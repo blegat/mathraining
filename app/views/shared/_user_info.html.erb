@@ -1,0 +1,18 @@
+<% if link %>
+  <a href="<%= user_path(user) %>">
+<% end %>
+  <%= gravatar_for user, size: 52 %>
+<% if link %>
+</a>
+<% end %>
+<h1>
+  <%= user.name %>
+</h1>
+<% if link %>
+<span>
+  <%= link_to "view my profile", user %>
+</span>
+<% end %>
+<span>
+  <%= pluralize(user.microposts.count, "micropost") %>
+</span>
