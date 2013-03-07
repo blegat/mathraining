@@ -28,7 +28,8 @@ GEM
     activesupport (3.2.11)
       i18n (~> 0.6)
       multi_json (~> 1.0)
-    annotate (2.4.1.beta1)
+    annotate (2.5.0)
+      rake
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
     bootstrap-sass (2.3.0.0)
@@ -79,7 +80,7 @@ GEM
     mime-types (1.21)
     multi_json (1.6.1)
     nokogiri (1.5.6)
-    pg (0.12.2)
+    pg (0.14.1)
     polyglot (0.3.3)
     rack (1.4.5)
     rack-cache (1.2)
@@ -156,7 +157,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  annotate (~> 2.4.1.beta)
+  annotate (~> 2.5.0)
   bcrypt-ruby (= 3.0.1)
   bootstrap-sass (= 2.3)
   bootstrap-will_paginate (= 0.0.6)
@@ -166,7 +167,7 @@ DEPENDENCIES
   factory_girl_rails (= 4.1.0)
   faker (= 1.0.1)
   jquery-rails
-  pg (= 0.12.2)
+  pg (~> 0.14.1)
   rails (= 3.2.11)
   random_record
   rspec-rails (= 2.11.0)
