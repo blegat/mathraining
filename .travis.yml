@@ -1,0 +1,19 @@
+# inspired from
+# http://stackoverflow.com/questions/9321153/rails-database-setup-on-travis-ci
+branches:
+  only:
+    - 'master'
+
+language: ruby
+rvm:
+  - 1.9.3
+
+#script: "bundle exec rspec spec"
+env:
+  - DB=sqlite
+  - DB=mysql
+  - DB=postgresql
+script:
+  - RAILS_ENV=test bundle exec rake db:migrate --trace
+  - bundle exec rake db:test:prepare
+  - bundle exec rake
