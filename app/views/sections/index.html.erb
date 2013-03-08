@@ -1,0 +1,11 @@
+<% provide(:title, 'Cours') %>
+<h1>Cours</h1>
+
+<ul>
+<%= render @sections %>
+</ul>
+
+<br />
+<% if current_user.admin? %>
+<%= link_to 'Nouvelle section', new_section_path %>
+<% end %>

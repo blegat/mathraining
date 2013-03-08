@@ -1,5 +1,6 @@
 Ombtraining::Application.routes.draw do
 
+  resources :sections
   resources :users
   resources :sessions, only: [:new, :create, :destroy]
 

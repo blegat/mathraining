@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_filter :signed_in_user,
-    only: [:destroy, :index, :edit, :update]
+    only: [:destroy, :index, :edit, :update, :show]
   before_filter :correct_user,
     only: [:edit, :update]
   before_filter :admin_user,
@@ -17,7 +17,7 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
   	if @user.save
       sign_in @user
-  	  flash[:success] = "Welcome to the OMB training!"
+  	  flash[:success] = "Bienvenue sur OMB training!"
   	  redirect_to @user
   	else
   	  render 'new'
@@ -33,7 +33,7 @@ class UsersController < ApplicationController
   end
   def update
     if @user.update_attributes(params[:user])
-      flash[:success] = "Profile updated."
+      flash[:success] = "Profil mis a jour."
       sign_in @user
       redirect_to @user
     else
@@ -42,7 +42,7 @@ class UsersController < ApplicationController
   end
   def destroy
     @user.destroy
-    flash[:success] = "User destroyed."
+    flash[:success] = "Utilisateur supprime."
     redirect_to users_path
   end
 
