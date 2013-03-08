@@ -3,19 +3,12 @@ class SectionsController < ApplicationController
   before_filter :recup,
     only: [:destroy, :show, :edit, :update]
   before_filter :admin_user,
-    only: [:destroy, :edit, :update]
+    only: [:destroy, :edit, :update, :create]
 
   def index
     @sections = Section.all
   end
   def create
-    @section = Section.new(params[:section])
-  	if @section.save
-  	  flash[:success] = "Section ajoutee."
-  	  redirect_to @section
-  	else
-  	  render 'new'
-  	end
   end
   def show
   end
@@ -25,7 +18,7 @@ class SectionsController < ApplicationController
   def edit
   end
   def update
-  if @section.update_attributes(params[:section])
+  if @section.update_attributes(name: params[:section][:name], description: params[:section][:description])
       flash[:success] = "Section modifiee."
       redirect_to @section
     else
@@ -33,9 +26,6 @@ class SectionsController < ApplicationController
     end
   end
   def destroy
-    @section.destroy
-    flash[:success] = "Section supprimee."
-    redirect_to sections_path
   end
 
   private

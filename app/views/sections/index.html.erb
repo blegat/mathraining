@@ -4,8 +4,3 @@
 <ul>
 <%= render @sections %>
 </ul>
-
-<br />
-<% if current_user.admin? %>
-<%= link_to 'Nouvelle section', new_section_path %>
-<% end %>

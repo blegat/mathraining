@@ -9,6 +9,5 @@
 
 <% if current_user.admin? %>
 <%= link_to 'Editer', edit_section_path(@section) %> |
-<%= link_to 'Supprimer', @section, method: :delete, data: { confirm: 'Are you sure?' } %> | 
 <% end %>
 <%= link_to 'Retour', sections_path %>
