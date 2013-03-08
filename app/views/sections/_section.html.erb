@@ -1,3 +1,7 @@
-<li>
-<%= link_to section.name, section %>
-</li>
+<div style="border: 1px solid black; width:600px;">
+<%= link_to image_tag(section.image, alt: section.name), section %>
+</div>
+<% if section.name == "Fondements" %>
+Bonjour
+<% end %>
+<br/>

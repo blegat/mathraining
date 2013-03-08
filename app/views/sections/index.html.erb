@@ -1,6 +1,27 @@
 <% provide(:title, 'Cours') %>
 <h1>Cours</h1>
+Les cours sont séparés dans cinq grandes sections.
 
-<ul>
-<%= render @sections %>
-</ul>
+La première contient tous les fondements mathématiques nécessaires à la bonne compréhension des quatre suivantes. Elle est principalement destinée aux étudiants les plus jeunes, mais peut également servir de rappel aux étudiants plus avancés dans leur cursus scolaire. <br/><br/>
+
+<center>
+<% section = @sections[0] %>
+<div style="border: 1px solid black; width:600px;">
+<%= link_to image_tag(section.image, alt: section.name), section %>
+</div>
+</center>
+<br/>
+
+Les quatre sections suivantes sont les quatre sujets phares des Olympiades Mathématiques Internationales. Chaque année, six problèmes y sont proposés aux élèves, et il y en a typiquement au moins un de chaque section. Cependant, les problèmes se diversifient au fil des années et il arrive qu'un exercice n'appartienne pas entièrement à l'une de ces catégories. C'est pourquoi ce site comportera certains chapitres hybrides, présents dans plus d'une section.
+
+<center>
+
+<% (1..4).each do |i| %>
+<% section = @sections[i] %>
+<br/>
+<div style="border: 1px solid black; width:600px;">
+<%= link_to image_tag(section.image, alt: section.name), section %>
+</div>
+<% end %>
+
+</center>
