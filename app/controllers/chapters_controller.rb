@@ -2,6 +2,8 @@
 class ChaptersController < ApplicationController
   before_filter :signed_in_user
   before_filter :search_section
+  before_filter :good_combination,
+    only: [:show, :edit, :update, :destroy]
   before_filter :admin_user,
     only: [:destroy, :edit, :update, :create]
 
@@ -10,7 +12,6 @@ class ChaptersController < ApplicationController
   end
 
   def show
-    @chapter = Chapter.find(params[:id])
   end
 
   def new
@@ -18,7 +19,6 @@ class ChaptersController < ApplicationController
   end
 
   def edit
-    @chapter = Chapter.find(params[:id])
   end
 
   def create
@@ -33,7 +33,6 @@ class ChaptersController < ApplicationController
   end
 
   def update
-    @chapter = Chapter.find(params[:id])
     if @chapter.update_attributes(params[:chapter])
       flash[:success] = "Chapitre modifié."
       redirect_to section_chapter_path(@section, @chapter)
@@ -43,7 +42,6 @@ class ChaptersController < ApplicationController
   end
 
   def destroy
-    @chapter = Chapter.find(params[:id])
     @chapter.destroy
     flash[:success] = "Chapitre supprimé."
     redirect_to @section
@@ -59,5 +57,14 @@ class ChaptersController < ApplicationController
   
   def admin_user
     redirect_to @section unless current_user.admin?
+  end
+  
+  def good_combination
+    if @section.chapters.exists?(:id => params[:id])
+      @chapter = Chapter.find(params[:id])
+    else
+      flash[:error] = "Page inexistante."
+  	  redirect_to @section unless @section.chapters.exists?(:id => params[:id])
+  	end
   end
 end

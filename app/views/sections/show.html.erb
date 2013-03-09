@@ -25,4 +25,6 @@
 <% if current_user.admin? %>
 <%= link_to "Ajouter un chapitre", new_section_chapter_path(@section) %> | 
 <% end %>
-<%= link_to "Retour", sections_path %>
+<center>
+<%= link_to "Retour à la liste des cours", sections_path %>
+</center>
