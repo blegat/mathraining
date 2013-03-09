@@ -1,11 +1,14 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
   before_filter :signed_in_user
-  before_filter :search_section
+  before_filter :search_section,
+    only: [:show, :edit, :update, :destroy,
+      :new, :create, :index]
   before_filter :good_combination,
     only: [:show, :edit, :update, :destroy]
   before_filter :admin_user,
-    only: [:destroy, :edit, :update, :create]
+    only: [:destroy, :edit, :update, :create,
+      :new_to_section, :create_to_section]
 
   def index
     redirect_to @section
@@ -47,12 +50,29 @@ class ChaptersController < ApplicationController
     redirect_to @section
   end
   
-  def add
+  def new_section
+    @chapter = Chapter.find(params[:chapter_id])
+    @sections_to_add = Section.where('id NOT IN(?)', @chapter.sections)
+    @sections_to_remove = @chapter.sections
+  end
+
+  def create_section
+    chapter = Chapter.find(params[:chapter_id])
+    section = Section.find(params[:id])
+    chapter.sections << section
+    redirect_to chapter_manage_sections_path(chapter)
+  end
+
+  def destroy_section
+    chapter = Chapter.find(params[:chapter_id])
+    section = Section.find(params[:id])
+    chapter.sections.delete(section)
+    redirect_to chapter_manage_sections_path(chapter)
   end
   
   private
   def search_section
-  @section = Section.find(params[:section_id])
+    @section = Section.find(params[:section_id])
   end
   
   def admin_user

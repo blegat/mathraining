@@ -12,15 +12,17 @@
 
 <% if current_user.admin? %>
 
-<%= link_to "Modifier le nom, le niveau ou l'introduction du chapitre", edit_section_chapter_path(@section, @chapter) %> |
+  <%= link_to "Modifier le nom, le niveau ou l'introduction du chapitre", edit_section_chapter_path(@section, @chapter) %> |
 
-<% if @chapter.sections.size > 1 %>
-<%= link_to "Supprimer ce chapitre", section_chapter_path(@section, @chapter), method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre ?" } %> <br/> <br/>
-<% else %>
-<%= link_to "Supprimer le chapitre", section_chapter_path(@section, @chapter), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre ?" } %> <br/> <br/>
-<% end %>
+  <% if @chapter.sections.size > 1 %>
+    <%= link_to "Supprimer ce chapitre", section_chapter_path(@section, @chapter), method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre ?" } %> <br/> <br/>
+  <% else %>
+    <%= link_to "Supprimer le chapitre", section_chapter_path(@section, @chapter), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre ?" } %> <br/> <br/>
+  <% end %>
+
+  <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %>
 
 <% end %>
 <center>
-<%= link_to "Retour à la section " + @section.name, section_chapters_path %>
+  <%= link_to "Retour à la section " + @section.name, section_chapters_path %>
 </center>
