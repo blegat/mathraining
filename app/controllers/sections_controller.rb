@@ -44,7 +44,3 @@ class SectionsController < ApplicationController
   
 end
 
-
-
-
-
