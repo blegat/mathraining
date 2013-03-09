@@ -1,3 +1,4 @@
+#encoding: utf-8
 class UsersController < ApplicationController
   before_filter :signed_in_user,
     only: [:destroy, :index, :edit, :update, :show]
@@ -33,7 +34,7 @@ class UsersController < ApplicationController
   end
   def update
     if @user.update_attributes(params[:user])
-      flash[:success] = "Profil mis a jour."
+      flash[:success] = "Profil mis à jour."
       sign_in @user
       redirect_to @user
     else
@@ -42,7 +43,7 @@ class UsersController < ApplicationController
   end
   def destroy
     @user.destroy
-    flash[:success] = "Utilisateur supprime."
+    flash[:success] = "Utilisateur supprimé."
     redirect_to users_path
   end
 

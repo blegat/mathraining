@@ -10,7 +10,8 @@
 #
 
 class Section < ActiveRecord::Base
-  attr_accessible :description, :name, :image
+  attr_accessible :description, :name, :image, :fondations
+  has_and_belongs_to_many :chapters
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
   validates :description, length: {maximum: 8000 }
 end

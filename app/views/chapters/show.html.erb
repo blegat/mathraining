@@ -1,0 +1,24 @@
+<% provide(:title, @chapter.name) %>
+
+
+<h1>
+  <%= @chapter.name %> (niveau <%= @chapter.level %>)
+</h1>
+
+<p>
+  <h3>Introduction</h3>
+  <%= @chapter.description %>
+</p>
+
+<% if current_user.admin? %>
+
+<%= link_to "Modifier le nom, le niveau ou l'introduction du chapitre", edit_section_chapter_path(@section, @chapter) %> |
+
+<% if @chapter.sections.size > 1 %>
+<%= link_to "Supprimer ce chapitre", section_chapter_path(@section, @chapter), method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre ?" } %> <br/> <br/>
+<% else %>
+<%= link_to "Supprimer le chapitre", section_chapter_path(@section, @chapter), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre ?" } %> <br/> <br/>
+<% end %>
+
+<% end %>
+<%= link_to "Retour", section_chapters_path %>

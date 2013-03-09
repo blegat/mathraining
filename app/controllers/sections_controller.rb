@@ -1,3 +1,4 @@
+#encoding: utf-8
 class SectionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :recup,
@@ -19,7 +20,7 @@ class SectionsController < ApplicationController
   end
   def update
   if @section.update_attributes(name: params[:section][:name], description: params[:section][:description])
-      flash[:success] = "Section modifiee."
+      flash[:success] = "Section modifiée."
       redirect_to @section
     else
       render 'edit'

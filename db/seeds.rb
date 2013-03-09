@@ -8,7 +8,8 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-Section.create(name: "Théorie des nombres", description: "", image: "numbertheory.jpg")
-Section.create(name: "Géométrie", description: "", image: "geometry.jpg")
-Section.create(name: "Algèbre", description: "", image: "algebra.jpg")
-Section.create(name: "Combinatoire", description: "", image: "combinatorics.jpg")
+Section.create(name: "Fondements", description: "", image: "fondations.jpg", fondations: true)
+Section.create(name: "Combinatoire", description: "", image: "combinatorics.jpg", fondations: false)
+Section.create(name: "Géométrie", description: "", image: "geometry.jpg", fondations: false)
+Section.create(name: "Théorie des nombres", description: "", image: "numbertheory.jpg", fondations: false)
+Section.create(name: "Algèbre", description: "", image: "algebra.jpg", fondations: false)

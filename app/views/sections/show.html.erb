@@ -4,10 +4,25 @@
   <%= @section.name %>
 </h1>
 <p>
+<h3>Introduction</h3>
   <%= @section.description %>
 </p>
 
 <% if current_user.admin? %>
-<%= link_to 'Editer', edit_section_path(@section) %> |
+<%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/><br/>
 <% end %>
-<%= link_to 'Retour', sections_path %>
+
+<% @chapters = @section.chapters.sort_by { |chap| chap[:level] } %>
+<ul>
+<% @chapters.each do |c| %>
+<li>
+<%= link_to c.name, section_chapter_path(@section, c) %>
+(niveau <%= c.level %>)
+</li>
+<% end %>
+</ul>
+
+<% if current_user.admin? %>
+<%= link_to "Ajouter un chapitre", new_section_chapter_path(@section) %> | 
+<% end %>
+<%= link_to "Retour", sections_path %>
