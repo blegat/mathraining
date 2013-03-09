@@ -1,6 +1,7 @@
 <% provide(:title, 'Créer un chapitre') %>
-<h1>Créer un chapitre</h1>
 
+<h1>Créer un chapitre</h1>
+Tous les chapitres ajoutés sont, par défauts, inclus dans la section "Fondements" (il n'appartient en fait à aucune vraie section, entendant par là l'une des quatre autres). Pour insérer ce chapitre dans une ou plusieurs autres sections, il vous suffit de vous rendre sur ce chapitre et de l'ajouter à une section par le biais d'un lien s'y trouvant. <br/><br/>
 <div class="row">
   <div class="span6">
     <%= form_for([@section,@chapter]) do |f| %>
@@ -11,5 +12,4 @@
   </div>
 </div>
 
-
-<%= link_to 'Retour', section_chapters_path %>
+<%= link_to 'Retour', @section %>

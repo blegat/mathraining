@@ -3,7 +3,7 @@
 
 <div class="row">
   <div class="span6">
-    <%= form_for([@section,@chapter]) do |f| %>
+    <%= form_for(@chapter) do |f| %>
       <%= render 'fields', f: f %>
       <br />
       <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
@@ -13,4 +13,4 @@
 
 
 
-<%= link_to 'Retour', section_chapter_path(@section, @chapter) %>
+<%= link_to 'Retour', chapter_path(@chapter) %>

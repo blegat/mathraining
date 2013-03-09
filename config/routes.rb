@@ -1,7 +1,12 @@
 Ombtraining::Application.routes.draw do
 
-  resources :sections do
-  	resources :chapters
+  resources :sections
+  resources :chapters do
+    match '/manage_sections', to: 'chapters#new_section'
+    match '/add_section/:id', to: 'chapters#create_section',
+      as: :add_section
+    match '/remove_section/:id', to: 'chapters#destroy_section',
+      as: :remove_section
   end
   resources :users
   resources :sessions, only: [:new, :create, :destroy]

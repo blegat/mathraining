@@ -2,32 +2,35 @@
 <h1>Cours</h1>
 Les cours sont séparés dans cinq grandes sections.
 
-La première contient tous les fondements mathématiques nécessaires à la bonne compréhension des quatre suivantes. Elle est principalement destinée aux étudiants les plus jeunes, mais peut également servir de rappel aux étudiants plus avancés dans leur cursus scolaire.
+La première contient tous les fondements mathématiques nécessaires à la bonne compréhension des quatre suivantes.
+Elle est principalement destinée aux étudiants les plus jeunes, mais peut également servir de rappel aux étudiants plus avancés dans leur cursus scolaire.
 
 <center>
-<% @sections.each do |f| %>
-<% if f.fondations == 't' %>
 <br/>
 <div style="border: 1px solid black; width:600px;">
-<%= link_to image_tag(f.image, alt: f.name), f %>
+<%= link_to image_tag("fondations.jpg", alt: "Fondations"), "sections/0" %>
 </div>
-<% end %>
-<% end %>
 
 </center>
 <br/>
 
-Les quatre sections suivantes sont les quatre sujets phares des Olympiades Mathématiques Internationales. Chaque année, six problèmes y sont proposés aux élèves, et il y en a typiquement au moins un de chaque section. Cependant, les problèmes se diversifient au fil des années et il arrive qu'un exercice n'appartienne pas entièrement à l'une de ces catégories. C'est pourquoi ce site comportera certains chapitres hybrides, présents dans plus d'une section.
+Les quatre sections suivantes sont les quatre sujets phares des Olympiades Mathématiques Internationales.
+Chaque année, six problèmes y sont proposés aux élèves, et il y en a typiquement au moins un de chaque section.
+Cependant, les problèmes se diversifient au fil des années et il arrive qu'un exercice n'appartienne pas entièrement à l'une de ces catégories.
+C'est pourquoi ce site comportera certains chapitres hybrides, présents dans plus d'une section.
 
 <center>
 
 <% @sections.each do |f| %>
-<% if f.fondations == 'f' %>
 <br/>
 <div style="border: 1px solid black; width:600px;">
 <%= link_to image_tag(f.image, alt: f.name), f %>
 </div>
 <% end %>
+
+<% if current_user.admin? %>
+<br/>
+<%= link_to "Ajouter un chapitre", new_chapter_path %>
 <% end %>
 
 </center>

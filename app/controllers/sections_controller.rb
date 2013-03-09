@@ -31,7 +31,12 @@ class SectionsController < ApplicationController
 
   private
   def recup
-    @section = Section.find(params[:id])
+  	if params[:id] == "0" || params[:id] == 0
+  	  @fondation = true
+  	else
+      @section = Section.find(params[:id])
+      @fondation = false
+    end
   end
   def admin_user
     redirect_to @section unless current_user.admin?

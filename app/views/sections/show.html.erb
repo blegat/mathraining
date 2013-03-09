@@ -1,3 +1,5 @@
+<% if !@fondation %>
+
 <% provide(:title, @section.name) %>
 
 <h1>
@@ -16,15 +18,42 @@
 <ul>
 <% @chapters.each do |c| %>
 <li>
-<%= link_to c.name, section_chapter_path(@section, c) %>
+<%= link_to c.name, chapter_path(c) %>
 (niveau <%= c.level %>)
 </li>
 <% end %>
 </ul>
 
-<% if current_user.admin? %>
-<%= link_to "Ajouter un chapitre", new_section_chapter_path(@section) %> | 
-<% end %>
 <center>
 <%= link_to "Retour à la liste des cours", sections_path %>
 </center>
+
+<% else %>
+
+<% provide(:title, "Fondements") %>
+
+<h1>
+  Fondements
+</h1>
+<p>
+<h3>Introduction</h3>
+  Vous trouverez ici certaines bases mathématiques sans lesquelles la compréhension des sections plus avancées risque d'être compliquée. Il n'est pas nécessaire de compléter ces chapitres pour accéder à la suite des cours.
+</p>
+
+<% @chapters = Chapter.all.sort_by { |chap| chap[:level] } %>
+<ul>
+<% @chapters.each do |c| %>
+<% if c.sections.size == 0 %>
+<li>
+<%= link_to c.name, chapter_path(c) %>
+(niveau <%= c.level %>)
+</li>
+<% end %>
+<% end %>
+</ul>
+
+<center>
+<%= link_to "Retour à la liste des cours", sections_path %>
+</center>
+
+<% end %>

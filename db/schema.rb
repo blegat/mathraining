@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130309122500) do
+ActiveRecord::Schema.define(:version => 20130309110405) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -26,8 +26,13 @@ ActiveRecord::Schema.define(:version => 20130309122500) do
     t.integer "section_id"
   end
 
-# Could not dump table "sections" because of following StandardError
-#   Unknown type 'bool' for column 'fondations'
+  create_table "sections", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.string   "image"
+  end
 
   create_table "users", :force => true do |t|
     t.string   "first_name"
