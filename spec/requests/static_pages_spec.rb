@@ -52,7 +52,7 @@ describe "Static pages" do
 		page.should have_selector 'title', text: full_title('Aide')
 		click_link "Contact"
 		page.should have_selector 'title', text: full_title('Contact')
-		click_link "Acceuil"
+		click_link "Accueil"
 		click_link "Inscrivez-vous maintenant!"
 		page.should have_selector 'title', text: full_title('Inscription')
 		click_link "OMB training"
