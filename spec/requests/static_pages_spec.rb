@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'spec_helper'
 
 describe "Static pages" do
@@ -21,16 +22,16 @@ describe "Static pages" do
 
 	describe "Help page" do
 		before { visit help_path }
-		let(:heading) { 'Help' }
-		let(:page_title) { 'Help' }
+		let(:heading) { 'Aide' }
+		let(:page_title) { 'Aide' }
 
 		it_should_behave_like "all static pages"
 	end
 
 	describe "About page" do
 		before { visit about_path }
-		let(:heading) { 'About Us' }
-		let(:page_title) { 'About Us' }
+		let(:heading) { 'A propos' }
+		let(:page_title) { 'A propos' }
 
 		it_should_behave_like "all static pages"
 	end
@@ -45,15 +46,15 @@ describe "Static pages" do
 
 	it "should have the right links on the layout" do
 		visit root_path
-		click_link "About"
-		page.should have_selector 'title', text: full_title('About Us')
-		click_link "Help"
-		page.should have_selector 'title', text: full_title('Help')
+		click_link "A propos"
+		page.should have_selector 'title', text: full_title('A propos')
+		click_link "Aide"
+		page.should have_selector 'title', text: full_title('Aide')
 		click_link "Contact"
 		page.should have_selector 'title', text: full_title('Contact')
-		click_link "Home"
-		click_link "Sign up now!"
-		page.should have_selector 'title', text: full_title('Sign up')
+		click_link "Acceuil"
+		click_link "Inscrivez-vous maintenant!"
+		page.should have_selector 'title', text: full_title('Inscription')
 		click_link "OMB training"
 		page.should have_selector 'title', text: full_title('')
 	end

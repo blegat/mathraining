@@ -8,4 +8,11 @@ module ApplicationHelper
       "#{base_title} | #{page_title}"
     end
   end
+
+  def flash_errors(object)
+    unless object.errors.empty?
+      flash.now[:error] = object.errors.full_messages.to_sentence
+    end
+  end
+
 end

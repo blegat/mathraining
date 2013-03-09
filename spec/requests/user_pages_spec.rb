@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'spec_helper'
 
 describe "User pages" do
@@ -25,8 +26,8 @@ describe "User pages" do
       visit users_path
     end
 
-    it { should have_selector('title', text: 'All users') }
-    it { should have_selector('h1',    text: 'All users') }
+    it { should have_selector('title', text: 'Utilisateurs') }
+    it { should have_selector('h1',    text: 'Utilisateurs') }
 
     describe "pagination" do
 
@@ -40,7 +41,7 @@ describe "User pages" do
     end
     describe "delete links" do
 
-      it { should_not have_link('delete') }
+      it { should_not have_link('Supprimer') }
 
       describe "as an admin user" do
         let(:admin) { FactoryGirl.create(:admin) }
@@ -49,36 +50,40 @@ describe "User pages" do
           visit users_path
         end
 
-        it { should have_link('delete', href: user_path(User.first)) }
+        it { should have_link('Supprimer', href: user_path(User.first)) }
         it "should be able to delete another user" do
-          expect { click_link('delete') }.to change(User, :count).by(-1)
+          expect { click_link('Supprimer') }.to change(User, :count).by(-1)
         end
-        it { should_not have_link('delete', href: user_path(admin)) }
+        it { should_not have_link('Supprimer', href: user_path(admin)) }
       end
     end
   end
 
   describe "profile page" do
     let(:user) { FactoryGirl.create(:user) }
+    let(:other_user) { FactoryGirl.create(:user) }
 
-    before { visit user_path(user) }
+    before do
+      sign_in(user)
+      visit user_path(other_user)
+    end
 
-    it { should have_selector('h1',    text: user.name) }
-    it { should have_selector('title', text: user.name) }
+    it { should have_selector('h1',    text: other_user.name) }
+    it { should have_selector('title', text: other_user.name) }
 
   end
 
   describe "signup page" do
     before { visit signup_path }
 
-    it { should have_selector('h1',    text: 'Sign up') }
-    it { should have_selector('title', text: full_title('Sign up')) }
+    it { should have_selector('h1',    text: 'Inscription') }
+    it { should have_selector('title', text: full_title('Inscription')) }
   end
 
   describe "signup" do
     before { visit signup_path }
 
-    let(:submit) { "Create my account" }
+    let(:submit) { "Créer mon compte" }
 
     describe "with invalid information" do
       it "should not create a user" do
@@ -87,18 +92,18 @@ describe "User pages" do
       describe "after submission" do
         before { click_button submit }
 
-        it { should have_selector('title', text: 'Sign up') }
-        it { should have_content('error') }
+        it { should have_selector('title', text: 'Inscription') }
+        it { should have_content('erreur') }
       end
     end
 
     describe "with valid information" do
       before do
-        fill_in "First name",         with: "Example"
-        fill_in "Last name",         with: "User"
+        fill_in "Prénom",         with: "Example"
+        fill_in "Nom",         with: "User"
         fill_in "Email",        with: "user@example.com"
-        fill_in "Password",     with: "foobar"
-        fill_in "Confirm Password", with: "foobar"
+        fill_in "Mot de passe",     with: "foobar"
+        fill_in "Confirmation du mot de passe", with: "foobar"
       end
 
       it "should create a user" do
@@ -109,8 +114,8 @@ describe "User pages" do
         let(:user) { User.find_by_email('user@example.com') }
 
         it { should have_selector('title', text: user.name) }
-        it { should have_selector('div.alert.alert-success', text: 'Welcome') }
-        it { should have_link('Sign out') }
+        it { should have_selector('div.alert.alert-success', text: 'Bienvenue') }
+        it { should have_link('Déconnexion') }
       end
     end
   end
@@ -122,15 +127,15 @@ describe "User pages" do
     end
 
     describe "page" do
-      it { should have_selector('h1',    text: "Update your profile") }
-      it { should have_selector('title', text: "Edit user") }
-      it { should have_link('change', href: 'http://gravatar.com/emails') }
+      it { should have_selector('h1',    text: "Actualisez votre profil") }
+      it { should have_selector('title', text: "Actualisez votre profil") }
+      it { should have_link('Modifier', href: 'http://gravatar.com/emails') }
     end
 
     describe "with invalid information" do
-      before { click_button "Save changes" }
+      before { click_button "Mettre à jour" }
 
-      it { should have_content('error') }
+      it { should have_content('erreur') }
     end
     describe "with valid information" do
       let(:new_first_name)  { "New First Name" }
@@ -138,17 +143,17 @@ describe "User pages" do
       let(:new_name)  { "#{new_first_name} #{new_last_name}" }
       let(:new_email) { "new@example.com" }
       before do
-        fill_in "First name",             with: new_first_name
-        fill_in "Last name",             with: new_last_name
+        fill_in "Prénom",             with: new_first_name
+        fill_in "Nom",             with: new_last_name
         fill_in "Email",            with: new_email
-        fill_in "Password",         with: user.password
-        fill_in "Confirm Password", with: user.password
-        click_button "Save changes"
+        fill_in "Mot de passe",         with: user.password
+        fill_in "Confirmation du mot de passe", with: user.password
+        click_button "Mettre à jour"
       end
 
       it { should have_selector('title', text: new_name) }
       it { should have_selector('div.alert.alert-success') }
-      it { should have_link('Sign out', href: signout_path) }
+      it { should have_link('Déconnexion', href: signout_path) }
       specify { user.reload.first_name.should  == new_first_name }
       specify { user.reload.last_name.should  == new_last_name }
       specify { user.reload.name.should  == new_name }

@@ -1,16 +1,16 @@
 <%= render 'shared/error_messages', object: f.object %>
 
-<%= f.label :prénom %>
+<%= f.label :first_name %>
 <%= f.text_field :first_name %>
 
-<%= f.label :nom %>
+<%= f.label :last_name %>
 <%= f.text_field :last_name %>
 
 <%= f.label :email %>
 <%= f.text_field :email %>
 
-<%= f.label "Mot de passe"%>
+<%= f.label :password %>
 <%= f.password_field :password %>
 
-<%= f.label "Confirmer votre mot de passe" %>
+<%= f.label :password_confirmation %>
 <%= f.password_field :password_confirmation %>

@@ -1,6 +1,6 @@
 OMB training
 ============
-[![Build Status](https://secure.travis-ci.org/blegat/openvoc.png)](http://travis-ci.org/blegat/openvoc)
+[![Build Status](https://secure.travis-ci.org/blegat/ombtraining.png)](http://travis-ci.org/blegat/ombtraining)
 
 Description
 -----------
