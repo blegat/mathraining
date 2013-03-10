@@ -1,8 +1,8 @@
 class CreateChaptersSectionsJoinTable < ActiveRecord::Migration
   def change
-  create_table :chapters_sections, :id => false do |t|
-    t.integer :chapter_id
-  	t.integer :section_id
-  	end
+    create_table :chapters_sections, :id => false do |t|
+      t.references :chapter
+      t.references :section
+    end
   end
 end

@@ -50,8 +50,13 @@ class ChaptersController < ApplicationController
   
   def new_section
     @chapter = Chapter.find(params[:chapter_id])
-    @sections_to_add = Section.where('id NOT IN(?)', @chapter.sections)
     @sections_to_remove = @chapter.sections
+    if @sections_to_remove.empty?
+      # weirdly in NOT IN(?), [] is always false
+      @sections_to_add = Section.all
+    else
+      @sections_to_add = Section.where('id NOT IN(?)', @chapter.sections)
+    end
   end
 
   def create_section

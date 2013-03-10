@@ -6,33 +6,28 @@
     <h2>Ajouter à une des sections suivantes</h2>
     <section>
     <% @sections_to_add.each do |s| %>
-      <% if s.fondations == 'f' %>
-        <br/>
-        <div style="border: 1px solid black; width:600px;">
-          <%= link_to image_tag(s.image, alt: s.name),
-            chapter_add_section_path(@chapter, s) %>
+      <br/>
+      <div style="border: 1px solid black; width:600px;">
+        <%= link_to image_tag(s.image, alt: s.name),
+          chapter_add_section_path(@chapter, s) %>
         </div>
       <% end %>
-    <% end %>
     </section>
   <% end %>
   <% unless @sections_to_remove.empty? %>
-    <h2>Retirer à une des sections suivantes</h2>
+    <h2>Retirer d'une des sections suivantes</h2>
     <section>
     <% @sections_to_remove.each do |s| %>
-      <% if s.fondations == 'f' %>
-        <br/>
-        <div style="border: 1px solid black; width:600px;">
-          <%= link_to image_tag(s.image, alt: s.name),
-            chapter_remove_section_path(@chapter, s) %>
+      <br/>
+      <div style="border: 1px solid black; width:600px;">
+        <%= link_to image_tag(s.image, alt: s.name),
+          chapter_remove_section_path(@chapter, s) %>
         </div>
       <% end %>
-    <% end %>
     </section>
   <% end %>
 
 </center>
 
-<!-- TODO change to chapter_path -->
 <%= link_to "Retour au chapitre " + @chapter.name,
-  section_chapter_path(@sections_to_remove.first, @chapter) %>
+  chapter_path(@chapter) %>
