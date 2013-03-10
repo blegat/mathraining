@@ -1,5 +1,6 @@
-<% provide(:title, 'Ajouter à un section') %>
-<h1>Ajouter à une section</h1>
+<% provide(:title, "Emplacement du chapitre") %>
+<h1>Enmplacement du chapitre</h1>
+Vous pouvez ici modifier les sections auxquelles le chapitre <%= @chapter.name %> appartient. Par défaut, si celui-ci n'est placé dans aucune des quatres sections ci-dessous, alors il se situera dans le chapitre Fondements. Vous pouvez à tout moment modifier l'emplacement d'un chapitre, votre choix n'est pas définitif.
 
 <center>
   <% unless @sections_to_add.empty? %>
@@ -26,8 +27,9 @@
       <% end %>
     </section>
   <% end %>
-
-</center>
+  
+  <br/>
 
 <%= link_to "Retour au chapitre " + @chapter.name,
   chapter_path(@chapter) %>
+
