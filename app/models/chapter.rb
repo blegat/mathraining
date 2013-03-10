@@ -13,12 +13,9 @@ class Chapter < ActiveRecord::Base
     #association_foreign_key: "prerequisite_id"
   #It does not check validations
   def available_prerequisites
-    rec_pre = self.recursive_prerequisites
-    if rec_pre.empty?
-      Chapter.all
-    else
-      Chapter.where("id NOT IN(?)", rec_pre + [self.id])
-    end
+    exceptions = self.recursive_prerequisites + [self.id]
+    # exceptions is never empty so the following line works
+    Chapter.where("id NOT IN(?)", exceptions)
   end
   def recursive_prerequisites
     visited = Set.new
