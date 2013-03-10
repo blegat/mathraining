@@ -2,11 +2,13 @@
 #
 # Table name: sections
 #
-#  id              :integer          not null, primary key
-#  name            :string(255)
-#  description     :text
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
+#  id          :integer          not null, primary key
+#  name        :string(255)
+#  description :text
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  image       :string(255)
+#  fondations  :bool
 #
 
 class Section < ActiveRecord::Base
