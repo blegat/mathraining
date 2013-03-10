@@ -1,0 +1,2 @@
+module PrerequisitesHelper
+end

@@ -1,5 +1,7 @@
 Ombtraining::Application.routes.draw do
 
+  resources :prerequisites
+
   resources :sections
 
   resources :chapters do

@@ -2,9 +2,12 @@ fr:
   activerecord:
     models:
       user: Utilisateur
+      prerequisite: Prérequis
     attributes:
       user:
         first_name: "Prénom"
         last_name: "Nom"
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
+      prerequisite:
+        prerequisite: "Prérequis"
