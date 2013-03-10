@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: prerequisites
+#
+#  id              :integer          not null, primary key
+#  prerequisite_id :integer
+#  chapter_id      :integer
+#
+
 require 'set'
 class Prerequisite < ActiveRecord::Base
   belongs_to :prerequisite, class_name: "Chapter"

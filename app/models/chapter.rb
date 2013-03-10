@@ -1,11 +1,24 @@
+# == Schema Information
+#
+# Table name: chapters
+#
+#  id          :integer          not null, primary key
+#  name        :string(255)
+#  description :text
+#  level       :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+
 class Chapter < ActiveRecord::Base
   attr_accessible :description, :level, :name
   has_and_belongs_to_many :sections
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
-  validates :description, length: {maximum: 8000 }
+  validates :description, length: { maximum: 8000 }
   validates :level, presence: true, :numericality => { :greater_than_or_equal_to => 0, :less_than_or_equal_to => 10 }
 
-  has_many :prerequisites_associations, class_name: "Prerequisite"
+  has_many :prerequisites_associations, class_name: "Prerequisite",
+    dependent: :destroy
   has_many :prerequisites, through: :prerequisites_associations
 
   #has_and_belongs_to_many :prerequisites, join_table: :prerequisites,
