@@ -1,46 +1,47 @@
 <% provide(:title, "Emplacement du chapitre") %>
-<h1>Enmplacement du chapitre</h1>
+<h1>Emplacement du chapitre</h1>
 Vous pouvez ici modifier les sections auxquelles le chapitre <%= @chapter.name %> appartient.
-Par défaut, si celui-ci n'est placé dans aucune des quatres sections ci-dessous, alors il se situera dans le chapitre Fondements.
-Vous pouvez à tout moment modifier l'emplacement d'un chapitre, votre choix n'est pas définitif.
-
-<%= link_to "Retour au chapitre " + @chapter.name, chapter_path(@chapter) %>
+Par défaut, si celui-ci n'est placé dans aucune des quatres sections ci-dessous, alors il se situera dans le chapitre Fondements.<br/><br/>
 
 <div class="row">
   <div class="span6">
+  <center> <h2>Retirer d'une section</h2> </center>
     <% if @sections_to_remove.empty? %>
       <p>Le chapitre est dans la section Fondement car
       il n'est dans aucune des 4 autres sections.
-      Pour supprimer le chapitre, il faut retourner à la <%= link_to "page du chapitre", chapter_path(@chapter) %>.</p>
+      Si vous désirez supprimer le chapitre, il faut retourner à la <%= link_to "page du chapitre", chapter_path(@chapter) %>.</p>
     <% else %>
-      <h2>Retirer d'une des sections suivantes</h2>
       <section>
+      <center>
       <% @sections_to_remove.each do |s| %>
         <br/>
-        <div style="border: 1px solid black; width:600px;">
+        <div style="border: 1px solid black; width:400px;">
           <%= link_to image_tag(s.image, alt: s.name), chapter_remove_section_path(@chapter, s) %>
         </div>
       <% end %>
+      </center>
       </section>
     <% end %>
   </div>
   <div class="span6">
+  <center> <h2>Ajouter à une section</h2> </center>
     <% if @sections_to_add.empty? %>
-      <p>Le chapitre est dans toutes les sections.
-      Ne serait-ce pas un chapitre fondement du coup ?
-      Pour le faire appartenir à Fondement,
-      il faut le lier à aucune section,
-      c'est le contraire de ce que vous avez fait.</p>
+      <p>Le chapitre est dans toutes les sections. Cela est-il vraiment ce que vous désiriez faire?
+      Si vous vouliez le faire appartenir à la section Fondement, il faut le retirer de toutes les sections, c'est le contraire de ce que vous avez fait.</p>
     <% else %>
-      <h2>Ajouter à une des sections suivantes</h2>
       <section>
+      <center>
       <% @sections_to_add.each do |s| %>
         <br/>
-        <div style="border: 1px solid black; width:600px;">
+        <div style="border: 1px solid black; width:400px;">
           <%= link_to image_tag(s.image, alt: s.name), chapter_add_section_path(@chapter, s) %>
         </div>
       <% end %>
+      </center>
       </section>
     <% end %>
   </div>
 </div>
+
+<br/><br/>
+<center><%= link_to "Retour au chapitre " + @chapter.name, chapter_path(@chapter) %></center>

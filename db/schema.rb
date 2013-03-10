@@ -31,8 +31,13 @@ ActiveRecord::Schema.define(:version => 20130310121101) do
     t.integer "chapter_id"
   end
 
-# Could not dump table "sections" because of following StandardError
-#   Unknown type 'bool' for column 'fondations'
+  create_table "sections", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.string   "image"
+  end
 
   create_table "users", :force => true do |t|
     t.string   "first_name"
