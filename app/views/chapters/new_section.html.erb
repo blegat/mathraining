@@ -1,33 +1,42 @@
 <% provide(:title, 'Ajouter à un section') %>
 <h1>Ajouter à une section</h1>
+<%= link_to "Retour au chapitre " + @chapter.name, chapter_path(@chapter) %>
 
-<center>
-  <% unless @sections_to_add.empty? %>
-    <h2>Ajouter à une des sections suivantes</h2>
-    <section>
-    <% @sections_to_add.each do |s| %>
-      <br/>
-      <div style="border: 1px solid black; width:600px;">
-        <%= link_to image_tag(s.image, alt: s.name),
-          chapter_add_section_path(@chapter, s) %>
+<div class="row">
+  <div class="span6">
+    <% if @sections_to_remove.empty? %>
+      <p>Le chapitre est dans la section Fondement car
+      il n'est dans aucune des 4 autres sections.
+      Pour supprimer le chapitre, il faut retourner à la <%= link_to "page du chapitre", chapter_path(@chapter) %>.</p>
+    <% else %>
+      <h2>Retirer d'une des sections suivantes</h2>
+      <section>
+      <% @sections_to_remove.each do |s| %>
+        <br/>
+        <div style="border: 1px solid black; width:600px;">
+          <%= link_to image_tag(s.image, alt: s.name), chapter_remove_section_path(@chapter, s) %>
         </div>
       <% end %>
-    </section>
-  <% end %>
-  <% unless @sections_to_remove.empty? %>
-    <h2>Retirer d'une des sections suivantes</h2>
-    <section>
-    <% @sections_to_remove.each do |s| %>
-      <br/>
-      <div style="border: 1px solid black; width:600px;">
-        <%= link_to image_tag(s.image, alt: s.name),
-          chapter_remove_section_path(@chapter, s) %>
+      </section>
+    <% end %>
+  </div>
+  <div class="span6">
+    <% if @sections_to_add.empty? %>
+      <p>Le chapitre est dans toutes les sections.
+      Ne serait-ce pas un chapitre fondement du coup ?
+      Pour le faire appartenir à Fondement,
+      il faut le lier à aucune section,
+      c'est le contraire de ce que vous avez fait.</p>
+    <% else %>
+      <h2>Ajouter à une des sections suivantes</h2>
+      <section>
+      <% @sections_to_add.each do |s| %>
+        <br/>
+        <div style="border: 1px solid black; width:600px;">
+          <%= link_to image_tag(s.image, alt: s.name), chapter_add_section_path(@chapter, s) %>
         </div>
       <% end %>
-    </section>
-  <% end %>
-
-</center>
-
-<%= link_to "Retour au chapitre " + @chapter.name,
-  chapter_path(@chapter) %>
+      </section>
+    <% end %>
+  </div>
+</div>

@@ -25,7 +25,7 @@ class ChaptersController < ApplicationController
     @chapter = Chapter.new(params[:chapter])
     if @chapter.save
       flash[:success] = "Chapitre ajouté."
-      redirect_to @chapter
+      redirect_to chapter_manage_sections_path(@chapter)
     else
       render 'new'
     end
