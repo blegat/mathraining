@@ -12,7 +12,11 @@ Ombtraining::Application.routes.draw do
       as: :remove_section
   end
 
-  resources :users
+  resources :users do
+    match '/add_administrator', to: 'users#create_administrator',
+      as: :add_administrator
+  end
+  
   resources :sessions, only: [:new, :create, :destroy]
 
   root to: 'static_pages#home'

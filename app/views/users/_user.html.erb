@@ -2,6 +2,7 @@
 <%= gravatar_for user, size: 52 %>
 <%= link_to user.name, user %>
 <% if current_user.admin? && !user.admin %>
-  | <%= link_to 'Supprimer', user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{user.name} ?" } %>
+  | <%= link_to 'Supprimer', user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{user.name}?" } %>
+  | <%= link_to 'Rendre administrateur', user_add_administrator_path(user), data: { confirm: "Etes-vous sûr de vouloir rendre #{user.name} administrateur? Vous ne pourrez plus revenir en arrière!"} %>
 <% end %>
 </li>

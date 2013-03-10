@@ -1,11 +1,11 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_filter :signed_in_user,
-    only: [:destroy, :index, :edit, :update, :show]
+    only: [:destroy, :index, :edit, :update, :show, :create_administrator]
   before_filter :correct_user,
     only: [:edit, :update]
   before_filter :admin_user,
-    only: [:destroy]
+    only: [:destroy, :create_administrator]
   before_filter :signed_out_user,
     only: [:new, :create]
   before_filter :destroy_admin,
@@ -44,6 +44,17 @@ class UsersController < ApplicationController
   def destroy
     @user.destroy
     flash[:success] = "Utilisateur supprimé."
+    redirect_to users_path
+  end
+  
+  def create_administrator
+    @user = User.find(params[:user_id])
+    if @user.admin?
+      flash[:error] = "I see what you did here! Mais non ;-)"
+    else
+      @user.toggle!(:admin)
+      flash[:success] = "Utilisateur promu au rend d'administrateur!"
+    end
     redirect_to users_path
   end
 
