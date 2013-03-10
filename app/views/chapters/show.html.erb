@@ -34,13 +34,7 @@
   
   <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/> <br/>
 
-  <%= form_for(:prerequisite, url: prerequisites_path) do |f| %>
-    <%= f.hidden_field :chapter_id, value: @chapter.id %>
-    <%= f.label :prerequisite_id, "Prérequis" %>
-    <%= f.collection_select(:prerequisite_id, @chapter.available_prerequisites,
-                            :id, :name, prompt: true) %>
-    <%= f.submit "Ajouter prérequis", class: "btn btn-primary" %>
-  <% end %>
+  <%= render 'prerequisites/new' %>
 
 <% end %>
 
