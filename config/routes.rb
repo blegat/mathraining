@@ -1,5 +1,6 @@
 Ombtraining::Application.routes.draw do
 
+  mathjax 'mathjax'
   resources :prerequisites
 
   resources :sections
