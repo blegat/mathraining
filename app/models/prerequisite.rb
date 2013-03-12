@@ -23,29 +23,44 @@ class Prerequisite < ActiveRecord::Base
   # a.prerequisites << c
   # b.prerequisites << c # should not be allowed
 
-  def can_go_from_to(current, target, visited)
-    if target == current
-      return true
-    end
-    if visited.include?(current.id)
-      return false
-    end
-    visited.add(current.id)
-    current.prerequisites.each do |next_chapter|
-      if can_go_from_to(next_chapter, target, visited)
-        return true
-      end
-    end
-    return false
-  end
   def no_loop
-    if can_go_from_to(prerequisite, chapter, Set.new)
-      errors.add(:prerequisite, "forme une boucle")
+    stack = can_go_from_to(prerequisite, chapter, Set.new)
+    unless stack.nil?
+      stack.push(chapter.name)
+      errors.add(:prerequisite, "#{chapter.name}->#{prerequisite.name} forme la boucle #{stack_to_s(stack)}")
     end
   end
   def not_redundant
-    if can_go_from_to(chapter, prerequisite, Set.new)
-      errors.add(:prerequisite, "est redondant")
+    stack = can_go_from_to(chapter, prerequisite, Set.new)
+    unless stack.nil?
+      errors.add(:prerequisite, "#{chapter.name}->#{prerequisite.name} est redondant avec #{stack_to_s(stack)}")
+    end
+  end
+  private
+
+  def can_go_from_to(current, target, visited)
+    if target == current
+      return [current.name]
+    end
+    if visited.include?(current.id)
+      return nil
+    end
+    visited.add(current.id)
+    current.prerequisites.each do |next_chapter|
+      stack = can_go_from_to(next_chapter, target, visited)
+      unless stack.nil?
+        stack.push(current.name)
+        return stack
+      end
+    end
+    return nil
+  end
+  def stack_to_s(stack)
+    current = stack.pop
+    if stack.empty?
+      return current
+    else
+      return "#{current} -> #{stack_to_s(stack)}"
     end
   end
 end

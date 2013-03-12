@@ -14,5 +14,10 @@ module ApplicationHelper
       flash.now[:error] = object.errors.full_messages.to_sentence
     end
   end
+  def get_errors(object)
+    unless object.errors.empty?
+      object.errors.full_messages.to_sentence
+    end
+  end
 
 end

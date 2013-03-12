@@ -9,8 +9,8 @@ class PrerequisitesController < ApplicationController
       redirect_to root_path and return
     end
     if prerequisite.nil?
-      flash.now[:notice] = "Choisissez un chapitre"
-      render "chapters/show" and return
+      redirect_to @chapter,
+        flash: { notice: "Choisissez un chapitre" } and return
     end
     pre = Prerequisite.new
     pre.chapter = @chapter
@@ -18,12 +18,12 @@ class PrerequisitesController < ApplicationController
     if pre.save
       flash.now[:success] = "Prérequis ajouté"
       @chapter.reload
+      redirect_to @chapter
       # Sinon @chapter.available_prerequsites
       # ne prend pas en compte les nouveaux changements
     else
-      flash_errors(pre)
+      redirect_to @chapter, flash: { error: get_errors(pre) };
     end
-    render "chapters/show"
   end
 
   private
