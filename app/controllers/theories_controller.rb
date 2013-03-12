@@ -23,7 +23,7 @@ class TheoriesController < ApplicationController
     if @theory.save
       flash[:success] = "Point théorique ajouté."
       @chapter = Chapter.find(params[:chapter_id])
-      redirect_to @chapter
+      redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
     else
       render 'new'
     end
@@ -36,7 +36,7 @@ class TheoriesController < ApplicationController
     @theory.order = params[:theory][:order]
     if @theory.save
       flash[:success] = "Point théorique modifié."
-      redirect_to @theory.chapter
+      redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
     else
       render 'edit'
     end

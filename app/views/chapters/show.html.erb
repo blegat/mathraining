@@ -1,74 +1,113 @@
 <% provide(:title, @chapter.name) %>
 
+<% if(params.has_key?:type) %>
+<% type = params[:type].to_i %>
+<% else type = 0 %>
+<% end %>
+<% if(params.has_key?:which) %>
+<% id = params[:which].to_i %>
+<% else id = 0 %>
+<% end %>
+
 
 <h1>
   <%= @chapter.name %> (niveau <%= @chapter.level %>)
 </h1>
 
 <div class="row">
-  <div class="span4">
-    <% if current_user.admin? %>
 
-      <br/>
-      <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
-
-      <% if @chapter.sections.size > 1 %>
-        <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
-      <% else %>
-        <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
-      <% end %> |
-
-      <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
-
-    <% end %>
-
-    <h3>Prérequis</h3>
-    <% if @chapter.prerequisites.empty? %>
-      <p>Aucun prérequis</p>
-    <% else %>
-      <ul>
-        <% @chapter.prerequisites.each do |prerequisite| %>
-          <li><%= link_to prerequisite.name, prerequisite %></li>
-        <% end %>
-      </ul>
-    <% end %>
-
-    <p>
-    <h3>Introduction</h3>
-    <%= @chapter.description %>
-    </p>
-
-  </div>
   <div class="span2">
-    <% unless @chapter.theories.empty? %>
       <ul class="nav nav-list">
+        <li class="nav-header">Préambule</li>
+        <li<%= ' class="active"'.html_safe if type == 0 %>>
+        <%= link_to "Introduction", chapter_path(@chapter) %></li>
         <li class="nav-header">Points théoriques</li>
-        <% @chapter.theories.each do |f| %>
-          <li<%= ' class="active"'.html_safe if f == @chapter.theories.first %>>
-          <a href="#"><%= f.title %></a></li>
+        <% liste = @chapter.theories %>
+        <% liste.sort!{|t1,t2|t1.order <=> t2.order} %>
+        <% liste.each do |f| %>
+          <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %>>
+          <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id) %></li>
         <% end %>
+        <li class="nav-header">Exercices</li>
+        <li class="nav-header">Problèmes</li>
       </ul>
     </div>
-    <div class="span6">
-      <% f = @chapter.theories.first %>
-      <h3><%= f.title %> </h3>
-      <%= f.content %>
-      <br/>
-      <% if current_user.admin? %>
-        <br/>
-        <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> | 
-        <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %>
-        <br/>
-      <% end %>
-    <% end %>
+    <div class="span10">
+    
+      <!-- INTRODUCTION -->
+      
+      <% if type == 0 %>
+        <h3>Prérequis</h3>
+        <% if @chapter.prerequisites.empty? %>
+          <p>Aucun prérequis</p>
+        <% else %>
+          <ul>
+            <% @chapter.prerequisites.each do |prerequisite| %>
+              <li><%= link_to prerequisite.name, prerequisite %></li>
+            <% end %>
+          </ul>
+        <% end %>
 
-    <% if current_user.admin? %>
-      <br/>
-      <%= link_to "Ajouter un point théorique", new_chapter_theory_path(@chapter) %>
-    <% end %>
+        <h3>Introduction</h3>
+        <p><%= @chapter.description %></p>
+      
+        <% if current_user.admin? %>
+          <br/>
+          <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
+
+          <% if @chapter.sections.size > 1 %>
+            <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
+          <% else %>
+            <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
+          <% end %> |
+
+        <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
+
+        <% end %>
+        
+      <% end %>
+      
+      
+      <!-- POINTS THEORIQUES -->
+      
+      <% if type == 1 && @chapter.theories.exists?(id)%>
+        <% f = Theory.find(id) %>
+        <h3><%= f.title %> </h3>
+        <%= f.content %>
+        <br/>
+        <% if current_user.admin? %>
+          <br/>
+          <center>
+          <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> | 
+          <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %>
+          </center>
+          <br/>
+        <% end %>
+      <% end %>
+      
+      
+      <!-- EXERCICES -->
+      
+      <% if type == 2 %>
+        Exercice
+      <% end %>
+      
+      
+      <!-- PROBLEMES -->
+      
+      <% if type == 3 %>
+        Problème
+      <% end %>
+    
   </div>
 </div>
-<br/><br/>
+<center>
+  <% if current_user.admin? %>
+    <br/>
+    <%= link_to "Ajouter un point théorique", new_chapter_theory_path(@chapter) %>
+  <% end %>
+</center>
+<br/>
 <center>
   Retour à la section : 
   <% i = false %>
