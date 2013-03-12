@@ -1,5 +1,7 @@
 Ombtraining::Application.routes.draw do
 
+  resources :theories, only: [:update, :edit, :destroy]
+
   mathjax 'mathjax'
   resources :prerequisites
 
@@ -11,6 +13,8 @@ Ombtraining::Application.routes.draw do
       as: :add_section
     match '/remove_section/:id', to: 'chapters#destroy_section',
       as: :remove_section
+      
+    resources :theories, only: [:new, :create]
   end
 
   resources :users do

@@ -1,0 +1,33 @@
+<%= form_for(@theory, url: chapter_theories_path) do |f| %>
+  <% if @theory.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@theory.errors.count, "error") %> prohibited this theory from being saved:</h2>
+
+      <ul>
+      <% @theory.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :title %><br />
+    <%= f.text_field :title %>
+  </div>
+  <div class="field">
+    <%= f.label :content %><br />
+    <%= f.text_area :content %>
+  </div>
+  <div class="field">
+    <%= f.label :chapter_id %><br />
+    <%= f.number_field :chapter_id %>
+  </div>
+  <div class="field">
+    <%= f.label :order %><br />
+    <%= f.number_field :order %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

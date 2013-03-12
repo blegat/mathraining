@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @theory.title %>
+</p>
+
+<p>
+  <b>Content:</b>
+  <%= @theory.content %>
+</p>
+
+<p>
+  <b>Chapter:</b>
+  <%= @theory.chapter_id %>
+</p>
+
+<p>
+  <b>Order:</b>
+  <%= @theory.order %>
+</p>
+
+
+<%= link_to 'Edit', edit_theory_path(@theory) %> |
+<%= link_to 'Back', theories_path %>

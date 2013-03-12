@@ -5,6 +5,21 @@
   <%= @chapter.name %> (niveau <%= @chapter.level %>)
 </h1>
 
+<% if current_user.admin? %>
+
+  <br/>
+  <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
+
+  <% if @chapter.sections.size > 1 %>
+    <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
+  <% else %>
+    <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
+  <% end %> |
+  
+  <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
+
+<% end %>
+
 <h3>Prérequis</h3>
 <% if @chapter.prerequisites.empty? %>
   <p>Aucun prérequis</p>
@@ -22,22 +37,25 @@
 </p>
 
 
+<% @chapter.theories.each do |f| %>
+
+<h3><%= f.title %> </h3>
+<%= f.content %>
+<br/>
 <% if current_user.admin? %>
-
-  <%= link_to "Modifier le nom, le niveau ou l'introduction du chapitre", edit_chapter_path(@chapter) %> |
-
-  <% if @chapter.sections.size > 1 %>
-    <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre ?" } %>
-  <% else %>
-    <%= link_to "Supprimer le chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre ?" } %>
-  <% end %> |
-  
-  <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/> <br/>
-
-  <%= render 'prerequisites/new' %>
+<br/>
+<%= link_to "Modifier ce point théorique", edit_theory_path(f) %> | 
+<%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %>
+<br/>
+<% end %>
 
 <% end %>
 
+<% if current_user.admin? %>
+<br/>
+<%= link_to "Ajouter un point théorique", new_chapter_theory_path(@chapter) %>
+<% end %>
+<br/><br/>
 <center>
 Retour à la section : 
 <% i = false %>
