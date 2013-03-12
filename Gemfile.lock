@@ -77,6 +77,8 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    mathjax-rails (0.0.4)
+      railties (~> 3.0)
     mime-types (1.21)
     multi_json (1.6.1)
     nokogiri (1.5.6)
@@ -169,6 +171,7 @@ DEPENDENCIES
   factory_girl_rails (= 4.1.0)
   faker (= 1.0.1)
   jquery-rails
+  mathjax-rails
   pg (~> 0.14.1)
   rails (= 3.2.11)
   rails-i18n

@@ -6,6 +6,15 @@
     <%= javascript_include_tag "application" %>
     <%= csrf_meta_tags %>
 	<%= render 'layouts/shim' %>
+	<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       processEscapes: true
+     }
+    });
+    </script>
+	<%= mathjax_tag %>
   </head>
   <body>
 	  <%= render 'layouts/header' %>
