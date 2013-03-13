@@ -18,7 +18,7 @@ class Chapter < ActiveRecord::Base
   has_many :qcms
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
   validates :description, length: { maximum: 8000 }
-  validates :level, presence: true, :numericality => { :greater_than_or_equal_to => 0, :less_than_or_equal_to => 10 }
+  validates :level, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10 }
 
   has_many :prerequisites_associations, class_name: "Prerequisite",
     dependent: :destroy

@@ -18,16 +18,20 @@ class TheoriesController < ApplicationController
     @theory = Theory.new
     @theory.title = params[:theory][:title]
     @theory.content = params[:theory][:content]
-    @theory.chapter_id = params[:chapter_id]
-    if Theory.exists?(["chapter_id = ?", params[:chapter_id]])
-      need = Theory.where("chapter_id = ?", params[:chapter_id]).order('position').reverse_order.first
-      @theory.position = need.position + 1
-    else
+    @chapter = Chapter.find_by_id(params[:chapter_id])
+    if @chapter.nil?
+      flash[:error] = "Chapitre inexistant."
+      render 'new' and return
+    end
+    @theory.chapter = @chapter
+    if @chapter.theories.empty?
       @theory.position = 1
+    else
+      need = @chapter.theories.order('position').reverse_order.first
+      @theory.position = need.position + 1
     end
     if @theory.save
       flash[:success] = "Point théorique ajouté."
-      @chapter = Chapter.find(params[:chapter_id])
       redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
     else
       render 'new'
@@ -56,10 +60,12 @@ class TheoriesController < ApplicationController
   
   def order_minus
     @theory = Theory.find(params[:theory_id])
-    @theory2 = Theory.where("position < ? AND chapter_id = ?", @theory.position, @theory.chapter.id).order('position').reverse_order.first
+    @theory2 = @theory.chapter.theories.where("position < ?", @theory.position).order('position').reverse_order.first
     x = @theory.position
     @theory.position = @theory2.position
     @theory2.position = x
+    @theory.save(validate: false) # disable validations
+    @theory2.save(validate: false) # because position must be unique
     @theory.save
     @theory2.save
     flash[:success] = "Point théorique déplacé vers le haut."
@@ -68,10 +74,12 @@ class TheoriesController < ApplicationController
   
   def order_plus
     @theory = Theory.find(params[:theory_id])
-    @theory2 = Theory.where("position > ? AND chapter_id = ?", @theory.position, @theory.chapter.id).order('position').first
+    @theory2 = @theory.chapter.theories.where("position > ?", @theory.position).order('position').first
     x = @theory.position
     @theory.position = @theory2.position
     @theory2.position = x
+    @theory.save(validate: false)
+    @theory2.save(validate: false)
     @theory.save
     @theory2.save
     flash[:success] = "Point théorique déplacé vers le bas."

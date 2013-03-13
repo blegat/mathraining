@@ -17,4 +17,10 @@ FactoryGirl.define do
     association :chapter
     association :prerequisite, factory: :chapter
   end
+  factory :theory do
+    association :chapter
+    title "a"
+    content "a"
+    sequence(:position) { |n| n }
+  end
 end
