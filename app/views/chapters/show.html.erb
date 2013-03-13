@@ -83,32 +83,36 @@
           </center>
           <br/>
           
-          <% if Theory.exists?(["chapter_id = ? AND position < ?", @chapter, f.position]) %>
-          <% up = true %>
-          <% else %>
-          <% up = false %>
-          <% end %>
+          <% if current_user.admin? %>
           
-          <% if Theory.exists?(["chapter_id = ? AND position > ?", @chapter, f.position]) %>
-          <% down = true %>
-          <% else %>
-          <% down = false %>
-          <% end %>
-          
-          <% if up || down %>
-            <center>
-            Déplacer ce point théorique vers le 
-            <% if up %>
-              <%= link_to "haut", theory_order_minus_path(f) %>
-              <% if down %>
-              | <%= link_to "bas", theory_order_plus_path(f) %>
-              <% end %>
+            <% if Theory.exists?(["chapter_id = ? AND position < ?", @chapter, f.position]) %>
+            <% up = true %>
             <% else %>
-              <%= link_to "bas", theory_order_plus_path(f) %>
+            <% up = false %>
             <% end %>
+          
+            <% if Theory.exists?(["chapter_id = ? AND position > ?", @chapter, f.position]) %>
+            <% down = true %>
+            <% else %>
+            <% down = false %>
+            <% end %>
+          
+            <% if up || down %>
+              <center>
+              Déplacer ce point théorique vers le 
+              <% if up %>
+                <%= link_to "haut", theory_order_minus_path(f) %>
+                <% if down %>
+                | <%= link_to "bas", theory_order_plus_path(f) %>
+                <% end %>
+              <% else %>
+                <%= link_to "bas", theory_order_plus_path(f) %>
+              <% end %>
+              </center> <br/>
+            <% end %>
+            
           <% end %>
-          </center>
-          <br/>
+
         <% end %>
         
       <% end %>
