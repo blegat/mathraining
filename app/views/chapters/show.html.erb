@@ -23,7 +23,7 @@
         <%= link_to "Introduction", chapter_path(@chapter) %></li>
         <li class="nav-header">Points théoriques</li>
         <% liste = @chapter.theories %>
-        <% liste.sort!{|t1,t2|t1.order <=> t2.order} %>
+        <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
         <% liste.each do |f| %>
           <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %>>
           <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id) %></li>
@@ -82,7 +82,35 @@
           <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %>
           </center>
           <br/>
+          
+          <% if Theory.exists?(["chapter_id = ? AND position < ?", @chapter, f.position]) %>
+          <% up = true %>
+          <% else %>
+          <% up = false %>
+          <% end %>
+          
+          <% if Theory.exists?(["chapter_id = ? AND position > ?", @chapter, f.position]) %>
+          <% down = true %>
+          <% else %>
+          <% down = false %>
+          <% end %>
+          
+          <% if up || down %>
+            <center>
+            Déplacer ce point théorique vers le 
+            <% if up %>
+              <%= link_to "haut", theory_order_minus_path(f) %>
+              <% if down %>
+              | <%= link_to "bas", theory_order_plus_path(f) %>
+              <% end %>
+            <% else %>
+              <%= link_to "bas", theory_order_plus_path(f) %>
+            <% end %>
+          <% end %>
+          </center>
+          <br/>
         <% end %>
+        
       <% end %>
       
       

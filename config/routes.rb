@@ -1,6 +1,11 @@
 Ombtraining::Application.routes.draw do
 
-  resources :theories, only: [:update, :edit, :destroy]
+  resources :theories, only: [:update, :edit, :destroy] do
+    match '/order_plus', to: 'theories#order_plus',
+      as: :order_plus
+    match '/order_minus', to: 'theories#order_minus',
+      as: :order_minus
+  end
 
   mathjax 'mathjax'
   resources :prerequisites
