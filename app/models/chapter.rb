@@ -15,6 +15,7 @@ class Chapter < ActiveRecord::Base
   has_and_belongs_to_many :sections
   has_many :theories
   has_many :exercises
+  has_many :qcms
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
   validates :description, length: { maximum: 8000 }
   validates :level, presence: true, :numericality => { :greater_than_or_equal_to => 0, :less_than_or_equal_to => 10 }

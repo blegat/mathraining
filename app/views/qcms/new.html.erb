@@ -1,0 +1,14 @@
+<% provide(:title, 'Créer un QCM') %>
+<h1>Créer un QCM</h1>
+
+<div class="row">
+  <div class="span6">
+    <%= form_for(@qcm, url: chapter_qcms_path) do |f| %>
+      <%= render 'fields', f: f %>
+      <br />
+      <%= f.submit "Créer", class: "btn btn-large btn-primary" %>
+    <% end %>
+  </div>
+</div>
+
+<center><%= link_to 'Retour au chapitre', @chapter %></center>

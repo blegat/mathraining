@@ -1,0 +1,10 @@
+<%= render 'shared/error_messages', object: f.object %>
+
+<%= f.label "Enoncé" %>
+<%= f.text_area :statement %>
+
+<label class="checkbox">
+Cochez si plusieurs réponses sont possibles
+<%= f.check_box(:many_answers) %>
+</label>
+

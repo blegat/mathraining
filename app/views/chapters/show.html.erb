@@ -18,6 +18,8 @@
 
   <div class="span2">
       <ul class="nav nav-list">
+        <% number = 0 %>
+        <% i = 1 %>
         <li class="nav-header">Préambule</li>
         <li<%= ' class="active"'.html_safe if type == 0 %>>
         <%= link_to "Introduction", chapter_path(@chapter) %></li>
@@ -27,19 +29,54 @@
         <% liste.each do |f| %>
           <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %>>
           <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id) %></li>
+          <% if f.id == id && type == 1 %>
+            <% number = i %>
+          <% end %>
+          <% i = i + 1 %>
         <% end %>
         <li class="nav-header">Exercices</li>
         <% liste = @chapter.exercises %>
-        <% number = 0 %>
-        <% i = 1 %>
         <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
-        <% liste.each do |f| %>
-          <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
-          <%= link_to "Exercice #{i}", chapter_path(@chapter, :type => 2, :which => f.id) %></li>
-          <% if f.id == id %>
-            <% number = i %>
+        <% liste2 = @chapter.qcms %>
+        <% liste2.sort!{|t1,t2|t1.position <=> t2.position} %>
+        <% un = 0 %>
+        <% deux = 0 %>
+        <% (1..(liste.size+liste2.size)).each do |i| %>
+        
+          <% encours = 0 %>
+          <% if un >= liste.size %>
+            <% encours = 2 %>
+          <% else %>
+            <% if deux >= liste2.size %>
+              <% encours = 1 %>
+            <% else %>
+              <% if liste[un].position < liste2[deux].position %>
+                <% encours = 1 %>
+              <% else %>
+                <% encours = 2 %>
+              <% end %>
+            <% end %>
           <% end %>
-          <% i = i+1%>
+          
+          <% if encours == 1 %>
+            <% f = liste[un] %> 
+            <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
+            <%= link_to "Exercice #{i}", chapter_path(@chapter, :type => 2, :which => f.id) %></li>
+            <% if f.id == id  && type == 2 %>
+              <% number = i %>
+            <% end %>
+            <% un = un + 1 %>
+          <% else %>
+            <% f = liste2[deux] %> 
+            <li<%= ' class="active"'.html_safe if f.id == id && type == 3 %>>
+            <%= link_to "Exercice #{i}", chapter_path(@chapter, :type => 3, :which => f.id) %></li>
+            <% if f.id == id  && type == 3 %>
+              <% number = i %>
+            <% end %>
+            <% deux = deux + 1 %>
+          <% end %>
+          
+
         <% end %>
         <li class="nav-header">Problèmes</li>
       </ul>
@@ -95,13 +132,13 @@
           </center>
           <br/>
           
-          <% if Theory.exists?(["chapter_id = ? AND position < ?", @chapter, f.position]) %>
+          <% if number > 1 %>
           <% up = true %>
           <% else %>
           <% up = false %>
           <% end %>
           
-          <% if Theory.exists?(["chapter_id = ? AND position > ?", @chapter, f.position]) %>
+          <% if number < @chapter.theories.count %>
           <% down = true %>
           <% else %>
           <% down = false %>
@@ -147,15 +184,96 @@
           <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
           </center>
           <br/>
+          
+          <% if number > 1 %>
+          <% up = true %>
+          <% else %>
+          <% up = false %>
+          <% end %>
+          
+          <% if number < liste.size + liste2.size %>
+          <% down = true %>
+          <% else %>
+          <% down = false %>
+          <% end %>
+          
+          <% if up || down %>
+            <center>
+            Déplacer cet exercice vers le 
+            <% if up %>
+              <%= link_to "haut", exercise_order_minus_path(f) %>
+              <% if down %>
+              | <%= link_to "bas", exercise_order_plus_path(f) %>
+              <% end %>
+            <% else %>
+              <%= link_to "bas", exercise_order_plus_path(f) %>
+            <% end %>
+            </center> <br/>
+          <% end %>
         <% end %>
         
       <% end %>
 
       
       
+      <!-- QCMS -->
+      
+      <% if type == 3 && @chapter.qcms.exists?(id)%>
+        <% f = Qcm.find(id) %>
+        <h3>Exercice <%= number %></h3>
+        <%= simple_format f.statement %>
+        <br/>
+        <% if f.many_answers %>
+          Plusieurs réponses possibles
+        <% else %>
+          Une seule réponse possible
+        <% end %>
+        <br/>
+        <% if current_user.admin? %>
+          <br/>
+          <center>
+          <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> | 
+          <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
+          </center>
+          <br/>
+          
+          <% if number > 1 %>
+          <% up = true %>
+          <% else %>
+          <% up = false %>
+          <% end %>
+          
+          <% if number < liste.size + liste2.size %>
+          <% down = true %>
+          <% else %>
+          <% down = false %>
+          <% end %>
+          
+          <% if up || down %>
+            <center>
+            Déplacer ce QCM vers le 
+            <% if up %>
+              <%= link_to "haut", qcm_order_minus_path(f) %>
+              <% if down %>
+              | <%= link_to "bas", qcm_order_plus_path(f) %>
+              <% end %>
+            <% else %>
+              <%= link_to "bas", qcm_order_plus_path(f) %>
+            <% end %>
+            </center> <br/>
+          <% end %>
+          
+        <% end %>
+        
+      <% end %>
+      
+      
+      
+      
+      
       <!-- PROBLEMES -->
       
-      <% if type == 3 %>
+      <% if type == 4 %>
         Problème
       <% end %>
     
@@ -166,7 +284,8 @@
     <br/>
     Ajouter un : 
     <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
-    <%= link_to "exercice", new_chapter_exercise_path(@chapter) %>
+    <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
+    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %>
   <% end %>
 </center>
 <br/>

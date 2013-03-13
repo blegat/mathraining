@@ -1,0 +1,2 @@
+module QcMsHelper
+end

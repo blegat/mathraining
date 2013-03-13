@@ -1,6 +1,18 @@
 Ombtraining::Application.routes.draw do
 
-  resources :exercises, only: [:update, :edit, :destroy]
+  resources :qcms, only: [:update, :edit, :destroy] do
+    match '/order_plus', to: 'qcms#order_plus',
+      as: :order_plus
+    match '/order_minus', to: 'qcms#order_minus',
+      as: :order_minus
+  end
+  
+  resources :exercises, only: [:update, :edit, :destroy] do
+    match '/order_plus', to: 'exercises#order_plus',
+      as: :order_plus
+    match '/order_minus', to: 'exercises#order_minus',
+      as: :order_minus
+  end
 
 
   resources :theories, only: [:update, :edit, :destroy] do
@@ -24,6 +36,7 @@ Ombtraining::Application.routes.draw do
       
     resources :theories, only: [:new, :create]
     resources :exercises, only: [:new, :create]
+    resources :qcms, only: [:new, :create]
   end
 
   resources :users do
