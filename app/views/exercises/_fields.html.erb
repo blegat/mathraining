@@ -1,0 +1,13 @@
+<%= render 'shared/error_messages', object: f.object %>
+
+<%= f.label "Enoncé" %>
+<%= f.text_area :statement %>
+
+<%= f.label "Réponse" %>
+<%= f.text_field :answer %>
+
+<label class="checkbox">
+Cochez si la réponse est décimale
+<%= f.check_box(:decimal) %>
+</label>
+

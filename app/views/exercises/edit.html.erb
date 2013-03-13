@@ -1,0 +1,14 @@
+<% provide(:title, 'Modifier un exercice') %>
+<h1>Modifier un exercice</h1>
+
+<div class="row">
+  <div class="span6">
+    <%= form_for(@exercise) do |f| %>
+      <%= render 'fields', f: f %>
+      <br />
+      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
+    <% end %>
+  </div>
+</div>
+
+<center><%= link_to 'Retour au chapitre', @exercise.chapter %></center>
