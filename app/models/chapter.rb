@@ -22,6 +22,11 @@ class Chapter < ActiveRecord::Base
     dependent: :destroy
   has_many :prerequisites, through: :prerequisites_associations
 
+  has_many :backwards_associations, class_name: "Prerequisite",
+    dependent: :destroy, foreign_key: :prerequisite_id
+  has_many :backwards, through: :backwards_associations,
+    source: :chapter
+
   #has_and_belongs_to_many :prerequisites, join_table: :prerequisites,
     #class_name: "Chapter", foreign_key: "chapter_id",
     #association_foreign_key: "prerequisite_id"
@@ -37,7 +42,9 @@ class Chapter < ActiveRecord::Base
     visited.delete(self.id)
     visited.to_a
   end
+
   private
+
   def recursive_prerequisites_aux(current, visited)
     unless visited.include?(current.id)
       # this should always happen since it shouldn't have loop
