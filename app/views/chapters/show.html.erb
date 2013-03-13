@@ -29,6 +29,18 @@
           <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id) %></li>
         <% end %>
         <li class="nav-header">Exercices</li>
+        <% liste = @chapter.exercises %>
+        <% number = 0 %>
+        <% i = 1 %>
+        <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
+        <% liste.each do |f| %>
+          <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
+          <%= link_to "Exercice #{i}", chapter_path(@chapter, :type => 2, :which => f.id) %></li>
+          <% if f.id == id %>
+            <% number = i %>
+          <% end %>
+          <% i = i+1%>
+        <% end %>
         <li class="nav-header">Problèmes</li>
       </ul>
     </div>
@@ -53,6 +65,7 @@
       
         <% if current_user.admin? %>
           <br/>
+          <center>
           <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
 
           <% if @chapter.sections.size > 1 %>
@@ -61,8 +74,8 @@
             <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
           <% end %> |
 
-        <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
-
+          <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
+          </center>
         <% end %>
         
       <% end %>
@@ -73,8 +86,7 @@
       <% if type == 1 && @chapter.theories.exists?(id)%>
         <% f = Theory.find(id) %>
         <h3><%= f.title %> </h3>
-        <%= f.content %>
-        <br/>
+        <%= simple_format f.content%>
         <% if current_user.admin? %>
           <br/>
           <center>
@@ -83,36 +95,32 @@
           </center>
           <br/>
           
-          <% if current_user.admin? %>
-          
-            <% if Theory.exists?(["chapter_id = ? AND position < ?", @chapter, f.position]) %>
-            <% up = true %>
-            <% else %>
-            <% up = false %>
-            <% end %>
-          
-            <% if Theory.exists?(["chapter_id = ? AND position > ?", @chapter, f.position]) %>
-            <% down = true %>
-            <% else %>
-            <% down = false %>
-            <% end %>
-          
-            <% if up || down %>
-              <center>
-              Déplacer ce point théorique vers le 
-              <% if up %>
-                <%= link_to "haut", theory_order_minus_path(f) %>
-                <% if down %>
-                | <%= link_to "bas", theory_order_plus_path(f) %>
-                <% end %>
-              <% else %>
-                <%= link_to "bas", theory_order_plus_path(f) %>
-              <% end %>
-              </center> <br/>
-            <% end %>
-            
+          <% if Theory.exists?(["chapter_id = ? AND position < ?", @chapter, f.position]) %>
+          <% up = true %>
+          <% else %>
+          <% up = false %>
           <% end %>
-
+          
+          <% if Theory.exists?(["chapter_id = ? AND position > ?", @chapter, f.position]) %>
+          <% down = true %>
+          <% else %>
+          <% down = false %>
+          <% end %>
+          
+          <% if up || down %>
+            <center>
+            Déplacer ce point théorique vers le 
+            <% if up %>
+              <%= link_to "haut", theory_order_minus_path(f) %>
+              <% if down %>
+              | <%= link_to "bas", theory_order_plus_path(f) %>
+              <% end %>
+            <% else %>
+              <%= link_to "bas", theory_order_plus_path(f) %>
+            <% end %>
+            </center> <br/>
+          <% end %>
+          
         <% end %>
         
       <% end %>
@@ -120,9 +128,29 @@
       
       <!-- EXERCICES -->
       
-      <% if type == 2 %>
-        Exercice
+      <% if type == 2 && @chapter.exercises.exists?(id)%>
+        <% f = Exercise.find(id) %>
+        <h3>Exercice <%= number %></h3>
+        <%= simple_format f.statement %>
+        <br/>
+        Réponse : 
+        <% if f.decimal %>
+          <%= f.answer %> (On demande une réponse décimale avec deux chiffres après la virgule)
+        <% else %>
+          <%= f.answer.to_i %> (On demande une réponse entière)
+        <% end %>
+        <br/>
+        <% if current_user.admin? %>
+          <br/>
+          <center>
+          <%= link_to "Modifier cet exercice", edit_exercise_path(f) %> | 
+          <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
+          </center>
+          <br/>
+        <% end %>
+        
       <% end %>
+
       
       
       <!-- PROBLEMES -->
@@ -136,7 +164,9 @@
 <center>
   <% if current_user.admin? %>
     <br/>
-    <%= link_to "Ajouter un point théorique", new_chapter_theory_path(@chapter) %>
+    Ajouter un : 
+    <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
+    <%= link_to "exercice", new_chapter_exercise_path(@chapter) %>
   <% end %>
 </center>
 <br/>

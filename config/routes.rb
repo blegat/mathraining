@@ -1,5 +1,8 @@
 Ombtraining::Application.routes.draw do
 
+  resources :exercises, only: [:update, :edit, :destroy]
+
+
   resources :theories, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'theories#order_plus',
       as: :order_plus
@@ -20,6 +23,7 @@ Ombtraining::Application.routes.draw do
       as: :remove_section
       
     resources :theories, only: [:new, :create]
+    resources :exercises, only: [:new, :create]
   end
 
   resources :users do
