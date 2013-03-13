@@ -50,13 +50,8 @@ ActiveRecord::Schema.define(:version => 20130313212337) do
     t.datetime "updated_at",   :null => false
   end
 
-  create_table "sections", :force => true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-    t.string   "image"
-  end
+# Could not dump table "sections" because of following StandardError
+#   Unknown type 'bool' for column 'fondations'
 
   create_table "theories", :force => true do |t|
     t.string   "title"
