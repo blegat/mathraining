@@ -51,7 +51,7 @@ class Prerequisite < ActiveRecord::Base
         stack2 = can_go_from_to(prerequisite, pre, Set.new)
         stack = stack2 + stack1.reverse
         back = stack1.first
-        errors.add(:prerequisite, "#{chapter.name} -> #{prerequisite.name} rend #{back} -> #{pre.name} en formant la boucle #{stack_to_s(stack)}")
+        errors.add(:prerequisite, "#{chapter.name} -> #{prerequisite.name} rend #{back} -> #{pre.name} redondant en formant la boucle #{stack_to_s(stack)}")
       end
     end
   end
