@@ -54,9 +54,16 @@ describe Theory do
     before { @theo.position = -1 }
     it { should_not be_valid }
   end
-  describe "when position is already taken" do
-    before { FactoryGirl.create(:theory, position: @theo.position) }
+  describe "when position is already taken with the same chapter" do
+    before { FactoryGirl.create(:theory,
+                                chapter: @theo.chapter,
+                                position: @theo.position) }
     it { should_not be_valid }
+  end
+  describe "when position is already taken with a different chapter" do
+    before { FactoryGirl.create(:theory,
+                                position: @theo.position) }
+    it { should be_valid }
   end
 
 end
