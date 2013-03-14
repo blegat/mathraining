@@ -224,16 +224,40 @@
         <h3>Exercice <%= number %></h3>
         <%= simple_format f.statement %>
         <br/>
-        <% if f.many_answers %>
-          Plusieurs réponses possibles
-        <% else %>
-          Une seule réponse possible
+        
+        <table cellpadding="5">
+        <tr><th>Choix</th><th>Rép?</th><th></th></tr>
+        <% f.choices.each do |c| %>
+          <tr>
+          <td>
+          <%= c.ans %>
+          </td>
+          <td>
+          <center>
+          <% if c.ok %>
+            <i class="icon-ok"></i>
+          <% else %>
+            <i class="icon-remove"></i>
+          <% end %>
+          </center>
+          </td>
+          </tr>
         <% end %>
+
+        </table>
+        
+        <% if f.many_answers %>
+          (Plusieurs réponses possibles)
+        <% else %>
+          (Une seule réponse possible)
+        <% end %>
+        
         <br/>
         <% if current_user.admin? %>
           <br/>
           <center>
           <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> | 
+          <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> | 
           <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
           </center>
           <br/>

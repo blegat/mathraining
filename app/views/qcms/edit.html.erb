@@ -11,4 +11,4 @@
   </div>
 </div>
 
-<center><%= link_to 'Retour au chapitre', @qcm.chapter %></center>
+<center><%= link_to 'Retour au chapitre', chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %></center>

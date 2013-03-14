@@ -14,6 +14,7 @@
 class Qcm < ActiveRecord::Base
   attr_accessible :many_answers, :position, :statement
   belongs_to :chapter
+  has_many :choices
   validates :statement, presence: true, length: {maximum: 8000 }
   validates :position, presence: true,
     uniqueness: { scope: :chapter_id },

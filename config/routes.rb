@@ -1,10 +1,16 @@
 Ombtraining::Application.routes.draw do
 
+  resources :choices
+  
   resources :qcms, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'qcms#order_plus',
       as: :order_plus
     match '/order_minus', to: 'qcms#order_minus',
       as: :order_minus
+    match '/manage_choices', to: "qcms#manage_choices"
+    match '/add_choice', to: "qcms#add_choice"
+    match '/remove_choice/:id', to: "qcms#remove_choice", as: :remove_choice
+    match '/switch_choice/:id', to: "qcms#switch_choice", as: :switch_choice
   end
   
   resources :exercises, only: [:update, :edit, :destroy] do
