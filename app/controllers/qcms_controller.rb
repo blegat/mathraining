@@ -1,5 +1,5 @@
 #encoding: utf-8
-class QcmsController < ApplicationController
+class QcmsController < QuestionsController
   before_filter :signed_in_user
   before_filter :admin_user,
     only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus]
@@ -72,50 +72,14 @@ class QcmsController < ApplicationController
     redirect_to @chapter
   end
 
-  def order_op(sign, fun, name)
-    @qcm = Qcm.find(params[:qcm_id])
-    x = nil
-    if @qcm.chapter.exercises.exists?(["position #{sign} ?", @qcm.position])
-      if sign == '<'
-        exercise2 = @qcm.chapter.exercises.where("position #{sign} ?", @qcm.position, @qcm.chapter.id).order('position').reverse_order.first
-      else
-        exercise2 = @qcm.chapter.exercises.where("position #{sign} ?", @qcm.position, @qcm.chapter.id).order('position').first
-      end
-      x = exercise2.position
-    end
-    y = nil
-    if @qcm.chapter.qcms.exists?(["position #{sign} ?", @qcm.position])
-      if sign == '<'
-        qcm2 = @qcm.chapter.qcms.where("position #{sign} ?", @qcm.position).order('position').reverse_order.first
-      else
-        qcm2 = @qcm.chapter.qcms.where("position #{sign} ?", @qcm.position).order('position').first
-      end
-      y = qcm2.position
-    end
-    if x.nil? and y.nil?
-      flash[:notice] = "QCM déjà le plus #{name} possible."
-    else
-      if not x.nil? and (y.nil? or fun.call x, y)
-        other = exercise2
-      else
-        other = qcm2
-      end
-      err = swap_position(@qcm, other)
-      if err.nil?
-        flash[:success] = "QCM déplacé vers le #{name}."
-      else
-        flash[:error] = err
-      end
-    end
-    redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
-  end
-
   def order_minus
-    order_op('<', lambda { |x, y| x < y }, 'haut')
+    qcm = Qcm.find(params[:qcm_id])
+    order_op(true, false, qcm)
   end
 
   def order_plus
-    order_op('>', lambda { |x, y| x > y }, 'bas')
+    qcm = Qcm.find(params[:qcm_id])
+    order_op(false, false, qcm)
   end
 
 
