@@ -53,7 +53,7 @@ class UsersController < ApplicationController
       flash[:error] = "I see what you did here! Mais non ;-)"
     else
       @user.toggle!(:admin)
-      flash[:success] = "Utilisateur promu au rend d'administrateur!"
+      flash[:success] = "Utilisateur promu au rang d'administrateur!"
     end
     redirect_to users_path
   end
