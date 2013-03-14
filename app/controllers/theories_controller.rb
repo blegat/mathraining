@@ -57,7 +57,7 @@ class TheoriesController < ApplicationController
     flash[:success] = "Point théorique supprimé."
     redirect_to @chapter
   end
-  
+
   def order_minus
     @theory = Theory.find(params[:theory_id])
     @theory2 = @theory.chapter.theories.where("position < ?", @theory.position).order('position').reverse_order.first
@@ -69,7 +69,7 @@ class TheoriesController < ApplicationController
     end
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
-  
+
   def order_plus
     @theory = Theory.find(params[:theory_id])
     @theory2 = @theory.chapter.theories.where("position > ?", @theory.position).order('position').first
@@ -81,6 +81,8 @@ class TheoriesController < ApplicationController
     end
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
+
+  private
 
   def swap_position(a, b)
     err = nil
@@ -108,9 +110,7 @@ class TheoriesController < ApplicationController
     end
     return err
   end
-  
-  private
-  
+
   def admin_user
     redirect_to root_path unless current_user.admin?
   end

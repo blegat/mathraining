@@ -23,4 +23,9 @@ FactoryGirl.define do
     content "a"
     sequence(:position) { |n| n }
   end
+  factory :qcm do
+    association :chapter
+    statement "a"
+    sequence(:position) { |n| n }
+  end
 end
