@@ -9,6 +9,10 @@ FactoryGirl.define do
       admin true
     end
   end
+  factory :section do
+    sequence(:name) { |n| "Section#{n}" }
+    description "Description"
+  end
   factory :chapter do
     sequence(:name) { |n| "Chapitre#{n}" }
     level 1
