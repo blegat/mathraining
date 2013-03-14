@@ -1,5 +1,5 @@
 #encoding: utf-8
-class ExercisesController < ApplicationController
+class ExercisesController < QuestionsController
   before_filter :signed_in_user
   before_filter :admin_user,
     only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus]
@@ -74,57 +74,13 @@ class ExercisesController < ApplicationController
   end
   
   def order_minus
-    @exercise = Exercise.find(params[:exercise_id])
-    x = 0
-    if Exercise.exists?(["position < ? AND chapter_id = ?", @exercise.position, @exercise.chapter.id])
-      @exercise2 = Exercise.where("position < ? AND chapter_id = ?", @exercise.position, @exercise.chapter.id).order('position').reverse_order.first
-      x = @exercise2.position
-    end
-    y = 0
-    if Qcm.exists?(["position < ? AND chapter_id = ?", @exercise.position, @exercise.chapter.id])
-      @qcm2 = Qcm.where("position < ? AND chapter_id = ?", @exercise.position, @exercise.chapter.id).order('position').reverse_order.first
-      y = @qcm2.position
-    end
-    if x > y
-      @exercise2.position = @exercise.position
-      @exercise.position = x
-      @exercise.save
-      @exercise2.save
-    else
-      @qcm2.position = @exercise.position
-      @exercise.position = y
-      @exercise.save
-      @qcm2.save
-    end
-    flash[:success] = "Exercice déplacé vers le haut."
-    redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
+    ex = Exercise.find(params[:exercise_id])
+    order_op(true, true, ex)
   end
   
   def order_plus
-    @exercise = Exercise.find(params[:exercise_id])
-    x = 12345678
-    if Exercise.exists?(["position > ? AND chapter_id = ?", @exercise.position, @exercise.chapter.id])
-      @exercise2 = Exercise.where("position > ? AND chapter_id = ?", @exercise.position, @exercise.chapter.id).order('position').first
-      x = @exercise2.position
-    end
-    y = 12345678
-    if Qcm.exists?(["position > ? AND chapter_id = ?", @exercise.position, @exercise.chapter.id])
-      @qcm2 = Qcm.where("position > ? AND chapter_id = ?", @exercise.position, @exercise.chapter.id).order('position').first
-      y = @qcm2.position
-    end
-    if x < y
-      @exercise2.position = @exercise.position
-      @exercise.position = x
-      @exercise.save
-      @exercise2.save
-    else
-      @qcm2.position = @exercise.position
-      @exercise.position = y
-      @exercise.save
-      @qcm2.save
-    end
-    flash[:success] = "Exercice déplacé vers le bas."
-    redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
+    ex = Exercise.find(params[:exercise_id])
+    order_op(false, true, ex)
   end
   
   private

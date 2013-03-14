@@ -1,15 +1,24 @@
 <% provide(:title, 'Cours') %>
 <h1>Cours</h1>
+
+<center>
+  <% if current_user.admin? %>
+    <br/>
+    <%= button_to "Ajouter un chapitre", new_chapter_path, method: :get,
+      class: 'btn btn-large' %>
+  <% end %>
+</center>
+
 Les cours sont séparés dans cinq grandes sections.
 
 La première contient tous les fondements mathématiques nécessaires à la bonne compréhension des quatre suivantes.
 Elle est principalement destinée aux étudiants les plus jeunes, mais peut également servir de rappel aux étudiants plus avancés dans leur cursus scolaire.
 
 <center>
-<br/>
-<div style="border: 1px solid black; width:600px;">
-<%= link_to image_tag("fondations.jpg", alt: "Fondations"), "sections/0" %>
-</div>
+  <br/>
+  <div style="border: 1px solid black; width:600px;">
+    <%= link_to image_tag("fondations.jpg", alt: "Fondations"), "sections/0" %>
+  </div>
 
 </center>
 <br/>
@@ -21,16 +30,11 @@ C'est pourquoi ce site comportera certains chapitres hybrides, présents dans pl
 
 <center>
 
-<% @sections.each do |f| %>
-<br/>
-<div style="border: 1px solid black; width:600px;">
-<%= link_to image_tag(f.image, alt: f.name), f %>
-</div>
-<% end %>
-
-<% if current_user.admin? %>
-<br/>
-<%= link_to "Ajouter un chapitre", new_chapter_path %>
-<% end %>
+  <% @sections.each do |f| %>
+    <br/>
+    <div style="border: 1px solid black; width:600px;">
+      <%= link_to image_tag(f.image, alt: f.name), f %>
+    </div>
+  <% end %>
 
 </center>

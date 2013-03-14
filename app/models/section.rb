@@ -8,12 +8,11 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  image       :string(255)
-#  fondations  :bool
 #
 
 class Section < ActiveRecord::Base
   attr_accessible :description, :name, :image
   has_and_belongs_to_many :chapters
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
-  validates :description, length: {maximum: 8000 }
+  validates :description, length: { maximum: 8000 }
 end
