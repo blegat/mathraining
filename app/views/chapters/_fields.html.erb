@@ -1,10 +1,10 @@
 <%= render 'shared/error_messages', object: f.object %>
 
 <%= f.label :titre %>
-<%= f.text_field :name %>
+<%= f.text_field :name, :class => "span6" %>
 
 <%= f.label :description %>
-<%= f.text_area :description %>
+<%= f.text_area :description, :class => "span6" %>
 
 <%= f.label "Niveau (entier entre 0 et 10)" %>
-<%= f.number_field :level %>
+<%= f.number_field :level, :class => "span1" %>
