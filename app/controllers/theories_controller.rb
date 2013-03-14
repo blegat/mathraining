@@ -83,6 +83,33 @@ class TheoriesController < ApplicationController
   end
 
   private
+  
+  def swap_position(a, b)
+    err = nil
+    Theory.transaction do
+      x = a.position
+      a.position = b.position
+      b.position = x
+      a.save(validate: false)
+      b.save(validate: false)
+      unless a.valid? and b.valid?
+        erra = get_errors(a)
+        errb = get_errors(b)
+        if erra.nil?
+          if errb.nil?
+            err = "Quelque chose a mal tourné."
+          else
+            err = "#{errb} pour #{b.title}"
+          end
+        else
+          # if a is not valid b.valid? is not executed
+          err = "#{erra} pour #{a.title}"
+        end
+        raise ActiveRecord::Rollback
+      end
+    end
+    return err
+  end
 
   def admin_user
     redirect_to root_path unless current_user.admin?
