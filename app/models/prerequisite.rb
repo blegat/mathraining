@@ -13,7 +13,7 @@ class Prerequisite < ActiveRecord::Base
   belongs_to :chapter
 
   validates :prerequisite_id, presence: true,
-    uniqueness: {scope: :chapter_id}
+    uniqueness: { scope: :chapter_id }
   validates :chapter_id, presence: true
 
   validate :no_loop

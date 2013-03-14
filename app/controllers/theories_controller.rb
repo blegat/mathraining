@@ -61,29 +61,52 @@ class TheoriesController < ApplicationController
   def order_minus
     @theory = Theory.find(params[:theory_id])
     @theory2 = @theory.chapter.theories.where("position < ?", @theory.position).order('position').reverse_order.first
-    x = @theory.position
-    @theory.position = @theory2.position
-    @theory2.position = x
-    @theory.save(validate: false) # disable validations
-    @theory2.save(validate: false) # because position must be unique
-    @theory.save
-    @theory2.save
-    flash[:success] = "Point théorique déplacé vers le haut."
+    err = swap_position(@theory, @theory2)
+    if err.nil?
+      flash[:success] = "Point théorique déplacé vers le haut."
+    else
+      flash[:error] = err
+    end
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
   
   def order_plus
     @theory = Theory.find(params[:theory_id])
     @theory2 = @theory.chapter.theories.where("position > ?", @theory.position).order('position').first
-    x = @theory.position
-    @theory.position = @theory2.position
-    @theory2.position = x
-    @theory.save(validate: false)
-    @theory2.save(validate: false)
-    @theory.save
-    @theory2.save
-    flash[:success] = "Point théorique déplacé vers le bas."
+    err = swap_position(@theory, @theory2)
+    if err.nil?
+      flash[:success] = "Point théorique déplacé vers le bas."
+    else
+      flash[:error] = err
+    end
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
+  end
+
+  def swap_position(a, b)
+    err = nil
+    Theory.transaction do
+      x = a.position
+      a.position = b.position
+      b.position = x
+      a.save(validate: false)
+      b.save(validate: false)
+      unless a.valid? and b.valid?
+        erra = get_errors(a)
+        errb = get_errors(b)
+        if erra.nil?
+          if errb.nil?
+            err = "Quelque chose a mal tourné."
+          else
+            err = "#{errb} pour #{b.title}"
+          end
+        else
+          # if a is not valid b.valid? is not executed
+          err = "#{erra} pour #{a.title}"
+        end
+        raise ActiveRecord::Rollback
+      end
+    end
+    return err
   end
   
   private
