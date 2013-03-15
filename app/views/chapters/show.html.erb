@@ -24,9 +24,9 @@
         <li<%= ' class="active"'.html_safe if type == 0 %>>
         <%= link_to "Introduction", chapter_path(@chapter) %></li>
         <li class="nav-header">Points théoriques</li>
-        <% liste = @chapter.theories %>
-        <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
-        <% liste.each do |f| %>
+        <% listex = @chapter.theories %>
+        <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
+        <% listex.each do |f| %>
           <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %>>
           <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id) %></li>
           <% if f.id == id && type == 1 %>
@@ -79,9 +79,10 @@
 
         <% end %>
         <li class="nav-header">Problèmes</li>
-        <% liste = @chapter.problems %>
-        <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
-        <% liste.each do |f| %>
+        <% i = 1 %>
+        <% listex = @chapter.problems %>
+        <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
+        <% listex.each do |f| %>
           <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>
           <%= link_to f.name, chapter_path(@chapter, :type => 4, :which => f.id) %></li>
           <% if f.id == id && type == 4 %>
