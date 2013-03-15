@@ -73,6 +73,7 @@ GEM
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     json (1.7.7)
+    kramdown (1.0.1)
     mail (2.4.4)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -175,6 +176,7 @@ DEPENDENCIES
   factory_girl_rails (= 4.1.0)
   faker (= 1.0.1)
   jquery-rails
+  kramdown
   mathjax-rails
   pg (~> 0.14.1)
   rails (= 3.2.11)

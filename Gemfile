@@ -10,8 +10,8 @@ gem 'rails-i18n'
 gem 'mathjax-rails'
 
 # Markdown
-gem 'redcarpet'
-gem 'showdown-rails'
+gem 'kramdown' # server-side
+gem 'showdown-rails' # client-side
 
 group :development, :test do
   gem 'sqlite3'
