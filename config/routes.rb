@@ -1,7 +1,6 @@
 Ombtraining::Application.routes.draw do
 
-  resources :choices
-  
+
   resources :qcms, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'qcms#order_plus',
       as: :order_plus
@@ -27,9 +26,18 @@ Ombtraining::Application.routes.draw do
     match '/order_minus', to: 'theories#order_minus',
       as: :order_minus
   end
+  
+  resources :problems, only: [:update, :edit, :destroy] do
+    match '/order_plus', to: 'problems#order_plus',
+      as: :order_plus
+    match '/order_minus', to: 'problems#order_minus',
+      as: :order_minus
+  end
 
   mathjax 'mathjax'
   resources :prerequisites
+  
+  match '/graph', to: "prerequisites#graph"
 
   resources :sections
 
@@ -43,6 +51,7 @@ Ombtraining::Application.routes.draw do
     resources :theories, only: [:new, :create]
     resources :exercises, only: [:new, :create]
     resources :qcms, only: [:new, :create]
+    resources :problems, only: [:new, :create]
   end
 
   resources :users do

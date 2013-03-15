@@ -24,9 +24,9 @@
         <li<%= ' class="active"'.html_safe if type == 0 %>>
         <%= link_to "Introduction", chapter_path(@chapter) %></li>
         <li class="nav-header">Points théoriques</li>
-        <% liste = @chapter.theories %>
-        <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
-        <% liste.each do |f| %>
+        <% listex = @chapter.theories %>
+        <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
+        <% listex.each do |f| %>
           <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %>>
           <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id) %></li>
           <% if f.id == id && type == 1 %>
@@ -79,6 +79,17 @@
 
         <% end %>
         <li class="nav-header">Problèmes</li>
+        <% i = 1 %>
+        <% listex = @chapter.problems %>
+        <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
+        <% listex.each do |f| %>
+          <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>
+          <%= link_to f.name, chapter_path(@chapter, :type => 4, :which => f.id) %></li>
+          <% if f.id == id && type == 4 %>
+            <% number = i %>
+          <% end %>
+          <% i = i + 1 %>
+        <% end %>
       </ul>
     </div>
     <div class="span10">
@@ -226,9 +237,14 @@
         <br/>
         
         <table cellpadding="5">
-        <tr><th>Choix</th><th>Rép?</th><th></th></tr>
-        <% f.choices.each do |c| %>
+        <tr><th></th><th></th><th>Rép?</th></tr>
+        <% letters = ('A'..'Z').to_a %>
+        <% i = 0 %>
+        <% f.choices.order(:id).each do |c| %>
           <tr>
+          <td>
+          <%= letters[i] %>)
+          </td>
           <td>
           <%= c.ans %>
           </td>
@@ -242,6 +258,7 @@
           </center>
           </td>
           </tr>
+          <% i = i+1 %>
         <% end %>
 
         </table>
@@ -298,9 +315,50 @@
       
       <!-- PROBLEMES -->
       
-      <% if type == 4 %>
-        Problème
+      <% if type == 4 && @chapter.problems.exists?(id)%>
+        <% f = Problem.find(id) %>
+        <h3><%= f.name %> </h3>
+        <%= simple_format f.statement%>
+        <% if current_user.admin? %>
+          <br/>
+          <center>
+          <%= link_to "Modifier ce problème", edit_problem_path(f) %> | 
+          <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
+          </center>
+          <br/>
+          
+          <% if number > 1 %>
+          <% up = true %>
+          <% else %>
+          <% up = false %>
+          <% end %>
+          
+          <% if number < @chapter.problems.count %>
+          <% down = true %>
+          <% else %>
+          <% down = false %>
+          <% end %>
+          
+          <% if up || down %>
+            <center>
+            Déplacer ce problème vers le 
+            <% if up %>
+              <%= link_to "haut", problem_order_minus_path(f) %>
+              <% if down %>
+              | <%= link_to "bas", problem_order_plus_path(f) %>
+              <% end %>
+            <% else %>
+              <%= link_to "bas", problem_order_plus_path(f) %>
+            <% end %>
+            </center> <br/>
+          <% end %>
+          
+        <% end %>
+        
       <% end %>
+      
+      
+      
     
   </div>
 </div>
@@ -310,7 +368,8 @@
     Ajouter un : 
     <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
     <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
-    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %>
+    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %> | 
+    <%= link_to "problème", new_chapter_problem_path(@chapter) %>
   <% end %>
 </center>
 <br/>

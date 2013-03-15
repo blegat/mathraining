@@ -4,6 +4,7 @@
     <title><%= full_title(yield(:title)) %></title>
     <%= stylesheet_link_tag    "application", media: "all" %>
     <%= javascript_include_tag "application" %>
+    <%= yield :javascript_includes %>
     <%= csrf_meta_tags %>
 	<%= render 'layouts/shim' %>
 	<script type="text/x-mathjax-config">

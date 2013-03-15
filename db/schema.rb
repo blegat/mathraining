@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130314145855) do
+ActiveRecord::Schema.define(:version => 20130315083441) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -49,6 +49,15 @@ ActiveRecord::Schema.define(:version => 20130314145855) do
   create_table "prerequisites", :force => true do |t|
     t.integer "prerequisite_id"
     t.integer "chapter_id"
+  end
+
+  create_table "problems", :force => true do |t|
+    t.string   "name"
+    t.text     "statement"
+    t.integer  "chapter_id"
+    t.integer  "position"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "qcms", :force => true do |t|
