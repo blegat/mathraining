@@ -114,7 +114,6 @@ GEM
       activerecord (>= 3.0.0)
     rdoc (3.12.2)
       json (~> 1.4)
-    redcarpet (2.2.2)
     rspec (2.11.0)
       rspec-core (~> 2.11.0)
       rspec-expectations (~> 2.11.0)
@@ -182,7 +181,6 @@ DEPENDENCIES
   rails (= 3.2.11)
   rails-i18n
   random_record
-  redcarpet
   rspec-rails (= 2.11.0)
   sass-rails (~> 3.2.5)
   showdown-rails
