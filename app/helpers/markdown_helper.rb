@@ -1,3 +1,4 @@
+require 'redcarpet'
 module MarkdownHelper
 
   def markdown_render(text)
