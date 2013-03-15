@@ -3,9 +3,14 @@
 <%= @qcm.statement %>
 <br/><br/>
 <table cellpadding="5">
-<tr><th>Choix</th><th>Rép?</th><th></th></tr>
-<% @qcm.choices.each do |f| %>
+<tr><th></th><th></th><th>Rép?</th><th></th><th></th></tr>
+<% letters = ('A'..'Z').to_a %>
+<% i = 0 %>
+<% @qcm.choices.order(:id).each do |f| %>
   <tr>
+  <td>
+  <%= letters[i] %>)
+  </td>
   <td>
   <%= f.ans %>
   </td>
@@ -31,11 +36,14 @@
   <% end %>
   </td>
   </tr>
+  <% i = i + 1 %>
 <% end %>
 
 <tr>
 
 <%= form_for(:choice, url: qcm_add_choice_path(@qcm)) do |f| %>
+  <td>
+  </td>
   <td>
   <%= f.text_field :ans %>
   </td>

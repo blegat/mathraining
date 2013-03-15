@@ -1,0 +1,7 @@
+<%= render 'shared/error_messages', object: f.object %>
+
+<%= f.label "Titre (court : il apparaitra dans le menu)"%>
+<%= f.text_field :name, :class => "span3" %>
+
+<%= f.label "Enoncé" %>
+<%= f.text_area :statement, :class => "span6"  %>
