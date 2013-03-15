@@ -113,6 +113,7 @@ GEM
       activerecord (>= 3.0.0)
     rdoc (3.12.2)
       json (~> 1.4)
+    redcarpet (2.2.2)
     rspec (2.11.0)
       rspec-core (~> 2.11.0)
       rspec-expectations (~> 2.11.0)
@@ -137,6 +138,9 @@ GEM
       multi_json (~> 1.0)
       rubyzip
       websocket (~> 1.0.4)
+    showdown-rails (0.0.3)
+      actionpack (>= 3.1)
+      railties (>= 3.1)
     sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -176,8 +180,10 @@ DEPENDENCIES
   rails (= 3.2.11)
   rails-i18n
   random_record
+  redcarpet
   rspec-rails (= 2.11.0)
   sass-rails (~> 3.2.5)
+  showdown-rails
   sqlite3
   uglifier (>= 1.2.3)
   will_paginate (= 3.0.3)

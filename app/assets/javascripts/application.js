@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require bootstrap
 //= require_tree .
+//= require showdown
 
 paintIt = function(element, backgroundColor, textColor) {
   element.style.backgroundColor = backgroundColor

@@ -135,7 +135,8 @@
       <% if type == 1 && @chapter.theories.exists?(id)%>
         <% f = Theory.find(id) %>
         <h3><%= f.title %> </h3>
-        <%= simple_format f.content%>
+        <!-- <%= simple_format f.content %> -->
+        <%= markdown_render f.content %>
         <% if current_user.admin? %>
           <br/>
           <center>

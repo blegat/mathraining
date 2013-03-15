@@ -9,6 +9,10 @@ gem 'bootstrap-will_paginate', '0.0.6'
 gem 'rails-i18n'
 gem 'mathjax-rails'
 
+# Markdown
+gem 'redcarpet'
+gem 'showdown-rails'
+
 group :development, :test do
   gem 'sqlite3'
   gem 'rspec-rails', '2.11.0'
