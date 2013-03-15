@@ -1,6 +1,4 @@
 Ombtraining::Application.routes.draw do
-
-  resources :choices
   
   resources :qcms, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'qcms#order_plus',
