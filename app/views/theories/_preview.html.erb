@@ -1,0 +1,26 @@
+<div class="span6">
+  <h2>Markdown</h2>
+  <p>
+  Le contenu doit être écrit en Markdown.
+  L'interpréteur est
+  <%= link_to 'Kramdown',
+    'http://kramdown.rubyforge.org/syntax.html' %>
+  qui permet d'insérer des
+  <%= link_to 'formules mathématiques',
+    'http://kramdown.rubyforge.org/syntax.html#math-blocks' %>
+  $\LaTeX$ à l'aide de Mathjax.
+  </p>
+  <p>La preview ci-dessous par contre se limite au Markdown sans
+  les formules mathématique.
+  L'interpréteur de la preview est
+  <%= link_to 'Showdown',
+    'https://github.com/coreyti/showdown' %>.
+  Ces deux interpréteurs sont théoriquement identiques grace
+  au Markdown mais il se peut que des différences subsistent.
+  Veuillez nous les indiquer si vous en rencontrer
+  pour qu'on essaie d'y remédier.
+  </p>
+  <h2>Preview</h2>
+  <p id="preview">
+  </p>
+</div>
