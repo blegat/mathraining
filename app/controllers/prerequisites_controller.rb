@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class PrerequisitesController < ApplicationController
+  before_filter :signed_in_user
   before_filter :admin_user
   def create
     @chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
@@ -24,6 +25,10 @@ class PrerequisitesController < ApplicationController
     else
       redirect_to @chapter, flash: { error: get_errors(pre) };
     end
+  end
+  
+  def graph
+  
   end
 
   private

@@ -36,6 +36,8 @@ Ombtraining::Application.routes.draw do
 
   mathjax 'mathjax'
   resources :prerequisites
+  
+  match '/graph', to: "prerequisites#graph"
 
   resources :sections
 
