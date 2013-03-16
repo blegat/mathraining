@@ -10,7 +10,7 @@ class PrerequisitesController < ApplicationController
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
     if prerequisite.nil? || chapter.nil?
-      redirect_to graph_prerequisites_path,
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
         flash: { notice: "Choisissez un chapitre." } and return
     end
     pre = Prerequisite.new
@@ -18,19 +18,24 @@ class PrerequisitesController < ApplicationController
     pre.prerequisite = prerequisite
     if pre.save
       flash[:success] = "Lien ajouté."
-      redirect_to graph_prerequisites_path
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement])
       # Sinon @chapter.available_prerequsites
       # ne prend pas en compte les nouveaux changements
     else
-      redirect_to graph_prerequisites_path, flash: { error: get_errors(pre) };
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement]), flash: { error: get_errors(pre) };
     end
   end
   
   def remove_prerequisite
+    if params[:fondement] == true
+      fond = 1
+    else
+      fond = 0
+    end
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
     if prerequisite.nil? || chapter.nil?
-      redirect_to graph_prerequisites_path,
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
         flash: { notice: "Choisissez un chapitre." } and return
     end
     if chapter.prerequisites.exists?(prerequisite)
@@ -39,7 +44,7 @@ class PrerequisitesController < ApplicationController
     else
       flash[:error] = "Ce lien n'existe pas."
     end
-    redirect_to graph_prerequisites_path
+    redirect_to graph_prerequisites_path(:fondement => params[:fondement])
   end
 
   private

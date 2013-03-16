@@ -66,6 +66,7 @@ Ombtraining::Application.routes.draw do
   root to: 'static_pages#home'
 
   match '/help', to: 'static_pages#help'
+  match '/essai', to: 'static_pages#essai'
 
   match '/about', to: 'static_pages#about'
 

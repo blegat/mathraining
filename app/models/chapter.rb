@@ -34,8 +34,11 @@ class Chapter < ActiveRecord::Base
     #class_name: "Chapter", foreign_key: "chapter_id",
     #association_foreign_key: "prerequisite_id"
   #It does not check validations
-  def number_prerequisites
+  def real_number_prerequisites
     return real_recursive_prerequisites.size
+  end
+  def number_prerequisites
+    return recursive_prerequisites.size
   end
   def available_prerequisites
     exceptions = self.recursive_prerequisites + [self.id]

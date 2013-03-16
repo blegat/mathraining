@@ -102,11 +102,13 @@
           <p>Aucun prérequis</p>
         <% else %>
           <ul>
-            <% @chapter.prerequisites.each do |prerequisite| %>
+            <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
               <li><%= link_to prerequisite.name, prerequisite %></li>
             <% end %>
           </ul>
         <% end %>
+        
+        <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %></center>
 
         <h3>Introduction</h3>
         <p><%= @chapter.description %></p>
