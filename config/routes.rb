@@ -35,12 +35,14 @@ Ombtraining::Application.routes.draw do
   end
 
   mathjax 'mathjax'
-  resources :prerequisites
   
-  match '/graph', to: "prerequisites#graph"
-
+  resource :prerequisites
   resources :sections
-
+  
+  match '/graph_prerequisites', to: "prerequisites#graph_prerequisites"
+  match '/add_prerequisite', to: "prerequisites#add_prerequisite"  
+  match '/remove_prerequisite', to: "prerequisites#remove_prerequisite"  
+    
   resources :chapters do
     match '/manage_sections', to: 'chapters#new_section'
     match '/add_section/:id', to: 'chapters#create_section',

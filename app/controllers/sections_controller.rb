@@ -38,6 +38,7 @@ class SectionsController < ApplicationController
       @fondation = false
     end
   end
+  
   def admin_user
     redirect_to @section unless current_user.admin?
   end

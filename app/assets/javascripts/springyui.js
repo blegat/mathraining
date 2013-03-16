@@ -126,7 +126,7 @@ jQuery.fn.springy = function(params) {
 			return this._width[text];
 
 		ctx.save();
-		ctx.font = "16px Verdana, sans-serif";
+		ctx.font = "12px Verdana, sans-serif";
 		var width = ctx.measureText(text).width + 10;
 		ctx.restore();
 
@@ -137,7 +137,7 @@ jQuery.fn.springy = function(params) {
 	};
 
 	Node.prototype.getHeight = function() {
-		return 20;
+		return 18;
 	};
 
 	var renderer = this.renderer = new Renderer(layout,
@@ -259,25 +259,17 @@ jQuery.fn.springy = function(params) {
 				ctx.fillStyle = "#FFFFFF";
 			}
 			
-			if(node.data.color == undefined)
-			{
-				ctx.fillStyle = "#FFFFFF";
-			}
-			else
-			{
-				ctx.fillStyle = node.data.color;
-			}
+			ctx.fillStyle = (node.data.color !== undefined) ? node.data.color : "#FFFFFF";
 			
 			ctx.fillRect(s.x - boxWidth/2, s.y - 10, boxWidth, 20);
 
 			ctx.textAlign = "left";
 			ctx.textBaseline = "top";
-			ctx.font = "16px Verdana, sans-serif";
+			ctx.font = "12px Verdana, sans-serif";
 			ctx.fillStyle = "#000000";
-			ctx.font = "16px Verdana, sans-serif";
+			ctx.font = "12px Verdana, sans-serif";
 			var text = (node.data.label !== undefined) ? node.data.label : node.id;
 			ctx.fillText(text, s.x - boxWidth/2 + 5, s.y - 8);
-
 			ctx.restore();
 		}
 	);

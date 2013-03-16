@@ -4,8 +4,17 @@
 <center>
   <% if current_user.admin? %>
     <br/>
+    <table>
+    <tr>
+    <td style="padding-right:10px;">
     <%= button_to "Ajouter un chapitre", new_chapter_path, method: :get,
       class: 'btn btn-large' %>
+      </td>
+      <td style="padding-left:10px;">
+    <%= button_to "Modifier la structure des sections", graph_prerequisites_path, method: :get,
+      class: 'btn btn-large' %>
+      </td></tr>
+      </table>
   <% end %>
 </center>
 

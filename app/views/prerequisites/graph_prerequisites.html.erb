@@ -1,0 +1,116 @@
+<% provide(:title, 'Graphe') %>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script src="assets/springy.js"></script>
+<script src="assets/springyui.js"></script>
+
+<script>
+
+var graph = new Graph();
+
+var noeud = new Array();
+var prereq = new Array();
+var depart = graph.newNode({label: "Départ", color: "#FFFFFF"});
+<% existe = Set.new %>
+<% maximum = 1 %>
+<% chapters = Array.new %>
+<% Chapter.all.each do |chapter|%>
+  <% unless chapter.sections.empty? %>
+    <% chapters.push(chapter) %>
+    prereq[<%= chapter.id %>] = <%= x = chapter.number_prerequisites() %>;
+    <% if x+1 > maximum %>
+      <% maximum = x+1 %>
+    <% end %>
+    <% existe.add(chapter.id) %>
+  <% end %>
+<% end %>
+
+couleur = "";
+
+function rouge(a, b){
+  var dose = 256-Math.floor(220*a/b);
+  var deux = dose % 16;
+  var un = Math.floor(dose/16);
+  var x, y;
+  var lettres = new Array("A", "B", "C", "D", "E", "F");
+  if(un <= 9)
+  {
+    x = un.toString();
+  }
+  else
+  {
+    x = lettres[un-10];
+  }
+  if(deux <= 9)
+  {
+    y = deux.toString();
+  }
+  else
+  {
+    y = lettres[deux-10];
+  }
+  return x.concat(y);
+}
+
+<% Chapter.all.each do |chapter| %>
+  <% unless chapter.sections.empty? %>
+    couleur = rouge(1+prereq[<%= chapter.id %>],<%= maximum %>);
+    noeud[<%= chapter.id %>] = graph.newNode({label: "<%= chapter.name.html_safe %>", color: "#FF".concat(couleur).concat(couleur)});
+    if(prereq[<%= chapter.id %>] == 0){
+      graph.newEdge(depart, noeud[<%= chapter.id %>]);
+    }
+  <% end %>
+<% end %>
+
+<% Prerequisite.all.each do |p| %>
+  <% if existe.include?(p.prerequisite_id) && existe.include?(p.chapter_id) %>
+    graph.newEdge(noeud[<%= p.prerequisite_id %>], noeud[<%= p.chapter_id %>]);
+  <% end %>
+<% end %>
+
+
+$(document).ready(function() {
+  var springy = window.springy = jQuery('#structure').springy({
+    graph: graph,
+      nodeSelected: function(node) {
+        console.log('Node selected: ' + JSON.stringify(node.data));
+      }
+  });
+});
+</script>
+<center>
+
+<canvas id="structure" style="border:1px solid #c3c3c3;" width="800" height="480">
+Votre navigateur ne supporte pas de canvas.
+</canvas>
+</center>
+<div class="row">
+<div class="span6">
+<center>
+
+<%= form_for(:prerequisite, url: add_prerequisite_path) do |f| %>
+  <h3> Ajouter un lien </h3>
+  <%= f.label "Prérequis" %>
+  <%= f.collection_select(:prerequisite_id, chapters, :id, :name, prompt: true) %>
+  <%= f.label "Chapitre" %>
+  <%= f.collection_select(:chapter_id, chapters, :id, :name, prompt: true) %>
+  <br/>
+  <%= f.submit "Ajouter ce lien", class: "btn btn-primary" %>
+<% end %>
+</center>
+</div>
+<div class="span6">
+<center>
+<%= form_for(:prerequisite, url: remove_prerequisite_path) do |f| %>
+  <h3> Supprimer un lien </h3>
+  <%= f.label "Prérequis" %>
+  <%= f.collection_select(:prerequisite_id, chapters, :id, :name, prompt: true) %>
+  <%= f.label "Chapitre" %>
+  <%= f.collection_select(:chapter_id, chapters, :id, :name, prompt: true) %>
+  <br/>
+  <%= f.submit "Supprimer ce lien", class: "btn btn-primary" %>
+<% end %>
+</center>
+</div>
+</div>
+

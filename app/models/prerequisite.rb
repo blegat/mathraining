@@ -29,7 +29,7 @@ class Prerequisite < ActiveRecord::Base
       stack = can_go_from_to(prerequisite, chapter, Set.new)
       unless stack.nil?
         stack.push(chapter.name)
-        errors.add(:prerequisite, " : #{chapter.name} -> #{prerequisite.name} forme la boucle #{stack_to_s(stack)}")
+        errors.add(:prerequisite, " : #{prerequisite.name} -> #{chapter.name} forme la boucle #{stack_to_s(stack)}")
       end
     end
   end
@@ -37,7 +37,7 @@ class Prerequisite < ActiveRecord::Base
     unless chapter.nil? or prerequisite.nil?
       stack = can_go_from_to(chapter, prerequisite, Set.new)
       unless stack.nil?
-        errors.add(:prerequisite, " : #{chapter.name} -> #{prerequisite.name} est redondant avec #{stack_to_s(stack)}")
+        errors.add(:prerequisite, " : #{prerequisite.name} -> #{chapter.name} est redondant avec #{stack_to_s(stack)}")
       end
     end
   end
@@ -51,7 +51,7 @@ class Prerequisite < ActiveRecord::Base
         stack2 = can_go_from_to(prerequisite, pre, Set.new)
         stack = stack2 + stack1.reverse
         back = stack1.first
-        errors.add(:prerequisite, " : #{chapter.name} -> #{prerequisite.name} rend #{back} -> #{pre.name} redondant en formant la boucle #{stack_to_s(stack)}")
+        errors.add(:prerequisite, " : #{prerequisite.name} -> #{chapter.name} rend #{pre.name} -> #{back} redondant en formant la boucle #{stack_to_s(stack)}. Veuillez supprimer ce lien avant de rajouter celui-ci.")
       end
     end
   end
@@ -80,7 +80,7 @@ class Prerequisite < ActiveRecord::Base
     if stack.empty?
       return current
     else
-      return "#{current} -> #{stack_to_s(stack)}"
+      return "#{stack_to_s(stack)} -> #{current}"
     end
   end
   def recursive_prerequisites(current, visited)
@@ -98,6 +98,7 @@ class Prerequisite < ActiveRecord::Base
       return nil
     end
     visited.add(current.id)
+
     current.prerequisites.each do |pre|
       if targets.include?(pre)
         stack.push(current.name)
