@@ -1,7 +1,15 @@
 <%= render 'shared/error_messages', object: f.object %>
 
-<%= f.label :titre %>
-<%= f.text_field :title, :class => "span6" %>
-
-<%= f.label :contenu %>
-<%= f.text_area :content, :class => "span6"  %>
+<%= f.label :title, 'Titre' %>
+<%= f.text_field :title, class: "span5" %>
+<%= f.label :content, 'Contenu' %>
+<div class="well">
+  <div id='wmd-preview' class='wmd-preview'>
+  </div>
+</div>
+<div class='wmd-panel'>
+  <div id='wmd-button-bar' class='wmd-button-bar'></div>
+  <%= f.text_area :content, class: 'span12 wmd-input', id: 'wmd-input' %>
+  <!--<%= f.text_area :content, class: 'span12 wmd-input', id: 'wmd-input', style: 'height:200px;'  %>-->
+</div>
+<%= javascript_include_tag 'mathjax-editing.js' %>

@@ -2,7 +2,7 @@
 // All this logic will automatically be available in application.js.
 // You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
-function update_preview() {
+/*function update_preview() {
   var content = $('#theory_content').val();
   var converter = new Showdown.converter();
   var render = converter.makeHtml(content);
@@ -14,4 +14,12 @@ $(document).ready(function() {
   $('#theory_content').keyup(function() {
     update_preview();
   });
+});*/
+$(document).ready(function () {
+  var converter = Markdown.getSanitizingConverter();
+  var editor = new Markdown.Editor(converter);
+  mathjaxEditing.prepareWmdForMathJax(editor,
+    '',
+    [['$']]);
+  editor.run();
 });

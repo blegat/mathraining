@@ -1,19 +1,11 @@
 <% provide(:title, 'Modifier un point théorique') %>
 <h1>Modifier un point théorique</h1>
 
+<%= form_for(@theory) do |f| %>
+  <%= render 'fields', f: f %>
+  <br />
+  <%= f.submit 'Éditer', class: 'btn btn-large btn-primary' %>
+<% end %>
 
-<div class="row">
-  <div class="span6">
-    <%= form_for(@theory) do |f| %>
-      <%= render 'fields', f: f %>
-      <br />
-      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
-    <% end %>
-  </div>
-  <%= render 'preview' %>
-  <div class="span6">
-  
-  </div>
-</div>
-
+<br />
 <center><%= link_to 'Retour au chapitre', @theory.chapter %></center>

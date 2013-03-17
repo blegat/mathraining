@@ -83,6 +83,8 @@ GEM
     mime-types (1.21)
     multi_json (1.6.1)
     nokogiri (1.5.6)
+    pagedown-rails (1.1.1)
+      railties (~> 3.1)
     pg (0.14.1)
     polyglot (0.3.3)
     rack (1.4.5)
@@ -177,6 +179,7 @@ DEPENDENCIES
   jquery-rails
   kramdown
   mathjax-rails
+  pagedown-rails (~> 1.1.1)
   pg (~> 0.14.1)
   rails (= 3.2.11)
   rails-i18n

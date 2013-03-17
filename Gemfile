@@ -11,7 +11,7 @@ gem 'mathjax-rails'
 
 # Markdown
 gem 'kramdown' # server-side
-gem 'showdown-rails' # client-side
+gem 'pagedown-rails', '~> 1.1.1' # client-side
 
 group :development, :test do
   gem 'sqlite3'
