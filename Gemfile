@@ -10,6 +10,7 @@ gem 'rails-i18n'
 gem 'mathjax-rails'
 
 # Markdown
+gem 'redcarpet' # server-side
 gem 'kramdown' # server-side
 gem 'pagedown-rails', '~> 1.1.1' # client-side
 

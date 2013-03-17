@@ -14,9 +14,6 @@
 //= require jquery_ujs
 //= require bootstrap
 //= require_tree .
-//= require markdown.converter
-//= require markdown.sanitizer
-//= require markdown.editor
 
 paintIt = function(element, backgroundColor, textColor) {
   element.style.backgroundColor = backgroundColor
