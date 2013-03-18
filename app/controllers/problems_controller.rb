@@ -2,7 +2,7 @@
 class ProblemsController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus]
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online]
 
 
   def new
@@ -18,6 +18,7 @@ class ProblemsController < ApplicationController
     @problem = Problem.new
     @problem.name = params[:problem][:name]
     @problem.statement = params[:problem][:statement]
+    @problem.online = false
     @chapter = Chapter.find_by_id(params[:chapter_id])
     if @chapter.nil?
       flash[:error] = "Chapitre inexistant."
@@ -56,6 +57,13 @@ class ProblemsController < ApplicationController
     @problem.destroy
     flash[:success] = "Problème supprimé."
     redirect_to @chapter
+  end
+  
+  def put_online
+    @problem = Problem.find(params[:problem_id])
+    @problem.online = true
+    @problem.save
+    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
   end
 
   def order_minus

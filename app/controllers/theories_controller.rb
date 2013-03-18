@@ -2,7 +2,7 @@
 class TheoriesController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus]
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online]
 
 
   def new
@@ -18,6 +18,7 @@ class TheoriesController < ApplicationController
     @theory = Theory.new
     @theory.title = params[:theory][:title]
     @theory.content = params[:theory][:content]
+    @theory.online = false
     @chapter = Chapter.find_by_id(params[:chapter_id])
     if @chapter.nil?
       flash[:error] = "Chapitre inexistant."
@@ -56,6 +57,13 @@ class TheoriesController < ApplicationController
     @theory.destroy
     flash[:success] = "Point théorique supprimé."
     redirect_to @chapter
+  end
+  
+  def put_online
+    @theory = Theory.find(params[:theory_id])
+    @theory.online = true
+    @theory.save
+    redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
 
   def order_minus

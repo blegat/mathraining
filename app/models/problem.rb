@@ -1,5 +1,5 @@
 class Problem < ActiveRecord::Base
-  attr_accessible :name, :position, :statement
+  attr_accessible :name, :position, :statement, :online
   belongs_to :chapter
   validates :name, presence: true, length: { maximum: 255 }
   validates :statement, presence: true, length: { maximum: 8000 }

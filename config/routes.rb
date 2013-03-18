@@ -25,6 +25,8 @@ Ombtraining::Application.routes.draw do
       as: :order_plus
     match '/order_minus', to: 'theories#order_minus',
       as: :order_minus
+    match '/put_online', to: 'theories#put_online',
+      as: :put_online
   end
   
   resources :problems, only: [:update, :edit, :destroy] do
@@ -32,6 +34,8 @@ Ombtraining::Application.routes.draw do
       as: :order_plus
     match '/order_minus', to: 'problems#order_minus',
       as: :order_minus
+    match '/put_online', to: 'problems#put_online',
+      as: :put_online
   end
 
   mathjax 'mathjax'

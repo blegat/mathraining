@@ -27,12 +27,19 @@
         <% listex = @chapter.theories %>
         <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
         <% listex.each do |f| %>
-          <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %>>
-          <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id) %></li>
-          <% if f.id == id && type == 1 %>
-            <% number = i %>
+          <% if f.online || current_user.admin? %>
+            <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %>>
+            <% if f.online %>
+              <% titre = f.title %>
+            <% else %>
+              <% titre = "[ ! ] " + f.title %>
+            <% end %>
+            <%= link_to titre, chapter_path(@chapter, :type => 1, :which => f.id) %></li>
+            <% if f.id == id && type == 1 %>
+              <% number = i %>
+            <% end %>
+            <% i = i + 1 %>
           <% end %>
-          <% i = i + 1 %>
         <% end %>
         <li class="nav-header">Exercices</li>
         <% liste = @chapter.exercises %>
@@ -83,12 +90,19 @@
         <% listex = @chapter.problems %>
         <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
         <% listex.each do |f| %>
-          <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>
-          <%= link_to f.name, chapter_path(@chapter, :type => 4, :which => f.id) %></li>
-          <% if f.id == id && type == 4 %>
-            <% number = i %>
+          <% if f.online || current_user.admin? %>
+            <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>
+            <% if f.online %>
+              <% titre = f.name %>
+            <% else %>
+              <% titre = "[ ! ] " + f.name %>
+            <% end %>
+            <%= link_to titre, chapter_path(@chapter, :type => 4, :which => f.id) %></li>
+            <% if f.id == id && type == 4 %>
+              <% number = i %>
+            <% end %>
+            <% i = i + 1 %>
           <% end %>
-          <% i = i + 1 %>
         <% end %>
       </ul>
     </div>
@@ -133,43 +147,52 @@
       
       <!-- POINTS THEORIQUES -->
       
-      <% if type == 1 && @chapter.theories.exists?(id)%>
+      <% if type == 1 && @chapter.theories.exists?(id) %>
         <% f = Theory.find(id) %>
-        <h3><%= f.title %> </h3>
-        <!--<%= simple_format f.content %>-->
-        <%= markdown_render f.content %>
-        <% if current_user.admin? %>
-          <br/>
-          <center>
-          <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> | 
-          <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %>
-          </center>
-          <br/>
-          
-          <% if number > 1 %>
-          <% up = true %>
-          <% else %>
-          <% up = false %>
-          <% end %>
-          
-          <% if number < @chapter.theories.count %>
-          <% down = true %>
-          <% else %>
-          <% down = false %>
-          <% end %>
-          
-          <% if up || down %>
+        <% if f.online || current_user.admin? %>
+          <h3><%= f.title %> </h3>
+          <!--<%= simple_format f.content %>-->
+          <%= markdown_render f.content %>
+          <% if current_user.admin? %>
+            <br/>
             <center>
-            Déplacer ce point théorique vers le 
-            <% if up %>
-              <%= link_to "haut", theory_order_minus_path(f) %>
-              <% if down %>
-              | <%= link_to "bas", theory_order_plus_path(f) %>
-              <% end %>
+            <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> | 
+            <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %>
+            </center>
+            <br/>
+            
+            <% if number > 1 %>
+            <% up = true %>
             <% else %>
-              <%= link_to "bas", theory_order_plus_path(f) %>
+            <% up = false %>
             <% end %>
-            </center> <br/>
+            
+            <% if number < @chapter.theories.count %>
+            <% down = true %>
+            <% else %>
+            <% down = false %>
+            <% end %>
+            
+            <% if up || down %>
+              <center>
+              Déplacer ce point théorique vers le 
+              <% if up %>
+                <%= link_to "haut", theory_order_minus_path(f) %>
+                <% if down %>
+                | <%= link_to "bas", theory_order_plus_path(f) %>
+                <% end %>
+              <% else %>
+                <%= link_to "bas", theory_order_plus_path(f) %>
+              <% end %>
+              </center> <br/>
+            <% end %>
+            
+            <% unless f.online %>
+              <center>
+              <%= button_to "Mettre en ligne", theory_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Etes vous sûr de vouloir rendre ce point théorique visible par les utilisateurs?" } %>
+              </center> <br/>
+            <% end %>
+          
           <% end %>
           
         <% end %>
@@ -319,40 +342,49 @@
       
       <% if type == 4 && @chapter.problems.exists?(id)%>
         <% f = Problem.find(id) %>
-        <h3><%= f.name %> </h3>
-        <%= simple_format f.statement%>
-        <% if current_user.admin? %>
-          <br/>
-          <center>
-          <%= link_to "Modifier ce problème", edit_problem_path(f) %> | 
-          <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
-          </center>
-          <br/>
-          
-          <% if number > 1 %>
-          <% up = true %>
-          <% else %>
-          <% up = false %>
-          <% end %>
-          
-          <% if number < @chapter.problems.count %>
-          <% down = true %>
-          <% else %>
-          <% down = false %>
-          <% end %>
-          
-          <% if up || down %>
+          <% if f.online || current_user.admin? %>
+          <h3><%= f.name %> </h3>
+          <%= simple_format f.statement%>
+          <% if current_user.admin? %>
+            <br/>
             <center>
-            Déplacer ce problème vers le 
-            <% if up %>
-              <%= link_to "haut", problem_order_minus_path(f) %>
-              <% if down %>
-              | <%= link_to "bas", problem_order_plus_path(f) %>
-              <% end %>
+            <%= link_to "Modifier ce problème", edit_problem_path(f) %> | 
+            <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
+            </center>
+            <br/>
+            
+            <% if number > 1 %>
+            <% up = true %>
             <% else %>
-              <%= link_to "bas", problem_order_plus_path(f) %>
+            <% up = false %>
             <% end %>
-            </center> <br/>
+            
+            <% if number < @chapter.problems.count %>
+            <% down = true %>
+            <% else %>
+            <% down = false %>
+            <% end %>
+            
+            <% if up || down %>
+              <center>
+              Déplacer ce problème vers le 
+              <% if up %>
+                <%= link_to "haut", problem_order_minus_path(f) %>
+                <% if down %>
+                | <%= link_to "bas", problem_order_plus_path(f) %>
+                <% end %>
+              <% else %>
+                <%= link_to "bas", problem_order_plus_path(f) %>
+              <% end %>
+              </center> <br/>
+            <% end %>
+            
+            <% unless f.online %>
+              <center>
+              <%= button_to "Mettre en ligne", problem_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Etes vous sûr de vouloir rendre ce problème visible par les utilisateurs?" } %>
+              </center> <br/>
+            <% end %>
+            
           <% end %>
           
         <% end %>
