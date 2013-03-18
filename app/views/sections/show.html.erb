@@ -17,10 +17,11 @@
 <% @chapters = @section.chapters.sort_by { |chap| chap[:level] } %>
 <ul>
 <% @chapters.each do |c| %>
-<li>
-<%= link_to c.name, chapter_path(c) %>
-(niveau <%= c.level %>)
-</li>
+  <% if c.online || current_user.admin? %>
+    <li>
+    <%= link_to c.name, chapter_path(c) %>
+    </li>
+  <% end %>
 <% end %>
 </ul>
 

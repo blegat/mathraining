@@ -1,6 +1,8 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
   before_filter :signed_in_user
+  before_filter :online_chapter,
+    only: [:show]
   before_filter :admin_user,
     only: [:destroy, :edit, :update, :create,
       :new_section, :create_section, :destroy_section]
@@ -10,7 +12,6 @@ class ChaptersController < ApplicationController
   end
 
   def show
-    @chapter = Chapter.find(params[:id])
   end
 
   def new
@@ -77,6 +78,11 @@ class ChaptersController < ApplicationController
 
   def admin_user
     redirect_to sections_path unless current_user.admin?
+  end
+  
+  def online_chapter
+    @chapter = Chapter.find(params[:id])
+    redirect_to sections_path unless (current_user.admin? || @chapter.online)
   end
 
 end

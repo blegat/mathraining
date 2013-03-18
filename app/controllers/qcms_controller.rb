@@ -1,6 +1,8 @@
 #encoding: utf-8
 class QcmsController < QuestionsController
   before_filter :signed_in_user
+  before_filter :online_chapter,
+    only: [:new, :create]
   before_filter :admin_user,
     only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :manage_choices, :remove_choice, :add_choice, :switch_choice]
 
@@ -202,6 +204,13 @@ class QcmsController < QuestionsController
 
   def admin_user
     redirect_to root_path unless current_user.admin?
+  end
+  
+  def online_chapter
+    @chapter = Chapter.find(params[:chapter_id])
+    if @chapter.online
+      redirect_to chapter_path(@chapter)
+    end
   end
 
   def maximum(a, b)

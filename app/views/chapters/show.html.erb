@@ -11,7 +11,7 @@
 
 
 <h1>
-  <%= @chapter.name %> (niveau <%= @chapter.level %>)
+  <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
 </h1>
 
 <div class="row">
@@ -122,8 +122,10 @@
           </ul>
         <% end %>
         
-        <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %></center>
-
+        <% if current_user.admin? %>
+          <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %></center>
+        <% end %>
+        
         <h3>Introduction</h3>
         <p><%= @chapter.description %></p>
       
@@ -218,7 +220,11 @@
           <br/>
           <center>
           <%= link_to "Modifier cet exercice", edit_exercise_path(f) %> | 
-          <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
+          <% if @chapter.online %>
+            <%= link_to "Supprimer définitivement cet exercice", f, method: :delete, data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, vous ne pourrez plus rajouter d'exercice à la place de celui-ci! Etes-vous sûr de vouloir supprimer cet exercice?" } %>
+          <% else %>
+            <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
+          <% end %>
           </center>
           <br/>
           
@@ -300,7 +306,11 @@
           <center>
           <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> | 
           <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> | 
-          <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
+          <% if @chapter.online %>
+            <%= link_to "Supprimer définitivement ce QCM", f, method: :delete, data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, vous ne pourrez plus rajouter de QCM à la place de celui-ci! Etes-vous sûr de vouloir supprimer ce QCM?" } %>
+          <% else %>
+            <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
+          <% end %>
           </center>
           <br/>
           
@@ -401,8 +411,10 @@
     <br/>
     Ajouter un : 
     <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
-    <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
-    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %> | 
+    <% unless @chapter.online %>
+      <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
+      <%= link_to "QCM", new_chapter_qcm_path(@chapter) %> | 
+    <% end %>
     <%= link_to "problème", new_chapter_problem_path(@chapter) %>
   <% end %>
 </center>

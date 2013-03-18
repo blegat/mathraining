@@ -11,7 +11,7 @@
 #
 
 class Chapter < ActiveRecord::Base
-  attr_accessible :description, :level, :name
+  attr_accessible :description, :level, :name, :online
   has_and_belongs_to_many :sections
   has_many :theories
   has_many :exercises
