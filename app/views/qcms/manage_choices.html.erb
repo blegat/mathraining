@@ -1,43 +1,53 @@
 <% provide(:title, "Modifier les choix du QCM") %>
 <h1>Modifier les choix d'un QCM</h1>
+Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne saurait être enregistrée.<br/><br/>
 <%= @qcm.statement %>
 <br/><br/>
 <table cellpadding="5">
-<tr><th></th><th></th><th>Rép?</th><th></th><th></th></tr>
+<tr><th></th><th></th><th>Rép?</th><th></th><th></th><th></th></tr>
 <% letters = ('A'..'Z').to_a %>
 <% i = 0 %>
 <% @qcm.choices.order(:id).each do |f| %>
-  <tr>
-  <td>
-  <%= letters[i] %>)
-  </td>
-  <td>
-  <%= f.ans %>
-  </td>
-  <td>
-  <center>
-  <% if f.ok %>
-    <i class="icon-ok"></i>
-  <% else %>
-    <i class="icon-remove"></i>
+  <%= form_for(f, url: qcm_update_choice_path(@qcm, f)) do |g| %>
+    <tr>
+      <td>
+        <%= letters[i] %>)
+      </td>
+      <td>
+        <%= g.text_field :ans %>
+      </td>
+      <td>
+        <center>
+        <% if f.ok %>
+          <i class="icon-ok"></i>
+        <% else %>
+          <i class="icon-remove"></i>
+        <% end %>
+        </center>
+      </td>
+      <td>
+        <%= g.submit "Modifier ce choix", class: "btn btn-primary" %>
+      </td>
+      <% unless @qcm.chapter.online %>
+        <td>
+          <% if f.ok %>
+            <% if @qcm.many_answers %>
+              <%= link_to "Rendre ce choix erroné", qcm_switch_choice_path(@qcm, f) %>
+            <% end %>
+          <% else %>
+            <%= link_to "Rendre ce choix correct", qcm_switch_choice_path(@qcm, f) %>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to "Supprimer ce choix", qcm_remove_choice_path(@qcm, f) %>
+        </td>
+      <% end %>
+    </tr>
   <% end %>
-  </center>
-  </td>
-  <td>
-  <%= link_to "Supprimer ce choix", qcm_remove_choice_path(@qcm, f) %>
-  </td>
-  <td>
-  <% if f.ok %>
-    <% if @qcm.many_answers %>
-      <%= link_to "Rendre ce choix erroné", qcm_switch_choice_path(@qcm, f) %>
-    <% end %>
-  <% else %>
-    <%= link_to "Rendre ce choix correct", qcm_switch_choice_path(@qcm, f) %>
-  <% end %>
-  </td>
-  </tr>
   <% i = i + 1 %>
 <% end %>
+
+<% unless @qcm.chapter.online %>
 
 <tr>
 
@@ -57,9 +67,14 @@
   </td>
   <td>
   </td>
+  <td>
+  </td>
 <% end %>
 
 </tr>
-</table>
 
+<% end %>
+
+</table>
+<br/>
 <center><%= link_to 'Retour au chapitre', chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %></center>

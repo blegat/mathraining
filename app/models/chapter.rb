@@ -35,7 +35,13 @@ class Chapter < ActiveRecord::Base
     #association_foreign_key: "prerequisite_id"
   #It does not check validations
   def real_number_prerequisites
-    return real_recursive_prerequisites.size
+    liste = recursive_prerequisites
+    Chapter.all.each do |c|
+      if c.sections.empty?
+        liste.delete(c.id)
+      end
+    end
+    return liste.size
   end
   def number_prerequisites
     return recursive_prerequisites.size
@@ -51,12 +57,6 @@ class Chapter < ActiveRecord::Base
     visited.delete(self.id)
     visited.to_a
   end
-  def real_recursive_prerequisites
-    visited = Set.new
-    real_recursive_prerequisites_aux(self, visited)
-    visited.delete(self.id)
-    visited.to_a
-  end
 
   private
 
@@ -67,18 +67,6 @@ class Chapter < ActiveRecord::Base
       visited.add(current.id)
       current.prerequisites.each do |next_chapter|
         recursive_prerequisites_aux(next_chapter, visited)
-      end
-    end
-  end
-  def real_recursive_prerequisites_aux(current, visited)
-    unless visited.include?(current.id)
-      # this should always happen since it shouldn't have loop
-      # or be redundant
-      unless current.sections.empty?
-        visited.add(current.id)
-        current.prerequisites.each do |next_chapter|
-          recursive_prerequisites_aux(next_chapter, visited)
-        end
       end
     end
   end

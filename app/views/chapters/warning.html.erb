@@ -1,0 +1,124 @@
+<% provide(:title, "Mise en ligne d'un chapitre") %>
+<h1>Mise en ligne du chapitre <%= @chapter.name %></h1>
+Vous vous apprêtez à mettre un chapitre en ligne.
+
+Une fois cela fait, les utilisateurs auront accès à tous les composants du chapitre (hormis les points théoriques et problèmes en construction) et pourront entre autres commencer à résoudre les exercices et QCMs qui leur sont proposés. Il ne sera alors plus envisageable pour un administrateur de modifier le chapitre autant qu'il ne le pouvait lorsque le chapitre était en construction. Avant de faire cette opération, <b>nous vous demandons donc de prendre connaissance de ce que vous pourrez et ne pourrez plus faire une fois ce chapitre mis en ligne.</b>
+
+<h2>Prérequis</h2>
+
+Les prérequis fondamentaux (ceux n'appartenant à aucune des quatre grandes sections) sont là à titre d'information (puisqu'il n'est pas nécessaire de valider un prérequis fondamental pour avoir accès à ce chapitre). 
+Ils pourront donc toujours être modifiés par la suite. Par contre, les autres prérequis sont très importants et ne doivent pas être négligés. 
+Vous devez absolument indiquer les prérequis nécessaires à ce chapitre avant de le mettre en ligne. Ceux-ci ne seront plus modifiables par la suite. 
+Si l'un de ces prérequis n'a pas encore été créé et le sera par la suite, ne mettez pas celui-ci en ligne!
+En effet, ce sont les prérequis qui déterminent lorsqu'un utilisateur aura accès à ce chapitre.
+Veillez donc à ne pas en oublier. Par exemple, les chapitres sans prérequis seront directement accessibles à tout le monde, et il ne peut dès lors s'agir que d'un chapitre compréhensible par un étudiant de 5ème année n'ayant suivi aucun cours supplémentaires (autre que les fondements éventuels).
+
+<h2>Points théoriques et problèmes</h2>
+
+Il sera toujours possible d'ajouter, modifier, et supprimer les points théoriques et problèmes de ce chapitre. 
+Lorsqu'un point théorique ou un problème est ajouté, il passe d'abord par une période "en construction" lors de laquelle les utilisateurs n'y ont pas encore accès. 
+Cela dit, il est évidemment préférable qu'à la mise en ligne de ce chapitre, les points théoriques soient finalisés. 
+Toute modification suite à une erreur quelconque restera cependant possible.
+
+<h2> Exercices et QCMs</h2>
+
+Les exercices et QCMs permettront aux utilisateurs de débloquer les chapitres dont celui-ci est un prérequis. Ils doivent donc être impérativement :
+<ul>
+<li>
+<b>Corrects.</b> Une imprécision dans l'énoncé ou les réponses (dans le cas d'un QCM) pourra toujours être modifiée, mais la réponse elle-même est définitive. Si un exercice se révèle totalement faux (et non légèrement modifiable pour le rendre correct) après la mise en ligne de ce chapitre, l'unique possibilité sera de le supprimer.
+</li>
+<li>
+<b>En nombre suffisant.</b> Ni trop, ni trop peu. Ils doivent couvrir la matière pour vérifier la bonne compréhension de l'utilisateur. Pour un chapitre théorique, une dizaine d'exercices ou QCMs seraient les bienvenus. Cependant, s'il s'agit d'un chapitre de haut niveau (peu théorique et essentiellement destiné à divers problèmes), il n'est pas nécessaire d'en créer autant.
+</li>
+<li>
+<b>De difficulté appropriée.</b> Le but ici n'est pas de déterminer les meilleurs utilisateurs, mais de leur donner un bon bagage théorique. Ces exercices doivent donc juste vérifier la bonne compréhension de la théorie. Un exercice difficile n'est pas le bienvenu puisqu'il fermerait les portes des chapitres suivants aux utilisateurs. Les exercices simples, quant à eux, peuvent être une bonne chose. Il ne vous est par exemple pas interdit de créer un QCM à peu d'entrées (même un vrai ou faux) pour appuyer sur un point théorique qu'il vous semble important de bien comprendre.
+</li>
+</ul>
+Voici les exercices et QCMs de ce chapitre. Soyez certain qu'ils vérifient les trois points précédents. Veillez également à ce que leur ordre soit cohérent.
+
+<% liste = @chapter.exercises %>
+<% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
+<% liste2 = @chapter.qcms %>
+<% liste2.sort!{|t1,t2|t1.position <=> t2.position} %>
+<% un = 0 %>
+<% deux = 0 %>
+<% (1..(liste.size+liste2.size)).each do |i| %>
+  <% encours = 0 %>
+  <% if un >= liste.size %>
+    <% encours = 2 %>
+  <% else %>
+    <% if deux >= liste2.size %>
+      <% encours = 1 %>
+    <% else %>
+      <% if liste[un].position < liste2[deux].position %>
+        <% encours = 1 %>
+      <% else %>
+        <% encours = 2 %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if encours == 1 %>
+    <% f = liste[un] %> 
+      <h3> Exercice <%= i%> - <%= link_to "Modifier cet exercice", chapter_path(@chapter, :type => 2, :which => f.id) %> </h3>
+      <%= f.statement %>
+      <br/><br/>
+      Réponse : 
+      <% if f.decimal %>
+        <b><%= f.answer %></b> (On demande une réponse <b>décimale</b> avec deux chiffres après la virgule)
+      <% else %>
+        <b><%= f.answer.to_i %></b> (On demande une réponse <b>entière</b>)
+      <% end %>
+      <br/><br/>
+    <% un = un + 1 %>
+  <% else %>
+    <% f = liste2[deux] %> 
+      <h3> Exercice <%= i%> - <%= link_to "Modifier ce QCM", chapter_path(@chapter, :type => 3, :which => f.id) %> </h3></h3>
+      <%= f.statement %>
+      <br/><br/>
+      <table cellpadding="5">
+        <% letters = ('A'..'Z').to_a %>
+        <% i = 0 %>
+        <% f.choices.order(:id).each do |c| %>
+          <tr>
+          <td>
+          <%= letters[i] %>)
+          </td>
+          <td>
+          <%= c.ans %>
+          </td>
+          <td>
+          <center>
+          <% if c.ok %>
+            <i class="icon-ok"></i>
+          <% else %>
+            <i class="icon-remove"></i>
+          <% end %>
+          </center>
+          </td>
+          </tr>
+          <% i = i+1 %>
+        <% end %>
+
+      </table>
+      <br/>
+      <% if f.many_answers %>
+        <b>(Plusieurs réponses possibles)</b>
+      <% else %>
+        <b>(Une seule réponse possible)</b>
+      <% end %>
+      <br/><br/>
+    <% deux = deux + 1 %>
+  <% end %>
+<% end %>
+
+<% if liste.size+liste2.size == 0 %>
+  <br/><br/><b>Aucun exercice</b><br/><br/>
+<% end %>
+
+<center>
+<%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), method: :get, class: 'btn btn-large', data: {confirm: "Etes-vous sûr de vouloir mettre ce chapitre en ligne?"} %>
+</center>
+
+<br/><br/>
+<center><%= link_to "Retour au chapitre " + @chapter.name, chapter_path(@chapter) %></center>

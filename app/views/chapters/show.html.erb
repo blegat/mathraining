@@ -123,7 +123,7 @@
         <% end %>
         
         <% if current_user.admin? %>
-          <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %></center>
+          <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>
         <% end %>
         
         <h3>Introduction</h3>
@@ -131,17 +131,31 @@
       
         <% if current_user.admin? %>
           <br/>
-          <center>
-          <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
+          <% if !@chapter.online %>
+          
+            <center>
+            <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
+            
+            <% if @chapter.sections.size > 1 %>
+              <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
+            <% else %>
+              <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
+            <% end %> |
 
-          <% if @chapter.sections.size > 1 %>
-            <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
+            <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
+            </center>
+            
           <% else %>
-            <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
-          <% end %> |
-
-          <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
-          </center>
+          
+            <center>
+            <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %>
+            
+            <% if !@chapter.sections.empty? %>
+              | <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
+            <% end %>
+            </center>
+            
+          <% end %>
         <% end %>
         
       <% end %>
@@ -211,18 +225,19 @@
         <br/>
         Réponse : 
         <% if f.decimal %>
-          <%= f.answer %> (On demande une réponse décimale avec deux chiffres après la virgule)
+          <b><%= f.answer %></b> (On demande une réponse décimale avec deux chiffres après la virgule)
         <% else %>
-          <%= f.answer.to_i %> (On demande une réponse entière)
+          <b><%= f.answer.to_i %></b> (On demande une réponse entière)
         <% end %>
         <br/>
         <% if current_user.admin? %>
           <br/>
           <center>
-          <%= link_to "Modifier cet exercice", edit_exercise_path(f) %> | 
           <% if @chapter.online %>
+            <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures dans cet exercice." } %> | 
             <%= link_to "Supprimer définitivement cet exercice", f, method: :delete, data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, vous ne pourrez plus rajouter d'exercice à la place de celui-ci! Etes-vous sûr de vouloir supprimer cet exercice?" } %>
           <% else %>
+            <%= link_to "Modifier cet exercice", edit_exercise_path(f) %> | 
             <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
           <% end %>
           </center>
@@ -240,7 +255,7 @@
           <% down = false %>
           <% end %>
           
-          <% if up || down %>
+          <% if (up || down) && !@chapter.online %>
             <center>
             Déplacer cet exercice vers le 
             <% if up %>
@@ -268,7 +283,6 @@
         <br/>
         
         <table cellpadding="5">
-        <tr><th></th><th></th><th>Rép?</th></tr>
         <% letters = ('A'..'Z').to_a %>
         <% i = 0 %>
         <% f.choices.order(:id).each do |c| %>
@@ -294,6 +308,8 @@
 
         </table>
         
+        <br/>
+        
         <% if f.many_answers %>
           (Plusieurs réponses possibles)
         <% else %>
@@ -304,11 +320,13 @@
         <% if current_user.admin? %>
           <br/>
           <center>
-          <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> | 
-          <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> | 
           <% if @chapter.online %>
+            <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures dans ce QCM." }  %> | 
+            <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures dans ce QCM." } %> | 
             <%= link_to "Supprimer définitivement ce QCM", f, method: :delete, data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, vous ne pourrez plus rajouter de QCM à la place de celui-ci! Etes-vous sûr de vouloir supprimer ce QCM?" } %>
           <% else %>
+            <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> | 
+            <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> | 
             <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
           <% end %>
           </center>
@@ -326,7 +344,7 @@
           <% down = false %>
           <% end %>
           
-          <% if up || down %>
+          <% if (up || down) && !@chapter.online %>
             <center>
             Déplacer ce QCM vers le 
             <% if up %>
@@ -416,6 +434,11 @@
       <%= link_to "QCM", new_chapter_qcm_path(@chapter) %> | 
     <% end %>
     <%= link_to "problème", new_chapter_problem_path(@chapter) %>
+    
+    <% if !@chapter.online %>
+      <br/><br/>
+      <%= button_to "Mettre ce chapitre en ligne", chapter_warning_path(@chapter), method: :get, class: 'btn btn-large' %>
+    <% end %>
   <% end %>
 </center>
 <br/>

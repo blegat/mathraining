@@ -16,7 +16,7 @@ var graph = new Graph();
 var noeud = new Array();
 var prereq = new Array();
 var fond = new Array();
-var depart = graph.newNode({label: "Départ", color: "#0000FF", text: "#000000"});
+var depart = graph.newNode({label: "Départ", color: "#0000FF", text: "#FFFFFF", bold: true});
 <% existe = Set.new %>
 <% maximum = 1 %>
 <% chapters = Array.new %>
@@ -71,9 +71,9 @@ function rouge(a, b, qui){
     <% nom = nom.slice(0..22) + "..." %>
   <% end %>
     <% if chapter.sections.empty? %>
-      noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(couleur).concat("FF").concat(couleur)});
+      noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(couleur).concat("FF").concat(couleur) <%= ", bold: true" if chapter.online %>});
     <% else %>
-      noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#FF".concat(couleur).concat(couleur)});
+      noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#FF".concat(couleur).concat(couleur) <%= ", bold: true" if chapter.online %>});
     <% end %>
     if(prereq[<%= chapter.id %>] == 0){
       graph.newEdge(depart, noeud[<%= chapter.id %>], {color: "#CCCCCC"});
@@ -109,6 +109,7 @@ $(document).ready(function() {
   });
 });
 </script>
+
 <center>
 <% if !fondement %>
   <%= link_to "Afficher/modifier les fondements", graph_prerequisites_path(:fondement => 1) %>
@@ -122,6 +123,8 @@ Votre navigateur ne supporte pas de canvas.
 <div class="row">
 <div class="span6">
 <center>
+
+<% chapters.sort!{|x,y| x.name.downcase <=> y.name.downcase}%>
 
 <%= form_for(:prerequisite, url: add_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
   <h3> Ajouter un lien </h3>

@@ -19,7 +19,7 @@
 <% @chapters.each do |c| %>
   <% if c.online || current_user.admin? %>
     <li>
-    <%= link_to c.name, chapter_path(c) %>
+    <%= link_to c.name, chapter_path(c) %> <%= "(en construction)" unless c.online %>
     </li>
   <% end %>
 <% end %>

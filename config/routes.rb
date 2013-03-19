@@ -8,6 +8,7 @@ Ombtraining::Application.routes.draw do
       as: :order_minus
     match '/manage_choices', to: "qcms#manage_choices"
     match '/add_choice', to: "qcms#add_choice"
+    match '/update_choice/:id', to: "qcms#update_choice", as: :update_choice
     match '/remove_choice/:id', to: "qcms#remove_choice", as: :remove_choice
     match '/switch_choice/:id', to: "qcms#switch_choice", as: :switch_choice
   end
@@ -48,6 +49,8 @@ Ombtraining::Application.routes.draw do
   match '/remove_prerequisite', to: "prerequisites#remove_prerequisite"  
     
   resources :chapters do
+    match '/warning', to: 'chapters#warning'
+    match '/put_online', to: 'chapters#put_online'
     match '/manage_sections', to: 'chapters#new_section'
     match '/add_section/:id', to: 'chapters#create_section',
       as: :add_section

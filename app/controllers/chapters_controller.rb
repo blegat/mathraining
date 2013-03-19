@@ -1,11 +1,15 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
   before_filter :signed_in_user
-  before_filter :online_chapter,
-    only: [:show]
   before_filter :admin_user,
     only: [:destroy, :edit, :update, :create,
       :new_section, :create_section, :destroy_section]
+  before_filter :online_chapter,
+    only: [:show]
+  before_filter :fondement_online,
+    only: [:new_section, :create_section, :destroy_section]
+  before_filter :prerequisites_online,
+    only: [:warning, :put_online]
 
   def index
     redirect_to sections_path
@@ -70,8 +74,21 @@ class ChaptersController < ApplicationController
   def destroy_section
     chapter = Chapter.find(params[:chapter_id])
     section = Section.find(params[:id])
-    chapter.sections.delete(section)
+    if chapter.online && chapter.sections.count == 1
+      flash[:error] = "Un chapitre en ligne non fondamental ne peut pas devenir fondamental. Si vous désirez changer ce chapitre de section, commencez par rajouter la nouvelle section et retirez ensuite l'ancienne."
+    else
+      chapter.sections.delete(section)
+    end
     redirect_to chapter_manage_sections_path(chapter)
+  end
+  
+  def warning
+  end
+  
+  def put_online
+    @chapter.online = true
+    @chapter.save
+    redirect_to @chapter
   end
   
   private
@@ -83,6 +100,24 @@ class ChaptersController < ApplicationController
   def online_chapter
     @chapter = Chapter.find(params[:id])
     redirect_to sections_path unless (current_user.admin? || @chapter.online)
+  end
+  
+  def fondement_online
+    @chapter = Chapter.find(params[:chapter_id])
+    redirect_to @chapter if (@chapter.online && @chapter.sections.empty?)
+  end
+  
+  def prerequisites_online
+    @chapter = Chapter.find(params[:chapter_id])
+    @chapter.prerequisites.each do |p|
+      if !p.online
+        flash[:error] = "Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne."
+        redirect_to @chapter and return
+      end
+    end
+  if @chapter.online
+    redirect_to @chapter and return	
+  end
   end
 
 end

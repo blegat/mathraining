@@ -126,8 +126,8 @@ jQuery.fn.springy = function(params) {
 			return this._width[text];
 
 		ctx.save();
-		if(this.data.text !== undefined){
-			ctx.font = "bold 12px Verdana, sans-serif";
+		if(this.data.bold !== undefined && this.data.bold == true){
+				ctx.font = "bold 12px Verdana, sans-serif";
 		}
 		else{
 			ctx.font = "12px Verdana, sans-serif";
@@ -278,7 +278,9 @@ jQuery.fn.springy = function(params) {
 			ctx.fillStyle = "#000000";
 			var text = (node.data.label !== undefined) ? node.data.label : node.id;
 			if(node.data.text !== undefined){
-				ctx.fillStyle = "#FFFFFF";
+				ctx.fillStyle = node.data.text;
+			}
+			if(node.data.bold !== undefined && node.data.bold == true){
 				ctx.font = "bold 12px Verdana, sans-serif";
 			}
 			ctx.fillText(text, s.x - boxWidth/2 + 5, s.y - 8);

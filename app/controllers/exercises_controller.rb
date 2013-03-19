@@ -1,14 +1,15 @@
 #encoding: utf-8
 class ExercisesController < QuestionsController
   before_filter :signed_in_user
-  before_filter :online_chapter,
-    only: [:new, :create]
   before_filter :admin_user,
     only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus]
+  before_filter :online_chapter,
+    only: [:new, :create]
+  before_filter :online_chapter3,
+    only: [:order_minus, :order_plus]
 
   def new
     @exercise = Exercise.new
-    @chapter = Chapter.find(params[:chapter_id])
   end
 
   def edit
@@ -54,10 +55,10 @@ class ExercisesController < QuestionsController
     @exercise.statement = params[:exercise][:statement]
     if params[:exercise][:decimal] == '1'
       @exercise.decimal = true
-      @exercise.answer = params[:exercise][:answer].to_f
+      @exercise.answer = params[:exercise][:answer].to_f unless @exercise.chapter.online
     else
       @exercise.decimal = false
-      @exercise.answer = params[:exercise][:answer].to_i
+      @exercise.answer = params[:exercise][:answer].to_i unless @exercise.chapter.online
     end
     if @exercise.save
       flash[:success] = "Exercice modifié."
@@ -76,13 +77,11 @@ class ExercisesController < QuestionsController
   end
   
   def order_minus
-    ex = Exercise.find(params[:exercise_id])
-    order_op(true, true, ex)
+    order_op(true, true, @exercise)
   end
   
   def order_plus
-    ex = Exercise.find(params[:exercise_id])
-    order_op(false, true, ex)
+    order_op(false, true, @exercise)
   end
   
   private
@@ -95,6 +94,13 @@ class ExercisesController < QuestionsController
     @chapter = Chapter.find(params[:chapter_id])
     if @chapter.online
       redirect_to chapter_path(@chapter)
+    end
+  end
+  
+  def online_chapter3
+    @exercise = Exercise.find(params[:exercise_id])
+    if @exercise.chapter.online
+      redirect_to chapter_path(@exercise.chapter)
     end
   end
   

@@ -1,0 +1,16 @@
+<%= render 'shared/error_messages', object: f.object %>
+
+<%= f.label "Enoncé" %>
+<%= f.text_area :statement, :class => "span6" %>
+
+<% if @exercise.chapter.online %>
+  Réponse : <b><%= @exercise.answer %></b><br/><br/>
+<% else %>
+  <%= f.label "Réponse" %>
+  <%= f.text_field :answer, :class => "span2" %>
+<% end %>
+
+<label class="checkbox">
+Cochez si la réponse est décimale
+<%= f.check_box(:decimal) %>
+</label>

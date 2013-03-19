@@ -1,14 +1,15 @@
 #encoding: utf-8
 class QcmsController < QuestionsController
   before_filter :signed_in_user
+  before_filter :admin_user,
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :manage_choices, :remove_choice, :add_choice, :switch_choice, :update_choice]
   before_filter :online_chapter,
     only: [:new, :create]
-  before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :manage_choices, :remove_choice, :add_choice, :switch_choice]
+  before_filter :online_chapter3,
+    only: [:order_minus, :order_plus, :add_choice, :remove_choice]
 
   def new
     @qcm = Qcm.new
-    @chapter = Chapter.find(params[:chapter_id])
   end
 
   def edit
@@ -17,7 +18,6 @@ class QcmsController < QuestionsController
 
   def create
     @qcm = Qcm.new
-    @chapter = Chapter.find(params[:chapter_id])
     if @chapter.nil?
       flash[:error] = "Chapitre inexistant."
       render 'new' and return
@@ -52,35 +52,41 @@ class QcmsController < QuestionsController
   def update
     @qcm = Qcm.find(params[:id])
     @qcm.statement = params[:qcm][:statement]
-    if params[:qcm][:many_answers] == '1'
-      @qcm.many_answers = true
-    else
-      if @qcm.many_answers
-        # Must check there is only one true
-        i = 0
-        @qcm.choices.each do |c|
-          if c.ok
-            if i > 0
-              c.ok = false
-              flash[:notice] = "Attention, il y avait plusieurs réponses correctes à ce QCM, seule la première a été gardée."
-              c.save
+    if !@qcm.chapter.online
+      if params[:qcm][:many_answers] == '1'
+        @qcm.many_answers = true
+      else
+        if @qcm.many_answers
+          # Must check there is only one true
+          i = 0
+          @qcm.choices.each do |c|
+            if c.ok
+              if i > 0
+                c.ok = false
+                flash[:notice] = "Attention, il y avait plusieurs réponses correctes à ce QCM, seule la première a été gardée."
+                c.save
+              end
+              i = i+1
             end
-            i = i+1
+          end
+          if @qcm.choices.count > 0 && i == 0
+            # There is no good answer
+            flash[:notice] = "Attention, il n'y avait aucune réponse correcte à ce QCM, une réponse correcte a été rajoutée aléatoirement."
+            @choice = @qcm.choices.first
+            @choice.ok = true
+            @choice.save
           end
         end
-        if @qcm.choices.count > 0 && i == 0
-          # There is no good answer
-          flash[:notice] = "Attention, il n'y avait aucune réponse correcte à ce QCM, une réponse correcte a été rajoutée aléatoirement."
-          @choice = @qcm.choices.first
-          @choice.ok = true
-          @choice.save
-        end
+        @qcm.many_answers = false
       end
-      @qcm.many_answers = false
     end
     if @qcm.save
       flash[:success] = "QCM modifié."
-      redirect_to qcm_manage_choices_path(@qcm)
+      if @qcm.chapter.online
+        redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
+      else
+        redirect_to qcm_manage_choices_path(@qcm)
+      end
     else
       render 'edit'
     end
@@ -101,7 +107,6 @@ class QcmsController < QuestionsController
   
   def remove_choice
     @choice = Choice.find(params[:id])
-    @qcm = @choice.qcm
     if !@qcm.many_answers && @choice.ok && @qcm.choices.count > 1
       # No more good answer
       # We put one in random to true
@@ -117,7 +122,6 @@ class QcmsController < QuestionsController
   end
   
   def add_choice
-    @qcm = Qcm.find(params[:qcm_id])
     @choice = Choice.new
     @choice.qcm_id = params[:qcm_id]
     @choice.ok = params[:choice][:ok]
@@ -138,7 +142,7 @@ class QcmsController < QuestionsController
       @choice.ok = true
     end
     unless @choice.save
-      flash[:error] = "Un choix ne peut être vide"
+      flash[:error] = "Un choix ne peut être vide."
     end
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
@@ -160,15 +164,24 @@ class QcmsController < QuestionsController
     @choice.save
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
+  
+  def update_choice
+    @choice = Choice.find(params[:id])
+    @choice.ans = params[:choice][:ans]
+    if @choice.save
+      flash[:success] = "Réponse modifiée."
+    else
+      flash[:error] = "Un choix ne peut être vide."
+    end
+    redirect_to qcm_manage_choices_path(params[:qcm_id])
+  end
 
   def order_minus
-    qcm = Qcm.find(params[:qcm_id])
-    order_op(true, false, qcm)
+    order_op(true, false, @qcm)
   end
 
   def order_plus
-    qcm = Qcm.find(params[:qcm_id])
-    order_op(false, false, qcm)
+    order_op(false, false, @qcm)
   end
 
 
@@ -210,6 +223,13 @@ class QcmsController < QuestionsController
     @chapter = Chapter.find(params[:chapter_id])
     if @chapter.online
       redirect_to chapter_path(@chapter)
+    end
+  end
+  
+  def online_chapter3
+    @qcm = Qcm.find(params[:qcm_id])
+    if @qcm.chapter.online
+      redirect_to chapter_path(@qcm.chapter)
     end
   end
 

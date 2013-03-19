@@ -3,8 +3,15 @@
 <%= f.label "Enoncé" %>
 <%= f.text_area :statement, :class => "span6", :style => "height:150px;" %>
 
+<% if @qcm.chapter.online %>
+  <% if @qcm.many_answers %>
+    <b>Plusieurs réponses possibles</b><br/>
+  <% else %>
+    <b>Une seule réponse possible</b><br/>
+  <% end %>
+<% else %>
   <label class="checkbox">
   Cochez si plusieurs réponses sont possibles
   <%= f.check_box(:many_answers) %>
   </label>
-
+<% end %>
