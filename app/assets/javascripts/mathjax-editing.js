@@ -44,7 +44,7 @@ var mathjaxEditing = function () {
 
   function e() {
     q = !1;
-    //h.cancelTypeset = !1;
+    h.cancelTypeset = !1;
     h.Queue(["Typeset", h, t])
   }
   function j() {
@@ -101,7 +101,7 @@ var mathjaxEditing = function () {
     }
   }
 }();
-/*(function () {
+(function () {
   var b = MathJax.Hub;
   if (!b.Cancel) {
     b.cancelTypeset = !1;
@@ -151,4 +151,4 @@ var mathjaxEditing = function () {
       this.cancelTypeset = !0
     }
   }
-})();*/
+})();
