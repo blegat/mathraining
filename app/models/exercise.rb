@@ -10,15 +10,19 @@
 #  position   :integer
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  online     :boolean          default(FALSE)
 #
 
 class Exercise < ActiveRecord::Base
-  attr_accessible :answer, :chapter_id, :decimal, :statement, :position, :online
+  attr_accessible :answer, :decimal, :position, :statement, :online
   belongs_to :chapter
-  has_many :solvedexercises
-  has_many :users, :through => :solvedexercises
+  has_many :solvedexercises, dependent: :destroy
+  has_many :users, through: :solvedexercises
   
-  validates :statement, presence: true, length: {maximum: 8000 }
+  validates :statement, presence: true, length: { maximum: 8000 }
   validates :answer, presence: true
-  validates :position, presence: true
+  validates :decimal, inclusion: { in: [false, true] }
+  validates :position, presence: true,
+    uniqueness: { scope: :chapter_id },
+    numericality: { greater_than_or_equal_to: 0 }
 end

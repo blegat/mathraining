@@ -9,6 +9,7 @@
 #  position     :integer
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  online       :boolean          default(FALSE)
 #
 
 require 'spec_helper'
@@ -24,7 +25,7 @@ describe Qcm do
 
   it { should be_valid }
 
-  # Title
+  # Statement
   describe "when statement is not present" do
     before { @qcm.statement = " " }
     it { should_not be_valid }

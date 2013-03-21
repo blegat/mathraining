@@ -1,0 +1,2 @@
+class ProblemSubmissionsController < ApplicationController
+end

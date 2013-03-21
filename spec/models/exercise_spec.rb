@@ -1,10 +1,11 @@
 # == Schema Information
 #
-# Table name: problems
+# Table name: exercises
 #
 #  id         :integer          not null, primary key
-#  name       :string(255)
 #  statement  :text
+#  decimal    :boolean          default(FALSE)
+#  answer     :float
 #  chapter_id :integer
 #  position   :integer
 #  created_at :datetime         not null
@@ -14,58 +15,60 @@
 
 require 'spec_helper'
 
-describe Problem do
-  before { @p = FactoryGirl.build(:problem) }
+describe Exercise do
+  before { @ex = FactoryGirl.build(:exercise) }
 
-  subject { @p }
+  subject { @ex }
 
   it { should respond_to(:statement) }
   it { should respond_to(:position) }
   it { should respond_to(:chapter) }
-  it { should respond_to(:name) }
+  it { should respond_to(:decimal) }
+  it { should respond_to(:answer) }
   it { should respond_to(:online) }
 
   it { should be_valid }
 
-  # Name
-  describe "when name is not present" do
-    before { @p.name = " " }
-    it { should_not be_valid }
-  end
-  describe "when name is too long" do
-    before { @p.name = "a" * 256 }
-    it { should_not be_valid }
-  end
-
   # Statement
   describe "when statement is not present" do
-    before { @p.statement = " " }
+    before { @ex.statement = " " }
     it { should_not be_valid }
   end
   describe "when statement is too long" do
-    before { @p.statement = "a" * 8001 }
+    before { @ex.statement = "a" * 8001 }
     it { should_not be_valid }
   end
 
   # Position
   describe "when position is not present" do
-    before { @p.position = nil }
+    before { @ex.position = nil }
     it { should_not be_valid }
   end
   describe "when position is negative" do
-    before { @p.position = -1 }
+    before { @ex.position = -1 }
     it { should_not be_valid }
   end
   describe "when position is already taken with the same chapter" do
-    before { FactoryGirl.create(:problem,
-                                chapter: @p.chapter,
-                                position: @p.position) }
+    before { FactoryGirl.create(:exercise,
+                                chapter: @ex.chapter,
+                                position: @ex.position) }
     it { should_not be_valid }
   end
   describe "when position is already taken with a different chapter" do
-    before { FactoryGirl.create(:problem,
-                                position: @p.position) }
+    before { FactoryGirl.create(:exercise,
+                                position: @ex.position) }
     it { should be_valid }
   end
 
+  # Decimal
+  describe "when decimal is not present" do
+    before { @ex.decimal = nil }
+    it { should_not be_valid }
+  end
+
+  # Answer
+  describe "when answer is not present" do
+    before { @ex.decimal = " " }
+    it { should_not be_valid }
+  end
 end
