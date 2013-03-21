@@ -13,7 +13,7 @@
 #
 
 class Exercise < ActiveRecord::Base
-  attr_accessible :answer, :chapter_id, :decimal, :statement, :position
+  attr_accessible :answer, :chapter_id, :decimal, :statement, :position, :online
   belongs_to :chapter
   has_many :solvedexercises
   has_many :users, :through => :solvedexercises

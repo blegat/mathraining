@@ -12,7 +12,7 @@
 #
 
 class Qcm < ActiveRecord::Base
-  attr_accessible :many_answers, :position, :statement
+  attr_accessible :many_answers, :position, :statement, :online
   belongs_to :chapter
   has_many :choices
   validates :statement, presence: true, length: {maximum: 8000 }

@@ -2,13 +2,12 @@
 class QcmsController < QuestionsController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :manage_choices, :remove_choice, :add_choice, :switch_choice, :update_choice]
-  before_filter :online_chapter,
-    only: [:new, :create]
-  before_filter :online_chapter3,
-    only: [:order_minus, :order_plus, :add_choice, :remove_choice]
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :manage_choices, :remove_choice, :add_choice, :switch_choice, :update_choice, :put_online]
+  before_filter :online_qcm,
+    only: [:add_choice, :remove_choice]
 
   def new
+    @chapter = Chapter.find(params[:chapter_id])
     @qcm = Qcm.new
   end
 
@@ -17,10 +16,16 @@ class QcmsController < QuestionsController
   end
 
   def create
+    @chapter = Chapter.find(params[:chapter_id])
     @qcm = Qcm.new
     if @chapter.nil?
       flash[:error] = "Chapitre inexistant."
       render 'new' and return
+    end
+    if @chapter.online
+      @qcm.online = false
+    else
+      @qcm.online = true
     end
     @qcm.chapter = @chapter
     @qcm.statement = params[:qcm][:statement]
@@ -177,11 +182,20 @@ class QcmsController < QuestionsController
   end
 
   def order_minus
+    @qcm = Qcm.find(params[:qcm_id])
     order_op(true, false, @qcm)
   end
 
   def order_plus
+    @qcm = Qcm.find(params[:qcm_id])
     order_op(false, false, @qcm)
+  end
+  
+  def put_online
+    @qcm = Qcm.find(params[:qcm_id])
+    @qcm.online = true
+    @qcm.save
+    redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
   end
 
 
@@ -219,16 +233,9 @@ class QcmsController < QuestionsController
     redirect_to root_path unless current_user.admin?
   end
   
-  def online_chapter
-    @chapter = Chapter.find(params[:chapter_id])
-    if @chapter.online
-      redirect_to chapter_path(@chapter)
-    end
-  end
-  
-  def online_chapter3
+  def online_qcm
     @qcm = Qcm.find(params[:qcm_id])
-    if @qcm.chapter.online
+    if @qcm.online && @qcm.chapter.online
       redirect_to chapter_path(@qcm.chapter)
     end
   end

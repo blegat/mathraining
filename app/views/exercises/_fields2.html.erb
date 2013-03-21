@@ -3,7 +3,7 @@
 <%= f.label "Enoncé" %>
 <%= f.text_area :statement, :class => "span6" %>
 
-<% if @exercise.chapter.online %>
+<% if @exercise.chapter.online && @exercise.online %>
   Réponse : <b><%= @exercise.answer %></b><br/><br/>
 <% else %>
   <%= f.label "Réponse" %>

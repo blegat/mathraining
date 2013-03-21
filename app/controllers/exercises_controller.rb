@@ -2,13 +2,10 @@
 class ExercisesController < QuestionsController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus]
-  before_filter :online_chapter,
-    only: [:new, :create]
-  before_filter :online_chapter3,
-    only: [:order_minus, :order_plus]
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online]
 
   def new
+    @chapter = Chapter.find(params[:chapter_id])
     @exercise = Exercise.new
   end
 
@@ -20,7 +17,13 @@ class ExercisesController < QuestionsController
   end
 
   def create
+    @chapter = Chapter.find(params[:chapter_id])
     @exercise = Exercise.new
+    if @chapter.online
+      @exercise.online = false
+    else
+      @exercise.online = true
+    end
     @exercise.chapter_id = params[:chapter_id]
     @exercise.statement = params[:exercise][:statement]
     if params[:exercise][:decimal] == '1'
@@ -55,10 +58,10 @@ class ExercisesController < QuestionsController
     @exercise.statement = params[:exercise][:statement]
     if params[:exercise][:decimal] == '1'
       @exercise.decimal = true
-      @exercise.answer = params[:exercise][:answer].to_f unless @exercise.chapter.online
+      @exercise.answer = params[:exercise][:answer].to_f unless @exercise.chapter.online && @exercise.online
     else
       @exercise.decimal = false
-      @exercise.answer = params[:exercise][:answer].to_i unless @exercise.chapter.online
+      @exercise.answer = params[:exercise][:answer].to_i unless @exercise.chapter.online && @exercise.online
     end
     if @exercise.save
       flash[:success] = "Exercice modifié."
@@ -77,31 +80,26 @@ class ExercisesController < QuestionsController
   end
   
   def order_minus
+    @exercise = Exercise.find(params[:exercise_id])
     order_op(true, true, @exercise)
   end
   
   def order_plus
+    @exercise = Exercise.find(params[:exercise_id])
     order_op(false, true, @exercise)
+  end
+  
+  def put_online
+    @exercise = Exercise.find(params[:exercise_id])
+    @exercise.online = true
+    @exercise.save
+    redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
   end
   
   private
   
   def admin_user
     redirect_to root_path unless current_user.admin?
-  end
-  
-  def online_chapter
-    @chapter = Chapter.find(params[:chapter_id])
-    if @chapter.online
-      redirect_to chapter_path(@chapter)
-    end
-  end
-  
-  def online_chapter3
-    @exercise = Exercise.find(params[:exercise_id])
-    if @exercise.chapter.online
-      redirect_to chapter_path(@exercise.chapter)
-    end
   end
   
   def maximum(a, b)

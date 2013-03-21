@@ -18,11 +18,15 @@ class ProblemsController < ApplicationController
     @problem = Problem.new
     @problem.name = params[:problem][:name]
     @problem.statement = params[:problem][:statement]
-    @problem.online = false
     @chapter = Chapter.find_by_id(params[:chapter_id])
     if @chapter.nil?
       flash[:error] = "Chapitre inexistant."
       render 'new' and return
+    end
+    if @chapter.online
+      @problem.online = false
+    else
+      @problem.online = true
     end
     @problem.chapter = @chapter
     if @chapter.problems.empty?

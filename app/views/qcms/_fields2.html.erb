@@ -3,7 +3,7 @@
 <%= f.label "Enoncé" %>
 <%= f.text_area :statement, :class => "span6", :style => "height:150px;" %>
 
-<% if @qcm.chapter.online %>
+<% if @qcm.chapter.online && @qcm.online %>
   <% if @qcm.many_answers %>
     <b>Plusieurs réponses possibles</b><br/>
   <% else %>

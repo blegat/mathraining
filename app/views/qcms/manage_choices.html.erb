@@ -28,7 +28,7 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
       <td>
         <%= g.submit "Modifier ce choix", class: "btn btn-primary" %>
       </td>
-      <% unless @qcm.chapter.online %>
+      <% unless @qcm.chapter.online && @qcm.online %>
         <td>
           <% if f.ok %>
             <% if @qcm.many_answers %>
@@ -47,7 +47,7 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
   <% i = i + 1 %>
 <% end %>
 
-<% unless @qcm.chapter.online %>
+<% unless @qcm.chapter.online && @qcm.online %>
 
 <tr>
 

@@ -18,11 +18,15 @@ class TheoriesController < ApplicationController
     @theory = Theory.new
     @theory.title = params[:theory][:title]
     @theory.content = params[:theory][:content]
-    @theory.online = false
     @chapter = Chapter.find_by_id(params[:chapter_id])
     if @chapter.nil?
       flash[:error] = "Chapitre inexistant."
       render 'new' and return
+    end
+    if @chapter.online
+      @theory.online = false
+    else
+      @theory.online = true
     end
     @theory.chapter = @chapter
     if @chapter.theories.empty?
