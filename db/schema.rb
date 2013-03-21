@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130321094454) do
+ActiveRecord::Schema.define(:version => 20130321172246) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -52,6 +52,16 @@ ActiveRecord::Schema.define(:version => 20130321094454) do
     t.integer "prerequisite_id"
     t.integer "chapter_id"
   end
+
+  create_table "problem_submissions", :force => true do |t|
+    t.integer  "problem_id"
+    t.integer  "user_id"
+    t.text     "content"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "problem_submissions", ["problem_id", "user_id"], :name => "index_problem_submissions_on_problem_id_and_user_id"
 
   create_table "problems", :force => true do |t|
     t.string   "name"

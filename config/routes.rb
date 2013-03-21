@@ -1,5 +1,8 @@
 Ombtraining::Application.routes.draw do
 
+  resources :problem_submissions
+
+
   resources :solvedexercises
 
 
