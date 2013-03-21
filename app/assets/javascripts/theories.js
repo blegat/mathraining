@@ -4,6 +4,7 @@
 //= require markdown.converter
 //= require markdown.sanitizer
 //= require markdown.editor
+//= require mathjax-editing.js
 
 /*function update_preview() {
   var content = $('#theory_content').val();
