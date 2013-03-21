@@ -19,6 +19,7 @@
   <div class="span2">
       <ul class="nav nav-list">
         <% number = 0 %>
+        <% number2 = 0 %>
         <% i = 1 %>
         <li class="nav-header">Préambule</li>
         <li<%= ' class="active"'.html_safe if type == 0 %>>
@@ -52,6 +53,7 @@
         <% liste2.sort!{|t1,t2|t1.position <=> t2.position} %>
         <% un = 0 %>
         <% deux = 0 %>
+        <% j = 1 %>
         <% (1..(liste.size+liste2.size)).each do |i| %>
         
           <% encours = 0 %>
@@ -71,34 +73,48 @@
           
           <% if encours == 1 %>
             <% f = liste[un] %> 
-            <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
+            <% if f.online || current_user.admin? %>
+              <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
             
-            <%= link_to chapter_path(@chapter, :type => 2, :which => f.id) do %>
-              <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => f.id) %>
-              <% if exo.size > 0 %>
-                <% exo = exo.first %>
-                <% if exo.correct %>
-                  <i class="icon-ok"></i>
-                <% else %>
-                  <i class="icon-remove"></i>
+              <%= link_to chapter_path(@chapter, :type => 2, :which => f.id) do %>
+                <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => f.id) %>
+                <% if exo.size > 0 %>
+                  <% exo = exo.first %>
+                  <% if exo.correct %>
+                    <i class="icon-ok"></i>
+                  <% else %>
+                    <i class="icon-remove"></i>
+                  <% end %>
                 <% end %>
+                <% if !f.online %>
+                  <i class="icon-warning-sign"></i>
+                <% end %>
+                Exercice <%= j if f.online%>
               <% end %>
-              Exercice <%= i %>
-            <% end %>
-            </li>
-            <% if f.id == id  && type == 2 %>
-              <% number = i %>
+              </li>
+              <% if f.id == id  && type == 2 %>
+                <% number = j %>
+                <% number2 = i %>
+              <% end %>
+              <% j = j+1 if f.online%>
             <% end %>
             <% un = un + 1 %>
           <% else %>
             <% f = liste2[deux] %> 
-            <li<%= ' class="active"'.html_safe if f.id == id && type == 3 %>>
-            <%= link_to chapter_path(@chapter, :type => 3, :which => f.id) do %>
-              Exercice <%= i %>
-            <% end %>
-            </li>
-            <% if f.id == id  && type == 3 %>
-              <% number = i %>
+            <% if f.online || current_user.admin? %>
+              <li<%= ' class="active"'.html_safe if f.id == id && type == 3 %>>
+              <%= link_to chapter_path(@chapter, :type => 3, :which => f.id) do %>
+                <% if !f.online %>
+                  <i class="icon-warning-sign"></i>
+                <% end %>
+                Exercice <%= j if f.online %>
+              <% end %>
+              </li>
+              <% if f.id == id  && type == 3 %>
+                <% number = j %>
+                <% number2 = i %>
+              <% end %>
+              <% j = j+1 if f.online%>
             <% end %>
             <% deux = deux + 1 %>
           <% end %>
@@ -225,7 +241,7 @@
               </center> <br/>
             <% end %>
             
-            <% unless f.online %>
+            <% if !f.online && @chapter.online %>
               <center>
               <%= button_to "Mettre en ligne", theory_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Etes vous sûr de vouloir rendre ce point théorique visible par les utilisateurs?" } %>
               </center> <br/>
@@ -265,29 +281,29 @@
           <br/>
           <br/>
           <center>
-          <% if @chapter.online %>
-            <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures dans cet exercice." } %> | 
-            <%= link_to "Supprimer définitivement cet exercice", f, method: :delete, data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, vous ne pourrez plus rajouter d'exercice à la place de celui-ci! Etes-vous sûr de vouloir supprimer cet exercice?" } %>
+          <% if @chapter.online && f.online %>
+            <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
+            | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Attention, cet exercice est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
           <% else %>
-            <%= link_to "Modifier cet exercice", edit_exercise_path(f) %> | 
-            <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
+            <%= link_to "Modifier cet exercice", edit_exercise_path(f) %>
+            | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
           <% end %>
           </center>
           <br/>
           
-          <% if number > 1 %>
+          <% if number2 > 1 %>
           <% up = true %>
           <% else %>
           <% up = false %>
           <% end %>
           
-          <% if number < liste.size + liste2.size %>
+          <% if number2 < liste.size + liste2.size %>
           <% down = true %>
           <% else %>
           <% down = false %>
           <% end %>
           
-          <% if (up || down) && !@chapter.online %>
+          <% if (up || down) %>
             <center>
             Déplacer cet exercice vers le 
             <% if up %>
@@ -298,6 +314,12 @@
             <% else %>
               <%= link_to "bas", exercise_order_plus_path(f) %>
             <% end %>
+            </center> <br/>
+          <% end %>
+          
+          <% if !f.online && @chapter.online %>
+            <center>
+            <%= button_to "Mettre en ligne", exercise_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
             </center> <br/>
           <% end %>
         <% else %>
@@ -400,10 +422,10 @@
         <% if current_user.admin? %>
           <br/>
           <center>
-          <% if @chapter.online %>
-            <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures dans ce QCM." }  %> | 
-            <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures dans ce QCM." } %> | 
-            <%= link_to "Supprimer définitivement ce QCM", f, method: :delete, data: { confirm: "Attention, ce chapitre étant visible des utilisateurs, vous ne pourrez plus rajouter de QCM à la place de celui-ci! Etes-vous sûr de vouloir supprimer ce QCM?" } %>
+          <% if @chapter.online && f.online %>
+            <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." }  %> | 
+            <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> | 
+            <%= link_to "Supprimer définitivement ce QCM", f, method: :delete, data: { confirm: "Attention, ce QCM est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
           <% else %>
             <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> | 
             <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> | 
@@ -412,19 +434,19 @@
           </center>
           <br/>
           
-          <% if number > 1 %>
+          <% if number2 > 1 %>
           <% up = true %>
           <% else %>
           <% up = false %>
           <% end %>
           
-          <% if number < liste.size + liste2.size %>
+          <% if number2 < liste.size + liste2.size %>
           <% down = true %>
           <% else %>
           <% down = false %>
           <% end %>
           
-          <% if (up || down) && !@chapter.online %>
+          <% if (up || down) %>
             <center>
             Déplacer ce QCM vers le 
             <% if up %>
@@ -435,6 +457,12 @@
             <% else %>
               <%= link_to "bas", qcm_order_plus_path(f) %>
             <% end %>
+            </center> <br/>
+          <% end %>
+          
+          <% if !f.online && @chapter.online %>
+            <center>
+            <%= button_to "Mettre en ligne", qcm_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de ce qcm par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
             </center> <br/>
           <% end %>
           
@@ -487,7 +515,7 @@
               </center> <br/>
             <% end %>
             
-            <% unless f.online %>
+            <% if !f.online && @chapter.online %>
               <center>
               <%= button_to "Mettre en ligne", problem_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Etes vous sûr de vouloir rendre ce problème visible par les utilisateurs?" } %>
               </center> <br/>
@@ -509,10 +537,8 @@
     <br/>
     Ajouter un : 
     <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
-    <% unless @chapter.online %>
-      <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
-      <%= link_to "QCM", new_chapter_qcm_path(@chapter) %> | 
-    <% end %>
+    <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
+    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %> | 
     <%= link_to "problème", new_chapter_problem_path(@chapter) %>
     
     <% if !@chapter.online %>
