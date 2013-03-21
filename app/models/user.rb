@@ -17,6 +17,9 @@ class User < ActiveRecord::Base
   attr_accessible :email, :first_name, :last_name,
     :password, :password_confirmation, :admin
   has_secure_password
+  has_and_belongs_to_many :theories
+  has_many :solvedexercises
+  has_many :exercises, :through => :solvedexercises
 
   before_save { self.email.downcase! }
   before_save :create_remember_token

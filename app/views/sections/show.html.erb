@@ -44,12 +44,13 @@
 <% @chapters = Chapter.all.sort_by { |chap| chap[:level] } %>
 <ul>
 <% @chapters.each do |c| %>
-<% if c.sections.size == 0 %>
-<li>
-<%= link_to c.name, chapter_path(c) %>
-(niveau <%= c.level %>)
-</li>
-<% end %>
+  <% if c.sections.size == 0 %>
+    <% if c.online || current_user.admin? %>
+      <li>
+      <%= link_to c.name, chapter_path(c) %> <%= "(en construction)" unless c.online %>
+      </li>
+    <% end %>
+  <% end %>
 <% end %>
 </ul>
 

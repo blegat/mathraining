@@ -89,6 +89,18 @@ class TheoriesController < ApplicationController
     end
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
+  
+  def read
+    @theory = Theory.find(params[:theory_id])
+    current_user.theories << @theory
+    redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
+  end
+  
+  def unread
+    @theory = Theory.find(params[:theory_id])
+    current_user.theories.delete(@theory)
+    redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
+  end
 
   private
   

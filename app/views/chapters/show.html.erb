@@ -28,13 +28,17 @@
         <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
         <% listex.each do |f| %>
           <% if f.online || current_user.admin? %>
-            <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %>>
-            <% if f.online %>
-              <% titre = f.title %>
-            <% else %>
-              <% titre = "[ ! ] " + f.title %>
+            <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %> >	
+            <%= link_to chapter_path(@chapter, :type => 1, :which => f.id) do %>
+              <% if !current_user.admin? && current_user.theories.exists?(f.id) %>
+                <i class="icon-ok"></i>
+              <% end %>
+              <% if !f.online %>
+                <i class="icon-warning-sign"></i>
+              <% end %>
+              <%= f.title %>
             <% end %>
-            <%= link_to titre, chapter_path(@chapter, :type => 1, :which => f.id) %></li>
+            </li>
             <% if f.id == id && type == 1 %>
               <% number = i %>
             <% end %>
@@ -68,7 +72,20 @@
           <% if encours == 1 %>
             <% f = liste[un] %> 
             <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
-            <%= link_to "Exercice #{i}", chapter_path(@chapter, :type => 2, :which => f.id) %></li>
+            
+            <%= link_to chapter_path(@chapter, :type => 2, :which => f.id) do %>
+              <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => f.id) %>
+              <% if exo.size > 0 %>
+                <% exo = exo.first %>
+                <% if exo.correct %>
+                  <i class="icon-ok"></i>
+                <% else %>
+                  <i class="icon-remove"></i>
+                <% end %>
+              <% end %>
+              Exercice <%= i %>
+            <% end %>
+            </li>
             <% if f.id == id  && type == 2 %>
               <% number = i %>
             <% end %>
@@ -76,7 +93,10 @@
           <% else %>
             <% f = liste2[deux] %> 
             <li<%= ' class="active"'.html_safe if f.id == id && type == 3 %>>
-            <%= link_to "Exercice #{i}", chapter_path(@chapter, :type => 3, :which => f.id) %></li>
+            <%= link_to chapter_path(@chapter, :type => 3, :which => f.id) do %>
+              Exercice <%= i %>
+            <% end %>
+            </li>
             <% if f.id == id  && type == 3 %>
               <% number = i %>
             <% end %>
@@ -91,13 +111,14 @@
         <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
         <% listex.each do |f| %>
           <% if f.online || current_user.admin? %>
-            <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>
-            <% if f.online %>
-              <% titre = f.name %>
-            <% else %>
-              <% titre = "[ ! ] " + f.name %>
+            <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>            
+            <%= link_to chapter_path(@chapter, :type => 4, :which => f.id) do %>
+              <% if !f.online %>
+                <i class="icon-warning-sign"></i>
+              <% end %>
+              <%= f.name %>
             <% end %>
-            <%= link_to titre, chapter_path(@chapter, :type => 4, :which => f.id) %></li>
+            </li>
             <% if f.id == id && type == 4 %>
               <% number = i %>
             <% end %>
@@ -169,6 +190,7 @@
           <h3><%= f.title %> </h3>
           <!--<%= simple_format f.content %>-->
           <%= markdown_render f.content %>
+          
           <% if current_user.admin? %>
             <br/>
             <center>
@@ -209,6 +231,16 @@
               </center> <br/>
             <% end %>
           
+          <% else %>
+          
+          <center>
+          <% if current_user.theories.exists?(id) %>
+            <%= button_to "Marquer comme non lu", theory_unread_path(f), method: :get, class: 'btn btn' %>
+          <% else %>
+            <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn' %>
+          <% end %>
+          </center>
+          
           <% end %>
           
         <% end %>
@@ -223,14 +255,14 @@
         <h3>Exercice <%= number %></h3>
         <%= simple_format f.statement %>
         <br/>
-        Réponse : 
-        <% if f.decimal %>
-          <b><%= f.answer %></b> (On demande une réponse décimale avec deux chiffres après la virgule)
-        <% else %>
-          <b><%= f.answer.to_i %></b> (On demande une réponse entière)
-        <% end %>
-        <br/>
         <% if current_user.admin? %>
+          Réponse : 
+          <% if f.decimal %>
+            <b><%= f.answer %></b> (On demande une réponse décimale avec deux chiffres après la virgule)
+          <% else %>
+            <b><%= f.answer.to_i %></b> (On demande une réponse entière)
+          <% end %>
+          <br/>
           <br/>
           <center>
           <% if @chapter.online %>
@@ -268,6 +300,54 @@
             <% end %>
             </center> <br/>
           <% end %>
+        <% else %>
+        
+        <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => id) %>
+        <% if exo.size > 0 %>
+          <% exo = exo.first %>
+          <% if exo.correct? %>
+            <p style="color:green;"><b>Vous avez résolu cet exercice!</b></p>
+            Réponse : 
+            <% if f.decimal %>
+              <b><%= f.answer %></b>
+            <% else %>
+              <b><%= f.answer.to_i %></b>
+            <% end %>
+            <br/>
+          <% else %>
+          
+            <% if f.decimal %>
+              On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
+              <% val = exo.guess %>
+            <% else %>
+              <% val = exo.guess.to_i %>
+            <% end %>
+            
+            <%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
+              <%= g.label "Votre réponse : " %>
+              <%= g.text_field :guess, style: "width:50px;", value: val %>
+              <%= g.submit "Soumettre", class: "btn btn-primary" %>
+            <% end %>
+            
+            <br/>
+            
+            <p style="color:red;">Votre réponse (<b><%= val %></b>) est erronée. Vous avez déjà commis <%= exo.nb_guess %> erreur<%= "s" if exo.nb_guess > 1 %>.</p>
+            
+          <% end %>
+        <% else %>
+          <% if f.decimal %>
+            On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
+          <% end %>
+            
+          <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
+            <%= g.hidden_field :exercise_id, value: f.id %>
+            <%= g.label "Votre réponse : " %>
+            <%= g.text_field :guess, style: "width:50px;" %>
+            <%= g.submit "Soumettre", class: "btn btn-primary" %>
+       	  <% end %>
+        
+        <% end %>
+        
         <% end %>
         
       <% end %>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130318165608) do
+ActiveRecord::Schema.define(:version => 20130320221634) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -79,6 +79,18 @@ ActiveRecord::Schema.define(:version => 20130318165608) do
     t.string   "image"
   end
 
+  create_table "solvedexercises", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "exercise_id"
+    t.float    "guess"
+    t.boolean  "correct"
+    t.integer  "nb_guess"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "solvedexercises", ["user_id"], :name => "index_solvedexercises_on_user_id"
+
   create_table "theories", :force => true do |t|
     t.string   "title"
     t.text     "content"
@@ -88,6 +100,13 @@ ActiveRecord::Schema.define(:version => 20130318165608) do
     t.datetime "updated_at",                    :null => false
     t.boolean  "online",     :default => false
   end
+
+  create_table "theories_users", :id => false, :force => true do |t|
+    t.integer "theory_id"
+    t.integer "user_id"
+  end
+
+  add_index "theories_users", ["user_id"], :name => "index_theories_users_on_user_id"
 
   create_table "users", :force => true do |t|
     t.string   "first_name"
