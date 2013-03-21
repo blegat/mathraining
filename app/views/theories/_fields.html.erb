@@ -1,3 +1,4 @@
+<%= javascript_include_tag 'theories.js' %>
 <%= render 'shared/error_messages', object: f.object %>
 
 <%= f.label :title, 'Titre' %>
@@ -12,4 +13,3 @@
   <%= f.text_area :content, class: 'span12 wmd-input', id: 'wmd-input' %>
   <!--<%= f.text_area :content, class: 'span12 wmd-input', id: 'wmd-input', style: 'height:200px;'  %>-->
 </div>
-<%= javascript_include_tag 'mathjax-editing.js' %>

@@ -2,7 +2,7 @@
 
 <% fondement = false %>
 <% if((params.has_key?:fondement) && (params[:fondement].to_i == 1)) %>
-<% fondement = true %>
+  <% fondement = true %>
 <% end %>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
@@ -11,144 +11,143 @@
 
 <script>
 
-var graph = new Graph();
+  var graph = new Graph();
 
-var noeud = new Array();
-var prereq = new Array();
-var fond = new Array();
-var depart = graph.newNode({label: "Départ", color: "#0000FF", text: "#FFFFFF", bold: true});
-<% existe = Set.new %>
-<% maximum = 1 %>
-<% chapters = Array.new %>
-<% Chapter.all.each do |chapter|%>
-  <% unless chapter.sections.empty? && !fondement %>
-    <% chapters.push(chapter) %>
-    <% if fondement %>
-      prereq[<%= chapter.id %>] = <%= x = chapter.number_prerequisites() %>;
-    <% else %>
-      prereq[<%= chapter.id %>] = <%= x = chapter.real_number_prerequisites() %>;
+  var noeud = new Array();
+  var prereq = new Array();
+  var fond = new Array();
+  var depart = graph.newNode({label: "Départ", color: "#0000FF", text: "#FFFFFF", bold: true});
+  <% existe = Set.new %>
+  <% maximum = 1 %>
+  <% chapters = Array.new %>
+  <% Chapter.all.each do |chapter|%>
+    <% unless chapter.sections.empty? && !fondement %>
+      <% chapters.push(chapter) %>
+      <% if fondement %>
+        prereq[<%= chapter.id %>] = <%= x = chapter.number_prerequisites() %>;
+      <% else %>
+        prereq[<%= chapter.id %>] = <%= x = chapter.real_number_prerequisites() %>;
+      <% end %>
+      <% if x+1 > maximum %>
+        <% maximum = x+1 %>
+      <% end %>
+      <% existe.add(chapter.id) %>
+      fond[<%= chapter.id %>] = <%= chapter.sections.empty? %>
     <% end %>
-    <% if x+1 > maximum %>
-      <% maximum = x+1 %>
+  <% end %>
+
+  couleur = "";
+
+  function rouge(a, b, qui){
+    var dose = 255-Math.floor(220*a/b);
+    var deux = dose % 16;
+    var un = Math.floor(dose/16);
+    var x, y;
+    var lettres = new Array("A", "B", "C", "D", "E", "F");
+    if(un <= 9)
+    {
+      x = un.toString();
+    }
+    else
+    {
+      x = lettres[un-10];
+    }
+    if(deux <= 9)
+    {
+      y = deux.toString();
+    }
+    else
+    {
+      y = lettres[deux-10];
+    }
+    return x.concat(y);
+  }
+
+  <% Chapter.all.each do |chapter| %>
+    <% unless chapter.sections.empty? && !fondement %>
+      couleur = rouge(1+prereq[<%= chapter.id %>],<%= maximum %>);
+      <% nom = chapter.name %>
+      <% if nom.size > 25 %>
+        <% nom = nom.slice(0..22) + "..." %>
+      <% end %>
+      <% if chapter.sections.empty? %>
+        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(couleur).concat("FF").concat(couleur) <%= ", bold: true" if chapter.online %>});
+      <% else %>
+        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#FF".concat(couleur).concat(couleur) <%= ", bold: true" if chapter.online %>});
+      <% end %>
+      if(prereq[<%= chapter.id %>] == 0){
+        graph.newEdge(depart, noeud[<%= chapter.id %>], {color: "#CCCCCC"});
+      }
     <% end %>
-    <% existe.add(chapter.id) %>
-    fond[<%= chapter.id %>] = <%= chapter.sections.empty? %>
   <% end %>
-<% end %>
 
-couleur = "";
-
-function rouge(a, b, qui){
-  var dose = 255-Math.floor(220*a/b);
-  var deux = dose % 16;
-  var un = Math.floor(dose/16);
-  var x, y;
-  var lettres = new Array("A", "B", "C", "D", "E", "F");
-  if(un <= 9)
-  {
-    x = un.toString();
-  }
-  else
-  {
-    x = lettres[un-10];
-  }
-  if(deux <= 9)
-  {
-    y = deux.toString();
-  }
-  else
-  {
-    y = lettres[deux-10];
-  }
-  return x.concat(y);
-}
-
-<% Chapter.all.each do |chapter| %>
-  <% unless chapter.sections.empty? && !fondement %>
-  couleur = rouge(1+prereq[<%= chapter.id %>],<%= maximum %>);
-  <% nom = chapter.name %>
-  <% if nom.size > 25 %>
-    <% nom = nom.slice(0..22) + "..." %>
-  <% end %>
-    <% if chapter.sections.empty? %>
-      noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(couleur).concat("FF").concat(couleur) <%= ", bold: true" if chapter.online %>});
-    <% else %>
-      noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#FF".concat(couleur).concat(couleur) <%= ", bold: true" if chapter.online %>});
+  <% Prerequisite.all.each do |p| %>
+    <% if existe.include?(p.prerequisite_id) && existe.include?(p.chapter_id) %>
+      if (fond[<%= p.chapter_id %>] && !fond[<%= p.prerequisite_id %>]){
+        couleur = "FF0000";
+        taille = 5;
+      }
+      else if(fond[<%= p.chapter_id %>] || fond[<%= p.prerequisite_id %>]){
+        couleur = "00BB00";
+        taille = 1;
+      }
+      else{
+        couleur = "000000";
+        taille = 1;
+      }
+      graph.newEdge(noeud[<%= p.prerequisite_id %>], noeud[<%= p.chapter_id %>], {color: couleur, width: taille});
     <% end %>
-    if(prereq[<%= chapter.id %>] == 0){
-      graph.newEdge(depart, noeud[<%= chapter.id %>], {color: "#CCCCCC"});
-    }
   <% end %>
-<% end %>
-
-<% Prerequisite.all.each do |p| %>
-  <% if existe.include?(p.prerequisite_id) && existe.include?(p.chapter_id) %>
-    if (fond[<%= p.chapter_id %>] && !fond[<%= p.prerequisite_id %>]){
-      couleur = "FF0000";
-      taille = 5;
-    }
-    else if(fond[<%= p.chapter_id %>] || fond[<%= p.prerequisite_id %>]){
-      couleur = "00BB00";
-      taille = 1;
-    }
-    else{
-      couleur = "000000";
-      taille = 1;
-    }
-    graph.newEdge(noeud[<%= p.prerequisite_id %>], noeud[<%= p.chapter_id %>], {color: couleur, width: taille});
-  <% end %>
-<% end %>
 
 
-$(document).ready(function() {
-  var springy = window.springy = jQuery('#structure').springy({
-    graph: graph,
+  $(document).ready(function() {
+    var springy = window.springy = jQuery('#structure').springy({
+      graph: graph,
       nodeSelected: function(node) {
         console.log('Node selected: ' + JSON.stringify(node.data));
       }
+    });
   });
-});
 </script>
 
 <center>
-<% if !fondement %>
-  <%= link_to "Afficher/modifier les fondements", graph_prerequisites_path(:fondement => 1) %>
-<% else %>
-  <%= link_to "Cacher les fondements", graph_prerequisites_path %>
-<% end %><br/><br/>
-<canvas id="structure" style="border:1px solid #c3c3c3;" width="800" height="550">
-Votre navigateur ne supporte pas de canvas.
-</canvas>
+  <% if !fondement %>
+    <%= link_to "Afficher/modifier les fondements", graph_prerequisites_path(:fondement => 1) %>
+  <% else %>
+    <%= link_to "Cacher les fondements", graph_prerequisites_path %>
+  <% end %><br/><br/>
+  <canvas id="structure" style="border:1px solid #c3c3c3;" width="800" height="550">
+  Votre navigateur ne supporte pas de canvas.
+  </canvas>
 </center>
 <div class="row">
-<div class="span6">
-<center>
+  <div class="span6">
+    <center>
 
-<% chapters.sort!{|x,y| x.name.downcase <=> y.name.downcase}%>
+      <% chapters.sort!{|x,y| x.name.downcase <=> y.name.downcase}%>
 
-<%= form_for(:prerequisite, url: add_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
-  <h3> Ajouter un lien </h3>
-  <%= f.label "Prérequis" %>
-  <%= f.collection_select(:prerequisite_id, chapters, :id, :name, prompt: true) %>
-  <%= f.label "Chapitre" %>
-  <%= f.collection_select(:chapter_id, chapters, :id, :name, prompt: true) %>
-  <br/>
-  <%= f.submit "Ajouter ce lien", class: "btn btn-primary" %>
-<% end %>
-</center>
+      <%= form_for(:prerequisite, url: add_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
+        <h3> Ajouter un lien </h3>
+        <%= f.label "Prérequis" %>
+        <%= f.collection_select(:prerequisite_id, chapters, :id, :name, prompt: true) %>
+        <%= f.label "Chapitre" %>
+        <%= f.collection_select(:chapter_id, chapters, :id, :name, prompt: true) %>
+        <br/>
+        <%= f.submit "Ajouter ce lien", class: "btn btn-primary" %>
+      <% end %>
+    </center>
+  </div>
+  <div class="span6">
+    <center>
+      <%= form_for(:prerequisite, url: remove_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
+        <h3> Supprimer un lien </h3>
+        <%= f.label "Prérequis" %>
+        <%= f.collection_select(:prerequisite_id, chapters, :id, :name, prompt: true) %>
+        <%= f.label "Chapitre" %>
+        <%= f.collection_select(:chapter_id, chapters, :id, :name, prompt: true) %>
+        <br/>
+        <%= f.submit "Supprimer ce lien", class: "btn btn-primary" %>
+      <% end %>
+    </center>
+  </div>
 </div>
-<div class="span6">
-<center>
-<%= form_for(:prerequisite, url: remove_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
-  <h3> Supprimer un lien </h3>
-  <%= f.label "Prérequis" %>
-  <%= f.collection_select(:prerequisite_id, chapters, :id, :name, prompt: true) %>
-  <%= f.label "Chapitre" %>
-  <%= f.collection_select(:chapter_id, chapters, :id, :name, prompt: true) %>
-  <br/>
-  <%= f.submit "Supprimer ce lien", class: "btn btn-primary" %>
-<% end %>
-</center>
-</div>
-</div>
-

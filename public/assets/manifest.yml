@@ -11,8 +11,12 @@ numbertheory.jpg: numbertheory-679a5fb18b3e686fabba4a1cc33b8524.jpg
 numbertheory/index.jpg: numbertheory-679a5fb18b3e686fabba4a1cc33b8524.jpg
 rails.png: rails-a3386665c05a2d82f711a4aaa72d247c.png
 rails/index.png: rails-a3386665c05a2d82f711a4aaa72d247c.png
-application.js: application-10c47069a092db1e39da0e38f1825a12.js
-application/index.js: application-10c47069a092db1e39da0e38f1825a12.js
+application.js: application-9407e88b4b417aefbc5d96d2e07c0dee.js
+application/index.js: application-9407e88b4b417aefbc5d96d2e07c0dee.js
+mathjax-editing.js: mathjax-editing-4515ef29b2ec63084feb4b817ba2ed38.js
+mathjax-editing/index.js: mathjax-editing-4515ef29b2ec63084feb4b817ba2ed38.js
+theories.js: theories-67ca711e941fbc58d217bc557180c92b.js
+theories/index.js: theories-67ca711e941fbc58d217bc557180c92b.js
 application.css: application-5116d4cbbe4b1c30f6afe0c022a1bedb.css
 application/index.css: application-5116d4cbbe4b1c30f6afe0c022a1bedb.css
 jquery.min.map: jquery.min-6c267bfd2b3f36e6edccb2e584934c1c.map
