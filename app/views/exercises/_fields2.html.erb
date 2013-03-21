@@ -4,7 +4,11 @@
 <%= f.text_area :statement, :class => "span6" %>
 
 <% if @exercise.chapter.online && @exercise.online %>
-  Réponse : <b><%= @exercise.answer %></b><br/><br/>
+  <% if @exercise.decimal %>
+    Réponse : <b><%= @exercise.answer %></b><br/><br/>
+  <% else %>
+    Réponse : <b><%= @exercise.answer.to_i %></b><br/><br/>
+  <% end %>
 <% else %>
   <%= f.label "Réponse" %>
   <%= f.text_field :answer, :class => "span2" %>

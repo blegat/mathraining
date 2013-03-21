@@ -274,9 +274,9 @@
         <% if current_user.admin? %>
           Réponse : 
           <% if f.decimal %>
-            <b><%= f.answer %></b> (On demande une réponse décimale avec deux chiffres après la virgule)
+            <b><%= f.answer %></b> (On demande une réponse <b>décimale</b> au millième près)
           <% else %>
-            <b><%= f.answer.to_i %></b> (On demande une réponse entière)
+            <b><%= f.answer.to_i %></b> (On demande une réponse <b>entière</b>)
           <% end %>
           <br/>
           <br/>

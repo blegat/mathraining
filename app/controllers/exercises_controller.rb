@@ -28,10 +28,10 @@ class ExercisesController < QuestionsController
     @exercise.statement = params[:exercise][:statement]
     if params[:exercise][:decimal] == '1'
       @exercise.decimal = true
-      @exercise.answer = params[:exercise][:answer].to_f
+      @exercise.answer = params[:exercise][:answer].gsub(",",".").to_f
     else
       @exercise.decimal = false
-      @exercise.answer = params[:exercise][:answer].to_i
+      @exercise.answer = params[:exercise][:answer].gsub(",",".").to_i
     end
     before = 0
     before2 = 0
@@ -58,10 +58,10 @@ class ExercisesController < QuestionsController
     @exercise.statement = params[:exercise][:statement]
     if params[:exercise][:decimal] == '1'
       @exercise.decimal = true
-      @exercise.answer = params[:exercise][:answer].to_f unless @exercise.chapter.online && @exercise.online
+      @exercise.answer = params[:exercise][:answer].gsub(",",".").to_f unless @exercise.chapter.online && @exercise.online
     else
       @exercise.decimal = false
-      @exercise.answer = params[:exercise][:answer].to_i unless @exercise.chapter.online && @exercise.online
+      @exercise.answer = params[:exercise][:answer].gsub(",",".").to_i unless @exercise.chapter.online && @exercise.online
     end
     if @exercise.save
       flash[:success] = "Exercice modifié."
