@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: problems
+#
+#  id         :integer          not null, primary key
+#  name       :string(255)
+#  statement  :text
+#  chapter_id :integer
+#  position   :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  online     :boolean          default(FALSE)
+#
+
 class Problem < ActiveRecord::Base
   attr_accessible :name, :position, :statement, :online
   belongs_to :chapter
