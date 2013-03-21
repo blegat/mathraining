@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130321094454) do
+ActiveRecord::Schema.define(:version => 20130321172313) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -36,6 +36,13 @@ ActiveRecord::Schema.define(:version => 20130321094454) do
   end
 
   add_index "choices", ["qcm_id"], :name => "index_choices_on_qcm_id"
+
+  create_table "choices_solvedqcms", :id => false, :force => true do |t|
+    t.integer "choice_id"
+    t.integer "solvedqcm_id"
+  end
+
+  add_index "choices_solvedqcms", ["solvedqcm_id"], :name => "index_choices_solvedqcms_on_solvedqcm_id"
 
   create_table "exercises", :force => true do |t|
     t.text     "statement"
@@ -92,6 +99,17 @@ ActiveRecord::Schema.define(:version => 20130321094454) do
   end
 
   add_index "solvedexercises", ["user_id"], :name => "index_solvedexercises_on_user_id"
+
+  create_table "solvedqcms", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "qcm_id"
+    t.boolean  "correct"
+    t.integer  "nb_guess"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "solvedqcms", ["user_id"], :name => "index_solvedqcms_on_user_id"
 
   create_table "theories", :force => true do |t|
     t.string   "title"
