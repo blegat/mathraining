@@ -15,6 +15,10 @@ application.js: application-9407e88b4b417aefbc5d96d2e07c0dee.js
 application/index.js: application-9407e88b4b417aefbc5d96d2e07c0dee.js
 mathjax-editing.js: mathjax-editing-4515ef29b2ec63084feb4b817ba2ed38.js
 mathjax-editing/index.js: mathjax-editing-4515ef29b2ec63084feb4b817ba2ed38.js
+springy.js: springy-02cfda2515bffb88b9923489559de35a.js
+springy/index.js: springy-02cfda2515bffb88b9923489559de35a.js
+springyui.js: springyui-5b5f40a6bf08e40313e1b094ed1969ce.js
+springyui/index.js: springyui-5b5f40a6bf08e40313e1b094ed1969ce.js
 theories.js: theories-67ca711e941fbc58d217bc557180c92b.js
 theories/index.js: theories-67ca711e941fbc58d217bc557180c92b.js
 application.css: application-5116d4cbbe4b1c30f6afe0c022a1bedb.css
