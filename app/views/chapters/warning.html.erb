@@ -2,7 +2,7 @@
 <h1>Mise en ligne du chapitre <%= @chapter.name %></h1>
 Vous vous apprêtez à mettre un chapitre en ligne.
 
-Une fois cela fait, les utilisateurs auront accès à tous les composants du chapitre et pourront entre autres commencer à résoudre les exercices et QCMs qui leur sont proposés. Il ne sera alors plus envisageable pour un administrateur de modifier le chapitre autant qu'il ne le pouvait lorsque le chapitre était en construction. Avant de faire cette opération, <b>nous vous demandons donc de prendre connaissance de ce que vous pourrez et ne pourrez plus faire une fois ce chapitre mis en ligne.</b>
+Une fois cela fait, les utilisateurs auront accès à tous les composants du chapitre et pourront entre autres commencer à résoudre les exercices et QCMs qui leur sont proposés. Il ne sera alors plus envisageable pour un administrateur de modifier le chapitre autant qu'il ne le pouvait lorsque le chapitre était en construction (en particulier, vous ne pourrez plus le supprimer). Avant de faire cette opération, <b>nous vous demandons donc de prendre connaissance de ce que vous pourrez et ne pourrez plus faire une fois ce chapitre mis en ligne.</b>
 
 <h2>Prérequis</h2>
 
@@ -85,7 +85,7 @@ Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mi
           <i class="icon-ok" style="margin-left:10px;"></i>
         <% end %>
         <% if !c.ok && f.many_answers %>
-          <i class="icon-remove"></i>
+          <i class="icon-remove" style="margin-left:10px;"></i>
         <% end %>
         </li>	
       <% end %>

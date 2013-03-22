@@ -102,7 +102,13 @@ class QcmsController < QuestionsController
     @qcm = Qcm.find(params[:id])
     @chapter = @qcm.chapter
     @qcm.destroy
-    flash[:success] = "Exercice supprimé."
+    flash[:success] = "QCM supprimé."
+    Solvedqcm.where(:qcm_id => params[:id]).each do |s|
+      s.destroy
+    end
+    Choice.where(:qcm_id => params[:id]).each do |c|
+      c.destroy
+    end
     redirect_to @chapter
   end
   

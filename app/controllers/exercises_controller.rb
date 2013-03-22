@@ -76,6 +76,9 @@ class ExercisesController < QuestionsController
     @chapter = @exercise.chapter
     @exercise.destroy
     flash[:success] = "Exercice supprimé."
+    Solvedexercise.where(:exercise_id => params[:id]).each do |s|
+      s.destroy
+    end
     redirect_to @chapter
   end
   

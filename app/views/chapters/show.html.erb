@@ -425,7 +425,7 @@
           <% if @chapter.online && f.online %>
             <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." }  %> | 
             <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> | 
-            <%= link_to "Supprimer définitivement ce QCM", f, method: :delete, data: { confirm: "Attention, ce QCM est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
+            <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Attention, ce QCM est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
           <% else %>
             <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> | 
             <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> | 
@@ -497,6 +497,7 @@
                 <% anciens = sol.choices %>
               
                 <%= form_for sol do |x| %>
+                  <b>Plusieurs réponses sont possibles.</b><br/><br/>
                   <% f.choices.order(:id).each do |c| %>
                     <input type="hidden" name="qcm_id" value="<%= f.id %>" />
                     <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
@@ -529,6 +530,7 @@
           <% else %>
           
             <% if f.many_answers %>
+              <b>Plusieurs réponses sont possibles.</b><br/><br/>
               <form action="<%= solvedqcms_path %>" method="post">
                 <input type="hidden" name="qcm_id" value="<%= f.id %>" />
                 <% f.choices.order(:id).each do |c| %>

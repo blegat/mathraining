@@ -80,6 +80,7 @@ class SolvedqcmsController < ApplicationController
     link.nb_guess = link.nb_guess + 1
     
     good_guess = true
+    autre = false
     
     if qcm.many_answers
     
@@ -95,12 +96,22 @@ class SolvedqcmsController < ApplicationController
           if !c.ok
             good_guess = false
           end
+          if !link.choices.exists?(c)
+            autre = true
+          end
         else
           # Répondu faux
           if c.ok
             good_guess = false
           end
+          if link.choices.exists?(c)
+            autre = true
+          end
         end
+      end
+      
+      if !autre
+        redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
       end
       
       if good_guess
@@ -127,6 +138,10 @@ class SolvedqcmsController < ApplicationController
       end
       
       rep = qcm.choices.where(:ok => true).first
+      if params[:ans].to_i == link.choices.first.id
+        redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
+      end
+      
       if rep.id == params[:ans].to_i
         link.correct = true
         link.save
