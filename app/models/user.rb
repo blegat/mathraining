@@ -18,6 +18,7 @@ class User < ActiveRecord::Base
     :password, :password_confirmation, :admin
   has_secure_password
   has_and_belongs_to_many :theories
+  has_and_belongs_to_many :chapters, :uniq => true
   has_many :solvedexercises
   has_many :exercises, :through => :solvedexercises
   has_many :solvedqcms

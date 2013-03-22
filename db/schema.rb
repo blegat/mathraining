@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130321172313) do
+ActiveRecord::Schema.define(:version => 20130322190142) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -25,6 +25,11 @@ ActiveRecord::Schema.define(:version => 20130321172313) do
   create_table "chapters_sections", :id => false, :force => true do |t|
     t.integer "chapter_id"
     t.integer "section_id"
+  end
+
+  create_table "chapters_users", :id => false, :force => true do |t|
+    t.integer "chapter_id"
+    t.integer "user_id"
   end
 
   create_table "choices", :force => true do |t|

@@ -14,16 +14,102 @@
 <%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/><br/>
 <% end %>
 
-<% @chapters = @section.chapters.sort_by { |chap| chap[:level] } %>
-<ul>
-<% @chapters.each do |c| %>
-  <% if c.online || current_user.admin? %>
-    <li>
-    <%= link_to c.name, chapter_path(c) %> <%= "(en construction)" unless c.online %>
-    </li>
+
+<% chap = Array.new %>
+<% debloque = Array.new %>
+<% faisable = Array.new %>
+<% affiche = Array.new %>
+<% nb_pre = Array.new %>
+<% possible = SortedSet.new %>
+<% retiens = Hash.new %>
+
+<% n = 0 %>
+
+<% Chapter.all.each do |c| %>
+  <% if (c.online || current_user.admin) && c.sections.count > 0 %>
+    <% retiens[c.id] = n %>
+    <% chap.push(c) %>
+    <% debloque.push([]) %>
+    <% faisable.push(-1) %>
+    <% nb_pre.push(0) %>
+    <% if c.sections.exists?(@section) %>
+      <% affiche.push(true) %>
+    <% else %>
+      <% affiche.push(false) %>
+    <% end %>
+    <% n = n+1 %>
   <% end %>
 <% end %>
-</ul>
+
+<% (0..(n-1)).each do |i| %>
+  <% if (chap[i].online || current_user.admin) %>
+    <% premier = true %>
+    <% chap[i].prerequisites.each do |p| %>
+      <% if p.sections.count > 0 %>
+        <% debloque[retiens[p.id]].push(i) %>
+        <% nb_pre[i] = nb_pre[i]+1 %>
+        <% premier = false %>
+      <% end %>
+    <% end %>
+    <% if premier %>
+      <% if current_user.chapters.exists?(chap[i]) %>
+        <% faisable[i] = 0 %>
+      <% else %>
+        <% faisable[i] = 1 %>
+      <% end %>
+      <% possible.add([faisable[i], chap[i].level, i]) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% i = 0 %>
+
+<% while !possible.empty? %>
+  <% encours = (possible.first)[2] %>
+  <% possible.delete(possible.first) %>
+  <% if affiche[encours] %>
+    <% if faisable[encours] == 0 %>
+      <h3><%= link_to chap[encours].name, chap[encours], {:style => "color:green;"} %> <i class="icon-ok"></i></h3>
+      <ul>
+      <% chap[encours].theories.each do |t| %>
+        <% if t.online %>
+          <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id), {:style => "color:green;"} %></li>
+        <% end %>
+      <% end %>	
+      </ul>
+    <% elsif faisable[encours] == 1 || current_user.admin %>
+      <h3><%= link_to chap[encours].name, chap[encours] %> <%= "(en construction)" if !chap[encours].online %></h3>
+      <ul>
+      <% chap[encours].theories.each do |t| %>
+        <% if t.online %>
+          <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %></li>
+        <% end %>
+      <% end %>	
+      </ul>
+    <% else %>
+      <h3><%= chap[encours].name %></h3>
+      <ul>
+      <% chap[encours].theories.each do |t| %>
+        <% if t.online %>
+          <li><%= t.title %></li>
+        <% end %>
+      <% end %>	
+      </ul>
+    <% end %>
+    
+  <% end %>
+  <% debloque[encours].each do |d| %>
+    <% nb_pre[d] = nb_pre[d] - 1 %>
+    <% faisable[d] = [faisable[d], faisable[encours]+1].max %>
+    <% if nb_pre[d] == 0 %>
+      <% if current_user.chapters.exists?(chap[d]) %>
+        <% faisable[d] = 0 %>
+      <% end %>
+      <% possible.add([faisable[d], chap[d].level, d]) %>
+    <% end %>
+  <% end %>
+  <% i = i+1 %>
+<% end %>
 
 <center>
 <%= link_to "Retour à la liste des cours", sections_path %>
@@ -41,18 +127,80 @@
   Vous trouverez ici certaines bases mathématiques sans lesquelles la compréhension des sections plus avancées risque d'être compliquée. Il n'est pas nécessaire de compléter ces chapitres pour accéder à la suite des cours.
 </p>
 
-<% @chapters = Chapter.all.sort_by { |chap| chap[:level] } %>
-<ul>
-<% @chapters.each do |c| %>
-  <% if c.sections.size == 0 %>
-    <% if c.online || current_user.admin? %>
-      <li>
-      <%= link_to c.name, chapter_path(c) %> <%= "(en construction)" unless c.online %>
-      </li>
+
+<% chap = Array.new %>
+<% debloque = Array.new %>
+<% faisable = Array.new %>
+<% nb_pre = Array.new %>
+<% possible = SortedSet.new %>
+<% retiens = Hash.new %>
+
+<% n = 0 %>
+
+<% Chapter.all.each do |c| %>
+  <% if (c.online || current_user.admin) && c.sections.count == 0 %>
+    <% retiens[c.id] = n %>
+    <% chap.push(c) %>
+    <% debloque.push([]) %>
+    <% faisable.push(-1) %>
+    <% nb_pre.push(0) %>
+    <% n = n+1 %>
+  <% end %>
+<% end %>
+
+<% (0..(n-1)).each do |i| %>
+  <% if (chap[i].online || current_user.admin) %>
+    <% premier = true %>
+    <% chap[i].prerequisites.each do |p| %>
+      <% if p.sections.count > 0 %>
+        <% debloque[retiens[p.id]].push(i) %>
+        <% nb_pre[i] = nb_pre[i]+1 %>
+        <% premier = false %>
+      <% end %>
+    <% end %>
+    <% if premier %>
+      <% possible.add([faisable[i], chap[i].level, i]) %>
     <% end %>
   <% end %>
 <% end %>
-</ul>
+
+<% i = 0 %>
+
+<% while !possible.empty? %>
+  <% encours = (possible.first)[2] %>
+  <% possible.delete(possible.first) %>
+
+  <% if current_user.chapters.exists?(chap[encours]) %>
+    <h3><%= link_to chap[encours].name, chap[encours], {:style => "color:green;"} %> <i class="icon-ok"></i></h3>
+    <ul>
+    <% chap[encours].theories.each do |t| %>
+      <% if t.online %>
+        <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id), {:style => "color:green;"} %></li>
+      <% end %>
+    <% end %>
+    </ul>
+  <% else %>
+    <h3><%= link_to chap[encours].name, chap[encours] %> <%= "(en construction)" if !chap[encours].online %></h3>
+    <ul>
+    <% chap[encours].theories.each do |t| %>
+      <% if t.online %>
+        <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %></li>
+      <% end %>
+    <% end %>	
+    </ul>
+  <% end %>
+  
+  <% debloque[encours].each do |d| %>
+    <% nb_pre[d] = nb_pre[d] - 1 %>
+    <% faisable[d] = [faisable[d], faisable[encours]+1].max %>
+    <% if nb_pre[d] == 0 %>
+      <% possible.add([faisable[d], chap[d].level, d]) %>
+    <% end %>
+  <% end %>
+  <% i = i+1 %>
+<% end %>
+
+
 
 <center>
 <%= link_to "Retour à la liste des cours", sections_path %>

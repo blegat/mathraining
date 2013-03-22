@@ -1,6 +1,26 @@
 #encoding: utf-8
 class QuestionsController < ApplicationController
 
+  def check_finish_chapter(user, chapter)
+    if user.chapters.exists?(chapter)
+      return 1
+    end
+    done = user.exercises.where(:chapter_id => chapter.id)
+    chapter.exercises.each do |e|
+      if !done.exists?(e)
+        return 0
+      end
+    end
+    done = user.qcms.where(:chapter_id => chapter.id)
+    chapter.qcms.each do |q|
+      if !done.exists?(q)
+        return 0
+      end
+    end
+    user.chapters << chapter
+    return 1
+  end
+
   def order_op(haut, exercice, subject)
     if haut
       sign = '<'

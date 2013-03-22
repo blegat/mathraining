@@ -1,5 +1,5 @@
 #encoding: utf-8
-class SolvedexercisesController < ApplicationController
+class SolvedexercisesController < QuestionsController
   before_filter :signed_in_user
   
   def create
@@ -13,17 +13,23 @@ class SolvedexercisesController < ApplicationController
     if exercise.decimal
       if absolu(exercise.answer, link.guess) < 0.001
         link.correct = true
+        link.save
+        check_finish_chapter(current_user, exercise.chapter)
       else
         link.correct = false
+        link.save
       end
     else
       if exercise.answer.to_i == link.guess.to_i
         link.correct = true
+        link.save
+        check_finish_chapter(current_user, exercise.chapter)
       else
         link.correct = false
+        link.save
       end
     end
-    link.save
+    
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
   end
   
@@ -38,14 +44,20 @@ class SolvedexercisesController < ApplicationController
       if exercise.decimal
         if absolu(exercise.answer, link.guess) < 0.001
           link.correct = true
+          link.save
+          check_finish_chapter(current_user, exercise.chapter)
         else
           link.correct = false
+          link.save
         end
       else
         if exercise.answer.to_i == link.guess.to_i
           link.correct = true
+          link.save
+          check_finish_chapter(current_user, exercise.chapter)
         else
           link.correct = false
+          link.save
         end
       end
       link.save
