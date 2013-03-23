@@ -1,9 +1,12 @@
 #encoding: utf-8
 class SolvedqcmsController < QuestionsController
   before_filter :signed_in_user
+  before_filter :before_all
+  before_filter :online_chapter
+  before_filter :unlocked_chapter
   
   def create
-    qcm = Qcm.find(params[:qcm_id])
+    qcm = @qcm2
     user = current_user
     link = Solvedqcm.new
     link.user_id = user.id
@@ -76,7 +79,7 @@ class SolvedqcmsController < QuestionsController
   end
   
   def update
-    qcm = Qcm.find(params[:qcm_id])
+    qcm = @qcm2
     user = current_user
     link = Solvedqcm.where(:user_id => user, :qcm_id => qcm).first
     link.nb_guess = link.nb_guess + 1
@@ -161,6 +164,26 @@ class SolvedqcmsController < QuestionsController
     end
     
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
+  end
+  
+   
+  def before_all
+    @qcm2 = Qcm.find(params[:qcm_id])
+    @chapter = @qcm2.chapter
+  end
+  
+  def online_chapter
+    redirect_to sections_path unless (current_user.admin? || @chapter.online)
+  end
+  
+  def unlocked_chapter
+    if !current_user.admin?
+      @chapter.prerequisites.each do |p|
+        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+          redirect_to sections_path and return
+        end
+      end
+    end
   end
   
 end

@@ -7,6 +7,8 @@ class ChaptersController < ApplicationController
   before_filter :delete_online, only: [:destroy]
   before_filter :online_chapter,
     only: [:show]
+  before_filter :unlocked_chapter,
+    only: [:show]
   before_filter :fondement_online,
     only: [:new_section, :create_section, :destroy_section]
   before_filter :prerequisites_online,
@@ -120,6 +122,16 @@ class ChaptersController < ApplicationController
   def online_chapter
     @chapter = Chapter.find(params[:id])
     redirect_to sections_path unless (current_user.admin? || @chapter.online)
+  end
+  
+  def unlocked_chapter
+    if !current_user.admin?
+      @chapter.prerequisites.each do |p|
+        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+          redirect_to sections_path and return
+        end
+      end
+    end
   end
   
   def delete_online
