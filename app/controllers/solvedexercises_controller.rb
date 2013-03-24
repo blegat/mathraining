@@ -1,5 +1,5 @@
 #encoding: utf-8
-class SolvedexercisesController < QuestionsController
+class SolvedexercisesController < ApplicationController
   before_filter :signed_in_user
   before_filter :before_create, only: [:create]
   before_filter :before_update, only: [:update]

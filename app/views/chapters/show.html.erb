@@ -54,6 +54,7 @@
         <% un = 0 %>
         <% deux = 0 %>
         <% j = 1 %>
+        <% pasfait = 0 %>
         <% (1..(liste.size+liste2.size)).each do |i| %>
         
           <% encours = 0 %>
@@ -84,7 +85,10 @@
                     <i class="icon-ok"></i>
                   <% else %>
                     <i class="icon-remove"></i>
+                    <% pasfait = pasfait + 1 %>
                   <% end %>
+                <% else %>
+                  <% pasfait = pasfait + 1 %>
                 <% end %>
                 <% if !f.online %>
                   <i class="icon-warning-sign"></i>
@@ -96,7 +100,7 @@
                 <% number = j %>
                 <% number2 = i %>
               <% end %>
-              <% j = j+1 if f.online%>
+              <% j = j+1 if f.online %>
             <% end %>
             <% un = un + 1 %>
           <% else %>
@@ -111,7 +115,10 @@
                     <i class = "icon-ok"></i>
                   <% else %>
                     <i class = "icon-remove"></i>
+                    <% pasfait = pasfait + 1 %>
                   <% end %>
+                <% else %>
+                  <% pasfait = pasfait + 1 %>
                 <% end %>
                 <% if !f.online %>
                   <i class="icon-warning-sign"></i>
@@ -123,13 +130,17 @@
                 <% number = j %>
                 <% number2 = i %>
               <% end %>
-              <% j = j+1 if f.online%>
+              <% j = j+1 if f.online %>
             <% end %>
             <% deux = deux + 1 %>
-          <% end %>
-          
+          <% end %> 
 
         <% end %>
+        
+        <% if pasfait == 0 && !current_user.admin? && !current_user.chapters.exists?(@chapter) %>
+          <% current_user.chapters << @chapter %>
+        <% end %>
+        
         <li class="nav-header">Problèmes</li>
         <% i = 1 %>
         <% listex = @chapter.problems %>

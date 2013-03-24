@@ -1,5 +1,5 @@
 #encoding: utf-8
-class SolvedqcmsController < QuestionsController
+class SolvedqcmsController < ApplicationController
   before_filter :signed_in_user
   before_filter :before_all
   before_filter :online_chapter
