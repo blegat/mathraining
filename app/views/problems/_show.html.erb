@@ -41,6 +41,9 @@
       </center> <br/>
     <% end %>
 
+  <% else %>
+    <!-- Online because of first if -->
+    <%= render 'submissions/new', problem: f %>
   <% end %>
 
 <% end %>

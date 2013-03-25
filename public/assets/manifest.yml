@@ -11,8 +11,8 @@ numbertheory.jpg: numbertheory-679a5fb18b3e686fabba4a1cc33b8524.jpg
 numbertheory/index.jpg: numbertheory-679a5fb18b3e686fabba4a1cc33b8524.jpg
 rails.png: rails-a3386665c05a2d82f711a4aaa72d247c.png
 rails/index.png: rails-a3386665c05a2d82f711a4aaa72d247c.png
-application.js: application-9407e88b4b417aefbc5d96d2e07c0dee.js
-application/index.js: application-9407e88b4b417aefbc5d96d2e07c0dee.js
+application.js: application-4e2d2250819327f2531f25a325fe9099.js
+application/index.js: application-4e2d2250819327f2531f25a325fe9099.js
 mathjax-editing.js: mathjax-editing-4515ef29b2ec63084feb4b817ba2ed38.js
 mathjax-editing/index.js: mathjax-editing-4515ef29b2ec63084feb4b817ba2ed38.js
 springy.js: springy-02cfda2515bffb88b9923489559de35a.js
@@ -21,8 +21,8 @@ springyui.js: springyui-5b5f40a6bf08e40313e1b094ed1969ce.js
 springyui/index.js: springyui-5b5f40a6bf08e40313e1b094ed1969ce.js
 theories.js: theories-59d8b0991b5f2c75f92d01211c046c65.js
 theories/index.js: theories-59d8b0991b5f2c75f92d01211c046c65.js
-application.css: application-8b61d8b220a50838b228794fa0d87e9f.css
-application/index.css: application-8b61d8b220a50838b228794fa0d87e9f.css
+application.css: application-d36fc4e9334d6ce7386cbd8eacd0a813.css
+application/index.css: application-d36fc4e9334d6ce7386cbd8eacd0a813.css
 jquery.min.map: jquery.min-6c267bfd2b3f36e6edccb2e584934c1c.map
 jquery/index.min.map: jquery.min-6c267bfd2b3f36e6edccb2e584934c1c.map
 markdown-buttons.png: markdown-buttons-14aaf5355f4342c3e5b94e7f1d5f5320.png

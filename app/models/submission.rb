@@ -1,7 +1,9 @@
-class ProblemSubmission < ActiveRecord::Base
+class Submission < ActiveRecord::Base
   attr_accessible :content
   belongs_to :user
   belongs_to :problem
+
+  has_many :submissions
 
   validates :user_id, presence: true
   validates :problem_id, presence: true

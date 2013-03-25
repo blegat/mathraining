@@ -1,0 +1,7 @@
+<%= form_for :submission,
+  url: problem_submissions_path(problem) do |f| %>
+  <%= f.label :content, "Solution" %>
+  <%= f.text_area :content %>
+  <br />
+  <%= f.submit "Soumettre solution", class: "btn btn-large btn-primary" %>
+<% end %>

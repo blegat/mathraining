@@ -15,6 +15,9 @@
 class Problem < ActiveRecord::Base
   attr_accessible :name, :position, :statement, :online
   belongs_to :chapter
+
+  has_many :submissions
+
   validates :name, presence: true, length: { maximum: 255 }
   validates :statement, presence: true, length: { maximum: 8000 }
   validates :position, presence: true,

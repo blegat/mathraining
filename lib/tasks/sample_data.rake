@@ -39,6 +39,10 @@ def make_base_chapter
                                      answer: 8,
                                      position: 1,
                                      online: true)
+  base.problems << Problem.create!(name: 'Neutre',
+                                  statement: 'Prouver que $0$ est neutre pour l\'addition',
+                                  position: 1,
+                                  online: true)
 end
 
 def make_words
