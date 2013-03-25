@@ -39,6 +39,7 @@ Ombtraining::Application.routes.draw do
       as: :put_online
     match '/read', to: 'theories#read', as: :read
     match '/unread', to: 'theories#unread', as: :unread
+    match '/latex', to: 'theories#latex', as: :latex
   end
   
   resources :problems, only: [:update, :edit, :destroy] do

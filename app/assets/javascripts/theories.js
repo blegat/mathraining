@@ -5,6 +5,7 @@
 //= require markdown.sanitizer
 //= require markdown.editor
 //= require mathjax-editing.js
+//= require Markdown.Extra.js
 
 /*function update_preview() {
   var content = $('#theory_content').val();
@@ -21,7 +22,8 @@ $(document).ready(function() {
 });*/
 $(document).ready(function () {
   var converter = Markdown.getSanitizingConverter();
-  //Markdown.Extra.init(converter);
+  Markdown.Extra.init(converter,
+    {extensions: ["tables", "fenced_code_gfm", "def_list"]});
   var editor = new Markdown.Editor(converter);
   mathjaxEditing.prepareWmdForMathJax(editor,
     '',

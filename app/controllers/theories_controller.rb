@@ -106,6 +106,11 @@ class TheoriesController < ApplicationController
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
 
+  def latex
+    @theory = Theory.find(params[:theory_id])
+    render text: markdown_to_latex(@theory.content)
+  end
+
   private
   
   def swap_position(a, b)

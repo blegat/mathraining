@@ -211,7 +211,8 @@
             <br/>
             <center>
             <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> | 
-            <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %>
+            <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %> |
+            <%= link_to "Code LaTeX", theory_latex_path(f) %>
             </center>
             <br/>
             

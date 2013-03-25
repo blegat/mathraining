@@ -12,7 +12,7 @@ gem 'mathjax-rails'
 # Markdown
 gem 'redcarpet' # server-side
 gem 'kramdown' # server-side
-gem 'pagedown-rails', '~> 1.1.1' # client-side
+gem 'pagedown-rails', '~> 1.1.2' # client-side
 
 group :development, :test do
   gem 'sqlite3'
