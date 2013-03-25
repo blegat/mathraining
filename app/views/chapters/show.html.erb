@@ -179,7 +179,7 @@
 
     <% if type == 1 && @chapter.theories.exists?(id) %>
       <% f = Theory.find(id) %>
-      <%= render 'theories/show', f: f, number: number %>
+      <%= render 'theories/show', f: f, number: number, id: id %>
     <% end %>
 
 
@@ -187,14 +187,14 @@
 
     <% if type == 2 && @chapter.exercises.exists?(id)%>
       <% f = Exercise.find(id) %>
-      <%= render 'exercises/show', f: f, number: number, number2: number2, liste: liste, liste2: liste2 %>
+      <%= render 'exercises/show', f: f, number: number, number2: number2, liste: liste, liste2: liste2, id: id %>
     <% end %>
 
     <!-- QCMS -->
 
     <% if type == 3 && @chapter.qcms.exists?(id)%>
       <% f = Qcm.find(id) %>
-      <%= render 'qcms/show', f: f, number: number, number2: number2, liste: liste, liste2: liste2 %>
+      <%= render 'qcms/show', f: f, number: number, number2: number2, liste: liste, liste2: liste2, id: id %>
     <% end %>
 
 
@@ -202,7 +202,7 @@
 
     <% if type == 4 && @chapter.problems.exists?(id)%>
       <% f = Problem.find(id) %>
-      <%= render 'problems/show', f: f, number: number %>
+      <%= render 'problems/show', f: f, number: number, id: id %>
     <% end %>
 
   </div>
