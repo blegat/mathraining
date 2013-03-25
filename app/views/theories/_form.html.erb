@@ -1,0 +1,12 @@
+<%= render 'shared/error_messages', object: f.object %>
+<%= f.label :titre %>
+<%= f.text_field :title, :class => "span5" %>
+
+<%= f.label :contenu %>
+<a href="#ici" onClick="JavaScript: TAinsert('<i>','</i>','MathInput'); Preview.Update();">Italique</a> - 
+<a href="#ici" onClick="JavaScript: TAinsert('<b>','</b>','MathInput'); Preview.Update();">Gras</a> - 
+<a href="#ici" onClick="JavaScript: TAinsert('<u>','</u>','MathInput'); Preview.Update();">Souligné</a> - 
+<a href="#ici" onClick="JavaScript: TAinsert('<h4>','</h4>','MathInput'); Preview.Update();">Titre</a> - 
+<a href="#ici" onClick="JavaScript: TAinsert('<a href=\'http://www.exemple.com\'>','</a>','MathInput'); Preview.Update();">Lien</a> - 
+<a href="#ici" onClick="JavaScript: TAinsert('<ul>\n<li>Point 1</li>\n<li>Point 2</li>\n</ul>','','MathInput'); Preview.Update();">Liste</a>
+<%= f.text_area :content, :class => "span12", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>

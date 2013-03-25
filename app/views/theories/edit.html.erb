@@ -1,11 +1,28 @@
+<%= javascript_include_tag 'preview.js' %>
+<%= javascript_include_tag 'tainsert.js' %>
+
 <% provide(:title, 'Modifier un point théorique') %>
 <h1>Modifier un point théorique</h1>
 
-<%= form_for(@theory) do |f| %>
-  <%= render 'fields', f: f %>
-  <br />
-  <%= f.submit 'Éditer', class: 'btn btn-large btn-primary' %>
-<% end %>
-
-<br />
+<div class="column">
+  <div class="span12" style="padding-bottom:10px; margin-bottom:20px; border-bottom: 1px solid black;">
+    <h3> Preview </h3>
+    <div id="MathPreview"></div>
+    <div id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+  </div>
+  <div class="span12">
+  
+    <%= form_for(@theory) do |f| %>
+      <%= render 'form', f: f %>
+      <br />
+      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
+    <% end %>
+  </div>
+</div>
+<br/>
 <center><%= link_to 'Retour au chapitre', chapter_path(@theory.chapter, :type => 1, :which => @theory.id) %></center>
+
+<script>
+Preview.Init();
+Preview.Update();
+</script>

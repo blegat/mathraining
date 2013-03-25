@@ -1,7 +1,10 @@
 <% if f.online || current_user.admin? %>
   <h3><%= f.title %> </h3>
+  <%= raw(f.content.gsub(/<\/h4>(\s)*\n/,'</h4>').gsub(/<\/ul>(\s)*\n/, '</ul>').gsub(/\n(\s)*<\/ul>/, '</ul>').gsub(/\n(\s)*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+  
+  <br/>
   <!--<%= simple_format f.content %>-->
-  <%= markdown_render f.content %>
+  <!--<%= markdown_render f.content %>-->
 
   <% if current_user.admin? %>
     <br/>
