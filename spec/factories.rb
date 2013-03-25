@@ -61,7 +61,7 @@ FactoryGirl.define do
     sequence(:position) { |n| n }
     online false
   end
-  factory :problem_submission do
+  factory :submission do
     association :problem
     association :user
     content "Foobar"
