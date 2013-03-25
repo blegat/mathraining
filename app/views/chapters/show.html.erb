@@ -1,14 +1,15 @@
 <% provide(:title, @chapter.name) %>
 
 <% if(params.has_key?:type) %>
-<% type = params[:type].to_i %>
-<% else type = 0 %>
+  <% type = params[:type].to_i %>
+<% else %>
+  <% type = 0 %>
 <% end %>
 <% if(params.has_key?:which) %>
-<% id = params[:which].to_i %>
-<% else id = 0 %>
+  <% id = params[:which].to_i %>
+<% else %>
+  <% id = 0 %>
 <% end %>
-
 
 <h1>
   <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
@@ -16,634 +17,206 @@
 
 <div class="row">
 
+  <!-- MENU -->
   <div class="span2">
-      <ul class="nav nav-list">
-        <% number = 0 %>
-        <% number2 = 0 %>
-        <% i = 1 %>
-        <li class="nav-header">Préambule</li>
-        <li<%= ' class="active"'.html_safe if type == 0 %>>
-        <%= link_to "Introduction", chapter_path(@chapter) %></li>
-        <li class="nav-header">Points théoriques</li>
-        <% listex = @chapter.theories %>
-        <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
-        <% listex.each do |f| %>
-          <% if f.online || current_user.admin? %>
-            <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %> >	
-            <%= link_to chapter_path(@chapter, :type => 1, :which => f.id) do %>
-              <% if !current_user.admin? && current_user.theories.exists?(f.id) %>
-                <i class="icon-ok"></i>
-              <% end %>
-              <% if !f.online %>
-                <i class="icon-warning-sign"></i>
-              <% end %>
-              <%= f.title %>
+    <ul class="nav nav-list">
+      <% number = 0 %>
+      <% number2 = 0 %>
+      <% i = 1 %>
+      <li class="nav-header">Préambule</li>
+      <li<%= ' class="active"'.html_safe if type == 0 %>>
+      <%= link_to "Introduction", chapter_path(@chapter) %></li>
+      <li class="nav-header">Points théoriques</li>
+      <% listex = @chapter.theories %>
+      <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
+      <% listex.each do |f| %>
+        <% if f.online || current_user.admin? %>
+          <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %> >
+          <%= link_to chapter_path(@chapter, :type => 1, :which => f.id) do %>
+            <% if !current_user.admin? && current_user.theories.exists?(f.id) %>
+              <i class="icon-ok"></i>
             <% end %>
-            </li>
-            <% if f.id == id && type == 1 %>
-              <% number = i %>
+            <% if !f.online %>
+              <i class="icon-warning-sign"></i>
             <% end %>
-            <% i = i + 1 %>
+            <%= f.title %>
           <% end %>
+          </li>
+          <% if f.id == id && type == 1 %>
+            <% number = i %>
+          <% end %>
+          <% i = i + 1 %>
         <% end %>
-        <li class="nav-header">Exercices</li>
-        <% liste = @chapter.exercises %>
-        <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
-        <% liste2 = @chapter.qcms %>
-        <% liste2.sort!{|t1,t2|t1.position <=> t2.position} %>
-        <% un = 0 %>
-        <% deux = 0 %>
-        <% j = 1 %>
-        <% pasfait = 0 %>
-        <% (1..(liste.size+liste2.size)).each do |i| %>
-        
-          <% encours = 0 %>
-          <% if un >= liste.size %>
-            <% encours = 2 %>
+      <% end %>
+      <li class="nav-header">Exercices</li>
+      <% liste = @chapter.exercises %>
+      <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
+      <% liste2 = @chapter.qcms %>
+      <% liste2.sort!{|t1,t2|t1.position <=> t2.position} %>
+      <% un = 0 %>
+      <% deux = 0 %>
+      <% j = 1 %>
+      <% pasfait = 0 %>
+      <% (1..(liste.size+liste2.size)).each do |i| %>
+
+        <% encours = 0 %>
+        <% if un >= liste.size %>
+          <% encours = 2 %>
+        <% else %>
+          <% if deux >= liste2.size %>
+            <% encours = 1 %>
           <% else %>
-            <% if deux >= liste2.size %>
+            <% if liste[un].position < liste2[deux].position %>
               <% encours = 1 %>
             <% else %>
-              <% if liste[un].position < liste2[deux].position %>
-                <% encours = 1 %>
-              <% else %>
-                <% encours = 2 %>
-              <% end %>
+              <% encours = 2 %>
             <% end %>
           <% end %>
-          
-          <% if encours == 1 %>
-            <% f = liste[un] %> 
-            <% if f.online || current_user.admin? %>
-              <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
-            
-              <%= link_to chapter_path(@chapter, :type => 2, :which => f.id) do %>
-                <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => f.id) %>
-                <% if exo.size > 0 %>
-                  <% exo = exo.first %>
-                  <% if exo.correct %>
-                    <i class="icon-ok"></i>
-                  <% else %>
-                    <i class="icon-remove"></i>
-                    <% pasfait = pasfait + 1 %>
-                  <% end %>
-                <% else %>
-                  <% pasfait = pasfait + 1 %>
-                <% end %>
-                <% if !f.online %>
-                  <i class="icon-warning-sign"></i>
-                <% end %>
-                Exercice <%= j if f.online%>
-              <% end %>
-              </li>
-              <% if f.id == id  && type == 2 %>
-                <% number = j %>
-                <% number2 = i %>
-              <% end %>
-              <% j = j+1 if f.online %>
-            <% end %>
-            <% un = un + 1 %>
-          <% else %>
-            <% f = liste2[deux] %> 
-            <% if f.online || current_user.admin? %>
-              <li<%= ' class="active"'.html_safe if f.id == id && type == 3 %>>
-              <%= link_to chapter_path(@chapter, :type => 3, :which => f.id) do %>
-                <% qcm = Solvedqcm.where(:user_id => current_user.id, :qcm_id => f.id) %>
-                <% if qcm.size > 0 %>
-                  <% qcm = qcm.first %>
-                  <% if qcm.correct %>
-                    <i class = "icon-ok"></i>
-                  <% else %>
-                    <i class = "icon-remove"></i>
-                    <% pasfait = pasfait + 1 %>
-                  <% end %>
-                <% else %>
-                  <% pasfait = pasfait + 1 %>
-                <% end %>
-                <% if !f.online %>
-                  <i class="icon-warning-sign"></i>
-                <% end %>
-                Exercice <%= j if f.online %>
-              <% end %>
-              </li>
-              <% if f.id == id  && type == 3 %>
-                <% number = j %>
-                <% number2 = i %>
-              <% end %>
-              <% j = j+1 if f.online %>
-            <% end %>
-            <% deux = deux + 1 %>
-          <% end %> 
+        <% end %>
 
-        <% end %>
-        
-        <% if pasfait == 0 && !current_user.admin? && !current_user.chapters.exists?(@chapter) %>
-          <% current_user.chapters << @chapter %>
-        <% end %>
-        
-        <li class="nav-header">Problèmes</li>
-        <% i = 1 %>
-        <% listex = @chapter.problems %>
-        <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
-        <% listex.each do |f| %>
+        <% if encours == 1 %>
+          <% f = liste[un] %>
           <% if f.online || current_user.admin? %>
-            <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>            
-            <%= link_to chapter_path(@chapter, :type => 4, :which => f.id) do %>
+            <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
+
+            <%= link_to chapter_path(@chapter, :type => 2, :which => f.id) do %>
+              <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => f.id) %>
+              <% if exo.size > 0 %>
+                <% exo = exo.first %>
+                <% if exo.correct %>
+                  <i class="icon-ok"></i>
+                <% else %>
+                  <i class="icon-remove"></i>
+                  <% pasfait = pasfait + 1 %>
+                <% end %>
+              <% else %>
+                <% pasfait = pasfait + 1 %>
+              <% end %>
               <% if !f.online %>
                 <i class="icon-warning-sign"></i>
               <% end %>
-              <%= f.name %>
+              Exercice <%= j if f.online%>
             <% end %>
             </li>
-            <% if f.id == id && type == 4 %>
-              <% number = i %>
+            <% if f.id == id  && type == 2 %>
+              <% number = j %>
+              <% number2 = i %>
             <% end %>
-            <% i = i + 1 %>
+            <% j = j+1 if f.online %>
           <% end %>
-        <% end %>
-      </ul>
-    </div>
-    <div class="span10">
-    
-      <!-- INTRODUCTION -->
-      
-      <% if type == 0 %>
-        <h3>Prérequis</h3>
-        <% if @chapter.prerequisites.empty? %>
-          <p>Aucun prérequis</p>
+          <% un = un + 1 %>
         <% else %>
-          <ul>
-            <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
-              <li><%= link_to prerequisite.name, prerequisite %></li>
-            <% end %>
-          </ul>
-        <% end %>
-        
-        <% if current_user.admin? %>
-          <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>
-        <% end %>
-        
-        <h3>Introduction</h3>
-        <p><%= @chapter.description %></p>
-      
-        <% if current_user.admin? %>
-          <br/>
-          <% if !@chapter.online %>
-          
-            <center>
-            <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
-            
-            <% if @chapter.sections.size > 1 %>
-              <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
-            <% else %>
-              <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
-            <% end %> |
-
-            <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
-            </center>
-            
-          <% else %>
-          
-            <center>
-            <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %>
-            
-            <% if !@chapter.sections.empty? %>
-              | <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
-            <% end %>
-            </center>
-            
-          <% end %>
-        <% end %>
-        
-      <% end %>
-      
-      
-      <!-- POINTS THEORIQUES -->
-      
-      <% if type == 1 && @chapter.theories.exists?(id) %>
-        <% f = Theory.find(id) %>
-        <% if f.online || current_user.admin? %>
-          <h3><%= f.title %> </h3>
-          <!--<%= simple_format f.content %>-->
-          <%= markdown_render f.content %>
-          
-          <% if current_user.admin? %>
-            <br/>
-            <center>
-            <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> | 
-            <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %> |
-            <%= link_to "Code LaTeX", theory_latex_path(f) %>
-            </center>
-            <br/>
-            
-            <% if number > 1 %>
-            <% up = true %>
-            <% else %>
-            <% up = false %>
-            <% end %>
-            
-            <% if number < @chapter.theories.count %>
-            <% down = true %>
-            <% else %>
-            <% down = false %>
-            <% end %>
-            
-            <% if up || down %>
-              <center>
-              Déplacer ce point théorique vers le 
-              <% if up %>
-                <%= link_to "haut", theory_order_minus_path(f) %>
-                <% if down %>
-                | <%= link_to "bas", theory_order_plus_path(f) %>
-                <% end %>
-              <% else %>
-                <%= link_to "bas", theory_order_plus_path(f) %>
-              <% end %>
-              </center> <br/>
-            <% end %>
-            
-            <% if !f.online && @chapter.online %>
-              <center>
-              <%= button_to "Mettre en ligne", theory_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Etes vous sûr de vouloir rendre ce point théorique visible par les utilisateurs?" } %>
-              </center> <br/>
-            <% end %>
-          
-          <% else %>
-          
-          <center>
-          <% if current_user.theories.exists?(id) %>
-            <%= button_to "Marquer comme non lu", theory_unread_path(f), method: :get, class: 'btn btn' %>
-          <% else %>
-            <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn' %>
-          <% end %>
-          </center>
-          
-          <% end %>
-          
-        <% end %>
-        
-      <% end %>
-      
-      
-      <!-- EXERCICES -->
-      
-      <% if type == 2 && @chapter.exercises.exists?(id)%>
-        <% f = Exercise.find(id) %>
-        <h3>Exercice <%= number %></h3>
-        <%= simple_format f.statement %>
-        <br/>
-        <% if current_user.admin? %>
-          Réponse : 
-          <% if f.decimal %>
-            <b><%= f.answer %></b> (On demande une réponse <b>décimale</b> au millième près)
-          <% else %>
-            <b><%= f.answer.to_i %></b> (On demande une réponse <b>entière</b>)
-          <% end %>
-          <br/>
-          <br/>
-          <center>
-          <% if @chapter.online && f.online %>
-            <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
-            | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Attention, cet exercice est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
-          <% else %>
-            <%= link_to "Modifier cet exercice", edit_exercise_path(f) %>
-            | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
-          <% end %>
-          </center>
-          <br/>
-          
-          <% if number2 > 1 %>
-          <% up = true %>
-          <% else %>
-          <% up = false %>
-          <% end %>
-          
-          <% if number2 < liste.size + liste2.size %>
-          <% down = true %>
-          <% else %>
-          <% down = false %>
-          <% end %>
-          
-          <% if (up || down) %>
-            <center>
-            Déplacer cet exercice vers le 
-            <% if up %>
-              <%= link_to "haut", exercise_order_minus_path(f) %>
-              <% if down %>
-              | <%= link_to "bas", exercise_order_plus_path(f) %>
-              <% end %>
-            <% else %>
-              <%= link_to "bas", exercise_order_plus_path(f) %>
-            <% end %>
-            </center> <br/>
-          <% end %>
-          
-          <% if !f.online && @chapter.online %>
-            <center>
-            <%= button_to "Mettre en ligne", exercise_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
-            </center> <br/>
-          <% end %>
-        <% else %>
-        
-        <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => id) %>
-        <% if exo.size > 0 %>
-          <% exo = exo.first %>
-          <% if exo.correct? %>
-            <p style="color:green;"><b>Vous avez résolu cet exercice!</b></p>
-            Réponse : 
-            <% if f.decimal %>
-              <b><%= f.answer %></b>
-            <% else %>
-              <b><%= f.answer.to_i %></b>
-            <% end %>
-            <br/>
-          <% else %>
-          
-            <% if f.decimal %>
-              On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
-              <% val = exo.guess %>
-            <% else %>
-              <% val = exo.guess.to_i %>
-            <% end %>
-            
-            <%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
-              <%= g.label "Votre réponse : " %>
-              <%= g.text_field :guess, style: "width:50px;", value: val %>
-              <%= g.submit "Soumettre", class: "btn btn-primary" %>
-            <% end %>
-            
-            <br/>
-            
-            <p style="color:red;">Votre réponse (<b><%= val %></b>) est erronée. Vous avez déjà commis <%= exo.nb_guess %> erreur<%= "s" if exo.nb_guess > 1 %>.</p>
-            
-          <% end %>
-        <% else %>
-          <% if f.decimal %>
-            On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
-          <% end %>
-            
-          <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
-            <%= g.hidden_field :exercise_id, value: f.id %>
-            <%= g.label "Votre réponse : " %>
-            <%= g.text_field :guess, style: "width:50px;" %>
-            <%= g.submit "Soumettre", class: "btn btn-primary" %>
-       	  <% end %>
-        
-        <% end %>
-        
-        <% end %>
-        
-      <% end %>
-
-      
-      
-      <!-- QCMS -->
-      
-      <% if type == 3 && @chapter.qcms.exists?(id)%>
-        <% f = Qcm.find(id) %>
-        <h3>Exercice <%= number %></h3>
-        <%= simple_format f.statement %>
-        <br/>
-        
-        
-        <% if current_user.admin? %>
-        
-          <ul>
-          <% f.choices.order(:id).each do |c| %>
-            <li style="padding:5px;">
-            <%= c.ans %>
-
-            <% if c.ok %>
-              <i class="icon-ok" style="margin-left:10px;"></i>
-            <% end %>
-            <% if !c.ok && f.many_answers %>
-              <i class="icon-remove" style="margin-left:10px;"></i>
-            <% end %>
-            </li>	
-          <% end %>
-          </ul>
-        
-          <br/>
-        
-          <% if f.many_answers %>
-            (Plusieurs réponses possibles)
-          <% else %>
-            (Une seule réponse possible)
-          <% end %>
-        
-          <br/>
-          <br/>
-          <center>
-          <% if @chapter.online && f.online %>
-            <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." }  %> | 
-            <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> | 
-            <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Attention, ce QCM est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
-          <% else %>
-            <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> | 
-            <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> | 
-            <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
-          <% end %>
-          </center>
-          <br/>
-          
-          <% if number2 > 1 %>
-          <% up = true %>
-          <% else %>
-          <% up = false %>
-          <% end %>
-          
-          <% if number2 < liste.size + liste2.size %>
-          <% down = true %>
-          <% else %>
-          <% down = false %>
-          <% end %>
-          
-          <% if (up || down) %>
-            <center>
-            Déplacer ce QCM vers le 
-            <% if up %>
-              <%= link_to "haut", qcm_order_minus_path(f) %>
-              <% if down %>
-              | <%= link_to "bas", qcm_order_plus_path(f) %>
-              <% end %>
-            <% else %>
-              <%= link_to "bas", qcm_order_plus_path(f) %>
-            <% end %>
-            </center> <br/>
-          <% end %>
-          
-          <% if !f.online && @chapter.online %>
-            <center>
-            <%= button_to "Mettre en ligne", qcm_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de ce qcm par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
-            </center> <br/>
-          <% end %>
-          
-        <% else %>
-        
-          <% sol = Solvedqcm.where(:user_id => current_user.id, :qcm_id => id) %>
-          <% if sol.size > 0 %>
-            <% sol = sol.first %>
-            <% if sol.correct? %>
-            
-              <ul>
-              <% f.choices.order(:id).each do |c| %>
-                <li style="padding:5px;">
-                <%= c.ans %>
-
-                <% if c.ok %>
-                  <i class="icon-ok" style="margin-left:10px;"></i>
-                <% end %>
-                <% if !c.ok && f.many_answers %>
-                  <i class="icon-remove" style="margin-left:10px;"></i>
-                <% end %>
-                </li>	
-              <% end %>
-              </ul>
-              
-              <p style="color:green;"><b>Vous avez résolu cet exercice!</b></p>
-            
-            <% else %>
-              
-              <% if f.many_answers %>
-              
-                <% anciens = sol.choices %>
-              
-                <%= form_for sol do |x| %>
-                  <b>Plusieurs réponses sont possibles.</b><br/><br/>
-                  <% f.choices.order(:id).each do |c| %>
-                    <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-                    <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-                      <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %>>
-                      <%= c.ans %>
-                    </label>
-                  <% end %>
-                     <br/><button class="btn btn-primary" type="submit">Soumettre</button>
-                <% end %>
-              <% else %>
-                <% choice = sol.choices.first %>
-                <%= form_for sol do |x| %>
-                  <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-                  <% f.choices.order(:id).each do |c| %>
-                    <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-                      <input type="radio" name="ans" value="<%= c.id %>" <%= "checked" if c.id == choice.id %>>
-                      <%= c.ans %>
-                    </label>
-                  <% end %>
-                     <br/><button class="btn btn-primary" type="submit">Soumettre</button>
-                <% end %>
-              
-              <% end %>
-              
-              <br/>
-            
-              <p style="color:red;">Votre réponse est erronée. Vous avez déjà commis <%= sol.nb_guess %> erreur<%= "s" if sol.nb_guess > 1 %>.</p>
-            
-            <% end %>
-          <% else %>
-          
-            <% if f.many_answers %>
-              <b>Plusieurs réponses sont possibles.</b><br/><br/>
-              <form action="<%= solvedqcms_path %>" method="post">
-                <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-                <% f.choices.order(:id).each do |c| %>
-                  <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-                    <input type="checkbox" name="ans[<%= c.id %>]" value="ok">
-                    <%= c.ans %>
-                  </label>
-                <% end %>
-                   <br/><button class="btn btn-primary" type="submit">Soumettre</button>
-              </form>
-            <% else %>
-              <form action="<%= solvedqcms_path %>" method="post">
-                <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-                <% f.choices.order(:id).each do |c| %>
-                  <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-                    <input type="radio" name="ans" value="<%= c.id %>">
-                    <%= c.ans %>
-                  </label>
-                <% end %>
-                   <br/><button class="btn btn-primary" type="submit">Soumettre</button>
-              </form>
-          
-            <% end %>
-          
-          <% end %> 
-        
-        <% end %>
-        
-      <% end %>
-      
-      
-      
-      
-      
-      <!-- PROBLEMES -->
-      
-      <% if type == 4 && @chapter.problems.exists?(id)%>
-        <% f = Problem.find(id) %>
+          <% f = liste2[deux] %>
           <% if f.online || current_user.admin? %>
-          <h3><%= f.name %> </h3>
-          <%= simple_format f.statement%>
-          <% if current_user.admin? %>
-            <br/>
-            <center>
-            <%= link_to "Modifier ce problème", edit_problem_path(f) %> | 
-            <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
-            </center>
-            <br/>
-            
-            <% if number > 1 %>
-            <% up = true %>
-            <% else %>
-            <% up = false %>
-            <% end %>
-            
-            <% if number < @chapter.problems.count %>
-            <% down = true %>
-            <% else %>
-            <% down = false %>
-            <% end %>
-            
-            <% if up || down %>
-              <center>
-              Déplacer ce problème vers le 
-              <% if up %>
-                <%= link_to "haut", problem_order_minus_path(f) %>
-                <% if down %>
-                | <%= link_to "bas", problem_order_plus_path(f) %>
+            <li<%= ' class="active"'.html_safe if f.id == id && type == 3 %>>
+            <%= link_to chapter_path(@chapter, :type => 3, :which => f.id) do %>
+              <% qcm = Solvedqcm.where(:user_id => current_user.id, :qcm_id => f.id) %>
+              <% if qcm.size > 0 %>
+                <% qcm = qcm.first %>
+                <% if qcm.correct %>
+                  <i class = "icon-ok"></i>
+                <% else %>
+                  <i class = "icon-remove"></i>
+                  <% pasfait = pasfait + 1 %>
                 <% end %>
               <% else %>
-                <%= link_to "bas", problem_order_plus_path(f) %>
+                <% pasfait = pasfait + 1 %>
               <% end %>
-              </center> <br/>
+              <% if !f.online %>
+                <i class="icon-warning-sign"></i>
+              <% end %>
+              Exercice <%= j if f.online %>
             <% end %>
-            
-            <% if !f.online && @chapter.online %>
-              <center>
-              <%= button_to "Mettre en ligne", problem_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Etes vous sûr de vouloir rendre ce problème visible par les utilisateurs?" } %>
-              </center> <br/>
+            </li>
+            <% if f.id == id  && type == 3 %>
+              <% number = j %>
+              <% number2 = i %>
             <% end %>
-            
+            <% j = j+1 if f.online %>
           <% end %>
-          
+          <% deux = deux + 1 %>
         <% end %>
-        
+
       <% end %>
-      
-      
-      
-    
+
+      <% if pasfait == 0 && !current_user.admin? && !current_user.chapters.exists?(@chapter) %>
+        <% current_user.chapters << @chapter %>
+      <% end %>
+
+      <li class="nav-header">Problèmes</li>
+      <% i = 1 %>
+      <% listex = @chapter.problems %>
+      <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
+      <% listex.each do |f| %>
+        <% if f.online || current_user.admin? %>
+          <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>
+          <%= link_to chapter_path(@chapter, :type => 4, :which => f.id) do %>
+            <% if !f.online %>
+              <i class="icon-warning-sign"></i>
+            <% end %>
+            <%= f.name %>
+          <% end %>
+          </li>
+          <% if f.id == id && type == 4 %>
+            <% number = i %>
+          <% end %>
+          <% i = i + 1 %>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="span10">
+
+    <!-- INTRODUCTION -->
+
+    <% if type == 0 %>
+      <%= render 'intro' %>
+    <% end %>
+
+
+    <!-- POINTS THEORIQUES -->
+
+    <% if type == 1 && @chapter.theories.exists?(id) %>
+      <% f = Theory.find(id) %>
+      <%= render 'theories/show', f: f, number: number %>
+    <% end %>
+
+
+    <!-- EXERCICES -->
+
+    <% if type == 2 && @chapter.exercises.exists?(id)%>
+      <% f = Exercise.find(id) %>
+      <%= render 'exercises/show', f: f, number: number, number2: number2, liste: liste, liste2: liste2 %>
+    <% end %>
+
+    <!-- QCMS -->
+
+    <% if type == 3 && @chapter.qcms.exists?(id)%>
+      <% f = Qcm.find(id) %>
+      <%= render 'qcms/show', f: f, number: number, number2: number2, liste: liste, liste2: liste2 %>
+    <% end %>
+
+
+    <!-- PROBLEMES -->
+
+    <% if type == 4 && @chapter.problems.exists?(id)%>
+      <% f = Problem.find(id) %>
+      <%= render 'problems/show', f: f, number: number %>
+    <% end %>
+
   </div>
 </div>
+
 <center>
   <% if current_user.admin? %>
     <br/>
-    Ajouter un : 
+    Ajouter un :
     <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
     <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
-    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %> | 
+    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %> |
     <%= link_to "problème", new_chapter_problem_path(@chapter) %>
-    
+
     <% if !@chapter.online %>
       <br/><br/>
       <%= button_to "Mettre ce chapitre en ligne", chapter_warning_path(@chapter), method: :get, class: 'btn btn-large' %>
@@ -652,7 +225,7 @@
 </center>
 <br/>
 <center>
-  Retour à la section : 
+  Retour à la section :
   <% i = false %>
   <% @chapter.sections.each do |f| %>
     <% if i %> | <% end %>

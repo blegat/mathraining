@@ -1,0 +1,169 @@
+<h3>Exercice <%= number %></h3>
+<%= simple_format f.statement %>
+<br/>
+
+
+<% if current_user.admin? %>
+
+  <ul>
+    <% f.choices.order(:id).each do |c| %>
+      <li style="padding:5px;">
+      <%= c.ans %>
+
+      <% if c.ok %>
+        <i class="icon-ok" style="margin-left:10px;"></i>
+      <% end %>
+      <% if !c.ok && f.many_answers %>
+        <i class="icon-remove" style="margin-left:10px;"></i>
+      <% end %>
+      </li>
+    <% end %>
+  </ul>
+
+  <br/>
+
+  <% if f.many_answers %>
+    (Plusieurs réponses possibles)
+  <% else %>
+    (Une seule réponse possible)
+  <% end %>
+
+  <br/>
+  <br/>
+  <center>
+    <% if @chapter.online && f.online %>
+      <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." }  %> |
+      <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
+      <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Attention, ce QCM est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
+    <% else %>
+      <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> |
+      <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> |
+      <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
+    <% end %>
+  </center>
+  <br/>
+
+  <% if number2 > 1 %>
+    <% up = true %>
+  <% else %>
+    <% up = false %>
+  <% end %>
+
+  <% if number2 < liste.size + liste2.size %>
+    <% down = true %>
+  <% else %>
+    <% down = false %>
+  <% end %>
+
+  <% if (up || down) %>
+    <center>
+      Déplacer ce QCM vers le
+      <% if up %>
+        <%= link_to "haut", qcm_order_minus_path(f) %>
+        <% if down %>
+          | <%= link_to "bas", qcm_order_plus_path(f) %>
+        <% end %>
+      <% else %>
+        <%= link_to "bas", qcm_order_plus_path(f) %>
+      <% end %>
+    </center> <br/>
+  <% end %>
+
+  <% if !f.online && @chapter.online %>
+    <center>
+      <%= button_to "Mettre en ligne", qcm_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de ce qcm par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
+    </center> <br/>
+  <% end %>
+
+<% else %>
+
+  <% sol = Solvedqcm.where(:user_id => current_user.id, :qcm_id => id) %>
+  <% if sol.size > 0 %>
+    <% sol = sol.first %>
+    <% if sol.correct? %>
+
+      <ul>
+        <% f.choices.order(:id).each do |c| %>
+          <li style="padding:5px;">
+          <%= c.ans %>
+
+          <% if c.ok %>
+            <i class="icon-ok" style="margin-left:10px;"></i>
+          <% end %>
+          <% if !c.ok && f.many_answers %>
+            <i class="icon-remove" style="margin-left:10px;"></i>
+          <% end %>
+          </li>
+        <% end %>
+      </ul>
+
+      <p style="color:green;"><b>Vous avez résolu cet exercice!</b></p>
+
+    <% else %>
+
+      <% if f.many_answers %>
+
+        <% anciens = sol.choices %>
+
+        <%= form_for sol do |x| %>
+          <b>Plusieurs réponses sont possibles.</b><br/><br/>
+          <% f.choices.order(:id).each do |c| %>
+            <input type="hidden" name="qcm_id" value="<%= f.id %>" />
+            <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+              <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %>>
+              <%= c.ans %>
+            </label>
+          <% end %>
+          <br/><button class="btn btn-primary" type="submit">Soumettre</button>
+        <% end %>
+      <% else %>
+        <% choice = sol.choices.first %>
+        <%= form_for sol do |x| %>
+          <input type="hidden" name="qcm_id" value="<%= f.id %>" />
+          <% f.choices.order(:id).each do |c| %>
+            <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+              <input type="radio" name="ans" value="<%= c.id %>" <%= "checked" if c.id == choice.id %>>
+              <%= c.ans %>
+            </label>
+          <% end %>
+          <br/><button class="btn btn-primary" type="submit">Soumettre</button>
+        <% end %>
+
+      <% end %>
+
+      <br/>
+
+      <p style="color:red;">Votre réponse est erronée. Vous avez déjà commis <%= sol.nb_guess %> erreur<%= "s" if sol.nb_guess > 1 %>.</p>
+
+    <% end %>
+  <% else %>
+
+    <% if f.many_answers %>
+      <b>Plusieurs réponses sont possibles.</b><br/><br/>
+      <form action="<%= solvedqcms_path %>" method="post">
+        <input type="hidden" name="qcm_id" value="<%= f.id %>" />
+        <% f.choices.order(:id).each do |c| %>
+          <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+            <input type="checkbox" name="ans[<%= c.id %>]" value="ok">
+            <%= c.ans %>
+          </label>
+        <% end %>
+        <br/><button class="btn btn-primary" type="submit">Soumettre</button>
+      </form>
+    <% else %>
+      <form action="<%= solvedqcms_path %>" method="post">
+        <input type="hidden" name="qcm_id" value="<%= f.id %>" />
+        <% f.choices.order(:id).each do |c| %>
+          <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+            <input type="radio" name="ans" value="<%= c.id %>">
+            <%= c.ans %>
+          </label>
+        <% end %>
+        <br/><button class="btn btn-primary" type="submit">Soumettre</button>
+      </form>
+
+    <% end %>
+
+  <% end %>
+
+<% end %>

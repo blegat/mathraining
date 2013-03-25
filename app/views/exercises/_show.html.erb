@@ -1,0 +1,103 @@
+<h3>Exercice <%= number %></h3>
+<%= simple_format f.statement %>
+<br/>
+<% if current_user.admin? %>
+  Réponse : 
+  <% if f.decimal %>
+    <b><%= f.answer %></b> (On demande une réponse <b>décimale</b> au millième près)
+  <% else %>
+    <b><%= f.answer.to_i %></b> (On demande une réponse <b>entière</b>)
+  <% end %>
+  <br/>
+  <br/>
+  <center>
+    <% if @chapter.online && f.online %>
+      <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
+      | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Attention, cet exercice est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
+    <% else %>
+      <%= link_to "Modifier cet exercice", edit_exercise_path(f) %>
+      | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
+    <% end %>
+  </center>
+  <br/>
+
+  <% if number2 > 1 %>
+    <% up = true %>
+  <% else %>
+    <% up = false %>
+  <% end %>
+
+  <% if number2 < liste.size + liste2.size %>
+    <% down = true %>
+  <% else %>
+    <% down = false %>
+  <% end %>
+
+  <% if (up || down) %>
+    <center>
+      Déplacer cet exercice vers le 
+      <% if up %>
+        <%= link_to "haut", exercise_order_minus_path(f) %>
+        <% if down %>
+          | <%= link_to "bas", exercise_order_plus_path(f) %>
+        <% end %>
+      <% else %>
+        <%= link_to "bas", exercise_order_plus_path(f) %>
+      <% end %>
+    </center> <br/>
+  <% end %>
+
+  <% if !f.online && @chapter.online %>
+    <center>
+      <%= button_to "Mettre en ligne", exercise_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
+    </center> <br/>
+  <% end %>
+<% else %>
+
+  <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => id) %>
+  <% if exo.size > 0 %>
+    <% exo = exo.first %>
+    <% if exo.correct? %>
+      <p style="color:green;"><b>Vous avez résolu cet exercice!</b></p>
+      Réponse : 
+      <% if f.decimal %>
+        <b><%= f.answer %></b>
+      <% else %>
+        <b><%= f.answer.to_i %></b>
+      <% end %>
+      <br/>
+    <% else %>
+
+      <% if f.decimal %>
+        On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
+        <% val = exo.guess %>
+      <% else %>
+        <% val = exo.guess.to_i %>
+      <% end %>
+
+      <%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
+        <%= g.label "Votre réponse : " %>
+        <%= g.text_field :guess, style: "width:50px;", value: val %>
+        <%= g.submit "Soumettre", class: "btn btn-primary" %>
+      <% end %>
+
+      <br/>
+
+      <p style="color:red;">Votre réponse (<b><%= val %></b>) est erronée. Vous avez déjà commis <%= exo.nb_guess %> erreur<%= "s" if exo.nb_guess > 1 %>.</p>
+
+    <% end %>
+  <% else %>
+    <% if f.decimal %>
+      On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
+    <% end %>
+
+    <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
+      <%= g.hidden_field :exercise_id, value: f.id %>
+      <%= g.label "Votre réponse : " %>
+      <%= g.text_field :guess, style: "width:50px;" %>
+      <%= g.submit "Soumettre", class: "btn btn-primary" %>
+    <% end %>
+
+  <% end %>
+
+<% end %>

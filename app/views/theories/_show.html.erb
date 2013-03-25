@@ -1,0 +1,59 @@
+<% if f.online || current_user.admin? %>
+  <h3><%= f.title %> </h3>
+  <!--<%= simple_format f.content %>-->
+  <%= markdown_render f.content %>
+
+  <% if current_user.admin? %>
+    <br/>
+    <center>
+      <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> | 
+      <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %> |
+      <%= link_to "Code LaTeX", theory_latex_path(f) %>
+    </center>
+    <br/>
+
+    <% if number > 1 %>
+      <% up = true %>
+    <% else %>
+      <% up = false %>
+    <% end %>
+
+    <% if number < @chapter.theories.count %>
+      <% down = true %>
+    <% else %>
+      <% down = false %>
+    <% end %>
+
+    <% if up || down %>
+      <center>
+        Déplacer ce point théorique vers le 
+        <% if up %>
+          <%= link_to "haut", theory_order_minus_path(f) %>
+          <% if down %>
+            | <%= link_to "bas", theory_order_plus_path(f) %>
+          <% end %>
+        <% else %>
+          <%= link_to "bas", theory_order_plus_path(f) %>
+        <% end %>
+      </center> <br/>
+    <% end %>
+
+    <% if !f.online && @chapter.online %>
+      <center>
+        <%= button_to "Mettre en ligne", theory_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Etes vous sûr de vouloir rendre ce point théorique visible par les utilisateurs?" } %>
+      </center> <br/>
+    <% end %>
+
+  <% else %>
+
+    <center>
+      <% if current_user.theories.exists?(id) %>
+        <%= button_to "Marquer comme non lu", theory_unread_path(f), method: :get, class: 'btn btn' %>
+      <% else %>
+        <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn' %>
+      <% end %>
+    </center>
+
+  <% end %>
+
+<% end %>

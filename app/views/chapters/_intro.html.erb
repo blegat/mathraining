@@ -1,0 +1,46 @@
+<h3>Prérequis</h3>
+<% if @chapter.prerequisites.empty? %>
+  <p>Aucun prérequis</p>
+<% else %>
+  <ul>
+    <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
+      <li><%= link_to prerequisite.name, prerequisite %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% if current_user.admin? %>
+  <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>
+<% end %>
+
+<h3>Introduction</h3>
+<p><%= @chapter.description %></p>
+
+<% if current_user.admin? %>
+  <br/>
+  <% if !@chapter.online %>
+
+    <center>
+      <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
+
+      <% if @chapter.sections.size > 1 %>
+        <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Attention! En supprimant ce chapitre, vous le supprimerez des #{@chapter.sections.size} sections auxquelles il appartient! Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
+      <% else %>
+        <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %>
+      <% end %> |
+
+      <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
+    </center>
+
+  <% else %>
+
+    <center>
+      <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %>
+
+      <% if !@chapter.sections.empty? %>
+        | <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
+      <% end %>
+    </center>
+
+  <% end %>
+<% end %>
