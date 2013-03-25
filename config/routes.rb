@@ -4,6 +4,8 @@ Ombtraining::Application.routes.draw do
 
 
   resources :solvedexercises
+  resources :solvedqcms
+  resources :solvedchoices
 
 
   resources :qcms, only: [:update, :edit, :destroy] do

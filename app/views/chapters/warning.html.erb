@@ -2,7 +2,7 @@
 <h1>Mise en ligne du chapitre <%= @chapter.name %></h1>
 Vous vous apprêtez à mettre un chapitre en ligne.
 
-Une fois cela fait, les utilisateurs auront accès à tous les composants du chapitre et pourront entre autres commencer à résoudre les exercices et QCMs qui leur sont proposés. Il ne sera alors plus envisageable pour un administrateur de modifier le chapitre autant qu'il ne le pouvait lorsque le chapitre était en construction. Avant de faire cette opération, <b>nous vous demandons donc de prendre connaissance de ce que vous pourrez et ne pourrez plus faire une fois ce chapitre mis en ligne.</b>
+Une fois cela fait, les utilisateurs auront accès à tous les composants du chapitre et pourront entre autres commencer à résoudre les exercices et QCMs qui leur sont proposés. Il ne sera alors plus envisageable pour un administrateur de modifier le chapitre autant qu'il ne le pouvait lorsque le chapitre était en construction (en particulier, vous ne pourrez plus le supprimer). Avant de faire cette opération, <b>nous vous demandons donc de prendre connaissance de ce que vous pourrez et ne pourrez plus faire une fois ce chapitre mis en ligne.</b>
 
 <h2>Prérequis</h2>
 
@@ -76,31 +76,20 @@ Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mi
       <h3> Exercice <%= i%> - <%= link_to "Modifier ce QCM", chapter_path(@chapter, :type => 3, :which => f.id) %> </h3></h3>
       <%= f.statement %>
       <br/><br/>
-      <table cellpadding="5">
-        <% letters = ('A'..'Z').to_a %>
-        <% i = 0 %>
-        <% f.choices.order(:id).each do |c| %>
-          <tr>
-          <td>
-          <%= letters[i] %>)
-          </td>
-          <td>
-          <%= c.ans %>
-          </td>
-          <td>
-          <center>
-          <% if c.ok %>
-            <i class="icon-ok"></i>
-          <% else %>
-            <i class="icon-remove"></i>
-          <% end %>
-          </center>
-          </td>
-          </tr>
-          <% i = i+1 %>
-        <% end %>
+      <ul>
+      <% f.choices.order(:id).each do |c| %>
+        <li style="padding:5px;">
+        <%= c.ans %>
 
-      </table>
+        <% if c.ok %>
+          <i class="icon-ok" style="margin-left:10px;"></i>
+        <% end %>
+        <% if !c.ok && f.many_answers %>
+          <i class="icon-remove" style="margin-left:10px;"></i>
+        <% end %>
+        </li>	
+      <% end %>
+      </ul>
       <br/>
       <% if f.many_answers %>
         <b>(Plusieurs réponses possibles)</b>
@@ -117,7 +106,7 @@ Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mi
 <% end %>
 
 <center>
-<%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), method: :get, class: 'btn btn-large', data: {confirm: "Etes-vous sûr de vouloir mettre ce chapitre en ligne?"} %>
+<%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), method: :get, class: 'btn-danger btn-large', data: {confirm: "Etes-vous sûr de vouloir mettre ce chapitre en ligne?"} %>
 </center>
 
 <br/><br/>

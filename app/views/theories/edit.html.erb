@@ -8,4 +8,4 @@
 <% end %>
 
 <br />
-<center><%= link_to 'Retour au chapitre', @theory.chapter %></center>
+<center><%= link_to 'Retour au chapitre', chapter_path(@theory.chapter, :type => 1, :which => @theory.id) %></center>

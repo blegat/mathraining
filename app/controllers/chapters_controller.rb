@@ -4,7 +4,10 @@ class ChaptersController < ApplicationController
   before_filter :admin_user,
     only: [:destroy, :edit, :update, :create,
       :new_section, :create_section, :destroy_section]
+  before_filter :delete_online, only: [:destroy]
   before_filter :online_chapter,
+    only: [:show]
+  before_filter :unlocked_chapter,
     only: [:show]
   before_filter :fondement_online,
     only: [:new_section, :create_section, :destroy_section]
@@ -50,6 +53,25 @@ class ChaptersController < ApplicationController
     @chapter = Chapter.find(params[:id])
     @chapter.destroy
     flash[:success] = "Chapitre supprimé."
+    Exercise.where(:chapter_id => params[:id]).each do |e|
+      e.destroy
+    end
+    
+    Theory.where(:chapter_id => params[:id]).each do |t|
+      t.destroy
+    end
+    
+    Problem.where(:chapter_id => params[:id]).each do |p|
+      p.destroy
+    end
+    
+    Qcm.where(:chapter_id => params[:id]).each do |q|
+      Choice.where(:qcm_id => q.id).each do |c|
+        c.destroy
+      end
+      q.destroy
+    end
+    
     redirect_to sections_path
   end
   
@@ -102,6 +124,21 @@ class ChaptersController < ApplicationController
     redirect_to sections_path unless (current_user.admin? || @chapter.online)
   end
   
+  def unlocked_chapter
+    if !current_user.admin?
+      @chapter.prerequisites.each do |p|
+        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+          redirect_to sections_path and return
+        end
+      end
+    end
+  end
+  
+  def delete_online
+    @chapter = Chapter.find(params[:id])
+    redirect_to sections.path unless @chapter.online
+  end
+  
   def fondement_online
     @chapter = Chapter.find(params[:chapter_id])
     redirect_to @chapter if (@chapter.online && @chapter.sections.empty?)
@@ -115,9 +152,9 @@ class ChaptersController < ApplicationController
         redirect_to @chapter and return
       end
     end
-  if @chapter.online
-    redirect_to @chapter and return	
-  end
+    if @chapter.online
+      redirect_to @chapter and return	
+    end
   end
 
 end
