@@ -66,4 +66,9 @@ FactoryGirl.define do
     association :user
     content "Foobar"
   end
+  factory :correction do
+    association :submission
+    association :user
+    content "Foobar"
+  end
 end

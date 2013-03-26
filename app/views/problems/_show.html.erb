@@ -43,6 +43,7 @@
 
   <% else %>
     <!-- Online because of first if -->
+    <%= render 'submissions/index', problem: f %>
     <%= render 'submissions/new', problem: f %>
   <% end %>
 

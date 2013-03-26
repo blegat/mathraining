@@ -1,5 +1,8 @@
 Ombtraining::Application.routes.draw do
 
+  resources :corrections
+
+
   resources :solvedexercises
   resources :solvedqcms
   resources :solvedchoices
@@ -48,7 +51,9 @@ Ombtraining::Application.routes.draw do
       as: :order_minus
     match '/put_online', to: 'problems#put_online',
       as: :put_online
-    resources :submissions, only: [:create, :show]
+    resources :submissions, only: [:create, :show] do
+      resources :corrections, only: [:create]
+    end
   end
 
   mathjax 'mathjax'

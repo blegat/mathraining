@@ -1,0 +1,15 @@
+<% corrections = @submission.corrections %>
+<% corrections.each do |correction| %>
+  <div class="well">
+    <aside>
+    <p>
+    <%= correction.user.name %>
+    </p>
+    </aside>
+    <aside>
+    <p>
+    <%= correction.content %>
+    </p>
+    </aside>
+  </div>
+<% end %>

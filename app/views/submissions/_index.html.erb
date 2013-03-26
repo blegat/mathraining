@@ -1,0 +1,6 @@
+<h2>Soumission précédentes</h2>
+<ul>
+  <% problem.submissions.where('user_id = ?', current_user).each do |s| %>
+    <li><%= link_to s.content, problem_submission_path(problem, s) %></p></li>
+  <% end %>
+</ul>

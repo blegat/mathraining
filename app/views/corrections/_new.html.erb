@@ -1,0 +1,7 @@
+<h3>Répondre</h3>
+<%= form_for :correction, url: problem_submission_corrections_path(@problem, @submission) do |f| %>
+  <%= f.label :content, "Contenu" %>
+  <%= f.text_area :content, class: 'span12' %>
+  <br />
+  <%= f.submit "Poster réponse", class: "btn btn-large btn-primary" %>
+<% end %>
