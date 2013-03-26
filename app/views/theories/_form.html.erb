@@ -3,10 +3,14 @@
 <%= f.text_field :title, :class => "span5" %>
 
 <%= f.label :contenu %>
-<a href="#ici" onClick="JavaScript: TAinsert('<i>','</i>','MathInput'); Preview.Update();">Italique</a> - 
-<a href="#ici" onClick="JavaScript: TAinsert('<b>','</b>','MathInput'); Preview.Update();">Gras</a> - 
-<a href="#ici" onClick="JavaScript: TAinsert('<u>','</u>','MathInput'); Preview.Update();">Souligné</a> - 
-<a href="#ici" onClick="JavaScript: TAinsert('<h4>','</h4>','MathInput'); Preview.Update();">Titre</a> - 
-<a href="#ici" onClick="JavaScript: TAinsert('<a href=\'http://www.exemple.com\'>','</a>','MathInput'); Preview.Update();">Lien</a> - 
-<a href="#ici" onClick="JavaScript: TAinsert('<ul>\n<li>Point 1</li>\n<li>Point 2</li>\n</ul>','','MathInput'); Preview.Update();">Liste</a>
-<%= f.text_area :content, :class => "span12", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
+<div class="well" id="MathPreview"></div>
+<div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+<a href="#ici" onClick="JavaScript: TAinsert('<b>','</b>','MathInput'); Preview.Update();"><%= image_tag "bold.jpg", :title => "Gras", :style=>"margin-left:5px;" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<i>','</i>','MathInput'); Preview.Update();"><%= image_tag "italics.jpg", :title => "Italique" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<u>','</u>','MathInput'); Preview.Update();"><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<h4>','</h4>','MathInput'); Preview.Update();"><%= image_tag "title.jpg", :title => "Sous-titre", :style=>"margin-left:15px;" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<hr>','','MathInput'); Preview.Update();"><%= image_tag "line.jpg", :title => "Séparateur horizontal" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<ul>\n<li>Point 1','</li>\n<li>Point 2</li>\n</ul>','MathInput'); Preview.Update();"><%= image_tag "list.jpg", :title => "Liste" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<ol>\n<li>Point 1','</li>\n<li>Point 2</li>\n</ol>','MathInput'); Preview.Update();"><%= image_tag "enumerate.jpg", :title => "Liste numérotée" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<a href=\'http://www.exemple.com\'>','</a>','MathInput'); Preview.Update();"><%= image_tag "link.jpg", :title => "Lien", :style=>"margin-left:15px;" %></a>
+<%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
