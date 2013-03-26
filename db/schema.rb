@@ -65,6 +65,16 @@ ActiveRecord::Schema.define(:version => 20130322190142) do
     t.integer "chapter_id"
   end
 
+  create_table "submissions", :force => true do |t|
+    t.integer  "problem_id"
+    t.integer  "user_id"
+    t.text     "content"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "submissions", ["problem_id", "user_id"], :name => "index_submissions_on_problem_id_and_user_id"
+
   create_table "problems", :force => true do |t|
     t.string   "name"
     t.text     "statement"
@@ -115,16 +125,6 @@ ActiveRecord::Schema.define(:version => 20130322190142) do
   end
 
   add_index "solvedqcms", ["user_id"], :name => "index_solvedqcms_on_user_id"
-
-  create_table "submissions", :force => true do |t|
-    t.integer  "problem_id"
-    t.integer  "user_id"
-    t.text     "content"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
-  add_index "submissions", ["problem_id", "user_id"], :name => "index_submissions_on_problem_id_and_user_id"
 
   create_table "theories", :force => true do |t|
     t.string   "title"
