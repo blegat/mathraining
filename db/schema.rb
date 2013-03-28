@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130326174100) do
+ActiveRecord::Schema.define(:version => 20130327091110) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -70,12 +70,22 @@ ActiveRecord::Schema.define(:version => 20130326174100) do
     t.boolean  "online",     :default => false
   end
 
+  create_table "pictures", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.datetime "image_updated_at"
+  end
+
+  add_index "pictures", ["user_id"], :name => "index_pictures_on_user_id"
+
   create_table "prerequisites", :force => true do |t|
     t.integer "prerequisite_id"
     t.integer "chapter_id"
   end
 
-  create_table "submissions", :force => true do |t|
+  create_table "problem_submissions", :force => true do |t|
     t.integer  "problem_id"
     t.integer  "user_id"
     t.text     "content"
@@ -83,7 +93,7 @@ ActiveRecord::Schema.define(:version => 20130326174100) do
     t.datetime "updated_at", :null => false
   end
 
-  add_index "submissions", ["problem_id", "user_id"], :name => "index_submissions_on_problem_id_and_user_id"
+  add_index "problem_submissions", ["problem_id", "user_id"], :name => "index_problem_submissions_on_problem_id_and_user_id"
 
   create_table "problems", :force => true do |t|
     t.string   "name"

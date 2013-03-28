@@ -1,6 +1,8 @@
 <% if f.online || current_user.admin? %>
   <h3><%= f.name %> </h3>
-  <%= simple_format f.statement%>
+  
+  <%= raw(f.statement.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+  <br/>
   <% if current_user.admin? %>
     <br/>
     <center>

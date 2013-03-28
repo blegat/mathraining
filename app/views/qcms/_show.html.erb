@@ -1,7 +1,7 @@
 <h3>Exercice <%= number %></h3>
-<%= simple_format f.statement %>
-<br/>
+<%= raw(f.statement.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
 
+<br/><br/>
 
 <% if current_user.admin? %>
 

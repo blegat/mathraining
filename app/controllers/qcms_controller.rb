@@ -57,7 +57,7 @@ class QcmsController < QuestionsController
   def update
     @qcm = Qcm.find(params[:id])
     @qcm.statement = params[:qcm][:statement]
-    if !@qcm.chapter.online
+    if !@qcm.chapter.online || !@qcm.online
       if params[:qcm][:many_answers] == '1'
         @qcm.many_answers = true
       else
@@ -86,7 +86,7 @@ class QcmsController < QuestionsController
       end
     end
     if @qcm.save
-      flash[:success] = "QCM modifié."
+      
       if @qcm.chapter.online
         redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
       else

@@ -2,7 +2,7 @@
 <h1>Créer un exercice</h1>
 
 <div class="row">
-  <div class="span6">
+  <div class="span12">
     <%= form_for(@exercise, url: chapter_exercises_path) do |f| %>
       <%= render 'fields', f: f %>
       <br />
@@ -12,3 +12,8 @@
 </div>
 
 <center><%= link_to 'Retour au chapitre', @chapter %></center>
+
+<script>
+Preview.Init();
+Preview.Update();
+</script>

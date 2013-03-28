@@ -1,0 +1,25 @@
+<% provide(:title, 'Vos images') %>
+<h1>Vos images</h1>
+Pour récupérer l'url d'une de vos images, cliquez dessus.<br/><br/>
+<div class="column">
+
+<% i = 0 %>
+<% current_user.pictures.each do |p| %>
+  <% if i % 4 == 0 %>
+    <div class="row">
+  <% end %>
+  
+  <div class="span3">
+  <%= link_to image_tag(p.image.url, :style => "margin-bottom:20px;"), p %>
+  </div>
+  
+  <% if i % 4 == 3 %>
+    </div>
+  <% end %>
+  
+  <% i = i + 1 %>
+<% end %>
+</div>
+
+<br/><br/>
+<center><%= button_to "Uploader une nouvelle image", new_picture_path, method: :get, class: 'btn btn-large' %></center>

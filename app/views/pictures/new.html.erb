@@ -1,0 +1,19 @@
+<% provide(:title, 'Uploader une image') %>
+<h1>Uploader une image</h1>
+<br/>
+Votre image doit respecter les conditions suivantes :<br/><br/>
+<ul>
+<li>Faire moins de 1 Mo</li>
+<li>Etre de type : gif, png, bmp, ou jp(e)g</li>
+<li>Etre jolie :-)</li>
+</ul>
+<br/>
+
+<%= form_for @pic, :url => pictures_path, :html => { :multipart => true } do |form| %>	
+  <%= render 'shared/error_messages', object: form.object %>
+  <%= form.hidden_field :user_id, value: current_user.id %>
+  <%= form.label "Choisissez votre image :" %>
+  <%= form.file_field :image %>
+  <br/><br/>
+  <%= form.submit "Uploader", class: "btn btn-primary" %>
+<% end %>

@@ -23,6 +23,7 @@ class User < ActiveRecord::Base
   has_many :exercises, :through => :solvedexercises
   has_many :solvedqcms
   has_many :qcms, :through => :solvedqcms
+  has_many :pictures
 
   before_save { self.email.downcase! }
   before_save :create_remember_token

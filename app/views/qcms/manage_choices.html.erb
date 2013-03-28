@@ -1,17 +1,20 @@
 <% provide(:title, "Modifier les choix du QCM") %>
 <h1>Modifier les choix d'un QCM</h1>
 Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne saurait être enregistrée.<br/><br/>
-<%= @qcm.statement %>
-<br/><br/>
+
+<h3>Enoncé</h3>	
+<%= raw(@qcm.statement.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+
+<br/>
+<h3>Réponse</h3>	
 <table cellpadding="5">
 <tr><th></th><th></th><th>Rép?</th><th></th><th></th><th></th></tr>
-<% letters = ('A'..'Z').to_a %>
 <% i = 0 %>
 <% @qcm.choices.order(:id).each do |f| %>
   <%= form_for(f, url: qcm_update_choice_path(@qcm, f)) do |g| %>
     <tr>
       <td>
-        <%= letters[i] %>)
+        -
       </td>
       <td>
         <%= g.text_field :ans %>
