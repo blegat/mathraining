@@ -15,7 +15,8 @@
 
 class User < ActiveRecord::Base
   attr_accessible :email, :first_name, :last_name,
-    :password, :password_confirmation, :admin
+    :password, :password_confirmation, :admin,
+    :email_confirm, :key
   has_secure_password
   has_and_belongs_to_many :theories
   has_and_belongs_to_many :chapters, :uniq => true

@@ -5,8 +5,14 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by_email(params[:session][:email])
     if user && user.authenticate(params[:session][:password])
-      sign_in user
-      redirect_back_or user
+      if user.email_confirm
+        flash[:success] = 'Bienvenue sur OMB training!'
+        sign_in user
+        redirect_back_or user
+      else
+        flash.now[:error] = 'Vous devez activer votre compte via le mail qui vous a été envoyé.'
+        render 'new'
+      end
     else
       flash.now[:error] = 'Email ou mot de passe invalide.'
       render 'new'

@@ -16,11 +16,14 @@ class UsersController < ApplicationController
   end
   def create
     @user = User.new(params[:user])
+    @user.key = SecureRandom.urlsafe_base64
+    @user.email_confirm = false
   	if @user.save
-      sign_in @user
-  	  flash[:success] = "Bienvenue sur OMB training!"
-  	  redirect_to @user
+  	  UserMailer.registration_confirmation(@user).deliver
+  	  flash[:success] = "Un mail de confirmation vous a été envoyé sur votre adresse mail pour activer votre compte."
+  	  redirect_to signin_path
   	else
+  	  flash[:error] = @user.email_confirm
   	  render 'new'
   	end
   end
@@ -56,6 +59,19 @@ class UsersController < ApplicationController
       flash[:success] = "Utilisateur promu au rang d'administrateur!"
     end
     redirect_to users_path
+  end
+  
+  def activate
+    @user = User.find(params[:id])
+    if !@user.email_confirm && @user.key.to_s == params[:key].to_s
+      @user.toggle!(:email_confirm)
+      flash[:success] = "Votre compte a bien été activé! Veuillez maintenant vous connecter."
+    elsif @user.key.to_s != params[:key].to_s
+      flash[:error] = "Le lien d'activation est erroné."
+    else
+      flash[:notice] = "Ce compte est déjà actif!"
+    end
+    redirect_to signin_path
   end
 
   private
