@@ -116,11 +116,10 @@
 <h1>
   <%= @section.name %>
 </h1>
-<p>
-<h3>Introduction</h3>
-  <%= @section.description %>
-</p>
 
+<h3>Introduction</h3>
+   <%= raw(@section.description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+<br/><br/>
 <% if current_user.admin? %>
 <%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/><br/>
 <% end %>
@@ -205,7 +204,7 @@
       <ul>
       <% chap[encours].theories.each do |t| %>
         <% if t.online %>
-          <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %></li>
+          <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.theories.exists?(t) %></li>
         <% end %>
       <% end %>	
       </ul>
@@ -270,7 +269,7 @@
 <% end %>
 
 
-<br/><br/>
+<br/>
 <center>
 <%= link_to "Retour à la liste des cours", sections_path %>
 </center>
@@ -286,10 +285,9 @@
 <h1>
   Fondements
 </h1>
-<p>
+
 <h3>Introduction</h3>
-  Vous trouverez ici certaines bases mathématiques sans lesquelles la compréhension des sections plus avancées risque d'être compliquée. Il n'est pas nécessaire de compléter ces chapitres pour accéder à la suite des cours.
-</p>
+  Vous trouverez ici certaines bases mathématiques sans lesquelles la compréhension des sections plus avancées risque d'être compliquée. Il n'est pas nécessaire de compléter ces chapitres pour accéder à la suite des cours.<br/><br/>
 
 
 <% chap = Array.new %>
@@ -354,7 +352,7 @@
   <ul>
   <% chap[encours].theories.each do |t| %>
     <% if t.online %>
-      <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %></li>
+      <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.theories.exists?(t) %></li>
     <% end %>
   <% end %>	
   </ul>
@@ -381,7 +379,7 @@
 <% end %>
 
 
-<br/><br/>
+<br/>
 <center>
 <%= link_to "Retour à la liste des cours", sections_path %>
 </center>

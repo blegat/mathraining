@@ -41,7 +41,6 @@ class SolvedqcmsController < ApplicationController
         # Correct
         link.correct = true
         link.save
-        check_finish_chapter(current_user, qcm.chapter)
       else
         # Incorrect
         link.correct = false
@@ -65,7 +64,6 @@ class SolvedqcmsController < ApplicationController
       if rep.id == params[:ans].to_i
         link.correct = true
         link.save
-        check_finish_chapter(current_user, qcm.chapter)
       else
         link.correct = false
         link.save
@@ -123,7 +121,6 @@ class SolvedqcmsController < ApplicationController
         # Correct
         link.correct = true
         link.save
-        check_finish_chapter(current_user, qcm.chapter)
         link.choices.clear
       else
         # Incorrect
@@ -151,7 +148,6 @@ class SolvedqcmsController < ApplicationController
       if rep.id == params[:ans].to_i
         link.correct = true
         link.save
-        check_finish_chapter(current_user, qcm.chapter)
         link.choices.clear
       else
         link.correct = false

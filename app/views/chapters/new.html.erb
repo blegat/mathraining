@@ -3,7 +3,7 @@
 <h1>Créer un chapitre</h1>
 Vous pourrez choisir la ou les sections auxquelles ce chapitre appartient dès que celui-ci sera créé. <br/><br/>
 <div class="row">
-  <div class="span6">
+  <div class="span12">
     <%= form_for([@section,@chapter]) do |f| %>
       <%= render 'fields', f: f %>
       <br />
@@ -12,4 +12,10 @@ Vous pourrez choisir la ou les sections auxquelles ce chapitre appartient dès q
   </div>
 </div>
 
-<%= link_to 'Retour', sections_path %>
+<center><%= link_to 'Retour', sections_path %></center>
+
+
+<script>
+Preview.Init();
+Preview.Update();
+</script>

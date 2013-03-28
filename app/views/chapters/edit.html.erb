@@ -2,7 +2,7 @@
 <h1>Modifier un chapitre</h1>
 
 <div class="row">
-  <div class="span6">
+  <div class="span12">
     <%= form_for(@chapter) do |f| %>
       <%= render 'fields', f: f %>
       <br />
@@ -11,6 +11,10 @@
   </div>
 </div>
 
+<center><%= link_to 'Retour au chapitre', chapter_path(@chapter) %></center>
 
 
-<%= link_to 'Retour', chapter_path(@chapter) %>
+<script>
+Preview.Init();
+Preview.Update();
+</script>

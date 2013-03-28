@@ -19,7 +19,6 @@ class SolvedexercisesController < ApplicationController
       if absolu(exercise.answer, link.guess) < 0.001
         link.correct = true
         link.save
-        check_finish_chapter(current_user, exercise.chapter)
       else
         link.correct = false
         link.save
@@ -28,7 +27,6 @@ class SolvedexercisesController < ApplicationController
       if exercise.answer.to_i == link.guess.to_i
         link.correct = true
         link.save
-        check_finish_chapter(current_user, exercise.chapter)
       else
         link.correct = false
         link.save
@@ -50,7 +48,6 @@ class SolvedexercisesController < ApplicationController
         if absolu(exercise.answer, link.guess) < 0.001
           link.correct = true
           link.save
-          check_finish_chapter(current_user, exercise.chapter)
         else
           link.correct = false
           link.save
@@ -59,7 +56,6 @@ class SolvedexercisesController < ApplicationController
         if exercise.answer.to_i == link.guess.to_i
           link.correct = true
           link.save
-          check_finish_chapter(current_user, exercise.chapter)
         else
           link.correct = false
           link.save
@@ -88,7 +84,7 @@ class SolvedexercisesController < ApplicationController
   
   def before_update
     @link2 = Solvedexercise.find(params[:id])
-    @exercise2 = link.exercise
+    @exercise2 = @link2.exercise
     @chapter = @exercise2.chapter
   end
   
