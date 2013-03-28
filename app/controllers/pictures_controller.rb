@@ -3,7 +3,7 @@ class PicturesController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_user
   before_filter :good_person,
-    only: [:show]
+    only: [:show, :destroy]
 
   def show
     
@@ -21,6 +21,13 @@ class PicturesController < ApplicationController
     else
       render 'new'
     end
+  end
+  
+  def destroy
+    @pic = Picture.find(params[:id])
+    @pic.image.destroy
+    @pic.destroy
+    redirect_to pictures_path
   end
 
   private
