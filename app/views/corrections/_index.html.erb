@@ -1,9 +1,11 @@
-<% corrections = @submission.corrections %>
+<% corrections = @submission.corrections.paginate(page: params[:page]) %>
+<h2>Réponses (<%= "#{@submission.corrections.count}/#{corrections.count}" %>)</h2>
+<%= will_paginate corrections %>
 <% corrections.each do |correction| %>
   <div class="well">
     <aside>
     <p>
-    <%= correction.user.name %>
+    <%= link_to correction.user.name, correction.user %>
     </p>
     </aside>
     <aside>
@@ -13,3 +15,4 @@
     </aside>
   </div>
 <% end %>
+<%= will_paginate corrections %>

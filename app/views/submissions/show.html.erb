@@ -1,9 +1,24 @@
 <% provide(:title, 'Soumission') %>
 <h1>Problème <%= @problem.name %></h1>
+<p><li class=<%= @submission.icon %>></li>
+<% case @submission.status %>
+<% when 0 %>
+  Soumission en attente de correction.
+<% when 1 %>
+  Soumission corrigée. Elle n'est pas encore correcte.
+<% when 2 %>
+  Soumission correcte.
+<% end %>
+</p>
+
+<% if current_user.admin and @submission.status != 2 %>
+  <%= link_to 'Marquer la soumission comme correcte', problem_submission_correct_path(@problem, @submission) %>
+<% end %>
 
 <h2>Solution</h2>
 <p><%= @submission.content %></p>
 
-<h2>Réponses</h2>
 <%= render 'corrections/index' %>
-<%= render 'corrections/new' %>
+<% unless @submission.correct? %>
+  <%= render 'corrections/new' %>
+<% end %>

@@ -1,6 +1,27 @@
-<h2>Soumission précédentes</h2>
-<ul>
-  <% problem.submissions.where('user_id = ?', current_user).each do |s| %>
-    <li><%= link_to s.content, problem_submission_path(problem, s) %></p></li>
+<% if current_user.admin %>
+  <h2>Soumissions à corriger</h2>
+  <% submissions = problem.submissions.where('status = 0').order('updated_at DESC').paginate(page: params[:page]) %>
+  <% if submissions.empty? %>
+    <p>Aucune soumission à corriger.</p>
+  <% else %>
+    <ul>
+      <% submissions.each do |s| %>
+        <li><i class="<%= s.icon %>"></i> <%= link_to troncate(s.content, 16), problem_submission_path(problem, s) %> par <%= link_to s.user.name, s.user %></li>
+      <% end %>
+    </ul>
   <% end %>
-</ul>
+<% else %>
+  <h2>Soumissions précédentes</h2>
+  <% submissions = problem.submissions.where('user_id = ?', current_user).order('updated_at DESC').paginate(page: params[:page]) %>
+  <% if submissions.empty? %>
+    <p>Aucune soumission pour l'instant.</p>
+  <% else %>
+    <%= will_paginate submissions %>
+    <ul>
+      <% submissions.each do |s| %>
+        <li><i class="<%= s.icon %>"></i> <%= link_to troncate(s.content, 16), problem_submission_path(problem, s) %></p></li>
+      <% end %>
+    </ul>
+    <%= will_paginate submissions %>
+  <% end %>
+<% end %>

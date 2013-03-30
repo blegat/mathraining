@@ -6,16 +6,27 @@ describe Submission do
   subject { @p }
 
   it { should respond_to(:content) }
+  it { should respond_to(:status) }
 
   it { should be_valid }
 
-  # User
+  # Content
   describe "when content is not present" do
     before { @p.content = " " }
     it { should_not be_valid }
   end
   describe "when content is too long" do
     before { @p.content = "a" * 8001 }
+    it { should_not be_valid }
+  end
+
+  # Status
+  describe "when the status is not present" do
+    before { @p.status = " " }
+    it { should_not be_valid }
+  end
+  describe "when the status is not in the allowed range" do
+    before { @p.status = 3 }
     it { should_not be_valid }
   end
 

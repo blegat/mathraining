@@ -20,10 +20,13 @@ class User < ActiveRecord::Base
   has_secure_password
   has_and_belongs_to_many :theories
   has_and_belongs_to_many :chapters, :uniq => true
-  has_many :solvedexercises
-  has_many :exercises, :through => :solvedexercises
-  has_many :solvedqcms
-  has_many :qcms, :through => :solvedqcms
+  has_many :solvedexercises, dependent: :destroy
+  has_many :exercises, through: :solvedexercises
+  has_many :solvedqcms, dependent: :destroy
+  has_many :qcms, through: :solvedqcms
+  has_many :solvedproblems, dependent: :destroy
+  has_many :problems, through: :solvedproblems
+
   has_many :pictures
 
   before_save { self.email.downcase! }
@@ -41,6 +44,10 @@ class User < ActiveRecord::Base
 
   def name
     "#{self.first_name} #{self.last_name}"
+  end
+
+  def solved?(x)
+    return x.users.include?(self)
   end
   private
   def create_remember_token

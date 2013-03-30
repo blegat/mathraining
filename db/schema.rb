@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130328160119) do
+ActiveRecord::Schema.define(:version => 20130330203812) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -125,6 +125,13 @@ ActiveRecord::Schema.define(:version => 20130328160119) do
 
   add_index "solvedexercises", ["user_id"], :name => "index_solvedexercises_on_user_id"
 
+  create_table "solvedproblems", :force => true do |t|
+    t.integer  "problem_id"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "solvedqcms", :force => true do |t|
     t.integer  "user_id"
     t.integer  "qcm_id"
@@ -140,8 +147,9 @@ ActiveRecord::Schema.define(:version => 20130328160119) do
     t.integer  "problem_id"
     t.integer  "user_id"
     t.text     "content"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+    t.integer  "status",     :default => 0
   end
 
   add_index "submissions", ["problem_id", "user_id"], :name => "index_submissions_on_problem_id_and_user_id"

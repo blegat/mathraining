@@ -19,5 +19,14 @@ module ApplicationHelper
       object.errors.full_messages.to_sentence
     end
   end
+  def troncate(str, len)
+    if str.length <= len
+      return str
+    else
+      # FIXME avoid cutting en math expr
+      # "Posons $x = 1$" -> "Posons $x..." should be avoided
+      return "#{str.to(len-1)}..."
+    end
+  end
 
 end

@@ -18,6 +18,9 @@ class Problem < ActiveRecord::Base
 
   has_many :submissions
 
+  has_many :solvedproblems, dependent: :destroy
+  has_many :users, through: :solvedproblems
+
   validates :name, presence: true, length: { maximum: 255 }
   validates :statement, presence: true, length: { maximum: 8000 }
   validates :position, presence: true,
