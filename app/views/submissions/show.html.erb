@@ -5,7 +5,7 @@
 <% when 0 %>
   Soumission en attente de correction.
 <% when 1 %>
-  Soumission corrigée. Elle n'est pas encore correcte.
+  Soumission corrigée. Elle n'est pas encore correcte. Vous pouvez tenter de la corriger en répondant par commentaire, ou <%= link_to 'soumettre une nouvelle solution', chapter_path(@submission.problem.chapter, :type => 4, :which => @submission.problem.id) %>.
 <% when 2 %>
   Soumission correcte.
 <% end %>
@@ -16,9 +16,11 @@
 <% end %>
 
 <h2>Solution</h2>
-<p><%= @submission.content %></p>
+<p><%= raw((h @submission.content).gsub(/\n/, '<br>')) %></p>
 
 <%= render 'corrections/index' %>
 <% unless @submission.correct? %>
   <%= render 'corrections/new' %>
 <% end %>
+
+<center><%= link_to 'Retour au problème', chapter_path(@submission.problem.chapter, :type => 4, :which => @submission.problem.id) %></center>

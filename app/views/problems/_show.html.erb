@@ -53,7 +53,7 @@
   <% else %>
     <!-- Online because of first if -->
     <%= render 'submissions/index', problem: f %>
-    <% unless current_user.solved?(f) %>
+    <% unless current_user.solved?(f) || !@newsub %>
       <%= render 'submissions/new', problem: f %>
     <% end %>
   <% end %>

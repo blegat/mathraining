@@ -1,7 +1,17 @@
+<script src="/assets/previewsafe.js"></script>
+
 <%= form_for :submission,
   url: problem_submissions_path(problem) do |f| %>
+
   <br/><h4>Nouvelle soumission</h4>
-  <%= f.text_area :content, class:'span10' %>
+  <div class="well" id="MathPreview"></div>
+  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+  <%= f.text_area :content, :class => "span10", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
   <br />
   <%= f.submit "Soumettre solution", class: "btn btn-large btn-primary" %>
 <% end %>
+
+<script>
+Preview.Init();
+Preview.Update();
+</script>

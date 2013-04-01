@@ -9,21 +9,41 @@
     <%= will_paginate submissions %>
       <% submissions.each do |s| %>
         <% date = s.created_at.in_time_zone %>
-        <p><i class="<%= s.icon %>" style="margin-right:10px;"></i><%= link_to s.user.name, s.user %> - <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> - <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %> : <%= link_to troncate(s.content, 80), problem_submission_path(problem, s) %></p>
+        <p><i class="<%= s.icon %>" style="margin-right:10px;"></i><%= link_to s.user.name, s.user %> - <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> - <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %> : <%= link_to troncate(s.content.gsub(/\n/, ' - '), 80), problem_submission_path(problem, s) %></p>
       <% end %>
     <%= will_paginate submissions %>
   <% end %>
 <% else %>
   <br/>
   <h4>Soumissions précédentes</h4>
-  <% submissions = problem.submissions.where('user_id = ?', current_user).order('created_at') %>
-  <% if submissions.empty? %>
-    <p>Aucune soumission pour l'instant.</p>
-  <% else %>
+  <% @newsub = true %>
+  <% aucun = true %>
+  <% encours = Submission.new %>
+  <% submissions = problem.submissions.where('user_id = ?', current_user).order('created_at') # Ne pas paginer, un type qui fait N > 30 soumissions mérite de voir les N soumissions qu'il a faites et de se faire chier avec sa roulette (et puis j'utilise le last submissions par la suite) %>
+  
+  <% if !submissions.empty? %>
       <% submissions.each do |s| %>
-        <% date = s.created_at.in_time_zone %>
-        <p><i class="<%= s.icon %>" style="margin-right:10px;"></i><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> - <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %> : 
-        <%= link_to troncate(s.content, 80), problem_submission_path(problem, s) %></p>
-      <% end %>
+        <% if s.status != 0 %>
+          <% date = s.created_at.in_time_zone %>
+          <p><i class="<%= s.icon %>" style="margin-right:10px;"></i><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> - <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %> : 
+          <%= link_to troncate(s.content.gsub(/\n/, ' - '), 80), problem_submission_path(problem, s) %></p>
+          <% aucun = false %>
+        <% else %>
+          <% @newsub = false %>
+          <% encours = s %>
+        <% end %>
+      <% end %>      
   <% end %>
+  
+  <% if aucun %>
+    <p>Aucune soumission précédente.</p>
+  <% end %>
+  
+  <% unless @newsub %>
+    <h4>Soumission en cours</h4>
+    <% date = encours.created_at.in_time_zone %>
+    <p><i class="<%= encours.icon %>" style="margin-right:10px;"></i><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> - <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %> : 
+    <%= link_to troncate(encours.content.gsub(/\n/, ' - '), 80), problem_submission_path(problem, encours) %></p>
+  <% end %>
+  
 <% end %>
