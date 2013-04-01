@@ -2,7 +2,8 @@
 class ExercisesController < QuestionsController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online]
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, 
+    :order_plus, :put_online, :explanation, :update_explanation]
 
   def new
     @chapter = Chapter.find(params[:chapter_id])
@@ -26,6 +27,7 @@ class ExercisesController < QuestionsController
     end
     @exercise.chapter_id = params[:chapter_id]
     @exercise.statement = params[:exercise][:statement]
+    @exercise.explanation = ""
     if params[:exercise][:decimal] == '1'
       @exercise.decimal = true
       @exercise.answer = params[:exercise][:answer].gsub(",",".").to_f
@@ -97,6 +99,21 @@ class ExercisesController < QuestionsController
     @exercise.online = true
     @exercise.save
     redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
+  end
+  
+  def explanation
+    @exercise = Exercise.find(params[:exercise_id])
+  end
+  
+  def update_explanation
+    @exercise = Exercise.find(params[:exercise_id])
+    @exercise.explanation = params[:exercise][:explanation]
+    if @exercise.save
+      flash[:success] = "Explication modifiée."
+      redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
+    else
+      render 'explanation'
+    end
   end
   
   private

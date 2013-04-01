@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130330203812) do
+ActiveRecord::Schema.define(:version => 20130401120859) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -61,13 +61,14 @@ ActiveRecord::Schema.define(:version => 20130330203812) do
 
   create_table "exercises", :force => true do |t|
     t.text     "statement"
-    t.boolean  "decimal",    :default => false
+    t.boolean  "decimal",     :default => false
     t.float    "answer"
     t.integer  "chapter_id"
     t.integer  "position"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
-    t.boolean  "online",     :default => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.boolean  "online",      :default => false
+    t.text     "explanation"
   end
 
   create_table "pictures", :force => true do |t|
@@ -103,6 +104,7 @@ ActiveRecord::Schema.define(:version => 20130330203812) do
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
     t.boolean  "online",       :default => false
+    t.text     "explanation"
   end
 
   create_table "sections", :force => true do |t|

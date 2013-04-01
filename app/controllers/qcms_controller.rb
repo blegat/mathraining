@@ -2,7 +2,9 @@
 class QcmsController < QuestionsController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :manage_choices, :remove_choice, :add_choice, :switch_choice, :update_choice, :put_online]
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, 
+    :order_plus, :manage_choices, :remove_choice, :add_choice, 
+    :switch_choice, :update_choice, :put_online, :explanation, :update_explanation]
   before_filter :online_qcm,
     only: [:add_choice, :remove_choice]
 
@@ -29,6 +31,7 @@ class QcmsController < QuestionsController
     end
     @qcm.chapter = @chapter
     @qcm.statement = params[:qcm][:statement]
+    @qcm.explanation = ""
     if params[:qcm][:many_answers] == '1'
       @qcm.many_answers = true
     else
@@ -203,7 +206,21 @@ class QcmsController < QuestionsController
     @qcm.save
     redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
   end
-
+  
+  def explanation
+    @qcm = Qcm.find(params[:qcm_id])
+  end
+  
+  def update_explanation
+    @qcm = Qcm.find(params[:qcm_id])
+    @qcm.explanation = params[:qcm][:explanation]
+    if @qcm.save
+      flash[:success] = "Explication modifiée."
+      redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
+    else
+      render 'explanation'
+    end
+  end
 
   private
 

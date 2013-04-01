@@ -1,0 +1,49 @@
+<% provide(:title, "Modifier l'explication d'un QCM") %>
+<h1>Modifier l'explication d'un QCM</h1>
+
+<h3>Enoncé</h3>	
+<%= raw(@qcm.statement.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+
+<br/>
+<h3>Réponse</h3>	
+
+<ul>
+  <% @qcm.choices.order(:id).each do |c| %>
+    <li style="padding:5px;">
+    <%= c.ans %>
+    
+    <% if c.ok %>
+      <i class="icon-ok" style="margin-left:10px;"></i>
+    <% end %>
+    <% if !c.ok && @qcm.many_answers %>
+      <i class="icon-remove" style="margin-left:10px;"></i>
+    <% end %>
+    </li>
+  <% end %>
+</ul>
+
+<br/>
+
+<% if @qcm.many_answers %>
+  (Plusieurs réponses possibles)
+<% else %>
+  (Une seule réponse possible)
+<% end %>
+
+<br/>
+
+<h3>Explication</h3>
+
+<%= form_for(@qcm, url: qcm_update_explanation_path) do |f| %>
+  <%= render 'explanation_fields', f: f %>
+  <br />
+  <%= f.submit "Modifier", class: "btn btn-large btn-primary" %>
+<% end %>
+
+<center><%= link_to 'Retour au chapitre', chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %></center>
+
+
+<script>
+Preview.Init();
+Preview.Update();
+</script>

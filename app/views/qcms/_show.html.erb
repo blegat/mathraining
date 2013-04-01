@@ -5,6 +5,8 @@
 
 <% if current_user.admin? %>
 
+  <h4>Réponse</h4>
+
   <ul>
     <% f.choices.order(:id).each do |c| %>
       <li style="padding:5px;">
@@ -19,25 +21,32 @@
       </li>
     <% end %>
   </ul>
-
   <br/>
-
   <% if f.many_answers %>
     (Plusieurs réponses possibles)
   <% else %>
     (Une seule réponse possible)
   <% end %>
+  <br/><br/>
+  <h4>Explication</h4>
+  <% if f.explanation.size == 0 %>
+    <p style="color:orange;"><b>Pas d'explication</b></p>
+  <% else %>
+    <%= raw(f.explanation.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+    <br/>
+  <% end %>
 
-  <br/>
   <br/>
   <center>
     <% if @chapter.online && f.online %>
       <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." }  %> |
       <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
+      <%= link_to "Modifier l'explication", qcm_explanation_path(f) %> | 
       <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Attention, ce QCM est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
     <% else %>
       <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> |
       <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> |
+      <%= link_to "Modifier l'explication", qcm_explanation_path(f) %> | 
       <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
     <% end %>
   </center>
@@ -81,6 +90,10 @@
   <% if sol.size > 0 %>
     <% sol = sol.first %>
     <% if sol.correct? %>
+    
+    <p style="color:green;"><b>Vous avez résolu cet exercice!</b><br/><br/></p>
+    
+      <h4>Réponse</h4>
 
       <ul>
         <% f.choices.order(:id).each do |c| %>
@@ -96,8 +109,13 @@
           </li>
         <% end %>
       </ul>
-
-      <p style="color:green;"><b>Vous avez résolu cet exercice!</b></p>
+      
+      <% if f.explanation.size > 0 %>
+        <br/>
+        <h4>Explication</h4>
+        <%= raw(f.explanation.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+      <% end %>
+      <br/>
 
     <% else %>
 

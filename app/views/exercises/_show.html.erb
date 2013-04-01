@@ -3,20 +3,30 @@
   
 <br/><br/>
 <% if current_user.admin? %>
-  Réponse : 
+  <h4>Réponse</h4>
   <% if f.decimal %>
     <b><%= f.answer %></b> (On demande une réponse <b>décimale</b> au millième près)
   <% else %>
     <b><%= f.answer.to_i %></b> (On demande une réponse <b>entière</b>)
   <% end %>
-  <br/>
+  <br/><br/>
+  
+  <h4>Explication</h4>
+  <% if f.explanation.size == 0 %>
+    <p style="color:orange;"><b>Pas d'explication</b></p>
+  <% else %>
+    <%= raw(f.explanation.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+    <br/>
+  <% end %>
   <br/>
   <center>
     <% if @chapter.online && f.online %>
       <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
+      | <%= link_to "Modifier l'explication", exercise_explanation_path(f) %>
       | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Attention, cet exercice est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
     <% else %>
       <%= link_to "Modifier cet exercice", edit_exercise_path(f) %>
+      | <%= link_to "Modifier l'explication", exercise_explanation_path(f) %>
       | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
     <% end %>
   </center>
@@ -59,12 +69,17 @@
   <% if exo.size > 0 %>
     <% exo = exo.first %>
     <% if exo.correct? %>
-      <p style="color:green;"><b>Vous avez résolu cet exercice!</b></p>
-      Réponse : 
+      <p style="color:green;"><b>Vous avez résolu cet exercice!</b><br/><br/></p>
+      <h4>Réponse</h4>
       <% if f.decimal %>
         <b><%= f.answer %></b>
       <% else %>
         <b><%= f.answer.to_i %></b>
+      <% end %>
+      <% if f.explanation.size > 0 %>
+        <br/><br/>
+        <h4>Explication</h4>
+        <%= raw(f.explanation.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       <% end %>
       <br/>
     <% else %>

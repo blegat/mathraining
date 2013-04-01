@@ -17,6 +17,8 @@ Ombtraining::Application.routes.draw do
       as: :order_minus
     match '/put_online', to: 'qcms#put_online',
       as: :put_online
+    match '/explanation', to: "qcms#explanation"
+    match '/update_explanation', to: "qcms#update_explanation", as: :update_explanation
     match '/manage_choices', to: "qcms#manage_choices"
     match '/add_choice', to: "qcms#add_choice"
     match '/update_choice/:id', to: "qcms#update_choice", as: :update_choice
@@ -31,6 +33,8 @@ Ombtraining::Application.routes.draw do
       as: :order_minus
     match '/put_online', to: 'exercises#put_online',
       as: :put_online
+    match '/explanation', to: "exercises#explanation"
+    match '/update_explanation', to: "exercises#update_explanation", as: :update_explanation
   end
 
 
