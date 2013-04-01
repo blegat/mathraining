@@ -10,7 +10,7 @@
     </aside>
     <aside>
     <p>
-    <%= raw((h correction.content).gsub(/\n/, '<br>')) %>
+    <%= raw((h correction.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
     </p>
     </aside>
   </div>

@@ -16,7 +16,7 @@
 <% end %>
 
 <h2>Solution</h2>
-<p><%= raw((h @submission.content).gsub(/\n/, '<br>')) %></p>
+<p><%= raw((h @submission.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %></p>
 
 <%= render 'corrections/index' %>
 <% unless @submission.correct? %>

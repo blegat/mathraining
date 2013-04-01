@@ -6,6 +6,7 @@ class SubmissionsController < ApplicationController
   before_filter :unlocked_chapter
   before_filter :admin_user, only: [:correct]
   before_filter :not_solved, only: [:create]
+  before_filter :can_submit, only: [:create]
 
   def show
     @submission = Submission.find_by_id(params[:id])
@@ -18,7 +19,7 @@ class SubmissionsController < ApplicationController
     submission = @problem.submissions.build(content: params[:submission][:content])
     submission.user = current_user
     if submission.save
-      redirect_to problem_submission_path(@problem, submission)
+      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
     else
       if params[:submission][:content].size == 0
         redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
@@ -52,6 +53,11 @@ class SubmissionsController < ApplicationController
 
   def not_solved
     redirect_to root_path if current_user.solved?(@problem)
+  end
+  
+  def can_submit
+    lastsub = Submission.where(:user_id => current_user, :problem_id => @problem).order('created_at')
+    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id) if (!lastsub.empty? && lastsub.last.status == 0)
   end
   
   def get_problem

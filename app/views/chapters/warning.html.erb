@@ -61,7 +61,7 @@ Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mi
   <% if encours == 1 %>
     <% f = liste[un] %> 
       <h3> Exercice <%= i%> - <%= link_to "Modifier cet exercice", chapter_path(@chapter, :type => 2, :which => f.id) %> </h3>
-        <%= raw(f.statement.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+        <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
       <br/><br/>
       Réponse : 
       <% if f.decimal %>
@@ -74,7 +74,7 @@ Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mi
   <% else %>
     <% f = liste2[deux] %> 
       <h3> Exercice <%= i%> - <%= link_to "Modifier ce QCM", chapter_path(@chapter, :type => 3, :which => f.id) %> </h3></h3>
-        <%= raw(f.statement.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+        <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
       <br/><br/>
       <ul>
       <% f.choices.order(:id).each do |c| %>
