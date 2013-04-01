@@ -17,13 +17,19 @@ class CorrectionsController < ApplicationController
         @submission.save
       end
       # Redirect to the submission
-      redirect_to problem_submission_path(@submission.problem,
-                                          @submission),
-                                          flash: {success:
-                                            'Réponse postée'}
+      redirect_to problem_submission_path(@submission.problem, @submission),
+        flash: {success: 'Réponse postée'}
     else
-      flash_errors(correction)
-      render 'submission/show'
+      if params[:correction][:content].size == 0
+        redirect_to problem_submission_path(@submission.problem, @submission),
+          flash: {error: 'Votre réponse est vide.'}
+      elsif params[:correction][:content].size > 8000
+        redirect_to problem_submission_path(@submission.problem, @submission),
+          flash: {error: 'Votre réponse doit faire moins de 8000 caractères.'}
+      else
+        redirect_to problem_submission_path(@submission.problem, @submission),
+          flash: {error: 'Une erreur est survenue.'}
+      end
     end
   end
 

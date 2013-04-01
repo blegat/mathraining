@@ -20,7 +20,16 @@ class SubmissionsController < ApplicationController
     if submission.save
       redirect_to problem_submission_path(@problem, submission)
     else
-      flash_errors(submission)
+      if params[:submission][:content].size == 0
+        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+          flash: { error: "Votre soumission est vide." }
+      elsif params[:submission][:content].size > 8000
+        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+          flash: { error: "Votre soumission doit faire moins de 8000 caractères." }
+      else
+        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+          flash: { error: "Une erreur est survenue." }
+      end
     end
   end
 

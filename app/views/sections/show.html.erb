@@ -109,6 +109,72 @@
 <% end %>
 
 
+
+
+
+
+<% def affiche_problemes(chapter, acces) %>
+
+<center>
+<div class="btn-group">
+
+  <% listex = chapter.problems %>
+  <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
+  <% k = 1 %>
+  <% j = 1 %>
+  
+  <% listex.each do |f| %>
+    
+    <% if f.online || current_user.admin? %>
+    
+      <% if k % 5 == 1 && k > 1 %>
+        </div>
+        <br/>
+        <div class="btn-group" style="margin-top:5px;">
+      <% end %>
+      
+      <% if acces %>
+      
+        <% pro = Solvedproblem.where(:user_id => current_user.id, :problem_id => f.id) %>
+        <% if pro.size > 0 %>
+          <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
+        <% elsif !f.online %>
+          <button class="btn-warning btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= '!' %></button>
+        <% else %>
+          <% sub = Submission.where(:problem_id => f.id, :user_id => current_user.id).order('created_at') %>
+          <% if sub.size == 0 %>
+            <button class="btn btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
+          <% else %>
+            <% sub = sub.first %>
+            <% if sub.status == 0 %>
+              <button class="btn-warning btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
+            <% else %>
+              <button class="btn-danger btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
+            <% end %>
+          <% end %>
+        <% end %>
+      
+      <% else %>
+        <button class="btn disabled"><%= j %></button>
+      <% end %>
+      
+      <% j = j+1 if f.online %>
+      <% k = k+1 %>
+    <% end %>
+  <% end %>
+
+</div>
+</center>
+
+
+<% end %>
+
+
+
+
+
+
+
 <% if !@fondation %>
 
 <% provide(:title, @section.name) %>
@@ -249,6 +315,11 @@
     </td>
     <td class="span4">
     <center><h4>Problèmes</h4></center>
+    <% if faisable[encours] <= 1 || current_user.admin? %>
+      <% affiche_problemes(chap[encours],true) %>
+    <% else %>
+      <% affiche_problemes(chap[encours],false) %>
+    <% end %>
     </td>
     </tr>
     </table>
@@ -364,6 +435,7 @@
   </td>
   <td class="span4">
   <center><h4>Problèmes</h4></center>
+  <% affiche_problemes(chap[encours],true) %>
   </td>
   </tr>
   </table>
