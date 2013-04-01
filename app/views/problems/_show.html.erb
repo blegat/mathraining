@@ -10,8 +10,13 @@
   <% if current_user.admin? %>
     <br/>
     <center>
-      <%= link_to "Modifier ce problème", edit_problem_path(f) %> |
-      <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
+      <% if @chapter.online && f.online %>
+        <%= link_to "Modifier ce problème", edit_problem_path(f), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
+        <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Attention, ce problème est visible des utilisateurs. Etes-vous sûr de vouloir supprimer ce problème?" } %>
+      <% else %>
+        <%= link_to "Modifier ce problème", edit_problem_path(f) %> |
+        <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
+      <% end %>
     </center>
     <br/>
 

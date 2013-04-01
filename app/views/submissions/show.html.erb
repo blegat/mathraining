@@ -5,7 +5,10 @@
 <% when 0 %>
   Soumission en attente de correction.
 <% when 1 %>
-  Soumission corrigée. Elle n'est pas encore correcte. Vous pouvez tenter de la corriger en répondant par commentaire, ou <%= link_to 'soumettre une nouvelle solution', chapter_path(@submission.problem.chapter, :type => 4, :which => @submission.problem.id) %>.
+  Soumission corrigée. Elle n'est pas encore correcte.
+  <% unless current_user.admin %>
+    Vous pouvez tenter de la corriger en répondant par commentaire, ou <%= link_to 'soumettre une nouvelle solution', chapter_path(@submission.problem.chapter, :type => 4, :which => @submission.problem.id) %>.
+  <% end %>
 <% when 2 %>
   Soumission correcte.
 <% end %>

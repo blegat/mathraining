@@ -1,3 +1,4 @@
+#encoding: utf-8
 namespace :db do
   desc "Fill database with sample data"
   task populate: :environment do
@@ -28,16 +29,51 @@ def make_base_chapter
                          level: 0,
                          online: true)
   base.theories << Theory.create!(title: 'Addition',
-                                  content: 'L\'addition (e.g. $1 + 2$) est *associative* et *commutative*',
+                                  content: 'L\'addition (e.g. $1 + 2$) est <i>associative</i> et <i>commutative</i>.',
                                   position: 1,
                                   online: true)
   base.theories << Theory.create!(title: 'Multiplication',
-                                  content: 'La multiplication (e.g. $6 \times 7$) est *associative* et *commutative*',
+                                  content: 'La multiplication (e.g. $6 \times 7$) est <i>associative</i> et <i>commutative</i>.',
                                   position: 2,
+                                  online: true)
+  base.theories << Theory.create!(title: 'Division',
+                                  content: 'La division (e.g. $12 / 3$) est considérée comme l\'opération opposée à la multiplication.',
+                                  position: 3,
                                   online: true)
   base.exercises << Exercise.create!(statement: 'Que vaut $3 + 5$?',
                                      answer: 8,
+                                     decimal: false,
                                      position: 1,
+                                     explanation: "Il suffit d'utiliser les règles expliquées dans la théorie.",
+                                     online: true)
+  base.exercises << Exercise.create!(statement: 'Que vaut $3.24 \times 10$?',
+                                     answer: 32.4,
+                                     decimal: true,
+                                     position: 2,
+                                     explanation: "Il suffit encore une fois d'utiliser les règles expliquées dans la théorie.",
+                                     online: true)
+  base.exercises << Exercise.create!(statement: 'Que vaut $6 / 3$?',
+                                     answer: 2,
+                                     decimal: false,
+                                     position: 3,
+                                     explanation: "",
+                                     online: false)
+  base.qcms << Qcm.create!(statement: 'Lesquelles de ces opérations donnent $3$?',
+                           many_answers: true,
+                           position: 4,
+                           online: true,
+                           explanation: "C'est évident.")      
+  
+  Choice.create!(ans: "$5-2$", ok: true, qcm_id: 1)
+  Choice.create!(ans: "$6/2$", ok: true, qcm_id: 1)
+  Choice.create!(ans: "$12/3$", ok: false, qcm_id: 1)
+  Choice.create!(ans: "$2+2$", ok: false, qcm_id: 1)
+                           
+  base.exercises << Exercise.create!(statement: 'Que vaut $5 - 2$?',
+                                     answer: 3,
+                                     decimal: false,
+                                     position: 5,
+                                     explanation: "",
                                      online: true)
   base.problems << Problem.create!(name: 'Neutre',
                                   statement: 'Prouver que $0$ est neutre pour l\'addition',

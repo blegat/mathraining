@@ -17,16 +17,15 @@
 
 <% if @exercise.chapter.online && @exercise.online %>
   <% if @exercise.decimal %>
-    Réponse : <b><%= @exercise.answer %></b><br/><br/>
+    Réponse : <b><%= @exercise.answer %> (réponse décimale)</b><br/>
   <% else %>
-    Réponse : <b><%= @exercise.answer.to_i %></b><br/><br/>
+    Réponse : <b><%= @exercise.answer.to_i %> (réponse entière)</b><br/>
   <% end %>
 <% else %>
   <%= f.label "Réponse" %>
   <%= f.text_field :answer, :class => "span2" %>
+  <label class="checkbox">
+  Cochez si la réponse est décimale
+  <%= f.check_box(:decimal) %>
+  </label>
 <% end %>
-
-<label class="checkbox">
-Cochez si la réponse est décimale
-<%= f.check_box(:decimal) %>
-</label>
