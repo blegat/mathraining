@@ -1,4 +1,13 @@
-<h3>Exercice <%= number %></h3>
+<% if (f.online && f.chapter.online) || current_user.admin? %>
+
+<% poss = f.choices.count %>
+<% if f.many_answers %>
+  <% pt = 2*(poss-1) %>
+<% else %>
+  <% pt = poss %>
+<% end %>
+
+<h3>Exercice <%= number %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
 <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
 
 <br/><br/>
@@ -183,5 +192,7 @@
     <% end %>
 
   <% end %>
+
+<% end %>
 
 <% end %>

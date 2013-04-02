@@ -136,7 +136,7 @@ class ChaptersController < ApplicationController
   
   def delete_online
     @chapter = Chapter.find(params[:id])
-    redirect_to sections.path unless @chapter.online
+    redirect_to sections_path if @chapter.online
   end
   
   def fondement_online

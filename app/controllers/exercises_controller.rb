@@ -58,6 +58,15 @@ class ExercisesController < QuestionsController
   def update
     @exercise = Exercise.find(params[:id])
     @exercise.statement = params[:exercise][:statement]
+    
+    unless @exercise.chapter.online && @exercise.online
+      if params[:exercise][:decimal] == '1'
+        @exercise.decimal = true
+      else
+        @exercise.decimal = false
+      end
+    end
+    
     if @exercise.decimal
       @exercise.answer = params[:exercise][:answer].gsub(",",".").to_f unless @exercise.chapter.online && @exercise.online
     else

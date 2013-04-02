@@ -14,13 +14,15 @@ def make_users
                email: 'root@admin.com',
                password: 'foobar',
                password_confirmation: 'foobar',
-               admin: true)
+               admin: true,
+               rating: 0)
   # Student
   User.create!(first_name: 'Jean',
                last_name: 'Dupont',
                email: 'jean@dupont.com',
                password: 'foobar',
-               password_confirmation: 'foobar')
+               password_confirmation: 'foobar',
+               rating: 0)
 end
 
 def make_base_chapter
@@ -78,7 +80,8 @@ def make_base_chapter
   base.problems << Problem.create!(name: 'Neutre',
                                   statement: 'Prouver que $0$ est neutre pour l\'addition',
                                   position: 1,
-                                  online: true)
+                                  online: true,
+                                  level: 1)
 end
 
 def make_words

@@ -13,7 +13,7 @@
 #
 
 class Problem < ActiveRecord::Base
-  attr_accessible :name, :position, :statement, :online
+  attr_accessible :name, :position, :statement, :online, :level
   belongs_to :chapter
 
   has_many :submissions
@@ -26,4 +26,6 @@ class Problem < ActiveRecord::Base
   validates :position, presence: true,
     uniqueness: { scope: :chapter_id },
     numericality: { greater_than_or_equal_to: 0 } 
+  validates :level, presence: true,
+    inclusion: { in: [1, 2, 3] }
 end

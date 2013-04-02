@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130401120859) do
+ActiveRecord::Schema.define(:version => 20130402125449) do
 
   create_table "chapters", :force => true do |t|
     t.string   "name"
@@ -81,6 +81,15 @@ ActiveRecord::Schema.define(:version => 20130401120859) do
 
   add_index "pictures", ["user_id"], :name => "index_pictures_on_user_id"
 
+  create_table "pointspersection", :force => true do |t|
+    t.integer "user_id"
+    t.integer "section_id"
+    t.integer "points"
+    t.integer "max_points"
+  end
+
+  add_index "pointspersection", ["user_id"], :name => "index_pointspersection_on_user_id"
+
   create_table "prerequisites", :force => true do |t|
     t.integer "prerequisite_id"
     t.integer "chapter_id"
@@ -94,6 +103,7 @@ ActiveRecord::Schema.define(:version => 20130401120859) do
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false
     t.boolean  "online",     :default => false
+    t.integer  "level"
   end
 
   create_table "qcms", :force => true do |t|
@@ -184,6 +194,7 @@ ActiveRecord::Schema.define(:version => 20130401120859) do
     t.datetime "updated_at",                         :null => false
     t.string   "key"
     t.boolean  "email_confirm",   :default => true
+    t.integer  "rating"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

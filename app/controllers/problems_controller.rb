@@ -18,6 +18,7 @@ class ProblemsController < ApplicationController
     @problem = Problem.new
     @problem.name = params[:problem][:name]
     @problem.statement = params[:problem][:statement]
+    @problem.level = params[:problem][:level]
     @chapter = Chapter.find_by_id(params[:chapter_id])
     if @chapter.nil?
       flash[:error] = "Chapitre inexistant."
@@ -47,6 +48,7 @@ class ProblemsController < ApplicationController
     @problem = Problem.find(params[:id])
     @problem.name = params[:problem][:name]
     @problem.statement = params[:problem][:statement]
+    @problem.level = params[:problem][:level] unless (@problem.online && @problem.chapter.online)
     if @problem.save
       flash[:success] = "Problème modifié."
       redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
