@@ -104,14 +104,21 @@ class QcmsController < QuestionsController
   def destroy
     @qcm = Qcm.find(params[:id])
     @chapter = @qcm.chapter
-    @qcm.destroy
-    flash[:success] = "QCM supprimé."
+    poss = @qcm.choices.count
+    if @qcm.many_answers
+      pt = 2*(poss-1)
+    else
+      pt = poss
+    end
     Solvedqcm.where(:qcm_id => params[:id]).each do |s|
+      remove_points(s.user, pt, !@qcm.chapter.sections.empty?) if s.correct
       s.destroy
     end
     Choice.where(:qcm_id => params[:id]).each do |c|
       c.destroy
     end
+    @qcm.destroy
+    flash[:success] = "QCM supprimé."
     redirect_to @chapter
   end
   
@@ -268,6 +275,13 @@ class QcmsController < QuestionsController
       return a
     else
       return b
+    end
+  end
+  
+  def remove_points(user, pt, notfondation)
+    if notfondation
+      user.point.rating = user.point.rating - pt
+      user.point.save
     end
   end
 end

@@ -60,6 +60,17 @@ class ProblemsController < ApplicationController
   def destroy
     @problem = Problem.find(params[:id])
     @chapter = @problem.chapter
+    pt = 25*@problem.level
+    Solvedproblem.where(:problem_id => params[:id]).each do |s|
+      remove_points(s.user, pt, !@problem.chapter.sections.empty?)
+      s.destroy
+    end
+    Submission.where(:problem_id => params[:id]).each do |s|
+      Correction.where(:submission_id => s.id).each do |c|
+        c.destroy
+      end
+      s.destroy
+    end
     @problem.destroy
     flash[:success] = "Problème supprimé."
     redirect_to @chapter
@@ -127,5 +138,12 @@ class ProblemsController < ApplicationController
 
   def admin_user
     redirect_to root_path unless current_user.admin?
+  end
+  
+  def remove_points(user, pt, notfondation)
+    if notfondation
+      user.point.rating = user.point.rating - pt
+      user.point.save
+    end
   end
 end

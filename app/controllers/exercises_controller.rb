@@ -83,11 +83,17 @@ class ExercisesController < QuestionsController
   def destroy
     @exercise = Exercise.find(params[:id])
     @chapter = @exercise.chapter
-    @exercise.destroy
-    flash[:success] = "Exercice supprimé."
+    if @exercise.decimal
+      pt = 10
+    else
+      pt = 6
+    end
     Solvedexercise.where(:exercise_id => params[:id]).each do |s|
+      remove_points(s.user, pt, !@exercise.chapter.sections.empty?) if s.correct
       s.destroy
     end
+    @exercise.destroy
+    flash[:success] = "Exercice supprimé."
     redirect_to @chapter
   end
   
@@ -134,6 +140,13 @@ class ExercisesController < QuestionsController
       return a
     else
       return b
+    end
+  end
+  
+  def remove_points(user, pt, notfondation)
+    if notfondation
+      user.point.rating = user.point.rating - pt
+      user.point.save
     end
   end
 end

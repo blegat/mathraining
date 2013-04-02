@@ -8,6 +8,12 @@ class SolvedqcmsController < ApplicationController
   def create
     qcm = @qcm2
     user = current_user
+    
+    previous = Solvedqcm.where(:qcm_id => qcm, :user_id => current_user).count
+    if previous > 0
+      redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
+    end
+    
     link = Solvedqcm.new
     link.user_id = user.id
     link.qcm_id = qcm.id
@@ -72,6 +78,9 @@ class SolvedqcmsController < ApplicationController
       end
     end
     
+    if link.correct
+      point_attribution(current_user, qcm)
+    end
    
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
   end
@@ -80,6 +89,11 @@ class SolvedqcmsController < ApplicationController
     qcm = @qcm2
     user = current_user
     link = Solvedqcm.where(:user_id => user, :qcm_id => qcm).first
+    
+    if link.correct
+      redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
+    end
+    
     link.nb_guess = link.nb_guess + 1
     
     good_guess = true
@@ -159,6 +173,10 @@ class SolvedqcmsController < ApplicationController
     
     end
     
+    if link.correct
+      point_attribution(current_user, qcm)
+    end
+    
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
   end
   
@@ -178,6 +196,26 @@ class SolvedqcmsController < ApplicationController
         if (p.sections.count > 0 && !current_user.chapters.exists?(p))
           redirect_to sections_path and return
         end
+      end
+    end
+  end
+  
+  def point_attribution(user, qcm)
+    poss = qcm.choices.count
+    if qcm.many_answers
+      pt = 2*(poss-1)
+    else
+      pt = poss
+    end
+    
+    if !qcm.chapter.sections.empty? # Pas un fondement
+      if user.point.nil?
+        newpoint = Point.new
+        newpoint.rating = pt
+        user.point = newpoint
+      else
+        user.point.rating = user.point.rating + pt
+        user.point.save
       end
     end
   end

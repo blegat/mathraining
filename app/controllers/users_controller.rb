@@ -17,7 +17,6 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     @user.key = SecureRandom.urlsafe_base64
-    @user.rating = 0
     # @user.email_confirm = false <-- A décommenter pour rendre les mails utiles!
   	if @user.save
   	  UserMailer.registration_confirmation(@user).deliver

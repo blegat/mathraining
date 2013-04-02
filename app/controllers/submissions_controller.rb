@@ -40,6 +40,7 @@ class SubmissionsController < ApplicationController
       @submission.status = 2
       @submission.save
       unless @submission.user.solved?(@problem)
+        point_attribution(@submission.user, @problem)
         @problem.users << @submission.user
       end
       redirect_to problem_submission_path(@problem, @submission),
@@ -82,6 +83,23 @@ class SubmissionsController < ApplicationController
     if not current_user.admin
       redirect_to root_path
     end
+  end
+  
+  def point_attribution(user, problem)
+    if !user.solved?(problem)
+      pt = 25*problem.level
+      
+      if !problem.chapter.sections.empty? # Pas un fondement
+        if user.point.nil?
+          newpoint = Point.new
+          newpoint.rating = pt
+          user.point = newpoint
+        else
+          user.point.rating = user.point.rating + pt
+          user.point.save
+        end
+      end 
+    end  
   end
 
 end

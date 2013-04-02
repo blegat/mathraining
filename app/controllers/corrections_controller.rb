@@ -21,6 +21,7 @@ class CorrectionsController < ApplicationController
         @submission.status = 2
         @submission.save
         unless @submission.user.solved?(@submission.problem)
+          point_attribution(@submission.user, @submission.problem)
           @submission.problem.users << @submission.user
         end
         m = ' et soumission marquée comme correcte'
@@ -48,6 +49,22 @@ class CorrectionsController < ApplicationController
     @submission = Submission.find_by_id(params[:submission_id])
     if @submission.nil? or (@submission.user != current_user and not current_user.admin)
       redirect_to root_path
+    end
+  end
+  
+  def point_attribution(user, problem)
+    if !user.solved?(problem)
+      pt = 25*problem.level
+      if !problem.chapter.sections.empty? # Pas un fondement
+        if user.point.nil?
+          newpoint = Point.new
+          newpoint.rating = pt
+          user.point = newpoint
+        else
+          user.point.rating = user.point.rating + pt
+          user.point.save
+        end
+      end   
     end
   end
 end

@@ -4,6 +4,7 @@ namespace :db do
   task populate: :environment do
     make_users
     make_base_chapter
+    make_algebra_chapter
   end
 end
 
@@ -14,15 +15,13 @@ def make_users
                email: 'root@admin.com',
                password: 'foobar',
                password_confirmation: 'foobar',
-               admin: true,
-               rating: 0)
+               admin: true)
   # Student
   User.create!(first_name: 'Jean',
                last_name: 'Dupont',
                email: 'jean@dupont.com',
                password: 'foobar',
-               password_confirmation: 'foobar',
-               rating: 0)
+               password_confirmation: 'foobar')
 end
 
 def make_base_chapter
@@ -66,10 +65,10 @@ def make_base_chapter
                            online: true,
                            explanation: "C'est évident.")
 
-  Choice.create!(ans: "$5-2$", ok: true, qcm_id: 1)
-  Choice.create!(ans: "$6/2$", ok: true, qcm_id: 1)
-  Choice.create!(ans: "$12/3$", ok: false, qcm_id: 1)
-  Choice.create!(ans: "$2+2$", ok: false, qcm_id: 1)
+  Choice.create!(ans: "$5-2$", ok: true, qcm_id: base.qcms.first.id)
+  Choice.create!(ans: "$6/2$", ok: true, qcm_id: base.qcms.first.id)
+  Choice.create!(ans: "$12/3$", ok: false, qcm_id: base.qcms.first.id)
+  Choice.create!(ans: "$2+2$", ok: false, qcm_id: base.qcms.first.id)
 
   base.exercises << Exercise.create!(statement: 'Que vaut $5 - 2$?',
                                      answer: 3,
@@ -82,6 +81,51 @@ def make_base_chapter
                                   position: 1,
                                   online: true,
                                   level: 1)
+end
+
+def make_algebra_chapter
+  algebre = Chapter.create!(name: 'Base de l\'algèbre',
+                         description: 'C\'est la base de l\'algèbre!',
+                         level: 1,
+                         online: true)
+  sect = Section.where(:name => "Algèbre").first
+  algebre.sections << sect
+  algebre.theories << Theory.create!(title: 'Racine carrée',
+                                  content: 'La racine carrée d\' un nombre réel positif est le nombre réel positif dont le carré vaut ce nombre. On la note $\sqrt{x}$',
+                                  position: 1,
+                                  online: true)
+  algebre.theories << Theory.create!(title: 'Puissance',
+                                  content: 'Lorsque l\'on écrit $a^b$, on veut dire que $a \times a \times \dots \times a$, où $a$ apparaît $b$ fois.',
+                                  position: 2,
+                                  online: true)
+  algebre.exercises << Exercise.create!(statement: 'Que vaut $\sqrt{9}$?',
+                                     answer: 3,
+                                     decimal: false,
+                                     position: 1,
+                                     explanation: "Il suffit d'utiliser les règles expliquées dans la théorie.",
+                                     online: true)
+  algebre.exercises << Exercise.create!(statement: 'Que vaut $4^3$?',
+                                     answer: 64,
+                                     decimal: false,
+                                     position: 2,
+                                     explanation: "Il suffit encore une fois d'utiliser les règles expliquées dans la théorie.",
+                                     online: true)
+  algebre.qcms << (newqcm = Qcm.create!(statement: 'Que vaut $\sqrt{x^4}$ si $x \geq 0$?',
+                           many_answers: false,
+                           position: 3,
+                           online: true,
+                           explanation: "C'est évident."))
+
+  Choice.create!(ans: "$x$", ok: false, qcm_id: algebre.qcms.first.id)
+  Choice.create!(ans: "$x^2$", ok: true, qcm_id: algebre.qcms.first.id)
+  Choice.create!(ans: "$x^4$", ok: false, qcm_id: algebre.qcms.first.id)
+  Choice.create!(ans: "$x^8$", ok: false, qcm_id: algebre.qcms.first.id)
+
+  algebre.problems << Problem.create!(name: 'Racine cubique',
+                                  statement: 'Définir la racine cubique d\'un élément.',
+                                  position: 1,
+                                  online: true,
+                                  level: 2)
 end
 
 def make_words

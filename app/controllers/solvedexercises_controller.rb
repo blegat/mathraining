@@ -10,6 +10,12 @@ class SolvedexercisesController < ApplicationController
   def create
     exercise = @exercise2
     user = current_user
+    
+    previous = Solvedexercise.where(:exercise_id => @exercise2, :user_id => current_user).count
+    if previous > 0
+      redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id) and return
+    end
+    
     link = Solvedexercise.new
     link.user_id = user.id
     link.exercise_id = exercise.id
@@ -33,6 +39,10 @@ class SolvedexercisesController < ApplicationController
       end
     end
     
+    if link.correct
+      point_attribution(current_user, exercise)
+    end
+    
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
   end
   
@@ -40,6 +50,11 @@ class SolvedexercisesController < ApplicationController
     exercise = @exercise2
     link = @link2
     user = link.user
+    
+    if link.correct
+      redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id) and return
+    end
+    
     if link.guess != params[:solvedexercise][:guess].gsub(",",".").to_f
       link.nb_guess = link.nb_guess + 1
       link.guess = params[:solvedexercise][:guess].gsub(",",".").to_f
@@ -62,6 +77,10 @@ class SolvedexercisesController < ApplicationController
         end
       end
       link.save
+    end
+    
+    if link.correct
+      point_attribution(current_user, exercise)
     end
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
@@ -98,6 +117,25 @@ class SolvedexercisesController < ApplicationController
         if (p.sections.count > 0 && !current_user.chapters.exists?(p))
           redirect_to sections_path and return
         end
+      end
+    end
+  end
+  
+  def point_attribution(user, exo)
+    if exo.decimal
+      pt = 10
+    else
+      pt = 6
+    end
+    
+    if !exo.chapter.sections.empty? # Pas un fondement
+      if user.point.nil?
+        newpoint = Point.new
+        newpoint.rating = pt
+        user.point = newpoint
+      else
+        user.point.rating = user.point.rating + pt
+        user.point.save
       end
     end
   end

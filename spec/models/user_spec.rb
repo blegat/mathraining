@@ -20,8 +20,7 @@ describe User do
   before { @user = User.new(first_name: "Example", last_name:"User",
                             email: "user@example.com",
                             password: "foobar",
-                            password_confirmation: "foobar",
-                            rating: 0) }
+                            password_confirmation: "foobar") }
 
   subject { @user }
 
