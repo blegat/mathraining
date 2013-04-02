@@ -1,8 +1,32 @@
 <% provide(:title, @user.name) %>
-<div class="row">
-  <aside class="span4">
-  <section>
-  <%= render 'shared/user_info', user: @user, link: false %>
-  </section>
-  </aside>
-</div>
+
+<h1><%= @user.name %></h1>
+
+<% if @user.admin %>
+  <b>Administrateur</b>
+<% else %>
+
+  <% if @user.point.nil? %>
+    <% rating = 0 %>
+  <% else %>
+    <% rating = @user.point.rating %>
+  <% end %>
+  
+  Total des points : <%= rating %><br/><br/>
+  <% p = Pointspersection.where(:user_id => @user) %>
+  <% if p.where(:section_id => 0).size == 0 %>
+    <% rate = 0 %>
+  <% else %>
+    <% rate = p.where(:section_id => 0).first.points %>
+  <% end %>
+  Fondements : <%= rate %><br/>	
+  <% Section.all.each do |s| %>
+    <% if p.where(:section_id => s.id).size == 0 %>
+      <% rate = 0 %>
+    <% else %>
+      <% rate = p.where(:section_id => s.id).first.points %>
+    <% end %>
+    <%= s.name %> : <%= rate %><br/>
+  <% end %>
+  
+<% end %>

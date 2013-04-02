@@ -111,7 +111,7 @@ class QcmsController < QuestionsController
       pt = poss
     end
     Solvedqcm.where(:qcm_id => params[:id]).each do |s|
-      remove_points(s.user, pt, !@qcm.chapter.sections.empty?) if s.correct
+      remove_points(s.user, pt, @qcm.chapter.sections) if s.correct
       s.destroy
     end
     Choice.where(:qcm_id => params[:id]).each do |c|
@@ -278,10 +278,21 @@ class QcmsController < QuestionsController
     end
   end
   
-  def remove_points(user, pt, notfondation)
-    if notfondation
+  def remove_points(user, pt, sec)
+    partials = user.pointspersections
+    if !sec.empty? # Not a fondation
       user.point.rating = user.point.rating - pt
       user.point.save
+    else # Fondation
+      partial = partials.where(:section_id => 0).first
+      partial.points = partial.points - pt
+      partial.save
+    end
+    
+    sec.each do |s| # Section s
+      partial = partials.where(:section_id => s.id).first
+      partial.points = partial.points - pt
+      partial.save
     end
   end
 end

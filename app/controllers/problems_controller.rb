@@ -62,7 +62,7 @@ class ProblemsController < ApplicationController
     @chapter = @problem.chapter
     pt = 25*@problem.level
     Solvedproblem.where(:problem_id => params[:id]).each do |s|
-      remove_points(s.user, pt, !@problem.chapter.sections.empty?)
+      remove_points(s.user, pt, @problem.chapter.sections)
       s.destroy
     end
     Submission.where(:problem_id => params[:id]).each do |s|
@@ -140,10 +140,21 @@ class ProblemsController < ApplicationController
     redirect_to root_path unless current_user.admin?
   end
   
-  def remove_points(user, pt, notfondation)
-    if notfondation
+  def remove_points(user, pt, sec)
+    partials = user.pointspersections
+    if !sec.empty? # Not a fondation
       user.point.rating = user.point.rating - pt
       user.point.save
+    else # Fondation
+      partial = partials.where(:section_id => 0).first
+      partial.points = partial.points - pt
+      partial.save
+    end
+    
+    sec.each do |s| # Section s
+      partial = partials.where(:section_id => s.id).first
+      partial.points = partial.points - pt
+      partial.save
     end
   end
 end

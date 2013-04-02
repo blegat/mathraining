@@ -86,9 +86,11 @@ class SubmissionsController < ApplicationController
   end
   
   def point_attribution(user, problem)
-    if !user.solved?(problem)
+    if !user.solved?(problem) # Avoid double count
       pt = 25*problem.level
       
+      partials = user.pointspersections
+    
       if !problem.chapter.sections.empty? # Pas un fondement
         if user.point.nil?
           newpoint = Point.new
@@ -98,8 +100,31 @@ class SubmissionsController < ApplicationController
           user.point.rating = user.point.rating + pt
           user.point.save
         end
-      end 
-    end  
+      else # Fondement
+        if partials.where(:section_id => 0).size == 0
+          newpoint = Pointspersection.new
+          newpoint.section_id = 0
+          newpoint.points = pt
+          user.pointspersections << newpoint
+        else
+          partial = partials.where(:section_id => 0).first
+          partial.points = partial.points + pt
+          partial.save
+        end
+      end
+    
+      problem.chapter.sections.each do |s| # Section s
+        if partials.where(:section_id => s.id).size == 0
+          newpoint = Pointspersection.new
+          newpoint.section_id = s.id
+          newpoint.points = pt
+          user.pointspersections << newpoint
+        else
+          partial = partials.where(:section_id => s.id).first
+          partial.points = partial.points + pt
+          partial.save
+        end
+      end
+    end
   end
-
 end

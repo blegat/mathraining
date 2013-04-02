@@ -89,7 +89,49 @@ class ChaptersController < ApplicationController
   def create_section
     chapter = Chapter.find(params[:chapter_id])
     section = Section.find(params[:id])
+    taillebefore = chapter.sections.count
     chapter.sections << section
+    tailleafter = chapter.sections.count
+    if tailleafter > taillebefore # Real add
+    
+      chapter.exercises.each do |exercise| # Exercises
+        if exercise.decimal
+          pt = 10
+        else
+          pt = 6
+        end
+        exercise.solvedexercises.each do |s|
+          if s.correct
+            user = s.user
+            distribute_points(user, pt, section)
+          end
+        end
+      end
+      
+      chapter.qcms.each do |qcm| # Qcms
+        poss = qcm.choices.count
+        if qcm.many_answers
+          pt = 2*(poss-1)
+        else
+          pt = poss
+        end
+        qcm.solvedqcms.each do |s|
+          if s.correct
+            user = s.user
+            distribute_points(user, pt, section)
+          end
+        end
+      end
+      
+      chapter.problems.each do |problem| # Problems
+        pt = 25*problem.level
+        problem.solvedproblems.each do |s|
+          user = s.user
+          distribute_points(user, pt, section)
+        end
+      end
+      
+    end
     redirect_to chapter_manage_sections_path(chapter)
   end
 
@@ -99,7 +141,47 @@ class ChaptersController < ApplicationController
     if chapter.online && chapter.sections.count == 1
       flash[:error] = "Un chapitre en ligne non fondamental ne peut pas devenir fondamental. Si vous désirez changer ce chapitre de section, commencez par rajouter la nouvelle section et retirez ensuite l'ancienne."
     else
+      taillebefore = chapter.sections.count
       chapter.sections.delete(section)
+      tailleafter = chapter.sections.count
+      if tailleafter < taillebefore # Real remove
+        chapter.exercises.each do |exercise| # Exercises
+          if exercise.decimal
+            pt = 10
+          else
+            pt = 6
+          end
+          exercise.solvedexercises.each do |s|
+            if s.correct
+              user = s.user
+              dedistribute_points(user, pt, section)
+            end
+          end
+        end
+      
+        chapter.qcms.each do |qcm| # Qcms
+          poss = qcm.choices.count
+          if qcm.many_answers
+            pt = 2*(poss-1)
+          else
+            pt = poss
+          end
+          qcm.solvedqcms.each do |s|
+            if s.correct
+              user = s.user
+              dedistribute_points(user, pt, section)
+            end
+          end
+        end
+      
+        chapter.problems.each do |problem| # Problems
+          pt = 25*problem.level
+          problem.solvedproblems.each do |s|
+            user = s.user
+            dedistribute_points(user, pt, section)
+          end
+        end
+      end
     end
     redirect_to chapter_manage_sections_path(chapter)
   end
@@ -155,6 +237,27 @@ class ChaptersController < ApplicationController
     if @chapter.online
       redirect_to @chapter and return	
     end
+  end
+  
+  def distribute_points(user, pt, section)
+    partials = user.pointspersections
+    if partials.where(:section_id => section.id).size == 0
+      newpoint = Pointspersection.new
+      newpoint.section_id = section.id
+      newpoint.points = pt
+      user.pointspersections << newpoint
+    else
+      partial = partials.where(:section_id => section.id).first
+      partial.points = partial.points + pt
+      partial.save
+    end
+  end
+  
+  def dedistribute_points(user, pt, section)
+    partials = user.pointspersections
+    partial = partials.where(:section_id => section.id).first
+    partial.points = partial.points - pt
+    partial.save
   end
 
 end

@@ -1,10 +1,64 @@
 <% provide(:title, 'Utilisateurs') %>
 <h1>Utilisateurs</h1>
 
-<%= will_paginate %>
+<h2>Etudiants</h2>
 
-<ul class="users">
-  <%= render @users %>
-</ul>
+<% allsec = Section.all %>
 
 <%= will_paginate %>
+
+<table cellpadding="6" border="1">
+  <tr><th>Nom</th><th>Points</th><th>Fondements</th>
+  <% allsec.each do |s| %>
+    <th><%= s.name %></th>
+  <% end %>
+  </tr>
+  
+  <% @users.each do |user| %>
+    <tr>
+    <td> <%= link_to user.name, user %>
+    <% if current_user.admin? %>
+      (<%= link_to 'Supprimer', user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{user.name}?" } %>
+      | <%= link_to 'Rendre administrateur', user_add_administrator_path(user), data: { confirm: "Etes-vous sûr de vouloir rendre #{user.name} administrateur? Vous ne pourrez plus revenir en arrière!"} %>)
+    <% end %>
+    </td>
+      
+    <% if user.point.nil? %>
+      <% rating = 0 %>
+    <% else %>
+      <% rating = user.point.rating %>
+    <% end %>
+    <td><%= rating %></td>
+      
+    <% p = Pointspersection.where(:user_id => user) %>
+    <% if p.where(:section_id => 0).size == 0 %>
+      <% rate = 0 %>
+    <% else %>
+      <% rate = p.where(:section_id => 0).first.points %>
+    <% end %>
+      <td><%= rate %></td>
+      <% allsec.each do |s| %>
+        <% if p.where(:section_id => s.id).size == 0 %>
+          <% rate = 0 %>
+        <% else %>
+          <% rate = p.where(:section_id => s.id).first.points %>
+        <% end %>
+      <td><%= rate %></td>
+    <% end %>
+  
+    </tr>
+
+  <% end %>
+
+</table>
+
+<%= will_paginate %>
+
+<h2>Administrateurs</h2>
+
+<% User.where(:admin => true).each do |user| %>
+  <% if user.admin %>
+    <td> <%= link_to user.name, user %>
+  <% end %>
+<% end %>
+

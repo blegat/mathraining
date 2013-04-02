@@ -28,6 +28,7 @@ class User < ActiveRecord::Base
   has_many :problems, through: :solvedproblems
   has_many :pictures
   has_one :point
+  has_many :pointspersections
 
   before_save { self.email.downcase! }
   before_save :create_remember_token

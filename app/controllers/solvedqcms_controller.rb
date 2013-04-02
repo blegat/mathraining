@@ -208,6 +208,8 @@ class SolvedqcmsController < ApplicationController
       pt = poss
     end
     
+    partials = user.pointspersections
+    
     if !qcm.chapter.sections.empty? # Pas un fondement
       if user.point.nil?
         newpoint = Point.new
@@ -216,6 +218,30 @@ class SolvedqcmsController < ApplicationController
       else
         user.point.rating = user.point.rating + pt
         user.point.save
+      end
+    else # Fondement
+      if partials.where(:section_id => 0).size == 0
+        newpoint = Pointspersection.new
+        newpoint.section_id = 0
+        newpoint.points = pt
+        user.pointspersections << newpoint
+      else
+        partial = partials.where(:section_id => 0).first
+        partial.points = partial.points + pt
+        partial.save
+      end
+    end
+    
+    qcm.chapter.sections.each do |s| # Section s
+      if partials.where(:section_id => s.id).size == 0
+        newpoint = Pointspersection.new
+        newpoint.section_id = s.id
+        newpoint.points = pt
+        user.pointspersections << newpoint
+      else
+        partial = partials.where(:section_id => s.id).first
+        partial.points = partial.points + pt
+        partial.save
       end
     end
   end

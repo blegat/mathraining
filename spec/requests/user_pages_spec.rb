@@ -34,8 +34,8 @@ describe "User pages" do
       it { should have_selector('div.pagination') }
 
       it "should list each user" do
-        User.paginate(page: 1).each do |user|
-          page.should have_selector('li', text: user.name)
+        User.where(:admin => false).paginate(page: 1).each do |user|
+          page.should have_selector('tr', text: user.name)
         end
       end
     end
@@ -129,7 +129,6 @@ describe "User pages" do
     describe "page" do
       it { should have_selector('h1',    text: "Actualisez votre profil") }
       it { should have_selector('title', text: "Actualisez votre profil") }
-      it { should have_link('Modifier', href: 'http://gravatar.com/emails') }
     end
 
     describe "with invalid information" do

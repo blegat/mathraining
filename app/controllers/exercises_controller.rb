@@ -89,7 +89,7 @@ class ExercisesController < QuestionsController
       pt = 6
     end
     Solvedexercise.where(:exercise_id => params[:id]).each do |s|
-      remove_points(s.user, pt, !@exercise.chapter.sections.empty?) if s.correct
+      remove_points(s.user, pt, @exercise.chapter.sections) if s.correct
       s.destroy
     end
     @exercise.destroy
@@ -143,10 +143,21 @@ class ExercisesController < QuestionsController
     end
   end
   
-  def remove_points(user, pt, notfondation)
-    if notfondation
+  def remove_points(user, pt, sec)
+    partials = user.pointspersections
+    if !sec.empty? # Not a fondation
       user.point.rating = user.point.rating - pt
       user.point.save
+    else # Fondation
+      partial = partials.where(:section_id => 0).first
+      partial.points = partial.points - pt
+      partial.save
+    end
+    
+    sec.each do |s| # Section s
+      partial = partials.where(:section_id => s.id).first
+      partial.points = partial.points - pt
+      partial.save
     end
   end
 end
