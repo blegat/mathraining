@@ -2,12 +2,11 @@ class PrepareToRatings < ActiveRecord::Migration
   def change
     add_column :users, :rating, :integer
     add_column :problems, :level, :integer
-    create_table :pointspersection do |t|
+    create_table :pointspersections do |t|
       t.integer :user_id
       t.integer :section_id
       t.integer :points
-      t.integer :max_points
     end
-    add_index :pointspersection, :user_id
+    add_index :pointspersections, :user_id
   end
 end
