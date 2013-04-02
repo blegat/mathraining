@@ -48,26 +48,26 @@ class SubmissionsController < ApplicationController
       redirect_to root_path
     end
   end
-  
+
   private
 
   def not_solved
     redirect_to root_path if current_user.solved?(@problem)
   end
-  
+
   def can_submit
     lastsub = Submission.where(:user_id => current_user, :problem_id => @problem).order('created_at')
     redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id) if (!lastsub.empty? && lastsub.last.status == 0)
   end
-  
+
   def get_problem
     @problem = Problem.find(params[:problem_id])
   end
-  
+
   def online_chapter
     redirect_to sections_path unless (current_user.admin? || @problem.chapter.online)
   end
-  
+
   def unlocked_chapter
     if !current_user.admin?
       @problem.chapter.prerequisites.each do |p|
@@ -83,5 +83,5 @@ class SubmissionsController < ApplicationController
       redirect_to root_path
     end
   end
-  
+
 end
