@@ -46,8 +46,8 @@ class User < ActiveRecord::Base
     "#{self.first_name} #{self.last_name}"
   end
 
-  def solved?(x)
-    return x.users.include?(self)
+  def solved?(problem)
+    return problem.users.include?(self)
   end
   private
   def create_remember_token

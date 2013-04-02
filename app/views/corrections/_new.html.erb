@@ -5,7 +5,16 @@
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
   <br />
-  <%= f.submit "Poster réponse", class: "btn btn-large btn-primary" %>
+  <% if current_user.admin? %>
+    <% if @submission.status == 1 %>
+      <%= f.submit "Poster réponse", class: "btn btn-large btn-primary" %>
+    <% else %>
+      <%= f.submit "Poster réponse et rendre la soumission fausse", class: "btn btn-large btn-danger" %>
+    <% end %>
+    <%= f.submit "Poster réponse et rendre la soumission correcte", class: "btn btn-large btn-success" %>
+  <% else %>
+    <%= f.submit "Poster réponse", class: "btn btn-large btn-primary" %>
+  <% end %>
 <% end %>
 
 <script>
