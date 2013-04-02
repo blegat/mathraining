@@ -64,13 +64,13 @@ def make_base_chapter
                            many_answers: true,
                            position: 4,
                            online: true,
-                           explanation: "C'est évident.")      
-  
+                           explanation: "C'est évident.")
+
   Choice.create!(ans: "$5-2$", ok: true, qcm_id: 1)
   Choice.create!(ans: "$6/2$", ok: true, qcm_id: 1)
   Choice.create!(ans: "$12/3$", ok: false, qcm_id: 1)
   Choice.create!(ans: "$2+2$", ok: false, qcm_id: 1)
-                           
+
   base.exercises << Exercise.create!(statement: 'Que vaut $5 - 2$?',
                                      answer: 3,
                                      decimal: false,

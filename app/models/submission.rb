@@ -8,10 +8,11 @@ class Submission < ActiveRecord::Base
   validates :user_id, presence: true
   validates :problem_id, presence: true
   validates :content, presence: true, length: { maximum: 8000 }
-  validates :status, presence: true, inclusion: { in: [0, 1, 2] }
+  validates :status, presence: true, inclusion: { in: [0, 1, 2, 3] }
   # 0: pas corrigé
-  # 1: corrigé
+  # 1: [corrigé et répondu et]* corrigé
   # 2: résolu
+  # 3: corrigé et répondu
 
   def correct?
     status == 2
@@ -20,7 +21,7 @@ class Submission < ActiveRecord::Base
     case status
     when 0
       'icon-question-sign'
-    when 1
+    when 1, 3
       'icon-remove-sign'
     when 2
       'icon-ok-sign'
