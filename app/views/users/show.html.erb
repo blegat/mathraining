@@ -1,4 +1,6 @@
 <% price = 15 %>
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
 
 <% provide(:title, @user.name) %>
 
@@ -7,22 +9,107 @@
 <% if @user.admin %>
   <b>Administrateur</b>
 <% else %>
+
+
   <div class="row">
   
-  <div class="span7">
-  <h2>Evolution</h2>
-  Ceci contiendra un canvas avec l'évolution du score de l'élève dans le temps.
+  <div class="span6">
+  <h2>Dernières activités</h2>
+  <% exercises = @user.solvedexercises.where(:correct => true) %>
+  <% qcms = @user.solvedqcms.where(:correct => true) %>
+  <% problems = @user.solvedproblems %>
+  <% activite = Array.new %>
+  
+  <% exercises.each do |e| %>
+    <% if e.exercise.decimal %>
+      <% pt = 10 %>
+    <% else %>
+      <% pt = 6 %>
+    <% end %>
+    <% pt = 0 if e.exercise.chapter.sections.empty? %>
+    <% activite.push({:time => e.updated_at, :type => 0, :pt => pt, :chapter => e.exercise.chapter.name}) %>
+  <% end %>
+  <% qcms.each do |q| %>
+    <% if q.qcm.many_answers %>
+      <% pt = 2*(q.qcm.choices.count-1) %>
+    <% else %>
+      <% pt = q.qcm.choices.count %>
+    <% end %>
+    <% pt = 0 if q.qcm.chapter.sections.empty? %>
+    <% activite.push({:time => q.updated_at, :type => 0, :pt => pt, :chapter => q.qcm.chapter.name}) %>
+  <% end %>
+  <% problems.each do |p| %>
+    <% pt = 25 * p.problem.level %>
+    <% pt = 0 if p.problem.chapter.sections.empty? %>
+    <% activite.push({time => p.updated_at, :type => 1, :pt => pt, :chapter => p.problem.chapter.name}) %>
+  <% end %>
+  
+  <% act = activite.sort{ |a, b| b[:time] <=> a[:time]} %>
+  <% actperday = Array.new %>
+
+  <% previousdate = Date.new(1980,1,1) %>
+  <% encours = -1 %>
+  
+  <% if act.size > 0 %>
+    <table class="table table-bordered">
+    <tr><th>Date</th><th><center>Heure</center></th><th><center>Type</center></th><th>Chapitre</th><th><center>Points</center></th></tr>
+  <% end %>
+  <% i = 1 %>
+  <% act.each do |a| %>
+    <% date = a[:time].in_time_zone %>
+    <% dateday = Date.new(date.year, date.month, date.day) %>
+    
+    <% if a[:pt] > 0 %>
+      <% if dateday != previousdate %>
+        <% encours = encours+1 %>
+        <% actperday.push({:time => dateday, :pt => a[:pt], :chapter => a[:chapter]}) %>
+      <% else %>
+        <% actperday[encours][:pt] = actperday[encours][:pt] + a[:pt] %>
+      <% end %>   
+      <% previousdate = dateday %>
+    <% end %>
+    
+    <% if i <= 10 %>
+    <tr style="background-color:<%= "#F1F1F1" if i % 2 == 1 %> <%= "white" if i % 2 == 0 %>;">
+    <td><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td><td><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
+    <td>
+    <center>
+    <% if a[:type] == 0 %>
+      Exercice
+    <% else %>
+      Problème
+    <% end %>
+    </center>
+    </td>
+    <td>
+      <%= a[:chapter] %>
+    </td>
+    <td>
+    <center>
+      <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
+    </center>	
+    </td>
+    </tr>
+    <% i = i+1 %>
+    <% end %>
+  <% end %>
+  
+  <% if act.size > 0 %>
+    </table>
+  <% else %>
+    <b>Aucune activité.</b>
+  <% end %>
+  
+  <% actperday = actperday.reverse %>
+  
   </div>
-  <div class="span5">
+  
+  <div class="span6">
   <h2>Statistiques</h2>
   
-  <% if @user.point.nil? %>
-    <% rating = 0 %>
-  <% else %>
-    <% rating = @user.point.rating %>
-  <% end %>
+  <% actualrating = @user.point.rating %>
   <br/>
-  <center><p style="font-size:24px;">Score : <%= rating %></p></center>
+  <center><p style="font-size:24px;">Score : <%= actualrating %></p></center>
   <br/>
   
   <table class="table table-bordered">
@@ -75,7 +162,68 @@
     </center>
   <% end %>
   </div>
+  </div>
+
+
+  <% if actualrating > 0 %>
+  
+  <div class="row">
+  
+  <div class="span12">
+  
+  <h2>Evolution</h2>
+  <br/>
+  <center>
+  <div style="width:846px; height:500px; position:relative;">
+  <canvas id="myCanvas" width="806" height="450" style="position:absolute; left:40px; top: 0px; border:1px solid #000000;">
+  Votre navigateur ne supporte pas les canvas.
+  </canvas>
+  </div>
+  </center>
+  
+  <script>
+  var c=document.getElementById("myCanvas");
+  var ctx=c.getContext("2d");
+  
+  
+    
+  <% if actperday.size == 1 %>
+    ctx.beginPath();
+    ctx.arc(400, 300, 3, 0, 2 * Math.PI, true);
+    ctx.fill();
+  <% else %>
+  
+    <% maxi = 1.2*actualrating %>
+    <% last = actperday.last[:time].to_time.to_i %>
+    <% first = actperday.first[:time].to_time.to_i %>
+    <% previousr = 0 %>
+    <% prevw = -1 %>
+    <% prevh = -1 %>
+    <% actperday.each do |a| %>
+      <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+      <% r = previousr + a[:pt] %>
+      <% previousr = r %>
+      <% h = 450 - 450*(r/maxi) %>
+      ctx.beginPath();
+      ctx.arc(<%= w %>, <%= h %>, 3, 0, 2 * Math.PI, true);
+      ctx.fill();
+      <% if prevw >= 0 %>
+        ctx.beginPath();
+        ctx.moveTo(<%= prevw %>, <%= prevh %>);
+        ctx.lineTo(<%= w %>, <%= h %>);
+        ctx.stroke();
+      <% end %>
+      <% prevw = w %>
+      <% prevh = h %>
+    <% end %>
+  <% end %>
+
+  
+  </script>
   
   </div>
+  </div>
+  
+  <% end %>
   
 <% end %>

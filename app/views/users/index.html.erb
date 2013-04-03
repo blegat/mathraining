@@ -18,7 +18,7 @@
   <% rank = 1 %>
   <% points.each do |p| %>
     <% user = User.find(p.user) %>
-    <% if !user.admin? && p.rating > 0 %>
+    <% if !user.admin? %>
     <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
     <td><center><%= rank %></center></td>
     <td> <%= link_to user.name, user %> </td>

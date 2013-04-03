@@ -27,11 +27,12 @@ class User < ActiveRecord::Base
   has_many :solvedproblems, dependent: :destroy
   has_many :problems, through: :solvedproblems
   has_many :pictures
-  has_one :point
-  has_many :pointspersections
+  has_one :point, dependent: :destroy
+  has_many :pointspersections, dependent: :destroy
 
   before_save { self.email.downcase! }
   before_save :create_remember_token
+  after_save :create_points
 
   validates :first_name, presence: true, length: { maximum: 32 }
   validates :last_name, presence: true, length: { maximum: 32 }
@@ -53,5 +54,10 @@ class User < ActiveRecord::Base
   private
   def create_remember_token
     self.remember_token = SecureRandom.urlsafe_base64
+  end
+  def create_points
+    newpoint = Point.new
+    newpoint.rating = 0
+    self.point = newpoint
   end
 end

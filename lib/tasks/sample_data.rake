@@ -188,6 +188,8 @@ def make_users_solve_exercises
         link.nb_guess = rand(1..5)
         link.guess = e.answer
         link.correct = true
+        link.created_at = Date.new(2013,3,rand(1..31)).to_time
+        link.updated_at = link.created_at
         point_attribution_ex(user, e)
         link.save
       end
@@ -200,6 +202,8 @@ def make_users_solve_exercises
         link.qcm = q
         link.nb_guess = rand(1..5)
         link.correct = true
+        link.created_at = Date.new(2013,3,rand(1..31)).to_time
+        link.updated_at = link.created_at
         point_attribution_qcm(user, q)
         link.save
       end

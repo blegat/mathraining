@@ -22,7 +22,6 @@ class UsersController < ApplicationController
   	  flash[:success] = "Un mail de confirmation vous a été envoyé sur votre adresse mail pour activer votre compte."
   	  redirect_to signin_path
   	else
-  	  flash[:error] = @user.email_confirm
   	  render 'new'
   	end
   end
