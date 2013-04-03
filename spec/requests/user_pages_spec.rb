@@ -31,30 +31,13 @@ describe "User pages" do
 
     describe "pagination" do
 
-      it { should have_selector('div.pagination') }
 
       it "should list each user" do
-        User.where(:admin => false).paginate(page: 1).each do |user|
-          page.should have_selector('tr', text: user.name)
+        User.where(:admin => false).each do |user|
+          if !user.point.nil? && user.point.rating > 0
+            page.should have_selector('tr', text: user.name)
+          end
         end
-      end
-    end
-    describe "delete links" do
-
-      it { should_not have_link('Supprimer') }
-
-      describe "as an admin user" do
-        let(:admin) { FactoryGirl.create(:admin) }
-        before do
-          sign_in admin
-          visit users_path
-        end
-
-        it { should have_link('Supprimer', href: user_path(User.first)) }
-        it "should be able to delete another user" do
-          expect { click_link('Supprimer') }.to change(User, :count).by(-1)
-        end
-        it { should_not have_link('Supprimer', href: user_path(admin)) }
       end
     end
   end
