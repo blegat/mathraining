@@ -5,6 +5,8 @@ namespace :db do
     make_users
     make_base_chapter
     make_algebra_chapter
+    make_geometry_chapter
+    make_users_solve_exercises
   end
 end
 
@@ -22,6 +24,13 @@ def make_users
                email: 'jean@dupont.com',
                password: 'foobar',
                password_confirmation: 'foobar')
+  (1..20).each do |i|
+    User.create!(first_name: "Etu",
+                 last_name: "Diant#{i}",
+                 email: "etu@diant#{i}.com",
+                 password: "foobar",
+                 password_confirmation: "foobar")
+  end
 end
 
 def make_base_chapter
@@ -127,6 +136,171 @@ def make_algebra_chapter
                                   online: true,
                                   level: 2)
 end
+
+
+def make_geometry_chapter
+  geometrie = Chapter.create!(name: 'Angles',
+                         description: 'C\'est la base de la géométrie!',
+                         level: 1,
+                         online: true)
+  sect = Section.where(:name => "Géométrie").first
+  geometrie.sections << sect
+  geometrie.theories << Theory.create!(title: 'Angles inscrits',
+                                  content: 'Deux angles inscrits interceptant le même arc ont la même amplitude.',
+                                  position: 1,
+                                  online: true)
+  geometrie.theories << Theory.create!(title: 'Angle inscrit et angle au centre',
+                                  content: 'L\'amplitude d\'un angle au centre est égale au double de l\'amplitude d\'un angle inscrit interceptant le même arc.',
+                                  position: 2,
+                                  online: true)
+  geometrie.exercises << Exercise.create!(statement: 'Si un angle inscrit a une amplitude de $30^\circ$, quelle est l\'amplitude en degré de l\'angle au centre interceptant le même arc?',
+                                     answer: 60,
+                                     decimal: false,
+                                     position: 1,
+                                     explanation: "Il suffit d'utiliser les règles expliquées dans la théorie.",
+                                     online: true)
+  geometrie.exercises << Exercise.create!(statement: 'Si un angle au centre a une amplitude de $29^\circ$, quelle est l\'amplitude en degré de l\'angle inscrit interceptant le même arc??',
+                                     answer: 14.5,
+                                     decimal: true,
+                                     position: 2,
+                                     explanation: "Il suffit encore une fois d'utiliser les règles expliquées dans la théorie.",
+                                     online: true)
+  geometrie.qcms << (newqcm = Qcm.create!(statement: 'Que peut-on dire de deux angles inscrits interceptant le même arc?',
+                           many_answers: false,
+                           position: 3,
+                           online: true,
+                           explanation: "C'est évident."))
+
+  Choice.create!(ans: 'La somme de leur amplitude vaut $180^\circ$', ok: false, qcm_id: geometrie.qcms.first.id)
+  Choice.create!(ans: "Ils ont la même amplitude", ok: true, qcm_id: geometrie.qcms.first.id)
+
+end
+
+def make_users_solve_exercises
+  (1..20).each do |i|
+    user = User.where(:last_name => "Diant#{i}").first
+    Exercise.all.each do |e|
+      r = rand(1..25)
+      if r > i # Solve the exercise
+        link = Solvedexercise.new
+        link.user = user
+        link.exercise = e
+        link.nb_guess = rand(1..5)
+        link.guess = e.answer
+        link.correct = true
+        point_attribution_ex(user, e)
+        link.save
+      end
+    end
+    Qcm.all.each do |q|
+      r = rand(1..25)
+      if r > i # Solve the qcm
+        link = Solvedqcm.new
+        link.user = user
+        link.qcm = q
+        link.nb_guess = rand(1..5)
+        link.correct = true
+        point_attribution_qcm(user, q)
+        link.save
+      end
+    end
+  end
+
+end
+
+
+def point_attribution_ex(user, exo)
+  if exo.decimal
+    pt = 10
+  else
+    pt = 6
+  end
+    
+  partials = user.pointspersections
+    
+  if !exo.chapter.sections.empty? # Pas un fondement
+    if user.point.nil?
+      newpoint = Point.new
+      newpoint.rating = pt
+      user.point = newpoint
+    else
+      user.point.rating = user.point.rating + pt
+      user.point.save
+    end
+  else # Fondement
+    if partials.where(:section_id => 0).size == 0
+      newpoint = Pointspersection.new
+      newpoint.section_id = 0
+      newpoint.points = pt
+      user.pointspersections << newpoint
+    else
+      partial = partials.where(:section_id => 0).first
+      partial.points = partial.points + pt
+      partial.save
+    end
+  end
+    
+  exo.chapter.sections.each do |s| # Section s
+    if partials.where(:section_id => s.id).size == 0
+      newpoint = Pointspersection.new
+      newpoint.section_id = s.id
+      newpoint.points = pt
+      user.pointspersections << newpoint
+    else
+      partial = partials.where(:section_id => s.id).first
+      partial.points = partial.points + pt
+      partial.save
+    end
+  end
+end
+
+
+def point_attribution_qcm(user, qcm)
+  poss = qcm.choices.count
+  if qcm.many_answers
+    pt = 2*(poss-1)
+  else
+    pt = poss
+  end
+    
+  partials = user.pointspersections
+  
+  if !qcm.chapter.sections.empty? # Pas un fondement
+    if user.point.nil?
+      newpoint = Point.new
+      newpoint.rating = pt
+      user.point = newpoint
+    else
+      user.point.rating = user.point.rating + pt
+      user.point.save
+    end
+  else # Fondement
+    if partials.where(:section_id => 0).size == 0
+      newpoint = Pointspersection.new
+      newpoint.section_id = 0
+      newpoint.points = pt
+      user.pointspersections << newpoint
+    else
+      partial = partials.where(:section_id => 0).first
+      partial.points = partial.points + pt
+      partial.save
+    end
+  end
+    
+  qcm.chapter.sections.each do |s| # Section s
+    if partials.where(:section_id => s.id).size == 0
+      newpoint = Pointspersection.new
+      newpoint.section_id = s.id
+      newpoint.points = pt
+      user.pointspersections << newpoint
+    else
+      partial = partials.where(:section_id => s.id).first
+      partial.points = partial.points + pt
+      partial.save
+    end
+  end
+end
+
 
 def make_words
   latin = Language.find_by_name("Latin")
