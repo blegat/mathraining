@@ -1,34 +1,30 @@
+<% price = 15 %>
+
 <% provide(:title, 'Utilisateurs') %>
 <h1>Utilisateurs</h1>
 
 <h2>Etudiants</h2>
 
+<% points = Point.order("rating DESC").all %>
+
 <% allsec = Section.all %>
 
-<%= will_paginate %>
-
-<table cellpadding="6" border="1">
-  <tr><th>Nom</th><th>Points</th><th>Fondements</th>
+<table class="table table-bordered">
+  <tr><th></th><th>Nom</th><th><center>Score</center></th><th><center>Fondements</center></th>
   <% allsec.each do |s| %>
-    <th><%= s.name %></th>
+    <th><center><%= s.name %></center></th>
   <% end %>
   </tr>
-  
-  <% @users.each do |user| %>
-    <tr>
-    <td> <%= link_to user.name, user %>
-    <% if current_user.admin? %>
-      (<%= link_to 'Supprimer', user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{user.name}?" } %>
-      | <%= link_to 'Rendre administrateur', user_add_administrator_path(user), data: { confirm: "Etes-vous sûr de vouloir rendre #{user.name} administrateur? Vous ne pourrez plus revenir en arrière!"} %>)
-    <% end %>
-    </td>
+  <% rank = 1 %>
+  <% points.each do |p| %>
+    <% user = User.find(p.user) %>
+    <% if !user.admin? && p.rating > 0 %>
+    <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
+    <td><center><%= rank %></center></td>
+    <td> <%= link_to user.name, user %> </td>
       
-    <% if user.point.nil? %>
-      <% rating = 0 %>
-    <% else %>
-      <% rating = user.point.rating %>
-    <% end %>
-    <td><%= rating %></td>
+    <% rating = p.rating %>
+    <td><center><%= rating %></center></td>
       
     <% p = Pointspersection.where(:user_id => user) %>
     <% if p.where(:section_id => 0).size == 0 %>
@@ -36,23 +32,36 @@
     <% else %>
       <% rate = p.where(:section_id => 0).first.points %>
     <% end %>
-      <td><%= rate %></td>
+      <td>
+      <center>
+      <% etoile = (rate/price).floor %>
+      <% etoile.times do |i| %>
+        <img src="/assets/etoilegrisefoncee.gif" />
+      <% end %>
+      </center>
+      </td>
       <% allsec.each do |s| %>
         <% if p.where(:section_id => s.id).size == 0 %>
           <% rate = 0 %>
         <% else %>
           <% rate = p.where(:section_id => s.id).first.points %>
         <% end %>
-      <td><%= rate %></td>
+      <td>
+      <center>
+      <% etoile = (rate/price).floor %>
+      <% etoile.times do |i| %>
+        <img src="/assets/etoilejaune.gif" />
+      <% end %>
+      </center>
+      </td>
     <% end %>
   
     </tr>
-
+    <% rank = rank + 1 %>
+    <% end %>
   <% end %>
 
 </table>
-
-<%= will_paginate %>
 
 <h2>Administrateurs</h2>
 

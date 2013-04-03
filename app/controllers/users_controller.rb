@@ -12,7 +12,6 @@ class UsersController < ApplicationController
     only: [:destroy]
 
   def index
-    @users = User.where(:admin => false).paginate(page: params[:page])
   end
   def create
     @user = User.new(params[:user])

@@ -1,3 +1,5 @@
+<% price = 15 %>
+
 <% provide(:title, @user.name) %>
 
 <h1><%= @user.name %></h1>
@@ -5,28 +7,75 @@
 <% if @user.admin %>
   <b>Administrateur</b>
 <% else %>
-
+  <div class="row">
+  
+  <div class="span7">
+  <h2>Evolution</h2>
+  Ceci contiendra un canvas avec l'évolution du score de l'élève dans le temps.
+  </div>
+  <div class="span5">
+  <h2>Statistiques</h2>
+  
   <% if @user.point.nil? %>
     <% rating = 0 %>
   <% else %>
     <% rating = @user.point.rating %>
   <% end %>
+  <br/>
+  <center><p style="font-size:24px;">Score : <%= rating %></p></center>
+  <br/>
   
-  Total des points : <%= rating %><br/><br/>
+  <table class="table table-bordered">
+  <tr><th>Section</th><th><center>Niveau</center></th><th><center>Niveau suivant</center></th></tr>
   <% p = Pointspersection.where(:user_id => @user) %>
   <% if p.where(:section_id => 0).size == 0 %>
     <% rate = 0 %>
   <% else %>
     <% rate = p.where(:section_id => 0).first.points %>
   <% end %>
-  Fondements : <%= rate %><br/>	
+  
+  <tr><td>Fondements</td>
+  <td>
+  <center>
+  <% etoile = (rate/price).floor %>
+  <% etoile.times do |i| %>
+    <img src="/assets/etoilegrisefoncee.gif" />
+  <% end %>
+  </center>
+  </td>
+  <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*price) )/price %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*price) )/price %>, <%= 255*(rate - (etoile*price) )/price %>, 100);"></div></div></td>
+  
+
   <% Section.all.each do |s| %>
+    <tr>
     <% if p.where(:section_id => s.id).size == 0 %>
       <% rate = 0 %>
     <% else %>
       <% rate = p.where(:section_id => s.id).first.points %>
     <% end %>
-    <%= s.name %> : <%= rate %><br/>
+    <td><%= s.name %></td>
+    <td>
+    <center>
+    <% etoile = (rate/price).floor %>
+    <% etoile.times do |i| %>
+      <img src="/assets/etoilejaune.gif" />
+    <% end %>
+    </center>
+    </td>
+    <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*price) )/price %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*price) )/price %>, <%= 255*(rate - (etoile*price) )/price %>, 100);"></div></div></td>
+    </tr>
   <% end %>
+  
+  </table>
+  
+  <% if current_user.admin? %>
+    <center>
+      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{@user.name}?" } %>
+      | <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"} %>
+    </center>
+  <% end %>
+  </div>
+  
+  </div>
   
 <% end %>
