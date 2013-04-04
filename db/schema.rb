@@ -196,6 +196,7 @@ ActiveRecord::Schema.define(:version => 20130402144156) do
     t.string   "password_digest"
     t.string   "remember_token"
     t.boolean  "admin",           :default => false
+    t.boolean  "root",            :default => false
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
     t.string   "key"

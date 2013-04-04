@@ -92,46 +92,13 @@ class ChaptersController < ApplicationController
     taillebefore = chapter.sections.count
     chapter.sections << section
     tailleafter = chapter.sections.count
-    if tailleafter > taillebefore # Real add
-    
-      chapter.exercises.each do |exercise| # Exercises
-        if exercise.decimal
-          pt = 10
-        else
-          pt = 6
-        end
-        exercise.solvedexercises.each do |s|
-          if s.correct
-            user = s.user
-            distribute_points(user, pt, section)
-          end
-        end
+  
+    if chapter.online && tailleafter > taillebefore
+      User.all.each do |user|
+        point_attribution(user)
       end
-      
-      chapter.qcms.each do |qcm| # Qcms
-        poss = qcm.choices.count
-        if qcm.many_answers
-          pt = 2*(poss-1)
-        else
-          pt = poss
-        end
-        qcm.solvedqcms.each do |s|
-          if s.correct
-            user = s.user
-            distribute_points(user, pt, section)
-          end
-        end
-      end
-      
-      chapter.problems.each do |problem| # Problems
-        pt = 25*problem.level
-        problem.solvedproblems.each do |s|
-          user = s.user
-          distribute_points(user, pt, section)
-        end
-      end
-      
     end
+    
     redirect_to chapter_manage_sections_path(chapter)
   end
 
@@ -144,42 +111,9 @@ class ChaptersController < ApplicationController
       taillebefore = chapter.sections.count
       chapter.sections.delete(section)
       tailleafter = chapter.sections.count
-      if tailleafter < taillebefore # Real remove
-        chapter.exercises.each do |exercise| # Exercises
-          if exercise.decimal
-            pt = 10
-          else
-            pt = 6
-          end
-          exercise.solvedexercises.each do |s|
-            if s.correct
-              user = s.user
-              dedistribute_points(user, pt, section)
-            end
-          end
-        end
-      
-        chapter.qcms.each do |qcm| # Qcms
-          poss = qcm.choices.count
-          if qcm.many_answers
-            pt = 2*(poss-1)
-          else
-            pt = poss
-          end
-          qcm.solvedqcms.each do |s|
-            if s.correct
-              user = s.user
-              dedistribute_points(user, pt, section)
-            end
-          end
-        end
-      
-        chapter.problems.each do |problem| # Problems
-          pt = 25*problem.level
-          problem.solvedproblems.each do |s|
-            user = s.user
-            dedistribute_points(user, pt, section)
-          end
+      if chapter.online && tailleafter < taillebefore
+        User.all.each do |user|
+          point_attribution(user)
         end
       end
     end
@@ -223,7 +157,8 @@ class ChaptersController < ApplicationController
   
   def fondement_online
     @chapter = Chapter.find(params[:chapter_id])
-    redirect_to @chapter if (@chapter.online && @chapter.sections.empty?)
+    (redirect_to @chapter and return) if (@chapter.online && @chapter.sections.empty?)
+    (redirect_to @chapter and return) if (@chapter.online && !current_user.root)
   end
   
   def prerequisites_online
@@ -239,25 +174,81 @@ class ChaptersController < ApplicationController
     end
   end
   
-  def distribute_points(user, pt, section)
+  def point_attribution(user)
+    user.point.rating = 0
     partials = user.pointspersections
-    if partials.where(:section_id => section.id).size == 0
-      newpoint = Pointspersection.new
-      newpoint.section_id = section.id
-      newpoint.points = pt
-      user.pointspersections << newpoint
-    else
-      partial = partials.where(:section_id => section.id).first
-      partial.points = partial.points + pt
-      partial.save
+    partial = Array.new
+    partial[0] = partials.where(:section_id => 0).first
+    partial[0].points = 0
+    Section.all.each do |s|
+      partial[s.id] = partials.where(:section_id => s.id).first
+      partial[s.id].points = 0
     end
-  end
-  
-  def dedistribute_points(user, pt, section)
-    partials = user.pointspersections
-    partial = partials.where(:section_id => section.id).first
-    partial.points = partial.points - pt
-    partial.save
+    
+    user.solvedexercises.each do |e|
+      if e.correct
+        exo = e.exercise
+        if exo.decimal
+          pt = 10
+        else
+          pt = 6
+        end
+        
+        if !exo.chapter.sections.empty? # Pas un fondement
+          user.point.rating = user.point.rating + pt
+        else # Fondement
+          partial[0].points = partial[0].points + pt
+        end
+    
+        exo.chapter.sections.each do |s| # Section s
+          partial[s.id].points = partial[s.id].points + pt
+        end
+      end
+    end
+    
+    user.solvedqcms.each do |q|
+      if q.correct
+        qcm = q.qcm
+        poss = qcm.choices.count
+        if qcm.many_answers
+          pt = 2*(poss-1)
+        else
+          pt = poss
+        end
+        
+        if !qcm.chapter.sections.empty? # Pas un fondement
+          user.point.rating = user.point.rating + pt
+        else # Fondement
+          partial[0].points = partial[0].points + pt
+        end
+    
+        qcm.chapter.sections.each do |s| # Section s
+          partial[s.id].points = partial[s.id].points + pt
+        end
+      end
+    end
+    
+    user.solvedproblems.each do |p|
+      problem = p.problem
+      pt = 25*problem.level
+      
+      if !problem.chapter.sections.empty? # Pas un fondement
+        user.point.rating = user.point.rating + pt
+      else # Fondement
+        partial[0].points = partial[0].points + pt
+      end
+    
+      problem.chapter.sections.each do |s| # Section s
+        partial[s.id].points = partial[s.id].points + pt
+      end
+    end
+    
+    user.point.save
+    partial[0].save
+    Section.all.each do |s|
+      partial[s.id].save
+    end
+ 
   end
 
 end

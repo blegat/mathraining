@@ -3,6 +3,10 @@
 Vous pouvez ici modifier les sections auxquelles le chapitre <%= @chapter.name %> appartient.
 Par défaut, si celui-ci n'est placé dans aucune des quatres sections ci-dessous, alors il se situera dans le chapitre Fondements.<br/><br/>
 
+<% if @chapter.online %>
+<p style="color:red;"><b>Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps).</b></p><br/>
+<% end %>
+
 <div class="row">
   <div class="span6">
   <center> <h2>Retirer d'une section</h2> </center>

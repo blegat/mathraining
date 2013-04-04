@@ -15,7 +15,7 @@
 
 class User < ActiveRecord::Base
   attr_accessible :email, :first_name, :last_name,
-    :password, :password_confirmation, :admin,
+    :password, :password_confirmation, :admin, :root,
     :email_confirm, :key
   has_secure_password
   has_and_belongs_to_many :theories
@@ -59,5 +59,15 @@ class User < ActiveRecord::Base
     newpoint = Point.new
     newpoint.rating = 0
     self.point = newpoint
+    newpoint = Pointspersection.new
+    newpoint.points = 0
+    newpoint.section_id = 0
+    self.pointspersections << newpoint
+    Section.all.each do |s|
+      newpoint = Pointspersection.new
+      newpoint.points = 0
+      newpoint.section_id = s.id
+      self.pointspersections << newpoint
+    end
   end
 end

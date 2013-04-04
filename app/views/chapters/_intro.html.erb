@@ -39,8 +39,8 @@
     <center>
       <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %>
 
-      <% if !@chapter.sections.empty? %>
-        | <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter) %> <br/>
+      <% if !@chapter.sections.empty? && current_user.root %>
+        | <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter), {:style => "color:red;" } %> <br/>
       <% end %>
     </center>
 

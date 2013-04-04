@@ -8,7 +8,7 @@
     {:pt => 6, :name => "Initié", :color => "#11AA00", :fontcolor => "#44DD11"},
     {:pt => 10, :name => "Compétent", :color => "#00BBEE", :fontcolor => "#33FFFF"},
     {:pt => 14, :name => "Qualifié", :color => "#0033FF", :fontcolor => "#6699FF"},
-    {:pt => 18, :name => "Expérimenté", :color => "#CC66FF", :fontcolor => "#FF99FF"},
+    {:pt => 18, :name => "Expérimenté", :color => "#DD77FF", :fontcolor => "#FF99FF"},
     {:pt => 22, :name => "Chevronné", :color => "#990099", :fontcolor => "#DD44DD"},
     {:pt => 26, :name => "Expert", :color => "#FF9900", :fontcolor => "#FFBB22"},
     {:pt => 30, :name => "Maître", :color => "#FF3300", :fontcolor => "#FF5522"},
@@ -145,11 +145,7 @@
   <table class="table table-bordered">
   <tr><th>Section</th><th><center>Niveau</center></th><th><center>Niveau suivant</center></th></tr>
   <% p = Pointspersection.where(:user_id => @user) %>
-  <% if p.where(:section_id => 0).size == 0 %>
-    <% rate = 0 %>
-  <% else %>
-    <% rate = p.where(:section_id => 0).first.points %>
-  <% end %>
+  <% rate = p.where(:section_id => 0).first.points %>
   
   <tr><td>Fondements</td>
   <td>
@@ -165,11 +161,7 @@
 
   <% Section.all.each do |s| %>
     <tr>
-    <% if p.where(:section_id => s.id).size == 0 %>
-      <% rate = 0 %>
-    <% else %>
-      <% rate = p.where(:section_id => s.id).first.points %>
-    <% end %>
+    <% rate = p.where(:section_id => s.id).first.points %>
     <td><%= s.name %></td>
     <td>
     <center>
@@ -294,9 +286,12 @@
   <% end %>
   
   <% if current_user.admin? %>
+    <br/>
     <center>
-      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{@user.name}?" } %>
-      | <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"} %>
+      <%= link_to 'Supprimer cet utilisateur', @user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{@user.name}?" } %>
+      <% if current_user.root %>
+        | <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"}, :style => "color:red;" %>
+      <% end %>
     </center>
   <% end %>
   

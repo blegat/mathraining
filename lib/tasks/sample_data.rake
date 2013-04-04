@@ -12,12 +12,20 @@ end
 
 def make_users
   # Admin
-  User.create!(first_name: 'Root',
+  User.create!(first_name: 'Admin',
                last_name: 'Admin',
-               email: 'root@admin.com',
+               email: 'admin@admin.com',
                password: 'foobar',
                password_confirmation: 'foobar',
                admin: true)
+  # Root
+  User.create!(first_name: 'Root',
+               last_name: 'Root',
+               email: 'root@root.com',
+               password: 'foobar',
+               password_confirmation: 'foobar',
+               admin: true,
+               root: true)
   # Student
   User.create!(first_name: 'Jean',
                last_name: 'Dupont',

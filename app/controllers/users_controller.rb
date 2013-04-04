@@ -1,11 +1,13 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_filter :signed_in_user,
-    only: [:destroy, :index, :edit, :update, :show, :create_administrator]
+    only: [:destroy, :index, :edit, :update, :show, :create_administrator, :recompute_scores]
   before_filter :correct_user,
     only: [:edit, :update]
   before_filter :admin_user,
-    only: [:destroy, :create_administrator]
+    only: [:destroy]
+  before_filter :root_user,
+    only: [:create_administrator, :recompute_scores]
   before_filter :signed_out_user,
     only: [:new, :create]
   before_filter :destroy_admin,
@@ -71,6 +73,13 @@ class UsersController < ApplicationController
     end
     redirect_to signin_path
   end
+  
+  def recompute_scores
+    User.all.each do |user|
+      point_attribution(user)
+    end
+    redirect_to users_path
+  end
 
   private
 
@@ -86,6 +95,9 @@ class UsersController < ApplicationController
   def admin_user
     redirect_to root_path unless current_user.admin?
   end
+  def root_user
+    redirect_to root_path unless current_user.root
+  end
   def destroy_admin
     @user = User.find(params[:id])
     if @user.admin?
@@ -93,4 +105,82 @@ class UsersController < ApplicationController
       redirect_to root_path
     end
   end
+  
+  def point_attribution(user)
+    user.point.rating = 0
+    partials = user.pointspersections
+    partial = Array.new
+    partial[0] = partials.where(:section_id => 0).first
+    partial[0].points = 0
+    Section.all.each do |s|
+      partial[s.id] = partials.where(:section_id => s.id).first
+      partial[s.id].points = 0
+    end
+    
+    user.solvedexercises.each do |e|
+      if e.correct
+        exo = e.exercise
+        if exo.decimal
+          pt = 10
+        else
+          pt = 6
+        end
+        
+        if !exo.chapter.sections.empty? # Pas un fondement
+          user.point.rating = user.point.rating + pt
+        else # Fondement
+          partial[0].points = partial[0].points + pt
+        end
+    
+        exo.chapter.sections.each do |s| # Section s
+          partial[s.id].points = partial[s.id].points + pt
+        end
+      end
+    end
+    
+    user.solvedqcms.each do |q|
+      if q.correct
+        qcm = q.qcm
+        poss = qcm.choices.count
+        if qcm.many_answers
+          pt = 2*(poss-1)
+        else
+          pt = poss
+        end
+        
+        if !qcm.chapter.sections.empty? # Pas un fondement
+          user.point.rating = user.point.rating + pt
+        else # Fondement
+          partial[0].points = partial[0].points + pt
+        end
+    
+        qcm.chapter.sections.each do |s| # Section s
+          partial[s.id].points = partial[s.id].points + pt
+        end
+      end
+    end
+    
+    user.solvedproblems.each do |p|
+      problem = p.problem
+      pt = 25*problem.level
+      
+      if !problem.chapter.sections.empty? # Pas un fondement
+        user.point.rating = user.point.rating + pt
+      else # Fondement
+        partial[0].points = partial[0].points + pt
+      end
+    
+      problem.chapter.sections.each do |s| # Section s
+        partial[s.id].points = partial[s.id].points + pt
+      end
+    end
+    
+    user.point.save
+    partial[0].save
+    Section.all.each do |s|
+      partial[s.id].save
+    end
+ 
+  end
+  
 end

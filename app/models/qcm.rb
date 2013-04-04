@@ -15,8 +15,8 @@
 class Qcm < ActiveRecord::Base
   attr_accessible :many_answers, :position, :statement, :online, :explanation
   belongs_to :chapter
-  has_many :choices
-  has_many :solvedqcms
+  has_many :choices, dependent: :destroy
+  has_many :solvedqcms, dependent: :destroy
   has_many :users, :through => :solvedqcms
   validates :statement, presence: true, length: { maximum: 8000 }
   validates :explanation, length: { maximum: 8000 }

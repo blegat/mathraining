@@ -16,7 +16,7 @@ class Problem < ActiveRecord::Base
   attr_accessible :name, :position, :statement, :online, :level
   belongs_to :chapter
 
-  has_many :submissions
+  has_many :submissions, dependent: :destroy
 
   has_many :solvedproblems, dependent: :destroy
   has_many :users, through: :solvedproblems

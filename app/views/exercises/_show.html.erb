@@ -35,7 +35,9 @@
     <% if @chapter.online && f.online %>
       <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
       | <%= link_to "Modifier l'explication", exercise_explanation_path(f) %>
-      | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Attention, cet exercice est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer?" } %>
+      <% if current_user.root %>
+        | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Attention, cet exercice est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
+      <% end %>
     <% else %>
       <%= link_to "Modifier cet exercice", edit_exercise_path(f) %>
       | <%= link_to "Modifier l'explication", exercise_explanation_path(f) %>

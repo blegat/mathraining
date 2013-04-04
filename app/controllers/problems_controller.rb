@@ -3,6 +3,7 @@ class ProblemsController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_user,
     only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online]
+  before_filter :root_user, only: [:destroy]
 
 
   def new
@@ -58,20 +59,16 @@ class ProblemsController < ApplicationController
   end
 
   def destroy
-    @problem = Problem.find(params[:id])
     @chapter = @problem.chapter
-    pt = 25*@problem.level
-    Solvedproblem.where(:problem_id => params[:id]).each do |s|
-      remove_points(s.user, pt, @problem.chapter.sections)
-      s.destroy
-    end
-    Submission.where(:problem_id => params[:id]).each do |s|
-      Correction.where(:submission_id => s.id).each do |c|
-        c.destroy
+
+    if @problem.online && @problem.chapter.online
+      @problem.destroy
+      User.all.each do |user|
+        point_attribution(user)
       end
-      s.destroy
+    else
+      @problem.destroy
     end
-    @problem.destroy
     flash[:success] = "Problème supprimé."
     redirect_to @chapter
   end
@@ -140,21 +137,85 @@ class ProblemsController < ApplicationController
     redirect_to root_path unless current_user.admin?
   end
   
-  def remove_points(user, pt, sec)
+  def root_user
+    @problem = Problem.find(params[:id])
+    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id) if (!current_user.root && @problem.online && @problem.chapter.online)
+  end
+  
+  def point_attribution(user)
+    user.point.rating = 0
     partials = user.pointspersections
-    if !sec.empty? # Not a fondation
-      user.point.rating = user.point.rating - pt
-      user.point.save
-    else # Fondation
-      partial = partials.where(:section_id => 0).first
-      partial.points = partial.points - pt
-      partial.save
+    partial = Array.new
+    partial[0] = partials.where(:section_id => 0).first
+    partial[0].points = 0
+    Section.all.each do |s|
+      partial[s.id] = partials.where(:section_id => s.id).first
+      partial[s.id].points = 0
     end
     
-    sec.each do |s| # Section s
-      partial = partials.where(:section_id => s.id).first
-      partial.points = partial.points - pt
-      partial.save
+    user.solvedexercises.each do |e|
+      if e.correct
+        exo = e.exercise
+        if exo.decimal
+          pt = 10
+        else
+          pt = 6
+        end
+        
+        if !exo.chapter.sections.empty? # Pas un fondement
+          user.point.rating = user.point.rating + pt
+        else # Fondement
+          partial[0].points = partial[0].points + pt
+        end
+    
+        exo.chapter.sections.each do |s| # Section s
+          partial[s.id].points = partial[s.id].points + pt
+        end
+      end
     end
+    
+    user.solvedqcms.each do |q|
+      if q.correct
+        qcm = q.qcm
+        poss = qcm.choices.count
+        if qcm.many_answers
+          pt = 2*(poss-1)
+        else
+          pt = poss
+        end
+        
+        if !qcm.chapter.sections.empty? # Pas un fondement
+          user.point.rating = user.point.rating + pt
+        else # Fondement
+          partial[0].points = partial[0].points + pt
+        end
+    
+        qcm.chapter.sections.each do |s| # Section s
+          partial[s.id].points = partial[s.id].points + pt
+        end
+      end
+    end
+    
+    user.solvedproblems.each do |p|
+      problem = p.problem
+      pt = 25*problem.level
+      
+      if !problem.chapter.sections.empty? # Pas un fondement
+        user.point.rating = user.point.rating + pt
+      else # Fondement
+        partial[0].points = partial[0].points + pt
+      end
+    
+      problem.chapter.sections.each do |s| # Section s
+        partial[s.id].points = partial[s.id].points + pt
+      end
+    end
+    
+    user.point.save
+    partial[0].save
+    Section.all.each do |s|
+      partial[s.id].save
+    end
+ 
   end
 end
