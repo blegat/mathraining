@@ -1,5 +1,5 @@
 <% price = 15 %>
-
+<% pricefondement = 15 %>
 <% provide(:title, 'Utilisateurs') %>
 <h1>Utilisateurs</h1>
 
@@ -34,7 +34,7 @@
     <% end %>
       <td>
       <center>
-      <% etoile = (rate/price).floor %>
+      <% etoile = (rate/pricefondement).floor %>
       <% etoile.times do |i| %>
         <img src="/assets/etoilegrisefoncee.gif" />
       <% end %>

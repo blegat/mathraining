@@ -1,4 +1,5 @@
 <% price = 15 %>
+<% pricefondement = 15 %>
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 
@@ -14,7 +15,8 @@
   <div class="row">
   
   <div class="span6">
-  <h2>Dernières activités</h2>
+  <h2>Dernières résolutions</h2>
+  <br/>
   <% exercises = @user.solvedexercises.where(:correct => true) %>
   <% qcms = @user.solvedqcms.where(:correct => true) %>
   <% problems = @user.solvedproblems %>
@@ -41,7 +43,7 @@
   <% problems.each do |p| %>
     <% pt = 25 * p.problem.level %>
     <% pt = 0 if p.problem.chapter.sections.empty? %>
-    <% activite.push({time => p.updated_at, :type => 1, :pt => pt, :chapter => p.problem.chapter.name}) %>
+    <% activite.push({:time => p.updated_at, :type => 1, :pt => pt, :chapter => p.problem.chapter.name}) %>
   <% end %>
   
   <% act = activite.sort{ |a, b| b[:time] <=> a[:time]} %>
@@ -105,11 +107,11 @@
   </div>
   
   <div class="span6">
-  <h2>Statistiques</h2>
+
   
   <% actualrating = @user.point.rating %>
   <br/>
-  <center><p style="font-size:24px;">Score : <%= actualrating %></p></center>
+  <center><p style="font-size:24px; margin-top:80px;">Score : <%= actualrating %></p></center>
   <br/>
   
   <table class="table table-bordered">
@@ -124,13 +126,13 @@
   <tr><td>Fondements</td>
   <td>
   <center>
-  <% etoile = (rate/price).floor %>
+  <% etoile = (rate/pricefondement).floor %>
   <% etoile.times do |i| %>
     <img src="/assets/etoilegrisefoncee.gif" />
   <% end %>
   </center>
   </td>
-  <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*price) )/price %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*price) )/price %>, <%= 255*(rate - (etoile*price) )/price %>, 100);"></div></div></td>
+  <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*pricefondement) )/pricefondement %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*pricefondement) )/pricefondement %>, <%= 255*(rate - (etoile*pricefondement) )/pricefondement %>, 0);"></div></div></td>
   
 
   <% Section.all.each do |s| %>
@@ -149,19 +151,18 @@
     <% end %>
     </center>
     </td>
-    <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*price) )/price %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*price) )/price %>, <%= 255*(rate - (etoile*price) )/price %>, 100);"></div></div></td>
+    <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*price) )/price %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*price) )/price %>, <%= 255*(rate - (etoile*price) )/price %>, 0);"></div></div></td>
     </tr>
   <% end %>
   
   </table>
   
-  <% if current_user.admin? %>
-    <center>
-      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{@user.name}?" } %>
-      | <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"} %>
-    </center>
-  <% end %>
+  <% date = @user.created_at.in_time_zone %>
+  <br/>
+  <center>Inscription : <%= date.day %> <%= mois[date.month-1] %> <%= date.year %></center>
+ 
   </div>
+  
   </div>
 
 
@@ -224,6 +225,13 @@
   </div>
   </div>
   
+  <% end %>
+  
+  <% if current_user.admin? %>
+    <center>
+      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{@user.name}?" } %>
+      | <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"} %>
+    </center>
   <% end %>
   
 <% end %>
