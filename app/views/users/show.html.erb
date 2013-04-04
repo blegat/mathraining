@@ -195,22 +195,55 @@
   <h2>Evolution</h2>
   <br/>
   <center>
-  <div style="width:846px; height:500px; position:relative;">
-  <canvas id="myCanvas" width="806" height="450" style="position:absolute; left:40px; top: 0px; border:1px solid #000000;">
+  <div style="width:850px; height:500px; position:relative;">
+  <canvas id="myCanvas" width="806" height="450" style="position:absolute; left:30px; top: 0px; border:1px solid #000000;">
   Votre navigateur ne supporte pas les canvas.
   </canvas>
-  </div>
-  </center>
-
-  <script>
-  var c=document.getElementById("myCanvas");
-  var ctx=c.getContext("2d");
   
   <% if actuallevel == (niveaux.size - 1) %>
     <% maxi = 1.2*actualrating %>
   <% else %>
     <% maxi = 1.1*niveaux[actuallevel+1][:pt] %>
   <% end %>
+  
+  <% (0..(niveaux.size-1)).each do |i| %>
+    <% if i < (niveaux.size - 1) %>
+      <% haut = [450 - 450*(niveaux[i+1][:pt]/maxi), 0].max %>
+      <% if haut > 0 %>
+        <div style="position:absolute; top:<%= haut-8 %>px; right:828px; width: 30px; text-align:right;"><%= niveaux[i+1][:pt] %></div>
+      <% end %>
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+  
+  <% if actperday.size == 1 %>
+  
+  <% a = actperday[0] %>
+  
+  <div style="position:absolute; top:460px; left:411px; width:44px; text-align:left; font-size:12px;"><%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %></div>
+  
+  <% else %>
+    <% last = actperday.last[:time].to_time.to_i %>
+    <% first = actperday.first[:time].to_time.to_i %>
+    <% previousw = -100 %>
+    <% actperday.each do |a| %>
+      <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+      
+      <% if w-previousw > 50 %>
+        <div style="position:absolute; top:460px; left:<%= 8 + w %>px; width: 44px; text-align:left; font-size:12px;"><%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %></div>
+        
+        <% previousw = w %>
+      <% end %>
+      
+    <% end %>
+  <% end %>
+  
+  </div>
+  </center>
+
+  <script>
+  var c=document.getElementById("myCanvas");
+  var ctx=c.getContext("2d");
   
   <% (0..(niveaux.size-1)).each do |i| %>
     <% if i == (niveaux.size - 1) %>
@@ -236,6 +269,7 @@
         ctx.beginPath();
         ctx.moveTo(0, <%= haut %>);
         ctx.lineTo(806, <%= haut %>);
+        ctx.lineWidth = 1;
         ctx.strokeStyle = 'white';
         ctx.stroke();
       <% end %>
@@ -247,31 +281,51 @@
   ctx.strokeStyle = 'black';
     
   <% if actperday.size == 1 %>
+    <% (0..22).each do |i| %>
+      ctx.moveTo(403, <%= 20*i %>);
+      ctx.lineTo(403, <%= 20*i+10 %>);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'white';
+      ctx.stroke();
+    <% end %>
     ctx.beginPath();
-    ctx.arc(400, <%= 450 - 450*(actualrating/maxi) %>, 3, 0, 2 * Math.PI, true);
+    ctx.arc(403, <%= 450 - 450*(actualrating/maxi) %>, 3, 0, 2 * Math.PI, true);
     ctx.fill();
   <% else %>
     
     <% last = actperday.last[:time].to_time.to_i %>
     <% first = actperday.first[:time].to_time.to_i %>
     <% previousr = 0 %>
-    <% prevw = -1 %>
+    <% prevw = -100 %>
+    <% previousw = -100 %>
     <% prevh = -1 %>
     <% actperday.each do |a| %>
       <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
       <% r = previousr + a[:pt] %>
       <% previousr = r %>
       <% h = 450 - 450*(r/maxi) %>
-      ctx.beginPath();
-      ctx.arc(<%= w %>, <%= h %>, 3, 0, 2 * Math.PI, true);
-      ctx.fill();
+      <% if w-previousw > 50 %>
+        ctx.beginPath();
+        <% (0..22).each do |i| %>
+          ctx.moveTo(<%= w %>, <%= 20*i %>);
+          ctx.lineTo(<%= w %>, <%= 20*i+10 %>);
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'white';
+          ctx.stroke();
+        <% end %>
+        <% previousw = w %>
+      <% end %>
       <% if prevw >= 0 %>
         ctx.beginPath();
         ctx.moveTo(<%= prevw %>, <%= prevh %>);
         ctx.lineTo(<%= w %>, <%= h %>);
         ctx.lineWidth = 2;
+        ctx.strokeStyle = 'black';
         ctx.stroke();
       <% end %>
+      ctx.beginPath();
+      ctx.arc(<%= w %>, <%= h %>, 3, 0, 2 * Math.PI, true);
+      ctx.fill();
       <% prevw = w %>
       <% prevh = h %>
     <% end %>
