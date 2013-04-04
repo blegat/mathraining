@@ -1,16 +1,47 @@
+<% # OPTIONS FOR RATINGS (CHANGE ALSO IN index.html.erb) %>
 <% price = 15 %>
 <% pricefondement = 15 %>
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
+<% niveaux = [
+    {:pt => 0, :name => "Novice", :color => "#888888", :fontcolor => "#BBBBBB"},
+    {:pt => 3, :name => "Débutant", :color => "#11DD44", :fontcolor => "#33FF66"},
+    {:pt => 6, :name => "Initié", :color => "#11AA00", :fontcolor => "#44DD11"},
+    {:pt => 10, :name => "Compétent", :color => "#00BBEE", :fontcolor => "#33FFFF"},
+    {:pt => 14, :name => "Qualifié", :color => "#0033FF", :fontcolor => "#6699FF"},
+    {:pt => 18, :name => "Expérimenté", :color => "#CC66FF", :fontcolor => "#FF99FF"},
+    {:pt => 22, :name => "Chevronné", :color => "#990099", :fontcolor => "#DD44DD"},
+    {:pt => 26, :name => "Expert", :color => "#FF9900", :fontcolor => "#FFBB22"},
+    {:pt => 30, :name => "Maître", :color => "#FF3300", :fontcolor => "#FF5522"},
+    {:pt => 34, :name => "Grand Maître", :color => "#CC0000", :fontcolor => "#EE2222"}
+    ] %>
+    
+    
+
+
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 <% provide(:title, @user.name) %>
 
-<h1><%= @user.name %></h1>
 
 <% if @user.admin %>
+  <h1><%= @user.name %></h1>
   <b>Administrateur</b>
 <% else %>
 
+
+
+<% actualrating = @user.point.rating %>
+
+<% i = 0 %>
+<% actuallevel = 0 %>
+<% niveaux.each do |n| %>
+  <% if n[:pt] <= actualrating %>
+    <% actuallevel = i %>
+  <% end %>
+  <% i = i+1 %>
+<% end %>
+
+<h1 style="color:<%= niveaux[actuallevel][:color] %>;"><%= @user.name %><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveaux[actuallevel][:name] %></span></h1>
 
   <div class="row">
   
@@ -108,10 +139,7 @@
   
   <div class="span6">
 
-  
-  <% actualrating = @user.point.rating %>
-  <br/>
-  <center><p style="font-size:24px; margin-top:80px;">Score : <%= actualrating %></p></center>
+  <center><p style="font-size:24px; margin-top:105px;">Score : <%= actualrating %></p></center>
   <br/>
   
   <table class="table table-bordered">
@@ -181,20 +209,57 @@
   </canvas>
   </div>
   </center>
-  
+
   <script>
   var c=document.getElementById("myCanvas");
   var ctx=c.getContext("2d");
   
+  <% if actuallevel == (niveaux.size - 1) %>
+    <% maxi = 1.2*actualrating %>
+  <% else %>
+    <% maxi = 1.1*niveaux[actuallevel+1][:pt] %>
+  <% end %>
   
+  <% (0..(niveaux.size-1)).each do |i| %>
+    <% if i == (niveaux.size - 1) %>
+      <% bas = [450 - 450*(niveaux[i][:pt]/maxi) , 0].max %>
+      <% haut = 0 %>
+    <% else %>
+      <% bas = [450 - 450*(niveaux[i][:pt]/maxi), 0].max %>
+      <% haut = [450 - 450*(niveaux[i+1][:pt]/maxi), 0].max %>
+    <% end %>
+    <% if bas > haut %>
+      ctx.beginPath();
+      ctx.rect(0, <%= haut %>, 806, <%= bas - haut %>);
+      ctx.fillStyle = '<%= niveaux[i][:fontcolor] %>';
+      ctx.fill();
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+  
+   <% (0..(niveaux.size-1)).each do |i| %>
+    <% if i < (niveaux.size - 1) %>
+      <% haut = [450 - 450*(niveaux[i+1][:pt]/maxi), 0].max %>
+      <% if haut > 0 %>
+        ctx.beginPath();
+        ctx.moveTo(0, <%= haut %>);
+        ctx.lineTo(806, <%= haut %>);
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+      <% end %>
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+  
+  ctx.fillStyle = 'black';
+  ctx.strokeStyle = 'black';
     
   <% if actperday.size == 1 %>
     ctx.beginPath();
-    ctx.arc(400, 300, 3, 0, 2 * Math.PI, true);
+    ctx.arc(400, <%= 450 - 450*(actualrating/maxi) %>, 3, 0, 2 * Math.PI, true);
     ctx.fill();
   <% else %>
-  
-    <% maxi = 1.2*actualrating %>
+    
     <% last = actperday.last[:time].to_time.to_i %>
     <% first = actperday.first[:time].to_time.to_i %>
     <% previousr = 0 %>
@@ -212,6 +277,7 @@
         ctx.beginPath();
         ctx.moveTo(<%= prevw %>, <%= prevh %>);
         ctx.lineTo(<%= w %>, <%= h %>);
+        ctx.lineWidth = 2;
         ctx.stroke();
       <% end %>
       <% prevw = w %>

@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
 
   before_save { self.email.downcase! }
   before_save :create_remember_token
-  after_save :create_points
+  after_create :create_points
 
   validates :first_name, presence: true, length: { maximum: 32 }
   validates :last_name, presence: true, length: { maximum: 32 }
