@@ -1,0 +1,5 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<% date = s.created_at.in_time_zone %>
+<p><i class="<%= s.icon %>" style="margin-right:10px;"></i><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> - <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %> : 
+<%= link_to "Voir soumission et commentaire(s)", problem_submission_path(s.problem, s) %></p>

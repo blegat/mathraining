@@ -1,0 +1,15 @@
+<% provide(:title, "Notifications") %>
+<h1>
+  <% if @new %>
+    Nouvelles soumissions
+  <% else %>
+    Nouvelles réponses
+  <% end %>
+</h1>
+<ul>
+<% @notifications.each do |n| %>
+  <li>
+  <%= render 'submissions/show', s: n %>
+  </li>
+<% end %>
+</ul>
