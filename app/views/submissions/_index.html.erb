@@ -21,7 +21,7 @@
   <% if !submissions.empty? %>
       <% submissions.each do |s| %>
         <% if s.status != 0 %>
-          <% render 'submissions/show', s: s %>
+          <%= render 'submissions/show', s: s %>
           <% aucun = false %>
         <% else %>
           <% @newsub = false %>
