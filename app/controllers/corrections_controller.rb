@@ -38,6 +38,11 @@ class CorrectionsController < ApplicationController
         end
         following.read = true
         following.save
+        
+        notif = Notif.new
+        notif.user = @submission.user
+        notif.submission = @submission
+        notif.save
       elsif current_user == @submission.user
         # An else would have the same effect normally
         @submission.followings.update_all(read: false)

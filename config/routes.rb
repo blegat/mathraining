@@ -4,6 +4,9 @@ Ombtraining::Application.routes.draw do
     as: :notifications_new
   match '/notifications_update', to: 'users#notifications_update',
     as: :notifications_update
+    
+  match '/notifs', to: 'users#notifs_show',
+    as: :notifs_show
 
   resources :corrections
 

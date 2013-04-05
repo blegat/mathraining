@@ -1,0 +1,11 @@
+<% provide(:title, "Nouvelles réponses") %>
+<h1>
+  Nouvelles réponses
+</h1>
+<ul>
+<% @notifs.each do |n| %>
+  <li>
+  <%= render 'submissions/show', s: n.submission %>
+  </li>
+<% end %>
+</ul>

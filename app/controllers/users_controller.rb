@@ -1,7 +1,7 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_filter :signed_in_user,
-    only: [:destroy, :index, :edit, :update, :show, :create_administrator, :recompute_scores, :notification_new, :notification_update]
+    only: [:destroy, :index, :edit, :update, :show, :create_administrator, :recompute_scores, :notification_new, :notification_update, :notifs_show]
   before_filter :correct_user,
     only: [:edit, :update]
   before_filter :admin_user,
@@ -92,6 +92,11 @@ class UsersController < ApplicationController
     @notifications = current_user.notifications_update
     @new = false
     render :notifications
+  end
+  
+  def notifs_show
+    @notifs = current_user.notifs
+    render :notifs
   end
 
   private
