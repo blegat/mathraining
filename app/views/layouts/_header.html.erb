@@ -30,9 +30,9 @@
     </ul>
     <ul class="nav pull-right">
       <li><%= link_to "Accueil",    root_path %></li>
-      <li><%= link_to "Aide",    help_path %></li>
       <% if signed_in? %>
-        <li><%= link_to "Cours",    sections_path %></li>
+        <li><%= link_to "Aide", help_path %></li>
+        <li><%= link_to "Cours", sections_path %></li>
         <li><%= link_to "Utilisateurs", users_path %></li>
         <li id="fat-menu" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">

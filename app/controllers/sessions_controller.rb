@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
       if user.email_confirm
         flash[:success] = 'Bienvenue sur OMB training!'
         sign_in user
-        redirect_back_or user
+        redirect_back_or root_path
       else
         flash.now[:error] = 'Vous devez activer votre compte via le mail qui vous a été envoyé.'
         render 'new'

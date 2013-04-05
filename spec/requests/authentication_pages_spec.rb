@@ -30,7 +30,7 @@ describe "Authentication" do
       let(:user) { FactoryGirl.create(:user) }
       before { sign_in(user) }
 
-      it { should have_selector('title', text: user.name) }
+      it { should have_selector('h1', text: 'Accueil') }
 
       it { should have_link('Utilisateurs', href: users_path) }
       it { should have_link('Compte', href: edit_user_path(user)) }
@@ -77,8 +77,8 @@ describe "Authentication" do
               before do
                 sign_in user
               end
-              it "should render the default (profile) page" do
-                page.should have_selector('title', text: user.name)
+              it "should render the home page" do
+                page.should have_selector('h1', text: 'Accueil')
               end
             end
           end
