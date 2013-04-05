@@ -97,7 +97,6 @@ describe "User pages" do
         let(:user) { User.find_by_email('user@example.com') }
 
         it { should have_selector('title', text: "Connexion") }
-        it { should have_selector('div.alert.alert-success', text: 'Un mail de confirmation') }
         it { should have_link('Connexion') }
       end
     end
