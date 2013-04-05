@@ -154,6 +154,19 @@
             <% if !f.online %>
               <i class="icon-warning-sign"></i>
             <% end %>
+            <% if current_user.solved?(f) %>
+              <i class="icon-ok"></i>
+            <% else %>
+              <% sub = current_user.submissions.where(:problem_id => f.id).order('created_at') %>
+              <% if sub.size > 0 %>
+                <% sub = sub.last %>
+                <% if sub.status == 0 %>
+                  <i class="icon-minus"></i>
+                <% else %>
+                 <i class="icon-remove"></i>
+               <% end %>
+              <% end %>
+            <% end %>
             <%= f.name %>
           <% end %>
           </li>

@@ -135,17 +135,16 @@
       
       <% if acces %>
       
-        <% pro = Solvedproblem.where(:user_id => current_user.id, :problem_id => f.id) %>
-        <% if pro.size > 0 %>
+        <% if current_user.solved?(f) %>
           <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
         <% elsif !f.online %>
           <button class="btn-warning btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= '!' %></button>
         <% else %>
-          <% sub = Submission.where(:problem_id => f.id, :user_id => current_user.id).order('created_at') %>
+          <% sub = current_user.submissions.where(:problem_id => f.id).order('created_at') %>
           <% if sub.size == 0 %>
             <button class="btn btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
           <% else %>
-            <% sub = sub.first %>
+            <% sub = sub.last %>
             <% if sub.status == 0 %>
               <button class="btn-warning btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
             <% else %>

@@ -27,6 +27,8 @@ class CorrectionsController < ApplicationController
           @submission.problem.users << @submission.user
         end
         m = ' et soumission marquée comme correcte'
+      else
+        @submission.touch
       end
       # Put in admin / following
       if current_user.admin?

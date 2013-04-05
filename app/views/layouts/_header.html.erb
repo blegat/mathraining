@@ -22,9 +22,13 @@
         <% notifications_update = current_user.notifications_update.count %>
         <% if notifications_new != 0 %>
           <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
+        <% else %>
+          <%= link_to "0", notifications_new_path, class: "btn btn" %>
         <% end %>
         <% if notifications_update != 0 %>
           <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
+        <% else %>
+          <%= link_to "0", notifications_update_path, class: "btn btn" %>
         <% end %>
       <% end %>
       <% if signed_in? && !current_user.admin? %>

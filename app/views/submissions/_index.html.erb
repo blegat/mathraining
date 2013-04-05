@@ -1,13 +1,20 @@
 <% if current_user.admin %>
-  <h4>Soumissions à corriger</h4>
-  <% submissions = problem.submissions.where('status = 0').order('created_at').paginate(page: params[:page]) %>
+  <h4>Soumissions récentes</h4>
+  <% submissions = problem.submissions.order('created_at DESC').paginate(page: params[:page]) %>
   <% if submissions.empty? %>
-    <p>Aucune soumission à corriger.</p>
+    <p>Aucune soumission.</p>
   <% else %>
     <%= will_paginate submissions %>
+    
+    <table class="table table-bordered">
+    <tr><th>Statut</th><th>Date</th><th>Heure</th><th>Qui</th><th></th></tr>
+    
       <% submissions.each do |s| %>
-        <%= render 'submissions/show', s: s %>
+        <% @new = true %>
+        <%= render 'submissions/show2', s: s %>
       <% end %>
+      
+      </table>	
     <%= will_paginate submissions %>
   <% end %>
 <% else %>

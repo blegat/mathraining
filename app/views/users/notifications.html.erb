@@ -1,15 +1,39 @@
 <% provide(:title, "Notifications") %>
 <h1>
   <% if @new %>
-    Nouvelles soumissions
+    Toutes les soumissions
   <% else %>
-    Nouvelles réponses
+    Soumissions auxquelles vous participez
   <% end %>
 </h1>
-<ul>
+<%= will_paginate @notifications %>
+<div class="row">
+<div class="span10">
+<table class="table table-bordered">
+<tr><th>Statut</th><th>Date</th><th>Heure</th><th>Qui</th><th></th></tr>
 <% @notifications.each do |n| %>
-  <li>
-  <%= render 'submissions/show', s: n %>
-  </li>
+  <%= render 'submissions/show2', s: n %>
 <% end %>
-</ul>
+</table>
+</div>
+<div class="span2">
+<table class="table table-bordered" style="width:200px;">
+<tr><th>Légende</th></tr>
+<tr class="warning"><td>
+<% if @new %>
+Nouvelle soumission
+<% else %>
+Commentaire non-lu
+<% end %>
+</td></tr>
+<% if @new %>
+<tr class="info"><td>
+Nouveau commentaire
+</td></tr>
+<% end %>
+<tr class="success"><td>Soumission correcte</td></tr>
+<tr class="error"><td>Soumission erronée</td></tr>
+</table>
+</div>
+</div>
+<%= will_paginate @notifications %>

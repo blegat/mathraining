@@ -7,9 +7,6 @@
     <% (1..f.level).each do |i| %>
       <i class='icon-star'></i>
     <% end %>
-    <% if current_user.solved?(f) %>
-      <i class='icon-check'></i>
-    <% end %>
     <% if !f.chapter.sections.empty? %>
       <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
     <% end %>

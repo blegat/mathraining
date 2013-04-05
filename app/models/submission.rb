@@ -23,11 +23,11 @@ class Submission < ActiveRecord::Base
   def icon
     case status
     when 0
-      'icon-question-sign'
+      'icon-minus'
     when 1, 3
-      'icon-remove-sign'
+      'icon-remove'
     when 2
-      'icon-ok-sign'
+      'icon-ok'
     end
 
   end

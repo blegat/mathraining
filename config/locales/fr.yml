@@ -11,3 +11,6 @@ fr:
         password_confirmation: "Confirmation du mot de passe"
       prerequisite:
         prerequisite: "Prérequis"
+  will_paginate:
+    previous_label: "Page précédente"
+    next_label: "Page suivante"

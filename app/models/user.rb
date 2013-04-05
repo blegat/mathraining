@@ -29,6 +29,7 @@ class User < ActiveRecord::Base
   has_many :pictures
   has_one :point, dependent: :destroy
   has_many :pointspersections, dependent: :destroy
+  has_many :submissions, dependent: :destroy
 
   has_many :followings, dependent: :destroy
   has_many :followed_submissions, through: :followings, source: :submission
