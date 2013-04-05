@@ -14,7 +14,7 @@ class SubmissionsController < ApplicationController
     if @submission.nil?
       redirect_to root_path
     end
-    notif = current_user.notifs.where(:submission_id => @submission.id)
+    notif = current_user.notifs.where(submission_id: @submission.id)
     if notif.size > 0
       notif.first.delete
     end

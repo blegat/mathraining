@@ -40,7 +40,7 @@ class CorrectionsController < ApplicationController
         end
         following.read = true
         following.save
-        
+
         notif = Notif.new
         notif.user = @submission.user
         notif.submission = @submission
@@ -74,13 +74,13 @@ class CorrectionsController < ApplicationController
       redirect_to root_path
     end
   end
-  
+
   def point_attribution(user, problem)
     if !user.solved?(problem) # Avoid double count
       pt = 25*problem.level
-      
+
       partials = user.pointspersections
-    
+
       if !problem.chapter.sections.empty? # Pas un fondement
         user.point.rating = user.point.rating + pt
         user.point.save
@@ -89,7 +89,7 @@ class CorrectionsController < ApplicationController
         partial.points = partial.points + pt
         partial.save
       end
-    
+
       problem.chapter.sections.each do |s| # Section s
         partial = partials.where(:section_id => s.id).first
         partial.points = partial.points + pt
