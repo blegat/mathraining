@@ -18,6 +18,17 @@
   <%= link_to 'Marquer la soumission comme correcte', problem_submission_correct_path(@problem, @submission) %>
 <% end %>
 
+<% if current_user.admin %>
+  <% following = Following.find_by_user_id_and_submission_id(current_user, @submission) %>
+  <% unless following.nil? %>
+    <% if following.read %>
+      <%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission) %>
+    <% else %>
+      <%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission) %>
+    <% end %>
+  <% end %>
+<% end %>
+
 <h2>Solution</h2>
 <p><%= raw((h @submission.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %></p>
 

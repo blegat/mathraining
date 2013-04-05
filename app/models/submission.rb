@@ -4,6 +4,8 @@ class Submission < ActiveRecord::Base
   belongs_to :problem
 
   has_many :corrections, dependent: :destroy
+  has_many :followings, dependent: :destroy
+  has_many :followers, through: :followings, source: :user
 
   validates :user_id, presence: true
   validates :problem_id, presence: true

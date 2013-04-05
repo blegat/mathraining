@@ -26,6 +26,20 @@ class CorrectionsController < ApplicationController
         end
         m = ' et soumission marquée comme correcte'
       end
+      # Put in admin / following
+      if current_user.admin?
+        following = Following.find_by_user_id_and_submission_id(current_user, @submission)
+        if following.nil?
+          following = Following.new
+          following.user = current_user
+          following.submission = @submission
+        end
+        following.read = true
+        following.save
+      elsif current_user == @submission.user
+        # An else would have the same effect normally
+        @submission.followings.update_all(read: false)
+      end
       # Redirect to the submission
       redirect_to problem_submission_path(@submission.problem, @submission),
         flash: { success: "Réponse postée#{m}" }

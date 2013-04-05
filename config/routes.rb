@@ -1,14 +1,17 @@
 Ombtraining::Application.routes.draw do
 
-  resources :corrections
+  match '/notifications_new', to: 'users#notifications_new',
+    as: :notifications_new
+  match '/notifications_update', to: 'users#notifications_update',
+    as: :notifications_update
 
+  resources :corrections
 
   resources :solvedexercises
   resources :solvedqcms
   resources :solvedchoices
   
   resources :pictures
-
 
   resources :qcms, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'qcms#order_plus',
@@ -61,6 +64,10 @@ Ombtraining::Application.routes.draw do
       resources :corrections, only: [:create]
       match '/correct', to: 'submissions#correct',
         as: :correct
+      match '/read', to: 'submissions#read',
+        as: :read
+      match '/unread', to: 'submissions#unread',
+        as: :unread
     end
   end
 

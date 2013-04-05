@@ -76,4 +76,9 @@ FactoryGirl.define do
     association :user
     content "Foobar"
   end
+  factory :following do
+    association :submission
+    association :user
+    read false
+  end
 end

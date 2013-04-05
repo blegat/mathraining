@@ -4,11 +4,12 @@ class SubmissionsController < ApplicationController
   before_filter :get_problem
   before_filter :online_chapter
   before_filter :unlocked_chapter
-  before_filter :admin_user, only: [:correct]
+  before_filter :admin_user, only: [:correct, :read, :unread]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
 
   def show
+    # Marquer comme lu ??
     @submission = Submission.find_by_id(params[:id])
     if @submission.nil?
       redirect_to root_path
@@ -48,6 +49,35 @@ class SubmissionsController < ApplicationController
     else
       redirect_to root_path
     end
+  end
+
+  def un_read(read, msg)
+    @submission = Submission.find(params[:submission_id])
+    if @submission
+      following = Following.find_by_user_id_and_submission_id(current_user, @submission)
+      if following
+        following.read = read
+        if following.save
+          redirect_to problem_submission_path(@problem, @submission),
+            flash: { success: "Soumission marquée comme #{msg}" }
+        else
+          redirect_to problem_submission_path(@problem, @submission),
+            flash: { error: "Un problème est apparu" }
+        end
+      else
+        redirect_to root_path
+      end
+    else
+      redirect_to root_path
+    end
+  end
+
+  def read
+    un_read(true, "lue")
+  end
+
+  def unread
+    un_read(false, "non lue")
   end
 
   private

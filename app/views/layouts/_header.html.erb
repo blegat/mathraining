@@ -16,6 +16,18 @@
     <!-- Adding collapse class to nav make it open by default -->
     <%= link_to "OMB training", root_path, class: "brand" %>
     <nav class="nav-collapse">
+    <ul class="nav pull-left">
+      <% if signed_in? and current_user.admin? %>
+        <% notifications_new = current_user.notifications_new.count %>
+        <% notifications_update = current_user.notifications_update.count %>
+        <% if notifications_new != 0 %>
+          <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
+        <% end %>
+        <% if notifications_update != 0 %>
+          <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
+        <% end %>
+      <% end %>
+    </ul>
     <ul class="nav pull-right">
       <li><%= link_to "Accueil",    root_path %></li>
       <li><%= link_to "Aide",    help_path %></li>

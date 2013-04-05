@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
     :email_confirm, :key
   has_secure_password
   has_and_belongs_to_many :theories
-  has_and_belongs_to_many :chapters, :uniq => true
+  has_and_belongs_to_many :chapters, uniq: true
   has_many :solvedexercises, dependent: :destroy
   has_many :exercises, through: :solvedexercises
   has_many :solvedqcms, dependent: :destroy
@@ -29,6 +29,9 @@ class User < ActiveRecord::Base
   has_many :pictures
   has_one :point, dependent: :destroy
   has_many :pointspersections, dependent: :destroy
+
+  has_many :followings, dependent: :destroy
+  has_many :followed_submissions, through: :followings, source: :submission
 
   before_save { self.email.downcase! }
   before_save :create_remember_token
@@ -51,6 +54,17 @@ class User < ActiveRecord::Base
   def solved?(problem)
     return problem.users.include?(self)
   end
+
+  def notifications_new
+    Submission.where("status = ?", 0)
+  end
+
+  def notifications_update
+    #followed_submissions.where(submissions: { status: 3 }, followings: { read: false })
+    # If another admin answer, it must still stay unread
+    followed_submissions.where(followings: { read: false })
+  end
+
   private
   def create_remember_token
     self.remember_token = SecureRandom.urlsafe_base64

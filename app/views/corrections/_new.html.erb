@@ -6,8 +6,11 @@
   <%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
   <br />
   <% if current_user.admin? %>
-    <% if @submission.status == 1 %>
+    <% case @submission.status %>
+    <% when 1 %>
       <%= f.submit "Poster réponse", class: "btn btn-large btn-primary" %>
+    <% when 3 %>
+      <%= f.submit "Poster réponse et laisser la soumission fausse", class: "btn btn-large btn-danger" %>
     <% else %>
       <%= f.submit "Poster réponse et rendre la soumission fausse", class: "btn btn-large btn-danger" %>
     <% end %>
