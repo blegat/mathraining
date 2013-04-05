@@ -4,7 +4,7 @@ class SubmissionsController < ApplicationController
   before_filter :get_problem
   before_filter :online_chapter
   before_filter :unlocked_chapter
-  before_filter :admin_user, only: [:correct, :read, :unread]
+  before_filter :admin_user, only: [:read, :unread]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
 
@@ -32,22 +32,6 @@ class SubmissionsController < ApplicationController
         redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
           flash: { error: "Une erreur est survenue." }
       end
-    end
-  end
-
-  def correct
-    @submission = Submission.find(params[:submission_id])
-    if @submission
-      @submission.status = 2
-      @submission.save
-      unless @submission.user.solved?(@problem)
-        point_attribution(@submission.user, @problem)
-        @problem.users << @submission.user
-      end
-      redirect_to problem_submission_path(@problem, @submission),
-        flash: { success: 'Soumission marquée comme correcte' }
-    else
-      redirect_to root_path
     end
   end
 

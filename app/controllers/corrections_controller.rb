@@ -13,7 +13,9 @@ class CorrectionsController < ApplicationController
         @submission.status = 3
         @submission.save
         m = ''
-      elsif current_user.admin and (@submission.status == 0 or @submission.status == 3) and params[:commit] == "Poster réponse et rendre la soumission fausse"
+      elsif current_user.admin and (@submission.status == 0 or @submission.status == 3) and
+        (params[:commit] == "Poster réponse et rendre la soumission fausse" or
+         params[:commit] == "Poster réponse et laisser la soumission fausse")
         @submission.status = 1
         @submission.save
         m = ' et soumission marquée comme incorrecte'

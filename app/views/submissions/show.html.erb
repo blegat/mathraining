@@ -14,10 +14,6 @@
 <% end %>
 </p>
 
-<% if current_user.admin and @submission.status != 2 %>
-  <%= link_to 'Marquer la soumission comme correcte', problem_submission_correct_path(@problem, @submission) %>
-<% end %>
-
 <% if current_user.admin %>
   <% following = Following.find_by_user_id_and_submission_id(current_user, @submission) %>
   <% unless following.nil? %>

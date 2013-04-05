@@ -62,8 +62,6 @@ Ombtraining::Application.routes.draw do
       as: :put_online
     resources :submissions, only: [:create, :show] do
       resources :corrections, only: [:create]
-      match '/correct', to: 'submissions#correct',
-        as: :correct
       match '/read', to: 'submissions#read',
         as: :read
       match '/unread', to: 'submissions#unread',
