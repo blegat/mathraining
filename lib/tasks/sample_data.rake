@@ -182,6 +182,13 @@ def make_geometry_chapter
   Choice.create!(ans: 'La somme de leur amplitude vaut $180^\circ$', ok: false, qcm_id: geometrie.qcms.first.id)
   Choice.create!(ans: "Ils ont la même amplitude", ok: true, qcm_id: geometrie.qcms.first.id)
 
+  geometrie.problems << Problem.create!(name: 'Angle au centre',
+                                  statement: 'Prouver que l\'amplitude d\'un angle au centre est égale au double de l\'amplitude d\'un angle inscrit interceptant le même arc.',
+                                  position: 1,
+                                  online: true,
+                                  level: 1)
+
+
 end
 
 def make_users_solve_exercises
@@ -298,62 +305,5 @@ def point_attribution_qcm(user, qcm)
       partial.points = partial.points + pt
       partial.save
     end
-  end
-end
-
-
-def make_words
-  latin = Language.find_by_name("Latin")
-  latin_words = []
-  content = "est"
-  99.times do |n|
-    while latin_words.include?(content) do
-      content = Faker::Lorem.sentence.split(' ')[0].downcase
-    end
-    word = latin.words.build(content: content)
-    word.owner = User.random # uses random_record gem
-    word.save!
-    latin_words.push(content)
-  end
-  random = Language.find_by_name("Random")
-  random_words = []
-  99.times do |n|
-    while random_words.include?(content) do
-      content = Faker::Lorem.characters(5)
-    end
-    word = random.words.build(content: content)
-    word.owner = User.random
-    word.save!
-    random_words.push(content)
-  end
-end
-
-def make_links
-  latin = Language.find_by_name("Latin")
-  random = Language.find_by_name("Random")
-  latin_words = latin.words
-  random_words = random.words
-  99.times do |n|
-    latin_word_id = latin_words[rand(0..98)]
-    random_word_id = random_words[rand(0..98)]
-    link = Link.new
-    link.word1 = latin_word_id
-    link.word2 = random_word_id
-    link.owner = User.random
-    link.save # it could fail for same word1, word2
-  end
-end
-
-def make_lists
-  empty = true
-  99.times do |n|
-    list = List.new
-    list.name = Faker::Lorem.words(1).to_s
-    list.owner = User.random
-    if Random.rand(2) == 0 and not empty
-      list.parent = list.owner.lists.random
-    end
-    list.save!
-    empty = false
   end
 end
