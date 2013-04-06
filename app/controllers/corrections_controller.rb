@@ -40,6 +40,10 @@ class CorrectionsController < ApplicationController
         end
         following.read = true
         following.save
+        
+        @submission.followings.each do |f|
+          f.touch
+        end
 
         notif = Notif.new
         notif.user = @submission.user

@@ -82,8 +82,10 @@ ActiveRecord::Schema.define(:version => 20130405155215) do
   add_index "followings", ["submission_id", "user_id"], :name => "index_followings_on_submission_id_and_user_id"
 
   create_table "notifs", :force => true do |t|
-    t.integer "submission_id"
-    t.integer "user_id"
+    t.integer  "submission_id"
+    t.integer  "user_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   add_index "notifs", ["user_id"], :name => "index_notifs_on_user_id"

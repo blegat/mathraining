@@ -95,7 +95,7 @@ class UsersController < ApplicationController
   end
   
   def notifs_show
-    @notifs = current_user.notifs
+    @notifs = current_user.notifs.order("created_at")
     render :notifs
   end
 

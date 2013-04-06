@@ -19,22 +19,31 @@
   <% end %>
 <% else %>
   <br/>
-  <h4>Soumissions précédentes</h4>
+  <h4>Dernières soumissions</h4>
   <% @newsub = true %>
   <% aucun = true %>
   <% encours = Submission.new %>
   <% submissions = problem.submissions.where('user_id = ?', current_user).order('created_at') # Ne pas paginer, un type qui fait N > 30 soumissions mérite de voir les N soumissions qu'il a faites et de se faire chier avec sa roulette (et puis j'utilise le last submissions par la suite) %>
+  <% @new = true %>
   
   <% if !submissions.empty? %>
+    <% @new = true %>
       <% submissions.each do |s| %>
         <% if s.status != 0 %>
-          <%= render 'submissions/show', s: s %>
+          <% if aucun %>
+            <table class="table table-bordered">
+            <tr><th>Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th></th></tr>
+          <% end %>
+          <%= render 'submissions/show2', s: s %>
           <% aucun = false %>
         <% else %>
           <% @newsub = false %>
           <% encours = s %>
         <% end %>
-      <% end %>      
+      <% end %>  
+    <% if !aucun %>
+      </table> 
+    <% end %>   
   <% end %>
   
   <% if aucun %>
@@ -43,7 +52,10 @@
   
   <% unless @newsub %>
     <h4>Soumission en cours</h4>
-    <%= render 'submissions/show', s: encours %>
+    <table class="table table-bordered">
+    <tr><th>Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th></th></tr>
+    <%= render 'submissions/show2', s: encours %>
+    </table>
   <% end %>
   
 <% end %>
