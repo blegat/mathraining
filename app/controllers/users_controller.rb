@@ -20,7 +20,7 @@ class UsersController < ApplicationController
     @user.key = SecureRandom.urlsafe_base64
     # @user.email_confirm = false <-- A décommenter pour rendre les mails utiles!
   	if @user.save
-  	  UserMailer.registration_confirmation(@user).deliver
+  	  # UserMailer.registration_confirmation(@user).deliver
   	  # flash[:success] = "Un mail de confirmation vous a été envoyé sur votre adresse mail pour activer votre compte."
   	  flash[:success] = "Vous êtes inscrit! Veuillez vous connecter."
   	  redirect_to signin_path
