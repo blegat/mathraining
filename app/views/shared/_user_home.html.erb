@@ -40,9 +40,16 @@ Nous n'avons pas la prétention de maîtriser toute la théorie que ce site cont
 <h3>6.2. Correction des soumissions</h3>
 Une fois ce site mis en ligne, des élèves tenteront de répondre aux problèmes suggérés. Comme expliqué plus haut, nous avons besoin de personnes compétentes pour juger de si une solution est correcte ou non. Cela ressemblera un peu à l'ancien système de coaching, sauf que vous n'aiderez pas un élève en particulier.
 <hr>
-<h2>7. Hébergement temporaire</h2>
+<h2>7. Découvrez la structure du site</h2>
 Ce site est pour le moment hébergé gratuitement et n'a pas une capacité suffisante (5 Mo de base de données, ca risque d'être un peu juste :-)). Vous avez d'ailleurs sûrement dû attendre un temps non-négligeable pour charger la première page de ce site à votre venue. Avant de passer à un hébergement plus sérieux, de vous faire devenir administrateur si vous le désirez et de commencer à introduire de vrais chapitres, nous voulons vous faire comprendre sa structure en l'explorant du point de vue utilisateur.<br/>
-Pour ce faire, nous avons inséré des faux utilisateurs et des chapitres tests. Ne soyez pas effrayés devant la non-utilité de ceux-ci, ils sont juste là pour que vous puissiez observez sans peine ce qu'un étudiant verra. N'hésitez pas à explorer les moindres recoins du site, et à nous tenir informés si vous repérer un bug ou une faille. Vous pouvez également nous faire part de vos impressions, commentaires, et idées d'améliorations.
+Pour ce faire, nous avons inséré des faux utilisateurs et des chapitres tests. Ne soyez pas effrayés devant la non-utilité de ceux-ci, ils sont juste là pour que vous puissiez observez sans peine ce qu'un étudiant verra. En particulier, vous pouvez trouver :
+<ul>
+<li>Un <%= link_to "chapitre", chapter_path(1), :target => "_blank" %> fait <i>un peu</i> sérieusement (avec trop peu d'exercices et problèmes ceci dit). Il y a sûrement des erreurs vu qu'on l'a fait en quelques heures, ne nous lyncher pas.</li>
+<li>Une <%= link_to "section", section_path(1), :target => "_blank" %> avec plusieurs chapitres contenant uniquement un exercice. Ceux-ci sont reliés grâce au système de prérequis, et vous pouvez observez comment un chapitre peut en débloquer d'autres (en réussissant (cela ne devrait pas être trop dûr) l'exercice du chapitre en question).
+<li>Un <%= link_to "utilisateur", user_path(3), :target => "_blank" %> ayant résolu quelques exercices. Vous pouvez également observer votre évolution <%= link_to "ici", user_path(current_user), :target => "blank" %>.
+</ul>
+ N'hésitez pas à explorer les autres recoins du site, et à nous tenir informés si vous repérer un bug ou une faille. Le plus pratique pour nous serait que vous le signaliez <a href="https://github.com/blegat/ombtraining/issues?labels=bug&page=1&state=open" target="_blank">ici</a> mais vous devez pour cela vous inscrire sur Github. Cela n'est pas très contraignant mais vous pouvez toujours nous signaler les bugs par mail si vous le désirez.<br/>
+ Vous pouvez également nous faire part de vos impressions, commentaires, et idées d'améliorations.
 <hr>
 En espérant avoir de vos nouvelles rapidement et vous voir enthousiastes,<br/><br/>
 
