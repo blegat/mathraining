@@ -97,7 +97,7 @@
     <% end %>
     
     <table class="table table-bordered">
-    <tr><th>Date</th><th><center>Heure</center></th><th><center>Type</center></th><th>Chapitre</th><th><center>Points</center></th></tr>
+    <tr><th style="width:140px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:70px;"><center>Type</center></th><th>Chapitre</th><th style="width:40px;"><center>Points</center></th></tr>
   <% end %>
   <% i = 1 %>
   <% act.each do |a| %>
@@ -160,7 +160,7 @@
   <br/>
   
   <table class="table table-bordered">
-  <tr><th>Section</th><th><center>Niveau</center></th><th><center>Niveau suivant</center></th></tr>
+  <tr><th style="width:150px;">Section</th><th><center>Niveau</center></th><th><center>Niveau suivant</center></th></tr>
   <% p = Pointspersection.where(:user_id => @user) %>
   <% rate = p.where(:section_id => 0).first.points %>
   
