@@ -77,12 +77,12 @@ class ChaptersController < ApplicationController
   
   def new_section
     @chapter = Chapter.find(params[:chapter_id])
-    @sections_to_remove = @chapter.sections
+    @sections_to_remove = @chapter.sections.order(:id)
     if @sections_to_remove.empty?
       # weirdly in NOT IN(?), [] is always false
-      @sections_to_add = Section.all
+      @sections_to_add = Section.order(:id).all
     else
-      @sections_to_add = Section.where('id NOT IN(?)', @chapter.sections)
+      @sections_to_add = Section.where('id NOT IN(?)', @chapter.sections).order(:id)
     end
   end
 

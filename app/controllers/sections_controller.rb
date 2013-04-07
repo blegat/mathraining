@@ -7,7 +7,7 @@ class SectionsController < ApplicationController
     only: [:destroy, :edit, :update, :create]
 
   def index
-    @sections = Section.all
+    @sections = Section.order(:id).all
   end
   def create
   end
