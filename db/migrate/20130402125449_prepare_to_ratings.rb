@@ -1,6 +1,5 @@
 class PrepareToRatings < ActiveRecord::Migration
   def change
-    add_column :users, :rating, :integer
     add_column :problems, :level, :integer
     create_table :pointspersections do |t|
       t.integer :user_id
