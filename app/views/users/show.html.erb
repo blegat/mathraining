@@ -88,8 +88,6 @@
   
   <% if act.size > 0 %>
   
-    <%= today = DateTime.now.in_time_zone %>
-  
     <% if act.last[:time].in_time_zone.day != DateTime.now.in_time_zone.day || act.last[:time].in_time_zone.month != DateTime.now.in_time_zone.month || act.last[:time].in_time_zone.year != DateTime.now.in_time_zone.year %>
       <% parquoi = "jour" %>
       Par jour
