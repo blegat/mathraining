@@ -90,13 +90,10 @@
   
     <% if act.last[:time].in_time_zone.day != DateTime.now.in_time_zone.day || act.last[:time].in_time_zone.month != DateTime.now.in_time_zone.month || act.last[:time].in_time_zone.year != DateTime.now.in_time_zone.year %>
       <% parquoi = "jour" %>
-      Par jour
     <% elsif act.last[:time].in_time_zone.hour < act.first[:time].in_time_zone.hour - 1 %>
       <% parquoi = "heure" %>
-      Par heure
     <% else %>
       <% parquoi = "minute" %>
-      Par minute
     <% end %>
     
     <table class="table table-bordered">
