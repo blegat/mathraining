@@ -7,6 +7,10 @@ combinatorics.jpg: combinatorics-3d0774d8c7af10505fded6293f46bef0.jpg
 combinatorics/index.jpg: combinatorics-3d0774d8c7af10505fded6293f46bef0.jpg
 enumerate.jpg: enumerate-d6e4bddc9d30656abe3e8322c18a25d5.jpg
 enumerate/index.jpg: enumerate-d6e4bddc9d30656abe3e8322c18a25d5.jpg
+etoilejaune.gif: etoilejaune-34b8f7d0f983d72fb7fad32131f3ef28.gif
+etoilejaune/index.gif: etoilejaune-34b8f7d0f983d72fb7fad32131f3ef28.gif
+etoilevertefoncee.gif: etoilevertefoncee-b363ab12ab64ded948f008dec73c9c38.gif
+etoilevertefoncee/index.gif: etoilevertefoncee-b363ab12ab64ded948f008dec73c9c38.gif
 fondations.jpg: fondations-0091096fc48d2213f4d3df7366bbff34.jpg
 fondations/index.jpg: fondations-0091096fc48d2213f4d3df7366bbff34.jpg
 geometry.jpg: geometry-c85c6b784b3fa539c6f6cf005ac72faf.jpg
@@ -29,8 +33,8 @@ title.jpg: title-1e16c6503188281520e970d7ea39c97e.jpg
 title/index.jpg: title-1e16c6503188281520e970d7ea39c97e.jpg
 underlined.jpg: underlined-1dddc42156d814077fa3fec55cad86aa.jpg
 underlined/index.jpg: underlined-1dddc42156d814077fa3fec55cad86aa.jpg
-application.js: application-d9b8a910f8230d6a8af5c27c5977e9a0.js
-application/index.js: application-d9b8a910f8230d6a8af5c27c5977e9a0.js
+application.js: application-990dbc736024b85043631f41fccfbb17.js
+application/index.js: application-990dbc736024b85043631f41fccfbb17.js
 mathjax-editing.js: mathjax-editing-4515ef29b2ec63084feb4b817ba2ed38.js
 mathjax-editing/index.js: mathjax-editing-4515ef29b2ec63084feb4b817ba2ed38.js
 springy.js: springy-02cfda2515bffb88b9923489559de35a.js

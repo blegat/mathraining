@@ -52,7 +52,7 @@ var Preview = {
   CreatePreview: function () {
     Preview.timeout = null;
     if (this.mjRunning) return;
-    var text = document.getElementById("MathInput").value.replace(/<hr>[ \r]*\n/g,'<hr>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/<\/h4>[ \r]*\n/g,'</h4>').replace(/<\/ol>[ \r]*\n/g, '</ol>').replace(/\n[ \r]*<\/ol>/g, '</ol>').replace(/<\/ul>[ \r]*\n/g, '</ul>').replace(/\n[ \r]*<\/ul>/g, '</ul>').replace(/\n(\040)*<li>/g, '<li>').replace(/\n/g, '<br/>');
+    var text = document.getElementById("MathInput").value.replace(/<hr>[ \r]*\n/g,'<hr>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/<\/h2>[ \r]*\n/g,'</h2>').replace(/<\/h3>[ \r]*\n/g,'</h3>').replace(/<\/h4>[ \r]*\n/g,'</h4>').replace(/<\/ol>[ \r]*\n/g, '</ol>').replace(/\n[ \r]*<\/ol>/g, '</ol>').replace(/<\/ul>[ \r]*\n/g, '</ul>').replace(/\n[ \r]*<\/ul>/g, '</ul>').replace(/\n(\040)*<li>/g, '<li>').replace(/\n/g, '<br/>');
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
     this.mjRunning = true;

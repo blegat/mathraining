@@ -1,0 +1,26 @@
+<script src="/assets/preview.js"></script>
+<script src="/assets/tainsert.js"></script>
+<%= render 'shared/error_messages', object: f.object %>
+<%= f.label :titre %>
+<%= f.text_field :title, :class => "span5" %>
+
+<label class="checkbox">
+  Cochez si cette actualité doit être visible des utilisateurs
+  <%= f.check_box(:tostudents) %>
+</label>
+
+
+<%= f.label :contenu %>
+<div class="well" id="MathPreview"></div>
+<div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+<a href="#ici" onClick="JavaScript: TAinsert('<b>','</b>','MathInput'); Preview.Update();"><%= image_tag "bold.jpg", :title => "Gras", :style=>"margin-left:5px;" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<i>','</i>','MathInput'); Preview.Update();"><%= image_tag "italics.jpg", :title => "Italique" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<u>','</u>','MathInput'); Preview.Update();"><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<h2>','</h2>','MathInput'); Preview.Update();"><%= image_tag "title.jpg", :title => "Sous-titre", :style=>"margin-left:15px;" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<hr>','','MathInput'); Preview.Update();"><%= image_tag "line.jpg", :title => "Séparateur horizontal" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<ul>\n<li>Point 1','</li>\n<li>Point 2</li>\n</ul>','MathInput'); Preview.Update();"><%= image_tag "list.jpg", :title => "Liste" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<ol>\n<li>Point 1','</li>\n<li>Point 2</li>\n</ol>','MathInput'); Preview.Update();"><%= image_tag "enumerate.jpg", :title => "Liste numérotée" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<a href=\'http://www.exemple.com\'>','</a>','MathInput'); Preview.Update();"><%= image_tag "link.jpg", :title => "Lien", :style=>"margin-left:15px;" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<center><img src=\'/system/pictures/0/votreImage.jpg\' width=\'600px\' /></center>','','MathInput'); Preview.Update();"><%= image_tag "picture.jpg", :title => "Image", :style=>"margin-right:50px;" %></a>
+<%= link_to "Mes images", pictures_path, :target => "_blank" %> - <%= link_to "Uploader une image", new_picture_path, :target => "_blank" %>
+<%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>

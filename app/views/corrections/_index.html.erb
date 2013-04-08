@@ -1,18 +1,28 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
 <% corrections = @submission.corrections.paginate(page: params[:page]) %>
 <h2>Commentaires (<%= "#{@submission.corrections.count}/#{corrections.count}" %>)</h2>
 <%= will_paginate corrections %>
 <% corrections.each do |correction| %>
   <div class="well">
-    <aside>
-    <p>
+    <table style="width:100%;">
+    <tr>
+    <td>
     <%= link_to correction.user.name, correction.user %>
-    </p>
-    </aside>
-    <aside>
-    <p>
+    </td>
+    <td style="text-align:right;">
+    <% date = correction.created_at.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+    </td>
+    </tr>
+    
+    <tr>
+    <td colspan="2" style="padding-top:10px;">
     <%= raw((h correction.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
-    </p>
-    </aside>
+    </td>
+    </tr>
+    </table>
+    
   </div>
 <% end %>
 <%= will_paginate corrections %>
