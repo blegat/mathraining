@@ -17,6 +17,9 @@ Ombtraining::Application.routes.draw do
   resources :pictures
   
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]
+  match '/feed' => 'actualities#feed',
+    as: :feed,
+    defaults: { :format => 'atom' }
 
   resources :qcms, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'qcms#order_plus',

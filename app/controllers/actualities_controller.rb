@@ -1,6 +1,7 @@
 #encoding: utf-8
 class ActualitiesController < ApplicationController
-  before_filter :signed_in_user
+  before_filter :signed_in_user,
+    only: [:destroy, :update, :edit, :new, :create]
   before_filter :admin_user,
     only: [:destroy, :update, :edit, :new, :create]
 
@@ -38,6 +39,24 @@ class ActualitiesController < ApplicationController
     @actuality.destroy
     flash[:success] = "Actualité supprimée."
     redirect_to root_path
+  end
+
+  def feed
+    # this will be the name of the feed displayed on the feed reader
+    @title = "OMB training feed"
+
+    # the news items
+    @news_items = Actuality.where(tostudents: true).order("updated_at desc")
+
+    # this will be our Feed's update timestamp
+    @updated = @news_items.first.updated_at unless @news_items.empty?
+
+    respond_to do |format|
+      format.atom { render :layout => false }
+
+      # we want the RSS feed to redirect permanently to the ATOM feed
+      format.rss { redirect_to feed_path(:format => :atom), :status => :moved_permanently }
+    end
   end
 
   private

@@ -1,3 +1,4 @@
+<h1>Actualités <%= link_to image_tag("rss.png", alt: 'rss'), feed_path %></h1>
 <% if current_user.admin? %>
   <% actualities = Actuality.order("created_at DESC").paginate(:page => params[:page], :per_page => 5) %>
 <% else %>

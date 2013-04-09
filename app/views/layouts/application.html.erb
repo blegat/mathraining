@@ -16,6 +16,8 @@
     });
     </script>
 	<%= mathjax_tag %>
+    <%= auto_discovery_link_tag :atom, "/feed" %>
+    <%= auto_discovery_link_tag :rss, "/feed.rss" %>
   </head>
   <body>
 	  <%= render 'layouts/header' %>
