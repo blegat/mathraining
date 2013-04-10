@@ -46,7 +46,7 @@ class ActualitiesController < ApplicationController
     @title = "OMB training feed"
 
     # the news items
-    @news_items = Actuality.where(tostudents: true).order("updated_at desc")
+    @news_items = Actuality.order("updated_at desc")
 
     # this will be our Feed's update timestamp
     @updated = @news_items.first.updated_at unless @news_items.empty?

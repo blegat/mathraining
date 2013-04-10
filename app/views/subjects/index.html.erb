@@ -1,0 +1,68 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+<% provide(:title, 'Discussions') %>
+<h1>Discussions
+<% if @chapview != 0 %>
+   - <%= Chapter.find(@chapview).name %>
+<% end %>
+</h1>
+
+<table class="table table-bordered" style="margin-top:20px;">
+<tr class="info" style="font-weight:bold;">
+<td style="text-align:center;">Sujet</td>
+<td style="width:180px; text-align:center;">Auteur</td>
+<td style="width:50px; text-align:center;">Rép.</td>
+<td style="text-align:center;" colspan="2">Dernière réponse</td></tr>
+<% @subjects.each do |s| %>
+<tr>
+<td>
+<%= link_to s.title, s %>
+<% if @chapview == 0 && s.chapter_id != 0 %>
+<% chapter = Chapter.find(s.chapter_id) %>
+- <%= chapter.name %>
+<% end %>
+</td>
+<td style="text-align:center;">
+<%= s.user.name %>
+</td>
+<td style="text-align:center;">
+<%= x = s.messages.count %>
+</td>
+<td style="width:180px; text-align:center;">
+<% if x > 0 %>
+  <% last = s.messages.order(:id).last %>
+  <% qui = last.user.name %>
+  <% date = last.created_at.in_time_zone %>
+<% else %>
+  <% qui = s.user.name %>
+  <% date = s.created_at.in_time_zone %>
+<% end %>
+<%= qui %>
+</td>
+<td style="width:170px; text-align:center;">
+<% tot = s.messages.count %>
+<% page = [0,((tot-1)/10).floor].max + 1 %>
+<%= link_to subject_path(s, :page => page, :anchor => "bottom") do %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+<% end %>
+</td>
+</tr>
+<% end %>
+
+</table>
+
+<center><%= will_paginate @subjects %></center>
+
+<center>
+<br/>
+<% if @chapview == 0 %>
+<%= button_to "Créer un sujet de discussion", new_subject_path, method: :get, class: 'btn btn-large' %>
+<% else %>
+
+<%= form_tag(new_subject_path, :method => "get") do %>
+<%= hidden_field_tag :chapview, value: @chapview %>
+<%= submit_tag "Créer un sujet de discussion", class: 'btn btn-large' %>
+<% end %>
+
+<% end %>
+</center>
+

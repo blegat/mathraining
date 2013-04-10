@@ -26,6 +26,10 @@
       <li class="nav-header">Préambule</li>
       <li<%= ' class="active"'.html_safe if type == 0 %>>
       <%= link_to "Introduction", chapter_path(@chapter) %></li>
+      <% if current_user.admin? %>
+        <li>
+        <%= link_to "Discussions", subjects_path(:chapview => @chapter), :target => "_blank" %></li>
+      <% end %>
       <li class="nav-header">Points théoriques</li>
       <% listex = @chapter.theories %>
       <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
@@ -186,8 +190,8 @@
     <% if type == 0 %>
       <%= render 'intro' %>
     <% end %>
-
-
+    
+    
     <!-- POINTS THEORIQUES -->
 
     <% if type == 1 && @chapter.theories.exists?(id) %>

@@ -16,6 +16,10 @@ Ombtraining::Application.routes.draw do
   
   resources :pictures
   
+  resources :subjects do
+    resources :messages, only: [:update, :edit, :destroy, :new, :create]
+  end
+  
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]
   match '/feed' => 'actualities#feed',
     as: :feed,

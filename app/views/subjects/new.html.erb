@@ -1,0 +1,27 @@
+<% provide(:title, 'Créer un sujet') %>
+<h1>Créer un sujet</h1>
+
+    <%= form_for(@subject) do |f| %>
+      <%= render 'form', f: f %>
+      <br />
+      <%= f.submit "Créer", class: "btn btn-large btn-primary" %>
+    <% end %>
+
+<br/>
+
+<center>
+Retour aux 
+<%= link_to "discussions", subjects_path %>
+<% if @preselect.to_i == -1 && @subject.chapter_id != 0 %>
+  <% @chapter = Chapter.find(@subject.chapter_id) %>
+ | <%= link_to "discussions sur #{@chapter.name}", subjects_path(:chapview => @chapter) %>
+<% elsif @preselect.to_i != 0 %>
+  <% @chapter = Chapter.find(@preselect) %>
+ | <%= link_to "discussions sur #{@chapter.name}", subjects_path(:chapview => @chapter) %>
+<% end %>
+</center>
+
+<script>
+Preview.Init();
+Preview.Update();
+</script>

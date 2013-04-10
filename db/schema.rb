@@ -11,12 +11,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130408140745) do
+ActiveRecord::Schema.define(:version => 20130410064152) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
     t.text     "content"
-    t.boolean  "tostudents"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
@@ -88,6 +87,16 @@ ActiveRecord::Schema.define(:version => 20130408140745) do
   end
 
   add_index "followings", ["submission_id", "user_id"], :name => "index_followings_on_submission_id_and_user_id"
+
+  create_table "messages", :force => true do |t|
+    t.text     "content"
+    t.integer  "subject_id"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "messages", ["subject_id"], :name => "index_messages_on_subject_id"
 
   create_table "notifs", :force => true do |t|
     t.integer  "submission_id"
@@ -187,6 +196,17 @@ ActiveRecord::Schema.define(:version => 20130408140745) do
   end
 
   add_index "solvedqcms", ["user_id"], :name => "index_solvedqcms_on_user_id"
+
+  create_table "subjects", :force => true do |t|
+    t.string   "title"
+    t.text     "content"
+    t.integer  "user_id"
+    t.integer  "chapter_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "subjects", ["chapter_id"], :name => "index_subjects_on_chapter_id"
 
   create_table "submissions", :force => true do |t|
     t.integer  "problem_id"

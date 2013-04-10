@@ -1,0 +1,88 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<% provide(:title, @subject.title) %>
+
+<% if @subject.chapter_id == 0 %>
+<h1><%= @subject.title %></h1>
+<% else %>
+  <% @chapter = Chapter.find(@subject.chapter_id) %>
+  <h1><%= @subject.title %> - <%= @chapter.name %> </h1>
+<% end %>
+
+<center><%= will_paginate @messages %></center>
+
+<% if ((!params.has_key?:page) || (params[:page] == '1')) %>
+
+<table class="table table-bordered" style="margin-top:20px;">
+<tr class="info">
+<td style="font-size:20px; font-weight:bold; padding:15px; border-right:none;"><%= @subject.user.name %> </td>
+<td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
+<% date = @subject.created_at.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</td>
+</tr>
+
+<tr><td colspan="2" style="padding:15px;">
+<div>
+<%= raw(@subject.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h2>[ \r]*\n/,'</h2>').gsub(/<\/h3>[ \r]*\n/,'</h3>').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+</div>
+</td></tr>
+
+<% if @subject.user == current_user %>
+  <tr><td colspan="2">
+  <center>
+    <%= link_to "Modifier ce sujet de discussion", edit_subject_path(@subject) %>
+  </center>
+  </td></tr>
+<% end %>
+
+</table>
+
+<% end %>
+
+<% @messages.each do |m| %>
+<a name="<%= m.id %>"></a>
+<table class="table table-bordered" style="margin-top:20px;">
+<tr class="info">
+<td style="font-size:20px; font-weight:bold; padding:15px; border-right:none;"><%= m.user.name %> </td>
+<td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
+<% date = m.created_at.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</td>
+</tr>
+
+<tr><td colspan="2" style="padding:15px;">
+<div>
+<%= raw(m.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h2>[ \r]*\n/,'</h2>').gsub(/<\/h3>[ \r]*\n/,'</h3>').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+</div>
+</td></tr>
+
+<% if m.user == current_user %>
+  <tr><td colspan="2">
+  <center>
+    <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m) %> | 
+    <%= link_to "Supprimer ce message", subject_message_path(@subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
+  </center>
+  </td></tr>
+<% end %>
+
+</table>
+<% end %>
+
+<center><%= will_paginate @messages %></center>
+
+
+<br/>
+<center>
+<%= button_to "Répondre", new_subject_message_path(@subject), method: :get, class: 'btn btn-large' %>
+</center>
+
+<br/>
+<center>
+Retour aux 
+<%= link_to "discussions", subjects_path %>
+<% if @subject.chapter_id != 0 %>
+ | <%= link_to "discussions sur #{@chapter.name}", subjects_path(:chapview => @chapter) %>
+<% end %>
+</center>
+<a name="bottom"></a>

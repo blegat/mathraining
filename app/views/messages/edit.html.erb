@@ -1,0 +1,19 @@
+<% provide(:title, 'Modifier un message') %>
+<h1>Modifier un message</h1>
+
+    <%= form_for([@message.subject, @message]) do |f| %>
+      <%= render 'form', f: f %>
+      <br />
+      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
+    <% end %>
+<br/>
+
+<% tot = @message.subject.messages.where("id <= ?", @message.id).count %>
+<% page = [0,((tot-1)/10).floor].max + 1 %>
+      
+<center><%= link_to "Retour à la discussion", subject_path(@message.subject, :anchor => @message.id, :page => page) %></center>
+
+<script>
+Preview.Init();
+Preview.Update();
+</script>
