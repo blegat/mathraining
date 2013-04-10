@@ -20,7 +20,7 @@ class MessagesController < ApplicationController
     if @message.save
       flash[:success] = "Message ajouté."
       
-      @subject.lastcomment = DateTime.now
+      @subject.lastcomment = DateTime.current
       @subject.save
       
       tot = @subject.messages.count

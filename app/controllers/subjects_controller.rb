@@ -36,7 +36,7 @@ class SubjectsController < ApplicationController
   def create
     @subject = Subject.create(params[:subject])
     @subject.user = current_user
-    @subject.lastcomment = DateTime.now
+    @subject.lastcomment = DateTime.current
     if @subject.save
       flash[:success] = "Sujet ajouté."
       redirect_to subject_path(@subject)
