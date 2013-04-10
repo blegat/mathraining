@@ -9,7 +9,7 @@ class SubjectsController < ApplicationController
     if @chapter.nil?
       @subjects = Subject.order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
     else
-      @subjects = Subject.where(chapter_id: @chapview).order("lastcomment DESC").paginate(page: params[:page])
+      @subjects = Subject.where(chapter_id: @chapter).order("lastcomment DESC").paginate(page: params[:page])
     end
   end
 
@@ -20,42 +20,70 @@ class SubjectsController < ApplicationController
 
   def new
     @subject = Subject.new
+    if @chapter.nil?
+      @preselect = 0
+    else
+      @preselect = @chapter.id
+    end
   end
 
   def edit
-    @chap = @subject.chapter_id
+    if @subject.chapter.nil?
+      @preselect = 0
+    else
+      @preselect = @subject.chapter.id
+    end
   end
 
   def create
     @subject = Subject.create(params[:subject].except(:chapter_id))
     @subject.user = current_user
     @subject.lastcomment = DateTime.current
-    chapter_id = params[:subject][:chapter_id]
+    chapter_id = params[:subject][:chapter_id].to_i
     if chapter_id != 0
-      @chapter = Chapter.find_by_id(chapter_id)
-      if @chapter.nil?
+      @chapitre = Chapter.find_by_id(chapter_id)
+      if @chapitre.nil?
         redirect_to root_path and return
       else
-        @subject.chapter = @chapter
+        @subject.chapter = @chapitre
       end
     end
     if @subject.save
       flash[:success] = "Sujet ajouté."
-      if @subject.chapter.nil?
+      if @subject.chapter.nil? || @chapter.nil?
         redirect_to subject_path(@subject)
       else
-        redirect_to chapter_subject_path(@chapter, @subject)
+        redirect_to chapter_subject_path(@subject.chapter, @subject)
       end
     else
+      @preselect = params[:subject][:chapter_id].to_i
       render 'new'
     end
   end
 
   def update
-    if @subject.update_attributes(params[:subject])
+    if @subject.update_attributes(params[:subject].except(:chapter_id))
+      chapter_id = params[:subject][:chapter_id].to_i
+      if chapter_id != 0
+        chapitre = Chapter.find_by_id(chapter_id)
+        if chapitre.nil?
+          redirect_to root_path and return
+        else
+          @subject.chapter = chapitre
+          @subject.save
+        end
+      else
+        @subject.chapter = nil
+        @subject.save
+      end
       flash[:success] = "Sujet modifié."
-      redirect_to subject_path(@subject)
+      if @chapter.nil? || @subject.chapter.nil?
+        redirect_to subject_path(@subject)
+      else
+        redirect_to chapter_subject_path(@subject.chapter, @subject)
+      end
     else
+      @preselect = params[:subject][:chapter_id].to_i
       render 'edit'
     end
   end

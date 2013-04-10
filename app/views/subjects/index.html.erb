@@ -15,9 +15,16 @@
   <% @subjects.each do |s| %>
     <tr>
       <td>
-        <%= link_to s.title, s %>
-        <% if @chapter.nil? and not s.chapter.nil? %>
-          - <%= s.chapter.name %>
+        <% if @chapter.nil? %>
+          <%= link_to s.title, s %>
+          <% if @chapter.nil? and not s.chapter.nil? %>
+            - <%= s.chapter.name %>
+          <% end %>
+        <% else %>
+          <%= link_to s.title, chapter_subject_path(@chapter, s) %>
+          <% if @chapter.nil? and not s.chapter.nil? %>
+            - <%= s.chapter.name %>
+          <% end %>
         <% end %>
       </td>
       <td style="text-align:center;">
@@ -40,8 +47,14 @@
       <td style="width:170px; text-align:center;">
         <% tot = s.messages.count %>
         <% page = [0,((tot-1)/10).floor].max + 1 %>
-        <%= link_to subject_path(s, :page => page, :anchor => "bottom") do %>
-          <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+        <% if @chapter.nil? %>
+          <%= link_to subject_path(s, :page => page, :anchor => "bottom") do %>
+            <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+          <% end %>
+        <% else %>
+          <%= link_to chapter_subject_path(@chapter, s, :page => page, :anchor => "bottom") do %>
+            <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+          <% end %>
         <% end %>
       </td>
     </tr>

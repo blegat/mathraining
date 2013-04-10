@@ -1,17 +1,30 @@
 <% provide(:title, 'Modifier un message') %>
 <h1>Modifier un message</h1>
 
+<% if @chapter.nil? %>
     <%= form_for([@message.subject, @message]) do |f| %>
       <%= render 'form', f: f %>
       <br />
       <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
     <% end %>
+<% else %>
+    <%= form_for([@chapter, @message.subject, @message]) do |f| %>
+      <%= render 'form', f: f %>
+      <br />
+      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
+    <% end %>
+<% end %>
+
 <br/>
 
 <% tot = @message.subject.messages.where("id <= ?", @message.id).count %>
 <% page = [0,((tot-1)/10).floor].max + 1 %>
       
+<% if @chapter.nil? %>
 <center><%= link_to "Retour à la discussion", subject_path(@message.subject, :anchor => @message.id, :page => page) %></center>
+<% else %>
+<center><%= link_to "Retour à la discussion", chapter_subject_path(@chapter, @message.subject, :anchor => @message.id, :page => page) %></center>
+<% end %>
 
 <script>
 Preview.Init();

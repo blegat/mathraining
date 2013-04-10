@@ -13,11 +13,7 @@
   <% chapters.push([c.name, c.id]) %>
 <% end %>
 
-<% if @chapter.nil? %>
-  <%= f.select :chapter_id, chapters, selected: 0 %>
-<% else %>
-  <%= f.select :chapter_id, chapters, selected: @chapter.id %>
-<% end %>
+<%= f.select :chapter_id, chapters, selected: @preselect %>
 
 <%= f.label :message %>
 <div class="well" id="MathPreview"></div>

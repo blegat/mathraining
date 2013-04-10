@@ -1,13 +1,26 @@
 <% provide(:title, 'Modifier un sujet') %>
 <h1>Modifier un sujet</h1>
 
+<% if @chapter.nil? %>
     <%= form_for(@subject) do |f| %>
       <%= render 'form', f: f %>
       <br />
       <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
     <% end %>
+<% else %>
+    <%= form_for([@chapter,@subject]) do |f| %>
+      <%= render 'form', f: f %>
+      <br />
+      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
+    <% end %>
+<% end %>
 <br/>
-<center><%= link_to "Retour à la discussion", @subject %></center>
+
+<% if @chapter.nil? %>
+  <center><%= link_to "Retour à la discussion", @subject %></center>
+<% else %>
+  <center><%= link_to "Retour à la discussion", chapter_subject_path(@chapter, @subject) %></center>
+<% end %>
 
 <script>
 Preview.Init();

@@ -2,12 +2,19 @@
 <% provide(:title, 'Répondre') %>
 <h1>Répondre</h1>
 
+<% if @chapter.nil? %>
     <%= form_for([@subject, @message]) do |f| %>
       <%= render 'form', f: f %>
       <br />
       <%= f.submit "Poster", class: "btn btn-large btn-primary" %>
     <% end %>
-
+<% else %>
+    <%= form_for([@chapter, @subject, @message]) do |f| %>
+      <%= render 'form', f: f %>
+      <br />
+      <%= f.submit "Poster", class: "btn btn-large btn-primary" %>
+    <% end %>
+<% end %>
 
 <h2>Messages récents</h2>
 
@@ -57,7 +64,12 @@
 
 <% tot = @subject.messages.count %>
 <% page = [0,((tot-1)/10).floor].max + 1 %>
+
+<% if @chapter.nil? %>
 <center><%= link_to "Retour à la discussion", subject_path(@subject, :anchor => "bottom", :page => page) %></center>
+<% else %>
+<center><%= link_to "Retour à la discussion", chapter_subject_path(@chapter, @subject, :anchor => "bottom", :page => page) %></center>
+<% end %>
 
 <script>
 Preview.Init();

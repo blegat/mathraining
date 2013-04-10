@@ -2,11 +2,11 @@
 
 <% provide(:title, @subject.title) %>
 
-<% if @subject.chapter_id == 0 %>
+<% if @subject.chapter.nil? %>
 <h1><%= @subject.title %></h1>
 <% else %>
-  <% @chapter = Chapter.find(@subject.chapter_id) %>
-  <h1><%= @subject.title %> - <%= @chapter.name %> </h1>
+  <% @chapitre = @subject.chapter %>
+  <h1><%= @subject.title %> - <%= @chapitre.name %> </h1>
 <% end %>
 
 <center><%= will_paginate @messages %></center>
@@ -31,7 +31,11 @@
 <% if @subject.user == current_user %>
   <tr><td colspan="2">
   <center>
-    <%= link_to "Modifier ce sujet de discussion", edit_subject_path(@subject) %>
+    <% if @chapter.nil? %>
+      <%= link_to "Modifier ce sujet de discussion", edit_subject_path(@subject) %>
+    <% else %>
+      <%= link_to "Modifier ce sujet de discussion", edit_chapter_subject_path(@chapter, @subject) %>
+    <% end %>
   </center>
   </td></tr>
 <% end %>
@@ -60,8 +64,13 @@
 <% if m.user == current_user %>
   <tr><td colspan="2">
   <center>
-    <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m) %> | 
-    <%= link_to "Supprimer ce message", subject_message_path(@subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
+    <% if @chapter.nil? %>
+      <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m) %> | 
+      <%= link_to "Supprimer ce message", subject_message_path(@subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
+    <% else %>
+      <%= link_to "Modifier ce message", edit_chapter_subject_message_path(@chapter, @subject, m) %> | 
+      <%= link_to "Supprimer ce message", chapter_subject_message_path(@chapter, @subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
+    <% end %>
   </center>
   </td></tr>
 <% end %>
@@ -74,15 +83,20 @@
 
 <br/>
 <center>
-<%= button_to "Répondre", new_subject_message_path(@subject), method: :get, class: 'btn btn-large' %>
+<% if @chapter.nil? %>
+  <%= link_to "Répondre", new_subject_message_path(@subject), class: 'btn btn-large' %>
+<% else %>
+  <%= link_to "Répondre", new_chapter_subject_message_path(@chapter, @subject), class: 'btn btn-large' %>
+<% end %>
 </center>
 
 <br/>
 <center>
-Retour aux 
-<%= link_to "discussions", subjects_path %>
-<% if @subject.chapter_id != 0 %>
- | <%= link_to "discussions sur #{@chapter.name}", subjects_path(:chapview => @chapter) %>
+
+<% if @chapter.nil? %>
+  <%= link_to "Retour aux discussions", subjects_path %>
+<% else %>
+ <%= link_to "Retour aux discussions", chapter_subjects_path(params[:chapter_id]) %>
 <% end %>
 </center>
 <a name="bottom"></a>
