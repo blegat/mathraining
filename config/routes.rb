@@ -4,7 +4,7 @@ Ombtraining::Application.routes.draw do
     as: :notifications_new
   match '/notifications_update', to: 'users#notifications_update',
     as: :notifications_update
-    
+
   match '/notifs', to: 'users#notifs_show',
     as: :notifs_show
 
@@ -13,13 +13,9 @@ Ombtraining::Application.routes.draw do
   resources :solvedexercises
   resources :solvedqcms
   resources :solvedchoices
-  
+
   resources :pictures
-  
-  resources :subjects do
-    resources :messages, only: [:update, :edit, :destroy, :new, :create]
-  end
-  
+
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]
   match '/feed' => 'actualities#feed',
     as: :feed,
@@ -40,7 +36,7 @@ Ombtraining::Application.routes.draw do
     match '/remove_choice/:id', to: "qcms#remove_choice", as: :remove_choice
     match '/switch_choice/:id', to: "qcms#switch_choice", as: :switch_choice
   end
-  
+
   resources :exercises, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'exercises#order_plus',
       as: :order_plus
@@ -64,7 +60,7 @@ Ombtraining::Application.routes.draw do
     match '/unread', to: 'theories#unread', as: :unread
     match '/latex', to: 'theories#latex', as: :latex
   end
-  
+
   resources :problems, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'problems#order_plus',
       as: :order_plus
@@ -82,14 +78,14 @@ Ombtraining::Application.routes.draw do
   end
 
   mathjax 'mathjax'
-  
+
   resource :prerequisites # missing a 's' here ?
   resources :sections
-  
+
   match '/graph_prerequisites', to: "prerequisites#graph_prerequisites"
-  match '/add_prerequisite', to: "prerequisites#add_prerequisite"  
-  match '/remove_prerequisite', to: "prerequisites#remove_prerequisite"  
-    
+  match '/add_prerequisite', to: "prerequisites#add_prerequisite"
+  match '/remove_prerequisite', to: "prerequisites#remove_prerequisite"
+
   resources :chapters do
     match '/warning', to: 'chapters#warning'
     match '/put_online', to: 'chapters#put_online'
@@ -98,18 +94,25 @@ Ombtraining::Application.routes.draw do
       as: :add_section
     match '/remove_section/:id', to: 'chapters#destroy_section',
       as: :remove_section
-      
+
     resources :theories, only: [:new, :create]
     resources :exercises, only: [:new, :create]
     resources :qcms, only: [:new, :create]
     resources :problems, only: [:new, :create]
+    resources :subjects do
+      resources :messages, only: [:update, :edit, :destroy, :new, :create]
+    end
+  end
+
+  resources :subjects do
+    resources :messages, only: [:update, :edit, :destroy, :new, :create]
   end
 
   resources :users do
     match '/add_administrator', to: 'users#create_administrator',
       as: :add_administrator
   end
-  
+
   resources :sessions, only: [:new, :create, :destroy]
 
   root to: 'static_pages#home'
@@ -125,7 +128,7 @@ Ombtraining::Application.routes.draw do
   match '/signin', to: 'sessions#new'
   match '/signout', to: 'sessions#destroy', via: :delete
   match '/activate', to: 'users#activate'
-  
+
   match '/recompute_scores', to: 'users#recompute_scores',
       as: :recompute_scores
 

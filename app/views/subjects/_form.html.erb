@@ -1,9 +1,9 @@
 <script src="/assets/preview.js"></script>
 <script src="/assets/tainsert.js"></script>
 <%= render 'shared/error_messages', object: f.object %>
-<%= f.label :titre %>
-<%= f.text_field :title, :class => "span5" %>
 
+<%= f.label :titre %>
+<%= f.text_field :title, class: "span5" %>
 
 <%= f.label :emplacement %>
 
@@ -13,10 +13,10 @@
   <% chapters.push([c.name, c.id]) %>
 <% end %>
 
-<% if @preselect == -1 %>
-<%= f.select :chapter_id, chapters %>
+<% if @chapter.nil? %>
+  <%= f.select :chapter_id, chapters, selected: 0 %>
 <% else %>
-<%= f.select :chapter_id, chapters, :selected => @preselect %>
+  <%= f.select :chapter_id, chapters, selected: @chapter.id %>
 <% end %>
 
 <%= f.label :message %>
