@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130410064152) do
+ActiveRecord::Schema.define(:version => 20130410113657) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -202,8 +202,9 @@ ActiveRecord::Schema.define(:version => 20130410064152) do
     t.text     "content"
     t.integer  "user_id"
     t.integer  "chapter_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.datetime "lastcomment"
   end
 
   add_index "subjects", ["chapter_id"], :name => "index_subjects_on_chapter_id"

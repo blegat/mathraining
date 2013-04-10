@@ -7,10 +7,10 @@ class SubjectsController < ApplicationController
   def index
     if(params.has_key?:chapview)
       @chapview = params[:chapview]
-      @subjects = Subject.where(:chapter_id => @chapview).order("updated_at DESC").paginate(:page => params[:page])
+      @subjects = Subject.where(:chapter_id => @chapview).order("lastcomment DESC").paginate(:page => params[:page])
     else
       @chapview = 0
-      @subjects = Subject.order("updated_at DESC").paginate(:page => params[:page], :per_page => 15)
+      @subjects = Subject.order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15)
     end
   end
   
@@ -36,6 +36,7 @@ class SubjectsController < ApplicationController
   def create
     @subject = Subject.create(params[:subject])
     @subject.user = current_user
+    @subject.lastcomment = DateTime.now
     if @subject.save
       flash[:success] = "Sujet ajouté."
       redirect_to subject_path(@subject)

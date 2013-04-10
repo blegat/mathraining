@@ -19,7 +19,10 @@ class MessagesController < ApplicationController
     @message.subject = @subject
     if @message.save
       flash[:success] = "Message ajouté."
-      @subject.touch
+      
+      @subject.lastcomment = DateTime.now
+      @subject.save
+      
       tot = @subject.messages.count
       page = [0,((tot-1)/10).floor].max + 1
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page)
@@ -41,8 +44,16 @@ class MessagesController < ApplicationController
   
   def destroy
     @message = Message.find(params[:id])
-    @subject = @message.subject
+    @subject = @message.subject    
     @message.destroy
+    if @subject.messages.size > 0
+      last = @subject.messages.order("id").last
+      @subject.lastcomment = last.created_at
+      @subject.save
+    else
+      @subject.lastcomment = @subject.created_at
+      @subject.save
+    end
     redirect_to @subject
   end
 
