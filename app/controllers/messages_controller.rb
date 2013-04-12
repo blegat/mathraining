@@ -20,10 +20,10 @@ class MessagesController < ApplicationController
     @message.subject = @subject
     if @message.save
       flash[:success] = "Message ajouté."
-      
+
       @subject.lastcomment = DateTime.current
       @subject.save
-      
+
       tot = @subject.messages.count
       page = [0,((tot-1)/10).floor].max + 1
       if @chapter.nil?
@@ -50,10 +50,10 @@ class MessagesController < ApplicationController
       render 'edit'
     end
   end
-  
+
   def destroy
     @message = Message.find(params[:id])
-    @subject = @message.subject    
+    @subject = @message.subject
     @message.destroy
     if @subject.messages.size > 0
       last = @subject.messages.order("id").last
@@ -71,7 +71,7 @@ class MessagesController < ApplicationController
   end
 
   private
-  
+
   def valid_chapter
     chapter_id = params[:chapter_id]
     if chapter_id.nil?
@@ -85,7 +85,7 @@ class MessagesController < ApplicationController
   def admin_user
     redirect_to root_path unless current_user.admin?
   end
-  
+
   def author
     @message = Message.find(params[:id])
     redirect_to subjects_path unless current_user == @message.user
