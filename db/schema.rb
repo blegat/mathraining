@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130410113657) do
+ActiveRecord::Schema.define(:version => 20130416185824) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -92,8 +92,9 @@ ActiveRecord::Schema.define(:version => 20130410113657) do
     t.text     "content"
     t.integer  "subject_id"
     t.integer  "user_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+    t.boolean  "admin_user", :default => false
   end
 
   add_index "messages", ["subject_id"], :name => "index_messages_on_subject_id"
@@ -202,9 +203,11 @@ ActiveRecord::Schema.define(:version => 20130410113657) do
     t.text     "content"
     t.integer  "user_id"
     t.integer  "chapter_id"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
     t.datetime "lastcomment"
+    t.boolean  "admin",       :default => false
+    t.boolean  "admin_user",  :default => false
   end
 
   add_index "subjects", ["chapter_id"], :name => "index_subjects_on_chapter_id"

@@ -14,7 +14,7 @@
 
     <!-- Everything within here will be hidden at 940px or less -->
     <!-- Adding collapse class to nav make it open by default -->
-    <%= link_to "OMB training", root_path, class: "brand" %>
+    <%= link_to "IMO Belgium", root_path, class: "brand" %>
     <nav class="nav-collapse">
     <ul class="nav pull-left">
       <% if signed_in? and current_user.admin? %>
@@ -41,10 +41,7 @@
     <ul class="nav pull-right">
       <li><%= link_to "Accueil",    root_path %></li>
       <% if signed_in? %>
-        <% if current_user.admin? %>
-        <li><%= link_to "Discussions", subjects_path %></li>	
-        <% end %>
-        <li><%= link_to "Aide", help_path %></li>
+        <li><%= link_to "Forum", subjects_path %></li>	
         <li><%= link_to "Cours", sections_path %></li>
         <li><%= link_to "Utilisateurs", users_path %></li>
         <li id="fat-menu" class="dropdown">

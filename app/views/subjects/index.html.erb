@@ -1,6 +1,6 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-<% provide(:title, 'Discussions') %>
-<h1>Discussions
+<% provide(:title, 'Forum') %>
+<h1>Forum
 <% unless @chapter.nil? %>
    - <%= @chapter.name %>
 <% end %>
@@ -15,6 +15,9 @@
   <% @subjects.each do |s| %>
     <tr>
       <td>
+        <% if s.admin? %>
+          <span class="label label-warning">Admin</span> - 
+        <% end %>
         <% if @chapter.nil? %>
           <%= link_to s.title, s %>
           <% if @chapter.nil? and not s.chapter.nil? %>
@@ -67,9 +70,9 @@
 <center>
   <br/>
   <% if @chapter.nil? %>
-    <%= link_to "Créer un sujet de discussion", new_subject_path, class: 'btn btn-large' %>
+    <%= link_to "Créer un sujet", new_subject_path, class: 'btn btn-large' %>
   <% else %>
-    <%= link_to "Créer un sujet de discussion", new_chapter_subject_path(@chapter), class: 'btn btn-large' %>
+    <%= link_to "Créer un sujet", new_chapter_subject_path(@chapter), class: 'btn btn-large' %>
   <% end %>
 </center>
 

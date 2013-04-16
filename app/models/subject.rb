@@ -1,5 +1,5 @@
 class Subject < ActiveRecord::Base
-  attr_accessible :content, :title, :lastcomment
+  attr_accessible :content, :title, :lastcomment, :admin, :admin_user
   has_many :messages
   belongs_to :user
   belongs_to :chapter

@@ -1,5 +1,5 @@
 class Message < ActiveRecord::Base
-  attr_accessible :content
+  attr_accessible :content, :admin_user
   belongs_to :subject
   belongs_to :user
   validates :content, presence: true

@@ -23,14 +23,12 @@
       <% number = 0 %>
       <% number2 = 0 %>
       <% i = 1 %>
-      <li class="nav-header">Préambule</li>
+      <li class="nav-header">Général</li>
       <li<%= ' class="active"'.html_safe if type == 0 %>>
       <%= link_to "Introduction", chapter_path(@chapter) %></li>
-      <% if current_user.admin? %>
-        <li>
-        <%= link_to "Discussions", chapter_subjects_path(@chapter), :target => "_blank" %>
-        </li>
-      <% end %>
+      <li>
+      <%= link_to "Forum", chapter_subjects_path(@chapter), :target => "_blank" %>
+      </li>
       <li class="nav-header">Points théoriques</li>
       <% listex = @chapter.theories %>
       <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>

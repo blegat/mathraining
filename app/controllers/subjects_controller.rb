@@ -1,25 +1,38 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
   before_filter :signed_in_user
-  before_filter :admin_user
-  before_filter :author, only: [:update, :edit]
+  before_filter :admin_user, only: [:show]
+  before_filter :author, only: [:update, :edit, :destroy]
   before_filter :valid_chapter
+  before_filter :online_chapter
+  before_filter :unlocked_chapter
+  before_filter :admin_delete, only: [:destroy]
 
   def index
-    if @chapter.nil?
-      @subjects = Subject.order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
+    if current_user.admin?
+      if @chapter.nil?
+        @subjects = Subject.order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
+      else
+        @subjects = Subject.where(chapter_id: @chapter).order("lastcomment DESC").paginate(page: params[:page])
+      end
     else
-      @subjects = Subject.where(chapter_id: @chapter).order("lastcomment DESC").paginate(page: params[:page])
+      if @chapter.nil?
+        @subjects = Subject.where(admin: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
+      else
+        @subjects = Subject.where(admin: false, chapter_id: @chapter).order("lastcomment DESC").paginate(page: params[:page])
+      end
     end
   end
 
   def show
-    @subject = Subject.find(params[:id])
     @messages = @subject.messages.order(:id).paginate(:page => params[:page], :per_page => 10)
   end
 
   def new
     @subject = Subject.new
+    if current_user.admin?
+      @subject.admin = true
+    end
     if @chapter.nil?
       @preselect = 0
     else
@@ -39,6 +52,7 @@ class SubjectsController < ApplicationController
     @subject = Subject.create(params[:subject].except(:chapter_id))
     @subject.user = current_user
     @subject.lastcomment = DateTime.current
+    @subject.admin_user = current_user.admin?
     chapter_id = params[:subject][:chapter_id].to_i
     if chapter_id != 0
       @chapitre = Chapter.find_by_id(chapter_id)
@@ -49,6 +63,10 @@ class SubjectsController < ApplicationController
       end
     end
     if @subject.save
+      if !current_user.admin? && @subject.admin? # Hack
+        @subject.admin = false
+        @subject.save
+      end
       flash[:success] = "Sujet ajouté."
       if @subject.chapter.nil? || @chapter.nil?
         redirect_to subject_path(@subject)
@@ -63,6 +81,10 @@ class SubjectsController < ApplicationController
 
   def update
     if @subject.update_attributes(params[:subject].except(:chapter_id))
+      if @subject.user.admin? && !@subject.admin_user?
+        @subject.admin_user = true
+        @subject.save
+      end
       chapter_id = params[:subject][:chapter_id].to_i
       if chapter_id != 0
         chapitre = Chapter.find_by_id(chapter_id)
@@ -76,6 +98,12 @@ class SubjectsController < ApplicationController
         @subject.chapter = nil
         @subject.save
       end
+      
+      if !current_user.admin? && @subject.admin? # Hack
+        @subject.admin = false
+        @subject.save
+      end
+      
       flash[:success] = "Sujet modifié."
       if @chapter.nil? || @subject.chapter.nil?
         redirect_to subject_path(@subject)
@@ -85,6 +113,19 @@ class SubjectsController < ApplicationController
     else
       @preselect = params[:subject][:chapter_id].to_i
       render 'edit'
+    end
+  end
+  
+  def destroy
+    @subject.delete
+    @subject.messages.each do |m|
+      m.destroy
+    end
+    flash[:success] = "Sujet supprimé."
+    if @chapter.nil? || @subject.chapter.nil?
+      redirect_to subjects_path
+    else
+      redirect_to chapter_subjects_path
     end
   end
 
@@ -99,13 +140,38 @@ class SubjectsController < ApplicationController
       redirect_to root_path if @chapter.nil?
     end
   end
+  
+  def online_chapter
+    if @chapter.nil?
+      return
+    end
+    redirect_to sections_path unless (current_user.admin? || @chapter.online)
+  end
+  
+  def unlocked_chapter
+    if @chapter.nil?
+      return
+    end
+    if !current_user.admin?
+      @chapter.prerequisites.each do |p|
+        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+          redirect_to sections_path and return
+        end
+      end
+    end
+  end
 
   def admin_user
+    @subject = Subject.find(params[:id])
+    redirect_to root_path unless (current_user.admin? || !@subject.admin)
+  end
+  
+  def admin_delete
     redirect_to root_path unless current_user.admin?
   end
 
   def author
     @subject = Subject.find(params[:id])
-    redirect_to subjects_path unless current_user == @subject.user
+    redirect_to subjects_path unless (current_user == @subject.user || (current_user.admin && !@subject.user.admin) || current_user.root)
   end
 end

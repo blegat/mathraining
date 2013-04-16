@@ -1,23 +1,32 @@
-<script src="/assets/preview.js"></script>
-<script src="/assets/tainsert.js"></script>
+<% iciadmin = false %>
+<% if current_user.admin? && (@subject.user.nil? || @subject.user.admin?) %>
+  <% iciadmin = true %>
+<% end %>
+
+<% if iciadmin %>
+  <script src="/assets/preview.js"></script>
+  <script src="/assets/tainsert.js"></script>
+<% else %>
+  <script src="/assets/previewsafe.js"></script>
+<% end %>
+
 <%= render 'shared/error_messages', object: f.object %>
 
 <%= f.label :titre %>
 <%= f.text_field :title, class: "span5" %>
 
 <%= f.label :emplacement %>
-
 <% chapters = Array.new %>
 <% chapters.push(["Aucun", 0]) %>
 <% Chapter.order(:name).all.each do |c| %>
   <% chapters.push([c.name, c.id]) %>
 <% end %>
-
 <%= f.select :chapter_id, chapters, selected: @preselect %>
 
 <%= f.label :message %>
 <div class="well" id="MathPreview"></div>
 <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+<% if iciadmin %>
 <a href="#ici" onClick="JavaScript: TAinsert('<b>','</b>','MathInput'); Preview.Update();"><%= image_tag "bold.jpg", :title => "Gras", :style=>"margin-left:5px;" %></a>
 <a href="#ici" onClick="JavaScript: TAinsert('<i>','</i>','MathInput'); Preview.Update();"><%= image_tag "italics.jpg", :title => "Italique" %></a>
 <a href="#ici" onClick="JavaScript: TAinsert('<u>','</u>','MathInput'); Preview.Update();"><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
@@ -28,4 +37,13 @@
 <a href="#ici" onClick="JavaScript: TAinsert('<a href=\'http://www.exemple.com\'>','</a>','MathInput'); Preview.Update();"><%= image_tag "link.jpg", :title => "Lien", :style=>"margin-left:15px;" %></a>
 <a href="#ici" onClick="JavaScript: TAinsert('<center><img src=\'/system/pictures/0/votreImage.jpg\' width=\'600px\' /></center>','','MathInput'); Preview.Update();"><%= image_tag "picture.jpg", :title => "Image", :style=>"margin-right:50px;" %></a>
 <%= link_to "Mes images", pictures_path, :target => "_blank" %> - <%= link_to "Uploader une image", new_picture_path, :target => "_blank" %>
+<% end %>
 <%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
+
+<% if iciadmin %>
+  <label class="checkbox">
+  Cochez si ce sujet est réservé aux administrateurs
+  <%= f.check_box :admin %>
+  </label>
+<% end %>
+
