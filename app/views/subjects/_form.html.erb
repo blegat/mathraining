@@ -15,7 +15,7 @@
 <%= f.label :titre %>
 <%= f.text_field :title, class: "span5" %>
 
-<%= f.label :emplacement %>
+<%= f.label "Chapitre concerné :" %>
 <% chapters = Array.new %>
 <% chapters.push(["Aucun", 0]) %>
 <% Chapter.order(:name).all.each do |c| %>
