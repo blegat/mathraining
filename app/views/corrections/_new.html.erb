@@ -7,16 +7,16 @@
   <br />
   <% if current_user.admin? %>
     <% case @submission.status %>
-    <% when 1 %>
-      <%= f.submit "Poster réponse", class: "btn btn-large btn-primary" %>
-    <% when 3 %>
-      <%= f.submit "Poster réponse et laisser la soumission fausse", class: "btn btn-large btn-danger" %>
-    <% else %>
-      <%= f.submit "Poster réponse et rendre la soumission fausse", class: "btn btn-large btn-danger" %>
+    <% when 1 ## Faux %>
+      <%= f.submit "Poster", class: "btn btn-large btn-primary" %>
+    <% when 3 ## Nouveau commentaire %>
+      <%= f.submit "Poster et laisser la soumission comme erronée", class: "btn btn-large btn-danger" %>
+    <% else ## Pas encore corrigé %>
+      <%= f.submit "Poster et refuser la soumission", class: "btn btn-large btn-danger" %>
     <% end %>
-    <%= f.submit "Poster réponse et rendre la soumission correcte", class: "btn btn-large btn-success" %>
+    <%= f.submit "Poster et accepter la soumission", class: "btn btn-large btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
   <% else %>
-    <%= f.submit "Poster réponse", class: "btn btn-large btn-primary" %>
+    <%= f.submit "Poster", class: "btn btn-large btn-primary" %>
   <% end %>
 <% end %>
 

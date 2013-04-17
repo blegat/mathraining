@@ -7,6 +7,7 @@ class SubmissionsController < ApplicationController
   before_filter :admin_user, only: [:read, :unread]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
+  before_filter :whatcolors
 
   def show
     # Marquer comme lu ??

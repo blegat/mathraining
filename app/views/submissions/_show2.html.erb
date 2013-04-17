@@ -1,3 +1,19 @@
+<% def color_of(user) %>
+  <% if user.admin %>
+    <% return "#000000" %>
+  <% end %>
+  <% actualrating = user.point.rating %>
+  <% i = 0 %>
+  <% actuallevel = 0 %>
+  <% @niveaux.each do |n| %>
+    <% if n[:pt] <= actualrating %>
+      <% actuallevel = i %>
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+  <% return @niveaux[actuallevel][:color] %>
+<% end %>
+
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 
@@ -23,8 +39,8 @@
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
 <% if current_user.admin %>
-<td>
-<%= link_to s.user.name, s.user %>
+<td style="font-weight:bold;">
+<%= link_to s.user.name, s.user, {:style => "color:#{color_of(s.user)}" } %>
 </td>
 <% end %>
 <td>
