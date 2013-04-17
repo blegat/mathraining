@@ -18,15 +18,16 @@
 
 <% provide(:title, @subject.title) %>
 
-<% if @subject.admin? %>
-<span class="label label-warning">Admin</span>
-<% end %>
 
 <% if @subject.chapter.nil? %>
 <h1><%= @subject.title %></h1>
 <% else %>
   <% @chapitre = @subject.chapter %>
   <h1><%= @subject.title %> - <%= @chapitre.name %> </h1>
+<% end %>
+
+<% if @subject.admin? %>
+<center><span class="label label-warning">Sujet réservé aux administrateurs</span></center>
 <% end %>
 
 <center><%= will_paginate @messages %></center>

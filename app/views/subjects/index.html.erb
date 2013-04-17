@@ -22,17 +22,19 @@
 <% end %>
 </h1>
 
+<% if @importants.size > 0 %>
+
 <table class="table table-bordered" style="margin-top:20px;">
-  <tr class="info" style="font-weight:bold;">
-    <td style="text-align:center;">Sujet</td>
+  <tr class="error" style="font-weight:bold;">
+    <td style="text-align:center;">Sujet important</td>
     <td style="width:180px; text-align:center;">Auteur</td>
     <td style="width:50px; text-align:center;">Rép.</td>
     <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
-  <% @subjects.each do |s| %>
+  <% @importants.each do |s| %>
     <tr>
       <td>
         <% if s.admin? %>
-          <span class="label label-warning">Admin</span>
+          <span class="label label-warning">Admin</span> - 
         <% end %>
         <% if @chapter.nil? %>
           <%= link_to s.title, s %>
@@ -81,7 +83,76 @@
 
 </table>
 
+<% end %>
+
+<% if @subjects.size > 0 %>
+
+<table class="table table-bordered" style="margin-top:20px;">
+  <tr class="info" style="font-weight:bold;">
+    <td style="text-align:center;">Sujet</td>
+    <td style="width:180px; text-align:center;">Auteur</td>
+    <td style="width:50px; text-align:center;">Rép.</td>
+    <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
+  <% @subjects.each do |s| %>
+    <tr>
+      <td>
+        <% if s.admin? %>
+          <span class="label label-warning">Admin</span> - 
+        <% end %>
+        <% if @chapter.nil? %>
+          <%= link_to s.title, s %>
+          <% if @chapter.nil? and not s.chapter.nil? %>
+            - <%= s.chapter.name %>
+          <% end %>
+        <% else %>
+          <%= link_to s.title, chapter_subject_path(@chapter, s) %>
+          <% if @chapter.nil? and not s.chapter.nil? %>
+            - <%= s.chapter.name %>
+          <% end %>
+        <% end %>
+      </td>
+      <td style="text-align:center; font-weight:bold;">
+        <%= link_to s.user.name, s.user, {:style => "color:#{color_of(s.user)}" } %>
+      </td>
+      <td style="text-align:center;">
+        <%= x = s.messages.count %>
+      </td>
+        <% if x > 0 %>
+          <% last = s.messages.order(:id).last %>
+          <% qui = last.user %>
+          <% date = last.created_at.in_time_zone %>
+        <% else %>
+          <% qui = s.user %>
+          <% date = s.created_at.in_time_zone %>
+        <% end %>
+      <td style="width:180px; text-align:center; font-weight:bold;">
+        <%= link_to qui.name, qui, {:style => "color:#{color_of(qui)}" } %>
+      </td>
+      <td style="width:170px; text-align:center;">
+        <% tot = s.messages.count %>
+        <% page = [0,((tot-1)/10).floor].max + 1 %>
+        <% if @chapter.nil? %>
+          <%= link_to subject_path(s, :page => page, :anchor => "bottom") do %>
+            <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+          <% end %>
+        <% else %>
+          <%= link_to chapter_subject_path(@chapter, s, :page => page, :anchor => "bottom") do %>
+            <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+          <% end %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+
+</table>
+
+<% end %>
+
 <center><%= will_paginate @subjects %></center>
+
+<% if @subjects.size + @importants.size == 0 %>
+<b>Aucun sujet</b>
+<% end %>
 
 <center>
   <br/>

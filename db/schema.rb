@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130416185824) do
+ActiveRecord::Schema.define(:version => 20130417200458) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -208,6 +208,7 @@ ActiveRecord::Schema.define(:version => 20130416185824) do
     t.datetime "lastcomment"
     t.boolean  "admin",       :default => false
     t.boolean  "admin_user",  :default => false
+    t.boolean  "important",   :default => false
   end
 
   add_index "subjects", ["chapter_id"], :name => "index_subjects_on_chapter_id"

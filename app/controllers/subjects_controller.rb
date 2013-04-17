@@ -12,15 +12,19 @@ class SubjectsController < ApplicationController
   def index
     if current_user.admin?
       if @chapter.nil?
-        @subjects = Subject.order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
+        @importants = Subject.where(important: true).order("lastcomment DESC")
+        @subjects = Subject.where(important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
       else
-        @subjects = Subject.where(chapter_id: @chapter).order("lastcomment DESC").paginate(page: params[:page])
+        @importants = Subject.where(chapter_id: @chapter, important: true).order("lastcomment DESC")
+        @subjects = Subject.where(chapter_id: @chapter, important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
       end
     else
       if @chapter.nil?
-        @subjects = Subject.where(admin: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
+        @importants = Subject.where(admin: false, important: true).order("lastcomment DESC")
+        @subjects = Subject.where(admin: false, important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
       else
-        @subjects = Subject.where(admin: false, chapter_id: @chapter).order("lastcomment DESC").paginate(page: params[:page])
+        @importants = Subject.where(admin: false, chapter_id: @chapter, important: true).order("lastcomment DESC")
+        @subjects = Subject.where(admin: false, chapter_id: @chapter, important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
       end
     end
   end
@@ -50,6 +54,9 @@ class SubjectsController < ApplicationController
   end
 
   def create
+    if !current_user.admin? && !params[:subject][:important].nil? # Hack
+      redirect_to root_path
+    end
     @subject = Subject.create(params[:subject].except(:chapter_id))
     @subject.user = current_user
     @subject.lastcomment = DateTime.current
@@ -81,6 +88,9 @@ class SubjectsController < ApplicationController
   end
 
   def update
+    if !current_user.admin? && !params[:subject][:important].nil? # Hack
+      redirect_to root_path
+    end
     if @subject.update_attributes(params[:subject].except(:chapter_id))
       if @subject.user.admin? && !@subject.admin_user?
         @subject.admin_user = true

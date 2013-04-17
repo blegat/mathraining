@@ -47,3 +47,10 @@
   </label>
 <% end %>
 
+<% if current_user.admin? %>
+  <label class="checkbox">
+  Cochez si ce sujet doit toujours apparaître en premier lieu.
+  <%= f.check_box :important %>
+  </label>
+<% end %>
+
