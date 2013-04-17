@@ -1,6 +1,9 @@
 <% provide(:title, 'Modifier un sujet') %>
 <h1>Modifier un sujet</h1>
-
+<span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
+<% if @subject.user != current_user %>
+<span style="color:red;">Ce sujet n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (mauvais emplacement, divulgation d'une réponse,...)</span><br/><br/>
+<% end %>
 <% if @chapter.nil? %>
     <%= form_for(@subject) do |f| %>
       <%= render 'form', f: f %>
@@ -17,9 +20,9 @@
 <br/>
 
 <% if @chapter.nil? %>
-  <center><%= link_to "Retour à la discussion", @subject %></center>
+  <center><%= link_to "Retour au sujet", @subject %></center>
 <% else %>
-  <center><%= link_to "Retour à la discussion", chapter_subject_path(@chapter, @subject) %></center>
+  <center><%= link_to "Retour au sujet", chapter_subject_path(@chapter, @subject) %></center>
 <% end %>
 
 <script>

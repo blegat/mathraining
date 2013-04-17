@@ -1,7 +1,7 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% provide(:title, 'Répondre') %>
 <h1>Répondre</h1>
-
+<span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
 <% if @chapter.nil? %>
     <%= form_for([@subject, @message]) do |f| %>
       <%= render 'form', f: f %>
@@ -74,9 +74,9 @@
 <% page = [0,((tot-1)/10).floor].max + 1 %>
 
 <% if @chapter.nil? %>
-<center><%= link_to "Retour à la discussion", subject_path(@subject, :anchor => "bottom", :page => page) %></center>
+<center><%= link_to "Retour au sujet", subject_path(@subject, :anchor => "bottom", :page => page) %></center>
 <% else %>
-<center><%= link_to "Retour à la discussion", chapter_subject_path(@chapter, @subject, :anchor => "bottom", :page => page) %></center>
+<center><%= link_to "Retour au sujet", chapter_subject_path(@chapter, @subject, :anchor => "bottom", :page => page) %></center>
 <% end %>
 
 <script>

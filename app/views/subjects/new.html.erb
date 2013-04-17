@@ -1,6 +1,6 @@
 <% provide(:title, 'Créer un sujet') %>
 <h1>Créer un sujet</h1>
-
+<span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
 <% if @chapter.nil? %>
     <%= form_for(@subject) do |f| %>
       <%= render 'form', f: f %>

@@ -1,23 +1,3 @@
-<% # OPTIONS FOR RATINGS (CHANGE ALSO IN index.html.erb) %>
-<% price = 15 %>
-<% pricefondement = 15 %>
-
-<% niveaux = [
-    {:pt => 0, :name => "Novice", :color => "#888888", :fontcolor => "#BBBBBB"},
-    {:pt => 10, :name => "Débutant", :color => "#11DD44", :fontcolor => "#33FF66"},
-    {:pt => 20, :name => "Initié", :color => "#11AA00", :fontcolor => "#44DD11"},
-    {:pt => 30, :name => "Compétent", :color => "#00BBEE", :fontcolor => "#33FFFF"},
-    {:pt => 40, :name => "Qualifié", :color => "#0033FF", :fontcolor => "#6699FF"},
-    {:pt => 50, :name => "Expérimenté", :color => "#DD77FF", :fontcolor => "#FF99FF"},
-    {:pt => 60, :name => "Chevronné", :color => "#990099", :fontcolor => "#DD44DD"},
-    {:pt => 70, :name => "Expert", :color => "#FF9900", :fontcolor => "#FFBB22"},
-    {:pt => 80, :name => "Maître", :color => "#FF3300", :fontcolor => "#FF5522"},
-    {:pt => 90, :name => "Grand Maître", :color => "#CC0000", :fontcolor => "#EE2222"}
-    ] %>
-    
-    
-
-
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 <% provide(:title, @user.name) %>
@@ -34,14 +14,14 @@
 
 <% i = 0 %>
 <% actuallevel = 0 %>
-<% niveaux.each do |n| %>
+<% @niveaux.each do |n| %>
   <% if n[:pt] <= actualrating %>
     <% actuallevel = i %>
   <% end %>
   <% i = i+1 %>
 <% end %>
 
-<h1 style="color:<%= niveaux[actuallevel][:color] %>;"><%= @user.name %><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveaux[actuallevel][:name] %></span></h1>
+<h1 style="color:<%= @niveaux[actuallevel][:color] %>;"><%= @user.name %><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= @niveaux[actuallevel][:name] %></span></h1>
 
   <div class="row">
   
@@ -167,13 +147,13 @@
   <tr><td>Fondements</td>
   <td>
   <center>
-  <% etoile = (rate/pricefondement).floor %>
+  <% etoile = (rate/@pricefondement).floor %>
   <% etoile.times do |i| %>
     <img src="/assets/etoilevertefoncee.gif" />
   <% end %>
   </center>
   </td>
-  <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*pricefondement) )/pricefondement %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*pricefondement) )/pricefondement %>, <%= 255*(rate - (etoile*pricefondement) )/pricefondement %>, 0);"></div></div></td>
+  <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*@pricefondement) )/@pricefondement %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*@pricefondement) )/@pricefondement %>, <%= 255*(rate - (etoile*@pricefondement) )/@pricefondement %>, 0);"></div></div></td>
   
 
   <% Section.all.each do |s| %>
@@ -182,13 +162,13 @@
     <td><%= s.name %></td>
     <td>
     <center>
-    <% etoile = (rate/price).floor %>
+    <% etoile = (rate/@price).floor %>
     <% etoile.times do |i| %>
       <img src="/assets/etoilejaune.gif" />
     <% end %>
     </center>
     </td>
-    <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*price) )/price %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*price) )/price %>, <%= 255*(rate - (etoile*price) )/price %>, 0);"></div></div></td>
+    <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*@price) )/@price %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*@price) )/@price %>, <%= 255*(rate - (etoile*@price) )/@price %>, 0);"></div></div></td>
     </tr>
   <% end %>
   
@@ -217,17 +197,17 @@
   Votre navigateur ne supporte pas les canvas.
   </canvas>
   
-  <% if actuallevel == (niveaux.size - 1) %>
+  <% if actuallevel == (@niveaux.size - 1) %>
     <% maxi = 1.2*actualrating %>
   <% else %>
-    <% maxi = 1.1*niveaux[actuallevel+1][:pt] %>
+    <% maxi = 1.1*@niveaux[actuallevel+1][:pt] %>
   <% end %>
   
-  <% (0..(niveaux.size-1)).each do |i| %>
-    <% if i < (niveaux.size - 1) %>
-      <% haut = [450 - 450*(niveaux[i+1][:pt]/maxi), 0].max %>
+  <% (0..(@niveaux.size-1)).each do |i| %>
+    <% if i < (@niveaux.size - 1) %>
+      <% haut = [450 - 450*(@niveaux[i+1][:pt]/maxi), 0].max %>
       <% if haut > 0 %>
-        <div style="position:absolute; top:<%= haut-8 %>px; right:828px; width: 30px; text-align:right;"><%= niveaux[i+1][:pt] %></div>
+        <div style="position:absolute; top:<%= haut-8 %>px; right:828px; width: 30px; text-align:right;"><%= @niveaux[i+1][:pt] %></div>
       <% end %>
     <% end %>
     <% i = i+1 %>
@@ -273,26 +253,26 @@
   var c=document.getElementById("myCanvas");
   var ctx=c.getContext("2d");
   
-  <% (0..(niveaux.size-1)).each do |i| %>
-    <% if i == (niveaux.size - 1) %>
-      <% bas = [450 - 450*(niveaux[i][:pt]/maxi) , 0].max %>
+  <% (0..(@niveaux.size-1)).each do |i| %>
+    <% if i == (@niveaux.size - 1) %>
+      <% bas = [450 - 450*(@niveaux[i][:pt]/maxi) , 0].max %>
       <% haut = 0 %>
     <% else %>
-      <% bas = [450 - 450*(niveaux[i][:pt]/maxi), 0].max %>
-      <% haut = [450 - 450*(niveaux[i+1][:pt]/maxi), 0].max %>
+      <% bas = [450 - 450*(@niveaux[i][:pt]/maxi), 0].max %>
+      <% haut = [450 - 450*(@niveaux[i+1][:pt]/maxi), 0].max %>
     <% end %>
     <% if bas > haut %>
       ctx.beginPath();
       ctx.rect(0, <%= haut %>, 806, <%= bas - haut %>);
-      ctx.fillStyle = '<%= niveaux[i][:fontcolor] %>';
+      ctx.fillStyle = '<%= @niveaux[i][:fontcolor] %>';
       ctx.fill();
     <% end %>
     <% i = i+1 %>
   <% end %>
   
-   <% (0..(niveaux.size-1)).each do |i| %>
-    <% if i < (niveaux.size - 1) %>
-      <% haut = [450 - 450*(niveaux[i+1][:pt]/maxi), 0].max %>
+   <% (0..(@niveaux.size-1)).each do |i| %>
+    <% if i < (@niveaux.size - 1) %>
+      <% haut = [450 - 450*(@niveaux[i+1][:pt]/maxi), 0].max %>
       <% if haut > 0 %>
         ctx.beginPath();
         ctx.moveTo(0, <%= haut %>);

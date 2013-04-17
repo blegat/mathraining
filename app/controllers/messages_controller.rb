@@ -7,6 +7,7 @@ class MessagesController < ApplicationController
   before_filter :valid_chapter
   before_filter :online_chapter
   before_filter :unlocked_chapter
+  before_filter :whatcolors
 
   def new
     @message = Message.new

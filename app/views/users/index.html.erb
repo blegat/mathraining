@@ -1,21 +1,3 @@
-<% # OPTIONS FOR RATINGS (CHANGE ALSO IN show.html.erb) %>
-<% price = 15 %>
-<% pricefondement = 15 %>
-
-<% niveaux = [
-    {:pt => 0, :name => "Novice", :color => "#888888", :fontcolor => "#BBBBBB"},
-    {:pt => 10, :name => "Débutant", :color => "#11DD44", :fontcolor => "#33FF66"},
-    {:pt => 20, :name => "Initié", :color => "#11AA00", :fontcolor => "#44DD11"},
-    {:pt => 30, :name => "Compétent", :color => "#00BBEE", :fontcolor => "#33FFFF"},
-    {:pt => 40, :name => "Qualifié", :color => "#0033FF", :fontcolor => "#6699FF"},
-    {:pt => 50, :name => "Expérimenté", :color => "#DD77FF", :fontcolor => "#FF99FF"},
-    {:pt => 60, :name => "Chevronné", :color => "#990099", :fontcolor => "#DD44DD"},
-    {:pt => 70, :name => "Expert", :color => "#FF9900", :fontcolor => "#FFBB22"},
-    {:pt => 80, :name => "Maître", :color => "#FF3300", :fontcolor => "#FF5522"},
-    {:pt => 90, :name => "Grand Maître", :color => "#CC0000", :fontcolor => "#EE2222"}
-    ] %>
-
-
 
 <% provide(:title, 'Utilisateurs') %>
 <h1>Utilisateurs</h1>
@@ -26,7 +8,7 @@
 
 <% allsec = Section.all %>
 
-<% actuallevel = niveaux.size - 1 %>
+<% actuallevel = @niveaux.size - 1 %>
 
 <table class="table table-bordered">
   <tr><th></th><th>Nom</th><th><center>Score</center></th><th><center>Fondements</center></th>
@@ -39,13 +21,13 @@
     <% user = User.find(p.user) %>
     <% if !user.admin? %>
     
-    <% while niveaux[actuallevel][:pt] > p.rating %>
+    <% while @niveaux[actuallevel][:pt] > p.rating %>
       <% actuallevel = actuallevel - 1 %>
     <% end %>
     
     <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
     <td><center><%= rank %></center></td>
-    <td><b> <%= link_to user.name, user, {:style => "color:#{niveaux[actuallevel][:color]}" } %> </b></td>
+    <td><b> <%= link_to user.name, user, {:style => "color:#{@niveaux[actuallevel][:color]}" } %> </b></td>
       
     <% rating = p.rating %>
     <td><center><%= rating %></center></td>
@@ -54,7 +36,7 @@
     <% rate = p.where(:section_id => 0).first.points %>
       <td>
       <center>
-      <% etoile = (rate/pricefondement).floor %>
+      <% etoile = (rate/@pricefondement).floor %>
       <% etoile.times do |i| %>
         <img src="/assets/etoilevertefoncee.gif" />
       <% end %>
@@ -64,7 +46,7 @@
         <% rate = p.where(:section_id => s.id).first.points %>
       <td>
       <center>
-      <% etoile = (rate/price).floor %>
+      <% etoile = (rate/@price).floor %>
       <% etoile.times do |i| %>
         <img src="/assets/etoilejaune.gif" />
       <% end %>

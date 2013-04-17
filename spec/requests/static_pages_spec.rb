@@ -12,21 +12,13 @@ describe "Static pages" do
 
     describe "Home page" do
       before { visit root_path }
-      let(:heading)    { 'OMB training' }
+      let(:heading)    { 'IMO Belgium' }
       let(:page_title) { '' }
 
       it_should_behave_like "all static pages"
       it { should_not have_selector 'title', text: '| Home' }
 
     end
-
-	describe "Help page" do
-		before { visit help_path }
-		let(:heading) { 'Aide' }
-		let(:page_title) { 'Aide' }
-
-		it_should_behave_like "all static pages"
-	end
 
 	describe "About page" do
 		before { visit about_path }
@@ -53,7 +45,7 @@ describe "Static pages" do
 		click_link "Accueil"
 		click_link "Inscrivez-vous maintenant!"
 		page.should have_selector 'title', text: full_title('Inscription')
-		click_link "OMB training"
+		click_link "IMO Belgium"
 		page.should have_selector 'title', text: full_title('')
 	end
 end

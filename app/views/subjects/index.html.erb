@@ -1,6 +1,6 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% provide(:title, 'Forum') %>
-<h1>Forum
+<h1>Forum <%= @bonjour %>
 <% unless @chapter.nil? %>
    - <%= @chapter.name %>
 <% end %>
