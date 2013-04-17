@@ -1,3 +1,19 @@
+<% def color_of(user) %>
+  <% if user.admin %>
+    <% return "#000000" %>
+  <% end %>
+  <% actualrating = user.point.rating %>
+  <% i = 0 %>
+  <% actuallevel = 0 %>
+  <% @niveaux.each do |n| %>
+    <% if n[:pt] <= actualrating %>
+      <% actuallevel = i %>
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+  <% return @niveaux[actuallevel][:color] %>
+<% end %>
+
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% provide(:title, 'Forum') %>
 <h1>Forum <%= @bonjour %>
@@ -16,7 +32,7 @@
     <tr>
       <td>
         <% if s.admin? %>
-          <span class="label label-warning">Admin</span> - 
+          <span class="label label-warning">Admin</span>
         <% end %>
         <% if @chapter.nil? %>
           <%= link_to s.title, s %>
@@ -30,22 +46,22 @@
           <% end %>
         <% end %>
       </td>
-      <td style="text-align:center;">
-        <%= s.user.name %>
+      <td style="text-align:center; font-weight:bold;">
+        <%= link_to s.user.name, s.user, {:style => "color:#{color_of(s.user)}" } %>
       </td>
       <td style="text-align:center;">
         <%= x = s.messages.count %>
       </td>
-      <td style="width:180px; text-align:center;">
         <% if x > 0 %>
           <% last = s.messages.order(:id).last %>
-          <% qui = last.user.name %>
+          <% qui = last.user %>
           <% date = last.created_at.in_time_zone %>
         <% else %>
-          <% qui = s.user.name %>
+          <% qui = s.user %>
           <% date = s.created_at.in_time_zone %>
         <% end %>
-        <%= qui %>
+      <td style="width:180px; text-align:center; font-weight:bold;">
+        <%= link_to qui.name, qui, {:style => "color:#{color_of(qui)}" } %>
       </td>
       <td style="width:170px; text-align:center;">
         <% tot = s.messages.count %>
