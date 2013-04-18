@@ -76,6 +76,12 @@ Ombtraining::Application.routes.draw do
         as: :unread
     end
   end
+  
+  resources :submissionfiles, only: [] do
+    member do
+      get :download
+    end
+  end
 
   mathjax 'mathjax'
 

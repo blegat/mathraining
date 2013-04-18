@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130417200458) do
+ActiveRecord::Schema.define(:version => 20130418083657) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -212,6 +212,16 @@ ActiveRecord::Schema.define(:version => 20130417200458) do
   end
 
   add_index "subjects", ["chapter_id"], :name => "index_subjects_on_chapter_id"
+
+  create_table "submissionfiles", :force => true do |t|
+    t.integer  "submission_id"
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at"
+  end
+
+  add_index "submissionfiles", ["submission_id"], :name => "index_submissionfiles_on_submission_id"
 
   create_table "submissions", :force => true do |t|
     t.integer  "problem_id"

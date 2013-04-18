@@ -24,9 +24,41 @@ class SubmissionsController < ApplicationController
   def create
     submission = @problem.submissions.build(content: params[:submission][:content])
     submission.user = current_user
+    flash[:error] = "#{params[:submission][:file].nil?} + #{params[:file].nil?}"
+    
+    attach = Array.new
+    
+    i = 1
+    while !params["file#{i}".to_sym].nil? do
+      attach.push()
+      attach[i-1] = Submissionfile.new(:file => params["file#{i}".to_sym])
+      if !attach[i-1].save
+        j = 1
+        while j < i do
+          attach[j-1].delete
+          j = j+1
+        end
+        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+          flash: {error: "Votre pièce jointe n°#{i} ne respecte pas les conditions." } and return   
+      end
+      i = i+1
+    end
+    
+    
     if submission.save
+      j = 1
+      while j < i do
+        attach[j-1].submission = submission
+        attach[j-1].save
+        j = j+1
+      end
       redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
     else
+      j = 1
+      while j < i do
+        attach[j-1].delete
+        j = j+1
+      end
       if params[:submission][:content].size == 0
         redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
           flash: { error: "Votre soumission est vide." }

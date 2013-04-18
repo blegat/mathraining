@@ -7,6 +7,7 @@ class Submission < ActiveRecord::Base
   has_many :followings, dependent: :destroy
   has_many :followers, through: :followings, source: :user
   has_many :notifs
+  has_many :submissionfiles
 
   validates :user_id, presence: true
   validates :problem_id, presence: true

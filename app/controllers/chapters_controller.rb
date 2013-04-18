@@ -13,6 +13,7 @@ class ChaptersController < ApplicationController
     only: [:new_section, :create_section, :destroy_section]
   before_filter :prerequisites_online,
     only: [:warning, :put_online]
+  before_filter :whatcolors
 
   def index
     redirect_to sections_path
