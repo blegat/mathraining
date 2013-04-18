@@ -1,3 +1,6 @@
+<% @price = 15 # ALSO CHANGE IN INDEX %>
+<% @pricefondement = 15 %>
+
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 <% provide(:title, @user.name) %>
@@ -11,17 +14,8 @@
 
 
 <% actualrating = @user.point.rating %>
-
-<% i = 0 %>
-<% actuallevel = 0 %>
-<% @niveaux.each do |n| %>
-  <% if n[:pt] <= actualrating %>
-    <% actuallevel = i %>
-  <% end %>
-  <% i = i+1 %>
-<% end %>
-
-<h1 style="color:<%= @niveaux[actuallevel][:color] %>;"><%= @user.name %><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= @niveaux[actuallevel][:name] %></span></h1>
+<% niveau = @user.level %>
+<h1 style="color:<%= niveau[:color] %>;"><%= @user.name %><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] %></span></h1>
 
   <div class="row">
   
@@ -197,6 +191,8 @@
   Votre navigateur ne supporte pas les canvas.
   </canvas>
   
+  <% @niveaux = @user.alllevel %>
+  <% actuallevel = niveau[:num] %>
   <% if actuallevel == (@niveaux.size - 1) %>
     <% maxi = 1.2*actualrating %>
   <% else %>

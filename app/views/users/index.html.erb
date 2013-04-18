@@ -1,3 +1,5 @@
+<% @price = 15 # ALSO CHANGE IN SHOW %>
+<% @pricefondement = 15 %>
 
 <% provide(:title, 'Utilisateurs') %>
 <h1>Utilisateurs</h1>
@@ -8,7 +10,6 @@
 
 <% allsec = Section.all %>
 
-<% actuallevel = @niveaux.size - 1 %>
 
 <table class="table table-bordered">
   <tr><th></th><th>Nom</th><th><center>Score</center></th><th><center>Fondements</center></th>
@@ -21,13 +22,11 @@
     <% user = User.find(p.user) %>
     <% if !user.admin? %>
     
-    <% while @niveaux[actuallevel][:pt] > p.rating %>
-      <% actuallevel = actuallevel - 1 %>
-    <% end %>
+    <% niveau = user.level %>
     
     <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
     <td><center><%= rank %></center></td>
-    <td><b> <%= link_to user.name, user, {:style => "color:#{@niveaux[actuallevel][:color]}" } %> </b></td>
+    <td><b> <%= link_to user.name, user, {:style => "color:#{niveau[:color]}" } %> </b></td>
       
     <% rating = p.rating %>
     <td><center><%= rating %></center></td>

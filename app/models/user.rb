@@ -1,3 +1,4 @@
+#encoding: utf-8
 # == Schema Information
 #
 # Table name: users
@@ -12,7 +13,6 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
-
 class User < ActiveRecord::Base
   attr_accessible :email, :first_name, :last_name,
     :password, :password_confirmation, :admin, :root,
@@ -70,7 +70,41 @@ class User < ActiveRecord::Base
     followed_submissions.where(followings: { read: false })
   end
 
+  def level
+    if admin
+      return {color:"#000000"}
+    end
+    actualrating = point.rating
+    i = 0
+    actuallevel = 0
+    @@niveaux.each do |n|
+      if n[:pt] <= actualrating
+        actuallevel = i
+      end
+      i = i+1
+    end
+    return @@niveaux[actuallevel]
+  end
+  
+  def alllevel
+    return @@niveaux
+  end
+
   private
+
+  @@niveaux = [
+  {:num => 0, :pt => 0, :name => "Novice", :color => "#888888", :fontcolor => "#BBBBBB"},
+  {:num => 1, :pt => 10, :name => "Débutant", :color => "#11DD44", :fontcolor => "#33FF66"},
+  {:num => 2, :pt => 20, :name => "Initié", :color => "#11AA00", :fontcolor => "#44DD11"},
+  {:num => 3, :pt => 30, :name => "Compétent", :color => "#00BBEE", :fontcolor => "#33FFFF"},
+  {:num => 4, :pt => 40, :name => "Qualifié", :color => "#0033FF", :fontcolor => "#6699FF"},
+  {:num => 5, :pt => 50, :name => "Expérimenté", :color => "#DD77FF", :fontcolor => "#FF99FF"},
+  {:num => 6, :pt => 60, :name => "Chevronné", :color => "#990099", :fontcolor => "#DD44DD"},
+  {:num => 7, :pt => 70, :name => "Expert", :color => "#FF9900", :fontcolor => "#FFBB22"},
+  {:num => 8, :pt => 80, :name => "Maître", :color => "#FF3300", :fontcolor => "#FF5522"},
+  {:num => 9, :pt => 90, :name => "Grand Maître", :color => "#CC0000", :fontcolor => "#EE2222"}
+  ]
+
   def create_remember_token
     self.remember_token = SecureRandom.urlsafe_base64
   end

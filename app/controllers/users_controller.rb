@@ -12,7 +12,6 @@ class UsersController < ApplicationController
     only: [:new, :create]
   before_filter :destroy_admin,
     only: [:destroy]
-  before_filter :whatcolors
 
   def index
   end

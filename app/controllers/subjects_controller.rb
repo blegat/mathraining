@@ -7,7 +7,6 @@ class SubjectsController < ApplicationController
   before_filter :online_chapter
   before_filter :unlocked_chapter
   before_filter :admin_delete, only: [:destroy]
-  before_filter :whatcolors
 
   def index
     if current_user.admin?
