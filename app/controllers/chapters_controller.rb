@@ -20,6 +20,8 @@ class ChaptersController < ApplicationController
   end
 
   def show
+    @ancientexte = session[:ancientexte]
+    session[:ancientexte] = nil
   end
 
   def new

@@ -6,20 +6,36 @@ function add() {
  
     //Create an input type dynamically.
     var element = document.createElement("input");
+    var element2 = document.createElement("input");
  
     //Assign different attributes to the element.
     element.setAttribute("type", "file");
     element.setAttribute("name", "file"+i);
- 
+    
+    element2.setAttribute("type", "hidden");
+    element2.setAttribute("name", "hidden"+i);
+    element2.setAttribute("value", "ok");
  
     var foo = document.getElementById("fooBar");
-    var p = document.createElement("br");
+    var br = document.createElement("br");
+    
+    if(i == 1)
+    {
+      var avert = document.createElement("p");
+      var bold = document.createElement("b");
+      var text = document.createTextNode("Taille totale autorisée : 10 Mo. Type de fichiers autorisés : zip, pdf, doc, gif, jpg, png, bmp.");
+      bold.appendChild(text);
+      avert.appendChild(bold);
+      foo.appendChild(avert);
+      foo.appendChild(br);
+    }
     
     i = i+1;
  
     //Append the element in page (in span).
+    foo.appendChild(element2);
     foo.appendChild(element);
-    foo.appendChild(p);
+    foo.appendChild(br);
 }
 </SCRIPT>
 
@@ -29,7 +45,11 @@ function add() {
   <br/><h4>Nouvelle soumission</h4>
   <div class="well" id="MathPreview"></div>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-  <%= f.text_area :content, :class => "span10", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
+  <% if @ancientexte.nil? %>
+    <%= f.text_area :content, :class => "span10", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
+  <% else %>
+    <%= f.text_area :content, :class => "span10", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "Preview.Update()" %>
+  <% end %>
   <br />
   <span id="fooBar"></span>
   <br/>

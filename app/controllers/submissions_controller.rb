@@ -24,24 +24,45 @@ class SubmissionsController < ApplicationController
   def create
     submission = @problem.submissions.build(content: params[:submission][:content])
     submission.user = current_user
-    flash[:error] = "#{params[:submission][:file].nil?} + #{params[:file].nil?}"
     
     attach = Array.new
+    totalsize = 0
     
     i = 1
-    while !params["file#{i}".to_sym].nil? do
-      attach.push()
-      attach[i-1] = Submissionfile.new(:file => params["file#{i}".to_sym])
-      if !attach[i-1].save
-        j = 1
-        while j < i do
-          attach[j-1].delete
-          j = j+1
+    k = 1
+    while !params["hidden#{k}".to_sym].nil? do
+      if !params["file#{k}".to_sym].nil?
+        attach.push()
+        attach[i-1] = Submissionfile.new(:file => params["file#{k}".to_sym])
+        if !attach[i-1].save
+          j = 1
+          while j < i do
+            attach[j-1].file.destroy
+            attach[j-1].destroy
+            j = j+1
+          end
+          nom = params["file#{k}".to_sym].original_filename
+          session[:ancientexte] = params[:submission][:content]
+          redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+            flash: {error: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return   
         end
-        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
-          flash: {error: "Votre pièce jointe n°#{i} ne respecte pas les conditions." } and return   
+        totalsize = totalsize + attach[i-1].file_file_size
+        
+        i = i+1
       end
-      i = i+1
+      k = k+1
+    end
+    
+    if totalsize > 10485760
+      j = 1
+      while j < i do
+        attach[j-1].file.destroy
+        attach[j-1].destroy
+        j = j+1
+      end
+      session[:ancientexte] = params[:submission][:content]
+      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+          flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
     
     
@@ -56,9 +77,11 @@ class SubmissionsController < ApplicationController
     else
       j = 1
       while j < i do
-        attach[j-1].delete
+        attach[j-1].file.destroy
+        attach[j-1].destroy
         j = j+1
       end
+      session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
           flash: { error: "Votre soumission est vide." }
