@@ -54,9 +54,9 @@ class SubjectsController < ApplicationController
 
   def create
     if !current_user.admin? && !params[:subject][:important].nil? # Hack
-      redirect_to root_path
+      redirect_to root_path and return
     end
-    @subject = Subject.create(params[:subject].except(:chapter_id))
+    @subject = Subject.new(params[:subject].except(:chapter_id))
     @subject.user = current_user
     @subject.lastcomment = DateTime.current
     @subject.admin_user = current_user.admin?
@@ -69,7 +69,56 @@ class SubjectsController < ApplicationController
         @subject.chapter = @chapitre
       end
     end
+    
+    attach = Array.new
+    totalsize = 0
+    
+    i = 1
+    k = 1
+    while !params["hidden#{k}".to_sym].nil? do
+      if !params["file#{k}".to_sym].nil?
+        attach.push()
+        attach[i-1] = Subjectfile.new(:file => params["file#{k}".to_sym])
+        if !attach[i-1].save
+          j = 1
+          while j < i do
+            attach[j-1].file.destroy
+            attach[j-1].destroy
+            j = j+1
+          end
+          nom = params["file#{k}".to_sym].original_filename
+          flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          @preselect = params[:subject][:chapter_id].to_i
+          render 'new' and return 
+        end
+        totalsize = totalsize + attach[i-1].file_file_size
+        
+        i = i+1
+      end
+      k = k+1
+    end
+    
+    if totalsize > 10485760
+      j = 1
+      while j < i do
+        attach[j-1].file.destroy
+        attach[j-1].destroy
+        j = j+1
+      end
+
+      flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+      @preselect = params[:subject][:chapter_id].to_i
+      render 'new' and return
+    end
+    
+    
     if @subject.save
+      j = 1
+      while j < i do
+        attach[j-1].subject = @subject
+        attach[j-1].save
+        j = j+1
+      end
       if !current_user.admin? && @subject.admin? # Hack
         @subject.admin = false
         @subject.save
@@ -81,6 +130,12 @@ class SubjectsController < ApplicationController
         redirect_to chapter_subject_path(@subject.chapter, @subject)
       end
     else
+      j = 1
+      while j < i do
+        attach[j-1].file.destroy
+        attach[j-1].destroy
+        j = j+1
+      end
       @preselect = params[:subject][:chapter_id].to_i
       render 'new'
     end
@@ -90,6 +145,7 @@ class SubjectsController < ApplicationController
     if !current_user.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path
     end
+    
     if @subject.update_attributes(params[:subject].except(:chapter_id))
       if @subject.user.admin? && !@subject.admin_user?
         @subject.admin_user = true
@@ -114,6 +170,59 @@ class SubjectsController < ApplicationController
         @subject.save
       end
       
+      totalsize = 0
+      
+      @subject.subjectfiles.each do |sf|
+        if params["prevfile#{sf.id}".to_sym].nil?
+          sf.file.destroy
+          sf.destroy
+        else
+          totalsize = totalsize + sf.file_file_size
+        end
+      end
+      
+      attach = Array.new
+    
+      i = 1
+      k = 1
+      while !params["hidden#{k}".to_sym].nil? do
+        if !params["file#{k}".to_sym].nil?
+          attach.push()
+          attach[i-1] = Subjectfile.new(:file => params["file#{k}".to_sym])
+          attach[i-1].subject = @subject
+          if !attach[i-1].save
+            j = 1
+            while j < i do
+              attach[j-1].file.destroy
+              attach[j-1].destroy
+              j = j+1
+            end
+            nom = params["file#{k}".to_sym].original_filename
+            @subject.reload
+            flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+            @preselect = params[:subject][:chapter_id].to_i
+            render 'edit' and return 
+          end
+          totalsize = totalsize + attach[i-1].file_file_size
+        
+          i = i+1
+        end
+        k = k+1
+      end
+    
+      if totalsize > 10485760
+        j = 1
+        while j < i do
+          attach[j-1].file.destroy
+          attach[j-1].destroy
+          j = j+1
+        end
+        @subject.reload
+        flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+        @preselect = params[:subject][:chapter_id].to_i
+        render 'edit' and return
+      end
+      
       flash[:success] = "Sujet modifié."
       if @chapter.nil? || @subject.chapter.nil?
         redirect_to subject_path(@subject)
@@ -128,7 +237,15 @@ class SubjectsController < ApplicationController
   
   def destroy
     @subject.delete
+    @subject.subjectfiles.each do |f|
+      f.file.destroy
+      f.destroy
+    end
     @subject.messages.each do |m|
+      m.messagefiles.each do |f|
+        f.file.destroy
+        f.destroy
+      end
       m.destroy
     end
     flash[:success] = "Sujet supprimé."

@@ -16,11 +16,57 @@ class MessagesController < ApplicationController
   end
 
   def create
-    @message = Message.create(params[:message])
+    @message = Message.new(params[:message])
     @message.user = current_user
     @message.subject = @subject
     @message.admin_user = current_user.admin?
+    
+    attach = Array.new
+    totalsize = 0
+    
+    i = 1
+    k = 1
+    while !params["hidden#{k}".to_sym].nil? do
+      if !params["file#{k}".to_sym].nil?
+        attach.push()
+        attach[i-1] = Messagefile.new(:file => params["file#{k}".to_sym])
+        if !attach[i-1].save
+          j = 1
+          while j < i do
+            attach[j-1].file.destroy
+            attach[j-1].destroy
+            j = j+1
+          end
+          nom = params["file#{k}".to_sym].original_filename
+          flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          render 'new' and return 
+        end
+        totalsize = totalsize + attach[i-1].file_file_size
+        
+        i = i+1
+      end
+      k = k+1
+    end
+    
+    if totalsize > 10485760
+      j = 1
+      while j < i do
+        attach[j-1].file.destroy
+        attach[j-1].destroy
+        j = j+1
+      end
+
+      flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+      render 'new' and return
+    end
+    
     if @message.save
+      j = 1
+      while j < i do
+        attach[j-1].message = @message
+        attach[j-1].save
+        j = j+1
+      end
       flash[:success] = "Message ajouté."
 
       @subject.lastcomment = DateTime.current
@@ -34,6 +80,12 @@ class MessagesController < ApplicationController
         redirect_to chapter_subject_path(@chapter, @message.subject, :anchor => @message.id, :page => page)
       end
     else
+      j = 1
+      while j < i do
+        attach[j-1].file.destroy
+        attach[j-1].destroy
+        j = j+1
+      end
       render 'new'
     end
   end
@@ -44,6 +96,58 @@ class MessagesController < ApplicationController
         @message.admin_user = true
         @message.save
       end
+      
+      totalsize = 0
+      
+      @message.messagefiles.each do |sf|
+        if params["prevfile#{sf.id}".to_sym].nil?
+          sf.file.destroy
+          sf.destroy
+        else
+          totalsize = totalsize + sf.file_file_size
+        end
+      end
+      
+      attach = Array.new
+    
+      i = 1
+      k = 1
+      while !params["hidden#{k}".to_sym].nil? do
+        if !params["file#{k}".to_sym].nil?
+          attach.push()
+          attach[i-1] = Messagefile.new(:file => params["file#{k}".to_sym])
+          attach[i-1].message = @message
+          if !attach[i-1].save
+            j = 1
+            while j < i do
+              attach[j-1].file.destroy
+              attach[j-1].destroy
+              j = j+1
+            end
+            @message.reload
+            nom = params["file#{k}".to_sym].original_filename
+            flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+            render 'edit' and return 
+          end
+          totalsize = totalsize + attach[i-1].file_file_size
+        
+          i = i+1
+        end
+        k = k+1
+      end
+    
+      if totalsize > 10485760
+        j = 1
+        while j < i do
+          attach[j-1].file.destroy
+          attach[j-1].destroy
+          j = j+1
+        end
+        @message.reload
+        flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+        render 'edit' and return
+      end
+      
       flash[:success] = "Message modifié."
       tot = @message.subject.messages.where("id <= ?", @message.id).count
       page = [0,((tot-1)/10).floor].max + 1
@@ -60,6 +164,12 @@ class MessagesController < ApplicationController
   def destroy
     @message = Message.find(params[:id])
     @subject = @message.subject
+    
+    @message.messagefiles.each do |f|
+      f.file.destroy
+      f.destroy
+    end
+    
     @message.destroy
     if @subject.messages.size > 0
       last = @subject.messages.order("id").last

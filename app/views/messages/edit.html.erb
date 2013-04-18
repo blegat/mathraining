@@ -1,3 +1,42 @@
+<SCRIPT language="javascript">
+var i = 1;
+function add() {
+ 
+    //Create an input type dynamically.
+    var element = document.createElement("input");
+    var element2 = document.createElement("input");
+ 
+    //Assign different attributes to the element.
+    element.setAttribute("type", "file");
+    element.setAttribute("name", "file"+i);
+    
+    element2.setAttribute("type", "hidden");
+    element2.setAttribute("name", "hidden"+i);
+    element2.setAttribute("value", "ok");
+ 
+    var foo = document.getElementById("fooBar");
+    var br = document.createElement("br");
+    
+    if(i == 1)
+    {
+      var avert = document.createElement("p");
+      var bold = document.createElement("b");
+      var text = document.createTextNode("Taille totale autorisée : 10 Mo. Type de fichiers autorisés : zip, pdf, doc, gif, jpg, png, bmp.");
+      bold.appendChild(text);
+      avert.appendChild(bold);
+      foo.appendChild(avert);
+      foo.appendChild(br);
+    }
+    
+    i = i+1;
+ 
+    //Append the element in page (in span).
+    foo.appendChild(element2);
+    foo.appendChild(element);
+    foo.appendChild(br);
+}
+</SCRIPT>
+
 <% provide(:title, 'Modifier un message') %>
 <h1>Modifier un message</h1>
 <span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
@@ -5,17 +44,28 @@
 <span style="color:red;">Ce message n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (divulgation d'une réponse, vulgarité,...)</span><br/><br/>
 <% end %>
 <% if @chapter.nil? %>
-    <%= form_for([@message.subject, @message]) do |f| %>
-      <%= render 'form', f: f %>
-      <br />
-      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
-    <% end %>
+  <% quoi = [@message.subject, @message] %>
 <% else %>
-    <%= form_for([@chapter, @message.subject, @message]) do |f| %>
-      <%= render 'form', f: f %>
-      <br />
-      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
+  <% quoi = [@chapter, @message.subject, @message] %>
+<% end %>
+
+<%= form_for quoi, :html => { :multipart => true }  do |f| %>
+  <%= render 'form', f: f %>
+  <br />
+  <% if @message.messagefiles.size > 0 %>
+    <b>Pièces jointes (décochez pour supprimer) :</b>
+    <% @message.messagefiles.each do |sf| %>
+      <label class="checkbox">
+        <%= link_to sf.file_file_name, download_messagefile_path(sf) %>
+        <input type="checkbox" name="prevfile<%= sf.id %>" value="1" checked="checked" />
+      </label>
     <% end %>
+  <% end %>
+  <span id="fooBar"></span>
+  <br/>
+  <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
+  <br /><br/>	
+  <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
 <% end %>
 
 <br/>

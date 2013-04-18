@@ -1,19 +1,60 @@
+<SCRIPT language="javascript">
+var i = 1;
+function add() {
+ 
+    //Create an input type dynamically.
+    var element = document.createElement("input");
+    var element2 = document.createElement("input");
+ 
+    //Assign different attributes to the element.
+    element.setAttribute("type", "file");
+    element.setAttribute("name", "file"+i);
+    
+    element2.setAttribute("type", "hidden");
+    element2.setAttribute("name", "hidden"+i);
+    element2.setAttribute("value", "ok");
+ 
+    var foo = document.getElementById("fooBar");
+    var br = document.createElement("br");
+    
+    if(i == 1)
+    {
+      var avert = document.createElement("p");
+      var bold = document.createElement("b");
+      var text = document.createTextNode("Taille totale autorisée : 10 Mo. Type de fichiers autorisés : zip, pdf, doc, gif, jpg, png, bmp.");
+      bold.appendChild(text);
+      avert.appendChild(bold);
+      foo.appendChild(avert);
+      foo.appendChild(br);
+    }
+    
+    i = i+1;
+ 
+    //Append the element in page (in span).
+    foo.appendChild(element2);
+    foo.appendChild(element);
+    foo.appendChild(br);
+}
+</SCRIPT>
+
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% provide(:title, 'Répondre') %>
 <h1>Répondre</h1>
 <span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
 <% if @chapter.nil? %>
-    <%= form_for([@subject, @message]) do |f| %>
-      <%= render 'form', f: f %>
-      <br />
-      <%= f.submit "Poster", class: "btn btn-large btn-primary" %>
-    <% end %>
+  <% quoi = [@subject, @message] %>
 <% else %>
-    <%= form_for([@chapter, @subject, @message]) do |f| %>
-      <%= render 'form', f: f %>
-      <br />
-      <%= f.submit "Poster", class: "btn btn-large btn-primary" %>
-    <% end %>
+  <% quoi = [@chapter, @subject, @message] %>
+<% end %>
+
+<%= form_for quoi, :html => { :multipart => true } do |f| %>
+  <%= render 'form', f: f %>
+  <br />
+  <span id="fooBar"></span>
+  <br/>
+  <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
+  <br /><br/>
+  <%= f.submit "Poster", class: "btn btn-large btn-primary" %>
 <% end %>
 
 <h2>Messages récents</h2>
@@ -62,6 +103,13 @@
 <%= raw(@subject.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h2>[ \r]*\n/,'</h2>').gsub(/<\/h3>[ \r]*\n/,'</h3>').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 <% else %>
 <%= raw((h @subject.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
+<% end %>
+<% if @subject.subjectfiles.size > 0 %>
+  <% if @subject.subjectfiles.size == 1 %>
+    <br/><br/><b>1 pièce jointe.</b>
+  <% else %>
+    <br/><br/><b><%= @subject.subjectfiles.size %> pièces jointes.</b>
+  <% end %>
 <% end %>
 </div>
 </td></tr>

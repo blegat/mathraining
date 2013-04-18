@@ -60,6 +60,21 @@ class ProblemsController < ApplicationController
 
   def destroy
     @chapter = @problem.chapter
+    
+    @problem.submissions.each do |s|
+      s.submissionfiles.each do |f|
+        f.file.destroy
+        f.destroy
+      end
+      s.corrections.each do |c|
+        c.correctionfiles.each do |f|
+          f.file.destroy
+          f.destroy
+        end
+        c.destroy
+      end
+      s.destroy
+    end
 
     if @problem.online && @problem.chapter.online
       @problem.destroy

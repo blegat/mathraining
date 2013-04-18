@@ -23,10 +23,7 @@ class SubmissionsController < ApplicationController
     session[:ancientexte] = nil
   end
 
-  def create
-    submission = @problem.submissions.build(content: params[:submission][:content])
-    submission.user = current_user
-    
+  def create    
     attach = Array.new
     totalsize = 0
     
@@ -66,6 +63,9 @@ class SubmissionsController < ApplicationController
       redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
           flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
+    
+    submission = @problem.submissions.build(content: params[:submission][:content])
+    submission.user = current_user
     
     
     if submission.save

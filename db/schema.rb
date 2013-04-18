@@ -98,6 +98,16 @@ ActiveRecord::Schema.define(:version => 20130418083657) do
 
   add_index "followings", ["submission_id", "user_id"], :name => "index_followings_on_submission_id_and_user_id"
 
+  create_table "messagefiles", :force => true do |t|
+    t.integer  "message_id"
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at"
+  end
+
+  add_index "messagefiles", ["message_id"], :name => "index_messagefiles_on_message_id"
+
   create_table "messages", :force => true do |t|
     t.text     "content"
     t.integer  "subject_id"
@@ -207,6 +217,16 @@ ActiveRecord::Schema.define(:version => 20130418083657) do
   end
 
   add_index "solvedqcms", ["user_id"], :name => "index_solvedqcms_on_user_id"
+
+  create_table "subjectfiles", :force => true do |t|
+    t.integer  "subject_id"
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at"
+  end
+
+  add_index "subjectfiles", ["subject_id"], :name => "index_subjectfiles_on_subject_id"
 
   create_table "subjects", :force => true do |t|
     t.string   "title"

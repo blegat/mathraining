@@ -3,10 +3,7 @@ class CorrectionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :correct_user
 
-  def create
-    correction = @submission.corrections.build(params[:correction])
-    correction.user = current_user
-    
+  def create    
     attach = Array.new
     totalsize = 0
     
@@ -47,6 +44,8 @@ class CorrectionsController < ApplicationController
           flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
     
+    correction = @submission.corrections.build(params[:correction])
+    correction.user = current_user
     
     if correction.save
       j = 1
@@ -107,6 +106,12 @@ class CorrectionsController < ApplicationController
       redirect_to problem_submission_path(@submission.problem, @submission),
         flash: { success: "Réponse postée#{m}" }
     else
+      j = 1
+      while j < i do
+        attach[j-1].file.destroy
+        attach[j-1].destroy
+        j = j+1
+      end
       session[:ancientexte] = params[:correction][:content]
       if params[:correction][:content].size == 0
         redirect_to problem_submission_path(@submission.problem, @submission),
