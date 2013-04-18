@@ -4,9 +4,4 @@ class ApplicationController < ActionController::Base
   include SessionsHelper
   include ApplicationHelper
   include MarkdownHelper
-  
-  def whatcolors
-    # OPTIONS FOR RATINGS
-  end
-
 end

@@ -18,6 +18,9 @@ class SubmissionsController < ApplicationController
     if notif.size > 0
       notif.first.delete
     end
+    
+    @ancientexte = session[:ancientexte]
+    session[:ancientexte] = nil
   end
 
   def create

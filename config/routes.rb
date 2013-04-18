@@ -82,6 +82,12 @@ Ombtraining::Application.routes.draw do
       get :download
     end
   end
+  
+  resources :correctionfiles, only: [] do
+    member do
+      get :download
+    end
+  end
 
   mathjax 'mathjax'
 

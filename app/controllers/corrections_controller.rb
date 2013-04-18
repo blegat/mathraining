@@ -6,7 +6,57 @@ class CorrectionsController < ApplicationController
   def create
     correction = @submission.corrections.build(params[:correction])
     correction.user = current_user
+    
+    attach = Array.new
+    totalsize = 0
+    
+    i = 1
+    k = 1
+    while !params["hidden#{k}".to_sym].nil? do
+      if !params["file#{k}".to_sym].nil?
+        attach.push()
+        attach[i-1] = Correctionfile.new(:file => params["file#{k}".to_sym])
+        if !attach[i-1].save
+          j = 1
+          while j < i do
+            attach[j-1].file.destroy
+            attach[j-1].destroy
+            j = j+1
+          end
+          nom = params["file#{k}".to_sym].original_filename
+          session[:ancientexte] = params[:correction][:content]
+          redirect_to problem_submission_path(@submission.problem, @submission),
+            flash: {error: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return   
+        end
+        totalsize = totalsize + attach[i-1].file_file_size
+        
+        i = i+1
+      end
+      k = k+1
+    end
+    
+    if totalsize > 10485760
+      j = 1
+      while j < i do
+        attach[j-1].file.destroy
+        attach[j-1].destroy
+        j = j+1
+      end
+      session[:ancientexte] = params[:correction][:content]
+      redirect_to problem_submission_path(@submission.problem, @submission),
+          flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
+    end
+    
+    
     if correction.save
+      j = 1
+      while j < i do
+        attach[j-1].correction = correction
+        attach[j-1].save
+        j = j+1
+      end
+      
+      
       # Change the status of the submission
       # We don't change the status if it is 2 (solved)
       if current_user == @submission.user and @submission.status == 1
@@ -57,6 +107,7 @@ class CorrectionsController < ApplicationController
       redirect_to problem_submission_path(@submission.problem, @submission),
         flash: { success: "Réponse postée#{m}" }
     else
+      session[:ancientexte] = params[:correction][:content]
       if params[:correction][:content].size == 0
         redirect_to problem_submission_path(@submission.problem, @submission),
           flash: { error: 'Votre réponse est vide.' }
