@@ -19,7 +19,7 @@ Par défaut, si celui-ci n'est placé dans aucune des quatres sections ci-dessou
       <center>
       <% @sections_to_remove.each do |s| %>
         <br/>
-        <div style="border: 1px solid black; width:400px;">
+        <div style="width:400px;">
           <%= link_to image_tag(s.image, alt: s.name), chapter_remove_section_path(@chapter, s) %>
         </div>
       <% end %>
@@ -37,7 +37,7 @@ Par défaut, si celui-ci n'est placé dans aucune des quatres sections ci-dessou
       <center>
       <% @sections_to_add.each do |s| %>
         <br/>
-        <div style="border: 1px solid black; width:400px;">
+        <div style="width:400px;">
           <%= link_to image_tag(s.image, alt: s.name), chapter_add_section_path(@chapter, s) %>
         </div>
       <% end %>
