@@ -14,7 +14,7 @@ class SubmissionsController < ApplicationController
     if @submission.nil?
       redirect_to root_path
     end
-    notif = current_user.notifs.where(submission_id: @submission.id)
+    notif = current_user.sk.notifs.where(submission_id: @submission.id)
     if notif.size > 0
       notif.first.delete
     end
@@ -65,7 +65,7 @@ class SubmissionsController < ApplicationController
     end
     
     submission = @problem.submissions.build(content: params[:submission][:content])
-    submission.user = current_user
+    submission.user = current_user.sk
     
     
     if submission.save
@@ -100,7 +100,7 @@ class SubmissionsController < ApplicationController
   def un_read(read, msg)
     @submission = Submission.find(params[:submission_id])
     if @submission
-      following = Following.find_by_user_id_and_submission_id(current_user, @submission)
+      following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
       if following
         following.read = read
         if following.save
@@ -129,11 +129,11 @@ class SubmissionsController < ApplicationController
   private
 
   def not_solved
-    redirect_to root_path if current_user.solved?(@problem)
+    redirect_to root_path if current_user.sk.solved?(@problem)
   end
 
   def can_submit
-    lastsub = Submission.where(:user_id => current_user, :problem_id => @problem).order('created_at')
+    lastsub = Submission.where(:user_id => current_user.sk, :problem_id => @problem).order('created_at')
     redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id) if (!lastsub.empty? && lastsub.last.status == 0)
   end
 
@@ -142,13 +142,13 @@ class SubmissionsController < ApplicationController
   end
 
   def online_chapter
-    redirect_to sections_path unless (current_user.admin? || @problem.chapter.online)
+    redirect_to sections_path unless (current_user.sk.admin? || @problem.chapter.online)
   end
 
   def unlocked_chapter
-    if !current_user.admin?
+    if !current_user.sk.admin?
       @problem.chapter.prerequisites.each do |p|
-        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+        if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p))
           redirect_to sections_path and return
         end
       end
@@ -156,7 +156,7 @@ class SubmissionsController < ApplicationController
   end
 
   def admin_user
-    if not current_user.admin
+    if not current_user.sk.admin
       redirect_to root_path
     end
   end

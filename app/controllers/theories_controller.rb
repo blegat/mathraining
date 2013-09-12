@@ -96,13 +96,13 @@ class TheoriesController < ApplicationController
   
   def read
     @theory = Theory.find(params[:theory_id])
-    current_user.theories << @theory
+    current_user.sk.theories << @theory
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
   
   def unread
     @theory = Theory.find(params[:theory_id])
-    current_user.theories.delete(@theory)
+    current_user.sk.theories.delete(@theory)
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
 
@@ -141,6 +141,6 @@ class TheoriesController < ApplicationController
   end
 
   def admin_user
-    redirect_to root_path unless current_user.admin?
+    redirect_to root_path unless current_user.sk.admin?
   end
 end

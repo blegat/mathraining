@@ -8,7 +8,7 @@
   </div>
   </td></tr>
 
-  <% if current_user.admin? %>
+  <% if current_user.sk.admin? %>
     <tr><td>
     <center>
       <%= link_to "Modifier cette actualité", edit_actuality_path(f) %> | 

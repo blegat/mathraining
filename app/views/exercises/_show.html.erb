@@ -1,4 +1,4 @@
-<% if (f.online && f.chapter.online) || current_user.admin? %>
+<% if (f.online && f.chapter.online) || current_user.sk.admin? %>
 
 <% if f.decimal %>
   <% pt = 10 %>
@@ -14,7 +14,7 @@
   <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
   
 <br/><br/>
-<% if current_user.admin? %>
+<% if current_user.sk.admin? %>
   <h4>Réponse</h4>
   <% if f.decimal %>
     <b><%= f.answer %></b> (On demande une réponse <b>décimale</b> au millième près)
@@ -35,7 +35,7 @@
     <% if @chapter.online && f.online %>
       <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
       | <%= link_to "Modifier l'explication", exercise_explanation_path(f) %>
-      <% if current_user.root %>
+      <% if current_user.sk.root %>
         | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Attention, cet exercice est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
       <% end %>
     <% else %>
@@ -79,7 +79,7 @@
   <% end %>
 <% else %>
 
-  <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => id) %>
+  <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => id) %>
   <% if exo.size > 0 %>
     <% exo = exo.first %>
     <% if exo.correct? %>
@@ -104,11 +104,11 @@
       <% else %>
         <% val = exo.guess.to_i %>
       <% end %>
-
+      
       <%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
-        <%= g.label "Votre réponse : " %>
-        <%= g.text_field :guess, style: "width:50px;", value: val %>
-        <%= g.submit "Soumettre", class: "btn btn-primary" %>
+        <%= g.label "Votre réponse : ", :disabled => current_user.other %>
+        <%= g.text_field :guess, style: "width:50px;", value: val, :disabled => current_user.other %>
+        <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => current_user.other %>
       <% end %>
 
       <br/>
@@ -120,12 +120,12 @@
     <% if f.decimal %>
       On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
     <% end %>
-
+    
     <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
       <%= g.hidden_field :exercise_id, value: f.id %>
-      <%= g.label "Votre réponse : " %>
-      <%= g.text_field :guess, style: "width:50px;" %>
-      <%= g.submit "Soumettre", class: "btn btn-primary" %>
+      <%= g.label "Votre réponse : ", :disabled => current_user.other %>
+      <%= g.text_field :guess, style: "width:50px;", :disabled => current_user.other %>
+      <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => current_user.other %>
     <% end %>
 
   <% end %>

@@ -130,12 +130,12 @@ class ExercisesController < QuestionsController
   private
   
   def admin_user
-    redirect_to root_path unless current_user.admin?
+    redirect_to root_path unless current_user.sk.admin?
   end
   
   def root_user
     @exercise = Exercise.find(params[:id])
-    redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) if (!current_user.root && @exercise.online && @exercise.chapter.online)
+    redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) if (!current_user.sk.root && @exercise.online && @exercise.chapter.online)
   end
   
   def maximum(a, b)

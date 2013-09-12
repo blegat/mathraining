@@ -1,4 +1,4 @@
-<% if (f.online && f.chapter.online) || current_user.admin? %>
+<% if (f.online && f.chapter.online) || current_user.sk.admin? %>
 
 <% poss = f.choices.count %>
 <% if f.many_answers %>
@@ -17,7 +17,7 @@
 
 <br/><br/>
 
-<% if current_user.admin? %>
+<% if current_user.sk.admin? %>
 
   <h4>Réponse</h4> 
 
@@ -56,7 +56,7 @@
       <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." }  %> |
       <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
       <%= link_to "Modifier l'explication", qcm_explanation_path(f) %>
-      <% if current_user.root %>
+      <% if current_user.sk.root %>
         | <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Attention, ce QCM est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
       <% end %>
     <% else %>
@@ -102,7 +102,7 @@
 
 <% else %>
 
-  <% sol = Solvedqcm.where(:user_id => current_user.id, :qcm_id => id) %>
+  <% sol = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => id) %>
   <% if sol.size > 0 %>
     <% sol = sol.first %>
     <% if sol.correct? %>
@@ -144,11 +144,11 @@
           <% f.choices.order(:id).each do |c| %>
             <input type="hidden" name="qcm_id" value="<%= f.id %>" />
             <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-              <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %>>
+              <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if current_user.other %>>
               <%= c.ans %>
             </label>
           <% end %>
-          <br/><button class="btn btn-primary" type="submit">Soumettre</button>
+          <br/><button class="btn btn-primary" type="submit" disabled="<%= current_user.other %>">Soumettre</button>
         <% end %>
       <% else %>
         <% choice = sol.choices.first %>
@@ -156,11 +156,11 @@
           <input type="hidden" name="qcm_id" value="<%= f.id %>" />
           <% f.choices.order(:id).each do |c| %>
             <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-              <input type="radio" name="ans" value="<%= c.id %>" <%= "checked" if c.id == choice.id %>>
+              <input type="radio" name="ans" value="<%= c.id %>" <%= "checked" if c.id == choice.id %> <%= "disabled=\"true\"" if current_user.other %>>
               <%= c.ans %>
             </label>
           <% end %>
-          <br/><button class="btn btn-primary" type="submit">Soumettre</button>
+          <br/><button class="btn btn-primary" type="submit" disabled="<%= current_user.other %>">Soumettre</button>
         <% end %>
 
       <% end %>
@@ -178,22 +178,22 @@
         <input type="hidden" name="qcm_id" value="<%= f.id %>" />
         <% f.choices.order(:id).each do |c| %>
           <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-            <input type="checkbox" name="ans[<%= c.id %>]" value="ok">
+            <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "disabled=\"true\"" if current_user.other %>>
             <%= c.ans %>
           </label>
         <% end %>
-        <br/><button class="btn btn-primary" type="submit">Soumettre</button>
+        <br/><button class="btn btn-primary" type="submit" disabled="<%= current_user.other %>">Soumettre</button>
       </form>
     <% else %>
       <form action="<%= solvedqcms_path %>" method="post">
         <input type="hidden" name="qcm_id" value="<%= f.id %>" />
         <% f.choices.order(:id).each do |c| %>
           <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-            <input type="radio" name="ans" value="<%= c.id %>">
+            <input type="radio" name="ans" value="<%= c.id %>" <%= "disabled=\"true\"" if current_user.other %>>
             <%= c.ans %>
           </label>
         <% end %>
-        <br/><button class="btn btn-primary" type="submit">Soumettre</button>
+        <br/><button class="btn btn-primary" type="submit" disabled="<%= current_user.other %>">Soumettre</button>
       </form>
 
     <% end %>

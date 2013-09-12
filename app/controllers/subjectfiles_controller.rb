@@ -11,7 +11,7 @@ class SubjectfilesController < ApplicationController
   
   def have_access
     @thing = Subjectfile.find(params[:id])
-    redirect_to root_path if (!current_user.admin? && @thing.subject.admin)
+    redirect_to root_path if (!current_user.sk.admin? && @thing.subject.admin)
   end
   
 end

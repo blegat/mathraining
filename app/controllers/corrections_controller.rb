@@ -45,7 +45,7 @@ class CorrectionsController < ApplicationController
     end
     
     correction = @submission.corrections.build(params[:correction])
-    correction.user = current_user
+    correction.user = current_user.sk
     
     if correction.save
       j = 1
@@ -58,17 +58,17 @@ class CorrectionsController < ApplicationController
       
       # Change the status of the submission
       # We don't change the status if it is 2 (solved)
-      if current_user == @submission.user and @submission.status == 1
+      if current_user.sk == @submission.user and @submission.status == 1
         @submission.status = 3
         @submission.save
         m = ''
-      elsif current_user.admin and (@submission.status == 0 or @submission.status == 3) and
+      elsif current_user.sk.admin and (@submission.status == 0 or @submission.status == 3) and
         (params[:commit] == "Poster et refuser la soumission" or
          params[:commit] == "Poster et laisser la soumission comme erronée")
         @submission.status = 1
         @submission.save
         m = ' et soumission marquée comme incorrecte'
-      elsif current_user.admin and params[:commit] == "Poster et accepter la soumission"
+      elsif current_user.sk.admin and params[:commit] == "Poster et accepter la soumission"
         @submission.status = 2
         @submission.save
         unless @submission.user.solved?(@submission.problem)
@@ -80,11 +80,11 @@ class CorrectionsController < ApplicationController
         @submission.touch
       end
       # Put in admin / following
-      if current_user.admin?
-        following = Following.find_by_user_id_and_submission_id(current_user, @submission)
+      if current_user.sk.admin?
+        following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
         if following.nil?
           following = Following.new
-          following.user = current_user
+          following.user = current_user.sk
           following.submission = @submission
         end
         following.read = true
@@ -98,7 +98,7 @@ class CorrectionsController < ApplicationController
         notif.user = @submission.user
         notif.submission = @submission
         notif.save
-      elsif current_user == @submission.user
+      elsif current_user.sk == @submission.user
         # An else would have the same effect normally
         @submission.followings.update_all(read: false)
       end
@@ -130,7 +130,7 @@ class CorrectionsController < ApplicationController
 
   def correct_user
     @submission = Submission.find_by_id(params[:submission_id])
-    if @submission.nil? or (@submission.user != current_user and not current_user.admin)
+    if @submission.nil? or (@submission.user != current_user.sk and not current_user.sk.admin)
       redirect_to root_path
     end
   end

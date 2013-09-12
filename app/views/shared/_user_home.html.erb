@@ -7,7 +7,7 @@
 
 <center><%= will_paginate actualities %></center>
 
-<% if current_user.admin? %>
+<% if current_user.sk.admin? %>
 <br/>
 <center><%= link_to "Ajouter une actualité", new_actuality_path %></center>
 <% end %>	

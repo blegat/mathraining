@@ -1,6 +1,7 @@
 <header class="navbar navbar-fixed-top">
 <!--<header class="navbar navbar-fixed-top navbar-inverse">-->
 <!-- navbar-inverse make it black -->
+
 <div class="navbar-inner">
   <div class="container">
 
@@ -17,9 +18,9 @@
     <%= link_to "IMO Belgium", root_path, class: "brand" %>
     <nav class="nav-collapse">
     <ul class="nav pull-left">
-      <% if signed_in? and current_user.admin? %>
-        <% notifications_new = current_user.notifications_new.count %>
-        <% notifications_update = current_user.notifications_update.count %>
+      <% if signed_in? and current_user.sk.admin? %>
+        <% notifications_new = current_user.sk.notifications_new.count %>
+        <% notifications_update = current_user.sk.notifications_update.count %>
         <% if notifications_new != 0 %>
           <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
         <% else %>
@@ -31,8 +32,8 @@
           <%= link_to "0", notifications_update_path, class: "btn btn" %>
         <% end %>
       <% end %>
-      <% if signed_in? && !current_user.admin? %>
-        <% noti = current_user.notifs.count %>
+      <% if signed_in? && !current_user.sk.admin? %>
+        <% noti = current_user.sk.notifs.count %>
         <% if noti != 0 %>
           <%= link_to "#{noti}", notifs_show_path, class: "btn btn-success" %>
         <% end %>
@@ -46,11 +47,18 @@
         <li><%= link_to "Utilisateurs", users_path %></li>
         <li id="fat-menu" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <%= current_user.name %> <b class="caret"></b>
+          <%= current_user.name %> 
+          <% if current_user.other %>
+            <b>(<%= current_user.sk.name %>)</b>
+          <% end %>
+          <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-          <li><%= link_to "Profil", current_user %></li>
-          <li><%= link_to "Compte", edit_user_path(current_user) %></li>
+          <% if current_user.other %>
+            <li><%= link_to "Sortir de ce corps", user_leave_skin_path(current_user) %></li>
+          <% end %>
+          <li><%= link_to "Profil", current_user.sk %></li>
+          <li><%= link_to "Compte", edit_user_path(current_user.sk) %></li>
           <li class="divider"></li>
           <li>
           <%= link_to "Déconnexion", signout_path, method: "delete" %>

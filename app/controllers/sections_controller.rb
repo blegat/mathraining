@@ -40,7 +40,7 @@ class SectionsController < ApplicationController
   end
   
   def admin_user
-    redirect_to @section unless current_user.admin?
+    redirect_to @section unless current_user.sk.admin?
   end
   
 end

@@ -11,7 +11,7 @@ class MessagefilesController < ApplicationController
   
   def have_access
     @thing = Messagefile.find(params[:id])
-    redirect_to root_path if (!current_user.admin? && @thing.message.subject.admin)
+    redirect_to root_path if (!current_user.sk.admin? && @thing.message.subject.admin)
   end
   
 end

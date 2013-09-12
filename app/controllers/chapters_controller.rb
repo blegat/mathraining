@@ -134,18 +134,18 @@ class ChaptersController < ApplicationController
   private
 
   def admin_user
-    redirect_to sections_path unless current_user.admin?
+    redirect_to sections_path unless current_user.sk.admin?
   end
   
   def online_chapter
     @chapter = Chapter.find(params[:id])
-    redirect_to sections_path unless (current_user.admin? || @chapter.online)
+    redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
   end
   
   def unlocked_chapter
-    if !current_user.admin?
+    if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
-        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+        if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p))
           redirect_to sections_path and return
         end
       end
@@ -160,7 +160,7 @@ class ChaptersController < ApplicationController
   def fondement_online
     @chapter = Chapter.find(params[:chapter_id])
     (redirect_to @chapter and return) if (@chapter.online && @chapter.sections.empty?)
-    (redirect_to @chapter and return) if (@chapter.online && !current_user.root)
+    (redirect_to @chapter and return) if (@chapter.online && !current_user.sk.root)
   end
   
   def prerequisites_online

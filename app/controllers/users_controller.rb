@@ -1,11 +1,11 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_filter :signed_in_user,
-    only: [:destroy, :index, :edit, :update, :show, :create_administrator, :recompute_scores, :notification_new, :notification_update, :notifs_show]
+    only: [:destroy, :index, :edit, :update, :show, :create_administrator, :recompute_scores, :notification_new, :notification_update, :notifs_show, :take_skin, :leave_skin]
   before_filter :correct_user,
     only: [:edit, :update]
   before_filter :admin_user,
-    only: [:destroy, :notification_new, :notification_update]
+    only: [:destroy, :notification_new, :notification_update, :take_skin]
   before_filter :root_user,
     only: [:create_administrator, :recompute_scores]
   before_filter :signed_out_user,
@@ -89,14 +89,35 @@ class UsersController < ApplicationController
   end
 
   def notifications_update
-    @notifications = current_user.followed_submissions.order("updated_at DESC").paginate(page: params[:page]).all
+    @notifications = current_user.sk.followed_submissions.order("updated_at DESC").paginate(page: params[:page]).all
     @new = false
     render :notifications
   end
   
   def notifs_show
-    @notifs = current_user.notifs.order("created_at")
+    @notifs = current_user.sk.notifs.order("created_at")
     render :notifs
+  end
+  
+  def take_skin
+    @user = User.find(params[:user_id])
+    if @user.admin?
+      flash[:error] = "Pas autorisé..."
+    else
+      current_user.update_attribute(:skin, @user.id)
+      sign_in current_user
+      flash[:success] = "Vous êtes maintenant dans la peau de #{@user.name}."
+    end
+    redirect_to sections_path
+  end
+  
+  def leave_skin
+    if current_user.id == params[:user_id].to_i
+      current_user.update_attribute(:skin, 0)
+      sign_in current_user
+      flash[:success] = "Vous êtes à nouveau dans votre peau."
+    end
+    redirect_to sections_path
   end
 
   private
@@ -108,7 +129,7 @@ class UsersController < ApplicationController
   end
   def correct_user
     @user = User.find(params[:id])
-    redirect_to root_path unless current_user?(@user)
+    redirect_to root_path unless current_user.sk?(@user)
   end
   def admin_user
     redirect_to root_path unless current_user.admin?

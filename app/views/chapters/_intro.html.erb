@@ -9,7 +9,7 @@
   </ul>
 <% end %>
 
-<% if current_user.admin? %>
+<% if current_user.sk.admin? %>
   <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>
 <% end %>
 
@@ -18,7 +18,7 @@
 
 <br/><br/>  
 
-<% if current_user.admin? %>
+<% if current_user.sk.admin? %>
   <br/>
   <% if !@chapter.online %>
 
@@ -39,7 +39,7 @@
     <center>
       <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %>
 
-      <% if !@chapter.sections.empty? && current_user.root %>
+      <% if !@chapter.sections.empty? && current_user.sk.root %>
         | <%= link_to "Ajouter ou retirer à une section", chapter_manage_sections_path(@chapter), {:style => "color:red;" } %> <br/>
       <% end %>
     </center>

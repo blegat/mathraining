@@ -137,6 +137,10 @@ Ombtraining::Application.routes.draw do
   resources :users do
     match '/add_administrator', to: 'users#create_administrator',
       as: :add_administrator
+    match '/take_skin', to: 'users#take_skin',
+      as: :take_skin
+    match '/leave_skin', to: 'users#leave_skin',
+      as: :leave_skin
   end
 
   resources :sessions, only: [:new, :create, :destroy]

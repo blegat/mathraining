@@ -1,4 +1,4 @@
-<% if current_user.admin %>
+<% if current_user.sk.admin %>
   <h4>Soumissions récentes</h4>
   <% submissions = problem.submissions.order('created_at DESC').paginate(page: params[:page]) %>
   <% if submissions.empty? %>
@@ -23,7 +23,7 @@
   <% @newsub = true %>
   <% aucun = true %>
   <% encours = Submission.new %>
-  <% submissions = problem.submissions.where('user_id = ?', current_user).order('created_at') # Ne pas paginer, un type qui fait N > 30 soumissions mérite de voir les N soumissions qu'il a faites et de se faire chier avec sa roulette (et puis j'utilise le last submissions par la suite) %>
+  <% submissions = problem.submissions.where('user_id = ?', current_user.sk).order('created_at') # Ne pas paginer, un type qui fait N > 30 soumissions mérite de voir les N soumissions qu'il a faites et de se faire chier avec sa roulette (et puis j'utilise le last submissions par la suite) %>
   <% @new = true %>
   
   <% if !submissions.empty? %>
@@ -47,7 +47,7 @@
   <% end %>
   
   <% if aucun %>
-    <p>Aucune soumission précédente.</p>
+    Aucune soumission précédente.<br/><br/>
   <% end %>
   
   <% unless @newsub %>

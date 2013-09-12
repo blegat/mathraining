@@ -12,7 +12,6 @@
 <% else %>
 
 
-
 <% actualrating = @user.point.rating %>
 <% niveau = @user.level %>
 <h1 style="color:<%= niveau[:color] %>;"><%= @user.name %><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] %></span></h1>
@@ -348,11 +347,12 @@
   
   <% end %>
   
-  <% if current_user.admin? %>
+  <% if current_user.sk.admin? %>
     <br/>
     <center>
       <%= link_to 'Supprimer cet utilisateur', @user, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer #{@user.name}?" } %>
-      <% if current_user.root %>
+      | <%= link_to 'Voir le site comme cet utilisateur', user_take_skin_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." } %>
+      <% if current_user.sk.root %>
         | <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"}, :style => "color:red;" %>
       <% end %>
     </center>

@@ -33,12 +33,12 @@ class PicturesController < ApplicationController
   private
   
   def admin_user
-    redirect_to root_path unless current_user.admin?
+    redirect_to root_path unless current_user.sk.admin?
   end
   
   def good_person
     @pic = Picture.find(params[:id])
-    redirect_to root_path unless @pic.user.id == current_user.id
+    redirect_to root_path unless @pic.user.id == current_user.sk.id
   end
 
 end

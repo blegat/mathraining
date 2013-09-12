@@ -44,16 +44,16 @@ function add() {
   <div class="well" id="MathPreview"></div>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
+    <%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
   <% else %>
-    <%= f.text_area :content, :class => "span12", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
+    <%= f.text_area :content, :class => "span12", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
   <% end %>
   <br />
   <span id="fooBar"></span>
   <br/>
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>
-  <% if current_user.admin? %>
+  <% if current_user.sk.admin? %>
     <% case @submission.status %>
     <% when 1 ## Faux %>
       <%= f.submit "Poster", class: "btn btn-large btn-primary" %>
@@ -64,7 +64,7 @@ function add() {
     <% end %>
     <%= f.submit "Poster et accepter la soumission", class: "btn btn-large btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
   <% else %>
-    <%= f.submit "Poster", class: "btn btn-large btn-primary" %>
+    <%= f.submit "Poster", class: "btn btn-large btn-primary", :disabled => current_user.other %>
   <% end %>
 <% end %>
 

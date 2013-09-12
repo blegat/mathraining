@@ -9,9 +9,9 @@ class SolvedexercisesController < ApplicationController
   
   def create
     exercise = @exercise2
-    user = current_user
+    user = current_user.sk
     
-    previous = Solvedexercise.where(:exercise_id => @exercise2, :user_id => current_user).count
+    previous = Solvedexercise.where(:exercise_id => @exercise2, :user_id => current_user.sk).count
     if previous > 0
       redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id) and return
     end
@@ -40,7 +40,7 @@ class SolvedexercisesController < ApplicationController
     end
     
     if link.correct
-      point_attribution(current_user, exercise)
+      point_attribution(current_user.sk, exercise)
     end
     
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
@@ -80,7 +80,7 @@ class SolvedexercisesController < ApplicationController
     end
     
     if link.correct
-      point_attribution(current_user, exercise)
+      point_attribution(current_user.sk, exercise)
     end
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
@@ -108,13 +108,13 @@ class SolvedexercisesController < ApplicationController
   end
   
   def online_chapter
-    redirect_to sections_path unless (current_user.admin? || @chapter.online)
+    redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
   end
   
   def unlocked_chapter
-    if !current_user.admin?
+    if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
-        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+        if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p))
           redirect_to sections_path and return
         end
       end

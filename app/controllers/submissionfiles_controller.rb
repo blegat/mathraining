@@ -11,7 +11,7 @@ class SubmissionfilesController < ApplicationController
   
   def have_access
     @thing = Submissionfile.find(params[:id])
-    redirect_to root_path unless (current_user.admin? || current_user == @thing.submission.user)
+    redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.submission.user)
   end
   
 end

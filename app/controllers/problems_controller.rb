@@ -165,12 +165,12 @@ class ProblemsController < ApplicationController
   end
 
   def admin_user
-    redirect_to root_path unless current_user.admin?
+    redirect_to root_path unless current_user.sk.admin?
   end
   
   def root_user
     @problem = Problem.find(params[:id])
-    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id) if (!current_user.root && @problem.online && @problem.chapter.online)
+    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id) if (!current_user.sk.root && @problem.online && @problem.chapter.online)
   end
   
   def point_attribution(user)

@@ -7,9 +7,9 @@ class SolvedqcmsController < ApplicationController
   
   def create
     qcm = @qcm2
-    user = current_user
+    user = current_user.sk
     
-    previous = Solvedqcm.where(:qcm_id => qcm, :user_id => current_user).count
+    previous = Solvedqcm.where(:qcm_id => qcm, :user_id => current_user.sk).count
     if previous > 0
       redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
     end
@@ -79,7 +79,7 @@ class SolvedqcmsController < ApplicationController
     end
     
     if link.correct
-      point_attribution(current_user, qcm)
+      point_attribution(current_user.sk, qcm)
     end
    
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
@@ -87,7 +87,7 @@ class SolvedqcmsController < ApplicationController
   
   def update
     qcm = @qcm2
-    user = current_user
+    user = current_user.sk
     link = Solvedqcm.where(:user_id => user, :qcm_id => qcm).first
     
     if link.correct
@@ -174,7 +174,7 @@ class SolvedqcmsController < ApplicationController
     end
     
     if link.correct
-      point_attribution(current_user, qcm)
+      point_attribution(current_user.sk, qcm)
     end
     
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
@@ -187,13 +187,13 @@ class SolvedqcmsController < ApplicationController
   end
   
   def online_chapter
-    redirect_to sections_path unless (current_user.admin? || @chapter.online)
+    redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
   end
   
   def unlocked_chapter
-    if !current_user.admin?
+    if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
-        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+        if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p))
           redirect_to sections_path and return
         end
       end

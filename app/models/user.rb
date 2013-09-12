@@ -16,7 +16,7 @@
 class User < ActiveRecord::Base
   attr_accessible :email, :first_name, :last_name,
     :password, :password_confirmation, :admin, :root,
-    :email_confirm, :key
+    :email_confirm, :key, :skin
   has_secure_password
   has_and_belongs_to_many :theories
   has_and_belongs_to_many :chapters, uniq: true
@@ -88,6 +88,22 @@ class User < ActiveRecord::Base
   
   def alllevel
     return @@niveaux
+  end
+  
+  def sk
+    if self.admin? && self.skin != 0
+      return User.find(self.skin)
+    else
+      return self
+    end
+  end
+  
+  def other
+    if self.admin? && self.skin != 0
+      return true
+    else
+      return false
+    end
   end
 
   private

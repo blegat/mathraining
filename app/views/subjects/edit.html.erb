@@ -40,7 +40,7 @@ function add() {
 <% provide(:title, 'Modifier un sujet') %>
 <h1>Modifier un sujet</h1>
 <span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
-<% if @subject.user != current_user %>
+<% if @subject.user != current_user.sk %>
 <span style="color:red;">Ce sujet n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (mauvais emplacement, divulgation d'une réponse,...)</span><br/><br/>
 <% end %>
 <% if @chapter.nil? %>
@@ -65,7 +65,7 @@ function add() {
   <br/>
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>	
-  <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
+  <%= f.submit "Editer", class: "btn btn-large btn-primary", :disabled => current_user.other %>
 <% end %>
 
 <br/>

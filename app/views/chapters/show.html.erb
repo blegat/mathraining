@@ -33,10 +33,10 @@
       <% listex = @chapter.theories %>
       <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
       <% listex.each do |f| %>
-        <% if f.online || current_user.admin? %>
+        <% if f.online || current_user.sk.admin? %>
           <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %> >
           <%= link_to chapter_path(@chapter, :type => 1, :which => f.id) do %>
-            <% if !current_user.admin? && current_user.theories.exists?(f.id) %>
+            <% if !current_user.sk.admin? && current_user.sk.theories.exists?(f.id) %>
               <i class="icon-ok"></i>
             <% end %>
             <% if !f.online %>
@@ -79,16 +79,16 @@
 
         <% if encours == 1 %>
           <% f = liste[un] %>
-          <% if f.online || current_user.admin? %>
+          <% if f.online || current_user.sk.admin? %>
             <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
 
             <%= link_to chapter_path(@chapter, :type => 2, :which => f.id) do %>
-              <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => f.id) %>
+              <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
               <% if exo.size > 0 %>
                 <% exo = exo.first %>
-                <% if exo.correct && !current_user.admin? %>
+                <% if exo.correct && !current_user.sk.admin? %>
                   <i class="icon-ok"></i>
-                <% elsif !current_user.admin? %>
+                <% elsif !current_user.sk.admin? %>
                   <i class="icon-remove"></i>
                   <% pasfait = pasfait + 1 %>
                 <% end %>
@@ -110,15 +110,15 @@
           <% un = un + 1 %>
         <% else %>
           <% f = liste2[deux] %>
-          <% if f.online || current_user.admin? %>
+          <% if f.online || current_user.sk.admin? %>
             <li<%= ' class="active"'.html_safe if f.id == id && type == 3 %>>
             <%= link_to chapter_path(@chapter, :type => 3, :which => f.id) do %>
-              <% qcm = Solvedqcm.where(:user_id => current_user.id, :qcm_id => f.id) %>
+              <% qcm = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
               <% if qcm.size > 0 %>
                 <% qcm = qcm.first %>
-                <% if qcm.correct && !current_user.admin?%>
+                <% if qcm.correct && !current_user.sk.admin?%>
                   <i class = "icon-ok"></i>
-                <% elsif !current_user.admin? %>
+                <% elsif !current_user.sk.admin? %>
                   <i class = "icon-remove"></i>
                   <% pasfait = pasfait + 1 %>
                 <% end %>
@@ -142,8 +142,8 @@
 
       <% end %>
 
-      <% if pasfait == 0 && !current_user.admin? && !current_user.chapters.exists?(@chapter) %>
-        <% current_user.chapters << @chapter %>
+      <% if pasfait == 0 && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter) %>
+        <% current_user.sk.chapters << @chapter %>
       <% end %>
 
       <li class="nav-header">Problèmes</li>
@@ -151,16 +151,16 @@
       <% listex = @chapter.problems %>
       <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
       <% listex.each do |f| %>
-        <% if f.online || current_user.admin? %>
+        <% if f.online || current_user.sk.admin? %>
           <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>
           <%= link_to chapter_path(@chapter, :type => 4, :which => f.id) do %>
             <% if !f.online %>
               <i class="icon-warning-sign"></i>
             <% end %>
-            <% if current_user.solved?(f) && !current_user.admin?%>
+            <% if current_user.sk.solved?(f) && !current_user.sk.admin?%>
               <i class="icon-ok"></i>
-            <% elsif !current_user.admin? %>
-              <% sub = current_user.submissions.where(:problem_id => f.id).order('created_at') %>
+            <% elsif !current_user.sk.admin? %>
+              <% sub = current_user.sk.submissions.where(:problem_id => f.id).order('created_at') %>
               <% if sub.size > 0 %>
                 <% sub = sub.last %>
                 <% if sub.status == 0 %>
@@ -225,7 +225,7 @@
 </div>
 
 <center>
-  <% if current_user.admin? %>
+  <% if current_user.sk.admin? %>
     <br/>
     Ajouter un :
     <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |

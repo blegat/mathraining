@@ -17,9 +17,9 @@ class MessagesController < ApplicationController
 
   def create
     @message = Message.new(params[:message])
-    @message.user = current_user
+    @message.user = current_user.sk
     @message.subject = @subject
-    @message.admin_user = current_user.admin?
+    @message.admin_user = current_user.sk.admin?
     
     attach = Array.new
     totalsize = 0
@@ -202,16 +202,16 @@ class MessagesController < ApplicationController
     if @chapter.nil?
       return
     end
-    redirect_to sections_path unless (current_user.admin? || @chapter.online)
+    redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
   end
   
   def unlocked_chapter
     if @chapter.nil?
       return
     end
-    if !current_user.admin?
+    if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
-        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+        if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p))
           redirect_to sections_path and return
         end
       end
@@ -220,15 +220,15 @@ class MessagesController < ApplicationController
 
   def admin_user
     @subject = Subject.find(params[:subject_id])
-    redirect_to root_path unless (current_user.admin? || !@subject.admin)
+    redirect_to root_path unless (current_user.sk.admin? || !@subject.admin)
   end
   
   def admin_delete
-    redirect_to root_path unless current_user.admin?
+    redirect_to root_path unless current_user.sk.admin?
   end
 
   def author
     @message = Message.find(params[:id])
-    redirect_to subjects_path unless (current_user == @message.user || (current_user.admin && !@message.user.admin) || current_user.root)
+    redirect_to subjects_path unless (current_user.sk == @message.user || (current_user.sk.admin && !@message.user.admin) || current_user.sk.root)
   end
 end

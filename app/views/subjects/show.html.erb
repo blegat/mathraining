@@ -53,17 +53,17 @@
 </div>
 </td></tr>
 
-<% if (@subject.user == current_user || (current_user.admin && !@subject.user.admin) || current_user.root) %>
+<% if (@subject.user == current_user.sk || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root) %>
   <tr><td colspan="2">
   <center>
     <% if @chapter.nil? %>
       <%= link_to "Modifier ce sujet", edit_subject_path(@subject) %>
-      <% if current_user.admin? %>
+      <% if current_user.sk.admin? %>
         | <%= link_to "Supprimer ce sujet", subject_path(@subject), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce sujet et tous les messages qui vont avec ?" }  %>
       <% end %>
     <% else %>
       <%= link_to "Modifier ce sujet", edit_chapter_subject_path(@chapter, @subject) %>
-      <% if current_user.admin? %>
+      <% if current_user.sk.admin? %>
         | <%= link_to "Supprimer ce sujet", chapter_subject_path(@subject), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce sujet et tous les messages qui vont avec ?" }  %>
       <% end %>
     <% end %>
@@ -112,17 +112,17 @@
 </div>
 </td></tr>
 
-<% if (m.user == current_user || (current_user.admin && !m.user.admin) || current_user.root) %>
+<% if (m.user == current_user.sk || (current_user.sk.admin && !m.user.admin) || current_user.sk.root) %>
   <tr><td colspan="2">
   <center>
     <% if @chapter.nil? %>
       <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m) %>
-      <% if current_user.admin? %>
+      <% if current_user.sk.admin? %>
          | <%= link_to "Supprimer ce message", subject_message_path(@subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
       <% end %>
     <% else %>
       <%= link_to "Modifier ce message", edit_chapter_subject_message_path(@chapter, @subject, m) %>
-      <% if current_user.admin? %>
+      <% if current_user.sk.admin? %>
          | <%= link_to "Supprimer ce message", chapter_subject_message_path(@chapter, @subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
       <% end %>
     <% end %>

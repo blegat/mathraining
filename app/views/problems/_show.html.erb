@@ -1,4 +1,4 @@
-<% if (f.online && f.chapter.online) || current_user.admin? %>
+<% if (f.online && f.chapter.online) || current_user.sk.admin? %>
 
   <% pt = 25*f.level %>
 
@@ -15,7 +15,7 @@
   <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
   <br/>
   
-  <% if current_user.admin? %>
+  <% if current_user.sk.admin? %>
   <br/>
   <h4>Solution officielle</h4>
   <% if f.explanation.size == 0 %>
@@ -30,7 +30,7 @@
       <% if @chapter.online && f.online %>
         <%= link_to "Modifier ce problème", edit_problem_path(f), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
         | <%= link_to "Modifier la solution", problem_explanation_path(f) %>
-        <% if current_user.root %>
+        <% if current_user.sk.root %>
            | <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Attention, ce problème est visible des utilisateurs. Etes-vous sûr de vouloir supprimer ce problème? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
         <% end %>
       <% else %>
@@ -77,14 +77,14 @@
 
   <% else %>
     <!-- Online because of first if -->
-    <% if current_user.solved?(f) && f.explanation.size > 0 %>
+    <% if current_user.sk.solved?(f) && f.explanation.size > 0 %>
       <br/>
       <h4>Solution officielle</h4>
       <%= raw(f.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       <br/>
     <% end %>
     <%= render 'submissions/index', problem: f %>
-    <% unless current_user.solved?(f) || !@newsub %>
+    <% unless current_user.sk.solved?(f) || !@newsub %>
       <%= render 'submissions/new', problem: f %>
     <% end %>
   <% end %>

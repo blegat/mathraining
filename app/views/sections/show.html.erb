@@ -31,7 +31,7 @@
     
     <% if encours == 1 %>
       <% f = liste[un] %> 
-      <% if f.online || current_user.admin? %>
+      <% if f.online || current_user.sk.admin? %>
       
         <% if k % 5 == 1 && k > 1 %>
           </div>
@@ -41,8 +41,8 @@
         
         <% if acces %>
       
-          <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => f.id) %>
-          <% if exo.size > 0 && ! current_user.admin? %>
+          <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
+          <% if exo.size > 0 && ! current_user.sk.admin? %>
             <% exo = exo.first %>
             <% if exo.correct %>
               <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= j %></button>
@@ -66,7 +66,7 @@
     <% else %>
     
       <% f = liste2[deux] %> 
-      <% if f.online || current_user.admin? %>
+      <% if f.online || current_user.sk.admin? %>
       
         <% if k % 5 == 1 && k > 1 %>
           </div>
@@ -76,8 +76,8 @@
         
         <% if acces %>
         
-          <% qcm = Solvedqcm.where(:user_id => current_user.id, :qcm_id => f.id) %>
-          <% if qcm.size > 0 && ! current_user.admin? %>
+          <% qcm = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
+          <% if qcm.size > 0 && ! current_user.sk.admin? %>
             <% qcm = qcm.first %>
             <% if qcm.correct %>
               <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 3, :which => f.id) %>'"><%= j %></button>
@@ -125,7 +125,7 @@
   
   <% listex.each do |f| %>
     
-    <% if f.online || current_user.admin? %>
+    <% if f.online || current_user.sk.admin? %>
     
       <% if k % 5 == 1 && k > 1 %>
         </div>
@@ -135,13 +135,13 @@
       
       <% if acces %>
       
-        <% if current_user.solved?(f) && ! current_user.admin? %>
+        <% if current_user.sk.solved?(f) && ! current_user.sk.admin? %>
           <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
         <% elsif !f.online %>
           <button class="btn-warning btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= '!' %></button>
         <% else %>
-          <% sub = current_user.submissions.where(:problem_id => f.id).order('created_at') %>
-          <% if sub.size == 0 || current_user.admin? %>%>
+          <% sub = current_user.sk.submissions.where(:problem_id => f.id).order('created_at') %>
+          <% if sub.size == 0 || current_user.sk.admin? %>%>
             <button class="btn btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
           <% else %>
             <% sub = sub.last %>
@@ -185,7 +185,7 @@
 <h3>Introduction</h3>
    <%= raw(@section.description.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
 <br/><br/>
-<% if current_user.admin? %>
+<% if current_user.sk.admin? %>
 <%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/><br/>
 <% end %>
 
@@ -202,7 +202,7 @@
 <% n = 0 %>
 
 <% Chapter.all.each do |c| %>
-  <% if (c.online || current_user.admin) && c.sections.count > 0 %>
+  <% if (c.online || current_user.sk.admin) && c.sections.count > 0 %>
     <% retiens[c.id] = n %>
     <% chap.push(c) %>
     <% debloque.push([]) %>
@@ -219,7 +219,7 @@
 <% end %>
 
 <% (0..(n-1)).each do |i| %>
-  <% if (chap[i].online || current_user.admin) %>
+  <% if (chap[i].online || current_user.sk.admin) %>
     <% premier = true %>
     <% chap[i].prerequisites.each do |p| %>
       <% if p.sections.count > 0 %>
@@ -229,7 +229,7 @@
       <% end %>
     <% end %>
     <% if premier %>
-      <% if current_user.chapters.exists?(chap[i]) %>
+      <% if current_user.sk.chapters.exists?(chap[i]) %>
         <% faisable[i] = 0 %>
       <% else %>
         <% faisable[i] = 1 %>
@@ -247,7 +247,7 @@
   <% encours = (possible.first)[3] %>
   <% possible.delete(possible.first) %>
   <% if affiche[encours] %>
-    <% if faisable[encours] <= 1 || current_user.admin %>
+    <% if faisable[encours] <= 1 || current_user.sk.admin %>
       
       <% if faisable[encours] == 0 %>
         <table style="border:1px solid green;" class="table">
@@ -269,7 +269,7 @@
       <ul>
       <% chap[encours].theories.each do |t| %>
         <% if t.online %>
-          <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.theories.exists?(t) %></li>
+          <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.sk.theories.exists?(t) %></li>
         <% end %>
       <% end %>	
       </ul>
@@ -282,7 +282,7 @@
       <p style="color:red;">Vous devez d'abord compléter :
       <% prems = true %>
       <% chap[encours].prerequisites.each do |p| %>
-        <% if (p.sections.count > 0 && !current_user.chapters.exists?(p)) %>
+        <% if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p)) %>
           <%= " - " if !prems %>
           <%= p.name %>
           <% prems = false %>
@@ -306,7 +306,7 @@
     
     <td class="span4">
     <center><h4>Exercices</h4></center>
-    <% if faisable[encours] <= 1 || current_user.admin? %>
+    <% if faisable[encours] <= 1 || current_user.sk.admin? %>
       <% affiche_exercices(chap[encours],true) %>
     <% else %>
       <% affiche_exercices(chap[encours],false) %>
@@ -314,7 +314,7 @@
     </td>
     <td class="span4">
     <center><h4>Problèmes</h4></center>
-    <% if faisable[encours] <= 1 || current_user.admin? %>
+    <% if faisable[encours] <= 1 || current_user.sk.admin? %>
       <% affiche_problemes(chap[encours],true) %>
     <% else %>
       <% affiche_problemes(chap[encours],false) %>
@@ -329,7 +329,7 @@
     <% faisable[d] = [faisable[d], faisable[encours]+1].max %>
     <% faisable2[d] = [faisable2[d], faisable2[encours]+1].max %>
     <% if nb_pre[d] == 0 %>
-      <% if current_user.chapters.exists?(chap[d]) %>
+      <% if current_user.sk.chapters.exists?(chap[d]) %>
         <% faisable[d] = 0 %>
       <% end %>
       <% possible.add([faisable[d], faisable2[d], chap[d].level, d]) %>
@@ -370,7 +370,7 @@
 <% n = 0 %>
 
 <% Chapter.all.each do |c| %>
-  <% if (c.online || current_user.admin) && c.sections.count == 0 %>
+  <% if (c.online || current_user.sk.admin) && c.sections.count == 0 %>
     <% retiens[c.id] = n %>
     <% chap.push(c) %>
     <% debloque.push([]) %>
@@ -381,7 +381,7 @@
 <% end %>
 
 <% (0..(n-1)).each do |i| %>
-  <% if (chap[i].online || current_user.admin) %>
+  <% if (chap[i].online || current_user.sk.admin) %>
     <% premier = true %>
     <% chap[i].prerequisites.each do |p| %>
       <% if p.sections.count > 0 %>
@@ -403,7 +403,7 @@
   <% encours = (possible.first)[2] %>
   <% possible.delete(possible.first) %>
 
-  <% if current_user.chapters.exists?(chap[encours]) %>
+  <% if current_user.sk.chapters.exists?(chap[encours]) %>
     <table style="border:1px solid green;" class="table">
     <tr style="background-color:#DDFFDD;">
     <td colspan="3" style="border-top:1px solid green;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <i class="icon-ok"></i></h3></center></td>
@@ -422,7 +422,7 @@
   <ul>
   <% chap[encours].theories.each do |t| %>
     <% if t.online %>
-      <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.theories.exists?(t) %></li>
+      <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.sk.theories.exists?(t) %></li>
     <% end %>
   <% end %>	
   </ul>

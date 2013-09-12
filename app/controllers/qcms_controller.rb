@@ -254,12 +254,12 @@ class QcmsController < QuestionsController
 
 
   def admin_user
-    redirect_to root_path unless current_user.admin?
+    redirect_to root_path unless current_user.sk.admin?
   end
   
   def root_user
     @qcm = Qcm.find(params[:id])
-    redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) if (!current_user.root && @qcm.online && @qcm.chapter.online)
+    redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) if (!current_user.sk.root && @qcm.online && @qcm.chapter.online)
   end
   
   def online_qcm

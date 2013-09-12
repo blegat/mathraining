@@ -9,7 +9,7 @@ class SubjectsController < ApplicationController
   before_filter :admin_delete, only: [:destroy]
 
   def index
-    if current_user.admin?
+    if current_user.sk.admin?
       if @chapter.nil?
         @importants = Subject.where(important: true).order("lastcomment DESC")
         @subjects = Subject.where(important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
@@ -34,7 +34,7 @@ class SubjectsController < ApplicationController
 
   def new
     @subject = Subject.new
-    if current_user.admin?
+    if current_user.sk.admin?
       @subject.admin = true
     end
     if @chapter.nil?
@@ -53,13 +53,13 @@ class SubjectsController < ApplicationController
   end
 
   def create
-    if !current_user.admin? && !params[:subject][:important].nil? # Hack
+    if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path and return
     end
     @subject = Subject.new(params[:subject].except(:chapter_id))
-    @subject.user = current_user
+    @subject.user = current_user.sk
     @subject.lastcomment = DateTime.current
-    @subject.admin_user = current_user.admin?
+    @subject.admin_user = current_user.sk.admin?
     chapter_id = params[:subject][:chapter_id].to_i
     if chapter_id != 0
       @chapitre = Chapter.find_by_id(chapter_id)
@@ -119,7 +119,7 @@ class SubjectsController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      if !current_user.admin? && @subject.admin? # Hack
+      if !current_user.sk.admin? && @subject.admin? # Hack
         @subject.admin = false
         @subject.save
       end
@@ -142,7 +142,7 @@ class SubjectsController < ApplicationController
   end
 
   def update
-    if !current_user.admin? && !params[:subject][:important].nil? # Hack
+    if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path
     end
     
@@ -165,7 +165,7 @@ class SubjectsController < ApplicationController
         @subject.save
       end
       
-      if !current_user.admin? && @subject.admin? # Hack
+      if !current_user.sk.admin? && @subject.admin? # Hack
         @subject.admin = false
         @subject.save
       end
@@ -272,16 +272,16 @@ class SubjectsController < ApplicationController
     if @chapter.nil?
       return
     end
-    redirect_to sections_path unless (current_user.admin? || @chapter.online)
+    redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
   end
   
   def unlocked_chapter
     if @chapter.nil?
       return
     end
-    if !current_user.admin?
+    if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
-        if (p.sections.count > 0 && !current_user.chapters.exists?(p))
+        if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p))
           redirect_to sections_path and return
         end
       end
@@ -290,15 +290,15 @@ class SubjectsController < ApplicationController
 
   def admin_user
     @subject = Subject.find(params[:id])
-    redirect_to root_path unless (current_user.admin? || !@subject.admin)
+    redirect_to root_path unless (current_user.sk.admin? || !@subject.admin)
   end
   
   def admin_delete
-    redirect_to root_path unless current_user.admin?
+    redirect_to root_path unless current_user.sk.admin?
   end
 
   def author
     @subject = Subject.find(params[:id])
-    redirect_to subjects_path unless (current_user == @subject.user || (current_user.admin && !@subject.user.admin) || current_user.root)
+    redirect_to subjects_path unless (current_user.sk == @subject.user || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root)
   end
 end

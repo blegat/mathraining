@@ -2,7 +2,7 @@
 
 <% date = s.created_at.in_time_zone %>
 <p><i class="<%= s.icon %>" style="margin-right:10px;"></i><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> - <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
-<% if current_user.admin %>
+<% if current_user.sk.admin %>
 (<%= link_to s.user.name, s.user %>)
 <% end %>
  : 
