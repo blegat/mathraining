@@ -86,9 +86,9 @@
               <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => f.id) %>
               <% if exo.size > 0 %>
                 <% exo = exo.first %>
-                <% if exo.correct %>
+                <% if exo.correct && !current_user.admin? %>
                   <i class="icon-ok"></i>
-                <% else %>
+                <% elsif !current_user.admin? %>
                   <i class="icon-remove"></i>
                   <% pasfait = pasfait + 1 %>
                 <% end %>
@@ -116,9 +116,9 @@
               <% qcm = Solvedqcm.where(:user_id => current_user.id, :qcm_id => f.id) %>
               <% if qcm.size > 0 %>
                 <% qcm = qcm.first %>
-                <% if qcm.correct %>
+                <% if qcm.correct && !current_user.admin?%>
                   <i class = "icon-ok"></i>
-                <% else %>
+                <% elsif !current_user.admin? %>
                   <i class = "icon-remove"></i>
                   <% pasfait = pasfait + 1 %>
                 <% end %>
@@ -157,9 +157,9 @@
             <% if !f.online %>
               <i class="icon-warning-sign"></i>
             <% end %>
-            <% if current_user.solved?(f) %>
+            <% if current_user.solved?(f) && !current_user.admin?%>
               <i class="icon-ok"></i>
-            <% else %>
+            <% elsif !current_user.admin? %>
               <% sub = current_user.submissions.where(:problem_id => f.id).order('created_at') %>
               <% if sub.size > 0 %>
                 <% sub = sub.last %>

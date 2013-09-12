@@ -33,7 +33,11 @@
         <% end %>
       </td>
       <td style="text-align:center; font-weight:bold;">
-        <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+      	<% if s.user.admin %>
+          <%= s.user.name %>
+        <% else %>
+          <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+        <% end %>
       </td>
       <td style="text-align:center;">
         <%= x = s.messages.count %>
@@ -47,9 +51,13 @@
           <% date = s.created_at.in_time_zone %>
         <% end %>
       <td style="width:180px; text-align:center; font-weight:bold;">
-        <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
+        <% if qui.admin %>
+          <%= qui.name %>
+        <% else %>
+          <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
+        <% end %>
       </td>
-      <td style="width:170px; text-align:center;">
+      <td style="width:180px; text-align:center;">
         <% tot = s.messages.count %>
         <% page = [0,((tot-1)/10).floor].max + 1 %>
         <% if @chapter.nil? %>
@@ -96,7 +104,11 @@
         <% end %>
       </td>
       <td style="text-align:center; font-weight:bold;">
-        <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+        <% if s.user.admin %>
+          <%= s.user.name %>
+        <% else %>
+          <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+        <% end %>
       </td>
       <td style="text-align:center;">
         <%= x = s.messages.count %>
@@ -110,9 +122,13 @@
           <% date = s.created_at.in_time_zone %>
         <% end %>
       <td style="width:180px; text-align:center; font-weight:bold;">
-        <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
+        <% if qui.admin %>
+          <%= qui.name %>
+        <% else %>
+          <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
+        <% end %>
       </td>
-      <td style="width:170px; text-align:center;">
+      <td style="width:180px; text-align:center;">
         <% tot = s.messages.count %>
         <% page = [0,((tot-1)/10).floor].max + 1 %>
         <% if @chapter.nil? %>

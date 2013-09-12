@@ -42,7 +42,7 @@
         <% if acces %>
       
           <% exo = Solvedexercise.where(:user_id => current_user.id, :exercise_id => f.id) %>
-          <% if exo.size > 0 %>
+          <% if exo.size > 0 && ! current_user.admin? %>
             <% exo = exo.first %>
             <% if exo.correct %>
               <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= j %></button>
@@ -77,7 +77,7 @@
         <% if acces %>
         
           <% qcm = Solvedqcm.where(:user_id => current_user.id, :qcm_id => f.id) %>
-          <% if qcm.size > 0 %>
+          <% if qcm.size > 0 && ! current_user.admin? %>
             <% qcm = qcm.first %>
             <% if qcm.correct %>
               <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 3, :which => f.id) %>'"><%= j %></button>
@@ -135,13 +135,13 @@
       
       <% if acces %>
       
-        <% if current_user.solved?(f) %>
+        <% if current_user.solved?(f) && ! current_user.admin? %>
           <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
         <% elsif !f.online %>
           <button class="btn-warning btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= '!' %></button>
         <% else %>
           <% sub = current_user.submissions.where(:problem_id => f.id).order('created_at') %>
-          <% if sub.size == 0 %>
+          <% if sub.size == 0 || current_user.admin? %>%>
             <button class="btn btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
           <% else %>
             <% sub = sub.last %>

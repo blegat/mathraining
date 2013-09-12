@@ -2,7 +2,7 @@
 class ProblemsController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online]
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation]
   before_filter :root_user, only: [:destroy]
 
 
@@ -20,6 +20,7 @@ class ProblemsController < ApplicationController
     @problem.name = params[:problem][:name]
     @problem.statement = params[:problem][:statement]
     @problem.level = params[:problem][:level]
+    @problem.explanation = ""
     @chapter = Chapter.find_by_id(params[:chapter_id])
     if @chapter.nil?
       flash[:error] = "Chapitre inexistant."
@@ -117,6 +118,21 @@ class ProblemsController < ApplicationController
       flash[:error] = err
     end
     redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
+  end
+  
+  def explanation
+    @problem = Problem.find(params[:problem_id])
+  end
+  
+  def update_explanation
+    @problem = Problem.find(params[:problem_id])
+    @problem.explanation = params[:problem][:explanation]
+    if @problem.save
+      flash[:success] = "Solution officielle modifiée."
+      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
+    else
+      render 'explanation'
+    end
   end
 
   private

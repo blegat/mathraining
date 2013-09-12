@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130418083657) do
+ActiveRecord::Schema.define(:version => 20130912125011) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -163,10 +163,11 @@ ActiveRecord::Schema.define(:version => 20130418083657) do
     t.text     "statement"
     t.integer  "chapter_id"
     t.integer  "position"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
-    t.boolean  "online",     :default => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.boolean  "online",      :default => false
     t.integer  "level"
+    t.text     "explanation", :default => ""
   end
 
   create_table "qcms", :force => true do |t|

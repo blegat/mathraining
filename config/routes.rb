@@ -68,6 +68,8 @@ Ombtraining::Application.routes.draw do
       as: :order_minus
     match '/put_online', to: 'problems#put_online',
       as: :put_online
+    match '/explanation', to: "problems#explanation"
+    match '/update_explanation', to: "problems#update_explanation", as: :update_explanation
     resources :submissions, only: [:create, :show] do
       resources :corrections, only: [:create]
       match '/read', to: 'submissions#read',

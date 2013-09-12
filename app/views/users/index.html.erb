@@ -4,7 +4,7 @@
 <% provide(:title, 'Utilisateurs') %>
 <h1>Utilisateurs</h1>
 
-<h2>Etudiants</h2>
+
 
 <% points = Point.order("rating DESC").all %>
 
@@ -68,11 +68,15 @@
 </center>
 <% end %>
 
+<% if current_user.admin %>
+
 <h2>Administrateurs</h2>
 
 <% User.where(:admin => true).each do |user| %>
   <% if user.admin %>
-    <%= link_to user.name, user %><br/>
+    <%= user.name %><br/>
   <% end %>
+<% end %>
+
 <% end %>
 

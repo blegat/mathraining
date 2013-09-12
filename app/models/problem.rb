@@ -13,7 +13,7 @@
 #
 
 class Problem < ActiveRecord::Base
-  attr_accessible :name, :position, :statement, :online, :level
+  attr_accessible :name, :position, :statement, :online, :level, :explanation
   belongs_to :chapter
 
   has_many :submissions, dependent: :destroy
@@ -23,6 +23,7 @@ class Problem < ActiveRecord::Base
 
   validates :name, presence: true, length: { maximum: 255 }
   validates :statement, presence: true, length: { maximum: 8000 }
+  validates :explanation, length: { maximum: 8000 }
   validates :position, presence: true,
     uniqueness: { scope: :chapter_id },
     numericality: { greater_than_or_equal_to: 0 } 
