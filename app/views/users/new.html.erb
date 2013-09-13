@@ -1,8 +1,8 @@
 <% provide(:title, 'Inscription') %>
 <h1>Inscription</h1>
-
+Pour vous inscrire, il vous suffit de posséder une adresse mail valide. Un mail de confirmation vous sera envoyé à cette adresse.<br/><br/>
 <div class="row">
-  <div class="span6 offset3">
+  <div class="span6">
     <%= form_for(@user) do |f| %>
       <%= render 'fields', f: f %>
       <br />

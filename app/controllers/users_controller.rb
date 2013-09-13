@@ -46,6 +46,10 @@ class UsersController < ApplicationController
     end
   end
   def destroy
+    skinner = User.where(skin: @user.id)
+    skinner.each do |s|
+      s.update_attribute(:skin, 0)
+    end
     @user.destroy
     flash[:success] = "Utilisateur supprimé."
     redirect_to users_path
@@ -57,6 +61,10 @@ class UsersController < ApplicationController
       flash[:error] = "I see what you did here! Mais non ;-)"
     else
       @user.toggle!(:admin)
+      skinner = User.where(skin: @user.id)
+      skinner.each do |s|
+        s.update_attribute(:skin, 0)
+      end
       flash[:success] = "Utilisateur promu au rang d'administrateur!"
     end
     redirect_to users_path
@@ -129,7 +137,7 @@ class UsersController < ApplicationController
   end
   def correct_user
     @user = User.find(params[:id])
-    redirect_to root_path unless current_user.sk?(@user)
+    redirect_to root_path unless current_user?(@user)
   end
   def admin_user
     redirect_to root_path unless current_user.admin?

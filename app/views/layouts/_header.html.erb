@@ -57,7 +57,9 @@
           <% if current_user.other %>
             <li><%= link_to "Sortir de ce corps", user_leave_skin_path(current_user) %></li>
           <% end %>
-          <li><%= link_to "Profil", current_user.sk %></li>
+          <% if !current_user.sk.admin? %>
+            <li><%= link_to "Profil", current_user.sk %></li>
+          <% end %>
           <li><%= link_to "Compte", edit_user_path(current_user.sk) %></li>
           <li class="divider"></li>
           <li>

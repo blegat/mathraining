@@ -1,8 +1,8 @@
 <% provide(:title, "Actualisez votre profil") %> 
 <h1>Actualisez votre profil</h1>
-
+Vous devez à nouveau rentrer votre mot de passe (éventuellement un nouveau si vous désirez en changer) pour modifier vos données.<br/><br/>
 <div class="row">
-  <div class="span6 offset3">
+  <div class="span6">
     <%= form_for(@user) do |f| %>
       <%= render 'fields', f: f %>
       <br />
