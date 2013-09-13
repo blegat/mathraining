@@ -1,5 +1,8 @@
 #encoding: utf-8
 class SessionsController < ApplicationController
+  before_filter :signed_out_user,
+    only: [:create, :new]
+    
   def new
   end
   def create
@@ -22,4 +25,13 @@ class SessionsController < ApplicationController
     sign_out
     redirect_to root_path
   end
+  
+  private
+  
+  def signed_out_user
+    if signed_in?
+      redirect_to root_path
+    end
+  end
+  
 end

@@ -9,7 +9,7 @@ class UsersController < ApplicationController
   before_filter :root_user,
     only: [:create_administrator, :recompute_scores]
   before_filter :signed_out_user,
-    only: [:new, :create]
+    only: [:new, :create, :password_forgotten, :forgot_password]
   before_filter :destroy_admin,
     only: [:destroy]
 
@@ -18,10 +18,10 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     @user.key = SecureRandom.urlsafe_base64
-    # @user.email_confirm = false <-- A décommenter pour rendre les mails utiles!
+    #@user.email_confirm = false # A décommenter
   	if @user.save
-  	  # UserMailer.registration_confirmation(@user).deliver
-  	  # flash[:success] = "Un mail de confirmation vous a été envoyé sur votre adresse mail pour activer votre compte."
+  	  #UserMailer.registration_confirmation(@user).deliver
+  	  #flash[:success] = "Un mail de confirmation vous a été envoyé sur votre adresse mail pour activer votre compte."
   	  flash[:success] = "Vous êtes inscrit! Veuillez vous connecter."
   	  redirect_to signin_path
   	else
@@ -40,7 +40,7 @@ class UsersController < ApplicationController
     if @user.update_attributes(params[:user])
       flash[:success] = "Profil mis à jour."
       sign_in @user
-      redirect_to @user
+      redirect_to root_path
     else
       render 'edit'
     end
@@ -81,6 +81,31 @@ class UsersController < ApplicationController
       flash[:notice] = "Ce compte est déjà actif!"
     end
     redirect_to signin_path
+  end
+  
+  def password_forgotten
+    @user = User.find_by_email(params[:user][:email])
+    if @user
+      @user.update_attribute(:key, SecureRandom.urlsafe_base64)
+      UserMailer.forgot_password(@user).deliver
+  	  flash[:success] = "Un mail vous a été envoyé pour que vous puissiez changer de mot de passe."
+    else
+      flash[:error] = 'Aucun utilisateur ne possède cet adresse.'
+    end
+    redirect_to signin_path
+  end
+  
+  def recup_password
+    @user = User.find(params[:id])
+    if @user.key.to_s != params[:key].to_s
+      flash[:error] = "Ce lien n'est pas correct."
+      redirect_to root_path
+    else
+      @user.update_attribute(:key, SecureRandom.urlsafe_base64) 
+      sign_in @user
+      flash[:success] = "Veuillez changer immédiatement de mot de passe."
+      redirect_to edit_user_path(@user)
+    end
   end
 
   def recompute_scores

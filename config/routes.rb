@@ -157,6 +157,9 @@ Ombtraining::Application.routes.draw do
   match '/signin', to: 'sessions#new'
   match '/signout', to: 'sessions#destroy', via: :delete
   match '/activate', to: 'users#activate'
+  match '/forgot_password', to: 'users#forgot_password'
+  match '/recup_password', to: 'users#recup_password'
+  match '/password_forgotten', to: 'users#password_forgotten'
 
   match '/recompute_scores', to: 'users#recompute_scores',
       as: :recompute_scores

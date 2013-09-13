@@ -12,6 +12,8 @@
 			<%= f.password_field :password %>
 
             <br />
+            <% link_to "Mot de passe oublié?", forgot_password_path # Ne plus mettre ce lien en commentaire %>
+            
 			<%= f.submit "Connexion", class: "btn btn-large btn-primary" %>
 		<% end %>
 
