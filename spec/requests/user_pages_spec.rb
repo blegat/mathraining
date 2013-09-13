@@ -132,7 +132,7 @@ describe "User pages" do
         click_button "Mettre à jour"
       end
 
-      it { should have_selector('title', text: new_name) }
+      it { should have_selector('h1', text: 'Actualités') }
       it { should have_selector('div.alert.alert-success') }
       it { should have_link('Déconnexion', href: signout_path) }
       specify { user.reload.first_name.should  == new_first_name }
