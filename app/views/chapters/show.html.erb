@@ -15,9 +15,11 @@
   <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
 </h1>
 
+
 <div class="row">
 
   <!-- MENU -->
+  <div class="noprint">
   <div class="span2">
     <ul class="nav nav-list">
       <% number = 0 %>
@@ -26,6 +28,8 @@
       <li class="nav-header">Général</li>
       <li<%= ' class="active"'.html_safe if type == 0 %>>
       <%= link_to "Introduction", chapter_path(@chapter) %></li>
+      <li<%= ' class="active"'.html_safe if type == 10 %>>
+      <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10) %></li>
       <li>
       <%= link_to "Forum", chapter_subjects_path(@chapter), :target => "_blank" %>
       </li>
@@ -181,6 +185,7 @@
       <% end %>
     </ul>
   </div>
+  </div>
 
   <div class="span10">
 
@@ -188,6 +193,13 @@
 
     <% if type == 0 %>
       <%= render 'intro' %>
+    <% end %>
+    
+    
+    <!-- VERSION IMPRIMABLE -->
+
+    <% if type == 10 %>
+      <%= render 'all' %>
     <% end %>
     
     
@@ -224,6 +236,7 @@
   </div>
 </div>
 
+<div class="noprint">
 <center>
   <% if current_user.sk.admin? %>
     <br/>
@@ -239,6 +252,7 @@
     <% end %>
   <% end %>
 </center>
+
 <br/>
 <center>
   Retour à la section :
@@ -252,3 +266,4 @@
     <%= link_to "Fondements", "../sections/0" %>
   <% end %>
 </center>
+</div>

@@ -1,0 +1,22 @@
+.noprint
+{
+  display: none;
+}
+
+a:link:after, a:visited:after
+{
+  content:"";
+}
+
+#container, #container2, #content
+{
+  width: 100%;
+  margin: 0;
+  float: none;
+}
+
+@page
+{
+  margin-bottom:2cm;
+  margin-top:2cm;
+}

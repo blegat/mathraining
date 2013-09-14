@@ -13,9 +13,9 @@
 <h3>Exercice <%= number %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
 <% end %>
 
+<div>
 <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
-
-<br/><br/>
+</div><br/>
 
 <% if current_user.sk.admin? %>
 
@@ -51,6 +51,7 @@
   <% end %>
 
   <br/>
+  <div class="noprint">
   <center>
     <% if @chapter.online && f.online %>
       <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." }  %> |
@@ -66,6 +67,7 @@
       <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
     <% end %>
   </center>
+  
   <br/>
 
   <% if number2 > 1 %>
@@ -99,6 +101,8 @@
       <%= button_to "Mettre en ligne", qcm_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de ce qcm par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
     </center> <br/>
   <% end %>
+  
+  </div>
 
 <% else %>
 
@@ -148,7 +152,7 @@
               <%= c.ans %>
             </label>
           <% end %>
-          <br/><button class="btn btn-primary" type="submit" disabled="<%= current_user.other %>">Soumettre</button>
+          <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
         <% end %>
       <% else %>
         <% choice = sol.choices.first %>
@@ -160,7 +164,7 @@
               <%= c.ans %>
             </label>
           <% end %>
-          <br/><button class="btn btn-primary" type="submit" disabled="<%= current_user.other %>">Soumettre</button>
+          <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
         <% end %>
 
       <% end %>
@@ -182,7 +186,7 @@
             <%= c.ans %>
           </label>
         <% end %>
-        <br/><button class="btn btn-primary" type="submit" disabled="<%= current_user.other %>">Soumettre</button>
+        <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
       </form>
     <% else %>
       <form action="<%= solvedqcms_path %>" method="post">
@@ -193,7 +197,7 @@
             <%= c.ans %>
           </label>
         <% end %>
-        <br/><button class="btn btn-primary" type="submit" disabled="<%= current_user.other %>">Soumettre</button>
+        <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
       </form>
 
     <% end %>

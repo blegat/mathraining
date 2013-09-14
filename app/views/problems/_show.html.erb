@@ -25,7 +25,7 @@
     <br/>
   <% end %>
   <br/>
-  
+  <div class="noprint">
     <center>
       <% if @chapter.online && f.online %>
         <%= link_to "Modifier ce problème", edit_problem_path(f), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
@@ -74,7 +74,7 @@
     <% if f.online %>
       <%= render 'submissions/index', problem: f %>
     <% end %>
-
+  </div>
   <% else %>
     <!-- Online because of first if -->
     <% if current_user.sk.solved?(f) && f.explanation.size > 0 %>

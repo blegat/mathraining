@@ -1,10 +1,10 @@
 <% if (f.online && f.chapter.online) || current_user.sk.admin? %>
   <h3><%= f.title %> </h3>
-  <%= raw(f.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+  <div><%= raw(f.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+  </div>
   <br/>
-  <br/>
-  <!--<%= simple_format f.content %>-->
-  <!--<%= markdown_render f.content %>-->
+  
+  <div class="noprint">
 
   <% if current_user.sk.admin? %>
     <br/>
@@ -47,7 +47,7 @@
     <% end %>
 
   <% else %>
-
+    <div class="noprint">
     <center>
       <% if current_user.sk.theories.exists?(id) %>
         <%= button_to "Marquer comme non lu", theory_unread_path(f), method: :get, class: 'btn btn', :disabled => current_user.other %>
@@ -55,7 +55,9 @@
         <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn', :disabled => current_user.other %>
       <% end %>
     </center>
-
+    </div>
   <% end %>
+  
+  </div>
 
 <% end %>

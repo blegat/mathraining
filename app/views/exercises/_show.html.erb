@@ -11,9 +11,9 @@
 <% else %>
 <h3>Exercice <%= number %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
 <% end %>
-  <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
-  
-<br/><br/>
+  <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+</div><br/>
+
 <% if current_user.sk.admin? %>
   <h4>Réponse</h4>
   <% if f.decimal %>
@@ -31,6 +31,7 @@
     <br/>
   <% end %>
   <br/>
+  <div class="noprint">
   <center>
     <% if @chapter.online && f.online %>
       <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
@@ -77,6 +78,9 @@
       <%= button_to "Mettre en ligne", exercise_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
     </center> <br/>
   <% end %>
+  
+  </div> 
+  
 <% else %>
 
   <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => id) %>
