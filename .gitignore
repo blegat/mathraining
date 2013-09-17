@@ -18,4 +18,6 @@
 doc/
 *.tmp
 *.swp
-*~
+
+# Variables
+/config/app_environment_variables.rb
