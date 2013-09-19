@@ -1,12 +1,17 @@
 <div class="center hero-unit">
-  <h1>Bienvenue sur <span style="color:black;">Ma</span><span style="color:rgb(50,50,150);">t</span><span style="color:black;">h</span><span style="color:rgb(100,100,255);">raining</span></h1>
-
+  
+  <h1>Bienvenue sur</h1><br/>
+  <center>
+   <%= image_tag("mathraining.jpg") %>
+   </center>
+   <br/>
   <h3>
     Le site d'entraînement belge aux Olympiades Internationales de Mathématiques
   </h3>
-  <p>
+  <br/>
+  <center>
   <%= link_to "Inscrivez-vous maintenant!", signup_path, class: "btn btn-large btn-primary" %>
-  </p>
+  </center>
 </div>
 
 <% link_to image_tag("rails.png", alt: "Rails"), 'http://rubyonrails.org/' %>
