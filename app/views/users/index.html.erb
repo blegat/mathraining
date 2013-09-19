@@ -60,3 +60,23 @@
 
 </table>
 
+<% if current_user.sk.root %>
+<center>
+<br/>
+<%= link_to 'Recalculer tous les ratings', recompute_scores_path, data: { confirm: "Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)."}, :style => "color:red;" %>
+<br/>
+</center>
+<% end %>
+
+<% if current_user.sk.admin %>
+
+<h2>Administrateurs</h2>
+
+<% User.where(:admin => true).each do |user| %>
+  <% if user.admin %>
+    <%= user.name %><br/>
+  <% end %>
+<% end %>
+
+<% end %>
+
