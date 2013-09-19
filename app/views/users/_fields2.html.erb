@@ -1,0 +1,16 @@
+<%= render 'shared/error_messages', object: f.object %>
+
+<%= f.label :first_name %>
+<%= f.text_field :first_name, :disabled => current_user.other %>
+
+<%= f.label :last_name %>
+<%= f.text_field :last_name, :disabled => current_user.other %>
+
+<%= f.label :email %>
+<%= f.email_field :email, :disabled => current_user.other %>
+
+<%= f.label :password %>
+<%= f.password_field :password, :disabled => current_user.other %>
+
+<%= f.label :password_confirmation %>
+<%= f.password_field :password_confirmation, :disabled => current_user.other %>

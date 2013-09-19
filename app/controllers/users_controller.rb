@@ -162,13 +162,13 @@ class UsersController < ApplicationController
   end
   def correct_user
     @user = User.find(params[:id])
-    redirect_to root_path unless current_user?(@user)
+    redirect_to root_path unless current_user.sk.id == @user.id
   end
   def admin_user
-    redirect_to root_path unless current_user.admin?
+    redirect_to root_path unless current_user.sk.admin?
   end
   def root_user
-    redirect_to root_path unless current_user.root
+    redirect_to root_path unless current_user.sk.root
   end
   def destroy_admin
     @user = User.find(params[:id])
