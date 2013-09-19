@@ -1,4 +1,13 @@
+<% @price = 15 # ALSO CHANGE IN SHOW %>
+<% @pricefondement = 15 %>
+
 <% provide(:title, 'Utilisateurs') %>
 <h1>Utilisateurs</h1>
+
+
+
+<% points = Point.order("rating DESC").all %>
+
+<% allsec = Section.all %>
 
 
