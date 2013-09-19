@@ -14,7 +14,14 @@
 
 <% actualrating = @user.point.rating %>
 <% niveau = @user.level %>
-<h1 style="color:<%= niveau[:color] %>;"><%= @user.name %><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] %></span></h1>
+
+<h1 style="color:<%= niveau[:color] %>;"><%= @user.name %><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] %></span>
+<% if current_user.sk.admin %>
+<span style="color:<%= niveau[:color] %>; margin-left:100px; font-size:18px;">(<%= @user.email %>)</span>
+<% end %>
+</h1>
+
+
 
   <div class="row">
   
