@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
     user = User.find_by_email(params[:session][:email])
     if user && user.authenticate(params[:session][:password])
       if user.email_confirm
-        flash[:success] = 'Bienvenue sur MathRaining!'
+        flash[:success] = 'Bienvenue sur Mathraining!'
         sign_in user
         redirect_back_or root_path
       else
