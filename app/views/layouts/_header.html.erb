@@ -20,7 +20,9 @@
 
     <!-- Everything within here will be hidden at 940px or less -->
     <!-- Adding collapse class to nav make it open by default -->
-    <%= link_to "MathRaining", root_path, class: "brand" %>
+    <%= link_to root_path, class: "brand" do %>
+    <span style="color:black;">Ma</span><span style="color:rgb(50,50,150);">t</span><span style="color:black;">h</span><span style="color:rgb(100,100,255);">raining</span>
+    <% end %>
     <nav class="nav-collapse">
     <ul class="nav pull-left">
       <% if signed_in? and current_user.sk.admin? %>
