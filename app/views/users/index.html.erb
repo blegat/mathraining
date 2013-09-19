@@ -11,3 +11,52 @@
 <% allsec = Section.all %>
 
 
+<table class="table table-bordered">
+  <tr><th></th><th>Nom</th><th><center>Score</center></th><th><center>Fondements</center></th>
+  <% allsec.each do |s| %>
+    <th><center><%= s.name %></center></th>
+  <% end %>
+  </tr>
+  <% rank = 1 %>
+  <% points.each do |p| %>
+    <% user = User.find(p.user) %>
+    <% if !user.admin? %>
+    
+    <% niveau = user.level %>
+    
+    <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
+    <td><center><%= rank %></center></td>
+    <td><b> <%= link_to user.name, user, {:style => "color:#{niveau[:color]}" } %> </b></td>
+      
+    <% rating = p.rating %>
+    <td><center><%= rating %></center></td>
+      
+    <% p = Pointspersection.where(:user_id => user) %>
+    <% rate = p.where(:section_id => 0).first.points %>
+      <td>
+      <center>
+      <% etoile = (rate/@pricefondement).floor %>
+      <% etoile.times do |i| %>
+        <img src="/assets/etoilevertefoncee.gif" />
+      <% end %>
+      </center>
+      </td>
+      <% allsec.each do |s| %>
+        <% rate = p.where(:section_id => s.id).first.points %>
+      <td>
+      <center>
+      <% etoile = (rate/@price).floor %>
+      <% etoile.times do |i| %>
+        <img src="/assets/etoilejaune.gif" />
+      <% end %>
+      </center>
+      </td>
+    <% end %>
+  
+    </tr>
+    <% rank = rank + 1 %>
+    <% end %>
+  <% end %>
+
+</table>
+
