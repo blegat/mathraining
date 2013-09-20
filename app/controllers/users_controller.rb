@@ -19,7 +19,7 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     @user.key = SecureRandom.urlsafe_base64
     @user.email_confirm = false # A décommenter
-  	if @user.save
+  	if verify_recaptcha(:model => @user, :message => "Captcha incorrect") && @user.save
   	  UserMailer.registration_confirmation(@user).deliver
   	  flash[:success] = "Un mail de confirmation vous a été envoyé sur votre adresse mail pour activer votre compte."
   	  #flash[:success] = "Vous êtes inscrit! Veuillez vous connecter."

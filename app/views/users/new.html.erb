@@ -5,7 +5,13 @@ Pour vous inscrire, il vous suffit de posséder une adresse mail valide. Un mail
   <div class="span6">
     <%= form_for(@user) do |f| %>
       <%= render 'fields', f: f %>
-      <br />
+      <br /><br/>
+      
+      Veuillez prouvez que vous êtes bien un humain <br/> (n'hésitez pas à actualiser les mots si vous hésitez).<br/><br/>
+      <%= recaptcha_tags :display => { :theme => "clean" } %>
+      <br/>
+  
+  
       <%= f.submit "Créer mon compte", class: "btn btn-large btn-primary" %>
     <% end %>
   </div>

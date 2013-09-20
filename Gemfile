@@ -9,6 +9,7 @@ gem 'bootstrap-will_paginate', '0.0.6'
 gem 'rails-i18n'
 gem 'mathjax-rails'
 gem "paperclip", :git => "git://github.com/thoughtbot/paperclip.git"
+gem "recaptcha", :require => "recaptcha/rails"
 
 # Markdown
 gem 'redcarpet' # server-side
