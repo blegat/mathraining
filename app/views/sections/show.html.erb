@@ -249,7 +249,7 @@
   <% if affiche[encours] %>
     <% if faisable[encours] <= 1 || current_user.sk.admin %>
       
-      <% if faisable[encours] == 0 %>
+      <% if faisable[encours] == 0 && !current_user.sk.admin %>
         <table style="border:1px solid green;" class="table">
         <tr style="background-color:#DDFFDD;">
         <td colspan="3" style="border-top:1px solid green;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <i class="icon-ok"></i></h3></center></td>
@@ -403,7 +403,7 @@
   <% encours = (possible.first)[2] %>
   <% possible.delete(possible.first) %>
 
-  <% if current_user.sk.chapters.exists?(chap[encours]) %>
+  <% if current_user.sk.chapters.exists?(chap[encours])  && !current_user.sk.admin %>
     <table style="border:1px solid green;" class="table">
     <tr style="background-color:#DDFFDD;">
     <td colspan="3" style="border-top:1px solid green;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <i class="icon-ok"></i></h3></center></td>

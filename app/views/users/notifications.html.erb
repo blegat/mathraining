@@ -12,7 +12,7 @@
 <table class="table table-bordered">
 <tr><th>Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
 <% @notifications.each do |n| %>
-  <%= render 'submissions/show2', s: n %>
+  <%= render 'submissions/show2', s: n, nom: true %>
 <% end %>
 </table>
 </div>

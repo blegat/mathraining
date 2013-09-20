@@ -17,9 +17,9 @@
   
   <% if current_user.sk.admin? %>
   <br/>
-  <h4>Solution officielle</h4>
+  <h4>Eléments de solution</h4>
   <% if f.explanation.size == 0 %>
-    <p style="color:orange;"><b>Pas de solution officielle</b></p>
+    <p style="color:orange;"><b>Pas d'éléments disponibles </b> : Aidez vos collègues en rédigeant les grandes idées de la solution!</p>
   <% else %>
     <%= raw(f.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
     <br/>
@@ -78,10 +78,6 @@
   <% else %>
     <!-- Online because of first if -->
     <% if current_user.sk.solved?(f) && f.explanation.size > 0 %>
-      <br/>
-      <h4>Solution officielle</h4>
-      <%= raw(f.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-      <br/>
     <% end %>
     <%= render 'submissions/index', problem: f %>
     <% unless current_user.sk.solved?(f) || !@newsub %>

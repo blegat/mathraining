@@ -4,18 +4,18 @@ class SubmissionsController < ApplicationController
   before_filter :get_problem
   before_filter :online_chapter
   before_filter :unlocked_chapter
+  before_filter :can_see, only: [:show]
   before_filter :admin_user, only: [:read, :unread]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
 
   def show
     # Marquer comme lu ??
-    @submission = Submission.find_by_id(params[:id])
     if @submission.nil?
       redirect_to root_path
     end
     notif = current_user.sk.notifs.where(submission_id: @submission.id)
-    if notif.size > 0
+    if notif.size > 0 && !current_user.other
       notif.first.delete
     end
     
@@ -127,6 +127,13 @@ class SubmissionsController < ApplicationController
   end
 
   private
+  
+  def can_see
+    @submission = Submission.find_by_id(params[:id])
+    if ((@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.solved?(@problem) && !current_user.sk.admin))
+      redirect_to root_path
+    end
+  end
 
   def not_solved
     redirect_to root_path if current_user.sk.solved?(@problem)

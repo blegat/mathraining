@@ -22,7 +22,7 @@
 <% date = s.updated_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
-<% if current_user.sk.admin %>
+<% if nom %>
 <td style="font-weight:bold;">
 <% if s.user.admin %>
   <%= s.user.name %>
