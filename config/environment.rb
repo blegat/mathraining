@@ -7,7 +7,7 @@ app_environment_variables = File.join(Rails.root, 'config', 'app_environment_var
 load(app_environment_variables) if File.exists?(app_environment_variables)
 
 # Initialize the rails application
-Ombtraining::Application.initialize!
+Mathraining::Application.initialize!
 
 # Localization
-Ombtraining::Application.config.i18n.available_locales = :fr
+Mathraining::Application.config.i18n.available_locales = :fr

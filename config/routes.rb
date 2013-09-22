@@ -1,4 +1,4 @@
-Ombtraining::Application.routes.draw do
+Mathraining::Application.routes.draw do
 
   match '/notifications_new', to: 'users#notifications_new',
     as: :notifications_new

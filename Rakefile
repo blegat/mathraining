@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Ombtraining::Application.load_tasks
+Mathraining::Application.load_tasks

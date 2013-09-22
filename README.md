@@ -1,10 +1,10 @@
-OMB training
+Mathraining
 ============
-[![Build Status](https://secure.travis-ci.org/blegat/ombtraining.png)](http://travis-ci.org/blegat/ombtraining)
+[![Build Status](https://secure.travis-ci.org/blegat/mathraining.png)](http://travis-ci.org/blegat/mathraining)
 
 Description
 -----------
-Code source de [Mathraining](http://ombtraining.heroku.com),
+Code source de [Mathraining](http://mathraining.heroku.com),
 le site interactif d'entraînement aux Olympiades Internationales de Mathématiques.
 
 Vous êtes libres et encouragés à participer à son développement en soumettant
