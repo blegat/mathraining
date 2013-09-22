@@ -267,7 +267,9 @@
       
       <center><h4>Théorie</h4></center>
       <ul>
-      <% chap[encours].theories.each do |t| %>
+      <% liste = chap[encours].theories %>
+      <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
+      <% liste.each do |t| %>
         <% if t.online %>
           <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.sk.theories.exists?(t) %></li>
         <% end %>
@@ -295,7 +297,9 @@
       <td class="span4">
       <center><h4>Théorie</h4></center>
       <ul>
-      <% chap[encours].theories.each do |t| %>
+      <% liste = chap[encours].theories %>
+      <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
+      <% liste.each do |t| %>
         <% if t.online %>
           <li><%= t.title %></li>
         <% end %>
