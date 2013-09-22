@@ -1,4 +1,4 @@
-<% provide(:title, @chapter.name) %>
+<% provide(:title, @chapter.name.html_safe) %>
 
 <% if(params.has_key?:type) %>
   <% type = params[:type].to_i %>

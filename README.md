@@ -4,8 +4,8 @@ OMB training
 
 Description
 -----------
-Code source d'[OMB training](http://ombtraining.heroku.com),
-le site d'entrainement belge pour les olympiades mathématiques internationales.
+Code source de [Mathraining](http://ombtraining.heroku.com),
+le site interactif d'entraînement aux Olympiades Internationales de Mathématiques.
 
 Vous êtes libres et encouragés à participer à son développement en soumettant
 des bugs, suggestions ou même en participant à l'écriture du site web.
