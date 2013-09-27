@@ -103,7 +103,7 @@ Mathraining::Application.routes.draw do
     end
   end
 
-  mathjax 'mathjax'
+ # mathjax 'mathjax'
 
   resource :prerequisites # missing a 's' here ?
   resources :sections

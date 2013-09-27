@@ -93,8 +93,6 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    mathjax-rails (0.0.4)
-      railties (~> 3.0)
     mime-types (1.21)
     mini_portile (0.5.1)
     multi_json (1.7.2)
@@ -194,7 +192,6 @@ DEPENDENCIES
   faker (= 1.0.1)
   jquery-rails
   kramdown
-  mathjax-rails
   pagedown-rails (~> 1.1.2)
   paperclip!
   pg (~> 0.14.1)
