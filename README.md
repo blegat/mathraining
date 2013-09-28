@@ -4,7 +4,7 @@ Mathraining
 
 Description
 -----------
-Code source de [Mathraining](http://mathraining.heroku.com),
+Code source de [Mathraining](http://www.mathraining.be),
 le site interactif d'entraînement aux Olympiades Internationales de Mathématiques.
 
 Vous êtes libres et encouragés à participer à son développement en soumettant
