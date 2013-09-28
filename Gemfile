@@ -10,6 +10,7 @@ gem 'rails-i18n'
 #gem 'mathjax-rails', "~> 0.0.4"
 gem "paperclip", :git => "git://github.com/thoughtbot/paperclip.git"
 gem "recaptcha", :require => "recaptcha/rails"
+gem 'thin'
 
 # Markdown
 gem 'redcarpet' # server-side
