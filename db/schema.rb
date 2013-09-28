@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130912192836) do
+ActiveRecord::Schema.define(:version => 20130928195118) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -139,8 +139,9 @@ ActiveRecord::Schema.define(:version => 20130912192836) do
   add_index "pictures", ["user_id"], :name => "index_pictures_on_user_id"
 
   create_table "points", :force => true do |t|
-    t.integer "user_id"
-    t.integer "rating"
+    t.integer  "user_id"
+    t.integer  "rating"
+    t.datetime "forumseen", :default => '2009-01-01 00:00:00'
   end
 
   add_index "points", ["user_id"], :name => "index_points_on_user_id"

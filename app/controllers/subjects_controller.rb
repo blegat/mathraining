@@ -26,6 +26,11 @@ class SubjectsController < ApplicationController
         @subjects = Subject.where(admin: false, chapter_id: @chapter, important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
       end
     end
+    
+    if !current_user.other && !current_user.sk.see_forum
+      current_user.sk.point.forumseen = DateTime.current
+      current_user.sk.point.save
+    end
   end
 
   def show

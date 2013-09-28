@@ -52,7 +52,11 @@
     <ul class="nav pull-right">
       <li><%= link_to "Accueil",    root_path %></li>
       <% if signed_in? %>
-        <li><%= link_to "Forum", subjects_path %></li>	
+        <% if current_user.sk.see_forum %>
+          <li><%= link_to "Forum", subjects_path %></li>
+        <% else %>
+          <li style="font-weight:bold;"><%= link_to "- Forum -", subjects_path %></li>
+        <% end %>
         <li><%= link_to "Cours", sections_path %></li>
         <li><%= link_to "Utilisateurs", users_path %></li>
         <li id="fat-menu" class="dropdown">

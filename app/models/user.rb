@@ -90,6 +90,20 @@ class User < ActiveRecord::Base
     return @@niveaux
   end
   
+  def see_forum
+    lastdate = '2009-01-01 00:00:00'
+    if self.admin?
+      lastdate = Subject.order("lastcomment DESC").first.lastcomment
+    else
+      lastdate = Subject.where(admin: false).order("lastcomment DESC").first.lastcomment
+    end
+    if lastdate < self.point.forumseen
+      return true
+    else
+      return false
+    end
+  end
+  
   def sk
     if self.admin? && self.skin != 0
       return User.find(self.skin)
