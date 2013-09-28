@@ -92,9 +92,12 @@ class User < ActiveRecord::Base
   
   def see_forum
     lastdate = '2009-01-01 00:00:00'
+    
     if self.admin?
+      return true if Subject.order("lastcomment DESC").count == 0
       lastdate = Subject.order("lastcomment DESC").first.lastcomment
     else
+      return true if Subject.where(admin: false).order("lastcomment DESC").count == 0
       lastdate = Subject.where(admin: false).order("lastcomment DESC").first.lastcomment
     end
     if lastdate < self.point.forumseen
