@@ -238,7 +238,7 @@ class UsersController < ApplicationController
 
     user.solvedproblems.each do |p|
       problem = p.problem
-      pt = 25*problem.level
+      pt = 15*problem.level
 
       if !problem.chapter.sections.empty? # Pas un fondement
         user.point.rating = user.point.rating + pt

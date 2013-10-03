@@ -170,7 +170,7 @@ class SubmissionsController < ApplicationController
   
   def point_attribution(user, problem)
     if !user.solved?(problem) # Avoid double count
-      pt = 25*problem.level
+      pt = 15*problem.level
       
       partials = user.pointspersections
     

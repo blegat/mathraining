@@ -52,7 +52,7 @@
     <% activite.push({:time => q.updated_at, :type => 0, :pt => pt, :chapter => q.qcm.chapter.name}) %>
   <% end %>
   <% problems.each do |p| %>
-    <% pt = 25 * p.problem.level %>
+    <% pt = 15 * p.problem.level %>
     <% pt = 0 if p.problem.chapter.sections.empty? %>
     <% activite.push({:time => p.updated_at, :type => 1, :pt => pt, :chapter => p.problem.chapter.name}) %>
   <% end %>

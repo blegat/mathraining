@@ -28,5 +28,5 @@ class Problem < ActiveRecord::Base
     uniqueness: { scope: :chapter_id },
     numericality: { greater_than_or_equal_to: 0 } 
   validates :level, presence: true,
-    inclusion: { in: [1, 2, 3] }
+    inclusion: { in: [1, 2, 3, 4, 5] }
 end

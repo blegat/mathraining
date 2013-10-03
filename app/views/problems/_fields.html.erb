@@ -18,5 +18,5 @@
 <%= link_to "Mes images", pictures_path, :target => "_blank" %> - <%= link_to "Uploader une image", new_picture_path, :target => "_blank" %>
 <%= f.text_area :statement, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
 
-<%= f.label "Niveau (1, 2 ou 3)" %>
-<%= f.number_field :level, :class => "span1", :min => 1, :max => 3 %>
+<%= f.label "Niveau (entre 1 et 5)" %>
+<%= f.number_field :level, :class => "span1", :min => 1, :max => 5 %>
