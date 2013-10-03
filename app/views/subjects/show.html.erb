@@ -1,6 +1,6 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
-<% provide(:title, @subject.title) %>
+<% provide(:title, @subject.title.html_safe) %>
 
 
 <% if @subject.chapter.nil? %>
