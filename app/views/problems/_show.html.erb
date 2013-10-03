@@ -34,7 +34,8 @@
            | <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Attention, ce problème est visible des utilisateurs. Etes-vous sûr de vouloir supprimer ce problème? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
         <% end %>
       <% else %>
-        <%= link_to "Modifier ce problème", edit_problem_path(f) %> |
+        <%= link_to "Modifier ce problème", edit_problem_path(f) %>
+        | <%= link_to "Modifier la solution", problem_explanation_path(f) %> |
         <%= link_to "Supprimer ce problème", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
       <% end %>
     </center>
