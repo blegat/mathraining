@@ -26,7 +26,7 @@
   <% if f.online %>
     <h3>1.<%= i %>. <%= f.title %></h3>
     <div>
-    <%= raw(f.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+    <%= raw(f.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/<evidence>[ \r]*\n/, '<evidence>').gsub(/<\/evidence>[ \r]*\n/, '</evidence>').gsub(/<evidence>/, '<div class="evidence">').gsub(/<\/evidence>/, '</div>').gsub(/\n/, '<br/>'))%>
     </div><br/>
     <% i = i+1 %>
   <% end %>
