@@ -140,7 +140,7 @@
 <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
 <% listex.each do |f| %>
   <% if f.online %>
-    <% pt = 25*f.level %>
+    <% pt = 15*f.level %>
     <h3>3.<%= i %>. <%= f.name %>
     <% (1..f.level).each do |i| %>
       <i class='icon-star'></i>
