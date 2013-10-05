@@ -4,14 +4,14 @@
 <% def affiche_date(date, datenow) %>
   <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
   
-  <% if (datenow - date).floor > 24*60*60 %>
+  <% if (datenow - date).floor >= 24*60*60 %>
     <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
-  <% elsif (datenow - date).floor > 60*60 %>
+  <% elsif (datenow - date).floor >= 60*60 %>
     <% minute = ((datenow - date)/60).floor %>
     <% heure = (minute / 60).floor %>
     <% minute = minute - 60*heure %>
     il y a <%= heure %> heure<%="s" if heure > 1 %>, <%= minute %> minute<%= "s" if minute > 1 %>
-  <% elsif (datenow - date).floor > 60 %>
+  <% elsif (datenow - date).floor >= 60 %>
     <% minute = ((datenow - date)/60).floor %>
     il y a <%= minute %> minute<%= "s" if minute > 1 %>
   <% else %>
