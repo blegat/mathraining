@@ -1,3 +1,5 @@
+require "resque_web"
+
 Mathraining::Application.routes.draw do
 
   match '/notifications_new', to: 'users#notifications_new',
@@ -163,5 +165,7 @@ Mathraining::Application.routes.draw do
 
   match '/recompute_scores', to: 'users#recompute_scores',
       as: :recompute_scores
+      
+  mount ResqueWeb::Engine => "/resque_web"
 
 end

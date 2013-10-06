@@ -12,6 +12,10 @@ gem "paperclip", :git => "git://github.com/thoughtbot/paperclip.git"
 gem "recaptcha", :require => "recaptcha/rails"
 gem 'thin'
 
+gem "resque", "~> 2.0.0.pre.1", github: "resque/resque"
+gem 'resque_mailer'
+gem 'resque-web', require: 'resque_web'
+
 # Markdown
 gem 'redcarpet' # server-side
 gem 'kramdown' # server-side

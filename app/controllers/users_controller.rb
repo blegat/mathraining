@@ -23,9 +23,9 @@ class UsersController < ApplicationController
       @user.admin = true
     end
   	if verify_recaptcha(:model => @user, :message => "Captcha incorrect") && @user.save
-  	  UserMailer.registration_confirmation(@user).deliver
+  	  UserMailer.registration_confirmation(@user.id).deliver
   	  
-  	  flash[:success] = "Un mail de confirmation vous a été envoyé sur votre adresse mail pour activer votre compte."
+  	  flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
   	  #flash[:success] = "Vous êtes inscrit! Veuillez vous connecter."
   	  redirect_to signin_path
   	else
@@ -91,8 +91,8 @@ class UsersController < ApplicationController
     @user = User.find_by_email(params[:user][:email])
     if @user
       @user.update_attribute(:key, SecureRandom.urlsafe_base64)
-      UserMailer.forgot_password(@user).deliver
-  	  flash[:success] = "Un mail vous a été envoyé pour que vous puissiez changer de mot de passe."
+      UserMailer.forgot_password(@user.id).deliver
+  	  flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
     else
       flash[:error] = 'Aucun utilisateur ne possède cet adresse.'
     end
