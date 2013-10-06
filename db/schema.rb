@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130928195118) do
+ActiveRecord::Schema.define(:version => 20131006153245) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -97,6 +97,14 @@ ActiveRecord::Schema.define(:version => 20130928195118) do
   end
 
   add_index "followings", ["submission_id", "user_id"], :name => "index_followings_on_submission_id_and_user_id"
+
+  create_table "followingsubjects", :force => true do |t|
+    t.integer "user_id"
+    t.integer "subject_id"
+  end
+
+  add_index "followingsubjects", ["subject_id"], :name => "index_followingsubjects_on_subject_id"
+  add_index "followingsubjects", ["user_id"], :name => "index_followingsubjects_on_user_id"
 
   create_table "messagefiles", :force => true do |t|
     t.integer  "message_id"

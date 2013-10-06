@@ -7,11 +7,17 @@
 <h1><%= @subject.title %></h1>
 <% else %>
   <% @chapitre = @subject.chapter %>
-  <h1><%= @subject.title %> - <%= @chapitre.name %> </h1>
+  <h1><%= @subject.title %> - <%= @chapitre.name %></h1>
+<% end %>
+
+<% if !current_user.followed_subjects.exists?(@subject) %>
+  <center><%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), data: { confirm: "Vous recevrez un email à chaque fois qu'un nouveau message sera posté sur ce sujet."}, class: 'btn btn' %></center>
+<% else %>
+  <center><%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn' %></center>
 <% end %>
 
 <% if @subject.admin? %>
-<center><span class="label label-warning">Sujet réservé aux administrateurs</span></center>
+<br/><center><span class="label label-warning">Sujet réservé aux administrateurs</span></center>
 <% end %>
 
 <center><%= will_paginate @messages %></center>

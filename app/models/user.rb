@@ -37,6 +37,9 @@ class User < ActiveRecord::Base
   
   has_many :subjects, dependent: :destroy
   has_many :messages, dependent: :destroy
+  
+  has_many :followingsubjects, dependent: :destroy
+  has_many :followed_subjects, through: :followingsubjects, source: :subject
 
   before_save { self.email.downcase! }
   before_save :create_remember_token

@@ -67,7 +67,13 @@ class MessagesController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      flash[:success] = "Message ajouté."
+      flash[:success] = "Message ajouté. "
+                
+      @subject.following_users.each do |u|
+        if u != current_user
+          UserMailer.new_message(u.id, @subject.id, current_user.name, @message.content).deliver
+        end
+      end
 
       @subject.lastcomment = DateTime.current
       @subject.save

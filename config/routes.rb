@@ -144,6 +144,11 @@ Mathraining::Application.routes.draw do
     match '/leave_skin', to: 'users#leave_skin',
       as: :leave_skin
   end
+  
+  resources :followingsubjects
+  
+  match '/add_followingsubject', to: "followingsubjects#add_followingsubject"
+  match '/remove_followingsubject', to: "followingsubjects#remove_followingsubject"
 
   resources :sessions, only: [:new, :create, :destroy]
 
