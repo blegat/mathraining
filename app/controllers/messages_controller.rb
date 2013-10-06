@@ -71,6 +71,7 @@ class MessagesController < ApplicationController
                 
       @subject.following_users.each do |u|
         if u != current_user
+          flash[:success] += u.email + " "
           UserMailer.new_message(u.id, @subject.id, current_user.name, @message.content).deliver
         end
       end
