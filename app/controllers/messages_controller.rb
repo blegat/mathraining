@@ -72,7 +72,7 @@ class MessagesController < ApplicationController
       @subject.following_users.each do |u|
         if u != current_user
           flash[:success] += u.email + " "
-          UserMailer.forgot_password(@user.id).deliver
+          UserMailer.forgot_password(u.id).deliver
           # UserMailer.new_message(u.id, @subject.id, current_user.name, @message.content).deliver
         end
       end
