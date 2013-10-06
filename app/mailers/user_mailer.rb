@@ -1,7 +1,7 @@
 #encoding: utf-8
 class UserMailer < AsyncMailer
 
-  # include Resque::Mailer
+  include Resque::Mailer
   
   def registration_confirmation(userid)
     @user = User.find(userid)
