@@ -36,7 +36,7 @@
     <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
   <% @importants.each do |s| %>
     <tr>
-      <td>
+      <td style="vertical-align:middle;">
         <% if s.admin? %>
           <table style="border:none; padding:0px; margin:0px;"><tr><td style="border:none; vertical-align:middle; padding:0px; padding-right:5px;">
           <span class="label label-warning">Admin</span>
@@ -61,14 +61,14 @@
         <% end %>
         
       </td>
-      <td style="text-align:center; font-weight:bold;">
+      <td style="text-align:center; font-weight:bold; vertical-align:middle;">
       	<% if s.user.admin %>
           <%= s.user.name %>
         <% else %>
           <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="text-align:center;">
+      <td style="text-align:center; vertical-align:middle;">
         <%= x = s.messages.count %>
       </td>
         <% if x > 0 %>
@@ -82,14 +82,14 @@
         
         <% datenow = Time.zone.now %>
         
-      <td style="width:180px; text-align:center; font-weight:bold;">
+      <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
         <% if qui.admin %>
           <%= qui.name %>
         <% else %>
           <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="width:180px; text-align:center;">
+      <td style="width:180px; text-align:center; vertical-align:middle;">
         <% tot = s.messages.count %>
         <% page = [0,((tot-1)/10).floor].max + 1 %>
         <% if @chapter.nil? %>
@@ -119,7 +119,7 @@
     <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
   <% @subjects.each do |s| %>
     <tr>
-      <td>
+      <td style="vertical-align:middle;">
         <% if s.admin? %>
           <table style="border:none; padding:0px; margin:0px;"><tr><td style="border:none; vertical-align:middle; padding:0px; padding-right:5px;">
           <span class="label label-warning">Admin</span>
@@ -143,14 +143,14 @@
           </td></tr></table>
         <% end %>
       </td>
-      <td style="text-align:center; font-weight:bold;">
+      <td style="text-align:center; font-weight:bold; vertical-align:middle;">
         <% if s.user.admin %>
           <%= s.user.name %>
         <% else %>
           <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="text-align:center;">
+      <td style="text-align:center; vertical-align:middle;">
         <%= x = s.messages.count %>
       </td>
         <% if x > 0 %>
@@ -164,14 +164,14 @@
         
         <% datenow = Time.zone.now %>
         
-      <td style="width:180px; text-align:center; font-weight:bold;">
+      <td style="width:180px; text-align:center; font-weight:bold; vertical-align;middle;">
         <% if qui.admin %>
           <%= qui.name %>
         <% else %>
           <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="width:180px; text-align:center;">
+      <td style="width:180px; text-align:center; vertical-align:middle;">
         <% tot = s.messages.count %>
         <% page = [0,((tot-1)/10).floor].max + 1 %>
         <% if @chapter.nil? %>
