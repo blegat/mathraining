@@ -1,0 +1,9 @@
+<p>Bonjour <%= @user.first_name %>,</p>
+
+<p>Bienvenue sur Mathraining! Afin de pouvoir accéder aux cours, il vous faut confirmer votre inscription en vous rendant à l'adresse suivante.</p>
+
+<p>http://www.mathraining.be/activate?id=<%= @user.id %>&key=<%= @user.key %></p>
+
+<p>A bientôt,</p>
+
+<p>L'équipe Mathraining.</p>
