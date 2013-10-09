@@ -141,7 +141,7 @@
           <button class="btn-warning btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= '!' %></button>
         <% else %>
           <% sub = current_user.sk.submissions.where(:problem_id => f.id).order('created_at') %>
-          <% if sub.size == 0 || current_user.sk.admin? %>%>
+          <% if sub.size == 0 || current_user.sk.admin? %>
             <button class="btn btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
           <% else %>
             <% sub = sub.last %>
