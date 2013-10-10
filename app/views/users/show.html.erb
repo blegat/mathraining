@@ -1,7 +1,6 @@
-<% @price = 15 # ALSO CHANGE IN INDEX %>
-<% @pricefondement = 15 %>
-
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<% colors = ["#FFFFBB", "#FFBBBB", "#DDDDFF", "#CCFFCC"] %>
 
 <% provide(:title, @user.name) %>
 
@@ -136,43 +135,81 @@
   
   <div class="span6">
 
-  <center><p style="font-size:24px; margin-top:105px;">Score : <%= actualrating %></p></center>
+  <center><p style="font-size:24px; margin-top:80px;">Score : <%= actualrating %></p></center>
   <br/>
   
-  <table class="table table-bordered">
-  <tr><th style="width:150px;">Section</th><th><center>Niveau</center></th><th><center>Niveau suivant</center></th></tr>
+  
+  <% if actualrating > 0 %>
+  
   <% p = Pointspersection.where(:user_id => @user) %>
-  <% rate = p.where(:section_id => 0).first.points %>
+  <% total = 0 %>
+  <% possible2 = SortedSet.new %>
   
-  <tr><td>Fondements</td>
-  <td>
-  <center>
-  <% etoile = (rate/@pricefondement).floor %>
-  <% etoile.times do |i| %>
-    <img src="/assets/etoilevertefoncee.gif" />
-  <% end %>
-  </center>
-  </td>
-  <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*@pricefondement) )/@pricefondement %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*@pricefondement) )/@pricefondement %>, <%= 255*(rate - (etoile*@pricefondement) )/@pricefondement %>, 0);"></div></div></td>
-  
-
   <% Section.all.each do |s| %>
-    <tr>
     <% rate = p.where(:section_id => s.id).first.points %>
-    <td><%= s.name %></td>
-    <td>
-    <center>
-    <% etoile = (rate/@price).floor %>
-    <% etoile.times do |i| %>
-      <img src="/assets/etoilejaune.gif" />
-    <% end %>
-    </center>
-    </td>
-    <td><div class="progress" style="margin-bottom:0px;"><div class="bar" style="width:<%= 100*(rate - (etoile*@price) )/@price %>%; background-image:none; background-color:rgb(<%= 255-255*(rate - (etoile*@price) )/@price %>, <%= 255*(rate - (etoile*@price) )/@price %>, 0);"></div></div></td>
-    </tr>
+    <% total = total + rate %>
+
+    <% possible2.add([rate, s.name, s.id]) %>
   <% end %>
   
+  <center>
+  <canvas id="Camembert" width="240" height="240">
+  Votre navigateur ne supporte pas les canvas.
+  </canvas>
+  </center>
+  
+  <center>
+  <table class="table table-bordered" style="width:360px; margin-top:20px;">
+  <% p = Pointspersection.where(:user_id => @user) %>
+  <tr>
+  <% i = 0 %>
+  <% Section.all.each do |s| %>
+    <% rate = p.where(:section_id => s.id).first.points %>
+
+    <td style="width:180px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td>
+    <% i = i+1 %>
+    <% if i == 2 %>
+      </tr><tr>
+    <% end %>
+    
+  <% end %>
+  
+  </tr>
   </table>
+  </center>
+  
+  
+  <script>
+  var d=document.getElementById("Camembert");
+  var ctx=d.getContext("2d");
+  
+  ctx.beginPath();
+  ctx.arc(120, 120, 115, 0, 2 * Math.PI, false);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#888888';
+  ctx.stroke();
+  prec = 0;
+  <% while !possible2.empty? %>
+    <% if (possible2.first)[0] > 0 %>
+      ctx.beginPath();
+      ctx.arc(120,120,115, prec, prec + (2 * Math.PI * <%= (possible2.first)[0] %>) / <%= total %>, false);
+      prec = prec + (2 * Math.PI * <%= (possible2.first)[0] %>) / <%= total %>;
+      ctx.lineTo(120, 120);
+      ctx.closePath();
+      ctx.fillStyle= "<%= colors[(possible2.first)[2]-1] %>";
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle="#888888";
+      ctx.stroke();
+    <% end %>
+    <% possible2.delete(possible2.first) %>
+  <% end %>
+  
+  </script>
+  
+  <% end %>
   
   <% date = @user.created_at.in_time_zone %>
   <br/>

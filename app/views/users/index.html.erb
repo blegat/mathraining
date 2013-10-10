@@ -1,21 +1,17 @@
-<% @price = 15 # ALSO CHANGE IN SHOW %>
-<% @pricefondement = 15 %>
+<% colors = ["#FFFFBB", "#FFBBBB", "#DDDDFF", "#CCFFCC"] %>
+<% abreviation = ["C", "G", "TN", "A"] %>
 
-<% provide(:title, 'Utilisateurs') %>
-<h1>Utilisateurs</h1>
-
-
-
-<% points = Point.order("rating DESC").all %>
-
-<% allsec = Section.all %>
+<% provide(:title, 'Scores') %>
+<h1>Scores</h1>
 
 
-<table class="table table-bordered">
-  <tr><th></th><th>Nom</th><th><center>Score</center></th><th><center>Fondements</center></th>
-  <% allsec.each do |s| %>
-    <th><center><%= s.name %></center></th>
-  <% end %>
+
+<% points = Point.order("rating DESC").where("rating != 0").all %>
+
+<% allsec = Section.order(:id).all %>
+
+<table class="table table-bordered" style="width:570px; margin-top:20px;">
+  <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th style="width:260px;"><center>Préférences</center></th>
   </tr>
   <% rank = 1 %>
   <% points.each do |p| %>
@@ -32,33 +28,37 @@
     <td><center><%= rating %></center></td>
       
     <% p = Pointspersection.where(:user_id => user) %>
-    <% rate = p.where(:section_id => 0).first.points %>
-      <td>
-      <center>
-      <% etoile = (rate/@pricefondement).floor %>
-      <% etoile.times do |i| %>
-        <img src="/assets/etoilevertefoncee.gif" />
-      <% end %>
-      </center>
-      </td>
+    <% total = 0 %>
+    <% allsec.each do |s| %>
+      <% rate = p.where(:section_id => s.id).first.points %>
+      <% total = total + rate %>
+    <% end %>
+    
+    <td>
+    <center>
+      <table style="height:20px; padding:0px; border:1px solid #CCCCCC;">
+      <tr>
       <% allsec.each do |s| %>
         <% rate = p.where(:section_id => s.id).first.points %>
-      <td>
-      <center>
-      <% etoile = (rate/@price).floor %>
-      <% etoile.times do |i| %>
-        <img src="/assets/etoilejaune.gif" />
+        <td style="padding:0px; text-align:center; width:<%= 220.0*rate/total %>px; background-color:<%= colors[s.id-1] %>">
+        <%= abreviation[s.id-1] if 220.0*rate/total > 30 %>
+        </td>
       <% end %>
-      </center>
-      </td>
-    <% end %>
+      </tr>
+      </table>
+    </center>
+    </td>
   
     </tr>
-    <% rank = rank + 1 %>
+    <% rank = rank + 1  %>
     <% end %>
   <% end %>
 
 </table>
+
+<% if rank == 1 %>
+  <b>Aucun utilisateur classé.</b>
+<% end %>
 
 <% if current_user.sk.root %>
 <center>
@@ -69,6 +69,21 @@
 <% end %>
 
 <% if current_user.sk.admin %>
+<br/><center><b> --- Cette partie n'est visible que des administrateurs --- </b></center>
+<h2>Utilisateurs non classés</h2>
+<% points = Point.where(rating: 0).all %>
+<% rank = 1 %>
+<% points.each do |p| %>
+  <% user = User.find(p.user) %>
+  <% if !user.admin %>
+    <b> <%= link_to user.name, user, {:style => "color:#{user.level[:color]}" } %> </b><br/>
+    <% rank = rank + 1 %>
+  <% end %>
+<% end %>
+
+<% if rank == 1 %>
+  <b>Aucun utilisateur non classé.</b>
+<% end %>
 
 <h2>Administrateurs</h2>
 

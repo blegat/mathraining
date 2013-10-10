@@ -30,7 +30,7 @@ describe "Authentication" do
       let(:user) { FactoryGirl.create(:user) }
       before { sign_in(user) }
 
-      it { should have_link('Utilisateurs', href: users_path) }
+      it { should have_link('Scores', href: users_path) }
       it { should have_link('Compte', href: edit_user_path(user)) }
       it { should have_link('Déconnexion', href: signout_path) }
       it { should_not have_link('Connexion', href: signin_path) }
