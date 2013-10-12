@@ -279,10 +279,16 @@
         <td colspan="3" style="border-top:1px solid green;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <i class="icon-ok"></i></h3></center></td>
         </tr>
         <tr style="background-color:#DDFFDD;">
+      <% elsif !chap[encours].online %>
+        <table style="border:1px solid black;" class="table">
+        <tr style="background-color:#FFEEAA;">
+        <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %> (en construction)</h3></center></td>
+        </tr>
+        <tr style="background-color:#FFEEAA;">
       <% else %>
         <table style="border:1px solid black;" class="table">
         <tr style="background-color:#FFFFE0;">
-        <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <%= "(en construction)" if !chap[encours].online %></h3></center></td>
+        <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %></h3></center></td>
         </tr>
         <tr style="background-color:#FFFFE0;">
       <% end %>
@@ -455,10 +461,16 @@
     <td colspan="3" style="border-top:1px solid green;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <i class="icon-ok"></i></h3></center></td>
     </tr>
     <tr style="background-color:#DDFFDD;">
+  <% elsif !chap[encours].online %>
+    <table style="border:1px solid black;" class="table">
+    <tr style="background-color:#FFEEAA;">
+    <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %> (en construction)</h3></center></td>
+    </tr>
+    <tr style="background-color:#FFEEAA;">
   <% else %>
     <table style="border:1px solid black;" class="table">
     <tr style="background-color:#FFFFE0;">
-    <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <%= "(en construction)" if !chap[encours].online %></h3></center></td>
+    <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %></h3></center></td>
     </tr>
     <tr style="background-color:#FFFFE0;">
   <% end %>
