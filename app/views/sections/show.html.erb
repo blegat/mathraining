@@ -1,7 +1,5 @@
 <% def affiche_exercices(chapter, acces) %>
 
-<center>
-<div class="btn-group">
 
   <% liste = chapter.exercises %>
   <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
@@ -11,6 +9,8 @@
   <% deux = 0 %>
   <% j = 1 %>
   <% k = 1 %>
+  
+  <% compteur = 0 %>
   
   <% (1..(liste.size+liste2.size)).each do |i| %>
     
@@ -33,10 +33,15 @@
       <% f = liste[un] %> 
       <% if f.online || current_user.sk.admin? %>
       
+        <% compteur = compteur + 1 %>
+      
         <% if k % 5 == 1 && k > 1 %>
           </div>
           <br/>
           <div class="btn-group" style="margin-top:5px;">
+        <% elsif k == 1 %>
+          <center>
+          <div class="btn-group">
         <% end %>
         
         <% if acces %>
@@ -68,10 +73,15 @@
       <% f = liste2[deux] %> 
       <% if f.online || current_user.sk.admin? %>
       
+        <% compteur = compteur + 1 %>
+      
         <% if k % 5 == 1 && k > 1 %>
           </div>
           <br/>
           <div class="btn-group" style="margin-top:5px;">
+        <% elsif k == 1 %>
+          <center>
+          <div class="btn-group">
         <% end %>
         
         <% if acces %>
@@ -102,8 +112,13 @@
     
   <% end %>
   
-</div>
-</center>
+
+<% if compteur == 0 %>
+  <center><p><i> Aucun exercice. </i></p></center>
+<% else %>
+  </div>
+  </center>
+<% end %>
 
 
 <% end %>
@@ -115,8 +130,7 @@
 
 <% def affiche_problemes(chapter, acces) %>
 
-<center>
-<div class="btn-group">
+  <% compteur = 0 %>
 
   <% listex = chapter.problems %>
   <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
@@ -131,7 +145,12 @@
         </div>
         <br/>
         <div class="btn-group" style="margin-top:5px;">
+      <% elsif k == 1 %>
+        <center>
+        <div class="btn-group">
       <% end %>
+      
+      <% compteur = compteur + 1 %>
       
       <% if acces %>
       
@@ -162,8 +181,13 @@
     <% end %>
   <% end %>
 
-</div>
-</center>
+
+<% if compteur == 0 %>
+  <center><p><i>Aucun problème.</i></p></center>
+<% else %>
+  </div>
+  </center>
+<% end %>
 
 
 <% end %>
@@ -266,15 +290,24 @@
      <td class="span4">
       
       <center><h4>Théorie</h4></center>
-      <ul>
+      <% compteur = 0 %>
       <% liste = chap[encours].theories %>
       <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
       <% liste.each do |t| %>
         <% if t.online %>
+          <% if compteur == 0 %>
+            <ul>
+          <% end %>
+          <% compteur = compteur + 1 %>
           <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.sk.theories.exists?(t) %></li>
         <% end %>
       <% end %>	
-      </ul>
+      
+      <% if compteur == 0 %>
+        <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
+      <% else %>
+        </ul>
+      <% end %>
       
       </td>
     <% else %>
@@ -296,15 +329,24 @@
       <tr style="background-color:#EEEEEE;">
       <td class="span4">
       <center><h4>Théorie</h4></center>
-      <ul>
       <% liste = chap[encours].theories %>
       <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
       <% liste.each do |t| %>
+      <% compteur = 0 %>
         <% if t.online %>
+          <% if compteur == 0 %>
+            <ul>
+          <% end %>
+          <% compteur = compteur + 1 %>
           <li><%= t.title %></li>
         <% end %>
       <% end %>	
-      </ul>
+      
+      <% if compteur == 0 %>
+        <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
+      <% else %>
+        </ul>
+      <% end %>
       </td>
     <% end %>
     
@@ -423,15 +465,25 @@
   
   <td class="span4">
   <center><h4>Théorie</h4></center>
-  <ul>
+
+  <% compteur = 0 %>
   <% liste = chap[encours].theories %>
   <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
   <% liste.each do |t| %>
     <% if t.online %>
+      <% if compteur == 0 %>
+        <ul>
+      <% end %>
+      <% compteur = compteur + 1 %>
       <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.sk.theories.exists?(t) %></li>
     <% end %>
   <% end %>	
-  </ul>
+  
+  <% if compteur == 0 %>
+    <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
+  <% else %>
+    </ul>
+  <% end %>
   </td>
   
   <td class="span4">
