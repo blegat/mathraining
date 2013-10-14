@@ -48,6 +48,7 @@
 
   <% else %>
     <div class="noprint">
+    <br/>
     <center>
       <% if current_user.sk.theories.exists?(id) %>
         <%= button_to "Marquer comme non lu", theory_unread_path(f), method: :get, class: 'btn btn', :disabled => current_user.other %>
@@ -55,6 +56,9 @@
         <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn', :disabled => current_user.other %>
       <% end %>
     </center>
+    
+    <hr>
+    Des questions sur ce point théorique? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
     </div>
   <% end %>
   

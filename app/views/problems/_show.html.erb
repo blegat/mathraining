@@ -84,6 +84,9 @@
     <% unless current_user.sk.solved?(f) || !@newsub %>
       <%= render 'submissions/new', problem: f %>
     <% end %>
+    
+    <hr>
+    Des questions concernant ce problème? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
   <% end %>
 
 <% end %>

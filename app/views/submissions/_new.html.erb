@@ -41,8 +41,9 @@ function add() {
 
 <%= form_for :submission,
   url: problem_submissions_path(problem), :html => { :multipart => true } do |f| %>
-
+  
   <br/><h4>Nouvelle soumission</h4>
+  La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
   <div class="well" id="MathPreview"></div>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <% if @ancientexte.nil? %>

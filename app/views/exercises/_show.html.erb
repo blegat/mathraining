@@ -120,6 +120,7 @@
       <p style="color:red;">Votre réponse (<b><%= val %></b>) est erronée. Vous avez déjà commis <%= exo.nb_guess %> erreur<%= "s" if exo.nb_guess > 1 %>.</p>
 
     <% end %>
+    
   <% else %>
     <% if f.decimal %>
       On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
@@ -133,6 +134,9 @@
     <% end %>
 
   <% end %>
+  
+  <hr>
+  Un soucis avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
 
 <% end %>
 
