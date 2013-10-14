@@ -1,6 +1,6 @@
 <% if (f.online && f.chapter.online) || current_user.sk.admin? %>
   <h3><%= f.title %> </h3>
-  <div><%= raw(f.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/<evidence>[ \r]*\n/, '<evidence>').gsub(/<\/evidence>[ \r]*\n/, '</evidence>').gsub(/<evidence>/, '<div class="evidence">').gsub(/<\/evidence>/, '</div>').gsub(/\n/, '<br/>'))%>	
+  <div><%= raw(f.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/<evidence>[ \r]*\n/, '<evidence>').gsub(/<\/evidence>[ \r]*\n/, '</evidence>').gsub(/<evidence>/, '<div class="evidence">').gsub(/<\/evidence>/, '</div>').gsub(/\n/, '<br/>').gsub(/\/latextest\//, '<script src="/assets/previewsafe.js"></script> <div class="well" id="MathPreview"></div> <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div> <textarea id="MathInput" class="span10" style="height:120px; margin-top:5px;" onkeyup="Preview.Update()">Rentrez ici le code $\LaTeX$ que vous souhaitez tester.</textarea><script> Preview.Init(); Preview.Update(); </script>') )%>	
   </div>
   <br/>
   
