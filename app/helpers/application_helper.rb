@@ -32,10 +32,23 @@ module ApplicationHelper
   end
 
   def html_to_tex(html_text)
-    nokogiri_to_tex(Nokogiri::HTML(html_text).children[1])
+    # Deal with '<' signs
+    html_text = fix_irregular_html(html_text)
+    tex_text = nokogiri_to_tex(Nokogiri::HTML(html_text).children[1])
+    tex_text.gsub(/&lt;/, "<")
   end
 
   private
+
+  # source: https://gist.github.com/rngtng/796571
+  def fix_irregular_html(html)
+    regexp = /<([^<>]*)(<|$)/
+    #we need to do this multiple time as regex are overlapping
+    while (fixed_html = html.gsub(regexp, "&lt;\\1\\2")) && fixed_html != html
+      html = fixed_html
+    end
+    fixed_html
+  end
 
   def nokogiri_to_tex(node)
     if node.class == Nokogiri::XML::Element
