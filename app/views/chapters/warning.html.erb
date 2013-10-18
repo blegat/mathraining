@@ -1,20 +1,5 @@
 <% provide(:title, "Mise en ligne d'un chapitre".html_safe) %>
 
-<% s = Section.create(name: "Equations fonctionnelles", description: "", image: "functionalequations.jpg") %>
-<% User.all.each do |u| %>
-  <% newpoint = Pointspersection.new %>
-  <% newpoint.points = 0 %>
-  <% newpoint.section_id = s.id %>
-  <% u.pointspersections << newpoint %>
-<% end %>
-<% s = Section.create(name: "Inégalités", description: "", image: "inequality.jpg") %>
-<% User.all.each do |u| %>
-  <% newpoint = Pointspersection.new %>
-  <% newpoint.points = 0 %>
-  <% newpoint.section_id = s.id %>
-  <% u.pointspersections << newpoint %>
-<% end %>
-
 <h1>Mise en ligne du chapitre <%= @chapter.name %></h1>
 Vous vous apprêtez à mettre un chapitre en ligne.
 
