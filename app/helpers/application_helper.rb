@@ -35,7 +35,10 @@ module ApplicationHelper
     # Deal with '<' signs
     html_text = fix_irregular_html(html_text)
     tex_text = nokogiri_to_tex(Nokogiri::HTML(html_text).children[1])
-    tex_text.gsub(/&lt;/, "<")
+    tex_text.gsub(/&lt;/, "<").
+      gsub(/&amp;/, "&").
+      gsub(/\$\$\s*\\begin{align\*}/,"\\begin{align*}").
+      gsub(/\\end{align\*}\s*\$\$/,"\\end{align*}")
   end
 
   private
