@@ -18,32 +18,39 @@
   <% end %>
 </center>
 
-Les cours sont séparés dans cinq grandes sections.
+Les cours sont séparés dans sept grandes sections.
 
-La première contient tous les fondements mathématiques nécessaires à la bonne compréhension des quatre suivantes.
+La première contient tous les fondements mathématiques nécessaires à la bonne compréhension des sections suivantes.
 Elle est principalement destinée aux étudiants les plus jeunes, mais peut également servir de rappel aux étudiants plus avancés dans leur cursus scolaire.
 
 <center>
   <br/>
-  <div style="width:600px;">
+  <div style="width:500px;">
     <%= link_to image_tag("fondations.jpg", alt: "Fondations"), "sections/0" %>
   </div>
 
 </center>
-<br/>
-
-Les quatre sections suivantes sont les quatre sujets phares des Olympiades Mathématiques Internationales.
-Chaque année, six problèmes y sont proposés aux élèves, et il y en a typiquement au moins un de chaque section.
+<hr>
+Les six sections suivantes représentent des sujets phares des Olympiades Mathématiques Internationales. Les problèmes sont généralement classés comme étant de la combinatoire, de la géométrie, de la théorie des nombres ou de l'algèbre, mais ce dernier domaine est ici découpé en trois parties. Il existe en effet trois grands types de problèmes en algèbre : les équations fonctionnelles, les inégalités et les autres.<br/><br/>
 Cependant, les problèmes se diversifient au fil des années et il arrive qu'un exercice n'appartienne pas entièrement à l'une de ces catégories.
 C'est pourquoi ce site comportera certains chapitres hybrides, présents dans plus d'une section.
 
 <center>
-
+<table style="margin-top:20px;">
+<tr>
+<% i = 0 %>
   <% @sections.each do |f| %>
-    <br/>
-    <div style="width:600px;">
+    <% if i > 0 && i % 2 == 0 %>
+    </tr><tr>
+    <% end %>
+    <td style=padding:10px;">
+    <div style="width:500px;">
       <%= link_to image_tag(f.image, alt: f.name), f %>
     </div>
+    </td>
+    <% i = i+1 %>
   <% end %>
 
+</tr>
+</table>
 </center>

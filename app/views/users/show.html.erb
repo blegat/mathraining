@@ -1,6 +1,6 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
-<% colors = ["#FFFFBB", "#FFBBBB", "#DDDDFF", "#CCFFCC"] %>
+<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#CCFFCC", "#CFF5FF", "#DDDDFF"] %>
 
 <% provide(:title, @user.name) %>
 
@@ -168,7 +168,7 @@
 
     <td style="width:180px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td>
     <% i = i+1 %>
-    <% if i == 2 %>
+    <% if i == 2 || i == 4 %>
       </tr><tr>
     <% end %>
     

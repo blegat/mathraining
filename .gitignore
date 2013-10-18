@@ -21,3 +21,6 @@ doc/
 
 # Variables
 /config/app_environment_variables.rb
+
+# Assets
+/public/assets/

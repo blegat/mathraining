@@ -1,5 +1,5 @@
-<% colors = ["#FFFFBB", "#FFBBBB", "#DDDDFF", "#CCFFCC"] %>
-<% abreviation = ["C", "G", "TN", "A"] %>
+<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#CCFFCC", "#CFF5FF", "#DDDDFF"] %>
+<% abreviation = ["C", "G", "TN", "A", "EF", "I"] %>
 
 <% provide(:title, 'Scores') %>
 <h1>Scores</h1>
@@ -16,7 +16,7 @@
     <% if !user.admin? %>
     
     <% if rank == 1 %>
-      <table class="table table-bordered" style="width:570px; margin-top:20px;">
+      <table class="table table-bordered" style="width:600px; margin-top:20px;">
       <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th style="width:260px;"><center>Préférences</center></th>
       </tr>
     <% end %>
@@ -39,13 +39,15 @@
     
     <td>
     <center>
-      <table style="height:20px; padding:0px; border:1px solid #CCCCCC;">
+      <table style="height:20px; width:250px; padding:0px; border:1px solid #888888;">
       <tr>
       <% allsec.each do |s| %>
         <% rate = p.where(:section_id => s.id).first.points %>
-        <td style="padding:0px; text-align:center; width:<%= 220.0*rate/total %>px; background-color:<%= colors[s.id-1] %>">
-        <%= abreviation[s.id-1] if 220.0*rate/total > 30 %>
+        <% if rate > 0 %>
+          <td width="<%= 100.0*rate/total %>%" style="padding:0px; text-align:center; border:1px solid #888888; border-radius: 0px 0px 0px 0px; background-color:<%= colors[s.id-1] %>">
+        <%= abreviation[s.id-1] if 250.0*rate/total > 30 %>
         </td>
+        <% end %>
       <% end %>
       </tr>
       </table>
