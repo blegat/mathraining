@@ -64,7 +64,7 @@ module ApplicationHelper
         before = "\\begin{enumerate}"
         after = "\\end{enumerate}"
       when "li"
-        before = "\\item"
+        before = "\\item "
       end
       content = node.children.inject("") do |sum, child|
         "#{sum}#{nokogiri_to_tex(child)}"

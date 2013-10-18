@@ -62,13 +62,20 @@ class Chapter < ActiveRecord::Base
   end
 
   def to_tex
-    theories_tex = theories.inject("") do |sum, theory|
-      "#{sum}\n#{theory.to_tex}"
+    content = "\\chapter{#{name}}\n"
+    if theories.any?
+      content << "\n\\section{Théorie}\n"
+      content << theories.inject("") do |sum, theory|
+        "#{sum}\n#{theory.to_tex}"
+      end
     end
-    problems_tex = problems.inject("") do |sum, problem|
-      "#{sum}\n#{problem.to_tex}"
+    if problems.any?
+      content << "\n\\section{Problèmes}\n"
+      content << problems.inject("") do |sum, problem|
+        "#{sum}\n#{problem.to_tex}"
+      end
     end
-    "\\chapter{#{name}}\n\\section{Théorie}\n#{theories_tex}\n\n\\section{Problèmes}\n#{problems_tex}"
+    content
   end
 
   private

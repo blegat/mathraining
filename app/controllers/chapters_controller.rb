@@ -136,7 +136,9 @@ class ChaptersController < ApplicationController
   end
 
   def export
-    send_data @chapter.to_tex, filename: "#{@chapter.name}.tex"
+    # Remove spaces and tabs at end of line
+    content = @chapter.to_tex.gsub(/[ \t]+$/, "")
+    send_data content, filename: "#{@chapter.name}.tex"
   end
 
   private
