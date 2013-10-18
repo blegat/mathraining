@@ -12,6 +12,8 @@
 #  online     :boolean          default(FALSE)
 #
 
+include ApplicationHelper
+
 class Problem < ActiveRecord::Base
   attr_accessible :name, :position, :statement, :online, :level, :explanation
   belongs_to :chapter
@@ -26,7 +28,11 @@ class Problem < ActiveRecord::Base
   validates :explanation, length: { maximum: 8000 }
   validates :position, presence: true,
     uniqueness: { scope: :chapter_id },
-    numericality: { greater_than_or_equal_to: 0 } 
+    numericality: { greater_than_or_equal_to: 0 }
   validates :level, presence: true,
     inclusion: { in: [1, 2, 3, 4, 5] }
+
+  def to_tex
+    "\\subsection{#{name}}\n#{html_to_tex(statement)}"
+  end
 end

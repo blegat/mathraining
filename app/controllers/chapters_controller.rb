@@ -4,11 +4,15 @@ class ChaptersController < ApplicationController
   before_filter :admin_user,
     only: [:destroy, :edit, :update, :create,
       :new_section, :create_section, :destroy_section]
+  before_filter :chapter_exists1, only: [:show, :destroy]
+  before_filter :chapter_exists2, only:
+    [:export, :new_section, :create_section, :destroy_section,
+      :warning, :put_online]
   before_filter :delete_online, only: [:destroy]
   before_filter :online_chapter,
-    only: [:show]
+    only: [:show, :export]
   before_filter :unlocked_chapter,
-    only: [:show]
+    only: [:show, :export]
   before_filter :fondement_online,
     only: [:new_section, :create_section, :destroy_section]
   before_filter :prerequisites_online,
@@ -58,25 +62,25 @@ class ChaptersController < ApplicationController
     Exercise.where(:chapter_id => params[:id]).each do |e|
       e.destroy
     end
-    
+
     Theory.where(:chapter_id => params[:id]).each do |t|
       t.destroy
     end
-    
+
     Problem.where(:chapter_id => params[:id]).each do |p|
       p.destroy
     end
-    
+
     Qcm.where(:chapter_id => params[:id]).each do |q|
       Choice.where(:qcm_id => q.id).each do |c|
         c.destroy
       end
       q.destroy
     end
-    
+
     redirect_to sections_path
   end
-  
+
   def new_section
     @chapter = Chapter.find(params[:chapter_id])
     @sections_to_remove = @chapter.sections.order(:id)
@@ -94,13 +98,13 @@ class ChaptersController < ApplicationController
     taillebefore = chapter.sections.count
     chapter.sections << section
     tailleafter = chapter.sections.count
-  
+
     if chapter.online && tailleafter > taillebefore
       User.all.each do |user|
         point_attribution(user)
       end
     end
-    
+
     redirect_to chapter_manage_sections_path(chapter)
   end
 
@@ -121,27 +125,44 @@ class ChaptersController < ApplicationController
     end
     redirect_to chapter_manage_sections_path(chapter)
   end
-  
+
   def warning
   end
-  
+
   def put_online
     @chapter.online = true
     @chapter.save
     redirect_to @chapter
   end
-  
+
+  def export
+    send_data @chapter.to_tex, filename: "#{@chapter.name}.tex"
+  end
+
   private
 
   def admin_user
     redirect_to sections_path unless current_user.sk.admin?
   end
-  
+
+  def chapter_exists1
+    @chapter = Chapter.find_by_id(params[:id])
+    if @chapter.nil?
+      redirect_to root_path and return
+    end
+  end
+
+  def chapter_exists2
+    @chapter = Chapter.find(params[:chapter_id])
+    if @chapter.nil?
+      redirect_to root_path and return
+    end
+  end
+
   def online_chapter
-    @chapter = Chapter.find(params[:id])
     redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
   end
-  
+
   def unlocked_chapter
     if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
@@ -151,20 +172,17 @@ class ChaptersController < ApplicationController
       end
     end
   end
-  
+
   def delete_online
-    @chapter = Chapter.find(params[:id])
     redirect_to sections_path if @chapter.online
   end
-  
+
   def fondement_online
-    @chapter = Chapter.find(params[:chapter_id])
     (redirect_to @chapter and return) if (@chapter.online && @chapter.sections.empty?)
     (redirect_to @chapter and return) if (@chapter.online && !current_user.sk.root)
   end
-  
+
   def prerequisites_online
-    @chapter = Chapter.find(params[:chapter_id])
     @chapter.prerequisites.each do |p|
       if !p.online
         flash[:error] = "Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne."
@@ -172,10 +190,10 @@ class ChaptersController < ApplicationController
       end
     end
     if @chapter.online
-      redirect_to @chapter and return	
+      redirect_to @chapter and return
     end
   end
-  
+
   def point_attribution(user)
     user.point.rating = 0
     partials = user.pointspersections
@@ -186,7 +204,7 @@ class ChaptersController < ApplicationController
       partial[s.id] = partials.where(:section_id => s.id).first
       partial[s.id].points = 0
     end
-    
+
     user.solvedexercises.each do |e|
       if e.correct
         exo = e.exercise
@@ -195,19 +213,19 @@ class ChaptersController < ApplicationController
         else
           pt = 6
         end
-        
+
         if !exo.chapter.sections.empty? # Pas un fondement
           user.point.rating = user.point.rating + pt
         else # Fondement
           partial[0].points = partial[0].points + pt
         end
-    
+
         exo.chapter.sections.each do |s| # Section s
           partial[s.id].points = partial[s.id].points + pt
         end
       end
     end
-    
+
     user.solvedqcms.each do |q|
       if q.correct
         qcm = q.qcm
@@ -217,40 +235,40 @@ class ChaptersController < ApplicationController
         else
           pt = poss
         end
-        
+
         if !qcm.chapter.sections.empty? # Pas un fondement
           user.point.rating = user.point.rating + pt
         else # Fondement
           partial[0].points = partial[0].points + pt
         end
-    
+
         qcm.chapter.sections.each do |s| # Section s
           partial[s.id].points = partial[s.id].points + pt
         end
       end
     end
-    
+
     user.solvedproblems.each do |p|
       problem = p.problem
       pt = 25*problem.level
-      
+
       if !problem.chapter.sections.empty? # Pas un fondement
         user.point.rating = user.point.rating + pt
       else # Fondement
         partial[0].points = partial[0].points + pt
       end
-    
+
       problem.chapter.sections.each do |s| # Section s
         partial[s.id].points = partial[s.id].points + pt
       end
     end
-    
+
     user.point.save
     partial[0].save
     Section.all.each do |s|
       partial[s.id].save
     end
- 
+
   end
 
 end

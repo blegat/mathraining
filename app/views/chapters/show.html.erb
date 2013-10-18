@@ -15,7 +15,6 @@
   <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
 </h1>
 
-
 <div class="row">
 
   <!-- MENU -->
@@ -153,7 +152,7 @@
         <% end %>
 
       <% end %>
-      
+
       <% if compteur == 0 %>
         <li><span style="color:#555555; font-style:italic">Aucun</i></li>
       <% end %>
@@ -211,15 +210,15 @@
     <% if type == 0 %>
       <%= render 'intro' %>
     <% end %>
-    
-    
+
+
     <!-- VERSION IMPRIMABLE -->
 
     <% if type == 10 %>
       <%= render 'all' %>
     <% end %>
-    
-    
+
+
     <!-- POINTS THEORIQUES -->
 
     <% if type == 1 && @chapter.theories.exists?(id) %>
@@ -272,6 +271,9 @@
 
 <br/>
 <center>
+  <%= button_to "Export in .tex", chapter_export_path(@chapter), class: "btn-primary" %>
+  <br/>
+
   Retour à la section :
   <% i = false %>
   <% @chapter.sections.each do |f| %>

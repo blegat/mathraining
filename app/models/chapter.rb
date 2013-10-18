@@ -1,3 +1,4 @@
+#encoding: utf-8
 # == Schema Information
 #
 # Table name: chapters
@@ -58,6 +59,16 @@ class Chapter < ActiveRecord::Base
     recursive_prerequisites_aux(self, visited)
     visited.delete(self.id)
     visited.to_a
+  end
+
+  def to_tex
+    theories_tex = theories.inject("") do |sum, theory|
+      "#{sum}\n#{theory.to_tex}"
+    end
+    problems_tex = problems.inject("") do |sum, problem|
+      "#{sum}\n#{problem.to_tex}"
+    end
+    "\\chapter{#{name}}\n\\section{Théorie}\n#{theories_tex}\n\n\\section{Problèmes}\n#{problems_tex}"
   end
 
   private

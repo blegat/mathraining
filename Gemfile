@@ -11,6 +11,7 @@ gem 'rails-i18n'
 gem "paperclip", :git => "git://github.com/thoughtbot/paperclip.git"
 gem "recaptcha", :require => "recaptcha/rails"
 gem 'thin'
+gem "nokogiri", "~> 1.6.0"
 
 gem "resque", "~> 2.0.0.pre.1", github: "resque/resque"
 gem 'resque_mailer'
