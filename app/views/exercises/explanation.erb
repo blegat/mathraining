@@ -1,11 +1,11 @@
 <% provide(:title, "Modifier l'explication d'un exercice".html_safe) %>
 <h1>Modifier l'explication d'un exercice</h1>
 
-<h3>Enoncé</h3>	
+<h3>Enoncé</h3>
 <%= raw(@exercise.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 
 <br/>
-<h3>Réponse</h3>	
+<h3>Réponse</h3>
   <% if @exercise.decimal %>
     <b><%= @exercise.answer %></b> (On demande une réponse <b>décimale</b> au millième près)
   <% else %>
@@ -19,7 +19,7 @@
   <br />
   <%= f.submit "Modifier", class: "btn btn-large btn-primary" %>
 <% end %>
-    
+
 <center><%= link_to 'Retour au chapitre', chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) %></center>
 
 <script>

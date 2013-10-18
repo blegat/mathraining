@@ -2,7 +2,7 @@
 class ExercisesController < QuestionsController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, 
+    only: [:destroy, :update, :edit, :new, :create, :order_minus,
     :order_plus, :put_online, :explanation, :update_explanation]
   before_filter :root_user, only: [:destroy]
 
@@ -59,7 +59,7 @@ class ExercisesController < QuestionsController
   def update
     @exercise = Exercise.find(params[:id])
     @exercise.statement = params[:exercise][:statement]
-    
+
     unless @exercise.chapter.online && @exercise.online
       if params[:exercise][:decimal] == '1'
         @exercise.decimal = true
@@ -67,7 +67,7 @@ class ExercisesController < QuestionsController
         @exercise.decimal = false
       end
     end
-    
+
     if @exercise.decimal
       @exercise.answer = params[:exercise][:answer].gsub(",",".").to_f unless @exercise.chapter.online && @exercise.online
     else
@@ -94,28 +94,28 @@ class ExercisesController < QuestionsController
     flash[:success] = "Exercice supprimé."
     redirect_to @chapter
   end
-  
+
   def order_minus
     @exercise = Exercise.find(params[:exercise_id])
     order_op(true, true, @exercise)
   end
-  
+
   def order_plus
     @exercise = Exercise.find(params[:exercise_id])
     order_op(false, true, @exercise)
   end
-  
+
   def put_online
     @exercise = Exercise.find(params[:exercise_id])
     @exercise.online = true
     @exercise.save
     redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
   end
-  
+
   def explanation
     @exercise = Exercise.find(params[:exercise_id])
   end
-  
+
   def update_explanation
     @exercise = Exercise.find(params[:exercise_id])
     @exercise.explanation = params[:exercise][:explanation]
@@ -126,18 +126,18 @@ class ExercisesController < QuestionsController
       render 'explanation'
     end
   end
-  
+
   private
-  
+
   def admin_user
     redirect_to root_path unless current_user.sk.admin?
   end
-  
+
   def root_user
     @exercise = Exercise.find(params[:id])
     redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) if (!current_user.sk.root && @exercise.online && @exercise.chapter.online)
   end
-  
+
   def maximum(a, b)
     if a > b
       return a
@@ -145,7 +145,7 @@ class ExercisesController < QuestionsController
       return b
     end
   end
-  
+
   def point_attribution(user)
     user.point.rating = 0
     partials = user.pointspersections
@@ -156,7 +156,7 @@ class ExercisesController < QuestionsController
       partial[s.id] = partials.where(:section_id => s.id).first
       partial[s.id].points = 0
     end
-    
+
     user.solvedexercises.each do |e|
       if e.correct
         exo = e.exercise
@@ -165,19 +165,19 @@ class ExercisesController < QuestionsController
         else
           pt = 6
         end
-        
+
         if !exo.chapter.sections.empty? # Pas un fondement
           user.point.rating = user.point.rating + pt
         else # Fondement
           partial[0].points = partial[0].points + pt
         end
-    
+
         exo.chapter.sections.each do |s| # Section s
           partial[s.id].points = partial[s.id].points + pt
         end
       end
     end
-    
+
     user.solvedqcms.each do |q|
       if q.correct
         qcm = q.qcm
@@ -187,39 +187,39 @@ class ExercisesController < QuestionsController
         else
           pt = poss
         end
-        
+
         if !qcm.chapter.sections.empty? # Pas un fondement
           user.point.rating = user.point.rating + pt
         else # Fondement
           partial[0].points = partial[0].points + pt
         end
-    
+
         qcm.chapter.sections.each do |s| # Section s
           partial[s.id].points = partial[s.id].points + pt
         end
       end
     end
-    
+
     user.solvedproblems.each do |p|
       problem = p.problem
       pt = 25*problem.level
-      
+
       if !problem.chapter.sections.empty? # Pas un fondement
         user.point.rating = user.point.rating + pt
       else # Fondement
         partial[0].points = partial[0].points + pt
       end
-    
+
       problem.chapter.sections.each do |s| # Section s
         partial[s.id].points = partial[s.id].points + pt
       end
     end
-    
+
     user.point.save
     partial[0].save
     Section.all.each do |s|
       partial[s.id].save
     end
- 
+
   end
 end

@@ -9,11 +9,11 @@
   <% deux = 0 %>
   <% j = 1 %>
   <% k = 1 %>
-  
+
   <% compteur = 0 %>
-  
+
   <% (1..(liste.size+liste2.size)).each do |i| %>
-    
+
     <% encours = 0 %>
     <% if un >= liste.size %>
       <% encours = 2 %>
@@ -28,13 +28,13 @@
         <% end %>
       <% end %>
     <% end %>
-    
+
     <% if encours == 1 %>
-      <% f = liste[un] %> 
+      <% f = liste[un] %>
       <% if f.online || current_user.sk.admin? %>
-      
+
         <% compteur = compteur + 1 %>
-      
+
         <% if k % 5 == 1 && k > 1 %>
           </div>
           <br/>
@@ -43,9 +43,9 @@
           <center>
           <div class="btn-group">
         <% end %>
-        
+
         <% if acces %>
-      
+
           <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
           <% if exo.size > 0 && ! current_user.sk.admin? %>
             <% exo = exo.first %>
@@ -59,7 +59,7 @@
           <% else %>
             <button class="btn btn" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= j %></button>
           <% end %>
-          
+
         <% else %>
           <button class="btn disabled"><%= j %></button>
         <% end %>
@@ -69,12 +69,12 @@
       <% end %>
       <% un = un + 1 %>
     <% else %>
-    
-      <% f = liste2[deux] %> 
+
+      <% f = liste2[deux] %>
       <% if f.online || current_user.sk.admin? %>
-      
+
         <% compteur = compteur + 1 %>
-      
+
         <% if k % 5 == 1 && k > 1 %>
           </div>
           <br/>
@@ -83,9 +83,9 @@
           <center>
           <div class="btn-group">
         <% end %>
-        
+
         <% if acces %>
-        
+
           <% qcm = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
           <% if qcm.size > 0 && ! current_user.sk.admin? %>
             <% qcm = qcm.first %>
@@ -99,19 +99,19 @@
           <% else %>
             <button class="btn btn" onclick="location.href='<%= chapter_path(chapter, :type => 3, :which => f.id) %>'"><%= j %></button>
           <% end %>
-          
+
         <% else %>
           <button class="btn disabled"><%= j %></button>
         <% end %>
         <% j = j+1 if f.online %>
         <% k = k+1 %>
-          
+
       <% end %>
       <% deux = deux + 1 %>
     <% end %>
-    
+
   <% end %>
-  
+
 
 <% if compteur == 0 %>
   <center><p><i> Aucun exercice. </i></p></center>
@@ -136,11 +136,11 @@
   <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
   <% k = 1 %>
   <% j = 1 %>
-  
+
   <% listex.each do |f| %>
-    
+
     <% if f.online || current_user.sk.admin? %>
-    
+
       <% if k % 5 == 1 && k > 1 %>
         </div>
         <br/>
@@ -149,11 +149,11 @@
         <center>
         <div class="btn-group">
       <% end %>
-      
+
       <% compteur = compteur + 1 %>
-      
+
       <% if acces %>
-      
+
         <% if current_user.sk.solved?(f) && ! current_user.sk.admin? %>
           <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 4, :which => f.id) %>'"><%= j %></button>
         <% elsif !f.online %>
@@ -171,11 +171,11 @@
             <% end %>
           <% end %>
         <% end %>
-      
+
       <% else %>
         <button class="btn disabled"><%= j %></button>
       <% end %>
-      
+
       <% j = j+1 if f.online %>
       <% k = k+1 %>
     <% end %>
@@ -207,7 +207,7 @@
 </h1>
 
 <h3>Introduction</h3>
-   <%= raw(@section.description.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+   <%= raw(@section.description.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 <br/><br/>
 <% if current_user.sk.admin? %>
 <%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/><br/>
@@ -272,7 +272,7 @@
   <% possible.delete(possible.first) %>
   <% if affiche[encours] %>
     <% if faisable[encours] <= 1 || current_user.sk.admin %>
-      
+
       <% if faisable[encours] == 0 && !current_user.sk.admin %>
         <table style="border:1px solid green;" class="table">
         <tr style="background-color:#DDFFDD;">
@@ -294,7 +294,7 @@
       <% end %>
 
      <td class="span4">
-      
+
       <center><h4>Théorie</h4></center>
       <% compteur = 0 %>
       <% liste = chap[encours].theories %>
@@ -307,14 +307,14 @@
           <% compteur = compteur + 1 %>
           <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.sk.theories.exists?(t) %></li>
         <% end %>
-      <% end %>	
-      
+      <% end %>
+
       <% if compteur == 0 %>
         <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
       <% else %>
         </ul>
       <% end %>
-      
+
       </td>
     <% else %>
       <table style="border:1px solid black;" class="table">
@@ -346,8 +346,8 @@
           <% compteur = compteur + 1 %>
           <li><%= t.title %></li>
         <% end %>
-      <% end %>	
-      
+      <% end %>
+
       <% if compteur == 0 %>
         <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
       <% else %>
@@ -355,7 +355,7 @@
       <% end %>
       </td>
     <% end %>
-    
+
     <td class="span4">
     <center><h4>Exercices</h4></center>
     <% if faisable[encours] <= 1 || current_user.sk.admin? %>
@@ -374,7 +374,7 @@
     </td>
     </tr>
     </table>
-    
+
   <% end %>
   <% debloque[encours].each do |d| %>
     <% nb_pre[d] = nb_pre[d] - 1 %>
@@ -474,7 +474,7 @@
     </tr>
     <tr style="background-color:#FFFFE0;">
   <% end %>
-  
+
   <td class="span4">
   <center><h4>Théorie</h4></center>
 
@@ -489,15 +489,15 @@
       <% compteur = compteur + 1 %>
       <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<i class=\"icon-ok\"></i>") if current_user.sk.theories.exists?(t) %></li>
     <% end %>
-  <% end %>	
-  
+  <% end %>
+
   <% if compteur == 0 %>
     <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
   <% else %>
     </ul>
   <% end %>
   </td>
-  
+
   <td class="span4">
   <center><h4>Exercices</h4></center>
   <% affiche_exercices(chap[encours],true) %>
@@ -508,7 +508,7 @@
   </td>
   </tr>
   </table>
-  
+
   <% debloque[encours].each do |d| %>
     <% nb_pre[d] = nb_pre[d] - 1 %>
     <% faisable[d] = [faisable[d], faisable[encours]+1].max %>

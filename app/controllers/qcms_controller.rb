@@ -2,8 +2,8 @@
 class QcmsController < QuestionsController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, 
-    :order_plus, :manage_choices, :remove_choice, :add_choice, 
+    only: [:destroy, :update, :edit, :new, :create, :order_minus,
+    :order_plus, :manage_choices, :remove_choice, :add_choice,
     :switch_choice, :update_choice, :put_online, :explanation, :update_explanation]
   before_filter :online_qcm,
     only: [:add_choice, :remove_choice]
@@ -90,7 +90,7 @@ class QcmsController < QuestionsController
       end
     end
     if @qcm.save
-      
+
       if @qcm.chapter.online
         redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
       else
@@ -115,11 +115,11 @@ class QcmsController < QuestionsController
     flash[:success] = "QCM supprimé."
     redirect_to @chapter
   end
-  
+
   def manage_choices
     @qcm = Qcm.find(params[:qcm_id])
   end
-  
+
   def remove_choice
     @choice = Choice.find(params[:id])
     if !@qcm.many_answers && @choice.ok && @qcm.choices.count > 1
@@ -135,7 +135,7 @@ class QcmsController < QuestionsController
     end
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
-  
+
   def add_choice
     @choice = Choice.new
     @choice.qcm_id = params[:qcm_id]
@@ -161,7 +161,7 @@ class QcmsController < QuestionsController
     end
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
-  
+
   def switch_choice
     @choice = Choice.find(params[:id])
     @qcm = @choice.qcm
@@ -179,7 +179,7 @@ class QcmsController < QuestionsController
     @choice.save
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
-  
+
   def update_choice
     @choice = Choice.find(params[:id])
     @choice.ans = params[:choice][:ans]
@@ -200,18 +200,18 @@ class QcmsController < QuestionsController
     @qcm = Qcm.find(params[:qcm_id])
     order_op(false, false, @qcm)
   end
-  
+
   def put_online
     @qcm = Qcm.find(params[:qcm_id])
     @qcm.online = true
     @qcm.save
     redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
   end
-  
+
   def explanation
     @qcm = Qcm.find(params[:qcm_id])
   end
-  
+
   def update_explanation
     @qcm = Qcm.find(params[:qcm_id])
     @qcm.explanation = params[:qcm][:explanation]
@@ -256,12 +256,12 @@ class QcmsController < QuestionsController
   def admin_user
     redirect_to root_path unless current_user.sk.admin?
   end
-  
+
   def root_user
     @qcm = Qcm.find(params[:id])
     redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) if (!current_user.sk.root && @qcm.online && @qcm.chapter.online)
   end
-  
+
   def online_qcm
     @qcm = Qcm.find(params[:qcm_id])
     if @qcm.online && @qcm.chapter.online
@@ -276,7 +276,7 @@ class QcmsController < QuestionsController
       return b
     end
   end
-  
+
   def point_attribution(user)
     user.point.rating = 0
     partials = user.pointspersections
@@ -287,7 +287,7 @@ class QcmsController < QuestionsController
       partial[s.id] = partials.where(:section_id => s.id).first
       partial[s.id].points = 0
     end
-    
+
     user.solvedexercises.each do |e|
       if e.correct
         exo = e.exercise
@@ -296,19 +296,19 @@ class QcmsController < QuestionsController
         else
           pt = 6
         end
-        
+
         if !exo.chapter.sections.empty? # Pas un fondement
           user.point.rating = user.point.rating + pt
         else # Fondement
           partial[0].points = partial[0].points + pt
         end
-    
+
         exo.chapter.sections.each do |s| # Section s
           partial[s.id].points = partial[s.id].points + pt
         end
       end
     end
-    
+
     user.solvedqcms.each do |q|
       if q.correct
         qcm = q.qcm
@@ -318,39 +318,39 @@ class QcmsController < QuestionsController
         else
           pt = poss
         end
-        
+
         if !qcm.chapter.sections.empty? # Pas un fondement
           user.point.rating = user.point.rating + pt
         else # Fondement
           partial[0].points = partial[0].points + pt
         end
-    
+
         qcm.chapter.sections.each do |s| # Section s
           partial[s.id].points = partial[s.id].points + pt
         end
       end
     end
-    
+
     user.solvedproblems.each do |p|
       problem = p.problem
       pt = 25*problem.level
-      
+
       if !problem.chapter.sections.empty? # Pas un fondement
         user.point.rating = user.point.rating + pt
       else # Fondement
         partial[0].points = partial[0].points + pt
       end
-    
+
       problem.chapter.sections.each do |s| # Section s
         partial[s.id].points = partial[s.id].points + pt
       end
     end
-    
+
     user.point.save
     partial[0].save
     Section.all.each do |s|
       partial[s.id].save
     end
- 
+
   end
 end

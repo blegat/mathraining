@@ -18,7 +18,7 @@ class Exercise < ActiveRecord::Base
   belongs_to :chapter
   has_many :solvedexercises, dependent: :destroy
   has_many :users, through: :solvedexercises
-  
+
   validates :statement, presence: true, length: { maximum: 8000 }
   validates :explanation, length: { maximum: 8000 }
   validates :answer, presence: true

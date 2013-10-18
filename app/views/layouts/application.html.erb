@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-  
+
   <style type="text/css">
   div.evidence {
     border: 1px dashed black;
@@ -9,7 +9,7 @@
     background-color: #F0FFFF;
     }
   </style>
-  
+
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
      tex2jax: {
@@ -30,7 +30,7 @@
     <%= yield :javascript_includes %>
     <%= csrf_meta_tags %>
 	<%= render 'layouts/shim' %>
-	
+
 	<% # mathjax_tag %>
     <%= auto_discovery_link_tag :atom, "/feed" %>
     <%= auto_discovery_link_tag :rss, "/feed.rss" %>

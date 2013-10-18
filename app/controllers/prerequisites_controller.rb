@@ -2,10 +2,10 @@
 class PrerequisitesController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_user
-  
+
   def graph_prerequisites
   end
-  
+
   def add_prerequisite
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
@@ -33,7 +33,7 @@ class PrerequisitesController < ApplicationController
       redirect_to graph_prerequisites_path(:fondement => params[:fondement]), flash: { error: get_errors(pre) };
     end
   end
-  
+
   def remove_prerequisite
     if params[:fondement] == true
       fond = 1

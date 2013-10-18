@@ -20,10 +20,10 @@ class MessagesController < ApplicationController
     @message.user = current_user.sk
     @message.subject = @subject
     @message.admin_user = current_user.sk.admin?
-    
+
     attach = Array.new
     totalsize = 0
-    
+
     i = 1
     k = 1
     while !params["hidden#{k}".to_sym].nil? do
@@ -39,15 +39,15 @@ class MessagesController < ApplicationController
           end
           nom = params["file#{k}".to_sym].original_filename
           flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          render 'new' and return 
+          render 'new' and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
-        
+
         i = i+1
       end
       k = k+1
     end
-    
+
     if totalsize > 10485760
       j = 1
       while j < i do
@@ -59,7 +59,7 @@ class MessagesController < ApplicationController
       flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
       render 'new' and return
     end
-    
+
     if @message.save
       j = 1
       while j < i do
@@ -68,7 +68,7 @@ class MessagesController < ApplicationController
         j = j+1
       end
       flash[:success] = "Message ajouté. "
-                
+
       @subject.following_users.each do |u|
         if u != current_user
           UserMailer.new_followed_message(u.id, @subject.id, current_user.name, @message.content).deliver
@@ -102,9 +102,9 @@ class MessagesController < ApplicationController
         @message.admin_user = true
         @message.save
       end
-      
+
       totalsize = 0
-      
+
       @message.messagefiles.each do |sf|
         if params["prevfile#{sf.id}".to_sym].nil?
           sf.file.destroy
@@ -113,9 +113,9 @@ class MessagesController < ApplicationController
           totalsize = totalsize + sf.file_file_size
         end
       end
-      
+
       attach = Array.new
-    
+
       i = 1
       k = 1
       while !params["hidden#{k}".to_sym].nil? do
@@ -133,15 +133,15 @@ class MessagesController < ApplicationController
             @message.reload
             nom = params["file#{k}".to_sym].original_filename
             flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-            render 'edit' and return 
+            render 'edit' and return
           end
           totalsize = totalsize + attach[i-1].file_file_size
-        
+
           i = i+1
         end
         k = k+1
       end
-    
+
       if totalsize > 10485760
         j = 1
         while j < i do
@@ -153,7 +153,7 @@ class MessagesController < ApplicationController
         flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
         render 'edit' and return
       end
-      
+
       flash[:success] = "Message modifié."
       tot = @message.subject.messages.where("id <= ?", @message.id).count
       page = [0,((tot-1)/10).floor].max + 1
@@ -170,12 +170,12 @@ class MessagesController < ApplicationController
   def destroy
     @message = Message.find(params[:id])
     @subject = @message.subject
-    
+
     @message.messagefiles.each do |f|
       f.file.destroy
       f.destroy
     end
-    
+
     @message.destroy
     if @subject.messages.size > 0
       last = @subject.messages.order("id").last
@@ -203,14 +203,14 @@ class MessagesController < ApplicationController
       redirect_to root_path if @chapter.nil?
     end
   end
-  
+
   def online_chapter
     if @chapter.nil?
       return
     end
     redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
   end
-  
+
   def unlocked_chapter
     if @chapter.nil?
       return
@@ -228,7 +228,7 @@ class MessagesController < ApplicationController
     @subject = Subject.find(params[:subject_id])
     redirect_to root_path unless (current_user.sk.admin? || !@subject.admin)
   end
-  
+
   def admin_delete
     redirect_to root_path unless current_user.sk.admin?
   end

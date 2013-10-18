@@ -11,10 +11,10 @@
       <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
     <% end %>
   </h3>
-  
+
   <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
   <br/>
-  
+
   <% if current_user.sk.admin? %>
   <br/>
   <h4>Eléments de solution</h4>
@@ -84,7 +84,7 @@
     <% unless current_user.sk.solved?(f) || !@newsub %>
       <%= render 'submissions/new', problem: f %>
     <% end %>
-    
+
     <hr>
     Des questions concernant ce problème? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
   <% end %>

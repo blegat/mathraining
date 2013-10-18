@@ -34,10 +34,10 @@ class User < ActiveRecord::Base
   has_many :followings, dependent: :destroy
   has_many :followed_submissions, through: :followings, source: :submission
   has_many :notifs, dependent: :destroy
-  
+
   has_many :subjects, dependent: :destroy
   has_many :messages, dependent: :destroy
-  
+
   has_many :followingsubjects, dependent: :destroy
   has_many :followed_subjects, through: :followingsubjects, source: :subject
 
@@ -88,14 +88,14 @@ class User < ActiveRecord::Base
     end
     return @@niveaux[actuallevel]
   end
-  
+
   def alllevel
     return @@niveaux
   end
-  
+
   def see_forum
     lastdate = '2009-01-01 00:00:00'
-    
+
     if self.admin?
       return true if Subject.order("lastcomment DESC").count == 0
       lastdate = Subject.order("lastcomment DESC").first.lastcomment
@@ -109,7 +109,7 @@ class User < ActiveRecord::Base
       return false
     end
   end
-  
+
   def sk
     if self.admin? && self.skin != 0
       return User.find(self.skin)
@@ -117,7 +117,7 @@ class User < ActiveRecord::Base
       return self
     end
   end
-  
+
   def other
     if self.admin? && self.skin != 0
       return true

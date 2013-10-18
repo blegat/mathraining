@@ -26,7 +26,7 @@ class SubjectsController < ApplicationController
         @subjects = Subject.where(admin: false, chapter_id: @chapter, important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
       end
     end
-    
+
     if !current_user.other && !current_user.sk.see_forum
       current_user.sk.point.forumseen = DateTime.current
       current_user.sk.point.save
@@ -74,10 +74,10 @@ class SubjectsController < ApplicationController
         @subject.chapter = @chapitre
       end
     end
-    
+
     attach = Array.new
     totalsize = 0
-    
+
     i = 1
     k = 1
     while !params["hidden#{k}".to_sym].nil? do
@@ -94,15 +94,15 @@ class SubjectsController < ApplicationController
           nom = params["file#{k}".to_sym].original_filename
           flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           @preselect = params[:subject][:chapter_id].to_i
-          render 'new' and return 
+          render 'new' and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
-        
+
         i = i+1
       end
       k = k+1
     end
-    
+
     if totalsize > 10485760
       j = 1
       while j < i do
@@ -115,8 +115,8 @@ class SubjectsController < ApplicationController
       @preselect = params[:subject][:chapter_id].to_i
       render 'new' and return
     end
-    
-    
+
+
     if @subject.save
       j = 1
       while j < i do
@@ -150,7 +150,7 @@ class SubjectsController < ApplicationController
     if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path
     end
-    
+
     if @subject.update_attributes(params[:subject].except(:chapter_id))
       if @subject.user.admin? && !@subject.admin_user?
         @subject.admin_user = true
@@ -169,14 +169,14 @@ class SubjectsController < ApplicationController
         @subject.chapter = nil
         @subject.save
       end
-      
+
       if !current_user.sk.admin? && @subject.admin? # Hack
         @subject.admin = false
         @subject.save
       end
-      
+
       totalsize = 0
-      
+
       @subject.subjectfiles.each do |sf|
         if params["prevfile#{sf.id}".to_sym].nil?
           sf.file.destroy
@@ -185,9 +185,9 @@ class SubjectsController < ApplicationController
           totalsize = totalsize + sf.file_file_size
         end
       end
-      
+
       attach = Array.new
-    
+
       i = 1
       k = 1
       while !params["hidden#{k}".to_sym].nil? do
@@ -206,15 +206,15 @@ class SubjectsController < ApplicationController
             @subject.reload
             flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
             @preselect = params[:subject][:chapter_id].to_i
-            render 'edit' and return 
+            render 'edit' and return
           end
           totalsize = totalsize + attach[i-1].file_file_size
-        
+
           i = i+1
         end
         k = k+1
       end
-    
+
       if totalsize > 10485760
         j = 1
         while j < i do
@@ -227,7 +227,7 @@ class SubjectsController < ApplicationController
         @preselect = params[:subject][:chapter_id].to_i
         render 'edit' and return
       end
-      
+
       flash[:success] = "Sujet modifié."
       if @chapter.nil? || @subject.chapter.nil?
         redirect_to subject_path(@subject)
@@ -239,7 +239,7 @@ class SubjectsController < ApplicationController
       render 'edit'
     end
   end
-  
+
   def destroy
     @subject.delete
     @subject.subjectfiles.each do |f|
@@ -272,14 +272,14 @@ class SubjectsController < ApplicationController
       redirect_to root_path if @chapter.nil?
     end
   end
-  
+
   def online_chapter
     if @chapter.nil?
       return
     end
     redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
   end
-  
+
   def unlocked_chapter
     if @chapter.nil?
       return
@@ -297,7 +297,7 @@ class SubjectsController < ApplicationController
     @subject = Subject.find(params[:id])
     redirect_to root_path unless (current_user.sk.admin? || !@subject.admin)
   end
-  
+
   def admin_delete
     redirect_to root_path unless current_user.sk.admin?
   end

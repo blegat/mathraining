@@ -11,7 +11,7 @@
 <% else %>
 <h3>Exercice <%= number %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
 <% end %>
-  <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+  <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 </div><br/>
 
 <% if current_user.sk.admin? %>
@@ -22,7 +22,7 @@
     <b><%= f.answer.to_i %></b> (On demande une réponse <b>entière</b>)
   <% end %>
   <br/><br/>
-  
+
   <h4>Explication</h4>
   <% if f.explanation.size == 0 %>
     <p style="color:orange;"><b>Pas d'explication</b></p>
@@ -61,7 +61,7 @@
 
   <% if (up || down) %>
     <center>
-      Déplacer cet exercice vers le 
+      Déplacer cet exercice vers le
       <% if up %>
         <%= link_to "haut", exercise_order_minus_path(f) %>
         <% if down %>
@@ -78,9 +78,9 @@
       <%= button_to "Mettre en ligne", exercise_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
     </center> <br/>
   <% end %>
-  
-  </div> 
-  
+
+  </div>
+
 <% else %>
 
   <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => id) %>
@@ -108,7 +108,7 @@
       <% else %>
         <% val = exo.guess.to_i %>
       <% end %>
-      
+
       <%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
         <%= g.label "Votre réponse : ", :disabled => current_user.other %>
         <%= g.text_field :guess, style: "width:50px;", value: val, :disabled => current_user.other %>
@@ -120,12 +120,12 @@
       <p style="color:red;">Votre réponse (<b><%= val %></b>) est erronée. Vous avez déjà commis <%= exo.nb_guess %> erreur<%= "s" if exo.nb_guess > 1 %>.</p>
 
     <% end %>
-    
+
   <% else %>
     <% if f.decimal %>
       On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
     <% end %>
-    
+
     <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
       <%= g.hidden_field :exercise_id, value: f.id %>
       <%= g.label "Votre réponse : ", :disabled => current_user.other %>
@@ -134,7 +134,7 @@
     <% end %>
 
   <% end %>
-  
+
   <hr>
   Un soucis avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
 

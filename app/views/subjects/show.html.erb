@@ -31,7 +31,7 @@
   <%= @subject.user.name %>
 <% else %>
   <%= link_to @subject.user.name, @subject.user, {:style => "color:#{@subject.user.level[:color]}" } %>
-<% end %> 
+<% end %>
 </td>
 <td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
 <% date = @subject.created_at.in_time_zone %>
@@ -90,7 +90,7 @@
   <%= m.user.name %>
 <% else %>
   <%= link_to m.user.name, m.user, {:style => "color:#{m.user.level[:color]}" } %>
-<% end %> 
+<% end %>
 </td>
 <td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
 <% date = m.created_at.in_time_zone %>
