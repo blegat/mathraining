@@ -3,22 +3,22 @@
 <SCRIPT language="javascript">
 var i = 1;
 function add() {
- 
+
     //Create an input type dynamically.
     var element = document.createElement("input");
     var element2 = document.createElement("input");
- 
+
     //Assign different attributes to the element.
     element.setAttribute("type", "file");
     element.setAttribute("name", "file"+i);
-    
+
     element2.setAttribute("type", "hidden");
     element2.setAttribute("name", "hidden"+i);
     element2.setAttribute("value", "ok");
- 
+
     var foo = document.getElementById("fooBar");
     var br = document.createElement("br");
-    
+
     if(i == 1)
     {
       var avert = document.createElement("p");
@@ -29,9 +29,9 @@ function add() {
       foo.appendChild(avert);
       foo.appendChild(br);
     }
-    
+
     i = i+1;
- 
+
     //Append the element in page (in span).
     foo.appendChild(element2);
     foo.appendChild(element);
@@ -41,7 +41,7 @@ function add() {
 
 <%= form_for :submission,
   url: problem_submissions_path(problem), :html => { :multipart => true } do |f| %>
-  
+
   <br/><h4>Nouvelle soumission</h4>
   La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
   <div class="well" id="MathPreview"></div>
@@ -56,7 +56,7 @@ function add() {
   <br/>
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>
-  
+
   <%= f.submit "Soumettre solution", class: "btn btn-large btn-primary", :disabled => current_user.other %>
 <% end %>
 

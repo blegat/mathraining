@@ -12,6 +12,8 @@
 #  online     :boolean          default(FALSE)
 #
 
+include ApplicationHelper
+
 class Theory < ActiveRecord::Base
   attr_accessible :content, :position, :title, :online
   belongs_to :chapter
@@ -21,4 +23,8 @@ class Theory < ActiveRecord::Base
   validates :position, presence: true,
     uniqueness: { scope: :chapter_id },
     numericality: { greater_than_or_equal_to: 0 }
+
+  def to_tex
+    "\\subsection{#{title}}\n#{html_to_tex(content)}"
+  end
 end

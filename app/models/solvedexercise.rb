@@ -14,7 +14,7 @@
 
 class Solvedexercise < ActiveRecord::Base
   attr_accessible :correct, :guess, :nb_guess
-  
+
   belongs_to :exercise
   belongs_to :user
 
@@ -24,5 +24,5 @@ class Solvedexercise < ActiveRecord::Base
   validates :nb_guess, presence: true, numericality:
     { greater_than_or_equal_to: 1 }
   validates :correct, inclusion: { in: [true, false] }
-  
+
 end

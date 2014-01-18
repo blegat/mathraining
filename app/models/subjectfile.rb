@@ -2,7 +2,7 @@ class Subjectfile < ActiveRecord::Base
   attr_accessible :file, :subject_id
   has_attached_file :file,
     :path => ':rails_root/non-public/system/:attachment/:class/:id/:basename.:extension',
-    :url => '/:class/:id/:attachment' 
+    :url => '/:class/:id/:attachment'
   belongs_to :subject
   validates_attachment_presence :file
   validates_attachment_size :file, :less_than => 10.megabytes

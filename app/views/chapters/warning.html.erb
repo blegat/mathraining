@@ -20,9 +20,9 @@ Il ne sera accessible que par les utilisateurs ayant déjà complété les chapi
 
 <h3>Prérequis</h3>
 
-Les prérequis fondamentaux (ceux n'appartenant à aucune des quatre grandes sections) sont là à titre d'information (puisqu'il n'est pas nécessaire de valider un prérequis fondamental pour avoir accès à ce chapitre). 
-Ils pourront donc toujours être modifiés par la suite. Par contre, les autres prérequis sont très importants et ne doivent pas être négligés. 
-Vous devez absolument indiquer les prérequis nécessaires à ce chapitre avant de le mettre en ligne. Ceux-ci ne seront plus modifiables par la suite. 
+Les prérequis fondamentaux (ceux n'appartenant à aucune des quatre grandes sections) sont là à titre d'information (puisqu'il n'est pas nécessaire de valider un prérequis fondamental pour avoir accès à ce chapitre).
+Ils pourront donc toujours être modifiés par la suite. Par contre, les autres prérequis sont très importants et ne doivent pas être négligés.
+Vous devez absolument indiquer les prérequis nécessaires à ce chapitre avant de le mettre en ligne. Ceux-ci ne seront plus modifiables par la suite.
 Si l'un de ces prérequis n'a pas encore été créé et le sera par la suite, ne mettez pas celui-ci en ligne!
 En effet, ce sont les prérequis qui déterminent lorsqu'un utilisateur aura accès à ce chapitre.
 Veillez donc à ne pas en oublier. Par exemple, les chapitres sans prérequis seront directement accessibles à tout le monde, et il ne peut dès lors s'agir que d'un chapitre compréhensible par un étudiant de 5ème année n'ayant suivi aucun cours supplémentaires (autre que les fondements éventuels).
@@ -33,7 +33,7 @@ Une fois ce chapitre en ligne, il sera toujours possible d'ajouter des points th
 <h3>Points théoriques</h3>
 
 Il sera toujours possible d'ajouter, modifier, et supprimer les points théoriques de ce chapitre.
-Cela dit, il est évidemment préférable qu'à la mise en ligne de ce chapitre, les points théoriques soient finalisés. 
+Cela dit, il est évidemment préférable qu'à la mise en ligne de ce chapitre, les points théoriques soient finalisés.
 
 <h3>Problèmes</h3>
 Il sera toujours possible d'ajouter et modifier les problèmes de ce chapitre. Pour des raisons de sécurité, les scores des utilisateurs devant être recalculés, la <u>suppression</u> d'un problème demandera l'appel à un webmaster. Pour les mêmes raisons de calcul de scores, le <u>niveau</u> de chaque problème sera définitif. Veillez à ce que celui-ci soit approprié.
@@ -62,7 +62,7 @@ Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mi
 <% deux = 0 %>
 <% (1..(liste.size+liste2.size)).each do |i| %>
   <% encours = 0 %>
-  <% if un >= liste.size %>	
+  <% if un >= liste.size %>
     <% encours = 2 %>
   <% else %>
     <% if deux >= liste2.size %>
@@ -77,11 +77,11 @@ Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mi
   <% end %>
 
   <% if encours == 1 %>
-    <% f = liste[un] %> 
+    <% f = liste[un] %>
       <h4> Exercice <%= i%> - <%= link_to "Modifier cet exercice", chapter_path(@chapter, :type => 2, :which => f.id) %> </h4>
-        <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+        <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       <br/><br/>
-      Réponse : 
+      Réponse :
       <% if f.decimal %>
         <b><%= f.answer %></b> (On demande une réponse <b>décimale</b> au millième près)
       <% else %>
@@ -90,9 +90,9 @@ Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mi
       <br/><br/>
     <% un = un + 1 %>
   <% else %>
-    <% f = liste2[deux] %> 
+    <% f = liste2[deux] %>
       <h4> Exercice <%= i%> - <%= link_to "Modifier ce QCM", chapter_path(@chapter, :type => 3, :which => f.id) %> </h4>
-        <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+        <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       <br/><br/>
       <ul>
       <% f.choices.order(:id).each do |c| %>
@@ -105,7 +105,7 @@ Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mi
         <% if !c.ok && f.many_answers %>
           <i class="icon-remove" style="margin-left:10px;"></i>
         <% end %>
-        </li>	
+        </li>
       <% end %>
       </ul>
       <br/>

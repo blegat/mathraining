@@ -61,7 +61,7 @@ class ProblemsController < ApplicationController
 
   def destroy
     @chapter = @problem.chapter
-    
+
     @problem.submissions.each do |s|
       s.submissionfiles.each do |f|
         f.file.destroy
@@ -88,7 +88,7 @@ class ProblemsController < ApplicationController
     flash[:success] = "Problème supprimé."
     redirect_to @chapter
   end
-  
+
   def put_online
     @problem = Problem.find(params[:problem_id])
     @problem.online = true
@@ -119,11 +119,11 @@ class ProblemsController < ApplicationController
     end
     redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
   end
-  
+
   def explanation
     @problem = Problem.find(params[:problem_id])
   end
-  
+
   def update_explanation
     @problem = Problem.find(params[:problem_id])
     @problem.explanation = params[:problem][:explanation]
@@ -136,7 +136,7 @@ class ProblemsController < ApplicationController
   end
 
   private
-  
+
   def swap_position(a, b)
     err = nil
     Problem.transaction do
@@ -167,12 +167,12 @@ class ProblemsController < ApplicationController
   def admin_user
     redirect_to root_path unless current_user.sk.admin?
   end
-  
+
   def root_user
     @problem = Problem.find(params[:id])
     redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id) if (!current_user.sk.root && @problem.online && @problem.chapter.online)
   end
-  
+
   def point_attribution(user)
     user.point.rating = 0
     partials = user.pointspersections
@@ -183,7 +183,7 @@ class ProblemsController < ApplicationController
       partial[s.id] = partials.where(:section_id => s.id).first
       partial[s.id].points = 0
     end
-    
+
     user.solvedexercises.each do |e|
       if e.correct
         exo = e.exercise
@@ -192,19 +192,19 @@ class ProblemsController < ApplicationController
         else
           pt = 6
         end
-        
+
         if !exo.chapter.sections.empty? # Pas un fondement
           user.point.rating = user.point.rating + pt
         else # Fondement
           partial[0].points = partial[0].points + pt
         end
-    
+
         exo.chapter.sections.each do |s| # Section s
           partial[s.id].points = partial[s.id].points + pt
         end
       end
     end
-    
+
     user.solvedqcms.each do |q|
       if q.correct
         qcm = q.qcm
@@ -214,39 +214,39 @@ class ProblemsController < ApplicationController
         else
           pt = poss
         end
-        
+
         if !qcm.chapter.sections.empty? # Pas un fondement
           user.point.rating = user.point.rating + pt
         else # Fondement
           partial[0].points = partial[0].points + pt
         end
-    
+
         qcm.chapter.sections.each do |s| # Section s
           partial[s.id].points = partial[s.id].points + pt
         end
       end
     end
-    
+
     user.solvedproblems.each do |p|
       problem = p.problem
       pt = 25*problem.level
-      
+
       if !problem.chapter.sections.empty? # Pas un fondement
         user.point.rating = user.point.rating + pt
       else # Fondement
         partial[0].points = partial[0].points + pt
       end
-    
+
       problem.chapter.sections.each do |s| # Section s
         partial[s.id].points = partial[s.id].points + pt
       end
     end
-    
+
     user.point.save
     partial[0].save
     Section.all.each do |s|
       partial[s.id].save
     end
- 
+
   end
 end

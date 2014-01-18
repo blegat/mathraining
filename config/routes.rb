@@ -116,6 +116,7 @@ Mathraining::Application.routes.draw do
 
   resources :chapters do
     match '/warning', to: 'chapters#warning'
+    match '/export', to: 'chapters#export', as: :export
     match '/put_online', to: 'chapters#put_online'
     match '/manage_sections', to: 'chapters#new_section'
     match '/add_section/:id', to: 'chapters#create_section',

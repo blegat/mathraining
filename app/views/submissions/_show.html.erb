@@ -5,5 +5,5 @@
 <% if current_user.sk.admin %>
 (<%= link_to s.user.name, s.user %>)
 <% end %>
- : 
+ :
 <%= link_to "Voir soumission et commentaire(s)", problem_submission_path(s.problem, s) %></p>

@@ -18,15 +18,15 @@ class SubmissionsController < ApplicationController
     if notif.size > 0 && !current_user.other
       notif.first.delete
     end
-    
+
     @ancientexte = session[:ancientexte]
     session[:ancientexte] = nil
   end
 
-  def create    
+  def create
     attach = Array.new
     totalsize = 0
-    
+
     i = 1
     k = 1
     while !params["hidden#{k}".to_sym].nil? do
@@ -43,15 +43,15 @@ class SubmissionsController < ApplicationController
           nom = params["file#{k}".to_sym].original_filename
           session[:ancientexte] = params[:submission][:content]
           redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
-            flash: {error: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return   
+            flash: {error: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
-        
+
         i = i+1
       end
       k = k+1
     end
-    
+
     if totalsize > 10485760
       j = 1
       while j < i do
@@ -63,11 +63,11 @@ class SubmissionsController < ApplicationController
       redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
           flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
-    
+
     submission = @problem.submissions.build(content: params[:submission][:content])
     submission.user = current_user.sk
-    
-    
+
+
     if submission.save
       j = 1
       while j < i do
@@ -127,7 +127,7 @@ class SubmissionsController < ApplicationController
   end
 
   private
-  
+
   def can_see
     @submission = Submission.find_by_id(params[:id])
     if ((@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.solved?(@problem) && !current_user.sk.admin))
@@ -167,13 +167,13 @@ class SubmissionsController < ApplicationController
       redirect_to root_path
     end
   end
-  
+
   def point_attribution(user, problem)
     if !user.solved?(problem) # Avoid double count
       pt = 15*problem.level
-      
+
       partials = user.pointspersections
-    
+
       if !problem.chapter.sections.empty? # Pas un fondement
         user.point.rating = user.point.rating + pt
         user.point.save
@@ -182,7 +182,7 @@ class SubmissionsController < ApplicationController
         partial.points = partial.points + pt
         partial.save
       end
-    
+
       problem.chapter.sections.each do |s| # Section s
         partial = partials.where(:section_id => s.id).first
         partial.points = partial.points + pt

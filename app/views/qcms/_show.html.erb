@@ -14,12 +14,12 @@
 <% end %>
 
 <div>
-<%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+<%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 </div><br/>
 
 <% if current_user.sk.admin? %>
 
-  <h4>Réponse</h4> 
+  <h4>Réponse</h4>
 
   <ul>
     <% f.choices.order(:id).each do |c| %>
@@ -63,11 +63,11 @@
     <% else %>
       <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> |
       <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> |
-      <%= link_to "Modifier l'explication", qcm_explanation_path(f) %> | 
+      <%= link_to "Modifier l'explication", qcm_explanation_path(f) %> |
       <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
     <% end %>
   </center>
-  
+
   <br/>
 
   <% if number2 > 1 %>
@@ -101,7 +101,7 @@
       <%= button_to "Mettre en ligne", qcm_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de ce qcm par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
     </center> <br/>
   <% end %>
-  
+
   </div>
 
 <% else %>
@@ -110,9 +110,9 @@
   <% if sol.size > 0 %>
     <% sol = sol.first %>
     <% if sol.correct? %>
-    
+
     <p style="color:green;"><b>Vous avez résolu cet exercice!</b><br/><br/></p>
-    
+
       <h4>Réponse</h4>
 
       <ul>
@@ -129,7 +129,7 @@
           </li>
         <% end %>
       </ul>
-      
+
       <% if f.explanation.size > 0 %>
         <br/>
         <h4>Explication</h4>
@@ -203,7 +203,7 @@
     <% end %>
 
   <% end %>
-  
+
   <hr>
   Un soucis avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
 

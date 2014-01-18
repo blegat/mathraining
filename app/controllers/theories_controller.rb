@@ -62,7 +62,7 @@ class TheoriesController < ApplicationController
     flash[:success] = "Point théorique supprimé."
     redirect_to @chapter
   end
-  
+
   def put_online
     @theory = Theory.find(params[:theory_id])
     @theory.online = true
@@ -93,13 +93,13 @@ class TheoriesController < ApplicationController
     end
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
-  
+
   def read
     @theory = Theory.find(params[:theory_id])
     current_user.sk.theories << @theory
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
-  
+
   def unread
     @theory = Theory.find(params[:theory_id])
     current_user.sk.theories.delete(@theory)
@@ -112,7 +112,7 @@ class TheoriesController < ApplicationController
   end
 
   private
-  
+
   def swap_position(a, b)
     err = nil
     Theory.transaction do

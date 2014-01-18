@@ -23,7 +23,7 @@
 
 
   <div class="row">
-  
+
   <div class="span6">
   <h2>Dernières résolutions</h2>
   <br/>
@@ -31,7 +31,7 @@
   <% qcms = @user.solvedqcms.where(:correct => true) %>
   <% problems = @user.solvedproblems %>
   <% activite = Array.new %>
-  
+
   <% exercises.each do |e| %>
     <% if e.exercise.decimal %>
       <% pt = 10 %>
@@ -55,18 +55,18 @@
     <% pt = 0 if p.problem.chapter.sections.empty? %>
     <% activite.push({:time => p.updated_at, :type => 1, :pt => pt, :chapter => p.problem.chapter.name}) %>
   <% end %>
-  
+
   <% act = activite.sort{ |a, b| b[:time] <=> a[:time]} %>
-  
+
   <% actperday = Array.new %>
 
   <% previousdate = Date.new(1980,1,1) %>
   <% encours = -1 %>
-  
+
   <% parquoi = "" %>
-  
+
   <% if act.size > 0 %>
-  
+
     <% if act.last[:time].in_time_zone.day != DateTime.now.in_time_zone.day || act.last[:time].in_time_zone.month != DateTime.now.in_time_zone.month || act.last[:time].in_time_zone.year != DateTime.now.in_time_zone.year %>
       <% parquoi = "jour" %>
     <% elsif act.last[:time].in_time_zone.hour < act.first[:time].in_time_zone.hour - 1 %>
@@ -74,14 +74,14 @@
     <% else %>
       <% parquoi = "minute" %>
     <% end %>
-    
+
     <table class="table table-bordered">
     <tr><th style="width:140px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:70px;"><center>Type</center></th><th>Chapitre</th><th style="width:40px;"><center>Points</center></th></tr>
   <% end %>
   <% i = 1 %>
   <% act.each do |a| %>
     <% date = a[:time].in_time_zone %>
-    
+
     <% if parquoi == "jour" %>
       <% dateday = DateTime.new(date.year, date.month, date.day, 0, 0) %>
     <% elsif parquoi == "heure" %>
@@ -89,17 +89,17 @@
     <% else %>
       <% dateday = DateTime.new(date.year, date.month, date.day, date.hour, date.min) %>
     <% end %>
-    
+
     <% if a[:pt] > 0 %>
       <% if dateday != previousdate %>
         <% encours = encours+1 %>
         <% actperday.push({:time => dateday, :pt => a[:pt], :chapter => a[:chapter]}) %>
       <% else %>
         <% actperday[encours][:pt] = actperday[encours][:pt] + a[:pt] %>
-      <% end %>   
+      <% end %>
       <% previousdate = dateday %>
     <% end %>
-    
+
     <% if i <= 10 %>
     <tr style="background-color:<%= "#F1F1F1" if i % 2 == 1 %> <%= "white" if i % 2 == 0 %>;">
     <td><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td><td><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
@@ -118,46 +118,46 @@
     <td>
     <center>
       <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
-    </center>	
+    </center>
     </td>
     </tr>
     <% i = i+1 %>
     <% end %>
   <% end %>
-  
+
   <% if act.size > 0 %>
     </table>
   <% else %>
     <b>Aucune activité.</b>
   <% end %>
-  
+
   </div>
-  
+
   <div class="span6">
 
   <center><p style="font-size:24px; margin-top:80px;">Score : <%= actualrating %></p></center>
   <br/>
-  
-  
+
+
   <% if actualrating > 0 %>
-  
+
   <% p = Pointspersection.where(:user_id => @user) %>
   <% total = 0 %>
   <% possible2 = SortedSet.new %>
-  
+
   <% Section.all.each do |s| %>
     <% rate = p.where(:section_id => s.id).first.points %>
     <% total = total + rate %>
 
     <% possible2.add([rate, s.name, s.id]) %>
   <% end %>
-  
+
   <center>
   <canvas id="Camembert" width="240" height="240">
   Votre navigateur ne supporte pas les canvas.
   </canvas>
   </center>
-  
+
   <center>
   <table class="table table-bordered" style="width:360px; margin-top:20px;">
   <% p = Pointspersection.where(:user_id => @user) %>
@@ -171,18 +171,18 @@
     <% if i == 2 || i == 4 %>
       </tr><tr>
     <% end %>
-    
+
   <% end %>
-  
+
   </tr>
   </table>
   </center>
-  
-  
+
+
   <script>
   var d=document.getElementById("Camembert");
   var ctx=d.getContext("2d");
-  
+
   ctx.beginPath();
   ctx.arc(120, 120, 115, 0, 2 * Math.PI, false);
   ctx.fillStyle = 'white';
@@ -206,26 +206,26 @@
     <% end %>
     <% possible2.delete(possible2.first) %>
   <% end %>
-  
+
   </script>
-  
+
   <% end %>
-  
+
   <% date = @user.created_at.in_time_zone %>
   <br/>
   <center>Inscription : <%= date.day %> <%= mois[date.month-1] %> <%= date.year %></center>
- 
+
   </div>
-  
+
   </div>
 
 
   <% if actualrating > 0 %>
-  
+
   <div class="row">
-  
+
   <div class="span12">
-  
+
   <h2>Evolution</h2>
   <br/>
   <center>
@@ -233,7 +233,7 @@
   <canvas id="myCanvas" width="806" height="450" style="position:absolute; left:30px; top: 0px; border:1px solid #000000;">
   Votre navigateur ne supporte pas les canvas.
   </canvas>
-  
+
   <% @niveaux = @user.alllevel %>
   <% actuallevel = niveau[:num] %>
   <% if actuallevel == (@niveaux.size - 1) %>
@@ -241,7 +241,7 @@
   <% else %>
     <% maxi = 1.1*@niveaux[actuallevel+1][:pt] %>
   <% end %>
-  
+
   <% (0..(@niveaux.size-1)).each do |i| %>
     <% if i < (@niveaux.size - 1) %>
       <% haut = [450 - 450*(@niveaux[i+1][:pt]/maxi), 0].max %>
@@ -251,11 +251,11 @@
     <% end %>
     <% i = i+1 %>
   <% end %>
-  
+
   <% if actperday.size == 1 %>
-  
+
   <% a = actperday.first %>
-  
+
   <% if parquoi == "jour" %>
     <div style="position:absolute; top:460px; left:411px; width:44px; text-align:left; font-size:12px;"><%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %></div>
   <% elsif parquoi == "heure" %>
@@ -263,14 +263,14 @@
   <% else %>
     <div style="position:absolute; top:460px; left:418px; width:44px; text-align:left; font-size:12px;"><%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %></div>
   <% end %>
-  
+
   <% else %>
     <% last = actperday.first[:time].to_time.to_i %>
     <% first = actperday.last[:time].to_time.to_i %>
     <% previousw = 2000 %>
     <% actperday.each do |a| %>
       <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-      
+
       <% if previousw - w > 50 %>
         <% if parquoi == "jour" %>
           <div style="position:absolute; top:460px; left:<%= 8 + w %>px; width: 44px; text-align:left; font-size:12px;"><%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %></div>
@@ -281,17 +281,17 @@
         <% end %>
         <% previousw = w %>
       <% end %>
-      
+
     <% end %>
   <% end %>
-  
+
   </div>
   </center>
 
   <script>
   var c=document.getElementById("myCanvas");
   var ctx=c.getContext("2d");
-  
+
   <% (0..(@niveaux.size-1)).each do |i| %>
     <% if i == (@niveaux.size - 1) %>
       <% bas = [450 - 450*(@niveaux[i][:pt]/maxi) , 0].max %>
@@ -308,7 +308,7 @@
     <% end %>
     <% i = i+1 %>
   <% end %>
-  
+
    <% (0..(@niveaux.size-1)).each do |i| %>
     <% if i < (@niveaux.size - 1) %>
       <% haut = [450 - 450*(@niveaux[i+1][:pt]/maxi), 0].max %>
@@ -323,10 +323,10 @@
     <% end %>
     <% i = i+1 %>
   <% end %>
-  
+
   ctx.fillStyle = 'black';
   ctx.strokeStyle = 'black';
-    
+
   <% if actperday.size == 1 %>
     <% (0..22).each do |i| %>
       ctx.moveTo(403, <%= 20*i %>);
@@ -339,14 +339,14 @@
     ctx.arc(403, <%= 450 - 450*(actualrating/maxi) %>, 3, 0, 2 * Math.PI, true);
     ctx.fill();
   <% else %>
-    
+
     <% last = actperday.first[:time].to_time.to_i %>
     <% first = actperday.last[:time].to_time.to_i %>
     <% previousr = 0 %>
     <% prevw = -100 %>
     <% previousw = 2000 %>
     <% prevh = -1 %>
-    
+
     <% actperday.each do |a| %>
       <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
       <% if previousw - w > 50 %>
@@ -361,7 +361,7 @@
         <% previousw = w %>
       <% end %>
     <% end %>
-    
+
     <% actperday.reverse.each do |a| %>
       <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
       <% r = previousr + a[:pt] %>
@@ -383,14 +383,14 @@
     <% end %>
   <% end %>
 
-  
+
   </script>
-  
+
   </div>
   </div>
-  
+
   <% end %>
-  
+
   <% if current_user.sk.admin? %>
     <br/>
     <center>
@@ -401,5 +401,5 @@
       <% end %>
     </center>
   <% end %>
-  
+
 <% end %>

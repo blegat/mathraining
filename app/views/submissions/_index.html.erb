@@ -5,16 +5,16 @@
     <p>Aucune soumission.</p>
   <% else %>
     <%= will_paginate submissions %>
-    
+
     <table class="table table-bordered">
     <tr><th>Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
-    
+
       <% submissions.each do |s| %>
         <% @new = true %>
         <%= render 'submissions/show2', s: s, nom: true %>
       <% end %>
-      
-      </table>	
+
+      </table>
     <%= will_paginate submissions %>
   <% end %>
 <% else %>
@@ -25,7 +25,7 @@
   <% encours = Submission.new %>
   <% submissions = problem.submissions.where('user_id = ?', current_user.sk).order('created_at') # Ne pas paginer, un type qui fait N > 30 soumissions mérite de voir les N soumissions qu'il a faites et de se faire chier avec sa roulette (et puis j'utilise le last submissions par la suite) %>
   <% @new = true %>
-  
+
   <% if !submissions.empty? %>
     <% @new = true %>
       <% submissions.each do |s| %>
@@ -40,16 +40,16 @@
           <% @newsub = false %>
           <% encours = s %>
         <% end %>
-      <% end %>  
+      <% end %>
     <% if !aucun %>
-      </table> 
-    <% end %>   
+      </table>
+    <% end %>
   <% end %>
-  
+
   <% if aucun %>
     Aucune soumission précédente.<br/><br/>
   <% end %>
-  
+
   <% unless @newsub %>
     <h4>Soumission en cours</h4>
     <table class="table table-bordered">
@@ -57,23 +57,23 @@
     <%= render 'submissions/show2', s: encours, nom: false %>
     </table>
   <% end %>
-  
+
   <% if current_user.sk.solved?(problem) %>
-  
+
     <h4>Toutes les soumissions correctes</h4>
     <% submissions = problem.submissions.where(status: 2).order('created_at DESC').paginate(page: params[:page]) %>
     <%= will_paginate submissions %>
-    
+
     <table class="table table-bordered">
     <tr><th>Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
-    
+
       <% submissions.each do |s| %>
         <%= render 'submissions/show2', s: s, nom: true %>
       <% end %>
-      
-      </table>	
+
+      </table>
     <%= will_paginate submissions %>
-    
+
   <% end %>
-  
+
 <% end %>

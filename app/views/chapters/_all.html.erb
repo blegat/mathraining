@@ -13,7 +13,7 @@
 
 <h2>Introduction</h2>
 <div>
-  <%= raw(@chapter.description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+  <%= raw(@chapter.description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 
 </div><br/> <br/>
 
@@ -49,7 +49,7 @@
 <% j = 1 %>
 <% pasfait = 0 %>
 <% (1..(liste.size+liste2.size)).each do |i| %>
-  
+
   <% encours = 0 %>
   <% if un >= liste.size %>
     <% encours = 2 %>
@@ -68,27 +68,27 @@
   <% if encours == 1 %>
     <% f = liste[un] %>
     <% if f.online %>
-    
+
       <% if f.decimal %>
         <% pt = 10 %>
       <% else %>
         <% pt = 6 %>
       <% end %>
-      
+
       <h3>2.<%= j %>. Exercice <%= j %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
       <div>
       <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       </div>
       <br/>
-        
+
       <% j = j+1 %>
     <% end %>
     <% un = un + 1 %>
-    
+
   <% else %>
     <% f = liste2[deux] %>
     <% if f.online %>
-    
+
       <% poss = f.choices.count %>
       <% if f.many_answers %>
         <% pt = 2*(poss-1) %>
@@ -97,10 +97,10 @@
       <% end %>
 
       <h3>2.<%= j %>. Exercice <%= j %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
-      <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>	
+      <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       </div>
       <br/>
-      
+
       <% if f.many_answers %>
         <b>(Plusieurs réponses sont possibles)</b><br/><br/>
         <% f.choices.order(:id).each do |c| %>
@@ -117,14 +117,14 @@
           </label>
         <% end %>
       <% end %>
-      
+
       <br/>
 
       <% j = j+1 %>
     <% end %>
     <% deux = deux + 1 %>
   <% end %>
-  
+
 <% end %>
 
 <% if j == 1 %>

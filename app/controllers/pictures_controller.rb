@@ -6,9 +6,9 @@ class PicturesController < ApplicationController
     only: [:show, :destroy]
 
   def show
-    
+
   end
-  
+
   def new
     @pic = Picture.new
   end
@@ -22,7 +22,7 @@ class PicturesController < ApplicationController
       render 'new'
     end
   end
-  
+
   def destroy
     @pic = Picture.find(params[:id])
     @pic.image.destroy
@@ -31,11 +31,11 @@ class PicturesController < ApplicationController
   end
 
   private
-  
+
   def admin_user
     redirect_to root_path unless current_user.sk.admin?
   end
-  
+
   def good_person
     @pic = Picture.find(params[:id])
     redirect_to root_path unless @pic.user.id == current_user.sk.id

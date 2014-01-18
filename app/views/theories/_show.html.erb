@@ -1,15 +1,31 @@
 <% if (f.online && f.chapter.online) || current_user.sk.admin? %>
   <h3><%= f.title %> </h3>
-  <div><%= raw(f.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/<evidence>[ \r]*\n/, '<evidence>').gsub(/<\/evidence>[ \r]*\n/, '</evidence>').gsub(/<evidence>/, '<div class="evidence">').gsub(/<\/evidence>/, '</div>').gsub(/\n/, '<br/>').gsub(/\/latextest\//, '<script src="/assets/previewsafe.js"></script> <div class="well" id="MathPreview"></div> <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div> <textarea id="MathInput" class="span10" style="height:120px; margin-top:5px;" onkeyup="Preview.Update()">Rentrez ici le code $\LaTeX$ que vous souhaitez tester.</textarea><script> Preview.Init(); Preview.Update(); </script>') )%>	
+  <div>
+    <%= raw(f.content.
+            gsub(/<hr>[ \r]*\n/,'<hr>').
+            gsub(/\\][ \r]*\n/,'\] ').
+            gsub(/\$\$[ \r]*\n/,'$$ ').
+            gsub(/<\/h4>[ \r]*\n/,'</h4>').
+            gsub(/<\/ol>[ \r]*\n/, '</ol>').
+            gsub(/\n[ \r]*<\/ol>/, '</ol>').
+            gsub(/<\/ul>[ \r]*\n/, '</ul>').
+            gsub(/\n[ \r]*<\/ul>/, '</ul>').
+            gsub(/\n[ \r]*<li>/, '<li>').
+            gsub(/<evidence>[ \r]*\n/, '<evidence>').
+            gsub(/<\/evidence>[ \r]*\n/, '</evidence>').
+            gsub(/<evidence>/, '<div class="evidence">').
+            gsub(/<\/evidence>/, '</div>').
+            gsub(/\n/, '<br/>').
+            gsub(/\/latextest\//, '<script src="/assets/previewsafe.js"></script> <div class="well" id="MathPreview"></div> <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div> <textarea id="MathInput" class="span10" style="height:120px; margin-top:5px;" onkeyup="Preview.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea><script> Preview.Init(); Preview.Update(); </script>') )%>
   </div>
   <br/>
-  
+
   <div class="noprint">
 
   <% if current_user.sk.admin? %>
     <br/>
     <center>
-      <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> | 
+      <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> |
       <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %>
     </center>
     <br/>
@@ -28,7 +44,7 @@
 
     <% if up || down %>
       <center>
-        Déplacer ce point théorique vers le 
+        Déplacer ce point théorique vers le
         <% if up %>
           <%= link_to "haut", theory_order_minus_path(f) %>
           <% if down %>
@@ -56,12 +72,12 @@
         <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn', :disabled => current_user.other %>
       <% end %>
     </center>
-    
+
     <hr>
     Des questions sur ce point théorique? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
     </div>
   <% end %>
-  
+
   </div>
 
 <% end %>

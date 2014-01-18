@@ -1,17 +1,17 @@
 <% provide(:title, "Modifier l'explication d'un QCM".html_safe) %>
 <h1>Modifier l'explication d'un QCM</h1>
 
-<h3>Enoncé</h3>	
+<h3>Enoncé</h3>
 <%= raw(@qcm.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 
 <br/>
-<h3>Réponse</h3>	
+<h3>Réponse</h3>
 
 <ul>
   <% @qcm.choices.order(:id).each do |c| %>
     <li style="padding:5px;">
     <%= c.ans %>
-    
+
     <% if c.ok %>
       <i class="icon-ok" style="margin-left:10px;"></i>
     <% end %>

@@ -18,15 +18,18 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     @user.key = SecureRandom.urlsafe_base64
-    @user.email_confirm = false
-    if Rails.env.development?
-    	@user.email_confirm = true
+
+    # Don't do email and captcha in development and tests
+    @user.email_confirm = !Rails.env.production?
+
     end
-  	if verify_recaptcha(:model => @user, :message => "Captcha incorrect") && @user.save
-  	  UserMailer.registration_confirmation(@user.id).deliver
-  	  
+  	if (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
+      if Rails.env.production?
+        UserMailer.registration_confirmation(@user.id).deliver
+      end
+
   	  flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
-  	  #flash[:success] = "Vous êtes inscrit! Veuillez vous connecter."
+  	  flash[:success] = "Vous êtes inscrit! Veuillez vous connecter."
   	  redirect_to signin_path
   	else
   	  render 'new'
@@ -86,7 +89,7 @@ class UsersController < ApplicationController
     end
     redirect_to signin_path
   end
-  
+
   def password_forgotten
     @user = User.find_by_email(params[:user][:email])
     if @user
@@ -98,14 +101,14 @@ class UsersController < ApplicationController
     end
     redirect_to signin_path
   end
-  
+
   def recup_password
     @user = User.find(params[:id])
     if @user.key.to_s != params[:key].to_s
       flash[:error] = "Ce lien n'est pas correct."
       redirect_to root_path
     else
-      @user.update_attribute(:key, SecureRandom.urlsafe_base64) 
+      @user.update_attribute(:key, SecureRandom.urlsafe_base64)
       sign_in @user
       flash[:success] = "Veuillez changer immédiatement de mot de passe."
       redirect_to edit_user_path(@user)
@@ -130,12 +133,12 @@ class UsersController < ApplicationController
     @new = false
     render :notifications
   end
-  
+
   def notifs_show
     @notifs = current_user.sk.notifs.order("created_at")
     render :notifs
   end
-  
+
   def take_skin
     @user = User.find(params[:user_id])
     if @user.admin?
@@ -147,7 +150,7 @@ class UsersController < ApplicationController
     end
     redirect_to sections_path
   end
-  
+
   def leave_skin
     if current_user.id == params[:user_id].to_i
       current_user.update_attribute(:skin, 0)

@@ -3,7 +3,7 @@
 
 <% def affiche_date(date, datenow) %>
   <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-  
+
   <% if (datenow - date).floor >= 24*60*60 %>
     <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
   <% elsif (datenow - date).floor >= 60*60 %>
@@ -43,7 +43,7 @@
           </td>
           <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
         <% end %>
-        
+
         <% if @chapter.nil? %>
           <%= link_to s.title, s %>
           <% if @chapter.nil? and not s.chapter.nil? %>
@@ -55,11 +55,11 @@
             - <%= s.chapter.name %>
           <% end %>
         <% end %>
-        
+
         <% if s.admin? %>
           </td></tr></table>
         <% end %>
-        
+
       </td>
       <td style="text-align:center; font-weight:bold; vertical-align:middle;">
       	<% if s.user.admin %>
@@ -79,9 +79,9 @@
           <% qui = s.user %>
           <% date = s.created_at.in_time_zone %>
         <% end %>
-        
+
         <% datenow = Time.zone.now %>
-        
+
       <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
         <% if qui.admin %>
           <%= qui.name %>
@@ -126,7 +126,7 @@
           </td>
           <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
         <% end %>
-        
+
         <% if @chapter.nil? %>
           <%= link_to s.title, s %>
           <% if @chapter.nil? and not s.chapter.nil? %>
@@ -138,7 +138,7 @@
             - <%= s.chapter.name %>
           <% end %>
         <% end %>
-        
+
         <% if s.admin? %>
           </td></tr></table>
         <% end %>
@@ -161,9 +161,9 @@
           <% qui = s.user %>
           <% date = s.created_at.in_time_zone %>
         <% end %>
-        
+
         <% datenow = Time.zone.now %>
-        
+
       <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
         <% if qui.admin %>
           <%= qui.name %>

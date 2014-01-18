@@ -225,6 +225,7 @@ DEPENDENCIES
   faker (= 1.0.1)
   jquery-rails
   kramdown
+  nokogiri (~> 1.6.0)
   pagedown-rails (~> 1.1.2)
   paperclip!
   pg (~> 0.14.1)
