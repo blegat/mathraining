@@ -18,9 +18,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     @user.key = SecureRandom.urlsafe_base64
-    @user.email_confirm = false 
-    if params[:code] == ENV['ADMIN_CODE']
-      @user.admin = true
+    @user.email_confirm = false
+    if Rails.env.development?
+    	@user.email_confirm = true
     end
   	if verify_recaptcha(:model => @user, :message => "Captcha incorrect") && @user.save
   	  UserMailer.registration_confirmation(@user.id).deliver
