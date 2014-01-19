@@ -14,7 +14,7 @@
 <a href="#ici" onClick="JavaScript: TAinsert('<ul>\n<li>Point 1','</li>\n<li>Point 2</li>\n</ul>','MathInput'); Preview.Update();"><%= image_tag "list.jpg", :title => "Liste", :style=>"margin-left:15px;" %></a>
 <a href="#ici" onClick="JavaScript: TAinsert('<ol>\n<li>Point 1','</li>\n<li>Point 2</li>\n</ol>','MathInput'); Preview.Update();"><%= image_tag "enumerate.jpg", :title => "Liste numérotée" %></a>
 <a href="#ici" onClick="JavaScript: TAinsert('<a target=\'blank\' href=\'http://www.exemple.com\'>','</a>','MathInput'); Preview.Update();"><%= image_tag "link.jpg", :title => "Lien", :style=>"margin-left:15px;" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('<center><img src=\'/system/pictures/0/votreImage.jpg\' width=\'600px\' /></center>','','MathInput'); Preview.Update();"><%= image_tag "picture.jpg", :title => "Image", :style=>"margin-right:50px;" %></a>
+<a href="#ici" onClick="JavaScript: TAinsert('<figure><center><img src=\'/system/pictures/0/votreImage.jpg\' width=\'600px\' />\n\n<figcaption>Légende</figcaption></center></figure>','','MathInput'); Preview.Update();"><%= image_tag "picture.jpg", :title => "Image", :style=>"margin-right:50px;" %></a>
 <%= link_to "Mes images", pictures_path, :target => "_blank" %> - <%= link_to "Uploader une image", new_picture_path, :target => "_blank" %>
 <%= f.text_area :description, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
 
