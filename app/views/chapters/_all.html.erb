@@ -160,10 +160,11 @@
   <b>Aucun problème</b><br/><br/>
 <% end %>
 
+<br/><center><%= button_to "Exporter en .tex (version beta)", chapter_export_path(@chapter), class: "btn-primary" %></center>
+
 <% if !current_user.sk.admin? %>
 
 <hr>
 Des questions? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
 
 <% end %>
-
