@@ -37,9 +37,15 @@ function add() {
 }
 </SCRIPT>
 
+<% q = 0 %>
+<% if(params.has_key?:q) %>
+  <% q = params[:q].to_i %>
+<% end %>
 
 <% provide(:title, 'Créer un sujet') %>
-<h1>Créer un sujet</h1>
+<h1>
+<span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
+Créer un sujet</h1>
 <span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
 <% if @chapter.nil? %>
   <% quoi = @subject %>
@@ -55,14 +61,6 @@ function add() {
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>
   <%= f.submit "Créer", class: "btn btn-large btn-primary", :disabled => current_user.other %>
-<% end %>
-
-<br/>
-
-<% if @chapter.nil? %>
-  <center><%= link_to "Retour au forum", subjects_path %></center>
-<% else %>
-  <center><%= link_to "Retour au forum", chapter_subjects_path %></center>
 <% end %>
 
 <script>

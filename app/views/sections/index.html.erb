@@ -4,17 +4,8 @@
 <center>
   <% if current_user.sk.admin? %>
     <br/>
-    <table>
-    <tr>
-    <td style="padding-right:10px;">
-    <%= button_to "Ajouter un chapitre", new_chapter_path, method: :get,
-      class: 'btn btn-large' %>
-      </td>
-      <td style="padding-left:10px;">
     <%= button_to "Modifier la structure des sections", graph_prerequisites_path, method: :get,
       class: 'btn btn-large' %>
-      </td></tr>
-      </table>
   <% end %>
 </center>
 
@@ -26,7 +17,12 @@ Elle est principalement destinée aux étudiants les plus jeunes, mais peut éga
 <center>
   <br/>
   <div style="width:500px;">
-    <%= link_to image_tag("fondations.jpg", alt: "Fondations"), "sections/0" %>
+    <% @sections.each do |f| %>
+      <% if f.fondation %>
+        <%= link_to image_tag(f.image, alt: f.name), f %>
+      <% end %>
+
+  <% end %>
   </div>
 
 </center>
@@ -40,6 +36,7 @@ C'est pourquoi ce site comportera certains chapitres hybrides, présents dans pl
 <tr>
 <% i = 0 %>
   <% @sections.each do |f| %>
+    <% if !f.fondation %>
     <% if i > 0 && i % 2 == 0 %>
     </tr><tr>
     <% end %>
@@ -49,6 +46,7 @@ C'est pourquoi ce site comportera certains chapitres hybrides, présents dans pl
     </div>
     </td>
     <% i = i+1 %>
+    <% end %>
   <% end %>
 
 </tr>

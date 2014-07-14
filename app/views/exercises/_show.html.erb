@@ -6,7 +6,7 @@
   <% pt = 6 %>
 <% end %>
 
-<% if f.chapter.sections.empty? %>
+<% if @fondation %>
 <h3>Exercice <%= number %></h3>
 <% else %>
 <h3>Exercice <%= number %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
@@ -136,7 +136,7 @@
   <% end %>
 
   <hr>
-  Un soucis avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
+  Un soucis avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(@chapter, :q => @chapter.id), :target => "_blank" %> dédié à ce chapitre!<br/><br/>
 
 <% end %>
 

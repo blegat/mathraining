@@ -14,7 +14,7 @@
 
 class Chapter < ActiveRecord::Base
   attr_accessible :description, :level, :name, :online
-  has_and_belongs_to_many :sections, :uniq => true
+  belongs_to :section
   has_and_belongs_to_many :users, :uniq => true
   has_many :theories
   has_many :exercises
@@ -40,7 +40,7 @@ class Chapter < ActiveRecord::Base
   def real_number_prerequisites
     liste = recursive_prerequisites
     Chapter.all.each do |c|
-      if c.sections.empty?
+      if c.section.fondation
         liste.delete(c.id)
       end
     end

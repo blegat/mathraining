@@ -38,7 +38,20 @@ function add() {
 </SCRIPT>
 
 <% provide(:title, 'Modifier un message') %>
-<h1>Modifier un message</h1>
+
+<% q = 0 %>
+<% if(params.has_key?:q) %>
+  <% q = params[:q].to_i %>
+<% end %>
+
+<% tot = @message.subject.messages.where("id <= ?", @message.id).count %>
+<% page = [0,((tot-1)/10).floor].max + 1 %>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
+<span style="font-size:24px;"><%= link_to @message.subject.title, subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q) %> ></span>
+Modifier un message
+</h1>
 <span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
 <% if @message.user != current_user.sk %>
 <span style="color:red;">Ce message n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (divulgation d'une réponse, vulgarité,...)</span><br/><br/>
@@ -68,16 +81,6 @@ function add() {
   <%= f.submit "Editer", class: "btn btn-large btn-primary", :disabled => current_user.other %>
 <% end %>
 
-<br/>
-
-<% tot = @message.subject.messages.where("id <= ?", @message.id).count %>
-<% page = [0,((tot-1)/10).floor].max + 1 %>
-
-<% if @chapter.nil? %>
-<center><%= link_to "Retour au sujet", subject_path(@message.subject, :anchor => @message.id, :page => page) %></center>
-<% else %>
-<center><%= link_to "Retour au sujet", chapter_subject_path(@chapter, @message.subject, :anchor => @message.id, :page => page) %></center>
-<% end %>
 
 <script>
 Preview.Init();

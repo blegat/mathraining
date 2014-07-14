@@ -9,24 +9,46 @@ class SubjectsController < ApplicationController
   before_filter :admin_delete, only: [:destroy]
 
   def index
-    if current_user.sk.admin?
-      if @chapter.nil?
-        @importants = Subject.where(important: true).order("lastcomment DESC")
-        @subjects = Subject.where(important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
+  
+    cherche_section = -1
+    cherche_chapitre = -1
+    cherche_personne = false
+    q = -1
+    if(params.has_key?:q)
+      q = params[:q].to_i
+      if q > 999
+        cherche_section = q/1000
+      elsif q > 0
+        cherche_chapitre = q
       else
-        @importants = Subject.where(chapter_id: @chapter, important: true).order("lastcomment DESC")
-        @subjects = Subject.where(chapter_id: @chapter, important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
+        cherche_personne = true
       end
     else
-      if @chapter.nil?
-        @importants = Subject.where(admin: false, important: true).order("lastcomment DESC")
-        @subjects = Subject.where(admin: false, important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
-      else
-        @importants = Subject.where(admin: false, chapter_id: @chapter, important: true).order("lastcomment DESC")
-        @subjects = Subject.where(admin: false, chapter_id: @chapter, important: false).order("lastcomment DESC").paginate(page: params[:page], per_page: 15)
+      cherche_personne = true
+      q = 0
+    end
+  
+    @importants = Array.new
+    Subject.where(important: true).order("lastcomment DESC").all.each do |s|
+      if current_user.sk.admin? || !s.admin
+        if cherche_personne || (cherche_section >= 0 && !s.chapter.nil? && s.chapter.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
+          @importants.push(s)
+        end
       end
     end
+    
 
+    @subjects = Array.new
+    Subject.where(important: false).order("lastcomment DESC").all.each do |s|
+      if current_user.sk.admin? || !s.admin
+        if cherche_personne || (cherche_section >= 0 && !s.chapter.nil? && s.chapter.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
+            @subjects.push(s)
+        end
+      end
+    end
+    
+    @subjectsfalse = @subjects.paginate(:page => params[:page], :per_page => 15)
+  
     if !current_user.other && !current_user.sk.see_forum
       current_user.sk.point.forumseen = DateTime.current
       current_user.sk.point.save
@@ -58,6 +80,12 @@ class SubjectsController < ApplicationController
   end
 
   def create
+  
+    q = 0
+    if(params.has_key?:q)
+      q = params[:q].to_i
+    end
+    
     if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path and return
     end
@@ -129,11 +157,8 @@ class SubjectsController < ApplicationController
         @subject.save
       end
       flash[:success] = "Sujet ajouté."
-      if @subject.chapter.nil? || @chapter.nil?
-        redirect_to subject_path(@subject)
-      else
-        redirect_to chapter_subject_path(@subject.chapter, @subject)
-      end
+
+      redirect_to subject_path(@subject, :q => q)
     else
       j = 1
       while j < i do
@@ -147,6 +172,12 @@ class SubjectsController < ApplicationController
   end
 
   def update
+  
+    q = 0
+    if(params.has_key?:q)
+      q = params[:q].to_i
+    end
+    
     if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path
     end
@@ -229,11 +260,8 @@ class SubjectsController < ApplicationController
       end
 
       flash[:success] = "Sujet modifié."
-      if @chapter.nil? || @subject.chapter.nil?
-        redirect_to subject_path(@subject)
-      else
-        redirect_to chapter_subject_path(@subject.chapter, @subject)
-      end
+
+      redirect_to subject_path(@subject, :q => q)
     else
       @preselect = params[:subject][:chapter_id].to_i
       render 'edit'
@@ -241,6 +269,12 @@ class SubjectsController < ApplicationController
   end
 
   def destroy
+  
+    q = 0
+    if(params.has_key?:q)
+      q = params[:q].to_i
+    end
+    
     @subject.delete
     @subject.subjectfiles.each do |f|
       f.file.destroy
@@ -254,11 +288,8 @@ class SubjectsController < ApplicationController
       m.destroy
     end
     flash[:success] = "Sujet supprimé."
-    if @chapter.nil? || @subject.chapter.nil?
-      redirect_to subjects_path
-    else
-      redirect_to chapter_subjects_path
-    end
+
+    redirect_to subjects_path(:q => q)
   end
 
   private

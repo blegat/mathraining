@@ -104,10 +104,10 @@ class SubmissionsController < ApplicationController
       if following
         following.read = read
         if following.save
-          redirect_to problem_submission_path(@problem, @submission),
+          redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => @submission),
             flash: { success: "Soumission marquée comme #{msg}" }
         else
-          redirect_to problem_submission_path(@problem, @submission),
+          redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => @submission),
             flash: { error: "Un problème est apparu" }
         end
       else

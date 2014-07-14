@@ -38,7 +38,17 @@ function add() {
 </SCRIPT>
 
 <% provide(:title, 'Modifier un sujet') %>
-<h1>Modifier un sujet</h1>
+
+<% q = 0 %>
+<% if(params.has_key?:q) %>
+  <% q = params[:q].to_i %>
+<% end %>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
+<span style="font-size:24px;"><%= link_to @subject.title, subject_path(@subject, :q => q) %> ></span>
+Modifier le sujet
+</h1>
 <span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
 <% if @subject.user != current_user.sk %>
 <span style="color:red;">Ce sujet n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (mauvais emplacement, divulgation d'une réponse,...)</span><br/><br/>
@@ -66,14 +76,6 @@ function add() {
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>
   <%= f.submit "Editer", class: "btn btn-large btn-primary", :disabled => current_user.other %>
-<% end %>
-
-<br/>
-
-<% if @chapter.nil? %>
-  <center><%= link_to "Retour au sujet", @subject %></center>
-<% else %>
-  <center><%= link_to "Retour au sujet", chapter_subject_path(@chapter, @subject) %></center>
 <% end %>
 
 <script>

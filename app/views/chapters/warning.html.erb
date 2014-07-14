@@ -6,16 +6,11 @@ Vous vous apprêtez à mettre un chapitre en ligne.
 Une fois cela fait, les utilisateurs auront accès à tous les composants du chapitre et pourront entre autres commencer à résoudre les exercices et QCMs qui leur sont proposés. Il ne sera alors plus envisageable pour un administrateur de modifier le chapitre autant qu'il ne le pouvait lorsque le chapitre était en construction (en particulier, vous ne pourrez plus le supprimer). Avant de faire cette opération, <b>nous vous demandons donc de prendre connaissance de ce que vous pourrez et ne pourrez plus faire une fois ce chapitre mis en ligne.</b>
 
 <h3>Sections</h3>
-<% if @chapter.sections.empty? %>
-Ce chapitre est <u>fondamental</u>. Il sera accessible par tout le monde, et ne comptera pas dans le score des utilisateurs. Il doit donc s'agir d'un chapitre dont la lecture n'est pas nécessaire, mais aide à rendre le niveau à des élèves moins expérimentés. Vous ne pourrez plus, par la suite, rendre ce chapitre non-fondamental.
+<% if @fondation %>
+Ce chapitre est <u>fondamental</u>. Il sera accessible par tout le monde, et ne comptera pas dans le score des utilisateurs. Il doit donc s'agir d'un chapitre dont la lecture n'est pas nécessaire, mais aide à rendre le niveau à des élèves moins expérimentés.
 <% else %>
-Ce chapitre appartient à <%= x = @chapter.sections.count %> section<%= "s" if x > 1 %> :<br/>
-<ul>
-<% @chapter.sections.each do |s| %>
-<li><%= s.name %></li>
-<% end %>
-</ul>
-Il ne sera accessible que par les utilisateurs ayant déjà complété les chapitres qui lui sont prérequis. Vous ne pourrez plus, par la suite, rendre ce chapitre fondamental. Il vous sera toutefois possible de le rajouter et de le supprimer d'une section, <u>en faisant appel à un webmaster</u>. En effet, cette action remet en cause l'avancement des étudiants dans chaque section. Soyez donc certain de son bon emplacement avant de le mettre en ligne.
+Ce chapitre appartient à la section <%= @chapter.section.name %>.
+Il ne sera accessible que par les utilisateurs ayant déjà complété les chapitres qui lui sont prérequis.
 <% end %>
 
 <h3>Prérequis</h3>

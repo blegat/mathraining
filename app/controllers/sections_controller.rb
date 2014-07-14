@@ -31,10 +31,10 @@ class SectionsController < ApplicationController
 
   private
   def recup
-  	if params[:id] == "0" || params[:id] == 0
+    @section = Section.find(params[:id])
+    if @section.fondation
   	  @fondation = true
   	else
-      @section = Section.find(params[:id])
       @fondation = false
     end
   end

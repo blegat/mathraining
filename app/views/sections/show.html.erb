@@ -194,17 +194,15 @@
 
 
 
+<% provide(:title, @section.name) %>
 
+<h1>
+  <span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span> <%= @section.name %>
+</h1>
 
 
 
 <% if !@fondation %>
-
-<% provide(:title, @section.name) %>
-
-<h1>
-  <%= @section.name %>
-</h1>
 
 <h3>Introduction</h3>
    <%= raw(@section.description.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
@@ -226,14 +224,14 @@
 <% n = 0 %>
 
 <% Chapter.all.each do |c| %>
-  <% if (c.online || current_user.sk.admin) && c.sections.count > 0 %>
+  <% if (c.online || current_user.sk.admin) && !c.section.fondation %>
     <% retiens[c.id] = n %>
     <% chap.push(c) %>
     <% debloque.push([]) %>
     <% faisable.push(-1) %>
     <% faisable2.push(-1) %>
     <% nb_pre.push(0) %>
-    <% if c.sections.exists?(@section) %>
+    <% if c.section == @section %>
       <% affiche.push(true) %>
     <% else %>
       <% affiche.push(false) %>
@@ -246,7 +244,7 @@
   <% if (chap[i].online || current_user.sk.admin) %>
     <% premier = true %>
     <% chap[i].prerequisites.each do |p| %>
-      <% if p.sections.count > 0 %>
+      <% if !p.section.fondation %>
         <% debloque[retiens[p.id]].push(i) %>
         <% nb_pre[i] = nb_pre[i]+1 %>
         <% premier = false %>
@@ -391,22 +389,8 @@
 <% end %>
 
 
-<br/>
-<center>
-<%= link_to "Retour à la liste des cours", sections_path %>
-</center>
-
-
-
-
 
 <% else %>
-
-<% provide(:title, "Fondements") %>
-
-<h1>
-  Fondements
-</h1>
 
 <h3>Introduction</h3>
   Vous trouverez ici certaines bases mathématiques sans lesquelles la compréhension des sections plus avancées risque d'être compliquée. Il n'est pas nécessaire de compléter ces chapitres pour accéder à la suite des cours.<br/><br/>
@@ -422,7 +406,7 @@
 <% n = 0 %>
 
 <% Chapter.all.each do |c| %>
-  <% if (c.online || current_user.sk.admin) && c.sections.count == 0 %>
+  <% if (c.online || current_user.sk.admin) && c.section.fondation %>
     <% retiens[c.id] = n %>
     <% chap.push(c) %>
     <% debloque.push([]) %>
@@ -436,7 +420,7 @@
   <% if (chap[i].online || current_user.sk.admin) %>
     <% premier = true %>
     <% chap[i].prerequisites.each do |p| %>
-      <% if p.sections.count > 0 %>
+      <% if p.section.fondation %>
         <% debloque[retiens[p.id]].push(i) %>
         <% nb_pre[i] = nb_pre[i]+1 %>
         <% premier = false %>
@@ -519,10 +503,11 @@
   <% i = i+1 %>
 <% end %>
 
-
-<br/>
-<center>
-<%= link_to "Retour à la liste des cours", sections_path %>
-</center>
-
 <% end %>
+
+
+<center>
+  <% if current_user.sk.admin? %>
+<%= button_to "Ajouter un chapitre", new_section_chapter_path(@section), method: :get, class: 'btn btn-large' %>
+  <% end %>
+</center>

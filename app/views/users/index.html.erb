@@ -8,7 +8,7 @@
 
 <% points = Point.order("rating DESC").where("rating != 0").all %>
 
-<% allsec = Section.order(:id).all %>
+<% allsec = Section.order(:id).where(:fondation => false).all %>
 
   <% rank = 1 %>
   <% points.each do |p| %>

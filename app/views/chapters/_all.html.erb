@@ -75,7 +75,11 @@
         <% pt = 6 %>
       <% end %>
 
-      <h3>2.<%= j %>. Exercice <%= j %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
+      <h3>2.<%= j %>. Exercice <%= j %>
+      <% if !f.chapter.section.fondation %>
+      <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
+      <% end %>
+      </h3>
       <div>
       <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       </div>
@@ -96,7 +100,11 @@
         <% pt = poss %>
       <% end %>
 
-      <h3>2.<%= j %>. Exercice <%= j %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
+      <h3>2.<%= j %>. Exercice <%= j %>
+      <% if !f.chapter.section.fondation %>
+      <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
+      <% end %>
+      </h3>
       <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       </div>
       <br/>
@@ -145,7 +153,7 @@
     <% (1..f.level).each do |i| %>
       <i class='icon-star'></i>
     <% end %>
-    <% if !f.chapter.sections.empty? %>
+    <% if !f.chapter.section.fondation %>
       <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
     <% end %>
     </h3>
@@ -165,6 +173,6 @@
 <% if !current_user.sk.admin? %>
 
 <hr>
-Des questions? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", chapter_subjects_path(@chapter) %> dédié à ce chapitre!<br/><br/>
+Des questions? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id) %> dédié à ce chapitre!<br/><br/>
 
 <% end %>

@@ -6,4 +6,4 @@
 (<%= link_to s.user.name, s.user %>)
 <% end %>
  :
-<%= link_to "Voir soumission et commentaire(s)", problem_submission_path(s.problem, s) %></p>
+<%= link_to "Voir soumission et commentaire(s)", chapter_path(@chapter, :type => 4, :which => s.problem.id, :sub => s.id) %></p>

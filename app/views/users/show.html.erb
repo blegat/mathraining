@@ -38,7 +38,7 @@
     <% else %>
       <% pt = 6 %>
     <% end %>
-    <% pt = 0 if e.exercise.chapter.sections.empty? %>
+    <% pt = 0 if e.exercise.chapter.section.fondation %>
     <% activite.push({:time => e.updated_at, :type => 0, :pt => pt, :chapter => e.exercise.chapter.name}) %>
   <% end %>
   <% qcms.each do |q| %>
@@ -47,12 +47,12 @@
     <% else %>
       <% pt = q.qcm.choices.count %>
     <% end %>
-    <% pt = 0 if q.qcm.chapter.sections.empty? %>
+    <% pt = 0 if q.qcm.chapter.section.fondation %>
     <% activite.push({:time => q.updated_at, :type => 0, :pt => pt, :chapter => q.qcm.chapter.name}) %>
   <% end %>
   <% problems.each do |p| %>
     <% pt = 15 * p.problem.level %>
-    <% pt = 0 if p.problem.chapter.sections.empty? %>
+    <% pt = 0 if p.problem.chapter.section.fondation %>
     <% activite.push({:time => p.updated_at, :type => 1, :pt => pt, :chapter => p.problem.chapter.name}) %>
   <% end %>
 
@@ -145,7 +145,7 @@
   <% total = 0 %>
   <% possible2 = SortedSet.new %>
 
-  <% Section.all.each do |s| %>
+  <% Section.order(:id).where(:fondation => false).all.each do |s| %>
     <% rate = p.where(:section_id => s.id).first.points %>
     <% total = total + rate %>
 
@@ -163,7 +163,7 @@
   <% p = Pointspersection.where(:user_id => @user) %>
   <tr>
   <% i = 0 %>
-  <% Section.all.each do |s| %>
+  <% Section.order(:id).where(:fondation => false).all.each do |s| %>
     <% rate = p.where(:section_id => s.id).first.points %>
 
     <td style="width:180px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td>

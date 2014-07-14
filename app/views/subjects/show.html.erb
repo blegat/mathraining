@@ -2,13 +2,20 @@
 
 <% provide(:title, @subject.title.html_safe) %>
 
-
-<% if @subject.chapter.nil? %>
-<h1><%= @subject.title %></h1>
-<% else %>
-  <% @chapitre = @subject.chapter %>
-  <h1><%= @subject.title %> - <%= @chapitre.name %></h1>
+<% q = 0 %>
+<% if(params.has_key?:q) %>
+  <% q = params[:q].to_i %>
 <% end %>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
+<%= @subject.title %>
+<% if !@subject.chapter.nil? %>
+  <% @chapitre = @subject.chapter %>
+   - <%= @chapitre.name %>
+<% end %>
+</h1>
+
 
 <% if !current_user.followed_subjects.exists?(@subject) %>
   <center><%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), data: { confirm: "Vous recevrez un email à chaque fois qu'un nouveau message sera posté sur ce sujet."}, class: 'btn btn' %></center>
@@ -62,17 +69,10 @@
 <% if (@subject.user == current_user.sk || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root) %>
   <tr><td colspan="2">
   <center>
-    <% if @chapter.nil? %>
-      <%= link_to "Modifier ce sujet", edit_subject_path(@subject) %>
+      <%= link_to "Modifier ce sujet", edit_subject_path(@subject, :q => q) %>
       <% if current_user.sk.admin? %>
         | <%= link_to "Supprimer ce sujet", subject_path(@subject), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce sujet et tous les messages qui vont avec ?" }  %>
       <% end %>
-    <% else %>
-      <%= link_to "Modifier ce sujet", edit_chapter_subject_path(@chapter, @subject) %>
-      <% if current_user.sk.admin? %>
-        | <%= link_to "Supprimer ce sujet", chapter_subject_path(@subject), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce sujet et tous les messages qui vont avec ?" }  %>
-      <% end %>
-    <% end %>
   </center>
   </td></tr>
 <% end %>
@@ -121,17 +121,10 @@
 <% if (m.user == current_user.sk || (current_user.sk.admin && !m.user.admin) || current_user.sk.root) %>
   <tr><td colspan="2">
   <center>
-    <% if @chapter.nil? %>
-      <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m) %>
+      <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m, :q => q) %>
       <% if current_user.sk.admin? %>
          | <%= link_to "Supprimer ce message", subject_message_path(@subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
       <% end %>
-    <% else %>
-      <%= link_to "Modifier ce message", edit_chapter_subject_message_path(@chapter, @subject, m) %>
-      <% if current_user.sk.admin? %>
-         | <%= link_to "Supprimer ce message", chapter_subject_message_path(@chapter, @subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
-      <% end %>
-    <% end %>
   </center>
   </td></tr>
 <% end %>
@@ -151,13 +144,4 @@
 <% end %>
 </center>
 
-<br/>
-<center>
-
-<% if @chapter.nil? %>
-  <%= link_to "Retour au forum", subjects_path %>
-<% else %>
-  <%= link_to "Retour au forum", chapter_subjects_path(params[:chapter_id]) %>
-<% end %>
-</center>
 <a name="bottom"></a>

@@ -26,6 +26,7 @@ class ExercisesController < QuestionsController
     else
       @exercise.online = true
     end
+    
     @exercise.chapter_id = params[:chapter_id]
     @exercise.statement = params[:exercise][:statement]
     @exercise.explanation = ""

@@ -210,20 +210,15 @@ class SolvedqcmsController < ApplicationController
 
     partials = user.pointspersections
 
-    if !qcm.chapter.sections.empty? # Pas un fondement
+    if !qcm.chapter.section.fondation # Pas un fondement
       user.point.rating = user.point.rating + pt
       user.point.save
-    else # Fondement
-      partial = partials.where(:section_id => 0).first
-      partial.points = partial.points + pt
-      partial.save
     end
 
-    qcm.chapter.sections.each do |s| # Section s
-      partial = partials.where(:section_id => s.id).first
-      partial.points = partial.points + pt
-      partial.save
-    end
+    partial = partials.where(:section_id => qcm.chapter.section.id).first
+    partial.points = partial.points + pt
+    partial.save
+
   end
 
 end

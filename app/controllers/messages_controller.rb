@@ -16,6 +16,12 @@ class MessagesController < ApplicationController
   end
 
   def create
+  
+    q = 0
+    if(params.has_key?:q)
+      q = params[:q].to_i
+    end
+  
     @message = Message.new(params[:message])
     @message.user = current_user.sk
     @message.subject = @subject
@@ -80,11 +86,8 @@ class MessagesController < ApplicationController
 
       tot = @subject.messages.count
       page = [0,((tot-1)/10).floor].max + 1
-      if @chapter.nil?
-        redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page)
-      else
-        redirect_to chapter_subject_path(@chapter, @message.subject, :anchor => @message.id, :page => page)
-      end
+      
+      redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
     else
       j = 1
       while j < i do
@@ -97,6 +100,12 @@ class MessagesController < ApplicationController
   end
 
   def update
+  
+    q = 0
+    if(params.has_key?:q)
+      q = params[:q].to_i
+    end
+    
     if @message.update_attributes(params[:message])
       if @message.user.admin? && !@message.admin_user?
         @message.admin_user = true
@@ -157,17 +166,20 @@ class MessagesController < ApplicationController
       flash[:success] = "Message modifié."
       tot = @message.subject.messages.where("id <= ?", @message.id).count
       page = [0,((tot-1)/10).floor].max + 1
-      if @chapter.nil?
-        redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page)
-      else
-        redirect_to chapter_subject_path(@chapter, @message.subject, :anchor => @message.id, :page => page)
-      end
+
+      redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
     else
       render 'edit'
     end
   end
 
   def destroy
+  
+    q = 0
+    if(params.has_key?:q)
+      q = params[:q].to_i
+    end
+    
     @message = Message.find(params[:id])
     @subject = @message.subject
 
@@ -185,11 +197,8 @@ class MessagesController < ApplicationController
       @subject.lastcomment = @subject.created_at
       @subject.save
     end
-    if @chapter.nil?
-      redirect_to @subject
-    else
-      redirect_to chapter_subject_path(@chapter, @subject)
-    end
+   
+    redirect_to subject_path(@subject, :q => q)
   end
 
   private

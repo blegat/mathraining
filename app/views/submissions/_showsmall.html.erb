@@ -1,20 +1,24 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
-<% provide(:title, 'Soumission') %>
-<h1>Soumission - <%= @problem.name %></h1>
-<p><i class=<%= @submission.icon %>></i>
+
+<% notif = current_user.sk.notifs.where(submission_id: @submission.id) %>
+<% if notif.size > 0 && !current_user.other %>
+  <% notif.first.delete %>
+<% end %>
+
+<h4>Soumission
+
 <% case @submission.status %>
 <% when 0 %>
-  Soumission en attente de correction.
+  (en attente de correction)</h4>
 <% when 1, 3 %>
-  Soumission corrigée. Elle n'est pas encore correcte.
-  <% unless current_user.sk.admin %>
-    Vous pouvez tenter de la corriger en répondant par commentaire, ou <%= link_to 'soumettre une nouvelle solution', chapter_path(@submission.problem.chapter, type: 4, which: @submission.problem.id) %>.
+  (erronée)</h4>
+  <% if !current_user.sk.admin %>
+  Vous pouvez tenter de corriger cette solution en postant un commentaire, ou soumettre une nouvelle solution.
   <% end %>
 <% when 2 %>
-  Soumission correcte.
+  (correcte)</h4>
 <% end %>
-</p>
 
 <% if current_user.sk.admin %>
   <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %>
@@ -26,12 +30,6 @@
     <% end %>
   <% end %>
 <% end %>
-
-<h2>Enoncé</h2>
-<%= raw(@submission.problem.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-  <br/>
-
-<h2>Solution</h2>
 
 
 <table class="table table-bordered" style="margin-top:20px;">
@@ -71,5 +69,3 @@
 <% unless @submission.correct? %>
   <%= render 'corrections/new' %>
 <% end %>
-
-<center><%= link_to 'Retour au problème', chapter_path(@submission.problem.chapter, :type => 4, :which => @submission.problem.id) %></center>

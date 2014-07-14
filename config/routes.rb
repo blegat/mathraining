@@ -72,7 +72,7 @@ Mathraining::Application.routes.draw do
       as: :put_online
     match '/explanation', to: "problems#explanation"
     match '/update_explanation', to: "problems#update_explanation", as: :update_explanation
-    resources :submissions, only: [:create, :show] do
+    resources :submissions, only: [:create] do
       resources :corrections, only: [:create]
       match '/read', to: 'submissions#read',
         as: :read
@@ -108,29 +108,23 @@ Mathraining::Application.routes.draw do
  # mathjax 'mathjax'
 
   resource :prerequisites # missing a 's' here ?
-  resources :sections
+  resources :sections do
+    resources :chapters, only: [:new, :create]
+  end
 
   match '/graph_prerequisites', to: "prerequisites#graph_prerequisites"
   match '/add_prerequisite', to: "prerequisites#add_prerequisite"
   match '/remove_prerequisite', to: "prerequisites#remove_prerequisite"
 
-  resources :chapters do
+  resources :chapters, only: [:show, :update, :edit, :destroy] do
     match '/warning', to: 'chapters#warning'
     match '/export', to: 'chapters#export', as: :export
     match '/put_online', to: 'chapters#put_online'
-    match '/manage_sections', to: 'chapters#new_section'
-    match '/add_section/:id', to: 'chapters#create_section',
-      as: :add_section
-    match '/remove_section/:id', to: 'chapters#destroy_section',
-      as: :remove_section
 
     resources :theories, only: [:new, :create]
     resources :exercises, only: [:new, :create]
     resources :qcms, only: [:new, :create]
     resources :problems, only: [:new, :create]
-    resources :subjects do
-      resources :messages, only: [:update, :edit, :destroy, :new, :create]
-    end
   end
 
   resources :subjects do

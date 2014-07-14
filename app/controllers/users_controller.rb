@@ -116,7 +116,9 @@ class UsersController < ApplicationController
 
   def recompute_scores
     User.all.each do |user|
-      point_attribution(user)
+      if !user.admin?
+        point_attribution(user)
+      end
     end
     redirect_to users_path
   end
@@ -188,8 +190,7 @@ class UsersController < ApplicationController
     user.point.rating = 0
     partials = user.pointspersections
     partial = Array.new
-    partial[0] = partials.where(:section_id => 0).first
-    partial[0].points = 0
+
     Section.all.each do |s|
       partial[s.id] = partials.where(:section_id => s.id).first
       partial[s.id].points = 0
@@ -204,15 +205,12 @@ class UsersController < ApplicationController
           pt = 6
         end
 
-        if !exo.chapter.sections.empty? # Pas un fondement
+        if !exo.chapter.section.fondation # Pas un fondement
           user.point.rating = user.point.rating + pt
-        else # Fondement
-          partial[0].points = partial[0].points + pt
         end
+        
+        partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
 
-        exo.chapter.sections.each do |s| # Section s
-          partial[s.id].points = partial[s.id].points + pt
-        end
       end
     end
 
@@ -226,15 +224,11 @@ class UsersController < ApplicationController
           pt = poss
         end
 
-        if !qcm.chapter.sections.empty? # Pas un fondement
+        if !qcm.chapter.section.fondation # Pas un fondement
           user.point.rating = user.point.rating + pt
-        else # Fondement
-          partial[0].points = partial[0].points + pt
         end
-
-        qcm.chapter.sections.each do |s| # Section s
-          partial[s.id].points = partial[s.id].points + pt
-        end
+        
+        partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
       end
     end
 
@@ -242,19 +236,14 @@ class UsersController < ApplicationController
       problem = p.problem
       pt = 15*problem.level
 
-      if !problem.chapter.sections.empty? # Pas un fondement
+      if !problem.chapter.section.fondation # Pas un fondement
         user.point.rating = user.point.rating + pt
-      else # Fondement
-        partial[0].points = partial[0].points + pt
       end
-
-      problem.chapter.sections.each do |s| # Section s
-        partial[s.id].points = partial[s.id].points + pt
-      end
+        
+      partial[problem.chapter.section.id].points = partial[problem.chapter.section.id].points + pt
     end
 
     user.point.save
-    partial[0].save
     Section.all.each do |s|
       partial[s.id].save
     end

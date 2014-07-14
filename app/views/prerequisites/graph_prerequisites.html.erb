@@ -5,6 +5,12 @@
   <% fondement = true %>
 <% end %>
 
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+Modifier la structure des sections
+</h1>
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
 <script src="assets/springy.js"></script>
 <script src="assets/springyui.js"></script>
@@ -21,7 +27,7 @@
   <% maximum = 1 %>
   <% chapters = Array.new %>
   <% Chapter.all.each do |chapter|%>
-    <% unless chapter.sections.empty? && !fondement %>
+    <% unless chapter.section.fondation && !fondement %>
       <% chapters.push(chapter) %>
       <% if fondement %>
         prereq[<%= chapter.id %>] = <%= x = chapter.number_prerequisites() %>;
@@ -32,7 +38,7 @@
         <% maximum = x+1 %>
       <% end %>
       <% existe.add(chapter.id) %>
-      fond[<%= chapter.id %>] = <%= chapter.sections.empty? %>
+      fond[<%= chapter.id %>] = <%= chapter.section.fondation? %>
     <% end %>
   <% end %>
 
@@ -64,13 +70,13 @@
   }
 
   <% Chapter.all.each do |chapter| %>
-    <% unless chapter.sections.empty? && !fondement %>
+    <% unless chapter.section.fondation && !fondement %>
       couleur = rouge(1+prereq[<%= chapter.id %>],<%= maximum %>);
       <% nom = chapter.name %>
       <% if nom.size > 25 %>
         <% nom = nom.slice(0..22) + "..." %>
       <% end %>
-      <% if chapter.sections.empty? %>
+      <% if chapter.section.fondation %>
         noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(couleur).concat("FF").concat(couleur) <%= ", bold: true" if chapter.online %>});
       <% else %>
         noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#FF".concat(couleur).concat(couleur) <%= ", bold: true" if chapter.online %>});
@@ -110,6 +116,8 @@
   });
 </script>
 
+
+
 <center>
   <% if !fondement %>
     <%= link_to "Afficher/modifier les fondements", graph_prerequisites_path(:fondement => 1) %>
@@ -120,6 +128,38 @@
   Votre navigateur ne supporte pas de canvas.
   </canvas>
 </center>
+
+<% liste = Array.new %>
+
+<% Section.where(:fondation => true).all.each do |s| %>
+  <% if !s.fondation || fondement %>
+    <% liste2 = Array.new %>
+    <% liste2.push(s.name) %>
+    <% liste3 = Array.new %>
+    <% s.chapters.find(:all, :order => "name DESC").each do |c| %>
+      <% liste3.push([c.name, c.id]) %>
+    <% end %>
+    <% liste2.push(liste3) %>
+  
+    <% liste.push(liste2) %>
+    <% end %>
+<% end %>
+
+
+<% Section.where(:fondation => false).all.each do |s| %>
+  <% if !s.fondation || fondement %>
+    <% liste2 = Array.new %>
+    <% liste2.push(s.name) %>
+    <% liste3 = Array.new %>
+    <% s.chapters.find(:all, :order => "name DESC").each do |c| %>
+      <% liste3.push([c.name, c.id]) %>
+    <% end %>
+    <% liste2.push(liste3) %>
+  
+    <% liste.push(liste2) %>
+    <% end %>
+<% end %>
+
 <div class="row">
   <div class="span6">
     <center>
@@ -129,9 +169,9 @@
       <%= form_for(:prerequisite, url: add_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
         <h3> Ajouter un lien </h3>
         <%= f.label "Prérequis" %>
-        <%= f.collection_select(:prerequisite_id, chapters, :id, :name, prompt: true) %>
+        <%= f.select :prerequisite_id, grouped_options_for_select(liste), :prompt => true %>
         <%= f.label "Chapitre" %>
-        <%= f.collection_select(:chapter_id, chapters, :id, :name, prompt: true) %>
+        <%= f.select :chapter_id, grouped_options_for_select(liste), :prompt => true %>
         <br/>
         <%= f.submit "Ajouter ce lien", class: "btn btn-primary" %>
       <% end %>
@@ -142,9 +182,9 @@
       <%= form_for(:prerequisite, url: remove_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
         <h3> Supprimer un lien </h3>
         <%= f.label "Prérequis" %>
-        <%= f.collection_select(:prerequisite_id, chapters, :id, :name, prompt: true) %>
+        <%= f.select :prerequisite_id, grouped_options_for_select(liste), :prompt => true %>
         <%= f.label "Chapitre" %>
-        <%= f.collection_select(:chapter_id, chapters, :id, :name, prompt: true) %>
+        <%= f.select :chapter_id, grouped_options_for_select(liste), :prompt => true %>
         <br/>
         <%= f.submit "Supprimer ce lien", class: "btn btn-primary" %>
       <% end %>

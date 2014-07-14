@@ -2,19 +2,15 @@
 class ChaptersController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_user,
-    only: [:destroy, :edit, :update, :create,
-      :new_section, :create_section, :destroy_section]
+    only: [:destroy, :edit, :update, :create]
   before_filter :chapter_exists1, only: [:show, :destroy]
   before_filter :chapter_exists2, only:
-    [:export, :new_section, :create_section, :destroy_section,
-      :warning, :put_online]
+    [:export, :warning, :put_online]
   before_filter :delete_online, only: [:destroy]
   before_filter :online_chapter,
     only: [:show, :export]
   before_filter :unlocked_chapter,
     only: [:show, :export]
-  before_filter :fondement_online,
-    only: [:new_section, :create_section, :destroy_section]
   before_filter :prerequisites_online,
     only: [:warning, :put_online]
 
@@ -28,6 +24,7 @@ class ChaptersController < ApplicationController
   end
 
   def new
+  	@section = Chapter.find(params[:section_id])
     @chapter = Chapter.new
   end
 
@@ -36,10 +33,12 @@ class ChaptersController < ApplicationController
   end
 
   def create
+    @section = Chapter.find(params[:section_id])    
     @chapter = Chapter.new(params[:chapter])
+    @chapter.section_id = params[:section_id]
     if @chapter.save
       flash[:success] = "Chapitre ajouté."
-      redirect_to chapter_manage_sections_path(@chapter)
+      redirect_to chapter_path(@chapter)
     else
       render 'new'
     end
@@ -78,52 +77,7 @@ class ChaptersController < ApplicationController
       q.destroy
     end
 
-    redirect_to sections_path
-  end
-
-  def new_section
-    @chapter = Chapter.find(params[:chapter_id])
-    @sections_to_remove = @chapter.sections.order(:id)
-    if @sections_to_remove.empty?
-      # weirdly in NOT IN(?), [] is always false
-      @sections_to_add = Section.order(:id).all
-    else
-      @sections_to_add = Section.where('id NOT IN(?)', @chapter.sections).order(:id)
-    end
-  end
-
-  def create_section
-    chapter = Chapter.find(params[:chapter_id])
-    section = Section.find(params[:id])
-    taillebefore = chapter.sections.count
-    chapter.sections << section
-    tailleafter = chapter.sections.count
-
-    if chapter.online && tailleafter > taillebefore
-      User.all.each do |user|
-        point_attribution(user)
-      end
-    end
-
-    redirect_to chapter_manage_sections_path(chapter)
-  end
-
-  def destroy_section
-    chapter = Chapter.find(params[:chapter_id])
-    section = Section.find(params[:id])
-    if chapter.online && chapter.sections.count == 1
-      flash[:error] = "Un chapitre en ligne non fondamental ne peut pas devenir fondamental. Si vous désirez changer ce chapitre de section, commencez par rajouter la nouvelle section et retirez ensuite l'ancienne."
-    else
-      taillebefore = chapter.sections.count
-      chapter.sections.delete(section)
-      tailleafter = chapter.sections.count
-      if chapter.online && tailleafter < taillebefore
-        User.all.each do |user|
-          point_attribution(user)
-        end
-      end
-    end
-    redirect_to chapter_manage_sections_path(chapter)
+    redirect_to section_path(@section)
   end
 
   def warning
@@ -142,6 +96,7 @@ class ChaptersController < ApplicationController
   end
 
   private
+ 
 
   def admin_user
     redirect_to sections_path unless current_user.sk.admin?
@@ -149,6 +104,12 @@ class ChaptersController < ApplicationController
 
   def chapter_exists1
     @chapter = Chapter.find_by_id(params[:id])
+    @section = @chapter.section
+    if @section.fondation?
+  	  @fondation = true
+  	else
+      @fondation = false
+    end
     if @chapter.nil?
       redirect_to root_path and return
     end
@@ -177,11 +138,6 @@ class ChaptersController < ApplicationController
 
   def delete_online
     redirect_to sections_path if @chapter.online
-  end
-
-  def fondement_online
-    (redirect_to @chapter and return) if (@chapter.online && @chapter.sections.empty?)
-    (redirect_to @chapter and return) if (@chapter.online && !current_user.sk.root)
   end
 
   def prerequisites_online

@@ -148,10 +148,7 @@ class User < ActiveRecord::Base
     newpoint = Point.new
     newpoint.rating = 0
     self.point = newpoint
-    newpoint = Pointspersection.new
-    newpoint.points = 0
-    newpoint.section_id = 0
-    self.pointspersections << newpoint
+
     Section.all.each do |s|
       newpoint = Pointspersection.new
       newpoint.points = 0

@@ -12,7 +12,9 @@
 <% end %>
 
 <h1>
-  <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
+<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:24px;"><%= link_to @section.name, @section %> ></span>
+<%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
 </h1>
 
 <div class="row">
@@ -30,7 +32,7 @@
       <li<%= ' class="active"'.html_safe if type == 10 %>>
       <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10) %></li>
       <li>
-      <%= link_to "Forum", chapter_subjects_path(@chapter), :target => "_blank" %>
+      <%= link_to "Forum", subjects_path(:q => @chapter.id), :target => "_blank" %>
       </li>
       <li class="nav-header">Points théoriques</li>
       <% compteur = 0 %>
@@ -266,21 +268,6 @@
       <br/><br/>
       <%= button_to "Mettre ce chapitre en ligne", chapter_warning_path(@chapter), method: :get, class: 'btn btn-large' %>
     <% end %>
-  <% end %>
-</center>
-
-<br/>
-<center>
-
-  Retour à la section :
-  <% i = false %>
-  <% @chapter.sections.each do |f| %>
-    <% if i %> | <% end %>
-    <%= link_to f.name, f %>
-    <% i = true %>
-  <% end %>
-  <% if !i %>
-    <%= link_to "Fondements", "../sections/0" %>
   <% end %>
 </center>
 </div>
