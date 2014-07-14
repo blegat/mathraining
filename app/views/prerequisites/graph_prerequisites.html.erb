@@ -42,10 +42,10 @@ Modifier la structure des sections
     <% end %>
   <% end %>
 
-  couleur = "";
-
-  function rouge(a, b, qui){
-    var dose = 255-Math.floor(220*a/b);
+  couleur = 0;
+  couleurmaxi = 0;
+  
+  function decitohexa(dose){
     var deux = dose % 16;
     var un = Math.floor(dose/16);
     var x, y;
@@ -68,18 +68,29 @@ Modifier la structure des sections
     }
     return x.concat(y);
   }
+  
+  var couleurmax = [[0, 0, 200], [0, 200, 200], [0, 100, 230], [200, 0, 200], [100, 0, 0], [100, 100, 0], [100, 100, 100]]
+  
+  function coucou(a, b, i){
+    var dose1 = 255-Math.floor(couleurmax[i][0]*a/b);
+    var dose2 = 255-Math.floor(couleurmax[i][1]*a/b);
+    var dose3 = 255-Math.floor(couleurmax[i][2]*a/b);
+    return decitohexa(dose1).concat(decitohexa(dose2)).concat(decitohexa(dose3));
+  }
+    
 
   <% Chapter.all.each do |chapter| %>
     <% unless chapter.section.fondation && !fondement %>
-      couleur = rouge(1+prereq[<%= chapter.id %>],<%= maximum %>);
+      couleur = 1+prereq[<%= chapter.id %>];
+      couleurmaxi = <%= maximum %>;
       <% nom = chapter.name %>
       <% if nom.size > 25 %>
         <% nom = nom.slice(0..22) + "..." %>
       <% end %>
       <% if chapter.section.fondation %>
-        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(couleur).concat("FF").concat(couleur) <%= ", bold: true" if chapter.online %>});
+        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section.id - 1 %>)) <%= ", bold: true" if chapter.online %>});
       <% else %>
-        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#FF".concat(couleur).concat(couleur) <%= ", bold: true" if chapter.online %>});
+        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section.id - 1 %>)) <%= ", bold: true" if chapter.online %>});
       <% end %>
       if(prereq[<%= chapter.id %>] == 0){
         graph.newEdge(depart, noeud[<%= chapter.id %>], {color: "#CCCCCC"});
