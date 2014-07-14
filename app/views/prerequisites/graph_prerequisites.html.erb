@@ -69,7 +69,7 @@ Modifier la structure des sections
     return x.concat(y);
   }
   
-  var couleurmax = [[0, 0, 200], [0, 200, 200], [0, 100, 230], [200, 0, 200], [100, 0, 0], [100, 100, 0], [100, 100, 100]]
+  var couleurmax = [[0, 0, 200], [0, 200, 200], [0, 100, 230], [200, 0, 200], [150, 0, 0], [150, 150, 0], [100, 100, 100]]
   
   function coucou(a, b, i){
     var dose1 = 255-Math.floor(couleurmax[i][0]*a/b);
@@ -147,7 +147,7 @@ Modifier la structure des sections
     <% liste2 = Array.new %>
     <% liste2.push(s.name) %>
     <% liste3 = Array.new %>
-    <% s.chapters.find(:all, :order => "name DESC").each do |c| %>
+    <% s.chapters.find(:all, :order => "name").each do |c| %>
       <% liste3.push([c.name, c.id]) %>
     <% end %>
     <% liste2.push(liste3) %>
@@ -162,7 +162,7 @@ Modifier la structure des sections
     <% liste2 = Array.new %>
     <% liste2.push(s.name) %>
     <% liste3 = Array.new %>
-    <% s.chapters.find(:all, :order => "name DESC").each do |c| %>
+    <% s.chapters.find(:all, :order => "name").each do |c| %>
       <% liste3.push([c.name, c.id]) %>
     <% end %>
     <% liste2.push(liste3) %>
