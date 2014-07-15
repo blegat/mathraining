@@ -42,7 +42,7 @@ class SubmissionsController < ApplicationController
           end
           nom = params["file#{k}".to_sym].original_filename
           session[:ancientexte] = params[:submission][:content]
-          redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+          redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
             flash: {error: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
@@ -60,7 +60,7 @@ class SubmissionsController < ApplicationController
         j = j+1
       end
       session[:ancientexte] = params[:submission][:content]
-      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
           flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
 
@@ -75,7 +75,7 @@ class SubmissionsController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
+      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => submission.id)
     else
       j = 1
       while j < i do
@@ -85,13 +85,13 @@ class SubmissionsController < ApplicationController
       end
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
-        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
           flash: { error: "Votre soumission est vide." }
       elsif params[:submission][:content].size > 8000
-        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
           flash: { error: "Votre soumission doit faire moins de 8000 caractères." }
       else
-        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id),
+        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
           flash: { error: "Une erreur est survenue." }
       end
     end

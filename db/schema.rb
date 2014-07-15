@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140714103427) do
+ActiveRecord::Schema.define(:version => 20140715183529) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -83,6 +83,46 @@ ActiveRecord::Schema.define(:version => 20140714103427) do
     t.boolean  "online",      :default => false
     t.text     "explanation"
   end
+
+  create_table "fakecorrectionfiles", :force => true do |t|
+    t.integer  "correction_id"
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at"
+  end
+
+  add_index "fakecorrectionfiles", ["correction_id"], :name => "index_fakecorrectionfiles_on_correction_id"
+
+  create_table "fakemessagefiles", :force => true do |t|
+    t.integer  "message_id"
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at"
+  end
+
+  add_index "fakemessagefiles", ["message_id"], :name => "index_fakemessagefiles_on_message_id"
+
+  create_table "fakesubjectfiles", :force => true do |t|
+    t.integer  "subject_id"
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at"
+  end
+
+  add_index "fakesubjectfiles", ["subject_id"], :name => "index_fakesubjectfiles_on_subject_id"
+
+  create_table "fakesubmissionfiles", :force => true do |t|
+    t.integer  "submission_id"
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at"
+  end
+
+  add_index "fakesubmissionfiles", ["submission_id"], :name => "index_fakesubmissionfiles_on_submission_id"
 
   create_table "followings", :force => true do |t|
     t.integer  "submission_id"

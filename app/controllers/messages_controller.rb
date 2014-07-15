@@ -122,6 +122,12 @@ class MessagesController < ApplicationController
           totalsize = totalsize + sf.file_file_size
         end
       end
+      
+      @message.fakemessagefiles.each do |sf|
+        if params["prevfakefile#{sf.id}".to_sym].nil?
+          sf.destroy
+        end
+      end
 
       attach = Array.new
 

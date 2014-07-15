@@ -65,12 +65,18 @@ Modifier un message
 <%= form_for quoi, :html => { :multipart => true }  do |f| %>
   <%= render 'form', f: f %>
   <br />
-  <% if @message.messagefiles.size > 0 %>
+  <% if @message.messagefiles.size + @message.fakemessagefiles.size > 0 %>
     <b>Pièces jointes (décochez pour supprimer) :</b>
     <% @message.messagefiles.each do |sf| %>
       <label class="checkbox">
         <%= link_to sf.file_file_name, download_messagefile_path(sf) %>
         <input type="checkbox" name="prevfile<%= sf.id %>" value="1" checked="checked" />
+      </label>
+    <% end %>
+    <% @message.fakemessagefiles.each do |sf| %>
+      <label class="checkbox">
+        <span style="color:#0000BB;"><%= sf.file_file_name %> (désactivée)</span>
+        <input type="checkbox" name="prevfakefile<%= sf.id %>" value="1" checked="checked" />
       </label>
     <% end %>
   <% end %>

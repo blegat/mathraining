@@ -3,6 +3,7 @@ class Correction < ActiveRecord::Base
   belongs_to :user
   belongs_to :submission
   has_many :correctionfiles, dependent: :destroy
+  has_many :fakecorrectionfiles, dependent: :destroy
 
   validates :user_id, presence: true
   validates :submission_id, presence: true

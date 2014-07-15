@@ -8,6 +8,7 @@ class Subject < ActiveRecord::Base
   has_many :following_users, through: :followingsubjects, source: :user
 
   has_many :subjectfiles, dependent: :destroy
+  has_many :fakesubjectfiles, dependent: :destroy
   validates :title, presence: true, length: { maximum: 255 }
   validates :content, presence: true
   validates :user_id, presence: true

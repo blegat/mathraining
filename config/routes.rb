@@ -82,24 +82,28 @@ Mathraining::Application.routes.draw do
   end
   
   resources :submissionfiles, only: [] do
+    match '/fake_delete', to: 'submissionfiles#fake_delete', as: :fake_delete
     member do
       get :download
     end
   end
   
   resources :correctionfiles, only: [] do
+    match '/fake_delete', to: 'correctionfiles#fake_delete', as: :fake_delete
     member do
       get :download
     end
   end
   
   resources :subjectfiles, only: [] do
+    match '/fake_delete', to: 'subjectfiles#fake_delete', as: :fake_delete
     member do
       get :download
     end
   end
   
   resources :messagefiles, only: [] do
+    match '/fake_delete', to: 'messagefiles#fake_delete', as: :fake_delete
     member do
       get :download
     end
@@ -154,6 +158,8 @@ Mathraining::Application.routes.draw do
   match '/about', to: 'static_pages#about'
 
   match '/contact', to: 'static_pages#contact'
+  
+  match '/pieces_jointes', to: 'submissionfiles#seeall'
 
   match '/signup', to: 'users#new'
   match '/signin', to: 'sessions#new'

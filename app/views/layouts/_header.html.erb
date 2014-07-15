@@ -49,6 +49,30 @@
         <% end %>
       <% end %>
     </ul>
+    
+    <% if signed_in? and current_user.sk.root? %>
+      <% total = 0 %>
+      <% Submissionfile.all.each do |f| %>
+        <% total = total + f.file_file_size %>
+      <% end %>
+      <% Correctionfile.all.each do |f| %>
+        <% total = total + f.file_file_size %>
+      <% end %>
+      <% Messagefile.all.each do |f| %>
+        <% total = total + f.file_file_size %>
+      <% end %>
+      <% Subjectfile.all.each do |f| %>
+        <% total = total + f.file_file_size %>
+      <% end %>
+      <ul class="nav pull-left" style="padding-left:15px;">
+        <% if total < 1000000 %>
+          <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn" %>
+        <% else %>
+          <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn" %>
+        <% end %>
+      </ul>
+    <% end %>
+    
     <ul class="nav pull-right">
       <li><%= link_to "Accueil",    root_path %></li>
       <% if signed_in? %>
