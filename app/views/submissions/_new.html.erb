@@ -57,7 +57,7 @@ function add() {
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>
 
-  <%= f.submit "Soumettre solution", class: "btn btn-large btn-primary", :disabled => current_user.other %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => current_user.other %>
 <% end %>
 
 <script>

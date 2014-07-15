@@ -1,5 +1,11 @@
 <% provide(:title, "Modifier l'explication d'un exercice".html_safe) %>
-<h1>Modifier l'explication d'un exercice</h1>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:24px;"><%= link_to @exercise.chapter.section.name, @exercise.chapter.section %> ></span>
+<span style="font-size:32px;"><%= link_to @exercise.chapter.name, chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) %> ></span>
+Modifier une explication
+</h1>
 
 <h3>Enoncé</h3>
 <%= raw(@exercise.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
@@ -15,7 +21,7 @@
 <h3>Explication</h3>
 
 <%= form_for(@exercise, url: exercise_update_explanation_path) do |f| %>
-  <%= render 'explanation_fields', f: f %>
+  <%= render 'form_explanation', f: f %>
   <br />
   <%= f.submit "Modifier", class: "btn btn-large btn-primary" %>
 <% end %>

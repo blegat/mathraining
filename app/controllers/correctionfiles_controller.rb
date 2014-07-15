@@ -11,7 +11,7 @@ class CorrectionfilesController < ApplicationController
 
   def have_access
     @thing = Correctionfile.find(params[:id])
-    redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.correction.submission.user)
+    redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.correction.submission.user || current_user.sk.solved?(@thing.correction.submission.problem))
   end
 
 end

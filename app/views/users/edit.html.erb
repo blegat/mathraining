@@ -4,7 +4,7 @@ Vous devez à nouveau rentrer votre mot de passe (éventuellement un nouveau si 
 <div class="row">
   <div class="span6">
     <%= form_for(@user) do |f| %>
-      <%= render 'fields2', f: f %>
+      <%= render 'form_edit', f: f %>
       <br />
       <%= f.submit "Mettre à jour", class: "btn btn-large btn-primary", :disabled => current_user.other %>
     <% end %>

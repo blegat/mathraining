@@ -24,7 +24,7 @@ class ChaptersController < ApplicationController
   end
 
   def new
-  	@section = Chapter.find(params[:section_id])
+  	@section = Section.find(params[:section_id])
     @chapter = Chapter.new
   end
 
@@ -33,7 +33,7 @@ class ChaptersController < ApplicationController
   end
 
   def create
-    @section = Chapter.find(params[:section_id])    
+    @section = Section.find(params[:section_id])    
     @chapter = Chapter.new(params[:chapter])
     @chapter.section_id = params[:section_id]
     if @chapter.save

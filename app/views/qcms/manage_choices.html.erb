@@ -1,5 +1,12 @@
 <% provide(:title, "Modifier les choix du QCM") %>
-<h1>Modifier les choix d'un QCM</h1>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:24px;"><%= link_to @qcm.chapter.section.name, @qcm.chapter.section %> ></span>
+<span style="font-size:32px;"><%= link_to @qcm.chapter.name, chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %> ></span>
+Modifier des choix
+</h1>
+
 Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne saurait être enregistrée.<br/><br/>
 
 <h3>Enoncé</h3>	
@@ -79,5 +86,3 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
 <% end %>
 
 </table>
-<br/>
-<center><%= link_to 'Retour au chapitre', chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %></center>

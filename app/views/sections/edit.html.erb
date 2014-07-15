@@ -1,10 +1,15 @@
 <% provide(:title, "Modifier une section") %>
-<h1>Modifier une section</h1>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:24px;"><%= link_to @section.name, @section %> ></span>
+Modifier
+</h1>
 
 <div class="row">
   <div class="span12">
     <%= form_for(@section) do |f| %>
-      <%= render 'fields', f: f %>
+      <%= render 'form', f: f %>
       <br />
       <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
     <% end %>

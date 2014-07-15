@@ -1,17 +1,21 @@
 <% provide(:title, 'Modifier un QCM') %>
-<h1>Modifier un QCM</h1>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:24px;"><%= link_to @qcm.chapter.section.name, @qcm.chapter.section %> ></span>
+<span style="font-size:32px;"><%= link_to @qcm.chapter.name, chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %> ></span>
+Modifier un QCM
+</h1>
 
 <div class="row">
   <div class="span12">
     <%= form_for(@qcm) do |f| %>
-      <%= render 'fields2', f: f %>
+      <%= render 'form_edit', f: f %>
       <br />
       <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
     <% end %>
   </div>
 </div>
-
-<center><%= link_to 'Retour au chapitre', chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %></center>
 
 <script>
 Preview.Init();

@@ -1,17 +1,22 @@
 <% provide(:title, 'Créer un QCM') %>
-<h1>Créer un QCM</h1>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:24px;"><%= link_to @chapter.section.name, @chapter.section %> ></span>
+<span style="font-size:32px;"><%= link_to @chapter.name, @chapter %> ></span>
+Créer un QCM
+</h1>
+
 
 <div class="row">
   <div class="span12">
     <%= form_for(@qcm, url: chapter_qcms_path) do |f| %>
-      <%= render 'fields', f: f %>
+      <%= render 'form', f: f %>
       <br />
       <%= f.submit "Créer", class: "btn btn-large btn-primary" %>
     <% end %>
   </div>
 </div>
-
-<center><%= link_to 'Retour au chapitre', @chapter %></center>
 
 <script>
 Preview.Init();

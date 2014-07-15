@@ -1,17 +1,21 @@
 <% provide(:title, 'Modifier un problème') %>
-<h1>Modifier un problème</h1>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:24px;"><%= link_to @problem.chapter.section.name, @problem.chapter.section %> ></span>
+<span style="font-size:32px;"><%= link_to @problem.chapter.name, chapter_path(@problem.chapter, :type => 4, :which => @problem.id) %> ></span>
+Modifier un problème
+</h1>
 
 <div class="row">
   <div class="span12">
     <%= form_for(@problem) do |f| %>
-      <%= render 'fields2', f: f %>
+      <%= render 'form_edit', f: f %>
       <br />
       <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
     <% end %>
   </div>
 </div>
-
-<center><%= link_to 'Retour au chapitre', chapter_path(@problem.chapter, :type => 4, :which => @problem.id) %></center>
 
 <script>
 Preview.Init();

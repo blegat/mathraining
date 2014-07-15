@@ -53,10 +53,10 @@
     <% end %>
 <% end %>
 
-<form action="" method="get">
+
+<form action="" method="get" name="research">
   N'afficher que les sujets relatifs à la section ou au chapitre : 
-  <%= select_tag :q, options_for_select(liste, q), :style => "margin-top:10px;" %>
-  <%= submit_tag "Go", :class => "btn btn-primary", :name => nil %>
+  <%= select_tag :q, options_for_select(liste, q), :style => "margin-top:5px;", :onchange => ("javascript: document.research.submit();") %>
 </form>
 
 <% if @importants.size > 0 %>

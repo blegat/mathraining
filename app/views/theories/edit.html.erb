@@ -1,6 +1,13 @@
 <% provide(:title, 'Modifier un point théorique') %>
-<h1>Modifier un point théorique</h1>
 
+<h1>
+<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:24px;"><%= link_to @theory.chapter.section.name, @theory.chapter.section %> ></span>
+<span style="font-size:32px;"><%= link_to @theory.chapter.name, chapter_path(@theory.chapter, :type => 1, :which => @theory.id) %> ></span>
+Modifier un point théorique
+</h1>
+
+<div class="row">
   <div class="span12">
     <%= form_for(@theory) do |f| %>
       <%= render 'form', f: f %>
@@ -8,8 +15,7 @@
       <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
     <% end %>
   </div>
-<br/>
-<center><%= link_to 'Retour au chapitre', chapter_path(@theory.chapter, :type => 1, :which => @theory.id) %></center>
+</div>
 
 <script>
 Preview.Init();

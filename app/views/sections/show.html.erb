@@ -201,15 +201,16 @@
 </h1>
 
 
-
-<% if !@fondation %>
-
 <h3>Introduction</h3>
    <%= raw(@section.description.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 <br/><br/>
 <% if current_user.sk.admin? %>
 <%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/><br/>
 <% end %>
+
+<h3>Chapitres</h3>
+
+<% if !@fondation %>
 
 
 <% chap = Array.new %>
@@ -392,8 +393,6 @@
 
 <% else %>
 
-<h3>Introduction</h3>
-  Vous trouverez ici certaines bases mathématiques sans lesquelles la compréhension des sections plus avancées risque d'être compliquée. Il n'est pas nécessaire de compléter ces chapitres pour accéder à la suite des cours.<br/><br/>
 
 
 <% chap = Array.new %>
