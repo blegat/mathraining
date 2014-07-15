@@ -24,3 +24,6 @@ doc/
 
 # Assets
 /public/assets/
+
+# Files
+/non-public/
