@@ -68,7 +68,11 @@ Soumission
 
 <td>
 <center>
-<%= (l[2].file_file_size / 1000.0).round(1) %> ko
+<% if (l[1] == 1 || l[1] == 3 || l[1] == 5 || l[1] == 7) %>
+  <%= (l[2].file_file_size / 1000.0).round(1) %> ko
+<% else %>
+  <span style="color:grey;">(<%= (l[2].file_file_size / 1000.0).round(1) %> ko)</span>
+<% end %>
 </center>
 </td>
 
