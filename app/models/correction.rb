@@ -2,7 +2,7 @@ class Correction < ActiveRecord::Base
   attr_accessible :content
   belongs_to :user
   belongs_to :submission
-  has_many :correctionfiles
+  has_many :correctionfiles, dependent: :destroy
 
   validates :user_id, presence: true
   validates :submission_id, presence: true
