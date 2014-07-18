@@ -12,8 +12,10 @@
 <% end %>
 
 <h1>
+<span class="noprint">
 <span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
 <span style="font-size:24px;"><%= link_to @section.name, @section %> ></span>
+</span>
 <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
 </h1>
 
