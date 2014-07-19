@@ -193,7 +193,7 @@ class SolvedqcmsController < ApplicationController
   def unlocked_chapter
     if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
-        if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p))
+        if (p.section.fondation && !current_user.sk.chapters.exists?(p))
           redirect_to sections_path and return
         end
       end

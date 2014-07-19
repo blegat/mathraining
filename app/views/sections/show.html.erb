@@ -275,24 +275,30 @@
       <% if faisable[encours] == 0 && !current_user.sk.admin %>
         <table style="border:1px solid green;" class="table">
         <tr style="background-color:#DDFFDD;">
-        <td colspan="3" style="border-top:1px solid green;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <i class="icon-ok"></i></h3></center></td>
+        <td colspan="3" style="border-top:1px solid green;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <i class="icon-ok"></i></h3></center>
+        <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %></div>
+        </td>
         </tr>
         <tr style="background-color:#DDFFDD;">
       <% elsif !chap[encours].online %>
         <table style="border:1px solid black;" class="table">
         <tr style="background-color:#FFEEAA;">
-        <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %> (en construction)</h3></center></td>
+        <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %> (en construction)</h3></center>
+        <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %></div>
+        </td>
         </tr>
         <tr style="background-color:#FFEEAA;">
       <% else %>
         <table style="border:1px solid black;" class="table">
         <tr style="background-color:#FFFFE0;">
-        <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %></h3></center></td>
+        <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %></h3></center>
+        <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %></div>
+        </td>
         </tr>
         <tr style="background-color:#FFFFE0;">
       <% end %>
 
-     <td class="span4">
+     <td class="span4" style="padding-bottom:5px;">
 
       <center><h4>Théorie</h4></center>
       <% compteur = 0 %>
@@ -319,25 +325,28 @@
       <table style="border:1px solid black;" class="table">
       <tr style="background-color:#EEEEEE;">
       <td colspan="3" style="border-top:1px solid black;"><center><h3><%= chap[encours].name %></h3></center>
-      <p style="color:red;">Vous devez d'abord compléter :
+      <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+      <br/><br/>
+      <span style="color:red;">Chapitre non accessible. Veuillez d'abord compléter :
       <% prems = true %>
       <% chap[encours].prerequisites.each do |p| %>
-        <% if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p)) %>
+        <% if (!p.section.fondation && !current_user.sk.chapters.exists?(p)) %>
           <%= " - " if !prems %>
           <%= p.name %>
           <% prems = false %>
         <% end %>
       <% end %>
-      </p>
+      </span>
+      </div>
       </td>
       </tr>
       <tr style="background-color:#EEEEEE;">
-      <td class="span4">
+      <td class="span4" style="padding-bottom:5px;">
       <center><h4>Théorie</h4></center>
+      <% compteur = 0 %>
       <% liste = chap[encours].theories %>
       <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
       <% liste.each do |t| %>
-      <% compteur = 0 %>
         <% if t.online %>
           <% if compteur == 0 %>
             <ul>
@@ -355,7 +364,7 @@
       </td>
     <% end %>
 
-    <td class="span4">
+    <td class="span4" style="padding-bottom:20px;">
     <center><h4>Exercices</h4></center>
     <% if faisable[encours] <= 1 || current_user.sk.admin? %>
       <% affiche_exercices(chap[encours],true) %>
@@ -363,7 +372,7 @@
       <% affiche_exercices(chap[encours],false) %>
     <% end %>
     </td>
-    <td class="span4">
+    <td class="span4" style="padding-bottom:20px;">
     <center><h4>Problèmes</h4></center>
     <% if faisable[encours] <= 1 || current_user.sk.admin? %>
       <% affiche_problemes(chap[encours],true) %>
@@ -441,24 +450,30 @@
   <% if current_user.sk.chapters.exists?(chap[encours])  && !current_user.sk.admin %>
     <table style="border:1px solid green;" class="table">
     <tr style="background-color:#DDFFDD;">
-    <td colspan="3" style="border-top:1px solid green;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <i class="icon-ok"></i></h3></center></td>
+    <td colspan="3" style="border-top:1px solid green;"><center><h3><%= link_to chap[encours].name, chap[encours] %> <i class="icon-ok"></i></h3></center>
+    <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %></div>
+    </td>
     </tr>
     <tr style="background-color:#DDFFDD;">
   <% elsif !chap[encours].online %>
     <table style="border:1px solid black;" class="table">
     <tr style="background-color:#FFEEAA;">
-    <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %> (en construction)</h3></center></td>
+    <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %> (en construction)</h3></center>
+    <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %></div>
+    </td>
     </tr>
     <tr style="background-color:#FFEEAA;">
   <% else %>
     <table style="border:1px solid black;" class="table">
     <tr style="background-color:#FFFFE0;">
-    <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %></h3></center></td>
+    <td colspan="3" style="border-top:1px solid black;"><center><h3><%= link_to chap[encours].name, chap[encours] %></h3></center>
+    <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %></div>
+    </td>
     </tr>
     <tr style="background-color:#FFFFE0;">
   <% end %>
 
-  <td class="span4">
+  <td class="span4" style="padding-bottom:5px;">
   <center><h4>Théorie</h4></center>
 
   <% compteur = 0 %>
@@ -481,11 +496,11 @@
   <% end %>
   </td>
 
-  <td class="span4">
+  <td class="span4" style="padding-bottom:20px;">
   <center><h4>Exercices</h4></center>
   <% affiche_exercices(chap[encours],true) %>
   </td>
-  <td class="span4">
+  <td class="span4" style="padding-bottom:20px;">
   <center><h4>Problèmes</h4></center>
   <% affiche_problemes(chap[encours],true) %>
   </td>
