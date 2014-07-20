@@ -92,7 +92,7 @@
 
 <h2>Administrateurs</h2>
 
-<% User.where(:admin => true).each do |user| %>
+<% User.where(:admin => true).order(:last_name).each do |user| %>
   <% if user.admin %>
     <%= user.name %><br/>
   <% end %>
