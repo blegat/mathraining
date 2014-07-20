@@ -21,8 +21,6 @@ Ce champ ne sera visible <u>que par les autres administrateurs</u>. Son but est 
   <%= f.submit "Modifier", class: "btn btn-large btn-primary" %>
 <% end %>
 
-<center><%= link_to 'Retour au chapitre', chapter_path(@problem.chapter, :type => 4, :which => @problem.id) %></center>
-
 <script>
 Preview.Init();
 Preview.Update();
