@@ -1,5 +1,25 @@
 <script src="/assets/preview.js"></script>
 <script src="/assets/tainsert.js"></script>
+
+<script>
+  function fakeupdate(){
+  
+    var stop = document.getElementById('stop');
+    if (stop.checked){
+        Preview.Update();
+    }
+    
+  }
+  
+  function changestop(){
+    var stop = document.getElementById('stop');
+    if (stop.checked){
+        Preview.Update();
+    }
+  }
+  
+</script>
+
 <%= render 'shared/error_messages', object: f.object %>
 <%= f.label :titre %>
 <%= f.text_field :title, :class => "span5" %>
@@ -18,4 +38,5 @@
 <a href="#ici" onClick="JavaScript: TAinsert('<a target=\'blank\' href=\'http://www.exemple.com\'>','</a>','MathInput'); Preview.Update();"><%= image_tag "link.jpg", :title => "Lien" %></a>
 <a href="#ici" onClick="JavaScript: TAinsert('<figure><center><img src=\'/system/pictures/0/votreImage.jpg\' width=\'600px\' />\n\n<figcaption>Légende</figcaption></center></figure>','','MathInput'); Preview.Update();"><%= image_tag "picture.jpg", :title => "Image", :style=>"margin-right:50px;" %></a>
 <%= link_to "Mes images", pictures_path, :target => "_blank" %> - <%= link_to "Uploader une image", new_picture_path, :target => "_blank" %>
-<%= f.text_area :content, :class => "span12", :style => "height:250px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
+- <input type="checkbox" style="margin-top:0px;" id="stop" name="stop" onclick="changestop()" checked="checked" /> Activer la preview
+<%= f.text_area :content, :class => "span12", :style => "height:250px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
