@@ -76,12 +76,15 @@
 <% if current_user.sk.admin %>
 <br/><center><b> --- Cette partie n'est visible que des administrateurs --- </b></center>
 <h2>Utilisateurs non classés</h2>
-<% points = Point.where(rating: 0).all %>
+
 <% rank = 1 %>
-<% points.each do |p| %>
-  <% user = User.find(p.user) %>
-  <% if !user.admin %>
-    <b> <%= link_to user.name, user, {:style => "color:#{user.level[:color]}" } %> </b><br/>
+<% User.order(:last_name).all.each do |u| %>
+  <% if u.point == 0 && !u.admin %>
+    <% if user.email_confirm %>
+      <b> <%= link_to u.name, user, {:style => "color:#{u.level[:color]}" } %> </b><br/>
+    <% else %>
+      <b> <%= link_to u.name, user, {:style => "color:#{u.level[:color]}" } %> </b> (email non confirmé)<br/>
+    <% end %>
     <% rank = rank + 1 %>
   <% end %>
 <% end %>
