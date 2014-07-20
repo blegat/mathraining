@@ -111,7 +111,13 @@
     <% sol = sol.first %>
     <% if sol.correct? %>
 
-    <p style="color:green;"><b>Vous avez résolu cet exercice!</b><br/><br/></p>
+      <% if sol.nb_guess-1 > 1 %>
+        <p style="color:green;"><b>Vous avez résolu cet exercice après <%= sol.nb_guess-1 %> erreurs.</b><br/><br/></p>
+      <% elsif sol.nb_guess-1 == 1 %>
+        <p style="color:green;"><b>Vous avez résolu cet exercice après 1 erreur.</b><br/><br/></p>
+      <% else %>
+        <p style="color:green;"><b>Vous avez résolu cet exercice du premier coup!</b><br/><br/></p>
+      <% end %>
 
       <h4>Réponse</h4>
 

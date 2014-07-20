@@ -87,7 +87,13 @@
   <% if exo.size > 0 %>
     <% exo = exo.first %>
     <% if exo.correct? %>
-      <p style="color:green;"><b>Vous avez résolu cet exercice!</b><br/><br/></p>
+      <% if exo.nb_guess-1 > 1 %>
+        <p style="color:green;"><b>Vous avez résolu cet exercice après <%= exo.nb_guess-1 %> erreurs.</b><br/><br/></p>
+      <% elsif exo.nb_guess-1 == 1 %>
+        <p style="color:green;"><b>Vous avez résolu cet exercice après 1 erreur.</b><br/><br/></p>
+      <% else %>
+        <p style="color:green;"><b>Vous avez résolu cet exercice du premier coup!</b><br/><br/></p>
+      <% end %>
       <h4>Réponse</h4>
       <% if f.decimal %>
         <b><%= f.answer %></b>
