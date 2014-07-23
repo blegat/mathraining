@@ -12,7 +12,7 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
 <h3>Enoncé</h3>	
 <%= raw(@qcm.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 
-<br/>
+<br/><br/>
 <h3>Réponse</h3>	
 <table cellpadding="5">
 <tr><th></th><th></th><th>Rép?</th><th></th><th></th><th></th></tr>
