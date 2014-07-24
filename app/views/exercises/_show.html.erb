@@ -1,10 +1,6 @@
 <% if (f.online && f.chapter.online) || current_user.sk.admin? %>
 
-<% if f.decimal %>
-  <% pt = 10 %>
-<% else %>
-  <% pt = 6 %>
-<% end %>
+<% pt = f.value %>
 
 <% if @fondation %>
 <h3>Exercice <%= number %></h3>

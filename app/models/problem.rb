@@ -35,4 +35,8 @@ class Problem < ActiveRecord::Base
   def to_tex
     "\\subsection{#{name}}\n#{html_to_tex(statement)}"
   end
+  
+  def value
+    return 15*level
+  end
 end

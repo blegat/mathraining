@@ -26,4 +26,12 @@ class Exercise < ActiveRecord::Base
   validates :position, presence: true,
     uniqueness: { scope: :chapter_id },
     numericality: { greater_than_or_equal_to: 0 }
+    
+  def value
+    if decimal
+      return 10
+    else
+      return 6
+    end
+  end
 end

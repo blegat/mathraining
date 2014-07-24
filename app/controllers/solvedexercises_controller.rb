@@ -122,11 +122,7 @@ class SolvedexercisesController < ApplicationController
   end
 
   def point_attribution(user, exo)
-    if exo.decimal
-      pt = 10
-    else
-      pt = 6
-    end
+    pt = exo.value
 
     partials = user.pointspersections
 

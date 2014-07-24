@@ -137,7 +137,7 @@ class CorrectionsController < ApplicationController
 
   def point_attribution(user, problem)
     if !user.solved?(problem) # Avoid double count
-      pt = 15*problem.level
+      pt = problem.value
 
       partials = user.pointspersections
 

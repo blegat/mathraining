@@ -199,11 +199,7 @@ class UsersController < ApplicationController
     user.solvedexercises.each do |e|
       if e.correct
         exo = e.exercise
-        if exo.decimal
-          pt = 10
-        else
-          pt = 6
-        end
+        pt = exo.value
 
         if !exo.chapter.section.fondation # Pas un fondement
           user.point.rating = user.point.rating + pt
@@ -217,12 +213,7 @@ class UsersController < ApplicationController
     user.solvedqcms.each do |q|
       if q.correct
         qcm = q.qcm
-        poss = qcm.choices.count
-        if qcm.many_answers
-          pt = 2*(poss-1)
-        else
-          pt = poss
-        end
+        pt = qcm.value
 
         if !qcm.chapter.section.fondation # Pas un fondement
           user.point.rating = user.point.rating + pt
@@ -234,7 +225,7 @@ class UsersController < ApplicationController
 
     user.solvedproblems.each do |p|
       problem = p.problem
-      pt = 15*problem.level
+      pt = problem.value
 
       if !problem.chapter.section.fondation # Pas un fondement
         user.point.rating = user.point.rating + pt

@@ -1,3 +1,17 @@
+<% @nb_exercices = 0 %>
+<% @nb_points_exercices = 0 %>
+
+<% @nb_problemes = 0 %>
+<% @nb_points_problemes = 0 %>
+
+<% @nb_n1 = 0 %>
+<% @nb_n2 = 0 %>
+<% @nb_n3 = 0 %>
+<% @nb_n4 = 0 %>
+<% @nb_n5 = 0 %>
+
+
+
 <% def affiche_exercices(chapter, acces) %>
 
 
@@ -13,6 +27,8 @@
   <% compteur = 0 %>
 
   <% (1..(liste.size+liste2.size)).each do |i| %>
+  
+    <% @nb_exercices = @nb_exercices + 1 %>
 
     <% encours = 0 %>
     <% if un >= liste.size %>
@@ -31,6 +47,7 @@
 
     <% if encours == 1 %>
       <% f = liste[un] %>
+      <% @nb_points_exercices = @nb_points_exercices + f.value %>
       <% if f.online || current_user.sk.admin? %>
 
         <% compteur = compteur + 1 %>
@@ -71,6 +88,7 @@
     <% else %>
 
       <% f = liste2[deux] %>
+      <% @nb_points_exercices = @nb_points_exercices + f.value %>
       <% if f.online || current_user.sk.admin? %>
 
         <% compteur = compteur + 1 %>
@@ -138,6 +156,15 @@
   <% j = 1 %>
 
   <% listex.each do |f| %>
+  
+    <% @nb_problemes = @nb_problemes + 1 %>
+    <% @nb_points_problemes = @nb_points_problemes + f.value %>
+    
+    <% @nb_n1 = @nb_n1 + 1 if f.level == 1 %>
+    <% @nb_n2 = @nb_n2 + 1 if f.level == 2 %>
+    <% @nb_n3 = @nb_n3 + 1 if f.level == 3 %>
+    <% @nb_n4 = @nb_n4 + 1 if f.level == 4 %>
+    <% @nb_n5 = @nb_n5 + 1 if f.level == 5 %>
 
     <% if f.online || current_user.sk.admin? %>
 
@@ -517,9 +544,29 @@
 
 <% end %>
 
+<% if current_user.sk.admin? %>
+
+<h3>Statistiques (uniquement visibles des administrateurs)</h3>
+<h4>Exercices</h4>
+<ul>
+<li>Nombre total d'exercices : <%= @nb_exercices %></li>
+<% if !@fondation %>
+<li>Nombre total de points : <%= @nb_points_exercices %></li>
+<% end %>
+</ul>
+
+<h4>Problèmes</h4>
+<ul>
+<li>Nombre de problèmes dans chaque niveau : <%= @nb_n1 %> / <%= @nb_n2 %> / <%= @nb_n3 %> / <%= @nb_n4 %> / <%= @nb_n5 %></li>
+<li>Nombre total de problèmes : <%= @nb_problemes %></li>
+<% if !@fondation %>
+<li>Nombre total de points : <%= @nb_points_problemes %></li>
+<% end %>
+</ul>
+<br/>
 
 <center>
-  <% if current_user.sk.admin? %>
 <%= button_to "Ajouter un chapitre", new_section_chapter_path(@section), method: :get, class: 'btn btn-large' %>
-  <% end %>
 </center>
+
+<% end %>

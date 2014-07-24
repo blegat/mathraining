@@ -24,4 +24,13 @@ class Qcm < ActiveRecord::Base
   validates :position, presence: true,
     uniqueness: { scope: :chapter_id },
     numericality: { greater_than_or_equal_to: 0 }
+    
+  def value
+    poss = choices.count
+    if many_answers
+      return 2*(poss-1)
+    else
+      return poss
+    end
+  end
 end

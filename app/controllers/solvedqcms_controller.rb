@@ -201,12 +201,7 @@ class SolvedqcmsController < ApplicationController
   end
 
   def point_attribution(user, qcm)
-    poss = qcm.choices.count
-    if qcm.many_answers
-      pt = 2*(poss-1)
-    else
-      pt = poss
-    end
+    pt = qcm.value
 
     partials = user.pointspersections
 
