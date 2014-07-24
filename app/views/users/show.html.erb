@@ -33,25 +33,17 @@
   <% activite = Array.new %>
 
   <% exercises.each do |e| %>
-    <% if e.exercise.decimal %>
-      <% pt = 10 %>
-    <% else %>
-      <% pt = 6 %>
-    <% end %>
+    <% pt = e.value %>
     <% pt = 0 if e.exercise.chapter.section.fondation %>
     <% activite.push({:time => e.updated_at, :type => 0, :pt => pt, :chapter => e.exercise.chapter.name}) %>
   <% end %>
   <% qcms.each do |q| %>
-    <% if q.qcm.many_answers %>
-      <% pt = 2*(q.qcm.choices.count-1) %>
-    <% else %>
-      <% pt = q.qcm.choices.count %>
-    <% end %>
+    <% pt = q.value %>
     <% pt = 0 if q.qcm.chapter.section.fondation %>
     <% activite.push({:time => q.updated_at, :type => 0, :pt => pt, :chapter => q.qcm.chapter.name}) %>
   <% end %>
   <% problems.each do |p| %>
-    <% pt = 15 * p.problem.level %>
+    <% pt = p.value %>
     <% pt = 0 if p.problem.chapter.section.fondation %>
     <% activite.push({:time => p.updated_at, :type => 1, :pt => pt, :chapter => p.problem.chapter.name}) %>
   <% end %>
