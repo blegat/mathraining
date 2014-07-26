@@ -89,10 +89,6 @@ class User < ActiveRecord::Base
     return actuallevel
   end
 
-  def alllevel
-    return @@niveaux
-  end
-
   def see_forum
     lastdate = '2009-01-01 00:00:00'
 
@@ -128,18 +124,6 @@ class User < ActiveRecord::Base
 
   private
 
-  @@niveaux = [
-  {:num => 0, :pt => 0, :name => "Novice", :color => "#888888", :fontcolor => "#CCCCCC"},
-  {:num => 1, :pt => 10, :name => "Débutant", :color => "#11DD44", :fontcolor => "#44FF88"},
-  {:num => 2, :pt => 20, :name => "Initié", :color => "#11AA00", :fontcolor => "#66EE22"},
-  {:num => 3, :pt => 30, :name => "Compétent", :color => "#00BBEE", :fontcolor => "#33FFFF"},
-  {:num => 4, :pt => 40, :name => "Qualifié", :color => "#0033FF", :fontcolor => "#88BBFF"},
-  {:num => 5, :pt => 50, :name => "Expérimenté", :color => "#DD77FF", :fontcolor => "#FFAAFF"},
-  {:num => 6, :pt => 60, :name => "Chevronné", :color => "#990099", :fontcolor => "#DD77DD"},
-  {:num => 7, :pt => 70, :name => "Expert", :color => "#FF9900", :fontcolor => "#FFBF44"},
-  {:num => 8, :pt => 80, :name => "Maître", :color => "#FF3300", :fontcolor => "#FF7744"},
-  {:num => 9, :pt => 90, :name => "Grand Maître", :color => "#CC0000", :fontcolor => "#EE3333"}
-  ]
 
   def create_remember_token
     self.remember_token = SecureRandom.urlsafe_base64

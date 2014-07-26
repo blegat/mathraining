@@ -33,3 +33,77 @@
   </tr>
 
 </table>
+
+<br/><br/>
+
+<center>
+<div style="width:850px; height:450px; position:relative;">
+<canvas id="myCanvas" width="806" height="450" style="position:absolute; left:30px; top: 0px; border:1px solid #000000;">
+  Votre navigateur ne supporte pas les canvas.
+</canvas>
+
+<% @niveaux = Color.order(:pt).all %>
+
+<% nombrelevel = 0 %>
+<% maxi = 0 %>
+
+<% @niveaux.each do |n| %>
+  <% maxi = n.pt * 1.2 %>
+  <% nombrelevel = nombrelevel+1 %>
+<% end %>
+
+<% i = 1 %>
+  
+  <% @niveaux.each do |n| %>
+    <% if i > 1 %>
+      <% haut = [450 - 450*(n.pt/maxi), 0].max %>
+      <% if haut > 0 %>
+        <div style="position:absolute; top:<%= haut-8 %>px; right:828px; width: 30px; text-align:right;"><%= n.pt %></div>
+      <% end %>
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+  
+</div>
+</center>
+
+<script>
+  var c=document.getElementById("myCanvas");
+  var ctx=c.getContext("2d");
+  
+  <% i = 1 %>
+  <% @niveaux.each do |n| %>
+    <% if i == nombrelevel %>
+      <% bas = [450 - 450*(n.pt/maxi) , 0].max %>
+      <% haut = 0 %>
+    <% else %>
+      <% bas = [450 - 450*(n.pt/maxi), 0].max %>
+      <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
+    <% end %>
+    <% if bas > haut %>
+      ctx.beginPath();
+      ctx.rect(0, <%= haut %>, 806, <%= bas - haut %>);
+      ctx.fillStyle = '<%= n.font_color %>';
+      ctx.fill();
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+  
+  
+  <% i = 1 %>
+  <% @niveaux.each do |n| %>
+    <% if i > 1 %>
+      <% haut = [450 - 450*(n.pt/maxi), 0].max %>
+      <% if haut > 0 %>
+        ctx.beginPath();
+        ctx.moveTo(0, <%= haut %>);
+        ctx.lineTo(806, <%= haut %>);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+      <% end %>
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+</script>
+
