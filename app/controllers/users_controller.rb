@@ -36,6 +36,9 @@ class UsersController < ApplicationController
   end
   def show
     @user = User.find(params[:id])
+    if @user.admin && !current_user.sk.root
+      redirect_to users_path
+    end
   end
   def new
   	@user = User.new
@@ -180,7 +183,7 @@ class UsersController < ApplicationController
   end
   def destroy_admin
     @user = User.find(params[:id])
-    if @user.admin?
+    if @user.admin? && !current_user.sk.root
       flash[:error] = "One does not simply destroy an admin."
       redirect_to root_path
     end

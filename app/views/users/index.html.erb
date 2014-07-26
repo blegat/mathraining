@@ -96,7 +96,11 @@
 
 <% User.where(:admin => true).order(:last_name).each do |user| %>
   <% if user.admin %>
-    <%= user.name %><br/>
+    <% if current_user.sk.root %>
+      <%= link_to user.name, user_path(user), style: "color:black"; %> <%= "(email non confirmé)" unless user.email_confirm %><br/>
+    <% else %>
+      <%= user.name %><br/>
+    <% end %>
   <% end %>
 <% end %>
 
