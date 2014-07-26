@@ -80,7 +80,7 @@
 <% User.order(:last_name).all.each do |u| %>
   <% if u.point.rating == 0 && !u.admin %>
     <% if u.email_confirm %>
-      <b> <%= link_to u.name, u, {:style => "color:#{u.level.colo}" } %> </b><br/>
+      <b> <%= link_to u.name, u, {:style => "color:#{u.level.color}" } %> </b><br/>
     <% else %>
       <b> <%= link_to u.name, u, {:style => "color:#{u.level.color}" } %> </b> (email non confirmé)<br/>
     <% end %>
