@@ -106,7 +106,7 @@
 
   <% if !current_user.sk.admin? %>
    <hr>
-   Des questions concernant ce problème? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(@chapter, :q => @chapter.id), :target => "_blank" %> dédié à ce chapitre!<br/><br/>
+   Des questions concernant ce problème? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> dédié à ce chapitre!<br/><br/>
   <% end %>
 
 <% end %>

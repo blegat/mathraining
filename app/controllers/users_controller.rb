@@ -149,7 +149,7 @@ class UsersController < ApplicationController
       sign_in current_user
       flash[:success] = "Vous êtes maintenant dans la peau de #{@user.name}."
     end
-    redirect_to sections_path
+    redirect_to(:back)
   end
 
   def leave_skin
@@ -158,7 +158,7 @@ class UsersController < ApplicationController
       sign_in current_user
       flash[:success] = "Vous êtes à nouveau dans votre peau."
     end
-    redirect_to sections_path
+    redirect_to(:back)
   end
 
   private

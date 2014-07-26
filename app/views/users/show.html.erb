@@ -232,7 +232,7 @@
   <% numerolevel = 0 %>
   
   <% @niveaux.each do |n| %>
-    <% if niveau == n %>
+    <% if niveau.id == n.id %>
       <% numerolevel = i %>
     <% end %>
     <% i = i+1 %>
@@ -242,10 +242,11 @@
   
   <% maxi = 0 %>
   
+  
   <% if numerolevel == nombrelevel %>
     <% maxi = 1.2*actualrating %>
   <% else %>
-    <% maxi = 1.1*@niveaux[actuallevel+1][:pt] %>
+    <% maxi = 1.1*@niveaux[numerolevel][:pt] %>
   <% end %>
   
   <% i = 1 %>

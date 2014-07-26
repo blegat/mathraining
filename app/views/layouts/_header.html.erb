@@ -85,9 +85,9 @@
         <li><%= link_to "Scores", users_path %></li>
         <li id="fat-menu" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <%= current_user.name %>
+          <span style="font-weight:bold; color:<%= current_user.level[:color] %>"><%= current_user.name %></span>
           <% if current_user.other %>
-            <b>(<%= current_user.sk.name %>)</b>
+            (<span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.name %></span>)
           <% end %>
           <b class="caret"></b>
         </a>
