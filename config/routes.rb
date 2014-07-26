@@ -150,6 +150,8 @@ Mathraining::Application.routes.draw do
   match '/remove_followingsubject', to: "followingsubjects#remove_followingsubject"
 
   resources :sessions, only: [:new, :create, :destroy]
+  
+  resources :colors, only: [:index, :create, :update, :destroy]
 
   root to: 'static_pages#home'
 

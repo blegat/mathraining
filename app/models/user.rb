@@ -79,14 +79,14 @@ class User < ActiveRecord::Base
     end
     actualrating = point.rating
     i = 0
-    actuallevel = 0
-    @@niveaux.each do |n|
-      if n[:pt] <= actualrating
-        actuallevel = i
+    actuallevel = Color.order(:pt).first
+    Color.order(:pt).all.each do |c|
+      if c.pt <= actualrating
+        actuallevel = c
       end
       i = i+1
     end
-    return @@niveaux[actuallevel]
+    return actuallevel
   end
 
   def alllevel

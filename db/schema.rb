@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140715183529) do
+ActiveRecord::Schema.define(:version => 20140726095346) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -51,6 +51,14 @@ ActiveRecord::Schema.define(:version => 20140715183529) do
   end
 
   add_index "choices_solvedqcms", ["solvedqcm_id"], :name => "index_choices_solvedqcms_on_solvedqcm_id"
+
+  create_table "colors", :force => true do |t|
+    t.integer "pt"
+    t.string  "name"
+    t.string  "plural_name"
+    t.string  "color"
+    t.string  "font_color"
+  end
 
   create_table "correctionfiles", :force => true do |t|
     t.integer  "correction_id"

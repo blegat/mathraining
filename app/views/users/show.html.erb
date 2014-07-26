@@ -33,17 +33,17 @@
   <% activite = Array.new %>
 
   <% exercises.each do |e| %>
-    <% pt = e.value %>
+    <% pt = e.exercise.value %>
     <% pt = 0 if e.exercise.chapter.section.fondation %>
     <% activite.push({:time => e.updated_at, :type => 0, :pt => pt, :chapter => e.exercise.chapter.name}) %>
   <% end %>
   <% qcms.each do |q| %>
-    <% pt = q.value %>
+    <% pt = q.qcm.value %>
     <% pt = 0 if q.qcm.chapter.section.fondation %>
     <% activite.push({:time => q.updated_at, :type => 0, :pt => pt, :chapter => q.qcm.chapter.name}) %>
   <% end %>
   <% problems.each do |p| %>
-    <% pt = p.value %>
+    <% pt = p.problem.value %>
     <% pt = 0 if p.problem.chapter.section.fondation %>
     <% activite.push({:time => p.updated_at, :type => 1, :pt => pt, :chapter => p.problem.chapter.name}) %>
   <% end %>
@@ -226,19 +226,35 @@
   Votre navigateur ne supporte pas les canvas.
   </canvas>
 
-  <% @niveaux = @user.alllevel %>
-  <% actuallevel = niveau[:num] %>
-  <% if actuallevel == (@niveaux.size - 1) %>
+  <% @niveaux = Color.order(:pt).all %>
+  
+  <% i = 1 %>
+  <% numerolevel = 0 %>
+  
+  <% @niveaux.each do |n| %>
+    <% if niveau == n %>
+      <% numerolevel = i %>
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+  
+  <% nombrelevel = i-1 %>
+  
+  <% maxi = 0 %>
+  
+  <% if numerolevel == nombrelevel %>
     <% maxi = 1.2*actualrating %>
   <% else %>
     <% maxi = 1.1*@niveaux[actuallevel+1][:pt] %>
   <% end %>
-
-  <% (0..(@niveaux.size-1)).each do |i| %>
-    <% if i < (@niveaux.size - 1) %>
-      <% haut = [450 - 450*(@niveaux[i+1][:pt]/maxi), 0].max %>
+  
+  <% i = 1 %>
+  
+  <% @niveaux.each do |n| %>
+    <% if i > 1 %>
+      <% haut = [450 - 450*(n.pt/maxi), 0].max %>
       <% if haut > 0 %>
-        <div style="position:absolute; top:<%= haut-8 %>px; right:828px; width: 30px; text-align:right;"><%= @niveaux[i+1][:pt] %></div>
+        <div style="position:absolute; top:<%= haut-8 %>px; right:828px; width: 30px; text-align:right;"><%= n.pt %></div>
       <% end %>
     <% end %>
     <% i = i+1 %>
@@ -283,27 +299,30 @@
   <script>
   var c=document.getElementById("myCanvas");
   var ctx=c.getContext("2d");
-
-  <% (0..(@niveaux.size-1)).each do |i| %>
-    <% if i == (@niveaux.size - 1) %>
-      <% bas = [450 - 450*(@niveaux[i][:pt]/maxi) , 0].max %>
+  
+  <% i = 1 %>
+  <% @niveaux.each do |n| %>
+    <% if i == nombrelevel %>
+      <% bas = [450 - 450*(n.pt/maxi) , 0].max %>
       <% haut = 0 %>
     <% else %>
-      <% bas = [450 - 450*(@niveaux[i][:pt]/maxi), 0].max %>
-      <% haut = [450 - 450*(@niveaux[i+1][:pt]/maxi), 0].max %>
+      <% bas = [450 - 450*(n.pt/maxi), 0].max %>
+      <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
     <% end %>
     <% if bas > haut %>
       ctx.beginPath();
       ctx.rect(0, <%= haut %>, 806, <%= bas - haut %>);
-      ctx.fillStyle = '<%= @niveaux[i][:fontcolor] %>';
+      ctx.fillStyle = '<%= n.font_color %>';
       ctx.fill();
     <% end %>
     <% i = i+1 %>
   <% end %>
-
-   <% (0..(@niveaux.size-1)).each do |i| %>
-    <% if i < (@niveaux.size - 1) %>
-      <% haut = [450 - 450*(@niveaux[i+1][:pt]/maxi), 0].max %>
+  
+  
+  <% i = 1 %>
+  <% @niveaux.each do |n| %>
+    <% if i > 1 %>
+      <% haut = [450 - 450*(n.pt/maxi), 0].max %>
       <% if haut > 0 %>
         ctx.beginPath();
         ctx.moveTo(0, <%= haut %>);
@@ -315,6 +334,7 @@
     <% end %>
     <% i = i+1 %>
   <% end %>
+  
 
   ctx.fillStyle = 'black';
   ctx.strokeStyle = 'black';
