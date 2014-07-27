@@ -21,9 +21,16 @@
   <% else %>
     <b>Une seule réponse possible</b><br/>
   <% end %>
+  
+  <br/>
+  Niveau : <%= @qcm.level %><br/>
 <% else %>
   <label class="checkbox">
   Cochez si plusieurs réponses sont possibles
   <%= f.check_box(:many_answers) %>
   </label>
+  
+  <br />
+  <%= f.label "Niveau (entre 1 et 4)" %>
+  <%= f.number_field :level, :class => "span1", :min => 1, :max => 4 %>
 <% end %>

@@ -32,6 +32,7 @@ class QcmsController < QuestionsController
     end
     @qcm.chapter = @chapter
     @qcm.statement = params[:qcm][:statement]
+    @qcm.level = params[:qcm][:level]
     @qcm.explanation = ""
     if params[:qcm][:many_answers] == '1'
       @qcm.many_answers = true
@@ -62,6 +63,7 @@ class QcmsController < QuestionsController
     @qcm = Qcm.find(params[:id])
     @qcm.statement = params[:qcm][:statement]
     if !@qcm.chapter.online || !@qcm.online
+      @qcm.level = params[:qcm][:level]
       if params[:qcm][:many_answers] == '1'
         @qcm.many_answers = true
       else

@@ -69,11 +69,7 @@
     <% f = liste[un] %>
     <% if f.online %>
 
-      <% if f.decimal %>
-        <% pt = 10 %>
-      <% else %>
-        <% pt = 6 %>
-      <% end %>
+      <% pt = f.value %>
 
       <h3>2.<%= j %>. Exercice <%= j %>
       <% if !f.chapter.section.fondation %>
@@ -93,12 +89,7 @@
     <% f = liste2[deux] %>
     <% if f.online %>
 
-      <% poss = f.choices.count %>
-      <% if f.many_answers %>
-        <% pt = 2*(poss-1) %>
-      <% else %>
-        <% pt = poss %>
-      <% end %>
+      <% pt = f.value %>
 
       <h3>2.<%= j %>. Exercice <%= j %>
       <% if !f.chapter.section.fondation %>
@@ -148,7 +139,7 @@
 <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
 <% listex.each do |f| %>
   <% if f.online %>
-    <% pt = 15*f.level %>
+    <% pt = f.value %>
     <h3>3.<%= i %>. <%= f.name %>
     <% (1..f.level).each do |i| %>
       <i class='icon-star'></i>

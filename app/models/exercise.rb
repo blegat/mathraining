@@ -14,7 +14,7 @@
 #
 
 class Exercise < ActiveRecord::Base
-  attr_accessible :answer, :decimal, :position, :statement, :online, :explanation
+  attr_accessible :answer, :decimal, :position, :statement, :online, :explanation, :level
   belongs_to :chapter
   has_many :solvedexercises, dependent: :destroy
   has_many :users, through: :solvedexercises
@@ -28,10 +28,6 @@ class Exercise < ActiveRecord::Base
     numericality: { greater_than_or_equal_to: 0 }
     
   def value
-    if decimal
-      return 10
-    else
-      return 6
-    end
+    return 3*level
   end
 end

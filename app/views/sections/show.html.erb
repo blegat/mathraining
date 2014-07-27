@@ -10,6 +10,11 @@
 <% @nb_n4 = 0 %>
 <% @nb_n5 = 0 %>
 
+<% @nb2_n1 = 0 %>
+<% @nb2_n2 = 0 %>
+<% @nb2_n3 = 0 %>
+<% @nb2_n4 = 0 %>
+
 
 
 <% def affiche_exercices(chapter, acces) %>
@@ -48,6 +53,11 @@
     <% if encours == 1 %>
       <% f = liste[un] %>
       <% @nb_points_exercices = @nb_points_exercices + f.value %>
+      <% @nb2_n1 = @nb2_n1 + 1 if f.level == 1 %>
+      <% @nb2_n2 = @nb2_n2 + 1 if f.level == 2 %>
+      <% @nb2_n3 = @nb2_n3 + 1 if f.level == 3 %>
+      <% @nb2_n4 = @nb2_n4 + 1 if f.level == 4 %>
+      
       <% if f.online || current_user.sk.admin? %>
 
         <% compteur = compteur + 1 %>
@@ -89,6 +99,11 @@
 
       <% f = liste2[deux] %>
       <% @nb_points_exercices = @nb_points_exercices + f.value %>
+      <% @nb2_n1 = @nb2_n1 + 1 if f.level == 1 %>
+      <% @nb2_n2 = @nb2_n2 + 1 if f.level == 2 %>
+      <% @nb2_n3 = @nb2_n3 + 1 if f.level == 3 %>
+      <% @nb2_n4 = @nb2_n4 + 1 if f.level == 4 %>
+      
       <% if f.online || current_user.sk.admin? %>
 
         <% compteur = compteur + 1 %>
@@ -550,6 +565,7 @@ Tous les chapitres sont ici directement accessibles.<br/><br/>
 <h3>Statistiques (uniquement visibles des administrateurs)</h3>
 <h4>Exercices</h4>
 <ul>
+<li>Nombre d'exercices dans chaque niveau : <%= @nb2_n1 %> / <%= @nb2_n2 %> / <%= @nb2_n3 %> / <%= @nb2_n4 %></li>
 <li>Nombre total d'exercices : <%= @nb_exercices %></li>
 <% if !@fondation %>
 <li>Nombre total de points : <%= @nb_points_exercices %></li>

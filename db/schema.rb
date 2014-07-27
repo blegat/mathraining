@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140726095346) do
+ActiveRecord::Schema.define(:version => 20140727185512) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -90,6 +90,7 @@ ActiveRecord::Schema.define(:version => 20140726095346) do
     t.datetime "updated_at",                     :null => false
     t.boolean  "online",      :default => false
     t.text     "explanation"
+    t.integer  "level",       :default => 1
   end
 
   create_table "fakecorrectionfiles", :force => true do |t|
@@ -232,6 +233,7 @@ ActiveRecord::Schema.define(:version => 20140726095346) do
     t.datetime "updated_at",                      :null => false
     t.boolean  "online",       :default => false
     t.text     "explanation"
+    t.integer  "level",        :default => 1
   end
 
   create_table "sections", :force => true do |t|

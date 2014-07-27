@@ -23,3 +23,6 @@ Cochez si la réponse est décimale
 <%= f.check_box(:decimal) %>
 </label>
 
+<br/>
+<%= f.label "Niveau (entre 1 et 4)" %>
+<%= f.number_field :level, :class => "span1", :min => 1, :max => 4 %>

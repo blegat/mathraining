@@ -29,6 +29,7 @@ class ExercisesController < QuestionsController
     
     @exercise.chapter_id = params[:chapter_id]
     @exercise.statement = params[:exercise][:statement]
+    @exercise.level = params[:exercise][:level]
     @exercise.explanation = ""
     if params[:exercise][:decimal] == '1'
       @exercise.decimal = true
@@ -67,6 +68,8 @@ class ExercisesController < QuestionsController
       else
         @exercise.decimal = false
       end
+      
+      @exercise.level = params[:exercise][:level]
     end
 
     if @exercise.decimal
@@ -74,6 +77,8 @@ class ExercisesController < QuestionsController
     else
       @exercise.answer = params[:exercise][:answer].gsub(",",".").to_i unless @exercise.chapter.online && @exercise.online
     end
+    
+    
     if @exercise.save
       flash[:success] = "Exercice modifié."
       redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
