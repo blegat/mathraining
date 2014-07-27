@@ -12,11 +12,19 @@
 <% end %>
 
 <h1>
+<table>
+<tr>
+<td nowrap style="vertical-align:top;">
 <span class="noprint">
 <span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
 <span style="font-size:24px;"><%= link_to @section.name, @section %> ></span>
 </span>
+</td>
+<td style="padding-left:10px; vertical-align:top;">
 <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
+</td>
+</tr>
+</table>
 </h1>
 
 <div class="row">
