@@ -19,7 +19,7 @@
   <ul>
     <% f.choices.order(:id).each do |c| %>
       <li style="padding:5px;">
-      <%= c.ans %>
+      <%= raw(c.ans) %>
 
       <% if c.ok %>
         <i class="icon-ok" style="margin-left:10px;"></i>
@@ -119,7 +119,7 @@
       <ul>
         <% f.choices.order(:id).each do |c| %>
           <li style="padding:5px;">
-          <%= c.ans %>
+          <%= raw(c.ans) %>
 
           <% if c.ok %>
             <i class="icon-ok" style="margin-left:10px;"></i>
@@ -150,7 +150,7 @@
             <input type="hidden" name="qcm_id" value="<%= f.id %>" />
             <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
               <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if current_user.other %>>
-              <%= c.ans %>
+              <%= raw(c.ans) %>
             </label>
           <% end %>
           <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
@@ -162,7 +162,7 @@
           <% f.choices.order(:id).each do |c| %>
             <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
               <input type="radio" name="ans" value="<%= c.id %>" <%= "checked" if c.id == choice.id %> <%= "disabled=\"true\"" if current_user.other %>>
-              <%= c.ans %>
+              <%= raw(c.ans) %>
             </label>
           <% end %>
           <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
@@ -184,7 +184,7 @@
         <% f.choices.order(:id).each do |c| %>
           <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
             <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "disabled=\"true\"" if current_user.other %>>
-            <%= c.ans %>
+            <%= raw(c.ans) %>
           </label>
         <% end %>
         <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
@@ -195,7 +195,7 @@
         <% f.choices.order(:id).each do |c| %>
           <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
             <input type="radio" name="ans" value="<%= c.id %>" <%= "disabled=\"true\"" if current_user.other %>>
-            <%= c.ans %>
+            <%= raw(c.ans) %>
           </label>
         <% end %>
         <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>

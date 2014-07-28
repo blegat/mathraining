@@ -105,14 +105,14 @@
         <% f.choices.order(:id).each do |c| %>
           <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
             <input type="checkbox">
-            <%= c.ans %>
+            <%= raw(c.ans) %>
           </label>
         <% end %>
       <% else %>
         <% f.choices.order(:id).each do |c| %>
           <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
             <input type="radio" name="ans" value="<%= c.id %>" <%= "disabled=\"true\"" if current_user.other %>>
-            <%= c.ans %>
+            <%= raw(c.ans) %>
           </label>
         <% end %>
       <% end %>
