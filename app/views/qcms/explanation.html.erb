@@ -16,7 +16,7 @@ Modifier une explication
 <ul>
   <% @qcm.choices.order(:id).each do |c| %>
     <li style="padding:5px;">
-    <%= c.ans %>
+    <%= raw(c.ans) %>
 
     <% if c.ok %>
       <i class="icon-ok" style="margin-left:10px;"></i>
