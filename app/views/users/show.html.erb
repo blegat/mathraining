@@ -36,6 +36,34 @@ html>body tbody.scroll {
 <% end %>
 </h1>
 
+<% cansee = Array.new %>
+
+<% if current_user.sk.admin %>
+  <% Chapter.all.each do |c| %>
+    <% cansee[c.id] = true %>
+  <% end %>
+<% else %>
+
+  <% debloque = Array.new %>
+  <% Chapter.all.each do |c| %>
+    <% debloque[c.id] = false %>
+  <% end %>
+  
+  <% current_user.sk.chapters.each do |c| %>
+    <% debloque[c.id] = true %>
+  <% end %>
+
+  <% Chapter.all.each do |c| %>
+    <% cansee[c.id] = true %>
+    <% if !c.section.fondation %>
+      <% c.prerequisites.each do |p| %>
+        <% if !p.section.fondation && !debloque[p.id] %>
+          <% cansee[c.id] = false %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
 
 
   <div class="row">
@@ -51,17 +79,17 @@ html>body tbody.scroll {
   <% exercises.each do |e| %>
     <% pt = e.exercise.value %>
     <% pt = 0 if e.exercise.chapter.section.fondation %>
-    <% activite.push({:time => e.updated_at, :type => 0, :pt => pt, :chapter => e.exercise.chapter.name, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
+    <% activite.push({:time => e.updated_at, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
   <% end %>
   <% qcms.each do |q| %>
     <% pt = q.qcm.value %>
     <% pt = 0 if q.qcm.chapter.section.fondation %>
-    <% activite.push({:time => q.updated_at, :type => 0, :pt => pt, :chapter => q.qcm.chapter.name, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
+    <% activite.push({:time => q.updated_at, :type => 3, :id => q.qcm.id,  :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
   <% end %>
   <% problems.each do |p| %>
     <% pt = p.problem.value %>
     <% pt = 0 if p.problem.chapter.section.fondation %>
-    <% activite.push({:time => p.updated_at, :type => 1, :pt => pt, :chapter => p.problem.chapter.name, :section => p.problem.chapter.section.id, :fondation => p.problem.chapter.section.fondation}) %>
+    <% activite.push({:time => p.updated_at, :type => 4, :id => p.problem.id,  :pt => pt, :chapter => p.problem.chapter.name, :c_id => p.problem.chapter.id, :section => p.problem.chapter.section.id, :fondation => p.problem.chapter.section.fondation}) %>
   <% end %>
 
   <% act = activite.sort{ |a, b| b[:time] <=> a[:time]} %>
@@ -85,7 +113,7 @@ html>body tbody.scroll {
 
     <table class="table table-bordered">
     <thead class="fixed">
-    <tr><th style="width:140px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:80px;"><center>Type</center></th><th style="width:250px;">Chapitre</th><th style="width:66px;"><center>Points</center></th></tr>
+    <tr><th style="width:130px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:80px;"><center>Type</center></th><th style="width:260px;">Chapitre</th><th style="width:66px;"><center>Points</center></th></tr>
     </thead>
     <tbody class="scroll">
   <% end %>
@@ -113,18 +141,26 @@ html>body tbody.scroll {
 
     
     <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
-    <td style="width:140px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+    <td style="width:130px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
     <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
     <td style="width:80px;">
     <center>
-    <% if a[:type] == 0 %>
-      Exercice
+    <% if a[:type] <= 3 %>
+      <% if cansee[a[:c_id]] %>
+        <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+      <% else %>
+        Exercice
+      <% end %>
     <% else %>
-      Problème
+      <% if cansee[a[:c_id]] %>
+        <%= link_to "Problème", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+      <% else %>
+        Problème
+      <% end %>
     <% end %>
     </center>
     </td>
-    <td style="width:250px;">
+    <td style="width:260px;">
       <%= a[:chapter] %>
     </td>
     <td style="width:50px;">
