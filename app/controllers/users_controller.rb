@@ -89,7 +89,7 @@ class UsersController < ApplicationController
     else
       flash[:notice] = "Ce compte est déjà actif!"
     end
-    redirect_to signin_path
+    redirect_to root_path
   end
 
   def password_forgotten
@@ -101,7 +101,7 @@ class UsersController < ApplicationController
     else
       flash[:error] = 'Aucun utilisateur ne possède cet adresse.'
     end
-    redirect_to signin_path
+    redirect_to root_path
   end
 
   def recup_password
