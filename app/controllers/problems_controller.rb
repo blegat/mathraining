@@ -25,6 +25,8 @@ class ProblemsController < ApplicationController
     @problem.name = ""
     @problem.statement = params[:problem][:statement]
     @problem.level = params[:problem][:level]
+    @section = Section.find_by_id(params[:section_id])
+    @problem.online = false
     @problem.section = @section
     
     nombre = 0
@@ -35,12 +37,6 @@ class ProblemsController < ApplicationController
     @problem.number = nombre
     
     @problem.explanation = ""
-    @section = Section.find_by_id(params[:section_id])
-    if @section.nil?
-      flash[:error] = "Chapitre inexistant."
-      render 'new' and return
-    end
-    @problem.online = false
     if @problem.save
       flash[:success] = "Problème ajouté."
       redirect_to problem_path(@problem)
@@ -50,11 +46,6 @@ class ProblemsController < ApplicationController
   end
 
   def update
-  
-    Problem.all.each do |p|
-      p.section = p.chapter.section
-    end
-  
   
     @problem = Problem.find(params[:id])
     @problem.name = ""
