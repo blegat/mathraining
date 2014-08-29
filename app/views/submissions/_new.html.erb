@@ -39,8 +39,13 @@ function add() {
 }
 </SCRIPT>
 
+<% r = 0 %>
+<% if(params.has_key?:r) %>
+  <% r = params[:r].to_i %>
+<% end %>
+
 <%= form_for :submission,
-  url: problem_submissions_path(problem), :html => { :multipart => true } do |f| %>
+  url: problem_submissions_path(problem, :r => r), :html => { :multipart => true } do |f| %>
 
   <h3>Nouvelle soumission</h3>
   La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>

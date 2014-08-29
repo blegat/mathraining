@@ -4,6 +4,20 @@
   <span style="font-size:16px;">Problèmes ></span> <%= @section.name %>
 </h1>
 
+<% r = 0 %>
+<% if(params.has_key?:r) %>
+  <% r = params[:r].to_i %>
+<% end %>
+
+<% if !signed_in? || !current_user.sk.admin? %>
+<center>
+<ul class="nav nav-tabs nav-justified" role="tablist">
+  <li class="<%= "active" if r == 0 %>" style="width:50%;"><%= link_to "Tous les problèmes", pb_sections_path(@section, :r => 0) %></li>
+  <li class="<%= "active" if r == 1 %>" style="width:50%;"><%= link_to "Problèmes non-résolus", pb_sections_path(@section, :r => 1) %></li>
+</ul>
+</center>
+<% end %>
+
 <% (1..5).each do |level| %>
 
 <h2>Niveau <%= level %></h2>
@@ -21,6 +35,10 @@
         <% visible = false %>
       <% end %>
     <% end %>
+  <% end %>
+  
+  <% if r == 1 && signed_in? && current_user.sk.solved?(p) %>
+    <% visible = false %>
   <% end %>
 
   <% if visible %>
@@ -49,7 +67,7 @@
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
     <% end %>
 
-    <center><h3><%= link_to "Problème ##{ p.number }", p %> <%= "(en construction)" if !p.online %></h3></center>
+    <center><h3><%= link_to "Problème ##{ p.number }", problem_path(p, :r => r) %> <%= "(en construction)" if !p.online %></h3></center>
     <% if signed_in? && current_user.sk.admin? %>
       <u>Prérequis</u> :
       <% prems = true %>

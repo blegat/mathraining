@@ -22,6 +22,12 @@ class SubmissionsController < ApplicationController
   end
 
   def create
+  
+    r = 0
+    if(params.has_key?:r)
+      r = params[:r].to_i
+    end
+
     attach = Array.new
     totalsize = 0
 
@@ -40,7 +46,7 @@ class SubmissionsController < ApplicationController
           end
           nom = params["file#{k}".to_sym].original_filename
           session[:ancientexte] = params[:submission][:content]
-          redirect_to problem_path(@problem, :sub => 0),
+          redirect_to problem_path(@problem, :sub => 0, :r => r),
             flash: {error: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
@@ -58,7 +64,7 @@ class SubmissionsController < ApplicationController
         j = j+1
       end
       session[:ancientexte] = params[:submission][:content]
-      redirect_to problem_path(@problem, :sub => 0),
+      redirect_to problem_path(@problem, :sub => 0, :r => r),
           flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
 
@@ -73,7 +79,7 @@ class SubmissionsController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      redirect_to problem_path(@problem, :sub => submission.id)
+      redirect_to problem_path(@problem, :sub => submission.id, :r => r)
     else
       j = 1
       while j < i do
@@ -83,13 +89,13 @@ class SubmissionsController < ApplicationController
       end
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
-        redirect_to problem_path(@problem, :sub => 0),
+        redirect_to problem_path(@problem, :sub => 0, :r => r),
           flash: { error: "Votre soumission est vide." }
       elsif params[:submission][:content].size > 8000
-        redirect_to problem_path(@problem, :sub => 0),
+        redirect_to problem_path(@problem, :sub => 0, :r => r),
           flash: { error: "Votre soumission doit faire moins de 8000 caractères." }
       else
-        redirect_to problem_path(@problem, :sub => 0),
+        redirect_to problem_path(@problem, :sub => 0, :r => r),
           flash: { error: "Une erreur est survenue." }
       end
     end
@@ -102,10 +108,10 @@ class SubmissionsController < ApplicationController
       if following
         following.read = read
         if following.save
-          redirect_to problem_path(@problem, :sub => @submission),
+          redirect_to problem_path(@problem, :sub => @submission, :r => r),
             flash: { success: "Soumission marquée comme #{msg}" }
         else
-          redirect_to problem_path(@problem, :sub => @submission),
+          redirect_to problem_path(@problem, :sub => @submission, :r => r),
             flash: { error: "Un problème est apparu" }
         end
       else

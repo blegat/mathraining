@@ -6,6 +6,11 @@ class CorrectionsController < ApplicationController
   def create
     attach = Array.new
     totalsize = 0
+    
+    r = 0
+    if(params.has_key?:r)
+      r = params[:r].to_i
+    end
 
     i = 1
     k = 1
@@ -22,7 +27,7 @@ class CorrectionsController < ApplicationController
           end
           nom = params["file#{k}".to_sym].original_filename
           session[:ancientexte] = params[:correction][:content]
-          redirect_to problem_path(@submission.problem, :sub => @submission),
+          redirect_to problem_path(@submission.problem, :sub => @submission, :r => r),
             flash: {error: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
@@ -40,7 +45,7 @@ class CorrectionsController < ApplicationController
         j = j+1
       end
       session[:ancientexte] = params[:correction][:content]
-      redirect_to problem_path(@submission.problem, :sub => @submission),
+      redirect_to problem_path(@submission.problem, :sub => @submission, :r => r),
           flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
 
@@ -103,7 +108,7 @@ class CorrectionsController < ApplicationController
         @submission.followings.update_all(read: false)
       end
       # Redirect to the submission
-      redirect_to problem_path(@submission.problem, :sub => @submission),
+      redirect_to problem_path(@submission.problem, :sub => @submission, :r => r),
         flash: { success: "Réponse postée#{m}" }
     else
       j = 1
@@ -114,13 +119,13 @@ class CorrectionsController < ApplicationController
       end
       session[:ancientexte] = params[:correction][:content]
       if params[:correction][:content].size == 0
-        redirect_to problem_path(@submission.problem, :sub => @submission),
+        redirect_to problem_path(@submission.problem, :sub => @submission, :r => r),
           flash: { error: 'Votre réponse est vide.' }
       elsif params[:correction][:content].size > 8000
-        redirect_to problem_path(@submission.problem, :sub => @submission),
+        redirect_to problem_path(@submission.problem, :sub => @submission, :r => r),
           flash: { error: 'Votre réponse doit faire moins de 8000 caractères.' }
       else
-        redirect_to problem_path(@submission.problem, :sub => @submission),
+        redirect_to problem_path(@submission.problem, :sub => @submission, :r => r),
           flash: { error: 'Une erreur est survenue.' }
       end
     end
