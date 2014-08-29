@@ -1,7 +1,7 @@
 <% provide(:title, "Modifier l'explication d'un QCM".html_safe) %>
 
 <h1>
-<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:16px;">Cours ></span>
 <span style="font-size:24px;"><%= link_to @qcm.chapter.section.name, @qcm.chapter.section %> ></span>
 <span style="font-size:32px;"><%= link_to @qcm.chapter.name, chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %> ></span>
 Modifier une explication
