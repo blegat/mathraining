@@ -29,8 +29,7 @@ class UsersController < ApplicationController
       end
 
   	  flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
-  	  flash[:success] = "Vous êtes inscrit! Veuillez vous connecter."
-  	  redirect_to signin_path
+  	  redirect_to root_path
   	else
   	  render 'new'
   	end
