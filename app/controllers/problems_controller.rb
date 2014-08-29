@@ -22,7 +22,6 @@ class ProblemsController < ApplicationController
 
   def create
     @problem = Problem.new
-    @problem.name = ""
     @problem.statement = params[:problem][:statement]
     @problem.level = params[:problem][:level]
     @section = Section.find_by_id(params[:section_id])
@@ -48,7 +47,6 @@ class ProblemsController < ApplicationController
   def update
   
     @problem = Problem.find(params[:id])
-    @problem.name = ""
     @problem.statement = params[:problem][:statement]
     
     if !@problem.online
