@@ -25,6 +25,7 @@ class ProblemsController < ApplicationController
     @problem.name = ""
     @problem.statement = params[:problem][:statement]
     @problem.level = params[:problem][:level]
+    @problem.section = @section
     
     nombre = 0
     loop do
@@ -40,7 +41,6 @@ class ProblemsController < ApplicationController
       render 'new' and return
     end
     @problem.online = false
-    @problem.section = @section
     if @problem.save
       flash[:success] = "Problème ajouté."
       redirect_to problem_path(@problem)

@@ -68,10 +68,6 @@ class ChaptersController < ApplicationController
       t.destroy
     end
 
-    Problem.where(:chapter_id => params[:id]).each do |p|
-      p.destroy
-    end
-
     Qcm.where(:chapter_id => params[:id]).each do |q|
       Choice.where(:qcm_id => q.id).each do |c|
         c.destroy
