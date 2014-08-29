@@ -1,4 +1,4 @@
-<h2>Prérequis</h2>
+<h3>Prérequis</h3>
 <% if @chapter.prerequisites.empty? %>
   <p>Aucun prérequis</p>
 <% else %>
@@ -10,21 +10,18 @@
 <% end %>
 <br/>
 
-
-<h2>Introduction</h2>
+<h3>Introduction</h3>
 <div>
   <%= raw(@chapter.description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 
-</div><br/> <br/>
-
-<h2>1. Points théoriques</h2>
+</div><br/>
 
 <% listex = @chapter.theories %>
 <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
 <% i = 1 %>
 <% listex.each do |f| %>
   <% if f.online %>
-    <h3>1.<%= i %>. <%= f.title %></h3>
+    <h3><%= i %>. <%= f.title %></h3>
     <div>
     <%= raw(f.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/<evidence>[ \r]*\n/, '<evidence>').gsub(/<\/evidence>[ \r]*\n/, '</evidence>').gsub(/<evidence>/, '<div class="evidence">').gsub(/<\/evidence>/, '</div>').gsub(/\n/, '<br/>'))%>
     </div><br/>
@@ -32,136 +29,11 @@
   <% end %>
 <% end %>
 
-<% if i == 1 %>
-  <b>Aucun point théorique</b><br/><br/>
-<% end %>
-
 <br/>
-
-<h2>2. Exercices</h2>
-
-<% liste = @chapter.exercises %>
-<% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
-<% liste2 = @chapter.qcms %>
-<% liste2.sort!{|t1,t2|t1.position <=> t2.position} %>
-<% un = 0 %>
-<% deux = 0 %>
-<% j = 1 %>
-<% pasfait = 0 %>
-<% (1..(liste.size+liste2.size)).each do |i| %>
-
-  <% encours = 0 %>
-  <% if un >= liste.size %>
-    <% encours = 2 %>
-  <% else %>
-    <% if deux >= liste2.size %>
-      <% encours = 1 %>
-    <% else %>
-      <% if liste[un].position < liste2[deux].position %>
-        <% encours = 1 %>
-      <% else %>
-        <% encours = 2 %>
-      <% end %>
-    <% end %>
-  <% end %>
-
-  <% if encours == 1 %>
-    <% f = liste[un] %>
-    <% if f.online %>
-
-      <% pt = f.value %>
-
-      <h3>2.<%= j %>. Exercice <%= j %>
-      <% if !f.chapter.section.fondation %>
-      <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
-      <% end %>
-      </h3>
-      <div>
-      <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-      </div>
-      <br/>
-
-      <% j = j+1 %>
-    <% end %>
-    <% un = un + 1 %>
-
-  <% else %>
-    <% f = liste2[deux] %>
-    <% if f.online %>
-
-      <% pt = f.value %>
-
-      <h3>2.<%= j %>. Exercice <%= j %>
-      <% if !f.chapter.section.fondation %>
-      <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
-      <% end %>
-      </h3>
-      <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-      </div>
-      <br/>
-
-      <% if f.many_answers %>
-        <b>(Plusieurs réponses sont possibles)</b><br/><br/>
-        <% f.choices.order(:id).each do |c| %>
-          <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-            <input type="checkbox">
-            <%= raw(c.ans) %>
-          </label>
-        <% end %>
-      <% else %>
-        <% f.choices.order(:id).each do |c| %>
-          <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-            <input type="radio" name="ans" value="<%= c.id %>" <%= "disabled=\"true\"" if current_user.other %>>
-            <%= raw(c.ans) %>
-          </label>
-        <% end %>
-      <% end %>
-
-      <br/>
-
-      <% j = j+1 %>
-    <% end %>
-    <% deux = deux + 1 %>
-  <% end %>
-
-<% end %>
-
-<% if j == 1 %>
-  <b>Aucun exercice</b><br/><br/>
-<% end %>
-
-<br/>
-
-<h2>3. Problèmes</h2>
-
-<% i = 1 %>
-<% listex = @chapter.problems %>
-<% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
-<% listex.each do |f| %>
-  <% if f.online %>
-    <% pt = f.value %>
-    <h3>3.<%= i %>. <%= f.name %>
-    <% (1..f.level).each do |i| %>
-      <i class='icon-star'></i>
-    <% end %>
-    <% if !f.chapter.section.fondation %>
-      <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
-    <% end %>
-    </h3>
-    <div>
-    <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-    </div><br/>
-    <% i = i + 1 %>
-  <% end %>
-<% end %>
-
-<% if i == 1 %>
-  <b>Aucun problème</b><br/><br/>
-<% end %>
 
 <br/><center><%= button_to "Exporter en .tex (version beta)", chapter_export_path(@chapter), class: "btn-primary" %></center>
 
-<% if !current_user.sk.admin? %>
+<% if !signed_in? || !current_user.sk.admin? %>
 
 <hr>
 Des questions? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id) %> dédié à ce chapitre!<br/><br/>

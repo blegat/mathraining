@@ -1,14 +1,19 @@
 #encoding: utf-8
 class ProblemsController < ApplicationController
-  before_filter :signed_in_user
+  before_filter :signed_in_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite]
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation]
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite]
   before_filter :root_user, only: [:destroy]
+  before_filter :has_access, only: [:show]
+  before_filter :online_problem, only: [:show]
+  before_filter :can_be_online, only: [:put_online]
 
+  def show
+  end
 
   def new
     @problem = Problem.new
-    @chapter = Chapter.find(params[:chapter_id])
+    @section = Section.find(params[:section_id])
   end
 
   def edit
@@ -17,50 +22,65 @@ class ProblemsController < ApplicationController
 
   def create
     @problem = Problem.new
-    @problem.name = params[:problem][:name]
+    @problem.name = ""
     @problem.statement = params[:problem][:statement]
     @problem.level = params[:problem][:level]
+    
+    nombre = 0
+    loop do
+      nombre = @problem.level*100 + @problem.section.id*1000+rand(100)
+      break if Problem.where(:number => nombre).count == 0
+    end
+    @problem.number = nombre
+    
     @problem.explanation = ""
-    @chapter = Chapter.find_by_id(params[:chapter_id])
-    if @chapter.nil?
+    @section = Section.find_by_id(params[:section_id])
+    if @section.nil?
       flash[:error] = "Chapitre inexistant."
       render 'new' and return
     end
-    if @chapter.online
-      @problem.online = false
-    else
-      @problem.online = true
-    end
-    @problem.chapter = @chapter
-    if @chapter.problems.empty?
-      @problem.position = 1
-    else
-      need = @chapter.problems.order('position').reverse_order.first
-      @problem.position = need.position + 1
-    end
+    @problem.online = false
+    @problem.section = @section
     if @problem.save
       flash[:success] = "Problème ajouté."
-      redirect_to chapter_path(@chapter, :type => 4, :which => @problem.id)
+      redirect_to problem_path(@problem)
     else
       render 'new'
     end
   end
 
   def update
+  
+    Problem.all.each do |p|
+      p.section = p.chapter.section
+    end
+  
+  
     @problem = Problem.find(params[:id])
-    @problem.name = params[:problem][:name]
+    @problem.name = ""
     @problem.statement = params[:problem][:statement]
-    @problem.level = params[:problem][:level] unless (@problem.online && @problem.chapter.online)
+    
+    if !@problem.online
+      if @problem.level != params[:problem][:level].to_i
+        @problem.level = params[:problem][:level]
+        nombre = 0
+        loop do
+          nombre = @problem.level*100 + @problem.section.id*1000+rand(100)
+          break if Problem.where(number: nombre).count == 0
+        end
+        @problem.number = nombre
+      end
+    end
     if @problem.save
       flash[:success] = "Problème modifié."
-      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
+      redirect_to problem_path(@problem)
     else
       render 'edit'
     end
   end
 
   def destroy
-    @chapter = @problem.chapter
+    @section = @problem.section
 
     @problem.submissions.each do |s|
       s.submissionfiles.each do |f|
@@ -77,7 +97,7 @@ class ProblemsController < ApplicationController
       s.destroy
     end
 
-    if @problem.online && @problem.chapter.online
+    if @problem.online
       @problem.destroy
       User.all.each do |user|
         point_attribution(user)
@@ -86,38 +106,13 @@ class ProblemsController < ApplicationController
       @problem.destroy
     end
     flash[:success] = "Problème supprimé."
-    redirect_to @chapter
+    redirect_to pb_sections_path(@section)
   end
 
   def put_online
-    @problem = Problem.find(params[:problem_id])
     @problem.online = true
     @problem.save
-    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
-  end
-
-  def order_minus
-    @problem = Problem.find(params[:problem_id])
-    @problem2 = @problem.chapter.problems.where("position < ?", @problem.position).order('position').reverse_order.first
-    err = swap_position(@problem, @problem2)
-    if err.nil?
-      flash[:success] = "Problème déplacé vers le haut."
-    else
-      flash[:error] = err
-    end
-    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
-  end
-
-  def order_plus
-    @problem = Problem.find(params[:problem_id])
-    @problem2 = @problem.chapter.problems.where("position > ?", @problem.position).order('position').first
-    err = swap_position(@problem, @problem2)
-    if err.nil?
-      flash[:success] = "Problème déplacé vers le bas."
-    else
-      flash[:error] = err
-    end
-    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
+    redirect_to problem_path(@problem)
   end
 
   def explanation
@@ -129,40 +124,29 @@ class ProblemsController < ApplicationController
     @problem.explanation = params[:problem][:explanation]
     if @problem.save
       flash[:success] = "Solution officielle modifiée."
-      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id)
+      redirect_to problem_path(@problem)
     else
       render 'explanation'
     end
   end
+  
+  def delete_prerequisite
+    @chapter = Chapter.find(params[:chapter_id])
+    @problem = Problem.find(params[:problem_id])    
+    @problem.chapters.delete(@chapter)
+    redirect_to @problem
+  end
+  
+  def add_prerequisite
+    @problem = Problem.find(params[:problem_id])	
+    if !params[:chapter_problem][:chapter_id].empty?
+      @chapter = Chapter.find(params[:chapter_problem][:chapter_id])
+      @problem.chapters << @chapter
+    end
+    redirect_to @problem
+  end
 
   private
-
-  def swap_position(a, b)
-    err = nil
-    Problem.transaction do
-      x = a.position
-      a.position = b.position
-      b.position = x
-      a.save(validate: false)
-      b.save(validate: false)
-      unless a.valid? and b.valid?
-        erra = get_errors(a)
-        errb = get_errors(b)
-        if erra.nil?
-          if errb.nil?
-            err = "Quelque chose a mal tourné."
-          else
-            err = "#{errb} pour #{b.name}"
-          end
-        else
-          # if a is not valid b.valid? is not executed
-          err = "#{erra} pour #{a.name}"
-        end
-        raise ActiveRecord::Rollback
-      end
-    end
-    return err
-  end
 
   def admin_user
     redirect_to root_path unless current_user.sk.admin?
@@ -170,17 +154,49 @@ class ProblemsController < ApplicationController
 
   def root_user
     @problem = Problem.find(params[:id])
-    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id) if (!current_user.sk.root && @problem.online && @problem.chapter.online)
+    redirect_to problem_path(@problem) if (!current_user.sk.root && @problem.online && @problem.chapter.online)
+  end
+  
+  def has_access
+    @problem = Problem.find(params[:id])
+    if !signed_in? || !current_user.sk.admin?
+      visible = true
+      @problem.chapters.each do |c|
+        visible = false if !signed_in? || !current_user.sk.solved?(c)
+      end
+      redirect_to root_path if !visible
+    end
+  end
+  
+  def online_problem
+    redirect_to root_path if !@problem.online && !current_user.sk.admin
+  end
+  
+  def can_be_online
+    @problem = Problem.find(params[:problem_id])
+    ok = true
+    nombre = 0
+    @problem.chapters.each do |c|
+      nombre = nombre+1
+      ok = false if !c.online
+    end
+    redirect_to @problem if !ok || nombre == 0
   end
 
   def point_attribution(user)
     user.point.rating = 0
     partials = user.pointspersections
     partial = Array.new
-    partial[0] = partials.where(:section_id => 0).first
-    partial[0].points = 0
+    
     Section.all.each do |s|
       partial[s.id] = partials.where(:section_id => s.id).first
+      if partial[s.id].nil?
+        newpoint = Pointspersection.new
+        newpoint.points = 0
+        newpoint.section_id = s.id
+        user.pointspersections << newpoint
+        partial[s.id] = user.pointspersections.where(:section_id => s.id).first
+      end
       partial[s.id].points = 0
     end
 
@@ -189,15 +205,11 @@ class ProblemsController < ApplicationController
         exo = e.exercise
         pt = exo.value
 
-        if !exo.chapter.sections.empty? # Pas un fondement
+        if !exo.chapter.section.fondation? # Pas un fondement
           user.point.rating = user.point.rating + pt
-        else # Fondement
-          partial[0].points = partial[0].points + pt
         end
 
-        exo.chapter.sections.each do |s| # Section s
-          partial[s.id].points = partial[s.id].points + pt
-        end
+        partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
       end
     end
 
@@ -206,15 +218,11 @@ class ProblemsController < ApplicationController
         qcm = q.qcm
         pt = qcm.value
 
-        if !qcm.chapter.sections.empty? # Pas un fondement
+        if !qcm.chapter.section.fondation? # Pas un fondement
           user.point.rating = user.point.rating + pt
-        else # Fondement
-          partial[0].points = partial[0].points + pt
         end
 
-        qcm.chapter.sections.each do |s| # Section s
-          partial[s.id].points = partial[s.id].points + pt
-        end
+        partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
       end
     end
 
@@ -222,19 +230,14 @@ class ProblemsController < ApplicationController
       problem = p.problem
       pt = problem.value
 
-      if !problem.chapter.sections.empty? # Pas un fondement
+      if !problem.section.fondation? # Pas un fondement
         user.point.rating = user.point.rating + pt
-      else # Fondement
-        partial[0].points = partial[0].points + pt
       end
 
-      problem.chapter.sections.each do |s| # Section s
-        partial[s.id].points = partial[s.id].points + pt
-      end
+      partial[problem.section.id].points = partial[problem.section.id].points + pt
     end
 
     user.point.save
-    partial[0].save
     Section.all.each do |s|
       partial[s.id].save
     end

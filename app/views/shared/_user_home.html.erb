@@ -1,3 +1,13 @@
+<div class="center hero-unit" style="text-align:center; padding:25px;">
+
+  <center>
+   <%= image_tag("mathraining.gif") %>
+   </center>
+  <h3>
+    Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques
+  </h3>
+</div>
+
 <h1>Actualités <%= link_to image_tag("rss.png", alt: 'rss'), feed_path %></h1>
 <% actualities = Actuality.order("created_at DESC").paginate(:page => params[:page], :per_page => 5) %>
 
@@ -7,7 +17,7 @@
 
 <center><%= will_paginate actualities %></center>
 
-<% if current_user.sk.admin? %>
+<% if signed_in? && current_user.sk.admin? %>
 <br/>
 <center><%= link_to "Ajouter une actualité", new_actuality_path %></center>
 <% end %>	

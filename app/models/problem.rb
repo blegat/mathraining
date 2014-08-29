@@ -15,20 +15,19 @@
 include ApplicationHelper
 
 class Problem < ActiveRecord::Base
-  attr_accessible :name, :position, :statement, :online, :level, :explanation
-  belongs_to :chapter
+  attr_accessible :statement, :online, :level, :explanation, :number
+
+  has_and_belongs_to_many :chapters, :uniq => true
+  belongs_to :section
 
   has_many :submissions, dependent: :destroy
 
   has_many :solvedproblems, dependent: :destroy
   has_many :users, through: :solvedproblems
 
-  validates :name, presence: true, length: { maximum: 255 }
+  validates :number, presence: true
   validates :statement, presence: true, length: { maximum: 8000 }
   validates :explanation, length: { maximum: 8000 }
-  validates :position, presence: true,
-    uniqueness: { scope: :chapter_id },
-    numericality: { greater_than_or_equal_to: 0 }
   validates :level, presence: true,
     inclusion: { in: [1, 2, 3, 4, 5] }
 

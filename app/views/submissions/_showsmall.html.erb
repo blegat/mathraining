@@ -6,18 +6,18 @@
   <% notif.first.delete %>
 <% end %>
 
-<h4>Soumission
+<h3>Soumission
 
 <% case @submission.status %>
 <% when 0 %>
-  (en attente de correction)</h4>
+  (en attente de correction)</h3>
 <% when 1, 3 %>
-  (erronée)</h4>
+  (erronée)</h3>
   <% if !current_user.sk.admin %>
   Vous pouvez tenter de corriger cette solution en postant un commentaire, ou soumettre une nouvelle solution.
   <% end %>
 <% when 2 %>
-  (correcte)</h4>
+  (correcte)</h3>
 <% end %>
 
 <% if current_user.sk.admin %>

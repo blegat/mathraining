@@ -1,9 +1,8 @@
 <% provide(:title, 'Modifier un problème') %>
 
 <h1>
-<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
-<span style="font-size:24px;"><%= link_to @problem.chapter.section.name, @problem.chapter.section %> ></span>
-<span style="font-size:32px;"><%= link_to @problem.chapter.name, chapter_path(@problem.chapter, :type => 4, :which => @problem.id) %> ></span>
+<span style="font-size:16px;">Cours ></span>
+<span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
 Modifier un problème
 </h1>
 

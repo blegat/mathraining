@@ -1,0 +1,133 @@
+<% provide(:title, "Problème ##{ @problem.number }") %>
+
+
+<% soumission = -1 %>
+<% if(params.has_key?:sub) %>
+  <% soumission = params[:sub].to_i %>
+<% end %>
+
+  <% pt = @problem.value %>
+
+
+  <h1>
+  <span style="font-size:16px;">Problèmes ></span>
+  <span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
+Problème # <%= @problem.number %>
+    <%= "(en construction)" if !@problem.online %>
+    <% if !signed_in? || !current_user.sk.admin %>
+    <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
+    <% end %>
+  </h1>
+  
+  <% if signed_in? && current_user.sk.admin? %>
+  <h3>Prérequis (uniquement visibles des administrateurs)</h3>
+  
+  <% has_pre = false %>
+  <% enligne_ok = true %>
+  <ul>
+  <% @problem.chapters.each do |c| %>
+  <% has_pre = true %>
+  <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span style='color:orange;'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Etes-vous sûr de vouloir supprimer ce prérequis?"} if !@problem.online %></li>
+  <% enligne_ok = false if !c.online %>
+  <% end %>
+  </ul>
+   
+  <% if !@problem.online %>
+	<% liste = Array.new %>
+
+	<% Section.where(:fondation => false).all.each do |s| %>
+	  <% if !s.fondation || fondement %>
+		<% liste2 = Array.new %>
+		<% liste2.push(s.name) %>
+		<% liste3 = Array.new %>
+		<% s.chapters.find(:all, :order => "name").each do |c| %>
+		  <% liste3.push([c.name, c.id]) %>
+		<% end %>
+		<% liste2.push(liste3) %>
+	  
+		<% liste.push(liste2) %>
+		<% end %>
+	<% end %>
+	
+	<%= form_for("chapter_problem", :url => problem_add_prerequisite_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
+	  <div class="form-group">
+        Ajouter le prérequis : 
+        <%= f.select :chapter_id, grouped_options_for_select(liste), :prompt => true, :class => "form-control" %>
+        <%= f.submit "OK", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  
+  <% end %>
+  
+  <% end %>
+
+  <h3>Enoncé</h3>
+  <%= raw(@problem.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+  <br/>
+
+  <% if signed_in? && current_user.sk.admin? %>
+  <br/>
+  <h3>Eléments de solution</h3>
+  <% if @problem.explanation.size == 0 %>
+    <p style="color:orange;"><b>Pas d'éléments disponibles </b> : Aidez vos collègues en rédigeant les grandes idées de la solution!</p>
+  <% else %>
+    <%= raw(@problem.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+    <br/>
+  <% end %>
+  <br/>
+  <div class="noprint">
+    <center>
+      <% if @problem.online %>
+        <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
+        | <%= link_to "Modifier la solution", problem_explanation_path(@problem) %>
+        <% if current_user.sk.root %>
+           | <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Attention, ce problème est visible des utilisateurs. Etes-vous sûr de vouloir supprimer ce problème? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
+        <% end %>
+      <% else %>
+        <%= link_to "Modifier ce problème", edit_problem_path(@problem) %>
+        | <%= link_to "Modifier la solution", problem_explanation_path(@problem) %> |
+        <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
+      <% end %>
+    </center>
+    <br/>
+
+    <% if !@problem.online %>
+      <center>
+        <% if !has_pre %>
+          <%= button_to "Mettre en ligne (Au moins un chapitre prérequis nécessaire)", problem_put_online_path(@problem), class: 'btn btn-large', disabled: true %>
+        <% elsif !enligne_ok %>
+          <%= button_to "Mettre en ligne (Chapitres prérequis doivent être en ligne)", problem_put_online_path(@problem), class: 'btn btn-large', disabled: true %>
+        <% else %>
+          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), method: :get, class: 'btn btn-large', data: { confirm: "Etes vous sûr de vouloir rendre ce problème visible par les utilisateurs? Vous ne pourrez alors plus changer ses prérequis!" } %>
+        <% end %>
+      </center> <br/>
+    <% end %>
+    <% if @problem.online %>
+      <%= render 'submissions/index', problem: @problem %>
+    <% end %>
+  </div>
+  <% else %>
+    <%= render 'submissions/index', problem: @problem if signed_in? %>
+    <% unless (signed_in? && current_user.sk.solved?(@problem)) || (signed_in? && !@newsub) %>
+    
+      <% if !signed_in? %>
+        <br/>
+      <% end %>
+      <button class="btn" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
+      
+    <% end %>
+  <% end %>
+    
+    <% if soumission == 0 %>
+    <hr>
+      <% unless (signed_in? && current_user.sk.solved?(@problem)) || (signed_in? && !@newsub) %>
+        <%= render 'submissions/new', problem: @problem %>
+      <% end %>
+    <% elsif soumission > 0 %>
+    <hr>
+      <% @submission = Submission.find_by_id(soumission) %>
+      <% if signed_in? && @submission.problem == @problem && (@submission.user == current_user.sk || (current_user.sk.solved?(@problem) && @submission.status == 2) || current_user.sk.admin) %>
+         <%= render 'submissions/showsmall' %>
+      <% end %>
+    <% end %>
+

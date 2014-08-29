@@ -16,10 +16,13 @@ class Chapter < ActiveRecord::Base
   attr_accessible :description, :level, :name, :online
   belongs_to :section
   has_and_belongs_to_many :users, :uniq => true
+  
+  has_and_belongs_to_many :problems, :uniq => true
+  
   has_many :theories
   has_many :exercises
   has_many :qcms
-  has_many :problems
+  
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
   validates :description, length: { maximum: 8000 }
   validates :level, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10 }
@@ -62,18 +65,9 @@ class Chapter < ActiveRecord::Base
   end
 
   def to_tex
-    content = "\\chapter{#{name}}\n"
-    if theories.any?
-      content << "\n\\section{Théorie}\n"
-      content << theories.inject("") do |sum, theory|
-        "#{sum}\n#{theory.to_tex}"
-      end
-    end
-    if problems.any?
-      content << "\n\\section{Problèmes}\n"
-      content << problems.inject("") do |sum, problem|
-        "#{sum}\n#{problem.to_tex}"
-      end
+    content = "\\section{#{name}}\n"
+    content << theories.inject("") do |sum, theory|
+      "#{sum}\n#{theory.to_tex}"
     end
     content
   end

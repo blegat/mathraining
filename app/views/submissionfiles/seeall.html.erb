@@ -79,9 +79,9 @@ Soumission
 <td>
 <center>
 <% if l[1] <= 2 %>
-  <%= link_to "Voir", chapter_path(l[2].submission.problem.chapter, :type => 4, :which => l[2].submission.problem.id, :sub => l[2].submission) %>
+  <%= link_to "Voir", problem_path(l[2].submission.problem, :sub => l[2].submission) %>
 <% elsif l[1] <= 4 %>
-  <%= link_to "Voir", chapter_path(l[2].correction.submission.problem.chapter, :type => 4, :which => l[2].correction.submission.problem.id, :sub => l[2].correction.submission) %>
+  <%= link_to "Voir", problem_path(l[2].correction.submission.problem, :sub => l[2].correction.submission) %>
 <% elsif l[1] <= 6 %>
   <%= link_to "Voir", l[2].subject %>
 <% else %>

@@ -16,7 +16,7 @@
   </div>
   </td></tr>
 
-  <% if current_user.sk.admin? %>
+  <% if signed_in? && current_user.sk.admin? %>
     <tr><td colspan="2">
     <center>
       <%= link_to "Modifier cette actualité", edit_actuality_path(f) %> |

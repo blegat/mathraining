@@ -63,7 +63,7 @@
   <b>Aucun utilisateur classé.</b>
 <% end %>
 
-<% if current_user.sk.root %>
+<% if signed_in? && current_user.sk.root %>
 <center>
 <br /><%= button_to "Modifier les niveaux et couleurs", colors_path, method: :get, class: 'btn btn' %>
 
@@ -72,7 +72,7 @@
 </center>
 <% end %>
 
-<% if current_user.sk.admin %>
+<% if signed_in? && current_user.sk.admin %>
 <br/><center><b> --- Cette partie n'est visible que des administrateurs --- </b></center>
 <h2>Utilisateurs non classés</h2>
 
@@ -96,7 +96,7 @@
 
 <% User.where(:admin => true).order(:last_name).each do |user| %>
   <% if user.admin %>
-    <% if current_user.sk.root %>
+    <% if signed_in? && current_user.sk.root %>
       <%= link_to user.name, user_path(user), style: "color:black"; %> <%= "(email non confirmé)" unless user.email_confirm %><br/>
     <% else %>
       <%= user.name %><br/>

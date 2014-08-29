@@ -2,9 +2,6 @@
 <script src="/assets/tainsert.js"></script>
 <%= render 'shared/error_messages', object: f.object %>
 
-<%= f.label "Titre (court : il apparaitra dans le menu)"%>
-<%= f.text_field :name, :class => "span3" %>
-
 <%= f.label "Enoncé" %>
 <div class="well" id="MathPreview"></div>
 <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>

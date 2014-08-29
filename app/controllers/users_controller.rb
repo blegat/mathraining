@@ -1,7 +1,7 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_filter :signed_in_user,
-    only: [:destroy, :index, :edit, :update, :show, :create_administrator, :recompute_scores, :notification_new, :notification_update, :notifs_show, :take_skin, :leave_skin]
+    only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notification_new, :notification_update, :notifs_show, :take_skin, :leave_skin]
   before_filter :correct_user,
     only: [:edit, :update]
   before_filter :admin_user,
@@ -15,6 +15,7 @@ class UsersController < ApplicationController
 
   def index
   end
+  
   def create
     @user = User.new(params[:user])
     @user.key = SecureRandom.urlsafe_base64
@@ -193,9 +194,16 @@ class UsersController < ApplicationController
     user.point.rating = 0
     partials = user.pointspersections
     partial = Array.new
-
+    
     Section.all.each do |s|
       partial[s.id] = partials.where(:section_id => s.id).first
+      if partial[s.id].nil?
+        newpoint = Pointspersection.new
+        newpoint.points = 0
+        newpoint.section_id = s.id
+        user.pointspersections << newpoint
+        partial[s.id] = user.pointspersections.where(:section_id => s.id).first
+      end
       partial[s.id].points = 0
     end
 
@@ -204,12 +212,11 @@ class UsersController < ApplicationController
         exo = e.exercise
         pt = exo.value
 
-        if !exo.chapter.section.fondation # Pas un fondement
+        if !exo.chapter.section.fondation? # Pas un fondement
           user.point.rating = user.point.rating + pt
         end
-        
-        partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
 
+        partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
       end
     end
 
@@ -218,10 +225,10 @@ class UsersController < ApplicationController
         qcm = q.qcm
         pt = qcm.value
 
-        if !qcm.chapter.section.fondation # Pas un fondement
+        if !qcm.chapter.section.fondation? # Pas un fondement
           user.point.rating = user.point.rating + pt
         end
-        
+
         partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
       end
     end
@@ -230,11 +237,11 @@ class UsersController < ApplicationController
       problem = p.problem
       pt = problem.value
 
-      if !problem.chapter.section.fondation # Pas un fondement
+      if !problem.section.fondation? # Pas un fondement
         user.point.rating = user.point.rating + pt
       end
-        
-      partial[problem.chapter.section.id].points = partial[problem.chapter.section.id].points + pt
+
+      partial[problem.section.id].points = partial[problem.section.id].points + pt
     end
 
     user.point.save

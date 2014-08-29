@@ -1,0 +1,82 @@
+<% provide(:title, @section.name) %>
+
+<h1>
+  <span style="font-size:16px;">Problèmes ></span> <%= @section.name %>
+</h1>
+
+<% (1..5).each do |level| %>
+
+<h2>Niveau <%= level %></h2>
+<% compteur = 0 %>
+
+<% @section.problems.where(:level => level).order(:number).each do |p| %>
+
+<% if p.online? || (signed_in? && current_user.sk.admin?) %>
+
+  <% visible = true %>
+
+  <% if !signed_in? || !current_user.sk.admin? %>
+    <% p.chapters.each do |c| %>
+      <% if !signed_in? || !current_user.sk.solved?(c) %>
+        <% visible = false %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if visible %>
+    <% if compteur == 0 %>
+      Chaque problème de niveau <%= level %> vaut <%= p.value %> points.<br/><br/>
+    <% end %>
+    <% compteur = compteur+1 %>
+
+    <% if signed_in? && current_user.sk.solved?(p) && !current_user.sk.admin? %>
+      <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#DDFFDD;">
+    <% elsif !p.online %>
+      <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFEEAA;">
+    <% elsif signed_in? %>
+      <% sub = current_user.sk.submissions.where(:problem_id => p.id).order('created_at') %>
+      <% if sub.size == 0 || current_user.sk.admin? %>
+        <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
+      <% else %>
+        <% sub = sub.last %>
+        <% if sub.status == 0 %>
+          <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFEEAA;">
+        <% else %>
+          <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFD0D0;">
+        <% end %>
+      <% end %>
+    <% else %>
+      <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
+    <% end %>
+
+    <center><h3><%= link_to "Problème ##{ p.number }", p %> <%= "(en construction)" if !p.online %></h3></center>
+    <% if signed_in? && current_user.sk.admin? %>
+      <u>Prérequis</u> :
+      <% prems = true %>
+      <% p.chapters.each do |c| %>
+        <%= "-" if !prems %>
+        <%= link_to c.name, c %>
+        <%= "(en construction)" if !c.online %>
+        <%= "(#{c.section.name})" if c.section != p.section %>
+        <% prems = false %>
+      <% end %>
+      <br/><br/>
+    <% end %>
+    <%= raw(p.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+    </div> <br/>
+
+    <% end %>	
+  <% end %>
+<% end %>
+
+<% if compteur == 0 %>
+  Aucun problème de niveau #{ level } disponible. Il vous faut compléter des chapitres pour pouvoir accéder à des problèmes.<br/><br/>
+<% end %>
+
+<% end %>
+
+<% if signed_in? && current_user.sk.admin? %>
+  <center>
+  <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-large' %>
+  </center>
+<% end %>	

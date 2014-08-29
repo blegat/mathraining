@@ -63,7 +63,11 @@ Mathraining::Application.routes.draw do
     match '/latex', to: 'theories#latex', as: :latex
   end
 
-  resources :problems, only: [:update, :edit, :destroy] do
+  resources :problems, only: [:update, :edit, :destroy, :show] do
+    match '/delete_prerequsite', to: 'problems#delete_prerequisite',
+      as: :delete_prerequisite
+    match '/add_prerequsite', to: 'problems#add_prerequisite',
+      as: :add_prerequisite
     match '/order_plus', to: 'problems#order_plus',
       as: :order_plus
     match '/order_minus', to: 'problems#order_minus',
@@ -112,8 +116,9 @@ Mathraining::Application.routes.draw do
  # mathjax 'mathjax'
 
   resource :prerequisites # missing a 's' here ?
-  resources :sections do
+  resources :sections, only: [:show, :update, :edit] do
     resources :chapters, only: [:new, :create]
+    resources :problems, only: [:new, :create]
   end
 
   match '/graph_prerequisites', to: "prerequisites#graph_prerequisites"
@@ -155,7 +160,7 @@ Mathraining::Application.routes.draw do
 
   root to: 'static_pages#home'
 
-  match '/essai', to: 'static_pages#essai'
+  get 'pb_sections/:id', to: 'sections#showpb', as: :pb_sections
 
   match '/about', to: 'static_pages#about'
 

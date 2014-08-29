@@ -1,8 +1,8 @@
 #encoding: utf-8
 class SectionsController < ApplicationController
-  before_filter :signed_in_user
+  before_filter :signed_in_user, only: [:create, :new, :update, :edit, :destroy]
   before_filter :recup,
-    only: [:destroy, :show, :edit, :update]
+    only: [:destroy, :show, :edit, :update, :showpb]
   before_filter :admin_user,
     only: [:destroy, :edit, :update, :create]
 
@@ -12,6 +12,8 @@ class SectionsController < ApplicationController
   def create
   end
   def show
+  end
+  def showpb
   end
   def new
   	@section = Section.new

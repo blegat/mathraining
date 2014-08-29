@@ -7,7 +7,7 @@
 
 
 <h1>
-<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:16px;">Cours ></span>
 Modifier la structure des sections
 </h1>
 
@@ -157,7 +157,7 @@ Modifier la structure des sections
 <% end %>
 
 
-<% Section.where(:fondation => false).all.each do |s| %>
+<% Section.where(:fondation => false).order(:name).all.each do |s| %>
   <% if !s.fondation || fondement %>
     <% liste2 = Array.new %>
     <% liste2.push(s.name) %>
@@ -174,9 +174,6 @@ Modifier la structure des sections
 <div class="row">
   <div class="span6">
     <center>
-
-      <% chapters.sort!{|x,y| x.name.downcase <=> y.name.downcase}%>
-
       <%= form_for(:prerequisite, url: add_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
         <h3> Ajouter un lien </h3>
         <%= f.label "Prérequis" %>

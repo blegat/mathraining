@@ -1,4 +1,4 @@
-<% if (f.online && f.chapter.online) || current_user.sk.admin? %>
+<% if (f.online && f.chapter.online) || (signed_in? && current_user.sk.admin?) %>
   <h3><%= f.title %> </h3>
   <div>
     <%= raw(f.content.
@@ -22,7 +22,7 @@
 
   <div class="noprint">
 
-  <% if current_user.sk.admin? %>
+  <% if signed_in? && current_user.sk.admin? %>
     <br/>
     <center>
       <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> |
@@ -66,15 +66,17 @@
     <div class="noprint">
     <br/>
     <center>
-      <% if current_user.sk.theories.exists?(id) %>
+      <% if signed_in? && current_user.sk.theories.exists?(id) %>
         <%= button_to "Marquer comme non lu", theory_unread_path(f), method: :get, class: 'btn btn', :disabled => current_user.other %>
-      <% else %>
+      <% elsif signed_in? %>
         <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn', :disabled => current_user.other %>
+      <% else %>
+        <button type=button disabled=true class="btn btn">Marquer comme lu</button>
       <% end %>
     </center>
 
     <hr>
-  Un soucis avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> dédié à ce chapitre!<br/><br/>
+  Une question concernant ce point théorique? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> dédié à ce chapitre!<br/><br/>
     </div>
   <% end %>
 

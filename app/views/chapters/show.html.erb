@@ -16,7 +16,7 @@
 <tr>
 <td nowrap style="vertical-align:top;">
 <span class="noprint">
-<span style="font-size:16px;"><%= link_to "Cours", sections_path %> ></span>
+<span style="font-size:16px;">Cours ></span>
 <span style="font-size:24px;"><%= link_to @section.name, @section %> ></span>
 </span>
 </td>
@@ -49,11 +49,11 @@
       <% listex = @chapter.theories %>
       <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
       <% listex.each do |f| %>
-        <% if f.online || current_user.sk.admin? %>
+        <% if f.online || (signed_in? && current_user.sk.admin?) %>
           <% compteur = compteur + 1 %>
           <li<%= ' class="active"'.html_safe if f.id == id && type == 1 %> >
           <%= link_to chapter_path(@chapter, :type => 1, :which => f.id) do %>
-            <% if !current_user.sk.admin? && current_user.sk.theories.exists?(f.id) %>
+            <% if signed_in? && !current_user.sk.admin? && current_user.sk.theories.exists?(f.id) %>
               <i class="icon-ok"></i>
             <% end %>
             <% if !f.online %>
@@ -72,6 +72,16 @@
         <li><span style="color:#555555; font-style:italic">Aucun</i></li>
       <% end %>
       <li class="nav-header">Exercices</li>
+      
+      <% exovisibles = true %>
+      
+      <% if !signed_in? || !current_user.sk.admin? %>
+        <% @chapter.prerequisites.each do |p| %>
+          <% exovisibles = false if !p.section.fondation && (!signed_in? || !current_user.sk.chapters.exists?(p)) %>
+        <% end %>
+      <% end %>
+      
+      
       <% compteur = 0 %>
       <% liste = @chapter.exercises %>
       <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
@@ -100,28 +110,37 @@
 
         <% if encours == 1 %>
           <% f = liste[un] %>
-          <% if f.online || current_user.sk.admin? %>
+          <% if f.online || (signed_in? && current_user.sk.admin?) %>
             <% compteur = compteur + 1 %>
             <li<%= ' class="active"'.html_safe if f.id == id && type == 2 %>>
+            
+            <% if exovisibles %>
 
             <%= link_to chapter_path(@chapter, :type => 2, :which => f.id) do %>
-              <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
-              <% if exo.size > 0 %>
-                <% exo = exo.first %>
-                <% if exo.correct && !current_user.sk.admin? %>
-                  <i class="icon-ok"></i>
-                <% elsif !current_user.sk.admin? %>
-                  <i class="icon-remove"></i>
+              <% if signed_in? %>
+                <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
+                <% if exo.size > 0 %>
+                  <% exo = exo.first %>
+                  <% if exo.correct && !current_user.sk.admin? %>
+                    <i class="icon-ok"></i>
+                  <% elsif !current_user.sk.admin? %>
+                    <i class="icon-remove"></i>
+                    <% pasfait = pasfait + 1 %>
+                  <% end %>
+                <% else %>
                   <% pasfait = pasfait + 1 %>
                 <% end %>
-              <% else %>
-                <% pasfait = pasfait + 1 %>
+                <% if !f.online %>
+                  <i class="icon-warning-sign"></i>
+                <% end %>
               <% end %>
-              <% if !f.online %>
-                <i class="icon-warning-sign"></i>
-              <% end %>
-              Exercice <%= j if f.online%>
+              Exercice <%= j if f.online %>
             <% end %>
+            
+            <% else %>
+              <span style="color:grey; display:inline-block; margin-top:3px; margin-bottom:3px;">Exercice <%= j if f.online %></span>
+            <% end %>
+            
             </li>
             <% if f.id == id  && type == 2 %>
               <% number = j %>
@@ -132,26 +151,35 @@
           <% un = un + 1 %>
         <% else %>
           <% f = liste2[deux] %>
-          <% if f.online || current_user.sk.admin? %>
+          <% if f.online || (signed_in? && current_user.sk.admin?) %>
             <% compteur = compteur+1 %>
             <li<%= ' class="active"'.html_safe if f.id == id && type == 3 %>>
+            
+            <% if exovisibles %>
+            
             <%= link_to chapter_path(@chapter, :type => 3, :which => f.id) do %>
-              <% qcm = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
-              <% if qcm.size > 0 %>
-                <% qcm = qcm.first %>
-                <% if qcm.correct && !current_user.sk.admin?%>
-                  <i class = "icon-ok"></i>
-                <% elsif !current_user.sk.admin? %>
-                  <i class = "icon-remove"></i>
+              <% if signed_in? %>
+                <% qcm = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
+                <% if qcm.size > 0 %>
+                  <% qcm = qcm.first %>
+                  <% if qcm.correct && !current_user.sk.admin?%>
+                    <i class = "icon-ok"></i>
+                  <% elsif !current_user.sk.admin? %>
+                    <i class = "icon-remove"></i>
+                    <% pasfait = pasfait + 1 %>
+                  <% end %>
+                <% else %>
                   <% pasfait = pasfait + 1 %>
                 <% end %>
-              <% else %>
-                <% pasfait = pasfait + 1 %>
-              <% end %>
-              <% if !f.online %>
-                <i class="icon-warning-sign"></i>
+                <% if !f.online %>
+                  <i class="icon-warning-sign"></i>
+                <% end %>
               <% end %>
               Exercice <%= j if f.online %>
+            <% end %>
+            
+            <% else %>
+              <span style="color:grey; display:inline-block; margin-top:3px; margin-bottom:3px;">Exercice <%= j %></span>
             <% end %>
             </li>
             <% if f.id == id  && type == 3 %>
@@ -169,48 +197,10 @@
         <li><span style="color:#555555; font-style:italic">Aucun</i></li>
       <% end %>
 
-      <% if pasfait == 0 && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter) %>
+      <% if pasfait == 0 && signed_in? && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter) %>
         <% current_user.sk.chapters << @chapter %>
       <% end %>
 
-      <li class="nav-header">Problèmes</li>
-      <% i = 1 %>
-      <% compteur = 0 %>
-      <% listex = @chapter.problems %>
-      <% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
-      <% listex.each do |f| %>
-        <% if f.online || current_user.sk.admin? %>
-          <% compteur = compteur + 1 %>
-          <li<%= ' class="active"'.html_safe if f.id == id && type == 4 %>>
-          <%= link_to chapter_path(@chapter, :type => 4, :which => f.id) do %>
-            <% if !f.online %>
-              <i class="icon-warning-sign"></i>
-            <% end %>
-            <% if current_user.sk.solved?(f) && !current_user.sk.admin?%>
-              <i class="icon-ok"></i>
-            <% elsif !current_user.sk.admin? %>
-              <% sub = current_user.sk.submissions.where(:problem_id => f.id).order('created_at') %>
-              <% if sub.size > 0 %>
-                <% sub = sub.last %>
-                <% if sub.status == 0 %>
-                  <i class="icon-minus"></i>
-                <% else %>
-                 <i class="icon-remove"></i>
-               <% end %>
-              <% end %>
-            <% end %>
-            <%= f.name %>
-          <% end %>
-          </li>
-          <% if f.id == id && type == 4 %>
-            <% number = i %>
-          <% end %>
-          <% i = i + 1 %>
-        <% end %>
-      <% end %>
-      <% if compteur == 0 %>
-        <li><span style="color:#555555; font-style:italic">Aucun</i></li>
-      <% end %>
     </ul>
   </div>
   </div>
@@ -221,8 +211,20 @@
 
     <% if type == 0 %>
       <%= render 'intro' %>
+    
+      <% if !exovisibles %>
+        <br/><span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
+        <% prems = true %>
+        <% @chapter.prerequisites.each do |p| %>
+          <% if (!p.section.fondation && (!signed_in? || !current_user.sk.chapters.exists?(p))) %>
+            <%= " - " if !prems %>
+            <%= p.name %>
+            <% prems = false %>
+          <% end %>
+        <% end %>
+        </span>
+      <% end %>
     <% end %>
-
 
     <!-- VERSION IMPRIMABLE -->
 
@@ -241,24 +243,16 @@
 
     <!-- EXERCICES -->
 
-    <% if type == 2 && @chapter.exercises.exists?(id)%>
+    <% if type == 2 && @chapter.exercises.exists?(id) && exovisibles %>
       <% f = Exercise.find(id) %>
       <%= render 'exercises/show', f: f, number: number, number2: number2, liste: liste, liste2: liste2, id: id %>
     <% end %>
 
     <!-- QCMS -->
 
-    <% if type == 3 && @chapter.qcms.exists?(id)%>
+    <% if type == 3 && @chapter.qcms.exists?(id) && exovisibles %>
       <% f = Qcm.find(id) %>
       <%= render 'qcms/show', f: f, number: number, number2: number2, liste: liste, liste2: liste2, id: id %>
-    <% end %>
-
-
-    <!-- PROBLEMES -->
-
-    <% if type == 4 && @chapter.problems.exists?(id)%>
-      <% f = Problem.find(id) %>
-      <%= render 'problems/show', f: f, number: number, id: id %>
     <% end %>
 
   </div>
@@ -266,13 +260,12 @@
 
 <div class="noprint">
 <center>
-  <% if current_user.sk.admin? %>
+  <% if signed_in? && current_user.sk.admin? %>
     <br/>
     Ajouter un :
     <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
     <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
-    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %> |
-    <%= link_to "problème", new_chapter_problem_path(@chapter) %>
+    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %>
 
     <% if !@chapter.online %>
       <br/><br/>

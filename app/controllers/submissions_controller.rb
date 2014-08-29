@@ -2,8 +2,6 @@
 class SubmissionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_problem
-  before_filter :online_chapter
-  before_filter :unlocked_chapter
   before_filter :can_see, only: [:show]
   before_filter :admin_user, only: [:read, :unread]
   before_filter :not_solved, only: [:create]
@@ -42,7 +40,7 @@ class SubmissionsController < ApplicationController
           end
           nom = params["file#{k}".to_sym].original_filename
           session[:ancientexte] = params[:submission][:content]
-          redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
+          redirect_to problem_path(@problem, :sub => 0),
             flash: {error: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
@@ -60,7 +58,7 @@ class SubmissionsController < ApplicationController
         j = j+1
       end
       session[:ancientexte] = params[:submission][:content]
-      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
+      redirect_to problem_path(@problem, :sub => 0),
           flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
 
@@ -75,7 +73,7 @@ class SubmissionsController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => submission.id)
+      redirect_to problem_path(@problem, :sub => submission.id)
     else
       j = 1
       while j < i do
@@ -85,13 +83,13 @@ class SubmissionsController < ApplicationController
       end
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
-        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
+        redirect_to problem_path(@problem, :sub => 0),
           flash: { error: "Votre soumission est vide." }
       elsif params[:submission][:content].size > 8000
-        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
+        redirect_to problem_path(@problem, :sub => 0),
           flash: { error: "Votre soumission doit faire moins de 8000 caractères." }
       else
-        redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => 0),
+        redirect_to problem_path(@problem, :sub => 0),
           flash: { error: "Une erreur est survenue." }
       end
     end
@@ -104,10 +102,10 @@ class SubmissionsController < ApplicationController
       if following
         following.read = read
         if following.save
-          redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => @submission),
+          redirect_to problem_path(@problem, :sub => @submission),
             flash: { success: "Soumission marquée comme #{msg}" }
         else
-          redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id, :sub => @submission),
+          redirect_to problem_path(@problem, :sub => @submission),
             flash: { error: "Un problème est apparu" }
         end
       else
@@ -141,25 +139,11 @@ class SubmissionsController < ApplicationController
 
   def can_submit
     lastsub = Submission.where(:user_id => current_user.sk, :problem_id => @problem).order('created_at')
-    redirect_to chapter_path(@problem.chapter, :type => 4, :which => @problem.id) if (!lastsub.empty? && lastsub.last.status == 0)
+    redirect_to problem_path(@problem) if (!lastsub.empty? && lastsub.last.status == 0)
   end
 
   def get_problem
     @problem = Problem.find(params[:problem_id])
-  end
-
-  def online_chapter
-    redirect_to sections_path unless (current_user.sk.admin? || @problem.chapter.online)
-  end
-
-  def unlocked_chapter
-    if !current_user.sk.admin?
-      @problem.chapter.prerequisites.each do |p|
-        if (p.section.fondation && !current_user.sk.chapters.exists?(p))
-          redirect_to sections_path and return
-        end
-      end
-    end
   end
 
   def admin_user
@@ -174,20 +158,14 @@ class SubmissionsController < ApplicationController
 
       partials = user.pointspersections
 
-      if !problem.chapter.sections.empty? # Pas un fondement
+      if !problem.section.fondation? # Pas un fondement
         user.point.rating = user.point.rating + pt
         user.point.save
-      else # Fondement
-        partial = partials.where(:section_id => 0).first
-        partial.points = partial.points + pt
-        partial.save
       end
 
-      problem.chapter.sections.each do |s| # Section s
-        partial = partials.where(:section_id => s.id).first
-        partial.points = partial.points + pt
-        partial.save
-      end
+      partial = partials.where(:section_id => problem.section.id).first
+      partial.points = partial.points + pt
+      partial.save
     end
   end
 end

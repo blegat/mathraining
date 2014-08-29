@@ -8,8 +8,9 @@
     <% end %>
   </ul>
 <% end %>
+<br/>
 
-<% if current_user.sk.admin? %>
+<% if signed_in? && current_user.sk.admin? %>
   <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>
 <% end %>
 
@@ -18,7 +19,7 @@
 
 <br/><br/>
 
-<% if current_user.sk.admin? %>
+<% if signed_in? && current_user.sk.admin? %>
   <br/>
   <% if !@chapter.online %>
 

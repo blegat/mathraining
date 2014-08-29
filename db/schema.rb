@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140727185512) do
+ActiveRecord::Schema.define(:version => 20140827184624) do
 
   create_table "actualities", :force => true do |t|
     t.string   "title"
@@ -28,6 +28,11 @@ ActiveRecord::Schema.define(:version => 20140727185512) do
     t.datetime "updated_at",                     :null => false
     t.boolean  "online",      :default => false
     t.integer  "section_id",  :default => 7
+  end
+
+  create_table "chapters_problems", :id => false, :force => true do |t|
+    t.integer "chapter_id"
+    t.integer "problem_id"
   end
 
   create_table "chapters_users", :id => false, :force => true do |t|
@@ -222,7 +227,11 @@ ActiveRecord::Schema.define(:version => 20140727185512) do
     t.boolean  "online",      :default => false
     t.integer  "level"
     t.text     "explanation", :default => ""
+    t.integer  "section_id",  :default => 1
+    t.integer  "number",      :default => 1
   end
+
+  add_index "problems", ["section_id"], :name => "index_problems_on_section_id"
 
   create_table "qcms", :force => true do |t|
     t.text     "statement"

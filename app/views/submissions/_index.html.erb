@@ -1,5 +1,5 @@
 <% if current_user.sk.admin %>
-  <h4>Soumissions récentes</h4>
+  <h3>Soumissions récentes</h3>
   <% submissions = problem.submissions.order('created_at DESC').paginate(page: params[:page]) %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
@@ -19,7 +19,7 @@
   <% end %>
 <% else %>
   <br/>
-  <h4>Dernières soumissions</h4>
+  <h3>Dernières soumissions</h3>
   <% @newsub = true %>
   <% aucun = true %>
   <% encours = Submission.new %>
@@ -51,7 +51,7 @@
   <% end %>
 
   <% unless @newsub %>
-    <h4>Soumission en cours</h4>
+    <h3>Soumission en cours</h3>
     <table class="table table-bordered">
     <tr><th>Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th></th></tr>
     <%= render 'submissions/show2', s: encours, nom: false %>

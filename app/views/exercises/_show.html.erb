@@ -1,4 +1,4 @@
-<% if (f.online && f.chapter.online) || current_user.sk.admin? %>
+<% if (f.online && f.chapter.online) || (signed_in? && current_user.sk.admin?) %>
 
 <% pt = f.value %>
 
@@ -10,7 +10,7 @@
   <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
 </div><br/>
 
-<% if current_user.sk.admin? %>
+<% if signed_in? && current_user.sk.admin? %>
   <h4>Réponse</h4>
   <% if f.decimal %>
     <b><%= f.answer %></b> (On demande une réponse <b>décimale</b> au millième près)
@@ -77,7 +77,7 @@
 
   </div>
 
-<% else %>
+<% elsif signed_in? %>
 
   <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => id) %>
   <% if exo.size > 0 %>
@@ -138,6 +138,22 @@
   <% end %>
 
   <hr>
+  Un soucis avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> dédié à ce chapitre!<br/><br/>
+
+<% else %>
+  <% if f.decimal %>
+    On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
+  <% end %>
+  
+  <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
+    <%= g.hidden_field :exercise_id, value: f.id %>
+    <%= g.label "Votre réponse : ", :disabled => true %>
+    <%= g.text_field :guess, style: "width:50px;", :disabled => true %>
+    <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => true %>
+  <% end %>
+<hr style="border-top:1px dashed lightgray;" />
+Pour pouvoir répondre aux exercices, vous devez être connecté.
+<hr>
   Un soucis avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> dédié à ce chapitre!<br/><br/>
 
 <% end %>

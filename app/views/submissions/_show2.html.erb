@@ -32,7 +32,7 @@
 </td>
 <% end %>
 <td>
-<%= link_to "Voir", chapter_path(s.problem.chapter, :type => 4, :which => s.problem.id, :sub => s.id) %>
+<%= link_to "Voir", problem_path(s.problem, :sub => s.id) %>
 </td>
 
 </tr>

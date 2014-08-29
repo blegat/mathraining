@@ -1,11 +1,10 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
-  before_filter :signed_in_user
+  before_filter :signed_in_user, only: [:new, :create, :update, :edit, :destroy]
   before_filter :admin_user, only: [:show]
   before_filter :author, only: [:update, :edit, :destroy]
   before_filter :valid_chapter
   before_filter :online_chapter
-  before_filter :unlocked_chapter
   before_filter :admin_delete, only: [:destroy]
 
   def index
@@ -30,7 +29,7 @@ class SubjectsController < ApplicationController
   
     @importants = Array.new
     Subject.where(important: true).order("lastcomment DESC").all.each do |s|
-      if current_user.sk.admin? || !s.admin
+      if (signed_in? && current_user.sk.admin?) || !s.admin
         if cherche_personne || (cherche_section >= 0 && !s.chapter.nil? && s.chapter.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @importants.push(s)
         end
@@ -40,7 +39,7 @@ class SubjectsController < ApplicationController
 
     @subjects = Array.new
     Subject.where(important: false).order("lastcomment DESC").all.each do |s|
-      if current_user.sk.admin? || !s.admin
+      if (signed_in? && current_user.sk.admin?) || !s.admin
         if cherche_personne || (cherche_section >= 0 && !s.chapter.nil? && s.chapter.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
             @subjects.push(s)
         end
@@ -49,7 +48,7 @@ class SubjectsController < ApplicationController
     
     @subjectsfalse = @subjects.paginate(:page => params[:page], :per_page => 15)
   
-    if !current_user.other && !current_user.sk.see_forum
+    if signed_in? && !current_user.other && !current_user.sk.see_forum
       current_user.sk.point.forumseen = DateTime.current
       current_user.sk.point.save
     end
@@ -314,25 +313,12 @@ class SubjectsController < ApplicationController
     if @chapter.nil?
       return
     end
-    redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
-  end
-
-  def unlocked_chapter
-    if @chapter.nil?
-      return
-    end
-    if !current_user.sk.admin?
-      @chapter.prerequisites.each do |p|
-        if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p))
-          redirect_to sections_path and return
-        end
-      end
-    end
+    redirect_to sections_path unless ((signed_in? && current_user.sk.admin?) || @chapter.online)
   end
 
   def admin_user
     @subject = Subject.find(params[:id])
-    redirect_to root_path unless (current_user.sk.admin? || !@subject.admin)
+    redirect_to root_path unless ((signed_in? && current_user.sk.admin?) || !@subject.admin)
   end
 
   def admin_delete

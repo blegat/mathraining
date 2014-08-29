@@ -74,15 +74,60 @@
     <% end %>
     
     <ul class="nav pull-right">
-      <li><%= link_to "Accueil",    root_path %></li>
-      <% if signed_in? %>
-        <% if current_user.sk.see_forum %>
+      <li><%= link_to "Accueil", root_path %></li>
+      
+      
+        <% if !signed_in? || current_user.sk.see_forum %>
           <li><%= link_to "Forum", subjects_path %></li>
         <% else %>
           <li style="font-weight:bold;"><%= link_to "- Forum -", subjects_path %></li>
         <% end %>
-        <li><%= link_to "Cours", sections_path %></li>
+        
+        
+        <li id="fat-menu" class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          Cours
+          <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+          <% Section.all.each do |f| %>
+            <% if f.fondation %>
+              <li><%= link_to f.name, f %></li>
+            <% end %>
+          <% end %>
+          <li class="divider"></li>
+          <% Section.order(:id).all.each do |f| %>
+            <% if !f.fondation %>
+              <li><%= link_to f.name, f %></li>
+            <% end %>
+          <% end %>
+          <% if signed_in? && current_user.sk.admin? %>
+          <li class="divider"></li>
+          <li><%= link_to "Modifier la structure", graph_prerequisites_path %></li>
+          <% end %>
+        </ul>
+        </li>
+        
+        
+        <li id="fat-menu" class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          Problèmes
+          <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+          <% Section.order(:id).all.each do |f| %>
+            <% if !f.fondation %>
+              <li><%= link_to f.name, pb_sections_path(f) %></li>
+            <% end %>
+          <% end %>
+        </ul>
+        </li>
+        
+        
         <li><%= link_to "Scores", users_path %></li>
+        
+        <% if signed_in? %> <!-- Si déjà loginé -->
+        
         <li id="fat-menu" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           <span style="font-weight:bold; color:<%= current_user.level[:color] %>"><%= current_user.name %></span>
@@ -105,9 +150,28 @@
           </li>
         </ul>
         </li>
-      <% else %>
-        <li><%= link_to "Connexion", signin_path %></li>
-      <% end %>
+        
+        <% else %> <!-- Si pas encore loginé -->
+        <li class="dropdown">
+          <a class="dropdown-toggle" href="#" data-toggle="dropdown">Connexion</a>
+          <ul class="dropdown-menu">
+            <li style="padding:15px; padding-bottom:0px;">
+            <%= form_for(:session, url: sessions_path) do |f| %>
+			<%= f.email_field :email, :placeholder => "Email" %>
+
+			<%= f.password_field :password, :placeholder => "Mot de passe" %>
+
+            <br />
+			<%= f.submit "Connexion", class: "btn btn btn-primary", style: "width:100%; margin-bottom:15px;" %>
+			<br />
+            <%= link_to "Mot de passe oublié?", forgot_password_path %>
+		    <% end %>
+		    </li>
+		    <li class="divider"></li>
+		    <li><%= link_to "S'inscrire", signup_path %></li>
+          </ul>
+        </li>
+        <% end %>
     </ul>
     </nav>
   </div>

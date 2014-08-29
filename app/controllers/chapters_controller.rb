@@ -1,6 +1,6 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
-  before_filter :signed_in_user
+  before_filter :signed_in_user, only: [:new, :edit, :create, :update, :destroy, :warning, :put_online]
   before_filter :admin_user,
     only: [:destroy, :edit, :update, :create]
   before_filter :chapter_exists1, only: [:show, :destroy]
@@ -8,8 +8,6 @@ class ChaptersController < ApplicationController
     [:export, :warning, :put_online]
   before_filter :delete_online, only: [:destroy]
   before_filter :online_chapter,
-    only: [:show, :export]
-  before_filter :unlocked_chapter,
     only: [:show, :export]
   before_filter :prerequisites_online,
     only: [:warning, :put_online]
@@ -19,6 +17,10 @@ class ChaptersController < ApplicationController
   end
 
   def show
+  
+    Problem.all.each do |p|
+    end
+  
     @ancientexte = session[:ancientexte]
     session[:ancientexte] = nil
   end
@@ -123,7 +125,7 @@ class ChaptersController < ApplicationController
   end
 
   def online_chapter
-    redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
+    redirect_to sections_path unless ((signed_in? && current_user.sk.admin?) || @chapter.online)
   end
 
   def unlocked_chapter

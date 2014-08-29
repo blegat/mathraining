@@ -42,22 +42,22 @@ function add() {
 <%= form_for :submission,
   url: problem_submissions_path(problem), :html => { :multipart => true } do |f| %>
 
-  <h4>Nouvelle soumission</h4>
+  <h3>Nouvelle soumission</h3>
   La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
   <div class="well" id="MathPreview"></div>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "span10", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
+    <%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => (!signed_in? || current_user.other) %>
   <% else %>
-    <%= f.text_area :content, :class => "span10", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
+    <%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => (!signed_in? || current_user.other) %>
   <% end %>
   <br />
   <span id="fooBar"></span>
   <br/>
-  <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
+  <input type="button" value="Ajouter une pièce jointe" onclick="add()" disabled="<%= 'true' if (!signed_in? || current_user.other) %>"/>
   <br /><br/>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => current_user.other %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => (!signed_in? || current_user.other) %>
 <% end %>
 
 <script>

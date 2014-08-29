@@ -9,16 +9,16 @@ class SessionsController < ApplicationController
     user = User.find_by_email(params[:session][:email])
     if user && user.authenticate(params[:session][:password])
       if user.email_confirm
-        flash[:success] = 'Bienvenue sur Mathraining!'
+        
         sign_in user
-        redirect_back_or root_path
+        redirect_to(:back)
       else
-        flash.now[:error] = 'Vous devez activer votre compte via le mail qui vous a été envoyé.'
-        render 'new'
+        flash[:error] = 'Vous devez activer votre compte via le mail qui vous a été envoyé.'
+        redirect_to(:back)
       end
     else
-      flash.now[:error] = 'Email ou mot de passe invalide.'
-      render 'new'
+      flash[:error] = 'Email ou mot de passe invalide.'
+      redirect_to(:back)
     end
   end
   def destroy

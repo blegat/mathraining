@@ -13,6 +13,7 @@
 class Section < ActiveRecord::Base
   attr_accessible :description, :name, :image, :fondation
   has_many :chapters
+  has_many :problems
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
   validates :description, length: { maximum: 8000 }
 end
