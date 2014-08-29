@@ -12,7 +12,7 @@
   <h1>
   <span style="font-size:16px;">Problèmes ></span>
   <span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
-Problème # <%= @problem.number %>
+<%= "Problème ##{ @problem.number }" %>
     <%= "(en construction)" if !@problem.online %>
     <% if !signed_in? || !current_user.sk.admin %>
     <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
