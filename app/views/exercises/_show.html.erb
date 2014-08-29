@@ -13,7 +13,11 @@
 <% if signed_in? && current_user.sk.admin? %>
   <h4>Réponse</h4>
   <% if f.decimal %>
-    <span style="font-size:16px;"><%= f.answer %></span> (On demande une réponse <b>décimale</b> au millième près)
+    <% vraidecimal = true %>
+    <% if f.answer - f.answer.to_i <= 0.00001 && f.answer.to_i - f.answer <= 0.00001 %>
+      <% vraidecimal = false %>
+    <% end %>
+    <span style="font-size:16px;"><%= f.answer if vraidecimal %><%= f.answer.to_i if !vraidecimal %></span> (On demande une réponse <b>décimale</b> au millième près)
   <% else %>
     <span style="font-size:16px;"><%= f.answer.to_i %></span> (On demande une réponse <b>entière</b>)
   <% end %>
@@ -92,9 +96,13 @@
       <% end %>
       <h4>Réponse</h4>
       <% if f.decimal %>
-        <span style="font-size:16px;"><%= f.answer %></span>
+        <% vraidecimal = true %>
+        <% if f.answer - f.answer.to_i <= 0.00001 && f.answer.to_i - f.answer <= 0.00001 %>
+          <% vraidecimal = false %>
+        <% end %>
+        <span style="font-size:16px;"><%= f.answer if vraidecimal %><%= f.answer.to_i if !vraidecimal %></span> (On demande une réponse <b>décimale</b> au millième près)
       <% else %>
-        <span style="font-size:16px;"><%= f.answer.to_i %></span>
+        <span style="font-size:16px;"><%= f.answer.to_i %></span> (On demande une réponse <b>entière</b>)
       <% end %>
       <% if f.explanation.size > 0 %>
         <br/><br/>

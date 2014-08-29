@@ -16,14 +16,19 @@
 <%= f.text_area :statement, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()" %>
 
 <% if @exercise.chapter.online && @exercise.online %>
+  Réponse : 
   <% if @exercise.decimal %>
-    Réponse : <b><%= @exercise.answer %> (réponse décimale)</b><br/>
+    <% vraidecimal = true %>
+    <% if @exercise.answer - @exercise.answer.to_i <= 0.00001 && @exercise.answer.to_i - @exercise.answer <= 0.00001 %>
+      <% vraidecimal = false %>
+    <% end %>
+    <span style="font-size:16px;"><%= @exercise.answer if vraidecimal %><%= @exercise.answer.to_i if !vraidecimal %></span> (réponse <b>décimale</b> au millième près)
   <% else %>
-    Réponse : <b><%= @exercise.answer.to_i %> (réponse entière)</b><br/>
+    <span style="font-size:16px;"><%= @exercise.answer.to_i %></span> (réponse <b>entière</b>)
   <% end %>
-  
   <br/>
-  Niveau : <%= @exercise.level %><br/>
+  <br/>
+  Niveau de l'exercice : <%= @exercise.level %><br/>
   
 <% else %>
   <%= f.label "Réponse" %>
