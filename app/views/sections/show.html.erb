@@ -6,7 +6,25 @@
 <% @nb2_n3 = 0 %>
 <% @nb2_n4 = 0 %>
 
+<% @nb_n1 = 0 %>
+<% @nb_n2 = 0 %>
+<% @nb_n3 = 0 %>
+<% @nb_n4 = 0 %>
+<% @nb_n5 = 0 %>
 
+<% @nb_problemes = 0 %>
+<% @nb_points_problemes = 0 %>
+
+<% @section.problems.each do |p| %>
+<% @nb_n1 = @nb_n1 + 1 if p.level == 1 %>
+<% @nb_n2 = @nb_n2 + 1 if p.level == 2 %>
+<% @nb_n3 = @nb_n3 + 1 if p.level == 3 %>
+<% @nb_n4 = @nb_n4 + 1 if p.level == 4 %>
+<% @nb_n5 = @nb_n5 + 1 if p.level == 5 %>
+
+<% @nb_problemes = @nb_problemes+1 %>
+<% @nb_points_problemes = @nb_points_problemes+p.value %>
+<% end %>
 
 <% def affiche_exercices(chapter, acces) %>
 
@@ -466,8 +484,9 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 <% if !@fondation %>
 <h4>Problèmes</h4>
 <ul>
-<li>Nombre de problèmes dans chaque niveau : A refaire</li>
-<li>Nombre total de problèmes : A refaire</li>
+<li>Nombre de problèmes dans chaque niveau : <%= @nb_n1 %> / <%= @nb_n2 %> / <%= @nb_n3 %> / <%= @nb_n4 %> / <%= @nb_n5 %></li>
+<li>Nombre total de problèmes : <%= @nb_problemes %></li>
+<li>Nombre total de points : <%= @nb_points_problemes %></li>
 </ul>
 <br/>
 <% end %>
