@@ -1,3 +1,16 @@
+<script type="text/javascript">
+function showStuff() {
+    document.getElementById("indice").style.display = 'inline';
+    document.getElementById("show").style.display = 'none';
+    document.getElementById("hide").style.display = 'inline';
+}
+function hideStuff(id, text, btn) {
+    document.getElementById("indice").style.display = 'none';
+    document.getElementById("show").style.display = 'inline';
+    document.getElementById("hide").style.display = 'none';
+}
+</script>
+
 <% provide(:title, "Modifier les choix du QCM") %>
 
 <h1>
@@ -10,7 +23,9 @@ Modifier des choix
 Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne saurait être enregistrée.<br/><br/>
 
 <h3>Enoncé</h3>	
-<%= raw(@qcm.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+<%= raw(@qcm.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>').
+  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn">Cacher l\'indice</a>').
+  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 
 <br/><br/>
 <h3>Réponse</h3>	
