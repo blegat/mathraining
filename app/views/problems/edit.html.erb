@@ -1,9 +1,10 @@
 <% provide(:title, 'Modifier un problème') %>
 
 <h1>
-<span style="font-size:16px;">Cours ></span>
+<span style="font-size:16px;">Problèmes ></span>
 <span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
-Modifier un problème
+<span style="font-size:32px;"><%= link_to "Problème ##{ @problem.number }", @problem %> ></span>
+Modifier le problème
 </h1>
 
 <div class="row">
