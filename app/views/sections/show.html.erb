@@ -264,7 +264,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
       <% end %>
       
       <tr>
-      <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3><%= link_to chap[encours].name, chap[encours] %>
+      <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
       <% if lecas == 1 %>
         <img style="margin-left:10px;" src="/assets/V.gif"/>
       <% elsif lecas == 2 %>
@@ -278,7 +278,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
     <% else %>
       <table style="border-radius:20px; background-color:#EEEEEE; border-collapse:separate;" class="table">
       <tr>
-      <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3><%= link_to chap[encours].name, chap[encours] %></h3></center>
+      <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %></h3></center>
       <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       <br/><br/>
       <span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
@@ -407,7 +407,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
     <% lecas = 3 %>
   <% end %>
   <tr>
-  <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3><%= link_to chap[encours].name, chap[encours] %>
+  <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
   <% if lecas == 1 %>
     <img style="margin-left:10px;" src="/assets/V.gif"/>
   <% elsif lecas == 2 %>

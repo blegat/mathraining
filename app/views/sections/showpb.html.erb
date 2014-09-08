@@ -67,9 +67,9 @@
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
     <% end %>
 
-    <center><h3><%= link_to "Problème ##{ p.number }", problem_path(p, :r => r) %> <%= "(en construction)" if !p.online %></h3></center>
+    <center><h3 style="margin-top:20px; margin-bottom:15px;"><%= link_to "Problème ##{ p.number }", problem_path(p, :r => r) %> <%= "(en construction)" if !p.online %></h3></center>
     <% if signed_in? && current_user.sk.admin? %>
-      <u>Prérequis</u> :
+      <b>Prérequis : </b>
       <% prems = true %>
       <% p.chapters.each do |c| %>
         <%= "-" if !prems %>

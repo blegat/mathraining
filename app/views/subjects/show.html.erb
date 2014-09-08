@@ -33,8 +33,10 @@
 
 <center><%= will_paginate @messages, :style => "margin:-10px;" %></center>
 
-<% if ((!params.has_key?:page) || (params[:page] == '1')) %>
+<% ouonest = 0 %>
 
+<% if ((!params.has_key?:page) || (params[:page] == '1')) %>
+<% ouonest = ouonest+1 %>
 <table class="table table-bordered">
 <tr class="info">
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
@@ -94,7 +96,8 @@
 
 <% @messages.each do |m| %>
 <a name="<%= m.id %>"></a>
-<table class="table table-bordered" style="margin-top:20px;">
+<% ouonest = ouonest+1 %>
+<table class="table table-bordered" style="<%= 'margin-top:20px;' if ouonest > 1 %>">
 <tr class="info">
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if m.user.admin %>

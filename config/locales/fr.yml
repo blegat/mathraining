@@ -1,31 +1,54 @@
 fr:
   activerecord:
     models:
-      user: Utilisateur
-      prerequisite: Prérequis
+      actuality: "Actualité"
+      chapter: "Chapitre"
+      correction: "Commentaire"
+      exercise: "Exercice"
+      message: "Message"
+      prerequisite: "Prérequis"
+      problem: "Problème"
+      qcm: "QCM"
+      section: "Section"
+      subject: "Subject"
+      user: "Utilisateur"
     attributes:
+      actuality:
+        content: "Contenu"
+        title: "Titre"
+      chapter:
+        name: "Titre"
+        level: "Niveau"
+        description: "Description"
+      correction:
+        content: "Commentaire"
+      exercise:
+        statement: "Enoncé"
+        level: "Niveau"
+        answer: "Réponse"
+      message:
+        content: "Message"
+      prerequisite:
+        prerequisite: "Prérequis"
+      problem:
+        statement: "Enoncé"
+        level: "Niveau"
+      subject:
+        content: "Message"
+      qcm:
+        statement: "Enoncé"
+        level: "Niveau"
+      section:
+        description: "Description"
+        name: "Nom"
+      theory:
+        title: "Titre"
+        content: "Contenu"
       user:
         first_name: "Prénom"
         last_name: "Nom"
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
-      prerequisite:
-        prerequisite: "Prérequis"
-      theory:
-        title: "Titre"
-        content: "Contenu"
-      exercise:
-        statement: "Enoncé"
-        level: "Niveau"
-      qcm:
-        statement: "Enoncé"
-        level: "Niveau"
-      problem:
-        statement: "Enoncé"
-        level: "Niveau"
-      chapter:
-        name: "Titre"
-        level: "Niveau"
   will_paginate:
     previous_label: "Page précédente"
     next_label: "Page suivante"
