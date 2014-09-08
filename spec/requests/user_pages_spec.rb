@@ -96,7 +96,6 @@ describe "User pages" do
         before { click_button submit }
         let(:user) { User.find_by_email('user@example.com') }
 
-        it { should have_selector('title', text: "Connexion") }
         it { should have_link('Connexion') }
       end
     end

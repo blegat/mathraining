@@ -7,6 +7,7 @@ FactoryGirl.define do
     password_confirmation "foobar"
     factory :admin do
       admin true
+      root false
     end
   end
   factory :section do
@@ -55,10 +56,7 @@ FactoryGirl.define do
     nb_guess 1
   end
   factory :problem do
-    name "Foo"
-    statement "Bar"
-    association :chapter
-    sequence(:position) { |n| n }
+    statement "Foobar"
     level 1
     online false
   end

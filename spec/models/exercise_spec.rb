@@ -68,7 +68,7 @@ describe Exercise do
 
   # Answer
   describe "when answer is not present" do
-    before { @ex.decimal = " " }
+    before { @ex.answer = nil }
     it { should_not be_valid }
   end
 end
