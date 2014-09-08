@@ -44,7 +44,7 @@ class MessagesController < ApplicationController
             j = j+1
           end
           nom = params["file#{k}".to_sym].original_filename
-          flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           render 'new' and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
@@ -62,7 +62,7 @@ class MessagesController < ApplicationController
         j = j+1
       end
 
-      flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
+      flash.now[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
       render 'new' and return
     end
 
@@ -73,7 +73,6 @@ class MessagesController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      flash[:success] = "Votre message a bien été posté."
 
       @subject.following_users.each do |u|
         if u != current_user
@@ -87,6 +86,7 @@ class MessagesController < ApplicationController
       tot = @subject.messages.count
       page = [0,((tot-1)/10).floor].max + 1
       
+      flash[:success] = "Votre message a bien été posté."
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
     else
       j = 1
@@ -147,7 +147,7 @@ class MessagesController < ApplicationController
             end
             @message.reload
             nom = params["file#{k}".to_sym].original_filename
-            flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+            flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
             render 'edit' and return
           end
           totalsize = totalsize + attach[i-1].file_file_size
@@ -165,7 +165,7 @@ class MessagesController < ApplicationController
           j = j+1
         end
         @message.reload
-        flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+        flash.now[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
         render 'edit' and return
       end
 

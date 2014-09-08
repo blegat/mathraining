@@ -20,7 +20,7 @@ class TheoriesController < ApplicationController
     @theory.content = params[:theory][:content]
     @chapter = Chapter.find_by_id(params[:chapter_id])
     if @chapter.nil?
-      flash[:danger] = "Chapitre inexistant."
+      flash.now[:danger] = "Chapitre inexistant."
       render 'new' and return
     end
     if @chapter.online

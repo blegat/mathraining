@@ -10,16 +10,16 @@ class PrerequisitesController < ApplicationController
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
     if prerequisite.nil? || chapter.nil?
-      redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
-        flash: { notice: "Choisissez un chapitre." } and return
+      flash[:info] = "Choisissez un chapitre."
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement]) and return
     end
     if chapter.online && !prerequisite.sections.empty?
-      redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
-        flash: { danger: "Vous ne pouvez ajouter un prérequis non fondamental à un chapitre en ligne." } and return
+      flash[:danger] = "Vous ne pouvez ajouter un prérequis non fondamental à un chapitre en ligne."
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement]) and return
     end
     if chapter.online && !prerequisite.online
-      redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
-        flash: { danger: "Pour ajouter à un chapitre en ligne un prérequis fondamental, celui-ci doit être en ligne." } and return
+      flash[:danger] = "Pour ajouter à un chapitre en ligne un prérequis fondamental, celui-ci doit être en ligne."
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement]) and return
     end
     pre = Prerequisite.new
     pre.chapter = chapter
@@ -30,7 +30,8 @@ class PrerequisitesController < ApplicationController
       # Sinon @chapter.available_prerequsites
       # ne prend pas en compte les nouveaux changements
     else
-      redirect_to graph_prerequisites_path(:fondement => params[:fondement]), flash: { error: get_errors(pre) };
+      flash[:error] = get_errors(pre)
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement])
     end
   end
 
@@ -43,12 +44,12 @@ class PrerequisitesController < ApplicationController
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
     if prerequisite.nil? || chapter.nil?
-      redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
-        flash: { notice: "Choisissez un chapitre." } and return
+      flash[:info] = "Choisissez un chapitre."
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement]) and return
     end
     if chapter.online && prerequisite.online
-      redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
-        flash: { danger: "Vous ne pouvez pas supprimer un prérequis non fondamental à un chapitre en ligne." } and return
+      flash[:danger] = "Vous ne pouvez pas supprimer un prérequis non fondamental à un chapitre en ligne."
+      redirect_to graph_prerequisites_path(:fondement => params[:fondement]) and return
     end
     if chapter.prerequisites.exists?(prerequisite)
       chapter.prerequisites.delete(prerequisite)

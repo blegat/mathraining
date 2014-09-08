@@ -23,7 +23,7 @@
 
     <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
     <td><center><%= rank %>. </center></td>
-    <td><b> <%= link_to user.name, user, {:style => "color:#{user.level.color}" } %> </b></td>
+    <td><b> <%= link_to user.name, user, {:style => "color:#{user.level.color}" } %> </b> <%= "(banni)" if signed_in? && current_user.sk.admin? && !user.active %></td>
 
     <% rating = p.rating %>
     <td><center><%= rating %></center></td>
@@ -80,9 +80,9 @@
 <% User.order(:last_name).to_a.each do |u| %>
   <% if u.point.rating == 0 && !u.admin %>
     <% if u.email_confirm %>
-      <b> <%= link_to u.name, u, {:style => "color:#{u.level.color}" } %> </b><br/>
+      <b> <%= link_to u.name, u, {:style => "color:#{u.level.color}" } %> </b> <%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %><br/>
     <% else %>
-      <b> <%= link_to u.name, u, {:style => "color:#{u.level.color}" } %> </b> (email non confirmé)<br/>
+      <b> <%= link_to u.name, u, {:style => "color:#{u.level.color}" } %> </b> (email non confirmé) <%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %><br/>
     <% end %>
     <% rank = rank + 1 %>
   <% end %>
@@ -97,9 +97,9 @@
 <% User.where(:admin => true).order(:last_name).each do |user| %>
   <% if user.admin %>
     <% if signed_in? && current_user.sk.root %>
-      <%= link_to user.name, user_path(user), style: "color:black"; %> <%= "(email non confirmé)" unless user.email_confirm %><br/>
+      <%= link_to user.name, user_path(user), style: "color:black"; %> <%= "(email non confirmé)" unless user.email_confirm %> <%= "(banni)" if signed_in? && current_user.sk.admin? && !user.active %><br/>
     <% else %>
-      <%= user.name %><br/>
+      <%= user.name %> <%= "(banni)" if signed_in? && current_user.sk.admin? && !user.active %><br/>
     <% end %>
   <% end %>
 <% end %>

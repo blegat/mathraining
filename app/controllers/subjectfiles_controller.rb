@@ -25,8 +25,8 @@ class SubjectfilesController < ApplicationController
       q = params[:q].to_i
     end
     
-    redirect_to subject_path(@subject, :q => q),
-            flash: { success: "Contenu de la pièce jointe supprimé" }
+    flash[:success] = "Contenu de la pièce jointe supprimé."
+    redirect_to subject_path(@subject, :q => q)
   end
 
   private

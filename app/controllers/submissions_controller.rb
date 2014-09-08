@@ -89,14 +89,14 @@ class SubmissionsController < ApplicationController
       end
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
-        redirect_to problem_path(@problem, :sub => 0, :r => r),
-          flash: { danger: "Votre soumission est vide." }
+        flash[:danger] = "Votre soumission est vide."
+        redirect_to problem_path(@problem, :sub => 0, :r => r)
       elsif params[:submission][:content].size > 8000
-        redirect_to problem_path(@problem, :sub => 0, :r => r),
-          flash: { danger: "Votre soumission doit faire moins de 8000 caractères." }
+        flash[:danger] = "Votre soumission doit faire moins de 8000 caractères."
+        redirect_to problem_path(@problem, :sub => 0, :r => r)
       else
-        redirect_to problem_path(@problem, :sub => 0, :r => r),
-          flash: { danger: "Une erreur est survenue." }
+        flash[:danger] = "Une erreur est survenue."
+        redirect_to problem_path(@problem, :sub => 0, :r => r)
       end
     end
   end
@@ -112,11 +112,11 @@ class SubmissionsController < ApplicationController
       if following
         following.read = read
         if following.save
-          redirect_to problem_path(@problem, :sub => @submission, :r => r),
-            flash: { success: "Soumission marquée comme #{msg}." }
+          flash[:success] = "Soumission marquée comme #{msg}."
+          redirect_to problem_path(@problem, :sub => @submission, :r => r)
         else
-          redirect_to problem_path(@problem, :sub => @submission, :r => r),
-            flash: { danger: "Un problème est apparu." }
+          flash[:danger] = "Un problème est apparu."
+          redirect_to problem_path(@problem, :sub => @submission, :r => r)
         end
       elsif !read
         following = Following.new
@@ -124,11 +124,11 @@ class SubmissionsController < ApplicationController
         following.submission = @submission
         following.read = read
         if following.save
-          redirect_to problem_path(@problem, :sub => @submission, :r => r),
-            flash: { success: "Soumission marquée comme #{msg}." }
+          flash[:success] = "Soumission marquée comme #{msg}."
+          redirect_to problem_path(@problem, :sub => @submission, :r => r)
         else
-          redirect_to problem_path(@problem, :sub => @submission, :r => r),
-            flash: { danger: "Un problème est apparu." }
+          flash[:danger] = "Un problème est apparu."
+          redirect_to problem_path(@problem, :sub => @submission, :r => r)
         end
       else
         redirect_to root_path

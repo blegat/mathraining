@@ -1,17 +1,17 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_filter :signed_in_user,
-    only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notification_new, :notification_update, :notifs_show, :take_skin, :leave_skin]
+    only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notification_new, :notification_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate]
   before_filter :correct_user,
     only: [:edit, :update]
   before_filter :admin_user,
-    only: [:destroy, :notification_new, :notification_update, :take_skin]
+    only: [:destroy, :notification_new, :notification_update, :take_skin, :unactivate, :reactivate]
   before_filter :root_user,
-    only: [:create_administrator, :recompute_scores]
+    only: [:create_administrator, :recompute_scores, :destroy]
   before_filter :signed_out_user,
     only: [:new, :create, :password_forgotten, :forgot_password]
-  before_filter :destroy_admin,
-    only: [:destroy]
+  before_filter :unactivate_admin,
+    only: [:unactivate, :reactivate]
 
   def index
   end
@@ -87,7 +87,7 @@ class UsersController < ApplicationController
     elsif @user.key.to_s != params[:key].to_s
       flash[:danger] = "Le lien d'activation est erroné."
     else
-      flash[:notice] = "Ce compte est déjà actif!"
+      flash[:info] = "Ce compte est déjà actif!"
     end
     redirect_to root_path
   end
@@ -163,6 +163,18 @@ class UsersController < ApplicationController
     end
     redirect_to(:back)
   end
+  
+  def unactivate
+    @user = User.find(params[:user_id])
+    @user.toggle!(:active)
+    redirect_to @user
+  end
+  
+  def reactivate
+    @user = User.find(params[:user_id])
+    @user.toggle!(:active)
+    redirect_to @user
+  end
 
   private
 
@@ -181,10 +193,10 @@ class UsersController < ApplicationController
   def root_user
     redirect_to root_path unless current_user.sk.root
   end
-  def destroy_admin
-    @user = User.find(params[:id])
+  def unactivate_admin
+    @user = User.find(params[:user_id])
     if @user.admin? && !current_user.sk.root
-      flash[:danger] = "One does not simply destroy an admin."
+      flash[:danger] = "Opération interdite envers les administrateurs."
       redirect_to root_path
     end
   end

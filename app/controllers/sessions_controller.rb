@@ -7,8 +7,12 @@ class SessionsController < ApplicationController
   end
   def create
     user = User.find_by_email(params[:session][:email])
+    
     if user && user.authenticate(params[:session][:password])
-      if user.email_confirm
+      if !user.active
+        flash[:danger] = "Ce compte a été désactivé et n'est plus accessible."
+        redirect_to(:back)
+      elsif user.email_confirm
         
         sign_in user
         redirect_to(:back)

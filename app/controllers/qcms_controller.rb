@@ -22,7 +22,7 @@ class QcmsController < QuestionsController
     @chapter = Chapter.find(params[:chapter_id])
     @qcm = Qcm.new
     if @chapter.nil?
-      flash[:danger] = "Chapitre inexistant."
+      flash.now[:danger] = "Chapitre inexistant."
       render 'new' and return
     end
     if @chapter.online
@@ -74,7 +74,7 @@ class QcmsController < QuestionsController
             if c.ok
               if i > 0
                 c.ok = false
-                flash[:notice] = "Attention, il y avait plusieurs réponses correctes à ce QCM, seule la première a été gardée."
+                flash[:info] = "Attention, il y avait plusieurs réponses correctes à ce QCM, seule la première a été gardée."
                 c.save
               end
               i = i+1
@@ -82,7 +82,7 @@ class QcmsController < QuestionsController
           end
           if @qcm.choices.count > 0 && i == 0
             # There is no good answer
-            flash[:notice] = "Attention, il n'y avait aucune réponse correcte à ce QCM, une réponse correcte a été rajoutée aléatoirement."
+            flash[:info] = "Attention, il n'y avait aucune réponse correcte à ce QCM, une réponse correcte a été rajoutée aléatoirement."
             @choice = @qcm.choices.first
             @choice.ok = true
             @choice.save
@@ -131,7 +131,7 @@ class QcmsController < QuestionsController
       @choice2 = @qcm.choices.last
       @choice2.ok = true
       @choice2.save
-      flash[:notice] = "Vous avez supprimé une réponse correcte : une autre a été mise correcte à la place par défaut."
+      flash[:info] = "Vous avez supprimé une réponse correcte : une autre a été mise correcte à la place par défaut."
     else
       @choice.destroy
     end
@@ -144,7 +144,7 @@ class QcmsController < QuestionsController
     @choice.ok = params[:choice][:ok]
     @choice.ans = params[:choice][:ans]
     if !@qcm.many_answers && @choice.ok && @qcm.choices.count > 0
-      flash[:notice] = "La réponse correcte a maintenant changé (une seule réponse est possible pour ce qcm)."
+      flash[:info] = "La réponse correcte a maintenant changé (une seule réponse est possible pour ce qcm)."
       # Two good answer
       # We put the other one to false
       @qcm.choices.each do |f|
@@ -155,11 +155,11 @@ class QcmsController < QuestionsController
       end
     end
     if !@qcm.many_answers && !@choice.ok && @qcm.choices.count == 0
-      flash[:notice] = "Cette réponse est mise correcte par défaut. Celle-ci redeviendra erronée lorsque vous rajouterez la réponse correcte."
+      flash[:info] = "Cette réponse est mise correcte par défaut. Celle-ci redeviendra erronée lorsque vous rajouterez la réponse correcte."
       @choice.ok = true
     end
     unless @choice.save
-      flash[:danger] = "Un choix ne peut être vide."
+      flash[:info] = "Un choix ne peut être vide."
     end
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end

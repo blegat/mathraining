@@ -470,14 +470,30 @@ html>body tbody.scroll {
 <% if signed_in? && current_user.sk.admin? %>
   <br/>
   <center>
+  <% i = 0 %>
     <% if !@user.root %>
-    <%= link_to 'Supprimer cet utilisateur', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Etes-vous sûr de vouloir supprimer #{@user.name}?" } %>
+      <%= " | " if i > 0 %>
+      <% i = i+1 %>
+      <% if @user.active %>
+        <%= link_to "Interdire l'accès à cet utilisateur", user_unactivate_path(@user), data: { confirm: "Etes-vous sûr de vouloir interdire l'accès au site à #{@user.name}?" } %>
+      <% else %>
+        <%= link_to "Rendre l'accès à cet utilisateur", user_reactivate_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre l'accès au site à #{@user.name}?" } %>
+      <% end %>
+    <% end %>
+    <% if current_user.sk.root? %>
+      <%= " | " if i > 0 %>
+      <% i = i+1 %>
+      <%= link_to 'Supprimer cet utilisateur', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Privilégiez une interdiction d'accès si possible. Etes-vous sûr de vouloir supprimer #{@user.name}?" }, :style => "color:red;" %>
     <% end %>
     <% if @user.email_confirm && !@user.admin %>
-    | <%= link_to 'Voir le site comme cet utilisateur', user_take_skin_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." } %>
+      <%= " | " if i > 0 %>
+      <% i = i+1 %>
+      <%= link_to 'Voir le site comme cet utilisateur', user_take_skin_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." } %>
     <% end %>
     <% if current_user.sk.root && !@user.admin %>
-      | <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"}, :style => "color:red;" %>
+      <%= " | " if i > 0 %>
+      <% i = i+1 %>
+      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"}, :style => "color:red;" %>
     <% end %>
   </center>
 <% end %>

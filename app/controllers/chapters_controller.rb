@@ -59,7 +59,7 @@ class ChaptersController < ApplicationController
   def destroy
     @chapter = Chapter.find(params[:id])
     @chapter.destroy
-    flash[:success] = "Chapitre supprimé."
+    
     Exercise.where(:chapter_id => params[:id]).each do |e|
       e.destroy
     end
@@ -74,7 +74,7 @@ class ChaptersController < ApplicationController
       end
       q.destroy
     end
-
+    flash[:success] = "Chapitre supprimé."
     redirect_to section_path(@section)
   end
 

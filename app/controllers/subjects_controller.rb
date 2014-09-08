@@ -122,7 +122,7 @@ class SubjectsController < ApplicationController
             j = j+1
           end
           nom = params["file#{k}".to_sym].original_filename
-          flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           @preselect = params[:subject][:chapter_id].to_i
           render 'new' and return
         end
@@ -141,7 +141,7 @@ class SubjectsController < ApplicationController
         j = j+1
       end
 
-      flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
+      flash.now[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
       @preselect = params[:subject][:chapter_id].to_i
       render 'new' and return
     end
@@ -248,7 +248,7 @@ class SubjectsController < ApplicationController
             end
             nom = params["file#{k}".to_sym].original_filename
             @subject.reload
-            flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+            flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
             @preselect = params[:subject][:chapter_id].to_i
             render 'edit' and return
           end
@@ -267,7 +267,7 @@ class SubjectsController < ApplicationController
           j = j+1
         end
         @subject.reload
-        flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+        flash.now[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
         @preselect = params[:subject][:chapter_id].to_i
         render 'edit' and return
       end

@@ -121,6 +121,8 @@ Mathraining::Application.routes.draw do
 
   resources :users do
     match '/add_administrator', to: 'users#create_administrator', :via => [:get], as: :add_administrator
+    match '/unactivate', to: 'users#unactivate', :via => [:get], as: :unactivate
+    match '/reactivate', to: 'users#reactivate', :via => [:get], as: :reactivate
     match '/take_skin', to: 'users#take_skin', :via => [:get], as: :take_skin
     match '/leave_skin', to: 'users#leave_skin', :via => [:get], as: :leave_skin
   end

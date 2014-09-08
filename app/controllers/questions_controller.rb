@@ -37,7 +37,7 @@ class QuestionsController < ApplicationController
       y = qcm2.position
     end
     if x.nil? and y.nil?
-      flash[:notice] = "#{class_name} déjà le plus #{name} possible."
+      flash[:info] = "#{class_name} déjà le plus #{name} possible."
     else
       if (not x.nil?) and (y.nil? or fun.call(x, y))
         other = exercise2
