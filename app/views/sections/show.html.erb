@@ -266,7 +266,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
       <tr>
       <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
       <% if lecas == 1 %>
-        <img style="margin-left:10px;" src="/assets/V.gif"/>
+        <%= image_tag "V.gif", :style => "margin-left:10px;" %>
       <% elsif lecas == 2 %>
         (en construction)
       <% end %>  
@@ -308,7 +308,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
           <ul>
         <% end %>
         <% compteur = compteur + 1 %>
-        <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<img style=\"margin-left:10px; margin-top:-3px;\" src=\"/assets/V.gif\"/>") if signed_in? && current_user.sk.theories.exists?(t) %></li>
+        <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if signed_in? && current_user.sk.theories.exists?(t) %></li>
       <% end %>
     <% end %>
 
@@ -409,7 +409,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <tr>
   <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
   <% if lecas == 1 %>
-    <img style="margin-left:10px;" src="/assets/V.gif"/>
+    <%= image_tag "V.gif", :style => "margin-left:10px;" %>
   <% elsif lecas == 2 %>
     (en construction)
   <% end %>  
@@ -431,7 +431,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
         <ul>
       <% end %>
       <% compteur = compteur + 1 %>
-      <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= raw("<img style=\"margin-left:10px; margin-top:-3px;\" src=\"/assets/V.gif\"/>") if signed_in? && current_user.sk.theories.exists?(t) %></li>
+      <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if signed_in? && current_user.sk.theories.exists?(t) %></li>
     <% end %>
   <% end %>
 

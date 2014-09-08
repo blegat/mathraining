@@ -37,10 +37,10 @@ function hideStuff(id, text, btn) {
       <%= raw(c.ans) %>
 
       <% if c.ok %>
-        <img style="margin-left:10px;" src="/assets/V.gif"/>
+        <%= image_tag "V.gif", :style => "margin-left:10px;" %>
       <% end %>
       <% if !c.ok && f.many_answers %>
-        <img style="margin-left:10px;" src="/assets/X.gif"/>
+        <%= image_tag "X.gif", :style => "margin-left:10px;" %>
       <% end %>
       </li>
     <% end %>
@@ -137,10 +137,10 @@ function hideStuff(id, text, btn) {
           <%= raw(c.ans) %>
 
           <% if c.ok %>
-            <img style="margin-left:10px;" src="/assets/V.gif"/>
+            <%= image_tag "V.gif", :style => "margin-left:10px;" %>
           <% end %>
           <% if !c.ok && f.many_answers %>
-            <img style="margin-left:10px;" src="/assets/X.gif"/>
+            <%= image_tag "X.gif", :style => "margin-left:10px;" %>
           <% end %>
           </li>
         <% end %>
