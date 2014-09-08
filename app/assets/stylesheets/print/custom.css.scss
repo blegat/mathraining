@@ -1,5 +1,5 @@
 @import "bootstrap";
-@import "bootstrap-responsive";
+
 
 /* universal */
 
@@ -8,12 +8,16 @@ html {
 }
 
 body {
-  padding-top: 60px;
+  padding-top: 0px;
 }
 
 /* footer */
 
 $grayMediumLight: #eaeaea;
+$grayLight: #eeeeee;
+$gray: #cccccc;
+$grayDarker: #999999;
+
 footer {
 	margin-top: 45px;
 	padding-top: 5px;

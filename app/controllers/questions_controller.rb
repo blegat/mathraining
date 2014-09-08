@@ -48,7 +48,7 @@ class QuestionsController < ApplicationController
       if err.nil?
         flash[:success] = "#{class_name} déplacé vers le #{name}."
       else
-        flash[:error] = err
+        flash[:danger] = err
       end
     end
     redirect_to chapter_path(subject.chapter, :type => type, :which => subject.id)

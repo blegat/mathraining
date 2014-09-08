@@ -8,16 +8,16 @@
 </h1>
 <%= will_paginate @notifications %>
 <div class="row">
-<div class="span9">
+<div class="col-xs-9 col-sm-9">
 <table class="table table-bordered">
-<tr><th>Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
+<tr><th style="text-align:center;">Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
 <% @notifications.each do |n| %>
   <%= render 'submissions/show2', s: n, nom: true %>
 <% end %>
 </table>
 </div>
-<div class="span1"></div>
-<div class="span2">
+<div class="col-xs-1 col-sm-1"></div>
+<div class="col-xs-2 col-sm-2">
 <table class="table table-bordered" style="width:200px;">
 <tr><th>Légende</th></tr>
 <tr class="warning"><td>
@@ -35,7 +35,7 @@ Commentaire lu
 <% end %>
 </td></tr>
 <tr class="success"><td>Soumission correcte</td></tr>
-<tr class="error"><td>Soumission erronée</td></tr>
+<tr class="danger"><td>Soumission erronée</td></tr>
 </table>
 </div>
 </div>

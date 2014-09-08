@@ -4,7 +4,7 @@ require File.expand_path('../boot', __FILE__)
 require "active_record/railtie"
 require "action_controller/railtie"
 require "action_mailer/railtie"
-require "active_resource/railtie"
+# require "active_resource/railtie"
 require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
@@ -17,6 +17,7 @@ end
 
 module Mathraining
   class Application < Rails::Application
+    
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -70,5 +71,7 @@ module Mathraining
     config.assets.precompile += ["application-print.css"]
     
     config.time_zone = 'Brussels'
+    
+    I18n.config.enforce_available_locales = true
   end
 end

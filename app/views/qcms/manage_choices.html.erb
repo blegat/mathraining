@@ -24,29 +24,29 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
 
 <h3>Enoncé</h3>	
 <%= raw(@qcm.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>').
-  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn">Cacher l\'indice</a>').
-  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
+  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 
 <br/><br/>
 <h3>Réponse</h3>	
 <table cellpadding="5">
-<tr><th></th><th></th><th>Rép?</th><th></th><th></th><th></th></tr>
+<tr><th></th><th></th><th style="padding:5px; text-align:center;">Rép?</th><th></th><th></th><th></th></tr>
 <% i = 0 %>
 <% @qcm.choices.order(:id).each do |f| %>
   <%= form_for(f, url: qcm_update_choice_path(@qcm, f)) do |g| %>
     <tr>
-      <td>
+      <td style="width:15px;">
         -
       </td>
-      <td>
-        <%= g.text_field :ans %>
+      <td style="padding:5px;">
+        <%= g.text_field :ans, :class => "form-control", :style => "width:200px;" %>
       </td>
       <td>
         <center>
         <% if f.ok %>
-          <i class="icon-ok"></i>
+          <img src="/assets/V.gif"/>
         <% else %>
-          <i class="icon-remove"></i>
+          <img src="/assets/X.gif"/>
         <% end %>
         </center>
       </td>
@@ -54,7 +54,7 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
         <%= g.submit "Modifier ce choix", class: "btn btn-primary" %>
       </td>
       <% unless @qcm.chapter.online && @qcm.online %>
-        <td>
+        <td style="padding:10px;">
           <% if f.ok %>
             <% if @qcm.many_answers %>
               <%= link_to "Rendre ce choix erroné", qcm_switch_choice_path(@qcm, f) %>
@@ -63,7 +63,7 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
             <%= link_to "Rendre ce choix correct", qcm_switch_choice_path(@qcm, f) %>
           <% end %>
         </td>
-        <td>
+        <td style="padding:10px;">
           <%= link_to "Supprimer ce choix", qcm_remove_choice_path(@qcm, f) %>
         </td>
       <% end %>
@@ -79,8 +79,8 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
 <%= form_for(:choice, url: qcm_add_choice_path(@qcm)) do |f| %>
   <td>
   </td>
-  <td>
-  <%= f.text_field :ans %>
+  <td style="padding:5px;">
+  <%= f.text_field :ans, :class => "form-control", :style => "width:200px;"  %>
   </td>
   <td>
   <center>

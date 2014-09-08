@@ -8,15 +8,10 @@ Créer un QCM
 </h1>
 
 
-<div class="row">
-  <div class="span12">
     <%= form_for(@qcm, url: chapter_qcms_path) do |f| %>
       <%= render 'form', f: f %>
-      <br />
-      <%= f.submit "Créer", class: "btn btn-large btn-primary" %>
+      <%= f.submit "Créer", class: "btn btn-lg btn-primary" %>
     <% end %>
-  </div>
-</div>
 
 <script>
 Preview.Init();

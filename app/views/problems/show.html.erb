@@ -50,9 +50,9 @@
 	<% end %>
 	
 	<%= form_for("chapter_problem", :url => problem_add_prerequisite_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
-	  <div class="form-group">
+	  <div class="form-inline">
         Ajouter le prérequis : 
-        <%= f.select :chapter_id, grouped_options_for_select(liste), :prompt => true, :class => "form-control" %>
+        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, {:prompt => true, :class => "form-control"}) %>
         <%= f.submit "OK", class: "btn btn-primary" %>
       </div>
     <% end %>
@@ -94,11 +94,11 @@
     <% if !@problem.online %>
       <center>
         <% if !has_pre %>
-          <%= button_to "Mettre en ligne (Au moins un chapitre prérequis nécessaire)", problem_put_online_path(@problem), class: 'btn btn-large', disabled: true %>
+          <%= button_to "Mettre en ligne (Au moins un chapitre prérequis nécessaire)", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true %>
         <% elsif !enligne_ok %>
-          <%= button_to "Mettre en ligne (Chapitres prérequis doivent être en ligne)", problem_put_online_path(@problem), class: 'btn btn-large', disabled: true %>
+          <%= button_to "Mettre en ligne (Chapitres prérequis doivent être en ligne)", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true %>
         <% else %>
-          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), method: :get, class: 'btn btn-large', data: { confirm: "Etes vous sûr de vouloir rendre ce problème visible par les utilisateurs? Vous ne pourrez alors plus changer ses prérequis!" } %>
+          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Etes vous sûr de vouloir rendre ce problème visible par les utilisateurs? Vous ne pourrez alors plus changer ses prérequis!" } %>
         <% end %>
       </center> <br/>
     <% end %>
@@ -113,7 +113,7 @@
       <% if !signed_in? %>
         <br/>
       <% end %>
-      <button class="btn" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
+      <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
       
     <% end %>
   <% end %>

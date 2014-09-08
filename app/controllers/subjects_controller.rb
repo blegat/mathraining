@@ -4,7 +4,6 @@ class SubjectsController < ApplicationController
   before_filter :admin_user, only: [:show]
   before_filter :author, only: [:update, :edit, :destroy]
   before_filter :valid_chapter
-  before_filter :online_chapter
   before_filter :admin_delete, only: [:destroy]
 
   def index
@@ -28,7 +27,7 @@ class SubjectsController < ApplicationController
     end
   
     @importants = Array.new
-    Subject.where(important: true).order("lastcomment DESC").all.each do |s|
+    Subject.where(important: true).order("lastcomment DESC").to_a.each do |s|
       if (signed_in? && current_user.sk.admin?) || !s.admin
         if cherche_personne || (cherche_section >= 0 && !s.chapter.nil? && s.chapter.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @importants.push(s)
@@ -38,10 +37,10 @@ class SubjectsController < ApplicationController
     
 
     @subjects = Array.new
-    Subject.where(important: false).order("lastcomment DESC").all.each do |s|
+    Subject.where(important: false).order("lastcomment DESC").to_a.each do |s|
       if (signed_in? && current_user.sk.admin?) || !s.admin
         if cherche_personne || (cherche_section >= 0 && !s.chapter.nil? && s.chapter.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
-            @subjects.push(s)
+          @subjects.push(s)
         end
       end
     end
@@ -99,6 +98,10 @@ class SubjectsController < ApplicationController
         redirect_to root_path and return
       else
         @subject.chapter = @chapitre
+        if !@subject.chapter.online && !@subject.admin?
+          flash[:info] = "Chapitre en construction : sujet réservé aux administrateurs."
+          @subject.admin = true
+        end
       end
     end
 
@@ -119,7 +122,7 @@ class SubjectsController < ApplicationController
             j = j+1
           end
           nom = params["file#{k}".to_sym].original_filename
-          flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           @preselect = params[:subject][:chapter_id].to_i
           render 'new' and return
         end
@@ -138,7 +141,7 @@ class SubjectsController < ApplicationController
         j = j+1
       end
 
-      flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+      flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
       @preselect = params[:subject][:chapter_id].to_i
       render 'new' and return
     end
@@ -155,7 +158,7 @@ class SubjectsController < ApplicationController
         @subject.admin = false
         @subject.save
       end
-      flash[:success] = "Sujet ajouté."
+      flash[:success] = "Votre sujet a bien été posté."
 
       redirect_to subject_path(@subject, :q => q)
     else
@@ -194,6 +197,11 @@ class SubjectsController < ApplicationController
         else
           @subject.chapter = chapitre
           @subject.save
+          if !chapitre.online? && !@subject.admin?
+            @subject.admin = true
+            @subject.save
+            flash[:info] = "Chapitre en construction : sujet réservé aux administrateurs."
+          end
         end
       else
         @subject.chapter = nil
@@ -240,7 +248,7 @@ class SubjectsController < ApplicationController
             end
             nom = params["file#{k}".to_sym].original_filename
             @subject.reload
-            flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+            flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
             @preselect = params[:subject][:chapter_id].to_i
             render 'edit' and return
           end
@@ -259,12 +267,12 @@ class SubjectsController < ApplicationController
           j = j+1
         end
         @subject.reload
-        flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+        flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
         @preselect = params[:subject][:chapter_id].to_i
         render 'edit' and return
       end
 
-      flash[:success] = "Sujet modifié."
+      flash[:success] = "Votre sujet a bien été modifié."
 
       redirect_to subject_path(@subject, :q => q)
     else
@@ -307,13 +315,6 @@ class SubjectsController < ApplicationController
       @chapter = Chapter.find_by_id(chapter_id)
       redirect_to root_path if @chapter.nil?
     end
-  end
-
-  def online_chapter
-    if @chapter.nil?
-      return
-    end
-    redirect_to sections_path unless ((signed_in? && current_user.sk.admin?) || @chapter.online)
   end
 
   def admin_user

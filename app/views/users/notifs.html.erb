@@ -3,7 +3,7 @@
   Nouvelles réponses
 </h1>
 <table class="table table-bordered">
-<tr><th>Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th></th></tr>
+<tr><th style="text-align:center;">Statut</th><th>Date de la soumission</th><th>Dernière activité</th><th></th></tr>
 <% @new = true %>
 <% @notifs.each do |n| %>
   <%= render 'submissions/show2', s: n.submission, nom: false %>

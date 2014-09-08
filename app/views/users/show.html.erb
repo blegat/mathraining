@@ -20,17 +20,17 @@ html>body tbody.scroll {
 
 
 <% if @user.admin %>
-  <h1><%= @user.name %>
+  <h1><b><%= @user.name %></b>
   <span style="font-size:18px; margin-left:100px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
   </h1>
-  <b>Administrateur</b>
+  <b>Administrateur</b><br/>
 <% else %>
 
 
 <% actualrating = @user.point.rating %>
 <% niveau = @user.level %>
 
-<h1 style="color:<%= niveau[:color] %>;"><%= @user.name %><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] %></span>
+<h1 style="color:<%= niveau[:color] %>;"><b><%= @user.name %></b><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] %></span>
 <% if signed_in? && current_user.sk.admin %>
 <span style="color:<%= niveau[:color] %>; margin-left:100px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
 <% end %>
@@ -39,13 +39,13 @@ html>body tbody.scroll {
 <% cansee = Array.new %>
 
 <% if signed_in? && current_user.sk.admin %>
-  <% Chapter.all.each do |c| %>
+  <% Chapter.all.to_a.each do |c| %>
     <% cansee[c.id] = true %>
   <% end %>
 <% else %>
 
   <% debloque = Array.new %>
-  <% Chapter.all.each do |c| %>
+  <% Chapter.all.to_a.each do |c| %>
     <% debloque[c.id] = false %>
   <% end %>
   
@@ -53,7 +53,7 @@ html>body tbody.scroll {
     <% debloque[c.id] = true %>
   <% end %>
 
-  <% Chapter.all.each do |c| %>
+  <% Chapter.all.to_a.each do |c| %>
     <% cansee[c.id] = true %>
     <% if !c.section.fondation %>
       <% c.prerequisites.each do |p| %>
@@ -68,7 +68,7 @@ html>body tbody.scroll {
 
   <div class="row">
 
-  <div class="span7">
+  <div class="col-md-7 col-sm-12 col-xs-12">
   <h2>Résolutions</h2>
   <br/>
   <% exercises = @user.solvedexercises.where(:correct => true) %>
@@ -119,7 +119,7 @@ html>body tbody.scroll {
       <% parquoi = "minute" %>
     <% end %>
 
-    <table class="table table-bordered">
+    <table class="table table-bordered" style="width:606px;">
     <thead class="fixed">
     <tr><th style="width:130px;">Date</th><th style="width:50px;"><center>Heure</center></th></th><th style="width:360px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
     </thead>
@@ -186,7 +186,7 @@ html>body tbody.scroll {
 
   </div>
 
-  <div class="span5">
+  <div class="col-md-5 col-sm-12 col-xs-12">
 
   <center><p style="font-size:24px; margin-top:80px;">Score : <%= actualrating %></p></center>
   <br/>
@@ -198,7 +198,7 @@ html>body tbody.scroll {
   <% total = 0 %>
   <% possible2 = SortedSet.new %>
 
-  <% Section.order(:id).where(:fondation => false).all.each do |s| %>
+  <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
     <% rate = p.where(:section_id => s.id).first.points %>
     <% total = total + rate %>
 
@@ -216,7 +216,7 @@ html>body tbody.scroll {
   <% p = Pointspersection.where(:user_id => @user) %>
   <tr>
   <% i = 0 %>
-  <% Section.order(:id).where(:fondation => false).all.each do |s| %>
+  <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
     <% rate = p.where(:section_id => s.id).first.points %>
 
     <td style="width:180px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td>
@@ -277,7 +277,7 @@ html>body tbody.scroll {
 
   <div class="row">
 
-  <div class="span12">
+  <div class="col-sm-12 col-xs-12">
 
   <h2>Evolution</h2>
   <br/>
@@ -287,7 +287,7 @@ html>body tbody.scroll {
   Votre navigateur ne supporte pas les canvas.
   </canvas>
 
-  <% @niveaux = Color.order(:pt).all %>
+  <% @niveaux = Color.order(:pt).to_a %>
   
   <% i = 1 %>
   <% numerolevel = 0 %>

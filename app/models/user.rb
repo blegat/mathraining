@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
     :email_confirm, :key, :skin
   has_secure_password
   has_and_belongs_to_many :theories
-  has_and_belongs_to_many :chapters, uniq: true
+  has_and_belongs_to_many :chapters, -> {uniq}
   has_many :solvedexercises, dependent: :destroy
   has_many :exercises, through: :solvedexercises
   has_many :solvedqcms, dependent: :destroy
@@ -80,7 +80,7 @@ class User < ActiveRecord::Base
     actualrating = point.rating
     i = 0
     actuallevel = Color.order(:pt).first
-    Color.order(:pt).all.each do |c|
+    Color.order(:pt).to_a.each do |c|
       if c.pt <= actualrating
         actuallevel = c
       end
@@ -133,7 +133,7 @@ class User < ActiveRecord::Base
     newpoint.rating = 0
     self.point = newpoint
 
-    Section.all.each do |s|
+    Section.all.to_a.each do |s|
       newpoint = Pointspersection.new
       newpoint.points = 0
       newpoint.section_id = s.id

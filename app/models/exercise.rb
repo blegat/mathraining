@@ -26,6 +26,8 @@ class Exercise < ActiveRecord::Base
   validates :position, presence: true,
     uniqueness: { scope: :chapter_id },
     numericality: { greater_than_or_equal_to: 0 }
+  
+  validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 4 }
     
   def value
     return 3*level

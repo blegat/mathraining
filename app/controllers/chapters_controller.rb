@@ -18,7 +18,7 @@ class ChaptersController < ApplicationController
 
   def show
   
-    Problem.all.each do |p|
+    Problem.all.to_a.each do |p|
     end
   
     @ancientexte = session[:ancientexte]
@@ -141,7 +141,7 @@ class ChaptersController < ApplicationController
   def prerequisites_online
     @chapter.prerequisites.each do |p|
       if !p.online
-        flash[:error] = "Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne."
+        flash[:danger] = "Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne."
         redirect_to @chapter and return
       end
     end
@@ -156,7 +156,7 @@ class ChaptersController < ApplicationController
     partial = Array.new
     partial[0] = partials.where(:section_id => 0).first
     partial[0].points = 0
-    Section.all.each do |s|
+    Section.all.to_a.each do |s|
       partial[s.id] = partials.where(:section_id => s.id).first
       partial[s.id].points = 0
     end
@@ -221,7 +221,7 @@ class ChaptersController < ApplicationController
 
     user.point.save
     partial[0].save
-    Section.all.each do |s|
+    Section.all.to_a.each do |s|
       partial[s.id].save
     end
 

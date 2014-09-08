@@ -25,11 +25,11 @@ class Submission < ActiveRecord::Base
   def icon
     case status
     when 0
-      'icon-minus'
+      '/assets/tiret.gif'
     when 1, 3
-      'icon-remove'
+      '/assets/X.gif'
     when 2
-      'icon-ok'
+      '/assets/V.gif'
     end
 
   end

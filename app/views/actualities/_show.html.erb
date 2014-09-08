@@ -2,9 +2,9 @@
 
   <table class="table table-bordered" style="margin-top:20px;">
   <tr class="info">
-  <td style="font-size:26px; font-weight:bold; padding:15px; border-right:none;"><%= f.title %> </td>
+  <td style="font-size:26px; font-weight:bold; padding-left:15px; border-right:none;"><%= f.title %> </td>
 
-  <td style="text-align:right; font-size:18px; padding:15px; border-left:none;">
+  <td style="vertical-align:middle; text-align:right; font-size:18px; border-left:none; padding-right:15px;">
   <% date = f.created_at.in_time_zone %>
   <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
   </td>

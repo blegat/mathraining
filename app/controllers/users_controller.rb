@@ -47,7 +47,7 @@ class UsersController < ApplicationController
   end
   def update
     if @user.update_attributes(params[:user])
-      flash[:success] = "Profil mis à jour."
+      flash[:success] = "Votre profil a bien été mis à jour."
       sign_in @user
       redirect_to root_path
     else
@@ -67,7 +67,7 @@ class UsersController < ApplicationController
   def create_administrator
     @user = User.find(params[:user_id])
     if @user.admin?
-      flash[:error] = "I see what you did here! Mais non ;-)"
+      flash[:danger] = "I see what you did here! Mais non ;-)"
     else
       @user.toggle!(:admin)
       skinner = User.where(skin: @user.id)
@@ -85,7 +85,7 @@ class UsersController < ApplicationController
       @user.toggle!(:email_confirm)
       flash[:success] = "Votre compte a bien été activé! Veuillez maintenant vous connecter."
     elsif @user.key.to_s != params[:key].to_s
-      flash[:error] = "Le lien d'activation est erroné."
+      flash[:danger] = "Le lien d'activation est erroné."
     else
       flash[:notice] = "Ce compte est déjà actif!"
     end
@@ -99,7 +99,7 @@ class UsersController < ApplicationController
       UserMailer.forgot_password(@user.id).deliver
   	  flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
     else
-      flash[:error] = 'Aucun utilisateur ne possède cet adresse.'
+      flash[:danger] = "Aucun utilisateur ne possède cette adresse."
     end
     redirect_to root_path
   end
@@ -107,7 +107,7 @@ class UsersController < ApplicationController
   def recup_password
     @user = User.find(params[:id])
     if @user.key.to_s != params[:key].to_s
-      flash[:error] = "Ce lien n'est pas correct."
+      flash[:danger] = "Ce lien n'est pas correct."
       redirect_to root_path
     else
       @user.update_attribute(:key, SecureRandom.urlsafe_base64)
@@ -127,13 +127,13 @@ class UsersController < ApplicationController
   end
 
   def notifications_new
-    @notifications = Submission.order("updated_at DESC").paginate(page: params[:page]).all
+    @notifications = Submission.order("updated_at DESC").paginate(page: params[:page]).to_a
     @new = true
     render :notifications
   end
 
   def notifications_update
-    @notifications = current_user.sk.followed_submissions.order("updated_at DESC").paginate(page: params[:page]).all
+    @notifications = current_user.sk.followed_submissions.order("updated_at DESC").paginate(page: params[:page]).to_a
     @new = false
     render :notifications
   end
@@ -146,7 +146,7 @@ class UsersController < ApplicationController
   def take_skin
     @user = User.find(params[:user_id])
     if @user.admin?
-      flash[:error] = "Pas autorisé..."
+      flash[:danger] = "Pas autorisé..."
     else
       current_user.update_attribute(:skin, @user.id)
       sign_in current_user
@@ -184,7 +184,7 @@ class UsersController < ApplicationController
   def destroy_admin
     @user = User.find(params[:id])
     if @user.admin? && !current_user.sk.root
-      flash[:error] = "One does not simply destroy an admin."
+      flash[:danger] = "One does not simply destroy an admin."
       redirect_to root_path
     end
   end

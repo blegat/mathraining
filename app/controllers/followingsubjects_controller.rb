@@ -10,7 +10,7 @@ class FollowingsubjectsController < ApplicationController
     if fol.save
       flash[:success] = "Vous suivez maintenant ce sujet."
     else
-      flash[:error] = "Une erreur est survenue."
+      flash[:danger = "Une erreur est survenue."
     end
 
     if request.env["HTTP_REFERER"]
@@ -26,7 +26,7 @@ class FollowingsubjectsController < ApplicationController
       current_user.sk.followed_subjects.delete(sub)
       flash[:success] = "Vous ne suivez plus ce sujet."
     else
-      flash[:error] = "Vous ne suiviez déjà pas ce sujet."
+      flash[:danger] = "Vous ne suiviez déjà pas ce sujet."
     end
 
     if request.env["HTTP_REFERER"]

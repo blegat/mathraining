@@ -22,7 +22,7 @@ class QcmsController < QuestionsController
     @chapter = Chapter.find(params[:chapter_id])
     @qcm = Qcm.new
     if @chapter.nil?
-      flash[:error] = "Chapitre inexistant."
+      flash[:danger] = "Chapitre inexistant."
       render 'new' and return
     end
     if @chapter.online
@@ -159,7 +159,7 @@ class QcmsController < QuestionsController
       @choice.ok = true
     end
     unless @choice.save
-      flash[:error] = "Un choix ne peut être vide."
+      flash[:danger] = "Un choix ne peut être vide."
     end
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
@@ -188,7 +188,7 @@ class QcmsController < QuestionsController
     if @choice.save
       flash[:success] = "Réponse modifiée."
     else
-      flash[:error] = "Un choix ne peut être vide."
+      flash[:danger] = "Un choix ne peut être vide."
     end
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end

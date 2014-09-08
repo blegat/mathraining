@@ -1,6 +1,12 @@
 <% provide(:title, "Mise en ligne d'un chapitre".html_safe) %>
 
-<h1>Mise en ligne du chapitre <%= @chapter.name %></h1>
+<h1>
+<span style="font-size:16px;">Cours ></span>
+<span style="font-size:24px;"><%= link_to @chapter.section.name, @chapter.section %> ></span>
+<span style="font-size:32px;"><%= link_to @chapter.name, @chapter %> ></span>
+Mise en ligne
+</h1>
+
 Vous vous apprêtez à mettre un chapitre en ligne.
 
 Une fois cela fait, les utilisateurs auront accès à tous les composants du chapitre et pourront entre autres commencer à résoudre les exercices et QCMs qui leur sont proposés. Il ne sera alors plus envisageable pour un administrateur de modifier le chapitre autant qu'il ne le pouvait lorsque le chapitre était en construction (en particulier, vous ne pourrez plus le supprimer). Avant de faire cette opération, <b>nous vous demandons donc de prendre connaissance de ce que vous pourrez et ne pourrez plus faire une fois ce chapitre mis en ligne.</b>
@@ -45,79 +51,8 @@ Les exercices et QCMs permettront aux utilisateurs de débloquer les chapitres d
 </li>
 </ul>
 Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mis en ligne, si vous jugez que cela est nécessaire, mais il est tout de même préférable qu'ils soient déjà finalisés maintenant. Voici les exercices et QCMs de ce chapitre. Soyez certain qu'ils vérifient les trois points précédents. Veillez également à ce que leur ordre soit cohérent.<br/><br/>
-
-<% liste = @chapter.exercises %>
-<% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
-<% liste2 = @chapter.qcms %>
-<% liste2.sort!{|t1,t2|t1.position <=> t2.position} %>
-<% un = 0 %>
-<% deux = 0 %>
-<% (1..(liste.size+liste2.size)).each do |i| %>
-  <% encours = 0 %>
-  <% if un >= liste.size %>
-    <% encours = 2 %>
-  <% else %>
-    <% if deux >= liste2.size %>
-      <% encours = 1 %>
-    <% else %>
-      <% if liste[un].position < liste2[deux].position %>
-        <% encours = 1 %>
-      <% else %>
-        <% encours = 2 %>
-      <% end %>
-    <% end %>
-  <% end %>
-
-  <% if encours == 1 %>
-    <% f = liste[un] %>
-      <h4> Exercice <%= i%> - <%= link_to "Modifier cet exercice", chapter_path(@chapter, :type => 2, :which => f.id) %> </h4>
-        <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-      <br/><br/>
-      Réponse :
-      <% if f.decimal %>
-        <b><%= f.answer %></b> (On demande une réponse <b>décimale</b> au millième près)
-      <% else %>
-        <b><%= f.answer.to_i %></b> (On demande une réponse <b>entière</b>)
-      <% end %>
-      <br/><br/>
-    <% un = un + 1 %>
-  <% else %>
-    <% f = liste2[deux] %>
-      <h4> Exercice <%= i%> - <%= link_to "Modifier ce QCM", chapter_path(@chapter, :type => 3, :which => f.id) %> </h4>
-        <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-      <br/><br/>
-      <ul>
-      <% f.choices.order(:id).each do |c| %>
-        <li style="padding:5px;">
-        <%= c.ans %>
-
-        <% if c.ok %>
-          <i class="icon-ok" style="margin-left:10px;"></i>
-        <% end %>
-        <% if !c.ok && f.many_answers %>
-          <i class="icon-remove" style="margin-left:10px;"></i>
-        <% end %>
-        </li>
-      <% end %>
-      </ul>
-      <br/>
-      <% if f.many_answers %>
-        <b>(Plusieurs réponses possibles)</b>
-      <% else %>
-        <b>(Une seule réponse possible)</b>
-      <% end %>
-      <br/><br/>
-    <% deux = deux + 1 %>
-  <% end %>
-<% end %>
-
-<% if liste.size+liste2.size == 0 %>
-  <br/><br/><b>Aucun exercice</b><br/>
-<% end %>
 <br/>
 <center>
-<%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), method: :get, class: 'btn-danger btn-large', data: {confirm: "Etes-vous sûr de vouloir mettre ce chapitre en ligne?"} %>
+<%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), method: :get, class: 'btn-danger btn-lg', data: {confirm: "Etes-vous sûr de vouloir mettre ce chapitre en ligne?"} %>
 </center>
 
-<br/><br/>
-<center><%= link_to "Retour au chapitre " + @chapter.name, chapter_path(@chapter) %></center>

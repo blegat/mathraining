@@ -1,4 +1,4 @@
-<div class="center hero-unit" style="text-align:center; padding:25px;">
+<div class="center jumbotron" style="text-align:center; margin-top:20px; padding:25px;">
 
   <center>
    <%= image_tag("mathraining.gif") %>
@@ -18,8 +18,8 @@
 <center><%= will_paginate actualities %></center>
 
 <% if signed_in? && current_user.sk.admin? %>
-<br/>
-<center><%= link_to "Ajouter une actualité", new_actuality_path %></center>
+
+<center><%= link_to "Ajouter une actualité", new_actuality_path, :class => "btn btn-grey btn-default btn-lg" %></center>
 <% end %>	
 
 

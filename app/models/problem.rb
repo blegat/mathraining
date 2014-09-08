@@ -17,7 +17,7 @@ include ApplicationHelper
 class Problem < ActiveRecord::Base
   attr_accessible :statement, :online, :level, :explanation, :number
 
-  has_and_belongs_to_many :chapters, :uniq => true
+  has_and_belongs_to_many :chapters, -> {uniq}
   belongs_to :section
 
   has_many :submissions, dependent: :destroy
@@ -28,8 +28,8 @@ class Problem < ActiveRecord::Base
   validates :number, presence: true
   validates :statement, presence: true, length: { maximum: 8000 }
   validates :explanation, length: { maximum: 8000 }
-  validates :level, presence: true,
-    inclusion: { in: [1, 2, 3, 4, 5] }
+  
+  validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 5 }
 
   def to_tex
     "\\subsection{#{name}}\n#{html_to_tex(statement)}"

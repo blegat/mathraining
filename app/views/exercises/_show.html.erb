@@ -21,8 +21,8 @@ function hideStuff(id, text, btn) {
 <h3>Exercice <%= number %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
 <% end %>
   <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>').
-  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn">Cacher l\'indice</a>').
-  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
+  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 </div><br/>
 
 <% if signed_in? && current_user.sk.admin? %>
@@ -90,7 +90,7 @@ function hideStuff(id, text, btn) {
 
   <% if !f.online && @chapter.online %>
     <center>
-      <%= button_to "Mettre en ligne", exercise_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
+      <%= button_to "Mettre en ligne", exercise_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
     </center> <br/>
   <% end %>
 
@@ -136,7 +136,7 @@ function hideStuff(id, text, btn) {
 
       <%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
         <%= g.label "Votre réponse : ", :disabled => current_user.other %>
-        <%= g.text_field :guess, style: "width:50px;", value: val, :disabled => current_user.other %>
+        <%= g.text_field :guess, class: "form-control", style: "width:70px; margin-left:5px;", value: val, :disabled => current_user.other %>
         <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => current_user.other %>
       <% end %>
 
@@ -154,7 +154,7 @@ function hideStuff(id, text, btn) {
     <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
       <%= g.hidden_field :exercise_id, value: f.id %>
       <%= g.label "Votre réponse : ", :disabled => current_user.other %>
-      <%= g.text_field :guess, style: "width:50px;", :disabled => current_user.other %>
+      <%= g.text_field :guess, class: "form-control", style: "width:70px; margin-left:5px;", :disabled => current_user.other %>
       <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => current_user.other %>
     <% end %>
 
@@ -171,7 +171,7 @@ function hideStuff(id, text, btn) {
   <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
     <%= g.hidden_field :exercise_id, value: f.id %>
     <%= g.label "Votre réponse : ", :disabled => true %>
-    <%= g.text_field :guess, style: "width:50px;", :disabled => true %>
+    <%= g.text_field :guess, class: "form-control", style: "width:70px; margin-left:5px;", :disabled => true %>
     <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => true %>
   <% end %>
 <hr style="border-top:1px dashed lightgray;" />

@@ -10,13 +10,17 @@
 <% elsif s.status == 2 %>
 <tr class="success">
 <% elsif s.status == 1 %>
-<tr class="error">
+<tr class="danger">
 <% else %>
-<tr class="info">
+  <% if current_user.sk.admin? %>
+  <tr class="info">
+  <% else %>
+  <tr class="danger">
+  <% end %>
 <% end %>
 
-<td>
-<i class="<%= s.icon %>" style="margin-right:10px;"></i>
+<td style="width:70px; text-align:center;">
+<img src="<%= s.icon %>" />
 </td>
 <td>
 <% date = s.created_at.in_time_zone %>
@@ -35,7 +39,7 @@
 <% end %>
 </td>
 <% end %>
-<td>
+<td style="text-align:center;">
 <%= link_to "Voir", problem_path(s.problem, :sub => s.id, :r => r) %>
 </td>
 

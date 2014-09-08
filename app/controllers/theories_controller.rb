@@ -20,7 +20,7 @@ class TheoriesController < ApplicationController
     @theory.content = params[:theory][:content]
     @chapter = Chapter.find_by_id(params[:chapter_id])
     if @chapter.nil?
-      flash[:error] = "Chapitre inexistant."
+      flash[:danger] = "Chapitre inexistant."
       render 'new' and return
     end
     if @chapter.online
@@ -77,7 +77,7 @@ class TheoriesController < ApplicationController
     if err.nil?
       flash[:success] = "Point théorique déplacé vers le haut."
     else
-      flash[:error] = err
+      flash[:danger] = err
     end
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end
@@ -89,7 +89,7 @@ class TheoriesController < ApplicationController
     if err.nil?
       flash[:success] = "Point théorique déplacé vers le bas."
     else
-      flash[:error] = err
+      flash[:danger] = err
     end
     redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
   end

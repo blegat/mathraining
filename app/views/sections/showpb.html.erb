@@ -11,9 +11,9 @@
 
 <% if !signed_in? || !current_user.sk.admin? %>
 <center>
-<ul class="nav nav-tabs nav-justified" role="tablist">
-  <li class="<%= "active" if r == 0 %>" style="width:50%;"><%= link_to "Tous les problèmes", pb_sections_path(@section, :r => 0) %></li>
-  <li class="<%= "active" if r == 1 %>" style="width:50%;"><%= link_to "Problèmes non-résolus", pb_sections_path(@section, :r => 1) %></li>
+<ul class="nav nav-tabs nav-justified">
+  <li class="<%= "active" if r == 0 %>"><%= link_to "Tous les problèmes", pb_sections_path(@section, :r => 0) %></li>
+  <li class="<%= "active" if r == 1 %>"><%= link_to "Problèmes non-résolus", pb_sections_path(@section, :r => 1) %></li>
 </ul>
 </center>
 <% end %>
@@ -95,6 +95,6 @@
 
 <% if signed_in? && current_user.sk.admin? %>
   <center>
-  <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-large' %>
+  <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>
   </center>
 <% end %>	

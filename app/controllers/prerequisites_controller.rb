@@ -15,11 +15,11 @@ class PrerequisitesController < ApplicationController
     end
     if chapter.online && !prerequisite.sections.empty?
       redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
-        flash: { error: "Vous ne pouvez ajouter un prérequis non fondamental à un chapitre en ligne." } and return
+        flash: { danger: "Vous ne pouvez ajouter un prérequis non fondamental à un chapitre en ligne." } and return
     end
     if chapter.online && !prerequisite.online
       redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
-        flash: { error: "Pour ajouter à un chapitre en ligne un prérequis fondamental, celui-ci doit être en ligne." } and return
+        flash: { danger: "Pour ajouter à un chapitre en ligne un prérequis fondamental, celui-ci doit être en ligne." } and return
     end
     pre = Prerequisite.new
     pre.chapter = chapter
@@ -48,13 +48,13 @@ class PrerequisitesController < ApplicationController
     end
     if chapter.online && prerequisite.online
       redirect_to graph_prerequisites_path(:fondement => params[:fondement]),
-        flash: { error: "Vous ne pouvez pas supprimer un prérequis non fondamental à un chapitre en ligne." } and return
+        flash: { danger: "Vous ne pouvez pas supprimer un prérequis non fondamental à un chapitre en ligne." } and return
     end
     if chapter.prerequisites.exists?(prerequisite)
       chapter.prerequisites.delete(prerequisite)
       flash[:success] = "Lien supprimé."
     else
-      flash[:error] = "Ce lien n'existe pas."
+      flash[:danger] = "Ce lien n'existe pas."
     end
     redirect_to graph_prerequisites_path(:fondement => params[:fondement])
   end

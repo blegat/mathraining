@@ -44,7 +44,7 @@ class MessagesController < ApplicationController
             j = j+1
           end
           nom = params["file#{k}".to_sym].original_filename
-          flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           render 'new' and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
@@ -62,7 +62,7 @@ class MessagesController < ApplicationController
         j = j+1
       end
 
-      flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+      flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
       render 'new' and return
     end
 
@@ -73,7 +73,7 @@ class MessagesController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      flash[:success] = "Message ajouté. "
+      flash[:success] = "Votre message a bien été posté."
 
       @subject.following_users.each do |u|
         if u != current_user
@@ -147,7 +147,7 @@ class MessagesController < ApplicationController
             end
             @message.reload
             nom = params["file#{k}".to_sym].original_filename
-            flash[:error] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+            flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
             render 'edit' and return
           end
           totalsize = totalsize + attach[i-1].file_file_size
@@ -165,11 +165,11 @@ class MessagesController < ApplicationController
           j = j+1
         end
         @message.reload
-        flash[:error] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+        flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
         render 'edit' and return
       end
 
-      flash[:success] = "Message modifié."
+      flash[:success] = "Votre message a bien été modifié."
       tot = @message.subject.messages.where("id <= ?", @message.id).count
       page = [0,((tot-1)/10).floor].max + 1
 

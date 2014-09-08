@@ -47,7 +47,7 @@ class SubmissionsController < ApplicationController
           nom = params["file#{k}".to_sym].original_filename
           session[:ancientexte] = params[:submission][:content]
           redirect_to problem_path(@problem, :sub => 0, :r => r),
-            flash: {error: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
+            flash: {danger: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
 
@@ -65,7 +65,7 @@ class SubmissionsController < ApplicationController
       end
       session[:ancientexte] = params[:submission][:content]
       redirect_to problem_path(@problem, :sub => 0, :r => r),
-          flash: {error: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
+          flash: {danger: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
@@ -90,18 +90,22 @@ class SubmissionsController < ApplicationController
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         redirect_to problem_path(@problem, :sub => 0, :r => r),
-          flash: { error: "Votre soumission est vide." }
+          flash: { danger: "Votre soumission est vide." }
       elsif params[:submission][:content].size > 8000
         redirect_to problem_path(@problem, :sub => 0, :r => r),
-          flash: { error: "Votre soumission doit faire moins de 8000 caractères." }
+          flash: { danger: "Votre soumission doit faire moins de 8000 caractères." }
       else
         redirect_to problem_path(@problem, :sub => 0, :r => r),
-          flash: { error: "Une erreur est survenue." }
+          flash: { danger: "Une erreur est survenue." }
       end
     end
   end
 
   def un_read(read, msg)
+    r = 0
+    if(params.has_key?:r)
+      r = params[:r].to_i
+    end
     @submission = Submission.find(params[:submission_id])
     if @submission
       following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
@@ -109,10 +113,22 @@ class SubmissionsController < ApplicationController
         following.read = read
         if following.save
           redirect_to problem_path(@problem, :sub => @submission, :r => r),
-            flash: { success: "Soumission marquée comme #{msg}" }
+            flash: { success: "Soumission marquée comme #{msg}." }
         else
           redirect_to problem_path(@problem, :sub => @submission, :r => r),
-            flash: { error: "Un problème est apparu" }
+            flash: { danger: "Un problème est apparu." }
+        end
+      elsif !read
+        following = Following.new
+        following.user = current_user.sk
+        following.submission = @submission
+        following.read = read
+        if following.save
+          redirect_to problem_path(@problem, :sub => @submission, :r => r),
+            flash: { success: "Soumission marquée comme #{msg}." }
+        else
+          redirect_to problem_path(@problem, :sub => @submission, :r => r),
+            flash: { danger: "Un problème est apparu." }
         end
       else
         redirect_to root_path

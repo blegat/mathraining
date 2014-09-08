@@ -17,8 +17,7 @@ Ce champ ne sera visible <u>que par les autres administrateurs</u>. Son but est 
 
 <%= form_for(@problem, url: problem_update_explanation_path) do |f| %>
   <%= render 'form_explanation', f: f %>
-  <br />
-  <%= f.submit "Modifier", class: "btn btn-large btn-primary" %>
+  <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
 <% end %>
 
 <script>

@@ -13,11 +13,11 @@ class SessionsController < ApplicationController
         sign_in user
         redirect_to(:back)
       else
-        flash[:error] = 'Vous devez activer votre compte via le mail qui vous a été envoyé.'
+        flash[:danger] = 'Vous devez activer votre compte via le mail qui vous a été envoyé.'
         redirect_to(:back)
       end
     else
-      flash[:error] = 'Email ou mot de passe invalide.'
+      flash[:danger] = 'Email ou mot de passe invalide.'
       redirect_to(:back)
     end
   end

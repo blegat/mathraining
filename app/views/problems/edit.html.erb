@@ -7,15 +7,10 @@
 Modifier le problème
 </h1>
 
-<div class="row">
-  <div class="span12">
     <%= form_for(@problem) do |f| %>
       <%= render 'form_edit', f: f %>
-      <br />
-      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
+      <%= f.submit "Editer", class: "btn btn-lg btn-primary" %>
     <% end %>
-  </div>
-</div>
 
 <script>
 Preview.Init();

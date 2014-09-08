@@ -6,97 +6,147 @@
 
 <div class="noprint">
 
-<header class="navbar navbar-fixed-top">
-<!--<header class="navbar navbar-fixed-top navbar-inverse">-->
-<!-- navbar-inverse make it black -->
 
-<div class="navbar-inner">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
-
-    <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-    <button class="btn btn-navbar"
-      data-toggle="collapse" data-target=".nav-collapse" type="button">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-
-    <!-- Everything within here will be hidden at 940px or less -->
-    <!-- Adding collapse class to nav make it open by default -->
-    <%= link_to root_path, class: "brand" do %>
-    <span style="color:black;">Math</span><span style="color:rgb(3,109,170);">raining</span>
-    <% end %>
-    <nav class="nav-collapse">
-    <ul class="nav pull-left">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <%= link_to root_path, class: "navbar-brand", style: "font-size:24px;" do %>
+          <span style="color:black;">Math</span><span style="color:rgb(3,109,170);">raining</span>
+          <% end %>
+        </div>
+        <div class="navbar-collapse collapse">
+        
+    
       <% if signed_in? and current_user.sk.admin? %>
-        <% notifications_new = current_user.sk.notifications_new.count %>
-        <% notifications_update = current_user.sk.notifications_update.count %>
-        <% if notifications_new != 0 %>
-          <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
-        <% else %>
-          <%= link_to "0", notifications_new_path, class: "btn btn" %>
-        <% end %>
-        <% if notifications_update != 0 %>
-          <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
-        <% else %>
-          <%= link_to "0", notifications_update_path, class: "btn btn" %>
-        <% end %>
-      <% end %>
-      <% if signed_in? && !current_user.sk.admin? %>
-        <% noti = current_user.sk.notifs.count %>
-        <% if noti != 0 %>
-          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-success" %>
-        <% end %>
-      <% end %>
-    </ul>
-    
-    <% if signed_in? and current_user.sk.root? %>
+      
+      <form class="navbar-form navbar-left hidden-xs hidden-sm" role="search">
+      
+              <% notifications_new = current_user.sk.notifications_new.count %>
+              <% notifications_update = current_user.sk.notifications_update.count %>
+              <% if notifications_new != 0 %>
+                <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
+              <% else %>
+                <%= link_to "0", notifications_new_path, class: "btn btn-default btn-grey" %>
+              <% end %>
+              <% if notifications_update != 0 %>
+                <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
+              <% else %>
+                <%= link_to "0", notifications_update_path, class: "btn btn-default btn-grey" %>
+              <% end %>
+            
+          
+    <% if current_user.sk.root? %>
       <% total = 0 %>
-      <% Submissionfile.all.each do |f| %>
+      <% Submissionfile.all.to_a.each do |f| %>
         <% total = total + f.file_file_size %>
       <% end %>
-      <% Correctionfile.all.each do |f| %>
+      <% Correctionfile.all.to_a.each do |f| %>
         <% total = total + f.file_file_size %>
       <% end %>
-      <% Messagefile.all.each do |f| %>
+      <% Messagefile.all.to_a.each do |f| %>
         <% total = total + f.file_file_size %>
       <% end %>
-      <% Subjectfile.all.each do |f| %>
+      <% Subjectfile.all.to_a.each do |f| %>
         <% total = total + f.file_file_size %>
       <% end %>
-      <ul class="nav pull-left" style="padding-left:15px;">
         <% if total < 1000000 %>
-          <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn" %>
+          <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:25px;" %>
         <% else %>
-          <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn" %>
+          <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:25px;" %>
         <% end %>
-      </ul>
     <% end %>
     
-    <ul class="nav pull-right">
-      <li><%= link_to "Accueil", root_path %></li>
-      
-      
-        <% if !signed_in? || current_user.sk.see_forum %>
-          <li><%= link_to "Forum", subjects_path %></li>
+    </form>
+    
+    <% end %>
+    
+    
+    <% if signed_in? && !current_user.sk.admin? %>
+      <% noti = current_user.sk.notifs.count %>
+      <% if noti != 0 %>
+        <form class="navbar-form navbar-left" role="search">
+        <%= link_to "#{noti}", notifs_show_path, class: "btn btn-success", style:"margin-left:10px;" %>
+        </form>
+      <% end %>
+    <% end %>
+    
+          
+        <ul class="nav navbar-nav navbar-right">
+        
+    <% if signed_in? and current_user.sk.admin? %>
+        
+        <li id="fat-menu" class="dropdown visible-xs visible-sm">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          ...
+        </a>
+        <ul class="dropdown-menu">
+          <li style="text-align:center; padding:5px;">
+          <form class="form-inline" role="search">
+          
+              <% notifications_new = current_user.sk.notifications_new.count %>
+              <% notifications_update = current_user.sk.notifications_update.count %>
+              <% if notifications_new != 0 %>
+                <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
+              <% else %>
+                <%= link_to "0", notifications_new_path, class: "btn btn-default btn-grey" %>
+              <% end %>
+              <% if notifications_update != 0 %>
+                <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
+              <% else %>
+                <%= link_to "0", notifications_update_path, class: "btn btn-default btn-grey" %>
+              <% end %>
+            
+            </form>
+            
+            </li>
+            <li style="text-align:center; padding:5px;">
+    <form class="form-inline" role="search">
+    <% if current_user.sk.root? %>
+      <% total = 0 %>
+      <% Submissionfile.all.to_a.each do |f| %>
+        <% total = total + f.file_file_size %>
+      <% end %>
+      <% Correctionfile.all.to_a.each do |f| %>
+        <% total = total + f.file_file_size %>
+      <% end %>
+      <% Messagefile.all.to_a.each do |f| %>
+        <% total = total + f.file_file_size %>
+      <% end %>
+      <% Subjectfile.all.to_a.each do |f| %>
+        <% total = total + f.file_file_size %>
+      <% end %>
+        <% if total < 1000000 %>
+          <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey" %>
         <% else %>
-          <li style="font-weight:bold;"><%= link_to "- Forum -", subjects_path %></li>
+          <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn-default btn-grey" %>
         <% end %>
-        
-        
+    <% end %>
+   </form>
+             </li>
+             </ul>
+             </li>
+             
+   <% end %>
+
         <li id="fat-menu" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           Cours
           <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-          <% Section.all.each do |f| %>
+          <% Section.all.to_a.each do |f| %>
             <% if f.fondation %>
               <li><%= link_to f.name, f %></li>
             <% end %>
           <% end %>
           <li class="divider"></li>
-          <% Section.order(:id).all.each do |f| %>
+          <% Section.order(:id).to_a.each do |f| %>
             <% if !f.fondation %>
               <li><%= link_to f.name, f %></li>
             <% end %>
@@ -115,7 +165,7 @@
           <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-          <% Section.order(:id).all.each do |f| %>
+          <% Section.order(:id).to_a.each do |f| %>
             <% if !f.fondation %>
               <li><%= link_to f.name, pb_sections_path(f) %></li>
             <% end %>
@@ -123,6 +173,11 @@
         </ul>
         </li>
         
+        <% if !signed_in? || current_user.sk.see_forum %>
+          <li><%= link_to "Forum", subjects_path %></li>
+        <% else %>
+          <li style="font-weight:bold;"><%= link_to "- Forum -", subjects_path %></li>
+        <% end %>
         
         <li><%= link_to "Scores", users_path %></li>
         
@@ -130,9 +185,10 @@
         
         <li id="fat-menu" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <span style="font-weight:bold; color:<%= current_user.level[:color] %>"><%= current_user.name %></span>
           <% if current_user.other %>
             (<span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.name %></span>)
+          <% else %>
+            <span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.name %></span>
           <% end %>
           <b class="caret"></b>
         </a>
@@ -155,16 +211,15 @@
         <li class="dropdown">
           <a class="dropdown-toggle" href="#" data-toggle="dropdown">Connexion</a>
           <ul class="dropdown-menu">
-            <li style="padding:15px; padding-bottom:0px;">
+            <li style="padding:15px; padding-bottom:5px; padding-top:10px;">
             <%= form_for(:session, url: sessions_path) do |f| %>
-			<%= f.email_field :email, :placeholder => "Email" %>
+			<%= f.email_field :email, :placeholder => "Email", :class => "form-control", :style => "width:200px;" %>
 
-			<%= f.password_field :password, :placeholder => "Mot de passe" %>
+			<%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control", :style => "margin-top:10px; width:200px;" %>
 
-            <br />
-			<%= f.submit "Connexion", class: "btn btn btn-primary", style: "width:100%; margin-bottom:15px;" %>
+			<%= f.submit "Connexion", class: "btn btn-default btn-primary", style: "width:200px; margin-top:10px; margin-bottom:15px;" %>
 			<br />
-            <%= link_to "Mot de passe oublié?", forgot_password_path %>
+            <%= link_to "J'ai oublié mon mot de passe", forgot_password_path %>
 		    <% end %>
 		    </li>
 		    <li class="divider"></li>
@@ -173,9 +228,10 @@
         </li>
         <% end %>
     </ul>
-    </nav>
-  </div>
-</div>
-</header>
-
-</div>
+    
+    
+    
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+</div>	

@@ -15,9 +15,9 @@
 class Chapter < ActiveRecord::Base
   attr_accessible :description, :level, :name, :online
   belongs_to :section
-  has_and_belongs_to_many :users, :uniq => true
+  has_and_belongs_to_many :users, -> { uniq }
   
-  has_and_belongs_to_many :problems, :uniq => true
+  has_and_belongs_to_many :problems, -> { uniq }
   
   has_many :theories
   has_many :exercises

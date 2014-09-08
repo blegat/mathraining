@@ -6,9 +6,9 @@
 
 
 
-<% points = Point.order("rating DESC").where("rating != 0").all %>
+<% points = Point.order("rating DESC").where("rating != 0").to_a %>
 
-<% allsec = Section.order(:id).where(:fondation => false).all %>
+<% allsec = Section.order(:id).where(:fondation => false).to_a %>
 
   <% rank = 1 %>
   <% points.each do |p| %>
@@ -22,7 +22,7 @@
     <% end %>
 
     <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
-    <td><center><%= rank %></center></td>
+    <td><center><%= rank %>. </center></td>
     <td><b> <%= link_to user.name, user, {:style => "color:#{user.level.color}" } %> </b></td>
 
     <% rating = p.rating %>
@@ -65,7 +65,7 @@
 
 <% if signed_in? && current_user.sk.root %>
 <center>
-<br /><%= button_to "Modifier les niveaux et couleurs", colors_path, method: :get, class: 'btn btn' %>
+<br /><%= button_to "Modifier les niveaux et couleurs", colors_path, method: :get, class: 'btn btn-default btn-grey' %><br/>
 
 <%= link_to 'Recalculer tous les ratings', recompute_scores_path, data: { confirm: "Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)."}, :style => "color:red;" %>
 <br/>
@@ -77,7 +77,7 @@
 <h2>Utilisateurs non classés</h2>
 
 <% rank = 1 %>
-<% User.order(:last_name).all.each do |u| %>
+<% User.order(:last_name).to_a.each do |u| %>
   <% if u.point.rating == 0 && !u.admin %>
     <% if u.email_confirm %>
       <b> <%= link_to u.name, u, {:style => "color:#{u.level.color}" } %> </b><br/>

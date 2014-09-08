@@ -39,18 +39,18 @@
 
 <% liste.push(["Afficher tous les sujets", 0]) %>
 
-<% Section.where(:fondation => true).all.each do |s| %>
+<% Section.where(:fondation => true).to_a.each do |s| %>
     <% liste.push([s.name, 1000*s.id]) %>
-    <% s.chapters.find(:all, :order => "name").each do |c| %>
+    <% s.chapters.order(:name).to_a.each do |c| %>
       <% if c.online || (signed_in? && current_user.sk.admin?) %>
         <% liste.push(["- " + c.name, c.id]) %>
       <% end %>
     <% end %>
 <% end %>
 
-<% Section.where(:fondation => false).all.each do |s| %>
+<% Section.where(:fondation => false).to_a.each do |s| %>
     <% liste.push([s.name, 1000*s.id]) %>
-    <% s.chapters.find(:all, :order => "name").each do |c| %>
+    <% s.chapters.order(:name).to_a.each do |c| %>
       <% if c.online || (signed_in? && current_user.sk.admin) %>
         <% liste.push(["- " + c.name, c.id]) %>
       <% end %>
@@ -58,15 +58,15 @@
 <% end %>
 
 
-<form action="" method="get" name="research">
+<form action="" method="get" class="form-inline" name="research">
   N'afficher que les sujets relatifs à la section ou au chapitre : 
-  <%= select_tag :q, options_for_select(liste, q), :style => "margin-top:5px;", :onchange => ("javascript: document.research.submit();") %>
+  <%= select_tag :q, options_for_select(liste, q), :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
 </form>
 
 <% if @importants.size > 0 %>
 
 <table class="table table-bordered" style="margin-top:20px;">
-  <tr class="error" style="font-weight:bold;">
+  <tr class="danger" style="font-weight:bold;">
     <td style="text-align:center;">Sujet important</td>
     <td style="width:180px; text-align:center;">Auteur</td>
     <td style="width:50px; text-align:center;">Rép.</td>
@@ -112,14 +112,14 @@
 
         <% datenow = Time.zone.now %>
 
-      <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
+      <td style="width:170px; text-align:center; font-weight:bold; vertical-align:middle;">
         <% if qui.admin %>
           <%= qui.name %>
         <% else %>
           <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="width:180px; text-align:center; vertical-align:middle;">
+      <td style="width:190px; text-align:center; vertical-align:middle;">
         <% tot = s.messages.count %>
         <% page = [0,((tot-1)/10).floor].max + 1 %>
 
@@ -184,14 +184,14 @@
 
         <% datenow = Time.zone.now %>
 
-      <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
+      <td style="width:170px; text-align:center; font-weight:bold; vertical-align:middle;">
         <% if qui.admin %>
           <%= qui.name %>
         <% else %>
           <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="width:180px; text-align:center; vertical-align:middle;">
+      <td style="width:190px; text-align:center; vertical-align:middle;">
         <% tot = s.messages.count %>
         <% page = [0,((tot-1)/10).floor].max + 1 %>
         
@@ -207,17 +207,17 @@
 
 <% end %>
 
-<center><%= will_paginate @subjectsfalse %></center>
+<center><%= will_paginate @subjectsfalse, :style => "margin-top:-10px; margin-bottom:-10px;" %></center>
 
 <% if @subjects.size + @importants.size == 0 %>
-<b>Aucun sujet</b>
+<br/><b>Aucun sujet</b><br/><br/>
 <% end %>
 
 <center>	
   <% if signed_in? %>
-    <%= link_to "Créer un sujet", new_subject_path(:q => q), class: 'btn btn-large' %>
+    <%= link_to "Créer un sujet", new_subject_path(:q => q), class: 'btn btn-lg btn-default btn-grey' %>
   <% else %>
-    <button type=button disabled=true class="btn btn-large">Créer un sujet</button>
+    <button type=button disabled=true class="btn btn-lg btn-default btn-grey">Créer un sujet</button>
   <% end %>
 </center>
 

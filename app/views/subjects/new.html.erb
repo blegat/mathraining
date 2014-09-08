@@ -55,12 +55,11 @@ Créer un sujet</h1>
 
 <%= form_for quoi, :html => { :multipart => true } do |f| %>
   <%= render 'form', f: f %>
-  <br />
   <span id="fooBar"></span>
-  <br/>
+  
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>
-  <%= f.submit "Créer", class: "btn btn-large btn-primary", :disabled => current_user.other %>
+  <%= f.submit "Créer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>
 
 <script>

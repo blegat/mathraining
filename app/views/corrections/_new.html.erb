@@ -46,16 +46,16 @@ function add() {
 
 <h4>Poster un commentaire</h4>
 <%= form_for :correction, url: problem_submission_corrections_path(@problem, @submission, :r => r), :html => { :multipart => true } do |f| %>
+  <div class="form-group">
   <div class="well" id="MathPreview"></div>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "span12", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
+    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
   <% else %>
-    <%= f.text_area :content, :class => "span12", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
+    <%= f.text_area :content, :class => "form-control", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
   <% end %>
-  <br />
+  </div>
   <span id="fooBar"></span>
-  <br/>
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>
   <% if current_user.sk.admin? %>

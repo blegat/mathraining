@@ -23,8 +23,8 @@ function hideStuff(id, text, btn) {
 
 <div>
 <%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>').
-  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn">Cacher l\'indice</a>').
-  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
+  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 </div><br/>
 
 <% if signed_in? && current_user.sk.admin? %>
@@ -37,10 +37,10 @@ function hideStuff(id, text, btn) {
       <%= raw(c.ans) %>
 
       <% if c.ok %>
-        <i class="icon-ok" style="margin-left:10px;"></i>
+        <img style="margin-left:10px;" src="/assets/V.gif"/>
       <% end %>
       <% if !c.ok && f.many_answers %>
-        <i class="icon-remove" style="margin-left:10px;"></i>
+        <img style="margin-left:10px;" src="/assets/X.gif"/>
       <% end %>
       </li>
     <% end %>
@@ -108,7 +108,7 @@ function hideStuff(id, text, btn) {
 
   <% if !f.online && @chapter.online %>
     <center>
-      <%= button_to "Mettre en ligne", qcm_put_online_path(f), method: :get, class: 'btn btn', data: { confirm: "Vous ne pourrez plus modifier la réponse de ce qcm par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
+      <%= button_to "Mettre en ligne", qcm_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de ce qcm par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
     </center> <br/>
   <% end %>
 
@@ -137,10 +137,10 @@ function hideStuff(id, text, btn) {
           <%= raw(c.ans) %>
 
           <% if c.ok %>
-            <i class="icon-ok" style="margin-left:10px;"></i>
+            <img style="margin-left:10px;" src="/assets/V.gif"/>
           <% end %>
           <% if !c.ok && f.many_answers %>
-            <i class="icon-remove" style="margin-left:10px;"></i>
+            <img style="margin-left:10px;" src="/assets/X.gif"/>
           <% end %>
           </li>
         <% end %>
@@ -163,10 +163,10 @@ function hideStuff(id, text, btn) {
           <b>Plusieurs réponses sont possibles.</b><br/><br/>
           <% f.choices.order(:id).each do |c| %>
             <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-            <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+            <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
               <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if current_user.other %>>
               <%= raw(c.ans) %>
-            </label>
+            </label><br/>
           <% end %>
           <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
         <% end %>
@@ -175,10 +175,10 @@ function hideStuff(id, text, btn) {
         <%= form_for sol do |x| %>
           <input type="hidden" name="qcm_id" value="<%= f.id %>" />
           <% f.choices.order(:id).each do |c| %>
-            <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+            <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
               <input type="radio" name="ans" value="<%= c.id %>" <%= "checked" if c.id == choice.id %> <%= "disabled=\"true\"" if current_user.other %>>
               <%= raw(c.ans) %>
-            </label>
+            </label><br/>
           <% end %>
           <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
         <% end %>
@@ -194,27 +194,29 @@ function hideStuff(id, text, btn) {
 
     <% if f.many_answers %>
       <b>Plusieurs réponses sont possibles.</b><br/><br/>
-      <form action="<%= solvedqcms_path %>" method="post">
+      <% sol = Solvedqcm.new %>
+      <%= form_for sol do |x| %>
         <input type="hidden" name="qcm_id" value="<%= f.id %>" />
         <% f.choices.order(:id).each do |c| %>
-          <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+          <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
             <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "disabled=\"true\"" if current_user.other %>>
             <%= raw(c.ans) %>
-          </label>
+          </label><br/>
         <% end %>
         <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
-      </form>
+      <% end %>
     <% else %>
-      <form action="<%= solvedqcms_path %>" method="post">
+      <% sol = Solvedqcm.new %>
+      <%= form_for sol do |x| %>
         <input type="hidden" name="qcm_id" value="<%= f.id %>" />
         <% f.choices.order(:id).each do |c| %>
-          <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+          <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
             <input type="radio" name="ans" value="<%= c.id %>" <%= "disabled=\"true\"" if current_user.other %>>
             <%= raw(c.ans) %>
-          </label>
+          </label><br/>
         <% end %>
         <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
-      </form>
+      <% end %>
 
     <% end %>
 
@@ -229,24 +231,25 @@ function hideStuff(id, text, btn) {
     <form action="<%= solvedqcms_path %>" method="post">
       <input type="hidden" name="qcm_id" value="<%= f.id %>" />
       <% f.choices.order(:id).each do |c| %>
-        <label class="checkbox" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-          <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "disabled=\"true\"" if !signed_in? || current_user.other %>>
+        <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+          <input type="checkbox" name="ans[<%= c.id %>]" value="ok" disabled="true">
           <%= raw(c.ans) %>
-        </label>
+        </label><br/>
       <% end %>
-      <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if !signed_in? || current_user.other %>>Soumettre</button>
+      <br/><button class="btn btn-primary" type="submit" disabled="true">Soumettre</button>
     </form>
   <% else %>
-    <form action="<%= solvedqcms_path %>" method="post">
+    <% sol = Solvedqcm.new %>
+    <%= form_for sol do |x| %>
       <input type="hidden" name="qcm_id" value="<%= f.id %>" />
       <% f.choices.order(:id).each do |c| %>
-        <label class="radio" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-          <input type="radio" name="ans" value="<%= c.id %>" <%= "disabled=\"true\"" if !signed_in? || current_user.other %>>
+        <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+          <input type="radio" name="ans" value="<%= c.id %>" disabled="true">
           <%= raw(c.ans) %>
-        </label>
+        </label><br/>
       <% end %>
-      <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if !signed_in? || current_user.other %>>Soumettre</button>
-    </form>
+      <br/><button class="btn btn-primary" type="submit" disabled="true">Soumettre</button>
+    <% end %>
   <% end %>
   
   <hr style="border-top:1px dashed lightgray;" />

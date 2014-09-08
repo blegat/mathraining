@@ -15,7 +15,7 @@ class ColorsController < ApplicationController
       flash[:success] = "Niveau et couleur ajoutés."
       redirect_to colors_path
     else
-      flash[:error] = "Une erreur est survenue."
+      flash[:danger] = "Une erreur est survenue."
       redirect_to colors_path
     end
   end
@@ -26,7 +26,7 @@ class ColorsController < ApplicationController
       flash[:success] = "Niveau et couleur modifiés."
       redirect_to colors_path
     else
-      flash[:error] = "Une erreur est survenue."
+      flash[:danger] = "Une erreur est survenue."
       redirect_to colors_path
     end
   end

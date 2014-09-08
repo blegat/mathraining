@@ -11,6 +11,21 @@ fr:
         password_confirmation: "Confirmation du mot de passe"
       prerequisite:
         prerequisite: "Prérequis"
+      theory:
+        title: "Titre"
+        content: "Contenu"
+      exercise:
+        statement: "Enoncé"
+        level: "Niveau"
+      qcm:
+        statement: "Enoncé"
+        level: "Niveau"
+      problem:
+        statement: "Enoncé"
+        level: "Niveau"
+      chapter:
+        name: "Titre"
+        level: "Niveau"
   will_paginate:
     previous_label: "Page précédente"
     next_label: "Page suivante"

@@ -1,5 +1,9 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
+<% r = 0 %>
+<% if(params.has_key?:r) %>
+  <% r = params[:r].to_i %>
+<% end %>
 
 <% notif = current_user.sk.notifs.where(submission_id: @submission.id) %>
 <% if notif.size > 0 && !current_user.other %>
@@ -10,38 +14,37 @@
 
 <% case @submission.status %>
 <% when 0 %>
-  (en attente de correction)</h3>
+  (en attente de correction)
 <% when 1, 3 %>
-  (erronée)</h3>
+  (erronée)
   <% if !current_user.sk.admin %>
   Vous pouvez tenter de corriger cette solution en postant un commentaire, ou soumettre une nouvelle solution.
   <% end %>
 <% when 2 %>
-  (correcte)</h3>
+  (correcte)
 <% end %>
 
 <% if current_user.sk.admin %>
   <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %>
-  <% unless following.nil? %>
-    <% if following.read %>
-      <%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission) %>
-    <% else %>
-      <%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission) %>
+    <% if (following.nil? || following.read) && @submission.status != 0 %>
+      <%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey", :style => "margin-left:25px;" %>
+    <% elsif @submission.status != 0 %>
+      <%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey", :style => "margin-left:25px;" %>
     <% end %>
-  <% end %>
 <% end %>
 
+</h3>
 
 <table class="table table-bordered" style="margin-top:20px;">
 <tr class="info">
-<td style="font-size:20px; font-weight:bold; padding:15px; border-right:none;">
+<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if @submission.user.admin %>
   <%= @submission.user.name %>
 <% else %>
   <%= link_to @submission.user.name, @submission.user, {:style => "color:#{@submission.user.level[:color]}" } %>
 <% end %>
 </td>
-<td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
+<td style="vertical-align:middle; text-align:right; font-size:18px; padding-right:15px; border-left:none;">
 <% date = @submission.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>

@@ -61,27 +61,28 @@ Modifier le sujet
 
 <%= form_for quoi, :html => { :multipart => true } do |f| %>
   <%= render 'form', f: f %>
-  <br />
   <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size > 0 %>
-    <b>Pièces jointes (décochez pour supprimer) :</b>
+    <b>Pièces jointes (décochez pour supprimer)</b><br/>
     <% @subject.subjectfiles.each do |sf| %>
-      <label class="checkbox">
-        <%= link_to sf.file_file_name, download_subjectfile_path(sf) %>
+      <label class="checkbox-inline">
         <input type="checkbox" name="prevfile<%= sf.id %>" value="1" checked="checked" />
+        <%= link_to sf.file_file_name, download_subjectfile_path(sf) %>
       </label>
+      <br/>
     <% end %>
     <% @subject.fakesubjectfiles.each do |sf| %>
-      <label class="checkbox">
-         <span style="color:#0000BB;"><%= sf.file_file_name %> (désactivée)</span>
+      <label class="checkbox-inline">
         <input type="checkbox" name="prevfakefile<%= sf.id %>" value="1" checked="checked" />
+        <span style="color:#0000BB;"><%= sf.file_file_name %> (désactivée)</span>
       </label>
+      <br/>
     <% end %>
+    <br/>
   <% end %>
   <span id="fooBar"></span>
-  <br/>
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>
-  <%= f.submit "Editer", class: "btn btn-large btn-primary", :disabled => current_user.other %>
+  <%= f.submit "Editer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>
 
 <script>

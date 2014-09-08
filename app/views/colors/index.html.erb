@@ -4,17 +4,17 @@
 <% i = 1 %>
 
 <table>
-<tr><th></th><th>Seuil</th><th>Nom</th><th>Pluriel</th><th>Couleur</th><th>Fond</th><th></th><th></th></tr>
+<tr><th></th><th style="padding:5px;">Seuil</th><th style="padding:5px;">Nom</th><th style="padding:5px;">Pluriel</th><th style="padding:5px;">Couleur</th><th style="padding:5px;">Fond</th><th></th><th></th></tr>
 <% Color.order(:pt).each do |c| %>
   <tr>
     <td style="padding-right:10px;"><%= i %><% i = i+1 %>.</td>
   <%= form_for(c) do |f| %>
-    <td><%= f.number_field :pt, :style => "width:50px; margin:0px;"%></td>
-    <td><%= f.text_field :name, :style => "width:150px; margin:0px;"%></td>
-    <td><%= f.text_field :plural_name, :style => "width:150px; margin:0px;"%></td>
-    <td><%= f.text_field :color, :style => "width:80px; margin:0px; color:#{c.color}; font-weight:bold;" %></td>
-    <td><%= f.text_field :font_color, :style => "width:80px; margin:0px; background-color:#{c.font_color};" %></td>
-    <td><%= f.submit "Editer", class: "btn btn-primary", onclick: "return confirm('Etes-vous sûr de vouloir éditer ce niveau?')" %></td>
+    <td><%= f.number_field :pt, :class => "form-control", :style => "width:70px; margin:0px;"%></td>
+    <td><%= f.text_field :name, :class => "form-control", :style => "width:150px; margin:0px;"%></td>
+    <td><%= f.text_field :plural_name, :class => "form-control", :style => "width:150px; margin:0px;"%></td>
+    <td><%= f.text_field :color, :class => "form-control", :style => "width:90px; margin:0px; color:#{c.color}; font-weight:bold;" %></td>
+    <td><%= f.text_field :font_color, :class => "form-control", :style => "width:90px; margin:0px; background-color:#{c.font_color};" %></td>
+    <td><%= f.submit "Editer", class: "btn btn-primary", style: "margin-left:10px;", onclick: "return confirm('Etes-vous sûr de vouloir éditer ce niveau?')" %></td>
   <% end %>
   <td><%= link_to "Supprimer", c, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce niveau?" } %> </td>
   </tr>
@@ -23,12 +23,12 @@
   <tr>
     <td style="padding-top:10px;"></td>
   <%= form_for(:color) do |f| %>
-    <td style="padding-top:10px;"><%= f.number_field :pt, :style => "width:50px; margin:0px;"%></td>
-    <td style="padding-top:10px;"><%= f.text_field :name, :style => "width:150px; margin:0px;"%></td>
-    <td style="padding-top:10px;"><%= f.text_field :plural_name, :style => "width:150px; margin:0px;"%></td>
-    <td style="padding-top:10px;"><%= f.text_field :color, :style => "width:80px; margin:0px;" %></td>
-    <td style="padding-top:10px;"><%= f.text_field :font_color, :style => "width:80px; margin:0px;" %></td>
-    <td style="padding-top:10px;"><%= f.submit "Ajouter", class: "btn btn-primary",  onclick: "return confirm('Etes-vous sûr de vouloir ajouter ce niveau?')" %></td>
+    <td style="padding-top:10px;"><%= f.number_field :pt, :class => "form-control", :style => "width:70px; margin:0px;"%></td>
+    <td style="padding-top:10px;"><%= f.text_field :name, :class => "form-control", :style => "width:150px; margin:0px;"%></td>
+    <td style="padding-top:10px;"><%= f.text_field :plural_name, :class => "form-control", :style => "width:150px; margin:0px;"%></td>
+    <td style="padding-top:10px;"><%= f.text_field :color, :class => "form-control", :style => "width:90px; margin:0px;" %></td>
+    <td style="padding-top:10px;"><%= f.text_field :font_color, :class => "form-control", :style => "width:90px; margin:0px;" %></td>
+    <td style="padding-top:10px;"><%= f.submit "Ajouter", style: "margin-left:10px;", class: "btn btn-primary",  onclick: "return confirm('Etes-vous sûr de vouloir ajouter ce niveau?')" %></td>
   <% end %>
   </tr>
 

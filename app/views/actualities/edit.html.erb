@@ -1,10 +1,12 @@
 <% provide(:title, 'Modifier une actualité') %>
-<h1>Modifier une actualité</h1>
+<h1>
+<span style="font-size:16px;"><%= link_to "Accueil", root_path %> ></span>
+Modifier une actualité
+</h1>
 
     <%= form_for(@actuality) do |f| %>
       <%= render 'form', f: f %>
-      <br />
-      <%= f.submit "Editer", class: "btn btn-large btn-primary" %>
+      <%= f.submit "Editer", class: "btn btn-lg btn-primary" %>
     <% end %>
 <br/>
 <center><%= link_to "Retour à l'accueil", root_path %></center>

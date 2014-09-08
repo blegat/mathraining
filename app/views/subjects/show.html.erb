@@ -7,7 +7,7 @@
   <% q = params[:q].to_i %>
 <% end %>
 
-<h1>
+<h1 style="margin-bottom:15px;">
 <table>
 <tr>
 <td nowrap style="vertical-align:top;">
@@ -28,23 +28,23 @@
 
 
 <% if @subject.admin? %>
-<br/><center><span class="label label-warning">Sujet réservé aux administrateurs</span></center>
+<br/><center><span class="label label-warning">Sujet réservé aux administrateurs</span></center><br/>
 <% end %>
 
-<center><%= will_paginate @messages %></center>
+<center><%= will_paginate @messages, :style => "margin:-10px;" %></center>
 
 <% if ((!params.has_key?:page) || (params[:page] == '1')) %>
 
-<table class="table table-bordered" style="margin-top:20px;">
+<table class="table table-bordered">
 <tr class="info">
-<td style="font-size:20px; font-weight:bold; padding:15px; border-right:none;">
+<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if @subject.user.admin %>
   <%= @subject.user.name %>
 <% else %>
   <%= link_to @subject.user.name, @subject.user, {:style => "color:#{@subject.user.level[:color]}" } %>
 <% end %>
 </td>
-<td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
+<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = @subject.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
@@ -65,7 +65,7 @@
   <% end %>
   <% @subject.subjectfiles.each do |f| %>
     <%= link_to f.file_file_name, download_subjectfile_path(f) %>
-    <% if current_user.sk.root? %>
+    <% if signed_in? && current_user.sk.root? %>
        - <%= link_to 'Supprimer le contenu', subjectfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
     <% end %>
     <br/>
@@ -96,14 +96,14 @@
 <a name="<%= m.id %>"></a>
 <table class="table table-bordered" style="margin-top:20px;">
 <tr class="info">
-<td style="font-size:20px; font-weight:bold; padding:15px; border-right:none;">
+<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if m.user.admin %>
   <%= m.user.name %>
 <% else %>
   <%= link_to m.user.name, m.user, {:style => "color:#{m.user.level[:color]}" } %>
 <% end %>
 </td>
-<td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
+<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = m.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
@@ -150,24 +150,24 @@
 </table>
 <% end %>
 
-<center><%= will_paginate @messages %></center>
+<center><%= will_paginate @messages, :style => "margin:-10px;" %></center>
 
 <center>
 <% if signed_in? %>
-  <%= link_to "Répondre", new_subject_message_path(@subject, :q => q), class: 'btn btn-large' %>
+  <%= link_to "Répondre", new_subject_message_path(@subject, :q => q), class: 'btn btn-lg btn-default btn-grey' %>
 <% else %>
-  <button type=button disabled=true class="btn btn-large">Répondre</button>
+  <button type=button disabled=true class="btn btn-lg btn-default btn-grey">Répondre</button>
 <% end %>
 </center>
 
 <hr style="border-top:1px lightgray dashed;" />
 
 <% if !signed_in? %>
-  <center><button type=button disabled=true class="btn btn">Suivre ce sujet</button></center>
+  <center><button type=button disabled=true class="btn btn-default btn-grey">Suivre ce sujet</button></center>
 <% elsif !current_user.followed_subjects.exists?(@subject) %>
-  <center><%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), data: { confirm: "Vous recevrez un email à chaque fois qu'un nouveau message sera posté sur ce sujet."}, class: 'btn btn' %></center>
+  <center><%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), data: { confirm: "Vous recevrez un email à chaque fois qu'un nouveau message sera posté sur ce sujet."}, class: 'btn btn-default btn-grey' %></center>
 <% else %>
-  <center><%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn' %></center>
+  <center><%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey' %></center>
 <% end %>
 
 <a name="bottom"></a>

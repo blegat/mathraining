@@ -12,16 +12,16 @@ Aucun commentaire.<br/><br/>
   <% if correction.user == @submission.user %>
     <tr class="info">
   <% else %>
-    <tr class="error">
+    <tr class="danger">
   <% end %>
-  <td style="font-size:20px; font-weight:bold; padding:15px; border-right:none;">
+  <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
   <% if correction.user.admin %>
     <%= correction.user.name %>
   <% else %>
     <%= link_to correction.user.name, correction.user, {:style => "color:#{correction.user.level[:color]}" } %>
   <% end %>
   </td>
-  <td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
+  <td style="vertical-align:middle; text-align:right; font-size:18px; padding-right:15px; border-left:none;">
   <% date = correction.created_at.in_time_zone %>
   <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
   </td>

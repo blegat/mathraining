@@ -22,8 +22,8 @@ Modifier une explication
 
 <h3>Enoncé</h3>
 <%= raw(@qcm.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>').
-  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn">Cacher l\'indice</a>').
-  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
+  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 
 <br/><br/>
 <h3>Réponse</h3>
@@ -34,10 +34,10 @@ Modifier une explication
     <%= raw(c.ans) %>
 
     <% if c.ok %>
-      <i class="icon-ok" style="margin-left:10px;"></i>
+      <img style="margin-left:10px;" src="/assets/V.gif"/>
     <% end %>
     <% if !c.ok && @qcm.many_answers %>
-      <i class="icon-remove" style="margin-left:10px;"></i>
+      <img style="margin-left:10px;" src="/assets/X.gif"/>
     <% end %>
     </li>
   <% end %>
@@ -56,8 +56,7 @@ Modifier une explication
 
 <%= form_for(@qcm, url: qcm_update_explanation_path) do |f| %>
   <%= render 'form_explanation', f: f %>
-  <br />
-  <%= f.submit "Modifier", class: "btn btn-large btn-primary" %>
+  <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
 <% end %>
 
 <script>

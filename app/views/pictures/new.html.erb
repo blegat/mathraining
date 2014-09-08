@@ -14,6 +14,6 @@ Votre image doit respecter les conditions suivantes :<br/><br/>
   <%= form.hidden_field :user_id, value: current_user.sk.id %>
   <%= form.label "Choisissez votre image :" %>
   <%= form.file_field :image %>
-  <br/><br/>
+  <br/>
   <%= form.submit "Uploader", class: "btn btn-primary" %>
 <% end %>

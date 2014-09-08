@@ -7,16 +7,11 @@
 Créer un exercice
 </h1>
 
-<div class="row">
-  <div class="span12">
     <%= form_for(@exercise, url: chapter_exercises_path) do |f| %>
       <%= render 'form', f: f %>
-      <br />
-      <%= f.submit "Créer", class: "btn btn-large btn-primary" %>
+      <%= f.submit "Créer", class: "btn btn-lg btn-primary" %>
     <% end %>
-  </div>
-</div>
-
+    
 <script>
 Preview.Init();
 Preview.Update();

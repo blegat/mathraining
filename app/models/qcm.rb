@@ -25,7 +25,7 @@ class Qcm < ActiveRecord::Base
     uniqueness: { scope: :chapter_id },
     numericality: { greater_than_or_equal_to: 0 }
     
-  validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 4 }
+  validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 5 }
     
   def value
     return 3*level

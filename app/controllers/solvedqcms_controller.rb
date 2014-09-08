@@ -62,7 +62,7 @@ class SolvedqcmsController < ApplicationController
 
     else
       if !params[:ans]
-        flash[:error] = "Veuillez cocher une réponse."
+        flash[:danger] = "Veuillez cocher une réponse."
         redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
       end
 
@@ -150,7 +150,7 @@ class SolvedqcmsController < ApplicationController
 
     else
       if !params[:ans]
-        flash[:error] = "Veuillez cocher une réponse."
+        flash[:danger] = "Veuillez cocher une réponse."
         redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
       end
 

@@ -63,12 +63,10 @@ Répondre
 
 <%= form_for quoi, :html => { :multipart => true } do |f| %>
   <%= render 'form', f: f %>
-  <br />
   <span id="fooBar"></span>
-  <br/>
   <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
   <br /><br/>
-  <%= f.submit "Poster", class: "btn btn-large btn-primary", :disabled => current_user.other %>
+  <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>
 
 <h2>Messages récents</h2>
@@ -79,14 +77,14 @@ Répondre
 
 <table class="table table-bordered" style="margin-top:20px;">
 <tr class="info">
-<td style="font-size:20px; font-weight:bold; padding:15px; border-right:none;">
+<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if m.user.admin %>
   <%= m.user.name %>
 <% else %>
   <%= link_to m.user.name, m.user, {:style => "color:#{m.user.level[:color]}" } %>
 <% end %>
 </td>
-<td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
+<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = m.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
@@ -110,14 +108,14 @@ Répondre
 
 <table class="table table-bordered" style="margin-top:20px;">
 <tr class="info">
-<td style="font-size:20px; font-weight:bold; padding:15px; border-right:none;">
+<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if @subject.user.admin %>
   <%= @subject.user.name %>
 <% else %>
   <%= link_to @subject.user.name, @subject.user, {:style => "color:#{@subject.user.level[:color]}" } %>
 <% end %>
 </td>
-<td style="text-align:right; font-size:20px; padding:15px; border-left:none;">
+<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = @subject.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
