@@ -3,9 +3,11 @@
 
 <script>
 $(function() {
-  // Fix input element click problem
-  $('.dropdown input').click(function(e) {
-    e.stopPropagation();
+  $('#tf1').click(function(e) {
+    $('#tf1').focus();
+  });
+  $('#tf2').click(function(e) {
+    $('#tf2').focus();
   });
 });
 </script>
@@ -222,9 +224,9 @@ $(function() {
           <ul class="dropdown-menu">
             <li style="padding:15px; padding-bottom:5px; padding-top:10px;">
             <%= form_for(:session, url: sessions_path) do |f| %>
-			<%= f.email_field :email, :placeholder => "Email", :class => "form-control", :style => "width:200px;" %>
+			<%= f.email_field :email, :placeholder => "Email", :class => "form-control", :style => "width:200px;", :id => "tf1" %>
 
-			<%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control", :style => "margin-top:10px; width:200px;" %>
+			<%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control", :style => "margin-top:10px; width:200px;", :id => "tf2" %>
 
 			<%= f.submit "Connexion", class: "btn btn-default btn-primary", style: "width:200px; margin-top:10px; margin-bottom:15px;" %>
 			<br />
