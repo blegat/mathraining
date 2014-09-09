@@ -17,9 +17,6 @@
   (en attente de correction)
 <% when 1, 3 %>
   (erronée)
-  <% if !current_user.sk.admin %>
-  Vous pouvez tenter de corriger cette solution en postant un commentaire, ou soumettre une nouvelle solution.
-  <% end %>
 <% when 2 %>
   (correcte)
 <% end %>
@@ -34,6 +31,10 @@
 <% end %>
 
 </h3>
+
+<% if (@submission.status == 1 || @submission.status == 3) && !current_user.sk.admin %>
+  Vous pouvez tenter de corriger cette solution en postant un commentaire, ou soumettre une nouvelle solution.
+<% end %>
 
 <table class="table table-bordered" style="margin-top:20px;">
 
