@@ -1,6 +1,15 @@
 <%= stylesheet_link_tag 'application', :media => 'screen, projection' %>
 <%= stylesheet_link_tag 'application-print', :media => 'print' %>
 
+<script>
+$(function() {
+  // Fix input element click problem
+  $('.dropdown input').click(function(e) {
+    e.stopPropagation();
+  });
+});
+</script>
+
 <%= favicon_link_tag '/favicon.ico' %>
 
 
