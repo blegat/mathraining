@@ -188,9 +188,9 @@ html>body tbody.scroll {
   
   <% if act.size > 0 %>
 
-    <table class="table table-bordered visible-xs" style="width:406px;">
+    <table class="table table-bordered visible-xs" style="width:356px;">
     <thead class="fixed">
-    <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th></th><th style="width:140px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
+    <tr><th style="width:150px;">Date</th><th style="width:140px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
     </thead>
     <tbody class="scroll">
   <% end %>
@@ -200,7 +200,6 @@ html>body tbody.scroll {
     
     <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
     <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
-    <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
     <td style="width:140px;">
     <% if a[:type] <= 3 %>
       <% if cansee[a[:c_id]] %>

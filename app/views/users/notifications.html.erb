@@ -6,7 +6,12 @@
     Soumissions auxquelles vous participez
   <% end %>
 </h1>
-<%= will_paginate @notifications %>
+
+<center>
+  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+</center>
+
 <div class="row">
 <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9">
 <table class="table table-bordered">
@@ -39,4 +44,9 @@ Commentaire lu
 </table>
 </div>
 </div>
-<%= will_paginate @notifications %>
+
+<center>
+  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+</center>
+

@@ -94,9 +94,11 @@
     <% if !@problem.online %>
       <center>
         <% if !has_pre %>
-          <%= button_to "Mettre en ligne (Au moins un chapitre prérequis nécessaire)", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true %>
+          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
+          (Au moins un chapitre prérequis nécessaire)
         <% elsif !enligne_ok %>
-          <%= button_to "Mettre en ligne (Chapitres prérequis doivent être en ligne)", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true %>
+          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
+          (Chapitres prérequis doivent être en ligne)
         <% else %>
           <%= button_to "Mettre en ligne", problem_put_online_path(@problem), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Etes vous sûr de vouloir rendre ce problème visible par les utilisateurs? Vous ne pourrez alors plus changer ses prérequis!" } %>
         <% end %>

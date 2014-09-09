@@ -31,7 +31,10 @@
 <br/><center><span class="label label-warning">Sujet réservé aux administrateurs</span></center><br/>
 <% end %>
 
-<center><%= will_paginate @messages, :style => "margin:-10px;" %></center>
+<center>
+<%= will_paginate @messages, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+<%= will_paginate @messages, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+</center>
 
 <% ouonest = 0 %>
 
@@ -187,7 +190,10 @@
 </table>
 <% end %>
 
-<center><%= will_paginate @messages, :style => "margin:-10px;" %></center>
+<center>
+<%= will_paginate @messages, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+<%= will_paginate @messages, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+</center>
 
 <center>
 <% if signed_in? %>

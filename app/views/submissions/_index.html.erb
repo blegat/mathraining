@@ -4,7 +4,10 @@
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>
-    <%= will_paginate submissions %>
+    <center>
+    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+    </center>
 
     <table class="table table-bordered">
     <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
@@ -14,8 +17,13 @@
         <%= render 'submissions/show2', s: s, nom: true %>
       <% end %>
 
-      </table>
-    <%= will_paginate submissions %>
+    </table>
+    
+    <center>
+    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+    </center>
+    
   <% end %>
 <% else %>
   <br/>
@@ -62,7 +70,10 @@
 
     <h4>Toutes les soumissions correctes</h4>
     <% submissions = problem.submissions.where(status: 2).order('created_at DESC').paginate(page: params[:page]) %>
-    <%= will_paginate submissions %>
+    <center>
+    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+    </center>
 
     <table class="table table-bordered">
     <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
@@ -71,8 +82,12 @@
         <%= render 'submissions/show2', s: s, nom: true %>
       <% end %>
 
-      </table>
-    <%= will_paginate submissions %>
+    </table>
+    
+    <center>
+    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+    </center>
 
   <% end %>
 

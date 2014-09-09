@@ -15,7 +15,11 @@
   <%= render 'actualities/show', f: a %>
 <% end %>
 
-<center><%= will_paginate actualities %></center>
+<center>
+  <%= will_paginate actualities, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+  <%= will_paginate actualities, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+</center>
+
 
 <% if signed_in? && current_user.sk.admin? %>
 

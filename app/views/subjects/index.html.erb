@@ -65,12 +65,15 @@
 
 <% if @importants.size > 0 %>
 
+<div class="hidden-xs">
+
 <table class="table table-bordered" style="margin-top:20px;">
   <tr class="danger" style="font-weight:bold;">
     <td style="text-align:center;">Sujet important</td>
-    <td class="hidden-xs" style="width:180px; text-align:center;">Auteur</td>
-    <td class="hidden-xs" style="width:50px; text-align:center;">Rép.</td>
-    <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
+    <td style="width:180px; text-align:center;">Auteur</td>
+    <td style="width:50px; text-align:center;">Rép.</td>
+    <td style="text-align:center;" colspan="2">Dernière contribution</td>
+  </tr>
   <% @importants.each do |s| %>
     <tr>
       <td style="vertical-align:middle;">
@@ -91,14 +94,14 @@
         <% end %>
 
       </td>
-      <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
+      <td style="text-align:center; font-weight:bold; vertical-align:middle;">
       	<% if s.user.admin %>
           <%= s.user.name %>
         <% else %>
           <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
         <% end %>
       </td>
-      <td class="hidden-xs" style="text-align:center; vertical-align:middle;">
+      <td style="text-align:center; vertical-align:middle;">
         <%= x = s.messages.count %>
       </td>
         <% if x > 0 %>
@@ -112,14 +115,14 @@
 
         <% datenow = Time.zone.now %>
 
-      <td style="width:170px; text-align:center; font-weight:bold; vertical-align:middle;">
+      <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
         <% if qui.admin %>
           <%= qui.name %>
         <% else %>
           <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="width:190px; text-align:center; vertical-align:middle;">
+      <td style="width:200px; text-align:center; vertical-align:middle;">
         <% tot = s.messages.count %>
         <% page = [0,((tot-1)/10).floor].max + 1 %>
 
@@ -134,15 +137,84 @@
 
 </table>
 
+</div>
+
+<div class="visible-xs">
+
+<table class="table table-bordered" style="margin-top:20px;">
+  <tr class="danger" style="font-weight:bold;">
+    <td style="text-align:center;">Sujet important</td>
+    <td style="text-align:center;">Dernière contribution</td>
+  </tr>
+  <% @importants.each do |s| %>
+    <tr>
+      <td style="vertical-align:middle;" rowspan="2">
+        <% if s.admin? %>
+          <table style="border:none; padding:0px; margin:0px; width:100%;"><tr><td style="border:none; text-align:center; vertical-align:middle; padding:0px; padding-bottom:5px;">
+          <span class="label label-warning">Admin</span>
+          </td></tr>
+          <tr><td style="border-top:1px dashed grey; padding:0px; padding-top:5px;">
+        <% end %>
+
+          <%= link_to s.title, subject_path(s, :q => q) %>
+          <% if @chapter.nil? and not s.chapter.nil? %>
+            - <%= s.chapter.name %>
+          <% end %>
+
+        <% if s.admin? %>
+          </td></tr></table>
+        <% end %>
+
+      </td>
+        <% x = s.messages.count %>
+        <% if x > 0 %>
+          <% last = s.messages.order(:id).last %>
+          <% qui = last.user %>
+          <% date = last.created_at.in_time_zone %>
+        <% else %>
+          <% qui = s.user %>
+          <% date = s.created_at.in_time_zone %>
+        <% end %>
+
+        <% datenow = Time.zone.now %>
+
+      <td style="width:200px; text-align:center; font-weight:bold; vertical-align:middle; border-bottom:1px dashed grey;">
+        <% if qui.admin %>
+          <%= qui.name %>
+        <% else %>
+          <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
+        <% end %>
+      </td>
+      </tr>
+      <tr>
+      <td style="width:200px; text-align:center; vertical-align:middle; border-top:1px dashed grey;">
+        <% tot = s.messages.count %>
+        <% page = [0,((tot-1)/10).floor].max + 1 %>
+
+          <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
+            <% affiche_date(date, datenow) %>
+          <% end %>
+
+      </td>
+    </tr>
+    
+  <% end %>
+
+</table>
+
+</div>
+
 <% end %>
 
 <% if @subjectsfalse.size > 0 %>
 
+<div class="hidden-xs">
+
 <table class="table table-bordered" style="margin-top:20px;">
   <tr class="info" style="font-weight:bold;">
     <td style="text-align:center;">Sujet</td>
-    <td class="hidden-xs" style="width:180px; text-align:center;">Auteur</td>
-    <td class="hidden-xs" style="width:50px; text-align:center;">Rép.</td>
+    <td style="width:180px; text-align:center;">Auteur</td>
+    <td style="width:50px; text-align:center;">Rép.</td>
     <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
   <% @subjectsfalse.each do |s| %>
     <tr>
@@ -163,14 +235,14 @@
           </td></tr></table>
         <% end %>
       </td>
-      <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
+      <td style="text-align:center; font-weight:bold; vertical-align:middle;">
         <% if s.user.admin %>
           <%= s.user.name %>
         <% else %>
           <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
         <% end %>
       </td>
-      <td class="hidden-xs" style="text-align:center; vertical-align:middle;">
+      <td style="text-align:center; vertical-align:middle;">
         <%= x = s.messages.count %>
       </td>
         <% if x > 0 %>
@@ -184,14 +256,14 @@
 
         <% datenow = Time.zone.now %>
 
-      <td style="width:170px; text-align:center; font-weight:bold; vertical-align:middle;">
+      <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
         <% if qui.admin %>
           <%= qui.name %>
         <% else %>
           <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="width:190px; text-align:center; vertical-align:middle;">
+      <td style="width:200px; text-align:center; vertical-align:middle;">
         <% tot = s.messages.count %>
         <% page = [0,((tot-1)/10).floor].max + 1 %>
         
@@ -205,9 +277,77 @@
 
 </table>
 
+</div>
+
+<div class="visible-xs">
+
+<table class="table table-bordered" style="margin-top:20px;">
+  <tr class="info" style="font-weight:bold;">
+    <td style="text-align:center;">Sujet</td>
+    <td style="text-align:center;">Dernière contribution</td>
+  </tr>
+  <% @subjectsfalse.each do |s| %>
+    <tr>
+      <td style="vertical-align:middle;" rowspan="2">
+        <% if s.admin? %>
+          <table style="border:none; padding:0px; margin:0px; width:100%;"><tr><td style="border:none; text-align:center; vertical-align:middle; padding:0px; padding-bottom:5px;">
+          <span class="label label-warning">Admin</span>
+          </td></tr>
+          <tr><td style="border-top:1px dashed grey; padding:0px; padding-top:5px;">
+        <% end %>
+
+          <%= link_to s.title, subject_path(s, :q => q) %>
+          <% if @chapter.nil? and not s.chapter.nil? %>
+            - <%= s.chapter.name %>
+          <% end %>
+
+        <% if s.admin? %>
+          </td></tr></table>
+        <% end %>
+      </td>
+        <% x = s.messages.count %>
+        <% if x > 0 %>
+          <% last = s.messages.order(:id).last %>
+          <% qui = last.user %>
+          <% date = last.created_at.in_time_zone %>
+        <% else %>
+          <% qui = s.user %>
+          <% date = s.created_at.in_time_zone %>
+        <% end %>
+
+        <% datenow = Time.zone.now %>
+
+      <td style="width:200px; text-align:center; font-weight:bold; vertical-align:middle; border-bottom:1px dashed grey;">
+        <% if qui.admin %>
+          <%= qui.name %>
+        <% else %>
+          <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <td style="width:200px; text-align:center; vertical-align:middle; border-top:1px dashed grey;">
+        <% tot = s.messages.count %>
+        <% page = [0,((tot-1)/10).floor].max + 1 %>
+        
+          <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
+            <% affiche_date(date, datenow) %>
+          <% end %>
+
+      </td>
+    </tr>
+  <% end %>
+
+</table>
+
+</div>
+
 <% end %>
 
-<center><%= will_paginate @subjectsfalse, :style => "margin-top:-10px; margin-bottom:-10px;" %></center>
+<center>
+<%= will_paginate @subjectsfalse, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+<%= will_paginate @subjectsfalse, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+</center>
 
 <% if @subjects.size + @importants.size == 0 %>
 <br/><b>Aucun sujet</b><br/><br/>
