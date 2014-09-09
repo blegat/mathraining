@@ -68,7 +68,7 @@ html>body tbody.scroll {
 
   <div class="row">
 
-  <div class="col-md-7 col-sm-12 col-xs-12">
+  <div class="col-lg-7 col-sm-12 col-xs-12">
   <h2>Résolutions</h2>
   <br/>
   <% exercises = @user.solvedexercises.where(:correct => true) %>
@@ -119,9 +119,9 @@ html>body tbody.scroll {
       <% parquoi = "minute" %>
     <% end %>
 
-    <table class="table table-bordered" style="width:606px;">
+    <table class="table table-bordered hidden-xs" style="width:606px;">
     <thead class="fixed">
-    <tr><th style="width:130px;">Date</th><th style="width:50px;"><center>Heure</center></th></th><th style="width:360px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
+    <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th></th><th style="width:340px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
     </thead>
     <tbody class="scroll">
   <% end %>
@@ -149,9 +149,9 @@ html>body tbody.scroll {
 
     
     <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
-    <td style="width:130px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+    <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
     <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
-    <td style="width:360px;">
+    <td style="width:340px;">
     <% if a[:type] <= 3 %>
       <% if cansee[a[:c_id]] %>
         <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
@@ -183,10 +183,60 @@ html>body tbody.scroll {
   <% else %>
     <b>Aucune activité.</b>
   <% end %>
+  
+  
+  
+  <% if act.size > 0 %>
+
+    <table class="table table-bordered visible-xs" style="width:406px;">
+    <thead class="fixed">
+    <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th></th><th style="width:140px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
+    </thead>
+    <tbody class="scroll">
+  <% end %>
+  
+  <% act.each do |a| %>
+    <% date = a[:time].in_time_zone %>
+    
+    <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+    <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+    <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
+    <td style="width:140px;">
+    <% if a[:type] <= 3 %>
+      <% if cansee[a[:c_id]] %>
+        <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+      <% else %>
+        Exercice
+      <% end %>
+    <% else %>
+      <% if a[:peutvoir] %>
+        <%= link_to "Problème ##{a[:number]}", problem_path(a[:id]) %>
+      <% else %>
+        Problème #<%= a[:number] %>
+      <% end %>
+    <% end %>
+    </td>
+    <td style="width:50px;">
+    <center>
+      <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
+    </center>
+    </td>
+    </tr>
+    
+  <% end %>
+
+  <% if act.size > 0 %>
+    </tbody>
+    </table>
+  <% else %>
+    <b>Aucune activité.</b>
+  <% end %>
+  
+  
 
   </div>
 
-  <div class="col-md-5 col-sm-12 col-xs-12">
+  <div class="col-lg-5 col-sm-12 col-xs-12">
 
   <center><p style="font-size:24px; margin-top:80px;">Score : <%= actualrating %></p></center>
   <br/>
@@ -212,7 +262,7 @@ html>body tbody.scroll {
   </center>
 
   <center>
-  <table class="table table-bordered" style="width:360px; margin-top:20px;">
+  <table class="table table-bordered hidden-xs" style="width:360px; margin-top:20px;">
   <% p = Pointspersection.where(:user_id => @user) %>
   <tr>
   <% i = 0 %>
@@ -226,9 +276,18 @@ html>body tbody.scroll {
     <% end %>
 
   <% end %>
-
   </tr>
   </table>
+  
+  <table class="table table-bordered visible-xs" style="width:250px; margin-top:20px;">
+  <% p = Pointspersection.where(:user_id => @user) %>
+  <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
+    <% rate = p.where(:section_id => s.id).first.points %>
+    <tr><td style="width:250px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td></tr>
+  <% end %>
+  </table>
+  
+  
   </center>
 
 
@@ -266,7 +325,7 @@ html>body tbody.scroll {
 
   <% date = @user.created_at.in_time_zone %>
   <br/>
-  <center>Inscription : <%= date.day %> <%= mois[date.month-1] %> <%= date.year %></center>
+  <center>Inscription : <%= date.day %> <%= mois[date.month-1] %> <%= date.year %></center><br/>
 
   </div>
 
@@ -282,8 +341,9 @@ html>body tbody.scroll {
   <h2>Evolution</h2>
   <br/>
   <center>
-  <div style="width:850px; height:500px; position:relative;">
-  <canvas id="myCanvas" width="806" height="450" style="position:absolute; left:30px; top: 0px; border:1px solid #000000;">
+  
+  <div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+  <canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
   Votre navigateur ne supporte pas les canvas.
   </canvas>
 
@@ -309,6 +369,41 @@ html>body tbody.scroll {
   <% else %>
     <% maxi = 1.1*@niveaux[numerolevel][:pt] %>
   <% end %>
+
+  </div>
+  </center>
+  
+  
+  <script type="text/javascript">
+  	$(document).ready( function(){
+  		
+  		//Get the canvas & context
+  		var c = $('#myCanvas');
+  		var ctx = c.get(0).getContext('2d');
+  		var container = $(c).parent();
+  		
+  		//Run function when browser  resize
+	  	$(window).resize( respondCanvas );
+	  	
+	  	function respondCanvas(){
+  			c.attr('width', $(container).width() ); //max width
+  			c.attr('height', 480*$(container).width()/900.0); //max height
+  			
+  			document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
+  			
+  			//Redraw & reposition content
+  			var x = c.width();
+  			var y = c.height();  
+  			
+  			var pct = c.width()/900.0;
+  						
+  ctx.beginPath();
+  ctx.rect(pct*50, pct*5, pct*806, pct*450);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'black';
+  ctx.stroke();
   
   <% i = 1 %>
   
@@ -316,54 +411,25 @@ html>body tbody.scroll {
     <% if i > 1 %>
       <% haut = [450 - 450*(n.pt/maxi), 0].max %>
       <% if haut > 0 %>
-        <div style="position:absolute; top:<%= haut-8 %>px; right:828px; width: 30px; text-align:right;"><%= n.pt %></div>
+        ctx.font="14px Arial";
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'right';
+        
+        if (pct > 0.7){
+        
+        ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
+        
+        ctx.beginPath();
+        ctx.moveTo(pct*50, pct*<%= haut+5 %>);
+        ctx.lineTo(pct*856, pct*<%= haut+5 %>);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+        
+        }
       <% end %>
     <% end %>
-    <% i = i+1 %>
-  <% end %>
-
-  <% if actperday.size == 1 %>
-
-  <% a = actperday.first %>
-
-  <% if parquoi == "jour" %>
-    <div style="position:absolute; top:460px; left:411px; width:44px; text-align:left; font-size:12px;"><%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %></div>
-  <% elsif parquoi == "heure" %>
-    <div style="position:absolute; top:460px; left:425px; width:44px; text-align:left; font-size:12px;"><%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h </div>
-  <% else %>
-    <div style="position:absolute; top:460px; left:418px; width:44px; text-align:left; font-size:12px;"><%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %></div>
-  <% end %>
-
-  <% else %>
-    <% last = actperday.first[:time].to_time.to_i %>
-    <% first = actperday.last[:time].to_time.to_i %>
-    <% previousw = 2000 %>
-    <% actperday.each do |a| %>
-      <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-
-      <% if previousw - w > 50 %>
-        <% if parquoi == "jour" %>
-          <div style="position:absolute; top:460px; left:<%= 8 + w %>px; width: 44px; text-align:left; font-size:12px;"><%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %></div>
-        <% elsif parquoi == "heure" %>
-          <div style="position:absolute; top:460px; left:<%= 22 + w %>px; width: 44px; text-align:left; font-size:12px;"><%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h </div>
-        <% else %>
-          <div style="position:absolute; top:460px; left:<%= 15 + w %>px; width: 44px; text-align:left; font-size:12px;"><%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %></div>
-        <% end %>
-        <% previousw = w %>
-      <% end %>
-
-    <% end %>
-  <% end %>
-
-  </div>
-  </center>
-
-  <script>
-  var c=document.getElementById("myCanvas");
-  var ctx=c.getContext("2d");
-  
-  <% i = 1 %>
-  <% @niveaux.each do |n| %>
+    
     <% if i == nombrelevel %>
       <% bas = [450 - 450*(n.pt/maxi) , 0].max %>
       <% haut = 0 %>
@@ -373,26 +439,9 @@ html>body tbody.scroll {
     <% end %>
     <% if bas > haut %>
       ctx.beginPath();
-      ctx.rect(0, <%= haut %>, 806, <%= bas - haut %>);
+      ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
       ctx.fillStyle = '<%= n.font_color %>';
       ctx.fill();
-    <% end %>
-    <% i = i+1 %>
-  <% end %>
-  
-  
-  <% i = 1 %>
-  <% @niveaux.each do |n| %>
-    <% if i > 1 %>
-      <% haut = [450 - 450*(n.pt/maxi), 0].max %>
-      <% if haut > 0 %>
-        ctx.beginPath();
-        ctx.moveTo(0, <%= haut %>);
-        ctx.lineTo(806, <%= haut %>);
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'white';
-        ctx.stroke();
-      <% end %>
     <% end %>
     <% i = i+1 %>
   <% end %>
@@ -403,15 +452,35 @@ html>body tbody.scroll {
 
   <% if actperday.size == 1 %>
     <% (0..22).each do |i| %>
-      ctx.moveTo(403, <%= 20*i %>);
-      ctx.lineTo(403, <%= 20*i+10 %>);
-      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pct*453, pct*<%= 20*i+5 %>);
+      ctx.lineTo(pct*453, pct*<%= 20*i+15 %>);
+      ctx.lineWidth = 2;
       ctx.strokeStyle = 'white';
       ctx.stroke();
     <% end %>
     ctx.beginPath();
-    ctx.arc(403, <%= 450 - 450*(actualrating/maxi) %>, 3, 0, 2 * Math.PI, true);
+    ctx.arc(pct*453, pct*<%= 455 - 450*(actualrating/maxi) %>, 3, 0, 2 * Math.PI, true);
     ctx.fill();
+    
+    ctx.font="12px Arial";
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center';
+    
+    <% a = actperday.first %>
+    
+    if (pct > 0.7){
+
+    <% if parquoi == "jour" %>
+      ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*453,pct*471);
+    <% elsif parquoi == "heure" %>
+      ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h",pct*453,pct*471);
+    <% else %>
+      ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*453,pct*471);
+    <% end %>
+    
+    }
+  
   <% else %>
 
     <% last = actperday.first[:time].to_time.to_i %>
@@ -424,11 +493,27 @@ html>body tbody.scroll {
     <% actperday.each do |a| %>
       <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
       <% if previousw - w > 50 %>
-        ctx.beginPath();
+        ctx.font="12px Arial";
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center';
+        
+        if (pct > 0.7){
+      
+        <% if parquoi == "jour" %>
+          ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
+        <% elsif parquoi == "heure" %>
+          ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h",pct*<%= 50+w %>,pct*471);
+        <% else %>
+          ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
+        <% end %>
+        
+        }
+      
         <% (0..22).each do |i| %>
-          ctx.moveTo(<%= w %>, <%= 20*i %>);
-          ctx.lineTo(<%= w %>, <%= 20*i+10 %>);
-          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(pct*<%= 50+w %>, pct*<%= 20*i+5 %>);
+          ctx.lineTo(pct*<%= 50+w %>, pct*<%= 20*i+15 %>);
+          ctx.lineWidth = 2;
           ctx.strokeStyle = 'white';
           ctx.stroke();
         <% end %>
@@ -443,19 +528,31 @@ html>body tbody.scroll {
       <% h = 450 - 450*(r/maxi) %>
       <% if prevw >= 0 %>
         ctx.beginPath();
-        ctx.moveTo(<%= prevw %>, <%= prevh %>);
-        ctx.lineTo(<%= w %>, <%= h %>);
+        ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevh+5 %>);
+        ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'black';
         ctx.stroke();
       <% end %>
       ctx.beginPath();
-      ctx.arc(<%= w %>, <%= h %>, 3, 0, 2 * Math.PI, true);
+      ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
       ctx.fill();
       <% prevw = w %>
       <% prevh = h %>
     <% end %>
   <% end %>
+		}
+		
+		//Initial call
+		respondCanvas();
+  	});
+  	
+  	
+</script>
+
+  <script> 
+  
+  
 
 
   </script>

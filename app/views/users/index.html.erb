@@ -16,8 +16,8 @@
     <% if !user.admin? %>
 
     <% if rank == 1 %>
-      <table class="table table-bordered" style="width:600px; margin-top:20px;">
-      <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th style="width:260px;"><center>Préférences</center></th>
+      <table class="table table-bordered" style="max-width:600px; margin-top:20px;">
+      <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th class="hidden-xs" style="width:260px;"><center>Préférences</center></th>
       </tr>
     <% end %>
 
@@ -35,7 +35,7 @@
       <% total = total + rate %>
     <% end %>
 
-    <td>
+    <td class="hidden-xs">
     <center>
       <table style="height:20px; width:250px; padding:0px; border:1px solid #888888;">
       <tr>

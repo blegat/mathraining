@@ -12,26 +12,18 @@
 <% end %>
 
 <h1>
-<table>
-<tr>
-<td nowrap style="vertical-align:top;">
 <span class="noprint">
 <span style="font-size:16px;">Cours ></span>
 <span style="font-size:24px;"><%= link_to @section.name, @section %> ></span>
 </span>
-</td>
-<td style="padding-left:10px; vertical-align:top;">
 <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
-</td>
-</tr>
-</table>
 </h1>
 
 <div class="row">
 
   <!-- MENU -->
   <div class="noprint">
-  <div class="col-md-2 col-sm-3 col-xs-3">
+  <div class="col-md-2 col-sm-3 col-xs-12">
     <div class="list-group">
       <% number = 0 %>
       <% number2 = 0 %>
@@ -229,7 +221,7 @@
   </div>
   </div>
 
-  <div class="col-md-10 col-sm-9 col-xs-9">
+  <div class="col-md-10 col-sm-9 col-xs-12">
 
     <!-- INTRODUCTION -->
 

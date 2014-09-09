@@ -76,7 +76,8 @@ Répondre
 <% messages.each do |m| %>
 
 <table class="table table-bordered" style="margin-top:20px;">
-<tr class="info">
+
+<tr class="info hidden-xs">
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if m.user.admin %>
   <%= m.user.name %>
@@ -84,6 +85,22 @@ Répondre
   <%= link_to m.user.name, m.user, {:style => "color:#{m.user.level[:color]}" } %>
 <% end %>
 </td>
+<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
+<% date = m.created_at.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</td>
+</tr>
+
+<tr class="info visible-xs">
+<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+<% if m.user.admin %>
+  <%= m.user.name %>
+<% else %>
+  <%= link_to m.user.name, m.user, {:style => "color:#{m.user.level[:color]}" } %>
+<% end %>
+</td>
+</tr>
+<tr class="info visible-xs">
 <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = m.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
@@ -107,7 +124,8 @@ Répondre
 <% if messages.size < 5 %>
 
 <table class="table table-bordered" style="margin-top:20px;">
-<tr class="info">
+
+<tr class="info hidden-xs">
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if @subject.user.admin %>
   <%= @subject.user.name %>
@@ -115,6 +133,22 @@ Répondre
   <%= link_to @subject.user.name, @subject.user, {:style => "color:#{@subject.user.level[:color]}" } %>
 <% end %>
 </td>
+<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
+<% date = @subject.created_at.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</td>
+</tr>
+
+<tr class="info visible-xs">
+<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+<% if @subject.user.admin %>
+  <%= @subject.user.name %>
+<% else %>
+  <%= link_to @subject.user.name, @subject.user, {:style => "color:#{@subject.user.level[:color]}" } %>
+<% end %>
+</td>
+</tr>
+<tr class="info visible-xs">
 <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = @subject.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>

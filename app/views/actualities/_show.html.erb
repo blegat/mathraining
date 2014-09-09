@@ -1,15 +1,26 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
   <table class="table table-bordered" style="margin-top:20px;">
-  <tr class="info">
+  <tr class="info hidden-xs">
   <td style="font-size:26px; font-weight:bold; padding-left:15px; border-right:none;"><%= f.title %> </td>
 
   <td style="vertical-align:middle; text-align:right; font-size:18px; border-left:none; padding-right:15px;">
   <% date = f.created_at.in_time_zone %>
   <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
   </td>
-
   </tr>
+  
+  <tr class="info visible-xs">
+  <td style="font-size:26px; font-weight:bold; padding-left:15px; border-right:none;"><%= f.title %> </td>
+  </tr>
+  
+  <tr class="info visible-xs">
+  <td style="vertical-align:middle; text-align:right; font-size:18px; border-left:none; padding-right:15px;">
+  <% date = f.created_at.in_time_zone %>
+  <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+  </td>
+  </tr>
+  
   <tr><td style="padding:15px;" colspan="2">
   <div">
   <%= raw(f.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h2>[ \r]*\n/,'</h2>').gsub(/<\/h3>[ \r]*\n/,'</h3>').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>

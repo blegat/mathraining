@@ -68,8 +68,8 @@
 <table class="table table-bordered" style="margin-top:20px;">
   <tr class="danger" style="font-weight:bold;">
     <td style="text-align:center;">Sujet important</td>
-    <td style="width:180px; text-align:center;">Auteur</td>
-    <td style="width:50px; text-align:center;">Rép.</td>
+    <td class="hidden-xs" style="width:180px; text-align:center;">Auteur</td>
+    <td class="hidden-xs" style="width:50px; text-align:center;">Rép.</td>
     <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
   <% @importants.each do |s| %>
     <tr>
@@ -91,14 +91,14 @@
         <% end %>
 
       </td>
-      <td style="text-align:center; font-weight:bold; vertical-align:middle;">
+      <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
       	<% if s.user.admin %>
           <%= s.user.name %>
         <% else %>
           <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="text-align:center; vertical-align:middle;">
+      <td class="hidden-xs" style="text-align:center; vertical-align:middle;">
         <%= x = s.messages.count %>
       </td>
         <% if x > 0 %>
@@ -141,8 +141,8 @@
 <table class="table table-bordered" style="margin-top:20px;">
   <tr class="info" style="font-weight:bold;">
     <td style="text-align:center;">Sujet</td>
-    <td style="width:180px; text-align:center;">Auteur</td>
-    <td style="width:50px; text-align:center;">Rép.</td>
+    <td class="hidden-xs" style="width:180px; text-align:center;">Auteur</td>
+    <td class="hidden-xs" style="width:50px; text-align:center;">Rép.</td>
     <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
   <% @subjectsfalse.each do |s| %>
     <tr>
@@ -163,14 +163,14 @@
           </td></tr></table>
         <% end %>
       </td>
-      <td style="text-align:center; font-weight:bold; vertical-align:middle;">
+      <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
         <% if s.user.admin %>
           <%= s.user.name %>
         <% else %>
           <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
         <% end %>
       </td>
-      <td style="text-align:center; vertical-align:middle;">
+      <td class="hidden-xs" style="text-align:center; vertical-align:middle;">
         <%= x = s.messages.count %>
       </td>
         <% if x > 0 %>

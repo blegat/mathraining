@@ -3,7 +3,7 @@
 <%= render 'shared/error_messages', object: f.object %>
 <div class="form-group">
 <%= f.label :titre %><br/>
-<%= f.text_field :title, :style => "width:400px;", :class => "form-control" %>
+<%= f.text_field :title, :style => "width:100%; max-width:400px;", :class => "form-control" %>
 </div>
 <div class="form-group">
 <%= f.label :contenu %>

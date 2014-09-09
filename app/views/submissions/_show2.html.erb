@@ -19,10 +19,10 @@
   <% end %>
 <% end %>
 
-<td style="width:70px; text-align:center;">
+<td class="hidden-xs" style="width:70px; text-align:center;">
 <%= image_tag s.icon %>
 </td>
-<td>
+<td class="hidden-xs">
 <% date = s.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>

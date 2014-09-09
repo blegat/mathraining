@@ -36,7 +36,8 @@
 </h3>
 
 <table class="table table-bordered" style="margin-top:20px;">
-<tr class="info">
+
+<tr class="info hidden-xs">
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if @submission.user.admin %>
   <%= @submission.user.name %>
@@ -44,6 +45,22 @@
   <%= link_to @submission.user.name, @submission.user, {:style => "color:#{@submission.user.level[:color]}" } %>
 <% end %>
 </td>
+<td style="vertical-align:middle; text-align:right; font-size:18px; padding-right:15px; border-left:none;">
+<% date = @submission.created_at.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</td>
+</tr>
+
+<tr class="info visible-xs">
+<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+<% if @submission.user.admin %>
+  <%= @submission.user.name %>
+<% else %>
+  <%= link_to @submission.user.name, @submission.user, {:style => "color:#{@submission.user.level[:color]}" } %>
+<% end %>
+</td>
+</tr>
+<tr class="info visible-xs">
 <td style="vertical-align:middle; text-align:right; font-size:18px; padding-right:15px; border-left:none;">
 <% date = @submission.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>

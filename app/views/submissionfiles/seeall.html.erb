@@ -9,7 +9,7 @@ Pièces jointes
 <% total = 0 %>
 
 <table class="table table-bordered">
-<tr><th>Date</th><th>Qui</th><th>Où</th><th>Quoi</th><th><center>Taille</center></th><th><center>Contexte</center></th></tr>
+<tr><th class="hidden-xs">Date</th><th>Qui</th><th class="hidden-xs">Où</th><th>Quoi</th><th><center>Taille</center></th><th><center>Contexte</center></th></tr>
 
 <% @list.each do |l| %>
 
@@ -20,7 +20,7 @@ Pièces jointes
 <tr style="background-color:#FFDDDD;">
 <% end %>
 
-<td>
+<td class="hidden-xs">
 <% date = l[0].in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
@@ -44,7 +44,7 @@ Pièces jointes
 </td>
 
 
-<td>
+<td class="hidden-xs">
 <% if l[1] >= 5 %>
 Forum
 <% else %>

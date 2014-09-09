@@ -14,7 +14,7 @@
 
 <div class="form-group">
 <%= f.label :titre, :disabled => current_user.other %>
-<%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :style => "width:400px;" %>
+<%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :style => "width:100%; max-width:400px;" %>
 </div>
 
 <% liste = Array.new %>
@@ -47,7 +47,7 @@
 
 <div class="form-group">
 <%= f.label "Chapitre concerné", :disabled => current_user.other %>
-<%= f.select(:chapter_id, grouped_options_for_select(liste, selected_key = @preselect), {}, { :class => "form-control", :style => "width:400px;", :disabled => current_user.other}) %>
+<%= f.select(:chapter_id, grouped_options_for_select(liste, selected_key = @preselect), {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other}) %>
 </div>
 
 <div class="form-group">

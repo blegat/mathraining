@@ -264,7 +264,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
       <% end %>
       
       <tr>
-      <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
+      <td colspan="2" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
       <% if lecas == 1 %>
         <%= image_tag "V.gif", :style => "margin-left:10px;" %>
       <% elsif lecas == 2 %>
@@ -278,7 +278,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
     <% else %>
       <table style="border-radius:20px; background-color:#EEEEEE; border-collapse:separate;" class="table">
       <tr>
-      <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %></h3></center>
+      <td colspan="2" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %></h3></center>
       <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
       <br/><br/>
       <span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
@@ -296,8 +296,8 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
       </tr>
     <% end %>
     
-    <tr>
-    <td class="col-sm-6 col-xs-6" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px solid black; border-bottom-left-radius:15px; border-right:1px dashed black;">
+    <tr class="hidden-xs">
+    <td class="col-sm-6" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px solid black; border-bottom-left-radius:15px; border-right:1px dashed black;">
 
     <center><h4>Théorie</h4></center>
     <% compteur = 0 %>
@@ -320,7 +320,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
 
     </td>
 
-    <td class="col-sm-6 col-xs-6" style="padding-bottom:20px; border-bottom:1px solid black; border-right:1px solid black; border-bottom-right-radius:15px;">
+    <td class="col-sm-6" style="padding-bottom:20px; border-bottom:1px solid black; border-right:1px solid black; border-bottom-right-radius:15px;">
     <center><h4>Exercices</h4></center>
     <% if faisable[encours] <= 1 || (signed_in? && current_user.sk.admin?) %>
       <% affiche_exercices(chap[encours],true) %>
@@ -329,6 +329,43 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
     <% end %>
     </td>
     </tr>
+    
+    <tr class="visible-xs">
+    <td class="col-xs-12" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px dashed black; border-right:1px solid black;">
+
+    <center><h4>Théorie</h4></center>
+    <% compteur = 0 %>
+    <% liste = chap[encours].theories.order(:position) %>
+    <% liste.each do |t| %>
+      <% if t.online %>
+        <% if compteur == 0 %>
+          <ul>
+        <% end %>
+        <% compteur = compteur + 1 %>
+        <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if signed_in? && current_user.sk.theories.exists?(t) %></li>
+      <% end %>
+    <% end %>
+
+    <% if compteur == 0 %>
+      <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
+    <% else %>
+      </ul>
+    <% end %>
+
+    </td>
+    </tr>
+    
+    <tr class="visible-xs">
+    <td class="col-xs-12" style="padding-bottom:20px; border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-bottom-left-radius:15px; border-bottom-right-radius:15px;">
+    <center><h4>Exercices</h4></center>
+    <% if faisable[encours] <= 1 || (signed_in? && current_user.sk.admin?) %>
+      <% affiche_exercices(chap[encours],true) %>
+    <% else %>
+      <% affiche_exercices(chap[encours],false) %>
+    <% end %>
+    </td>
+    </tr>
+    
     </table>
 
   <% end %>
@@ -407,7 +444,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
     <% lecas = 3 %>
   <% end %>
   <tr>
-  <td colspan="3" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
+  <td colspan="2" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
   <% if lecas == 1 %>
     <%= image_tag "V.gif", :style => "margin-left:10px;" %>
   <% elsif lecas == 2 %>
@@ -417,9 +454,11 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %></div>
   </td>
   </tr>
-  <tr>
+  
+  
+  <tr class="hidden-xs">
 
-  <td class="col-sm-6  col-xs-6" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px solid black; border-bottom-left-radius:15px; border-right:1px dashed black;">
+  <td class="col-sm-6" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px solid black; border-bottom-left-radius:15px; border-right:1px dashed black;">
   <center><h4>Théorie</h4></center>
 
   <% compteur = 0 %>
@@ -447,6 +486,40 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <% affiche_exercices(chap[encours],true) %>
   </td>
   </tr>
+  
+  <tr class="visible-xs">
+
+  <td class="col-xs-12" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px dashed black; border-right:1px solid black;">
+  <center><h4>Théorie</h4></center>
+
+  <% compteur = 0 %>
+  <% liste = chap[encours].theories %>
+  <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
+  <% liste.each do |t| %>
+    <% if t.online %>
+      <% if compteur == 0 %>
+        <ul>
+      <% end %>
+      <% compteur = compteur + 1 %>
+      <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if signed_in? && current_user.sk.theories.exists?(t) %></li>
+    <% end %>
+  <% end %>
+
+  <% if compteur == 0 %>
+    <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
+  <% else %>
+    </ul>
+  <% end %>
+  </td>
+  </tr>
+  <tr class="visible-xs">
+  <td class="col-xs-12" style="padding-bottom:20px; border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-bottom-left-radius:15px; border-bottom-right-radius:15px;">
+  <center><h4>Exercices</h4></center>
+  <% affiche_exercices(chap[encours],true) %>
+  </td>
+  </tr>
+  
+  
   </table>
 
   <% debloque[encours].each do |d| %>
