@@ -25,7 +25,8 @@
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
     <title><%= full_title(yield(:title)) %></title>
-    <%= stylesheet_link_tag    "application", media: "all" %>
+    <%= stylesheet_link_tag 'application', :media => 'screen, projection' %>
+    <%= stylesheet_link_tag 'application-print', :media => 'print' %>
     <%= javascript_include_tag "application" %>
     <%= yield :javascript_includes %>
     <%= csrf_meta_tags %>
