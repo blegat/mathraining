@@ -1,5 +1,5 @@
 
-var Preview = {
+var PreviewSafe = {
   delay: 150,        // delay after keystroke before updating
 
   preview: null,     // filled in by Init below
@@ -79,6 +79,6 @@ var Preview = {
 //
 //  Cache a callback to the CreatePreview action
 //
-Preview.callback = MathJax.Callback(["CreatePreview",Preview]);
-Preview.callback.autoReset = true;  // make sure it can run more than once
+PreviewSafe.callback = MathJax.Callback(["CreatePreview",PreviewSafe]);
+PreviewSafe.callback.autoReset = true;  // make sure it can run more than once
 

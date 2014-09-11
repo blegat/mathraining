@@ -16,7 +16,7 @@
             gsub(/<evidence>/, '<div class="evidence">').
             gsub(/<\/evidence>/, '</div>').
             gsub(/\n/, '<br/>').
-            gsub(/\/latextest\//, '<script src="/assets/previewsafe.js"></script> <div class="well" id="MathPreview"></div> <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div> <textarea id="MathInput" class="span10" style="height:120px; margin-top:5px;" onkeyup="Preview.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea><script> Preview.Init(); Preview.Update(); </script>') )%>
+            gsub(/\/latextest\//, '<div class="well" id="MathPreview"></div> <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div> <textarea id="MathInput" class="span10" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>') )%>
   </div>
   <br/>
 
