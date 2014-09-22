@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   before_filter :correct_user,
     only: [:edit, :update]
   before_filter :admin_user,
-    only: [:destroy, :notification_new, :notification_update, :take_skin, :unactivate, :reactivate]
+    only: [:notification_new, :notification_update, :take_skin, :unactivate, :reactivate]
   before_filter :root_user,
     only: [:create_administrator, :recompute_scores, :destroy]
   before_filter :signed_out_user,
@@ -55,6 +55,7 @@ class UsersController < ApplicationController
     end
   end
   def destroy
+    @user = User.find(params[:id])
     skinner = User.where(skin: @user.id)
     skinner.each do |s|
       s.update_attribute(:skin, 0)
