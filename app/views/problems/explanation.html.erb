@@ -13,7 +13,10 @@ Modifier la solution
 <br/><br/>
 
 <h3>Eléments de solution</h3>
-Ce champ ne sera visible <u>que par les autres administrateurs</u>. Son but est de donner les grandes idées de la solution afin de faciliter la tâche des autres administrateurs voulant corriger des solutions d'étudiants à ce problème.<br/><br/>
+<p>Ce champ ne sera visible <u>que par les autres administrateurs</u>.
+Son but est de donner les grandes idées de la solution afin de faciliter la tâche des autres administrateurs voulant corriger des solutions d'étudiants à ce problème.</p>
+
+<p>Si vous connaissez la source de ce problème, mettez la en italique à la première ligne (e.g. <i>IMO 2042 P6</i>).</p>
 
 <%= form_for(@problem, url: problem_update_explanation_path) do |f| %>
   <%= render 'form_explanation', f: f %>
