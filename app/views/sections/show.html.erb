@@ -462,8 +462,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <center><h4>Théorie</h4></center>
 
   <% compteur = 0 %>
-  <% liste = chap[encours].theories %>
-  <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
+  <% liste = chap[encours].theories.order(:position) %>
   <% liste.each do |t| %>
     <% if t.online %>
       <% if compteur == 0 %>
@@ -493,8 +492,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <center><h4>Théorie</h4></center>
 
   <% compteur = 0 %>
-  <% liste = chap[encours].theories %>
-  <% liste.sort!{|t1,t2|t1.position <=> t2.position} %>
+  <% liste = chap[encours].theories.order(:position) %>
   <% liste.each do |t| %>
     <% if t.online %>
       <% if compteur == 0 %>
