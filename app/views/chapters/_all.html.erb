@@ -16,8 +16,7 @@
 
 </div><br/>
 
-<% listex = @chapter.theories %>
-<% listex.sort!{|t1,t2|t1.position <=> t2.position} %>
+<% listex = @chapter.theories.order(:position) %>
 <% i = 1 %>
 <% listex.each do |f| %>
   <% if f.online %>
