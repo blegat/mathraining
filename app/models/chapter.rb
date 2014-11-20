@@ -66,7 +66,7 @@ class Chapter < ActiveRecord::Base
 
   def to_tex
     content = "\\section{#{name}}\n"
-    content << theories.inject("") do |sum, theory|
+    content << theories.order(:position).inject("") do |sum, theory|
       "#{sum}\n#{theory.to_tex}"
     end
     content
