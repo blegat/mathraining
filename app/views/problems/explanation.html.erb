@@ -8,15 +8,15 @@ Modifier la solution
 </h1>
 
 <h3>Enoncé</h3>
+<div style="margin-bottom:30px;">
 <%= raw(@problem.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-
-<br/><br/>
+</div>
 
 <h3>Eléments de solution</h3>
-<p>Ce champ ne sera visible <u>que par les autres administrateurs</u>.
-Son but est de donner les grandes idées de la solution afin de faciliter la tâche des autres administrateurs voulant corriger des solutions d'étudiants à ce problème.</p>
+Ce champ ne sera visible <u>que par les autres administrateurs</u>.
+Son but est de donner les grandes idées de la solution afin de faciliter la tâche des autres administrateurs voulant corriger des solutions d'étudiants à ce problème.<br/><br/>
 
-<p>Si vous connaissez la source de ce problème, mettez la en italique à la première ligne (e.g. <i>IMO 2042 P6</i>).</p>
+Si vous connaissez la source de ce problème, mettez la en italique à la première ligne (e.g. <i>IMO 2042 P6</i>).<br/><br/>
 
 <%= form_for(@problem, url: problem_update_explanation_path) do |f| %>
   <%= render 'form_explanation', f: f %>
