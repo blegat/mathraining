@@ -152,7 +152,7 @@ Mathraining::Application.routes.draw do
   match '/activate', to: 'users#activate', :via => [:get]
   match '/forgot_password', to: 'users#forgot_password', :via => [:get]
   match '/recup_password', to: 'users#recup_password', :via => [:get]
-  match '/password_forgotten', to: 'users#password_forgotten', :via => [:get]
+  match '/password_forgotten', to: 'users#password_forgotten', :via => [:post]
 
   match '/recompute_scores', to: 'users#recompute_scores', :via => [:get], as: :recompute_scores
       
