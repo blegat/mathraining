@@ -406,6 +406,8 @@ html>body tbody.scroll {
   
   <% i = 1 %>
   
+  var prec = 1000;
+  
   <% @niveaux.each do |n| %>
     <% if i > 1 %>
       <% haut = [450 - 450*(n.pt/maxi), 0].max %>
@@ -416,7 +418,10 @@ html>body tbody.scroll {
         
         if (pct > 0.7){
         
-        ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
+          if (pct * <%= haut %> < prec - 13){
+            ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
+            prec = pct * <%= haut %>;
+          }
         
         ctx.beginPath();
         ctx.moveTo(pct*50, pct*<%= haut+5 %>);

@@ -3,14 +3,13 @@
 <% i = 1 %>
 
 <table>
-<tr><th></th><th style="padding:5px;">Seuil</th><th style="padding:5px;">Nom</th><th style="padding:5px;">Pluriel</th><th style="padding:5px;">Couleur</th><th style="padding:5px;">Fond</th><th></th><th></th></tr>
+<tr><th></th><th style="padding:5px;">Seuil</th><th style="padding:5px;">Nom</th><th style="padding:5px;">Couleur</th><th style="padding:5px;">Fond</th><th></th><th></th></tr>
 <% Color.order(:pt).each do |c| %>
   <tr>
     <td style="padding-right:10px;"><%= i %><% i = i+1 %>.</td>
   <%= form_for(c) do |f| %>
     <td><%= f.number_field :pt, :class => "form-control", :style => "width:75px; margin:0px;"%></td>
     <td><%= f.text_field :name, :class => "form-control", :style => "width:150px; margin:0px;"%></td>
-    <td><%= f.text_field :plural_name, :class => "form-control", :style => "width:150px; margin:0px;"%></td>
     <td><%= f.text_field :color, :class => "form-control", :style => "width:95px; margin:0px; color:#{c.color}; font-weight:bold;" %></td>
     <td><%= f.text_field :font_color, :class => "form-control", :style => "width:95px; margin:0px; background-color:#{c.font_color};" %></td>
     <td><%= f.submit "Editer", class: "btn btn-primary", style: "margin-left:10px;", onclick: "return confirm('Etes-vous sûr de vouloir éditer ce niveau?')" %></td>
@@ -24,7 +23,6 @@
   <%= form_for(:color) do |f| %>
     <td style="padding-top:10px;"><%= f.number_field :pt, :class => "form-control", :style => "width:75px; margin:0px;"%></td>
     <td style="padding-top:10px;"><%= f.text_field :name, :class => "form-control", :style => "width:150px; margin:0px;"%></td>
-    <td style="padding-top:10px;"><%= f.text_field :plural_name, :class => "form-control", :style => "width:150px; margin:0px;"%></td>
     <td style="padding-top:10px;"><%= f.text_field :color, :class => "form-control", :style => "width:95px; margin:0px;" %></td>
     <td style="padding-top:10px;"><%= f.text_field :font_color, :class => "form-control", :style => "width:95px; margin:0px;" %></td>
     <td style="padding-top:10px;"><%= f.submit "Ajouter", style: "margin-left:10px;", class: "btn btn-primary",  onclick: "return confirm('Etes-vous sûr de vouloir ajouter ce niveau?')" %></td>
@@ -52,12 +50,17 @@
 <% end %>
 
 <% i = 1 %>
+
+<% prec = 2000 %>
   
   <% @niveaux.each do |n| %>
     <% if i > 1 %>
       <% haut = [450 - 450*(n.pt/maxi), 0].max %>
       <% if haut > 0 %>
-        <div style="position:absolute; top:<%= haut-8 %>px; right:828px; width: 30px; text-align:right;"><%= n.pt %></div>
+        <% if haut < prec - 12 %>
+          <div style="position:absolute; top:<%= haut-8 %>px; right:828px; width: 30px; text-align:right;"><%= n.pt %></div>
+          <% prec = haut %>
+        <% end %>
       <% end %>
     <% end %>
     <% i = i+1 %>

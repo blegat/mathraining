@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140908134238) do
+ActiveRecord::Schema.define(version: 20141130100320) do
 
   create_table "actualities", force: true do |t|
     t.string   "title"
@@ -60,7 +60,6 @@ ActiveRecord::Schema.define(version: 20140908134238) do
   create_table "colors", force: true do |t|
     t.integer "pt"
     t.string  "name"
-    t.string  "plural_name"
     t.string  "color"
     t.string  "font_color"
   end
