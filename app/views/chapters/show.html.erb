@@ -213,7 +213,7 @@
 
       <% end %>
 
-      <% if pasfait == 0 && signed_in? && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter) %>
+      <% if exovisibles && pasfait == 0 && signed_in? && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter) %>
         <% current_user.sk.chapters << @chapter %>
       <% end %>
 
