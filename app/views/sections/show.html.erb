@@ -433,9 +433,11 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <% possible.delete(possible.first) %>
   <% lecas = 0 %>
 
-  <% if signed_in? && current_user.sk.chapters.exists?(chap[encours])  && !current_user.sk.admin %>
-    <table style="border-radius:15px; background-color:#DDFFDD; border-collapse:separate;" class="table">
-    <% lecas = 1 %>
+  <% if signed_in? && current_user.sk.chapters.exists?(chap[encours]) && !current_user.sk.admin %>
+    <!-- <table style="border-radius:15px; background-color:#DDFFDD; border-collapse:separate;" class="table"> -->
+    <!-- <% lecas = 1 %> -->
+    <table style="border-radius:15px; background-color:#FFFFD0; border-collapse:separate;" class="table">
+    <% lecas = 3 %>
   <% elsif !chap[encours].online %>
     <table style="border-radius:15px; background-color:#FFEEAA; border-collapse:separate;" class="table">
     <% lecas = 2 %>
