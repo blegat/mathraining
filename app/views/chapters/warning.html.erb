@@ -37,7 +37,7 @@ Il sera toujours possible d'ajouter, modifier, et supprimer les points théoriqu
 Cela dit, il est évidemment préférable qu'à la mise en ligne de ce chapitre, les points théoriques soient finalisés.
 
 <h3>Exercices et QCMs</h3>
-<% if @chapter.section.fondation %>
+<% if !@chapter.section.fondation %>
 Les exercices et QCMs permettront aux utilisateurs de débloquer les chapitres dont celui-ci est un prérequis. Ils doivent donc être impérativement :
 <ul>
 <li>
