@@ -358,6 +358,8 @@
     <%= link_to "Créer un sujet", new_subject_path(:q => q), class: 'btn btn-lg btn-default btn-grey' %>
   <% else %>
     <button type=button disabled=true class="btn btn-lg btn-default btn-grey">Créer un sujet</button>
+    <hr style="border-top:1px dashed lightgray;" />
+    Pour pouvoir créer un sujet, vous devez être connecté.
   <% end %>
 </center>
 

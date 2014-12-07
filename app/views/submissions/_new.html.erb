@@ -62,6 +62,11 @@ function add() {
   <br /><br/>
 
   <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => (!signed_in? || current_user.other) %>
+  
+  <% if !signed_in? %>
+    <hr style="border-top:1px dashed lightgray;" />
+    <center>Pour pouvoir faire une soumission, vous devez être connecté.</center>
+  <% end %>
 <% end %>
 
 <script>

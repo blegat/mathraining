@@ -19,7 +19,9 @@
     <% liste2.push(s.name) %>
     <% liste3 = Array.new %>
     <% s.chapters.find(:all, :order => "name DESC").each do |c| %>
-      <% liste3.push([c.name, c.id]) %>
+      <% if c.online || (signed_in? && current_user.sk.admin) %>
+        <% liste3.push([c.name, c.id]) %>
+      <% end %>
     <% end %>
     <% liste2.push(liste3) %>
   
@@ -31,7 +33,9 @@
     <% liste2.push(s.name) %>
     <% liste3 = Array.new %>
     <% s.chapters.find(:all, :order => "name DESC").each do |c| %>
-      <% liste3.push([c.name, c.id]) %>
+      <% if c.online || (signed_in? && current_user.sk.admin) %>
+        <% liste3.push([c.name, c.id]) %>
+      <% end %>
     <% end %>
     <% liste2.push(liste3) %>
   

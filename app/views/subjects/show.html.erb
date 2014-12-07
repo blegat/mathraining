@@ -207,6 +207,8 @@
 
 <% if !signed_in? %>
   <center><button type=button disabled=true class="btn btn-default btn-grey">Suivre ce sujet</button></center>
+  <hr style="border-top:1px dashed lightgray;" />
+  <center>Pour pouvoir répondre à ce sujet ou le suivre, vous devez être connecté.</center>
 <% elsif !current_user.followed_subjects.exists?(@subject) %>
   <center><%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), data: { confirm: "Vous recevrez un email à chaque fois qu'un nouveau message sera posté sur ce sujet."}, class: 'btn btn-default btn-grey' %></center>
 <% else %>

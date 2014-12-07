@@ -1,3 +1,4 @@
+#encoding: utf-8
 module SessionsHelper
   def sign_in(user)
     cookies.permanent[:remember_token] =  user.remember_token
@@ -22,7 +23,7 @@ module SessionsHelper
 
   def signed_in_user
     unless signed_in?
-      redirect_to root_path, notice: "Can't be done without being signed in."
+      redirect_to root_path, danger: "Vous devez être connecté."
     end
   end
 
