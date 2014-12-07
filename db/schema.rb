@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141130100320) do
+ActiveRecord::Schema.define(version: 20141207140143) do
 
   create_table "actualities", force: true do |t|
     t.string   "title"
@@ -301,6 +301,7 @@ ActiveRecord::Schema.define(version: 20141130100320) do
     t.boolean  "admin",       default: false
     t.boolean  "admin_user",  default: false
     t.boolean  "important",   default: false
+    t.integer  "section_id"
   end
 
   add_index "subjects", ["chapter_id"], name: "index_subjects_on_chapter_id"

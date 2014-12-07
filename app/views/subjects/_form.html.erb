@@ -12,67 +12,37 @@
 
 <% liste = Array.new %>
 
-<% liste.push(["Aucun", [["Aucun", 0]]]) %>
+<% liste.push(["Aucun", 0]) %>
 
-<% Section.where(:fondation => true).all.each do |s| %>
-    <% liste2 = Array.new %>
-    <% liste2.push(s.name) %>
-    <% liste3 = Array.new %>
-    <% s.chapters.find(:all, :order => "name DESC").each do |c| %>
-      <% if c.online || (signed_in? && current_user.sk.admin) %>
-        <% liste3.push([c.name, c.id]) %>
+<% Section.where(:fondation => true).to_a.each do |s| %>
+    <% liste.push([s.name, 1000*s.id]) %>
+    <% s.chapters.order(:name).to_a.each do |c| %>
+      <% if c.online || (signed_in? && current_user.sk.admin?) %>
+        <% liste.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
       <% end %>
     <% end %>
-    <% liste2.push(liste3) %>
-  
-    <% liste.push(liste2) %>
 <% end %>
 
-<% Section.where(:fondation => false).all.each do |s| %>
-    <% liste2 = Array.new %>
-    <% liste2.push(s.name) %>
-    <% liste3 = Array.new %>
-    <% s.chapters.find(:all, :order => "name DESC").each do |c| %>
+<% Section.where(:fondation => false).order(:id).to_a.each do |s| %>
+    <% liste.push([s.name, 1000*s.id]) %>
+    <% s.chapters.order(:name).to_a.each do |c| %>
       <% if c.online || (signed_in? && current_user.sk.admin) %>
-        <% liste3.push([c.name, c.id]) %>
+        <% liste.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
       <% end %>
     <% end %>
-    <% liste2.push(liste3) %>
-  
-    <% liste.push(liste2) %>
 <% end %>
 
 <div class="form-group">
 <%= f.label "Chapitre concerné", :disabled => current_user.other %>
-<%= f.select(:chapter_id, grouped_options_for_select(liste, selected_key = @preselect), {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other}) %>
+<%= f.select(:chapter_id, options_for_select(liste, @preselect).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other}) %>
 </div>
 
 <div class="form-group">
-
-<% if iciadmin %>
-
-<%= f.label :message, :disabled => current_user.other %>
-<div class="well" id="MathPreview"></div>
-<div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-<a href="#ici" onClick="JavaScript: TAinsert('<b>','</b>','MathInput'); Preview.Update();"><%= image_tag "bold.jpg", :title => "Gras", :style=>"margin-left:5px;" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('<i>','</i>','MathInput'); Preview.Update();"><%= image_tag "italics.jpg", :title => "Italique" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('<u>','</u>','MathInput'); Preview.Update();"><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('<h4>','</h4>','MathInput'); Preview.Update();"><%= image_tag "title.jpg", :title => "Sous-titre", :style=>"margin-left:15px;" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('<hr>','','MathInput'); Preview.Update();"><%= image_tag "line.jpg", :title => "Séparateur horizontal" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('<ul>\n<li>Point 1','</li>\n<li>Point 2</li>\n</ul>','MathInput'); Preview.Update();"><%= image_tag "list.jpg", :title => "Liste" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('<ol>\n<li>Point 1','</li>\n<li>Point 2</li>\n</ol>','MathInput'); Preview.Update();"><%= image_tag "enumerate.jpg", :title => "Liste numérotée" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('<a href=\'http://www.exemple.com\'>','</a>','MathInput'); Preview.Update();"><%= image_tag "link.jpg", :title => "Lien", :style=>"margin-left:15px;" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('<figure><center><img src=\'/system/pictures/0/votreImage.jpg\' width=\'600px\' />\n\n<figcaption>Légende</figcaption></center></figure>','','MathInput'); Preview.Update();"><%= image_tag "picture.jpg", :title => "Image", :style=>"margin-right:50px;" %></a>
-<%= link_to "Mes images", pictures_path, :target => "_blank" %> - <%= link_to "Uploader une image", new_picture_path, :target => "_blank" %>
-<%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
-
-<% else %>
   
 <%= f.label :message, :disabled => current_user.other %>
 <div class="well" id="MathPreview"></div>
 <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
 <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
-<% end %>
 
 <% if iciadmin %>
   <br/><label class="checkbox-inline">

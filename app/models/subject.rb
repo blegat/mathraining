@@ -3,6 +3,7 @@ class Subject < ActiveRecord::Base
   has_many :messages, dependent: :destroy
   belongs_to :user
   belongs_to :chapter
+  belongs_to :section
 
   has_many :followingsubjects, dependent: :destroy
   has_many :following_users, through: :followingsubjects, source: :user

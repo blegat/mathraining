@@ -15,8 +15,15 @@
 </td>
 <td style="padding-left:10px; vertical-align:top;">
 <%= @subject.title %>
-<% if !@subject.chapter.nil? %>
+<% if @subject.section.nil? %>
+
+<% elsif @subject.chapter.nil? %>
+  <% @chapitre = nil %>
+  <% @section = @subject.section %>
+   - <%= @section.name %>
+<% else %>
   <% @chapitre = @subject.chapter %>
+  <% @section = @subject.chapter.section %>
    - <%= @chapitre.name %>
 <% end %>
 </td>
@@ -74,11 +81,7 @@
 
 <tr><td colspan="2" style="padding:15px;">
 <div>
-<% if @subject.admin_user? %>
-<%= raw(@subject.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h2>[ \r]*\n/,'</h2>').gsub(/<\/h3>[ \r]*\n/,'</h3>').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-<% else %>
 <%= raw((h @subject.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
-<% end %>
 <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size > 0 %>
   <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size == 1 %>
     <br/><br/><b>1 pièce jointe :</b><br/>
@@ -151,11 +154,7 @@
 
 <tr><td colspan="2" style="padding:15px;">
 <div>
-<% if m.admin_user? %>
-<%= raw(m.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h2>[ \r]*\n/,'</h2>').gsub(/<\/h3>[ \r]*\n/,'</h3>').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-<% else %>
 <%= raw((h m.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
-<% end %>
 <% if m.messagefiles.size + m.fakemessagefiles.size > 0 %>
   <% if m.messagefiles.size + m.fakemessagefiles.size == 1 %>
     <br/><br/><b>1 pièce jointe :</b><br/>

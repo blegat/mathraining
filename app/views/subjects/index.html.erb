@@ -29,9 +29,14 @@
 <% end %>
 
 
-<h1>Forum <%= @bonjour %>
-<% unless @chapter.nil? %>
-   - <%= @chapter.name %>
+<h1>Forum
+
+<% if @section.nil? %>
+
+<% elsif @chapitre.nil? %>
+   - <%= @section.name %>
+<% else %>
+   - <%= @chapitre.name %>
 <% end %>
 </h1>
 
@@ -43,24 +48,23 @@
     <% liste.push([s.name, 1000*s.id]) %>
     <% s.chapters.order(:name).to_a.each do |c| %>
       <% if c.online || (signed_in? && current_user.sk.admin?) %>
-        <% liste.push(["- " + c.name, c.id]) %>
+        <% liste.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
       <% end %>
     <% end %>
 <% end %>
 
-<% Section.where(:fondation => false).to_a.each do |s| %>
+<% Section.where(:fondation => false).order(:id).to_a.each do |s| %>
     <% liste.push([s.name, 1000*s.id]) %>
     <% s.chapters.order(:name).to_a.each do |c| %>
       <% if c.online || (signed_in? && current_user.sk.admin) %>
-        <% liste.push(["- " + c.name, c.id]) %>
+        <% liste.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
       <% end %>
     <% end %>
 <% end %>
 
-
 <form action="" method="get" class="form-inline" name="research">
   N'afficher que les sujets relatifs à la section ou au chapitre : 
-  <%= select_tag :q, options_for_select(liste, q), :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
+  <%= select_tag :q, options_for_select(liste, q).html_safe, :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
 </form>
 
 <% if @importants.size > 0 %>
@@ -85,7 +89,11 @@
         <% end %>
 
           <%= link_to s.title, subject_path(s, :q => q) %>
-          <% if @chapter.nil? and not s.chapter.nil? %>
+          <% if s.section.nil? %>
+          
+          <% elsif s.chapter.nil? %>
+            - <%= s.section.name %>
+          <% else %>
             - <%= s.chapter.name %>
           <% end %>
 
@@ -157,10 +165,14 @@
         <% end %>
 
           <%= link_to s.title, subject_path(s, :q => q) %>
-          <% if @chapter.nil? and not s.chapter.nil? %>
+          <% if s.section.nil? %>
+          
+          <% elsif s.chapter.nil? %>
+            - <%= s.section.name %>
+          <% else %>
             - <%= s.chapter.name %>
           <% end %>
-
+          
         <% if s.admin? %>
           </td></tr></table>
         <% end %>
@@ -227,7 +239,11 @@
         <% end %>
 
           <%= link_to s.title, subject_path(s, :q => q) %>
-          <% if @chapter.nil? and not s.chapter.nil? %>
+          <% if s.section.nil? %>
+          
+          <% elsif s.chapter.nil? %>
+            - <%= s.section.name %>
+          <% else %>
             - <%= s.chapter.name %>
           <% end %>
 
@@ -297,7 +313,11 @@
         <% end %>
 
           <%= link_to s.title, subject_path(s, :q => q) %>
-          <% if @chapter.nil? and not s.chapter.nil? %>
+          <% if s.section.nil? %>
+          
+          <% elsif s.chapter.nil? %>
+            - <%= s.section.name %>
+          <% else %>
             - <%= s.chapter.name %>
           <% end %>
 
