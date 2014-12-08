@@ -472,11 +472,11 @@ html>body tbody.scroll {
     <% last = actperday.first[:time].to_time.to_i %>
     
     <% if parquoi == "jour" %>
-      <% first = [inscription.to_time.to_i, actperday.last[:time].to_time.to_i - 86400].min %>
+      <% first = actperday.last[:time].to_time.to_i %>
     <% elsif parquoi == "heure" %>
-      <% first = [inscription.to_time.to_i, actperday.last[:time].to_time.to_i - 3600].min %>
+      <% first = actperday.last[:time].to_time.to_i - 3600 %>
     <% else %>
-      <% first = [inscription.to_time.to_i, actperday.last[:time].to_time.to_i - 60].min %>
+      <% first = actperday.last[:time].to_time.to_i - 60 %>
     <% end %>
     
     <% previousw = 2000 %>
