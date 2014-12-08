@@ -111,14 +111,28 @@ html>body tbody.scroll {
   
   <% inscription = @user.created_at %>
 
+  <% premier = -1 %>
+  <% dernier = 0 %>
+  
   <% if act.size > 0 %>
-
-    <% if inscription.in_time_zone.day != DateTime.now.in_time_zone.day || inscription.in_time_zone.month != DateTime.now.in_time_zone.month || inscription.in_time_zone.year != DateTime.now.in_time_zone.year %>
-      <% parquoi = "jour" %>
-    <% elsif inscription.in_time_zone.hour < act.first[:time].in_time_zone.hour - 1 %>
-      <% parquoi = "heure" %>
-    <% else %>
-      <% parquoi = "minute" %>
+  
+    <% act.each do |a| %>
+      <% if a[:pt] > 0 %>
+        <% dernier = a[:time].in_time_zone %>
+        <% if premier == -1 %>
+          <% premier = a[:time].in_time_zone %>
+        <% end %>
+      <% end %>
+    <% end %>
+    
+    <% if premier != -1 %>
+      <% if dernier.day != DateTime.now.in_time_zone.day || dernier.month != DateTime.now.in_time_zone.month || dernier.year != DateTime.now.in_time_zone.year %>
+        <% parquoi = "jour" %>
+      <% elsif dernier.hour < premier.hour - 1 %>
+        <% parquoi = "heure" %>
+      <% else %>
+        <% parquoi = "minute" %>
+      <% end %>
     <% end %>
 
     <table class="table table-bordered hidden-xs" style="width:606px;">
