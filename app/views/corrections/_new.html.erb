@@ -48,7 +48,7 @@ function add() {
   <div class="well" id="MathPreview"></div>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.Update()", :disabled => current_user.other %>
+    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
   <% else %>
     <%= f.text_area :content, :class => "form-control", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
   <% end %>

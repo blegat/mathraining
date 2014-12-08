@@ -108,12 +108,14 @@ html>body tbody.scroll {
   <% encours = -1 %>
 
   <% parquoi = "" %>
+  
+  <% inscription = @user.created_at %>
 
   <% if act.size > 0 %>
 
-    <% if act.last[:time].in_time_zone.day != DateTime.now.in_time_zone.day || act.last[:time].in_time_zone.month != DateTime.now.in_time_zone.month || act.last[:time].in_time_zone.year != DateTime.now.in_time_zone.year %>
+    <% if inscription.in_time_zone.day != DateTime.now.in_time_zone.day || inscription.in_time_zone.month != DateTime.now.in_time_zone.month || inscription.in_time_zone.year != DateTime.now.in_time_zone.year %>
       <% parquoi = "jour" %>
-    <% elsif act.last[:time].in_time_zone.hour < act.first[:time].in_time_zone.hour - 1 %>
+    <% elsif inscription.in_time_zone.hour < act.first[:time].in_time_zone.hour - 1 %>
       <% parquoi = "heure" %>
     <% else %>
       <% parquoi = "minute" %>
@@ -130,11 +132,11 @@ html>body tbody.scroll {
     <% date = a[:time].in_time_zone %>
 
     <% if parquoi == "jour" %>
-      <% dateday = DateTime.new(date.year, date.month, date.day, 0, 0) %>
+      <% dateday = Time.zone.local(date.year, date.month, date.day, 0, 0, 0) %>
     <% elsif parquoi == "heure" %>
-      <% dateday = DateTime.new(date.year, date.month, date.day, date.hour, 0) %>
+      <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, 0, 0) %>
     <% else %>
-      <% dateday = DateTime.new(date.year, date.month, date.day, date.hour, date.min) %>
+      <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, date.min, 0) %>
     <% end %>
 
     <% if a[:pt] > 0 %>
@@ -322,9 +324,8 @@ html>body tbody.scroll {
 
   <% end %>
 
-  <% date = @user.created_at.in_time_zone %>
   <br/>
-  <center>Inscription : <%= date.day %> <%= mois[date.month-1] %> <%= date.year %></center><br/>
+  <center>Inscription : <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %></center><br/>
 
   </div>
 
@@ -454,48 +455,21 @@ html>body tbody.scroll {
   ctx.fillStyle = 'black';
   ctx.strokeStyle = 'black';
 
-  <% if actperday.size == 1 %>
-    <% (0..22).each do |i| %>
-      ctx.beginPath();
-      ctx.moveTo(pct*453, pct*<%= 20*i+5 %>);
-      ctx.lineTo(pct*453, pct*<%= 20*i+15 %>);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'white';
-      ctx.stroke();
-    <% end %>
-    ctx.beginPath();
-    ctx.arc(pct*453, pct*<%= 455 - 450*(actualrating/maxi) %>, 3, 0, 2 * Math.PI, true);
-    ctx.fill();
-    
-    ctx.font="12px Arial";
-    ctx.fillStyle = 'black';
-    ctx.textAlign = 'center';
-    
-    <% a = actperday.first %>
-    
-    if (pct > 0.7){
-
-    <% if parquoi == "jour" %>
-      ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*453,pct*471);
-    <% elsif parquoi == "heure" %>
-      ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h",pct*453,pct*471);
-    <% else %>
-      ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*453,pct*471);
-    <% end %>
-    
-    }
-  
-  <% else %>
-
     <% last = actperday.first[:time].to_time.to_i %>
-    <% first = actperday.last[:time].to_time.to_i %>
-    <% previousr = 0 %>
-    <% prevw = -100 %>
+    
+    <% if parquoi == "jour" %>
+      <% first = [inscription.to_time.to_i, actperday.last[:time].to_time.to_i - 86400].min %>
+    <% elsif parquoi == "heure" %>
+      <% first = [inscription.to_time.to_i, actperday.last[:time].to_time.to_i - 3600].min %>
+    <% else %>
+      <% first = [inscription.to_time.to_i, actperday.last[:time].to_time.to_i - 60].min %>
+    <% end %>
+    
     <% previousw = 2000 %>
-    <% prevh = -1 %>
 
     <% actperday.each do |a| %>
       <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+      
       <% if previousw - w > 50 %>
         ctx.font="12px Arial";
         ctx.fillStyle = 'black';
@@ -524,27 +498,33 @@ html>body tbody.scroll {
         <% previousw = w %>
       <% end %>
     <% end %>
+    
+    <% w = 3 %>
+    <% r = 0 %>
+    <% previousr = r %>
+    <% h = 450 %>
+    
+    <% prevw = w %>
+    <% prevh = h %>
 
     <% actperday.reverse.each do |a| %>
       <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
       <% r = previousr + a[:pt] %>
       <% previousr = r %>
       <% h = 450 - 450*(r/maxi) %>
-      <% if prevw >= 0 %>
-        ctx.beginPath();
-        ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevh+5 %>);
-        ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'black';
-        ctx.stroke();
-      <% end %>
+      ctx.beginPath();
+      ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevh+5 %>);
+      ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
       ctx.beginPath();
       ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
       ctx.fill();
       <% prevw = w %>
       <% prevh = h %>
     <% end %>
-  <% end %>
+    
 		}
 		
 		//Initial call
