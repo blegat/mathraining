@@ -6,7 +6,11 @@
 Aucun commentaire.<br/><br/>
 <% end %>
 
+<% @lastid = -1 %>
+
 <% @submission.corrections.each do |correction| %>
+
+  <% @lastid = correction.id %>
 
   <table class="table table-bordered" style="margin-top:20px;">
   

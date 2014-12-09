@@ -11,6 +11,18 @@ class CorrectionsController < ApplicationController
     if(params.has_key?:r)
       r = params[:r].to_i
     end
+    
+    lastid = -1
+    
+    @submission.corrections.each do |correction|
+      lastid = correction.id
+    end
+    
+    if lastid != params[:lastcomment].to_i
+      session[:ancientexte] = params[:correction][:content]
+      flash[:danger] = "Un nouveau commentaire a été posté avant le vôtre! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire."
+      redirect_to problem_path(@submission.problem, :sub => @submission, :r => r) and return
+    end
 
     i = 1
     k = 1
