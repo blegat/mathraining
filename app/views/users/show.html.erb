@@ -472,7 +472,7 @@ html>body tbody.scroll {
     <% last = actperday.first[:time].to_time.to_i %>
     
     <% if parquoi == "jour" %>
-      <% first = actperday.last[:time].to_time.to_i %>
+      <% first = actperday.last[:time].to_time.to_i - 86400%>
     <% elsif parquoi == "heure" %>
       <% first = actperday.last[:time].to_time.to_i - 3600 %>
     <% else %>
