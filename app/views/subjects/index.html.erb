@@ -79,7 +79,10 @@
     <td style="text-align:center;" colspan="2">Dernière contribution</td>
   </tr>
   <% @importants.each do |s| %>
-    <tr>
+    <% if current_user.sk.point.forumseen < s.lastcomment %>
+      <% style = "background-color:#FFFFBB;" %>
+    <% end %>
+    <tr style="<%= style %>">
       <td style="vertical-align:middle;">
         <% if s.admin? %>
           <table style="border:none; padding:0px; margin:0px;"><tr><td style="border:none; vertical-align:middle; padding:0px; padding-right:5px;">
@@ -155,7 +158,10 @@
     <td style="text-align:center;">Dernière contribution</td>
   </tr>
   <% @importants.each do |s| %>
-    <tr>
+    <% if current_user.sk.point.forumseen < s.lastcomment %>
+      <% style = "background-color:#FFFFBB;" %>
+    <% end %>
+    <tr style="<%= style %>">
       <td style="vertical-align:middle;" rowspan="2">
         <% if s.admin? %>
           <table style="border:none; padding:0px; margin:0px; width:100%; height:100%;"><tr><td style="border:none; text-align:center; vertical-align:middle; padding:0px; padding-bottom:5px;">
@@ -229,7 +235,10 @@
     <td style="width:50px; text-align:center;">Rép.</td>
     <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
   <% @subjectsfalse.each do |s| %>
-    <tr>
+    <% if current_user.sk.point.forumseen < s.lastcomment %>
+      <% style = "background-color:#FFFFBB;" %>
+    <% end %>
+    <tr style="<%= style %>">
       <td style="vertical-align:middle;">
         <% if s.admin? %>
           <table style="border:none; padding:0px; margin:0px;"><tr><td style="border:none; vertical-align:middle; padding:0px; padding-right:5px;">
@@ -303,7 +312,10 @@
     <td style="text-align:center;">Dernière contribution</td>
   </tr>
   <% @subjectsfalse.each do |s| %>
-    <tr>
+    <% if current_user.sk.point.forumseen < s.lastcomment %>
+      <% style = "background-color:#FFFFBB;" %>
+    <% end %>
+    <tr style="<%= style %>">
       <td style="vertical-align:middle;" rowspan="2">
         <% if s.admin? %>
           <table style="border:none; padding:0px; margin:0px; width:100%;"><tr><td style="border:none; text-align:center; vertical-align:middle; padding:0px; padding-bottom:5px;">
@@ -382,4 +394,10 @@
     Pour pouvoir créer un sujet, vous devez être connecté.
   <% end %>
 </center>
+
+
+<% if signed_in? && !current_user.other && !current_user.sk.see_forum %>
+  <% current_user.sk.point.forumseen = DateTime.current %>
+  <% current_user.sk.point.save %>
+<% end %>
 

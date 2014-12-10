@@ -105,6 +105,14 @@ class User < ActiveRecord::Base
       return false
     end
   end
+  
+  def combien_forum
+    if self.admin?
+      return Subject.where("lastcomment > ?", self.point.forumseen).count
+    else
+      return Subject.where("admin = ? AND lastcomment > ?", false, self.point.forumseen).count
+    end
+  end
 
   def sk
     if self.admin? && self.skin != 0

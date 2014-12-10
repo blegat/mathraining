@@ -51,11 +51,6 @@ class SubjectsController < ApplicationController
     end
     
     @subjectsfalse = @subjects.paginate(:page => params[:page], :per_page => 15)
-  
-    if signed_in? && !current_user.other && !current_user.sk.see_forum
-      current_user.sk.point.forumseen = DateTime.current
-      current_user.sk.point.save
-    end
   end
 
   def show
