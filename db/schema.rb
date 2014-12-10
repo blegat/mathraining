@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141207140143) do
+ActiveRecord::Schema.define(version: 20141210191815) do
 
   create_table "actualities", force: true do |t|
     t.string   "title"
@@ -260,6 +260,7 @@ ActiveRecord::Schema.define(version: 20141207140143) do
     t.datetime "updated_at",  null: false
   end
 
+  add_index "solvedexercises", ["exercise_id"], name: "index_solvedexercises_on_exercise_id"
   add_index "solvedexercises", ["user_id"], name: "index_solvedexercises_on_user_id"
 
   create_table "solvedproblems", force: true do |t|
@@ -278,6 +279,7 @@ ActiveRecord::Schema.define(version: 20141207140143) do
     t.datetime "updated_at", null: false
   end
 
+  add_index "solvedqcms", ["qcm_id"], name: "index_solvedqcms_on_qcm_id"
   add_index "solvedqcms", ["user_id"], name: "index_solvedqcms_on_user_id"
 
   create_table "subjectfiles", force: true do |t|

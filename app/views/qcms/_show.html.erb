@@ -52,6 +52,53 @@ function hideStuff(id, text, btn) {
     (Une seule réponse possible)
   <% end %>
   <br/><br/>
+  
+  <h4>Essais</h4>
+  Corrects :
+  <% compte = 0 %>
+  <% f.solvedqcms.order(:updated_at).all.each do |se| %>
+    <% if se.correct %>
+      <% if compte > 0 %>
+        <%= ", " %>
+      <% end %>
+      <% compte = compte+1 %>
+      <b>
+      <% if se.user.admin %>
+        <%= se.user.name %>
+      <% else %>
+        <%= link_to se.user.name, se.user, {:style => "color:#{se.user.level[:color]}" } %>
+      <% end %>
+      </b>
+      <%= "(#{se.nb_guess-1})" if se.nb_guess-1 > 0 %>
+    <% end %>
+  <% end %>
+  <% if compte == 0 %>
+    <%= "Aucune résolution." %>
+  <% end %>
+  <br />
+  Incorrects :
+  <% compte = 0 %>
+  <% f.solvedqcms.order(:updated_at).all.each do |se| %>
+    <% if !se.correct %>
+      <% if compte > 0 %>
+        <%= ", " %>
+      <% end %>
+      <% compte = compte+1 %>
+      <b>
+      <% if se.user.admin %>
+        <%= se.user.name %>
+      <% else %>
+        <%= link_to se.user.name, se.user, {:style => "color:#{se.user.level[:color]}" } %>
+      <% end %>
+      </b>
+      (<%= se.nb_guess %>)
+    <% end %>
+  <% end %>
+  <% if compte == 0 %>
+    <%= "Aucun utilisateur bloqué." %>
+  <% end %>
+  <br/><br/>
+  
   <h4>Explication</h4>
   <% if f.explanation.size == 0 %>
     <p style="color:orange;"><b>Pas d'explication</b></p>
