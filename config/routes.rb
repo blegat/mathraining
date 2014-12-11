@@ -144,6 +144,8 @@ Mathraining::Application.routes.draw do
 
   match '/contact', to: 'static_pages#contact', :via => [:get]
   
+  match '/stats', to: 'static_pages#statistics', :via => [:get]
+  
   match '/pieces_jointes', to: 'submissionfiles#seeall', :via => [:get]
 
   match '/signup', to: 'users#new', :via => [:get]

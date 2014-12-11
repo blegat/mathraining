@@ -1,0 +1,47 @@
+<% provide(:title, 'Statistiques') %>
+
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
+
+<% if current_user.sk.admin %>
+
+<h1>Statistiques</h1>
+
+<% activite = Array.new %>
+
+<% Solvedexercise.where(:correct => true).each do |e| %>
+  <% pt = e.exercise.value %>
+  <% pt = 0 if e.exercise.chapter.section.fondation %>
+  <% activite.push({:time => e.updated_at, :qui => e.user, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
+<% end %>
+
+<% Solvedqcm.where(:correct => true).each do |q| %>
+  <% pt = q.qcm.value %>
+  <% pt = 0 if q.qcm.chapter.section.fondation %>
+  <% activite.push({:time => q.updated_at, :qui => q.user, :type => 3, :id => q.qcm.id, :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
+<% end %>
+
+<% act = activite.sort{ |a, b| b[:time] <=> a[:time]} %>
+
+
+<table class="table table-bordered" style="width:866px;">
+  <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:200px;">Qui</th><th style="width:400px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
+
+<% act.each do |a| %>
+ <% date = a[:time].in_time_zone %>
+  <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+  <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+  <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
+  <td><span style="font-weight:bold;"><%= link_to a[:qui].fullname, a[:qui], :style => "color:#{a[:qui].level[:color]}" %></span></td>
+  <td style="width:340px;"><%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %> <%= "(#{a[:chapter]})" %></td>
+  <td style="width:50px;">
+  <center>
+    <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
+  </center>
+  </td>
+  </tr>
+<% end %>
+
+</table>
+
+<% end %>
