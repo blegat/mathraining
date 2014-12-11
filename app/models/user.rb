@@ -62,6 +62,10 @@ class User < ActiveRecord::Base
       "#{self.first_name} #{self.last_name}"
     end
   end
+  
+  def fullname
+    "#{self.first_name} #{self.last_name}"
+  end
 
   def solved?(problem)
     return problem.users.include?(self)

@@ -188,9 +188,9 @@
         <li id="fat-menu" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           <% if current_user.other %>
-            (<span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.name %></span>)
+            (<span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.fullname %></span>)
           <% else %>
-            <span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.name %></span>
+            <span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.fullname %></span>
           <% end %>
           <b class="caret"></b>
         </a>
