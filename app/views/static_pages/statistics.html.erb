@@ -5,17 +5,19 @@
 
 <% if current_user.sk.admin %>
 
-<h1>Statistiques</h1>
+<h1>Statistiques (deux derniers jours)</h1>
+
+<% today = Date.today - 2 %>
 
 <% activite = Array.new %>
 
-<% Solvedexercise.where(:correct => true).each do |e| %>
+<% Solvedexercise.where("correct = ? AND updated_at > ?", true, today).each do |e| %>
   <% pt = e.exercise.value %>
   <% pt = 0 if e.exercise.chapter.section.fondation %>
   <% activite.push({:time => e.updated_at, :qui => e.user, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
 <% end %>
 
-<% Solvedqcm.where(:correct => true).each do |q| %>
+<% Solvedqcm.where("correct = ? AND updated_at > ?", true, today).each do |q| %>
   <% pt = q.qcm.value %>
   <% pt = 0 if q.qcm.chapter.section.fondation %>
   <% activite.push({:time => q.updated_at, :qui => q.user, :type => 3, :id => q.qcm.id, :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
