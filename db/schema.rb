@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141210191815) do
+ActiveRecord::Schema.define(version: 20141211165942) do
 
   create_table "actualities", force: true do |t|
     t.string   "title"
@@ -360,6 +360,7 @@ ActiveRecord::Schema.define(version: 20141210191815) do
     t.boolean  "email_confirm",   default: true
     t.integer  "skin",            default: 0
     t.boolean  "active",          default: true
+    t.integer  "seename",         default: 1
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true

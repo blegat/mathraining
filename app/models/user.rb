@@ -16,7 +16,7 @@
 class User < ActiveRecord::Base
   attr_accessible :email, :first_name, :last_name,
     :password, :password_confirmation, :admin, :root,
-    :email_confirm, :key, :skin
+    :email_confirm, :key, :skin, :seename
   has_secure_password
   has_and_belongs_to_many :theories
   has_and_belongs_to_many :chapters, -> {uniq}
@@ -56,7 +56,11 @@ class User < ActiveRecord::Base
   validates :password_confirmation, presence: true
 
   def name
-    "#{self.first_name} #{self.last_name}"
+    if self.seename == 0
+      "#{self.first_name} #{self.last_name[0]}."
+    else
+      "#{self.first_name} #{self.last_name}"
+    end
   end
 
   def solved?(problem)
