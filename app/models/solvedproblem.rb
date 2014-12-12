@@ -1,4 +1,6 @@
 class Solvedproblem < ActiveRecord::Base
+  attr_accessible :resolutiontime
+  
   belongs_to :user
   belongs_to :problem
 

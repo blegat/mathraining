@@ -1,5 +1,5 @@
 class Solvedqcm < ActiveRecord::Base
-  attr_accessible :correct, :qcm_id, :nb_guess, :user_id
+  attr_accessible :correct, :qcm_id, :nb_guess, :user_id, :resolutiontime
 
   belongs_to :qcm
   belongs_to :user

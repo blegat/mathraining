@@ -18,6 +18,7 @@ class SolvedqcmsController < ApplicationController
     link.user_id = user.id
     link.qcm_id = qcm.id
     link.nb_guess = 1
+    link.resolutiontime = DateTime.now
 
     good_guess = true
 
@@ -95,6 +96,7 @@ class SolvedqcmsController < ApplicationController
     end
 
     link.nb_guess = link.nb_guess + 1
+    link.resolutiontime = DateTime.now
 
     good_guess = true
     autre = false

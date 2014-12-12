@@ -13,7 +13,7 @@
 #
 
 class Solvedexercise < ActiveRecord::Base
-  attr_accessible :correct, :guess, :nb_guess
+  attr_accessible :correct, :guess, :nb_guess, :resolutiontime
 
   belongs_to :exercise
   belongs_to :user

@@ -21,6 +21,7 @@ class SolvedexercisesController < ApplicationController
     link.exercise_id = exercise.id
     link.guess = params[:solvedexercise][:guess].gsub(",",".").to_f
     link.nb_guess = 1
+    link.resolutiontime = DateTime.now
     if exercise.decimal
       if absolu(exercise.answer, link.guess) < 0.001
         link.correct = true
@@ -58,7 +59,8 @@ class SolvedexercisesController < ApplicationController
     if link.guess != params[:solvedexercise][:guess].gsub(",",".").to_f
       link.nb_guess = link.nb_guess + 1
       link.guess = params[:solvedexercise][:guess].gsub(",",".").to_f
-
+      link.resolutiontime = DateTime.now
+      
       if exercise.decimal
         if absolu(exercise.answer, link.guess) < 0.001
           link.correct = true

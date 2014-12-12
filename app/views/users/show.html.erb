@@ -79,12 +79,12 @@ html>body tbody.scroll {
   <% exercises.each do |e| %>
     <% pt = e.exercise.value %>
     <% pt = 0 if e.exercise.chapter.section.fondation %>
-    <% activite.push({:time => e.updated_at, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
+    <% activite.push({:time => e.resolutiontime, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
   <% end %>
   <% qcms.each do |q| %>
     <% pt = q.qcm.value %>
     <% pt = 0 if q.qcm.chapter.section.fondation %>
-    <% activite.push({:time => q.updated_at, :type => 3, :id => q.qcm.id,  :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
+    <% activite.push({:time => q.resolutiontime, :type => 3, :id => q.qcm.id,  :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
   <% end %>
   <% problems.each do |p| %>
     <% pt = p.problem.value %>
@@ -97,7 +97,7 @@ html>body tbody.scroll {
       <% end %>      
     <% end %>
     
-    <% activite.push({:time => p.updated_at, :type => 4, :id => p.problem.id, :peutvoir => peutvoir, :pt => pt, :number => p.problem.number, :level => p.problem.level, :section => p.problem.section.id, :fondation => p.problem.section.fondation}) %>
+    <% activite.push({:time => p.resolutiontime, :type => 4, :id => p.problem.id, :peutvoir => peutvoir, :pt => pt, :number => p.problem.number, :level => p.problem.level, :section => p.problem.section.id, :fondation => p.problem.section.fondation}) %>
   <% end %>
 
   <% act = activite.sort{ |a, b| b[:time] <=> a[:time]} %>

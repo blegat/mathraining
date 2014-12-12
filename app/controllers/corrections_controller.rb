@@ -90,7 +90,11 @@ class CorrectionsController < ApplicationController
         @submission.save
         unless @submission.user.solved?(@submission.problem)
           point_attribution(@submission.user, @submission.problem)
-          @submission.problem.users << @submission.user
+          link = Solvedproblem.new
+          link.user_id = @submission.user.id
+          link.problem_id = @submission.problem.id
+          link.resolutiontime = DateTime.now
+          link.save
         end
         m = ' et soumission marquée comme correcte'
       else
