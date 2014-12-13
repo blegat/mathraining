@@ -60,6 +60,7 @@ function add() {
   <input type="hidden" name="lastcomment" value="<%= @lastid %>">
   <br /><br/>
   <% if current_user.sk.admin? %>
+    N'hésitez pas à faire des commentaires, même minimes, pouvant permettre à l'étudiant de progresser. On signalera par exemple une erreur de notation, un oubli de cas particulier, une suggestion d'amélioration... Si une grosse partie est manquante, alors on refusera la solution en demandant de la compléter.<br/><br/>
     <% case @submission.status %>
     <% when 1 ## Faux %>
       <%= f.submit "Poster", class: "btn btn-primary" %>
