@@ -80,6 +80,16 @@ class ChaptersController < ApplicationController
 
   def warning
   end
+  
+  def read
+    @chapter = Chapter.find(params[:chapter_id])
+    @chapter.theories.each do |t|
+      if t.online && !current_user.sk.theories.exists?(t)
+        current_user.sk.theories << t
+      end
+    end
+    redirect_to chapter_path(@chapter, :type => 10)
+  end
 
   def put_online
     @chapter.online = true

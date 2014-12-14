@@ -32,9 +32,15 @@
   <% end %>
 <% end %>
 
-<br/>
+<center>
+<% if !signed_in? || !current_user.sk.admin? %>
+<br/><br/>
+<%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
+<% end %>
 
-<br/><center><%= button_to "Exporter en .tex (version beta)", chapter_export_path(@chapter), class: "btn-primary" %></center>
+<br/><br/>
+
+<%= button_to "Exporter en .tex (version beta)", chapter_export_path(@chapter), class: "btn-primary" %></center>
 
 <% if !signed_in? || !current_user.sk.admin? %>
 

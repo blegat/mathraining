@@ -108,6 +108,8 @@ Mathraining::Application.routes.draw do
     match '/warning', to: 'chapters#warning', :via => [:get]
     match '/export', to: 'chapters#export', :via => [:post], as: :export
     match '/put_online', to: 'chapters#put_online', :via => [:get]
+    
+    match '/read', to: 'chapters#read', :via => [:get], as: :read
 
     resources :theories, only: [:new, :create]
     resources :exercises, only: [:new, :create]
