@@ -79,7 +79,11 @@
     <td style="text-align:center;" colspan="2">Dernière contribution</td>
   </tr>
   <% @importants.each do |s| %>
-    <% if current_user.sk.point.forumseen < s.lastcomment %>
+    <% m = s.messages.order(:id).last %>
+    <% if m.nil? %>
+      <% m = s %>
+    <% end %>
+    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -158,7 +162,11 @@
     <td style="text-align:center;">Dernière contribution</td>
   </tr>
   <% @importants.each do |s| %>
-    <% if current_user.sk.point.forumseen < s.lastcomment %>
+    <% m = s.messages.order(:id).last %>
+    <% if m.nil? %>
+      <% m = s %>
+    <% end %>
+    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -235,7 +243,11 @@
     <td style="width:50px; text-align:center;">Rép.</td>
     <td style="text-align:center;" colspan="2">Dernière contribution</td></tr>
   <% @subjectsfalse.each do |s| %>
-    <% if current_user.sk.point.forumseen < s.lastcomment %>
+    <% m = s.messages.order(:id).last %>
+    <% if m.nil? %>
+      <% m = s %>
+    <% end %>
+    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -312,7 +324,11 @@
     <td style="text-align:center;">Dernière contribution</td>
   </tr>
   <% @subjectsfalse.each do |s| %>
-    <% if current_user.sk.point.forumseen < s.lastcomment %>
+    <% m = s.messages.order(:id).last %>
+    <% if m.nil? %>
+      <% m = s %>
+    <% end %>
+    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -396,7 +412,7 @@
 </center>
 
 
-<% if signed_in? && !current_user.other && !current_user.sk.see_forum %>
+<% if signed_in? && !current_user.other && current_user.sk.combien_forum > 0 %>
   <% current_user.sk.point.forumseen = DateTime.current %>
   <% current_user.sk.point.save %>
 <% end %>

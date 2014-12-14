@@ -96,30 +96,25 @@ class User < ActiveRecord::Base
     end
     return actuallevel
   end
-
-  def see_forum
-    lastdate = '2009-01-01 00:00:00'
-
-    if self.admin?
-      return true if Subject.order("lastcomment DESC").count == 0
-      lastdate = Subject.order("lastcomment DESC").first.lastcomment
-    else
-      return true if Subject.where(admin: false).order("lastcomment DESC").count == 0
-      lastdate = Subject.where(admin: false).order("lastcomment DESC").first.lastcomment
-    end
-    if lastdate < self.point.forumseen
-      return true
-    else
-      return false
-    end
-  end
   
   def combien_forum
+    lastsubjects = Array.new
+    compteur = 0
     if self.admin?
-      return Subject.where("lastcomment > ?", self.point.forumseen).count
+      lastsubjects = Subject.where("lastcomment > ?", self.point.forumseen)
     else
-      return Subject.where("admin = ? AND lastcomment > ?", false, self.point.forumseen).count
+      lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.point.forumseen)
     end
+    lastsubjects.each do |s|
+      m = s.messages.order(:id).last
+      if m.nil?
+      m = s
+      end
+      if m.user.id != self.id
+        compteur = compteur+1
+      end
+    end
+    return compteur
   end
 
   def sk
