@@ -59,7 +59,7 @@ function hideStuff(id, text, btn) {
   <% f.solvedqcms.order(:updated_at).all.each do |se| %>
     <% if se.correct %>
       <% if compte > 0 %>
-        <%= ", " %>
+        <%= " - " %>
       <% end %>
       <% compte = compte+1 %>
       <b>
@@ -81,7 +81,7 @@ function hideStuff(id, text, btn) {
   <% f.solvedqcms.order(:updated_at).all.each do |se| %>
     <% if !se.correct %>
       <% if compte > 0 %>
-        <%= ", " %>
+        <%= " - " %>
       <% end %>
       <% compte = compte+1 %>
       <b>
