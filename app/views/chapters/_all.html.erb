@@ -34,7 +34,7 @@
 
 <center>
 <% if !signed_in? || !current_user.sk.admin? %>
-<br/><br/>
+<br/>
 <%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
 <% end %>
 

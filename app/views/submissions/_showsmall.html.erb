@@ -20,16 +20,6 @@
 <% when 2 %>
   (correcte)
 <% end %>
-
-<% if current_user.sk.admin %>
-  <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %>
-    <% if (following.nil? || following.read) && @submission.status != 0 %>
-      <%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey", :style => "margin-left:25px;" %>
-    <% elsif @submission.status != 0 %>
-      <%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey", :style => "margin-left:25px;" %>
-    <% end %>
-<% end %>
-
 </h3>
 
 <% if (@submission.status == 1 || @submission.status == 3) && !current_user.sk.admin %>
@@ -94,6 +84,16 @@
 </table>
 
 <%= render 'corrections/index' %>
-<% unless @submission.correct? %>
+
+<% if current_user.sk.admin %>
+  <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %>
+    <% if (following.nil? || following.read) && @submission.status != 0 %>
+      <center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey" %></center>
+    <% elsif @submission.status != 0 %>
+      <center><%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey" %></center>
+    <% end %>
+<% end %>
+
+<% if current_user.sk.admin? || current_user.sk == @submission.user %>
   <%= render 'corrections/new' %>
 <% end %>

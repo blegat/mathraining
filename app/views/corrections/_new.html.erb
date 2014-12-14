@@ -64,12 +64,16 @@ function add() {
     <% case @submission.status %>
     <% when 1 ## Faux %>
       <%= f.submit "Poster", class: "btn btn-primary" %>
+      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
+    <% when 2 ## Correct %>
+      <%= f.submit "Poster", class: "btn btn-primary" %>
     <% when 3 ## Nouveau commentaire %>
       <%= f.submit "Poster et laisser la soumission comme erronée", class: "btn btn-danger" %>
+      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
     <% else ## Pas encore corrigé %>
       <%= f.submit "Poster et refuser la soumission", class: "btn btn-danger" %>
+      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
     <% end %>
-    <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
   <% else %>
     <%= f.submit "Poster", class: "btn btn-primary", :disabled => current_user.other %>
   <% end %>
