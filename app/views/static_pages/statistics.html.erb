@@ -34,7 +34,7 @@
   <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
   <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
   <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
-  <td><span style="font-weight:bold;"><%= link_to a[:qui].fullname, a[:qui], :style => "color:#{a[:qui].level[:color]}" %></span></td>
+  <td><span style="font-weight:bold;"><%= link_to a[:qui].name, a[:qui], :style => "color:#{a[:qui].level[:color]}" %></span></td>
   <td style="width:340px;"><%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %> <%= "(#{a[:chapter]})" %></td>
   <td style="width:50px;">
   <center>
