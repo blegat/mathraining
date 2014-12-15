@@ -14,7 +14,7 @@ class CorrectionsController < ApplicationController
     
     lastid = -1
     
-    @submission.corrections.each do |correction|
+    @submission.corrections.order(:created_at).each do |correction|
       lastid = correction.id
     end
     
