@@ -83,7 +83,7 @@
     <% if m.nil? %>
       <% m = s %>
     <% end %>
-    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+    <% if signed_in? && current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -166,7 +166,7 @@
     <% if m.nil? %>
       <% m = s %>
     <% end %>
-    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+    <% if signed_in? && current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -247,7 +247,7 @@
     <% if m.nil? %>
       <% m = s %>
     <% end %>
-    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+    <% if signed_in? && current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -328,7 +328,7 @@
     <% if m.nil? %>
       <% m = s %>
     <% end %>
-    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+    <% if signed_in? && current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
