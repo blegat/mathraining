@@ -70,26 +70,34 @@ html>body tbody.scroll {
 
   <div class="col-lg-7 col-sm-12 col-xs-12">
   <h2>Résolutions</h2>
-  <br/>
   <% exercises = @user.solvedexercises.where(:correct => true) %>
   <% qcms = @user.solvedqcms.where(:correct => true) %>
   <% problems = @user.solvedproblems %>
   <% activite = Array.new %>
+  
+  <% nb_e = 0 %>
+  <% nb_p = 0 %>
 
   <% exercises.each do |e| %>
     <% pt = e.exercise.value %>
     <% pt = 0 if e.exercise.chapter.section.fondation %>
+    <% if pt > 0 %>
+      <% nb_e = nb_e+1 %>
+    <% end %>
     <% activite.push({:time => e.resolutiontime, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
   <% end %>
   <% qcms.each do |q| %>
     <% pt = q.qcm.value %>
     <% pt = 0 if q.qcm.chapter.section.fondation %>
+    <% if pt > 0 %>
+      <% nb_e = nb_e+1 %>
+    <% end %>
     <% activite.push({:time => q.resolutiontime, :type => 3, :id => q.qcm.id,  :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
   <% end %>
   <% problems.each do |p| %>
     <% pt = p.problem.value %>
     <% pt = 0 if p.problem.section.fondation %>
-    
+    <% nb_p = nb_p+1 %>
     <% peutvoir = true %>
     <% if !signed_in? || !current_user.sk.admin? %>
       <% p.problem.chapters.each do |c| %>
@@ -133,6 +141,13 @@ html>body tbody.scroll {
       <% else %>
         <% parquoi = "minute" %>
       <% end %>
+    <% end %>
+    
+    <%= @user.name %> a résolu <b><%= nb_e %></b> exercice<%= "s (non fondamentaux)" if nb_e > 1 %><%= " (non fondamental)" if nb_e == 1 %><%= "." if nb_p == 0 %>
+    <% if nb_p > 0 %>
+      et <b><%= nb_p %></b> problème<%= "s" if nb_p > 1 %>.<br/><br/>
+    <% else %>
+      <br/><br/>
     <% end %>
 
     <table class="table table-bordered hidden-xs" style="width:606px;">

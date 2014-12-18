@@ -112,7 +112,12 @@ class CorrectionsController < ApplicationController
         following.save
 
         @submission.followings.each do |f|
-          f.touch
+          if f.user == current_user.sk
+            f.touch
+          else
+            f.read = false
+            f.save
+          end
         end
 
         notif = Notif.new
