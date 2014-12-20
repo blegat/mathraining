@@ -1,6 +1,5 @@
 #encoding: utf-8
 class MessagefilesController < ApplicationController
-  before_filter :signed_in_user
   before_filter :have_access, only: [:download]
   before_filter :check_root, only: [:fake_delete]
 
@@ -36,7 +35,7 @@ class MessagefilesController < ApplicationController
 
   def have_access
     @thing = Messagefile.find(params[:id])
-    redirect_to root_path if (!current_user.sk.admin? && @thing.message.subject.admin)
+    redirect_to root_path if ((!signed_in? || !current_user.sk.admin?) && @thing.message.subject.admin)
   end
   
   def check_root
