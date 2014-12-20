@@ -2,6 +2,8 @@
 
 <% provide(:title, @subject.title.html_safe) %>
 
+
+
 <% q = 0 %>
 <% if(params.has_key?:q) %>
   <% q = params[:q].to_i %>
@@ -30,8 +32,6 @@
 </tr>
 </table>
 </h1>
-
-
 
 
 <% if @subject.admin? %>
@@ -81,7 +81,7 @@
 
 <tr><td colspan="2" style="padding:15px;">
 <div>
-<%= raw((h @subject.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
+<%= raw(bbcode(@subject.content)) %>
 <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size > 0 %>
   <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size == 1 %>
     <br/><br/><b>1 pièce jointe :</b><br/>
@@ -154,7 +154,7 @@
 
 <tr><td colspan="2" style="padding:15px;">
 <div>
-<%= raw((h m.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
+<%= raw(bbcode(m.content)) %>
 <% if m.messagefiles.size + m.fakemessagefiles.size > 0 %>
   <% if m.messagefiles.size + m.fakemessagefiles.size == 1 %>
     <br/><br/><b>1 pièce jointe :</b><br/>
@@ -163,7 +163,7 @@
   <% end %>
   <% m.messagefiles.each do |f| %>
     <%= link_to f.file_file_name, download_messagefile_path(f) %>
-    <% if current_user.sk.root? %>
+    <% if signed_in? && current_user.sk.root? %>
        - <%= link_to 'Supprimer le contenu', messagefile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
     <% end %>
     <br/>

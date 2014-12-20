@@ -108,8 +108,8 @@ module ApplicationHelper
     options_for_select.join("\n")
   end
   
-  def testtest()
-    2
+  def bbcode(m)
+  (h m.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>').gsub(/\[b\](.*?)\[\/b\]/mi, '<b>\1</b>').gsub(/\[u\](.*?)\[\/u\]/mi, '<u>\1</u>').gsub(/\[i\](.*?)\[\/i\]/mi, '<i>\1</i>').gsub(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/mi, '<a target=\'blank\' href=\'\1\'>\2</a>')
   end
 
 end

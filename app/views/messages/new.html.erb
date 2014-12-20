@@ -109,11 +109,7 @@ Répondre
 
 <tr><td colspan="2" style="padding:15px;">
 <div>
-<% if m.admin_user? %>
-<%= raw(m.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h2>[ \r]*\n/,'</h2>').gsub(/<\/h3>[ \r]*\n/,'</h3>').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-<% else %>
-<%= raw((h m.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
-<% end %>
+<%= raw(bbcode(m.content)) %>
 </div>
 </td></tr>
 
@@ -157,11 +153,7 @@ Répondre
 
 <tr><td colspan="2" style="padding:15px;">
 <div>
-<% if @subject.admin_user? %>
-<%= raw(@subject.content.gsub(/<hr>[ \r]*\n/,'<hr>').gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/h2>[ \r]*\n/,'</h2>').gsub(/<\/h3>[ \r]*\n/,'</h3>').gsub(/<\/h4>[ \r]*\n/,'</h4>').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-<% else %>
-<%= raw((h @subject.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
-<% end %>
+<%= raw(bbcode(@subject.content)) %>
 <% if @subject.subjectfiles.size > 0 %>
   <% if @subject.subjectfiles.size == 1 %>
     <br/><br/><b>1 pièce jointe.</b>

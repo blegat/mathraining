@@ -52,7 +52,7 @@ var PreviewSafe = {
   CreatePreview: function () {
     Preview.timeout = null;
     if (this.mjRunning) return;
-    var text = document.getElementById("MathInput").value.replace(/</g,'&lt').replace(/>/g,'&gt').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/\n/g, '<br/>');
+    var text = document.getElementById("MathInput").value.replace(/</g,'&lt').replace(/>/g,'&gt').replace(/\[b\](.*?)\[\/b\]/gmi, '<b>$1</b>').replace(/\[u\](.*?)\[\/u\]/gmi, '<u>$1</u>').replace(/\[i\](.*?)\[\/i\]/gmi, '<i>$1</i>').replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/\n/g, '<br/>');
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
     this.mjRunning = true;

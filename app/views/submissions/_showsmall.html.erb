@@ -60,7 +60,7 @@
 
 <tr><td colspan="2" style="padding:15px;">
 <div>
-<%= raw((h @submission.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
+<%= raw(bbcode(@submission.content)) %>
 <% if @submission.submissionfiles.size + @submission.fakesubmissionfiles.size > 0 %>
   <% if @submission.submissionfiles.size + @submission.fakesubmissionfiles.size == 1 %>
     <br/><br/><b>1 pièce jointe :</b><br/>

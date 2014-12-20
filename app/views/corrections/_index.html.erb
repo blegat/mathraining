@@ -58,7 +58,7 @@ Aucun commentaire.<br/><br/>
 
   <tr><td colspan="2" style="padding:15px;">
   <div>
-  <%= raw((h correction.content.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>')) %>
+  <%= raw(bbcode(correction.content)) %>
   <% if correction.correctionfiles.size + correction.fakecorrectionfiles.size > 0 %>
     <% if correction.correctionfiles.size + correction.fakecorrectionfiles.size == 1 %>
       <br/><br/><b>1 pièce jointe :</b><br/>

@@ -1,20 +1,10 @@
 <script>
   function fakeupdate(){
-  
-    var stop = document.getElementById('stop');
-    if (stop.checked){
-        Preview.Update();
-    }
-    
-  }
-  
-  function changestop(){
     var stop = document.getElementById('stop');
     if (stop.checked){
         Preview.Update();
     }
   }
-  
 </script>
 
 <%= render 'shared/error_messages', object: f.object %>
@@ -39,6 +29,6 @@
 <a href="#ici" onClick="JavaScript: TAinsert('<a target=\'blank\' href=\'http://www.exemple.com\'>','</a>','MathInput'); fakeupdate();"><%= image_tag "link.jpg", :title => "Lien" %></a>
 <a href="#ici" onClick="JavaScript: TAinsert('<figure><center><img src=\'/system/pictures/0/votreImage.jpg\' width=\'600px\' />\n\n<figcaption>Légende</figcaption></center></figure>','','MathInput'); fakeupdate();"><%= image_tag "picture.jpg", :title => "Image", :style=>"margin-right:50px;" %></a>
 <%= link_to "Mes images", pictures_path, :target => "_blank" %> - <%= link_to "Uploader une image", new_picture_path, :target => "_blank" %>
-- <input type="checkbox" id="stop" name="stop" onclick="changestop()" checked="checked" /> Activer la preview
+- <input type="checkbox" id="stop" name="stop" onclick="fakeupdate()" checked="checked" /> Activer la preview
 <%= f.text_area :content, :class => "form-control", :style => "height:250px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
 </div>
