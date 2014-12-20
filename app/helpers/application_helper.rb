@@ -109,7 +109,7 @@ module ApplicationHelper
   end
   
   def bbcode(m)
-  (h m.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>').gsub(/\[b\](.*?)\[\/b\]/mi, '<b>\1</b>').gsub(/\[u\](.*?)\[\/u\]/mi, '<u>\1</u>').gsub(/\[i\](.*?)\[\/i\]/mi, '<i>\1</i>').gsub(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/mi, '<a target=\'blank\' href=\'\1\'>\2</a>')
+  (h m.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ')).gsub(/\n/, '<br>').gsub(/\[b\](.*?)\[\/b\]/mi, '<b>\1</b>').gsub(/\[u\](.*?)\[\/u\]/mi, '<u>\1</u>').gsub(/\[i\](.*?)\[\/i\]/mi, '<i>\1</i>').gsub(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/mi, '<a target=\'blank\' href=\'\1\'>\2</a>').gsub(/\:\-\)/, image_tag("Smiley1.gif")).gsub(/\:\-\(/, image_tag("Smiley2.gif")).gsub(/\:\-[D]/, image_tag("Smiley3.gif")).gsub(/\:\-[O]/, image_tag("Smiley4.gif")).gsub(/\:\-[P]/, image_tag("Smiley5.gif")).gsub(/\:&#39;\(/, image_tag("Smiley6.gif")).gsub(/\;\-\)/, image_tag("Smiley7.gif")).gsub(/\:\-\|/, image_tag("Smiley8.gif"))
   end
 
 end
