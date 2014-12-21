@@ -1,6 +1,5 @@
 <% provide(:title, "Actualisez votre profil") %>
 <h1>Actualisez votre profil</h1>
-Vous devez à nouveau rentrer votre mot de passe (éventuellement un nouveau si vous désirez en changer) pour modifier vos données.<br/><br/>
     <%= form_for(@user) do |f| %>
       <%= render 'form_edit', f: f %>
       <%= f.submit "Mettre à jour", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
