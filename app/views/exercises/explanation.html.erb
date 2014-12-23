@@ -20,7 +20,7 @@ function hideStuff(id, text, btn) {
 Modifier une explication
 </h1>
 
-<h3>Enoncé</h3>
+<h3>Énoncé</h3>
 <%= raw(@exercise.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>').
   gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
   gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
