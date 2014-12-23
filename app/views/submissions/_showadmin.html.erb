@@ -1,0 +1,55 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<% r = 0 %>
+<% if(params.has_key?:r) %>
+  <% r = params[:r].to_i %>
+<% end %>
+
+<% if s.status == 0  || (@situation == 2 && !current_user.sk.followings.where(:submission_id => s.id).first.read) %>
+<tr class="warning">
+<% elsif s.status == 2 %>
+<tr class="success">
+<% elsif s.status == 1 %>
+<tr class="danger">
+<% else %>
+<tr class="info">
+<% end %>
+
+<td class="hidden-xs" style="width:70px; text-align:center;">
+<%= image_tag s.icon %>
+</td>
+<td class="hidden-xs">
+<% date = s.created_at.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</td>
+<td>
+<% date = s.updated_at.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</td>
+<% if nom %>
+<td style="font-weight:bold;">
+<% if s.user.admin %>
+  <%= s.user.name %>
+<% else %>
+  <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+<% end %>
+</td>
+
+<% if @situation == 1 %>
+  <td class="hidden-xs">
+  <% premier = true %>
+  <% s.followings.each do |f| %>
+    <%= " - " if !premier %>
+    <b><%= f.user.name %></b>
+    <% premier = false %>
+  <% end %>
+  </td>
+<% end %>
+
+<% end %>
+<td style="text-align:center;">
+<%= link_to "Voir", problem_path(s.problem, :sub => s.id, :r => r) %>
+</td>
+
+</tr>
+

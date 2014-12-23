@@ -5,7 +5,7 @@
   <% r = params[:r].to_i %>
 <% end %>
 
-<% if s.status == 0  || (!@new && !current_user.sk.followings.where(:submission_id => s.id).first.read) %>
+<% if s.status == 0 %>
 <tr class="warning">
 <% elsif s.status == 2 %>
 <tr class="success">
@@ -30,15 +30,7 @@
 <% date = s.updated_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
-<% if nom %>
-<td style="font-weight:bold;">
-<% if s.user.admin %>
-  <%= s.user.name %>
-<% else %>
-  <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
-<% end %>
-</td>
-<% end %>
+
 <td style="text-align:center;">
 <%= link_to "Voir", problem_path(s.problem, :sub => s.id, :r => r) %>
 </td>
