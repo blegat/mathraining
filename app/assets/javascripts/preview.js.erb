@@ -1,5 +1,5 @@
 
-var PreviewSafe = {
+var Preview = {
   delay: 150,        // delay after keystroke before updating
 
   preview: null,     // filled in by Init below
@@ -52,7 +52,7 @@ var PreviewSafe = {
   CreatePreview: function () {
     Preview.timeout = null;
     if (this.mjRunning) return;
-    var text = document.getElementById("MathInput").value.replace(/</g,'&lt').replace(/>/g,'&gt').replace(/\[b\](.*?)\[\/b\]/gmi, '<b>$1</b>').replace(/\[u\](.*?)\[\/u\]/gmi, '<u>$1</u>').replace(/\[i\](.*?)\[\/i\]/gmi, '<i>$1</i>').replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/\n/g, '<br/>').replace(/\:\-\)/g,'<%= image_tag "Smiley1.gif", :width => "20px", :height => "20px" %>').replace(/\:\-\(/g,'<%= image_tag "Smiley2.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[D]/g,'<%= image_tag "Smiley3.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[O]/g,'<%= image_tag "Smiley4.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[P]/g,'<%= image_tag "Smiley5.gif", :width => "20px", :height => "20px" %>').replace(/\:\'\(/g,'<%= image_tag "Smiley6.gif", :width => "20px", :height => "20px" %>').replace(/\;\-\)/g,'<%= image_tag "Smiley7.gif", :width => "20px", :height => "20px" %>').replace(/\:\-\|/g,'<%= image_tag "Smiley8.gif", :width => "20px", :height => "20px" %>');
+    var text = document.getElementById("MathInput").value.replace(/<hr>[ \r]*\n/g,'<hr>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/<\/h2>[ \r]*\n/g,'</h2>').replace(/<\/h3>[ \r]*\n/g,'</h3>').replace(/<\/h4>[ \r]*\n/g,'</h4>').replace(/<\/ol>[ \r]*\n/g, '</ol>').replace(/\n[ \r]*<\/ol>/g, '</ol>').replace(/<\/ul>[ \r]*\n/g, '</ul>').replace(/\n[ \r]*<\/ul>/g, '</ul>').replace(/\n(\040)*<li>/g, '<li>').replace(/<evidence>[ \r]*\n/g, '<evidence>').replace(/<\/evidence>[ \r]*\n/g, '</evidence>').replace(/<evidence>/g, '<div class="evidence">').replace(/<\/evidence>/g, '</div>').replace(/\n/g, '<br/>').replace(/\:\-\)/g,'<%= image_tag "Smiley1.gif", :width => "20px", :height => "20px" %>');
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
     this.mjRunning = true;
@@ -79,6 +79,6 @@ var PreviewSafe = {
 //
 //  Cache a callback to the CreatePreview action
 //
-PreviewSafe.callback = MathJax.Callback(["CreatePreview",PreviewSafe]);
-PreviewSafe.callback.autoReset = true;  // make sure it can run more than once
+Preview.callback = MathJax.Callback(["CreatePreview",Preview]);
+Preview.callback.autoReset = true;  // make sure it can run more than once
 
