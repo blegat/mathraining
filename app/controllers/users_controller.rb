@@ -134,7 +134,7 @@ class UsersController < ApplicationController
   end
 
   def notifications_update
-    @notifications = current_user.sk.followed_submissions.order("updated_at DESC").paginate(page: params[:page]).to_a
+    @notifications = current_user.sk.followed_submissions.where("status > 0").order("updated_at DESC").paginate(page: params[:page]).to_a
     @new = false
     render :notifications
   end

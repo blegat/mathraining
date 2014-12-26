@@ -72,6 +72,11 @@ class CorrectionsController < ApplicationController
         j = j+1
       end
 
+      if @submission.status == 0
+        @submission.followings.each do |f|
+          Following.delete(f.id)
+        end
+      end
 
       # Change the status of the submission
       # We don't change the status if it is 2 (solved)
@@ -100,6 +105,7 @@ class CorrectionsController < ApplicationController
       else
         @submission.touch
       end
+      
       # Put in admin / following
       if current_user.sk.admin?
         following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)

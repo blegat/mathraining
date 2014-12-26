@@ -40,6 +40,7 @@
   <% premier = true %>
   <% s.followings.each do |f| %>
     <%= " - " if !premier %>
+    <%= "Réservé par " if s.status == 0 && premier %>
     <b><%= f.user.name %></b>
     <% premier = false %>
   <% end %>

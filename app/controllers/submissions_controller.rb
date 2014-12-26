@@ -3,7 +3,7 @@ class SubmissionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_problem
   before_filter :can_see, only: [:show]
-  before_filter :admin_user, only: [:read, :unread]
+  before_filter :admin_user, only: [:read, :unread, :reserve]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
 
@@ -145,7 +145,44 @@ class SubmissionsController < ApplicationController
   def unread
     un_read(false, "non lue")
   end
-
+  
+  def reserve
+    r = 0
+    if(params.has_key?:r)
+      r = params[:r].to_i
+    end
+    @submission = Submission.find(params[:submission_id])
+    if @submission.followings.count > 0
+      flash[:danger] = "Cette soumission a déjà été réservée."
+      redirect_to problem_path(@problem, :sub => @submission, :r => r)
+    else
+      f = Following.new
+      f.user = current_user.sk
+      f.submission = @submission
+      f.read = true
+      f.save
+      flash[:success] = "Soumission réservée."
+      redirect_to problem_path(@problem, :sub => @submission, :r => r)
+    end
+  end
+  
+  def unreserve
+    r = 0
+    if(params.has_key?:r)
+      r = params[:r].to_i
+    end
+    @submission = Submission.find(params[:submission_id])
+    f = @submission.followings.first
+    if @submission.status != 0 || f.nil? || f.user != current_user.sk
+      redirect_to problem_path(@problem, :sub => @submission, :r => r)
+    else
+      Following.delete(f.id)
+      flash[:success] = "Réservation annulée."
+      redirect_to problem_path(@problem, :sub => @submission, :r => r)
+    end
+    
+  end
+  
   private
 
   def can_see

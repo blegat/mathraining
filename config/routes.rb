@@ -61,6 +61,8 @@ Mathraining::Application.routes.draw do
       resources :corrections, only: [:create]
       match '/read', to: 'submissions#read', :via => [:get], as: :read
       match '/unread', to: 'submissions#unread', :via => [:get], as: :unread
+      match '/reserve', to: 'submissions#reserve', :via => [:get], as: :reserve
+      match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
     end
   end
   
