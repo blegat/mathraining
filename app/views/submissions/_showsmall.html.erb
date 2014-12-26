@@ -26,7 +26,7 @@
   <% f = @submission.followings.first %>
   <% if f.nil? %>
     <div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
-    Avant de corriger cette soumission, prévenez les autres que vous vous en occuper!
+    Avant de corriger cette soumission, prévenez les autres que vous vous en occupez!
     <%= link_to 'Réserver cette soumission', problem_submission_reserve_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
     </div>
   <% elsif f.user == current_user.sk %>
