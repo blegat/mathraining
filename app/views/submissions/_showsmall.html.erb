@@ -89,7 +89,7 @@
   <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %>
     <% if !following.nil? && following.read && @submission.status != 0 %>
       <center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey" %></center>
-    <% elsif @submission.status != 0 %>
+    <% elsif !following.nil && @submission.status != 0 %>
       <center><%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey" %></center>
     <% end %>
 <% end %>
