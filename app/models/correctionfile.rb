@@ -6,5 +6,5 @@ class Correctionfile < ActiveRecord::Base
   belongs_to :correction
   validates_attachment_presence :file
   validates_attachment_size :file, :less_than => 10.megabytes
-  validates_attachment_content_type :file, :content_type => ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf', 'application/zip', 'application/doc']
+  validates_attachment_content_type :file, :content_type => ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf', 'application/zip', 'application/msword', 'text/plain']
 end
