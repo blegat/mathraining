@@ -30,7 +30,7 @@ html>body tbody.scroll {
 <% actualrating = @user.point.rating %>
 <% niveau = @user.level %>
 
-<h1 style="color:<%= niveau[:color] %>;"><b><%= @user.name %></b><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] %></span>
+<h1 style="color:<%= niveau[:color] %>;"><b><%= @user.name %></b><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] if @user.sex == 0 %><%= niveau[:femininename] if @user.sex != 0 %></span>
 <% if signed_in? && current_user.sk.admin %>
 <span style="color:<%= niveau[:color] %>; margin-left:100px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
 <% end %>

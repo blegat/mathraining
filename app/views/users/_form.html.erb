@@ -18,6 +18,14 @@ N'afficher que l'initiale de mon nom de famille.
 </div>
 
 <div class="form-group">
+<%= f.label :sex %><br/>
+<%= f.radio_button :sex, 0 %>
+<span style="margin-right:10px;">Masculin</span>
+<%= f.radio_button :sex, 1 %>
+Féminin
+</div>
+
+<div class="form-group">
 <%= f.label :email %>
 <%= f.email_field :email, :class => "form-control", :style => "width:200px;" %>
 </div>
