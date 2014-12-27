@@ -1,11 +1,11 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_filter :signed_in_user,
-    only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notification_new, :notification_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate]
+    only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate]
   before_filter :correct_user,
     only: [:edit, :update]
   before_filter :admin_user,
-    only: [:notification_new, :notification_update, :take_skin, :unactivate, :reactivate]
+    only: [:notifications_new, :notifications_update, :take_skin, :unactivate, :reactivate]
   before_filter :root_user,
     only: [:create_administrator, :recompute_scores, :destroy]
   before_filter :signed_out_user,
