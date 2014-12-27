@@ -47,7 +47,7 @@ fr:
       user:
         first_name: "Prénom"
         last_name: "Nom"
-        sex: "Genre"
+        sex: "Sexe"
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
   will_paginate:
