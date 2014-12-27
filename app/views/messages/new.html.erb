@@ -37,8 +37,23 @@ function add() {
 }
 </SCRIPT>
 
+<script type="text/javascript">
+function showStuff(id) {
+    document.getElementById("indice" + id).style.display = 'inline';
+    document.getElementById("show" + id).style.display = 'none';
+    document.getElementById("hide" + id).style.display = 'inline';
+}
+function hideStuff(id) {
+    document.getElementById("indice" + id).style.display = 'none';
+    document.getElementById("show" + id).style.display = 'inline';
+    document.getElementById("hide" + id).style.display = 'none';
+}
+</script>
+
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% provide(:title, 'Répondre') %>
+
+<% nb_indice = 0 %>
 
 <% q = 0 %>
 <% if(params.has_key?:q) %>
@@ -109,7 +124,18 @@ Répondre
 
 <tr><td colspan="2" style="padding:15px;">
 <div>
-<%= raw(bbcode(m.content)) %>
+<% bb = bbcode(m.content) %>
+<% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div style='background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;'><a href='#' id='show#{nb_indice}' onclick='showStuff(#{nb_indice}); return false;' style='display:inline;' class='btn btn-default btn-grey'>#{$1}</a><a href='#' id='hide#{nb_indice}' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(#{nb_indice}); return false;'>#{$1}</a><span id='indice#{nb_indice}' style='display:none;'><br/><br/>#{$2}</span></div>"} %>
+<% nb_indice = nb_indice+1 %>
+<% end %>
+<%= raw(bb) %>
+<% if m.messagefiles.size > 0 %>
+  <% if m.messagefiles.size == 1 %>
+    <br/><br/><b>1 pièce jointe.</b>
+  <% else %>
+    <br/><br/><b><%= m.messagefiles.size %> pièces jointes.</b>
+  <% end %>
+<% end %>
 </div>
 </td></tr>
 
@@ -153,7 +179,11 @@ Répondre
 
 <tr><td colspan="2" style="padding:15px;">
 <div>
-<%= raw(bbcode(@subject.content)) %>
+<% bb = bbcode(@subject.content) %>
+<% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div style='background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;'><a href='#' id='show#{nb_indice}' onclick='showStuff(#{nb_indice}); return false;' style='display:inline;' class='btn btn-default btn-grey'>#{$1}</a><a href='#' id='hide#{nb_indice}' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(#{nb_indice}); return false;'>#{$1}</a><span id='indice#{nb_indice}' style='display:none;'><br/><br/>#{$2}</span></div>"} %>
+<% nb_indice = nb_indice+1 %>
+<% end %>
+<%= raw(bb) %>
 <% if @subject.subjectfiles.size > 0 %>
   <% if @subject.subjectfiles.size == 1 %>
     <br/><br/><b>1 pièce jointe.</b>
