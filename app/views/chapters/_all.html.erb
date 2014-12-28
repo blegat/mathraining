@@ -33,12 +33,16 @@
 <% end %>
 
 <center>
-<% if !signed_in? || !current_user.sk.admin? %>
 <br/>
-<%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
+<% if !signed_in? || !current_user.sk.admin? %>
+  <% if signed_in? %>
+    <%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
+  <% else %>
+    <button type=button disabled=true class="btn btn-default btn-grey">Marquer toute la théorie comme lue</button><br/>
+  <% end %>
 <% end %>
 
-<br/><br/>
+<br/>
 
 <%= button_to "Exporter en .tex (version beta)", chapter_export_path(@chapter), class: "btn-primary" %></center>
 
