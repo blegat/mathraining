@@ -26,7 +26,7 @@
     <% rating = p.rating %>
 
     <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
-    <td><center><%= rank if rating != previouspoint %>. </center></td>
+    <td><center><%= "#{ rank }." if rating != previouspoint %></center></td>
     <td><b> <%= link_to user.name, user, {:style => "color:#{user.level.color}" } %> </b> <%= "(banni)" if signed_in? && current_user.sk.admin? && !user.active %></td>
 
     <% previouspoint = rating %>
