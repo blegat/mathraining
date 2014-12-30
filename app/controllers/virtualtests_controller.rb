@@ -20,6 +20,7 @@ class VirtualtestsController < ApplicationController
   end
 
   def edit
+    @virtualtest = Virtualtest.find(params[:id])
   end
 
   def create
@@ -43,6 +44,14 @@ class VirtualtestsController < ApplicationController
   end
 
   def update
+    @virtualtest = Virtualtest.find(params[:id])
+    @virtualtest.duration = params[:virtualtest][:duration]
+    if @virtualtest.save
+      flash[:success] = "Test virtuel ajouté."
+      redirect_to @virtualtest
+    else
+      render 'new'
+    end
   end
 
   def destroy

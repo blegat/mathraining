@@ -99,7 +99,7 @@ Test #<%= @virtualtest.number %>
   <% end %>
   
   <br/><br/>
-  <%= link_to "Supprimer ce test", @virtualtest, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce test virtuel? Cela ne supprimera pas les problèmes associés." } %>
+  <%= link_to "Modifier ce test", edit_virtualtest_path(@virtualtest) %> - <%= link_to "Supprimer ce test", @virtualtest, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce test virtuel? Cela ne supprimera pas les problèmes associés." } %>
 </center>
 <% end %>
 

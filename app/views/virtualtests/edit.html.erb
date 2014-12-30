@@ -1,0 +1,11 @@
+<% provide(:title, 'Modifier un test virtuel') %>
+
+<h1>
+<span style="font-size:16px;">Tests virtuels ></span>
+Modifier un test virtuel
+</h1>
+
+<%= form_for @virtualtest do |f| %>
+  <%= render 'form', f: f %>
+  <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
+<% end %>
