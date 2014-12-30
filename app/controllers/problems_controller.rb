@@ -138,14 +138,18 @@ class ProblemsController < ApplicationController
   def add_virtualtest
     @problem = Problem.find(params[:problem_id])	
     if !params[:problem][:virtualtest_id].empty?
-      @t = Virtualtest.find(params[:problem][:virtualtest_id].to_i)
-      lastnumero = @t.problems.order(:position).reverse_order.first
-      if lastnumero.nil?
-        @problem.position = 1
+      if params[:problem][:virtualtest_id].to_i == 0
+        @problem.virtualtest_id = 0
       else
-        @problem.position = lastnumero.position+1
+        @t = Virtualtest.find(params[:problem][:virtualtest_id].to_i)
+        lastnumero = @t.problems.order(:position).reverse_order.first
+        if lastnumero.nil?
+          @problem.position = 1
+        else
+          @problem.position = lastnumero.position+1
+        end
+        @problem.virtualtest = @t
       end
-      @problem.virtualtest = @t
       @problem.save
     end
     redirect_to @problem
