@@ -12,6 +12,7 @@
 <% allsec = Section.order(:id).where(:fondation => false).to_a %>
 
   <% rank = 1 %>
+  <% previouspoint = -1 %>
   <% points.each do |p| %>
     <% user = User.find(p.user) %>
     <% if !user.admin? %>
@@ -21,12 +22,15 @@
       <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th class="hidden-xs" style="width:260px;"><center>Préférences</center></th>
       </tr>
     <% end %>
+    
+    <% rating = p.rating %>
 
     <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
-    <td><center><%= rank %>. </center></td>
+    <td><center><%= rank if rating != previouspoint %>. </center></td>
     <td><b> <%= link_to user.name, user, {:style => "color:#{user.level.color}" } %> </b> <%= "(banni)" if signed_in? && current_user.sk.admin? && !user.active %></td>
 
-    <% rating = p.rating %>
+    <% previouspoint = rating %>
+
     <td><center><%= rating %></center></td>
 
     <% p = Pointspersection.where(:user_id => user) %>
