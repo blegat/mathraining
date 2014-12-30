@@ -13,6 +13,10 @@
   <span style="font-size:16px;">Problèmes ></span>
   <span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
 <%= "Problème ##{ @problem.number }" %>
+
+  <% if !@problem.virtualtest.nil? %>
+  - <%= link_to "Test ##{@problem.virtualtest.number}", @problem.virtualtest %>
+  <% end %>
     <%= "(en construction)" if !@problem.online %>
     <% if !signed_in? || !current_user.sk.admin %>
     <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
@@ -20,6 +24,32 @@
   </h1>
   
   <% if signed_in? && current_user.sk.admin? %>
+  
+  <% if !@problem.online? %>        
+    <%= form_for(:problem, :url => problem_add_virtualtest_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
+	  <div class="form-inline">
+	    <% selectionne = 0 %>
+	    <% vt = @problem.virtualtest %>
+        <% if vt.nil? %>
+          Ce problème ne fait partie d'aucun test virtuel.
+        <% else %>
+          Ce problème fait partie du <b>test virtuel #<%= vt.number %></b>.
+          <% selectionne = vt.id %>
+        <% end %>
+        
+        <% liste = Array.new %>
+        <% liste.push(["Aucun test virtuel", 0]) %>
+        <% Virtualtest.where(online: false).all.each do |t| %>
+          <% liste.push(["Test virtuel ##{ t.number }", t.id]) %>
+        <% end %>
+    
+        Faire appartenir ce problème à : 
+        <%= f.select(:virtualtest_id, options_for_select(liste, selectionne), {}, {:prompt => true, :class => "form-control"}) %>
+        <%= f.submit "OK", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  <% end %>
+  
   <h3>Prérequis (uniquement visibles des administrateurs)</h3>
   
   <% has_pre = false %>

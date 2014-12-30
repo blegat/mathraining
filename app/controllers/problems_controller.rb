@@ -1,8 +1,8 @@
 #encoding: utf-8
 class ProblemsController < ApplicationController
-  before_filter :signed_in_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite]
+  before_filter :signed_in_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite]
+    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_filter :root_user, only: [:destroy]
   before_filter :has_access, only: [:show]
   before_filter :online_problem, only: [:show]
@@ -134,6 +134,75 @@ class ProblemsController < ApplicationController
     end
     redirect_to @problem
   end
+  
+  def add_virtualtest
+    @problem = Problem.find(params[:problem_id])	
+    if !params[:problem][:virtualtest_id].empty?
+      @t = Virtualtest.find(params[:problem][:virtualtest_id].to_i)
+      lastnumero = @t.problems.order(:position).reverse_order.first
+      if lastnumero.nil?
+        @problem.position = 1
+      else
+        @problem.position = lastnumero.position+1
+      end
+      @problem.virtualtest = @t
+      @problem.save
+    end
+    redirect_to @problem
+  end
+  
+  def order_minus
+    @problem = Problem.find(params[:problem_id])
+    @t = @problem.virtualtest
+    @problem2 = @t.problems.where("position < ?", @problem.position).order('position').reverse_order.first
+    err = swap_position(@problem, @problem2)
+    if err.nil?
+      flash[:success] = "Problème déplacé vers la droite."
+    else
+      flash[:danger] = err
+    end
+    redirect_to virtualtest_path(@t, :p => @problem.id)
+  end
+
+  def order_plus
+    @problem = Problem.find(params[:problem_id])
+    @t = @problem.virtualtest
+    @problem2 = @t.problems.where("position > ?", @problem.position).order('position').first
+    err = swap_position(@problem, @problem2)
+    if err.nil?
+      flash[:success] = "Problème déplacé vers la gauche."
+    else
+      flash[:danger] = err
+    end
+    redirect_to virtualtest_path(@t, :p => @problem.id)
+  end
+  
+  def swap_position(a, b)
+    err = nil
+    Problem.transaction do
+      x = a.position
+      a.position = b.position
+      b.position = x
+      a.save(validate: false)
+      b.save(validate: false)
+      unless a.valid? and b.valid?
+        erra = get_errors(a)
+        errb = get_errors(b)
+        if erra.nil?
+          if errb.nil?
+            err = "Quelque chose a mal tourné."
+          else
+            err = "#{errb} pour #{b.title}"
+          end
+        else
+          # if a is not valid b.valid? is not executed
+          err = "#{erra} pour #{a.title}"
+        end
+        raise ActiveRecord::Rollback
+      end
+    end
+    return err
+  end
 
   private
 
@@ -148,13 +217,26 @@ class ProblemsController < ApplicationController
   
   def has_access
     @problem = Problem.find(params[:id])
+    visible = true
     if !signed_in? || !current_user.sk.admin?
-      visible = true
       @problem.chapters.each do |c|
         visible = false if !signed_in? || !current_user.sk.solved?(c)
       end
-      redirect_to root_path if !visible
     end
+    
+    t = @problem.virtualtest
+    
+    if !t.nil?
+      if !signed_in?
+        visible = false
+      elsif !current_user.sk.admin?
+        if current_user.sk.status(t) <= 0
+          visible = false
+        end
+      end
+    end
+    
+    redirect_to root_path if !visible
   end
   
   def online_problem

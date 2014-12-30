@@ -22,7 +22,7 @@
 <% end %>
 </h3>
 
-<% if current_user.sk.admin && @submission.status == 0 %>
+<% if current_user.sk.admin && @submission.status == 0 && @submission.visible %>
   <% f = @submission.followings.first %>
   <% if f.nil? %>
     <div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
@@ -102,6 +102,11 @@
 
 </table>
 
+<% if @submission.intest && @submission.score != -1 && (current_user.sk.admin? || current_user.sk == @submission.user) %>
+<h4>Score obtenu</h4>
+      <center><div style="padding:3px; font-size:24px; border:1px solid orange; background-color:#FFFFCC;"><%= @submission.score %> / 7</span></center><br/>
+<% end %>
+
 <%= render 'corrections/index' %>
 
 <% if current_user.sk.admin %>
@@ -113,6 +118,10 @@
     <% end %>
 <% end %>
 
-<% if current_user.sk.admin? || current_user.sk == @submission.user %>
+<% if current_user.sk.admin? && !@submission.visible %>
+  Cette soumission fait partie d'un test virtuel qui n'est pas terminé. Vous ne pourrez la corriger qu'une fois le temps de celui-ci écoulé.
+<% elsif !current_user.sk.admin? && current_user.sk == @submission.user && @submission.intest && @submission.score == -1 %>
+  Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.
+<% elsif current_user.sk.admin? || current_user.sk == @submission.user %>
   <%= render 'corrections/new' %>
 <% end %>

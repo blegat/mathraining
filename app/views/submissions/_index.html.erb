@@ -1,6 +1,6 @@
 <% if current_user.sk.admin %>
   <h3>Soumissions récentes</h3>
-  <% submissions = problem.submissions.order('created_at DESC').paginate(page: params[:page]) %>
+  <% submissions = problem.submissions.where(visible: true).order('created_at DESC').paginate(page: params[:page]) %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>

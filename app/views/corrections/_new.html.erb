@@ -83,6 +83,21 @@ function add() {
       <%= f.submit "Poster et laisser la soumission comme erronée", class: "btn btn-danger" %>
       <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
     <% else ## Pas encore corrigé %>
+      <% if @submission.intest && @submission.score == -1 %>
+      <div class="form-group">
+      <label>Score attribué (sur 7)</label>
+      <input type="number" name="score" class="form-control" style="width:70px;" min="0" max="7" /> 
+      </div>
+      Rappel sur la cotation des problèmes :
+      <ul>
+      <li>7 : Solution parfaitement correcte</li>
+      <li>5-6 : Solution essentiellement correcte mais contenant quelques erreurs (on ne prendra pas en compte les fautes de frappe)</li>
+      <li>3-4 : Moitié de solution (par exemple lorsque le problème est divisé en deux parties)</li>
+      <li>1-2 : Quelques éléments de solution (restons généreux)</li>
+      <li>0 : Aucun élément de solution</li>
+      </ul><br/>
+      Veuillez accepter ou refuser la solution indépendamment du score attribué, comme pour un problème normal. On acceptera donc essentiellement les solutions ayant obtenu un 7, mais des exceptions (dans un sens comme dans l'autre) restent possibles.<br/><br/>
+      <% end %>
       <%= f.submit "Poster et refuser la soumission", class: "btn btn-danger" %>
       <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
     <% end %>

@@ -1,0 +1,260 @@
+<head>
+<style>
+  table.tableau td, th {
+    padding: 8px;
+    border: 1px solid black;
+  }
+</style>
+</head>
+
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<% provide(:title, 'Tests virtuels') %>
+
+<% compteur = 0 %>
+
+<h1>Tests virtuels</h1>
+
+<% if signed_in? %>
+
+<% Virtualtest.all.each do |t| %>
+  <% access = true %>
+  
+  <% nb_prob = 0 %>
+  <% pre = Array.new %>
+  <% niveaumoyen = 0.0 %>
+  
+  <% t.problems.each do |p| %>
+    <% nb_prob += 1 %>
+    <% niveaumoyen += p.level %>
+    <% p.chapters.each do |c| %>
+      <% pre.push(c) %>
+      <% access = false if !current_user.sk.solved?(c) %>
+    <% end %>
+  <% end %>
+  
+  <% if nb_prob > 0 %>
+    <% niveaumoyen = niveaumoyen / nb_prob.to_f %>
+  <% end %>
+  
+  <% access = false if !t.online? %>
+  <% access = true if current_user.sk.admin? %>
+  
+  <% if access %>
+    <% compteur = compteur + 1 %>
+    <% status = current_user.sk.status(t) %>
+    <% if (current_user.sk.admin? && t.online?) || (!current_user.sk.admin? && status == -1) %>
+      <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
+    <% elsif (current_user.sk.admin? && !t.online?) || status == 0 %>
+      <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFEEAA;">
+    <% else %>
+      <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#DDFFDD;">
+    <% end %>
+    
+    <center><h3 style="margin-top:20px; margin-bottom:15px;"><%= link_to "Test ##{ t.number }", t %> <%= "(en construction)" if !t.online %></h3></center>
+    
+    <% if current_user.sk.admin? %>
+      <b>Prérequis : </b>
+      <% prems = true %>
+      <% pre.each do |c| %>
+        <%= "-" if !prems %>
+        <%= link_to c.name, c %>
+        <%= "(en construction)" if !c.online %>
+        <% prems = false %>
+      <% end %>
+      <br/>
+    <% end %>
+    
+    <table width="100%" style="margin-top:30px;"><tr>
+    <td width="33%" style="font-size:18px;"><center><%= nb_prob %> problèmes</center></td>
+    <td width="33%" style="font-size:18px;"><center>Durée : <%= t.duration / 60 %>h<%= "0" if (t.duration % 60) < 10 %><%= t.duration % 60 %></center></td>
+    <td width="33%" style="font-size:18px;"><center>Niveau moyen : 
+    <% if niveaumoyen == 0 %>
+      -
+    <% else %>
+      <%= niveaumoyen.round(1) %>
+    <% end %>
+    </center>
+    </td>
+    </tr>
+    </table>
+    
+    <% if !current_user.sk.admin? && status >= 0 %>
+      <% initial = Takentest.find_by(user_id: current_user.sk.id, virtualtest_id: t.id).takentime %>
+      <% depart = initial.to_i %>
+    <% end %>
+    
+    <% if !current_user.sk.admin? && status == 0 %>
+    
+<script type="text/javascript">
+function RemainingTime(){
+
+if (!Date.now) {
+    Date.now = function() { return new Date().getTime(); }
+}
+
+var d = Math.floor(Date.now() / 1000)
+
+var reste = <%= t.duration * 60 %> - d + <%= depart %>
+
+if (reste < 0) {
+  document.getElementById('clockbox').innerHTML = "Temps écoulé"
+}
+else {
+  var resteh = Math.floor(reste / 3600)
+  reste = reste - 3600 * resteh
+  var restem = Math.floor(reste / 60)
+  var restes = reste - 60 * restem
+  
+  if(resteh < 10){ afficheh = "0" + resteh }
+  else { afficheh = resteh }
+  
+  if(restem < 10){ affichem = "0" + restem }
+  else { affichem = restem }
+  
+  if(restes < 10){ affiches = "0" + restes }
+  else { affiches = restes }
+  
+  document.getElementById('clockbox').innerHTML = afficheh + "h" + affichem + ":" + affiches
+}
+
+}
+
+window.onload=function(){
+RemainingTime();
+setInterval(RemainingTime,1000);
+}
+</script>
+
+    <br/><br/>
+    <center><span style="font-size:20px;">Temps restant : <b><span id="clockbox">--h--:--</span></b></span></center>
+
+    <% end %>
+    
+    
+    <% if !current_user.sk.admin? && status == 1 %>
+    
+<br/>
+
+<table width="100%">
+<tr>
+<td width="50%" style="font-size:18px;">
+<center>
+Test commencé le
+<% date = initial.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</center>
+</td>
+<td width="50%">
+
+<center>
+<table style="text-align:center; border:1px solid black; font-size:16px; margin-top:10px;">
+<tr>
+<% (1..nb_prob).each do |i| %>
+  <th style="padding:10px; border:1px solid black;">P<%= i %></th>
+<% end %>
+<th style="padding:10px; border:1px solid black;">Total</th>
+</tr>
+<tr>
+<% total = 0 %>
+<% existetotal = true %>
+<% t.problems.order(:position).each do |p| %>
+  <td style="padding:10px; border:1px solid black;">
+  <% s = p.submissions.where(user_id: current_user.sk.id, intest: true).first %>
+  <% if s.nil? %>
+    0
+  <% elsif s.score == -1 %>
+    ?
+    <% existetotal = false %>
+  <% else %>
+    <%= s.score %>
+    <% total = total + s.score %>
+  <% end %>
+  </td>
+<% end %>
+
+<td style="padding:10px; border:1px solid black;">
+<% if existetotal %>
+  <%= total %>
+<% else %>
+  ?
+<% end %>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+    <% end %>
+    
+    <% if current_user.sk.admin? && t.takentests.count > 0 %>
+    <br/><br/>
+    <center>
+    <table class="tableau">
+    <tr style="background-color:#FFE0E0;">
+    <th>Date de début</th>
+    <th>Fini?</th>
+    <th>Qui</th>
+    <% (1..nb_prob).each do |i| %>
+      <th style="text-align:center;">P<%= i %></th>
+    <% end %>
+    <th style="text-align:center;">Total</th>
+    </tr>
+    
+    <% t.takentests.order(:id).each do |tt| %>
+      <% if tt.status == 0 %>
+        <tr style="background-color:yellow;">
+      <% else %>
+        <tr style="background-color:white;">
+      <% end %>
+      <% u = tt.user %>
+      <td><% date = tt.takentime.in_time_zone %><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></td>
+      <td style="text-align:center;"><%= "Oui" if tt.status == 1 %><%= "Non" if tt.status == 0 %></td>
+      <td><b><%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %></b></td>
+      <% totalexiste = true %>
+      <% total = 0 %>
+      <% t.problems.order(:position).each do |p| %>
+        <td style="text-align:center;">
+        <% s = p.submissions.where(user_id: u.id, intest: true).first %>
+        <% if s.nil? %>
+          0
+        <% elsif s.score == -1 %>
+          <%= link_to "?", problem_path(s.problem, :sub => s) %>
+          <% totalexiste = false %>
+        <% else %>
+          <%= link_to s.score, problem_path(s.problem, :sub => s) %>
+          <% total = total + s.score %>
+        <% end %>
+        </td>
+      <% end %>
+      <td style="text-align:center;">
+      <% if !totalexiste %>
+        ?
+      <% else %>
+        <%= total %>
+      <% end %>
+      </td>
+      </tr>
+    <% end %>
+    </table>
+    </center>
+    <br/>
+    <% end %>
+    
+    </div><br/>
+  <% end %>
+<% end %>
+
+<% if current_user.sk.admin? %>
+  <center>
+  <%= button_to "Ajouter un test virtuel", new_virtualtest_path, method: :get, class: 'btn btn-lg btn-default btn-grey' %>
+  </center>
+<% end %>	
+
+<% end %>
+
+<% if compteur == 0 %>
+Aucun test virtuel n'est disponible.
+<% end %>

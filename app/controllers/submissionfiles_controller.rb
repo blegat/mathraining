@@ -23,7 +23,7 @@ class SubmissionfilesController < ApplicationController
     @thing.destroy
     
     flash[:success] = "Contenu de la pièce jointe supprimé."
-    redirect_to chapter_path(@submission.problem.chapter, :type => 4, :which => @submission.problem.id, :sub => @submission)
+    redirect_to problem_path(@submission.problem, :sub => @submission)
   end
   
   def seeall

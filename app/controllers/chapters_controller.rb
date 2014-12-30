@@ -13,7 +13,7 @@ class ChaptersController < ApplicationController
     only: [:warning, :put_online]
 
   def index
-    redirect_to sections_path
+    redirect_to root_path
   end
 
   def show
@@ -107,7 +107,7 @@ class ChaptersController < ApplicationController
  
 
   def admin_user
-    redirect_to sections_path unless current_user.sk.admin?
+    redirect_to root_path unless current_user.sk.admin?
   end
 
   def chapter_exists1
@@ -131,21 +131,21 @@ class ChaptersController < ApplicationController
   end
 
   def online_chapter
-    redirect_to sections_path unless ((signed_in? && current_user.sk.admin?) || @chapter.online)
+    redirect_to root_path unless ((signed_in? && current_user.sk.admin?) || @chapter.online)
   end
 
   def unlocked_chapter
     if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
         if (p.section.fondation && !current_user.sk.chapters.exists?(p))
-          redirect_to sections_path and return
+          redirect_to root_path and return
         end
       end
     end
   end
 
   def delete_online
-    redirect_to sections_path if @chapter.online
+    redirect_to root_path if @chapter.online
   end
 
   def prerequisites_online

@@ -15,10 +15,12 @@
 include ApplicationHelper
 
 class Problem < ActiveRecord::Base
-  attr_accessible :statement, :online, :level, :explanation, :number
+  attr_accessible :statement, :online, :level, :explanation, :number, :position
 
   has_and_belongs_to_many :chapters, -> {uniq}
   belongs_to :section
+  
+  belongs_to :virtualtest
 
   has_many :submissions, dependent: :destroy
 

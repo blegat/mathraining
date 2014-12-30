@@ -1,0 +1,201 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<% provide(:title, "Test virtuel ##{ @virtualtest.number }") %>
+
+<% statut = current_user.sk.status(@virtualtest) %>
+
+<% if !current_user.sk.admin? && statut >= 0 %>
+  <% initial = Takentest.find_by(user_id: current_user.sk.id, virtualtest_id: @virtualtest.id).takentime %>
+  <% depart = initial.to_i %>
+<% else %>
+  <% depart = 0 %>
+<% end %>
+
+<script type="text/javascript">
+function RemainingTime(){
+
+if (!Date.now) {
+    Date.now = function() { return new Date().getTime(); }
+}
+
+var d = Math.floor(Date.now() / 1000)
+
+var reste = <%= @virtualtest.duration * 60 %> - d + <%= depart %>
+
+if (reste < 0) {
+  document.getElementById('clockbox').innerHTML = "Temps écoulé"
+}
+else {
+  var resteh = Math.floor(reste / 3600)
+  reste = reste - 3600 * resteh
+  var restem = Math.floor(reste / 60)
+  var restes = reste - 60 * restem
+  
+  if(resteh < 10){ afficheh = "0" + resteh }
+  else { afficheh = resteh }
+  
+  if(restem < 10){ affichem = "0" + restem }
+  else { affichem = restem }
+  
+  if(restes < 10){ affiches = "0" + restes }
+  else { affiches = restes }
+  
+  document.getElementById('clockbox').innerHTML = afficheh + "h" + affichem + ":" + affiches
+}
+
+}
+
+window.onload=function(){
+RemainingTime();
+setInterval(RemainingTime,1000);
+}
+</script>
+
+<% compteur = 0 %>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Tests virtuels", virtualtests_path %> ></span>
+Test #<%= @virtualtest.number %>
+</h1>
+
+<% nb_prob = 0 %>
+<% niveaumoyen = 0.0 %>
+<% can_online = true %>
+  
+<% @virtualtest.problems.each do |p| %>
+  <% nb_prob += 1 %>
+  <% niveaumoyen += p.level %>
+  <% can_online = false if !p.online? %>
+<% end %>
+  
+<% if nb_prob > 0 %>
+  <% niveaumoyen = niveaumoyen / nb_prob.to_f %>
+<% end %>
+
+<table width="100%" style="margin-top:15px; border:2px dashed orange;"><tr>
+<td width="33%" style="font-size:18px; padding:7px;"><center><%= nb_prob %> problèmes</center></td>
+<td width="33%" style="font-size:18px; padding:7px;"><center>Durée : <%= @virtualtest.duration / 60 %>h<%= "0" if (@virtualtest.duration % 60) < 10 %><%= @virtualtest.duration % 60 %></center></td>
+<td width="33%" style="font-size:18px; padding:7px;"><center>Niveau moyen : 
+<% if niveaumoyen == 0 %>
+  -
+<% else %>
+  <%= niveaumoyen.round(1) %>
+<% end %>
+</center>
+</td>
+</tr></table>
+
+<% if !@virtualtest.online? && current_user.sk.admin? %>
+<br/>
+<center>
+  <% if nb_prob == 0 %>
+    <%= button_to "Mettre en ligne", virtualtest_put_online_path(@virtualtest), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
+    (Au moins un problème nécessaire)
+  <% elsif !can_online %>
+    <%= button_to "Mettre en ligne", virtualtest_put_online_path(@virtualtest), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
+    (Problèmes doivent être en ligne)
+  <% else %>
+    <%= button_to "Mettre en ligne", virtualtest_put_online_path(@virtualtest), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Etes vous sûr de vouloir mettre ce test virtuel en ligne? Vous ne pourrez alors plus le modifier!" } %>
+  <% end %>
+</center>
+<% end %>
+
+<% if !current_user.sk.admin? && statut == -1 %>
+  <br/><center><%= button_to "Commencer ce test", virtualtest_begin_test_path(@virtualtest), method: :get, class: 'btn btn-lg btn-default btn-grey', disabled: current_user.other, data: { confirm: "Etes vous certain de vouloir commencer ce test? Soyez sûr d'avoir #{@virtualtest.duration / 60}h#{"0" if (@virtualtest.duration % 60) < 10}#{@virtualtest.duration % 60} devant vous!" } %></center>
+<% elsif !current_user.sk.admin? && statut == 0 %>
+<br/>
+<center><span style="font-size:20px;">Temps restant : <b><span id="clockbox">--h--:--</span></b></span></center>
+<% end %>
+
+<% if !current_user.sk.admin? && statut == 1 %>
+<br/>
+<table width="100%">
+<tr>
+<td width="50%" style="font-size:18px;">
+<center>
+Test commencé le
+<% date = initial.in_time_zone %>
+<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</center>
+</td>
+<td width="50%">
+<center>
+<table style="text-align:center; border:1px solid black; font-size:16px; margin-top:10px;">
+<tr>
+<% (1..nb_prob).each do |i| %>
+  <th style="padding:10px; border:1px solid black;">P<%= i %></th>
+<% end %>
+<th style="padding:10px; border:1px solid black;">Total</th>
+</tr>
+<tr>
+<% total = 0 %>
+<% existetotal = true %>
+<% @virtualtest.problems.order(:position).each do |p| %>
+  <td style="padding:10px; border:1px solid black;">
+  <% s = p.submissions.where(user_id: current_user.sk.id, intest: true).first %>
+  <% if s.nil? %>
+    0
+  <% elsif s.score == -1 %>
+    ?
+    <% existetotal = false %>
+  <% else %>
+    <%= s.score %>
+    <% total = total + s.score %>
+  <% end %>
+  </td>
+<% end %>
+
+<td style="padding:10px; border:1px solid black;">
+<% if existetotal %>
+  <%= total %>
+<% else %>
+  ?
+<% end %>
+</td>
+</tr>
+</table>
+</center>
+</td>
+</tr>
+</table>
+<br/>
+<% end %>
+
+<% if current_user.sk.admin? || statut >= 0 %>
+
+<% x = 1 %>
+<% numero = 0 %>
+
+<% prob = -1 %>
+<% @problem = nil %>
+<% if(params.has_key?:p) %>
+  <% prob = params[:p].to_i %>
+<% end %>
+
+<br/>
+<ul class="nav nav-tabs nav-justified">
+<% @virtualtest.problems.order(:position).all.each do |p| %>
+  <li role="presentation"
+  <% if p.id == prob %>
+    class="active"
+    <% numero = x %>
+    <% @problem = p %>
+  <% end %>
+  ><%= link_to "Problème #{ x }", virtualtest_path(@virtualtest, :p => p.id) %></li>
+  <% x = x+1 %>
+<% end %> 
+</ul>
+
+<% if !@problem.nil? %>
+  <%= render 'problems/showintest', problem: @problem, virtualtest: @virtualtest %>
+  
+  <% if current_user.sk.admin? && !@virtualtest.online? && nb_prob > 1 %>
+  <br/><br/><center>Déplacer ce problème vers la
+  <%= link_to "gauche", problem_order_minus_path(@problem) if numero > 1 %>
+  <%= "|" if numero > 1 && numero < nb_prob %>
+  <%= link_to "droite", problem_order_plus_path(@problem) if numero < nb_prob %>
+  <% end %>
+  </center>
+<% end %>
+
+<% end %>

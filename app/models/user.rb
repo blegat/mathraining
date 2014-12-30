@@ -71,9 +71,18 @@ class User < ActiveRecord::Base
   def solved?(problem)
     return problem.users.include?(self)
   end
+  
+  def status(virtualtest)
+    x = Takentest.find_by(user_id: self.id, virtualtest_id: virtualtest.id)
+    if x.nil?
+      return -1
+    else
+      return x.status
+    end
+  end
 
   def notifications_new
-    Submission.where("status = ?", 0)
+    Submission.where(status: 0, visible: true)
   end
 
   def notifications_update

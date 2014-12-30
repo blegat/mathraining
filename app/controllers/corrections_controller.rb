@@ -12,6 +12,12 @@ class CorrectionsController < ApplicationController
       r = params[:r].to_i
     end
     
+    if @submission.status == 0 && @submission.intest && @submission.score == -1 && (params["score".to_sym].nil? || params["score".to_sym].blank?)
+      flash[:danger] = "Veuillez donner un score à cette solution."
+      session[:ancientexte] = params[:correction][:content]
+      redirect_to problem_path(@submission.problem, :sub => @submission, :r => r) and return
+    end
+    
     lastid = -1
     
     @submission.corrections.order(:created_at).each do |correction|
@@ -70,6 +76,10 @@ class CorrectionsController < ApplicationController
         attach[j-1].correction = correction
         attach[j-1].save
         j = j+1
+      end
+      
+      if @submission.status == 0 && @submission.intest && @submission.score == -1
+        @submission.score = params["score".to_sym].to_i
       end
 
       if @submission.status == 0

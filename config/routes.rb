@@ -57,7 +57,11 @@ Mathraining::Application.routes.draw do
     match '/put_online', to: 'problems#put_online', :via => [:get], as: :put_online
     match '/explanation', to: "problems#explanation", :via => [:get]
     match '/update_explanation', to: "problems#update_explanation", :via => [:patch], as: :update_explanation
+    match '/add_virtualtest', to: 'problems#add_virtualtest', :via => [:post], as: :add_virtualtest
+    match '/intest', to: 'submissions#intest', :via => [:get], as: :intest
+    match '/create_intest', to: 'submissions#create_intest', :via => [:post], as: :create_intest
     resources :submissions, only: [:create] do
+      match '/update_intest', to: 'submissions#update_intest', :via => [:post], as: :update_intest
       resources :corrections, only: [:create]
       match '/read', to: 'submissions#read', :via => [:get], as: :read
       match '/unread', to: 'submissions#unread', :via => [:get], as: :unread
@@ -129,6 +133,11 @@ Mathraining::Application.routes.draw do
     match '/reactivate', to: 'users#reactivate', :via => [:get], as: :reactivate
     match '/take_skin', to: 'users#take_skin', :via => [:get], as: :take_skin
     match '/leave_skin', to: 'users#leave_skin', :via => [:get], as: :leave_skin
+  end
+  
+  resources :virtualtests do
+    match '/put_online', to: 'virtualtests#put_online', :via => [:get], as: :put_online
+    match '/begin_test', to: 'virtualtests#begin_test', :via => [:get], as: :begin_test
   end
   
   resources :followingsubjects

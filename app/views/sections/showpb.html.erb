@@ -22,6 +22,14 @@
       <% end %>
     <% end %>
   <% end %>
+  
+  <% t = p.virtualtest %>
+  
+  <% if !t.nil? && !current_user.sk.admin? %>
+    <% if current_user.sk.status(t) <= 0 %>
+      <% visible = false %>
+    <% end %>
+  <% end %>
 
   <% if visible %>
     <% if compteur == 0 %>
@@ -49,7 +57,11 @@
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
     <% end %>
 
-    <center><h3 style="margin-top:20px; margin-bottom:15px;"><%= link_to "Problème ##{ p.number }", p %> <%= "(en construction)" if !p.online %></h3></center>
+    <center><h3 style="margin-top:20px; margin-bottom:15px;"><%= link_to "Problème ##{ p.number }", p %>
+    <% if !p.virtualtest.nil? %>
+      - <%= link_to "Test virtuel ##{p.virtualtest.number}", p.virtualtest %>
+    <% end %>
+    <%= "(en construction)" if !p.online %></h3></center>
     <% if signed_in? && current_user.sk.admin? %>
       <b>Prérequis : </b>
       <% prems = true %>

@@ -99,10 +99,14 @@ html>body tbody.scroll {
     <% pt = 0 if p.problem.section.fondation %>
     <% nb_p = nb_p+1 %>
     <% peutvoir = true %>
-    <% if !signed_in? || !current_user.sk.admin? %>
+    <% t = p.problem.virtualtest %>
+    <% if t.nil? && (!signed_in? || !current_user.sk.admin?) %>
       <% p.problem.chapters.each do |c| %>
         <% peutvoir = false if !debloque[c.id] %>
       <% end %>      
+    <% end %>
+    <% if !t.nil? && (!signed_in? || !current_user.sk.admin?) %>
+      <% peutvoir = false if current_user.sk.status(t) <= 0 %>
     <% end %>
     
     <% activite.push({:time => p.resolutiontime, :type => 4, :id => p.problem.id, :peutvoir => peutvoir, :pt => pt, :number => p.problem.number, :level => p.problem.level, :section => p.problem.section.id, :fondation => p.problem.section.fondation}) %>
