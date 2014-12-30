@@ -1,8 +1,8 @@
 #encoding: utf-8
 class VirtualtestsController < ApplicationController
   before_filter :signed_in_user
-  before_filter :admin_user, only: [:destroy, :update, :edit, :new, :create, :put_online]
-  before_filter :recup, only: [:show]
+  before_filter :admin_user, only: [:destroy, :update, :edit, :new, :create, :put_online, :destroy]
+  before_filter :recup, only: [:show, :destroy]
   before_filter :recup2, only: [:begin_test]
   before_filter :has_access, only: [:show, :begin_test]
   before_filter :online_test, only: [:show, :begin_test]
@@ -46,6 +46,13 @@ class VirtualtestsController < ApplicationController
   end
 
   def destroy
+    @virtualtest.problems.each do |p|
+      p.virtualtest_id = 0
+      p.position = 0
+      p.save
+    end
+    @virtualtest.destroy
+    redirect_to virtualtests_path
   end
 
   def put_online

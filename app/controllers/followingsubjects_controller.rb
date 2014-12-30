@@ -35,4 +35,5 @@ class FollowingsubjectsController < ApplicationController
       redirect_to subject_path(sub)
     end
   end
+  
 end

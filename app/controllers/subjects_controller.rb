@@ -326,6 +326,9 @@ class SubjectsController < ApplicationController
       end
       m.destroy
     end
+    @subject.followingsubjects.each do |f|
+      f.destroy
+    end
     flash[:success] = "Sujet supprimé."
 
     redirect_to subjects_path(:q => q)

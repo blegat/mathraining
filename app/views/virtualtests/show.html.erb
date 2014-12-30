@@ -97,6 +97,9 @@ Test #<%= @virtualtest.number %>
   <% else %>
     <%= button_to "Mettre en ligne", virtualtest_put_online_path(@virtualtest), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Etes vous sûr de vouloir mettre ce test virtuel en ligne? Vous ne pourrez alors plus le modifier!" } %>
   <% end %>
+  
+  <br/><br/>
+  <%= link_to "Supprimer ce test", @virtualtest, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce test virtuel? Cela ne supprimera pas les problèmes associés." } %>
 </center>
 <% end %>
 
