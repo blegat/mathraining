@@ -53,6 +53,7 @@
   <% else %>
     <% if statut == 0 %>
       <span style="color:orange;">Vous n'avez pas encore envoyé de solution à ce problème.</span><br/><br/>
+      N'hésitez pas à écrire tout ce que vous trouvez même s'il ne s'agit pas d'une solution complète au problème! Lors d'un vrai test ou d'une vraie compétition, vous rendrez également vos feuilles de brouillon et celles-ci pourront vous rapporter des points si elles contiennent des éléments pouvant mener à une solution.<br/><br/>
       <center><%= button_to "Écrire une solution", problem_intest_path(@problem), method: :get, class: 'btn btn-default btn-grey' %></center>
     <% else %>
       Aucune solution envoyée.<br/>

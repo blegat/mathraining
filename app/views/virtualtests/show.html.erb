@@ -100,6 +100,8 @@ Test #<%= @virtualtest.number %>
   
   <br/><br/>
   <%= link_to "Modifier ce test", edit_virtualtest_path(@virtualtest) %> - <%= link_to "Supprimer ce test", @virtualtest, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce test virtuel? Cela ne supprimera pas les problèmes associés." } %>
+  <br/><br/>
+  Pour ajouter un problème à ce test, ajouter d'abord le problème dans la section Problèmes, puis indiquer sur sa page qu'il appartient à ce test (<b>avant</b> de mettre le problème en ligne). 
 </center>
 <% end %>
 
