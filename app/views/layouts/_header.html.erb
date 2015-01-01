@@ -156,6 +156,7 @@
         </ul>
         </li>
         
+        <% if signed_in? %>
         
         <li id="fat-menu" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -169,9 +170,12 @@
             <% end %>
           <% end %>
           <li class="divider"></li>
+          
           <li><%= link_to "Tests virtuels", virtualtests_path %></li>
         </ul>
         </li>
+        
+        <% end %>
         
         <% if signed_in? %>
           <% combien_nouveau = current_user.sk.combien_forum %>
