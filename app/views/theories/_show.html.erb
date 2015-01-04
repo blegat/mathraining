@@ -75,8 +75,10 @@
       <% end %>
     </center>
 
+    <% if signed_in? %>
     <hr>
   Une question concernant ce point théorique? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %>!<br/><br/>
+    <% end %>
     </div>
   <% end %>
 

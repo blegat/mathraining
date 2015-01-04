@@ -1,6 +1,6 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
-  before_filter :signed_in_user, only: [:new, :create, :update, :edit, :destroy]
+  before_filter :signed_in_user
   before_filter :admin_user, only: [:show]
   before_filter :author, only: [:update, :edit, :destroy]
   before_filter :admin_delete, only: [:destroy]

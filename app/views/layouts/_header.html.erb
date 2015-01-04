@@ -181,9 +181,9 @@
           <% combien_nouveau = current_user.sk.combien_forum %>
         <% end %>
         
-        <% if !signed_in? || current_user.sk.combien_forum == 0%>
+        <% if signed_in? && current_user.sk.combien_forum == 0%>
           <li><%= link_to "Forum", subjects_path %></li>
-        <% else %>
+        <% elsif signed_in? %>
           <li style="font-weight:bold;"><%= link_to "Forum (#{combien_nouveau})", subjects_path %></li>
         <% end %>
         
