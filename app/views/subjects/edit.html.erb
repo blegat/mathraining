@@ -49,7 +49,7 @@ function add() {
 <span style="font-size:24px;"><%= link_to @subject.title, subject_path(@subject, :q => q) %> ></span>
 Modifier le sujet
 </h1>
-<span style="color:red;">Veillez à ne dévoilez aucune solution à un exercice ou un problème.</span><br/><br/>
+<span style="color:red;">Veillez à ne dévoiler aucune solution à un exercice ou un problème. Si vous devez donner des éléments de solution pour expliquer un souci, écrivez-les en <i>texte caché</i>.</span><br/><br/>
 <% if @subject.user != current_user.sk %>
 <span style="color:red;">Ce sujet n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (mauvais emplacement, divulgation d'une réponse,...)</span><br/><br/>
 <% end %>
