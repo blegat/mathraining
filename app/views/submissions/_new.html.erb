@@ -70,7 +70,7 @@ function add() {
   </div>
   <span id="fooBar"></span>
   
-  <input type="button" value="Ajouter une pièce jointe" onclick="add()" disabled="<%= 'true' if (!signed_in? || current_user.other) %>"/>
+  <input type="button" value="Ajouter une pièce jointe" onclick="add()" />
   <br /><br/>
 
   <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => (!signed_in? || current_user.other) %>
