@@ -54,14 +54,7 @@ function add() {
   <a href="#ici" onClick="JavaScript: TAinsert('[i]','[/i]','MathInput'); PreviewSafe.Update();"><%= image_tag "italics.jpg", :title => "Italique" %></a>
   <a href="#ici" onClick="JavaScript: TAinsert('[u]','[/u]','MathInput'); PreviewSafe.Update();"><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
   <a href="#ici" onClick="JavaScript: TAinsert('[url=http://www.exemple.com]','[/url]','MathInput'); PreviewSafe.Update();"><%= image_tag "link.jpg", :title => "Lien", :style=>"margin-left:15px;" %></a>
-  <a href="#ici" onClick="JavaScript: TAinsert(' :-)','','MathInput'); PreviewSafe.Update();"><%= image_tag "Smiley1.gif", :title => ":-)", :style=>"margin-left:15px;" %></a>
-  <a href="#ici" onClick="JavaScript: TAinsert(' :-(','','MathInput'); PreviewSafe.Update();"><%= image_tag "Smiley2.gif", :title => ":-(" %></a>
-  <a href="#ici" onClick="JavaScript: TAinsert(' ;-)','','MathInput'); PreviewSafe.Update();"><%= image_tag "Smiley7.gif", :title => ";-)" %></a>
-  <a href="#ici" onClick="JavaScript: TAinsert(' :\'(','','MathInput'); PreviewSafe.Update();"><%= image_tag "Smiley6.gif", :title => ":'(" %></a>
-  <a href="#ici" onClick="JavaScript: TAinsert(' :-D','','MathInput'); PreviewSafe.Update();"><%= image_tag "Smiley3.gif", :title => ":-D" %></a>
-  <a href="#ici" onClick="JavaScript: TAinsert(' :-O','','MathInput'); PreviewSafe.Update();"><%= image_tag "Smiley4.gif", :title => ":-O" %></a>
-  <a href="#ici" onClick="JavaScript: TAinsert(' :-P','','MathInput'); PreviewSafe.Update();"><%= image_tag "Smiley5.gif", :title => ":-P" %></a>
-  <a href="#ici" onClick="JavaScript: TAinsert(' :-|','','MathInput'); PreviewSafe.Update();"><%= image_tag "Smiley8.gif", :title => ":-|" %></a>
+  <%= render 'subjects/smiley' %>
   <% if @ancientexte.nil? %>
     <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => (!signed_in? || current_user.other) %>
   <% else %>
