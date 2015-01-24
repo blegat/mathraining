@@ -73,12 +73,14 @@ class MessagesController < ApplicationController
         attach[j-1].save
         j = j+1
       end
+      
+      # On ne peut plus suivre un sujet!
 
-      @subject.following_users.each do |u|
-        if u != current_user
-          UserMailer.new_followed_message(u.id, @subject.id, current_user.name, @message.content).deliver
-        end
-      end
+      # @subject.following_users.each do |u|
+      #   if u != current_user
+      #     UserMailer.new_followed_message(u.id, @subject.id, current_user.name, @message.content).deliver
+      #   end
+      # end
 
       @subject.lastcomment = DateTime.current
       @subject.save
