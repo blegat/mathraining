@@ -9,12 +9,7 @@
 <%= f.label :message, :disabled => current_user.other %>
 <div class="well" id="MathPreview"></div>
 <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-<a href="#ici" onClick="JavaScript: TAinsert('[b]','[/b]','MathInput'); PreviewSafe.Update();"><%= image_tag "bold.jpg", :title => "Gras", :style=>"margin-left:5px;" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('[i]','[/i]','MathInput'); PreviewSafe.Update();"><%= image_tag "italics.jpg", :title => "Italique" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('[u]','[/u]','MathInput'); PreviewSafe.Update();"><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('[url=http://www.exemple.com]','[/url]','MathInput'); PreviewSafe.Update();"><%= image_tag "link.jpg", :title => "Lien", :style=>"margin-left:15px; margin-right:10px;" %></a>
-<a href="#ici" onClick="JavaScript: TAinsert('[hide=Texte caché]\nTexte caché.','\n[/hide]','MathInput'); PreviewSafe.Update();">Texte caché</a>
-<%= render 'subjects/smiley' %>
+<%= render 'subjects/smiley', hiddentext: true %>
 <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
 </div>
 

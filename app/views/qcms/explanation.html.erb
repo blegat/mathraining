@@ -55,7 +55,14 @@ Modifier une explication
 <h3>Explication</h3>
 
 <%= form_for(@qcm, url: qcm_update_explanation_path) do |f| %>
-  <%= render 'form_explanation', f: f %>
+  <%= render 'shared/error_messages', object: f.object %>
+
+  <div class="form-group">
+  <div class="well" id="MathPreview"></div>
+  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+  <%= render 'theories/font' %>
+  <%= f.text_area :explanation, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
+  </div>
   <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
 <% end %>
 
