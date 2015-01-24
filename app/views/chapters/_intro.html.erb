@@ -1,3 +1,4 @@
+<!-- Prérequis -->
 <h3>Prérequis</h3>
 <% if @chapter.prerequisites.empty? %>
   <p>Aucun prérequis</p>
@@ -10,30 +11,29 @@
 <% end %>
 <br/>
 
+<!-- Modifier les prérequis -->
 <% if signed_in? && current_user.sk.admin? %>
   <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>
 <% end %>
 
+<!-- Introduction -->
 <h3>Introduction</h3>
-  <%= raw(@chapter.description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-
+<div>
+  <%= raw(htmlise(@chapter.description)) %>
+</div>
 <br/><br/>
 
+<!-- Modifier / Supprimer -->
 <% if signed_in? && current_user.sk.admin? %>
   <br/>
   <% if !@chapter.online %>
-
     <center>
-      <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
-
-        <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %><br />
+    <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %> |
+    <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %><br />
     </center>
-
   <% else %>
-
     <center>
-      <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %><br />
+    <%= link_to "Modifier le nom, le niveau ou l'introduction de ce chapitre", edit_chapter_path(@chapter) %><br />
     </center>
-
   <% end %>
 <% end %>

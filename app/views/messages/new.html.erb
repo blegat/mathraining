@@ -32,6 +32,8 @@ Répondre
 
 <span style="color:red;">Veillez à ne dévoiler aucune solution à un exercice ou un problème. Si vous devez donner des éléments de solution pour expliquer un souci, écrivez-les en <i>texte caché</i>.</span><br/><br/>
 
+<!-- Formulaire -->
+
 <%= form_for [@subject, @message], :url => subject_messages_path(@subject, @message, :action => :create, :q => q), :html => { :multipart => true } do |f| %>
   <%= render 'form', f: f %>
   <span id="fooBar"></span>
@@ -40,15 +42,20 @@ Répondre
   <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>
 
+<!-- Messages récents -->
 <h2>Messages récents</h2>
 
 <% messages = @subject.messages.order("id DESC").slice(0,5) %>
 
 <% messages.each do |m| %>
 
+<!-- Messages -->
 <table class="table table-bordered" style="margin-top:20px;">
 
+<!-- Cas normal -->
 <tr class="info hidden-xs">
+
+<!-- Nom -->
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if m.user.admin %>
   <%= m.user.name %>
@@ -56,12 +63,17 @@ Répondre
   <%= link_to m.user.name, m.user, {:style => "color:#{m.user.level[:color]}" } %>
 <% end %>
 </td>
+
+<!-- Date -->
 <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = m.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
 </tr>
 
+<!-- Cas gsm -->
+
+<!-- Nom -->
 <tr class="info visible-xs">
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if m.user.admin %>
@@ -71,6 +83,8 @@ Répondre
 <% end %>
 </td>
 </tr>
+
+<!-- Date -->
 <tr class="info visible-xs">
 <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = m.created_at.in_time_zone %>
@@ -78,6 +92,7 @@ Répondre
 </td>
 </tr>
 
+<!-- Contenu du message -->
 <tr><td colspan="2" style="padding:15px;">
 <div>
 <% bb = bbcode(m.content) %>
@@ -85,6 +100,8 @@ Répondre
 <% nb_indice = nb_indice+1 %>
 <% end %>
 <%= raw(bb) %>
+
+<!-- Pièces jointes -->
 <% if m.messagefiles.size > 0 %>
   <% if m.messagefiles.size == 1 %>
     <br/><br/><b>1 pièce jointe.</b>
@@ -99,11 +116,16 @@ Répondre
 
 <% end %>
 
+<!-- Si moins de 5 messages, on affiche le sujet également -->
+
 <% if messages.size < 5 %>
 
 <table class="table table-bordered" style="margin-top:20px;">
 
+<!-- Cas normal -->
 <tr class="info hidden-xs">
+
+<!-- Nom -->
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if @subject.user.admin %>
   <%= @subject.user.name %>
@@ -111,12 +133,17 @@ Répondre
   <%= link_to @subject.user.name, @subject.user, {:style => "color:#{@subject.user.level[:color]}" } %>
 <% end %>
 </td>
+
+<!-- Date -->
 <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = @subject.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
 </tr>
 
+<!-- Cas gsm -->
+
+<!-- Nom -->
 <tr class="info visible-xs">
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
 <% if @subject.user.admin %>
@@ -126,6 +153,8 @@ Répondre
 <% end %>
 </td>
 </tr>
+
+<!-- Date -->
 <tr class="info visible-xs">
 <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
 <% date = @subject.created_at.in_time_zone %>
@@ -133,6 +162,7 @@ Répondre
 </td>
 </tr>
 
+<!-- Contenu du sujet -->
 <tr><td colspan="2" style="padding:15px;">
 <div>
 <% bb = bbcode(@subject.content) %>
@@ -140,6 +170,8 @@ Répondre
 <% nb_indice = nb_indice+1 %>
 <% end %>
 <%= raw(bb) %>
+
+<!-- Pièces jointes -->
 <% if @subject.subjectfiles.size > 0 %>
   <% if @subject.subjectfiles.size == 1 %>
     <br/><br/><b>1 pièce jointe.</b>

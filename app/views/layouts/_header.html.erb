@@ -1,141 +1,142 @@
-
 <%= favicon_link_tag '/favicon.ico' %>
-
 
 <div class="noprint">
 
-
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <%= link_to root_path, class: "navbar-brand", style: "font-size:24px;" do %>
-          <span style="color:black;">Math</span><span style="color:rgb(3,109,170);">raining</span>
-          <% end %>
-        </div>
-        <div class="navbar-collapse collapse">
-        
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <!-- Lien Mathraining -->
+      <%= link_to root_path, class: "navbar-brand", style: "font-size:24px;" do %>
+        <span style="color:black;">Math</span><span style="color:rgb(3,109,170);">raining</span>
+      <% end %>
+    </div>
     
+    <div class="navbar-collapse collapse">
+    
+      <!-- Dans le cas normal -->
       <% if signed_in? and current_user.sk.admin? %>
-      
-      <form class="navbar-form navbar-left hidden-xs hidden-sm" role="search">
-      
-              <% notifications_new = current_user.sk.notifications_new.count %>
-              <% notifications_update = current_user.sk.notifications_update.count %>
-              <% if notifications_new != 0 %>
-                <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
-              <% else %>
-                <%= link_to "0", notifications_new_path, class: "btn btn-default btn-grey" %>
-              <% end %>
-              <% if notifications_update != 0 %>
-                <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
-              <% else %>
-                <%= link_to "0", notifications_update_path, class: "btn btn-default btn-grey" %>
-              <% end %>
-            
-          
-    <% if current_user.sk.root? %>
-      <% total = 0 %>
-      <% Submissionfile.all.to_a.each do |f| %>
-        <% total = total + f.file_file_size %>
-      <% end %>
-      <% Correctionfile.all.to_a.each do |f| %>
-        <% total = total + f.file_file_size %>
-      <% end %>
-      <% Messagefile.all.to_a.each do |f| %>
-        <% total = total + f.file_file_size %>
-      <% end %>
-      <% Subjectfile.all.to_a.each do |f| %>
-        <% total = total + f.file_file_size %>
-      <% end %>
-        <% if total < 1000000 %>
-          <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:25px;" %>
+        <form class="navbar-form navbar-left hidden-xs hidden-sm" role="search">
+        
+        <!-- Nouvelles soumissions -->
+        <% notifications_new = current_user.sk.notifications_new.count %>
+        <% notifications_update = current_user.sk.notifications_update.count %>
+        <% if notifications_new != 0 %>
+          <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
         <% else %>
-          <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:25px;" %>
+          <%= link_to "0", notifications_new_path, class: "btn btn-default btn-grey" %>
         <% end %>
-    <% end %>
-    
-    </form>
-    
-    <% end %>
-    
-    
-    <% if signed_in? && !current_user.sk.admin? %>
-      <% noti = current_user.sk.notifs.count %>
-      <% if noti != 0 %>
-        <form class="navbar-form navbar-left" role="search">
-        <%= link_to "#{noti}", notifs_show_path, class: "btn btn-success", style:"margin-left:10px;" %>
+        <% if notifications_update != 0 %>
+          <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
+        <% else %>
+          <%= link_to "0", notifications_update_path, class: "btn btn-default btn-grey" %>
+        <% end %>
+        
+        <!-- Pièces jointes -->
+        <% if current_user.sk.root? %>
+          <% total = 0 %>
+          <% Submissionfile.all.to_a.each do |f| %>
+            <% total = total + f.file_file_size %>
+          <% end %>
+          <% Correctionfile.all.to_a.each do |f| %>
+            <% total = total + f.file_file_size %>
+          <% end %>
+          <% Messagefile.all.to_a.each do |f| %>
+            <% total = total + f.file_file_size %>
+          <% end %>
+          <% Subjectfile.all.to_a.each do |f| %>
+            <% total = total + f.file_file_size %>
+          <% end %>
+          
+          <% if total < 1000000 %>
+            <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:25px;" %>
+          <% else %>
+            <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:25px;" %>
+          <% end %>
+        <% end %>
         </form>
       <% end %>
-    <% end %>
     
-          
-        <ul class="nav navbar-nav navbar-right">
-        
-    <% if signed_in? and current_user.sk.admin? %>
-        
+      <!-- Corrections (pour les étudiants) -->
+      <% if signed_in? && !current_user.sk.admin? %>
+        <% noti = current_user.sk.notifs.count %>
+        <% if noti != 0 %>
+          <form class="navbar-form navbar-left" role="search">
+          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-success", style:"margin-left:10px;" %>
+          </form>
+        <% end %>
+      <% end %>
+      
+      <ul class="nav navbar-nav navbar-right">
+      
+      <% if signed_in? and current_user.sk.admin? %>
+      
+        <!-- Dans le cas gsm -->
         <li id="fat-menu" class="dropdown visible-xs visible-sm">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           +++
         </a>
         <ul class="dropdown-menu">
+        
+          <!-- Nouvelles soumissions -->
           <li style="text-align:center; padding:5px;">
           <form class="form-inline" role="search">
+          <% notifications_new = current_user.sk.notifications_new.count %>
+          <% notifications_update = current_user.sk.notifications_update.count %>
+          <% if notifications_new != 0 %>
+            <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
+          <% else %>
+            <%= link_to "0", notifications_new_path, class: "btn btn-default btn-grey" %>
+          <% end %>
+          <% if notifications_update != 0 %>
+            <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
+          <% else %>
+            <%= link_to "0", notifications_update_path, class: "btn btn-default btn-grey" %>
+          <% end %>
+          </form>
+          </li>
           
-              <% notifications_new = current_user.sk.notifications_new.count %>
-              <% notifications_update = current_user.sk.notifications_update.count %>
-              <% if notifications_new != 0 %>
-                <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
-              <% else %>
-                <%= link_to "0", notifications_new_path, class: "btn btn-default btn-grey" %>
-              <% end %>
-              <% if notifications_update != 0 %>
-                <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
-              <% else %>
-                <%= link_to "0", notifications_update_path, class: "btn btn-default btn-grey" %>
-              <% end %>
+          <!-- Pièces jointes -->
+          <li style="text-align:center; padding:5px;">
+          <form class="form-inline" role="search">
+          <% if current_user.sk.root? %>
+            <% total = 0 %>
+            <% Submissionfile.all.to_a.each do |f| %>
+              <% total = total + f.file_file_size %>
+            <% end %>
+            <% Correctionfile.all.to_a.each do |f| %>
+              <% total = total + f.file_file_size %>
+            <% end %>
+            <% Messagefile.all.to_a.each do |f| %>
+              <% total = total + f.file_file_size %>
+            <% end %>
+            <% Subjectfile.all.to_a.each do |f| %>
+              <% total = total + f.file_file_size %>
+            <% end %>
             
-            </form>
-            
-            </li>
-            <li style="text-align:center; padding:5px;">
-    <form class="form-inline" role="search">
-    <% if current_user.sk.root? %>
-      <% total = 0 %>
-      <% Submissionfile.all.to_a.each do |f| %>
-        <% total = total + f.file_file_size %>
+            <% if total < 1000000 %>
+              <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey" %>
+            <% else %>
+              <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn-default btn-grey" %>
+            <% end %>
+          <% end %>
+          </form>
+          </li>
+          
+        </ul>
+        </li>
       <% end %>
-      <% Correctionfile.all.to_a.each do |f| %>
-        <% total = total + f.file_file_size %>
-      <% end %>
-      <% Messagefile.all.to_a.each do |f| %>
-        <% total = total + f.file_file_size %>
-      <% end %>
-      <% Subjectfile.all.to_a.each do |f| %>
-        <% total = total + f.file_file_size %>
-      <% end %>
-        <% if total < 1000000 %>
-          <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey" %>
-        <% else %>
-          <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn-default btn-grey" %>
-        <% end %>
-    <% end %>
-   </form>
-             </li>
-             </ul>
-             </li>
-             
-   <% end %>
 
-        <li id="fat-menu" class="dropdown">
+      <!-- Cours -->
+      <li id="fat-menu" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          Cours
-          <b class="caret"></b>
+          Cours <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
           <% Section.all.to_a.each do |f| %>
@@ -154,44 +155,48 @@
           <li><%= link_to "Modifier la structure", graph_prerequisites_path %></li>
           <% end %>
         </ul>
-        </li>
-        
-        <% if signed_in? %>
-        
+      </li>
+      
+      <!-- Problèmes -->
+      <% if signed_in? %>
         <li id="fat-menu" class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          Problèmes
-          <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-          <% Section.order(:id).to_a.each do |f| %>
-            <% if !f.fondation %>
-              <li><%= link_to f.name, pb_sections_path(f) %></li>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            Problèmes <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            <% Section.order(:id).to_a.each do |f| %>
+              <% if !f.fondation %>
+                <li><%= link_to f.name, pb_sections_path(f) %></li>
+              <% end %>
             <% end %>
-          <% end %>
-          <li class="divider"></li>
-          
-          <li><%= link_to "Tests virtuels", virtualtests_path %></li>
-        </ul>
+            <li class="divider"></li>
+            
+            <li><%= link_to "Tests virtuels", virtualtests_path %></li>
+          </ul>
         </li>
+      <% end %>
+      
+      <!-- Forum -->
+      <% if signed_in? %>
+        <% combien_nouveau = current_user.sk.combien_forum %>
+      <% end %>
         
-        <% end %>
+      <% if signed_in? && current_user.sk.combien_forum == 0%>
+        <li><%= link_to "Forum", subjects_path %></li>
+      <% elsif signed_in? %>
+        <li style="font-weight:bold;"><%= link_to "Forum (#{combien_nouveau})", subjects_path %></li>
+      <% end %>
+      
+      <!-- Scores -->  
+      <li><%= link_to "Scores", users_path %></li>
         
-        <% if signed_in? %>
-          <% combien_nouveau = current_user.sk.combien_forum %>
-        <% end %>
-        
-        <% if signed_in? && current_user.sk.combien_forum == 0%>
-          <li><%= link_to "Forum", subjects_path %></li>
-        <% elsif signed_in? %>
-          <li style="font-weight:bold;"><%= link_to "Forum (#{combien_nouveau})", subjects_path %></li>
-        <% end %>
-        
-        <li><%= link_to "Scores", users_path %></li>
-        
-        <% if signed_in? %> <!-- Si déjà loginé -->
-        
+      <!-- Menu déroulant -->
+      
+      <!-- Si connecté -->
+      <% if signed_in? %>
         <li id="fat-menu" class="dropdown">
+        
+        <!-- Nom -->
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           <% if current_user.other %>
             (<span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.fullname %></span>)
@@ -200,6 +205,7 @@
           <% end %>
           <b class="caret"></b>
         </a>
+        
         <ul class="dropdown-menu">
           <% if current_user.other %>
             <li><%= link_to "Sortir de ce corps", user_leave_skin_path(current_user) %></li>
@@ -214,10 +220,13 @@
           </li>
         </ul>
         </li>
-        
-        <% else %> <!-- Si pas encore loginé -->
+      
+      <!-- Si pas connecté -->
+      <% else %>
         <li class="dropdown">
           <a class="dropdown-toggle" href="#" data-toggle="dropdown">Connexion</a>
+          
+          <!-- Formulaire pour se connecter -->
           <ul class="dropdown-menu">
             <li style="padding:15px; padding-bottom:5px; padding-top:10px;">
             <%= form_for(:session, url: sessions_path) do |f| %>
@@ -234,12 +243,12 @@
 		    <li><%= link_to "S'inscrire", signup_path %></li>
           </ul>
         </li>
-        <% end %>
-    </ul>
-    
-    
-    
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>
+      <% end %>
+      
+      </ul>
+
+    </div> <!--/.nav-collapse -->
+  </div> <!-- container -->
+</div> <!-- navigation -->
+
 </div>	

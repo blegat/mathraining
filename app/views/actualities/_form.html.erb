@@ -1,13 +1,16 @@
 <%= render 'shared/error_messages', object: f.object %>
+
+<!-- Titre -->
 <div class="form-group">
-<%= f.label :titre %><br/>
-<%= f.text_field :title, :style => "width:100%; max-width:400px;", :class => "form-control" %>
+  <%= f.label :titre %>
+  <%= f.text_field :title, :style => "width:100%; max-width:400px;", :class => "form-control" %>
 </div>
+
+<!-- Contenu -->
 <div class="form-group">
-<%= f.label :contenu %>
-<br/>
-<div class="well" id="MathPreview"></div>
-<div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-<%= render 'theories/font' %>
-<%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
+  <%= f.label :contenu %>
+  <div class="well" id="MathPreview"></div>
+  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+  <%= render 'theories/font' %>
+  <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
 </div>

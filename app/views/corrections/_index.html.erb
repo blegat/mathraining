@@ -3,7 +3,7 @@
 <h4>Commentaires</h4>
 
 <% if @submission.corrections.size == 0 %>
-Aucun commentaire.<br/><br/>
+  Aucun commentaire.<br/><br/>
 <% end %>
 
 <% @lastid = -1 %>
@@ -14,11 +14,14 @@ Aucun commentaire.<br/><br/>
 
   <table class="table table-bordered" style="margin-top:20px;">
   
+  <!-- Cas normal -->
   <% if correction.user == @submission.user %>
     <tr class="info hidden-xs">
   <% else %>
     <tr class="danger hidden-xs">
   <% end %>
+  
+  <!-- Nom -->
   <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
   <% if correction.user.admin %>
     <%= correction.user.name %>
@@ -26,17 +29,23 @@ Aucun commentaire.<br/><br/>
     <%= link_to correction.user.name, correction.user, {:style => "color:#{correction.user.level[:color]}" } %>
   <% end %>
   </td>
+  
+  <!-- Date -->
   <td style="vertical-align:middle; text-align:right; font-size:18px; padding-right:15px; border-left:none;">
   <% date = correction.created_at.in_time_zone %>
   <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
   </td>
   </tr>
   
+  <!-- Cas gsm -->
+  
+  <!-- Nom -->
   <% if correction.user == @submission.user %>
     <tr class="info visible-xs">
   <% else %>
     <tr class="danger visible-xs">
   <% end %>
+  
   <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
   <% if correction.user.admin %>
     <%= correction.user.name %>
@@ -45,6 +54,8 @@ Aucun commentaire.<br/><br/>
   <% end %>
   </td>
   </tr>
+  
+  <!-- Date -->
   <% if correction.user == @submission.user %>
     <tr class="info visible-xs">
   <% else %>
@@ -55,10 +66,13 @@ Aucun commentaire.<br/><br/>
   <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
   </td>
   </tr>
-
+  
+  <!-- Contenu du commentaire -->
   <tr><td colspan="2" style="padding:15px;">
   <div>
   <%= raw(bbcode(correction.content)) %>
+  
+  <!-- Pièces jointes -->
   <% if correction.correctionfiles.size + correction.fakecorrectionfiles.size > 0 %>
     <% if correction.correctionfiles.size + correction.fakecorrectionfiles.size == 1 %>
       <br/><br/><b>1 pièce jointe :</b><br/>

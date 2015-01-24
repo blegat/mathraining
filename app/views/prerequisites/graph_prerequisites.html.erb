@@ -11,8 +11,8 @@
 Modifier la structure des sections
 </h1>
 
+<!-- Graphique des prérequis -->
 <script>
-
   var graph = new Graph();
 
   var noeud = new Array();
@@ -124,7 +124,7 @@ Modifier la structure des sections
 </script>
 
 
-
+<!-- Afficher/Cacher les fondements -->
 <center>
   <% if !fondement %>
     <%= link_to "Afficher/modifier les fondements", graph_prerequisites_path(:fondement => 1) %>
@@ -138,6 +138,7 @@ Modifier la structure des sections
 
 <% liste = Array.new %>
 
+<!-- Création de la liste -->
 <% Section.where(:fondation => true).all.each do |s| %>
   <% if !s.fondation || fondement %>
     <% liste2 = Array.new %>
@@ -168,6 +169,8 @@ Modifier la structure des sections
 <% end %>
 
 <div class="row">
+
+  <!-- Ajouter un lien -->
   <div class="col-sm-6 col-xs-6">
     <center>
       <%= form_for(:prerequisite, url: add_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
@@ -184,6 +187,8 @@ Modifier la structure des sections
       <% end %>
     </center>
   </div>
+  
+  <!-- Supprimer un lien -->
   <div class="col-sm-6 col-xs-6">
     <center>
       <%= form_for(:prerequisite, url: remove_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>

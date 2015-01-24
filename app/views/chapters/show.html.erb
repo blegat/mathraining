@@ -39,7 +39,7 @@
    
       <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item", :target => "_blank" %>
       
-      
+      <!-- Points théoriques -->
       <% compteur = 0 %>
       <% listex = @chapter.theories.order(:position) %>
       <% listex.each do |f| %>
@@ -71,6 +71,7 @@
       <% end %>
       
       
+      <!-- Peut-on voit les exercices? -->
       <% exovisibles = true %>
       
       <% if !signed_in? || !current_user.sk.admin? %>
@@ -79,7 +80,7 @@
         <% end %>
       <% end %>
       
-      
+      <!-- Exercices -->
       <% compteur = 0 %>
       <% liste = @chapter.exercises.order(:position) %>
       <% liste2 = @chapter.qcms.order(:position) %>
@@ -104,6 +105,7 @@
           <% end %>
         <% end %>
 
+        <!-- Exercice (pas QCM) -->
         <% if encours == 1 %>
           <% f = liste[un] %>
           <% if f.online || (signed_in? && current_user.sk.admin?) %>
@@ -156,7 +158,7 @@
           <% end %>
           <% un = un + 1 %>
           
-          
+        <!-- QCM -->
         <% else %>
           <% f = liste2[deux] %>
           <% if f.online || (signed_in? && current_user.sk.admin?) %>
@@ -224,7 +226,7 @@
   <div class="col-md-10 col-sm-9 col-xs-12">
 
     <!-- INTRODUCTION -->
-
+    
     <% if type == 0 %>
       <%= render 'intro' %>
     
@@ -274,6 +276,7 @@
   </div>
 </div>
 
+<!-- Ajouter quelque chose -->
 <div class="noprint">
 <center>
   <% if signed_in? && current_user.sk.admin? %>

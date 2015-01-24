@@ -11,6 +11,7 @@ function hideStuff() {
 }
 </script>
 
+<!-- On vérifie que cet exercice peut bien être vu -->
 <% if (f.online && f.chapter.online) || (signed_in? && current_user.sk.admin?) %>
 
 <% pt = f.value %>
@@ -20,12 +21,18 @@ function hideStuff() {
 <% else %>
 <h3>Exercice <%= number %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
 <% end %>
-  <div><%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>').
+
+<!-- Enoncé -->
+<div>
+  <%= raw(htmlise(f.statement).
   gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
   gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 </div><br/>
 
+<!-- Si administrateur -->
 <% if signed_in? && current_user.sk.admin? %>
+
+  <!-- Réponse -->
   <h4>Réponse</h4>
   <% if f.decimal %>
     <% vraidecimal = true %>
@@ -38,6 +45,7 @@ function hideStuff() {
   <% end %>
   <br/><br/>
   
+  <!-- Essais des élèves -->
   <h4>Essais</h4>
   Corrects :
   <% compte = 0 %>
@@ -84,14 +92,17 @@ function hideStuff() {
   <% end %>
   <br/><br/>
   
+  <!-- Explication -->
   <h4>Explication</h4>
   <% if f.explanation.size == 0 %>
     <p style="color:orange;"><b>Pas d'explication</b></p>
   <% else %>
-    <%= raw(f.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+    <%= raw(htmlise(f.explanation)) %>
     <br/>
   <% end %>
   <br/>
+  
+  <!-- Modifier / Supprimer -->
   <div class="noprint">
   <center>
     <% if @chapter.online && f.online %>
@@ -107,7 +118,8 @@ function hideStuff() {
     <% end %>
   </center>
   <br/>
-
+  
+  <!-- Déplacer -->
   <% if number2 > 1 %>
     <% up = true %>
   <% else %>
@@ -133,7 +145,8 @@ function hideStuff() {
       <% end %>
     </center> <br/>
   <% end %>
-
+  
+  <!-- Mettre en ligne -->
   <% if !f.online && @chapter.online %>
     <center>
       <%= button_to "Mettre en ligne", exercise_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
@@ -142,11 +155,16 @@ function hideStuff() {
 
   </div>
 
+<!-- Si étudiant inscrit -->
 <% elsif signed_in? %>
 
   <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => id) %>
+  
+  <!-- Si il y a déjà eu au moins un essai -->
   <% if exo.size > 0 %>
     <% exo = exo.first %>
+    
+    <!-- Si l'exercice est déjà résolu -->
     <% if exo.correct? %>
       <% if exo.nb_guess-1 > 1 %>
         <p style="color:green;"><b>Vous avez résolu cet exercice après <%= exo.nb_guess-1 %> erreurs.</b><br/><br/></p>
@@ -155,6 +173,8 @@ function hideStuff() {
       <% else %>
         <p style="color:green;"><b>Vous avez résolu cet exercice du premier coup!</b><br/><br/></p>
       <% end %>
+      
+      <!-- Réponse -->
       <h4>Réponse</h4>
       <% if f.decimal %>
         <% vraidecimal = true %>
@@ -167,12 +187,17 @@ function hideStuff() {
       <% end %>
       <% if f.explanation.size > 0 %>
         <br/><br/>
+        
+        <!-- Explication -->
         <h4>Explication</h4>
-        <%= raw(f.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+        <%= raw(htmlise(f.explanation)) %>
       <% end %>
       <br/>
+      
+    <!-- Si l'étudiant s'est déjà trompé -->
     <% else %>
 
+      <!-- Réponse -->
       <% if f.decimal %>
         On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
         <% val = exo.guess %>
@@ -185,14 +210,16 @@ function hideStuff() {
         <%= g.text_field :guess, class: "form-control", style: "width:70px; margin-left:5px;", value: val, :disabled => current_user.other %>
         <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => current_user.other %>
       <% end %>
-
       <br/>
 
       <p style="color:red;">Votre réponse (<b><%= val %></b>) est erronée. Vous avez déjà commis <%= exo.nb_guess %> erreur<%= "s" if exo.nb_guess > 1 %>.</p>
 
     <% end %>
 
+  <!-- Si l'étudiant n'a pas encore essayé l'exercice -->
   <% else %>
+  
+    <!-- Réponse -->
     <% if f.decimal %>
       On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
     <% end %>
@@ -209,7 +236,10 @@ function hideStuff() {
   <hr>
   Un souci avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %>!<br/><br/>
 
+<!-- Si étudiant non inscrit -->
 <% else %>
+
+  <!-- Réponse -->
   <% if f.decimal %>
     On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
   <% end %>

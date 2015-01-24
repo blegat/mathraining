@@ -1,30 +1,30 @@
 <% provide(:title, "Problème ##{ @problem.number }") %>
 
-
 <% soumission = -1 %>
 <% if(params.has_key?:sub) %>
   <% soumission = params[:sub].to_i %>
 <% end %>
 
-  <% pt = @problem.value %>
+<% pt = @problem.value %>
 
-
-  <h1>
-  <span style="font-size:16px;">Problèmes ></span>
-  <span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
+<h1>
+<span style="font-size:16px;">Problèmes ></span>
+<span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
 <%= "Problème ##{ @problem.number }" %>
 
-  <% if !@problem.virtualtest.nil? %>
-  - <%= link_to "Test ##{@problem.virtualtest.number}", @problem.virtualtest %>
+<% if !@problem.virtualtest.nil? %>
+- <%= link_to "Test ##{@problem.virtualtest.number}", @problem.virtualtest %>
+<% end %>
+  <%= "(en construction)" if !@problem.online %>
+  <% if !signed_in? || !current_user.sk.admin %>
+  <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
   <% end %>
-    <%= "(en construction)" if !@problem.online %>
-    <% if !signed_in? || !current_user.sk.admin %>
-    <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
-    <% end %>
-  </h1>
+</h1>
+
+<!-- Si administrateur -->
+<% if signed_in? && current_user.sk.admin? %>
   
-  <% if signed_in? && current_user.sk.admin? %>
-  
+  <!-- Dans un test virtuel ou non -->
   <% if !@problem.online? %>        
     <%= form_for(:problem, :url => problem_add_virtualtest_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
 	  <div class="form-inline">
@@ -50,10 +50,12 @@
     <% end %>
   <% end %>
   
+  <!-- Prérequis -->
   <h3>Prérequis (uniquement visibles des administrateurs)</h3>
   
   <% has_pre = false %>
   <% enligne_ok = true %>
+  
   <ul>
   <% @problem.chapters.each do |c| %>
   <% has_pre = true %>
@@ -89,22 +91,30 @@
   
   <% end %>
   
-  <% end %>
+<% end %>
 
-  <h3>Énoncé</h3>
-  <div style="margin-bottom:30px;">
-  <%= raw(@problem.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-  </div>
+<!-- Enoncé -->
+<h3>Énoncé</h3>
+<div style="margin-bottom:30px;">
+  <%= raw(htmlise(@problem.statement)) %>
+</div>
 
-  <% if signed_in? && current_user.sk.admin? %>
+<!-- Si administrateur -->
+
+<% if signed_in? && current_user.sk.admin? %>
+  
+  <!-- Explication -->
   <h3>Éléments de solution</h3>
   <% if @problem.explanation.size == 0 %>
     <p style="color:orange;"><b>Pas d'éléments disponibles </b> : Aidez vos collègues en rédigeant les grandes idées de la solution!</p>
   <% else %>
-    <%= raw(@problem.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+    <%= raw(htmlise(@problem.explanation)) %>
     <br/>
   <% end %>
   <br/>
+  
+  <!-- Modifier/Supprimer/... -->
+  
   <div class="noprint">
     <center>
       <% if @problem.online %>
@@ -134,32 +144,44 @@
         <% end %>
       </center> <br/>
     <% end %>
+    
+    <!-- Toutes les soumissions des étudiants -->
     <% if @problem.online %>
       <%= render 'submissions/index', problem: @problem %>
     <% end %>
   </div>
-  <% else %>
-    <%= render 'submissions/index', problem: @problem if signed_in? %>
-    <% unless (signed_in? && current_user.sk.solved?(@problem)) || (signed_in? && !@newsub) %>
-    
-      <% if !signed_in? %>
-        <br/>
-      <% end %>
-      <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
-      
-    <% end %>
-  <% end %>
-    
-    <% if soumission == 0 %>
-    <hr>
-      <% unless (signed_in? && current_user.sk.solved?(@problem)) || (signed_in? && !@newsub) %>
-        <%= render 'submissions/new', problem: @problem %>
-      <% end %>
-    <% elsif soumission > 0 %>
-    <hr>
-      <% @submission = Submission.find_by_id(soumission) %>
-      <% if signed_in? && @submission.problem == @problem && (@submission.user == current_user.sk || (current_user.sk.solved?(@problem) && @submission.status == 2) || current_user.sk.admin) %>
-         <%= render 'submissions/showsmall' %>
-      <% end %>
-    <% end %>
+  
+<!-- Si étudiant -->
+<% else %>
 
+  <!-- Affiche les soumissions qu'on peut voir -->
+  <%= render 'submissions/index', problem: @problem if signed_in? %>
+  
+  <!-- Si pas encore résolu le problème -->
+  <% unless (signed_in? && current_user.sk.solved?(@problem)) || (signed_in? && !@newsub) %>
+    <% if !signed_in? %>
+    <br/>
+    <% end %>
+    <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
+  <% end %>
+<% end %>
+
+<!-- Si on veut écrire une nouvelle soumission -->
+<% if soumission == 0 %>
+  <hr>
+  
+  <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
+  <% unless (signed_in? && current_user.sk.solved?(@problem)) || (signed_in? && !@newsub) %>
+    <%= render 'submissions/new', problem: @problem %>
+  <% end %>
+  
+<!-- Si on veut regarder une soumission -->
+<% elsif soumission > 0 %>
+  <hr>
+  <% @submission = Submission.find_by_id(soumission) %>
+  
+  <!-- On vérifie que l'on peut la regarder -->
+  <% if signed_in? && @submission.problem == @problem && (@submission.user == current_user.sk || (current_user.sk.solved?(@problem) && @submission.status == 2) || current_user.sk.admin) %>
+     <%= render 'submissions/showsmall' %>
+  <% end %>
+<% end %>

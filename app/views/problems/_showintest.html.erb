@@ -1,25 +1,37 @@
+<!-- Enoncé -->
 <h3>Énoncé</h3>
-  <div style="margin-bottom:30px;">
-  <%= raw(@problem.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-  </div>
-  
+
+<div style="margin-bottom:30px;">
+  <%= raw(htmlise(@problem.statement)) %>
+</div>
+
+<!-- Si administrateur -->
 <% if current_user.sk.admin? %>
+
+  <!-- Explication -->
   <h3>Éléments de solution</h3>
   <% if @problem.explanation.size == 0 %>
     <p style="color:orange;"><b>Pas d'éléments disponibles </b> : Aidez vos collègues en rédigeant les grandes idées de la solution!</p>
   <% else %>
-    <%= raw(@problem.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+    <%= raw(htmlise(@problem.explanation)) %>
     <br/>
   <% end %>
   
-<br/>Ce problème est le <%= link_to "problème ##{@problem.number}", problem_path(@problem) %>.
-  
+  <br/>Ce problème est le <%= link_to "problème ##{@problem.number}", problem_path(@problem) %>.
+
+<!-- Si étudiant -->
 <% else %>
-<h3>Votre solution</h3>
+
+  <!-- Solution de l'étudiant -->
+  <h3>Votre solution</h3>
   <% statut = current_user.sk.status(@virtualtest) %>
   <% @submission = Submission.where(user_id: current_user.sk.id, problem_id: @problem.id, intest: true).first %>
+  
+  <!-- Si une soumission a déjà été faite -->
   <% if !@submission.nil? %>
     <%= raw(bbcode(@submission.content)) %>
+    
+    <!-- Pièces jointes -->
     <% if @submission.submissionfiles.size + @submission.fakesubmissionfiles.size > 0 %>
       <% if @submission.submissionfiles.size + @submission.fakesubmissionfiles.size == 1 %>
         <br/><br/><b>1 pièce jointe :</b><br/>
@@ -38,8 +50,11 @@
       <% end %>
     <% end %>
     
+    <!-- Si on peut encore soumettre, on propose de modifier -->
     <% if statut == 0 %>
       <br/><br/><center><%= button_to "Modifier cette solution", problem_intest_path(@problem), method: :get, class: 'btn btn-default btn-grey' %></center>
+      
+    <!-- Si on ne peut plus soumettre, on affiche le score -->
     <% else %>
       <h3>Score obtenu</h3>
       <% if @submission.score == -1 %>
@@ -49,12 +64,16 @@
       <% end %>
       <br/>Ce problème est le <%= link_to "problème ##{@problem.number}", problem_path(@problem, :sub => @submission.id) %>.
     <% end %>
-    
+  
+  <!-- Si pas encore de soumission -->
   <% else %>
+    <!-- Si on peut encore soumettre, on propose d'écrire une solution -->
     <% if statut == 0 %>
       <span style="color:orange;">Vous n'avez pas encore envoyé de solution à ce problème.</span><br/><br/>
       N'hésitez pas à écrire tout ce que vous trouvez même s'il ne s'agit pas d'une solution complète au problème! Lors d'un vrai test ou d'une vraie compétition, vous rendrez également vos feuilles de brouillon et celles-ci pourront vous rapporter des points si elles contiennent des éléments pouvant mener à une solution.<br/><br/>
       <center><%= button_to "Écrire une solution", problem_intest_path(@problem), method: :get, class: 'btn btn-default btn-grey' %></center>
+      
+    <!-- Si on ne peut plus soumettre, on affiche score 0 -->
     <% else %>
       Aucune solution envoyée.<br/>
       <h3>Score obtenu</h3>
@@ -62,8 +81,5 @@
       <br/>Ce problème est le <%= link_to "problème ##{@problem.number}", problem_path(@problem) %>.
     <% end %>
   <% end %>
-  
-  <% if statut == 1 %>
-  
-  <% end %>
+
 <% end %>
