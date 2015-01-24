@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+# Ce controller ne sert plus à rien pour le moment car la possibilité de suivre un sujet a été enlevée.
+
 class FollowingsubjectsController < ApplicationController
   before_filter :signed_in_user
 

@@ -1,9 +1,7 @@
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% provide(:title, 'Forum') %>
 
 <% def affiche_date(date, datenow) %>
   <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
   <% if (datenow - date).floor >= 24*60*60 %>
     <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
   <% elsif (datenow - date).floor >= 60*60 %>
@@ -47,7 +45,7 @@
 <% Section.where(:fondation => true).to_a.each do |s| %>
     <% liste.push([s.name, 1000*s.id]) %>
     <% s.chapters.order(:name).to_a.each do |c| %>
-      <% if c.online || (signed_in? && current_user.sk.admin?) %>
+      <% if c.online || current_user.sk.admin? %>
         <% liste.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
       <% end %>
     <% end %>
@@ -56,7 +54,7 @@
 <% Section.where(:fondation => false).order(:id).to_a.each do |s| %>
     <% liste.push([s.name, 1000*s.id]) %>
     <% s.chapters.order(:name).to_a.each do |c| %>
-      <% if c.online || (signed_in? && current_user.sk.admin) %>
+      <% if c.online || current_user.sk.admin? %>
         <% liste.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
       <% end %>
     <% end %>
@@ -83,7 +81,7 @@
     <% if m.nil? %>
       <% m = s %>
     <% end %>
-    <% if signed_in? && current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -166,7 +164,7 @@
     <% if m.nil? %>
       <% m = s %>
     <% end %>
-    <% if signed_in? && current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -247,7 +245,7 @@
     <% if m.nil? %>
       <% m = s %>
     <% end %>
-    <% if signed_in? && current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -328,7 +326,7 @@
     <% if m.nil? %>
       <% m = s %>
     <% end %>
-    <% if signed_in? && current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+    <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
       <% style = "background-color:#FFFFBB;" %>
     <% end %>
     <tr style="<%= style %>">
@@ -402,17 +400,11 @@
 <% end %>
 
 <center>	
-  <% if signed_in? %>
-    <%= link_to "Créer un sujet", new_subject_path(:q => q), class: 'btn btn-lg btn-default btn-grey' %>
-  <% else %>
-    <button type=button disabled=true class="btn btn-lg btn-default btn-grey">Créer un sujet</button>
-    <hr style="border-top:1px dashed lightgray;" />
-    Pour pouvoir créer un sujet, vous devez être connecté.
-  <% end %>
+  <%= link_to "Créer un sujet", new_subject_path(:q => q), class: 'btn btn-lg btn-default btn-grey' %>
 </center>
 
 
-<% if signed_in? && !current_user.other && current_user.sk.combien_forum > 0 %>
+<% if !current_user.other && current_user.sk.combien_forum > 0 %>
   <% current_user.sk.point.forumseen = DateTime.current %>
   <% current_user.sk.point.save %>
 <% end %>

@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 class UsersController < ApplicationController
   before_filter :signed_in_user,
     only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate]

@@ -107,7 +107,7 @@ function hideStuff(id) {
   <% end %>
   <% @subject.subjectfiles.each do |f| %>
     <%= link_to f.file_file_name, download_subjectfile_path(f) %>
-    <% if signed_in? && current_user.sk.root? %>
+    <% if current_user.sk.root? %>
        - <%= link_to 'Supprimer le contenu', subjectfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
     <% end %>
     <br/>
@@ -119,7 +119,7 @@ function hideStuff(id) {
 </div>
 </td></tr>
 
-<% if signed_in? && (@subject.user == current_user.sk || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root) %>
+<% if @subject.user == current_user.sk || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root %>
   <tr><td colspan="2">
   <center>
       <%= link_to "Modifier ce sujet", edit_subject_path(@subject, :q => q) %>
@@ -184,7 +184,7 @@ function hideStuff(id) {
   <% end %>
   <% m.messagefiles.each do |f| %>
     <%= link_to f.file_file_name, download_messagefile_path(f) %>
-    <% if signed_in? && current_user.sk.root? %>
+    <% if current_user.sk.root? %>
        - <%= link_to 'Supprimer le contenu', messagefile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
     <% end %>
     <br/>
@@ -196,7 +196,7 @@ function hideStuff(id) {
 </div>
 </td></tr>
 
-<% if signed_in? && (m.user == current_user.sk || (current_user.sk.admin && !m.user.admin) || current_user.sk.root) %>
+<% if m.user == current_user.sk || (current_user.sk.admin && !m.user.admin) || current_user.sk.root %>
   <tr><td colspan="2">
   <center>
       <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m, :q => q) %>
@@ -222,17 +222,5 @@ function hideStuff(id) {
   <button type=button disabled=true class="btn btn-lg btn-default btn-grey">Répondre</button>
 <% end %>
 </center>
-
-<hr style="border-top:1px lightgray dashed;" />
-
-<% if !signed_in? %>
-  <center><button type=button disabled=true class="btn btn-default btn-grey">Suivre ce sujet</button></center>
-  <hr style="border-top:1px dashed lightgray;" />
-  <center>Pour pouvoir répondre à ce sujet ou le suivre, vous devez être connecté.</center>
-<% elsif !current_user.followed_subjects.exists?(@subject) %>
-  <center><%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), data: { confirm: "Vous recevrez un email à chaque fois qu'un nouveau message sera posté sur ce sujet."}, class: 'btn btn-default btn-grey' %></center>
-<% else %>
-  <center><%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey' %></center>
-<% end %>
 
 <a name="bottom"></a>
