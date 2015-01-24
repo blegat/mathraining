@@ -1,42 +1,3 @@
-<SCRIPT language="javascript">
-var i = 1;
-function add() {
-
-    //Create an input type dynamically.
-    var element = document.createElement("input");
-    var element2 = document.createElement("input");
-
-    //Assign different attributes to the element.
-    element.setAttribute("type", "file");
-    element.setAttribute("name", "file"+i);
-
-    element2.setAttribute("type", "hidden");
-    element2.setAttribute("name", "hidden"+i);
-    element2.setAttribute("value", "ok");
-
-    var foo = document.getElementById("fooBar");
-    var br = document.createElement("br");
-
-    if(i == 1)
-    {
-      var avert = document.createElement("p");
-      var bold = document.createElement("b");
-      var text = document.createTextNode("Taille totale autorisée : 10 Mo. Type de fichiers autorisés : zip, pdf, doc, gif, jpg, png, bmp, txt.");
-      bold.appendChild(text);
-      avert.appendChild(bold);
-      foo.appendChild(avert);
-      foo.appendChild(br);
-    }
-
-    i = i+1;
-
-    //Append the element in page (in span).
-    foo.appendChild(element2);
-    foo.appendChild(element);
-    foo.appendChild(br);
-}
-</SCRIPT>
-
 <% r = 0 %>
 <% if(params.has_key?:r) %>
   <% r = params[:r].to_i %>
@@ -63,7 +24,7 @@ function add() {
   </div>
   <span id="fooBar"></span>
   
-  <input type="button" value="Ajouter une pièce jointe" onclick="add()" />
+  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" />
   <br /><br/>
 
   <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => (!signed_in? || current_user.other) %>

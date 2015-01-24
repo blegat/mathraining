@@ -1,42 +1,3 @@
-<SCRIPT language="javascript">
-var i = 1;
-function add() {
-
-    //Create an input type dynamically.
-    var element = document.createElement("input");
-    var element2 = document.createElement("input");
-
-    //Assign different attributes to the element.
-    element.setAttribute("type", "file");
-    element.setAttribute("name", "file"+i);
-
-    element2.setAttribute("type", "hidden");
-    element2.setAttribute("name", "hidden"+i);
-    element2.setAttribute("value", "ok");
-
-    var foo = document.getElementById("fooBar");
-    var br = document.createElement("br");
-
-    if(i == 1)
-    {
-      var avert = document.createElement("p");
-      var bold = document.createElement("b");
-      var text = document.createTextNode("Taille totale autorisée : 10 Mo. Type de fichiers autorisés : zip, pdf, doc, gif, jpg, png, bmp, txt.");
-      bold.appendChild(text);
-      avert.appendChild(bold);
-      foo.appendChild(avert);
-      foo.appendChild(br);
-    }
-
-    i = i+1;
-
-    //Append the element in page (in span).
-    foo.appendChild(element2);
-    foo.appendChild(element);
-    foo.appendChild(br);
-}
-</SCRIPT>
-
 <% provide(:title, 'Modifier un message') %>
 
 <% q = 0 %>
@@ -56,13 +17,8 @@ Modifier un message
 <% if @message.user != current_user.sk %>
 <span style="color:red;">Ce message n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (divulgation d'une réponse, vulgarité,...)</span><br/><br/>
 <% end %>
-<% if @chapter.nil? %>
-  <% quoi = [@message.subject, @message] %>
-<% else %>
-  <% quoi = [@chapter, @message.subject, @message] %>
-<% end %>
 
-<%= form_for quoi, :html => { :multipart => true }  do |f| %>
+<%= form_for [@message.subject, @message], :url => subject_message_path(@message.subject, @message, :action => :update, :q => q), :html => { :multipart => true }  do |f| %>
   <%= render 'form', f: f %>
 
   <% if @message.messagefiles.size + @message.fakemessagefiles.size > 0 %>
@@ -84,7 +40,7 @@ Modifier un message
     <br/>
   <% end %>
   <span id="fooBar"></span>
-  <input type="button" value="Ajouter une pièce jointe" onclick="add()"/>
+  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
   <br /><br/>
   <%= f.submit "Editer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>

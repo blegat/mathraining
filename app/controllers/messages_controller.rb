@@ -16,7 +16,6 @@ class MessagesController < ApplicationController
   end
 
   def create
-  
     q = 0
     if(params.has_key?:q)
       q = params[:q].to_i
