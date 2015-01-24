@@ -11,6 +11,7 @@ function hideStuff() {
 }
 </script>
 
+<!-- On vérifie que ce qcm peut bien être vu -->
 <% if (f.online && f.chapter.online) || (signed_in? && current_user.sk.admin?) %>
 
 <% pt = f.value %>
@@ -21,14 +22,16 @@ function hideStuff() {
 <h3>Exercice <%= number %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
 <% end %>
 
+<!-- Enoncé -->
 <div>
-<%= raw(f.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>').
-  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
-  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
-</div><br/>
+  <%= raw(htmlise(f.statement).gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+</div>
+<br/>
 
+<!-- Si administrateur -->
 <% if signed_in? && current_user.sk.admin? %>
 
+  <!-- Réponse -->
   <h4>Réponse</h4>
 
   <ul>
@@ -53,6 +56,7 @@ function hideStuff() {
   <% end %>
   <br/><br/>
   
+  <!-- Essais des étudiants -->
   <h4>Essais</h4>
   Corrects :
   <% compte = 0 %>
@@ -99,15 +103,18 @@ function hideStuff() {
   <% end %>
   <br/><br/>
   
+  <!-- Explication -->
   <h4>Explication</h4>
   <% if f.explanation.size == 0 %>
     <p style="color:orange;"><b>Pas d'explication</b></p>
   <% else %>
-    <%= raw(f.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+    <%= raw(htmlise(f.explanation)) %>
     <br/>
   <% end %>
 
   <br/>
+  
+  <!-- Modifier/Supprimer/... -->
   <div class="noprint">
   <center>
     <% if @chapter.online && f.online %>
@@ -127,6 +134,7 @@ function hideStuff() {
 
   <br/>
 
+  <!-- Déplacer -->
   <% if number2 > 1 %>
     <% up = true %>
   <% else %>
@@ -153,6 +161,7 @@ function hideStuff() {
     </center> <br/>
   <% end %>
 
+  <!-- Mettre en ligne -->
   <% if !f.online && @chapter.online %>
     <center>
       <%= button_to "Mettre en ligne", qcm_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de ce qcm par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
@@ -161,11 +170,16 @@ function hideStuff() {
 
   </div>
 
+<!-- Si étudiant inscrit -->
 <% elsif signed_in? %>
 
   <% sol = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => id) %>
+  
+  <!-- Si l'étudiant a déjà essayé -->
   <% if sol.size > 0 %>
     <% sol = sol.first %>
+    
+    <!-- Si déjà résolu -->
     <% if sol.correct? %>
 
       <% if sol.nb_guess-1 > 1 %>
@@ -175,7 +189,8 @@ function hideStuff() {
       <% else %>
         <p style="color:green;"><b>Vous avez résolu cet exercice du premier coup!</b><br/><br/></p>
       <% end %>
-
+      
+      <!-- Réponse -->
       <h4>Réponse</h4>
 
       <ul>
@@ -193,13 +208,15 @@ function hideStuff() {
         <% end %>
       </ul>
 
+      <!-- Explication -->
       <% if f.explanation.size > 0 %>
         <br/>
         <h4>Explication</h4>
-        <%= raw(f.explanation.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+        <%= raw(htmlise(f.explanation)) %>
       <% end %>
       <br/>
-
+    
+    <!-- Si déjà essayé -->
     <% else %>
 
       <% if f.many_answers %>
@@ -237,6 +254,8 @@ function hideStuff() {
       <p style="color:red;">Votre réponse est erronée. Vous avez déjà commis <%= sol.nb_guess %> erreur<%= "s" if sol.nb_guess > 1 %>.</p>
 
     <% end %>
+    
+  <!-- Si pas encore essayé -->
   <% else %>
 
     <% if f.many_answers %>
@@ -272,6 +291,7 @@ function hideStuff() {
   <hr>
   Un souci avec cet exercice? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %>!<br/><br/>
 
+<!-- Si étudiant non connecté -->
 <% else %>
   <% if f.many_answers %>
     <b>Plusieurs réponses sont possibles.</b><br/><br/>

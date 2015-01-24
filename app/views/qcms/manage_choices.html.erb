@@ -22,12 +22,13 @@ Modifier des choix
 
 Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne saurait être enregistrée.<br/><br/>
 
+<!-- Enoncé -->
 <h3>Énoncé</h3>	
-<%= raw(@qcm.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>').
-  gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
-  gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+<%= raw(htmlise(@qcm.statement).gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 
 <br/><br/>
+
+<!-- Réponse -->
 <h3>Réponse</h3>	
 <table cellpadding="5">
 <tr><th></th><th></th><th style="padding:5px; text-align:center;">Rép?</th><th></th><th></th><th></th></tr>
@@ -72,31 +73,30 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
   <% i = i + 1 %>
 <% end %>
 
+<!-- Si pas encore en ligne, on peut ajouter un choix -->
 <% unless @qcm.chapter.online && @qcm.online %>
 
-<tr>
-
-<%= form_for(:choice, url: qcm_add_choice_path(@qcm)) do |f| %>
-  <td>
-  </td>
-  <td style="padding:5px;">
-  <%= f.text_field :ans, :class => "form-control", :style => "width:200px;"  %>
-  </td>
-  <td>
-  <center>
-  <%= f.check_box :ok %>
-  </center>
-  </td>
-  <td>
-  <%= f.submit "Ajouter ce choix", class: "btn btn-primary" %>
-  </td>
-  <td>
-  </td>
-  <td>
-  </td>
-<% end %>
-
-</tr>
+  <tr>
+  <%= form_for(:choice, url: qcm_add_choice_path(@qcm)) do |f| %>
+    <td>
+    </td>
+    <td style="padding:5px;">
+      <%= f.text_field :ans, :class => "form-control", :style => "width:200px;"  %>
+    </td>
+    <td>
+      <center>
+      <%= f.check_box :ok %>
+      </center>
+    </td>
+    <td>
+      <%= f.submit "Ajouter ce choix", class: "btn btn-primary" %>
+    </td>
+    <td>
+    </td>
+    <td>
+    </td>
+  <% end %>
+  </tr>
 
 <% end %>
 

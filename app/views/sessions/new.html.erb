@@ -1,22 +1,25 @@
 <% provide(:title, "Connexion") %>
+
+<!-- Juste pour Nicolas sur son gsm qui bugge : personne ne devrait arriver ici sinon -->
 <h1>Connexion</h1>
 
-		<%= form_for(:session, url: sessions_path) do |f| %>
-		    <div class="form-group">
-			<%= f.label :email %>
-			<%= f.email_field :email, :class => "form-control", :style => "width:200px;" %>
-			</div>
+<%= form_for(:session, url: sessions_path) do |f| %>
+  <div class="form-group">
+    <%= f.label :email %>
+    <%= f.email_field :email, :class => "form-control", :style => "width:200px;" %>
+  </div>
 			
-			<div class="form-group">
-			<%= f.label :password, "Mot de passe" %>
-			<%= f.password_field :password, :class => "form-control", :style => "width:200px;" %>
-			</div>
+  <div class="form-group">
+    <%= f.label :password, "Mot de passe" %>
+    <%= f.password_field :password, :class => "form-control", :style => "width:200px;" %>
+  </div>
 
-            <%= link_to "Mot de passe oublié?", forgot_password_path %>
-            <br /><br />
-			<%= f.submit "Connexion", class: "btn btn-lg btn-primary" %>
-		<% end %>
+  <%= link_to "Mot de passe oublié?", forgot_password_path %>
+  <br/><br/>
+  <%= f.submit "Connexion", class: "btn btn-lg btn-primary" %>
+<% end %>
 
-		<br/>
-		Pas encore inscrit? <%= link_to "Inscrivez-vous", signup_path %> maintenant!
+<br/>
+
+Pas encore inscrit? <%= link_to "Inscrivez-vous", signup_path %> maintenant!
 

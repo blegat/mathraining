@@ -1,3 +1,5 @@
+<% provide(:title, @section.name) %>
+
 <% @nb_exercices = 0 %>
 <% @nb_points_exercices = 0 %>
 
@@ -26,8 +28,8 @@
 <% @nb_points_problemes = @nb_points_problemes+p.value %>
 <% end %>
 
+<!-- Fonction pour afficher les exercices d'un chapitre -->
 <% def affiche_exercices(chapter, acces) %>
-
 
   <% liste = chapter.exercises.order(:position) %>
   <% liste2 = chapter.qcms.order(:position) %>
@@ -168,25 +170,25 @@
 
 <% end %>
 
-
-
-
-<% provide(:title, @section.name) %>
-
 <h1>
-  <span style="font-size:16px;">Cours ></span> <%= @section.name %>
+<span style="font-size:16px;">Cours ></span>
+<%= @section.name %>
 </h1>
 
 
+<!-- Introduction -->
 <h3>Introduction</h3>
-   <%= raw(@section.description.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+<%= raw(htmlise(@section.description)) %>
 <br/><br/>
+
 <% if signed_in? && current_user.sk.admin? %>
 <%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/><br/>
 <% end %>
 
+<!-- Chapitres -->
 <h3>Chapitres</h3>
 
+<!-- Si chapitre non fondamental -->
 <% if !@fondation %>
 
 L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses chapitres prérequis ont été complétés, c'est-à-dire quand tous les exercices de ceux-ci ont été résolus.<br/><br/>
@@ -202,6 +204,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
 
 <% n = 0 %>
 
+<!-- Parcours tous les chapitres -->
 <% Chapter.all.each do |c| %>
   <% if (c.online || (signed_in? && current_user.sk.admin)) && !c.section.fondation %>
     <% retiens[c.id] = n %>
@@ -219,6 +222,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
   <% end %>
 <% end %>
 
+<!-- Détermine ce qu'on peut voir ou ne pas voir -->
 <% (0..(n-1)).each do |i| %>
   <% if (chap[i].online || (signed_in? && current_user.sk.admin)) %>
     <% premier = true %>
@@ -243,21 +247,31 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
 
 <% i = 0 %>
 
+<!-- On parcourt les chapitres dans l'ordre -->
 
 <% while !possible.empty? %>
   <% encours = (possible.first)[3] %>
   <% possible.delete(possible.first) %>
+  
+  <!-- Si on peut l'afficher -->
   <% if affiche[encours] %>
+  
+    <!-- Si on peut le faire -->
     <% if faisable[encours] <= 1 || (signed_in? && current_user.sk.admin) %>
     
     <% lecas = 0 %>
-
+      
+      <!-- Si on l'a déà résolu : en vert -->
       <% if faisable[encours] == 0 && (!signed_in? || !current_user.sk.admin) %>
         <table style="border-radius:15px; background-color:#DDFFDD; border-collapse:separate;" class="table">
         <% lecas = 1 %>
+        
+      <!-- Si il n'est pas en ligne : en orange -->
       <% elsif !chap[encours].online %>
         <table style="border-radius:15px; background-color:#FFEEAA; border-collapse:separate;" class="table">
         <% lecas = 2 %>
+        
+      <!-- Sinon : en jaune -->
       <% else %>
         <table style="border-radius:15px; background-color:#FFFFD0; border-collapse:separate;" class="table">
         <% lecas = 3 %>
@@ -271,10 +285,13 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
         (en construction)
       <% end %>  
       </h3></center>
-      <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %></div>
+      <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;">
+        <%= raw(htmlise(chap[encours].description)) %>
+      </div>
       </td>
       </tr>
-
+    
+    <!-- Si on ne peut pas le faire : en gris -->
     <% else %>
       <table style="border-radius:20px; background-color:#EEEEEE; border-collapse:separate;" class="table">
       <tr>
@@ -296,9 +313,13 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
       </tr>
     <% end %>
     
+    <!-- Affichage du chapitre -->
+    
+    <!-- Cas normal -->
+    
+    <!-- Théorie -->
     <tr class="hidden-xs">
     <td class="col-sm-6" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px solid black; border-bottom-left-radius:15px; border-right:1px dashed black;">
-
     <center><h4>Théorie</h4></center>
     <% compteur = 0 %>
     <% liste = chap[encours].theories.order(:position) %>
@@ -319,7 +340,8 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
     <% end %>
 
     </td>
-
+    
+    <!-- Exercices -->
     <td class="col-sm-6" style="padding-bottom:20px; border-bottom:1px solid black; border-right:1px solid black; border-bottom-right-radius:15px;">
     <center><h4>Exercices</h4></center>
     <% if faisable[encours] <= 1 || (signed_in? && current_user.sk.admin?) %>
@@ -330,9 +352,11 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
     </td>
     </tr>
     
+    <!-- Cas gsm -->
+    
+    <!-- Théorie -->
     <tr class="visible-xs">
     <td class="col-xs-12" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px dashed black; border-right:1px solid black;">
-
     <center><h4>Théorie</h4></center>
     <% compteur = 0 %>
     <% liste = chap[encours].theories.order(:position) %>
@@ -355,6 +379,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
     </td>
     </tr>
     
+    <!-- Exercices -->
     <tr class="visible-xs">
     <td class="col-xs-12" style="padding-bottom:20px; border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-bottom-left-radius:15px; border-bottom-right-radius:15px;">
     <center><h4>Exercices</h4></center>
@@ -384,7 +409,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
 <% end %>
 
 
-
+<!-- Si chapitre fondamental -->
 <% else %>
 
 Tous les exercices sont ici directement accessibles.<br/><br/>
@@ -398,6 +423,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 
 <% n = 0 %>
 
+<!-- On parcourt tous les chapitres -->
 <% Chapter.all.each do |c| %>
   <% if (c.online || (signed_in? && current_user.sk.admin)) && c.section.fondation %>
     <% retiens[c.id] = n %>
@@ -409,6 +435,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <% end %>
 <% end %>
 
+<!-- Détermine ce qu'on peut voir ou ne pas voir -->
 <% (0..(n-1)).each do |i| %>
   <% if (chap[i].online || (signed_in? && current_user.sk.admin)) %>
     <% premier = true %>
@@ -427,20 +454,19 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 
 <% i = 0 %>
 
+<!-- On parcourt les chapitres dans l'ordre -->
 <% while !possible.empty? %>
 
   <% encours = (possible.first)[2] %>
   <% possible.delete(possible.first) %>
   <% lecas = 0 %>
-
-  <% if signed_in? && current_user.sk.chapters.exists?(chap[encours]) && !current_user.sk.admin %>
-    <!-- <table style="border-radius:15px; background-color:#DDFFDD; border-collapse:separate;" class="table"> -->
-    <!-- <% lecas = 1 %> -->
-    <table style="border-radius:15px; background-color:#FFFFD0; border-collapse:separate;" class="table">
-    <% lecas = 3 %>
-  <% elsif !chap[encours].online %>
+  
+  <!-- Si pas en ligne : orange -->
+  <% if !chap[encours].online %>
     <table style="border-radius:15px; background-color:#FFEEAA; border-collapse:separate;" class="table">
     <% lecas = 2 %>
+    
+  <!-- Sinon : jaune -->
   <% else %>
     <table style="border-radius:15px; background-color:#FFFFD0; border-collapse:separate;" class="table">
     <% lecas = 3 %>
@@ -453,16 +479,18 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
     (en construction)
   <% end %>  
   </h3></center>
-  <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %></div>
+  <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;">
+    <%= raw(htmlise(chap[encours].description)) %>
+  </div>
   </td>
   </tr>
   
+  <!-- Cas normal -->
   
+  <!-- Théorie -->
   <tr class="hidden-xs">
-
   <td class="col-sm-6" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px solid black; border-bottom-left-radius:15px; border-right:1px dashed black;">
   <center><h4>Théorie</h4></center>
-
   <% compteur = 0 %>
   <% liste = chap[encours].theories.order(:position) %>
   <% liste.each do |t| %>
@@ -482,14 +510,17 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <% end %>
   </td>
 
+  <!-- Exercices -->
   <td class="col-sm-6  col-xs-6" style="padding-bottom:20px; border-bottom:1px solid black; border-right:1px solid black; border-bottom-right-radius:15px;">
   <center><h4>Exercices</h4></center>
   <% affiche_exercices(chap[encours],true) %>
   </td>
   </tr>
   
+  <!-- Cas gsm -->
+  
+  <!-- Théorie -->
   <tr class="visible-xs">
-
   <td class="col-xs-12" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px dashed black; border-right:1px solid black;">
   <center><h4>Théorie</h4></center>
 
@@ -512,6 +543,8 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <% end %>
   </td>
   </tr>
+  
+  <!-- Exercices -->
   <tr class="visible-xs">
   <td class="col-xs-12" style="padding-bottom:20px; border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-bottom-left-radius:15px; border-bottom-right-radius:15px;">
   <center><h4>Exercices</h4></center>
@@ -534,13 +567,16 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 
 <% end %>
 
+<!-- Si administrateur -->
 <% if signed_in? && current_user.sk.admin? %>
 
+<!-- Ajouter un chapitre -->
 <center>
 <%= button_to "Ajouter un chapitre", new_section_chapter_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>
 </center>
 <br/>
 
+<!-- Statistiques -->
 <h3>Statistiques (uniquement visibles des administrateurs)</h3>
 <h4>Exercices</h4>
 <ul>

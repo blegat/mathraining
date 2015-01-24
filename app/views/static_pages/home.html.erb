@@ -1,1 +1,30 @@
-<%= render 'shared/user_home' %>
+<!-- Gros titre Mathraining -->
+<div class="center jumbotron" style="text-align:center; margin-top:20px; padding:25px;">
+  <center>
+   <%= image_tag "mathraining.gif", :style => "width:100%; max-width:342px;" %>
+   </center>
+  <h3>
+  Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques
+  </h3>
+</div>
+
+<!-- Afficher les actualités -->
+<h1>Actualités <%= link_to image_tag("rss.png", alt: 'rss'), feed_path %></h1>
+<% actualities = Actuality.order("created_at DESC").paginate(:page => params[:page], :per_page => 5) %>
+
+<% actualities.each do |a| %>
+  <%= render 'actualities/show', f: a %>
+<% end %>
+
+<center>
+<%= will_paginate actualities, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+<%= will_paginate actualities, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+</center>
+
+
+<!-- Ajouter une actualité -->
+<% if signed_in? && current_user.sk.admin? %>
+<center><%= link_to "Ajouter une actualité", new_actuality_path, :class => "btn btn-grey btn-default btn-lg" %></center>
+<% end %>	
+
+

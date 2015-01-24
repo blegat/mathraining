@@ -1,18 +1,23 @@
 <% provide(:title, @section.name) %>
 
 <h1>
-  <span style="font-size:16px;">Problèmes ></span> <%= @section.name %>
+<span style="font-size:16px;">Problèmes ></span>
+<%= @section.name %>
 </h1>
 
+<!-- On parcourt tous les niveaux -->
 <% (1..5).each do |level| %>
 
 <h2>Niveau <%= level %></h2>
 <% compteur = 0 %>
 
+<!-- On parcourt tous les problèmes de ce niveau -->
 <% @section.problems.where(:level => level).order(:number).each do |p| %>
 
+<!-- Si le problème est en ligne (ou on est admin) -->
 <% if p.online? || (signed_in? && current_user.sk.admin?) %>
 
+  <!-- On regarde si on peut le voir ou non -->
   <% visible = true %>
 
   <% if !signed_in? || !current_user.sk.admin? %>
@@ -30,29 +35,43 @@
       <% visible = false %>
     <% end %>
   <% end %>
-
+  
+  <!-- Si on peut le voir -->
   <% if visible %>
     <% if compteur == 0 %>
       Chaque problème de niveau <%= level %> vaut <%= p.value %> points.<br/><br/>
     <% end %>
     <% compteur = compteur+1 %>
 
+    <!-- Si déjà résolu : vert -->
     <% if signed_in? && current_user.sk.solved?(p) && !current_user.sk.admin? %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#DDFFDD;">
+      
+    <!-- Si pas en ligne : orange -->
     <% elsif !p.online %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFEEAA;">
+      
+    <!-- Si connecté -->
     <% elsif signed_in? %>
       <% sub = current_user.sk.submissions.where(:problem_id => p.id).order('created_at') %>
+      
+      <!-- Si aucune soumission (ou admin) : jaune -->
       <% if sub.size == 0 || current_user.sk.admin? %>
         <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
       <% else %>
         <% sub = sub.last %>
+        
+        <!-- Si une soumission pas encore corrigée : orange -->
         <% if sub.status == 0 %>
           <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFEEAA;">
+          
+        <!-- Si une soumission erronnée : vert -->
         <% else %>
           <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFD0D0;">
         <% end %>
       <% end %>
+      
+    <!-- Si pas connecté : jaune (Cela devrait ne jamais arriver) -->
     <% else %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
     <% end %>
@@ -62,6 +81,8 @@
       - <%= link_to "Test virtuel ##{p.virtualtest.number}", p.virtualtest %>
     <% end %>
     <%= "(en construction)" if !p.online %></h3></center>
+    
+    <!-- Prérequis (si admin) -->
     <% if signed_in? && current_user.sk.admin? %>
       <b>Prérequis : </b>
       <% prems = true %>
@@ -74,9 +95,12 @@
       <% end %>
       <br/><br/>
     <% end %>
-    <%= raw(p.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-    </div> <br/>
-
+    
+    <!-- Enoncé -->
+    <%= raw(htmlise(p.statement)) %>
+    
+    </div>
+    <br/>
     <% end %>	
   <% end %>
 <% end %>
@@ -87,6 +111,7 @@
 
 <% end %>
 
+<!-- Ajouter un problème -->
 <% if signed_in? && current_user.sk.admin? %>
   <center>
   <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>
