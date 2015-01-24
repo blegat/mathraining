@@ -19,14 +19,14 @@ Modifier le sujet
   <%= render 'form', f: f %>
   <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
-    <% @subject.subjectfiles.each do |sf| %>
+    <% @subject.subjectfiles.order(:id).each do |sf| %>
       <label class="checkbox-inline">
         <input type="checkbox" name="prevfile<%= sf.id %>" value="1" checked="checked" />
         <%= link_to sf.file_file_name, download_subjectfile_path(sf) %>
       </label>
       <br/>
     <% end %>
-    <% @subject.fakesubjectfiles.each do |sf| %>
+    <% @subject.fakesubjectfiles.order(:id).each do |sf| %>
       <label class="checkbox-inline">
         <input type="checkbox" name="prevfakefile<%= sf.id %>" value="1" checked="checked" />
         <span style="color:#0000BB;"><%= sf.file_file_name %> (désactivée)</span>

@@ -23,14 +23,14 @@ Modifier un message
 
   <% if @message.messagefiles.size + @message.fakemessagefiles.size > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
-    <% @message.messagefiles.each do |sf| %>
+    <% @message.messagefiles.order(:id).each do |sf| %>
       <label class="checkbox-inline">
         <input type="checkbox" name="prevfile<%= sf.id %>" value="1" checked="checked" />
         <%= link_to sf.file_file_name, download_messagefile_path(sf) %>
       </label>
       <br/>
     <% end %>
-    <% @message.fakemessagefiles.each do |sf| %>
+    <% @message.fakemessagefiles.order(:id).each do |sf| %>
       <label class="checkbox-inline">
         <input type="checkbox" name="prevfakefile<%= sf.id %>" value="1" checked="checked" />
         <span style="color:#0000BB;"><%= sf.file_file_name %> (désactivée)</span>

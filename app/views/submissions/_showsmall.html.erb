@@ -86,14 +86,14 @@
   <% else %>
     <br/><br/><b><%= @submission.submissionfiles.size + @submission.fakesubmissionfiles.size %> pièces jointes :</b><br/>
   <% end %>
-  <% @submission.submissionfiles.each do |f| %>
+  <% @submission.submissionfiles.order(:id).each do |f| %>
     <%= link_to f.file_file_name, download_submissionfile_path(f) %>
     <% if current_user.sk.root? %>
        - <%= link_to 'Supprimer le contenu', submissionfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
     <% end %>
     <br/>
   <% end %>
-  <% @submission.fakesubmissionfiles.each do |f| %>
+  <% @submission.fakesubmissionfiles.order(:id).each do |f| %>
     <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
   <% end %>
 <% end %>

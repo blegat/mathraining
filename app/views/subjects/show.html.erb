@@ -105,14 +105,14 @@ function hideStuff(id) {
   <% else %>
     <br/><br/><b><%= @subject.subjectfiles.size + @subject.fakesubjectfiles.size %> pièces jointes :</b><br/>
   <% end %>
-  <% @subject.subjectfiles.each do |f| %>
+  <% @subject.subjectfiles.order(:id).each do |f| %>
     <%= link_to f.file_file_name, download_subjectfile_path(f) %>
     <% if current_user.sk.root? %>
        - <%= link_to 'Supprimer le contenu', subjectfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
     <% end %>
     <br/>
   <% end %>
-  <% @subject.fakesubjectfiles.each do |f| %>
+  <% @subject.fakesubjectfiles.order(:id).each do |f| %>
     <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
   <% end %>
 <% end %>
@@ -182,14 +182,14 @@ function hideStuff(id) {
   <% else %>
     <br/><br/><b><%= m.messagefiles.size + m.fakemessagefiles.size %> pièces jointes :</b><br/>
   <% end %>
-  <% m.messagefiles.each do |f| %>
+  <% m.messagefiles.order(:id).each do |f| %>
     <%= link_to f.file_file_name, download_messagefile_path(f) %>
     <% if current_user.sk.root? %>
        - <%= link_to 'Supprimer le contenu', messagefile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
     <% end %>
     <br/>
   <% end %>
-  <% m.fakemessagefiles.each do |f| %>
+  <% m.fakemessagefiles.order(:id).each do |f| %>
     <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
   <% end %>
 <% end %>

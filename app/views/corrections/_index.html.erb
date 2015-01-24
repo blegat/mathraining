@@ -65,14 +65,14 @@ Aucun commentaire.<br/><br/>
     <% else %>
       <br/><br/><b><%= correction.correctionfiles.size + correction.fakecorrectionfiles.size %> pièces jointes :</b><br/>
     <% end %>
-    <% correction.correctionfiles.each do |f| %>
+    <% correction.correctionfiles.order(:id).each do |f| %>
       <%= link_to f.file_file_name, download_correctionfile_path(f) %>
       <% if current_user.sk.root? %>
        - <%= link_to 'Supprimer le contenu', correctionfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
       <% end %>
       <br/>
     <% end %>
-    <% correction.fakecorrectionfiles.each do |f| %>
+    <% correction.fakecorrectionfiles.order(:id).each do |f| %>
       <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
     <% end %>
   <% end %>
