@@ -1,13 +1,17 @@
 #encoding: utf-8
 class MessagefilesController < ApplicationController
+  before_filter :signed_in_user
   before_filter :have_access, only: [:download]
-  before_filter :check_root, only: [:fake_delete]
+  before_filter :root_user, only: [:fake_delete]
 
+  # Télécharger : il faut avoir l'accès
   def download
     send_file @thing.file.path, :type => @thing.file_content_type, :filename => @thing.file_file_name
   end
   
+  # Supprimer fictivement : il faut être root
   def fake_delete
+    @thing = Messagefile.find(params[:messagefile_id])
     @message = @thing.message
     @fakething = Fakemessagefile.new
     @fakething.message = @thing.message
@@ -30,17 +34,14 @@ class MessagefilesController < ApplicationController
     flash[:success] = "Contenu de la pièce jointe supprimé."
     redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
   end
-
+  
+  ########## PARTIE PRIVEE ##########
   private
-
+  
+  # La seule façon de ne pas avoir accès est que le sujet soit admin et pas l'utilisateur
   def have_access
     @thing = Messagefile.find(params[:id])
-    redirect_to root_path if ((!signed_in? || !current_user.sk.admin?) && @thing.message.subject.admin)
-  end
-  
-  def check_root
-    @thing = Messagefile.find(params[:messagefile_id])
-    redirect_to root_path unless current_user.sk.root?
+    redirect_to root_path if (!current_user.sk.admin? && @thing.message.subject.admin)
   end
 
 end

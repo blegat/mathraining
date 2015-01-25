@@ -1,23 +1,24 @@
 #encoding: utf-8
 class ExercisesController < QuestionsController
   before_filter :signed_in_user
-  before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus,
-    :order_plus, :put_online, :explanation, :update_explanation]
-  before_filter :root_user, only: [:destroy]
+  before_filter :admin_user
+  before_filter :root_exercise_user, only: [:destroy]
 
+  # Créer un nouvel exercice : il faut être admin
   def new
     @chapter = Chapter.find(params[:chapter_id])
     @exercise = Exercise.new
   end
-
+  
+  # Editer un exercice : il faut être admin
   def edit
     @exercise = Exercise.find(params[:id])
     if !@exercise.decimal
       @exercise.answer = @exercise.answer.to_i
     end
   end
-
+  
+  # Créer un nouvel exercice 2 : il faut être admin
   def create
     @chapter = Chapter.find(params[:chapter_id])
     @exercise = Exercise.new
@@ -57,7 +58,8 @@ class ExercisesController < QuestionsController
       render 'new'
     end
   end
-
+  
+  # Editer un exercice 2 : il faut être admin
   def update
     @exercise = Exercise.find(params[:id])
     @exercise.statement = params[:exercise][:statement]
@@ -78,7 +80,6 @@ class ExercisesController < QuestionsController
       @exercise.answer = params[:exercise][:answer].gsub(",",".").to_i unless @exercise.chapter.online && @exercise.online
     end
     
-    
     if @exercise.save
       flash[:success] = "Exercice modifié."
       redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
@@ -87,6 +88,7 @@ class ExercisesController < QuestionsController
     end
   end
 
+  # Supprimer un exercice : il faut être admin, voire root si en ligne
   def destroy
     @chapter = @exercise.chapter
     if @exercise.online && @exercise.chapter.online
@@ -100,28 +102,33 @@ class ExercisesController < QuestionsController
     flash[:success] = "Exercice supprimé."
     redirect_to @chapter
   end
-
+  
+  # Ordre moins : il faut être admin
   def order_minus
     @exercise = Exercise.find(params[:exercise_id])
     order_op(true, true, @exercise)
   end
-
+  
+  # Ordre plus : il faut être admin
   def order_plus
     @exercise = Exercise.find(params[:exercise_id])
     order_op(false, true, @exercise)
   end
 
+  # Mettre en ligne : il faut être admin
   def put_online
     @exercise = Exercise.find(params[:exercise_id])
     @exercise.online = true
     @exercise.save
     redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
   end
-
+  
+  # Modifier l'explication : il faut être admin
   def explanation
     @exercise = Exercise.find(params[:exercise_id])
   end
-
+  
+  # Modifier l'explication 2 : il faut être admin
   def update_explanation
     @exercise = Exercise.find(params[:exercise_id])
     @exercise.explanation = params[:exercise][:explanation]
@@ -133,83 +140,21 @@ class ExercisesController < QuestionsController
     end
   end
 
+  ########## PARTIE PRIVEE ##########
   private
-
-  def admin_user
-    redirect_to root_path unless current_user.sk.admin?
-  end
-
-  def root_user
+  
+  # Vérifie qu'on est root si l'exercice est en ligne
+  def root_exercise_user
     @exercise = Exercise.find(params[:id])
     redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) if (!current_user.sk.root && @exercise.online && @exercise.chapter.online)
   end
-
+  
+  # Bete fonction maximum
   def maximum(a, b)
     if a > b
       return a
     else
       return b
     end
-  end
-
-  def point_attribution(user)
-    user.point.rating = 0
-    partials = user.pointspersections
-    partial = Array.new
-    
-    Section.all.each do |s|
-      partial[s.id] = partials.where(:section_id => s.id).first
-      if partial[s.id].nil?
-        newpoint = Pointspersection.new
-        newpoint.points = 0
-        newpoint.section_id = s.id
-        user.pointspersections << newpoint
-        partial[s.id] = user.pointspersections.where(:section_id => s.id).first
-      end
-      partial[s.id].points = 0
-    end
-
-    user.solvedexercises.each do |e|
-      if e.correct
-        exo = e.exercise
-        pt = exo.value
-
-        if !exo.chapter.section.fondation? # Pas un fondement
-          user.point.rating = user.point.rating + pt
-        end
-
-        partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
-      end
-    end
-
-    user.solvedqcms.each do |q|
-      if q.correct
-        qcm = q.qcm
-        pt = qcm.value
-
-        if !qcm.chapter.section.fondation? # Pas un fondement
-          user.point.rating = user.point.rating + pt
-        end
-
-        partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
-      end
-    end
-
-    user.solvedproblems.each do |p|
-      problem = p.problem
-      pt = problem.value
-
-      if !problem.section.fondation? # Pas un fondement
-        user.point.rating = user.point.rating + pt
-      end
-
-      partial[problem.section.id].points = partial[problem.section.id].points + pt
-    end
-
-    user.point.save
-    Section.all.each do |s|
-      partial[s.id].save
-    end
-
   end
 end

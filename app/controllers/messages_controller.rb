@@ -1,20 +1,22 @@
 #encoding: utf-8
 class MessagesController < ApplicationController
   before_filter :signed_in_user
-  before_filter :admin_user, only: [:new, :create]
-  before_filter :author, only: [:update, :edit, :destroy]
-  before_filter :admin_delete, only: [:destroy]
+  before_filter :admin_subject_user, only: [:new, :create]
+  before_filter :author, only: [:edit, :update]
+  before_filter :admin_user, only: [:destroy]
   before_filter :valid_chapter
   before_filter :online_chapter
-  before_filter :unlocked_chapter
 
+  # Créer un message
   def new
     @message = Message.new
   end
-
+  
+  # Editer un message
   def edit
   end
-
+  
+  # Créer un message 2
   def create
     q = 0
     if(params.has_key?:q)
@@ -25,7 +27,8 @@ class MessagesController < ApplicationController
     @message.user = current_user.sk
     @message.subject = @subject
     @message.admin_user = current_user.sk.admin?
-
+    
+    # Pièces jointes une par une
     attach = Array.new
     totalsize = 0
 
@@ -52,7 +55,8 @@ class MessagesController < ApplicationController
       end
       k = k+1
     end
-
+    
+    # On vérifie que les pièces jointes ne sont pas trop grosses
     if totalsize > 10485760
       j = 1
       while j < i do
@@ -64,8 +68,11 @@ class MessagesController < ApplicationController
       flash.now[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
       render 'new' and return
     end
-
+    
+    # Si le message a bien été sauvé
     if @message.save
+    
+      # On enregistre les pièces jointes
       j = 1
       while j < i do
         attach[j-1].message = @message
@@ -89,6 +96,8 @@ class MessagesController < ApplicationController
       
       flash[:success] = "Votre message a bien été posté."
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
+      
+    # Si il y a eu un problème : on supprime les pièces jointes
     else
       j = 1
       while j < i do
@@ -99,22 +108,24 @@ class MessagesController < ApplicationController
       render 'new'
     end
   end
-
-  def update
   
+  # Editer un message 2
+  def update
     q = 0
     if(params.has_key?:q)
       q = params[:q].to_i
     end
     
+    # Si la modification du message réussit
     if @message.update_attributes(params[:message])
       if @message.user.admin? && !@message.admin_user?
         @message.admin_user = true
         @message.save
       end
-
+      
+      # On s'occupe des pièces jointes
       totalsize = 0
-
+      
       @message.messagefiles.each do |sf|
         if params["prevfile#{sf.id}".to_sym].nil?
           sf.file.destroy
@@ -175,13 +186,15 @@ class MessagesController < ApplicationController
       page = [0,((tot-1)/10).floor].max + 1
 
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
+      
+    # Si il y a eu un bug
     else
       render 'edit'
     end
   end
 
+  # Supprimer un message : il faut être admin
   def destroy
-  
     q = 0
     if(params.has_key?:q)
       q = params[:q].to_i
@@ -207,9 +220,11 @@ class MessagesController < ApplicationController
    
     redirect_to subject_path(@subject, :q => q)
   end
-
+  
+  ########## PARTIE PRIVEE ##########
   private
 
+  # Il faut que le chapitre existe
   def valid_chapter
     chapter_id = params[:chapter_id]
     if chapter_id.nil?
@@ -219,7 +234,8 @@ class MessagesController < ApplicationController
       redirect_to root_path if @chapter.nil?
     end
   end
-
+  
+  # Il faut que le chapitre soit en ligne ou qu'on soit admin
   def online_chapter
     if @chapter.nil?
       return
@@ -227,28 +243,13 @@ class MessagesController < ApplicationController
     redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
   end
 
-  def unlocked_chapter
-    if @chapter.nil?
-      return
-    end
-    if !current_user.sk.admin?
-      @chapter.prerequisites.each do |p|
-        if (p.sections.count > 0 && !current_user.sk.chapters.exists?(p))
-          redirect_to sections_path and return
-        end
-      end
-    end
-  end
-
-  def admin_user
+  # Il faut être admin si le sujet est pour admin
+  def admin_subject_user
     @subject = Subject.find(params[:subject_id])
     redirect_to root_path unless (current_user.sk.admin? || !@subject.admin)
   end
-
-  def admin_delete
-    redirect_to root_path unless current_user.sk.admin?
-  end
-
+  
+  # Il faut être l'auteur ou admin pour modifier un message
   def author
     @message = Message.find(params[:id])
     redirect_to subjects_path unless (current_user.sk == @message.user || (current_user.sk.admin && !@message.user.admin) || current_user.sk.root)

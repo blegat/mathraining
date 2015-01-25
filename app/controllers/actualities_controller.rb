@@ -1,19 +1,19 @@
 #encoding: utf-8
 class ActualitiesController < ApplicationController
-  before_filter :signed_in_user,
-    only: [:destroy, :update, :edit, :new, :create]
-  before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create]
+  before_filter :signed_in_user, only: [:destroy, :update, :edit, :new, :create]
+  before_filter :admin_user, only: [:destroy, :update, :edit, :new, :create]
 
-
+  # Création d'une actualité : que pour les admins
   def new
     @actuality = Actuality.new
   end
-
+  
+  # Editer une actualité : que pour les admins
   def edit
     @actuality = Actuality.find(params[:id])
   end
-
+  
+  # Création d'une actualité 2 : que pour les admins
   def create
     @actuality = Actuality.create(params[:actuality])
     if @actuality.save
@@ -23,7 +23,8 @@ class ActualitiesController < ApplicationController
       render 'new'
     end
   end
-
+  
+  # Editer une actualité 2 : que pour les admins
   def update
     @actuality = Actuality.find(params[:id])
     if @actuality.update_attributes(params[:actuality])
@@ -33,7 +34,8 @@ class ActualitiesController < ApplicationController
       render 'edit'
     end
   end
-
+  
+  # Supprimer une actualité : que pour les admins
   def destroy
     @actuality = Actuality.find(params[:id])
     @actuality.destroy
@@ -41,6 +43,7 @@ class ActualitiesController < ApplicationController
     redirect_to root_path
   end
 
+  # Feed...
   def feed
     # this will be the name of the feed displayed on the feed reader
     @title = "OMB training feed"
@@ -58,10 +61,5 @@ class ActualitiesController < ApplicationController
       format.rss { redirect_to feed_path(:format => :atom), status: :moved_permanently }
     end
   end
-
-  private
-
-  def admin_user
-    redirect_to root_path unless current_user.sk.admin?
-  end
+  
 end

@@ -7,8 +7,6 @@ Mathraining::Application.routes.draw do
 
   match '/notifs', to: 'users#notifs_show', :via => [:get], as: :notifs_show
 
-  resources :corrections
-
   resources :solvedexercises
   resources :solvedqcms
   resources :solvedchoices
@@ -112,10 +110,10 @@ Mathraining::Application.routes.draw do
 
   resources :chapters, only: [:show, :update, :edit, :destroy] do
     match '/warning', to: 'chapters#warning', :via => [:get]
-    match '/export', to: 'chapters#export', :via => [:post], as: :export
+    match '/export', to: 'chapters#export', :via => [:post]
     match '/put_online', to: 'chapters#put_online', :via => [:get]
     
-    match '/read', to: 'chapters#read', :via => [:get], as: :read
+    match '/read', to: 'chapters#read', :via => [:get]
 
     resources :theories, only: [:new, :create]
     resources :exercises, only: [:new, :create]
@@ -124,7 +122,7 @@ Mathraining::Application.routes.draw do
   end
 
   resources :subjects do
-    resources :messages, only: [:update, :edit, :destroy, :new, :create]
+    resources :messages, only: [:new, :edit, :create, :update, :destroy]
   end
 
   resources :users do
