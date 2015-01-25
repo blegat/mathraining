@@ -1,22 +1,26 @@
 <h4>Poster un commentaire</h4>
 <%= form_for :correction, url: problem_submission_corrections_path(@problem, @submission), :html => { :multipart => true } do |f| %>
   <div class="form-group">
-  <div class="well" id="MathPreview"></div>
-  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-  <%= render 'subjects/smiley', hiddentext: false %>
+    <div class="well" id="MathPreview"></div>
+    <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+    <%= render 'subjects/smiley', hiddentext: false %>
 
-  <% @ancientexte = session[:ancientexte] %>
-  <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
-  <% else %>
-    <%= f.text_area :content, :class => "form-control", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
-  <% end %>
+    <% @ancientexte = session[:ancientexte] %>
+    <% if @ancientexte.nil? %>
+      <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
+    <% else %>
+      <%= f.text_area :content, :class => "form-control", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
+    <% end %>
   <% session.delete(:ancientexte) %>
   </div>
+  
+  <!-- Pièces jointes -->
   <span id="fooBar"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
   <input type="hidden" name="lastcomment" value="<%= @lastid %>">
-  <br /><br/>
+  <br/><br/>
+  
+  <!-- Si administrateur : tous les boutons différents -->
   <% if current_user.sk.admin? %>
     N'hésitez pas à faire des commentaires, même minimes, pouvant permettre à l'étudiant de progresser. On signalera par exemple une erreur de notation, un oubli de cas particulier, une suggestion d'amélioration... Si une grosse partie est manquante, alors on refusera la solution en demandant de la compléter.<br/><br/>
     <% case @submission.status %>
@@ -47,6 +51,8 @@
       <%= f.submit "Poster et refuser la soumission", class: "btn btn-danger" %>
       <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
     <% end %>
+    
+  <!-- Si étudiant, bête bouton -->
   <% else %>
     <%= f.submit "Poster", class: "btn btn-primary", :disabled => current_user.other %>
   <% end %>

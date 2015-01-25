@@ -182,6 +182,6 @@
   
   <!-- On vérifie que l'on peut la regarder -->
   <% if signed_in? && @submission.problem == @problem && (@submission.user == current_user.sk || (current_user.sk.solved?(@problem) && @submission.status == 2) || current_user.sk.admin) %>
-     <%= render 'submissions/showsmall' %>
+     <%= render 'submissions/show' %>
   <% end %>
 <% end %>

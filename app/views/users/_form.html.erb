@@ -1,41 +1,52 @@
 <%= render 'shared/error_messages', object: f.object %>
 
+<!-- Prénom -->
 <div class="form-group">
-<%= f.label :first_name %>
-<%= f.text_field :first_name, :class => "form-control", :style => "width:200px;" %>
+  <%= f.label :first_name %>
+  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other) %>
 </div>
 
+<!-- Nom -->
 <div class="form-group">
-<%= f.label :last_name %>
-<%= f.text_field :last_name, :class => "form-control", :style => "width:200px;" %>
+  <%= f.label :last_name %>
+  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other)%>
 </div>
 
+<!-- Voir nom entier? -->
 <div class="form-group">
-<%= f.radio_button :seename, 1 %>
-Apparaître avec mon nom entier sur le site.<br/>
-<%= f.radio_button :seename, 0 %>
-N'afficher que l'initiale de mon nom de famille.
+  <%= f.radio_button :seename, 1 %>
+  Apparaître avec mon nom entier sur le site.<br/>
+  <%= f.radio_button :seename, 0 %>
+  N'afficher que l'initiale de mon nom de famille.
 </div>
 
+<!-- Sexe -->
 <div class="form-group">
-<%= f.label :sex %><br/>
-<%= f.radio_button :sex, 0 %>
-<span style="margin-right:10px;">Masculin</span>
-<%= f.radio_button :sex, 1 %>
-Féminin
+  <%= f.label :sex %><br/>
+  <%= f.radio_button :sex, 0 %>
+  <span style="margin-right:10px;">Masculin</span>
+  <%= f.radio_button :sex, 1 %>
+  Féminin
 </div>
 
+<!-- Email -->
 <div class="form-group">
-<%= f.label :email %>
-<%= f.email_field :email, :class => "form-control", :style => "width:200px;" %>
+  <%= f.label :email %>
+  <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other) %>
 </div>
 
+<% if modif %>
+  <br/>Si vous désirez modifier votre mot de passe, remplissez les champs suivants.<br/><br/>
+<% end %>
+
+<!-- Mot de passe -->
 <div class="form-group">
-<%= f.label :password %>
-<%= f.password_field :password, :class => "form-control", :style => "width:200px;" %>
+  <%= f.label :password %>
+  <%= f.password_field :password, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other) %>
 </div>
 
+<!-- Confirmation mot de passe -->
 <div class="form-group">
-<%= f.label :password_confirmation %>
-<%= f.password_field :password_confirmation, :class => "form-control", :style => "width:200px;" %>
+  <%= f.label :password_confirmation %>
+  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other) %>
 </div>

@@ -4,6 +4,7 @@
 
 <% provide(:title, @user.name) %>
 
+<!-- Style pour la barre de défilement dans le tableau -->
 <style type="text/css">
 
 html>body thead.fixed tr {
@@ -18,59 +19,62 @@ html>body tbody.scroll {
 }
 </style>
 
-
+<!-- Si c'est un administrateur -->
 <% if @user.admin %>
   <h1><b><%= @user.name %></b>
   <span style="font-size:18px; margin-left:100px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
   </h1>
   <b>Administrateur</b><br/>
-<% else %>
-
-
-<% actualrating = @user.point.rating %>
-<% niveau = @user.level %>
-
-<h1 style="color:<%= niveau[:color] %>;"><b><%= @user.name %></b><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] if @user.sex == 0 %><%= niveau[:femininename] if @user.sex != 0 %></span>
-<% if signed_in? && current_user.sk.admin %>
-<span style="color:<%= niveau[:color] %>; margin-left:100px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
-<% end %>
-</h1>
-
-<% cansee = Array.new %>
-
-<% if signed_in? && current_user.sk.admin %>
-  <% Chapter.all.to_a.each do |c| %>
-    <% cansee[c.id] = true %>
-  <% end %>
-<% else %>
-
-  <% debloque = Array.new %>
-  <% Chapter.all.to_a.each do |c| %>
-    <% debloque[c.id] = false %>
-  <% end %>
   
-  <% signed_in? && current_user.sk.chapters.each do |c| %>
-    <% debloque[c.id] = true %>
-  <% end %>
+<!-- SI c'est un étudiant -->
+<% else %>
 
-  <% Chapter.all.to_a.each do |c| %>
-    <% cansee[c.id] = true %>
-    <% if !c.section.fondation %>
-      <% c.prerequisites.each do |p| %>
-        <% if !p.section.fondation && !debloque[p.id] %>
-          <% cansee[c.id] = false %>
+  <% actualrating = @user.point.rating %>
+  <% niveau = @user.level %>
+
+  <!-- Titre avec le nom et le niveau -->
+  <h1 style="color:<%= niveau[:color] %>;"><b><%= @user.name %></b><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] if @user.sex == 0 %><%= niveau[:femininename] if @user.sex != 0 %></span>
+  <% if signed_in? && current_user.sk.admin %>
+    <span style="color:<%= niveau[:color] %>; margin-left:100px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
+  <% end %>
+  </h1>
+
+  <!-- On détermine ce que la personne peut voir ou ne pas voir -->
+  <% cansee = Array.new %>
+
+  <% if signed_in? && current_user.sk.admin %>
+    <% Chapter.all.to_a.each do |c| %>
+      <% cansee[c.id] = true %>
+    <% end %>
+  <% else %>
+    <% debloque = Array.new %>
+    <% Chapter.all.to_a.each do |c| %>
+      <% debloque[c.id] = false %>
+    <% end %>
+  
+    <% signed_in? && current_user.sk.chapters.each do |c| %>
+      <% debloque[c.id] = true %>
+    <% end %>
+
+    <% Chapter.all.to_a.each do |c| %>
+      <% cansee[c.id] = true %>
+      <% if !c.section.fondation %>
+        <% c.prerequisites.each do |p| %>
+          <% if !p.section.fondation && !debloque[p.id] %>
+            <% cansee[c.id] = false %>
+          <% end %>
         <% end %>
       <% end %>
     <% end %>
   <% end %>
-<% end %>
 
-
+  <!-- Affichage des résolutions -->
   <div class="row">
 
   <div class="col-lg-7 col-sm-12 col-xs-12">
   <h2>Résolutions</h2>
   
+  <!-- On va parcourir tous les exercices, qcms et problèmes -->
   <% exercises = @user.solvedexercises.where(:correct => true).order("resolutiontime DESC") %>
   <% qcms = @user.solvedqcms.where(:correct => true).order("resolutiontime DESC") %>
   <% problems = @user.solvedproblems.order("resolutiontime DESC") %>
@@ -155,8 +159,10 @@ html>body tbody.scroll {
   <% premier = -1 %>
   <% dernier = 0 %>
   
+  <!-- Si l'étudiant a déjà fait au moins un truc -->
   <% if act.size > 0 %>
   
+    <!-- On détermine le premier et le dernier acte non fondamental -->
     <% act.each do |a| %>
       <% if a[:pt] > 0 %>
         <% dernier = a[:time].in_time_zone %>
@@ -166,6 +172,7 @@ html>body tbody.scroll {
       <% end %>
     <% end %>
     
+    <!-- On détermine si on rassemble les actes par minute, heure ou jour -->
     <% if premier != -1 %>
       <% if dernier.day != DateTime.now.in_time_zone.day || dernier.month != DateTime.now.in_time_zone.month || dernier.year != DateTime.now.in_time_zone.year %>
         <% parquoi = "jour" %>
@@ -176,6 +183,7 @@ html>body tbody.scroll {
       <% end %>
     <% end %>
     
+    <!-- Nombre d'exercices et de problèmes résolus -->
     <%= @user.name %> a résolu <b><%= nb_e %></b> exercice<%= "s (non fondamentaux)" if nb_e > 1 %><%= " (non fondamental)" if nb_e == 1 %><%= "." if nb_p == 0 %>
     <% if nb_p > 0 %>
       et <b><%= nb_p %></b> problème<%= "s" if nb_p > 1 %>.<br/><br/>
@@ -183,6 +191,7 @@ html>body tbody.scroll {
       <br/><br/>
     <% end %>
 
+    <!-- Début du tableau des résolutions (cas normal) -->
     <table class="table table-bordered hidden-xs" style="width:606px;">
     <thead class="fixed">
     <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:340px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
@@ -190,7 +199,10 @@ html>body tbody.scroll {
     <tbody class="scroll">
   <% end %>
   
+  <!-- On parcourt les actes un par un (cas normal) -->
   <% act.each do |a| %>
+  
+    <!-- Rassemblement par date des actes -->
     <% date = a[:time].in_time_zone %>
 
     <% if parquoi == "jour" %>
@@ -211,10 +223,16 @@ html>body tbody.scroll {
       <% previousdate = dateday %>
     <% end %>
 
-    
+    <!-- Affichage de la ligne -->
     <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+    
+    <!-- Date -->
     <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+    
+    <!-- Heure -->
     <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
+    
+    <!-- Quoi -->
     <td style="width:340px;">
     <% if a[:type] <= 3 %>
       <% if cansee[a[:c_id]] %>
@@ -232,6 +250,8 @@ html>body tbody.scroll {
       <%= "(Niveau #{a[:level]})" %>
     <% end %>
     </td>
+    
+    <!-- Points -->
     <td style="width:50px;">
     <center>
       <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
@@ -249,9 +269,8 @@ html>body tbody.scroll {
   <% end %>
   
   
-  
+  <!-- Début du tableau des résolutions (cas gsm) -->
   <% if act.size > 0 %>
-
     <table class="table table-bordered visible-xs" style="width:356px;">
     <thead class="fixed">
     <tr><th style="width:150px;">Date</th><th style="width:140px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
@@ -259,11 +278,16 @@ html>body tbody.scroll {
     <tbody class="scroll">
   <% end %>
   
+  <!-- On parcourt les actes un par un (cas gsm) -->
   <% act.each do |a| %>
     <% date = a[:time].in_time_zone %>
     
     <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+    
+    <!-- Date -->
     <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+    
+    <!-- Quoi -->
     <td style="width:140px;">
     <% if a[:type] <= 3 %>
       <% if cansee[a[:c_id]] %>
@@ -279,6 +303,8 @@ html>body tbody.scroll {
       <% end %>
     <% end %>
     </td>
+    
+    <!-- Points -->
     <td style="width:50px;">
     <center>
       <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
@@ -295,97 +321,102 @@ html>body tbody.scroll {
     <div class="visible-xs"><b>Aucune activité.</b></div>
   <% end %>
   
-  
-
   </div>
-
+  
+  
+  <!-- Affichage du score et du camembert -->
   <div class="col-lg-5 col-sm-12 col-xs-12">
 
   <center><p style="font-size:24px; margin-top:80px;">Score : <%= actualrating %></p></center>
   <br/>
 
-
+  <!-- Si le score n'est pas 0, on affiche le camembert -->
   <% if actualrating > 0 %>
 
-  <% p = Pointspersection.where(:user_id => @user) %>
-  <% total = 0 %>
-  <% possible2 = SortedSet.new %>
+    <% p = Pointspersection.where(:user_id => @user) %>
+    <% total = 0 %>
+    <% possible2 = SortedSet.new %>
 
-  <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
-    <% rate = p.where(:section_id => s.id).first.points %>
-    <% total = total + rate %>
+    <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
+      <% rate = p.where(:section_id => s.id).first.points %>
+      <% total = total + rate %>
 
-    <% possible2.add([rate, s.name, s.id]) %>
-  <% end %>
+      <% possible2.add([rate, s.name, s.id]) %>
+    <% end %>
+    
+    <!-- Canvas pour camembert -->
+    <center>
+    <canvas id="Camembert" width="240" height="240">
+    Votre navigateur ne supporte pas les canvas.
+    </canvas>
+    </center>
+    
+    <center>
+    
+    <!-- Légende du camembert (cas normal) -->
+    <table class="table table-bordered hidden-xs" style="width:360px; margin-top:20px;">
+    <% p = Pointspersection.where(:user_id => @user) %>
+    <tr>
+    <% i = 0 %>
+    <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
+      <% rate = p.where(:section_id => s.id).first.points %>
+      <td style="width:180px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td>
+      <% i = i+1 %>
+      <% if i == 2 || i == 4 %>
+        </tr><tr>
+      <% end %>
+    <% end %>
+    </tr>
+    </table>
+    
+    <!-- Légende du camembert (cas gsm) -->
+    <table class="table table-bordered visible-xs" style="width:250px; margin-top:20px;">
+    <% p = Pointspersection.where(:user_id => @user) %>
+    <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
+      <% rate = p.where(:section_id => s.id).first.points %>
+      <tr><td style="width:250px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td></tr>
+    <% end %>
+    </table>
+    
+    </center>
 
-  <center>
-  <canvas id="Camembert" width="240" height="240">
-  Votre navigateur ne supporte pas les canvas.
-  </canvas>
-  </center>
-
-  <center>
-  <table class="table table-bordered hidden-xs" style="width:360px; margin-top:20px;">
-  <% p = Pointspersection.where(:user_id => @user) %>
-  <tr>
-  <% i = 0 %>
-  <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
-    <% rate = p.where(:section_id => s.id).first.points %>
-
-    <td style="width:180px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td>
-    <% i = i+1 %>
-    <% if i == 2 || i == 4 %>
-      </tr><tr>
+    <!-- Script pour le camembert -->
+    <script>
+    var d=document.getElementById("Camembert");
+    var ctx=d.getContext("2d");
+    
+    // Cercle
+    ctx.beginPath();
+    ctx.arc(120, 120, 115, 0, 2 * Math.PI, false);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#888888';
+    ctx.stroke();
+    prec = 0;
+    
+    // Chaque quartier
+    <% while !possible2.empty? %>
+      <% if (possible2.first)[0] > 0 %>
+        ctx.beginPath();
+        ctx.arc(120,120,115, prec, prec + (2 * Math.PI * <%= (possible2.first)[0] %>) / <%= total %>, false);
+        prec = prec + (2 * Math.PI * <%= (possible2.first)[0] %>) / <%= total %>;
+        ctx.lineTo(120, 120);
+        ctx.closePath();
+        ctx.fillStyle= "<%= colors[(possible2.first)[2]-1] %>";
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle="#888888";
+        ctx.stroke();
+      <% end %>
+      <% possible2.delete(possible2.first) %>
     <% end %>
 
+    </script>
+
   <% end %>
-  </tr>
-  </table>
   
-  <table class="table table-bordered visible-xs" style="width:250px; margin-top:20px;">
-  <% p = Pointspersection.where(:user_id => @user) %>
-  <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
-    <% rate = p.where(:section_id => s.id).first.points %>
-    <tr><td style="width:250px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td></tr>
-  <% end %>
-  </table>
-  
-  
-  </center>
-
-
-  <script>
-  var d=document.getElementById("Camembert");
-  var ctx=d.getContext("2d");
-
-  ctx.beginPath();
-  ctx.arc(120, 120, 115, 0, 2 * Math.PI, false);
-  ctx.fillStyle = 'white';
-  ctx.fill();
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = '#888888';
-  ctx.stroke();
-  prec = 0;
-  <% while !possible2.empty? %>
-    <% if (possible2.first)[0] > 0 %>
-      ctx.beginPath();
-      ctx.arc(120,120,115, prec, prec + (2 * Math.PI * <%= (possible2.first)[0] %>) / <%= total %>, false);
-      prec = prec + (2 * Math.PI * <%= (possible2.first)[0] %>) / <%= total %>;
-      ctx.lineTo(120, 120);
-      ctx.closePath();
-      ctx.fillStyle= "<%= colors[(possible2.first)[2]-1] %>";
-      ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle="#888888";
-      ctx.stroke();
-    <% end %>
-    <% possible2.delete(possible2.first) %>
-  <% end %>
-
-  </script>
-
-  <% end %>
-
+  <!-- Date d'inscription -->
   <br/>
   <center>Inscription : <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %></center><br/>
 
@@ -393,223 +424,221 @@ html>body tbody.scroll {
 
   </div>
 
-
+  <!-- Si l'étudiant a un score non égal à 0, on montre son évolution -->
   <% if actualrating > 0 %>
 
-  <div class="row">
+    <div class="row">
 
-  <div class="col-sm-12 col-xs-12">
+    <div class="col-sm-12 col-xs-12">
 
-  <h2>Evolution</h2>
-  <br/>
-  <center>
-  
-  <div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-  <canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
-  Votre navigateur ne supporte pas les canvas.
-  </canvas>
+    <h2>Evolution</h2>
+    <br/>
+    <center>
+    
+    <!-- Endroit pour dessiner l'évolution -->
+    <div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+    <canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+    Votre navigateur ne supporte pas les canvas.
+    </canvas>
 
-  <% @niveaux = Color.order(:pt).to_a %>
+    </div>
+    </center>
+
+    <!-- Script pour le graphique de l'évolution -->  
+    <% @niveaux = Color.order(:pt).to_a %>
   
-  <% i = 1 %>
-  <% numerolevel = 0 %>
+    <% i = 1 %>
+    <% numerolevel = 0 %>
   
-  <% @niveaux.each do |n| %>
-    <% if niveau.id == n.id %>
-      <% numerolevel = i %>
+    <% @niveaux.each do |n| %>
+      <% if niveau.id == n.id %>
+        <% numerolevel = i %>
+      <% end %>
+      <% i = i+1 %>
     <% end %>
-    <% i = i+1 %>
-  <% end %>
   
-  <% nombrelevel = i-1 %>
+    <% nombrelevel = i-1 %>
   
-  <% maxi = 0 %>
+    <% maxi = 0 %>
   
   
-  <% if numerolevel == nombrelevel %>
-    <% maxi = 1.2*actualrating %>
-  <% else %>
-    <% maxi = 1.1*@niveaux[numerolevel][:pt] %>
-  <% end %>
-
-  </div>
-  </center>
-  
-  
-  <script type="text/javascript">
-  	$(document).ready( function(){
-  		
-  		//Get the canvas & context
-  		var c = $('#myCanvas');
-  		var ctx = c.get(0).getContext('2d');
-  		var container = $(c).parent();
-  		
-  		//Run function when browser  resize
-	  	$(window).resize( respondCanvas );
-	  	
-	  	function respondCanvas(){
-  			c.attr('width', $(container).width() ); //max width
-  			c.attr('height', 480*$(container).width()/900.0); //max height
+    <% if numerolevel == nombrelevel %>
+      <% maxi = 1.2*actualrating %>
+    <% else %>
+      <% maxi = 1.1*@niveaux[numerolevel][:pt] %>
+    <% end %>
+    
+    <script type="text/javascript">
+      $(document).ready( function(){
+      
+      //Get the canvas & context
+      var c = $('#myCanvas');
+      var ctx = c.get(0).getContext('2d');
+      var container = $(c).parent();
+      
+      //Run function when browser  resize
+      $(window).resize( respondCanvas );
+      
+      function respondCanvas(){
+      c.attr('width', $(container).width() ); //max width
+      c.attr('height', 480*$(container).width()/900.0); //max height
   			
-  			document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
+      document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
+      
+      //Redraw & reposition content
+      var x = c.width();
+      var y = c.height();  
   			
-  			//Redraw & reposition content
-  			var x = c.width();
-  			var y = c.height();  
-  			
-  			var pct = c.width()/900.0;
+      var pct = c.width()/900.0;
   						
-  ctx.beginPath();
-  ctx.rect(pct*50, pct*5, pct*806, pct*450);
-  ctx.fillStyle = 'white';
-  ctx.fill();
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = 'black';
-  ctx.stroke();
-  
-  <% i = 1 %>
-  
-  var prec = 1000;
-  
-  <% @niveaux.each do |n| %>
-    <% if i > 1 %>
-      <% haut = [450 - 450*(n.pt/maxi), 0].max %>
-      <% if haut > 0 %>
-        ctx.font="14px Arial";
-        ctx.fillStyle = 'black';
-        ctx.textAlign = 'right';
-        
-        if (pct > 0.7){
-        
-          if (pct * <%= haut %> < prec - 13){
-            ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
-            prec = pct * <%= haut %>;
-          }
-        
-        ctx.beginPath();
-        ctx.moveTo(pct*50, pct*<%= haut+5 %>);
-        ctx.lineTo(pct*856, pct*<%= haut+5 %>);
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'white';
-        ctx.stroke();
-        
-        }
-      <% end %>
-    <% end %>
-    
-    <% if i == nombrelevel %>
-      <% bas = [450 - 450*(n.pt/maxi) , 0].max %>
-      <% haut = 0 %>
-    <% else %>
-      <% bas = [450 - 450*(n.pt/maxi), 0].max %>
-      <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
-    <% end %>
-    <% if bas > haut %>
       ctx.beginPath();
-      ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
-      ctx.fillStyle = '<%= n.font_color %>';
+      ctx.rect(pct*50, pct*5, pct*806, pct*450);
+      ctx.fillStyle = 'white';
       ctx.fill();
-    <% end %>
-    <% i = i+1 %>
-  <% end %>
-  
-
-  ctx.fillStyle = 'black';
-  ctx.strokeStyle = 'black';
-
-    <% last = actperday.first[:time].to_time.to_i %>
-    
-    <% if parquoi == "jour" %>
-      <% first = actperday.last[:time].to_time.to_i - 86400%>
-    <% elsif parquoi == "heure" %>
-      <% first = actperday.last[:time].to_time.to_i - 3600 %>
-    <% else %>
-      <% first = actperday.last[:time].to_time.to_i - 60 %>
-    <% end %>
-    
-    <% previousw = 2000 %>
-
-    <% actperday.each do |a| %>
-      <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-      
-      <% if previousw - w > 50 %>
-        ctx.font="12px Arial";
-        ctx.fillStyle = 'black';
-        ctx.textAlign = 'center';
-        
-        if (pct > 0.7){
-      
-        <% if parquoi == "jour" %>
-          ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
-        <% elsif parquoi == "heure" %>
-          ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h",pct*<%= 50+w %>,pct*471);
-        <% else %>
-          ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
-        <% end %>
-        
-        }
-      
-        <% (0..22).each do |i| %>
-          ctx.beginPath();
-          ctx.moveTo(pct*<%= 50+w %>, pct*<%= 20*i+5 %>);
-          ctx.lineTo(pct*<%= 50+w %>, pct*<%= 20*i+15 %>);
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = 'white';
-          ctx.stroke();
-        <% end %>
-        <% previousw = w %>
-      <% end %>
-    <% end %>
-    
-    <% w = 3 %>
-    <% r = 0 %>
-    <% previousr = r %>
-    <% h = 450 %>
-    
-    <% prevw = w %>
-    <% prevh = h %>
-
-    <% actperday.reverse.each do |a| %>
-      <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-      <% r = previousr + a[:pt] %>
-      <% previousr = r %>
-      <% h = 450 - 450*(r/maxi) %>
-      ctx.beginPath();
-      ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevh+5 %>);
-      ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
       ctx.lineWidth = 2;
       ctx.strokeStyle = 'black';
       ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
-      ctx.fill();
+  
+      <% i = 1 %>
+  
+      var prec = 1000;
+      
+      // Affichage des niveaux avec couleurs
+      <% @niveaux.each do |n| %>
+        <% if i > 1 %>
+          <% haut = [450 - 450*(n.pt/maxi), 0].max %>
+          <% if haut > 0 %>
+            ctx.font="14px Arial";
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'right';
+        
+            if (pct > 0.7){
+        
+              if (pct * <%= haut %> < prec - 13){
+                ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
+                prec = pct * <%= haut %>;
+              }
+        
+            ctx.beginPath();
+            ctx.moveTo(pct*50, pct*<%= haut+5 %>);
+            ctx.lineTo(pct*856, pct*<%= haut+5 %>);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'white';
+            ctx.stroke();
+        
+            }
+          <% end %>
+        <% end %>
+        
+        // Calcul du bas et du haut
+        <% if i == nombrelevel %>
+          <% bas = [450 - 450*(n.pt/maxi), 0].max %>
+          <% haut = 0 %>
+        <% else %>
+          <% bas = [450 - 450*(n.pt/maxi), 0].max %>
+          <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
+        <% end %>
+        <% if bas > haut %>
+          ctx.beginPath();
+          ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
+          ctx.fillStyle = '<%= n.font_color %>';
+          ctx.fill();
+        <% end %>
+        <% i = i+1 %>
+      <% end %>
+  
+      
+      // On trace maintenant le graphique
+      ctx.fillStyle = 'black';
+      ctx.strokeStyle = 'black';
+
+      <% last = actperday.first[:time].to_time.to_i %>
+      
+      // Commencement du graphique
+      <% if parquoi == "jour" %>
+        <% first = actperday.last[:time].to_time.to_i - 86400%>
+      <% elsif parquoi == "heure" %>
+        <% first = actperday.last[:time].to_time.to_i - 3600 %>
+      <% else %>
+        <% first = actperday.last[:time].to_time.to_i - 60 %>
+      <% end %>
+    
+      <% previousw = 2000 %>
+
+      <% actperday.each do |a| %>
+        <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+      
+        <% if previousw - w > 50 %>
+          ctx.font="12px Arial";
+          ctx.fillStyle = 'black';
+          ctx.textAlign = 'center';
+        
+          if (pct > 0.7){
+          <% if parquoi == "jour" %>
+            ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
+          <% elsif parquoi == "heure" %>
+            ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h",pct*<%= 50+w %>,pct*471);
+          <% else %>
+            ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
+          <% end %>
+          }
+      
+          <% (0..22).each do |i| %>
+            ctx.beginPath();
+            ctx.moveTo(pct*<%= 50+w %>, pct*<%= 20*i+5 %>);
+            ctx.lineTo(pct*<%= 50+w %>, pct*<%= 20*i+15 %>);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'white';
+            ctx.stroke();
+          <% end %>
+          <% previousw = w %>
+        <% end %>
+      <% end %>
+    
+      <% w = 3 %>
+      <% r = 0 %>
+      <% previousr = r %>
+      <% h = 450 %>
+    
       <% prevw = w %>
       <% prevh = h %>
-    <% end %>
+      
+      // On parcourt dans le sens inverse pour déterminer où on trace les barres verticales blanches
+      <% actperday.reverse.each do |a| %>
+        <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+        <% r = previousr + a[:pt] %>
+        <% previousr = r %>
+        <% h = 450 - 450*(r/maxi) %>
+        ctx.beginPath();
+        ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevh+5 %>);
+        ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
+        ctx.fill();
+        <% prevw = w %>
+        <% prevh = h %>
+      <% end %>
     
-		}
-		
-		//Initial call
-		respondCanvas();
-  	});
-  	
-  	
-</script>
+      }
+      
+      //Initial call
+      respondCanvas();
+      
+      });
+      
+    </script>
 
-  <script> 
-  
-  
-
-
-  </script>
-
-  </div>
-  </div>
+    </div>
+    </div>
 
   <% end %>
   
 <% end %>
 
+<!-- Si administrateur, différentes options -->
 <% if signed_in? && current_user.sk.admin? %>
   <br/>
   <center>

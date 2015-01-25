@@ -1,16 +1,12 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
-<% r = 0 %>
-<% if(params.has_key?:r) %>
-  <% r = params[:r].to_i %>
-<% end %>
-
+<!-- Couleur -->
 <% if s.status == 0 %>
-<tr class="warning">
+  <tr class="warning">
 <% elsif s.status == 2 %>
-<tr class="success">
+  <tr class="success">
 <% elsif s.status == 1 %>
-<tr class="danger">
+  <tr class="danger">
 <% else %>
   <% if current_user.sk.admin? %>
   <tr class="info">
@@ -19,9 +15,12 @@
   <% end %>
 <% end %>
 
+<!-- Icone -->
 <td class="hidden-xs" style="width:70px; text-align:center;">
 <%= image_tag s.icon %>
 </td>
+
+<!-- Date de la soumission -->
 <td class="hidden-xs">
 <% date = s.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
@@ -29,11 +28,14 @@
 - <b> TEST</b>
 <% end %>
 </td>
+
+<!-- Dernière activité -->
 <td>
 <% date = s.updated_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
 
+<!-- Voir -->
 <td style="text-align:center;">
 <%= link_to "Voir", problem_path(s.problem, :sub => s.id, :r => r) %>
 </td>

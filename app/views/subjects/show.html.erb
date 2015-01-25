@@ -11,17 +11,16 @@ function hideStuff(id) {
 }
 </script>
 
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
 <% provide(:title, @subject.title.html_safe) %>
 
-<% nb_indice = 0 %>
+<% @nb_indice = 0 %>
 
 <% q = 0 %>
 <% if(params.has_key?:q) %>
   <% q = params[:q].to_i %>
 <% end %>
 
+<!-- Titre avec un tableau pour que l'alignement soit joli si le titre fait plus d'une ligne -->
 <h1 style="margin-bottom:15px;">
 <table>
 <tr>
@@ -46,7 +45,6 @@ function hideStuff(id) {
 </table>
 </h1>
 
-
 <% if @subject.admin? %>
 <br/><center><span class="label label-warning">Sujet réservé aux administrateurs</span></center><br/>
 <% end %>
@@ -56,158 +54,15 @@ function hideStuff(id) {
 <%= will_paginate @messages, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 2 %>
 </center>
 
-<% ouonest = 0 %>
-
+<!-- S'il s'agit de la première page, on affiche le sujet -->
 <% if ((!params.has_key?:page) || (params[:page] == '1')) %>
-<% ouonest = ouonest+1 %>
-<table class="table table-bordered">
-
-<tr class="hidden-xs info">
-<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-<% if @subject.user.admin %>
-  <%= @subject.user.name %>
-<% else %>
-  <%= link_to @subject.user.name, @subject.user, {:style => "color:#{@subject.user.level[:color]}" } %>
-<% end %>
-</td>
-<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
-<% date = @subject.created_at.in_time_zone %>
-<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
-</td>
-</tr>
-
-<tr class="visible-xs info">
-<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-<% if @subject.user.admin %>
-  <%= @subject.user.name %>
-<% else %>
-  <%= link_to @subject.user.name, @subject.user, {:style => "color:#{@subject.user.level[:color]}" } %>
-<% end %>
-</td>
-</tr>
-<tr class="visible-xs info">
-<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
-<% date = @subject.created_at.in_time_zone %>
-<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
-</td>
-</tr>
-
-<tr><td colspan="2" style="padding:15px;">
-<div>
-<% bb = bbcode(@subject.content) %>
-<% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div style='background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;'><a href='#' id='show#{nb_indice}' onclick='showStuff(#{nb_indice}); return false;' style='display:inline;' class='btn btn-default btn-grey'>#{$1}</a><a href='#' id='hide#{nb_indice}' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(#{nb_indice}); return false;'>#{$1}</a><span id='indice#{nb_indice}' style='display:none;'><br/><br/>#{$2}</span></div>"} %>
-<% nb_indice = nb_indice+1 %>
-<% end %>
-<%= raw(bb) %>
-<% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size > 0 %>
-  <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size == 1 %>
-    <br/><br/><b>1 pièce jointe :</b><br/>
-  <% else %>
-    <br/><br/><b><%= @subject.subjectfiles.size + @subject.fakesubjectfiles.size %> pièces jointes :</b><br/>
-  <% end %>
-  <% @subject.subjectfiles.order(:id).each do |f| %>
-    <%= link_to f.file_file_name, download_subjectfile_path(f) %>
-    <% if current_user.sk.root? %>
-       - <%= link_to 'Supprimer le contenu', subjectfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
-    <% end %>
-    <br/>
-  <% end %>
-  <% @subject.fakesubjectfiles.order(:id).each do |f| %>
-    <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
-  <% end %>
-<% end %>
-</div>
-</td></tr>
-
-<% if @subject.user == current_user.sk || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root %>
-  <tr><td colspan="2">
-  <center>
-      <%= link_to "Modifier ce sujet", edit_subject_path(@subject, :q => q) %>
-      <% if current_user.sk.admin? %>
-        | <%= link_to "Supprimer ce sujet", subject_path(@subject), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce sujet et tous les messages qui vont avec ?" }  %>
-      <% end %>
-  </center>
-  </td></tr>
+  <%= render 'subject', s: @subject, canmodif: true %>
 <% end %>
 
-</table>
-
-<% end %>
-
+<!-- On affiche les messages -->
 <% @messages.each do |m| %>
-<a name="<%= m.id %>"></a>
-<% ouonest = ouonest+1 %>
-<table class="table table-bordered" style="<%= 'margin-top:20px;' if ouonest > 1 %>">
-
-<tr class="hidden-xs info">
-<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-<% if m.user.admin %>
-  <%= m.user.name %>
-<% else %>
-  <%= link_to m.user.name, m.user, {:style => "color:#{m.user.level[:color]}" } %>
-<% end %>
-</td>
-<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
-<% date = m.created_at.in_time_zone %>
-<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
-</td>
-</tr>
-
-<tr class="visible-xs info">
-<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-<% if m.user.admin %>
-  <%= m.user.name %>
-<% else %>
-  <%= link_to m.user.name, m.user, {:style => "color:#{m.user.level[:color]}" } %>
-<% end %>
-</td>
-</tr>
-<tr class="visible-xs info">
-<td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
-<% date = m.created_at.in_time_zone %>
-<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
-</td>
-</tr>
-
-<tr><td colspan="2" style="padding:15px;">
-<div>
-<% bb = bbcode(m.content) %>
-<% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div style='background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;'><a href='#' id='show#{nb_indice}' onclick='showStuff(#{nb_indice}); return false;' style='display:inline;' class='btn btn-default btn-grey'>#{$1}</a><a href='#' id='hide#{nb_indice}' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(#{nb_indice}); return false;'>#{$1}</a><span id='indice#{nb_indice}' style='display:none;'><br/><br/>#{$2}</span></div>"} %>
-<% nb_indice = nb_indice+1 %>
-<% end %>
-<%= raw(bb) %>
-<% if m.messagefiles.size + m.fakemessagefiles.size > 0 %>
-  <% if m.messagefiles.size + m.fakemessagefiles.size == 1 %>
-    <br/><br/><b>1 pièce jointe :</b><br/>
-  <% else %>
-    <br/><br/><b><%= m.messagefiles.size + m.fakemessagefiles.size %> pièces jointes :</b><br/>
-  <% end %>
-  <% m.messagefiles.order(:id).each do |f| %>
-    <%= link_to f.file_file_name, download_messagefile_path(f) %>
-    <% if current_user.sk.root? %>
-       - <%= link_to 'Supprimer le contenu', messagefile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
-    <% end %>
-    <br/>
-  <% end %>
-  <% m.fakemessagefiles.order(:id).each do |f| %>
-    <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
-  <% end %>
-<% end %>
-</div>
-</td></tr>
-
-<% if m.user == current_user.sk || (current_user.sk.admin && !m.user.admin) || current_user.sk.root %>
-  <tr><td colspan="2">
-  <center>
-      <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m, :q => q) %>
-      <% if current_user.sk.admin? %>
-         | <%= link_to "Supprimer ce message", subject_message_path(@subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
-      <% end %>
-  </center>
-  </td></tr>
-<% end %>
-
-</table>
+  <a name="<%= m.id %>"></a>
+  <%= render 'message', m: m, canmodif: true %>
 <% end %>
 
 <center>
@@ -215,12 +70,9 @@ function hideStuff(id) {
 <%= will_paginate @messages, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 2 %>
 </center>
 
+<!-- Répondre -->
 <center>
-<% if signed_in? %>
   <%= link_to "Répondre", new_subject_message_path(@subject, :q => q), class: 'btn btn-lg btn-default btn-grey' %>
-<% else %>
-  <button type=button disabled=true class="btn btn-lg btn-default btn-grey">Répondre</button>
-<% end %>
 </center>
 
 <a name="bottom"></a>

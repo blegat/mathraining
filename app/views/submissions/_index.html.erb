@@ -1,3 +1,6 @@
+<!-- Cette page affiche toutes les soumissions que l'utilisateur peut voir pour le problème problem -->
+
+<!-- Si administrateur : peut tout voir -->
 <% if current_user.sk.admin %>
   <h3>Soumissions récentes</h3>
   <% submissions = problem.submissions.where(visible: true).order('created_at DESC').paginate(page: params[:page]) %>
@@ -11,26 +14,27 @@
 
     <table class="table table-bordered">
     <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
-
       <% submissions.each do |s| %>
         <% @situation = 3 %>
         <%= render 'submissions/showadmin', s: s, nom: true %>
       <% end %>
-
     </table>
     
     <center>
     <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
     <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
     </center>
-    
   <% end %>
+  
+<!-- Si étudiant -->
 <% else %>
-  <h3>Dernières soumissions</h3>
+
+  <!-- Dernières soumissions de l'étudiant en question -->
+  <h3>Vos dernières soumissions</h3>
   <% @newsub = true %>
   <% aucun = true %>
   <% encours = Submission.new %>
-  <% submissions = problem.submissions.where('user_id = ?', current_user.sk).order('created_at') # Ne pas paginer, un type qui fait N > 30 soumissions mérite de voir les N soumissions qu'il a faites et de se faire chier avec sa roulette (et puis j'utilise le last submissions par la suite) %>
+  <% submissions = problem.submissions.where('user_id = ?', current_user.sk).order('created_at') %>
   <% @new = true %>
 
   <% if !submissions.empty? %>
@@ -56,7 +60,8 @@
   <% if aucun %>
     Aucune soumission précédente.<br/><br/>
   <% end %>
-
+  
+  <!-- Si il y a une soumission en cours, on l'affiche -->
   <% unless @newsub %>
     <h3>Soumission en cours</h3>
     <table class="table table-bordered">
@@ -64,31 +69,35 @@
     <%= render 'submissions/showuser', s: encours, nom: false %>
     </table>
   <% end %>
-
+  
+  <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
   <% if current_user.sk.solved?(problem) %>
 
-    <h4>Toutes les soumissions correctes</h4>
+    <h3>Autres soumissions correctes</h3>
     <% @new = false %>
-    <% submissions = problem.submissions.where(status: 2).order('created_at DESC').paginate(page: params[:page]) %>
-    <center>
-    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
-    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
-    </center>
-
-    <table class="table table-bordered">
-    <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
-
+    <% submissions = problem.submissions.where('user_id != ? AND status = 2', current_user.sk).order('created_at DESC').paginate(page: params[:page]) %>
+    
+    <% if !submissions.empty? %>
+      <center>
+      <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+      <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+      </center>
+    
+      <table class="table table-bordered">
+      <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
       <% submissions.each do |s| %>
         <%= render 'submissions/showadmin', s: s, nom: true %>
       <% end %>
-
-    </table>
+     </table>
     
-    <center>
-    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
-    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
-    </center>
-
+      <center>
+      <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
+      <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+      </center>
+    <% else %>
+    Vous êtes le seul à avoir résolu ce problème.
+    <% end %>
+    
   <% end %>
 
 <% end %>

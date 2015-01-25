@@ -10,13 +10,18 @@
 <span style="font-size:24px;"><%= link_to @subject.title, subject_path(@subject, :q => q) %> ></span>
 Modifier le sujet
 </h1>
+
 <span style="color:red;">Veillez à ne dévoiler aucune solution à un exercice ou un problème. Si vous devez donner des éléments de solution pour expliquer un souci, écrivez-les en <i>texte caché</i>.</span><br/><br/>
+
 <% if @subject.user != current_user.sk %>
-<span style="color:red;">Ce sujet n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (mauvais emplacement, divulgation d'une réponse,...)</span><br/><br/>
+  <span style="color:red;">Ce sujet n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (mauvais emplacement, divulgation d'une réponse,...)</span><br/><br/>
 <% end %>
 
+<!-- Formulaire -->
 <%= form_for @subject, :url => subject_path(@subject, :action => :update, :q => q), :html => { :multipart => true } do |f| %>
   <%= render 'form', f: f %>
+  
+  <!-- Pièces jointes -->
   <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
     <% @subject.subjectfiles.order(:id).each do |sf| %>
@@ -37,7 +42,7 @@ Modifier le sujet
   <% end %>
   <span id="fooBar"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
-  <br /><br/>
+  <br/><br/>
   <%= f.submit "Editer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>
 

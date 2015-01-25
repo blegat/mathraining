@@ -53,15 +53,18 @@ Problème <%= @numero %>
 <br/>
 <center><span style="font-size:20px;">Temps restant : <b><span id="clockbox">--h--:--</span></b></span></center>
 
+<!-- Enoncé -->
 <h3>Énoncé</h3>
   <div style="margin-bottom:30px;">
-  <%= raw(@problem.statement.gsub(/\\][ \r]*\n/,'\] ').gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
+  <%= raw(htmlise(@problem.statement)) %>
   </div>
 
+<!-- S'il s'agit d'une nouvelle soumission -->
 <% if @neworedit == 0 %>
 
 <%= form_for :submission, url: problem_create_intest_path(@problem), :html => { :multipart => true } do |f| %>
 
+<!-- Soumettre une solution -->
 <h3>Solution</h3>
   La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
   <div class="form-group">
@@ -75,8 +78,8 @@ Problème <%= @numero %>
   <% end %>
   </div>
   
+  <!-- Pièces jointes -->
   <span id="fooBar"></span>
-  
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="true"' if current_user.other %> />
   <br /><br/>
 
@@ -86,10 +89,12 @@ Problème <%= @numero %>
   
 <% end %>
 
+<!-- Si on modifie une solution -->
 <% else %>
 
 <%= form_for :submission, url: problem_submission_update_intest_path(@problem, @submission), :html => { :multipart => true } do |f| %>
 
+<!-- Modifier la solution -->
 <h3>Solution</h3>
   La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
   <div class="form-group">
@@ -103,6 +108,7 @@ Problème <%= @numero %>
   <% end %>
   </div>
   
+  <!-- Pièces jointes -->
   <% if @submission.submissionfiles.size + @submission.fakesubmissionfiles.size > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
     <% @submission.submissionfiles.each do |sf| %>

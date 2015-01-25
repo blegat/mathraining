@@ -6,19 +6,22 @@
 <% provide(:title, 'Créer un sujet') %>
 <h1>
 <span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
-Créer un sujet</h1>
+Créer un sujet
+</h1>
+
 <span style="color:red;">Veillez à ne dévoiler aucune solution à un exercice ou un problème. Si vous devez donner des éléments de solution pour expliquer un souci, écrivez-les en <i>texte caché</i>.</span><br/><br/>
 
 <%= form_for @subject, :url => subjects_path(@subject, :action => :create, :q => q), :html => { :multipart => true } do |f| %>
   <%= render 'form', f: f %>
   <span id="fooBar"></span>
   
+  <!-- Ajouter une pièce jointe -->
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
-  <br /><br/>
+  <br/><br/>
   <%= f.submit "Créer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>
 
 <script>
-  PreviewSafe.Init();
-  PreviewSafe.Update();
+PreviewSafe.Init();
+PreviewSafe.Update();
 </script>

@@ -14,49 +14,49 @@ Veuillez commencer par les soumissions les plus anciennes, c'est-à-dire le plus
   <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
 </center>
 
+<!-- Si on affiche toutes les soumissions -->
 <% if @new %>
 
-<% @situation = 1 %>
-<div class="row">
-<div class="col-sm-12 col-xs-12">
-<table class="table table-bordered">
-<tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs">Correcteur(s)</th><th></th></tr>
-<% @notifications.each do |n| %>
-  <%= render 'submissions/showadmin', s: n, nom: true %>
-<% end %>
-</table>
-</div>
-</div>
+  <% @situation = 1 %>
+  <div class="row">
+  <div class="col-sm-12 col-xs-12">
+  <table class="table table-bordered">
+  <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs">Correcteur(s)</th><th></th></tr>
+  <% @notifications.each do |n| %>
+    <%= render 'submissions/showadmin', s: n, nom: true %>
+  <% end %>
+  </table>
+  </div>
+  </div>
 
+<!-- Si on affiche les soumissions auxquelles on participe -->
 <% else %>
 
-<% @situation = 2 %>
-<div class="row">
-<div class="col-xs-12 col-sm-8 col-md-8 col-lg-9">
-<table class="table table-bordered">
-<tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
-<% @notifications.each do |n| %>
-  <%= render 'submissions/showadmin', s: n, nom: true %>
-<% end %>
-</table>
-</div>
-<div class="hidden-xs col-sm-1 col-md-1 col-lg-1"></div>
-<div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
-<table class="table table-bordered" style="width:200px;">
-<tr><th>Légende</th></tr>
-<tr class="warning"><td>
-Commentaire non-lu
-</td></tr>
-<tr class="info"><td>
-Commentaire lu
-</td></tr>
-<tr class="success"><td>Soumission correcte</td></tr>
-<tr class="danger"><td>Soumission erronée</td></tr>
-</table>
-</div>
-</div>
-
-
+  <% @situation = 2 %>
+  <div class="row">
+  <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9">
+  <table class="table table-bordered">
+  <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
+  <% @notifications.each do |n| %>
+    <%= render 'submissions/showadmin', s: n, nom: true %>
+  <% end %>
+  </table>
+  </div>
+  <div class="hidden-xs col-sm-1 col-md-1 col-lg-1"></div>
+  <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+  <table class="table table-bordered" style="width:200px;">
+  <tr><th>Légende</th></tr>
+  <tr class="warning"><td>
+  Commentaire non-lu
+  </td></tr>
+  <tr class="info"><td>
+  Commentaire lu
+  </td></tr>
+  <tr class="success"><td>Soumission correcte</td></tr>
+  <tr class="danger"><td>Soumission erronée</td></tr>
+  </table>
+  </div>
+  </div>
 <% end %>
 
 <center>

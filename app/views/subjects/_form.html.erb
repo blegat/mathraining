@@ -5,11 +5,13 @@
 
 <%= render 'shared/error_messages', object: f.object %>
 
+<!-- Titre -->
 <div class="form-group">
-<%= f.label :titre, :disabled => current_user.other %>
-<%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :style => "width:100%; max-width:400px;" %>
+  <%= f.label :titre, :disabled => current_user.other %>
+  <%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :style => "width:100%; max-width:400px;" %>
 </div>
 
+<!-- Calcul de la liste des sections et chapitres -->
 <% liste = Array.new %>
 
 <% liste.push(["Aucun", 0]) %>
@@ -32,30 +34,34 @@
     <% end %>
 <% end %>
 
+<!-- Chapitre concerné -->
 <div class="form-group">
-<%= f.label "Chapitre concerné", :disabled => current_user.other %>
-<%= f.select(:chapter_id, options_for_select(liste, @preselect).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other}) %>
+  <%= f.label "Chapitre concerné", :disabled => current_user.other %>
+  <%= f.select(:chapter_id, options_for_select(liste, @preselect).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other}) %>
 </div>
 
+<!-- Message -->
 <div class="form-group">
+  <%= f.label :message, :disabled => current_user.other %>
+  <div class="well" id="MathPreview"></div>
+  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+  <%= render 'subjects/smiley', hiddentext: true %>
+  <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
   
-<%= f.label :message, :disabled => current_user.other %>
-<div class="well" id="MathPreview"></div>
-<div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-<%= render 'subjects/smiley', hiddentext: true %>
-<%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
+  <!-- Case admin et case premier lieu -->
+  <% if iciadmin %>
+    <br/>
+    <label class="checkbox-inline">
+      <%= f.check_box :admin, :disabled => current_user.other %>
+      Cochez si ce sujet est réservé aux administrateurs
+    </label>
+  <% end %>
 
-<% if iciadmin %>
-  <br/><label class="checkbox-inline">
-  <%= f.check_box :admin, :disabled => current_user.other %>
-    Cochez si ce sujet est réservé aux administrateurs
-  </label>
-<% end %>
-
-<% if current_user.sk.admin? %>
-  <br/><label class="checkbox-inline">
-  <%= f.check_box :important, :disabled => current_user.other %>
-  Cochez si ce sujet doit toujours apparaître en premier lieu.
-  </label>
-<% end %>
+  <% if current_user.sk.admin? %>
+    <br/>
+    <label class="checkbox-inline">
+      <%= f.check_box :important, :disabled => current_user.other %>
+      Cochez si ce sujet doit toujours apparaître en premier lieu.
+    </label>
+  <% end %>
 </div>

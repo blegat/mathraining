@@ -1,6 +1,7 @@
 <% provide(:title, "Actualisez votre profil") %>
 <h1>Actualisez votre profil</h1>
-    <%= form_for(@user) do |f| %>
-      <%= render 'form_edit', f: f %>
-      <%= f.submit "Mettre à jour", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
-    <% end %>
+
+<%= form_for(@user) do |f| %>
+  <%= render 'form', f: f, modif: true %>
+  <%= f.submit "Mettre à jour", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+<% end %>
