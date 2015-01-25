@@ -23,12 +23,12 @@
   <% if f.nil? %>
     <div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
     Avant de corriger cette soumission, prévenez les autres que vous vous en occupez!
-    <%= link_to 'Réserver cette soumission', problem_submission_reserve_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
+    <%= link_to 'Réserver cette soumission', problem_submission_reserve_path(@problem, @submission), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
     </div>
   <% elsif f.user == current_user.sk %>
     <div style="background-color:#CCFFCC; padding:10px; border:1px solid green;">
     Vous avez réservé cette soumission pour la corriger.
-    <%= link_to 'Annuler ma réservation', problem_submission_unreserve_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
+    <%= link_to 'Annuler ma réservation', problem_submission_unreserve_path(@problem, @submission), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
     </div>
   <% else %>
     <div style="background-color:#FFCCCC; padding:10px; border:1px solid red;">
@@ -126,9 +126,9 @@
 <% if current_user.sk.admin %>
   <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %>
     <% if !following.nil? && following.read && @submission.status != 0 %>
-      <center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey" %></center>
+      <center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission), :class => "btn btn-default btn-grey" %></center>
     <% elsif !following.nil? && @submission.status != 0 %>
-      <center><%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission, :r => r), :class => "btn btn-default btn-grey" %></center>
+      <center><%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission), :class => "btn btn-default btn-grey" %></center>
     <% end %>
 <% end %>
 
