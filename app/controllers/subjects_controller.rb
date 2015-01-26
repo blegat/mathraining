@@ -1,12 +1,12 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
   before_filter :signed_in_user
-  before_filter :admin_user, only: [:show]
-  before_filter :author, only: [:update, :edit, :destroy]
-  before_filter :admin_delete, only: [:destroy]
+  before_filter :admin_subject_user, only: [:show]
+  before_filter :author, only: [:edit, :update, :destroy]
+  before_filter :admin_user, only: [:destroy]
 
+  # Voir tous les sujets
   def index
-  
     cherche_section = -1
     cherche_chapitre = -1
     cherche_personne = false
@@ -40,7 +40,6 @@ class SubjectsController < ApplicationController
       end
     end
     
-
     @subjects = Array.new
     Subject.where(important: false).order("lastcomment DESC").to_a.each do |s|
       if (signed_in? && current_user.sk.admin?) || !s.admin
@@ -53,10 +52,12 @@ class SubjectsController < ApplicationController
     @subjectsfalse = @subjects.paginate(:page => params[:page], :per_page => 15)
   end
 
+  # Montre un sujet
   def show
     @messages = @subject.messages.order(:id).paginate(:page => params[:page], :per_page => 10)
   end
 
+  # Créer un sujet
   def new
     @subject = Subject.new
     if current_user.sk.admin?
@@ -71,6 +72,7 @@ class SubjectsController < ApplicationController
     end
   end
 
+  # Editer un sujet
   def edit
     if @subject.section.nil?
       @preselect = 0
@@ -81,8 +83,8 @@ class SubjectsController < ApplicationController
     end
   end
 
+  # Créer un sujet 2
   def create
-  
     q = 0
     if(params.has_key?:q)
       q = params[:q].to_i
@@ -119,6 +121,7 @@ class SubjectsController < ApplicationController
       end
     end
 
+    # Gérer les pièces jointes
     attach = Array.new
     totalsize = 0
 
@@ -159,8 +162,8 @@ class SubjectsController < ApplicationController
       @preselect = params[:subject][:chapter_id].to_i
       render 'new' and return
     end
-
-
+    
+    # Si on parvient à enregistrer
     if @subject.save
       j = 1
       while j < i do
@@ -175,6 +178,8 @@ class SubjectsController < ApplicationController
       flash[:success] = "Votre sujet a bien été posté."
 
       redirect_to subject_path(@subject, :q => q)
+      
+    # Si il y a eu une erreur
     else
       j = 1
       while j < i do
@@ -187,8 +192,8 @@ class SubjectsController < ApplicationController
     end
   end
 
+  # Modifier un sujet
   def update
-  
     q = 0
     if(params.has_key?:q)
       q = params[:q].to_i
@@ -307,8 +312,8 @@ class SubjectsController < ApplicationController
     end
   end
 
+  # Supprimer un sujet : il faut être admin
   def destroy
-  
     q = 0
     if(params.has_key?:q)
       q = params[:q].to_i
@@ -333,16 +338,13 @@ class SubjectsController < ApplicationController
 
     redirect_to subjects_path(:q => q)
   end
-
+  
+  ########## PARTIE PRIVEE ##########
   private
 
-  def admin_user
+  def admin_subject_user
     @subject = Subject.find(params[:id])
     redirect_to root_path unless ((signed_in? && current_user.sk.admin?) || !@subject.admin)
-  end
-
-  def admin_delete
-    redirect_to root_path unless current_user.sk.admin?
   end
 
   def author

@@ -2,12 +2,14 @@
 class SubjectfilesController < ApplicationController
   before_filter :signed_in_user
   before_filter :have_access, only: [:download]
-  before_filter :check_root, only: [:fake_delete]
+  before_filter :root_user, only: [:fake_delete]
 
+  # Télécharger le pièce jointe
   def download
     send_file @thing.file.path, :type => @thing.file_content_type, :filename => @thing.file_file_name
   end
   
+  # Supprimer la pièce jointe fictivement
   def fake_delete
     @subject = @thing.subject
     @fakething = Fakesubjectfile.new
@@ -29,16 +31,13 @@ class SubjectfilesController < ApplicationController
     redirect_to subject_path(@subject, :q => q)
   end
 
+  ########## PARTIE PRIVEE ##########
   private
 
+  # Vérifie qu'on a accès à la pièce jointe
   def have_access
     @thing = Subjectfile.find(params[:id])
     redirect_to root_path if (!current_user.sk.admin? && @thing.subject.admin)
   end
   
-  def check_root
-    @thing = Subjectfile.find(params[:subjectfile_id])
-    redirect_to root_path unless current_user.sk.root?
-  end
-
 end

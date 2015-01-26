@@ -6,7 +6,7 @@ class SolvedexercisesController < ApplicationController
   before_filter :online_chapter
   before_filter :unlocked_chapter
 
-
+  # On tente de résoudre un exercice
   def create
     exercise = @exercise2
     user = current_user.sk
@@ -46,7 +46,8 @@ class SolvedexercisesController < ApplicationController
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
   end
-
+  
+  # On tente de résoudre un exercice une nouvelle fois
   def update
     exercise = @exercise2
     link = @link2
@@ -87,9 +88,11 @@ class SolvedexercisesController < ApplicationController
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
   end
-
+  
+  ########## PARTIE PRIVEE ##########
   private
-
+  
+  # Retourne la différence (en valeur absolue) entre a et b
   def absolu(a, b)
     if a > b
       return a-b
@@ -98,6 +101,7 @@ class SolvedexercisesController < ApplicationController
     end
   end
 
+  # On récupère l'exercice et le chapitre
   def before_create
     @exercise2 = Exercise.find(params[:solvedexercise][:exercise_id])
     @chapter = @exercise2.chapter
@@ -109,10 +113,12 @@ class SolvedexercisesController < ApplicationController
     @chapter = @exercise2.chapter
   end
 
+  # Il faut que le chapitre soit en ligne
   def online_chapter
     redirect_to root_path unless (current_user.sk.admin? || @chapter.online)
   end
 
+  # Il faut qu'on puisse faire les exercices
   def unlocked_chapter
     if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
@@ -122,7 +128,8 @@ class SolvedexercisesController < ApplicationController
       end
     end
   end
-
+  
+  # Attribution des points pour un exercice
   def point_attribution(user, exo)
     pt = exo.value
 

@@ -1,25 +1,28 @@
 #encoding: utf-8
-class ProblemsController < ApplicationController
+class ProblemsController < QuestionController
   before_filter :signed_in_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_filter :root_user, only: [:destroy]
+  before_filter :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  before_filter :root_problem_user, only: [:destroy]
   before_filter :has_access, only: [:show]
   before_filter :online_problem, only: [:show]
   before_filter :can_be_online, only: [:put_online]
 
+  # Voir le problème : il faut avoir accès
   def show
   end
-
+  
+  # Créer un problème : il faut être admin
   def new
     @problem = Problem.new
     @section = Section.find(params[:section_id])
   end
-
+  
+  # Editer un problème : il faut être admin
   def edit
     @problem = Problem.find(params[:id])
   end
-
+  
+  # Créer un problème 2 : il faut être admin
   def create
     @problem = Problem.new
     @problem.statement = params[:problem][:statement]
@@ -44,8 +47,8 @@ class ProblemsController < ApplicationController
     end
   end
 
+  # Editer un problème 2 : il faut être admin
   def update
-  
     @problem = Problem.find(params[:id])
     @problem.statement = params[:problem][:statement]
     
@@ -68,6 +71,7 @@ class ProblemsController < ApplicationController
     end
   end
 
+  # Supprimer un problème : il faut être admin, voire root
   def destroy
     @section = @problem.section
 
@@ -98,16 +102,19 @@ class ProblemsController < ApplicationController
     redirect_to pb_sections_path(@section)
   end
 
+  # Mettre un problème en ligne : il faut qu'il puisse l'être
   def put_online
     @problem.online = true
     @problem.save
     redirect_to problem_path(@problem)
   end
 
+  # Modifier l'explication d'un problème
   def explanation
     @problem = Problem.find(params[:problem_id])
   end
 
+  # Modifier l'explication d'un problème 2
   def update_explanation
     @problem = Problem.find(params[:problem_id])
     @problem.explanation = params[:problem][:explanation]
@@ -119,6 +126,7 @@ class ProblemsController < ApplicationController
     end
   end
   
+  # Supprimer un prérequis
   def delete_prerequisite
     @chapter = Chapter.find(params[:chapter_id])
     @problem = Problem.find(params[:problem_id])    
@@ -126,6 +134,7 @@ class ProblemsController < ApplicationController
     redirect_to @problem
   end
   
+  # Ajouter un prérequis
   def add_prerequisite
     @problem = Problem.find(params[:problem_id])	
     if !params[:chapter_problem][:chapter_id].empty?
@@ -135,6 +144,7 @@ class ProblemsController < ApplicationController
     redirect_to @problem
   end
   
+  # Ajouter à un test virtuel
   def add_virtualtest
     @problem = Problem.find(params[:problem_id])	
     if !params[:problem][:virtualtest_id].empty?
@@ -155,70 +165,36 @@ class ProblemsController < ApplicationController
     redirect_to @problem
   end
   
+  # Déplacer dans un test virtuel
   def order_minus
     @problem = Problem.find(params[:problem_id])
     @t = @problem.virtualtest
     @problem2 = @t.problems.where("position < ?", @problem.position).order('position').reverse_order.first
-    err = swap_position(@problem, @problem2)
-    if err.nil?
-      flash[:success] = "Problème déplacé vers la droite."
-    else
-      flash[:danger] = err
-    end
+    swap_position(@problem, @problem2)
+    flash[:success] = "Problème déplacé vers la droite."
     redirect_to virtualtest_path(@t, :p => @problem.id)
   end
-
+  
+  # Déplacer dans un test virtuel
   def order_plus
     @problem = Problem.find(params[:problem_id])
     @t = @problem.virtualtest
     @problem2 = @t.problems.where("position > ?", @problem.position).order('position').first
-    err = swap_position(@problem, @problem2)
-    if err.nil?
-      flash[:success] = "Problème déplacé vers la gauche."
-    else
-      flash[:danger] = err
-    end
+    swap_position(@problem, @problem2)
+    flash[:success] = "Problème déplacé vers la gauche."
     redirect_to virtualtest_path(@t, :p => @problem.id)
   end
   
-  def swap_position(a, b)
-    err = nil
-    Problem.transaction do
-      x = a.position
-      a.position = b.position
-      b.position = x
-      a.save(validate: false)
-      b.save(validate: false)
-      unless a.valid? and b.valid?
-        erra = get_errors(a)
-        errb = get_errors(b)
-        if erra.nil?
-          if errb.nil?
-            err = "Quelque chose a mal tourné."
-          else
-            err = "#{errb} pour #{b.title}"
-          end
-        else
-          # if a is not valid b.valid? is not executed
-          err = "#{erra} pour #{a.title}"
-        end
-        raise ActiveRecord::Rollback
-      end
-    end
-    return err
-  end
-
+  ########## PARTIE PRIVEE ##########
   private
 
-  def admin_user
-    redirect_to root_path unless current_user.sk.admin?
-  end
-
-  def root_user
+  # Vérifie qu'on est root si on veut supprimer un problème en ligne
+  def root_problem_user
     @problem = Problem.find(params[:id])
     redirect_to problem_path(@problem) if (!current_user.sk.root && @problem.online && @problem.chapter.online)
   end
   
+  # Vérifie qu'on peut voir ce problème
   def has_access
     @problem = Problem.find(params[:id])
     visible = true
@@ -229,7 +205,6 @@ class ProblemsController < ApplicationController
     end
     
     t = @problem.virtualtest
-    
     if !t.nil?
       if !signed_in?
         visible = false
@@ -243,10 +218,12 @@ class ProblemsController < ApplicationController
     redirect_to root_path if !visible
   end
   
+  # Vérifie que le problème est en ligne
   def online_problem
     redirect_to root_path if !@problem.online && !current_user.sk.admin
   end
   
+  # Vérifie que le problème peut être en ligne
   def can_be_online
     @problem = Problem.find(params[:problem_id])
     ok = true
@@ -256,66 +233,5 @@ class ProblemsController < ApplicationController
       ok = false if !c.online
     end
     redirect_to @problem if !ok || nombre == 0
-  end
-
-  def point_attribution(user)
-    user.point.rating = 0
-    partials = user.pointspersections
-    partial = Array.new
-    
-    Section.all.each do |s|
-      partial[s.id] = partials.where(:section_id => s.id).first
-      if partial[s.id].nil?
-        newpoint = Pointspersection.new
-        newpoint.points = 0
-        newpoint.section_id = s.id
-        user.pointspersections << newpoint
-        partial[s.id] = user.pointspersections.where(:section_id => s.id).first
-      end
-      partial[s.id].points = 0
-    end
-
-    user.solvedexercises.each do |e|
-      if e.correct
-        exo = e.exercise
-        pt = exo.value
-
-        if !exo.chapter.section.fondation? # Pas un fondement
-          user.point.rating = user.point.rating + pt
-        end
-
-        partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
-      end
-    end
-
-    user.solvedqcms.each do |q|
-      if q.correct
-        qcm = q.qcm
-        pt = qcm.value
-
-        if !qcm.chapter.section.fondation? # Pas un fondement
-          user.point.rating = user.point.rating + pt
-        end
-
-        partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
-      end
-    end
-
-    user.solvedproblems.each do |p|
-      problem = p.problem
-      pt = problem.value
-
-      if !problem.section.fondation? # Pas un fondement
-        user.point.rating = user.point.rating + pt
-      end
-
-      partial[problem.section.id].points = partial[problem.section.id].points + pt
-    end
-
-    user.point.save
-    Section.all.each do |s|
-      partial[s.id].save
-    end
-
   end
 end

@@ -2,12 +2,14 @@
 class SubmissionfilesController < ApplicationController
   before_filter :signed_in_user
   before_filter :have_access, only: [:download]
-  before_filter :check_root, only: [:fake_delete, :seeall]
+  before_filter :root_user, only: [:fake_delete, :seeall]
 
+  # Télécharger la pièce jointe
   def download
     send_file @thing.file.path, :type => @thing.file_content_type, :filename => @thing.file_file_name
   end
   
+  # Supprimer fictivement la pièce jointe
   def fake_delete
     @thing = Submissionfile.find(params[:submissionfile_id])
   
@@ -26,6 +28,7 @@ class SubmissionfilesController < ApplicationController
     redirect_to problem_path(@submission.problem, :sub => @submission)
   end
   
+  # Voir toutes les pièces jointes
   def seeall
     @list = Array.new
     
@@ -62,18 +65,15 @@ class SubmissionfilesController < ApplicationController
     end
     
     @list = @list.sort_by{|a| -a[0].min - 60 * a[0].hour - 3600*a[0].day - 3600*32*a[0].month - 3600*32*12*a[0].year}
-    
   end
   
+  ########## PARTIE PRIVEE ##########
   private
-
+  
+  # Vérifie qu'on a accès à cette pièce jointe
   def have_access
     @thing = Submissionfile.find(params[:id])
     redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.submission.user || current_user.sk.solved?(@thing.submission.problem))
-  end
-  
-  def check_root
-    redirect_to root_path unless current_user.sk.root?
   end
   
 end

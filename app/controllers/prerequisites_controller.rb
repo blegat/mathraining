@@ -3,9 +3,11 @@ class PrerequisitesController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_user
 
+  # Graphe des prérequis
   def graph_prerequisites
   end
 
+  # Ajouter un prérequis
   def add_prerequisite
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
@@ -35,6 +37,7 @@ class PrerequisitesController < ApplicationController
     end
   end
 
+  # Supprimer un prérequis
   def remove_prerequisite
     if params[:fondement] == true
       fond = 1
@@ -58,12 +61,6 @@ class PrerequisitesController < ApplicationController
       flash[:danger] = "Ce lien n'existe pas."
     end
     redirect_to graph_prerequisites_path(:fondement => params[:fondement])
-  end
-
-  private
-
-  def admin_user
-    redirect_to root_path unless current_user.sk.admin?
   end
 
 end

@@ -7,11 +7,10 @@ Mathraining::Application.routes.draw do
 
   match '/notifs', to: 'users#notifs_show', :via => [:get], as: :notifs_show
 
-  resources :solvedexercises
-  resources :solvedqcms
-  resources :solvedchoices
+  resources :solvedexercises, only: [:create, :update]
+  resources :solvedqcms, only: [:create, :update]
 
-  resources :pictures
+  resources :pictures, only: [:show, :new, :create, :destroy]
 
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]
   match '/feed' => 'actualities#feed', :via => [:get], as: :feed, defaults: { :format => 'atom' }
@@ -98,8 +97,9 @@ Mathraining::Application.routes.draw do
 
  # mathjax 'mathjax'
 
-  resource :prerequisites # missing a 's' here ?
-  resources :sections, only: [:show, :update, :edit] do
+  resources :prerequisites, only: []
+  
+  resources :sections, only: [:show, :edit, :update] do
     resources :chapters, only: [:new, :create]
     resources :problems, only: [:new, :create]
   end
@@ -118,7 +118,6 @@ Mathraining::Application.routes.draw do
     resources :theories, only: [:new, :create]
     resources :exercises, only: [:new, :create]
     resources :qcms, only: [:new, :create]
-    resources :problems, only: [:new, :create]
   end
 
   resources :subjects do

@@ -1,22 +1,27 @@
 #encoding: utf-8
 
 class UsersController < ApplicationController
-  before_filter :signed_in_user,
-    only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate]
-  before_filter :correct_user,
-    only: [:edit, :update]
-  before_filter :admin_user,
-    only: [:notifications_new, :notifications_update, :take_skin, :unactivate, :reactivate]
-  before_filter :root_user,
-    only: [:create_administrator, :recompute_scores, :destroy]
-  before_filter :signed_out_user,
-    only: [:new, :create, :password_forgotten, :forgot_password]
-  before_filter :unactivate_admin,
-    only: [:unactivate, :reactivate]
+  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate]
+  before_filter :correct_user, only: [:edit, :update]
+  before_filter :admin_user, only: [:notifications_new, :notifications_update, :take_skin, :unactivate, :reactivate]
+  before_filter :root_user, only: [:create_administrator, :recompute_scores, :destroy]
+  before_filter :signed_out_user, only: [:new, :create, :password_forgotten]
+  before_filter :unactivate_admin, only: [:unactivate, :reactivate]
 
+  # Index de tous les users avec scores
   def index
   end
   
+  # S'inscrire au site : il faut être en ligne 
+  def new
+  	@user = User.new
+  end
+  
+  # Modifier son compte : il faut être en ligne et que ce soit la bonne personne
+  def edit
+  end
+  
+  # S'inscrire au site 2 : il faut être hors ligne
   def create
     @user = User.new(params[:user])
     @user.key = SecureRandom.urlsafe_base64
@@ -35,17 +40,16 @@ class UsersController < ApplicationController
   	  render 'new'
   	end
   end
+  
+  # Voir un utilisateur
   def show
     @user = User.find(params[:id])
     if @user.admin && !current_user.sk.root
       redirect_to users_path
     end
   end
-  def new
-  	@user = User.new
-  end
-  def edit
-  end
+  
+  # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
   def update
     if @user.update_attributes(params[:user])
       flash[:success] = "Votre profil a bien été mis à jour."
@@ -55,6 +59,8 @@ class UsersController < ApplicationController
       render 'edit'
     end
   end
+  
+  # Supprimer un utilisateur : il faut être root
   def destroy
     @user = User.find(params[:id])
     skinner = User.where(skin: @user.id)
@@ -66,6 +72,7 @@ class UsersController < ApplicationController
     redirect_to users_path
   end
 
+  # Rendre administrateur : il faut être root
   def create_administrator
     @user = User.find(params[:user_id])
     if @user.admin?
@@ -81,6 +88,7 @@ class UsersController < ApplicationController
     redirect_to users_path
   end
 
+  # Activer son compte
   def activate
     @user = User.find(params[:id])
     if !@user.email_confirm && @user.key.to_s == params[:key].to_s
@@ -93,7 +101,8 @@ class UsersController < ApplicationController
     end
     redirect_to root_path
   end
-
+  
+  # Mot de passe oublié
   def password_forgotten
     @user = User.find_by_email(params[:user][:email])
     if @user
@@ -105,7 +114,8 @@ class UsersController < ApplicationController
     end
     redirect_to root_path
   end
-
+  
+  # Mot de passe oublié 2
   def recup_password
     @user = User.find(params[:id])
     if @user.key.to_s != params[:key].to_s
@@ -113,12 +123,16 @@ class UsersController < ApplicationController
       redirect_to root_path
     else
       @user.update_attribute(:key, SecureRandom.urlsafe_base64)
+      if signed_in?
+        sign_out
+      end
       sign_in @user
       flash[:success] = "Veuillez changer immédiatement de mot de passe."
       redirect_to edit_user_path(@user)
     end
   end
-
+  
+  # Recalculer tous les scores
   def recompute_scores
     User.all.each do |user|
       if !user.admin?
@@ -128,23 +142,27 @@ class UsersController < ApplicationController
     redirect_to users_path
   end
 
+  # Voir les nouvelles notifications (admin)
   def notifications_new
     @notifications = Submission.where(visible: true).order("updated_at DESC").paginate(page: params[:page]).to_a
     @new = true
     render :notifications
   end
 
+  # Voir les notifications pour les modifs (admin)
   def notifications_update
     @notifications = current_user.sk.followed_submissions.where("status > 0").order("updated_at DESC").paginate(page: params[:page]).to_a
     @new = false
     render :notifications
   end
 
+  # Voir les notifications (étudiant)
   def notifs_show
     @notifs = current_user.sk.notifs.order("created_at")
     render :notifs
   end
-
+  
+  # Prendre la peau d'un utilisateur
   def take_skin
     @user = User.find(params[:user_id])
     if @user.admin?
@@ -157,6 +175,7 @@ class UsersController < ApplicationController
     redirect_to(:back)
   end
 
+  # Quitter la peau d'un utilisateur
   def leave_skin
     if current_user.id == params[:user_id].to_i
       current_user.update_attribute(:skin, 0)
@@ -166,35 +185,37 @@ class UsersController < ApplicationController
     redirect_to(:back)
   end
   
+  # Désactiver un compte
   def unactivate
     @user = User.find(params[:user_id])
     @user.toggle!(:active)
     redirect_to @user
   end
   
+  # Réactiver un compte
   def reactivate
     @user = User.find(params[:user_id])
     @user.toggle!(:active)
     redirect_to @user
   end
 
+  ########## PARTIE PRIVEE ##########
   private
 
+  # Vérifie qu'on est pas connecté
   def signed_out_user
     if signed_in?
       redirect_to root_path
     end
   end
+  
+  # Vérifie qu'il s'agit de la bonne personne
   def correct_user
     @user = User.find(params[:id])
     redirect_to root_path unless current_user.sk.id == @user.id
   end
-  def admin_user
-    redirect_to root_path unless current_user.sk.admin?
-  end
-  def root_user
-    redirect_to root_path unless current_user.sk.root
-  end
+  
+  # Vérifie qu'on ne désactive pas un admin
   def unactivate_admin
     @user = User.find(params[:user_id])
     if @user.admin? && !current_user.sk.root
@@ -202,66 +223,4 @@ class UsersController < ApplicationController
       redirect_to root_path
     end
   end
-
-  def point_attribution(user)
-    user.point.rating = 0
-    partials = user.pointspersections
-    partial = Array.new
-    
-    Section.all.each do |s|
-      partial[s.id] = partials.where(:section_id => s.id).first
-      if partial[s.id].nil?
-        newpoint = Pointspersection.new
-        newpoint.points = 0
-        newpoint.section_id = s.id
-        user.pointspersections << newpoint
-        partial[s.id] = user.pointspersections.where(:section_id => s.id).first
-      end
-      partial[s.id].points = 0
-    end
-
-    user.solvedexercises.each do |e|
-      if e.correct
-        exo = e.exercise
-        pt = exo.value
-
-        if !exo.chapter.section.fondation? # Pas un fondement
-          user.point.rating = user.point.rating + pt
-        end
-
-        partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
-      end
-    end
-
-    user.solvedqcms.each do |q|
-      if q.correct
-        qcm = q.qcm
-        pt = qcm.value
-
-        if !qcm.chapter.section.fondation? # Pas un fondement
-          user.point.rating = user.point.rating + pt
-        end
-
-        partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
-      end
-    end
-
-    user.solvedproblems.each do |p|
-      problem = p.problem
-      pt = problem.value
-
-      if !problem.section.fondation? # Pas un fondement
-        user.point.rating = user.point.rating + pt
-      end
-
-      partial[problem.section.id].points = partial[problem.section.id].points + pt
-    end
-
-    user.point.save
-    Section.all.each do |s|
-      partial[s.id].save
-    end
-
-  end
-
 end

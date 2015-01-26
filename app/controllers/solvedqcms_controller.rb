@@ -5,6 +5,7 @@ class SolvedqcmsController < ApplicationController
   before_filter :online_chapter
   before_filter :unlocked_chapter
 
+  # On tente de résoudre un qcm
   def create
     qcm = @qcm2
     user = current_user.sk
@@ -23,7 +24,6 @@ class SolvedqcmsController < ApplicationController
     good_guess = true
 
     if qcm.many_answers
-
       if params[:ans]
         answer = params[:ans]
       else
@@ -59,8 +59,6 @@ class SolvedqcmsController < ApplicationController
           end
         end
       end
-
-
     else
       if !params[:ans]
         flash[:danger] = "Veuillez cocher une réponse."
@@ -86,6 +84,7 @@ class SolvedqcmsController < ApplicationController
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
   end
 
+  # On tente de résoudre un qcm une nouvelle fois
   def update
     qcm = @qcm2
     user = current_user.sk
@@ -172,7 +171,6 @@ class SolvedqcmsController < ApplicationController
         link.choices.clear
         link.choices << choice
       end
-
     end
 
     if link.correct
@@ -182,16 +180,21 @@ class SolvedqcmsController < ApplicationController
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
   end
 
+  ########## PARTIE PRIVEE ##########
+  private
 
+  # On récupère le qcm et le chapitre
   def before_all
     @qcm2 = Qcm.find(params[:qcm_id])
     @chapter = @qcm2.chapter
   end
 
+  # Il faut que le chapitre soit en ligne
   def online_chapter
     redirect_to root_path unless (current_user.sk.admin? || @chapter.online)
   end
 
+  # Il faut qu'on puisse faire les exercices
   def unlocked_chapter
     if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
@@ -202,6 +205,7 @@ class SolvedqcmsController < ApplicationController
     end
   end
 
+  # Attribution des points pour un qcm
   def point_attribution(user, qcm)
     pt = qcm.value
 
@@ -215,7 +219,6 @@ class SolvedqcmsController < ApplicationController
     partial = partials.where(:section_id => qcm.chapter.section.id).first
     partial.points = partial.points + pt
     partial.save
-
   end
 
 end

@@ -1,6 +1,9 @@
 #encoding: utf-8
 class QuestionsController < ApplicationController
 
+  ########## PARTIE PRIVEE ##########
+  private
+
   def order_op(haut, exercice, subject)
     if haut
       sign = '<'
@@ -44,43 +47,18 @@ class QuestionsController < ApplicationController
       else
         other = qcm2
       end
-      err = swap_position(subject, other)
-      if err.nil?
-        flash[:success] = "#{class_name} déplacé vers le #{name}."
-      else
-        flash[:danger] = err
-      end
+      swap_position(subject, other)
+      flash[:success] = "#{class_name} déplacé vers le #{name}."
     end
     redirect_to chapter_path(subject.chapter, :type => type, :which => subject.id)
   end
 
-  private
-
   def swap_position(a, b)
-    err = nil
-    Qcm.transaction do
-      x = a.position
-      a.position = b.position
-      b.position = x
-      a.save(validate: false)
-      b.save(validate: false)
-      unless a.valid? and b.valid?
-        erra = get_errors(a)
-        errb = get_errors(b)
-        if erra.nil?
-          if errb.nil?
-            err = "Quelque chose a mal tourné."
-          else
-            err = "#{errb} pour #{b.title}"
-          end
-        else
-          # if a is not valid b.valid? is not executed
-          err = "#{erra} pour #{a.title}"
-        end
-        raise ActiveRecord::Rollback
-      end
-    end
-    return err
+    x = a.position
+    a.position = b.position
+    b.position = x
+    a.save
+    b.save
   end
 
 end

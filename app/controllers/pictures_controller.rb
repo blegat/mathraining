@@ -2,17 +2,18 @@
 class PicturesController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_user
-  before_filter :good_person,
-    only: [:show, :destroy]
+  before_filter :good_person, only: [:show, :destroy]
 
+  # Voir, il faut être la bonne personne
   def show
-
   end
 
+  # Créer
   def new
     @pic = Picture.new
   end
-
+  
+  # Créer 2
   def create
     @pic = Picture.new(params[:picture])
     if @pic.save
@@ -23,19 +24,18 @@ class PicturesController < ApplicationController
     end
   end
 
+  # Supprimer, il faut être la bonne personne
   def destroy
     @pic = Picture.find(params[:id])
     @pic.image.destroy
     @pic.destroy
     redirect_to pictures_path
   end
-
+  
+  ########## PARTIE PRIVEE ##########
   private
 
-  def admin_user
-    redirect_to root_path unless current_user.sk.admin?
-  end
-
+  # Vérifie qu'il s'agit de la bonne personne
   def good_person
     @pic = Picture.find(params[:id])
     redirect_to root_path unless @pic.user.id == current_user.sk.id

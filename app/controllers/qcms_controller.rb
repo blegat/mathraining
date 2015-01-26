@@ -1,30 +1,25 @@
 #encoding: utf-8
 class QcmsController < QuestionsController
   before_filter :signed_in_user
-  before_filter :admin_user,
-    only: [:destroy, :update, :edit, :new, :create, :order_minus,
-    :order_plus, :manage_choices, :remove_choice, :add_choice,
-    :switch_choice, :update_choice, :put_online, :explanation, :update_explanation]
-  before_filter :online_qcm,
-    only: [:add_choice, :remove_choice]
-  before_filter :root_user, only: [:destroy]
+  before_filter :admin_user
+  before_filter :online_qcm, only: [:add_choice, :remove_choice]
+  before_filter :root_qcm_user, only: [:destroy]
 
+  # Créer un qcm
   def new
     @chapter = Chapter.find(params[:chapter_id])
     @qcm = Qcm.new
   end
-
+  
+  # Editer un qcm
   def edit
     @qcm = Qcm.find(params[:id])
   end
-
+  
+  # Créer un qcm 2
   def create
     @chapter = Chapter.find(params[:chapter_id])
     @qcm = Qcm.new
-    if @chapter.nil?
-      flash.now[:danger] = "Chapitre inexistant."
-      render 'new' and return
-    end
     if @chapter.online
       @qcm.online = false
     else
@@ -56,9 +51,9 @@ class QcmsController < QuestionsController
     else
       render 'new'
     end
-
   end
 
+  # Editer un qcm 2
   def update
     @qcm = Qcm.find(params[:id])
     @qcm.statement = params[:qcm][:statement]
@@ -101,9 +96,9 @@ class QcmsController < QuestionsController
     else
       render 'edit'
     end
-
   end
 
+  # Supprimer un qcm
   def destroy
     @chapter = @qcm.chapter
     if @qcm.online && @qcm.chapter.online
@@ -118,10 +113,12 @@ class QcmsController < QuestionsController
     redirect_to @chapter
   end
 
+  # Page pour modifier les choix
   def manage_choices
     @qcm = Qcm.find(params[:qcm_id])
   end
 
+  # Supprimer un choix
   def remove_choice
     @choice = Choice.find(params[:id])
     if !@qcm.many_answers && @choice.ok && @qcm.choices.count > 1
@@ -138,6 +135,7 @@ class QcmsController < QuestionsController
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
 
+  # Ajouter un choix
   def add_choice
     @choice = Choice.new
     @choice.qcm_id = params[:qcm_id]
@@ -164,6 +162,7 @@ class QcmsController < QuestionsController
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
 
+  # Modifier la véracité d'un choix
   def switch_choice
     @choice = Choice.find(params[:id])
     @qcm = @choice.qcm
@@ -182,6 +181,7 @@ class QcmsController < QuestionsController
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
 
+  # Modifier un choix
   def update_choice
     @choice = Choice.find(params[:id])
     @choice.ans = params[:choice][:ans]
@@ -193,16 +193,19 @@ class QcmsController < QuestionsController
     redirect_to qcm_manage_choices_path(params[:qcm_id])
   end
 
+  # Déplacer
   def order_minus
     @qcm = Qcm.find(params[:qcm_id])
     order_op(true, false, @qcm)
   end
 
+  # Déplacer
   def order_plus
     @qcm = Qcm.find(params[:qcm_id])
     order_op(false, false, @qcm)
   end
 
+  # Mettre en ligne
   def put_online
     @qcm = Qcm.find(params[:qcm_id])
     @qcm.online = true
@@ -210,10 +213,12 @@ class QcmsController < QuestionsController
     redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
   end
 
+  # Modifier l'explication
   def explanation
     @qcm = Qcm.find(params[:qcm_id])
   end
 
+  # Modifier l'explication 2
   def update_explanation
     @qcm = Qcm.find(params[:qcm_id])
     @qcm.explanation = params[:qcm][:explanation]
@@ -224,53 +229,25 @@ class QcmsController < QuestionsController
       render 'explanation'
     end
   end
-
+  
+  ########## PARTIE PRIVEE ##########
   private
 
-  def swap_position(a, b)
-    err = nil
-    Qcm.transaction do
-      x = a.position
-      a.position = b.position
-      b.position = x
-      a.save(validate: false)
-      b.save(validate: false)
-      unless a.valid? and b.valid?
-        erra = get_errors(a)
-        errb = get_errors(b)
-        if erra.nil?
-          if errb.nil?
-            err = "Quelque chose a mal tourné."
-          else
-            err = "#{errb} pour #{b.title}"
-          end
-        else
-          # if a is not valid b.valid? is not executed
-          err = "#{erra} pour #{a.title}"
-        end
-        raise ActiveRecord::Rollback
-      end
-    end
-    return err
-  end
-
-
-  def admin_user
-    redirect_to root_path unless current_user.sk.admin?
-  end
-
-  def root_user
+  # Il faut être root pour supprimer un qcm en ligne
+  def root_qcm_user
     @qcm = Qcm.find(params[:id])
     redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) if (!current_user.sk.root && @qcm.online && @qcm.chapter.online)
   end
 
+  # Vérifie que le qcm est en ligne
   def online_qcm
     @qcm = Qcm.find(params[:qcm_id])
     if @qcm.online && @qcm.chapter.online
       redirect_to chapter_path(@qcm.chapter)
     end
   end
-
+  
+  # Bete maximum
   def maximum(a, b)
     if a > b
       return a
@@ -278,5 +255,4 @@ class QcmsController < QuestionsController
       return b
     end
   end
-
 end

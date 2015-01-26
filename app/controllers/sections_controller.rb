@@ -1,25 +1,22 @@
 #encoding: utf-8
 class SectionsController < ApplicationController
-  before_filter :signed_in_user, only: [:create, :new, :update, :edit, :destroy]
-  before_filter :recup,
-    only: [:destroy, :show, :edit, :update, :showpb]
-  before_filter :admin_user,
-    only: [:destroy, :edit, :update, :create]
+  before_filter :signed_in_user, only: [:edit, :update]
+  before_filter :recup
+  before_filter :admin_user, only: [:edit, :update]
 
-  def index
-    @sections = Section.order(:id).all
-  end
-  def create
-  end
+  # Montrer la section
   def show
   end
+  
+  # Montrer les problèmes de la section
   def showpb
   end
-  def new
-  	@section = Section.new
-  end
+  
+  # Editer une section
   def edit
   end
+  
+  # Editer une section 2
   def update
   if @section.update_attributes(name: params[:section][:name], description: params[:section][:description])
       flash[:success] = "Section modifiée."
@@ -28,10 +25,11 @@ class SectionsController < ApplicationController
       render 'edit'
     end
   end
-  def destroy
-  end
-
+  
+  ########## PARTIE PRIVEE ##########
   private
+  
+  # Récupérer la section
   def recup
     @section = Section.find(params[:id])
     if @section.fondation
@@ -40,10 +38,6 @@ class SectionsController < ApplicationController
       @fondation = false
     end
   end
-
-  def admin_user
-    redirect_to @section unless current_user.sk.admin?
-  end
-
+  
 end
 

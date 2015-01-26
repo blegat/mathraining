@@ -1,10 +1,12 @@
 #encoding: utf-8
 class SessionsController < ApplicationController
-  before_filter :signed_out_user,
-    only: [:create, :new]
-
+  before_filter :signed_out_user, only: [:create, :new]
+  
+  # Se connecter 1
   def new
   end
+  
+  # Se connecter 2
   def create
     user = User.find_by_email(params[:session][:email])
     
@@ -25,13 +27,17 @@ class SessionsController < ApplicationController
       redirect_to(:back)
     end
   end
+    
+  # Se déconnecter
   def destroy
     sign_out
     redirect_to root_path
   end
-
+  
+  ########## PARTIE PRIVEE ##########
   private
 
+  # Il ne faut pas être connecté pour se connecter
   def signed_out_user
     if signed_in?
       redirect_to root_path

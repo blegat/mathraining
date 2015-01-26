@@ -1,28 +1,34 @@
 #encoding: utf-8
 class VirtualtestsController < ApplicationController
   before_filter :signed_in_user
-  before_filter :admin_user, only: [:destroy, :update, :edit, :new, :create, :put_online, :destroy]
+  before_filter :admin_user, only: [:new, :create, :edit, :update, :destroy, :put_online, :destroy]
   before_filter :recup, only: [:show, :destroy]
   before_filter :recup2, only: [:begin_test]
   before_filter :has_access, only: [:show, :begin_test]
   before_filter :online_test, only: [:show, :begin_test]
   before_filter :can_begin, only: [:begin_test]
   before_filter :can_be_online, only: [:put_online]
+  before_filter :delete_online, only: [:destroy]
 
+  # Voir tous les tests virtuels
   def index
   end
   
+  # Montrer un test virtuel
   def show
   end
 
+  # Créer un test virtuel
   def new
     @virtualtest = Virtualtest.new
   end
 
+  # Editer un test virtuel
   def edit
     @virtualtest = Virtualtest.find(params[:id])
   end
-
+  
+  # Créer un test virtuel 2
   def create
     @virtualtest = Virtualtest.new
     @virtualtest.duration = params[:virtualtest][:duration]
@@ -43,6 +49,7 @@ class VirtualtestsController < ApplicationController
     end
   end
 
+  # Editer un test virtuel 2
   def update
     @virtualtest = Virtualtest.find(params[:id])
     @virtualtest.duration = params[:virtualtest][:duration]
@@ -54,6 +61,7 @@ class VirtualtestsController < ApplicationController
     end
   end
 
+  # Supprimer un test virtuel
   def destroy
     @virtualtest.problems.each do |p|
       p.virtualtest_id = 0
@@ -64,12 +72,14 @@ class VirtualtestsController < ApplicationController
     redirect_to virtualtests_path
   end
 
+  # Mettre en ligne
   def put_online
     @virtualtest.online = true
     @virtualtest.save
     redirect_to @virtualtest
   end
   
+  # Commencer le test
   def begin_test
     t = Takentest.new
     t.user = current_user.sk
@@ -80,12 +90,10 @@ class VirtualtestsController < ApplicationController
     redirect_to @virtualtest
   end
 
+  ########## PARTIE PRIVEE ##########
   private
-
-  def admin_user
-    redirect_to root_path unless current_user.sk.admin?
-  end
   
+  # On récupère
   def recup
     @virtualtest = Virtualtest.find(params[:id])
   end
@@ -94,6 +102,7 @@ class VirtualtestsController < ApplicationController
     @virtualtest = Virtualtest.find(params[:virtualtest_id])
   end
   
+  # Vérifie qu'on a accès à ce test
   def has_access
     if !current_user.sk.admin?
       visible = true
@@ -106,10 +115,12 @@ class VirtualtestsController < ApplicationController
     end
   end
   
+  # Vérifie que le test est en ligne ou qu'on est admin
   def online_test
     redirect_to root_path if !@virtualtest.online && !current_user.sk.admin
   end
   
+  # Vérifie que le test peut être en ligne
   def can_be_online
     @virtualtest = Virtualtest.find(params[:virtualtest_id])
     nb_prob = 0
@@ -121,6 +132,7 @@ class VirtualtestsController < ApplicationController
     redirect_to @virtualtest if !can_online || nb_prob == 0
   end
   
+  # Vérifie qu'on peut commencer le test
   def can_begin
     if current_user.sk.status(@virtualtest) >= 0
       redirect_to @virtualtest
@@ -128,5 +140,10 @@ class VirtualtestsController < ApplicationController
       flash[:danger] = "Vous avez déjà un test virtuel en cours!"
       redirect_to @virtualtest
     end
+  end
+  
+  # Vérifie qu'on ne supprime pas un test en ligne
+  def delete_online
+    redirect_to root_path if @virtualtest.online
   end
 end

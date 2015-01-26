@@ -3,13 +3,13 @@ class SubmissionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_problem
   before_filter :can_see, only: [:show]
-  before_filter :admin_user, only: [:read, :unread, :reserve]
+  before_filter :admin_user, only: [:read, :unread, :reserve, :unreserve]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
   before_filter :in_test, only: [:intest, :create_intest, :update_intest]
 
+  # Montrer une soumission : il faut qu'on puisse la voir
   def show
-    # Marquer comme lu ??
     if @submission.nil?
       redirect_to root_path
     end
@@ -22,12 +22,9 @@ class SubmissionsController < ApplicationController
     session[:ancientexte] = nil
   end
 
+  # Créer une nouvelle soumission
   def create
-    r = 0
-    if(params.has_key?:r)
-      r = params[:r].to_i
-    end
-
+    # Pièces jointes
     attach = Array.new
     totalsize = 0
 
@@ -46,7 +43,7 @@ class SubmissionsController < ApplicationController
           end
           nom = params["file#{k}".to_sym].original_filename
           session[:ancientexte] = params[:submission][:content]
-          redirect_to problem_path(@problem, :sub => 0, :r => r),
+          redirect_to problem_path(@problem, :sub => 0),
             flash: {danger: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
@@ -64,14 +61,14 @@ class SubmissionsController < ApplicationController
         j = j+1
       end
       session[:ancientexte] = params[:submission][:content]
-      redirect_to problem_path(@problem, :sub => 0, :r => r),
+      redirect_to problem_path(@problem, :sub => 0),
           flash: {danger: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
     submission.user = current_user.sk
-
-
+    
+    # Si on réussit à sauver
     if submission.save
       j = 1
       while j < i do
@@ -79,7 +76,9 @@ class SubmissionsController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      redirect_to problem_path(@problem, :sub => submission.id, :r => r)
+      redirect_to problem_path(@problem, :sub => submission.id)
+    
+    # Si il y a eu une erreur
     else
       j = 1
       while j < i do
@@ -90,17 +89,18 @@ class SubmissionsController < ApplicationController
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         flash[:danger] = "Votre soumission est vide."
-        redirect_to problem_path(@problem, :sub => 0, :r => r)
+        redirect_to problem_path(@problem, :sub => 0)
       elsif params[:submission][:content].size > 8000
         flash[:danger] = "Votre soumission doit faire moins de 8000 caractères."
-        redirect_to problem_path(@problem, :sub => 0, :r => r)
+        redirect_to problem_path(@problem, :sub => 0)
       else
         flash[:danger] = "Une erreur est survenue."
-        redirect_to problem_path(@problem, :sub => 0, :r => r)
+        redirect_to problem_path(@problem, :sub => 0)
       end
     end
   end
   
+  # Voir une soumission pendant un test
   def intest
     @neworedit = 0
     @submission = @problem.submissions.where(user_id: current_user.sk.id, intest: true).first
@@ -119,6 +119,7 @@ class SubmissionsController < ApplicationController
     end
   end
   
+  # Faire une nouvelle soumission
   def create_intest
     attach = Array.new
     totalsize = 0
@@ -195,6 +196,7 @@ class SubmissionsController < ApplicationController
     end
   end
   
+  # Modifier une soumission
   def update_intest
     @submission = Submission.find(params[:submission_id])
     if @submission.update_attributes(params[:submission])
@@ -279,11 +281,8 @@ class SubmissionsController < ApplicationController
     end    
   end
 
+  # Lu et non lu
   def un_read(read, msg)
-    r = 0
-    if(params.has_key?:r)
-      r = params[:r].to_i
-    end
     @submission = Submission.find(params[:submission_id])
     if @submission
       following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
@@ -291,10 +290,10 @@ class SubmissionsController < ApplicationController
         following.read = read
         if following.save
           flash[:success] = "Soumission marquée comme #{msg}."
-          redirect_to problem_path(@problem, :sub => @submission, :r => r)
+          redirect_to problem_path(@problem, :sub => @submission)
         else
           flash[:danger] = "Un problème est apparu."
-          redirect_to problem_path(@problem, :sub => @submission, :r => r)
+          redirect_to problem_path(@problem, :sub => @submission)
         end
       elsif !read
         following = Following.new
@@ -303,10 +302,10 @@ class SubmissionsController < ApplicationController
         following.read = read
         if following.save
           flash[:success] = "Soumission marquée comme #{msg}."
-          redirect_to problem_path(@problem, :sub => @submission, :r => r)
+          redirect_to problem_path(@problem, :sub => @submission)
         else
           flash[:danger] = "Un problème est apparu."
-          redirect_to problem_path(@problem, :sub => @submission, :r => r)
+          redirect_to problem_path(@problem, :sub => @submission)
         end
       else
         redirect_to root_path
@@ -315,24 +314,23 @@ class SubmissionsController < ApplicationController
       redirect_to root_path
     end
   end
-
+  
+  # Marquer comme lu
   def read
     un_read(true, "lue")
   end
 
+  # Marquer comme non lu
   def unread
     un_read(false, "non lue")
   end
   
+  # Réserver la soumission
   def reserve
-    r = 0
-    if(params.has_key?:r)
-      r = params[:r].to_i
-    end
     @submission = Submission.find(params[:submission_id])
     if @submission.followings.count > 0
       flash[:danger] = "Cette soumission a déjà été réservée."
-      redirect_to problem_path(@problem, :sub => @submission, :r => r)
+      redirect_to problem_path(@problem, :sub => @submission)
     else
       f = Following.new
       f.user = current_user.sk
@@ -340,29 +338,27 @@ class SubmissionsController < ApplicationController
       f.read = true
       f.save
       flash[:success] = "Soumission réservée."
-      redirect_to problem_path(@problem, :sub => @submission, :r => r)
+      redirect_to problem_path(@problem, :sub => @submission)
     end
   end
   
+  # Dé-réserver la soumission
   def unreserve
-    r = 0
-    if(params.has_key?:r)
-      r = params[:r].to_i
-    end
     @submission = Submission.find(params[:submission_id])
     f = @submission.followings.first
     if @submission.status != 0 || f.nil? || f.user != current_user.sk
-      redirect_to problem_path(@problem, :sub => @submission, :r => r)
+      redirect_to problem_path(@problem, :sub => @submission)
     else
       Following.delete(f.id)
       flash[:success] = "Réservation annulée."
-      redirect_to problem_path(@problem, :sub => @submission, :r => r)
+      redirect_to problem_path(@problem, :sub => @submission)
     end
-    
   end
   
+  ########## PARTIE PRIVEE ##########
   private
 
+  # Peut voir la soumission
   def can_see
     @submission = Submission.find_by_id(params[:id])
     if ((@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.solved?(@problem) && !current_user.sk.admin))
@@ -370,25 +366,23 @@ class SubmissionsController < ApplicationController
     end
   end
 
+  # Pas déjà résolu
   def not_solved
     redirect_to root_path if current_user.sk.solved?(@problem)
   end
-
+  
+  # Peut envoyer une soumission
   def can_submit
     lastsub = Submission.where(:user_id => current_user.sk, :problem_id => @problem).order('created_at')
     redirect_to problem_path(@problem) if (!lastsub.empty? && lastsub.last.status == 0)
   end
 
+  # Récupère le problème
   def get_problem
     @problem = Problem.find(params[:problem_id])
   end
-
-  def admin_user
-    if not current_user.sk.admin
-      redirect_to root_path
-    end
-  end
   
+  # Est-ce qu'on est en test?
   def in_test
     @t = @problem.virtualtest
     if @t.nil?
@@ -397,7 +391,8 @@ class SubmissionsController < ApplicationController
       redirect_to @t if current_user.sk.status(@t) != 0
     end
   end
-
+  
+  # Attribution des points pour un problème
   def point_attribution(user, problem)
     if !user.solved?(problem) # Avoid double count
       pt = problem.value
