@@ -1,5 +1,5 @@
 #encoding: utf-8
-class ProblemsController < QuestionController
+class ProblemsController < QuestionsController
   before_filter :signed_in_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_filter :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_filter :root_problem_user, only: [:destroy]
