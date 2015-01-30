@@ -139,4 +139,11 @@
   Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.
 <% elsif current_user.sk.admin? || current_user.sk == @submission.user %>
   <%= render 'corrections/new' %>
+  
+  <!-- Supprimer la soumission : pas possible si correcte -->
+  <% if current_user.sk.admin? && @submission.status != 2 && !@submission.intest %>
+    <br/><center>
+    <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cette soumission? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :style => "color:red;" %>
+    </center>
+  <% end %>
 <% end %>

@@ -3,7 +3,7 @@ class SubmissionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_problem
   before_filter :can_see, only: [:show]
-  before_filter :admin_user, only: [:read, :unread, :reserve, :unreserve]
+  before_filter :admin_user, only: [:destroy, :read, :unread, :reserve, :unreserve]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
   before_filter :in_test, only: [:intest, :create_intest, :update_intest]
@@ -355,6 +355,16 @@ class SubmissionsController < ApplicationController
     end
   end
   
+  def destroy
+    @submission = Submission.find(params[:id])
+    @problem = @submission.problem
+    @submission.corrections.each do |c|
+      c.destroy
+    end
+    @submission.destroy
+    redirect_to problem_path(@problem)
+  end
+  
   ########## PARTIE PRIVEE ##########
   private
 
@@ -379,7 +389,9 @@ class SubmissionsController < ApplicationController
 
   # Récupère le problème
   def get_problem
-    @problem = Problem.find(params[:problem_id])
+    if !params[:problem_id].nil?
+      @problem = Problem.find(params[:problem_id])
+    end
   end
   
   # Est-ce qu'on est en test?
