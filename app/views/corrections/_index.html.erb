@@ -89,6 +89,14 @@
     <% correction.fakecorrectionfiles.order(:id).each do |f| %>
       <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
     <% end %>
+    
+    <!-- Afficher les pièces jointes images -->
+    <% correction.correctionfiles.order(:id).each do |f| %>
+      <% if f.is_image %>
+        <hr/>
+        <center><%= f.file_file_name %><br/><br/><%= image_tag f.file.url, :style => "max-width:80%;" %></center>
+      <% end %>
+    <% end %>
   <% end %>
   </div>
   </td></tr>
