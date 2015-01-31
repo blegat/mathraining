@@ -7,9 +7,9 @@
 
     <% @ancientexte = session[:ancientexte] %>
     <% if @ancientexte.nil? %>
-      <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
+      <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => current_user.other %>
     <% else %>
-      <%= f.text_area :content, :class => "form-control", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => current_user.other %>
+      <%= f.text_area :content, :class => "form-control", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => current_user.other %>
     <% end %>
   <% session.delete(:ancientexte) %>
   </div>

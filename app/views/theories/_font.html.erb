@@ -9,4 +9,4 @@
 <a href="#ici" onClick="JavaScript: TAinsert('<a target=\'blank\' href=\'http://www.exemple.com\'>','</a>','MathInput'); fakeupdate();"><%= image_tag "link.jpg", :title => "Lien" %></a>
 <a href="#ici" onClick="JavaScript: TAinsert('<center><img src=\'/system/pictures/0/votreImage.jpg\' /></center>','','MathInput'); fakeupdate();"><%= image_tag "picture.jpg", :title => "Image", :style=>"margin-right:50px;" %></a>
 <%= link_to "Mes images", pictures_path, :target => "_blank" %> - <%= link_to "Uploader une image", new_picture_path, :target => "_blank" %>
-- <input type="checkbox" id="stop" name="stop" onclick="fakeupdate()" checked="checked" /> Activer la preview
+<label class="checkbox-inline" style="margin-left:30px;"><input type="checkbox" id="stop" name="stop" onclick="fakeupdate()" checked="checked" /> Activer la prévisualisation</label>

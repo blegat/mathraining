@@ -8,9 +8,9 @@
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <%= render 'subjects/smiley', hiddentext: false %>
   <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => (!signed_in? || current_user.other) %>
+    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
   <% else %>
-    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "PreviewSafe.Update()", :disabled => (!signed_in? || current_user.other) %>
+    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
   <% end %>
   </div>
   
