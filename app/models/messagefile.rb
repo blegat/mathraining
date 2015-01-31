@@ -1,8 +1,9 @@
 class Messagefile < ActiveRecord::Base
   attr_accessible :file, :message_id
   has_attached_file :file,
-    :path => ':rails_root/public/system/:attachment/:class/:id/:basename.:extension',
-    :url => '/system/:attachment/:class/:id/:basename.:extension'
+    :path => ':rails_root/public/system/:attachment/:class/:id/:basename_:hash.:extension',
+    :url => '/system/:attachment/:class/:id/:basename_:hash.:extension',
+    :hash_secret => "longSecretString"
   belongs_to :message
   validates_attachment_presence :file
   validates_attachment_size :file, :less_than => 10.megabytes
