@@ -1,8 +1,9 @@
 class Picture < ActiveRecord::Base
   attr_accessible :image, :user_id
   has_attached_file :image,
-    :path => "public/system/:class/:id/:filename",
-    :url => "/system/:class/:id/:basename.:extension"
+    :path => "public/system/:class/:id/:basename_:hash.:extension",
+    :url => "/system/:class/:id/:basename_:hash.:extension",
+    :hash_secret => "longSecretString"
   belongs_to :user
   validates_attachment_presence :image
   validates_attachment_size :image, :less_than => 1.megabytes

@@ -10,7 +10,7 @@ Mathraining::Application.routes.draw do
   resources :solvedexercises, only: [:create, :update]
   resources :solvedqcms, only: [:create, :update]
 
-  resources :pictures, only: [:show, :new, :create, :destroy]
+  resources :pictures, only: [:index, :show, :new, :create, :destroy]
 
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]
   match '/feed' => 'actualities#feed', :via => [:get], as: :feed, defaults: { :format => 'atom' }
