@@ -1,3 +1,13 @@
+#encoding: utf-8
+# == Schema Information
+#
+# Table name: followings
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer
+#  subject_id :integer
+#
+
 class Followingsubject < ActiveRecord::Base
   belongs_to :subject
   belongs_to :user

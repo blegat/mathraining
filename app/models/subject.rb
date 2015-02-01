@@ -1,3 +1,22 @@
+#encoding: utf-8
+# == Schema Information
+#
+# Table name: subjects
+#
+#  id          :integer          not null, primary key
+#  title       :string(255)
+#  content     :text
+#  user_id     :integer
+#  chapter_id  :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  lastcomment :datetime
+#  admin       :boolean
+#  admin_user  :boolean
+#  important   :boolean
+#  section_id  :integer
+#
+
 class Subject < ActiveRecord::Base
   attr_accessible :content, :title, :lastcomment, :admin, :admin_user, :important
   has_many :messages, dependent: :destroy

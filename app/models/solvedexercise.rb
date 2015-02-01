@@ -1,15 +1,17 @@
+#encoding: utf-8
 # == Schema Information
 #
 # Table name: solvedexercises
 #
-#  id          :integer          not null, primary key
-#  user_id     :integer
-#  exercise_id :integer
-#  guess       :float
-#  correct     :boolean
-#  nb_guess    :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id             :integer          not null, primary key
+#  user_id        :integer
+#  exercise_id    :integer
+#  guess          :float
+#  correct        :boolean
+#  nb_guess       :integer
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  resolutiontime :datetime
 #
 
 class Solvedexercise < ActiveRecord::Base

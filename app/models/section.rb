@@ -1,3 +1,4 @@
+#encoding: utf-8
 # == Schema Information
 #
 # Table name: sections
@@ -8,6 +9,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  image       :string(255)
+#  fondation   :boolean
 #
 
 class Section < ActiveRecord::Base

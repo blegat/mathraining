@@ -1,3 +1,16 @@
+#encoding: utf-8
+# == Schema Information
+#
+# Table name: subjectfiles
+#
+#  id                :integer          not null, primary key
+#  subject_id        :integer
+#  file_file_name    :string(255)
+#  file_content_type :string(255)
+#  file_file_size    :integer
+#  file_updated_at   :datetime         not null
+#
+
 class Subjectfile < ActiveRecord::Base
   attr_accessible :file, :subject_id
   has_attached_file :file,

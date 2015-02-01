@@ -2,15 +2,17 @@
 #
 # Table name: exercises
 #
-#  id         :integer          not null, primary key
-#  statement  :text
-#  decimal    :boolean          default(FALSE)
-#  answer     :float
-#  chapter_id :integer
-#  position   :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  online     :boolean          default(FALSE)
+#  id          :integer          not null, primary key
+#  statement   :text
+#  decimal     :boolean          default(FALSE)
+#  answer      :float
+#  chapter_id  :integer
+#  position    :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  online      :boolean          default(FALSE)
+#  explanation :text
+#  level       :integer
 #
 
 class Exercise < ActiveRecord::Base

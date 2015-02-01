@@ -1,3 +1,16 @@
+#encoding: utf-8
+# == Schema Information
+#
+# Table name: correctionfiles
+#
+#  id                :integer          not null, primary key
+#  correction_id     :integer
+#  file_file_name    :string(255)
+#  file_content_type :string(255)
+#  file_file_size    :integer
+#  file_updated_at   :datetime         not null
+#
+
 class Correctionfile < ActiveRecord::Base
   attr_accessible :file, :correction_id
   has_attached_file :file,

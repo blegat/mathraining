@@ -1,4 +1,14 @@
-include ApplicationHelper
+#encoding: utf-8
+# == Schema Information
+#
+# Table name: takentests
+#
+#  id             :integer          not null, primary key
+#  user_id        :integer
+#  virtualtest_id :integer
+#  takentime      :datetime
+#  status         :integer
+#
 
 class Takentest < ActiveRecord::Base
   attr_accessible :takentime, :status

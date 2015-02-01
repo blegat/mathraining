@@ -10,9 +10,17 @@
 #  password_digest :string(255)
 #  remember_token  :string(255)
 #  admin           :boolean          default(FALSE)
+#  root            :boolean          default(FALSE)
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  key             :string(255)
+#  email_confirm   :boolean
+#  skin            :integer
+#  active          :boolean
+#  seename         :integer
+#  sex             :integer
 #
+
 class User < ActiveRecord::Base
   attr_accessible :email, :first_name, :last_name,
     :password, :password_confirmation, :admin, :root,

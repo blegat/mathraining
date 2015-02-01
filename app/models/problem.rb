@@ -1,15 +1,19 @@
+#encoding: utf-8
 # == Schema Information
 #
 # Table name: problems
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  statement  :text
-#  chapter_id :integer
-#  position   :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  online     :boolean          default(FALSE)
+#  id             :integer          not null, primary key
+#  statement      :text
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  online         :boolean          default(FALSE)
+#  level          :integer
+#  explanation    :text
+#  section_id     :integer
+#  number         :integer
+#  virtualtest_id :integer
+#  position       :integer
 #
 
 include ApplicationHelper

@@ -1,3 +1,17 @@
+#encoding: utf-8
+# == Schema Information
+#
+# Table name: messages
+#
+#  id         :integer          not null, primary key
+#  content    :text
+#  subject_id :integer
+#  user_id    :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  admin_user :boolean
+#
+
 class Message < ActiveRecord::Base
   attr_accessible :content, :admin_user
   belongs_to :subject

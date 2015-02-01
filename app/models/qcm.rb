@@ -1,3 +1,4 @@
+#encoding: utf-8
 # == Schema Information
 #
 # Table name: qcms
@@ -10,6 +11,8 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  online       :boolean          default(FALSE)
+#  explanation  :text
+#  level        :integer
 #
 
 class Qcm < ActiveRecord::Base

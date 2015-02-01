@@ -10,6 +10,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  online      :boolean          default(FALSE)
+#  section_id  :integer
 #
 
 class Chapter < ActiveRecord::Base
@@ -36,9 +37,6 @@ class Chapter < ActiveRecord::Base
   has_many :backwards, through: :backwards_associations,
     source: :chapter
 
-  #has_and_belongs_to_many :prerequisites, join_table: :prerequisites,
-    #class_name: "Chapter", foreign_key: "chapter_id",
-    #association_foreign_key: "prerequisite_id"
   #It does not check validations
   def real_number_prerequisites
     liste = recursive_prerequisites

@@ -1,3 +1,20 @@
+#encoding: utf-8
+# == Schema Information
+#
+# Table name: submissions
+#
+#  id         :integer          not null, primary key
+#  problem_id :integer
+#  user_id    :integer
+#  content    :text
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  status     :integer
+#  intest     :boolean
+#  visible    :boolean
+#  score      :integer
+#
+
 class Submission < ActiveRecord::Base
   attr_accessible :content, :status
   belongs_to :user
