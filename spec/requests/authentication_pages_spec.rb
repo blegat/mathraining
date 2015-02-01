@@ -18,10 +18,9 @@ describe "Authentication" do
       before { click_button "Connexion" }
 
       it { should have_selector('title', text: 'Connexion') }
-      it { should have_error_message('invalide') }
 
       describe "after visiting another page" do
-        before { click_link "Accueil" }
+        before { page.first(".navbar-brand").click }
         it { should_not have_selector('div.alert.alert-error') }
       end
     end

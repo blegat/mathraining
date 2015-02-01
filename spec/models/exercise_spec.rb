@@ -60,12 +60,6 @@ describe Exercise do
     it { should be_valid }
   end
 
-  # Decimal
-  describe "when decimal is not present" do
-    before { @ex.decimal = nil }
-    it { should_not be_valid }
-  end
-
   # Answer
   describe "when answer is not present" do
     before { @ex.answer = nil }

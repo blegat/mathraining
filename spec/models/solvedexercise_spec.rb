@@ -39,13 +39,7 @@ describe Solvedexercise do
     before { @se.user = nil }
     it { should_not be_valid }
   end
-
-  # Correct
-  describe "when correct is not present" do
-    before { @se.correct = nil }
-    it { should_not be_valid }
-  end
-
+  
   # Guess
   describe "when guess is not present" do
     before { @se.guess = nil }

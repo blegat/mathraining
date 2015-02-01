@@ -18,7 +18,7 @@ require 'spec_helper'
 describe User do
 
   before { @user = User.new(first_name: "Example", last_name:"User",
-                            email: "user@example.com",
+                            email: "user@exampletest.com",
                             password: "foobar",
                             password_confirmation: "foobar") }
 
