@@ -12,8 +12,12 @@
 class Virtualtest < ActiveRecord::Base
   attr_accessible :duration, :number, :online
   
+  # BELONGS_TO, HAS_MANY
+  
   has_many :problems
   has_many :takentests
+  
+  # VALIDATIONS
   
   validates :duration, presence: true, numericality: { greater_than: 0 }
 end

@@ -10,21 +10,22 @@
 
 require 'set'
 class Prerequisite < ActiveRecord::Base
+
+  # BELONGS_TO, HAS_MANY
+  
   belongs_to :prerequisite, class_name: "Chapter"
   belongs_to :chapter
+  
+  # VALIDATIONS
 
-  validates :prerequisite_id, presence: true,
-    uniqueness: { scope: :chapter_id }
+  validates :prerequisite_id, presence: true, uniqueness: { scope: :chapter_id }
   validates :chapter_id, presence: true
 
   validate :no_loop
   validate :not_redundant
   validate :create_no_redundance
-  # need validation to prevent
-  # a.prerequisites << b
-  # a.prerequisites << c
-  # b.prerequisites << c # should not be allowed
-
+  
+  # Vérifie qu'il n'y a pas de boucle
   def no_loop
     unless chapter.nil? or prerequisite.nil?
       stack = can_go_from_to(prerequisite, chapter, Set.new)
@@ -34,6 +35,8 @@ class Prerequisite < ActiveRecord::Base
       end
     end
   end
+  
+  # Vérifie que ce n'est pas redondant
   def not_redundant
     unless chapter.nil? or prerequisite.nil?
       stack = can_go_from_to(chapter, prerequisite, Set.new)
@@ -42,6 +45,8 @@ class Prerequisite < ActiveRecord::Base
       end
     end
   end
+  
+  # Vérifie que ca ne crée pas de redondance
   def create_no_redundance
     unless chapter.nil? or prerequisite.nil?
       targets = Set.new
@@ -76,6 +81,7 @@ class Prerequisite < ActiveRecord::Base
     end
     return nil
   end
+  
   def stack_to_s(stack)
     current = stack.pop
     if stack.empty?
@@ -84,6 +90,7 @@ class Prerequisite < ActiveRecord::Base
       return "#{stack_to_s(stack)} -> #{current}"
     end
   end
+  
   def recursive_prerequisites(current, visited)
     unless visited.include?(current)
       # this should always happen since it shouldn't have loop
@@ -94,6 +101,7 @@ class Prerequisite < ActiveRecord::Base
       end
     end
   end
+  
   def backward_check(current, targets, visited, stack)
     if visited.include?(current.id)
       return nil

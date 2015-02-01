@@ -1,3 +1,4 @@
+// Fonction pour les pièces jointes
 var Joint = {
   i: 1,
   add: function() {

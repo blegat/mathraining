@@ -14,10 +14,13 @@
 class Solvedproblem < ActiveRecord::Base
   attr_accessible :resolutiontime
   
+  # BELONGS_TO, HAS_MANY
+  
   belongs_to :user
   belongs_to :problem
+  
+  # VALIDATIONS
 
   validates :user_id, presence: true
-  validates :problem_id, presence: true,
-    uniqueness: { scope: :user_id }
+  validates :problem_id, presence: true, uniqueness: { scope: :user_id }
 end

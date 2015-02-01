@@ -17,16 +17,20 @@
 
 class Submission < ActiveRecord::Base
   attr_accessible :content, :status
+  
+  # BELONGS_TO, HAS_MANY
+  
   belongs_to :user
   belongs_to :problem
-
   has_many :corrections, dependent: :destroy
   has_many :followings, dependent: :destroy
   has_many :followers, through: :followings, source: :user
   has_many :notifs, dependent: :destroy
   has_many :submissionfiles, dependent: :destroy
   has_many :fakesubmissionfiles, dependent: :destroy
-
+  
+  # VALIDATIONS
+  
   validates :user_id, presence: true
   validates :problem_id, presence: true
   validates :content, presence: true, length: { maximum: 8000 }
@@ -35,10 +39,13 @@ class Submission < ActiveRecord::Base
   # 1: [corrigé et répondu et]* corrigé
   # 2: résolu
   # 3: corrigé et répondu
-
+  
+  # Rend true si la soumission est correcte
   def correct?
     status == 2
   end
+  
+  # Rend l'icone correspondante
   def icon
     case status
     when 0
@@ -48,6 +55,5 @@ class Submission < ActiveRecord::Base
     when 2
       'V.gif'
     end
-
   end
 end

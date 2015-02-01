@@ -22,9 +22,10 @@
 #
 
 class User < ActiveRecord::Base
-  attr_accessible :email, :first_name, :last_name,
-    :password, :password_confirmation, :admin, :root,
-    :email_confirm, :key, :skin, :seename, :sex
+  attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex
+  
+  # BELONGS_TO, HAS_MANY
+  
   has_secure_password
   has_and_belongs_to_many :theories
   has_and_belongs_to_many :chapters, -> {uniq}
@@ -38,32 +39,31 @@ class User < ActiveRecord::Base
   has_one :point, dependent: :destroy
   has_many :pointspersections, dependent: :destroy
   has_many :submissions, dependent: :destroy
-
   has_many :followings, dependent: :destroy
   has_many :followed_submissions, through: :followings, source: :submission
   has_many :notifs, dependent: :destroy
-
   has_many :subjects, dependent: :destroy
   has_many :messages, dependent: :destroy
-
   has_many :followingsubjects, dependent: :destroy
   has_many :followed_subjects, through: :followingsubjects, source: :subject
-
+  
+  # BEFORE, AFTER
+  
   before_save { self.email.downcase! }
   before_save :create_remember_token
   after_create :create_points
+  
+  # VALIDATIONS
 
   validates :first_name, presence: true, length: { maximum: 32 }
   validates :last_name, presence: true, length: { maximum: 32 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-  validates :email, presence: true, format: { with: VALID_EMAIL_REGEX },
-	  uniqueness: { case_sensitive: false }
+  validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
   validates :password, length: { minimum: 6 }, on: :create
   validates :password, length: { minimum: 6 }, on: :update, allow_blank: true
-  # presence: true <- commented to avoid
-  # duplication of error message with confirmation
   validates :password_confirmation, presence: true, on: :create
-
+  
+  # Nom complet, avec seulement l'initiale s'il faut
   def name
     if self.seename == 0
       "#{self.first_name} #{self.last_name[0]}."
@@ -72,14 +72,17 @@ class User < ActiveRecord::Base
     end
   end
   
+  # Nom complet
   def fullname
     "#{self.first_name} #{self.last_name}"
   end
-
+  
+  # Rend true si l'utilisateur a résolu le problème
   def solved?(problem)
     return problem.users.include?(self)
   end
   
+  # Rend le statut pour un certain test virtuel
   def status(virtualtest)
     x = Takentest.find_by(user_id: self.id, virtualtest_id: virtualtest.id)
     if x.nil?
@@ -88,17 +91,18 @@ class User < ActiveRecord::Base
       return x.status
     end
   end
-
+  
+  # Rend les notifications
   def notifications_new
     Submission.where(status: 0, visible: true)
   end
-
+  
+  # Rend les notifications pour nouveau commentaire
   def notifications_update
-    #followed_submissions.where(submissions: { status: 3 }, followings: { read: false })
-    # If another admin answer, it must still stay unread
     followed_submissions.where(followings: { read: false })
   end
-
+  
+  # Rend le niveau de l'utilisateur
   def level
     if admin
       return {color:"#000000"}
@@ -115,6 +119,7 @@ class User < ActiveRecord::Base
     return actuallevel
   end
   
+  # Rend le nombre de nouveaux messages sur le forum
   def combien_forum
     lastsubjects = Array.new
     compteur = 0
@@ -134,7 +139,8 @@ class User < ActiveRecord::Base
     end
     return compteur
   end
-
+  
+  # Rend la peau de l'utilisateur : current_user.sk à mettre quasi partout
   def sk
     if self.admin? && self.skin != 0
       return User.find(self.skin)
@@ -142,7 +148,8 @@ class User < ActiveRecord::Base
       return self
     end
   end
-
+  
+  # Rend true si l'utilisateur n'est pas dans sa propre peau
   def other
     if self.admin? && self.skin != 0
       return true
@@ -153,10 +160,12 @@ class User < ActiveRecord::Base
 
   private
 
-
+  # Créer un token aléatoire
   def create_remember_token
     self.remember_token = SecureRandom.urlsafe_base64
   end
+  
+  # Créer les points associés à l'utilisateur
   def create_points
     newpoint = Point.new
     newpoint.rating = 0

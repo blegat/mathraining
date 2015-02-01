@@ -14,6 +14,8 @@
 class Color < ActiveRecord::Base
   attr_accessible :pt, :name, :color, :font_color, :femininename
   
+  # VALIDATIONS
+  
   validates :pt, presence: true
   validates :name, presence: true
   validates :femininename, presence: true
