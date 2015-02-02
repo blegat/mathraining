@@ -431,7 +431,7 @@ html>body tbody.scroll {
 
     <div class="col-sm-12 col-xs-12">
 
-    <h2>Evolution</h2>
+    <h2>Évolution</h2>
     <br/>
     <center>
     
@@ -666,6 +666,15 @@ html>body tbody.scroll {
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"}, :style => "color:red;" %>
+    <% end %>
+    <% if current_user.sk.admin && !@user.admin %>
+      <%= " | " if i > 0 %>
+      <% i = i+1 %>
+      <% if @user.wepion %>
+        <%= link_to 'Retirer du groupe Wépion', user_switch_wepion_path(@user) %>
+      <% else %>
+        <%= link_to 'Ajouter au groupe Wépion', user_switch_wepion_path(@user) %>
+      <% end %>
     <% end %>
   </center>
 <% end %>

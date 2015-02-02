@@ -33,7 +33,7 @@ class SubjectsController < ApplicationController
   
     @importants = Array.new
     Subject.where(important: true).order("lastcomment DESC").to_a.each do |s|
-      if (signed_in? && current_user.sk.admin?) || !s.admin
+      if ((signed_in? && current_user.sk.admin?) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @importants.push(s)
         end
@@ -42,7 +42,7 @@ class SubjectsController < ApplicationController
     
     @subjects = Array.new
     Subject.where(important: false).order("lastcomment DESC").to_a.each do |s|
-      if (signed_in? && current_user.sk.admin?) || !s.admin
+      if (signed_in? && current_user.sk.admin?) || !s.admin && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @subjects.push(s)
         end
@@ -93,10 +93,16 @@ class SubjectsController < ApplicationController
     if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path and return
     end
+    
     @subject = Subject.new(params[:subject].except(:chapter_id))
     @subject.user = current_user.sk
     @subject.lastcomment = DateTime.current
     @subject.admin_user = current_user.sk.admin?
+    
+    if @subject.admin
+      @subject.wepion = false # On n'autorise pas wépion si admin
+    end
+    
     chapter_id = params[:subject][:chapter_id].to_i
     if chapter_id != 0
       if chapter_id > 999
@@ -208,6 +214,12 @@ class SubjectsController < ApplicationController
         @subject.admin_user = true
         @subject.save
       end
+      
+      if @subject.admin
+        @subject.wepion = false # On n'autorise pas wépion si admin
+        @subject.save
+      end
+    
       chapter_id = params[:subject][:chapter_id].to_i
       if chapter_id != 0
         if chapter_id > 999

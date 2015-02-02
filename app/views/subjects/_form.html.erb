@@ -53,7 +53,7 @@
     <br/>
     <label class="checkbox-inline">
       <%= f.check_box :admin, :disabled => current_user.other %>
-      Cochez si ce sujet est réservé aux administrateurs
+      Cochez si ce sujet est réservé aux administrateurs.
     </label>
   <% end %>
 
@@ -62,6 +62,15 @@
     <label class="checkbox-inline">
       <%= f.check_box :important, :disabled => current_user.other %>
       Cochez si ce sujet doit toujours apparaître en premier lieu.
+    </label>
+  <% end %>
+  
+  <!-- Case wépion -->
+  <% if current_user.sk.wepion || current_user.sk.admin? %>
+    <br/>
+    <label class="checkbox-inline">
+      <%= f.check_box :wepion, :disabled => current_user.other %>
+      Cochez si ce sujet est destiné aux étudiants de Wépion.
     </label>
   <% end %>
 </div>

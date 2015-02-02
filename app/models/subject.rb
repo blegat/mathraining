@@ -15,10 +15,11 @@
 #  admin_user  :boolean
 #  important   :boolean
 #  section_id  :integer
+#  wepion      :boolean
 #
 
 class Subject < ActiveRecord::Base
-  attr_accessible :content, :title, :lastcomment, :admin, :admin_user, :important
+  attr_accessible :content, :title, :lastcomment, :admin, :admin_user, :important, :wepion
   
   # BELONGS_TO, HAS_MANY
   

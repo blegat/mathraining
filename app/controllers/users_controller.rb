@@ -87,6 +87,20 @@ class UsersController < ApplicationController
     end
     redirect_to users_path
   end
+  
+  # Ajouter / Enlever du groupe Wépion
+  def switch_wepion
+    @user = User.find(params[:user_id])
+    if !@user.admin?
+      if @user.wepion
+        flash[:success] = "Utilisateur retiré du groupe Wépion."
+      else
+        flash[:success] = "Utilisateur ajouté au groupe Wépion."
+      end
+      @user.toggle!(:wepion)
+    end
+    redirect_to @user
+  end
 
   # Activer son compte
   def activate

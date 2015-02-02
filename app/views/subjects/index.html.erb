@@ -88,10 +88,15 @@
   
     <!-- Titre du sujet, + "admin" s'il le faut -->
     <td style="vertical-align:middle;">
-      <% if s.admin? %> 
+      <% if s.admin? || s.wepion? %> 
         <table style="border:none; padding:0px; margin:0px;"><tr><td style="border:none; vertical-align:middle; padding:0px; padding-right:5px;">
-        <span class="hidden-xs label label-warning">Admin</span>
-        <span class="visible-xs label label-warning">A</span>
+        <% if s.admin? %>
+          <span class="hidden-xs label label-warning">Admin</span>
+          <span class="visible-xs label label-warning">A</span>
+        <% elsif s.wepion? %>
+          <span class="hidden-xs label label-success">Wépion</span>
+          <span class="visible-xs label label-success">W</span>
+        <% end %>
         </td>
         <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
       <% end %>
@@ -105,7 +110,7 @@
           - <%= s.chapter.name %>
         <% end %>
 
-      <% if s.admin? %>
+      <% if s.admin? || s.wepion? %>
         </td></tr></table>
       <% end %>
     </td>

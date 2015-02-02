@@ -45,10 +45,6 @@ function hideStuff(id) {
 </table>
 </h1>
 
-<% if @subject.admin? %>
-<br/><center><span class="label label-warning">Sujet réservé aux administrateurs</span></center><br/>
-<% end %>
-
 <center>
 <%= will_paginate @messages, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
 <%= will_paginate @messages, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 2 %>

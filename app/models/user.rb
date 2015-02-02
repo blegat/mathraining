@@ -19,10 +19,11 @@
 #  active          :boolean
 #  seename         :integer
 #  sex             :integer
+#  wepion          :boolean
 #
 
 class User < ActiveRecord::Base
-  attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex
+  attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion
   
   # BELONGS_TO, HAS_MANY
   
@@ -125,8 +126,10 @@ class User < ActiveRecord::Base
     compteur = 0
     if self.admin?
       lastsubjects = Subject.where("lastcomment > ?", self.point.forumseen)
-    else
+    elsif self.wepion?
       lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.point.forumseen)
+    else
+      lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.point.forumseen)
     end
     lastsubjects.each do |s|
       m = s.messages.order(:id).last
