@@ -1,3 +1,14 @@
+<script type="text/javascript">
+function showSoumissionAnormal(id) {
+    document.getElementById("anormalsoumission" + id).style.display = 'inline';
+    document.getElementById("normalsoumission" + id).style.display = 'none';
+}
+function showSoumissionNormal(id) {
+    document.getElementById("normalsoumission" + id).style.display = 'inline';
+    document.getElementById("anormalsoumission" + id).style.display = 'none';
+}
+</script>
+
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 <!-- Enlève la notification de l'étudiant s'il faut -->
@@ -87,8 +98,16 @@
 
 <!-- Contenu de la soumission -->
 <tr><td colspan="2" style="padding:15px;">
-<div>
+
+<div id="normalsoumission<%= @submission.id %>" style="display:inline;">
 <%= raw(bbcode(@submission.content)) %>
+<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSoumissionAnormal(<%= @submission.id %>); return false;'>(Montrer le code)</a></div>
+</div>
+  
+<div class="tex2jax_ignore" id="anormalsoumission<%= @submission.id %>" style="display:none;">
+<%= raw((h @submission.content).gsub(/\n/, '<br/>')) %>
+<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSoumissionNormal(<%= @submission.id %>); return false;'>(Cacher le code)</a></div>
+</div>
 
 <!-- Pièces jointes -->
 <% if @submission.submissionfiles.size + @submission.fakesubmissionfiles.size > 0 %>
@@ -116,7 +135,7 @@
     <% end %>
   <% end %>
 <% end %>
-</div>
+
 </td></tr>
 
 </table>

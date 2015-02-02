@@ -1,3 +1,14 @@
+<script type="text/javascript">
+function showCorrectionAnormal(id) {
+    document.getElementById("anormalcorrection" + id).style.display = 'inline';
+    document.getElementById("normalcorrection" + id).style.display = 'none';
+}
+function showCorrectionNormal(id) {
+    document.getElementById("normalcorrection" + id).style.display = 'inline';
+    document.getElementById("anormalcorrection" + id).style.display = 'none';
+}
+</script>
+
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 <h4>Commentaires</h4>
@@ -69,8 +80,16 @@
   
   <!-- Contenu du commentaire -->
   <tr><td colspan="2" style="padding:15px;">
-  <div>
+
+  <div id="normalcorrection<%= correction.id %>" style="display:inline;">
   <%= raw(bbcode(correction.content)) %>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showCorrectionAnormal(<%= correction.id %>); return false;'>(Montrer le code)</a></div>
+  </div>
+  
+  <div class="tex2jax_ignore" id="anormalcorrection<%= correction.id %>" style="display:none;">
+  <%= raw((h correction.content).gsub(/\n/, '<br/>')) %>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showCorrectionNormal(<%= correction.id %>); return false;'>(Cacher le code)</a></div>
+  </div>
   
   <!-- Pièces jointes -->
   <% if correction.correctionfiles.size + correction.fakecorrectionfiles.size > 0 %>
@@ -98,7 +117,6 @@
       <% end %>
     <% end %>
   <% end %>
-  </div>
   </td></tr>
 
   </table>

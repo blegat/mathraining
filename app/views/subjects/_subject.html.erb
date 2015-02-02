@@ -1,3 +1,14 @@
+<script type="text/javascript">
+function showSujetAnormal(id) {
+    document.getElementById("anormalsujet" + id).style.display = 'inline';
+    document.getElementById("normalsujet" + id).style.display = 'none';
+}
+function showSujetNormal(id) {
+    document.getElementById("normalsujet" + id).style.display = 'inline';
+    document.getElementById("anormalsujet" + id).style.display = 'none';
+}
+</script>
+
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 <% q = 0 %>
@@ -54,7 +65,16 @@
   <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div style='background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;'><a href='#' id='show#{@nb_indice}' onclick='showStuff(#{@nb_indice}); return false;' style='display:inline;' class='btn btn-default btn-grey'>#{$1}</a><a href='#' id='hide#{@nb_indice}' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(#{@nb_indice}); return false;'>#{$1}</a><span id='indice#{@nb_indice}' style='display:none;'><br/><br/>#{$2}</span></div>"} %>
   <% @nb_indice = @nb_indice+1 %>
   <% end %>
+  
+  <div id="normalsujet<%= s.id %>" style="display:inline;">
   <%= raw(bb) %>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSujetAnormal(<%= s.id %>); return false;'>(Montrer le code)</a></div>
+  </div>
+  
+  <div class="tex2jax_ignore" id="anormalsujet<%= s.id %>" style="display:none;">
+  <%= raw((h s.content).gsub(/\n/, '<br/>')) %>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSujetNormal(<%= s.id %>); return false;'>(Cacher le code)</a></div>
+  </div>
   
   <!-- Pièces jointes -->
   <% if s.subjectfiles.size + s.fakesubjectfiles.size > 0 %>
