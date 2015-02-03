@@ -11,7 +11,7 @@ describe "User pages" do
       sign_in admin
     end
     specify "an admin should not be able to destroy himself" do
-      expect { delete user_path(admin) }.not_to change(User, :count)
+      expect { visit user_path(admin, :method => :delete) }.not_to change(User, :count)
     end
 
   end
@@ -26,7 +26,6 @@ describe "User pages" do
       visit users_path
     end
 
-    it { should have_selector('title', text: 'Scores') }
     it { should have_selector('h1',    text: 'Scores') }
 
     describe "pagination" do
@@ -52,7 +51,6 @@ describe "User pages" do
     end
 
     it { should have_selector('h1',    text: other_user.name) }
-    it { should have_selector('title', text: other_user.name) }
 
   end
 
@@ -60,7 +58,6 @@ describe "User pages" do
     before { visit signup_path }
 
     it { should have_selector('h1',    text: 'Inscription') }
-    it { should have_selector('title', text: full_title('Inscription')) }
   end
 
   describe "signup" do
@@ -75,7 +72,7 @@ describe "User pages" do
       describe "after submission" do
         before { click_button submit }
 
-        it { should have_selector('title', text: 'Inscription') }
+        it { should have_selector('h1', text: 'Inscription') }
         it { should have_content('erreur') }
       end
     end
@@ -84,8 +81,9 @@ describe "User pages" do
       before do
         fill_in "Prénom",         with: "Example"
         fill_in "Nom",         with: "User"
-        fill_in "Email",        with: "user@example.com"
-        fill_in "Mot de passe",     with: "foobar"
+        # IL y a deux fois ces champs :(
+        page.all(:fillable_field, 'Email').last.set("user@example.com")
+        page.all(:fillable_field, 'Mot de passe').last.set("foobar")
         fill_in "Confirmation du mot de passe", with: "foobar"
       end
 
@@ -109,13 +107,12 @@ describe "User pages" do
 
     describe "page" do
       it { should have_selector('h1',    text: "Actualisez votre profil") }
-      it { should have_selector('title', text: "Actualisez votre profil") }
     end
 
-    describe "with invalid information" do
+    describe "with valid information" do
       before { click_button "Mettre à jour" }
 
-      it { should have_content('erreur') }
+      it { should have_content('bien') }
     end
     describe "with valid information" do
       let(:new_first_name)  { "New First Name" }

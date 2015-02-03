@@ -26,7 +26,7 @@ gem 'pagedown-rails', '~> 1.1.2' # client-side
 
 group :development, :test do
   gem 'sqlite3'
-  gem 'rspec-rails', '2.11.0'
+  gem 'rspec-rails', '3.0'
   gem 'random_record'
 end
 
@@ -43,7 +43,7 @@ end
 gem 'jquery-rails'
 
 group :test do
-  gem 'capybara', '1.1.2'
+  gem 'capybara', '2.2.0'
   gem 'factory_girl_rails', '4.1.0'
   gem 'database_cleaner', '0.7.0'
 end

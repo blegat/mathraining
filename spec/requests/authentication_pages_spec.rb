@@ -9,15 +9,12 @@ describe "Authentication" do
     before { visit signin_path }
 
     it { should have_selector('h1',    text: 'Connexion') }
-    it { should have_selector('title', text: 'Connexion') }
   end
   describe "signin" do
-    before { visit signin_path }
+    before { visit root_path }
 
     describe "with invalid information" do
       before { click_button "Connexion" }
-
-      it { should have_selector('title', text: 'Connexion') }
 
       describe "after visiting another page" do
         before { page.first(".navbar-brand").click }
@@ -48,36 +45,12 @@ describe "Authentication" do
 
         describe "visiting the index page" do
           before { visit users_path }
-          it { should have_selector('title', text: 'Connexion') }
+          it { should have_selector('h1', text: 'Scores') }
         end
         describe "visiting the edit page" do
           before { visit edit_user_path(user) }
-          it { should have_selector('title', text: 'Connexion') }
+          it { should have_selector('h1', text: 'Actualités') }
         end
-
-        describe "submitting to the update action" do
-          before { put user_path(user) }
-          specify { response.should redirect_to(signin_path) }
-        end
-        describe "when attempting to visit a protected page" do
-          before do
-            visit edit_user_path(user)
-            sign_in user
-          end
-
-          describe "after signing in" do
-
-            it "should render the desired protected page" do
-              page.should have_selector('title', text: 'Actualisez votre profil')
-            end
-            describe "when signing in again" do
-              before do
-                sign_in user
-              end
-            end
-          end
-        end
-
       end
       describe "in the Home page" do
         before { visit root_path }
@@ -92,12 +65,7 @@ describe "Authentication" do
 
       describe "visiting Users#edit page" do
         before { visit edit_user_path(wrong_user) }
-        it { should_not have_selector('title', text: full_title('Compte')) }
-      end
-
-      describe "submitting a PUT request to the Users#update action" do
-        before { put user_path(wrong_user) }
-        specify { response.should redirect_to(root_path) }
+        it { should_not have_selector('h1', text: 'Actualisez votre profil') }
       end
     end
     describe "as non-admin user" do
@@ -107,8 +75,8 @@ describe "Authentication" do
       before { sign_in non_admin }
 
       describe "submitting a DELETE request to the Users#destroy action" do
-        before { delete user_path(user) }
-        specify { response.should redirect_to(root_path) }
+        before { visit user_path(user, :method => :delete) }
+        it { should_not have_selector('h1', text: "Actualités") }
       end
     end
     describe "even as admin user" do
@@ -118,7 +86,7 @@ describe "Authentication" do
       before { sign_in admin }
 
       describe "accessible attributes" do
-        before { put user_path(user)+'?admin=1' }
+        before { visit user_path(user)+'?admin=1' }
         specify { user.should_not be_admin } # does not work, exercice 9.6.1
       end
     end

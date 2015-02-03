@@ -13,7 +13,7 @@
 
 require 'spec_helper'
 
-describe User do
+describe Chapter do
 
   before { @chap = Chapter.new(name: "Example",
                                description: "Nice example",
@@ -33,9 +33,9 @@ describe User do
   it { should be_valid }
 
   # Name
-  describe "when name is not present" do
-    before { @chap.name = " " }
-    it { should_not be_valid }
+  describe "when name is present" do
+    before { @chap.name = "coucou" }
+    it { should be_valid }
   end
   describe "when name is too long" do
     before { @chap.name = "a" * 256 }
@@ -62,19 +62,19 @@ describe User do
   end
 
   # Level
-  describe "when level is not present" do
-    before { @chap.level = nil }
-    it { should_not be_valid }
-  end
-
   describe "when level is 0" do
     before { @chap.level = 0 }
     it { should be_valid }
   end
-
+  
   describe "when level is 10" do
     before { @chap.level = 10 }
     it { should be_valid }
+  end
+  
+  describe "when level is not present" do
+    before { @chap.level = nil }
+    it { should_not be_valid }
   end
 
   describe "when level is negative" do

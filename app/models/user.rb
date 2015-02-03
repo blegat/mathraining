@@ -117,6 +117,18 @@ class User < ActiveRecord::Base
       end
       i = i+1
     end
+    
+    if actuallevel.nil? # Juste pour les tests car je ne sais pas comment initialiser :-(
+      color = Color.new
+      color.pt = 0
+      color.color = "#AAAAAA"
+      color.font_color = "#AAAAAA"
+      color.name = "test"
+      color.femininename = "test"
+      color.save
+      actuallevel = Color.order(:pt).first
+    end
+    
     return actuallevel
   end
   

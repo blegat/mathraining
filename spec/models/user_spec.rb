@@ -18,7 +18,7 @@ require 'spec_helper'
 describe User do
 
   before { @user = User.new(first_name: "Example", last_name:"User",
-                            email: "user@exampletest.com",
+                            email: "test@example.com",
                             password: "foobar",
                             password_confirmation: "foobar") }
 
@@ -120,7 +120,6 @@ describe User do
       let(:user_for_invalid_password) { found_user.authenticate("invalid") }
 
       it { should_not == user_for_invalid_password }
-      specify { user_for_invalid_password.should be_false }
     end
   end
   describe "with a password that's too short" do
@@ -135,9 +134,5 @@ describe User do
       @user.save
       @user.email.should == mixed_case_email.downcase
     end
-  end
-  describe "remember token" do
-    before { @user.save }
-    its(:remember_token) { should_not be_blank }
   end
 end
