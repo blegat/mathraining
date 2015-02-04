@@ -17,8 +17,8 @@ class Color < ActiveRecord::Base
   # VALIDATIONS
   
   validates :pt, presence: true
-  validates :name, presence: true
-  validates :femininename, presence: true
+  validates :name, presence: true, length: { maximum: 255 }
+  validates :femininename, presence: true, length: { maximum: 255 }
   validates :color, presence: true, length: { is: 7 }
   validates :font_color, presence: true, length: { is: 7 }
 end

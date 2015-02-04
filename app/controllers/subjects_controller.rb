@@ -97,7 +97,6 @@ class SubjectsController < ApplicationController
     @subject = Subject.new(params[:subject].except(:chapter_id))
     @subject.user = current_user.sk
     @subject.lastcomment = DateTime.current
-    @subject.admin_user = current_user.sk.admin?
     
     if @subject.admin
       @subject.wepion = false # On n'autorise pas wépion si admin
@@ -210,10 +209,6 @@ class SubjectsController < ApplicationController
     end
 
     if @subject.update_attributes(params[:subject].except(:chapter_id))
-      if @subject.user.admin? && !@subject.admin_user?
-        @subject.admin_user = true
-        @subject.save
-      end
       
       if @subject.admin
         @subject.wepion = false # On n'autorise pas wépion si admin

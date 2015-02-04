@@ -9,6 +9,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  online      :boolean          default(FALSE)
+#  section_id  :integer
 #
 
 require 'spec_helper'
@@ -25,6 +26,8 @@ describe Chapter do
   it { should respond_to(:description) }
   it { should respond_to(:level) }
   it { should respond_to(:theories) }
+  it { should respond_to(:exercises) }
+  it { should respond_to(:qcms) }
   it { should respond_to(:prerequisites) }
   it { should respond_to(:backwards) }
   it { should respond_to(:available_prerequisites) }
@@ -33,6 +36,10 @@ describe Chapter do
   it { should be_valid }
 
   # Name
+  describe "when name is not present" do
+    before { @chap.name = nil }
+    it { should_not be_valid }
+  end
   describe "when name is present" do
     before { @chap.name = "coucou" }
     it { should be_valid }
@@ -45,7 +52,7 @@ describe Chapter do
     before do
       other_chap = Chapter.new(name: @chap.name,
                                description: "Other description",
-                               level: (@chap.level + 1) % 10)
+                               level: 2)
       other_chap.save
     end
     it { should_not be_valid }
@@ -98,6 +105,7 @@ describe Chapter do
       @chap.save
       @chap.prerequisites << chap1
       chap1.prerequisites << chap2
+      # chap < chap1 < (chap2 & chap3)
     end
     describe "recursive_prerequisites should be correct" do
       specify { @chap.recursive_prerequisites.should include(chap1.id) }

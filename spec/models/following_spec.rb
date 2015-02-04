@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: followings
+#
+#  id            :integer          not null, primary key
+#  submission_id :integer
+#  user_id       :integer
+#  read          :boolean
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#
+
 require 'spec_helper'
 
 describe Following do

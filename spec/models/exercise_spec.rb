@@ -2,15 +2,17 @@
 #
 # Table name: exercises
 #
-#  id         :integer          not null, primary key
-#  statement  :text
-#  decimal    :boolean          default(FALSE)
-#  answer     :float
-#  chapter_id :integer
-#  position   :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  online     :boolean          default(FALSE)
+#  id          :integer          not null, primary key
+#  statement   :text
+#  decimal     :boolean          default(FALSE)
+#  answer      :float
+#  chapter_id  :integer
+#  position    :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  online      :boolean          default(FALSE)
+#  explanation :text
+#  level       :integer
 #
 
 require 'spec_helper'
@@ -26,6 +28,8 @@ describe Exercise do
   it { should respond_to(:decimal) }
   it { should respond_to(:answer) }
   it { should respond_to(:online) }
+  it { should respond_to(:explanation) }
+  it { should respond_to(:level) }
 
   it { should be_valid }
 
@@ -64,5 +68,21 @@ describe Exercise do
   describe "when answer is not present" do
     before { @ex.answer = nil }
     it { should_not be_valid }
+  end
+  
+  # Explanation
+  describe "when explication is not present" do
+    before { @ex.explanation = nil }
+    it { should be_valid }
+  end
+  
+  # Level
+  describe "when level is > 4" do
+    before { @ex.level = 5 }
+    it { should_not be_valid }
+  end
+  describe "when level is 4" do
+    before { @ex.level = 4 }
+    it { should be_valid }
   end
 end

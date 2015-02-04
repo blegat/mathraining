@@ -26,7 +26,6 @@ class MessagesController < ApplicationController
     @message = Message.new(params[:message])
     @message.user = current_user.sk
     @message.subject = @subject
-    @message.admin_user = current_user.sk.admin?
     
     # Pièces jointes une par une
     attach = Array.new
@@ -118,10 +117,6 @@ class MessagesController < ApplicationController
     
     # Si la modification du message réussit
     if @message.update_attributes(params[:message])
-      if @message.user.admin? && !@message.admin_user?
-        @message.admin_user = true
-        @message.save
-      end
       
       # On s'occupe des pièces jointes
       totalsize = 0

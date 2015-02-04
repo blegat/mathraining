@@ -9,11 +9,10 @@
 #  user_id    :integer
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  admin_user :boolean
 #
 
 class Message < ActiveRecord::Base
-  attr_accessible :content, :admin_user
+  attr_accessible :content
   
   # BELONGS_TO, HAS_MANY
   

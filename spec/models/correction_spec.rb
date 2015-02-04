@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: corrections
+#
+#  id            :integer          not null, primary key
+#  user_id       :integer
+#  submission_id :integer
+#  content       :text
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#
+
 require 'spec_helper'
 
 describe Correction do
@@ -6,10 +18,12 @@ describe Correction do
   subject { @c }
 
   it { should respond_to(:content) }
+  it { should respond_to(:user) }
+  it { should respond_to(:submission) }
 
   it { should be_valid }
 
-  # User
+  # Content
   describe "when content is not present" do
     before { @c.content = " " }
     it { should_not be_valid }
