@@ -38,6 +38,7 @@
   <%= s.user.name %>
 <% else %>
   <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+  <%= "*" if s.user.wepion && current_user.sk.admin? %>
 <% end %>
 </td>
 

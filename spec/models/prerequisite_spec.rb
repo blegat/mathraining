@@ -96,7 +96,6 @@ describe Prerequisite do
     it { should_not be_valid }
   end
 
-
   describe "when there seems to create a redundance (start)" do
     # a->b->c
     # \_d__/
