@@ -6,6 +6,7 @@ class MessagesController < ApplicationController
   before_filter :admin_user, only: [:destroy]
   before_filter :valid_chapter
   before_filter :online_chapter
+  before_filter :notskin_user, only: [:create, :update]
 
   # Créer un message
   def new

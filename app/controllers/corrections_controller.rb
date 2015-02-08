@@ -2,6 +2,7 @@
 class CorrectionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :correct_user
+  before_filter :notskin_user, only: [:create]
 
   # Créer une correction : il faut être soit admin, soit l'étudiant de la soumission
   def create

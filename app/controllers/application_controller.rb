@@ -39,6 +39,14 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Vérifie qu'il ne s'agit pas d'un administrateur dans la peau de quelqu'un
+  def notskin_user
+    if current_user.other
+      flash[:danger] = "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un."
+      redirect_to(:back)
+    end
+  end
+  
   # Vérifie qu'on est administrateur
   def admin_user
     redirect_to root_path unless current_user.sk.admin?

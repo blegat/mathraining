@@ -4,6 +4,7 @@ class SubjectsController < ApplicationController
   before_filter :admin_subject_user, only: [:show]
   before_filter :author, only: [:edit, :update, :destroy]
   before_filter :admin_user, only: [:destroy]
+  before_filter :notskin_user, only: [:create, :update]
 
   # Voir tous les sujets
   def index
