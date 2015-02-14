@@ -67,7 +67,7 @@ class SubmissionsController < ApplicationController
 
     submission = @problem.submissions.build(content: params[:submission][:content])
     submission.user = current_user.sk
-    submission.lastcomment = Datetime.current
+    submission.lastcomment = DateTime.current
     
     # Si on réussit à sauver
     if submission.save
