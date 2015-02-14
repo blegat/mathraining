@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   # Vérifie si l'utilisateur a déjà rentré son pays et son année de naissance
   # A ENLEVER DANS QUELQUES TEMPS
   def country_year
-    if signed_in? && !current_user.admin? && current_user.sk.year == 0
+    if signed_in? && !current_user.sk.admin? && current_user.sk.year == 0
       flash[:success] = "Veuillez compléter votre <b>année de naissance</b> et votre <b>pays</b> sur #{view_context.link_to("la page dédiée à votre compte", edit_user_path(current_user.sk))}.".html_safe
     end
   end
