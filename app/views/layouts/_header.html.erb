@@ -25,21 +25,13 @@
         <form class="navbar-form navbar-left hidden-xs hidden-sm" role="search">
         
         <!-- Nouvelles soumissions -->
-        <% a = 0 %>
-        <% b = 0 %>
-        <% current_user.sk.notifications_new.each do |s| %>
-          <% if s.user.wepion? %>
-            <% a = a+1 %>
-          <% else %>
-            <% b = b+1 %>
-          <% end %>
-        <% end %> 
         
+        <% notifications_new = current_user.sk.notifications_new.count %>
         <% notifications_update = current_user.sk.notifications_update.count %>
-        <% if a+b > 0 %>
-          <%= link_to "#{a} + #{b}", notifications_new_path, class: "btn btn-danger" %>
+        <% if notifications_new > 0 %>
+          <%= link_to "#{notifications_new}", notifications_new_path, class: "btn btn-danger" %>
         <% else %>
-          <%= link_to "0 + 0", notifications_new_path, class: "btn btn-default btn-grey" %>
+          <%= link_to "0", notifications_new_path, class: "btn btn-default btn-grey" %>
         <% end %>
         <% if notifications_update != 0 %>
           <%= link_to "#{notifications_update}", notifications_update_path, class: "btn btn-warning" %>
