@@ -33,6 +33,11 @@ Veuillez commencer par les soumissions les plus anciennes, c'est-à-dire le plus
 <% else %>
 
   <% @situation = 2 %>
+  <% @follow = Array.new %>
+  <% current_user.sk.followings.where(:read => false).each do |f| %>
+    <% @follow.push(f.submission_id) %>
+  <% end %>
+  
   <div class="row">
   <div class="col-xs-12 col-sm-12">
   <table class="table table-bordered">

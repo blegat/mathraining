@@ -5,7 +5,7 @@
 <!-- Couleur -->
 
 <!-- Si nouveau commentaire non lu et situation = 2 : toujours jaune -->
-<% if @situation == 2 && !current_user.sk.followings.where(:submission_id => s.id).first.read %>
+<% if @situation == 2 && @follow.include?(s.id) %>
   <tr class="warning">
 <!-- Si status = 2 (accepté) : toujours vert -->
 <% elsif s.status == 2 %>
