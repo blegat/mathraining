@@ -50,6 +50,8 @@ fr:
         sex: "Sexe"
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
+        year: "Année de naissance"
+        country: "Pays"
   will_paginate:
     previous_label: "Page précédente"
     next_label: "Page suivante"

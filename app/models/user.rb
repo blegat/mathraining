@@ -23,7 +23,7 @@
 #
 
 class User < ActiveRecord::Base
-  attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion
+  attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion, :country, :year
   
   # BELONGS_TO, HAS_MANY
   
