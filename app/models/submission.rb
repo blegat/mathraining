@@ -16,7 +16,7 @@
 #
 
 class Submission < ActiveRecord::Base
-  attr_accessible :content, :status
+  attr_accessible :content, :status, :lastcomment
   
   # BELONGS_TO, HAS_MANY
   

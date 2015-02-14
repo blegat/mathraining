@@ -40,7 +40,7 @@
 
 <!-- Dernière activité -->
 <td>
-<% date = s.updated_at.in_time_zone %>
+<% date = s.lastcomment.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
 

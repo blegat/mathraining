@@ -124,10 +124,6 @@ class CorrectionsController < ApplicationController
           link.save
         end
         m = ' et soumission marquée comme correcte'
-        
-      # Sinon : on fait juste savoir qu'on a fait quelque chose
-      else
-        @submission.touch
       end
       
       # On gère les notifications
@@ -158,6 +154,10 @@ class CorrectionsController < ApplicationController
         # An else would have the same effect normally
         @submission.followings.update_all(read: false)
       end
+      
+      # On change la valeur de lastcomment
+      @submission.lastcomment = correction.created_at
+      @submission.save
       
       flash[:success] = "Réponse postée#{m}."
       redirect_to problem_path(@submission.problem, :sub => @submission)
