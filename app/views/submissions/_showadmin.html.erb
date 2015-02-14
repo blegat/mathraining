@@ -4,20 +4,19 @@
 
 <!-- Couleur -->
 
-<!-- Si status = 2 (accepté) : toujours vert -->
-<% if s.status == 2 %>
-  <tr class="success">
-<!-- Si status = 1 (refusé) : toujours rouge, sauf si il y a eu un dernier commentaire non lu (situation = 2 et non lu) -->
-<% elsif s.status == 1 && @situation == 2 && !current_user.sk.followings.where(:submission_id => s.id).first.read %>
+<!-- Si nouveau commentaire non lu et situation = 2 : toujours jaune -->
+<% if @situation == 2 && !current_user.sk.followings.where(:submission_id => s.id).first.read %>
   <tr class="warning">
+<!-- Si status = 2 (accepté) : toujours vert -->
+<% elsif s.status == 2 %>
+  <tr class="success">
+<!-- Si status = 1 (refusé) : toujours rouge -->
 <% elsif s.status == 1 %>
   <tr class="danger">
 <!-- Si status = 0 (pas encore corrigé) : toujours jaune -->
 <% elsif s.status == 0 %>
   <tr class="warning">
-<!-- Si status = 3 (nouveau commentaire jamais lu) : jaune si on est dans la situation 2, bleu sinon et qu'on est admin, rouge si on est pas admin -->
-<% elsif s.status == 3 && @situation == 2 %>
-  <tr class="warning">
+<!-- Si status = 3 (nouveau commentaire jamais lu) : bleu si on est admin, rouge si on est pas admin -->
 <% elsif s.status == 3 && current_user.sk.admin? %>
   <tr class="info">
 <% elsif s.status == 3 %>
