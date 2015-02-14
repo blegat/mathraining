@@ -1,14 +1,27 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
+<!-- Situation vaut : 3 si on est dans l'index des soumissions, 1 si on affiche tout, 2 si on affiche que celles auxquelles on participe -->
+
 <!-- Couleur -->
-<% if s.status == 0  || (@situation == 2 && !current_user.sk.followings.where(:submission_id => s.id).first.read) %>
-  <tr class="warning">
-<% elsif s.status == 2 %>
+
+<!-- Si status = 2 (accepté) : toujours vert -->
+<% if s.status == 2 %>
   <tr class="success">
+<!-- Si status = 1 (refusé) : toujours rouge, sauf si il y a eu un dernier commentaire non lu (situation = 2 et non lu) -->
+<% elsif s.status == 1 && @situation == 2 && !current_user.sk.followings.where(:submission_id => s.id).first.read %>
+  <tr class="warning">
 <% elsif s.status == 1 %>
   <tr class="danger">
-<% else %>
+<!-- Si status = 0 (pas encore corrigé) : toujours jaune -->
+<% elsif s.status == 0 %>
+  <tr class="warning">
+<!-- Si status = 3 (nouveau commentaire jamais lu) : jaune si on est dans la situation 2, bleu sinon et qu'on est admin, rouge si on est pas admin -->
+<% elsif s.status == 3 && @situation == 2 %>
+  <tr class="warning">
+<% elsif s.status == 3 && current_user.sk.admin? %>
   <tr class="info">
+<% elsif s.status == 3 %>
+  <tr class="danger">
 <% end %>
 
 <!-- Icone -->

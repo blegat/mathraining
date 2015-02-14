@@ -36,9 +36,9 @@ class Submission < ActiveRecord::Base
   validates :content, presence: true, length: { maximum: 8000 }
   validates :status, presence: true, inclusion: { in: [0, 1, 2, 3] }
   # 0: pas corrigé
-  # 1: [corrigé et répondu et]* corrigé
+  # 1: [corrigé et répondu et]* corrigé ou lu
   # 2: résolu
-  # 3: corrigé et répondu
+  # 3: erroné + commentaire d'un étudiant jamais lu
   
   # Rend true si la soumission est correcte
   def correct?

@@ -283,32 +283,27 @@ class SubmissionsController < ApplicationController
 
   # Lu et non lu
   def un_read(read, msg)
-    @submission = Submission.find(params[:submission_id])
-    if @submission
-      following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
-      if following
-        following.read = read
-        if following.save
-          flash[:success] = "Soumission marquée comme #{msg}."
-          redirect_to problem_path(@problem, :sub => @submission)
-        else
-          flash[:danger] = "Un problème est apparu."
-          redirect_to problem_path(@problem, :sub => @submission)
-        end
-      elsif !read
-        following = Following.new
-        following.user = current_user.sk
-        following.submission = @submission
-        following.read = read
-        if following.save
-          flash[:success] = "Soumission marquée comme #{msg}."
-          redirect_to problem_path(@problem, :sub => @submission)
-        else
-          flash[:danger] = "Un problème est apparu."
-          redirect_to problem_path(@problem, :sub => @submission)
-        end
+    following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
+    if following
+      following.read = read
+      if following.save
+        flash[:success] = "Soumission marquée comme #{msg}."
+        redirect_to problem_path(@problem, :sub => @submission)
       else
-        redirect_to root_path
+        flash[:danger] = "Un problème est apparu."
+        redirect_to problem_path(@problem, :sub => @submission)
+      end
+    elsif !read
+      following = Following.new
+      following.user = current_user.sk
+      following.submission = @submission
+      following.read = read
+      if following.save
+        flash[:success] = "Soumission marquée comme #{msg}."
+        redirect_to problem_path(@problem, :sub => @submission)
+      else
+        flash[:danger] = "Un problème est apparu."
+        redirect_to problem_path(@problem, :sub => @submission)
       end
     else
       redirect_to root_path
@@ -317,11 +312,17 @@ class SubmissionsController < ApplicationController
   
   # Marquer comme lu
   def read
+    @submission = Submission.find(params[:submission_id])
     un_read(true, "lue")
+    if @submission.status == 3
+      @submission.status = 1
+      @submission.save
+    end
   end
 
   # Marquer comme non lu
   def unread
+    @submission = Submission.find(params[:submission_id])
     un_read(false, "non lue")
   end
   

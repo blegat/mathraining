@@ -77,7 +77,7 @@
         <% noti = current_user.sk.notifs.count %>
         <% if noti != 0 %>
           <form class="navbar-form navbar-left" role="search">
-          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-success", style:"margin-left:10px;" %>
+          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info", style:"margin-left:10px;" %>
           </form>
         <% end %>
       <% end %>
