@@ -6,6 +6,7 @@ class ProblemsController < QuestionsController
   before_filter :has_access, only: [:show]
   before_filter :online_problem, only: [:show]
   before_filter :can_be_online, only: [:put_online]
+  before_filter :enough_points, only: [:show]
 
   # Voir le problème : il faut avoir accès
   def show
@@ -233,5 +234,13 @@ class ProblemsController < QuestionsController
       ok = false if !c.online
     end
     redirect_to @problem if !ok || nombre == 0
+  end
+  
+  # Vérifie que l'on a assez de points si on est étudiant
+  def enough_points
+    if !current_user.sk.admin?
+      score = current_user.sk.point.rating
+      redirect_to root_path if score < 200
+    end
   end
 end

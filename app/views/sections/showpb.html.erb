@@ -5,6 +5,13 @@
 <%= @section.name %>
 </h1>
 
+<!-- On vérifie que l'on a 200 points ou plus -->
+<% if !signed_in? || (!current_user.sk.admin? && current_user.sk.point.rating < 200) %>
+
+<span style="color:red; font-weight:bold;">Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieur à 200.</span>
+
+<% else %>
+
 <!-- On parcourt tous les niveaux -->
 <% (1..5).each do |level| %>
 
@@ -117,3 +124,6 @@
   <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>
   </center>
 <% end %>	
+
+
+<% end %>

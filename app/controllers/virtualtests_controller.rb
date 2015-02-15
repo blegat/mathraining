@@ -9,6 +9,7 @@ class VirtualtestsController < ApplicationController
   before_filter :can_begin, only: [:begin_test]
   before_filter :can_be_online, only: [:put_online]
   before_filter :delete_online, only: [:destroy]
+  before_filter :enough_points, only: [:show, :begin_test]
 
   # Voir tous les tests virtuels
   def index
@@ -145,5 +146,13 @@ class VirtualtestsController < ApplicationController
   # Vérifie qu'on ne supprime pas un test en ligne
   def delete_online
     redirect_to root_path if @virtualtest.online
+  end
+  
+  # Vérifie que l'on a assez de points si on est étudiant
+  def enough_points
+    if !current_user.sk.admin?
+      score = current_user.sk.point.rating
+      redirect_to root_path if score < 200
+    end
   end
 end

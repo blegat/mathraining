@@ -6,6 +6,8 @@ class SubmissionsController < ApplicationController
   before_filter :admin_user, only: [:destroy, :read, :unread, :reserve, :unreserve]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
+  before_filter :has_access, only: [:create]
+  before_filter :enough_points, only: [:create]
   before_filter :in_test, only: [:intest, :create_intest, :update_intest]
 
   # Montrer une soumission : il faut qu'on puisse la voir
@@ -397,6 +399,29 @@ class SubmissionsController < ApplicationController
     end
   end
   
+  # Vérifie qu'on peut voir le problème associé
+  def has_access
+    visible = true
+    if !signed_in? || !current_user.sk.admin?
+      @problem.chapters.each do |c|
+        visible = false if !signed_in? || !current_user.sk.solved?(c)
+      end
+    end
+    
+    t = @problem.virtualtest
+    if !t.nil?
+      if !signed_in?
+        visible = false
+      elsif !current_user.sk.admin?
+        if current_user.sk.status(t) <= 0
+          visible = false
+        end
+      end
+    end
+    
+    redirect_to root_path if !visible
+  end
+  
   # Est-ce qu'on est en test?
   def in_test
     @t = @problem.virtualtest
@@ -422,6 +447,14 @@ class SubmissionsController < ApplicationController
       partial = partials.where(:section_id => problem.section.id).first
       partial.points = partial.points + pt
       partial.save
+    end
+  end
+  
+  # Vérifie que l'on a assez de points si on est étudiant
+  def enough_points
+    if !current_user.sk.admin?
+      score = current_user.sk.point.rating
+      redirect_to root_path if score < 200
     end
   end
 end

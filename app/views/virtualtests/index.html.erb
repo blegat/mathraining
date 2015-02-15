@@ -18,6 +18,13 @@
 <!-- Vérifie que l'on est connecté (ne sert normalement à rien) -->
 <% if signed_in? %>
 
+<!-- On vérifie que l'on a 200 points ou plus -->
+<% if !current_user.sk.admin? && current_user.sk.point.rating < 200 %>
+
+<span style="color:red; font-weight:bold;">Les tests virtuels ne sont pas accessibles aux utilisateurs ayant un score inférieur à 200.</span>
+
+<% else %>
+
 <% Virtualtest.all.each do |t| %>
 
   <!-- Vérifie si on a accès à ce test virtuel -->
@@ -270,8 +277,10 @@
   </center>
 <% end %>	
 
-<% end %>
-
 <% if compteur == 0 %>
   Aucun test virtuel n'est disponible.
+<% end %>
+
+<% end %>
+
 <% end %>

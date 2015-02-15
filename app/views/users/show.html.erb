@@ -67,6 +67,11 @@ html>body tbody.scroll {
       <% end %>
     <% end %>
   <% end %>
+  
+  <% enough_points = false %>
+  <% if signed_in? && (current_user.sk.admin? || current_user.sk.point.rating >= 200) %>
+    <% enough_points = true %>
+  <% end %>
 
   <!-- Affichage des résolutions -->
   <div class="row">
@@ -130,7 +135,7 @@ html>body tbody.scroll {
       <% pt = p.problem.value %>
       <% pt = 0 if p.problem.section.fondation %>
       <% nb_p = nb_p+1 %>
-      <% peutvoir = true %>
+      <% peutvoir = enough_points %>
       <% t = p.problem.virtualtest %>
       <% if t.nil? && (!signed_in? || !current_user.sk.admin?) %>
         <% p.problem.chapters.each do |c| %>
