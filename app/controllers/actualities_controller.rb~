@@ -61,4 +61,5 @@ class ActualitiesController < ApplicationController
       format.rss { redirect_to feed_path(:format => :atom), status: :moved_permanently }
     end
   end
+  
 end
