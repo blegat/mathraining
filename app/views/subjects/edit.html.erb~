@@ -1,40 +1,37 @@
-<% provide(:title, 'Modifier un message') %>
+<% provide(:title, 'Modifier un sujet') %>
 
 <% q = 0 %>
 <% if(params.has_key?:q) %>
   <% q = params[:q].to_i %>
 <% end %>
 
-<% tot = @message.subject.messages.where("id <= ?", @message.id).count %>
-<% page = [0,((tot-1)/10).floor].max + 1 %>
-
 <h1>
 <span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
-<span style="font-size:24px;"><%= link_to @message.subject.title, subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q) %> ></span>
-Modifier un message
+<span style="font-size:24px;"><%= link_to @subject.title, subject_path(@subject, :q => q) %> ></span>
+Modifier le sujet
 </h1>
 
 <span style="color:red;">Veillez à ne dévoiler aucune solution à un exercice ou un problème. Si vous devez donner des éléments de solution pour expliquer un souci, écrivez-les en <i>texte caché</i>.</span><br/><br/>
 
-<% if @message.user != current_user.sk %>
-<span style="color:red;">Ce message n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (divulgation d'une réponse, vulgarité,...)</span><br/><br/>
+<% if @subject.user != current_user.sk %>
+  <span style="color:red;">Ce sujet n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (mauvais emplacement, divulgation d'une réponse,...)</span><br/><br/>
 <% end %>
 
-<%= form_for [@message.subject, @message], :url => subject_message_path(@message.subject, @message, :action => :update, :q => q), :html => { :multipart => true }  do |f| %>
-
+<!-- Formulaire -->
+<%= form_for @subject, :url => subject_path(@subject, :action => :update, :q => q), :html => { :multipart => true } do |f| %>
   <%= render 'form', f: f %>
   
   <!-- Pièces jointes -->
-  <% if @message.messagefiles.count + @message.fakemessagefiles.count > 0 %>
+  <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
-    <% @message.messagefiles.order(:id).each do |sf| %>
+    <% @subject.subjectfiles.order(:id).each do |sf| %>
       <label class="checkbox-inline">
         <input type="checkbox" name="prevfile<%= sf.id %>" value="1" checked="checked" />
-        <%= link_to sf.file_file_name, download_messagefile_path(sf) %>
+        <%= link_to sf.file_file_name, download_subjectfile_path(sf) %>
       </label>
       <br/>
     <% end %>
-    <% @message.fakemessagefiles.order(:id).each do |sf| %>
+    <% @subject.fakesubjectfiles.order(:id).each do |sf| %>
       <label class="checkbox-inline">
         <input type="checkbox" name="prevfakefile<%= sf.id %>" value="1" checked="checked" />
         <span style="color:#0000BB;"><%= sf.file_file_name %> (désactivée)</span>
@@ -45,10 +42,9 @@ Modifier un message
   <% end %>
   <span id="fooBar"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
-  <br /><br/>
+  <br/><br/>
   <%= f.submit "Editer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>
-
 
 <script>
 PreviewSafe.Init();

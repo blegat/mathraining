@@ -25,7 +25,7 @@ Modifier un message
   <%= render 'form', f: f %>
   
   <!-- Pièces jointes -->
-  <% if @message.messagefiles.count + @message.fakemessagefiles.count > 0 %>
+  <% if @message.messagefiles.size + @message.fakemessagefiles.size > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
     <% @message.messagefiles.order(:id).each do |sf| %>
       <label class="checkbox-inline">

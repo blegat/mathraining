@@ -22,7 +22,7 @@ Modifier le sujet
   <%= render 'form', f: f %>
   
   <!-- Pièces jointes -->
-  <% if @subject.subjectfiles.size + @subject.fakesubjectfiles.size > 0 %>
+  <% if @subject.subjectfiles.count + @subject.fakesubjectfiles.count > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
     <% @subject.subjectfiles.order(:id).each do |sf| %>
       <label class="checkbox-inline">
