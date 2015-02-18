@@ -28,6 +28,18 @@ class MessagesController < ApplicationController
     @message.user = current_user.sk
     @message.subject = @subject
     
+    # On vérifie qu'il n'y a pas eu de nouveau message entre
+    lastid = -1
+    lastmessage = @subject.messages.order("id DESC").first
+    if !lastmessage.nil?
+      lastid = lastmessage.id
+    end
+    
+    if lastid != params[:lastmessage].to_i
+      flash.now[:danger] = "Un nouveau message a été posté avant le vôtre! Veuillez en prendre connaissance ci-dessous avant de poster votre message."
+      render 'new' and return
+    end
+    
     # Pièces jointes une par une
     attach = Array.new
     totalsize = 0

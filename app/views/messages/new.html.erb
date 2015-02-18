@@ -38,6 +38,12 @@ Répondre
   <%= render 'form', f: f %>
   <span id="fooBar"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
+  <% lastid = -1 %>
+  <% lastmessage = @subject.messages.order("id DESC").first %>
+  <% if !lastmessage.nil? %>
+    <% lastid = lastmessage.id %>
+  <% end %>
+  <input type="hidden" name="lastmessage" value="<%= lastid %>">
   <br /><br/>
   <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>
