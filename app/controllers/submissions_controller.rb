@@ -9,6 +9,7 @@ class SubmissionsController < ApplicationController
   before_filter :has_access, only: [:create]
   before_filter :enough_points, only: [:create]
   before_filter :in_test, only: [:intest, :create_intest, :update_intest]
+  before_filter :brouillon, only: [:update_brouillon]
 
   # Montrer une soumission : il faut qu'on puisse la voir
   def show
@@ -71,6 +72,11 @@ class SubmissionsController < ApplicationController
     submission.user = current_user.sk
     submission.lastcomment = DateTime.current
     
+    if params[:commit] == "Enregistrer comme brouillon"
+      submission.visible = false
+      submission.status = -1
+    end
+    
     # Si on réussit à sauver
     if submission.save
       j = 1
@@ -79,7 +85,14 @@ class SubmissionsController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      redirect_to problem_path(@problem, :sub => submission.id)
+      
+      if submission.status == -1
+        flash[:success] = "Votre brouillon a bien été enregistré."
+        redirect_to problem_path(@problem, :sub => 0)
+      else
+        flash[:success] = "Votre solution a bien été soumise."
+        redirect_to problem_path(@problem, :sub => submission.id)
+      end
     
     # Si il y a eu une erreur
     else
@@ -200,9 +213,46 @@ class SubmissionsController < ApplicationController
     end
   end
   
+  # Modifier un brouillon / l'envoyer
+  def update_brouillon
+    if params[:commit] == "Enregistrer le brouillon"
+      @context = 2
+      update_submission
+    elsif params[:commit] = "Supprimer ce brouillon"
+      @submission.submissionfiles.each do |f|
+        f.destroy
+      end
+      @submission.fakesubmissionfiles.each do |f|
+        f.destroy
+      end
+      @submission.delete
+      flash[:success] = "Brouillon supprimé."
+      redirect_to @problem
+    else
+      @submission.status = 0
+      @submission.created_at = DateTime.current
+      @submission.lastcomment = @submission.created_at
+      @submission.visible = true
+      @submission.save
+      flash[:success] = "Votre solution a bien été soumise."
+      redirect_to problem_path(@problem, :sub => @submission.id)
+    end
+  end
+  
   # Modifier une soumission
   def update_intest
     @submission = Submission.find(params[:submission_id])
+    @context = 1
+    update_submission
+  end
+  
+  def update_submission
+    if @context == 1
+      lepath = problem_intest_path(@problem)
+    else
+      lepath = problem_path(@problem, :sub => 0)
+    end
+    
     if @submission.update_attributes(params[:submission])
     
       totalsize = 0
@@ -239,8 +289,7 @@ class SubmissionsController < ApplicationController
             end
             nom = params["file#{k}".to_sym].original_filename
             session[:ancientexte] = params[:submission][:content]
-            redirect_to problem_intest_path(@problem),
-              flash: {danger: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
+            redirect_to lepath, flash: {danger: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
           end
           totalsize = totalsize + attach[i-1].file_file_size
 
@@ -257,8 +306,7 @@ class SubmissionsController < ApplicationController
           j = j+1
         end
         session[:ancientexte] = params[:submission][:content]
-        redirect_to problem_intest_path(@problem),
-            flash: {danger: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
+        redirect_to lepath, flash: {danger: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
       end
       
       j = 1
@@ -268,20 +316,23 @@ class SubmissionsController < ApplicationController
         j = j+1
       end
       
-      flash[:success] = "Votre solution a bien été modifiée."
-      redirect_to virtualtest_path(@t, :p => @problem.id)
+      if @context == 1
+        flash[:success] = "Votre solution a bien été modifiée."
+        redirect_to virtualtest_path(@t, :p => @problem.id)
+      else
+        flash[:success] = "Votre brouillon a bien été enregistré."
+        redirect_to lepath
+      end
     else
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         flash[:danger] = "Votre soumission est vide."
-        redirect_to problem_intest_path(@problem)
       elsif params[:submission][:content].size > 8000
         flash[:danger] = "Votre soumission doit faire moins de 8000 caractères."
-        redirect_to problem_intest_path(@problem)
       else
         flash[:danger] = "Une erreur est survenue."
-        redirect_to problem_intest_path(@problem)
       end
+      redirect_to lepath
     end    
   end
 
@@ -376,7 +427,7 @@ class SubmissionsController < ApplicationController
   # Peut voir la soumission
   def can_see
     @submission = Submission.find_by_id(params[:id])
-    if ((@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.solved?(@problem) && !current_user.sk.admin))
+    if ((@submission.status == -1 && !current_user.sk.admin?) || (@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.solved?(@problem) && !current_user.sk.admin))
       redirect_to root_path
     end
   end
@@ -429,6 +480,14 @@ class SubmissionsController < ApplicationController
       redirect_to root_path
     else
       redirect_to @t if current_user.sk.status(@t) != 0
+    end
+  end
+  
+  # Est-ce qu'on est propriétaire de ce brouillon?
+  def brouillon
+    @submission = Submission.find(params[:submission_id])
+    unless !@submission.nil? && @submission.user == current_user.sk && @submission.problem == @problem && @submission.status == -1
+      redirect_to @problem
     end
   end
   

@@ -124,6 +124,18 @@ class CorrectionsController < ApplicationController
           link.save
         end
         m = ' et soumission marquée comme correcte'
+        
+        # On supprime les brouillons!
+        brouillon = @submission.problem.submissions.where('user_id = ? AND status = -1', @submission.user).first
+        if !brouillon.nil?
+          brouillon.submissionfiles.each do |f|
+            f.destroy
+          end
+          brouillon.fakesubmissionfiles.each do |f|
+            f.destroy
+          end
+          brouillon.destroy
+        end
       end
       
       # On gère les notifications

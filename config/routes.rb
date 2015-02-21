@@ -61,6 +61,7 @@ Mathraining::Application.routes.draw do
     match '/create_intest', to: 'submissions#create_intest', :via => [:post], as: :create_intest
     resources :submissions, only: [:create] do
       match '/update_intest', to: 'submissions#update_intest', :via => [:post], as: :update_intest
+      match '/update_brouillon', to: 'submissions#update_brouillon', :via => [:post], as: :update_brouillon
       resources :corrections, only: [:create]
       match '/read', to: 'submissions#read', :via => [:get], as: :read
       match '/unread', to: 'submissions#unread', :via => [:get], as: :unread

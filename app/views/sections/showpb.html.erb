@@ -60,7 +60,7 @@
       
     <!-- Si connecté -->
     <% elsif signed_in? %>
-      <% sub = current_user.sk.submissions.where(:problem_id => p.id).order('created_at') %>
+      <% sub = current_user.sk.submissions.where("problem_id = ? AND status >= 0", p.id).order('created_at') %>
       
       <!-- Si aucune soumission (ou admin) : jaune -->
       <% if sub.size == 0 || current_user.sk.admin? %>
@@ -72,7 +72,7 @@
         <% if sub.status == 0 %>
           <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFEEAA;">
           
-        <!-- Si une soumission erronnée : vert -->
+        <!-- Si une soumission erronée : rouge -->
         <% else %>
           <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFD0D0;">
         <% end %>

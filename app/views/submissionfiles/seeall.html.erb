@@ -53,6 +53,8 @@ Pièces jointes
   <td class="hidden-xs">
   <% if l[1] >= 5 %>
     Forum
+  <% elsif (l[1] == 1 || l[1] == 2) && l[2].submission.status == -1 %>
+    Brouillon
   <% else %>
     Soumission
   <% end %>

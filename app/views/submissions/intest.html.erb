@@ -109,7 +109,7 @@ Problème <%= @numero %>
   </div>
   
   <!-- Pièces jointes -->
-  <% if @submission.submissionfiles.size + @submission.fakesubmissionfiles.size > 0 %>
+  <% if @submission.submissionfiles.count + @submission.fakesubmissionfiles.count > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
     <% @submission.submissionfiles.each do |sf| %>
       <label class="checkbox-inline">

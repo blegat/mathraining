@@ -32,6 +32,7 @@
   <!-- Dernières soumissions de l'étudiant en question -->
   <h3>Vos dernières soumissions</h3>
   <% @newsub = true %>
+  <% brouillon = false %>
   <% aucun = true %>
   <% encours = Submission.new %>
   <% submissions = problem.submissions.where('user_id = ?', current_user.sk).order('created_at') %>
@@ -40,16 +41,18 @@
   <% if !submissions.empty? %>
     <% @new = true %>
       <% submissions.each do |s| %>
-        <% if s.status != 0 %>
+        <% if s.status > 0 %>
           <% if aucun %>
             <table class="table table-bordered">
             <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th></th></tr>
           <% end %>
           <%= render 'submissions/showuser', s: s, nom: false %>
           <% aucun = false %>
-        <% else %>
+        <% elsif s.status == 0 %>
           <% @newsub = false %>
           <% encours = s %>
+        <% else %>
+          <% @brouillon = true %>
         <% end %>
       <% end %>
     <% if !aucun %>

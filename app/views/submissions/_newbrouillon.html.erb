@@ -1,0 +1,50 @@
+<% @submission = problem.submissions.where('user_id = ? AND status = -1', current_user.sk).first %>
+
+<%= form_for :submission, url: problem_submission_update_brouillon_path(problem, @submission), :html => { :multipart => true } do |f| %>
+
+  <!-- Nouvelle soumission -->
+  <h3>Nouvelle soumission</h3>
+  La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
+  <div class="form-group">
+  <div class="well" id="MathPreview"></div>
+  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+  <%= render 'subjects/smiley', hiddentext: false %>
+  <% if @ancientexte.nil? %>
+    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
+  <% else %>
+    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
+  <% end %>
+  </div>
+  
+  <!-- Pièces jointes -->
+  <% if @submission.submissionfiles.count + @submission.fakesubmissionfiles.count > 0 %>
+    <b>Pièces jointes (décochez pour supprimer)</b><br/>
+    <% @submission.submissionfiles.each do |sf| %>
+      <label class="checkbox-inline">
+        <input type="checkbox" name="prevfile<%= sf.id %>" value="1" checked="checked" />
+        <%= link_to sf.file_file_name, download_submissionfile_path(sf) %>
+      </label>
+      <br/>
+    <% end %>
+    <% @submission.fakesubmissionfiles.each do |sf| %>
+      <label class="checkbox-inline">
+        <input type="checkbox" name="prevfakefile<%= sf.id %>" value="1" checked="checked" />
+        <span style="color:#0000BB;"><%= sf.file_file_name %> (désactivée)</span>
+      </label>
+      <br/>
+    <% end %>
+    <br/>
+  <% end %>
+  <span id="fooBar"></span>
+  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
+  <br/><br/>
+
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => (!signed_in? || current_user.other) %>
+  <%= f.submit "Enregistrer le brouillon", class: "btn btn-default btn-grey", :disabled => (!signed_in? || current_user.other) %>
+  <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger", :disabled => (!signed_in? || current_user.other) %>
+<% end %>
+
+<script>
+PreviewSafe.Init();
+PreviewSafe.Update();
+</script>

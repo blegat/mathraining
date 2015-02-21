@@ -13,7 +13,7 @@ function showCorrectionNormal(id) {
 
 <h4>Commentaires</h4>
 
-<% if @submission.corrections.size == 0 %>
+<% if @submission.corrections.count == 0 %>
   Aucun commentaire.<br/><br/>
 <% end %>
 
@@ -92,11 +92,13 @@ function showCorrectionNormal(id) {
   </div>
   
   <!-- Pièces jointes -->
-  <% if correction.correctionfiles.size + correction.fakecorrectionfiles.size > 0 %>
-    <% if correction.correctionfiles.size + correction.fakecorrectionfiles.size == 1 %>
+  <% n_correction = correction.correctionfiles.count %>
+  <% n_fake = correction.fakecorrectionfiles.count %>
+  <% if n_correction + n_fake > 0 %>
+    <% if n_correction + n_fake == 1 %>
       <br/><br/><b>1 pièce jointe :</b><br/>
     <% else %>
-      <br/><br/><b><%= correction.correctionfiles.size + correction.fakecorrectionfiles.size %> pièces jointes :</b><br/>
+      <br/><br/><b><%= n_correction + n_fake %> pièces jointes :</b><br/>
     <% end %>
     <% correction.correctionfiles.order(:id).each do |f| %>
       <%= link_to f.file_file_name, download_correctionfile_path(f) %>

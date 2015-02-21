@@ -34,7 +34,8 @@ class Submission < ActiveRecord::Base
   validates :user_id, presence: true
   validates :problem_id, presence: true
   validates :content, presence: true, length: { maximum: 8000 }
-  validates :status, presence: true, inclusion: { in: [0, 1, 2, 3] }
+  validates :status, presence: true, inclusion: { in: [-1, 0, 1, 2, 3] }
+  # -1 : brouillon
   # 0: pas corrigé
   # 1: [corrigé et répondu et]* corrigé ou lu
   # 2: résolu
@@ -48,6 +49,8 @@ class Submission < ActiveRecord::Base
   # Rend l'icone correspondante
   def icon
     case status
+    when -1
+      'tiret.gif'
     when 0
       'tiret.gif'
     when 1, 3
