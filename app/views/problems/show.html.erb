@@ -102,15 +102,15 @@
 
 <!-- Origine si administrateur ou si résolu -->
 <% if current_user.sk.admin? || @resolu %>
-  <br/><br/><i>Origine du problème :
+  <br/><br/><i>(Origine du problème :
   <% if @problem.origin.nil? || @problem.origin.size == 0 %>
     <% if current_user.sk.admin? %>
       <span style="color:orange;">Inconnue</span>
     <% else %>
-      Inconnue
+      Inconnue)
     <% end %>
   <% else %>
-    <b><%= @problem.origin %></b>
+    <b><%= @problem.origin %></b>)
   <% end %>
   </i>
 <% end %>

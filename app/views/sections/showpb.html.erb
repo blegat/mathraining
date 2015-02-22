@@ -49,10 +49,13 @@
       Chaque problème de niveau <%= level %> vaut <%= p.value %> points.<br/><br/>
     <% end %>
     <% compteur = compteur+1 %>
+    
+    <% resolu = false %>
 
     <!-- Si déjà résolu : vert -->
     <% if signed_in? && current_user.sk.solved?(p) && !current_user.sk.admin? %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#DDFFDD;">
+      <% resolu = true %>
       
     <!-- Si pas en ligne : orange -->
     <% elsif !p.online %>
@@ -105,6 +108,17 @@
     
     <!-- Enoncé -->
     <%= raw(htmlise(p.statement)) %>
+    
+    <!-- Origine si administrateur ou si résolu -->
+    <% if current_user.sk.admin? || resolu %>
+      <br/><br/><i>(Origine du problème :
+      <% if p.origin.nil? || p.origin.size == 0 %>
+        Inconnue)
+      <% else %>
+    <b><%= p.origin %></b>)
+  <% end %>
+  </i>
+<% end %>
     
     </div>
     <br/>
