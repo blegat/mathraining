@@ -126,7 +126,8 @@ class CorrectionsController < ApplicationController
         m = ' et soumission marquée comme correcte'
         
         # On supprime les brouillons!
-        brouillon = @submission.problem.submissions.where('user_id = ? AND status = -1', @submission.user).first
+        pb = @submission.problem
+        brouillon = pb.submissions.where('user_id = ? AND status = -1', @submission.user).first
         if !brouillon.nil?
           brouillon.submissionfiles.each do |f|
             f.destroy

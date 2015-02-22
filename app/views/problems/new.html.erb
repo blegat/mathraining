@@ -17,6 +17,12 @@ Créer un problème
     <%= render 'theories/font' %>
     <%= f.text_area :statement, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
   </div>
+  
+  <!-- Origine -->
+  <div class="form-group">
+    <%= f.label "Origine" %>
+    <%= f.text_field :origin, :class => "form-control", :style => "width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
+  </div>
 
   <!-- Niveau -->
   <div class="form-group">

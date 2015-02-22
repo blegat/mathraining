@@ -19,7 +19,7 @@
 include ApplicationHelper
 
 class Problem < ActiveRecord::Base
-  attr_accessible :statement, :online, :level, :explanation, :number, :position
+  attr_accessible :statement, :online, :level, :explanation, :number, :position, :origin
   
   # BELONGS_TO, HAS_MANY
   

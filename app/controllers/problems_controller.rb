@@ -27,6 +27,7 @@ class ProblemsController < QuestionsController
   def create
     @problem = Problem.new
     @problem.statement = params[:problem][:statement]
+    @problem.origin = params[:problem][:origin]
     @problem.level = params[:problem][:level]
     @section = Section.find_by_id(params[:section_id])
     @problem.online = false
@@ -52,6 +53,7 @@ class ProblemsController < QuestionsController
   def update
     @problem = Problem.find(params[:id])
     @problem.statement = params[:problem][:statement]
+    @problem.origin = params[:problem][:origin]
     
     if !@problem.online
       if @problem.level != params[:problem][:level].to_i

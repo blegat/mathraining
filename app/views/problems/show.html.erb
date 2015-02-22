@@ -7,6 +7,8 @@
 
 <% pt = @problem.value %>
 
+<% @resolu = current_user.sk.solved?(@problem) %>
+
 <h1>
 <span style="font-size:16px;">Problèmes ></span>
 <span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
@@ -97,6 +99,21 @@
 <h3>Énoncé</h3>
 <div style="margin-bottom:30px;">
   <%= raw(htmlise(@problem.statement)) %>
+
+<!-- Origine si administrateur ou si résolu -->
+<% if current_user.sk.admin? || @resolu %>
+  <br/><br/><i>Origine du problème :
+  <% if @problem.origin.nil? || @problem.origin.size == 0 %>
+    <% if current_user.sk.admin? %>
+      <span style="color:orange;">Inconnue</span>
+    <% else %>
+      Inconnue
+    <% end %>
+  <% else %>
+    <b><%= @problem.origin %></b>
+  <% end %>
+  </i>
+<% end %>
 </div>
 
 <!-- Si administrateur -->
@@ -158,7 +175,7 @@
   <%= render 'submissions/index', problem: @problem if signed_in? %>
   
   <!-- Si pas encore résolu le problème -->
-  <% unless (signed_in? && current_user.sk.solved?(@problem)) || (signed_in? && !@newsub) %>
+  <% unless (signed_in? && @resolu) || (signed_in? && !@newsub) %>
     <% if !signed_in? %>
     <br/>
     <% end %>
@@ -175,7 +192,7 @@
   <hr>
   
   <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
-  <% unless (signed_in? && current_user.sk.solved?(@problem)) || (signed_in? && !@newsub) %>
+  <% unless (signed_in? && @resolu) || (signed_in? && !@newsub) %>
     <% if !@brouillon %>
       <%= render 'submissions/new', problem: @problem %>
     <% else %>
@@ -189,7 +206,7 @@
   <% @submission = Submission.find_by_id(soumission) %>
   
   <!-- On vérifie que l'on peut la regarder -->
-  <% if signed_in? && @submission.problem == @problem && (@submission.status >= 0 || current_user.sk.admin?) && (@submission.user == current_user.sk || (current_user.sk.solved?(@problem) && @submission.status == 2) || current_user.sk.admin) %>
+  <% if signed_in? && @submission.problem == @problem && (@submission.status >= 0 || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.status == 2) || current_user.sk.admin) %>
      <%= render 'submissions/show' %>
   <% end %>
 <% end %>
