@@ -141,11 +141,16 @@ html>body tbody.scroll {
     <% if bestqui == 1 %>
 		  <% if jusque >= 6 %>
       <% e = exercises[e_encours] %>
+			<% end %>
+			<% if jusque >= 7 %>
       <% pt = e.exercise.value %>
+			<% end %>
+			<% if jusque >= 8 %>
       <% pt = 0 if e.exercise.chapter.section.fondation %>
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
       <% end %>
+			<% end %>
 			<% end %>
 
 			<% e_encours = e_encours + 1 %>
@@ -154,7 +159,7 @@ html>body tbody.scroll {
       <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
       <% end %>
 		<% elsif bestqui == 2 %>
-	  	<% if jusque >= 7 %>
+	  	<% if jusque >= 9 %>
       <% q = qcms[q_encours] %>
       <% pt = q.qcm.value %>
       <% pt = 0 if q.qcm.chapter.section.fondation %>
@@ -169,7 +174,7 @@ html>body tbody.scroll {
       <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm.id,  :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
       <% end %>
 		<% elsif bestqui == 3 %>
-		  <% if jusque >= 9 %>
+		  <% if jusque >= 10 %>
       <% p = problems[p_encours] %>
 			<% end %>
 			<% if jusque >= 10 %>
