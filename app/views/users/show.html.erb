@@ -115,6 +115,9 @@ html>body tbody.scroll {
     <% trouve = false %>
     <% besttime = 0 %>
     <% bestqui = -1 %>
+
+		<% if jusque >= 4 %>
+
     <% if e_encours < exercises.size && (!trouve || exercises[e_encours].resolutiontime.to_i > besttime) %>
       <% besttime = exercises[e_encours].resolutiontime.to_i %>
       <% trouve = true %>
@@ -131,6 +134,10 @@ html>body tbody.scroll {
       <% bestqui = 3 %>
     <% end %>
 
+		<% end %>
+
+		<% if jusque >= 5 %>
+
     <% if bestqui == 1 %>
       <% e = exercises[e_encours] %>
       <% e_encours = e_encours + 1 %>
@@ -139,8 +146,11 @@ html>body tbody.scroll {
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
       <% end %>
+
+			<% if jusque >= 6 %>
       <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
-    <% elsif bestqui == 2 %>
+      <% end %>
+		<% elsif bestqui == 2 %>
       <% q = qcms[q_encours] %>
       <% q_encours = q_encours + 1 %>
       <% pt = q.qcm.value %>
@@ -148,8 +158,11 @@ html>body tbody.scroll {
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
       <% end %>
+
+			<% if jusque >= 6 %>
       <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm.id,  :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
-    <% elsif bestqui == 3 %>
+      <% end %>
+		<% elsif bestqui == 3 %>
       <% p = problems[p_encours] %>
       <% p_encours = p_encours + 1 %>
       <% pt = p.problem.value %>
@@ -165,10 +178,15 @@ html>body tbody.scroll {
       <% if !t.nil? && (!signed_in? || !current_user.sk.admin?) %>
         <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
       <% end %>
+
+			<% if jusque >= 6 %>
       <% act.push({:time => p.resolutiontime, :type => 4, :id => p.problem.id, :peutvoir => peutvoir, :pt => pt, :number => p.problem.number, :level => p.problem.level, :section => p.problem.section.id, :fondation => p.problem.section.fondation}) %>
-    <% else %>
+      <% end %>
+		<% else %>
       Erreur
     <% end %>
+
+		<% end %>
 
   <% end %>
 
@@ -186,7 +204,7 @@ html>body tbody.scroll {
   <% premier = -1 %>
   <% dernier = 0 %>
 
-	<% if jusque >= 4 %> <!-- ICI ICI ICI -->
+	<% if jusque >= 10 %> <!-- ICI ICI ICI -->
 
   <!-- Si l'étudiant a déjà fait au moins un truc -->
   <% if act.size > 0 %>
@@ -230,7 +248,7 @@ html>body tbody.scroll {
 
 	<% end %> <!-- ICI ICI ICI -->
 
-	<% if jusque >= 5 %> <!-- ICI ICI ICI -->
+	<% if jusque >= 15 %> <!-- ICI ICI ICI -->
 
   <!-- On parcourt les actes un par un (cas normal) -->
   <% act.each do |a| %>
@@ -303,7 +321,7 @@ html>body tbody.scroll {
     <div class="hidden-xs"><b>Aucune activité.</b></div>
   <% end %>
 
-	<% if jusque >= 6 %> <!-- ICI ICI ICI -->
+	<% if jusque >= 20 %> <!-- ICI ICI ICI -->
 
   <!-- Début du tableau des résolutions (cas gsm) -->
   <% if act.size > 0 %>
@@ -361,7 +379,7 @@ html>body tbody.scroll {
 
   </div>
 
-  <% if jusque >= 7 %> <!-- ICI ICI ICI -->
+  <% if jusque >= 25 %> <!-- ICI ICI ICI -->
 
   <!-- Affichage du score et du camembert -->
   <div class="col-lg-5 col-sm-12 col-xs-12">
@@ -465,7 +483,7 @@ html>body tbody.scroll {
 
   </div>
 
-	<% if jusque >= 8 %> <!-- ICI ICI ICI -->
+	<% if jusque >= 30 %> <!-- ICI ICI ICI -->
 
   <!-- Si l'étudiant a un score non égal à 0, on montre son évolution -->
   <% if actualrating > 0 %>
