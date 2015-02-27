@@ -149,7 +149,7 @@ html>body tbody.scroll {
       <% end %>
 			<% end %>
 
-			<% if jusque >= 9 %>
+			<% if jusque >= 15 %>
       <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
       <% end %>
 		<% elsif bestqui == 2 %>
@@ -163,7 +163,7 @@ html>body tbody.scroll {
       <% end %>
 			<% end %>
 
-			<% if jusque >= 10 %>
+			<% if jusque >= 16 %>
       <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm.id,  :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
       <% end %>
 		<% elsif bestqui == 3 %>
@@ -175,17 +175,21 @@ html>body tbody.scroll {
       <% nb_p = nb_p+1 %>
       <% peutvoir = enough_points %>
       <% t = p.problem.virtualtest %>
+			<% end %>
+			<% if jusque >= 10 %>
       <% if t.nil? && (!signed_in? || !current_user.sk.admin?) %>
         <% p.problem.chapters.each do |c| %>
           <% peutvoir = false if !debloque[c.id] %>
         <% end %>
       <% end %>
+			<% end %>
+			<% if jusque >= 11 %>
       <% if !t.nil? && (!signed_in? || !current_user.sk.admin?) %>
         <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
       <% end %>
 			<% end %>
 
-			<% if jusque >= 11 %>
+			<% if jusque >= 17 %>
       <% act.push({:time => p.resolutiontime, :type => 4, :id => p.problem.id, :peutvoir => peutvoir, :pt => pt, :number => p.problem.number, :level => p.problem.level, :section => p.problem.section.id, :fondation => p.problem.section.fondation}) %>
       <% end %>
 		<% else %>
@@ -210,7 +214,7 @@ html>body tbody.scroll {
   <% premier = -1 %>
   <% dernier = 0 %>
 
-	<% if jusque >= 12 %> <!-- ICI ICI ICI -->
+	<% if jusque >= 18 %> <!-- ICI ICI ICI -->
 
   <!-- Si l'étudiant a déjà fait au moins un truc -->
   <% if act.size > 0 %>
@@ -254,7 +258,7 @@ html>body tbody.scroll {
 
 	<% end %> <!-- ICI ICI ICI -->
 
-	<% if jusque >= 15 %> <!-- ICI ICI ICI -->
+	<% if jusque >= 19 %> <!-- ICI ICI ICI -->
 
   <!-- On parcourt les actes un par un (cas normal) -->
   <% act.each do |a| %>
