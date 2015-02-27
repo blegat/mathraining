@@ -112,6 +112,8 @@ html>body tbody.scroll {
 	<% allsec = Array.new %>
 	<% allchap = Array.new %>
 	<% allex = Array.new %>
+	<% allqcm = Array.new %>
+	<% allpb = Array.new %>
 
 	<% Section.all.each do |s| %>
 	  <% allsec[s.id] = s %>
@@ -123,6 +125,14 @@ html>body tbody.scroll {
 
 	<% Exercise.all.each do |e| %>
 		<% allex[e.id] = e %>
+	<% end %>
+
+	<% Qcm.all.each do |q| %>
+	  <% allqcm[q.id] = q %>
+	<% end %>
+
+	<% Problem.all.each do |p| %>
+	  <% allpb[p.id] = p %>
 	<% end %>
 
 	<% if jusque >= 3 %>
@@ -172,13 +182,14 @@ html>body tbody.scroll {
 			<% e_encours = e_encours + 1 %>
 
 			<% if jusque >= 15 %>
-      <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
+      <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => allsec[allchap[exo.chapter_id].section_id].fondation}) %>
       <% end %>
 		<% elsif bestqui == 2 %>
 	  	<% if jusque >= 9 %>
       <% q = qcms[q_encours] %>
-      <% pt = q.qcm.value %>
-      <% pt = 0 if q.qcm.chapter.section.fondation %>
+			<% qcm = allqcm[q.qcm_id] %>
+      <% pt = qcm.value %>
+      <% pt = 0 if allsec[allchap[qcm.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
       <% end %>
@@ -187,25 +198,26 @@ html>body tbody.scroll {
 			<% q_encours = q_encours + 1 %>
 
 			<% if jusque >= 16 %>
-      <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm.id,  :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
+      <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => allsec[allchap[qcm.chapter_id].section_id].fondation}) %>
       <% end %>
 		<% elsif bestqui == 3 %>
 		  <% if jusque >= 10 %>
       <% p = problems[p_encours] %>
+			<% pb = allpb[p.problem_id] %>
 			<% end %>
 			<% if jusque >= 10 %>
-      <% pt = p.problem.value %>
+      <% pt = pb.value %>
 			<% end %>
       <% nb_p = nb_p+1 %>
 			<% if jusque >= 11 %>
       <% peutvoir = enough_points %>
 			<% end %>
 			<% if jusque >= 12 %>
-      <% t = p.problem.virtualtest %>
+      <% t = pb.virtualtest %>
 			<% end %>
 			<% if jusque >= 13 %>
       <% if t.nil? && (!signed_in? || !current_user.sk.admin?) %>
-        <% p.problem.chapters.each do |c| %>
+        <% pb.chapters.each do |c| %>
           <% peutvoir = false if !debloque[c.id] %>
         <% end %>
       <% end %>
@@ -219,7 +231,7 @@ html>body tbody.scroll {
 			<% p_encours = p_encours + 1 %>
 
 			<% if jusque >= 17 %>
-      <% act.push({:time => p.resolutiontime, :type => 4, :id => p.problem.id, :peutvoir => peutvoir, :pt => pt, :number => p.problem.number, :level => p.problem.level, :section => p.problem.section.id, :fondation => p.problem.section.fondation}) %>
+      <% act.push({:time => p.resolutiontime, :type => 4, :id => p.problem_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
       <% end %>
 		<% else %>
       Erreur
