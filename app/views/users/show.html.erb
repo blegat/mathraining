@@ -109,6 +109,22 @@ html>body tbody.scroll {
   <% nb_e = 0 %>
   <% nb_p = 0 %>
 
+	<% allsec = Array.new %>
+	<% allchap = Array.new %>
+	<% allex = Array.new %>
+
+	<% Section.all.each do |s| %>
+	  <% allsec[s.id] = s %>
+	<% end %>
+
+	<% Chapter.all.each do |c| %>
+	  <% allchap[c.id] = c %>
+	<% end %>
+
+	<% Exercise.all.each do |e| %>
+		<% allex[e.id] = e %>
+	<% end %>
+
 	<% if jusque >= 3 %>
 
   <% (1..(exercises.size+qcms.size+problems.size)).each do |i| %>
@@ -141,12 +157,13 @@ html>body tbody.scroll {
     <% if bestqui == 1 %>
 		  <% if jusque >= 6 %>
       <% e = exercises[e_encours] %>
+			<% exo = allex[e.exercise_id] %>
 			<% end %>
 			<% if jusque >= 7 %>
-      <% pt = e.exercise.value %>
+      <% pt = exo.value %>
 			<% end %>
 			<% if jusque >= 8 %>
-      <% pt = 0 if e.exercise.chapter.section.fondation %>
+      <% pt = 0 if allsec[allchap[exo.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
       <% end %>
