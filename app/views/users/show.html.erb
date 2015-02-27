@@ -4,6 +4,12 @@
 
 <% provide(:title, @user.name) %>
 
+<!-- Test pour la performance -->
+<% jusque = 100 %>
+<% if(params.has_key?:jusque) %>
+  <% jusque = params[:jusque].to_i %>
+<% end %>
+
 <!-- Style pour la barre de défilement dans le tableau -->
 <style type="text/css">
 
@@ -25,7 +31,7 @@ html>body tbody.scroll {
   <span style="font-size:18px; margin-left:100px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
   </h1>
   <b>Administrateur</b><br/>
-  
+
 <!-- SI c'est un étudiant -->
 <% else %>
 
@@ -39,6 +45,8 @@ html>body tbody.scroll {
   <% end %>
   </h1>
 
+	<% if jusque >= 1 %> <!-- ICI ICI ICI -->
+
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
   <% cansee = Array.new %>
 
@@ -51,7 +59,7 @@ html>body tbody.scroll {
     <% Chapter.all.to_a.each do |c| %>
       <% debloque[c.id] = false %>
     <% end %>
-  
+
     <% signed_in? && current_user.sk.chapters.each do |c| %>
       <% debloque[c.id] = true %>
     <% end %>
@@ -67,30 +75,40 @@ html>body tbody.scroll {
       <% end %>
     <% end %>
   <% end %>
-  
+
   <% enough_points = false %>
   <% if signed_in? && (current_user.sk.admin? || current_user.sk.point.rating >= 200) %>
     <% enough_points = true %>
   <% end %>
+
+	<% end %> <!-- ICI ICI ICI -->
 
   <!-- Affichage des résolutions -->
   <div class="row">
 
   <div class="col-lg-7 col-sm-12 col-xs-12">
   <h2>Résolutions</h2>
-  
+
   <!-- On va parcourir tous les exercices, qcms et problèmes -->
+
+	<% if jusque >= 2 %> <!-- ICI ICI ICI -->
+
   <% exercises = @user.solvedexercises.where(:correct => true).order("resolutiontime DESC") %>
   <% qcms = @user.solvedqcms.where(:correct => true).order("resolutiontime DESC") %>
   <% problems = @user.solvedproblems.order("resolutiontime DESC") %>
+
+	<% end %> <!-- ICI ICI ICI -->
+
   <% act = Array.new %>
   <% e_encours = 0 %>
   <% q_encours = 0 %>
   <% p_encours = 0 %>
-  
+
   <% nb_e = 0 %>
   <% nb_p = 0 %>
-  
+
+	<% if jusque >= 3 %>
+
   <% (1..(exercises.size+qcms.size+problems.size)).each do |i| %>
     <% trouve = false %>
     <% besttime = 0 %>
@@ -110,7 +128,7 @@ html>body tbody.scroll {
       <% trouve = true %>
       <% bestqui = 3 %>
     <% end %>
-    
+
     <% if bestqui == 1 %>
       <% e = exercises[e_encours] %>
       <% e_encours = e_encours + 1 %>
@@ -140,7 +158,7 @@ html>body tbody.scroll {
       <% if t.nil? && (!signed_in? || !current_user.sk.admin?) %>
         <% p.problem.chapters.each do |c| %>
           <% peutvoir = false if !debloque[c.id] %>
-        <% end %>      
+        <% end %>
       <% end %>
       <% if !t.nil? && (!signed_in? || !current_user.sk.admin?) %>
         <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
@@ -149,8 +167,10 @@ html>body tbody.scroll {
     <% else %>
       Erreur
     <% end %>
-    
+
   <% end %>
+
+	<% end %> <!-- ICI ICI ICI -->
 
   <% actperday = Array.new %>
 
@@ -158,15 +178,17 @@ html>body tbody.scroll {
   <% encours = -1 %>
 
   <% parquoi = "" %>
-  
+
   <% inscription = @user.created_at %>
 
   <% premier = -1 %>
   <% dernier = 0 %>
-  
+
+	<% if jusque >= 4 %> <!-- ICI ICI ICI -->
+
   <!-- Si l'étudiant a déjà fait au moins un truc -->
   <% if act.size > 0 %>
-  
+
     <!-- On détermine le premier et le dernier acte non fondamental -->
     <% act.each do |a| %>
       <% if a[:pt] > 0 %>
@@ -176,7 +198,7 @@ html>body tbody.scroll {
         <% end %>
       <% end %>
     <% end %>
-    
+
     <!-- On détermine si on rassemble les actes par minute, heure ou jour -->
     <% if premier != -1 %>
       <% if dernier.day != DateTime.now.in_time_zone.day || dernier.month != DateTime.now.in_time_zone.month || dernier.year != DateTime.now.in_time_zone.year %>
@@ -187,7 +209,7 @@ html>body tbody.scroll {
         <% parquoi = "minute" %>
       <% end %>
     <% end %>
-    
+
     <!-- Nombre d'exercices et de problèmes résolus -->
     <%= @user.name %> a résolu <b><%= nb_e %></b> exercice<%= "s (non fondamentaux)" if nb_e > 1 %><%= " (non fondamental)" if nb_e == 1 %><%= "." if nb_p == 0 %>
     <% if nb_p > 0 %>
@@ -203,10 +225,14 @@ html>body tbody.scroll {
     </thead>
     <tbody class="scroll">
   <% end %>
-  
+
+	<% end %> <!-- ICI ICI ICI -->
+
+	<% if jusque >= 5 %> <!-- ICI ICI ICI -->
+
   <!-- On parcourt les actes un par un (cas normal) -->
   <% act.each do |a| %>
-  
+
     <!-- Rassemblement par date des actes -->
     <% date = a[:time].in_time_zone %>
 
@@ -230,13 +256,13 @@ html>body tbody.scroll {
 
     <!-- Affichage de la ligne -->
     <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
-    
+
     <!-- Date -->
     <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
-    
+
     <!-- Heure -->
     <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
-    
+
     <!-- Quoi -->
     <td style="width:340px;">
     <% if a[:type] <= 3 %>
@@ -255,7 +281,7 @@ html>body tbody.scroll {
       <%= "(Niveau #{a[:level]})" %>
     <% end %>
     </td>
-    
+
     <!-- Points -->
     <td style="width:50px;">
     <center>
@@ -263,8 +289,10 @@ html>body tbody.scroll {
     </center>
     </td>
     </tr>
-    
+
   <% end %>
+
+	<% end %> <!-- ICI ICI ICI -->
 
   <% if act.size > 0 %>
     </tbody>
@@ -272,8 +300,9 @@ html>body tbody.scroll {
   <% else %>
     <div class="hidden-xs"><b>Aucune activité.</b></div>
   <% end %>
-  
-  
+
+	<% if jusque >= 6 %> <!-- ICI ICI ICI -->
+
   <!-- Début du tableau des résolutions (cas gsm) -->
   <% if act.size > 0 %>
     <table class="table table-bordered visible-xs" style="width:356px;">
@@ -282,16 +311,16 @@ html>body tbody.scroll {
     </thead>
     <tbody class="scroll">
   <% end %>
-  
+
   <!-- On parcourt les actes un par un (cas gsm) -->
   <% act.each do |a| %>
     <% date = a[:time].in_time_zone %>
-    
+
     <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
-    
+
     <!-- Date -->
     <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
-    
+
     <!-- Quoi -->
     <td style="width:140px;">
     <% if a[:type] <= 3 %>
@@ -308,7 +337,7 @@ html>body tbody.scroll {
       <% end %>
     <% end %>
     </td>
-    
+
     <!-- Points -->
     <td style="width:50px;">
     <center>
@@ -316,7 +345,7 @@ html>body tbody.scroll {
     </center>
     </td>
     </tr>
-    
+
   <% end %>
 
   <% if act.size > 0 %>
@@ -325,10 +354,13 @@ html>body tbody.scroll {
   <% else %>
     <div class="visible-xs"><b>Aucune activité.</b></div>
   <% end %>
-  
+
+	<% end %> <!-- ICI ICI ICI -->
+
   </div>
-  
-  
+
+  <% if jusque >= 7 %> <!-- ICI ICI ICI -->
+
   <!-- Affichage du score et du camembert -->
   <div class="col-lg-5 col-sm-12 col-xs-12">
 
@@ -348,16 +380,16 @@ html>body tbody.scroll {
 
       <% possible2.add([rate, s.name, s.id]) %>
     <% end %>
-    
+
     <!-- Canvas pour camembert -->
     <center>
     <canvas id="Camembert" width="240" height="240">
     Votre navigateur ne supporte pas les canvas.
     </canvas>
     </center>
-    
+
     <center>
-    
+
     <!-- Légende du camembert (cas normal) -->
     <table class="table table-bordered hidden-xs" style="width:360px; margin-top:20px;">
     <% p = Pointspersection.where(:user_id => @user) %>
@@ -373,7 +405,7 @@ html>body tbody.scroll {
     <% end %>
     </tr>
     </table>
-    
+
     <!-- Légende du camembert (cas gsm) -->
     <table class="table table-bordered visible-xs" style="width:250px; margin-top:20px;">
     <% p = Pointspersection.where(:user_id => @user) %>
@@ -382,14 +414,14 @@ html>body tbody.scroll {
       <tr><td style="width:250px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td></tr>
     <% end %>
     </table>
-    
+
     </center>
 
     <!-- Script pour le camembert -->
     <script>
     var d=document.getElementById("Camembert");
     var ctx=d.getContext("2d");
-    
+
     // Cercle
     ctx.beginPath();
     ctx.arc(120, 120, 115, 0, 2 * Math.PI, false);
@@ -399,7 +431,7 @@ html>body tbody.scroll {
     ctx.strokeStyle = '#888888';
     ctx.stroke();
     prec = 0;
-    
+
     // Chaque quartier
     <% while !possible2.empty? %>
       <% if (possible2.first)[0] > 0 %>
@@ -420,14 +452,18 @@ html>body tbody.scroll {
     </script>
 
   <% end %>
-  
+
   <!-- Date d'inscription -->
   <br/>
   <center>Inscription : <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %></center><br/>
 
   </div>
 
+	<% end %> <!-- ICI ICI ICI -->
+
   </div>
+
+	<% if jusque >= 8 %> <!-- ICI ICI ICI -->
 
   <!-- Si l'étudiant a un score non égal à 0, on montre son évolution -->
   <% if actualrating > 0 %>
@@ -439,7 +475,7 @@ html>body tbody.scroll {
     <h2>Évolution</h2>
     <br/>
     <center>
-    
+
     <!-- Endroit pour dessiner l'évolution -->
     <div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
     <canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
@@ -449,53 +485,53 @@ html>body tbody.scroll {
     </div>
     </center>
 
-    <!-- Script pour le graphique de l'évolution -->  
+    <!-- Script pour le graphique de l'évolution -->
     <% @niveaux = Color.order(:pt).to_a %>
-  
+
     <% i = 1 %>
     <% numerolevel = 0 %>
-  
+
     <% @niveaux.each do |n| %>
       <% if niveau.id == n.id %>
         <% numerolevel = i %>
       <% end %>
       <% i = i+1 %>
     <% end %>
-  
+
     <% nombrelevel = i-1 %>
-  
+
     <% maxi = 0 %>
-  
-  
+
+
     <% if numerolevel == nombrelevel %>
       <% maxi = 1.2*actualrating %>
     <% else %>
       <% maxi = 1.1*@niveaux[numerolevel][:pt] %>
     <% end %>
-    
+
     <script type="text/javascript">
       $(document).ready( function(){
-      
+
       //Get the canvas & context
       var c = $('#myCanvas');
       var ctx = c.get(0).getContext('2d');
       var container = $(c).parent();
-      
+
       //Run function when browser  resize
       $(window).resize( respondCanvas );
-      
+
       function respondCanvas(){
       c.attr('width', $(container).width() ); //max width
       c.attr('height', 480*$(container).width()/900.0); //max height
-  			
+
       document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
-      
+
       //Redraw & reposition content
       var x = c.width();
-      var y = c.height();  
-  			
+      var y = c.height();
+
       var pct = c.width()/900.0;
-  						
+
       ctx.beginPath();
       ctx.rect(pct*50, pct*5, pct*806, pct*450);
       ctx.fillStyle = 'white';
@@ -503,11 +539,11 @@ html>body tbody.scroll {
       ctx.lineWidth = 2;
       ctx.strokeStyle = 'black';
       ctx.stroke();
-  
+
       <% i = 1 %>
-  
+
       var prec = 1000;
-      
+
       // Affichage des niveaux avec couleurs
       <% @niveaux.each do |n| %>
         <% if i > 1 %>
@@ -516,25 +552,25 @@ html>body tbody.scroll {
             ctx.font="14px Arial";
             ctx.fillStyle = 'black';
             ctx.textAlign = 'right';
-        
+
             if (pct > 0.7){
-        
+
               if (pct * <%= haut %> < prec - 13){
                 ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
                 prec = pct * <%= haut %>;
               }
-        
+
             ctx.beginPath();
             ctx.moveTo(pct*50, pct*<%= haut+5 %>);
             ctx.lineTo(pct*856, pct*<%= haut+5 %>);
             ctx.lineWidth = 1;
             ctx.strokeStyle = 'white';
             ctx.stroke();
-        
+
             }
           <% end %>
         <% end %>
-        
+
         // Calcul du bas et du haut
         <% if i == nombrelevel %>
           <% bas = [450 - 450*(n.pt/maxi), 0].max %>
@@ -551,14 +587,14 @@ html>body tbody.scroll {
         <% end %>
         <% i = i+1 %>
       <% end %>
-  
-      
+
+
       // On trace maintenant le graphique
       ctx.fillStyle = 'black';
       ctx.strokeStyle = 'black';
 
       <% last = actperday.first[:time].to_time.to_i %>
-      
+
       // Commencement du graphique
       <% if parquoi == "jour" %>
         <% first = actperday.last[:time].to_time.to_i - 86400%>
@@ -567,17 +603,17 @@ html>body tbody.scroll {
       <% else %>
         <% first = actperday.last[:time].to_time.to_i - 60 %>
       <% end %>
-    
+
       <% previousw = 2000 %>
 
       <% actperday.each do |a| %>
         <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-      
+
         <% if previousw - w > 50 %>
           ctx.font="12px Arial";
           ctx.fillStyle = 'black';
           ctx.textAlign = 'center';
-        
+
           if (pct > 0.7){
           <% if parquoi == "jour" %>
             ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
@@ -587,7 +623,7 @@ html>body tbody.scroll {
             ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
           <% end %>
           }
-      
+
           <% (0..22).each do |i| %>
             ctx.beginPath();
             ctx.moveTo(pct*<%= 50+w %>, pct*<%= 20*i+5 %>);
@@ -599,15 +635,15 @@ html>body tbody.scroll {
           <% previousw = w %>
         <% end %>
       <% end %>
-    
+
       <% w = 3 %>
       <% r = 0 %>
       <% previousr = r %>
       <% h = 450 %>
-    
+
       <% prevw = w %>
       <% prevh = h %>
-      
+
       // On parcourt dans le sens inverse pour déterminer où on trace les barres verticales blanches
       <% actperday.reverse.each do |a| %>
         <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
@@ -626,22 +662,24 @@ html>body tbody.scroll {
         <% prevw = w %>
         <% prevh = h %>
       <% end %>
-    
+
       }
-      
+
       //Initial call
       respondCanvas();
-      
+
       });
-      
+
     </script>
 
     </div>
     </div>
 
   <% end %>
-  
+
 <% end %>
+
+<% end %> <!-- ICI ICI ICI -->
 
 <!-- Si administrateur, différentes options -->
 <% if signed_in? && current_user.sk.admin? %>
