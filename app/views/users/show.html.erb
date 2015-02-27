@@ -4,6 +4,8 @@
 
 <% provide(:title, @user.name) %>
 
+<% t1 = Time.now %>
+
 <!-- Test pour la performance -->
 <% jusque = 100 %>
 <% if(params.has_key?:jusque) %>
@@ -720,4 +722,10 @@ html>body tbody.scroll {
       <% end %>
     <% end %>
   </center>
+<% end %>
+
+<% t2 = Time.now %>
+
+<% if jusque < 50 %>
+  <%= t2-t1 %> secondes
 <% end %>
