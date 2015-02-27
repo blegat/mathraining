@@ -7,9 +7,9 @@
 <% t1 = Time.now %>
 
 <!-- Test pour la performance -->
-<% jusque = 100 %>
-<% if(params.has_key?:jusque) %>
-  <% jusque = params[:jusque].to_i %>
+<% montretemps = 0 %>
+<% if(params.has_key?:montretemps) %>
+  <% montretemps = params[:montretemps].to_i %>
 <% end %>
 
 <!-- Style pour la barre de défilement dans le tableau -->
@@ -47,8 +47,6 @@ html>body tbody.scroll {
   <% end %>
   </h1>
 
-	<% if jusque >= 1 %> <!-- ICI ICI ICI -->
-
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
   <% cansee = Array.new %>
 
@@ -83,8 +81,6 @@ html>body tbody.scroll {
     <% enough_points = true %>
   <% end %>
 
-	<% end %> <!-- ICI ICI ICI -->
-
   <!-- Affichage des résolutions -->
   <div class="row">
 
@@ -93,13 +89,9 @@ html>body tbody.scroll {
 
   <!-- On va parcourir tous les exercices, qcms et problèmes -->
 
-	<% if jusque >= 2 %> <!-- ICI ICI ICI -->
-
   <% exercises = @user.solvedexercises.where(:correct => true).order("resolutiontime DESC") %>
   <% qcms = @user.solvedqcms.where(:correct => true).order("resolutiontime DESC") %>
   <% problems = @user.solvedproblems.order("resolutiontime DESC") %>
-
-	<% end %> <!-- ICI ICI ICI -->
 
   <% act = Array.new %>
   <% e_encours = 0 %>
@@ -135,14 +127,13 @@ html>body tbody.scroll {
 	  <% allpb[p.id] = p %>
 	<% end %>
 
-	<% if jusque >= 3 %>
+	<% premier = nil %>
+  <% dernier = nil %>
 
   <% (1..(exercises.size+qcms.size+problems.size)).each do |i| %>
     <% trouve = false %>
     <% besttime = 0 %>
     <% bestqui = -1 %>
-
-		<% if jusque >= 4 %>
 
     <% if e_encours < exercises.size && (!trouve || exercises[e_encours].resolutiontime.to_i > besttime) %>
       <% besttime = exercises[e_encours].resolutiontime.to_i %>
@@ -160,88 +151,57 @@ html>body tbody.scroll {
       <% bestqui = 3 %>
     <% end %>
 
-		<% end %>
-
-		<% if jusque >= 5 %>
-
     <% if bestqui == 1 %>
-		  <% if jusque >= 6 %>
       <% e = exercises[e_encours] %>
 			<% exo = allex[e.exercise_id] %>
-			<% end %>
-			<% if jusque >= 7 %>
       <% pt = exo.value %>
-			<% end %>
-			<% if jusque >= 8 %>
       <% pt = 0 if allsec[allchap[exo.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
+				<% dernier = e.resolutiontime.in_time_zone %>
+        <% if premier.nil? %>
+          <% premier = e.resolutiontime.in_time_zone %>
+        <% end %>
       <% end %>
-			<% end %>
-
 			<% e_encours = e_encours + 1 %>
-
-			<% if jusque >= 15 %>
       <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => allsec[allchap[exo.chapter_id].section_id].fondation}) %>
-      <% end %>
 		<% elsif bestqui == 2 %>
-	  	<% if jusque >= 9 %>
       <% q = qcms[q_encours] %>
 			<% qcm = allqcm[q.qcm_id] %>
       <% pt = qcm.value %>
       <% pt = 0 if allsec[allchap[qcm.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
+				<% dernier = q.resolutiontime.in_time_zone %>
+        <% if premier.nil? %>
+          <% premier = q.resolutiontime.in_time_zone %>
+        <% end %>
       <% end %>
-			<% end %>
-
 			<% q_encours = q_encours + 1 %>
-
-			<% if jusque >= 16 %>
       <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => allsec[allchap[qcm.chapter_id].section_id].fondation}) %>
-      <% end %>
 		<% elsif bestqui == 3 %>
-		  <% if jusque >= 10 %>
       <% p = problems[p_encours] %>
 			<% pb = allpb[p.problem_id] %>
-			<% end %>
-			<% if jusque >= 10 %>
       <% pt = pb.value %>
-			<% end %>
       <% nb_p = nb_p+1 %>
-			<% if jusque >= 11 %>
       <% peutvoir = enough_points %>
-			<% end %>
-			<% if jusque >= 12 %>
-      <% t = pb.virtualtest %>
-			<% end %>
-			<% if jusque >= 13 %>
-      <% if t.nil? && (!signed_in? || !current_user.sk.admin?) %>
+      <% t = pb.virtualtest_id %>
+      <% if t == 0 && (!signed_in? || !current_user.sk.admin?) %>
         <% pb.chapters.each do |c| %>
           <% peutvoir = false if !debloque[c.id] %>
         <% end %>
       <% end %>
-			<% end %>
-			<% if jusque >= 14 %>
-      <% if !t.nil? && (!signed_in? || !current_user.sk.admin?) %>
+      <% if t != 0 && (!signed_in? || !current_user.sk.admin?) %>
         <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
       <% end %>
-			<% end %>
-
 			<% p_encours = p_encours + 1 %>
-
-			<% if jusque >= 17 %>
+			<% dernier = p.resolutiontime.in_time_zone %>
+			<% if premier.nil? %>
+				<% premier = p.resolutiontime.in_time_zone %>
+			<% end %>
       <% act.push({:time => p.resolutiontime, :type => 4, :id => p.problem_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
-      <% end %>
-		<% else %>
-      Erreur
     <% end %>
-
-		<% end %>
-
   <% end %>
-
-	<% end %> <!-- ICI ICI ICI -->
 
   <% actperday = Array.new %>
 
@@ -252,26 +212,11 @@ html>body tbody.scroll {
 
   <% inscription = @user.created_at %>
 
-  <% premier = -1 %>
-  <% dernier = 0 %>
-
-	<% if jusque >= 18 %> <!-- ICI ICI ICI -->
-
   <!-- Si l'étudiant a déjà fait au moins un truc -->
   <% if act.size > 0 %>
 
-    <!-- On détermine le premier et le dernier acte non fondamental -->
-    <% act.each do |a| %>
-      <% if a[:pt] > 0 %>
-        <% dernier = a[:time].in_time_zone %>
-        <% if premier == -1 %>
-          <% premier = a[:time].in_time_zone %>
-        <% end %>
-      <% end %>
-    <% end %>
-
     <!-- On détermine si on rassemble les actes par minute, heure ou jour -->
-    <% if premier != -1 %>
+    <% if !premier.nil? %>
       <% if dernier.day != DateTime.now.in_time_zone.day || dernier.month != DateTime.now.in_time_zone.month || dernier.year != DateTime.now.in_time_zone.year %>
         <% parquoi = "jour" %>
       <% elsif dernier.hour < premier.hour - 1 %>
@@ -296,10 +241,6 @@ html>body tbody.scroll {
     </thead>
     <tbody class="scroll">
   <% end %>
-
-	<% end %> <!-- ICI ICI ICI -->
-
-	<% if jusque >= 19 %> <!-- ICI ICI ICI -->
 
   <!-- On parcourt les actes un par un (cas normal) -->
   <% act.each do |a| %>
@@ -363,16 +304,12 @@ html>body tbody.scroll {
 
   <% end %>
 
-	<% end %> <!-- ICI ICI ICI -->
-
   <% if act.size > 0 %>
     </tbody>
     </table>
   <% else %>
     <div class="hidden-xs"><b>Aucune activité.</b></div>
   <% end %>
-
-	<% if jusque >= 20 %> <!-- ICI ICI ICI -->
 
   <!-- Début du tableau des résolutions (cas gsm) -->
   <% if act.size > 0 %>
@@ -426,11 +363,7 @@ html>body tbody.scroll {
     <div class="visible-xs"><b>Aucune activité.</b></div>
   <% end %>
 
-	<% end %> <!-- ICI ICI ICI -->
-
   </div>
-
-  <% if jusque >= 25 %> <!-- ICI ICI ICI -->
 
   <!-- Affichage du score et du camembert -->
   <div class="col-lg-5 col-sm-12 col-xs-12">
@@ -530,11 +463,7 @@ html>body tbody.scroll {
 
   </div>
 
-	<% end %> <!-- ICI ICI ICI -->
-
   </div>
-
-	<% if jusque >= 30 %> <!-- ICI ICI ICI -->
 
   <!-- Si l'étudiant a un score non égal à 0, on montre son évolution -->
   <% if actualrating > 0 %>
@@ -750,8 +679,6 @@ html>body tbody.scroll {
 
 <% end %>
 
-<% end %> <!-- ICI ICI ICI -->
-
 <!-- Si administrateur, différentes options -->
 <% if signed_in? && current_user.sk.admin? %>
   <br/>
@@ -795,6 +722,6 @@ html>body tbody.scroll {
 
 <% t2 = Time.now %>
 
-<% if jusque < 50 %>
-  <%= t2-t1 %> secondes
+<% if montretemps == 1 %>
+  <br/>Temps de chargement : <%= t2-t1 %> secondes.
 <% end %>
