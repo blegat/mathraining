@@ -5,7 +5,7 @@ class SolvedqcmsController < ApplicationController
   before_filter :online_chapter
   before_filter :unlocked_chapter
 
-  # On tente de résoudre un qcm
+  # On tente de résoudre un qcm (pour la première fois)
   def create
     qcm = @qcm2
     user = current_user.sk
@@ -128,6 +128,7 @@ class SolvedqcmsController < ApplicationController
         end
       end
 
+      # Il s'agit de la même réponse que la précédente : on ne la compte pas
       if !autre
         redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
       end

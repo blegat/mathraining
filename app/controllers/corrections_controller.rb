@@ -8,26 +8,26 @@ class CorrectionsController < ApplicationController
   def create
     attach = Array.new
     totalsize = 0
-    
+
     # Si il faut donner un score, on vérifie que le score est donné
     if @submission.status == 0 && @submission.intest && @submission.score == -1 && (params["score".to_sym].nil? || params["score".to_sym].blank?)
       flash[:danger] = "Veuillez donner un score à cette solution."
       session[:ancientexte] = params[:correction][:content]
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
-    
+
     # On vérifie qu'il n'y a pas eu de nouveau message entre
     lastid = -1
     @submission.corrections.order(:created_at).each do |correction|
       lastid = correction.id
     end
-    
+
     if lastid != params[:lastcomment].to_i
       session[:ancientexte] = params[:correction][:content]
       flash[:danger] = "Un nouveau commentaire a été posté avant le vôtre! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire."
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
-    
+
     # On parcourt toutes les pièces jointes
     i = 1
     k = 1
@@ -53,7 +53,7 @@ class CorrectionsController < ApplicationController
       end
       k = k+1
     end
-    
+
     # On vérifie la taille des pièces jointes
     if totalsize > 10485760
       j = 1
@@ -69,7 +69,7 @@ class CorrectionsController < ApplicationController
 
     correction = @submission.corrections.build(params[:correction])
     correction.user = current_user.sk
-    
+
     # Si la sauvegarde se passe bien
     if correction.save
       # On enregistre les pièces jointes
@@ -79,12 +79,12 @@ class CorrectionsController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      
+
       # On attribue le score s'il faut
       if @submission.status == 0 && @submission.intest && @submission.score == -1
         @submission.score = params["score".to_sym].to_i
       end
-      
+
       # On supprime les réservations s'il faut
       if @submission.status == 0 && current_user.sk.admin?
         @submission.followings.each do |f|
@@ -94,13 +94,13 @@ class CorrectionsController < ApplicationController
 
       # On change le statut de la soumission
       # Il ne change pas s'il vaut 2 (déjà résolu)
-      
+
       # Si erroné et étudiant : nouveau commentaire
       if current_user.sk == @submission.user and @submission.status == 1
         @submission.status = 3
         @submission.save
         m = ''
-      
+
       # Si admin et nouvelle soumission : cela dépend du bouton
       elsif current_user.sk.admin and (@submission.status == 0 or @submission.status == 3) and
         (params[:commit] == "Poster et refuser la soumission" or
@@ -108,12 +108,12 @@ class CorrectionsController < ApplicationController
         @submission.status = 1
         @submission.save
         m = ' et soumission marquée comme incorrecte'
-        
+
       # Si soumission erronée et on accepte : devient correcte
       elsif current_user.sk.admin and params[:commit] == "Poster et accepter la soumission"
         @submission.status = 2
         @submission.save
-        
+
         # On donne les points et on enregistre qu'il est résolu
         unless @submission.user.solved?(@submission.problem)
           point_attribution(@submission.user, @submission.problem)
@@ -124,7 +124,7 @@ class CorrectionsController < ApplicationController
           link.save
         end
         m = ' et soumission marquée comme correcte'
-        
+
         # On supprime les brouillons!
         pb = @submission.problem
         brouillon = pb.submissions.where('user_id = ? AND status = -1', @submission.user).first
@@ -138,7 +138,7 @@ class CorrectionsController < ApplicationController
           brouillon.destroy
         end
       end
-      
+
       # On gère les notifications
       if current_user.sk.admin?
         following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
@@ -167,14 +167,14 @@ class CorrectionsController < ApplicationController
         # An else would have the same effect normally
         @submission.followings.update_all(read: false)
       end
-      
+
       # On change la valeur de lastcomment
       @submission.lastcomment = correction.created_at
       @submission.save
-      
+
       flash[:success] = "Réponse postée#{m}."
       redirect_to problem_path(@submission.problem, :sub => @submission)
-      
+
     # Si il y a eu une erreur au moment de sauver
     else
       # On supprime les pièces jointes
@@ -197,7 +197,7 @@ class CorrectionsController < ApplicationController
       end
     end
   end
-  
+
   ########## PARTIE PRIVEE ##########
   private
 
@@ -208,7 +208,7 @@ class CorrectionsController < ApplicationController
       redirect_to root_path
     end
   end
-  
+
   # Attribution des points d'un problème
   def point_attribution(user, problem)
     if !user.solved?(problem) # Eviter les doubles comptages

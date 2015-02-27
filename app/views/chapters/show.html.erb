@@ -30,56 +30,63 @@
       <% i = 1 %>
       <br/>
       <h4 class="list-group-item-heading" style="margin-bottom:10px;">Général</h4>
-      
+
       <%= link_to "Introduction", chapter_path(@chapter), :class => "list-group-item active" if type == 0 %>
       <%= link_to "Introduction", chapter_path(@chapter), :class => "list-group-item" unless type == 0 %>
-      
+
       <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item active" if type == 10 %>
       <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item" unless type == 10 %>
-   
+
       <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item", :target => "_blank" %>
-      
+
       <!-- Points théoriques -->
       <% compteur = 0 %>
       <% listex = @chapter.theories.order(:position) %>
       <% listex.each do |f| %>
         <% if f.online || (signed_in? && current_user.sk.admin?) %>
-        
+
           <% if compteur == 0 %>
             <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Points théoriques</h4>
           <% end %>
-          
+
           <% compteur = compteur + 1 %>
-          
+
+          <% lu = false %>
+          <% if signed_in? && !current_user.sk.admin? %>
+            <% if current_user.sk.theories.exists?(f.id) %>
+              <% lu = true %>
+            <% end %>
+          <% end %>
+
           <% if type == 1 && f.id == id %>
             <% number = i %>
             <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-warning active" if !f.online %>
             <% if f.online %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success active" if signed_in? && !current_user.sk.admin? && current_user.sk.theories.exists?(f.id) %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item active" unless signed_in? && !current_user.sk.admin? && current_user.sk.theories.exists?(f.id) %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success active" if signed_in? && !current_user.sk.admin? && lu %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item active" unless signed_in? && !current_user.sk.admin? && lu %>
             <% end %>
           <% else %>
             <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-warning" if !f.online %>
             <% if f.online %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success" if signed_in? && !current_user.sk.admin? && current_user.sk.theories.exists?(f.id) %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item" unless signed_in? && !current_user.sk.admin? && current_user.sk.theories.exists?(f.id) %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success" if signed_in? && !current_user.sk.admin? && lu %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item" unless signed_in? && !current_user.sk.admin? && lu %>
             <% end %>
           <% end %>
 
           <% i = i + 1 %>
         <% end %>
       <% end %>
-      
-      
+
+
       <!-- Peut-on voit les exercices? -->
       <% exovisibles = true %>
-      
+
       <% if !signed_in? || !current_user.sk.admin? %>
         <% @chapter.prerequisites.each do |p| %>
           <% exovisibles = false if !p.section.fondation && (!signed_in? || !current_user.sk.chapters.exists?(p)) %>
         <% end %>
       <% end %>
-      
+
       <!-- Exercices -->
       <% compteur = 0 %>
       <% liste = @chapter.exercises.order(:position) %>
@@ -109,13 +116,13 @@
         <% if encours == 1 %>
           <% f = liste[un] %>
           <% if f.online || (signed_in? && current_user.sk.admin?) %>
-          
+
             <% if compteur == 0 %>
               <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Exercices</h4>
             <% end %>
-            
+
             <% compteur = compteur + 1 %>
-            
+
             <% if exovisibles %>
               <% if f.online %>
                 <% if signed_in? %>
@@ -149,7 +156,7 @@
             <% else %>
               <span class="list-group-item disabled"><%= "Exercice #{j}" %></span>
             <% end %>
-            
+
             <% if f.id == id  && type == 2 %>
               <% number = j %>
               <% number2 = i %>
@@ -157,18 +164,18 @@
             <% j = j+1 if f.online %>
           <% end %>
           <% un = un + 1 %>
-          
+
         <!-- QCM -->
         <% else %>
           <% f = liste2[deux] %>
           <% if f.online || (signed_in? && current_user.sk.admin?) %>
-          
+
             <% if compteur == 0 %>
               <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Exercices</h4>
             <% end %>
-            
+
             <% compteur = compteur+1 %>
-            
+
             <% if exovisibles %>
               <% if f.online %>
                 <% if signed_in? %>
@@ -202,8 +209,8 @@
             <% else %>
               <span class="list-group-item disabled"><%= "Exercice #{j}" %></span>
             <% end %>
-            
-            
+
+
             <% if f.id == id  && type == 3 %>
               <% number = j %>
               <% number2 = i %>
@@ -226,10 +233,10 @@
   <div class="col-md-10 col-sm-9 col-xs-12">
 
     <!-- INTRODUCTION -->
-    
+
     <% if type == 0 %>
       <%= render 'intro' %>
-    
+
       <% if !exovisibles %>
         <br/><span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
         <% prems = true %>
