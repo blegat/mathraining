@@ -25,9 +25,9 @@
 
 <!-- Si administrateur -->
 <% if signed_in? && current_user.sk.admin? %>
-  
+
   <!-- Dans un test virtuel ou non -->
-  <% if !@problem.online? %>        
+  <% if !@problem.online? %>
     <%= form_for(:problem, :url => problem_add_virtualtest_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
 	  <div class="form-inline">
 	    <% selectionne = 0 %>
@@ -38,26 +38,26 @@
           Ce problème fait partie du <b>test virtuel #<%= vt.number %></b>.
           <% selectionne = vt.id %>
         <% end %>
-        
+
         <% liste = Array.new %>
         <% liste.push(["Aucun test virtuel", 0]) %>
         <% Virtualtest.where(online: false).all.each do |t| %>
           <% liste.push(["Test virtuel ##{ t.number }", t.id]) %>
         <% end %>
-    
-        Faire appartenir ce problème à : 
+
+        Faire appartenir ce problème à :
         <%= f.select(:virtualtest_id, options_for_select(liste, selectionne), {}, {:prompt => true, :class => "form-control"}) %>
         <%= f.submit "OK", class: "btn btn-primary" %>
       </div>
     <% end %>
   <% end %>
-  
+
   <!-- Prérequis -->
   <h3>Prérequis (uniquement visibles des administrateurs)</h3>
-  
+
   <% has_pre = false %>
   <% enligne_ok = true %>
-  
+
   <ul>
   <% @problem.chapters.each do |c| %>
   <% has_pre = true %>
@@ -65,7 +65,7 @@
   <% enligne_ok = false if !c.online %>
   <% end %>
   </ul>
-   
+
   <% if !@problem.online %>
 	<% liste = Array.new %>
 
@@ -78,21 +78,21 @@
 		  <% liste3.push([c.name, c.id]) %>
 		<% end %>
 		<% liste2.push(liste3) %>
-	  
+
 		<% liste.push(liste2) %>
 		<% end %>
 	<% end %>
-	
+
 	<%= form_for("chapter_problem", :url => problem_add_prerequisite_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
 	  <div class="form-inline">
-        Ajouter le prérequis : 
+        Ajouter le prérequis :
         <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, {:prompt => true, :class => "form-control"}) %>
         <%= f.submit "OK", class: "btn btn-primary" %>
       </div>
     <% end %>
-  
+
   <% end %>
-  
+
 <% end %>
 
 <!-- Enoncé -->
@@ -102,7 +102,21 @@
 
 <!-- Origine si administrateur ou si résolu -->
 <% if current_user.sk.admin? || @resolu %>
-  <br/><br/><i>(Origine du problème :
+
+  <% taille = @problem.statement.size() %>
+  <% liste = false %>
+  <% if taille >= 5 %>
+    <% fin = @problem.statement[taille-5, taille-1] %>
+    <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
+      <% liste = true %>
+    <% end %>
+  <% end %>
+
+  <% if !liste %>
+    <br/><br/>
+  <% end %>
+
+  <i>(Origine du problème :
   <% if @problem.origin.nil? || @problem.origin.size == 0 %>
     <% if current_user.sk.admin? %>
       <span style="color:orange;">Inconnue</span>)
@@ -119,7 +133,7 @@
 <!-- Si administrateur -->
 
 <% if signed_in? && current_user.sk.admin? %>
-  
+
   <!-- Explication -->
   <h3>Éléments de solution</h3>
   <% if @problem.explanation.size == 0 %>
@@ -129,9 +143,9 @@
     <br/>
   <% end %>
   <br/>
-  
+
   <!-- Modifier/Supprimer/... -->
-  
+
   <div class="noprint">
     <center>
       <% if @problem.online %>
@@ -161,19 +175,19 @@
         <% end %>
       </center> <br/>
     <% end %>
-    
+
     <!-- Toutes les soumissions des étudiants -->
     <% if @problem.online %>
       <%= render 'submissions/index', problem: @problem %>
     <% end %>
   </div>
-  
+
 <!-- Si étudiant -->
 <% else %>
 
   <!-- Affiche les soumissions qu'on peut voir -->
   <%= render 'submissions/index', problem: @problem if signed_in? %>
-  
+
   <!-- Si pas encore résolu le problème -->
   <% unless (signed_in? && @resolu) || (signed_in? && !@newsub) %>
     <% if !signed_in? %>
@@ -190,7 +204,7 @@
 <!-- Si on veut écrire une nouvelle soumission -->
 <% if soumission == 0 %>
   <hr>
-  
+
   <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
   <% unless (signed_in? && @resolu) || (signed_in? && !@newsub) %>
     <% if !@brouillon %>
@@ -199,12 +213,12 @@
       <%= render 'submissions/newbrouillon', problem: @problem %>
     <% end %>
   <% end %>
-  
+
 <!-- Si on veut regarder une soumission -->
 <% elsif soumission > 0 %>
   <hr>
   <% @submission = Submission.find_by_id(soumission) %>
-  
+
   <!-- On vérifie que l'on peut la regarder -->
   <% if signed_in? && @submission.problem == @problem && (@submission.status >= 0 || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.status == 2) || current_user.sk.admin) %>
      <%= render 'submissions/show' %>

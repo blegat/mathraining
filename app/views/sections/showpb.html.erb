@@ -34,53 +34,53 @@
       <% end %>
     <% end %>
   <% end %>
-  
+
   <% t = p.virtualtest %>
-  
+
   <% if !t.nil? && !current_user.sk.admin? %>
     <% if current_user.sk.status(t) <= 0 %>
       <% visible = false %>
     <% end %>
   <% end %>
-  
+
   <!-- Si on peut le voir -->
   <% if visible %>
     <% if compteur == 0 %>
       Chaque problème de niveau <%= level %> vaut <%= p.value %> points.<br/><br/>
     <% end %>
     <% compteur = compteur+1 %>
-    
+
     <% resolu = false %>
 
     <!-- Si déjà résolu : vert -->
     <% if signed_in? && current_user.sk.solved?(p) && !current_user.sk.admin? %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#DDFFDD;">
       <% resolu = true %>
-      
+
     <!-- Si pas en ligne : orange -->
     <% elsif !p.online %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFEEAA;">
-      
+
     <!-- Si connecté -->
     <% elsif signed_in? %>
       <% sub = current_user.sk.submissions.where("problem_id = ? AND status >= 0", p.id).order('created_at') %>
-      
+
       <!-- Si aucune soumission (ou admin) : jaune, ou bleu si brouillon -->
       <% if sub.size == 0 || current_user.sk.admin? %>
         <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
       <% else %>
         <% sub = sub.last %>
-        
+
         <!-- Si une soumission pas encore corrigée : orange -->
         <% if sub.status == 0 %>
           <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFEEAA;">
-          
+
         <!-- Si une soumission erronée : rouge -->
         <% else %>
           <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFD0D0;">
         <% end %>
       <% end %>
-      
+
     <!-- Si pas connecté : jaune (Cela devrait ne jamais arriver) -->
     <% else %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
@@ -91,7 +91,7 @@
       - <%= link_to "Test virtuel ##{p.virtualtest.number}", p.virtualtest %>
     <% end %>
     <%= "(en construction)" if !p.online %></h3></center>
-    
+
     <!-- Prérequis (si admin) -->
     <% if signed_in? && current_user.sk.admin? %>
       <b>Prérequis : </b>
@@ -105,13 +105,26 @@
       <% end %>
       <br/><br/>
     <% end %>
-    
+
     <!-- Enoncé -->
     <%= raw(htmlise(p.statement)) %>
-    
+
+    <% taille = p.statement.size() %>
+    <% liste = false %>
+    <% if taille >= 5 %>
+      <% fin = p.statement[taille-5, taille-1] %>
+      <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
+        <% liste = true %>
+      <% end %>
+    <% end %>
+
+    <% if !liste %>
+      <br/><br/>
+    <% end %>
+
     <!-- Origine si administrateur ou si résolu -->
     <% if current_user.sk.admin? || resolu %>
-      <br/><br/><i>(Origine du problème :
+      <i>(Origine du problème :
       <% if p.origin.nil? || p.origin.size == 0 %>
         Inconnue)
       <% else %>
@@ -119,10 +132,10 @@
   <% end %>
   </i>
 <% end %>
-    
+
     </div>
     <br/>
-    <% end %>	
+    <% end %>
   <% end %>
 <% end %>
 
@@ -137,7 +150,7 @@
   <center>
   <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>
   </center>
-<% end %>	
+<% end %>
 
 
 <% end %>
