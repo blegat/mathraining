@@ -67,7 +67,6 @@ class ApplicationController < ActionController::Base
   end
 
   def point_attribution(user)
-    user.point.rating = 0
     user.rating = 0
     partials = user.pointspersections
     partial = Array.new
@@ -90,7 +89,6 @@ class ApplicationController < ActionController::Base
         pt = exo.value
 
         if !exo.chapter.section.fondation? # Pas un fondement
-          user.point.rating = user.point.rating + pt
           user.rating = user.rating + pt
         end
 
@@ -104,7 +102,6 @@ class ApplicationController < ActionController::Base
         pt = qcm.value
 
         if !qcm.chapter.section.fondation? # Pas un fondement
-          user.point.rating = user.point.rating + pt
           user.rating = user.rating + pt
         end
 
@@ -116,13 +113,11 @@ class ApplicationController < ActionController::Base
       problem = p.problem
       pt = problem.value
 
-      user.point.rating = user.point.rating + pt
       user.rating = user.rating + pt;
 
       partial[problem.section.id].points = partial[problem.section.id].points + pt
     end
 
-    user.point.save
     user.save
     Section.all.each do |s|
       partial[s.id].save

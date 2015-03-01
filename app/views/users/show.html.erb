@@ -37,7 +37,7 @@ html>body tbody.scroll {
 <!-- SI c'est un étudiant -->
 <% else %>
 
-  <% actualrating = @user.point.rating %>
+  <% actualrating = @user.rating %>
   <% niveau = @user.level %>
 
   <!-- Titre avec le nom et le niveau -->
@@ -77,7 +77,7 @@ html>body tbody.scroll {
   <% end %>
 
   <% enough_points = false %>
-  <% if signed_in? && (current_user.sk.admin? || current_user.sk.point.rating >= 200) %>
+  <% if signed_in? && (current_user.sk.admin? || current_user.sk.rating >= 200) %>
     <% enough_points = true %>
   <% end %>
 

@@ -136,8 +136,6 @@ class SolvedexercisesController < ApplicationController
     partials = user.pointspersections
 
     if !exo.chapter.section.fondation # Pas un fondement
-      user.point.rating = user.point.rating + pt
-      user.point.save
       user.rating = user.rating + pt
       user.save
     end

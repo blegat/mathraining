@@ -216,8 +216,6 @@ class CorrectionsController < ApplicationController
 
       partials = user.pointspersections
 
-      user.point.rating = user.point.rating + pt
-      user.point.save
       user.rating = user.rating + pt
       user.save
 

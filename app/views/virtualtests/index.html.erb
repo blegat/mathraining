@@ -19,7 +19,7 @@
 <% if signed_in? %>
 
 <!-- On vérifie que l'on a 200 points ou plus -->
-<% if !current_user.sk.admin? && current_user.sk.point.rating < 200 %>
+<% if !current_user.sk.admin? && current_user.sk.rating < 200 %>
 
 <span style="color:red; font-weight:bold;">Les tests virtuels ne sont pas accessibles aux utilisateurs ayant un score inférieur à 200.</span>
 
@@ -29,11 +29,11 @@
 
   <!-- Vérifie si on a accès à ce test virtuel -->
   <% access = true %>
-  
+
   <% nb_prob = 0 %>
   <% pre = Array.new %>
   <% niveaumoyen = 0.0 %>
-  
+
   <% t.problems.each do |p| %>
     <% nb_prob += 1 %>
     <% niveaumoyen += p.level %>
@@ -42,35 +42,35 @@
       <% access = false if !current_user.sk.solved?(c) %>
     <% end %>
   <% end %>
-  
+
   <!-- Calcul du niveau moyen -->
   <% if nb_prob > 0 %>
     <% niveaumoyen = niveaumoyen / nb_prob.to_f %>
   <% end %>
-  
+
   <% access = false if !t.online? %>
   <% access = true if current_user.sk.admin? %>
-  
+
   <!-- Si on a accès à ce test virtuel -->
   <% if access %>
     <% compteur = compteur + 1 %>
     <% status = current_user.sk.status(t) %>
-    
+
     <!-- Si (administrateur et en ligne) OU (étudiant et pas encore fait) : jaune -->
     <% if (current_user.sk.admin? && t.online?) || (!current_user.sk.admin? && status == -1) %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
-      
+
     <!-- Si (administrateur et pas en ligne) OU (étudiant et en cours) : orange -->
     <% elsif (current_user.sk.admin? && !t.online?) || status == 0 %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFEEAA;">
-      
+
     <!-- Sinon : déjà fait donc vert -->
     <% else %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#DDFFDD;">
     <% end %>
-    
+
     <center><h3 style="margin-top:20px; margin-bottom:15px;"><%= link_to "Test ##{ t.number }", t %> <%= "(en construction)" if !t.online %></h3></center>
-    
+
     <!-- Prérequis (si admin) -->
     <% if current_user.sk.admin? %>
       <b>Prérequis : </b>
@@ -83,12 +83,12 @@
       <% end %>
       <br/>
     <% end %>
-    
+
     <!-- Description -->
     <table width="100%" style="margin-top:30px;"><tr>
     <td width="33%" style="font-size:18px;"><center><%= nb_prob %> problèmes</center></td>
     <td width="33%" style="font-size:18px;"><center>Durée : <%= t.duration / 60 %>h<%= "0" if (t.duration % 60) < 10 %><%= t.duration % 60 %></center></td>
-    <td width="33%" style="font-size:18px;"><center>Niveau moyen : 
+    <td width="33%" style="font-size:18px;"><center>Niveau moyen :
     <% if niveaumoyen == 0 %>
       -
     <% else %>
@@ -98,16 +98,16 @@
     </td>
     </tr>
     </table>
-    
+
     <!-- Si étudiant et déjà commencé (ou fini) -->
     <% if !current_user.sk.admin? && status >= 0 %>
       <% initial = Takentest.find_by(user_id: current_user.sk.id, virtualtest_id: t.id).takentime %>
       <% depart = initial.to_i %>
     <% end %>
-    
+
     <!-- Si étudiant et en cours : chrono -->
     <% if !current_user.sk.admin? && status == 0 %>
-    
+
       <script type="text/javascript">
         function RemainingTime(){
 
@@ -127,16 +127,16 @@
           reste = reste - 3600 * resteh
           var restem = Math.floor(reste / 60)
           var restes = reste - 60 * restem
-  
+
           if(resteh < 10){ afficheh = "0" + resteh }
           else { afficheh = resteh }
-  
+
           if(restem < 10){ affichem = "0" + restem }
           else { affichem = restem }
-  
+
           if(restes < 10){ affiches = "0" + restes }
           else { affiches = restes }
-  
+
           document.getElementById('clockbox').innerHTML = afficheh + "h" + affichem + ":" + affiches
         }
 
@@ -152,10 +152,10 @@
       <center><span style="font-size:20px;">Temps restant : <b><span id="clockbox">--h--:--</span></b></span></center>
 
     <% end %>
-    
+
     <!-- Si étudiant et déjà terminé : affichage du score -->
     <% if !current_user.sk.admin? && status == 1 %>
-    
+
       <br/>
 
       <table width="100%">
@@ -210,7 +210,7 @@
       </table>
 
     <% end %>
-    
+
     <!-- Si administrateur et il y a déjà eu un test -->
     <% if current_user.sk.admin? && t.takentests.count > 0 %>
       <br/><br/>
@@ -225,7 +225,7 @@
       <% end %>
       <th style="text-align:center;">Total</th>
       </tr>
-    
+
       <% t.takentests.order(:id).each do |tt| %>
         <% if tt.status == 0 %>
           <tr style="background-color:yellow;">
@@ -265,7 +265,7 @@
       </center>
       <br/>
     <% end %>
-    
+
     </div><br/>
   <% end %>
 <% end %>
@@ -275,7 +275,7 @@
   <center>
   <%= button_to "Ajouter un test virtuel", new_virtualtest_path, method: :get, class: 'btn btn-lg btn-default btn-grey' %>
   </center>
-<% end %>	
+<% end %>
 
 <% if compteur == 0 %>
   Aucun test virtuel n'est disponible.

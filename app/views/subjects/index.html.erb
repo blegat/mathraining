@@ -81,7 +81,7 @@
   <% if m.nil? %>
     <% m = s %>
   <% end %>
-  <% if current_user.sk.point.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+  <% if current_user.sk.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
     <% style = "background-color:#FFFFBB;" %>
   <% end %>
   <tr style="<%= style %>">
@@ -241,9 +241,6 @@
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->
 <% if !current_user.other && current_user.sk.combien_forum > 0 %>
-  <% current_user.sk.point.forumseen = DateTime.current %>
-  <% current_user.sk.point.save %>
-
   <% current_user.sk.forumseen = DateTime.current %>
   <% current_user.sk.save %>
 <% end %>

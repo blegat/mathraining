@@ -181,7 +181,7 @@ class SubmissionsController < ApplicationController
     submission.user = current_user.sk
     submission.intest = true
     submission.visible = false
-    submission.lastcomment = Datetime.current
+    submission.lastcomment = DateTime.current
 
     if submission.save
       j = 1
@@ -491,28 +491,10 @@ class SubmissionsController < ApplicationController
     end
   end
 
-  # Attribution des points pour un problème
-  def point_attribution(user, problem)
-    if !user.solved?(problem) # Avoid double count
-      pt = problem.value
-
-      partials = user.pointspersections
-
-      if !problem.section.fondation? # Pas un fondement
-        user.point.rating = user.point.rating + pt
-        user.point.save
-      end
-
-      partial = partials.where(:section_id => problem.section.id).first
-      partial.points = partial.points + pt
-      partial.save
-    end
-  end
-
   # Vérifie que l'on a assez de points si on est étudiant
   def enough_points
     if !current_user.sk.admin?
-      score = current_user.sk.point.rating
+      score = current_user.sk.rating
       redirect_to root_path if score < 200
     end
   end

@@ -37,7 +37,6 @@ class User < ActiveRecord::Base
   has_many :solvedproblems, dependent: :destroy
   has_many :problems, through: :solvedproblems
   has_many :pictures
-  has_one :point, dependent: :destroy
   has_many :pointspersections, dependent: :destroy
   has_many :submissions, dependent: :destroy
   has_many :followings, dependent: :destroy
@@ -108,11 +107,10 @@ class User < ActiveRecord::Base
     if admin
       return {color:"#000000"}
     end
-    actualrating = point.rating
     i = 0
     actuallevel = Color.order(:pt).first
     Color.order(:pt).to_a.each do |c|
-      if c.pt <= actualrating
+      if c.pt <= rating
         actuallevel = c
       end
       i = i+1
@@ -137,11 +135,11 @@ class User < ActiveRecord::Base
     lastsubjects = Array.new
     compteur = 0
     if self.admin?
-      lastsubjects = Subject.where("lastcomment > ?", self.point.forumseen)
+      lastsubjects = Subject.where("lastcomment > ?", self.forumseen)
     elsif self.wepion?
-      lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.point.forumseen)
+      lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen)
     else
-      lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.point.forumseen)
+      lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen)
     end
     lastsubjects.each do |s|
       m = s.messages.order(:id).last
@@ -184,10 +182,6 @@ class User < ActiveRecord::Base
 
   # Créer les points associés à l'utilisateur
   def create_points
-    newpoint = Point.new
-    newpoint.rating = 0
-    self.point = newpoint
-
     Section.all.to_a.each do |s|
       newpoint = Pointspersection.new
       newpoint.points = 0

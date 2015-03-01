@@ -14,7 +14,7 @@ class VirtualtestsController < ApplicationController
   # Voir tous les tests virtuels
   def index
   end
-  
+
   # Montrer un test virtuel
   def show
   end
@@ -28,20 +28,20 @@ class VirtualtestsController < ApplicationController
   def edit
     @virtualtest = Virtualtest.find(params[:id])
   end
-  
+
   # Créer un test virtuel 2
   def create
     @virtualtest = Virtualtest.new
     @virtualtest.duration = params[:virtualtest][:duration]
     @virtualtest.online = false
-    
+
     nombre = 0
     loop do
       nombre = rand(100)
       break if Virtualtest.where(:number => nombre).count == 0
     end
     @virtualtest.number = nombre
-    
+
     if @virtualtest.save
       flash[:success] = "Test virtuel ajouté."
       redirect_to @virtualtest
@@ -79,7 +79,7 @@ class VirtualtestsController < ApplicationController
     @virtualtest.save
     redirect_to @virtualtest
   end
-  
+
   # Commencer le test
   def begin_test
     t = Takentest.new
@@ -93,16 +93,16 @@ class VirtualtestsController < ApplicationController
 
   ########## PARTIE PRIVEE ##########
   private
-  
+
   # On récupère
   def recup
     @virtualtest = Virtualtest.find(params[:id])
   end
-  
+
   def recup2
     @virtualtest = Virtualtest.find(params[:virtualtest_id])
   end
-  
+
   # Vérifie qu'on a accès à ce test
   def has_access
     if !current_user.sk.admin?
@@ -115,12 +115,12 @@ class VirtualtestsController < ApplicationController
       redirect_to root_path if !visible
     end
   end
-  
+
   # Vérifie que le test est en ligne ou qu'on est admin
   def online_test
     redirect_to root_path if !@virtualtest.online && !current_user.sk.admin
   end
-  
+
   # Vérifie que le test peut être en ligne
   def can_be_online
     @virtualtest = Virtualtest.find(params[:virtualtest_id])
@@ -132,7 +132,7 @@ class VirtualtestsController < ApplicationController
     end
     redirect_to @virtualtest if !can_online || nb_prob == 0
   end
-  
+
   # Vérifie qu'on peut commencer le test
   def can_begin
     if current_user.sk.status(@virtualtest) >= 0
@@ -142,16 +142,16 @@ class VirtualtestsController < ApplicationController
       redirect_to @virtualtest
     end
   end
-  
+
   # Vérifie qu'on ne supprime pas un test en ligne
   def delete_online
     redirect_to root_path if @virtualtest.online
   end
-  
+
   # Vérifie que l'on a assez de points si on est étudiant
   def enough_points
     if !current_user.sk.admin?
-      score = current_user.sk.point.rating
+      score = current_user.sk.rating
       redirect_to root_path if score < 200
     end
   end

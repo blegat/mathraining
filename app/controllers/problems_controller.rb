@@ -11,18 +11,18 @@ class ProblemsController < QuestionsController
   # Voir le problème : il faut avoir accès
   def show
   end
-  
+
   # Créer un problème : il faut être admin
   def new
     @problem = Problem.new
     @section = Section.find(params[:section_id])
   end
-  
+
   # Editer un problème : il faut être admin
   def edit
     @problem = Problem.find(params[:id])
   end
-  
+
   # Créer un problème 2 : il faut être admin
   def create
     @problem = Problem.new
@@ -32,14 +32,14 @@ class ProblemsController < QuestionsController
     @section = Section.find_by_id(params[:section_id])
     @problem.online = false
     @problem.section = @section
-    
+
     nombre = 0
     loop do
       nombre = @problem.level*100 + @problem.section.id*1000+rand(100)
       break if Problem.where(:number => nombre).count == 0
     end
     @problem.number = nombre
-    
+
     @problem.explanation = ""
     if @problem.save
       flash[:success] = "Problème ajouté."
@@ -54,7 +54,7 @@ class ProblemsController < QuestionsController
     @problem = Problem.find(params[:id])
     @problem.statement = params[:problem][:statement]
     @problem.origin = params[:problem][:origin]
-    
+
     if !@problem.online
       if @problem.level != params[:problem][:level].to_i
         @problem.level = params[:problem][:level]
@@ -128,28 +128,28 @@ class ProblemsController < QuestionsController
       render 'explanation'
     end
   end
-  
+
   # Supprimer un prérequis
   def delete_prerequisite
     @chapter = Chapter.find(params[:chapter_id])
-    @problem = Problem.find(params[:problem_id])    
+    @problem = Problem.find(params[:problem_id])
     @problem.chapters.delete(@chapter)
     redirect_to @problem
   end
-  
+
   # Ajouter un prérequis
   def add_prerequisite
-    @problem = Problem.find(params[:problem_id])	
+    @problem = Problem.find(params[:problem_id])
     if !params[:chapter_problem][:chapter_id].empty?
       @chapter = Chapter.find(params[:chapter_problem][:chapter_id])
       @problem.chapters << @chapter
     end
     redirect_to @problem
   end
-  
+
   # Ajouter à un test virtuel
   def add_virtualtest
-    @problem = Problem.find(params[:problem_id])	
+    @problem = Problem.find(params[:problem_id])
     if !params[:problem][:virtualtest_id].empty?
       if params[:problem][:virtualtest_id].to_i == 0
         @problem.virtualtest_id = 0
@@ -167,7 +167,7 @@ class ProblemsController < QuestionsController
     end
     redirect_to @problem
   end
-  
+
   # Déplacer dans un test virtuel
   def order_minus
     @problem = Problem.find(params[:problem_id])
@@ -177,7 +177,7 @@ class ProblemsController < QuestionsController
     flash[:success] = "Problème déplacé vers la droite."
     redirect_to virtualtest_path(@t, :p => @problem.id)
   end
-  
+
   # Déplacer dans un test virtuel
   def order_plus
     @problem = Problem.find(params[:problem_id])
@@ -187,7 +187,7 @@ class ProblemsController < QuestionsController
     flash[:success] = "Problème déplacé vers la gauche."
     redirect_to virtualtest_path(@t, :p => @problem.id)
   end
-  
+
   ########## PARTIE PRIVEE ##########
   private
 
@@ -196,7 +196,7 @@ class ProblemsController < QuestionsController
     @problem = Problem.find(params[:id])
     redirect_to problem_path(@problem) if (!current_user.sk.root && @problem.online && @problem.chapter.online)
   end
-  
+
   # Vérifie qu'on peut voir ce problème
   def has_access
     @problem = Problem.find(params[:id])
@@ -206,7 +206,7 @@ class ProblemsController < QuestionsController
         visible = false if !signed_in? || !current_user.sk.solved?(c)
       end
     end
-    
+
     t = @problem.virtualtest
     if !t.nil?
       if !signed_in?
@@ -217,15 +217,15 @@ class ProblemsController < QuestionsController
         end
       end
     end
-    
+
     redirect_to root_path if !visible
   end
-  
+
   # Vérifie que le problème est en ligne
   def online_problem
     redirect_to root_path if !@problem.online && !current_user.sk.admin
   end
-  
+
   # Vérifie que le problème peut être en ligne
   def can_be_online
     @problem = Problem.find(params[:problem_id])
@@ -237,11 +237,11 @@ class ProblemsController < QuestionsController
     end
     redirect_to @problem if !ok || nombre == 0
   end
-  
+
   # Vérifie que l'on a assez de points si on est étudiant
   def enough_points
     if !current_user.sk.admin?
-      score = current_user.sk.point.rating
+      score = current_user.sk.rating
       redirect_to root_path if score < 200
     end
   end
