@@ -77,9 +77,17 @@ class User < ActiveRecord::Base
     "#{self.first_name} #{self.last_name}"
   end
 
-  # Rend true si l'utilisateur a résolu le problème
+  # Devrait ne plus être utilisé : on privilégie les deux suivants meilleurs en complexité
   def solved?(x)
     return x.users.include?(self)
+  end
+
+  def pb_solved?(problem)
+    return self.problems.include?(problem)
+  end
+
+  def chap_solved?(chapter)
+    return self.chapters.include?(chapter)
   end
 
   def solution(problem)

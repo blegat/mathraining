@@ -8,7 +8,7 @@ class CorrectionfilesController < ApplicationController
   def download
     send_file @thing.file.path, :type => @thing.file_content_type, :filename => @thing.file_file_name
   end
-  
+
   # Supprimer fictivement la pièce jointe : il faut être root
   def fake_delete
     @thing = Correctionfile.find(params[:correctionfile_id])
@@ -22,19 +22,19 @@ class CorrectionfilesController < ApplicationController
     @fakething.save
     @thing.file.destroy
     @thing.destroy
-    
+
     flash[:success] = "Contenu de la pièce jointe supprimé."
-    
+
     redirect_to problem_path(@submission.problem, :sub => @submission)
   end
-  
+
   ########## PARTIE PRIVEE ##########
   private
 
   # Pour avoir accès, il faut soit être admin, soit être le propriétaire de la pièce jointe, soit avoir résolu le même problème
   def have_access
     @thing = Correctionfile.find(params[:id])
-    redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.correction.submission.user || current_user.sk.solved?(@thing.correction.submission.problem))
+    redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.correction.submission.user || current_user.sk.pb_solved?(@thing.correction.submission.problem))
   end
 
 end

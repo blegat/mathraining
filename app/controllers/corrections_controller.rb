@@ -115,7 +115,7 @@ class CorrectionsController < ApplicationController
         @submission.save
 
         # On donne les points et on enregistre qu'il est résolu
-        unless @submission.user.solved?(@submission.problem)
+        unless @submission.user.pb_solved?(@submission.problem)
           point_attribution(@submission.user, @submission.problem)
           link = Solvedproblem.new
           link.user_id = @submission.user.id
@@ -212,7 +212,7 @@ class CorrectionsController < ApplicationController
 
   # Attribution des points d'un problème
   def point_attribution(user, problem)
-    if !user.solved?(problem) # Eviter les doubles comptages
+    if !user.pb_solved?(problem) # Eviter les doubles comptages
       pt = problem.value
 
       partials = user.pointspersections

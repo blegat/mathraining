@@ -109,7 +109,7 @@ class VirtualtestsController < ApplicationController
       visible = true
       @virtualtest.problems.each do |p|
         p.chapters.each do |c|
-          visible = false if !current_user.sk.solved?(c)
+          visible = false if !current_user.sk.chap_solved?(c)
         end
       end
       redirect_to root_path if !visible

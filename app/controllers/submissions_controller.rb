@@ -427,14 +427,14 @@ class SubmissionsController < ApplicationController
   # Peut voir la soumission
   def can_see
     @submission = Submission.find_by_id(params[:id])
-    if ((@submission.status == -1 && !current_user.sk.admin?) || (@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.solved?(@problem) && !current_user.sk.admin))
+    if ((@submission.status == -1 && !current_user.sk.admin?) || (@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.pb_solved?(@problem) && !current_user.sk.admin))
       redirect_to root_path
     end
   end
 
   # Pas déjà résolu
   def not_solved
-    redirect_to root_path if current_user.sk.solved?(@problem)
+    redirect_to root_path if current_user.sk.pb_solved?(@problem)
   end
 
   # Peut envoyer une soumission
@@ -455,7 +455,7 @@ class SubmissionsController < ApplicationController
     visible = true
     if !signed_in? || !current_user.sk.admin?
       @problem.chapters.each do |c|
-        visible = false if !signed_in? || !current_user.sk.solved?(c)
+        visible = false if !signed_in? || !current_user.sk.chap_solved?(c)
       end
     end
 

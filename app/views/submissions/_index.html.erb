@@ -19,13 +19,13 @@
         <%= render 'submissions/showadmin', s: s, nom: true %>
       <% end %>
     </table>
-    
+
     <center>
     <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
     <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
     </center>
   <% end %>
-  
+
 <!-- Si étudiant -->
 <% else %>
 
@@ -63,7 +63,7 @@
   <% if aucun %>
     Aucune soumission précédente.<br/><br/>
   <% end %>
-  
+
   <!-- Si il y a une soumission en cours, on l'affiche -->
   <% unless @newsub %>
     <h3>Soumission en cours</h3>
@@ -72,27 +72,27 @@
     <%= render 'submissions/showuser', s: encours, nom: false %>
     </table>
   <% end %>
-  
+
   <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
-  <% if current_user.sk.solved?(problem) %>
+  <% if current_user.sk.pb_solved?(problem) %>
 
     <h3>Autres soumissions correctes</h3>
     <% @new = false %>
     <% submissions = problem.submissions.where('user_id != ? AND status = 2', current_user.sk).order('created_at DESC').paginate(page: params[:page]) %>
-    
+
     <% if !submissions.empty? %>
       <center>
       <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
       <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
       </center>
-    
+
       <table class="table table-bordered">
       <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
       <% submissions.each do |s| %>
         <%= render 'submissions/showadmin', s: s, nom: true %>
       <% end %>
      </table>
-    
+
       <center>
       <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
       <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
@@ -100,7 +100,7 @@
     <% else %>
     Vous êtes le seul à avoir résolu ce problème.
     <% end %>
-    
+
   <% end %>
 
 <% end %>

@@ -39,7 +39,7 @@
     <% niveaumoyen += p.level %>
     <% p.chapters.each do |c| %>
       <% pre.push(c) %>
-      <% access = false if !current_user.sk.solved?(c) %>
+      <% access = false if !current_user.sk.chap_solved?(c) %>
     <% end %>
   <% end %>
 
