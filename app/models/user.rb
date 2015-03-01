@@ -78,8 +78,13 @@ class User < ActiveRecord::Base
   end
 
   # Rend true si l'utilisateur a résolu le problème
-  def solved?(problem)
-    return problem.users.include?(self)
+  def solved?(x)
+    return x.users.include?(self)
+  end
+
+  def solution(problem)
+    s = self.solvedproblems.where(:problem_id => problem).first
+    return s;
   end
 
   # Rend le statut pour un certain test virtuel

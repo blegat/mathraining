@@ -121,6 +121,7 @@ class CorrectionsController < ApplicationController
           link.user_id = @submission.user.id
           link.problem_id = @submission.problem.id
           link.resolutiontime = DateTime.now
+          link.submission_id = @submission.id
           link.save
         end
         m = ' et soumission marquée comme correcte'

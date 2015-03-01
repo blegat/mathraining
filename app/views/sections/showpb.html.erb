@@ -12,6 +12,22 @@
 
 <% else %>
 
+<% section_fondation = Array.new %>
+<% Section.all.to_a.each do |s| %>
+  <% section_fondation[s.id] = s.fondation %>
+<% end %>
+
+<% debloque = Array.new %>
+<% Chapter.all.to_a.each do |c| %>
+  <% debloque[c.id] = section_fondation[c.section_id] %>
+<% end %>
+
+<% if signed_in? %>
+  <% current_user.sk.chapters.each do |c| %>
+    <% debloque[c.id] = true %>
+  <% end %>
+<% end %>
+
 <!-- On parcourt tous les niveaux -->
 <% (1..5).each do |level| %>
 
@@ -29,7 +45,7 @@
 
   <% if !signed_in? || !current_user.sk.admin? %>
     <% p.chapters.each do |c| %>
-      <% if !signed_in? || !current_user.sk.solved?(c) %>
+      <% if !debloque[c.id] %>
         <% visible = false %>
       <% end %>
     <% end %>
@@ -52,8 +68,10 @@
 
     <% resolu = false %>
 
+    <% solution = current_user.sk.solution(p) %>
+
     <!-- Si déjà résolu : vert -->
-    <% if signed_in? && current_user.sk.solved?(p) && !current_user.sk.admin? %>
+    <% if signed_in? && solution != nil && !current_user.sk.admin? %>
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#DDFFDD;">
       <% resolu = true %>
 
@@ -86,7 +104,9 @@
       <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
     <% end %>
 
-    <center><h3 style="margin-top:20px; margin-bottom:15px;"><%= link_to "Problème ##{ p.number }", p %>
+    <center><h3 style="margin-top:20px; margin-bottom:15px;">
+    <%= link_to "Problème ##{ p.number }", problem_path(p, :sub => solution.submission_id) unless solution == nil %>
+    <%= link_to "Problème ##{ p.number }", problem_path(p) if solution == nil %>
     <% if !p.virtualtest.nil? %>
       - <%= link_to "Test virtuel ##{p.virtualtest.number}", p.virtualtest %>
     <% end %>

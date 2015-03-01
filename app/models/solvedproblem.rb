@@ -13,12 +13,13 @@
 
 class Solvedproblem < ActiveRecord::Base
   attr_accessible :resolutiontime
-  
+
   # BELONGS_TO, HAS_MANY
-  
+
   belongs_to :user
   belongs_to :problem
-  
+  belongs_to :submission
+
   # VALIDATIONS
 
   validates :user_id, presence: true

@@ -50,6 +50,11 @@ html>body tbody.scroll {
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
   <% cansee = Array.new %>
 
+  <% section_fondation = Array.new %>
+  <% Section.all.to_a.each do |s| %>
+    <% section_fondation[s.id] = s.fondation %>
+  <% end %>
+
   <% if signed_in? && current_user.sk.admin %>
     <% Chapter.all.to_a.each do |c| %>
       <% cansee[c.id] = true %>
@@ -60,15 +65,17 @@ html>body tbody.scroll {
       <% debloque[c.id] = false %>
     <% end %>
 
-    <% signed_in? && current_user.sk.chapters.each do |c| %>
-      <% debloque[c.id] = true %>
+    <% if signed_in? %>
+      <% current_user.sk.chapters.each do |c| %>
+        <% debloque[c.id] = true %>
+      <% end %>
     <% end %>
 
     <% Chapter.all.to_a.each do |c| %>
       <% cansee[c.id] = true %>
-      <% if !c.section.fondation %>
+      <% if !section_fondation[c.section_id] %>
         <% c.prerequisites.each do |p| %>
-          <% if !p.section.fondation && !debloque[p.id] %>
+          <% if !section_fondation[p.section_id] && !debloque[p.id] %>
             <% cansee[c.id] = false %>
           <% end %>
         <% end %>
@@ -199,7 +206,7 @@ html>body tbody.scroll {
 			<% if premier.nil? %>
 				<% premier = p.resolutiontime.in_time_zone %>
 			<% end %>
-      <% act.push({:time => p.resolutiontime, :type => 4, :id => p.problem_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
+      <% act.push({:time => p.resolutiontime, :type => 4, :id => p.problem_id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
     <% end %>
   <% end %>
 
@@ -286,7 +293,7 @@ html>body tbody.scroll {
       <%= "(#{a[:chapter]})" %>
     <% else %>
       <% if a[:peutvoir] %>
-        <%= link_to "Problème ##{a[:number]}", problem_path(a[:id]) %>
+        <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
       <% else %>
         Problème #<%= a[:number] %>
       <% end %>
@@ -339,7 +346,7 @@ html>body tbody.scroll {
       <% end %>
     <% else %>
       <% if a[:peutvoir] %>
-        <%= link_to "Problème ##{a[:number]}", problem_path(a[:id]) %>
+        <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
       <% else %>
         Problème #<%= a[:number] %>
       <% end %>
