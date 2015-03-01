@@ -15,7 +15,8 @@ class SessionsController < ApplicationController
         flash[:danger] = "Ce compte a été désactivé et n'est plus accessible."
         redirect_to(:back)
       elsif user.email_confirm
-
+        @remember_me = params[:session][:remember_me].to_i
+        user.save
         sign_in user
         redirect_to(:back)
       else

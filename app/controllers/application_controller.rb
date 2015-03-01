@@ -3,14 +3,14 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   include SessionsHelper
   include ApplicationHelper
-  
+
   before_filter :active_user
   before_filter :check_up
   before_filter :country_year
-  
+
   ########## PARTIE PRIVEE ##########
   private
-  
+
   # Vérifie si l'utilisateur a déjà rentré son pays et son année de naissance
   # A ENLEVER DANS QUELQUES TEMPS
   def country_year
@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
       flash[:success] = "Veuillez compléter votre <b>année de naissance</b> et votre <b>pays</b> sur #{view_context.link_to("la page dédiée à votre compte", edit_user_path(current_user.sk))}.".html_safe
     end
   end
-  
+
   # Vérifie que l'utilisateur n'a pas eu son compte désactivé.
   def active_user
     if signed_in? && !current_user.active
@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
       redirect_to root_path
     end
   end
-  
+
   # Regarde s'il y a un test virtuel qui vient de se terminer
   def check_up
     maintenant = DateTime.now.to_i
@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
       end
     end
   end
-  
+
   # Vérifie qu'il ne s'agit pas d'un administrateur dans la peau de quelqu'un
   def notskin_user
     if current_user.other
@@ -55,22 +55,23 @@ class ApplicationController < ActionController::Base
       redirect_to(:back)
     end
   end
-  
+
   # Vérifie qu'on est administrateur
   def admin_user
     redirect_to root_path unless current_user.sk.admin?
   end
-  
+
   # Vérifie que l'on est root
   def root_user
     redirect_to root_path unless current_user.sk.root
   end
-  
+
   def point_attribution(user)
     user.point.rating = 0
+    user.rating = 0
     partials = user.pointspersections
     partial = Array.new
-    
+
     Section.all.each do |s|
       partial[s.id] = partials.where(:section_id => s.id).first
       if partial[s.id].nil?
@@ -90,6 +91,7 @@ class ApplicationController < ActionController::Base
 
         if !exo.chapter.section.fondation? # Pas un fondement
           user.point.rating = user.point.rating + pt
+          user.rating = user.rating + pt
         end
 
         partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
@@ -103,6 +105,7 @@ class ApplicationController < ActionController::Base
 
         if !qcm.chapter.section.fondation? # Pas un fondement
           user.point.rating = user.point.rating + pt
+          user.rating = user.rating + pt
         end
 
         partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
@@ -113,14 +116,14 @@ class ApplicationController < ActionController::Base
       problem = p.problem
       pt = problem.value
 
-      if !problem.section.fondation? # Pas un fondement
-        user.point.rating = user.point.rating + pt
-      end
+      user.point.rating = user.point.rating + pt
+      user.rating = user.rating + pt;
 
       partial[problem.section.id].points = partial[problem.section.id].points + pt
     end
 
     user.point.save
+    user.save
     Section.all.each do |s|
       partial[s.id].save
     end

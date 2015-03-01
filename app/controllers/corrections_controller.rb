@@ -216,10 +216,10 @@ class CorrectionsController < ApplicationController
 
       partials = user.pointspersections
 
-      if !problem.section.fondation? # Pas un fondement
-        user.point.rating = user.point.rating + pt
-        user.point.save
-      end
+      user.point.rating = user.point.rating + pt
+      user.point.save
+      user.rating = user.rating + pt
+      user.save
 
       partial = partials.where(:section_id => problem.section.id).first
       partial.points = partial.points + pt

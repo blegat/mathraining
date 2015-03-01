@@ -1,6 +1,6 @@
 <!-- Prérequis -->
 <h3>Prérequis</h3>
-<% if @chapter.prerequisites.empty? %>
+<% if @chapter.prerequisites.count == 0 %>
   <p>Aucun prérequis</p>
 <% else %>
   <ul>
@@ -9,8 +9,8 @@
     <% end %>
   </ul>
 <% end %>
-<br/>
 
+<br/>
 <!-- Introduction -->
 <h3>Introduction</h3>
 <div>

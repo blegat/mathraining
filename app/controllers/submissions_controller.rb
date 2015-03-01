@@ -71,12 +71,12 @@ class SubmissionsController < ApplicationController
     submission = @problem.submissions.build(content: params[:submission][:content])
     submission.user = current_user.sk
     submission.lastcomment = DateTime.current
-    
+
     if params[:commit] == "Enregistrer comme brouillon"
       submission.visible = false
       submission.status = -1
     end
-    
+
     # Si on réussit à sauver
     if submission.save
       j = 1
@@ -85,7 +85,7 @@ class SubmissionsController < ApplicationController
         attach[j-1].save
         j = j+1
       end
-      
+
       if submission.status == -1
         flash[:success] = "Votre brouillon a bien été enregistré."
         redirect_to problem_path(@problem, :sub => 0)
@@ -93,7 +93,7 @@ class SubmissionsController < ApplicationController
         flash[:success] = "Votre solution a bien été soumise."
         redirect_to problem_path(@problem, :sub => submission.id)
       end
-    
+
     # Si il y a eu une erreur
     else
       j = 1
@@ -115,7 +115,7 @@ class SubmissionsController < ApplicationController
       end
     end
   end
-  
+
   # Voir une soumission pendant un test
   def intest
     @neworedit = 0
@@ -125,16 +125,16 @@ class SubmissionsController < ApplicationController
     else
       @neworedit = 1
     end
-    
+
     @numero = 0
     x = 1
-    
+
     @t.problems.order(:position).each do |p|
       @numero = x if p.id == @problem.id
       x = x+1
     end
   end
-  
+
   # Faire une nouvelle soumission
   def create_intest
     attach = Array.new
@@ -212,13 +212,13 @@ class SubmissionsController < ApplicationController
       end
     end
   end
-  
+
   # Modifier un brouillon / l'envoyer
   def update_brouillon
     if params[:commit] == "Enregistrer le brouillon"
       @context = 2
       update_submission
-    elsif params[:commit] = "Supprimer ce brouillon"
+    elsif params[:commit] == "Supprimer ce brouillon"
       @submission.submissionfiles.each do |f|
         f.destroy
       end
@@ -238,25 +238,25 @@ class SubmissionsController < ApplicationController
       redirect_to problem_path(@problem, :sub => @submission.id)
     end
   end
-  
+
   # Modifier une soumission
   def update_intest
     @submission = Submission.find(params[:submission_id])
     @context = 1
     update_submission
   end
-  
+
   def update_submission
     if @context == 1
       lepath = problem_intest_path(@problem)
     else
       lepath = problem_path(@problem, :sub => 0)
     end
-    
+
     if @submission.update_attributes(params[:submission])
-    
+
       totalsize = 0
-      
+
       @submission.submissionfiles.each do |sf|
         if params["prevfile#{sf.id}".to_sym].nil?
           sf.file.destroy
@@ -265,13 +265,13 @@ class SubmissionsController < ApplicationController
           totalsize = totalsize + sf.file_file_size
         end
       end
-      
+
       @submission.fakesubmissionfiles.each do |sf|
         if params["prevfakefile#{sf.id}".to_sym].nil?
           sf.destroy
         end
       end
-      
+
       attach = Array.new
 
       i = 1
@@ -308,14 +308,14 @@ class SubmissionsController < ApplicationController
         session[:ancientexte] = params[:submission][:content]
         redirect_to lepath, flash: {danger: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
       end
-      
+
       j = 1
       while j < i do
         attach[j-1].submission = @submission
         attach[j-1].save
         j = j+1
       end
-      
+
       if @context == 1
         flash[:success] = "Votre solution a bien été modifiée."
         redirect_to virtualtest_path(@t, :p => @problem.id)
@@ -333,7 +333,7 @@ class SubmissionsController < ApplicationController
         flash[:danger] = "Une erreur est survenue."
       end
       redirect_to lepath
-    end    
+    end
   end
 
   # Lu et non lu
@@ -364,7 +364,7 @@ class SubmissionsController < ApplicationController
       redirect_to root_path
     end
   end
-  
+
   # Marquer comme lu
   def read
     @submission = Submission.find(params[:submission_id])
@@ -380,7 +380,7 @@ class SubmissionsController < ApplicationController
     @submission = Submission.find(params[:submission_id])
     un_read(false, "non lue")
   end
-  
+
   # Réserver la soumission
   def reserve
     @submission = Submission.find(params[:submission_id])
@@ -397,7 +397,7 @@ class SubmissionsController < ApplicationController
       redirect_to problem_path(@problem, :sub => @submission)
     end
   end
-  
+
   # Dé-réserver la soumission
   def unreserve
     @submission = Submission.find(params[:submission_id])
@@ -410,7 +410,7 @@ class SubmissionsController < ApplicationController
       redirect_to problem_path(@problem, :sub => @submission)
     end
   end
-  
+
   def destroy
     @submission = Submission.find(params[:id])
     @problem = @submission.problem
@@ -420,7 +420,7 @@ class SubmissionsController < ApplicationController
     @submission.destroy
     redirect_to problem_path(@problem)
   end
-  
+
   ########## PARTIE PRIVEE ##########
   private
 
@@ -436,7 +436,7 @@ class SubmissionsController < ApplicationController
   def not_solved
     redirect_to root_path if current_user.sk.solved?(@problem)
   end
-  
+
   # Peut envoyer une soumission
   def can_submit
     lastsub = Submission.where(:user_id => current_user.sk, :problem_id => @problem).order('created_at')
@@ -449,7 +449,7 @@ class SubmissionsController < ApplicationController
       @problem = Problem.find(params[:problem_id])
     end
   end
-  
+
   # Vérifie qu'on peut voir le problème associé
   def has_access
     visible = true
@@ -458,7 +458,7 @@ class SubmissionsController < ApplicationController
         visible = false if !signed_in? || !current_user.sk.solved?(c)
       end
     end
-    
+
     t = @problem.virtualtest
     if !t.nil?
       if !signed_in?
@@ -469,10 +469,10 @@ class SubmissionsController < ApplicationController
         end
       end
     end
-    
+
     redirect_to root_path if !visible
   end
-  
+
   # Est-ce qu'on est en test?
   def in_test
     @t = @problem.virtualtest
@@ -482,7 +482,7 @@ class SubmissionsController < ApplicationController
       redirect_to @t if current_user.sk.status(@t) != 0
     end
   end
-  
+
   # Est-ce qu'on est propriétaire de ce brouillon?
   def brouillon
     @submission = Submission.find(params[:submission_id])
@@ -490,7 +490,7 @@ class SubmissionsController < ApplicationController
       redirect_to @problem
     end
   end
-  
+
   # Attribution des points pour un problème
   def point_attribution(user, problem)
     if !user.solved?(problem) # Avoid double count
@@ -508,7 +508,7 @@ class SubmissionsController < ApplicationController
       partial.save
     end
   end
-  
+
   # Vérifie que l'on a assez de points si on est étudiant
   def enough_points
     if !current_user.sk.admin?

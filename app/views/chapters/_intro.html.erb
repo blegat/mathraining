@@ -1,6 +1,6 @@
 <!-- Prérequis -->
 <h3>Prérequis</h3>
-<% if @chapter.prerequisites.empty? %>
+<% if @chapter.prerequisites.count == 0 %>
   <p>Aucun prérequis</p>
 <% else %>
   <ul>
@@ -9,8 +9,8 @@
     <% end %>
   </ul>
 <% end %>
-<br/>
 
+<br/>
 <!-- Modifier les prérequis -->
 <% if signed_in? && current_user.sk.admin? %>
   <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>

@@ -11,16 +11,16 @@ class UsersController < ApplicationController
   # Index de tous les users avec scores
   def index
   end
-  
-  # S'inscrire au site : il faut être en ligne 
+
+  # S'inscrire au site : il faut être en ligne
   def new
   	@user = User.new
   end
-  
+
   # Modifier son compte : il faut être en ligne et que ce soit la bonne personne
   def edit
   end
-  
+
   # S'inscrire au site 2 : il faut être hors ligne
   def create
     @user = User.new(params[:user])
@@ -40,7 +40,7 @@ class UsersController < ApplicationController
   	  render 'new'
   	end
   end
-  
+
   # Voir un utilisateur
   def show
     @user = User.find(params[:id])
@@ -48,18 +48,17 @@ class UsersController < ApplicationController
       redirect_to users_path
     end
   end
-  
+
   # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
   def update
     if @user.update_attributes(params[:user])
       flash[:success] = "Votre profil a bien été mis à jour."
-      sign_in @user
       redirect_to root_path
     else
       render 'edit'
     end
   end
-  
+
   # Supprimer un utilisateur : il faut être root
   def destroy
     @user = User.find(params[:id])
@@ -87,7 +86,7 @@ class UsersController < ApplicationController
     end
     redirect_to users_path
   end
-  
+
   # Ajouter / Enlever du groupe Wépion
   def switch_wepion
     @user = User.find(params[:user_id])
@@ -115,7 +114,7 @@ class UsersController < ApplicationController
     end
     redirect_to root_path
   end
-  
+
   # Mot de passe oublié
   def password_forgotten
     @user = User.find_by_email(params[:user][:email])
@@ -128,7 +127,7 @@ class UsersController < ApplicationController
     end
     redirect_to root_path
   end
-  
+
   # Mot de passe oublié 2
   def recup_password
     @user = User.find(params[:id])
@@ -145,7 +144,7 @@ class UsersController < ApplicationController
       redirect_to edit_user_path(@user)
     end
   end
-  
+
   # Recalculer tous les scores
   def recompute_scores
     User.all.each do |user|
@@ -175,7 +174,7 @@ class UsersController < ApplicationController
     @notifs = current_user.sk.notifs.order("created_at")
     render :notifs
   end
-  
+
   # Prendre la peau d'un utilisateur
   def take_skin
     @user = User.find(params[:user_id])
@@ -183,7 +182,6 @@ class UsersController < ApplicationController
       flash[:danger] = "Pas autorisé..."
     else
       current_user.update_attribute(:skin, @user.id)
-      sign_in current_user
       flash[:success] = "Vous êtes maintenant dans la peau de #{@user.name}."
     end
     redirect_to(:back)
@@ -193,19 +191,18 @@ class UsersController < ApplicationController
   def leave_skin
     if current_user.id == params[:user_id].to_i
       current_user.update_attribute(:skin, 0)
-      sign_in current_user
       flash[:success] = "Vous êtes à nouveau dans votre peau."
     end
     redirect_to(:back)
   end
-  
+
   # Désactiver un compte
   def unactivate
     @user = User.find(params[:user_id])
     @user.toggle!(:active)
     redirect_to @user
   end
-  
+
   # Réactiver un compte
   def reactivate
     @user = User.find(params[:user_id])
@@ -222,13 +219,13 @@ class UsersController < ApplicationController
       redirect_to root_path
     end
   end
-  
+
   # Vérifie qu'il s'agit de la bonne personne
   def correct_user
     @user = User.find(params[:id])
     redirect_to root_path unless current_user.sk.id == @user.id
   end
-  
+
   # Vérifie qu'on ne désactive pas un admin
   def unactivate_admin
     @user = User.find(params[:user_id])

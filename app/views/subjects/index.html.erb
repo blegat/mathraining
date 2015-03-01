@@ -61,7 +61,7 @@
 
 <!-- Trier selon section ou chapitre -->
 <form action="" method="get" class="form-inline" name="research">
-  N'afficher que les sujets relatifs à la section ou au chapitre : 
+  N'afficher que les sujets relatifs à la section ou au chapitre :
   <%= select_tag :q, options_for_select(liste, q).html_safe, :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
 </form>
 
@@ -85,10 +85,10 @@
     <% style = "background-color:#FFFFBB;" %>
   <% end %>
   <tr style="<%= style %>">
-  
+
     <!-- Titre du sujet, + "admin" s'il le faut -->
     <td style="vertical-align:middle;">
-      <% if s.admin? || s.wepion? %> 
+      <% if s.admin? || s.wepion? %>
         <table style="border:none; padding:0px; margin:0px;"><tr><td style="border:none; vertical-align:middle; padding:0px; padding-right:5px;">
         <% if s.admin? %>
           <span class="hidden-xs label label-warning">Admin</span>
@@ -103,7 +103,7 @@
 
       <%= link_to s.title, subject_path(s, :q => q) %>
         <% if s.section.nil? %>
-          
+
         <% elsif s.chapter.nil? %>
           - <%= s.section.name %>
         <% else %>
@@ -114,7 +114,7 @@
         </td></tr></table>
       <% end %>
     </td>
-      
+
     <!-- Auteur du sujet -->
     <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
     	<% if s.user.admin %>
@@ -123,12 +123,12 @@
         <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
       <% end %>
     </td>
-      
+
     <!-- Nombre de messages -->
     <td class="hidden-xs" style="text-align:center; vertical-align:middle;">
       <%= x = s.messages.count %>
     </td>
-      
+
     <% if x > 0 %>
       <% last = s.messages.order(:id).last %>
       <% qui = last.user %>
@@ -138,9 +138,9 @@
       <% date = s.created_at.in_time_zone %>
     <% end %>
     <% datenow = Time.zone.now %>
-      
+
     <!-- Cas normal -->
-      
+
     <!-- Dernier message -->
     <td class="hidden-xs" style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
       <% if qui.admin %>
@@ -149,7 +149,7 @@
         <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
       <% end %>
     </td>
-      
+
     <!-- Date du dernier message -->
     <td class="hidden-xs" style="width:200px; text-align:center; vertical-align:middle;">
       <% tot = s.messages.count %>
@@ -159,12 +159,12 @@
         <% affiche_date(date, datenow) %>
       <% end %>
     </td>
-      
+
     <!-- Cas gsm -->
-      
+
     <td class="visible-xs" style="width:200px;">
     <table style="width:100%;">
-      
+
       <!-- Dernier message -->
       <tr>
       <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle; padding-bottom:5px; border-bottom:1px dashed grey;">
@@ -175,7 +175,7 @@
         <% end %>
       </td>
       </tr>
-        
+
       <!-- Date du derinier message -->
       <tr>
       <td style="width:200px; text-align:center; vertical-align:middle; padding-top:5px;">
@@ -235,7 +235,7 @@
 
 
 <!-- Créer un sujet -->
-<center>	
+<center>
   <%= link_to "Créer un sujet", new_subject_path(:q => q), class: 'btn btn-lg btn-default btn-grey' %>
 </center>
 
@@ -243,5 +243,7 @@
 <% if !current_user.other && current_user.sk.combien_forum > 0 %>
   <% current_user.sk.point.forumseen = DateTime.current %>
   <% current_user.sk.point.save %>
-<% end %>
 
+  <% current_user.sk.forumseen = DateTime.current %>
+  <% current_user.sk.save %>
+<% end %>

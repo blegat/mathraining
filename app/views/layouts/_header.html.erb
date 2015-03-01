@@ -11,21 +11,21 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      
+
       <!-- Lien Mathraining -->
       <%= link_to root_path, class: "navbar-brand", style: "font-size:24px;", id: "Accueil" do %>
         <span style="color:black;">Math</span><span style="color:rgb(3,109,170);">raining</span>
       <% end %>
     </div>
-    
+
     <div class="navbar-collapse collapse">
-    
+
       <!-- Dans le cas normal -->
       <% if signed_in? and current_user.sk.admin? %>
         <form class="navbar-form navbar-left hidden-xs hidden-sm" role="search">
-        
+
         <!-- Nouvelles soumissions -->
-        
+
         <% notifications_new = current_user.sk.notifications_new.count %>
         <% notifications_update = current_user.sk.notifications_update.count %>
         <% if notifications_new > 0 %>
@@ -38,7 +38,7 @@
         <% else %>
           <%= link_to "0", notifications_update_path, class: "btn btn-default btn-grey" %>
         <% end %>
-        
+
         <!-- Pièces jointes -->
         <% if current_user.sk.root? %>
           <% total = 0 %>
@@ -54,7 +54,7 @@
           <% Subjectfile.all.to_a.each do |f| %>
             <% total = total + f.file_file_size %>
           <% end %>
-          
+
           <% if total < 1000000 %>
             <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:25px;" %>
           <% else %>
@@ -63,7 +63,7 @@
         <% end %>
         </form>
       <% end %>
-    
+
       <!-- Corrections (pour les étudiants) -->
       <% if signed_in? && !current_user.sk.admin? %>
         <% noti = current_user.sk.notifs.count %>
@@ -73,18 +73,18 @@
           </form>
         <% end %>
       <% end %>
-      
+
       <ul class="nav navbar-nav navbar-right">
-      
+
       <% if signed_in? and current_user.sk.admin? %>
-      
+
         <!-- Dans le cas gsm -->
         <li id="fat-menu" class="dropdown visible-xs visible-sm">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           +++
         </a>
         <ul class="dropdown-menu">
-        
+
           <!-- Nouvelles soumissions -->
           <li style="text-align:center; padding:5px;">
           <form class="form-inline" role="search">
@@ -102,7 +102,7 @@
           <% end %>
           </form>
           </li>
-          
+
           <!-- Pièces jointes -->
           <li style="text-align:center; padding:5px;">
           <form class="form-inline" role="search">
@@ -120,7 +120,7 @@
             <% Subjectfile.all.to_a.each do |f| %>
               <% total = total + f.file_file_size %>
             <% end %>
-            
+
             <% if total < 1000000 %>
               <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey" %>
             <% else %>
@@ -129,7 +129,7 @@
           <% end %>
           </form>
           </li>
-          
+
         </ul>
         </li>
       <% end %>
@@ -157,7 +157,7 @@
           <% end %>
         </ul>
       </li>
-      
+
       <!-- Problèmes -->
       <% if signed_in? %>
         <li id="fat-menu" class="dropdown">
@@ -171,32 +171,32 @@
               <% end %>
             <% end %>
             <li class="divider"></li>
-            
+
             <li><%= link_to "Tests virtuels", virtualtests_path %></li>
           </ul>
         </li>
       <% end %>
-      
+
       <!-- Forum -->
       <% if signed_in? %>
         <% combien_nouveau = current_user.sk.combien_forum %>
       <% end %>
-        
+
       <% if signed_in? && current_user.sk.combien_forum == 0%>
         <li><%= link_to "Forum", subjects_path %></li>
       <% elsif signed_in? %>
         <li style="font-weight:bold;"><%= link_to "Forum (#{combien_nouveau})", subjects_path %></li>
       <% end %>
-      
-      <!-- Scores -->  
+
+      <!-- Scores -->
       <li><%= link_to "Scores", users_path %></li>
-        
+
       <!-- Menu déroulant -->
-      
+
       <!-- Si connecté -->
       <% if signed_in? %>
         <li id="fat-menu" class="dropdown">
-        
+
         <!-- Nom -->
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           <% if current_user.other %>
@@ -206,7 +206,7 @@
           <% end %>
           <b class="caret"></b>
         </a>
-        
+
         <ul class="dropdown-menu">
           <% if current_user.other %>
             <li><%= link_to "Sortir de ce corps", user_leave_skin_path(current_user) %></li>
@@ -221,12 +221,12 @@
           </li>
         </ul>
         </li>
-      
+
       <!-- Si pas connecté -->
       <% else %>
         <li class="dropdown">
           <a class="dropdown-toggle" href="#" data-toggle="dropdown">Connexion</a>
-          
+
           <!-- Formulaire pour se connecter -->
           <ul class="dropdown-menu">
             <li style="padding:15px; padding-bottom:5px; padding-top:10px;">
@@ -234,6 +234,11 @@
 			<%= f.email_field :email, :placeholder => "Email", :class => "form-control", :style => "width:200px;", :id => "tf1" %>
 
 			<%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control", :style => "margin-top:10px; width:200px;", :id => "tf2" %>
+
+      <label class="checkbox-inline" style="margin-top:10px;">
+        <%= f.check_box :remember_me %>
+        Garder ma session active
+      </label>
 
 			<%= f.submit "Connexion", class: "btn btn-default btn-primary", style: "width:200px; margin-top:10px; margin-bottom:15px;" %>
 			<br />
@@ -245,11 +250,11 @@
           </ul>
         </li>
       <% end %>
-      
+
       </ul>
 
     </div> <!--/.nav-collapse -->
   </div> <!-- container -->
 </div> <!-- navigation -->
 
-</div>	
+</div>

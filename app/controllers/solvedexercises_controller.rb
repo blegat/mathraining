@@ -46,7 +46,7 @@ class SolvedexercisesController < ApplicationController
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
   end
-  
+
   # On tente de résoudre un exercice une nouvelle fois
   def update
     exercise = @exercise2
@@ -61,7 +61,7 @@ class SolvedexercisesController < ApplicationController
       link.nb_guess = link.nb_guess + 1
       link.guess = params[:solvedexercise][:guess].gsub(",",".").to_f
       link.resolutiontime = DateTime.now
-      
+
       if exercise.decimal
         if absolu(exercise.answer, link.guess) < 0.001
           link.correct = true
@@ -88,10 +88,10 @@ class SolvedexercisesController < ApplicationController
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
   end
-  
+
   ########## PARTIE PRIVEE ##########
   private
-  
+
   # Retourne la différence (en valeur absolue) entre a et b
   def absolu(a, b)
     if a > b
@@ -128,7 +128,7 @@ class SolvedexercisesController < ApplicationController
       end
     end
   end
-  
+
   # Attribution des points pour un exercice
   def point_attribution(user, exo)
     pt = exo.value
@@ -138,6 +138,8 @@ class SolvedexercisesController < ApplicationController
     if !exo.chapter.section.fondation # Pas un fondement
       user.point.rating = user.point.rating + pt
       user.point.save
+      user.rating = user.rating + pt
+      user.save
     end
 
     partial = partials.where(:section_id => exo.chapter.section.id).first

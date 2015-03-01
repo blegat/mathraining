@@ -23,7 +23,7 @@
 #
 
 class User < ActiveRecord::Base
-  attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion, :country, :year
+  attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion, :country, :year, :rating, :forumseen
 
   # BELONGS_TO, HAS_MANY
 
@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
   # BEFORE, AFTER
 
   before_save { self.email.downcase! }
-  before_save :create_remember_token
+  before_create :create_remember_token
   after_create :create_points
 
   # VALIDATIONS
@@ -177,7 +177,9 @@ class User < ActiveRecord::Base
 
   # Créer un token aléatoire
   def create_remember_token
+    begin
     self.remember_token = SecureRandom.urlsafe_base64
+    end while User.exists?(:remember_token => self.remember_token)
   end
 
   # Créer les points associés à l'utilisateur
