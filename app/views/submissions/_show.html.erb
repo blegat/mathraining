@@ -107,7 +107,7 @@ function showSoumissionNormal(id) {
 <%= raw(bbcode(@submission.content)) %>
 <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSoumissionAnormal(<%= @submission.id %>); return false;'>(Montrer le code)</a></div>
 </div>
-  
+
 <div class="tex2jax_ignore" id="anormalsoumission<%= @submission.id %>" style="display:none;">
 <%= raw((h @submission.content).gsub(/\n/, '<br/>')) %>
 <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSoumissionNormal(<%= @submission.id %>); return false;'>(Cacher le code)</a></div>
@@ -132,7 +132,7 @@ function showSoumissionNormal(id) {
   <% @submission.fakesubmissionfiles.order(:id).each do |f| %>
     <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
   <% end %>
-  
+
   <!-- Afficher les pièces jointes images -->
   <% @submission.submissionfiles.order(:id).each do |f| %>
     <% if f.is_image %>
@@ -174,7 +174,7 @@ function showSoumissionNormal(id) {
   Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.
 <% elsif (current_user.sk.admin? || current_user.sk == @submission.user) && @submission.status >= 0 %>
   <%= render 'corrections/new' %>
-  
+
   <!-- Supprimer la soumission : pas possible si correcte -->
   <% if current_user.sk.admin? && @submission.status != 2 && !@submission.intest %>
     <br/><center>

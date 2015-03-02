@@ -1,3 +1,6 @@
+<% @ancientexte = session[:ancientexte] %>
+<% session[:ancientexte] = nil %>
+
 <%= form_for :submission, url: problem_submissions_path(problem), :html => { :multipart => true } do |f| %>
 
   <!-- Nouvelle soumission -->
@@ -13,10 +16,10 @@
     <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
   <% end %>
   </div>
-  
+
   <!-- Pièces jointes -->
   <span id="fooBar"></span>
-  
+
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" />
   <br/><br/>
 

@@ -2,7 +2,6 @@
 class SubmissionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_problem
-  before_filter :can_see, only: [:show]
   before_filter :admin_user, only: [:destroy, :read, :unread, :reserve, :unreserve]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
@@ -10,20 +9,6 @@ class SubmissionsController < ApplicationController
   before_filter :enough_points, only: [:create]
   before_filter :in_test, only: [:intest, :create_intest, :update_intest]
   before_filter :brouillon, only: [:update_brouillon]
-
-  # Montrer une soumission : il faut qu'on puisse la voir
-  def show
-    if @submission.nil?
-      redirect_to root_path
-    end
-    notif = current_user.sk.notifs.where(submission_id: @submission.id)
-    if notif.size > 0 && !current_user.other
-      notif.first.delete
-    end
-
-    @ancientexte = session[:ancientexte]
-    session[:ancientexte] = nil
-  end
 
   # Créer une nouvelle soumission
   def create
@@ -229,13 +214,19 @@ class SubmissionsController < ApplicationController
       flash[:success] = "Brouillon supprimé."
       redirect_to @problem
     else
-      @submission.status = 0
-      @submission.created_at = DateTime.current
-      @submission.lastcomment = @submission.created_at
-      @submission.visible = true
-      @submission.save
-      flash[:success] = "Votre solution a bien été soumise."
-      redirect_to problem_path(@problem, :sub => @submission.id)
+      @context = 3
+      update_submission
+      if @erreur
+        redirect_to problem_path(@problem, :sub => 0)
+      else
+        @submission.status = 0
+        @submission.created_at = DateTime.current
+        @submission.lastcomment = @submission.created_at
+        @submission.visible = true
+        @submission.save
+        flash[:success] = "Votre solution a bien été soumise."
+        redirect_to problem_path(@problem, :sub => @submission.id)
+      end
     end
   end
 
@@ -249,8 +240,10 @@ class SubmissionsController < ApplicationController
   def update_submission
     if @context == 1
       lepath = problem_intest_path(@problem)
-    else
+    elsif @context == 2
       lepath = problem_path(@problem, :sub => 0)
+    else
+      @erreur = false
     end
 
     if @submission.update_attributes(params[:submission])
@@ -289,7 +282,12 @@ class SubmissionsController < ApplicationController
             end
             nom = params["file#{k}".to_sym].original_filename
             session[:ancientexte] = params[:submission][:content]
-            redirect_to lepath, flash: {danger: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
+            flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+            if @context < 3
+              redirect_to lepath and return
+            else
+              @erreur = true
+            end
           end
           totalsize = totalsize + attach[i-1].file_file_size
 
@@ -306,7 +304,12 @@ class SubmissionsController < ApplicationController
           j = j+1
         end
         session[:ancientexte] = params[:submission][:content]
-        redirect_to lepath, flash: {danger: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
+        flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+        if @context < 3
+          redirect_to lepath and return
+        else
+          @erreur = true
+        end
       end
 
       j = 1
@@ -319,7 +322,7 @@ class SubmissionsController < ApplicationController
       if @context == 1
         flash[:success] = "Votre solution a bien été modifiée."
         redirect_to virtualtest_path(@t, :p => @problem.id)
-      else
+      elsif @context == 2
         flash[:success] = "Votre brouillon a bien été enregistré."
         redirect_to lepath
       end
@@ -332,7 +335,11 @@ class SubmissionsController < ApplicationController
       else
         flash[:danger] = "Une erreur est survenue."
       end
-      redirect_to lepath
+      if @context < 3
+        redirect_to lepath
+      else
+        @erreur = true
+      end
     end
   end
 
