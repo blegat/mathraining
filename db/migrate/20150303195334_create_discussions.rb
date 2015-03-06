@@ -35,6 +35,6 @@ class CreateDiscussions < ActiveRecord::Migration
     add_index :tchatmessagefiles, :tchatmessage_id
     add_index :links, :discussion_id
     add_index :links, :user_id
-    add_index :tchatmessages, [:discussion_id, :created_at], order: "DESC", unique: true, 
+    add_index :tchatmessages, [:discussion_id, :created_at], order: "DESC", unique: true
   end
 end
