@@ -29,7 +29,7 @@
         <b><%= other.name %></b><br/>
           <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
       <% end %>
-    <% elsif d!= @discussion && number[d.id] > 0 %>
+    <% elsif d != @discussion && number[d.id] > 0 %>
       <%= link_to d, :class => "list-group-item jaune" do %>
         <b><%= "#{other.name} (#{number[d.id]})" %></b><br/>
         <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>

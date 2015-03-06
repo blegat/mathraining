@@ -45,6 +45,13 @@ class DiscussionsController < ApplicationController
       @discussion = Discussion.new
       @discussion.last_message = DateTime.now
       @discussion.save
+    else
+      link = current_user.sk.links.where(:discussion_id => @discussion.id).first
+      if link.nonread > 0
+        session[:ancientexte] = params[:content]
+        flash[:danger] = "Un message a été envoyé avant le vôtre."
+        redirect_to @discussion and return
+      end
     end
 
     @content = params[:content]

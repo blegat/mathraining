@@ -4,6 +4,13 @@ class TchatmessagesController < DiscussionsController
   before_filter :is_involved_2, only: [:create]
 
   def create
+    link = current_user.sk.links.where(:discussion_id => @discussion.id).first
+    if link.nonread > 0
+      session[:ancientexte] = params[:content]
+      flash[:danger] = "Un message a été envoyé avant le vôtre."
+      redirect_to @discussion and return
+    end
+
     @destinataire = current_user.sk
     @discussion.users.each do |u|
       if u != current_user.sk
