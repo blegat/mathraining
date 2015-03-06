@@ -33,7 +33,7 @@ describe "User pages" do
 
       it "should list each user" do
         User.where(:admin => false).each do |user|
-          if !user.point.nil? && user.point.rating > 0
+          if user.rating > 0
             page.should have_selector('tr', text: user.name)
           end
         end

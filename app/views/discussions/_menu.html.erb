@@ -12,6 +12,8 @@
     <% number[l.discussion_id] = l.nonread %>
   <% end %>
 
+  <% combien = 0 %>
+
   <% current_user.sk.discussions.order("last_message DESC").each do |d| %>
     <% other = current_user.sk %>
     <% d.users.each do |u| %>
@@ -38,5 +40,10 @@
         <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
       <% end %>
     <% end %>
+    <% combien = combien + 1 %>
+  <% end %>
+
+  <% if combien == 0 %>
+    <i>Aucune discussion</i>
   <% end %>
 </div>
