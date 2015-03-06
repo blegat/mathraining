@@ -56,4 +56,3 @@ group :production do
 # http://stackoverflow.com/questions/9392939/pg-gem-fails-to-install
 # Centos 5 has a too old version of pg
 end
-

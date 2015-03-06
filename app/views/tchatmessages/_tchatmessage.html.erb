@@ -1,0 +1,64 @@
+<script type="text/javascript">
+function showMessageAnormal(id) {
+    document.getElementById("anormalmessage" + id).style.display = 'inline';
+    document.getElementById("normalmessage" + id).style.display = 'none';
+}
+function showMessageNormal(id) {
+    document.getElementById("normalmessage" + id).style.display = 'inline';
+    document.getElementById("anormalmessage" + id).style.display = 'none';
+}
+</script>
+
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<hr style="margin-top:3px; margin-bottom:3px;"/>
+
+<% if @compteur <= params[:nonread].to_i %>
+  <div style="padding:8px; background-color:#FFFFBB; overflow-y:hidden;">
+<% else %>
+  <div style="padding:8px; overflow-y:hidden; overflow-x:visible">
+<% end %>
+
+<% @compteur = @compteur+1 %>
+
+<% m = tchatmessage %>
+
+<!-- Qui et quand -->
+<div style="text-align:right; float:right;">&nbsp;
+  <% date = m.created_at.in_time_zone %>
+  <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+</div>
+
+<div style="margin-bottom:10px;"><b><%= m.user.name %></b></div>
+
+  <!-- Contenu du message -->
+<div id="normalmessage<%= m.id %>" style="display:inline;">
+<%= raw(bbcode(m.content)) %>
+<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showMessageAnormal(<%= m.id %>); return false;'>(Montrer le code)</a></div>
+</div>
+
+<div class="tex2jax_ignore" id="anormalmessage<%= m.id %>" style="display:none;">
+<%= raw((h m.content).gsub(/\n/, '<br/>')) %>
+<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showMessageNormal(<%= m.id %>); return false;'>(Cacher le code)</a></div>
+</div>
+
+<!-- Pièces jointes -->
+<% n_message = m.tchatmessagefiles.count %>
+<% n_fake = m.faketchatmessagefiles.count %>
+
+<% if n_message + n_fake > 0 %>
+  <% if n_message + n_fake == 1 %>
+    <br/><br/><b>1 pièce jointe :</b><br/>
+  <% else %>
+    <br/><br/><b><%= n_message + n_fake %> pièces jointes :</b><br/>
+  <% end %>
+  <% m.tchatmessagefiles.order(:id).each do |f| %>
+    <%= link_to f.file_file_name, download_tchatmessagefile_path(f) %>
+    <br/>
+  <% end %>
+  <% m.faketchatmessagefiles.order(:id).each do |f| %>
+    <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
+  <% end %>
+<% end %>
+
+</div>

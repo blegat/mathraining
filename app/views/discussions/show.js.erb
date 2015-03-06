@@ -1,0 +1,7 @@
+$('#all-messages').append('<%= j render @tchatmessages %>');
+<% if @tchatmessages.next_page %>
+  $('.toreplace').html('<div style="display:none;"><%= j will_paginate @tchatmessages %></div>');
+<% else %>
+  $('.pagination').remove();
+  $('.toreplace').remove();
+<% end %>

@@ -117,11 +117,7 @@
 
     <!-- Auteur du sujet -->
     <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
-    	<% if s.user.admin %>
-        <%= s.user.name %>
-      <% else %>
-        <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
-      <% end %>
+      <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
     </td>
 
     <!-- Nombre de messages -->
@@ -143,11 +139,7 @@
 
     <!-- Dernier message -->
     <td class="hidden-xs" style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
-      <% if qui.admin %>
-        <%= qui.name %>
-      <% else %>
-        <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
-      <% end %>
+      <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
     </td>
 
     <!-- Date du dernier message -->
@@ -168,11 +160,7 @@
       <!-- Dernier message -->
       <tr>
       <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle; padding-bottom:5px; border-bottom:1px dashed grey;">
-        <% if qui.admin %>
-          <%= qui.name %>
-        <% else %>
-          <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
-        <% end %>
+        <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
       </td>
       </tr>
 

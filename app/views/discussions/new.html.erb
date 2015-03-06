@@ -1,0 +1,56 @@
+<% provide(:title, 'Messages') %>
+<h1>Messages</h1>
+
+<% @nouveau = true %>
+
+<div class="row">
+  <div class="noprint">
+  <div class="col-md-3 col-sm-3 col-xs-12">
+    <%= render 'menu' %>
+  </div>
+  </div>
+
+  <div class="col-md-9 col-sm-9 col-xs-12">
+
+    <h3>Nouvelle discussion</h3>
+
+    <% @ancientexte = session[:ancientexte] %>
+    <% session[:ancientexte] = nil %>
+
+    <%= form_for @discussion, :html => { :multipart => true } do |f| %>
+
+      <%= render 'shared/error_messages', object: f.object %>
+
+      <div class="form-inline">
+        <%= f.label :destinataire %><br/>
+        <%= select_tag :destinataire, options_for_select(User.where("id != ?", current_user.sk.id).order(:first_name).collect {|u| [ u.name, u.id ] }, params[:qui].to_i), :class => "form-control" %>
+      </div><br/>
+
+      <div class="form-group">
+        <%= f.label :message %>
+        <div class="well" id="MathPreview"></div>
+        <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+        <%= render 'subjects/smiley', hiddentext: false %>
+        <% if @ancientexte.nil? %>
+          <textarea name="content" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ></textarea>
+        <% else %>
+          <textarea name="content" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte %></textarea>
+        <% end %>
+      </div>
+
+      <span id="fooBar"></span>
+
+      <!-- Ajouter une pièce jointe -->
+      <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
+      <br/><br/>
+      <%= f.submit "Envoyer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+    <% end %>
+
+  </div>
+</div>
+
+
+<script>
+PreviewSafe.Init();
+PreviewSafe.Update();
+</script>

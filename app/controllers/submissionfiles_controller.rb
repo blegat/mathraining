@@ -64,6 +64,14 @@ class SubmissionfilesController < ApplicationController
       @list.push([f.file_updated_at, 8, f])
     end
 
+    Tchatmessagefile.all.each do |f|
+      @list.push([f.file_updated_at, 9, f])
+    end
+
+    Faketchatmessagefile.all.each do |f|
+      @list.push([f.file_updated_at, 10, f])
+    end
+
     @list = @list.sort_by{|a| -a[0].min - 60 * a[0].hour - 3600*a[0].day - 3600*32*a[0].month - 3600*32*12*a[0].year}
   end
 

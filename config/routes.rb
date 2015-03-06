@@ -45,7 +45,7 @@ Mathraining::Application.routes.draw do
     match '/unread', to: 'theories#unread', :via => [:get], as: :unread
     match '/latex', to: 'theories#latex', :via => [:get], as: :latex
   end
-  
+
   resources :submissions, only: [:destroy]
 
   resources :problems, only: [:update, :edit, :destroy, :show] do
@@ -69,30 +69,37 @@ Mathraining::Application.routes.draw do
       match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
     end
   end
-  
+
   resources :submissionfiles, only: [] do
     match '/fake_delete', to: 'submissionfiles#fake_delete', :via => [:get], as: :fake_delete
     member do
       get :download
     end
   end
-  
+
   resources :correctionfiles, only: [] do
     match '/fake_delete', to: 'correctionfiles#fake_delete', :via => [:get], as: :fake_delete
     member do
       get :download
     end
   end
-  
+
   resources :subjectfiles, only: [] do
     match '/fake_delete', to: 'subjectfiles#fake_delete', :via => [:get], as: :fake_delete
     member do
       get :download
     end
   end
-  
+
   resources :messagefiles, only: [] do
     match '/fake_delete', to: 'messagefiles#fake_delete', :via => [:get], as: :fake_delete
+    member do
+      get :download
+    end
+  end
+
+  resources :tchatmessagefiles, only: [] do
+    match '/fake_delete', to: 'tchatmessagefiles#fake_delete', :via => [:get], as: :fake_delete
     member do
       get :download
     end
@@ -101,7 +108,7 @@ Mathraining::Application.routes.draw do
  # mathjax 'mathjax'
 
   resources :prerequisites, only: []
-  
+
   resources :sections, only: [:show, :edit, :update] do
     resources :chapters, only: [:new, :create]
     resources :problems, only: [:new, :create]
@@ -115,7 +122,7 @@ Mathraining::Application.routes.draw do
     match '/warning', to: 'chapters#warning', :via => [:get]
     match '/export', to: 'chapters#export', :via => [:post]
     match '/put_online', to: 'chapters#put_online', :via => [:get]
-    
+
     match '/read', to: 'chapters#read', :via => [:get]
 
     resources :theories, only: [:new, :create]
@@ -135,20 +142,24 @@ Mathraining::Application.routes.draw do
     match '/take_skin', to: 'users#take_skin', :via => [:get], as: :take_skin
     match '/leave_skin', to: 'users#leave_skin', :via => [:get], as: :leave_skin
   end
-  
+
   resources :virtualtests do
     match '/put_online', to: 'virtualtests#put_online', :via => [:get], as: :put_online
     match '/begin_test', to: 'virtualtests#begin_test', :via => [:get], as: :begin_test
   end
-  
+
   resources :followingsubjects
-  
+
   match '/add_followingsubject', to: "followingsubjects#add_followingsubject", :via => [:get]
   match '/remove_followingsubject', to: "followingsubjects#remove_followingsubject", :via => [:get]
 
   resources :sessions, only: [:new, :create, :destroy]
-  
+
   resources :colors, only: [:index, :create, :update, :destroy]
+
+  resources :discussions, only: [:new, :create, :show]
+  resources :tchatmessages, only: [:create]
+  resources :links, only: []
 
   root to: 'static_pages#home'
 
@@ -157,9 +168,9 @@ Mathraining::Application.routes.draw do
   match '/about', to: 'static_pages#about', :via => [:get]
 
   match '/contact', to: 'static_pages#contact', :via => [:get]
-  
+
   match '/stats', to: 'static_pages#statistics', :via => [:get]
-  
+
   match '/pieces_jointes', to: 'submissionfiles#seeall', :via => [:get]
 
   match '/signup', to: 'users#new', :via => [:get]
@@ -171,7 +182,7 @@ Mathraining::Application.routes.draw do
   match '/password_forgotten', to: 'users#password_forgotten', :via => [:post]
 
   match '/recompute_scores', to: 'users#recompute_scores', :via => [:get], as: :recompute_scores
-      
+
   mount ResqueWeb::Engine => "/resque_web"
 
 end

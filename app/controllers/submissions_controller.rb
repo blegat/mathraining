@@ -41,7 +41,7 @@ class SubmissionsController < ApplicationController
       k = k+1
     end
 
-    if totalsize > 10485760
+    if totalsize > 5242880
       j = 1
       while j < i do
         attach[j-1].file.destroy
@@ -50,7 +50,7 @@ class SubmissionsController < ApplicationController
       end
       session[:ancientexte] = params[:submission][:content]
       redirect_to problem_path(@problem, :sub => 0),
-          flash: {danger: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
+          flash: {danger: "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)" } and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
@@ -150,7 +150,7 @@ class SubmissionsController < ApplicationController
       k = k+1
     end
 
-    if totalsize > 10485760
+    if totalsize > 5242880
       j = 1
       while j < i do
         attach[j-1].file.destroy
@@ -159,7 +159,7 @@ class SubmissionsController < ApplicationController
       end
       session[:ancientexte] = params[:submission][:content]
       redirect_to problem_intest_path(@problem),
-          flash: {danger: "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)" } and return
+          flash: {danger: "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)" } and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
@@ -296,7 +296,7 @@ class SubmissionsController < ApplicationController
         k = k+1
       end
 
-      if totalsize > 10485760
+      if totalsize > 5242880
         j = 1
         while j < i do
           attach[j-1].file.destroy
@@ -304,7 +304,7 @@ class SubmissionsController < ApplicationController
           j = j+1
         end
         session[:ancientexte] = params[:submission][:content]
-        flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+        flash[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)"
         if @context < 3
           redirect_to lepath and return
         else

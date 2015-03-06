@@ -1,0 +1,98 @@
+<% link = current_user.sk.links.where(:discussion_id => @discussion.id).first %>
+<% params[:nonread] = link.nonread %>
+
+<script type="text/javascript">
+
+var scrollHandler = function () {
+  var more_posts_url = $('.pagination .next_page a').attr('href')
+  if(more_posts_url.length > 0 && $(window).scrollTop() > $(document).height() - $(window).height() - 1)
+  {
+    $('.toreplace').html('<br/>Chargement des messages anciens...')
+    $.getScript(more_posts_url + "?nonread=<%= params[:nonread] %>")
+  }
+}
+
+$(window).scroll(scrollHandler);
+</script>
+
+<% provide(:title, 'Messages') %>
+<h1>Messages</h1>
+
+<% show = 20 %>
+<% if(params.has_key?:show) %>
+  <% show = params[:show].to_i %>
+<% end %>
+
+<% @nouveau = false %>
+
+<div class="row" style="height:80%;">
+  <div class="col-md-3 col-sm-3 col-xs-12">
+    <%= render 'menu' %>
+  </div>
+
+  <div class="col-md-9 col-sm-9 col-xs-12">
+
+    <% other = current_user.sk %>
+    <% @discussion.users.each do |u| %>
+      <% if u != current_user.sk %>
+        <% other = u %>
+      <% end %>
+    <% end %>
+    <h3>Discussion avec <b><%= link_to other.name, other, {:style => "color:#{other.level[:color]}" } %></b></h3>
+
+    <% @tchatmessage = Tchatmessage.new %>
+
+    <% @ancientexte = session[:ancientexte] %>
+    <% session[:ancientexte] = nil %>
+
+    <%= form_for @tchatmessage, :html => { :multipart => true } do |f| %>
+
+      <%= render 'shared/error_messages', object: f.object %>
+
+      <%= f.hidden_field :discussion_id, value: @discussion.id %>
+
+      <div class="form-group">
+        <div class="well" id="MathPreview"></div>
+        <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+        <%= render 'subjects/smiley', hiddentext: false %>
+        <% if @ancientexte.nil? %>
+          <textarea name="content" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ></textarea>
+        <% else %>
+          <textarea name="content" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte %></textarea>
+        <% end %>
+      </div>
+
+      <span id="fooBar"></span>
+
+      <!-- Ajouter une pièce jointe -->
+      <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
+      <br/><br/>
+      <%= f.submit "Envoyer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+    <% end %>
+
+    <br/>
+    <div id="all-messages">
+      <%= render @tchatmessages %>
+    </div>
+
+    <div id="infinite-scrolling" class="toreplace" style="text-align:center;">
+      <div style="display:none;">
+      <center>
+      <%= will_paginate @tchatmessages %>
+      </center>
+      </div>
+    </div>
+
+    <% if params[:nonread].to_i > 0 %>
+      <% link.nonread = 0 %>
+      <% link.save %>
+    <% end %>
+
+  </div>
+</div>
+
+
+<script>
+PreviewSafe.Init();
+PreviewSafe.Update();
+</script>

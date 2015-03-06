@@ -19,9 +19,9 @@
 
 class Subject < ActiveRecord::Base
   attr_accessible :content, :title, :lastcomment, :admin, :important, :wepion
-  
+
   # BELONGS_TO, HAS_MANY
-  
+
   has_many :messages, dependent: :destroy
   belongs_to :user
   belongs_to :chapter
@@ -30,11 +30,11 @@ class Subject < ActiveRecord::Base
   has_many :following_users, through: :followingsubjects, source: :user
   has_many :subjectfiles, dependent: :destroy
   has_many :fakesubjectfiles, dependent: :destroy
-  
+
   # VALIDATIONS
-  
+
   validates :title, presence: true, length: { maximum: 255 }
-  validates :content, presence: true
+  validates :content, presence: true, length: { maximum: 8000 }
   validates :user_id, presence: true
   validates :lastcomment, presence: true
 end

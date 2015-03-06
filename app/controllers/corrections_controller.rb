@@ -55,7 +55,7 @@ class CorrectionsController < ApplicationController
     end
 
     # On vérifie la taille des pièces jointes
-    if totalsize > 10485760
+    if totalsize > 5242880
       j = 1
       while j < i do
         attach[j-1].file.destroy
@@ -63,7 +63,7 @@ class CorrectionsController < ApplicationController
         j = j+1
       end
       session[:ancientexte] = params[:correction][:content]
-      flash[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
+      flash[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)."
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
 

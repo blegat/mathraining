@@ -1,0 +1,42 @@
+<div class="list-group">
+  <br/>
+  <h4 class="list-group-item-heading" style="margin-bottom:10px;">Nouveau message</h4>
+  <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item active" if @nouveau %>
+  <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item" if !@nouveau %>
+  <br/>
+  <h4 class="list-group-item-heading" style="margin-bottom:10px;">Discussions</h4>
+
+  <% number = Array.new %>
+
+  <% current_user.sk.links.each do |l| %>
+    <% number[l.discussion_id] = l.nonread %>
+  <% end %>
+
+  <% current_user.sk.discussions.order("last_message DESC").each do |d| %>
+    <% other = current_user.sk %>
+    <% d.users.each do |u| %>
+      <% if u != current_user.sk %>
+        <% other = u %>
+      <% end %>
+    <% end %>
+
+    <% texte = d.tchatmessages.order("created_at DESC").first.content %>
+
+    <% if d == @discussion %>
+      <%= link_to d, :class => "list-group-item active" do %>
+        <b><%= other.name %></b><br/>
+          <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
+      <% end %>
+    <% elsif d!= @discussion && number[d.id] > 0 %>
+      <%= link_to d, :class => "list-group-item jaune" do %>
+        <b><%= "#{other.name} (#{number[d.id]})" %></b><br/>
+        <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
+      <% end %>
+    <% else %>
+      <%= link_to d, :class => "list-group-item" do %>
+        <b><%= other.name %></b><br/>
+        <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -65,11 +65,7 @@ function showSoumissionNormal(id) {
 
 <!-- Nom -->
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-<% if @submission.user.admin %>
-  <%= @submission.user.name %>
-<% else %>
   <%= link_to @submission.user.name, @submission.user, {:style => "color:#{@submission.user.level[:color]}" } %>
-<% end %>
 </td>
 
 <!-- Date -->
@@ -84,11 +80,7 @@ function showSoumissionNormal(id) {
 <!-- Nom -->
 <tr class="info visible-xs">
 <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-<% if @submission.user.admin %>
-  <%= @submission.user.name %>
-<% else %>
   <%= link_to @submission.user.name, @submission.user, {:style => "color:#{@submission.user.level[:color]}" } %>
-<% end %>
 </td>
 
 <!-- Date -->

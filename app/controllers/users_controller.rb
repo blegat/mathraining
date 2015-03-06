@@ -44,9 +44,6 @@ class UsersController < ApplicationController
   # Voir un utilisateur
   def show
     @user = User.find(params[:id])
-    if @user.admin && !current_user.sk.root
-      redirect_to users_path
-    end
   end
 
   # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne

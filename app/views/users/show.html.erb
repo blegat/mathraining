@@ -30,7 +30,13 @@ html>body tbody.scroll {
 <!-- Si c'est un administrateur -->
 <% if @user.admin %>
   <h1><b><%= @user.name %></b>
-  <span style="font-size:18px; margin-left:100px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
+  <% if current_user.sk.root? %>
+    <span style="font-size:18px; margin-left:100px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
+  <% end %>
+
+  <% if current_user.sk != @user %>
+    <span style="float:right;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default" %></span>
+  <% end %>
   </h1>
   <b>Administrateur</b><br/>
 
@@ -44,6 +50,10 @@ html>body tbody.scroll {
   <h1 style="color:<%= niveau[:color] %>;"><b><%= @user.name %></b><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] if @user.sex == 0 %><%= niveau[:femininename] if @user.sex != 0 %></span>
   <% if signed_in? && current_user.sk.admin %>
     <span style="color:<%= niveau[:color] %>; margin-left:100px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
+  <% end %>
+
+  <% if current_user.sk != @user %>
+    <span style="float:right;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default" %></span>
   <% end %>
   </h1>
 

@@ -54,6 +54,9 @@
           <% Subjectfile.all.to_a.each do |f| %>
             <% total = total + f.file_file_size %>
           <% end %>
+          <% Tchatmessagefile.all.to_a.each do |f| %>
+            <% total = total + f.file_file_size %>
+          <% end %>
 
           <% if total < 1000000 %>
             <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:25px;" %>
@@ -194,7 +197,16 @@
       <!-- Menu déroulant -->
 
       <!-- Si connecté -->
+
       <% if signed_in? %>
+
+        <% nonlu = current_user.sk.links.where("nonread != 0").count %>
+        <% if nonlu == 0 %>
+          <li><%= link_to "Messages", new_discussion_path %></li>
+        <% else %>
+          <li style="font-weight:bold;"><%= link_to "Messages (#{nonlu})", new_discussion_path %></li>
+        <% end %>
+
         <li id="fat-menu" class="dropdown">
 
         <!-- Nom -->

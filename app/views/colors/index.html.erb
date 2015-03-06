@@ -49,14 +49,14 @@
 <% maxi = 0 %>
 
 <% @niveaux.each do |n| %>
-  <% maxi = n.pt * 1.2 %>
+  <% maxi = 1 + n.pt * 1.2 %>
   <% nombrelevel = nombrelevel+1 %>
 <% end %>
 
 <% i = 1 %>
 
 <% prec = 2000 %>
-  
+
   <% @niveaux.each do |n| %>
     <% if i > 1 %>
       <% haut = [450 - 450*(n.pt/maxi), 0].max %>
@@ -69,18 +69,18 @@
     <% end %>
     <% i = i+1 %>
   <% end %>
-  
+
 </div>
 </center>
 
 <script>
   var c=document.getElementById("myCanvas");
   var ctx=c.getContext("2d");
-  
+
   <% i = 1 %>
   <% @niveaux.each do |n| %>
     <% if i == nombrelevel %>
-      <% bas = [450 - 450*(n.pt/maxi) , 0].max %>
+      <% bas = [450 - 450*(n.pt/maxi), 0].max %>
       <% haut = 0 %>
     <% else %>
       <% bas = [450 - 450*(n.pt/maxi), 0].max %>
@@ -94,7 +94,7 @@
     <% end %>
     <% i = i+1 %>
   <% end %>
-  
+
   <% i = 1 %>
   <% @niveaux.each do |n| %>
     <% if i > 1 %>
@@ -111,4 +111,3 @@
     <% i = i+1 %>
   <% end %>
 </script>
-

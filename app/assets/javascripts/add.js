@@ -22,7 +22,7 @@ var Joint = {
     {
       var avert = document.createElement("p");
       var bold = document.createElement("b");
-      var text = document.createTextNode("Taille totale autorisée : 10 Mo. Type de fichiers autorisés : zip, pdf, doc, gif, jpg, png, bmp, txt.");
+      var text = document.createTextNode("Taille totale autorisée : 5 Mo. Types de fichier autorisés : zip, pdf, doc, gif, jpg, png, bmp, txt.");
       bold.appendChild(text);
       avert.appendChild(bold);
       foo.appendChild(avert);

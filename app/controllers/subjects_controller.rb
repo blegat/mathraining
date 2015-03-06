@@ -12,7 +12,7 @@ class SubjectsController < ApplicationController
     cherche_chapitre = -1
     cherche_personne = false
     q = -1
-    
+
     @chapitre = nil
     @section = nil
     if(params.has_key?:q)
@@ -31,7 +31,7 @@ class SubjectsController < ApplicationController
       cherche_personne = true
       q = 0
     end
-  
+
     @importants = Array.new
     Subject.where(important: true).order("lastcomment DESC").to_a.each do |s|
       if ((signed_in? && current_user.sk.admin?) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
@@ -40,7 +40,7 @@ class SubjectsController < ApplicationController
         end
       end
     end
-    
+
     @subjects = Array.new
     Subject.where(important: false).order("lastcomment DESC").to_a.each do |s|
       if (signed_in? && current_user.sk.admin?) || !s.admin && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
@@ -49,7 +49,7 @@ class SubjectsController < ApplicationController
         end
       end
     end
-    
+
     @subjectsfalse = @subjects.paginate(:page => params[:page], :per_page => 15)
   end
 
@@ -90,19 +90,19 @@ class SubjectsController < ApplicationController
     if(params.has_key?:q)
       q = params[:q].to_i
     end
-    
+
     if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path and return
     end
-    
+
     @subject = Subject.new(params[:subject].except(:chapter_id))
     @subject.user = current_user.sk
     @subject.lastcomment = DateTime.current
-    
+
     if @subject.admin
       @subject.wepion = false # On n'autorise pas wépion si admin
     end
-    
+
     chapter_id = params[:subject][:chapter_id].to_i
     if chapter_id != 0
       if chapter_id > 999
@@ -156,7 +156,7 @@ class SubjectsController < ApplicationController
       k = k+1
     end
 
-    if totalsize > 10485760
+    if totalsize > 5242880
       j = 1
       while j < i do
         attach[j-1].file.destroy
@@ -164,11 +164,11 @@ class SubjectsController < ApplicationController
         j = j+1
       end
 
-      flash.now[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
+      flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)."
       @preselect = params[:subject][:chapter_id].to_i
       render 'new' and return
     end
-    
+
     # Si on parvient à enregistrer
     if @subject.save
       j = 1
@@ -184,7 +184,7 @@ class SubjectsController < ApplicationController
       flash[:success] = "Votre sujet a bien été posté."
 
       redirect_to subject_path(@subject, :q => q)
-      
+
     # Si il y a eu une erreur
     else
       j = 1
@@ -204,18 +204,18 @@ class SubjectsController < ApplicationController
     if(params.has_key?:q)
       q = params[:q].to_i
     end
-    
+
     if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path
     end
 
     if @subject.update_attributes(params[:subject].except(:chapter_id))
-      
+
       if @subject.admin
         @subject.wepion = false # On n'autorise pas wépion si admin
         @subject.save
       end
-    
+
       chapter_id = params[:subject][:chapter_id].to_i
       if chapter_id != 0
         if chapter_id > 999
@@ -262,7 +262,7 @@ class SubjectsController < ApplicationController
           totalsize = totalsize + sf.file_file_size
         end
       end
-      
+
       @subject.fakesubjectfiles.each do |sf|
         if params["prevfakefile#{sf.id}".to_sym].nil?
           sf.destroy
@@ -298,7 +298,7 @@ class SubjectsController < ApplicationController
         k = k+1
       end
 
-      if totalsize > 10485760
+      if totalsize > 5242880
         j = 1
         while j < i do
           attach[j-1].file.destroy
@@ -306,7 +306,7 @@ class SubjectsController < ApplicationController
           j = j+1
         end
         @subject.reload
-        flash.now[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)"
+        flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)"
         @preselect = params[:subject][:chapter_id].to_i
         render 'edit' and return
       end
@@ -326,7 +326,7 @@ class SubjectsController < ApplicationController
     if(params.has_key?:q)
       q = params[:q].to_i
     end
-    
+
     @subject.delete
     @subject.subjectfiles.each do |f|
       f.file.destroy
@@ -346,7 +346,7 @@ class SubjectsController < ApplicationController
 
     redirect_to subjects_path(:q => q)
   end
-  
+
   ########## PARTIE PRIVEE ##########
   private
 

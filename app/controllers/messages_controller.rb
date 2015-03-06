@@ -69,7 +69,7 @@ class MessagesController < ApplicationController
     end
 
     # On vérifie que les pièces jointes ne sont pas trop grosses
-    if totalsize > 10485760
+    if totalsize > 5242880
       j = 1
       while j < i do
         attach[j-1].file.destroy
@@ -77,7 +77,7 @@ class MessagesController < ApplicationController
         j = j+1
       end
 
-      flash.now[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
+      flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)."
       render 'new' and return
     end
 
@@ -177,7 +177,7 @@ class MessagesController < ApplicationController
         k = k+1
       end
 
-      if totalsize > 10485760
+      if totalsize > 5242880
         j = 1
         while j < i do
           attach[j-1].file.destroy
@@ -185,7 +185,7 @@ class MessagesController < ApplicationController
           j = j+1
         end
         @message.reload
-        flash.now[:danger] = "Vos pièces jointes font plus de 10 Mo au total (#{(totalsize.to_f/1048576.0).round(3)} Mo)."
+        flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)."
         render 'edit' and return
       end
 
