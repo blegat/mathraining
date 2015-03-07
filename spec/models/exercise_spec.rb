@@ -52,30 +52,19 @@ describe Exercise do
     before { @ex.position = -1 }
     it { should_not be_valid }
   end
-  describe "when position is already taken with the same chapter" do
-    before { FactoryGirl.create(:exercise,
-                                chapter: @ex.chapter,
-                                position: @ex.position) }
-    it { should_not be_valid }
-  end
-  describe "when position is already taken with a different chapter" do
-    before { FactoryGirl.create(:exercise,
-                                position: @ex.position) }
-    it { should be_valid }
-  end
 
   # Answer
   describe "when answer is not present" do
     before { @ex.answer = nil }
     it { should_not be_valid }
   end
-  
+
   # Explanation
   describe "when explication is not present" do
     before { @ex.explanation = nil }
     it { should be_valid }
   end
-  
+
   # Level
   describe "when level is > 4" do
     before { @ex.level = 5 }

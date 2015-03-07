@@ -44,15 +44,4 @@ describe Qcm do
     before { @qcm.position = -1 }
     it { should_not be_valid }
   end
-  describe "when position is already taken with the same chapter" do
-    before { FactoryGirl.create(:qcm,
-                                chapter: @qcm.chapter,
-                                position: @qcm.position) }
-    it { should_not be_valid }
-  end
-  describe "when position is already taken with a different chapter" do
-    before { FactoryGirl.create(:qcm,
-                                position: @qcm.position) }
-    it { should be_valid }
-  end
 end
