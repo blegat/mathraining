@@ -20,7 +20,7 @@
   <!-- Pièces jointes -->
   <span id="fooBar"></span>
 
-  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" />
+  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="disabled"' if current_user.other %> />
   <br/><br/>
 
   <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => (!signed_in? || current_user.other) %>

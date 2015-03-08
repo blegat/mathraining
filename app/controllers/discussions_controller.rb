@@ -100,7 +100,7 @@ class DiscussionsController < ApplicationController
     if !current_user.sk.discussions.include?(@discussion)
       redirect_to new_discussion_path
     elsif current_user.other
-      flash[:info] = "Vous ne pouvez pas voir les messages de #{current_user.sk.name}"
+      flash[:info] = "Vous ne pouvez pas voir les messages de #{current_user.sk.name}."
       redirect_to new_discussion_path
     end
   end

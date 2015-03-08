@@ -7,19 +7,19 @@
 
     <% @ancientexte = session[:ancientexte] %>
     <% if @ancientexte.nil? %>
-      <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => current_user.other %>
+      <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (current_user.other || @unactivate > 0) %>
     <% else %>
-      <%= f.text_area :content, :class => "form-control", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => current_user.other %>
+      <%= f.text_area :content, :class => "form-control", :value => @ancientexte, :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (current_user.other || @unactivate > 0) %>
     <% end %>
   <% session.delete(:ancientexte) %>
   </div>
-  
+
   <!-- Pièces jointes -->
   <span id="fooBar"></span>
-  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
+  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="disabled"' if current_user.other || @unactivate > 0 %>/>
   <input type="hidden" name="lastcomment" value="<%= @lastid %>">
   <br/><br/>
-  
+
   <!-- Si administrateur : tous les boutons différents -->
   <% if current_user.sk.admin? %>
     N'hésitez pas à faire des commentaires, même minimes, pouvant permettre à l'étudiant de progresser. On signalera par exemple une erreur de notation, un oubli de cas particulier, une suggestion d'amélioration... Si une grosse partie est manquante, alors on refusera la solution en demandant de la compléter.<br/><br/>
@@ -36,7 +36,7 @@
       <% if @submission.intest && @submission.score == -1 %>
       <div class="form-group">
       <label>Score attribué (sur 7)</label>
-      <input type="number" name="score" class="form-control" style="width:70px;" min="0" max="7" /> 
+      <input type="number" name="score" class="form-control" style="width:70px;" min="0" max="7" />
       </div>
       Rappel sur la cotation des problèmes :
       <ul>
@@ -48,10 +48,10 @@
       </ul><br/>
       Veuillez accepter ou refuser la solution indépendamment du score attribué, comme pour un problème normal. On acceptera donc essentiellement les solutions ayant obtenu un 7, mais des exceptions (dans un sens comme dans l'autre) restent possibles.<br/><br/>
       <% end %>
-      <%= f.submit "Poster et refuser la soumission", class: "btn btn-danger" %>
-      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
+      <%= f.submit "Poster et refuser la soumission", class: "btn btn-danger", :disabled => (@unactivate > 0) %>
+      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", :disabled => (@unactivate > 0), data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
     <% end %>
-    
+
   <!-- Si étudiant, bête bouton -->
   <% else %>
     <%= f.submit "Poster", class: "btn btn-primary", :disabled => current_user.other %>

@@ -23,7 +23,7 @@ Modifier un message
 <%= form_for [@message.subject, @message], :url => subject_message_path(@message.subject, @message, :action => :update, :q => q), :html => { :multipart => true }  do |f| %>
 
   <%= render 'form', f: f %>
-  
+
   <!-- Pièces jointes -->
   <% if @message.messagefiles.count + @message.fakemessagefiles.count > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
@@ -44,7 +44,7 @@ Modifier un message
     <br/>
   <% end %>
   <span id="fooBar"></span>
-  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
+  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="disabled"' if current_user.other %> />
   <br /><br/>
   <%= f.submit "Editer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
 <% end %>

@@ -33,11 +33,13 @@ function showSoumissionNormal(id) {
 <% end %>
 
 <!-- Si administrateur, on propose de réserver la soumission -->
+<% @unactivate = 0 %>
 <% if current_user.sk.admin && @submission.status == 0 && @submission.visible %>
   <% f = @submission.followings.first %>
   <% if f.nil? %>
     <div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
     Avant de corriger cette soumission, prévenez les autres que vous vous en occupez!
+    <% @unactivate = 1 %>
     <%= link_to 'Réserver cette soumission', problem_submission_reserve_path(@problem, @submission), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
     </div>
   <% elsif f.user == current_user.sk %>
@@ -47,7 +49,8 @@ function showSoumissionNormal(id) {
     </div>
   <% else %>
     <div style="background-color:#FFCCCC; padding:10px; border:1px solid red;">
-    Cette soumission est en train d'être corrigée par <%= f.user.name %>.
+    <% @unactivate = 2 %>
+    Cette soumission est en train d'être corrigée par <b><%= f.user.name %></b>.
     </div>
   <% end %>
 <% end %>
