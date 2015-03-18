@@ -68,7 +68,7 @@
 <!-- Section et niveau (si on l'affiche) -->
 <% if @situation == 1 || @situation == 2 %>
   <td class="hidden-xs" style="text-align:center;">
-    <%= abreviation[s.problem.section_id] %>
+    <%= abreviation[s.problem.section_id-1] %>
     <%= s.problem.level %>
   </td>
 <% end %>
