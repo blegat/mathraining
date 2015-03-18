@@ -1,5 +1,7 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
+<% abreviation = ["Comb.", "Géom.", "Th. Nb.", "Alg.", "Eq. Fct.", "Inég."] %>
+
 <!-- Situation vaut : 3 si on est dans l'index des soumissions, 1 si on affiche tout, 2 si on affiche que celles auxquelles on participe -->
 
 <!-- Couleur -->
@@ -60,6 +62,14 @@
     <b><%= f.user.name %></b>
     <% premier = false %>
   <% end %>
+  </td>
+<% end %>
+
+<!-- Section et niveau (si on l'affiche) -->
+<% if @situation == 1 || @situation == 2 %>
+  <td class="hidden-xs" style="text-align:center;">
+    <%= abreviation[s.problem.section_id] %>
+    <%= s.problem.level %>
   </td>
 <% end %>
 
