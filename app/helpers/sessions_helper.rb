@@ -22,7 +22,17 @@ module SessionsHelper
   end
 
   def current_user
-    @current_user ||= User.find_by_remember_token(cookies[:remember_token])
+    if @current_user.nil?
+      @current_user = User.find_by_remember_token(cookies[:remember_token])
+      if !@current_user.nil?
+        mtn = DateTime.now.in_time_zone.to_date
+        if mtn != @current_user.last_connexion
+          @current_user.last_connexion = mtn
+          @current_user.save
+        end
+      end
+    end
+    return @current_user
   end
 
   def signed_in_user

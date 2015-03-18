@@ -5,7 +5,25 @@
 
 <% if current_user.sk.admin %>
 
-<h1>Statistiques (deux derniers jours)</h1>
+<h1>Statistiques</h1>
+
+<h3>Dernières connexions des utilisateurs</h3>
+
+<% dernier = -1 %>
+<% User.order("last_connexion DESC").all.each do |u| %>
+  <% lc = u.last_connexion %>
+  <% if lc != dernier %>
+    <% if !lc.nil? %>
+      <h4><%= lc.day %>/<%= lc.month %>/<%= lc.year %></h4>
+    <% else %>
+      <h4>Avant le 18/3/2015</h4>
+    <% end %>
+    <% dernier = lc %>
+  <% end %>
+  <b><%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %></b><br/>
+<% end %>
+
+<h3>Dernières résolutions (deux derniers jours)</h3>
 
 <% today = Date.today - 2 %>
 
