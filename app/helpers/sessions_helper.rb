@@ -33,10 +33,20 @@ module SessionsHelper
           if total.nil?
             total = Visitor.new
             total.date = mtn
-            total.number = 1
+            total.number_user = 0
+            total.number_admin = 0
+            if @current_user.admin?
+              total.number_admin = total.number_admin+1
+            else
+              total.number_user = total.number_user+1
+            end
             total.save
           else
-            total.number = total.number+1
+            if @current_user.admin?
+              total.number_admin = total.number_admin+1
+            else
+              total.number_user = total.number_user+1
+            end
             total.save
           end
         end
