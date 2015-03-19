@@ -29,6 +29,16 @@ module SessionsHelper
         if mtn != @current_user.last_connexion
           @current_user.last_connexion = mtn
           @current_user.save
+          total = Visitor.where(:date => mtn).first
+          if total.nil?
+            total = Visitor.new
+            total.date = mtn
+            total.number = 1
+            total.save
+          else
+            total.number = total.number+1
+            total.save
+          end
         end
       end
     end
