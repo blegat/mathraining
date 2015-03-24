@@ -10,9 +10,15 @@
 <h3>Dernières connexions des utilisateurs</h3>
 
 <% dernier = -1 %>
-<% User.order("last_connexion DESC").all.each do |u| %>
+<% number = 0 %>
+<% User.order("last_connexion DESC, last_name, first_name").all.each do |u| %>
   <% lc = u.last_connexion %>
+  <% number = number+1 %>
   <% if lc != dernier %>
+    <% if dernier != -1 %>
+      (<%= number %> <%= "personnes" if number > 1 %><%= "personne" unless number > 1 %>)
+    <% end %>
+    <% number = 0 %>
     <% if lc.year >= 2015 %>
       <h4><%= lc.day %>/<%= lc.month %>/<%= lc.year %></h4>
     <% else %>
