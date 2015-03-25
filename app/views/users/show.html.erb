@@ -52,7 +52,7 @@ html>body tbody.scroll {
     <span style="color:<%= niveau[:color] %>; margin-left:100px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
   <% end %>
 
-  <% if current_user.sk != @user %>
+  <% if signed_in? && current_user.sk != @user %>
     <span style="float:right;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default" %></span>
   <% end %>
   </h1>

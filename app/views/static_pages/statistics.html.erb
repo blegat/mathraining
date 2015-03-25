@@ -3,7 +3,7 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
 
-<% if current_user.sk.admin %>
+<% if signed_in? && current_user.sk.admin %>
 
 <h1>Statistiques</h1>
 
