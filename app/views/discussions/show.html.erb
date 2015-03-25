@@ -5,7 +5,7 @@
 
 var scrollHandler = function () {
   var more_posts_url = $('.pagination .next_page a').attr('href')
-  if(more_posts_url.length > 0 && $(window).scrollTop() > $(document).height() - $(window).height() - 1)
+  if(more_posts_url.length > 0 && $(window).scrollTop() > $(document).height() - $(window).height() - 10)
   {
     $('.toreplace').html('<br/>Chargement des messages anciens...')
     $.getScript(more_posts_url + "?nonread=<%= params[:nonread] %>")
