@@ -40,7 +40,7 @@ html>body tbody.scroll {
   </h1>
   <b>Administrateur</b><br/>
 
-<!-- SI c'est un étudiant -->
+<!-- Si c'est un étudiant -->
 <% else %>
 
   <% actualrating = @user.rating %>
@@ -623,6 +623,7 @@ html>body tbody.scroll {
 
       <% previousw = 2000 %>
 
+      // De droite vers la gauche : calcul où on met les verticales pointillées
       <% actperday.each do |a| %>
         <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
 
@@ -661,7 +662,7 @@ html>body tbody.scroll {
       <% prevw = w %>
       <% prevh = h %>
 
-      // On parcourt dans le sens inverse pour déterminer où on trace les barres verticales blanches
+      // De gauche vers la droite : on met les points
       <% actperday.reverse.each do |a| %>
         <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
         <% r = previousr + a[:pt] %>

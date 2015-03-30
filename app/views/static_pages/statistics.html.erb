@@ -7,6 +7,197 @@
 
 <h1>Statistiques</h1>
 
+<h3>Fréquentation du site</h3>
+En orange : les utilisateurs.<br/>
+En bleu : les administrateurs.<br/>
+<br/>
+<center>
+<!-- Endroit pour dessiner la fréquentation -->
+<div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+</center>
+
+<!-- Script pour le graphique de l'évolution -->
+<% @visiteurs = Visitor.order("date").to_a %>
+
+<% maxivisitor = 0 %>
+<% premierjour = @visiteurs[0].date %>
+<% dernierjour = DateTime.now.in_time_zone.to_date %>
+
+<% if premierjour != dernierjour %>
+
+<% @visiteurs.each do |v| %>
+  <% if v.number_user > maxivisitor %>
+    <% maxivisitor = v.number_user %>
+  <% end %>
+  <% if v.number_admin > maxivisitor %>
+    <% maxivisitor = v.number_admin %>
+  <% end %>
+<% end %>
+
+<% maxi = maxivisitor * 1.15 %>
+
+<script type="text/javascript">
+  $(document).ready( function(){
+
+  //Get the canvas & context
+  var c = $('#myCanvas');
+  var ctx = c.get(0).getContext('2d');
+  var container = $(c).parent();
+
+  //Run function when browser  resize
+  $(window).resize( respondCanvas );
+
+  function respondCanvas(){
+  c.attr('width', $(container).width() ); //max width
+  c.attr('height', 480*$(container).width()/900.0); //max height
+
+  document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
+
+  //Redraw & reposition content
+  var x = c.width();
+  var y = c.height();
+
+  var pct = c.width()/900.0;
+
+  ctx.beginPath();
+  ctx.rect(pct*50, pct*5, pct*806, pct*450);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = 'black';
+  ctx.stroke();
+
+  // Affichage des barres horizontales
+  <% tranche = (maxivisitor/4).to_i %>
+  <% if tranche == 0 %>
+    <% tranche = 1 %>
+  <% end %>
+
+  <% encours = maxivisitor %>
+
+  <% while encours > 0 %>
+    <% haut = [450 - 450*(encours/maxi), 0].max %>
+
+    <% (0..40).each do |i| %>
+    ctx.beginPath();
+    ctx.moveTo(pct*<%= 45 + 20*i+5 %>, pct*<%= haut+5 %>);
+    ctx.lineTo(pct*<%= 45 + 20*i+15 if 45 + 20*i+15 < 856 %><%= 856 if 45 + 20*i+15 >= 856 %>, pct*<%= haut+5 %>);
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = 'grey';
+    ctx.stroke();
+    <% end %>
+
+    ctx.font="14px Arial";
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'right';
+    ctx.fillText(<%= encours %>,pct*44,pct*<%= haut+10 %>);
+    <% encours = encours - tranche %>
+  <% end %>
+
+  // On trace maintenant le graphique
+  ctx.strokeStyle = 'black';
+
+  // Commencement du graphique
+
+  <% first = premierjour %>
+  <% last = dernierjour %>
+  <% entre = (last-first).to_i %>
+  // On parcourt de droite à gauche
+  <% encours = @visiteurs.size()-1 %>
+
+  <% prevw = 0 %>
+  <% printw = 10000 %>
+  <% prevhadmin = 0 %>
+  <% prevhuser = 0 %>
+
+  <% (0..entre).each do |i| %>
+    <% if (last - @visiteurs[encours].date).to_i == i %>
+      <% nbadmin = @visiteurs[encours].number_admin %>
+      <% nbuser = @visiteurs[encours].number_user %>
+      <% encours = encours-1 %>
+    <% else %>
+      <% nbadmin = 0 %>
+      <% nbuser = 0 %>
+    <% end %>
+
+    <% w = 3 + 800*(entre-i)/(entre) %>
+
+    <% hadmin = 450 - 450*(nbadmin/maxi) %>
+    ctx.beginPath();
+    ctx.arc(pct*<%= 50+w %>, pct*<%= hadmin+5 %>, 2, 0, 2 * Math.PI, true);
+    ctx.fillStyle = 'blue';
+    ctx.fill();
+
+    <% huser = 450 - 450*(nbuser/maxi) %>
+    ctx.beginPath();
+    ctx.arc(pct*<%= 50+w %>, pct*<%= huser+5 %>, 3, 0, 2 * Math.PI, true);
+    ctx.fillStyle = 'orange';
+    ctx.fill();
+
+    <% if i > 0 %>
+      ctx.beginPath();
+      ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevhadmin+5 %>);
+      ctx.lineTo(pct*<%= 50+w %>, pct*<%= hadmin+5 %>);
+      ctx.lineWidth = 2;
+      <% if i > 1 %>
+        ctx.strokeStyle = 'blue';
+      <% else %>
+        ctx.strokeStyle = 'purple';
+      <% end %>
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevhuser+5 %>);
+      ctx.lineTo(pct*<%= 50+w %>, pct*<%= huser+5 %>);
+      ctx.lineWidth = 2;
+      <% if i > 1 %>
+        ctx.strokeStyle = 'orange';
+      <% else %>
+        ctx.strokeStyle = 'red';
+      <% end %>
+      ctx.stroke();
+    <% end %>
+
+    <% prevw = w %>
+    <% prevhadmin = hadmin %>
+    <% prevhuser = huser %>
+
+    <% if w < printw - 50 && nbadmin+nbuser > 0 %>
+      <% courant = @visiteurs[encours+1].date %>
+      if (pct > 0.7){
+        ctx.font="12px Arial";
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center';
+        ctx.fillText("<%= "0" if courant.day < 10 %><%= courant.day %>/<%= "0" if courant.month < 10 %><%= courant.month %>/<%= "0" if (courant.year % 2000) < 10 %><%= (courant.year % 2000) %>",pct*<%= 50+w %>,pct*471);
+      }
+      <% (0..22).each do |i| %>
+        ctx.beginPath();
+        ctx.moveTo(pct*<%= 50+w %>, pct*<%= 20*i+5 %>);
+        ctx.lineTo(pct*<%= 50+w %>, pct*<%= 20*i+15 %>);
+        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = 'grey';
+        ctx.stroke();
+      <% end %>
+      <% printw = w %>
+    <% end %>
+
+  <% end %>
+
+  }
+
+  //Initial call
+  respondCanvas();
+
+  });
+
+</script>
+
+<% end %>
+
 <h3>Dernières connexions des utilisateurs</h3>
 
 <% dernier = -1 %>
