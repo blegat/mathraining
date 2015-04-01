@@ -86,17 +86,8 @@ class ApplicationController < ActionController::Base
     user.solvedexercises.each do |e|
       if e.correct
         exo = e.exercise
-        pt = exo.value - (e.nb_guess-1) # AF
+        pt = exo.value
 
-        if !exo.chapter.section.fondation? # Pas un fondement
-          user.rating = user.rating + pt
-        end
-
-        partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
-      else
-        # AF
-        exo = e.exercise
-        pt = - e.nb_guess
         if !exo.chapter.section.fondation? # Pas un fondement
           user.rating = user.rating + pt
         end
@@ -108,17 +99,7 @@ class ApplicationController < ActionController::Base
     user.solvedqcms.each do |q|
       if q.correct
         qcm = q.qcm
-        pt = qcm.value - (q.nb_guess-1) # AF
-
-        if !qcm.chapter.section.fondation? # Pas un fondement
-          user.rating = user.rating + pt
-        end
-
-        partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
-      else
-        # AF
-        qcm = q.qcm
-        pt = - (q.nb_guess) # AF
+        pt = qcm.value
 
         if !qcm.chapter.section.fondation? # Pas un fondement
           user.rating = user.rating + pt
