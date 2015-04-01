@@ -106,8 +106,9 @@ html>body tbody.scroll {
 
   <!-- On va parcourir tous les exercices, qcms et problèmes -->
 
-  <% exercises = @user.solvedexercises.where(:correct => true).order("resolutiontime DESC") %>
-  <% qcms = @user.solvedqcms.where(:correct => true).order("resolutiontime DESC") %>
+  <!-- AF : Rajouter .where(:correct => true) aux deux premiers -->
+  <% exercises = @user.solvedexercises.order("resolutiontime DESC") %>
+  <% qcms = @user.solvedqcms.order("resolutiontime DESC") %>
   <% problems = @user.solvedproblems.order("resolutiontime DESC") %>
 
   <% act = Array.new %>
@@ -174,28 +175,36 @@ html>body tbody.scroll {
       <% pt = exo.value %>
       <% pt = 0 if allsec[allchap[exo.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
-        <% nb_e = nb_e+1 %>
+        <!-- AF enlever le if -->
+        <% if e.correct %>
+          <% nb_e = nb_e+1 %>
+          <% end %>
 				<% dernier = e.resolutiontime.in_time_zone %>
         <% if premier.nil? %>
           <% premier = e.resolutiontime.in_time_zone %>
         <% end %>
       <% end %>
 			<% e_encours = e_encours + 1 %>
-      <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => allsec[allchap[exo.chapter_id].section_id].fondation}) %>
+      <!-- AF : enlever correct -->
+      <% act.push({:time => e.resolutiontime, :type => 2, :correct => e.correct, :nb_guess => e.nb_guess, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => allsec[allchap[exo.chapter_id].section_id].fondation}) %>
 		<% elsif bestqui == 2 %>
       <% q = qcms[q_encours] %>
 			<% qcm = allqcm[q.qcm_id] %>
       <% pt = qcm.value %>
       <% pt = 0 if allsec[allchap[qcm.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
-        <% nb_e = nb_e+1 %>
+        <!-- AF enlever le if -->
+        <% if q.correct %>
+          <% nb_e = nb_e+1 %>
+        <% end %>
 				<% dernier = q.resolutiontime.in_time_zone %>
         <% if premier.nil? %>
           <% premier = q.resolutiontime.in_time_zone %>
         <% end %>
       <% end %>
 			<% q_encours = q_encours + 1 %>
-      <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => allsec[allchap[qcm.chapter_id].section_id].fondation}) %>
+      <!-- AF : enlever correct -->
+      <% act.push({:time => q.resolutiontime, :type => 3, :correct => q.correct, :nb_guess => q.nb_guess, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => allsec[allchap[qcm.chapter_id].section_id].fondation}) %>
 		<% elsif bestqui == 3 %>
       <% p = problems[p_encours] %>
 			<% pb = allpb[p.problem_id] %>
@@ -274,14 +283,25 @@ html>body tbody.scroll {
     <% end %>
 
     <% if a[:pt] > 0 %>
+      <!-- AF : rajoute vaut juste a[:pt] -->
+      <% if a[:type] == 4 %>
+        <% rajoute = a[:pt] %>
+      <% elsif a[:type] <= 3 && a[:correct] %>
+        <% rajoute = a[:pt] - (a[:nb_guess]-1) %>
+      <% else %>
+        <% rajoute = - a[:nb_guess] %>
+      <% end %>
       <% if dateday != previousdate %>
         <% encours = encours+1 %>
-        <% actperday.push({:time => dateday, :pt => a[:pt], :chapter => a[:chapter]}) %>
+        <% actperday.push({:time => dateday, :pt => rajoute, :chapter => a[:chapter]}) %>
       <% else %>
-        <% actperday[encours][:pt] = actperday[encours][:pt] + a[:pt] %>
+        <% actperday[encours][:pt] = actperday[encours][:pt] + rajoute %>
       <% end %>
       <% previousdate = dateday %>
     <% end %>
+
+    <!-- AF : Enlever le if -->
+    <% if a[:type] == 4 || a[:correct] %>
 
     <!-- Affichage de la ligne -->
     <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
@@ -319,6 +339,8 @@ html>body tbody.scroll {
     </td>
     </tr>
 
+    <% end %>
+
   <% end %>
 
   <% if act.size > 0 %>
@@ -340,6 +362,9 @@ html>body tbody.scroll {
   <!-- On parcourt les actes un par un (cas gsm) -->
   <% act.each do |a| %>
     <% date = a[:time].in_time_zone %>
+
+    <!-- AF : enlever le if -->
+    <% if a[:type] == 4 || a[:correct] %>
 
     <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
 
@@ -370,6 +395,8 @@ html>body tbody.scroll {
     </center>
     </td>
     </tr>
+
+    <% end %>
 
   <% end %>
 

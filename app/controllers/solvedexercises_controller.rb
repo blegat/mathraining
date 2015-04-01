@@ -42,6 +42,9 @@ class SolvedexercisesController < ApplicationController
 
     if link.correct
       point_attribution(current_user.sk, exercise)
+    else
+      # AF
+      minus_one(current_user.sk, exercise)
     end
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
@@ -84,6 +87,9 @@ class SolvedexercisesController < ApplicationController
 
     if link.correct
       point_attribution(current_user.sk, exercise)
+    else
+      # AF
+      minus_one(current_user.sk, exercise)
     end
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
@@ -142,6 +148,20 @@ class SolvedexercisesController < ApplicationController
 
     partial = partials.where(:section_id => exo.chapter.section.id).first
     partial.points = partial.points + pt
+    partial.save
+  end
+
+  # AF
+  def minus_one(user, exo)
+    partials = user.pointspersections
+
+    if !exo.chapter.section.fondation # Pas un fondement
+      user.rating = user.rating - 1
+      user.save
+    end
+
+    partial = partials.where(:section_id => exo.chapter.section.id).first
+    partial.points = partial.points - 1
     partial.save
   end
 

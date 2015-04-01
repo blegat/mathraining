@@ -79,6 +79,9 @@ class SolvedqcmsController < ApplicationController
 
     if link.correct
       point_attribution(current_user.sk, qcm)
+    else
+      # AF
+      minus_one(current_user.sk, qcm)
     end
 
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
@@ -176,6 +179,9 @@ class SolvedqcmsController < ApplicationController
 
     if link.correct
       point_attribution(current_user.sk, qcm)
+    else
+      # AF
+      minus_one(current_user.sk, qcm)
     end
 
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
@@ -219,6 +225,20 @@ class SolvedqcmsController < ApplicationController
 
     partial = partials.where(:section_id => qcm.chapter.section.id).first
     partial.points = partial.points + pt
+    partial.save
+  end
+
+  # AF
+  def minus_one(user, qcm)
+    partials = user.pointspersections
+
+    if !qcm.chapter.section.fondation # Pas un fondement
+      user.rating = user.rating - 1
+      user.save
+    end
+
+    partial = partials.where(:section_id => qcm.chapter.section.id).first
+    partial.points = partial.points - 1
     partial.save
   end
 
