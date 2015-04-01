@@ -21,6 +21,9 @@
 
   <% rating = user.rating %>
 
+  <!-- AF -->
+  <% if rating > 0 %>
+
   <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
 
   <!-- Rang -->
@@ -60,6 +63,7 @@
   </td>
 
   </tr>
+  <% end %>
   <% rank = rank + 1  %>
 <% end %>
 
