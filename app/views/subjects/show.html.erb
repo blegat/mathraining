@@ -22,7 +22,7 @@ function hideStuff(id) {
 
 <!-- Titre avec un tableau pour que l'alignement soit joli si le titre fait plus d'une ligne -->
 <h1 style="margin-bottom:15px;">
-<table>
+<table style="float:left;">
 <tr>
 <td nowrap style="vertical-align:top;">
 <span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
@@ -43,11 +43,18 @@ function hideStuff(id) {
 </td>
 </tr>
 </table>
+
+<% if !current_user.followed_subjects.exists?(@subject) %>
+  <span style="float:right;"><%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."} %></span>
+<% else %>
+  <span style="float:right;"><%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey' %></span>
+<% end %>
 </h1>
+<br/><br/><br/>
 
 <center>
-<%= will_paginate @messages, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @messages, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 2 %>
+<%= will_paginate @messages, :style => "margin-top:-30px;", :class => "hidden-xs", :inner_window => 2 %>
+<%= will_paginate @messages, :style => "margin-top:-30px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 2 %>
 </center>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->

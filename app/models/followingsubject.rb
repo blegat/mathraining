@@ -8,14 +8,12 @@
 #  subject_id :integer
 #
 
-# Ce model ne sert pour le moment plus à rien
-
 class Followingsubject < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY
   belongs_to :subject
   belongs_to :user
-  
+
   # VALIDATIONS
 
   validates :subject_id, presence: true

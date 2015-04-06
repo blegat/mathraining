@@ -94,11 +94,13 @@ class MessagesController < ApplicationController
 
       # On ne peut plus suivre un sujet!
 
-      # @subject.following_users.each do |u|
-      #   if u != current_user
-      #     UserMailer.new_followed_message(u.id, @subject.id, current_user.name, @message.content).deliver
-      #   end
-      # end
+      @subject.following_users.each do |u|
+        if u != current_user
+          unless (@subject.admin? && !u.admin?) || (@subject.wepion && !u.wepion && !u.admin)
+            UserMailer.new_followed_message(u.id, @subject.id, current_user.name, @message.content, @message.id).deliver
+          end
+        end
+      end
 
       @subject.lastcomment = DateTime.current
       @subject.save

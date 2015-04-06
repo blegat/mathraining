@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Ce controller ne sert plus à rien pour le moment car la possibilité de suivre un sujet a été enlevée.
-
 class FollowingsubjectsController < ApplicationController
   before_filter :signed_in_user
 
@@ -10,11 +8,7 @@ class FollowingsubjectsController < ApplicationController
     fol = Followingsubject.new
     fol.subject = sub
     fol.user = current_user.sk
-    if fol.save
-      flash[:success] = "Vous suivez maintenant ce sujet."
-    else
-      flash[:danger] = "Une erreur est survenue."
-    end
+    fol.save
 
     if request.env["HTTP_REFERER"]
       redirect_to(:back)
@@ -25,11 +19,9 @@ class FollowingsubjectsController < ApplicationController
 
   def remove_followingsubject
     sub = Subject.find_by_id(params[:subject_id])
-    if current_user.sk.followed_subjects.exists?(sub)
-      current_user.sk.followed_subjects.delete(sub)
-      flash[:success] = "Vous ne suivez plus ce sujet."
-    else
-      flash[:danger] = "Vous ne suiviez déjà pas ce sujet."
+    x = current_user.sk.followingsubjects.where(:subject => sub).first
+    if !x.nil?
+      x.destroy
     end
 
     if request.env["HTTP_REFERER"]
@@ -38,5 +30,5 @@ class FollowingsubjectsController < ApplicationController
       redirect_to subject_path(sub)
     end
   end
-  
+
 end
