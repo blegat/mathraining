@@ -103,6 +103,8 @@ class SubjectsController < ApplicationController
       @subject.wepion = false # On n'autorise pas wépion si admin
     end
 
+    @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
+
     chapter_id = params[:subject][:chapter_id].to_i
     if chapter_id != 0
       if chapter_id > 999
@@ -215,6 +217,8 @@ class SubjectsController < ApplicationController
         @subject.wepion = false # On n'autorise pas wépion si admin
         @subject.save
       end
+
+      @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
 
       chapter_id = params[:subject][:chapter_id].to_i
       if chapter_id != 0
