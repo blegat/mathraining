@@ -100,6 +100,7 @@ class MessagesController < ApplicationController
             # Ce n'est pas vraiment normal qu'il suive ce sujet
           else
             UserMailer.new_followed_message(u.id, @subject.id, current_user.name, @message.content, @message.id).deliver
+            flash[:danger] = "Mail envoyé"
           end
         end
       end
