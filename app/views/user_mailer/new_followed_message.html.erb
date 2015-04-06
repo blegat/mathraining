@@ -1,1 +1,7 @@
-<p>Coucou</p>
+<p>Bonjour <%= @user.first_name %>,</p>
+
+<p><%= @qui %> a posté un nouveau message sur le sujet '<%= @subject.title %>' que vous suivez. Vous pouvez lire ce message dans son contexte <%= link_to "ici", subject_url(@subject, :host => "www.mathraining.be", :page => @page, :anchor => @id) %>.</p>
+
+<p>Si vous ne désirez plus suivre ce sujet, cliquez <%= link_to "ici", remove_followingsubject_url(:subject_id => @subject, :host => "www.mathraining.be") %>.</p>
+
+<p>L'équipe Mathraining.</p>
