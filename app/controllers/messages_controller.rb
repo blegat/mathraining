@@ -96,7 +96,9 @@ class MessagesController < ApplicationController
 
       @subject.following_users.each do |u|
         if u != current_user
-          unless (@subject.admin? && !u.admin?) || (@subject.wepion && !u.wepion && !u.admin)
+          if (@subject.admin && !u.admin) || (@subject.wepion && !u.wepion && !u.admin)
+            # Ce n'est pas vraiment normal qu'il suive ce sujet
+          else
             UserMailer.new_followed_message(u.id, @subject.id, current_user.name, @message.content, @message.id).deliver
           end
         end
