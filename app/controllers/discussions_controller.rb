@@ -188,5 +188,12 @@ class DiscussionsController < ApplicationController
         return
       end
     end
+
+    if !@erreur
+      if @destinataire.follow_message
+        flash[:danger] = "Envoi d'un mail à l'autre..."
+        UserMailer.new_followed_tchatmessage(@destinataire.id, current_user.sk.name, @tchatmessage.content, @discussion.id).deliver
+      end
+    end
   end
 end

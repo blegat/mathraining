@@ -21,10 +21,11 @@
 #  sex             :integer
 #  wepion          :boolean
 #  last_connexion  :date
+#  follow_message  :boolean
 #
 
 class User < ActiveRecord::Base
-  attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion, :country, :year, :rating, :forumseen, :last_connexion
+  attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion, :country, :year, :rating, :forumseen, :last_connexion, :follow_message
 
   # BELONGS_TO, HAS_MANY
 

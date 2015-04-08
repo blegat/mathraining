@@ -31,4 +31,26 @@ class FollowingsubjectsController < ApplicationController
     end
   end
 
+  def add_followingmessage
+    current_user.sk.follow_message = true
+    current_user.sk.save
+
+    if request.env["HTTP_REFERER"]
+      redirect_to(:back)
+    else
+      redirect_to new_discussion_path
+    end
+  end
+
+  def remove_followingmessage
+    current_user.sk.follow_message = false
+    current_user.sk.save
+
+    if request.env["HTTP_REFERER"]
+      redirect_to(:back)
+    else
+      redirect_to new_discussion_path
+    end
+  end
+
 end
