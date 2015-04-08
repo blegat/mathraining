@@ -29,6 +29,6 @@ class UserMailer < AsyncMailer
     @qui = qui
     @message = message
     @id = id
-    mail(to: @user.email, subject: "Mathraining - Nouveau message de '" + @qui + "'", from: "mathraining@mathraining.be")
+    mail(to: @user.email, subject: "Mathraining - Nouveau message de " + @qui, from: "mathraining@mathraining.be")
   end
 end
