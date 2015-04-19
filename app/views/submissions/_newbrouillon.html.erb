@@ -15,7 +15,7 @@
     <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
   <% end %>
   </div>
-  
+
   <!-- Pièces jointes -->
   <% if @submission.submissionfiles.count + @submission.fakesubmissionfiles.count > 0 %>
     <b>Pièces jointes (décochez pour supprimer)</b><br/>
@@ -39,9 +39,9 @@
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
   <br/><br/>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => (!signed_in? || current_user.other) %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", :disabled => (!signed_in? || current_user.other), data: { confirm: "Etes-vous sûr de vouloir soumettre cette solution?" } %>
   <%= f.submit "Enregistrer le brouillon", class: "btn btn-default btn-grey", :disabled => (!signed_in? || current_user.other) %>
-  <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger", :disabled => (!signed_in? || current_user.other) %>
+  <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger", :disabled => (!signed_in? || current_user.other), data: { confirm: "Etes-vous sûr de vouloir supprimer ce brouillon?" } %>
 <% end %>
 
 <script>
