@@ -108,7 +108,7 @@ html>body tbody.scroll {
 
   <% exercises = @user.solvedexercises.where(:correct => true).order("resolutiontime DESC") %>
   <% qcms = @user.solvedqcms.where(:correct => true).order("resolutiontime DESC") %>
-  <% problems = @user.solvedproblems.order("resolutiontime DESC") %>
+  <% problems = @user.solvedproblems.order("truetime DESC") %>
 
   <% act = Array.new %>
   <% e_encours = 0 %>
@@ -162,8 +162,8 @@ html>body tbody.scroll {
       <% trouve = true %>
       <% bestqui = 2 %>
     <% end %>
-    <% if p_encours < problems.size && (!trouve || problems[p_encours].resolutiontime.to_i > besttime) %>
-      <% besttime = problems[p_encours].resolutiontime.to_i %>
+    <% if p_encours < problems.size && (!trouve || problems[p_encours].truetime.to_i > besttime) %>
+      <% besttime = problems[p_encours].truetime.to_i %>
       <% trouve = true %>
       <% bestqui = 3 %>
     <% end %>
@@ -212,11 +212,11 @@ html>body tbody.scroll {
         <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
       <% end %>
 			<% p_encours = p_encours + 1 %>
-			<% dernier = p.resolutiontime.in_time_zone %>
+			<% dernier = p.truetime.in_time_zone %>
 			<% if premier.nil? %>
-				<% premier = p.resolutiontime.in_time_zone %>
+				<% premier = p.truetime.in_time_zone %>
 			<% end %>
-      <% act.push({:time => p.resolutiontime, :type => 4, :id => p.problem_id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
+      <% act.push({:time => p.truetime, :type => 4, :id => p.problem_id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
     <% end %>
   <% end %>
 
