@@ -697,7 +697,7 @@ html>body tbody.scroll {
 
     <form action="<%= compare_path %>" method="get" class="form-inline">
       Comparer
-      <%= options_for_select(User.where("rating != 0 AND admin == ?", false).order(:first_name).collect {|u| [ u.name, u.id ] }) %>
+      <%= User.where("rating != 0 AND admin == ?", false).order(:first_name) %>
       <%= button_tag "Comparer!", class: "btn btn btn-primary", name: "" %>
     </form>
 
