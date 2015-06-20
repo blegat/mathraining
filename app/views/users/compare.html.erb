@@ -415,11 +415,7 @@ html>body tbody.scroll {
 
   <% maxi = 0 %>
 
-  <% if [numerolevel[1], numerolevel[2]].max == nombrelevel %>
-    <% maxi = 1.2*[actualrating[1], actualrating[2]].max %>
-  <% else %>
-    <% maxi = 1.1*@niveaux[[numerolevel[1], numerolevel[2]].max][:pt] %>
-  <% end %>
+  <% maxi = 1.15*[actualrating[1], actualrating[2]].max %>
 
   <script type="text/javascript">
     $(document).ready( function(){
