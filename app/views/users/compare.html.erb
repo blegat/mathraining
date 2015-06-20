@@ -644,9 +644,9 @@ html>body tbody.scroll {
 
   <form action="/compare" method="get" class="form-inline" name="research">
     Comparer
-    <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin == ?", false).order(:first_name).collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order(:first_name).collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
     avec
-    <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin == ?", false).order(:first_name).collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order(:first_name).collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
     <%= button_tag "Comparer!", class: "btn btn btn-primary", name: "" %>
   </form>
 
