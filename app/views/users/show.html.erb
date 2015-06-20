@@ -697,7 +697,7 @@ html>body tbody.scroll {
 
     <form action="<%= compare_path %>" method="get" class="form-inline">
       Comparer
-      <% User.where("rating != 0 AND admin == ?", false).order(:first_name).each do |u| %>
+      <% User.where("rating != 0 AND admin = 0", false).order(:first_name).each do |u| %>
         <%= u.name %>
         <%= u.id %>
       <% end %>
