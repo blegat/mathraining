@@ -141,6 +141,7 @@ Mathraining::Application.routes.draw do
     match '/reactivate', to: 'users#reactivate', :via => [:get], as: :reactivate
     match '/take_skin', to: 'users#take_skin', :via => [:get], as: :take_skin
     match '/leave_skin', to: 'users#leave_skin', :via => [:get], as: :leave_skin
+    match '/compare', to: 'users#compare', :via => [:get]
   end
 
   resources :virtualtests do

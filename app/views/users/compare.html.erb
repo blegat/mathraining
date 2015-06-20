@@ -1,0 +1,634 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
+
+<% provide(:title, "#{@user[1].name} vs #{@user[2].name}") %>
+
+<% t1 = Time.now %>
+
+<!-- Test pour la performance -->
+<% montretemps = 0 %>
+<% if(params.has_key?:montretemps) %>
+  <% montretemps = params[:montretemps].to_i %>
+<% end %>
+
+<!-- Style pour la barre de défilement dans le tableau -->
+<style type="text/css">
+
+html>body thead.fixed tr {
+	display: block;
+}
+
+html>body tbody.scroll {
+	display: block;
+	max-height: 440px;
+	overflow-y: scroll;
+	width: 100%;
+}
+</style>
+
+<!-- Si il y a un administrateur -->
+<% if @user[1].admin || @user[2].admin || @user[1].rating == 0 || @user[2].rating == 0 %>
+  <!-- On ne compare pas avec un administrateur! -->
+
+<!-- Si ce sont des étudiants -->
+<% else %>
+  <% actualrating = [] %>
+  <% niveau = [] %>
+  <% actualrating[1] = @user[1].rating %>
+  <% actualrating[2] = @user[2].rating %>
+  <% niveau[1] = @user[1].level %>
+  <% niveau[2] = @user[2].level %>
+
+  <h1><b><%= link_to @user[1].name, @user[1], {:style => "color:#{niveau[1][:color]}" } %></b> vs <b><%= link_to @user[2].name, @user[2], {:style => "color:#{niveau[2][:color]}" } %> </b></h1>
+
+  <!-- On détermine ce que la personne peut voir ou ne pas voir -->
+  <% cansee = Array.new %>
+
+  <% section_fondation = Array.new %>
+  <% Section.all.to_a.each do |s| %>
+    <% section_fondation[s.id] = s.fondation %>
+  <% end %>
+
+  <% if signed_in? && current_user.sk.admin %>
+    <% Chapter.all.to_a.each do |c| %>
+      <% cansee[c.id] = true %>
+    <% end %>
+  <% else %>
+    <% debloque = Array.new %>
+    <% Chapter.all.to_a.each do |c| %>
+      <% debloque[c.id] = false %>
+    <% end %>
+
+    <% if signed_in? %>
+      <% current_user.sk.chapters.each do |c| %>
+        <% debloque[c.id] = true %>
+      <% end %>
+    <% end %>
+
+    <% Chapter.all.to_a.each do |c| %>
+      <% cansee[c.id] = true %>
+      <% if !section_fondation[c.section_id] %>
+        <% c.prerequisites.each do |p| %>
+          <% if !section_fondation[p.section_id] && !debloque[p.id] %>
+            <% cansee[c.id] = false %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% enough_points = false %>
+  <% if signed_in? && (current_user.sk.admin? || current_user.sk.rating >= 200) %>
+    <% enough_points = true %>
+  <% end %>
+
+  <!-- On va parcourir tous les exercices, qcms et problèmes -->
+
+  <% act = Array.new %>
+  <% resolu = Array.new %>
+
+	<% allsec = Array.new %>
+	<% allchap = Array.new %>
+	<% allex = Array.new %>
+	<% allqcm = Array.new %>
+	<% allpb = Array.new %>
+
+	<% Section.all.each do |s| %>
+	  <% allsec[s.id] = s %>
+	<% end %>
+
+	<% Chapter.all.each do |c| %>
+	  <% allchap[c.id] = c %>
+	<% end %>
+
+	<% Exercise.all.each do |e| %>
+		<% allex[e.id] = e %>
+	<% end %>
+
+	<% Qcm.all.each do |q| %>
+	  <% allqcm[q.id] = q %>
+	<% end %>
+
+	<% Problem.all.each do |p| %>
+	  <% allpb[p.id] = p %>
+	<% end %>
+
+	<% premier = nil %>
+  <% dernier = nil %>
+
+  <% [1,2].each do |qui| %>
+
+    <% act[qui] = Array.new %>
+    <% resolu[qui] = Array.new %>
+    <% resolu[qui][1] = Array.new %>
+    <% resolu[qui][2] = Array.new %>
+    <% resolu[qui][3] = Array.new %>
+
+    <% exercises = @user[qui].solvedexercises.where(:correct => true).order("resolutiontime DESC") %>
+    <% qcms = @user[qui].solvedqcms.where(:correct => true).order("resolutiontime DESC") %>
+    <% problems = @user[qui].solvedproblems.order("truetime DESC") %>
+
+    <% e_encours = 0 %>
+    <% q_encours = 0 %>
+    <% p_encours = 0 %>
+
+    <% (1..(exercises.size+qcms.size+problems.size)).each do |i| %>
+      <% trouve = false %>
+      <% besttime = 0 %>
+      <% bestqui = -1 %>
+
+      <% if e_encours < exercises.size && (!trouve || exercises[e_encours].resolutiontime.to_i > besttime) %>
+        <% besttime = exercises[e_encours].resolutiontime.to_i %>
+        <% trouve = true %>
+        <% bestqui = 1 %>
+      <% end %>
+      <% if q_encours < qcms.size && (!trouve || qcms[q_encours].resolutiontime.to_i > besttime) %>
+        <% besttime = qcms[q_encours].resolutiontime.to_i %>
+        <% trouve = true %>
+        <% bestqui = 2 %>
+      <% end %>
+      <% if p_encours < problems.size && (!trouve || problems[p_encours].truetime.to_i > besttime) %>
+        <% besttime = problems[p_encours].truetime.to_i %>
+        <% trouve = true %>
+        <% bestqui = 3 %>
+      <% end %>
+
+      <% if bestqui == 1 %>
+        <% e = exercises[e_encours] %>
+  			<% exo = allex[e.exercise_id] %>
+        <% pt = exo.value %>
+        <% pt = 0 if allsec[allchap[exo.chapter_id].section_id].fondation %>
+        <% if pt > 0 %>
+  				<% dernier = e.resolutiontime.in_time_zone %>
+          <% if premier.nil? %>
+            <% premier = e.resolutiontime.in_time_zone %>
+          <% end %>
+        <% end %>
+  			<% e_encours = e_encours + 1 %>
+        <% act[qui].push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => allsec[allchap[exo.chapter_id].section_id].fondation}) %>
+  		  <% resolu[qui][1][e.exercise_id] = true %>
+      <% elsif bestqui == 2 %>
+        <% q = qcms[q_encours] %>
+  			<% qcm = allqcm[q.qcm_id] %>
+        <% pt = qcm.value %>
+        <% pt = 0 if allsec[allchap[qcm.chapter_id].section_id].fondation %>
+        <% if pt > 0 %>
+  				<% dernier = q.resolutiontime.in_time_zone %>
+          <% if premier.nil? %>
+            <% premier = q.resolutiontime.in_time_zone %>
+          <% end %>
+        <% end %>
+  			<% q_encours = q_encours + 1 %>
+        <% act[qui].push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => allsec[allchap[qcm.chapter_id].section_id].fondation}) %>
+        <% resolu[qui][2][q.qcm_id] = true %>
+      <% elsif bestqui == 3 %>
+        <% p = problems[p_encours] %>
+  			<% pb = allpb[p.problem_id] %>
+        <% pt = pb.value %>
+        <% peutvoir = enough_points %>
+        <% t = pb.virtualtest_id %>
+        <% if t == 0 && (!signed_in? || !current_user.sk.admin?) %>
+          <% pb.chapters.each do |c| %>
+            <% peutvoir = false if !debloque[c.id] %>
+          <% end %>
+        <% end %>
+        <% if t != 0 && (!signed_in? || !current_user.sk.admin?) %>
+          <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
+        <% end %>
+  			<% p_encours = p_encours + 1 %>
+  			<% dernier = p.truetime.in_time_zone %>
+  			<% if premier.nil? %>
+  				<% premier = p.truetime.in_time_zone %>
+  			<% end %>
+        <% act[qui].push({:time => p.truetime, :type => 4, :id => p.problem_id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
+        <% resolu[qui][3][p.problem_id] = true %>
+      <% end %>
+    <% end %>
+
+  <% end %>
+
+
+  <% actperday = Array.new %>
+
+  <% parquoi = "" %>
+
+    <!-- On détermine si on rassemble les actes par minute, heure ou jour -->
+    <% if !premier.nil? %>
+      <% if dernier.day != DateTime.now.in_time_zone.day || dernier.month != DateTime.now.in_time_zone.month || dernier.year != DateTime.now.in_time_zone.year %>
+        <% parquoi = "jour" %>
+      <% elsif dernier.hour < premier.hour - 1 %>
+        <% parquoi = "heure" %>
+      <% else %>
+        <% parquoi = "minute" %>
+      <% end %>
+    <% end %>
+
+  <h2>Résolutions</h2>
+
+  <div class="row">
+
+  <% [1,2].each do |qui| %>
+    <div class="col-lg-6 col-sm-12 col-xs-12">
+    <% previousdate = Date.new(1980,1,1) %>
+    <% encours = -1 %>
+
+    <% actperday[qui] = Array.new %>
+
+    Résolus par <b><%= @user[qui].name %></b> mais pas par <%= @user[3-qui].name %> :<br/><br/>
+
+    <!-- Début du tableau des résolutions (cas normal) -->
+    <table class="table table-bordered hidden-xs" style="width:556px;">
+    <thead class="fixed">
+    <tr><th style="width:150px;">Date</th><th style="width:340px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
+    </thead>
+
+    <tbody class="scroll">
+
+      <% zero = true %>
+
+      <!-- On parcourt les actes un par un (cas normal) -->
+      <% act[qui].each do |a| %>
+
+        <!-- Rassemblement par date des actes -->
+        <% date = a[:time].in_time_zone %>
+
+        <% if parquoi == "jour" %>
+          <% dateday = Time.zone.local(date.year, date.month, date.day, 0, 0, 0) %>
+        <% elsif parquoi == "heure" %>
+          <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, 0, 0) %>
+        <% else %>
+          <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, date.min, 0) %>
+        <% end %>
+
+        <% if a[:pt] > 0 %>
+          <% if dateday != previousdate %>
+            <% encours = encours+1 %>
+            <% actperday[qui].push({:time => dateday, :pt => a[:pt], :chapter => a[:chapter]}) %>
+          <% else %>
+            <% actperday[qui][encours][:pt] = actperday[qui][encours][:pt] + a[:pt] %>
+          <% end %>
+          <% previousdate = dateday %>
+        <% end %>
+
+        <% if !resolu[3-qui][a[:type]-1][a[:id]] %>
+
+        <% zero = false %>
+
+        <!-- Affichage de la ligne -->
+        <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+
+        <!-- Date -->
+        <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+
+        <!-- Quoi -->
+        <td style="width:340px;">
+        <% if a[:type] <= 3 %>
+          <% if cansee[a[:c_id]] %>
+            <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+          <% else %>
+            Exercice
+          <% end %>
+          <%= "(#{a[:chapter]})" %>
+        <% else %>
+          <% if a[:peutvoir] %>
+            <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
+          <% else %>
+            Problème #<%= a[:number] %>
+          <% end %>
+          <%= "(Niveau #{a[:level]})" %>
+        <% end %>
+        </td>
+
+        <!-- Points -->
+        <td style="width:50px;">
+        <center>
+          <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
+        </center>
+        </td>
+        </tr>
+
+        <% end %>
+
+      <% end %>
+
+      <% if zero %>
+      <tr><td style="width:556px; text-align:center" colspan="3"><i>Rien du tout <%= image_tag "Smiley2.gif", :title => ":-(" %></i></tr>
+      <% end %>
+
+      </tbody>
+      </table>
+
+      <!-- Début du tableau des résolutions (cas gsm) -->
+      <table class="table table-bordered visible-xs" style="width:356px;">
+      <thead class="fixed">
+      <tr><th style="width:150px;">Date</th><th style="width:140px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
+      </thead>
+      <tbody class="scroll">
+
+      <!-- On parcourt les actes un par un (cas gsm) -->
+      <% act[qui].each do |a| %>
+
+        <% if !resolu[3-qui][a[:type]-1][a[:id]] %>
+        <% date = a[:time].in_time_zone %>
+
+        <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+
+        <!-- Date -->
+        <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+
+        <!-- Quoi -->
+        <td style="width:140px;">
+        <% if a[:type] <= 3 %>
+          <% if cansee[a[:c_id]] %>
+            <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+          <% else %>
+            Exercice
+          <% end %>
+        <% else %>
+          <% if a[:peutvoir] %>
+            <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
+          <% else %>
+            Problème #<%= a[:number] %>
+          <% end %>
+        <% end %>
+        </td>
+
+        <!-- Points -->
+        <td style="width:50px;">
+        <center>
+          <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
+        </center>
+        </td>
+        </tr>
+        <% end %>
+
+      <% end %>
+
+      <% if zero %>
+      <tr><td style="width:356px; text-align:center" colspan="3"><i>Rien du tout <%= image_tag "Smiley2.gif", :title => ":-(" %></i></tr>
+      <% end %>
+
+      </tbody>
+      </table>
+
+    </div>
+  <% end %>
+  </div>
+
+  <div class="row">
+  <div class="col-sm-12 col-xs-12">
+
+  <h2>Évolution</h2>
+  <br/>
+  <center>
+
+  <!-- Endroit pour dessiner l'évolution -->
+  <div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+  <canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+  Votre navigateur ne supporte pas les canvas.
+  </canvas>
+
+  </div>
+  </center>
+
+  <!-- Script pour le graphique de l'évolution -->
+  <% @niveaux = Color.order(:pt).to_a %>
+
+  <% numerolevel = Array.new %>
+  <% nombrelevel = 0 %>
+
+  <% [1,2].each do |qui| %>
+
+    <% numerolevel[qui] = 0 %>
+    <% i = 1 %>
+    <% @niveaux.each do |n| %>
+      <% if niveau[qui].id == n.id %>
+        <% numerolevel[qui] = i %>
+      <% end %>
+      <% i = i+1 %>
+    <% end %>
+
+    <% nombrelevel = i-1 %>
+
+  <% end %>
+
+  <% maxi = 0 %>
+
+  <% if [numerolevel[1], numerolevel[2]].max == nombrelevel %>
+    <% maxi = 1.2*[actualrating[1], actualrating[2]].max %>
+  <% else %>
+    <% maxi = 1.1*@niveaux[[numerolevel[1], numerolevel[2]].max][:pt] %>
+  <% end %>
+
+  <script type="text/javascript">
+    $(document).ready( function(){
+
+    //Get the canvas & context
+    var c = $('#myCanvas');
+    var ctx = c.get(0).getContext('2d');
+    var container = $(c).parent();
+
+    //Run function when browser  resize
+    $(window).resize( respondCanvas );
+
+    function respondCanvas(){
+    c.attr('width', $(container).width() ); //max width
+    c.attr('height', 480*$(container).width()/900.0); //max height
+
+    document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
+
+    //Redraw & reposition content
+    var x = c.width();
+    var y = c.height();
+
+    var pct = c.width()/900.0;
+
+    ctx.beginPath();
+    ctx.rect(pct*50, pct*5, pct*806, pct*450);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+
+    <% i = 1 %>
+
+    var prec = 1000;
+
+    // Affichage des niveaux avec couleurs
+    <% @niveaux.each do |n| %>
+      <% if i > 1 %>
+        <% haut = [450 - 450*(n.pt/maxi), 0].max %>
+        <% if haut > 0 %>
+          ctx.font="14px Arial";
+          ctx.fillStyle = 'black';
+          ctx.textAlign = 'right';
+
+          if (pct > 0.7){
+
+            if (pct * <%= haut %> < prec - 13){
+              ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
+              prec = pct * <%= haut %>;
+            }
+
+          ctx.beginPath();
+          ctx.moveTo(pct*50, pct*<%= haut+5 %>);
+          ctx.lineTo(pct*856, pct*<%= haut+5 %>);
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'white';
+          ctx.stroke();
+
+          }
+        <% end %>
+      <% end %>
+
+      // Calcul du bas et du haut
+      <% if i == nombrelevel %>
+        <% bas = [450 - 450*(n.pt/maxi), 0].max %>
+        <% haut = 0 %>
+      <% else %>
+        <% bas = [450 - 450*(n.pt/maxi), 0].max %>
+        <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
+      <% end %>
+      <% if bas > haut %>
+        ctx.beginPath();
+        ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
+        ctx.fillStyle = '<%= n.font_color %>';
+        ctx.fill();
+      <% end %>
+      <% i = i+1 %>
+    <% end %>
+
+    <% last = [actperday[1].first[:time].to_time.to_i, actperday[2].first[:time].to_time.to_i].max %>
+
+    // Commencement du graphique
+    <% if parquoi == "jour" %>
+      <% first = [actperday[1].last[:time].to_time.to_i, actperday[2].last[:time].to_time.to_i].min - 86400%>
+    <% elsif parquoi == "heure" %>
+      <% first = [actperday[1].last[:time].to_time.to_i, actperday[2].last[:time].to_time.to_i].min - 3600 %>
+    <% else %>
+      <% first = [actperday[1].last[:time].to_time.to_i, actperday[2].last[:time].to_time.to_i].min - 60 %>
+    <% end %>
+
+    <% previousw = 2000 %>
+
+    // De droite vers la gauche : calcul où on met les verticales pointillées
+
+    <% enc = Array.new %>
+    <% enc[1] = 0 %>
+    <% enc[2] = 0 %>
+    <% (1..(actperday[1].size+actperday[2].size)).each do |i| %>
+      <% qui = 0 %>
+      <% if enc[1] >= actperday[1].size %>
+        <% qui = 2 %>
+      <% elsif enc[2] >= actperday[2].size %>
+        <% qui = 1 %>
+      <% elsif actperday[1][enc[1]][:time] >= actperday[2][enc[2]][:time] %>
+        <% qui = 1 %>
+      <% else %>
+        <% qui = 2 %>
+      <% end %>
+      <% a = actperday[qui][enc[qui]] %>
+      <% enc[qui] = enc[qui] + 1 %>
+
+      <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+
+      <% if previousw - w > 50 %>
+        ctx.font="12px Arial";
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center';
+
+        if (pct > 0.7){
+        <% if parquoi == "jour" %>
+          ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
+        <% elsif parquoi == "heure" %>
+          ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h",pct*<%= 50+w %>,pct*471);
+        <% else %>
+          ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
+        <% end %>
+        }
+
+        <% (0..22).each do |i| %>
+          ctx.beginPath();
+          ctx.moveTo(pct*<%= 50+w %>, pct*<%= 20*i+5 %>);
+          ctx.lineTo(pct*<%= 50+w %>, pct*<%= 20*i+15 %>);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'white';
+          ctx.stroke();
+        <% end %>
+        <% previousw = w %>
+      <% end %>
+    <% end %>
+
+    <% [1,2].each do |qui| %>
+
+    // On trace maintenant le graphique
+    <% if qui == 1 %>
+      ctx.fillStyle = 'black';
+      ctx.strokeStyle = 'black';
+    <% else %>
+      ctx.fillStyle = 'blue';
+      ctx.strokeStyle = 'blue';
+    <% end %>
+
+    ctx.font="14px Arial";
+    ctx.textAlign = 'left';
+    ctx.fillText("<%= @user[qui].name %>",pct*<%= 65 %>,pct*10+<%=qui*20 %>);
+
+    // Commencement du graphique bis
+    <% if parquoi == "jour" %>
+      <% firstbis = actperday[qui].last[:time].to_time.to_i - 86400%>
+    <% elsif parquoi == "heure" %>
+      <% firstbis = actperday[qui].last[:time].to_time.to_i - 3600 %>
+    <% else %>
+      <% firstbis = actperday[qui].last[:time].to_time.to_i - 60 %>
+    <% end %>
+
+    <% w = 3 + 800*(firstbis - first)/(last-first) %>
+    <% r = 0 %>
+    <% previousr = r %>
+    <% h = 450 %>
+
+    <% prevw = w %>
+    <% prevh = h %>
+
+    // De gauche vers la droite : on met les points
+    <% actperday[qui].reverse.each do |a| %>
+      <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+      <% r = previousr + a[:pt] %>
+      <% previousr = r %>
+      <% h = 450 - 450*(r/maxi) %>
+      ctx.beginPath();
+      ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevh+5 %>);
+      ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
+      ctx.fill();
+      <% prevw = w %>
+      <% prevh = h %>
+    <% end %>
+
+    <% end %>
+
+    }
+
+    //Initial call
+    respondCanvas();
+
+    });
+
+  </script>
+
+  </div>
+  </div>
+
+<% end %>
+
+<% t2 = Time.now %>
+
+<% if montretemps == 1 %>
+  <br/>Temps de chargement : <%= t2-t1 %> secondes.
+<% end %>

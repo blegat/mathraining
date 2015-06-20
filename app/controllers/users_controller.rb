@@ -46,6 +46,12 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
+  def compare
+    @user = []
+    @user[1] = User.find(params[:user_id])
+    @user[2] = User.find(params[:with])
+  end
+
   # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
   def update
     if @user.update_attributes(params[:user])
