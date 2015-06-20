@@ -31,64 +31,71 @@ class DiscussionsController < ApplicationController
   end
 
   def create
-    @destinataire = User.find(params[:destinataire])
-    deja = false
-
-    current_user.sk.discussions.each do |d|
-      if d.users.include?(@destinataire)
-        deja = true
-        @discussion = d
-      end
-    end
-
-    if !deja
-      @discussion = Discussion.new
-      @discussion.last_message = DateTime.now
-      @discussion.save
+    if params[:destinataire].to_i == 0
+      session[:ancientexte] = params[:content]
+      flash[:danger] = "Veuillez choisir un destinataire."
+      redirect_to new_discussion_path and return
     else
-      link = current_user.sk.links.where(:discussion_id => @discussion.id).first
-      if link.nonread > 0
-        session[:ancientexte] = params[:content]
-        flash[:danger] = "Un message a été envoyé avant le vôtre."
-        redirect_to @discussion and return
-      end
-    end
 
-    @content = params[:content]
+      @destinataire = User.find(params[:destinataire])
+      deja = false
 
-    send_message
-
-    if @erreur
-      if !deja
-        @discussion.destroy
-      end
-      redirect_to new_discussion_path
-    else
-      if !deja
-        link = Link.new
-        link.user_id = current_user.sk.id
-        link.discussion_id = @discussion.id
-        link.nonread = 0
-        link.save
-
-        link2 = Link.new
-        link2.user_id = @destinataire.id
-        link2.discussion_id = @discussion.id
-        link2.nonread = 1
-        link2.save
-      else
-        @discussion.links.each do |l|
-          if l.user_id != current_user.sk.id
-            l.nonread = l.nonread + 1
-          else
-            l.nonread = 0
-          end
-          l.save
+      current_user.sk.discussions.each do |d|
+        if d.users.include?(@destinataire)
+          deja = true
+          @discussion = d
         end
+      end
+
+      if !deja
+        @discussion = Discussion.new
         @discussion.last_message = DateTime.now
         @discussion.save
+      else
+        link = current_user.sk.links.where(:discussion_id => @discussion.id).first
+        if link.nonread > 0
+          session[:ancientexte] = params[:content]
+          flash[:danger] = "Un message a été envoyé avant le vôtre."
+          redirect_to @discussion and return
+        end
       end
-      redirect_to @discussion
+
+      @content = params[:content]
+
+      send_message
+
+      if @erreur
+        if !deja
+          @discussion.destroy
+        end
+        redirect_to new_discussion_path
+      else
+        if !deja
+          link = Link.new
+          link.user_id = current_user.sk.id
+          link.discussion_id = @discussion.id
+          link.nonread = 0
+          link.save
+
+          link2 = Link.new
+          link2.user_id = @destinataire.id
+          link2.discussion_id = @discussion.id
+          link2.nonread = 1
+          link2.save
+        else
+          @discussion.links.each do |l|
+            if l.user_id != current_user.sk.id
+              l.nonread = l.nonread + 1
+            else
+              l.nonread = 0
+            end
+            l.save
+          end
+          @discussion.last_message = DateTime.now
+          @discussion.save
+        end
+        redirect_to @discussion
+      end
     end
   end
 

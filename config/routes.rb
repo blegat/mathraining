@@ -141,7 +141,6 @@ Mathraining::Application.routes.draw do
     match '/reactivate', to: 'users#reactivate', :via => [:get], as: :reactivate
     match '/take_skin', to: 'users#take_skin', :via => [:get], as: :take_skin
     match '/leave_skin', to: 'users#leave_skin', :via => [:get], as: :leave_skin
-    match '/compare', to: 'users#compare', :via => [:get]
   end
 
   resources :virtualtests do
@@ -176,6 +175,8 @@ Mathraining::Application.routes.draw do
   match '/stats', to: 'static_pages#statistics', :via => [:get]
 
   match '/pieces_jointes', to: 'submissionfiles#seeall', :via => [:get]
+
+  match '/compare', to: 'users#compare', :via => [:get]
 
   match '/signup', to: 'users#new', :via => [:get]
   match '/signin', to: 'sessions#new', :via => [:get]

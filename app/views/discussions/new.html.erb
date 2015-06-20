@@ -29,7 +29,7 @@
 
       <div class="form-inline">
         <%= f.label :destinataire %><br/>
-        <%= select_tag :destinataire, options_for_select(User.where("id != ?", current_user.sk.id).order(:first_name).collect {|u| [ u.name, u.id ] }, params[:qui].to_i), :class => "form-control" %>
+        <%= select_tag :destinataire, options_for_select(User.where("id != ?", current_user.sk.id).order(:first_name).collect {|u| [ u.name, u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-control" %>
       </div><br/>
 
       <div class="form-group">

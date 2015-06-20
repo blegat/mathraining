@@ -31,7 +31,26 @@ html>body tbody.scroll {
 <% if @user[1].admin || @user[2].admin || @user[1].rating == 0 || @user[2].rating == 0 %>
   <!-- On ne compare pas avec un administrateur! -->
 
+
 <!-- Si ce sont des étudiants -->
+<% elsif @user[1].id == @user[2].id %>
+  <% niveau = [] %>
+  <% niveau[1] = @user[1].level %>
+  <% niveau[2] = @user[2].level %>
+  <h1><b><%= link_to @user[1].name, @user[1], {:style => "color:#{niveau[1][:color]}" } %></b> vs <b><%= link_to @user[2].name, @user[2], {:style => "color:#{niveau[2][:color]}" } %> </b></h1>
+  Pourquoi se comparer avec soi-même?
+
+  <h2>Autre comparaison</h2>
+
+  <form action="/compare" method="get" class="form-inline" name="research">
+    Comparer
+    <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin == ?", false).order(:first_name).collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    avec
+    <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin == ?", false).order(:first_name).collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <%= button_tag "Comparer!", class: "btn btn btn-primary", name: "" %>
+  </form>
+
+
 <% else %>
   <% actualrating = [] %>
   <% niveau = [] %>
@@ -379,7 +398,7 @@ html>body tbody.scroll {
   <div class="row">
   <div class="col-sm-12 col-xs-12">
 
-  <h2>Évolution</h2>
+  <h2>Évolutions</h2>
   <br/>
   <center>
 
@@ -620,6 +639,16 @@ html>body tbody.scroll {
 
   </div>
   </div>
+
+  <h2>Autre comparaison</h2>
+
+  <form action="/compare" method="get" class="form-inline" name="research">
+    Comparer
+    <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin == ?", false).order(:first_name).collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    avec
+    <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin == ?", false).order(:first_name).collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <%= button_tag "Comparer!", class: "btn btn btn-primary", name: "" %>
+  </form>
 
 <% end %>
 

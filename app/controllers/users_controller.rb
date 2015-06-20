@@ -48,8 +48,8 @@ class UsersController < ApplicationController
 
   def compare
     @user = []
-    @user[1] = User.find(params[:user_id])
-    @user[2] = User.find(params[:with])
+    @user[1] = User.find(params[:id1])
+    @user[2] = User.find(params[:id2])
   end
 
   # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
