@@ -250,7 +250,7 @@ html>body tbody.scroll {
     <% if nb_p > 0 %>
       et <b><%= nb_p %></b> problème<%= "s" if nb_p > 1 %>.
     <% end %>
-    <% if current_user.sk.admin? && nb_e > 0 %>
+    <% if signed_in? && current_user.sk.admin? && nb_e > 0 %>
       <br/>[Uniquement administrateurs : Moyenne de <b><%= (100*nb_erreur/nb_e.to_f).round / 100.0 %></b> erreurs/exercice]
     <% end %>
     <br/><br/>
