@@ -9,7 +9,7 @@ Pièces jointes
 <% total = 0 %>
 
 <table class="table table-bordered">
-<tr><th class="hidden-xs">Date</th><th>Qui</th><th class="hidden-xs">Où</th><th>Quoi</th><th><center>Taille</center></th><th><center></center></th></tr>
+<tr><th class="hidden-xs">Date</th><th>Qui</th><th class="hidden-xs">Où</th><th class="hidden-xs">>Quoi</th><th><center>Taille</center></th><th><center></center></th></tr>
 
 <!-- Affiche toutes les pièces jointes du site -->
 <% @list.each do |l| %>
@@ -61,7 +61,7 @@ Pièces jointes
   </td>
 
   <!-- Télécharger -->
-  <td>
+  <td class="hidden-xs">>
   <% if l[1] == 1 %>
     <%= link_to l[2].file_file_name, download_submissionfile_path(l[2]) %>
   <% elsif l[1] == 3 %>

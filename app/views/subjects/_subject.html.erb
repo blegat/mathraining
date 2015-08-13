@@ -80,20 +80,26 @@ function showSujetNormal(id) {
     <% end %>
     <% s.subjectfiles.order(:id).each do |f| %>
       <%= link_to f.file_file_name, download_subjectfile_path(f) %>
+      (<%= (f.file_file_size / 1000.0).round(1) %> ko)
       <% if current_user.sk.root? %>
          - <%= link_to 'Supprimer le contenu', subjectfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
       <% end %>
       <br/>
     <% end %>
     <% s.fakesubjectfiles.order(:id).each do |f| %>
-      <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span><br/>
+      <span style="color:#0000BB;"><%= f.file_file_name %> (<%= (f.file_file_size / 1000.0).round(1) %> ko, désactivée)</span><br/>
     <% end %>
 
     <!-- Afficher les pièces jointes images -->
     <% s.subjectfiles.order(:id).each do |f| %>
       <% if f.is_image %>
         <hr/>
-        <center><%= f.file_file_name %><br/><br/><%= image_tag f.file.url, :style => "max-width:900px;" %></center>
+        <center><%= f.file_file_name %><br/><br/>
+        <%= image_tag f.file.url, :class => "visible-lg", :style => "max-width:900px;" %>
+        <%= image_tag f.file.url, :class => "visible-md", :style => "max-width:800px;" %>
+        <%= image_tag f.file.url, :class => "visible-sm", :style => "max-width:600px;" %>
+        <%= image_tag f.file.url, :class => "visible-xs", :style => "width:90%;" %>
+        </center>
       <% end %>
     <% end %>
   <% end %>
