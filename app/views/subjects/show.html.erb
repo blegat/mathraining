@@ -47,7 +47,7 @@ function hideStuff(id) {
 </table>
 </td>
 
-<td style="padding-left:15px; text-align:right;">
+<td class="hidden-xs" style="padding-left:15px; text-align:right;">
 <% if !current_user.followed_subjects.exists?(@subject) %>
   <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
@@ -59,9 +59,18 @@ function hideStuff(id) {
 </table>
 </h1>
 
+<div class="visible-xs" style="text-align:center;">
+<% if !current_user.followed_subjects.exists?(@subject) %>
+  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
+<% else %>
+  <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
+<% end %>
+<br/><br/>
+</div>
+
 <center>
 <%= will_paginate @messages, :style => "margin-top:-20px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @messages, :style => "margin-top:-20px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1, :outer_window => 0 %>
+<%= will_paginate @messages, :style => "margin-top:-20px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1 %>
 </center>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->
@@ -77,7 +86,7 @@ function hideStuff(id) {
 
 <center>
 <%= will_paginate @messages, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @messages, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1, :outer_window => 0 %>
+<%= will_paginate @messages, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1 %>
 </center>
 
 <!-- Répondre -->

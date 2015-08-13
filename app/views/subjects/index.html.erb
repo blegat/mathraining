@@ -213,8 +213,8 @@
 <% end %>
 
 <center>
-<%= will_paginate @subjectsfalse, :style => "margin-top:-10px;", :class => "hidden-xs" %>
-<%= will_paginate @subjectsfalse, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+<%= will_paginate @subjectsfalse, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
+<%= will_paginate @subjectsfalse, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1 %>
 </center>
 
 <% if @subjects.size + @importants.size == 0 %>
