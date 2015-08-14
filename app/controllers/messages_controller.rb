@@ -58,7 +58,7 @@ class MessagesController < ApplicationController
             j = j+1
           end
           nom = params["file#{k}".to_sym].original_filename
-          flash.now[:danger] = attach[i-1].errors.messages
+          flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           render 'new' and return
         end
         totalsize = totalsize + attach[i-1].file_file_size
