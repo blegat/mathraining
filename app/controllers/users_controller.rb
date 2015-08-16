@@ -124,6 +124,7 @@ class UsersController < ApplicationController
     if @user
       @user.update_attribute(:key, SecureRandom.urlsafe_base64)
       UserMailer.forgot_password(@user.id).deliver
+      UserMailer.test_image().deliver
   	  flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
     else
       flash[:danger] = "Aucun utilisateur ne possède cette adresse."
