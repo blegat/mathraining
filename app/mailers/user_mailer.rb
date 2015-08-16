@@ -13,10 +13,6 @@ class UserMailer < AsyncMailer
     mail(to: @user.email, subject: "Mathraining - Mot de passe oublié", from: "mathraining@mathraining.be")
   end
 
-  def test_image()
-    mail(to: "nicolasradu16@gmail.com", subject: "Test d'image", from: "nicolasradu16@gmail.com")
-  end
-
   def new_followed_message(userid, subjectid, qui, message, id)
     @user = User.find(userid)
     @subject = Subject.find(subjectid)
