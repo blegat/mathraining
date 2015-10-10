@@ -26,6 +26,10 @@ function showSoumissionNormal(id) {
   (erronée)
 <% when 2 %>
   (correcte)
+  <% if @submission.star %>
+    <%= image_tag @submission.icon %>
+    <%= image_tag @submission.icon %>
+  <% end %>
 <% end %>
 </h3>
 <% else %>
@@ -175,11 +179,22 @@ function showSoumissionNormal(id) {
   Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.
 <% elsif (current_user.sk.admin? || current_user.sk == @submission.user) && @submission.status >= 0 %>
   <%= render 'corrections/new' %>
+<% end %>
 
-  <!-- Supprimer la soumission : pas possible si correcte -->
-  <% if current_user.sk.admin? && @submission.status != 2 && !@submission.intest %>
-    <br/><center>
-    <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cette soumission? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :style => "color:red;" %>
-    </center>
-  <% end %>
+<!-- Supprimer la soumission : pas possible si correcte -->
+<% if current_user.sk.admin? && @submission.status != 2 && @submission.status >= 0 && !@submission.intest %>
+  <br/><center>
+  <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cette soumission? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :style => "color:red;" %>
+  </center>
+<% end %>
+
+<!-- Marquer la soumission comme élégante -->
+<% if current_user.sk.admin? && @submission.status == 2 %>
+  <br/><center>
+    <% if @submission.star %>
+      <center><%= link_to 'Ne plus marquer comme élégant', problem_submission_unstar_path(@problem, @submission), :class => "btn btn-default btn-grey" %></center>
+    <% else %>
+      <center><%= link_to 'Marquer comme élégant', problem_submission_star_path(@problem, @submission), :class => "btn btn-default btn-grey" %></center>
+    <% end %>
+  </center>
 <% end %>

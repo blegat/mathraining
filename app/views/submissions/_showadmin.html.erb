@@ -27,7 +27,12 @@
 
 <!-- Icone -->
 <td class="hidden-xs" style="width:70px; text-align:center;">
-<%= image_tag s.icon %>
+<% if s.star %>
+  <%= image_tag s.icon %>
+  <%= image_tag s.icon %>
+<% else %>
+  <%= image_tag s.icon %>
+<% end %>
 </td>
 
 <!-- Date de soumission -->

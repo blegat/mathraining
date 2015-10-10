@@ -2,7 +2,7 @@
 class SubmissionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_problem
-  before_filter :admin_user, only: [:destroy, :read, :unread, :reserve, :unreserve]
+  before_filter :admin_user, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
   before_filter :has_access, only: [:create]
@@ -386,6 +386,22 @@ class SubmissionsController < ApplicationController
   def unread
     @submission = Submission.find(params[:submission_id])
     un_read(false, "non lue")
+  end
+
+  # Marquer comme élégant
+  def star
+    @submission = Submission.find(params[:submission_id])
+    @submission.star = true
+    @submission.save
+    redirect_to problem_path(@problem, :sub => @submission)
+  end
+
+  # Marquer comme non élégant
+  def unstar
+    @submission = Submission.find(params[:submission_id])
+    @submission.star = false
+    @submission.save
+    redirect_to problem_path(@problem, :sub => @submission)
   end
 
   # Réserver la soumission
