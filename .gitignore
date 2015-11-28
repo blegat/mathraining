@@ -21,6 +21,7 @@ doc/
 
 # Variables
 /config/app_environment_variables.rb
+/config/initializers/secret_token.rb
 
 # Assets
 /public/assets/

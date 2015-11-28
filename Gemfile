@@ -11,7 +11,7 @@ gem 'bootstrap-will_paginate', '0.0.10'
 gem 'rails-i18n'
 #gem 'mathjax-rails', "~> 0.0.4"
 gem "paperclip"
-gem "recaptcha", :require => "recaptcha/rails"
+gem "recaptcha", "~> 0.6.0", :require => "recaptcha/rails"
 gem 'thin'
 gem "nokogiri", "~> 1.6.0"
 
