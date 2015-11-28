@@ -130,8 +130,7 @@ GEM
     rake (10.3.2)
     random_record (0.0.8)
       activerecord (>= 3.0.0)
-    recaptcha (0.6.0)
-      json
+    recaptcha (0.3.6)
     redcarpet (3.1.2)
     redis (3.1.0)
     redis-namespace (1.5.1)
@@ -293,7 +292,7 @@ DEPENDENCIES
   rails (= 4.0.0)
   rails-i18n
   random_record
-  recaptcha (~> 0.6.0)
+  recaptcha (~> 0.3.5)
   redcarpet
   resque (~> 2.0.0.pre.1)!
   resque-web
