@@ -123,6 +123,9 @@
             <% Subjectfile.all.to_a.each do |f| %>
               <% total = total + f.file_file_size %>
             <% end %>
+            <% Tchatmessagefile.all.to_a.each do |f| %>
+              <% total = total + f.file_file_size %>
+            <% end %>
 
             <% if total < 1000000 %>
               <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey" %>
