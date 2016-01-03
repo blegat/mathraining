@@ -65,7 +65,7 @@
 
   <!-- Admin -->
   <% if signed_in? && current_user.sk.admin %>
-    <td><center><%= user.country %><%= "?" if user.country == "" %></center></td>
+    <td><center><%= user.country %><%= "?" if user.country.nil? %></center></td>
     <td><center><%= user.year if user.year > 0 %><%= "?" if user.year == 0 %></center></td>
     <td><center>
       <% if user.wepion %>
@@ -106,9 +106,9 @@
   <% rank = 1 %>
   <% User.order(:last_name).where(:admin => false, :rating => 0).each do |u| %>
     <% if u.email_confirm %>
-      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (<%= u.country %><%= "?" if u.country == "" %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b><%= "(banni)" if !u.active %></b><br/>
+      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b><%= "(banni)" if !u.active %></b><br/>
     <% else %>
-      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (<%= u.country %><%= "?" if u.country == "" %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b>(email non confirmé) <%= "(banni)" if !u.active %></b><br/>
+      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b>(email non confirmé) <%= "(banni)" if !u.active %></b><br/>
     <% end %>
     <% rank = rank + 1 %>
   <% end %>
