@@ -11,12 +11,16 @@
 <% previouspoint = -1 %>
 
 <!-- On parcourt tous les utilisateurs (non admins) en ordre de points décroissants -->
-<% User.where("rating != 0 AND admin = ?", false).order("rating DESC").each do |user| %>
+<% User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").each do |user| %>
   <!-- Si premier, on commence le tableau -->
   <% if rank == 1 %>
-    <table class="table table-bordered" style="max-width:600px; margin-top:20px;">
-    <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th class="hidden-xs" style="width:260px;"><center>Préférences</center></th>
-    </tr>
+    <% if signed_in? && current_user.sk.admin %>
+      <table class="table table-bordered" style="max-width:800px; margin-top:20px;">
+      <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th class="hidden-xs" style="width:260px;"><center>Préférences</center></th><th style="width:200px;" colspan="3"><center>Admin uniquement</center></th></tr>
+    <% else %>
+      <table class="table table-bordered" style="max-width:600px; margin-top:20px;">
+      <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th class="hidden-xs" style="width:260px;"><center>Préférences</center></th></tr>
+    <% end %>
   <% end %>
 
   <% rating = user.rating %>
@@ -27,7 +31,7 @@
   <td><center><%= "#{ rank }." if rating != previouspoint %></center></td>
 
   <!-- Nom -->
-  <td><b> <%= link_to user.name, user, {:style => "color:#{user.level[:color]}" } %> </b> <%= "*" if user.wepion && signed_in? && current_user.sk.admin? %> <%= "(banni)" if signed_in? && current_user.sk.admin? && !user.active %></td>
+  <td><b> <%= link_to user.name, user, {:style => "color:#{user.level[:color]}" } %> </b> <%= "(banni)" if signed_in? && current_user.sk.admin? && !user.active %></td>
 
   <% previouspoint = rating %>
 
@@ -58,6 +62,17 @@
     </table>
   </center>
   </td>
+
+  <!-- Admin -->
+  <% if signed_in? && current_user.sk.admin %>
+    <td><center><%= user.country %></center></td>
+    <td><center><%= user.year %></center></td>
+    <td><center>
+      <% if user.wepion %>
+        W
+      <% end %>
+    </center></td>
+  <% end %>
 
   </tr>
   <% rank = rank + 1  %>
@@ -91,9 +106,9 @@
   <% rank = 1 %>
   <% User.order(:last_name).where(:admin => false, :rating => 0).each do |u| %>
     <% if u.email_confirm %>
-      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> <%= "*" if u.wepion && signed_in? && current_user.sk.admin? %> <%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %><br/>
+      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> <%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %> (<%= u.country %>, <%= u.year %><%= ", W" if u.wepion %>)<br/>
     <% else %>
-      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (email non confirmé) <%= "*" if u.wepion && signed_in? && current_user.sk.admin? %> <%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %><br/>
+      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (email non confirmé) <%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %><br/>
     <% end %>
     <% rank = rank + 1 %>
   <% end %>
