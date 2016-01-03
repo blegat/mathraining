@@ -11,7 +11,7 @@
 
 class Discussion < ActiveRecord::Base
   attr_accessible :last_message
-  
+
   # BELONGS_TO, HAS_MANY
 
   has_many :discussions_users

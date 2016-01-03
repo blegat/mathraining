@@ -48,8 +48,8 @@ class User < ActiveRecord::Base
   has_many :messages, dependent: :destroy
   has_many :followingsubjects, dependent: :destroy
   has_many :followed_subjects, through: :followingsubjects, source: :subject
-  has_many :discussions, through: :links
-  has_many :links
+  has_many :discussions, through: :links, dependent: :destroy
+  has_many :links, dependent: :destroy
 
   # BEFORE, AFTER
 
