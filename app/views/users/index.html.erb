@@ -65,8 +65,8 @@
 
   <!-- Admin -->
   <% if signed_in? && current_user.sk.admin %>
-    <td><center><%= user.country %></center></td>
-    <td><center><%= user.year %></center></td>
+    <td><center><%= user.country %><%= "?" if user.country.size == 0 %></center></td>
+    <td><center><%= user.year if user.year > 0 %><%= "?" if user.year == 0 %></center></td>
     <td><center>
       <% if user.wepion %>
         W
@@ -106,9 +106,9 @@
   <% rank = 1 %>
   <% User.order(:last_name).where(:admin => false, :rating => 0).each do |u| %>
     <% if u.email_confirm %>
-      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> <%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %> (<%= u.country %>, <%= u.year %><%= ", W" if u.wepion %>)<br/>
+      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (<%= u.country %><%= "?" if u.country.size == 0 %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b><%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %></b><br/>
     <% else %>
-      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (email non confirmé) <%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %><br/>
+      <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (<%= u.country %><%= "?" if u.country.size == 0 %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b>(email non confirmé) <%= "(banni)" if signed_in? && current_user.sk.admin? && !u.active %></b><br/>
     <% end %>
     <% rank = rank + 1 %>
   <% end %>
