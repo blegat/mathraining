@@ -44,9 +44,9 @@ html>body tbody.scroll {
 
   <form action="/compare" method="get" class="form-inline" name="research">
     Comparer
-    <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC").collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
     avec
-    <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC").collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
     <%= button_tag "Comparer!", class: "btn btn btn-primary", name: "" %>
   </form>
 
@@ -183,10 +183,10 @@ html>body tbody.scroll {
           <% if premier.nil? %>
             <% premier = e.resolutiontime.in_time_zone %>
           <% end %>
+          <% act[qui].push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => allsec[allchap[exo.chapter_id].section_id].fondation}) %>
+    		  <% resolu[qui][1][e.exercise_id] = true %>
         <% end %>
   			<% e_encours = e_encours + 1 %>
-        <% act[qui].push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => allsec[allchap[exo.chapter_id].section_id].fondation}) %>
-  		  <% resolu[qui][1][e.exercise_id] = true %>
       <% elsif bestqui == 2 %>
         <% q = qcms[q_encours] %>
   			<% qcm = allqcm[q.qcm_id] %>
@@ -197,10 +197,10 @@ html>body tbody.scroll {
           <% if premier.nil? %>
             <% premier = q.resolutiontime.in_time_zone %>
           <% end %>
+          <% act[qui].push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => allsec[allchap[qcm.chapter_id].section_id].fondation}) %>
+          <% resolu[qui][2][q.qcm_id] = true %>
         <% end %>
   			<% q_encours = q_encours + 1 %>
-        <% act[qui].push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => allsec[allchap[qcm.chapter_id].section_id].fondation}) %>
-        <% resolu[qui][2][q.qcm_id] = true %>
       <% elsif bestqui == 3 %>
         <% p = problems[p_encours] %>
   			<% pb = allpb[p.problem_id] %>
@@ -644,9 +644,9 @@ html>body tbody.scroll {
 
   <form action="/compare" method="get" class="form-inline" name="research">
     Comparer
-    <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC").collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
     avec
-    <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC").collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
     <%= button_tag "Comparer!", class: "btn btn btn-primary", name: "" %>
   </form>
 
