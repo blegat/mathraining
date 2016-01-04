@@ -702,9 +702,9 @@ html>body tbody.scroll {
 
     <form action="<%= compare_path %>" method="get" class="form-inline">
       Comparer
-      <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC").collect {|u| [ u.name, u.id ] }, @user.id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+      <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user.id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
       avec
-      <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC").collect {|u| [ u.name, u.id ] }), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+      <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
       <%= button_tag "Comparer!", class: "btn btn btn-primary", name: "" %>
     </form>
 
