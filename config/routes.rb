@@ -9,6 +9,7 @@ Mathraining::Application.routes.draw do
 
   resources :solvedexercises, only: [:create, :update]
   resources :solvedqcms, only: [:create, :update]
+  resources :solvedproblems, only: [:index]
 
   resources :pictures, only: [:index, :show, :new, :create, :destroy]
 
