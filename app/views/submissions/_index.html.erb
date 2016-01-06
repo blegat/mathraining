@@ -1,29 +1,52 @@
+<!-- Style pour la barre de défilement dans le tableau -->
+<style type="text/css">
+
+html>body thead.fixed tr {
+	display: block;
+}
+
+html>body tbody.scroll {
+	display: block;
+	max-height: 440px;
+	overflow-y: scroll;
+	width: 100%;
+}
+</style>
+
 <!-- Cette page affiche toutes les soumissions que l'utilisateur peut voir pour le problème problem -->
 
 <!-- Si administrateur : peut tout voir -->
 <% if current_user.sk.admin %>
   <h3>Soumissions récentes</h3>
-  <% submissions = problem.submissions.where(visible: true).order('created_at DESC').paginate(page: params[:page]) %>
+  <% submissions = problem.submissions.where(visible: true).order('created_at DESC') %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>
-    <center>
-    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
-    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
-    </center>
-
-    <table class="table table-bordered">
-    <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
-      <% submissions.each do |s| %>
+    <!-- Large -->
+    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px;">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody class="scroll">
+    <% submissions.each do |s| %>
         <% @situation = 3 %>
         <%= render 'submissions/showadmin', s: s, nom: true %>
       <% end %>
+    </tbody>
     </table>
 
-    <center>
-    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
-    <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
-    </center>
+    <!-- Petit -->
+    <table class="table table-bordered visible-sm visible-xs" style="width:340px;">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody class="scroll">
+    <% submissions.each do |s| %>
+        <% @situation = 3 %>
+        <%= render 'submissions/showadmin', s: s, nom: true %>
+      <% end %>
+    </tbody>
+    </table>
   <% end %>
 
 <!-- Si étudiant -->
@@ -38,13 +61,17 @@
   <% submissions = problem.submissions.where('user_id = ?', current_user.sk).order('created_at') %>
   <% @new = true %>
 
+  <!-- Large -->
   <% if !submissions.empty? %>
     <% @new = true %>
       <% submissions.each do |s| %>
         <% if s.status > 0 %>
           <% if aucun %>
-            <table class="table table-bordered">
-            <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th></th></tr>
+            <table class="table table-bordered hidden-xs hidden-sm" style="width:640px;">
+            <thead class="fixed">
+            <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:70px;"></th></tr>
+            </thead>
+            <tbody class="scroll">
           <% end %>
           <%= render 'submissions/showuser', s: s, nom: false %>
           <% aucun = false %>
@@ -56,6 +83,29 @@
         <% end %>
       <% end %>
     <% if !aucun %>
+      </tbody>
+      </table>
+    <% end %>
+  <% end %>
+
+  <!-- Petit -->
+  <% aucun = true %>
+  <% if !submissions.empty? %>
+      <% submissions.each do |s| %>
+        <% if s.status > 0 %>
+          <% if aucun %>
+            <table class="table table-bordered visible-xs visible-sm" style="width:390px;">
+            <thead class="fixed">
+            <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:70px;"></th></tr>
+            </thead>
+            <tbody class="scroll">
+          <% end %>
+          <%= render 'submissions/showuser', s: s, nom: false %>
+          <% aucun = false %>
+        <% end %>
+      <% end %>
+    <% if !aucun %>
+      </tbody>
       </table>
     <% end %>
   <% end %>
@@ -67,9 +117,24 @@
   <!-- Si il y a une soumission en cours, on l'affiche -->
   <% unless @newsub %>
     <h3>Soumission en cours</h3>
-    <table class="table table-bordered">
-    <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th></th></tr>
+    <!-- Large -->
+    <table class="table table-bordered hidden-xs hidden-sm" style="width:640px;">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody class="scroll">
     <%= render 'submissions/showuser', s: encours, nom: false %>
+    </tbody>
+    </table>
+
+    <!-- Petit -->
+    <table class="table table-bordered visible-xs visible-sm" style="width:390px;">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody class="scroll">
+    <%= render 'submissions/showuser', s: encours, nom: false %>
+    </tbody>
     </table>
   <% end %>
 
@@ -78,25 +143,34 @@
 
     <h3>Autres soumissions correctes</h3>
     <% @new = false %>
-    <% submissions = problem.submissions.where('user_id != ? AND status = 2', current_user.sk).order('created_at DESC').paginate(page: params[:page]) %>
+    <% submissions = problem.submissions.where('user_id != ? AND status = 2', current_user.sk).order('created_at DESC') %>
 
     <% if !submissions.empty? %>
-      <center>
-      <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
-      <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
-      </center>
-
-      <table class="table table-bordered">
-      <tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th></th></tr>
+      <!-- Large -->
+      <table class="table table-bordered hidden-xs hidden-sm" style="width:840px;">
+      <thead class="fixed">
+      <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
+      </thead>
+      <tbody class="scroll">
       <% submissions.each do |s| %>
+        <% @situation = 3 %>
         <%= render 'submissions/showadmin', s: s, nom: true %>
       <% end %>
-     </table>
+      </tbody>
+      </table>
 
-      <center>
-      <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "hidden-xs" %>
-      <%= will_paginate submissions, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
-      </center>
+      <!-- Petit -->
+      <table class="table table-bordered visible-xs visible-sm" style="width:340px;">
+      <thead class="fixed">
+      <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+      </thead>
+      <tbody class="scroll">
+      <% submissions.each do |s| %>
+        <% @situation = 3 %>
+        <%= render 'submissions/showadmin', s: s, nom: true %>
+      <% end %>
+      </tbody>
+      </table>
     <% else %>
     Vous êtes le seul à avoir résolu ce problème.
     <% end %>

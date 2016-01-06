@@ -16,7 +16,7 @@
 <% end %>
 
 <!-- Icone -->
-<td class="hidden-xs" style="width:70px; text-align:center;">
+<td style="width:70px; text-align:center;">
 <% if s.star %>
   <%= image_tag s.icon %>
   <%= image_tag s.icon %>
@@ -26,7 +26,7 @@
 </td>
 
 <!-- Date de la soumission -->
-<td class="hidden-xs">
+<td style="width:250px;">
 <% date = s.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 <% if s.intest && current_user.sk.admin? %>
@@ -35,13 +35,13 @@
 </td>
 
 <!-- Dernière activité -->
-<td>
+<td class="hidden-xs hidden-sm" style="width:250px;">
 <% date = s.lastcomment.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
 
 <!-- Voir -->
-<td style="text-align:center;">
+<td style="text-align:center; width:56px;">
 <%= link_to "Voir", problem_path(s.problem, :sub => s.id) %>
 </td>
 

@@ -26,7 +26,7 @@
 <% end %>
 
 <!-- Icone -->
-<td class="hidden-xs" style="width:70px; text-align:center;">
+<td style="width:70px; text-align:center;" class="<%= "hidden-xs hidden-sm" if @situation <= 2 %>">
 <% if s.star %>
   <%= image_tag s.icon %>
   <%= image_tag s.icon %>
@@ -36,7 +36,7 @@
 </td>
 
 <!-- Date de soumission -->
-<td class="hidden-xs">
+<td class="hidden-xs hidden-sm" style="width:250px;">
 <% date = s.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 <% if s.intest && current_user.sk.admin? %>
@@ -45,21 +45,21 @@
 </td>
 
 <!-- Dernière activité -->
-<td>
+<td class="<%= "hidden-xs hidden-sm" if @situation >= 3 %>" style="width:250px;">
 <% date = s.lastcomment.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
 </td>
 
 <!-- Nom (si on l'affiche) -->
 <% if nom %>
-<td style="font-weight:bold;">
+<td style="font-weight:bold; width:200px">
   <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
   <%= "*" if s.user.wepion && current_user.sk.admin? %>
 </td>
 
 <!-- Correcteur (si on l'affiche) -->
 <% if @situation == 1 %>
-  <td class="hidden-xs">
+  <td class="hidden-xs hidden-sm">
   <% premier = true %>
   <% s.followings.each do |f| %>
     <%= " - " if !premier %>
@@ -72,7 +72,7 @@
 
 <!-- Section et niveau (si on l'affiche) -->
 <% if @situation == 1 || @situation == 2 %>
-  <td class="hidden-xs" style="text-align:center;">
+  <td class="hidden-xs hidden-sm" style="text-align:center; width:100px;">
     <%= abreviation[s.problem.section_id-1] %>
     <%= s.problem.level %>
   </td>
@@ -80,7 +80,7 @@
 
 <!-- Voir -->
 <% end %>
-<td style="text-align:center;">
+<td style="text-align:center; width:54px;">
 <%= link_to "Voir", problem_path(s.problem, :sub => s.id) %>
 </td>
 

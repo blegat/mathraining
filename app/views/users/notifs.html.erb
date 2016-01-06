@@ -3,10 +3,43 @@
 Nouvelles réponses
 </h1>
 
-<table class="table table-bordered">
-<tr><th class="hidden-xs" style="text-align:center;">Statut</th><th class="hidden-xs">Date de la soumission</th><th>Dernière activité</th><th></th></tr>
+<!-- Style pour la barre de défilement dans le tableau -->
+<style type="text/css">
+
+html>body thead.fixed tr {
+	display: block;
+}
+
+html>body tbody.scroll {
+	display: block;
+	max-height: 500px;
+	overflow-y: scroll;
+	width: 100%;
+}
+</style>
+
+<!-- Large -->
+<table class="table table-bordered hidden-xs hidden-sm" style="width:640px;">
+<thead class="fixed">
+<tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:70px;"></th></tr>
+</thead>
+<tbody class="scroll">
 <% @new = true %>
 <% @notifs.each do |n| %>
   <%= render 'submissions/showuser', s: n.submission, nom: false %>
 <% end %>
+</tbody>
+</table>
+
+<!-- Petit -->
+<table class="table table-bordered visible-xs visible-sm" style="width:390px;">
+<thead class="fixed">
+<tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:70px;"></th></tr>
+</thead>
+<tbody class="scroll">
+<% @new = true %>
+<% @notifs.each do |n| %>
+  <%= render 'submissions/showuser', s: n.submission, nom: false %>
+<% end %>
+</tbody>
 </table>
