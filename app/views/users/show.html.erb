@@ -717,7 +717,7 @@ html>body tbody.scroll {
   <br/><br/>
   <center>
   <% i = 0 %>
-    <% if !@user.root %>
+    <% if !@user.root && (!@user.admin || current_user.sk.root) %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if @user.active %>
