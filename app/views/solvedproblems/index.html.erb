@@ -23,8 +23,9 @@ html>body tbody.scroll {
 }
 </style>
 
-<% allsec = Section.order(:id).where(:fondation => false).to_a %>
 <% twoweeksago = Date.today - 14 %>
+
+<% allsec = Section.order(:id).where(:fondation => false).to_a %>
 <% table = Array.new %>
 <% (1..5).each do |level| %>
   <% table[level] = Array.new %>
@@ -48,21 +49,10 @@ html>body tbody.scroll {
   <% end %>
 <% end %>
 
-<% actifs = Array.new %>
-<% User.all.each do |u| %>
-  <% id = u.id %>
-  <% actifs[id] = Array.new %>
-  <% actifs[id][0] = 0 %>
-  <% actifs[id][1] = 0 %>
-  <% actifs[id][2] = id %>
-<% end %>
-
 <% Solvedproblem.where("truetime > ?", twoweeksago).order("truetime DESC").each do |s| %>
   <% problem = s.problem %>
   <% user_id = s.user_id %>
   <% level = problem.level %>
-  <% actifs[user_id][0] = actifs[user_id][0] + problem.value %>
-  <% actifs[user_id][1] = actifs[user_id][1] + 1 %>
   <% peutvoir = enough_points %>
   <% t = problem.virtualtest_id %>
   <% if t == 0 && (!signed_in? || !current_user.sk.admin?) %>
@@ -77,35 +67,6 @@ html>body tbody.scroll {
 <% end %>
 
 <div class="row">
-
-<div class="col-lg-6 col-sm-12 col-xs-12">
-  <h3>Les plus actifs</h3>
-  <% realactifs = Array.new %>
-  <% actifs.each do |a| %>
-    <% if !a.nil? && a[0] != 0 %>
-      <% realactifs.push({:pt => a[0], :pb => a[1], :id => a[2]}) %>
-    <% end %>
-  <% end %>
-  <% rank = 1 %>
-  <% previouspoint = -1 %>
-  <table class="table table-bordered" style="width:386px;">
-  <thead class="fixed">
-  <tr><th style="width:40px;"></th><th style="width:200px;">Qui</th><th style="width:50px;"><center>Pb.</center></th><th style="width:96px;"><center>Points</center></th></tr>
-  <tbody class="scroll">
-  <% realactifs.sort_by { |k| -1000*k[:pt]-k[:pb] }.each do |a| %>
-    <tr style="background-color:<%= "#F1F1F1" if rank % 2 == 1 %> <%= "white" if rank % 2 == 0 %>;">
-    <% user = User.find(a[:id]) %>
-    <td style="width:40px;"><center><%= "#{ rank }." if a[:pt] + 10000*a[:pb] != previouspoint %></center></td>
-    <% previouspoint = a[:pt] + 10000*a[:pb] %>
-    <% rank = rank+1 %>
-    <td style="width:200px;"><b> <%= link_to user.name, user, {:style => "color:#{user.level[:color]}" } %> </b></td>
-    <td style="width:50px;"><center><%= a[:pb] %></center></td>
-    <td style="width:80px;"><center>+ <%= a[:pt] %></center></td>
-  <% end %>
-  </tbody>
-  </table>
-</div>
-
 <% (1..5).each do |level| %>
   <div class="col-lg-6 col-sm-12 col-xs-12">
   <h3>Problèmes de niveau <%= level %></h3>
@@ -141,7 +102,7 @@ html>body tbody.scroll {
   </tbody>
   </table>
   </div>
-  <% if level % 2 == 1 %>
+  <% if level % 2 == 0 %>
     </div>
     <div class="row">
   <% end %>

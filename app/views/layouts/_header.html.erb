@@ -194,8 +194,16 @@
         <li style="font-weight:bold;"><%= link_to "Forum (#{combien_nouveau})", subjects_path %></li>
       <% end %>
 
-      <!-- Scores -->
-      <li><%= link_to "Scores", users_path %></li>
+      <!-- Statistiques -->
+      <li id="fat-menu" class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        Statistiques <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        <li><%= link_to "Scores", users_path %></li>
+        <li><%= link_to "Résolutions récentes", solvedproblems_path %></li>
+      </ul>
+      </li>
 
       <!-- Menu déroulant -->
 
