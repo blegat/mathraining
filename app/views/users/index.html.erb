@@ -11,7 +11,7 @@
 <% previouspoint = -1 %>
 
 <% recent = Array.new %>
-<% twoweeksago = Date.today - 14 %>
+<% twoweeksago = Date.today - 1400 %>
 
 <% allsec2 = Array.new %>
 <% allchap = Array.new %>
@@ -34,14 +34,14 @@
 
 <% Solvedexercise.where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
   <% exo = s.exercise %>
-  <% if !allsec2[allchap[exo.chapter_id].section_id].fondation %>
+  <% if s.correct && !allsec2[allchap[exo.chapter_id].section_id].fondation %>
     <% recent[s.user_id] += exo.value %>
   <% end %>
 <% end %>
 
 <% Solvedqcm.where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
   <% qcm = s.qcm %>
-  <% if !allsec2[allchap[qcm.chapter_id].section_id].fondation %>
+  <% if s.correct && !allsec2[allchap[qcm.chapter_id].section_id].fondation %>
     <% recent[s.user_id] += qcm.value %>
   <% end %>
 <% end %>
@@ -51,10 +51,10 @@
   <!-- Si premier, on commence le tableau -->
   <% if rank == 1 %>
     <% if signed_in? && current_user.sk.admin %>
-      <table class="table table-bordered" style="max-width:900px; margin-top:20px;">
+      <table class="table table-bordered" style="max-width:870px; margin-top:20px;">
       <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th class="hidden-xs" style="width:260px;"><center>Préférences</center></th><th class="hidden-xs hidden-sm" style="width:100px;"><center>&le; 2 sem.</center></th><th class="hidden-xs hidden-sm" style="width:200px;" colspan="3"><center>Admin uniquement</center></th></tr>
     <% else %>
-      <table class="table table-bordered" style="max-width:700px; margin-top:20px;">
+      <table class="table table-bordered" style="max-width:670px; margin-top:20px;">
       <tr><th style="width:20px;"></th><th style="width:200px;">Nom</th><th style="width:90px;"><center>Score</center></th><th class="hidden-xs" style="width:260px;"><center>Préférences</center></th><th class="hidden-xs" style="width:100px;"><center>&le; 2 sem.</center></th></tr>
     <% end %>
   <% end %>
