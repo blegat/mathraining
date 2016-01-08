@@ -34,7 +34,7 @@ class UsersController < ApplicationController
         UserMailer.registration_confirmation(@user.id).deliver
       end
 
-  	  flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
+  	  flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
   	  redirect_to root_path
   	else
   	  render 'new'
@@ -122,9 +122,13 @@ class UsersController < ApplicationController
   def password_forgotten
     @user = User.find_by_email(params[:user][:email])
     if @user
-      @user.update_attribute(:key, SecureRandom.urlsafe_base64)
-      UserMailer.forgot_password(@user.id).deliver
-  	  flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
+      if @user.email_confirm
+        @user.update_attribute(:key, SecureRandom.urlsafe_base64)
+        UserMailer.forgot_password(@user.id).deliver
+  	    flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
+      else
+        flash[:danger] = "Veuillez d'abord confirmer votre adresse mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
+      end
     else
       flash[:danger] = "Aucun utilisateur ne possède cette adresse."
     end
