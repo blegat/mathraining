@@ -1,3 +1,5 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
 <% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
 
 <% abreviation = ["C", "G", "TN", "A", "EF", "I"] %>
@@ -150,11 +152,26 @@
 <% if signed_in? && current_user.sk.admin %>
   <br/><center><b> --- Cette partie n'est visible que des administrateurs --- </b></center>
 
+  <% if current_user.sk.root %>
+    <!-- Inscriptions récentes -->
+    <h2>Inscriptions récentes</h2>
+    <% User.order("created_at DESC").where(:admin => false).first(10).each do |u| %>
+      <% inscription = u.created_at %>
+      <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %> :
+      <% if u.email_confirm %>
+        <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b><%= "(banni)" if !u.active %></b><br/>
+        <% else %>
+        <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b>(email non confirmé) <%= "(banni)" if !u.active %></b><br/>
+      <% end %>
+    <% end %>
+  <% end %>
   <!-- Utilisateurs avec score 0 -->
   <h2>Utilisateurs non classés</h2>
 
   <% rank = 1 %>
-  <% User.order(:last_name).where(:admin => false, :rating => 0).each do |u| %>
+  <% User.order("created_at DESC").where(:admin => false, :rating => 0).each do |u| %>
+    <% inscription = u.created_at %>
+    <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %> :
     <% if u.email_confirm %>
       <b> <%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %> </b> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b><%= "(banni)" if !u.active %></b><br/>
     <% else %>
