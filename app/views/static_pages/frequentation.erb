@@ -1,16 +1,12 @@
-<% provide(:title, 'Statistiques') %>
+<% provide(:title, 'Fréquentation du site') %>
 
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
 
-<% if signed_in? && current_user.sk.admin %>
+<h1>Fréquentation du site</h1>
 
-<h1>Statistiques</h1>
+Le graphique suivant reprend le nombre d'étudiants connectés chaque jour sur le site, depuis le 19 mars 2015.<br/><br/>
 
-<h3>Fréquentation du site</h3>
-En orange : les utilisateurs.<br/>
-En bleu : les administrateurs.<br/>
-<br/>
 <center>
 <!-- Endroit pour dessiner la fréquentation -->
 <div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
@@ -32,9 +28,6 @@ Votre navigateur ne supporte pas les canvas.
 <% @visiteurs.each do |v| %>
   <% if v.number_user > maxivisitor %>
     <% maxivisitor = v.number_user %>
-  <% end %>
-  <% if v.number_admin > maxivisitor %>
-    <% maxivisitor = v.number_admin %>
   <% end %>
 <% end %>
 
@@ -117,24 +110,13 @@ Votre navigateur ne supporte pas les canvas.
   <% j = 0 %>
   <% (0..entre).each do |i| %>
     <% if (last - @visiteurs[encours].date).to_i == i %>
-      <% nbadmin = @visiteurs[encours].number_admin %>
       <% nbuser = @visiteurs[encours].number_user %>
       <% encours = encours-1 %>
     <% else %>
-      <% nbadmin = 0 %>
       <% nbuser = 0 %>
     <% end %>
 
     <% w = 3 + 800*(entre-i)/(entre) %>
-
-    <% hadmin = 450 - 450*(nbadmin/maxi) %>
-    ctx.beginPath();
-    ctx.arc(pct*<%= 50+w %>, pct*<%= hadmin+5 %>, 2, 0, 2 * Math.PI, true);
-    ctx.fillStyle = 'blue';
-    <% if i == 0 %>
-      ctx.fillStyle = 'purple';
-    <% end %>
-    ctx.fill();
 
     <% huser = 450 - 450*(nbuser/maxi) %>
     ctx.beginPath();
@@ -146,17 +128,6 @@ Votre navigateur ne supporte pas les canvas.
     ctx.fill();
 
     <% if i > 0 %>
-      ctx.beginPath();
-      ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevhadmin+5 %>);
-      ctx.lineTo(pct*<%= 50+w %>, pct*<%= hadmin+5 %>);
-      ctx.lineWidth = 2;
-      <% if i > 1 %>
-        ctx.strokeStyle = 'blue';
-      <% else %>
-        ctx.strokeStyle = 'purple';
-      <% end %>
-      ctx.stroke();
-
       ctx.beginPath();
       ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevhuser+5 %>);
       ctx.lineTo(pct*<%= 50+w %>, pct*<%= huser+5 %>);
@@ -170,10 +141,9 @@ Votre navigateur ne supporte pas les canvas.
     <% end %>
 
     <% prevw = w %>
-    <% prevhadmin = hadmin %>
     <% prevhuser = huser %>
 
-    <% if w < printw - 50 && nbadmin+nbuser > 0 %>
+    <% if w < printw - 50 && nbuser > 0 %>
       <% j = j+1 %>
       <% courant = @visiteurs[encours+1].date %>
       if (pct > 0.8 || (pct > 0.7 && <%= j % 2 == 1 %>)){
@@ -203,71 +173,5 @@ Votre navigateur ne supporte pas les canvas.
   });
 
 </script>
-
-<% end %>
-
-<h3>Dernières connexions des utilisateurs</h3>
-
-<% dernier = -1 %>
-<% number = 0 %>
-<% User.order("last_connexion DESC, last_name, first_name").all.each do |u| %>
-  <% lc = u.last_connexion %>
-  <% number = number+1 %>
-  <% if lc != dernier %>
-    <% if dernier != -1 %>
-      (<%= number %> <%= "personnes" if number > 1 %><%= "personne" unless number > 1 %>)
-    <% end %>
-    <% number = 0 %>
-    <% if lc.year >= 2015 %>
-      <h4><%= lc.day %>/<%= lc.month %>/<%= lc.year %></h4>
-    <% else %>
-      <h4>Avant le 18/3/2015</h4>
-    <% end %>
-    <% dernier = lc %>
-  <% end %>
-  <b><%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %></b><br/>
-<% end %>
-
-<h3>Dernières résolutions (deux derniers jours)</h3>
-
-<% today = Date.today - 2 %>
-
-<% activite = Array.new %>
-
-<% Solvedexercise.where("correct = ? AND resolutiontime > ?", true, today).each do |e| %>
-  <% pt = e.exercise.value %>
-  <% pt = 0 if e.exercise.chapter.section.fondation %>
-  <% activite.push({:time => e.resolutiontime, :qui => e.user, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
-<% end %>
-
-<% Solvedqcm.where("correct = ? AND resolutiontime > ?", true, today).each do |q| %>
-  <% pt = q.qcm.value %>
-  <% pt = 0 if q.qcm.chapter.section.fondation %>
-  <% activite.push({:time => q.resolutiontime, :qui => q.user, :type => 3, :id => q.qcm.id, :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
-<% end %>
-
-<% act = activite.sort{ |a, b| b[:time] <=> a[:time]} %>
-
-<!-- Affiche tous les exercices (et qcms) résolus dans les deux/trois derniers jours -->
-
-<table class="table table-bordered" style="width:866px;">
-  <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:200px;">Qui</th><th style="width:400px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
-
-<% act.each do |a| %>
- <% date = a[:time].in_time_zone %>
-  <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
-  <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
-  <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
-  <td><span style="font-weight:bold;"><%= link_to a[:qui].name, a[:qui], :style => "color:#{a[:qui].level[:color]}" %></span></td>
-  <td style="width:340px;"><%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %> <%= "(#{a[:chapter]})" %></td>
-  <td style="width:50px;">
-  <center>
-    <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
-  </center>
-  </td>
-  </tr>
-<% end %>
-
-</table>
 
 <% end %>
