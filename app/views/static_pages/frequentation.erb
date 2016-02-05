@@ -72,24 +72,27 @@ Votre navigateur ne supporte pas les canvas.
 
   <% encours = maxivisitor %>
 
+  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = 'grey';
+  ctx.font="14px Arial";
+  ctx.fillStyle = 'black';
+  ctx.textAlign = 'right';
+
+  ctx.beginPath();
+
   <% while encours > 0 %>
     <% haut = [450 - 450*(encours/maxi), 0].max %>
 
     <% (0..40).each do |i| %>
-    ctx.beginPath();
     ctx.moveTo(pct*<%= 45 + 20*i+5 %>, pct*<%= haut+5 %>);
     ctx.lineTo(pct*<%= 45 + 20*i+15 if 45 + 20*i+15 < 856 %><%= 856 if 45 + 20*i+15 >= 856 %>, pct*<%= haut+5 %>);
-    ctx.lineWidth = 0.5;
-    ctx.strokeStyle = 'grey';
-    ctx.stroke();
     <% end %>
 
-    ctx.font="14px Arial";
-    ctx.fillStyle = 'black';
-    ctx.textAlign = 'right';
     ctx.fillText(<%= encours %>,pct*44,pct*<%= haut+10 %>);
     <% encours = encours - tranche %>
   <% end %>
+
+  ctx.stroke();
 
   // On trace maintenant le graphique
   ctx.strokeStyle = 'black';
@@ -107,6 +110,10 @@ Votre navigateur ne supporte pas les canvas.
   <% prevhadmin = 0 %>
   <% prevhuser = 0 %>
 
+  ctx.fillStyle = 'red';
+  ctx.strokeStyle = 'red';
+  ctx.font = "12px Arial";
+  ctx.textAlign = 'center';
   <% j = 0 %>
   <% (0..entre).each do |i| %>
     <% if (last - @visiteurs[encours].date).to_i == i %>
@@ -115,55 +122,49 @@ Votre navigateur ne supporte pas les canvas.
     <% else %>
       <% nbuser = 0 %>
     <% end %>
-
     <% w = 3 + 800*(entre-i)/(entre) %>
-
     <% huser = 450 - 450*(nbuser/maxi) %>
     ctx.beginPath();
     ctx.arc(pct*<%= 50+w %>, pct*<%= huser+5 %>, 3, 0, 2 * Math.PI, true);
-    ctx.fillStyle = 'orange';
-    <% if i == 0 %>
-      ctx.fillStyle = 'red';
+    <% if i == 1 %>
+      ctx.fillStyle = 'orange';
     <% end %>
     ctx.fill();
-
     <% if i > 0 %>
       ctx.beginPath();
       ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevhuser+5 %>);
       ctx.lineTo(pct*<%= 50+w %>, pct*<%= huser+5 %>);
       ctx.lineWidth = 2;
-      <% if i > 1 %>
+      <% if i == 2 %>
         ctx.strokeStyle = 'orange';
-      <% else %>
-        ctx.strokeStyle = 'red';
       <% end %>
       ctx.stroke();
     <% end %>
-
     <% prevw = w %>
     <% prevhuser = huser %>
+  <% end %>
 
-    <% if w < printw - 50 && nbuser > 0 %>
+  ctx.fillStyle = 'black';
+  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = 'grey';
+
+  ctx.beginPath();
+  <% (0..entre).each do |i| %>
+    <% w = 3 + 800*(entre-i)/(entre) %>
+    <% if w < printw - 50 %>
       <% j = j+1 %>
       <% courant = @visiteurs[encours+1].date %>
       if (pct > 0.8 || (pct > 0.7 && <%= j % 2 == 1 %>)){
-        ctx.font="12px Arial";
-        ctx.fillStyle = 'black';
-        ctx.textAlign = 'center';
         ctx.fillText("<%= "0" if courant.day < 10 %><%= courant.day %>/<%= "0" if courant.month < 10 %><%= courant.month %>/<%= "0" if (courant.year % 2000) < 10 %><%= (courant.year % 2000) %>",pct*<%= 50+w %>,pct*471);
       }
       <% (0..22).each do |i| %>
-        ctx.beginPath();
         ctx.moveTo(pct*<%= 50+w %>, pct*<%= 20*i+5 %>);
         ctx.lineTo(pct*<%= 50+w %>, pct*<%= 20*i+15 %>);
-        ctx.lineWidth = 0.5;
-        ctx.strokeStyle = 'grey';
-        ctx.stroke();
       <% end %>
       <% printw = w %>
     <% end %>
-
   <% end %>
+  ctx.stroke();
 
   }
 
