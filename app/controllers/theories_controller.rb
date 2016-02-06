@@ -13,7 +13,7 @@ class TheoriesController < ApplicationController
   def edit
     @theory = Theory.find(params[:id])
   end
-  
+
   # Créer une théorie 2
   def create
     @theory = Theory.new
@@ -111,5 +111,16 @@ class TheoriesController < ApplicationController
     @theory = Theory.find(params[:theory_id])
     render text: markdown_to_latex(@theory.content)
   end
-  
+
+  ########## PARTIE PRIVEE ##########
+  private
+
+  def swap_position(a, b)
+    x = a.position
+    a.position = b.position
+    b.position = x
+    a.save
+    b.save
+  end
+
 end
