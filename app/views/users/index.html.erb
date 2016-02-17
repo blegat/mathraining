@@ -82,7 +82,7 @@
         <% Section.where("fondation = ?", false).order(:id).each do |s| %>
           <th class="hidden-xs" style="width:60px;"><center><%= abreviation[s.id-1] %></center></th>
         <% end %>
-      <th class="hidden-xs" style="width:100px;"><center>&le; 2 sem.</center></th></tr>
+      <th class="hidden-xs hidden-sm" style="width:100px;"><center>&le; 2 sem.</center></th></tr>
     <% end %>
   <% end %>
 
