@@ -1,8 +1,31 @@
 <!-- Gros titre Mathraining -->
 <div class="center jumbotron" style="text-align:center; margin-top:20px; padding:25px;">
+
+	<div class="row">
+
+  <div class="col-lg-7 col-sm-7 col-xs-12">
   <center>
    <%= image_tag "mathraining.gif", :style => "width:100%; max-width:342px;" %>
-   </center>
+  </center>
+  </div>
+  <div class="col-lg-5 col-sm-5 col-xs-12">
+  <% tot = 0 %>
+  <% number = 0 %>
+  <% User.where("admin = ?", false).each do |u| %>
+  	<% tot = tot + u.rating %>
+  	<% number = number + 1 %>
+  <% end %>
+  <center>
+  <table style="font-size:16px; border:2px dashed black; margin-top:25px; margin-bottom:10px;">
+  <tr><td style="text-align:right; padding-left:8px; padding-right:10px; font-weight:bold; font-size:18px; color:rgb(3,109,170);"><%= number %></td><td style="text-align:left; padding-right:8px;">utilisateurs classés</td></tr>
+  <tr><td style="text-align:right; padding-left:8px; padding-right:10px; font-weight:bold; font-size:18px; color:rgb(3,109,170);"><%= Solvedproblem.count %></td><td style="text-align:left; padding-right:8px;">problèmes résolus</td></tr>
+  <tr><td style="text-align:right; padding-left:8px; padding-right:10px; font-weight:bold; font-size:18px; color:rgb(3,109,170);"><%= Solvedexercise.where("correct = ?", true).count + Solvedqcm.where("correct = ?", true).count %></td><td style="text-align:left; padding-right:8px;">exercices résolus</td></tr>
+  <tr><td style="text-align:right; padding-left:8px; padding-right:10px; font-weight:bold; font-size:18px; color:rgb(3,109,170);"><%= tot %></td><td style="text-align:left; padding-right:8px;">points distribués</td></tr>
+  </table>
+  </center>
+  </div>
+  </div>
+   
   <h3>
   Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques
   </h3>
