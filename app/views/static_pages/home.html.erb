@@ -11,7 +11,7 @@
   <div class="col-lg-5 col-sm-5 col-xs-12">
   <% tot = 0 %>
   <% number = 0 %>
-  <% User.where("admin = ?", false).each do |u| %>
+  <% User.where("admin = ? AND rating > 0", false).each do |u| %>
   	<% tot = tot + u.rating %>
   	<% number = number + 1 %>
   <% end %>
