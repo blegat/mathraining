@@ -57,12 +57,16 @@
 
 <% Exercise.where("online = ?", true).each do |e| %>
   <% chap = allchap[e.chapter_id] %>
-  <% maxscore[chap.section_id] += e.value %>
+  <% if chap.online %>
+  	<% maxscore[chap.section_id] += e.value %>
+  <% end %>
 <% end %>
 
 <% Qcm.where("online = ?", true).each do |e| %>
   <% chap = allchap[e.chapter_id] %>
-  <% maxscore[chap.section_id] += e.value %>
+  <% if chap.online %>
+  	<% maxscore[chap.section_id] += e.value %>
+  <% end %>
 <% end %>
 
 <!-- On parcourt tous les utilisateurs (non admins) en ordre de points décroissants -->
