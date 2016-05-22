@@ -19,7 +19,7 @@
 <% elsif s.status == 0 %>
   <tr class="warning">
 <!-- Si status = 3 (nouveau commentaire jamais lu) : bleu si on est admin, rouge si on est pas admin -->
-<% elsif s.status == 3 && current_user.sk.admin? %>
+<% elsif s.status == 3 && current_user.sk != s.user %>
   <tr class="info">
 <% elsif s.status == 3 %>
   <tr class="danger">
@@ -39,7 +39,7 @@
 <td class="hidden-xs hidden-sm" style="width:250px;">
 <% date = s.created_at.in_time_zone %>
 <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
-<% if s.intest && current_user.sk.admin? %>
+<% if s.intest && (current_user.sk.admin? || current_user.sk.corrector) %>
 - <b> TEST</b>
 <% end %>
 </td>
@@ -53,7 +53,7 @@
 <!-- Nom (si on l'affiche) -->
 <% if nom %>
 <td style="font-weight:bold; width:200px">
-  <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+  <% colored_link(s.user) %>
   <%= "*" if s.user.wepion && current_user.sk.admin? %>
 </td>
 
@@ -64,7 +64,7 @@
   <% s.followings.each do |f| %>
     <%= " - " if !premier %>
     <%= "Réservé par " if s.status == 0 && premier %>
-    <b><%= f.user.name %></b>
+    <% colored_link(f.user) %>
     <% premier = false %>
   <% end %>
   </td>

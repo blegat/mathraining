@@ -15,12 +15,12 @@ html>body tbody.scroll {
 
 <!-- Cette page affiche toutes les soumissions que l'utilisateur peut voir pour le problème problem -->
 
-<!-- Si administrateur : peut tout voir -->
+<!-- Si administrateur : peut voir toutes les soumissions correctes -->
 <% if current_user.sk.admin %>
-  <h3>Soumissions récentes</h3>
-  <% submissions = problem.submissions.where(visible: true).order('created_at DESC') %>
+  <h3>Soumissions correctes</h3>
+  <% submissions = problem.submissions.where(visible: true, status: 2).order('created_at DESC') %>
   <% if submissions.empty? %>
-    <p>Aucune soumission.</p>
+    <p>Aucune soumission correcte.</p>
   <% else %>
     <!-- Large -->
     <table class="table table-bordered hidden-sm hidden-xs" style="width:840px;">
@@ -175,6 +175,43 @@ html>body tbody.scroll {
     Vous êtes le seul à avoir résolu ce problème.
     <% end %>
 
+  <% end %>
+
+<% end %>
+
+<!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées -->
+<% if current_user.sk.admin || (current_user.sk.corrector && current_user.sk.pb_solved?(problem)) %>
+
+	<h3>Soumissions erronées ou en attente</h3>
+  <% submissions = problem.submissions.where('status != 2 AND visible = ?', true).order('created_at DESC') %>
+  <% if submissions.empty? %>
+    <p>Aucune soumission erronée ou en attente.</p>
+  <% else %>
+    <!-- Large -->
+    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px;">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody class="scroll">
+    <% submissions.each do |s| %>
+        <% @situation = 3 %>
+        <%= render 'submissions/showadmin', s: s, nom: true %>
+      <% end %>
+    </tbody>
+    </table>
+
+    <!-- Petit -->
+    <table class="table table-bordered visible-sm visible-xs" style="width:340px;">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody class="scroll">
+    <% submissions.each do |s| %>
+        <% @situation = 3 %>
+        <%= render 'submissions/showadmin', s: s, nom: true %>
+      <% end %>
+    </tbody>
+    </table>
   <% end %>
 
 <% end %>

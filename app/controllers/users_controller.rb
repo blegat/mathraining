@@ -1,10 +1,11 @@
 #encoding: utf-8
 
 class UsersController < ApplicationController
-  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate]
+  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector]
   before_filter :correct_user, only: [:edit, :update]
-  before_filter :admin_user, only: [:notifications_new, :notifications_update, :take_skin, :unactivate, :reactivate]
-  before_filter :root_user, only: [:create_administrator, :recompute_scores, :destroy]
+  before_filter :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion]
+  before_filter :corrector_user, only: [:notifications_new, :notifications_update]
+  before_filter :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector]
   before_filter :signed_out_user, only: [:new, :create, :password_forgotten]
   before_filter :unactivate_admin, only: [:unactivate, :reactivate]
 
@@ -100,6 +101,20 @@ class UsersController < ApplicationController
         flash[:success] = "Utilisateur ajouté au groupe Wépion."
       end
       @user.toggle!(:wepion)
+    end
+    redirect_to @user
+  end
+  
+  # Ajouter / Enlever des correcteurs
+  def switch_corrector
+    @user = User.find(params[:user_id])
+    if !@user.admin?
+      if !@user.corrector
+        flash[:success] = "Utilisateur ajouté aux correcteurs."
+      else
+        flash[:success] = "Utilisateur retiré des correcteurs."
+      end
+      @user.toggle!(:corrector)
     end
     redirect_to @user
   end
@@ -231,6 +246,10 @@ class UsersController < ApplicationController
   def correct_user
     @user = User.find(params[:id])
     redirect_to root_path unless current_user.sk.id == @user.id
+  end
+  
+  def corrector_user
+  	redirect_to root_path unless current_user.sk.admin or current_user.sk.corrector
   end
 
   # Vérifie qu'on ne désactive pas un admin

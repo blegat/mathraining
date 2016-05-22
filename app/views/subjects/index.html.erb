@@ -117,7 +117,7 @@
 
     <!-- Auteur du sujet -->
     <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
-      <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+      <% colored_link(s.user) %>
     </td>
 
     <!-- Nombre de messages -->
@@ -139,7 +139,7 @@
 
     <!-- Dernier message -->
     <td class="hidden-xs" style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
-      <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
+      <% colored_link(qui) %>
     </td>
 
     <!-- Date du dernier message -->
@@ -160,7 +160,7 @@
       <!-- Dernier message -->
       <tr>
       <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle; padding-bottom:5px; border-bottom:1px dashed grey;">
-        <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
+        <% colored_link(qui) %>
       </td>
       </tr>
 

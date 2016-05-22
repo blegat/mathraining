@@ -42,12 +42,11 @@ html>body tbody.scroll {
 
 <!-- Si c'est un étudiant -->
 <% else %>
-
   <% actualrating = @user.rating %>
   <% niveau = @user.level %>
 
   <!-- Titre avec le nom et le niveau -->
-  <h1 style="color:<%= niveau[:color] %>;"><b><%= @user.name %></b><span style="margin-left:30px;">-</span><span style="margin-left:30px;"><%= niveau[:name] if @user.sex == 0 %><%= niveau[:femininename] if @user.sex != 0 %></span>
+  <h1><% colored(@user) %><span style="margin-left:30px; color:<%= niveau[:color] %>;">-</span><span style="margin-left:30px; color:<%= niveau[:color] %>;"><%= niveau[:name] if @user.sex == 0 %><%= niveau[:femininename] if @user.sex != 0 %></span>
   <% if signed_in? && current_user.sk.admin %>
     <span style="color:<%= niveau[:color] %>; margin-left:100px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
   <% end %>
@@ -740,6 +739,15 @@ html>body tbody.scroll {
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"}, :style => "color:red;" %>
+    <% end %>
+    <% if current_user.sk.root && !@user.admin %>
+      <%= " | " if i > 0 %>
+      <% i = i+1 %>
+      <% if !@user.corrector %>
+        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} correcteur?"}, :style => "color:red;" %>
+      <% else %>
+        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Etes-vous sûr de vouloir retirer #{@user.name} des correcteurs?"}, :style => "color:red;" %>
+      <% end %>
     <% end %>
     <% if current_user.sk.admin && !@user.admin %>
       <%= " | " if i > 0 %>

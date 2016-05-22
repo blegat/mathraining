@@ -2,7 +2,8 @@
 class SubmissionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_problem
-  before_filter :admin_user, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar]
+  before_filter :admin_user, only: [:destroy, :star, :unstar]
+  before_filter :corrector_user, only: [:read, :unread, :reserve, :unreserve]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
   before_filter :has_access, only: [:create]
@@ -520,5 +521,9 @@ class SubmissionsController < ApplicationController
       score = current_user.sk.rating
       redirect_to root_path if score < 200
     end
+  end
+  
+  def corrector_user
+  	redirect_to root_path unless current_user.sk.admin or current_user.sk.corrector
   end
 end

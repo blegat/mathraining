@@ -4,7 +4,7 @@ class CorrectionsController < ApplicationController
   before_filter :correct_user
   before_filter :notskin_user, only: [:create]
 
-  # Créer une correction : il faut être soit admin, soit l'étudiant de la soumission
+  # Créer une correction : il faut être soit admin, soit correcteur, soit l'étudiant de la soumission
   def create
     attach = Array.new
     totalsize = 0
@@ -102,7 +102,7 @@ class CorrectionsController < ApplicationController
         m = ''
 
       # Si admin et nouvelle soumission : cela dépend du bouton
-      elsif current_user.sk.admin and (@submission.status == 0 or @submission.status == 3) and
+      elsif (current_user.sk != @submission.user) and (@submission.status == 0 or @submission.status == 3) and
         (params[:commit] == "Poster et refuser la soumission" or
          params[:commit] == "Poster et laisser la soumission comme erronée")
         @submission.status = 1
@@ -110,7 +110,7 @@ class CorrectionsController < ApplicationController
         m = ' et soumission marquée comme incorrecte'
 
       # Si soumission erronée et on accepte : devient correcte
-      elsif current_user.sk.admin and params[:commit] == "Poster et accepter la soumission"
+      elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
         @submission.status = 2
         @submission.save
 
@@ -149,7 +149,7 @@ class CorrectionsController < ApplicationController
       end
 
       # On gère les notifications
-      if current_user.sk.admin?
+      if current_user.sk != @submission.user
         following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
         if following.nil?
           following = Following.new
@@ -172,8 +172,7 @@ class CorrectionsController < ApplicationController
         notif.user = @submission.user
         notif.submission = @submission
         notif.save
-      elsif current_user.sk == @submission.user
-        # An else would have the same effect normally
+      else
         @submission.followings.update_all(read: false)
       end
 
@@ -210,10 +209,10 @@ class CorrectionsController < ApplicationController
   ########## PARTIE PRIVEE ##########
   private
 
-  # Vérifie qu'il s'agit du bon utilisateur ou d'un admin
+  # Vérifie qu'il s'agit du bon utilisateur ou d'un admin ou d'un correcteur
   def correct_user
     @submission = Submission.find_by_id(params[:submission_id])
-    if @submission.nil? || (@submission.user != current_user.sk && !current_user.sk.admin)
+    if @submission.nil? || (@submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@submission.problem)))
       redirect_to root_path
     end
   end

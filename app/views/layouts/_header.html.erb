@@ -1,5 +1,25 @@
 <%= favicon_link_tag '/favicon.ico' %>
 
+<% def colored(user) %>
+	<% if !user.corrector? %>
+		<span style="color:<%= user.level[:color] %>; font-weight:bold;"><%= user.name %></span>
+	<% else %>
+		<% debut = user.name[0] %>
+		<% fin = user.name[1..-1] %>
+		<span style="color:black; font-weight:bold;"><%= debut %></span><span style="color:<%= user.level[:color] %>; font-weight:bold;"><%= fin %></span>
+	<% end %>
+<% end %>
+
+<% def colored_link(user) %>
+	<% if !user.corrector? %>
+		<%= link_to user, style:"color:#{user.level[:color]};" do %><span style="color:<%= user.level[:color] %>; font-weight:bold;"><%= user.name %></span><% end %>
+	<% else %>
+		<% debut = user.name[0] %>
+		<% fin = user.name[1..-1] %>
+		<%= link_to user, style:"color:#{user.level[:color]};" do %><span style="color:black; font-weight:bold;"><%= debut %></span><span style="color:<%= user.level[:color] %>; font-weight:bold;"><%= fin %></span><% end %>
+	<% end %>
+<% end %>
+
 <div class="noprint">
 
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -21,7 +41,7 @@
     <div class="navbar-collapse collapse">
 
       <!-- Dans le cas normal -->
-      <% if signed_in? and current_user.sk.admin? %>
+      <% if signed_in? and (current_user.sk.admin || current_user.sk.corrector) %>
         <form class="navbar-form navbar-left hidden-xs hidden-sm" role="search">
 
         <!-- Nouvelles soumissions -->
@@ -282,3 +302,4 @@
 </div> <!-- navigation -->
 
 </div>
+

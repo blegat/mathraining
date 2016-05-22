@@ -34,7 +34,7 @@ function showCorrectionNormal(id) {
 
   <!-- Nom -->
   <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-  <%= link_to correction.user.name, correction.user, {:style => "color:#{correction.user.level[:color]}" } %>
+  <% colored_link(correction.user) %>
   </td>
 
   <!-- Date -->
@@ -54,7 +54,7 @@ function showCorrectionNormal(id) {
   <% end %>
 
   <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-  <%= link_to correction.user.name, correction.user, {:style => "color:#{correction.user.level[:color]}" } %>
+  <% colored_link(correction.user) %>
   </td>
   </tr>
 

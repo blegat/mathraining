@@ -44,7 +44,7 @@ Pièces jointes
     <% qui = l[2].tchatmessage.user %>
   <% end %>
 
-  <%= link_to qui.name, qui, {:style => "color:#{qui.level[:color]}" } %>
+  <% colored_link(qui) %>
   </td>
 
   <!-- Où? Forum ou soumission? -->

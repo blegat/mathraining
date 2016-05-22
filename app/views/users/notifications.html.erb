@@ -1,3 +1,5 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
 <% provide(:title, "Notifications") %>
 <h1>
   <% if @new %>
@@ -23,7 +25,38 @@ Veuillez commencer par les soumissions les plus anciennes, c'est-à-dire le plus
   <table class="table table-bordered">
   <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm">Correcteur(s)</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
   <% @notifications.each do |n| %>
-    <%= render 'submissions/showadmin', s: n, nom: true %>
+    <% if current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem) %>
+
+    	
+    	<tr style="background-color:#E0E0E0;">
+    	
+    	<td class="hidden-xs hidden-sm" style="text-align:center;">
+    	<% if n.star %>
+				<%= image_tag n.icon %>
+				<%= image_tag n.icon %>
+			<% else %>
+				<%= image_tag n.icon %>
+			<% end %>
+			</td>
+    	<td class="hidden-xs hidden-sm">
+    	<% date = n.created_at.in_time_zone %>
+			<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+			<% if n.intest %>
+				- <b> TEST</b>
+			<% end %>
+    	</td>
+    	<td>
+    	<% date = n.lastcomment.in_time_zone %>
+			<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+			</td>
+    	<td> </td>
+    	<td class="hidden-xs hidden-sm"> </td>
+    	<td class="hidden-xs hidden-sm"> </td>
+    	<td> </td>
+    	</tr>
+    <% else %>
+    	<%= render 'submissions/showadmin', s: n, nom: true %>
+    <% end %>
   <% end %>
   </table>
   </div>

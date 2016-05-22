@@ -111,7 +111,17 @@ class User < ActiveRecord::Base
 
   # Rend les notifications
   def notifications_new
-    Submission.where(status: 0, visible: true)
+  	if sk.admin
+  		Submission.where(status: 0, visible: true)
+  	else
+  		newsub = Array.new
+			Submission.where(status: 0, visible: true).each do |s|
+				if sk.admin || (sk.corrector && sk.pb_solved?(s.problem))
+    			newsub.push(s)
+    		end
+    	end
+    	newsub
+    end
   end
 
   # Rend les notifications pour nouveau commentaire

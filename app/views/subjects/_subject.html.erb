@@ -23,7 +23,7 @@ function showSujetNormal(id) {
 
   <!-- Nom -->
   <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-    <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+    <% colored_link(s.user) %>
   </td>
 
   <!-- Date -->
@@ -38,7 +38,7 @@ function showSujetNormal(id) {
   <!-- Nom -->
   <tr class="visible-xs info">
   <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-    <%= link_to s.user.name, s.user, {:style => "color:#{s.user.level[:color]}" } %>
+    <% colored_link(s.user) %>
   </td>
   </tr>
 
