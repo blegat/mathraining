@@ -1,11 +1,12 @@
 <%= favicon_link_tag '/favicon.ico' %>
 
-<% def colored(user) %>
+<% def colored(user, fullname = false) %>
 	<% if !user.corrector? %>
-		<span style="color:<%= user.level[:color] %>; font-weight:bold;"><%= user.name %></span>
+		<span style="color:<%= user.level[:color] %>; font-weight:bold;"><%= user.name unless fullname %><%= user.fullname if fullname %></span>
 	<% else %>
 		<% debut = user.name[0] %>
-		<% fin = user.name[1..-1] %>
+		<% fin = user.name[1..-1] unless fullname %>
+		<% fin = user.fullname[1..-1] if fullname %>
 		<span style="color:black; font-weight:bold;"><%= debut %></span><span style="color:<%= user.level[:color] %>; font-weight:bold;"><%= fin %></span>
 	<% end %>
 <% end %>
@@ -244,9 +245,9 @@
         <!-- Nom -->
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           <% if current_user.other %>
-            (<span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.fullname %></span>)
+            [<% colored(current_user.sk, true) %>]
           <% else %>
-            <span style="font-weight:bold; color:<%= current_user.sk.level[:color] %>"><%= current_user.sk.fullname %></span>
+            <% colored(current_user.sk, true) %>
           <% end %>
           <b class="caret"></b>
         </a>

@@ -113,8 +113,7 @@
   <% p = Pointspersection.where(:user_id => user).order(:section_id) %>
   <% total = 0 %>
   <% allsec.each do |s| %>
-    <td class="hidden-xs">
-      <center>
+    <td class="hidden-xs" style="text-align:center;">
         <% m = maxscore[s.id] %>
         <% if m == 0 %>
           -
@@ -126,7 +125,6 @@
             <%= 100*rate/m %> %
           <% end %>
         <% end %>
-      </center>
     </td>
   <% end %>
 
