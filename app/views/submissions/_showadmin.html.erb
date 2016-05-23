@@ -53,7 +53,7 @@
 <!-- Nom (si on l'affiche) -->
 <% if nom %>
 <td style="font-weight:bold; width:200px">
-  <% colored_link(s.user) %>
+  <%= raw(s.user.linked_name) %>
   <%= "*" if s.user.wepion && current_user.sk.admin? %>
 </td>
 
@@ -64,7 +64,7 @@
   <% s.followings.each do |f| %>
     <%= " - " if !premier %>
     <%= "Réservé par " if s.status == 0 && premier %>
-    <% colored_link(f.user) %>
+    <%= raw(f.user.linked_name) %>
     <% premier = false %>
   <% end %>
   </td>

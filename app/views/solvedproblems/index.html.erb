@@ -85,7 +85,7 @@ html>body tbody.scroll {
 
     <!-- Qui -->
     <% user = User.find(t[:user_id]) %>
-    <td style="width:200px;"><% colored_link(user) %></td>
+    <td style="width:200px;"><%= raw(user.linked_name) %></td>
 
     <!-- Problème -->
     <td style="width:80px;">

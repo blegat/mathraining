@@ -34,7 +34,7 @@ html>body tbody.scroll {
 
 <!-- Si ce sont des étudiants -->
 <% elsif @user[1].id == @user[2].id %>
-  <h1><% colored_link(@user[1]) %> vs <% colored_link(@user[2]) %></h1>
+  <h1><%= raw(@user[1].linked_name) %> vs <%= raw(@user[2].linked_name) %></h1>
   Pourquoi se comparer avec soi-même?
 
   <h2>Autre comparaison</h2>
@@ -56,7 +56,7 @@ html>body tbody.scroll {
   <% niveau[1] = @user[1].level %>
   <% niveau[2] = @user[2].level %>
 
-  <h1><% colored_link(@user[1]) %> vs <% colored_link(@user[2]) %></h1>
+  <h1><%= raw(@user[1].linked_name) %> vs <%= raw(@user[2].linked_name) %></h1>
 
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
   <% cansee = Array.new %>

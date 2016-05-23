@@ -34,7 +34,7 @@ function showCorrectionNormal(id) {
 
   <!-- Nom -->
   <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-  <% colored_link(correction.user) %>
+  <%= raw(correction.user.linked_name) %>
   </td>
 
   <!-- Date -->
@@ -54,7 +54,7 @@ function showCorrectionNormal(id) {
   <% end %>
 
   <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
-  <% colored_link(correction.user) %>
+  <%= raw(correction.user.linked_name) %>
   </td>
   </tr>
 

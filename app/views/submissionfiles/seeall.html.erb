@@ -44,7 +44,7 @@ Pièces jointes
     <% qui = l[2].tchatmessage.user %>
   <% end %>
 
-  <% colored_link(qui) %>
+  <%= raw(qui.linked_name) %>
   </td>
 
   <!-- Où? Forum ou soumission? -->

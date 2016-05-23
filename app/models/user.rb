@@ -197,6 +197,28 @@ class User < ActiveRecord::Base
       return false
     end
   end
+  
+  def colored_name(fullname = false)
+  	if !self.corrector?
+  		return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{self.name unless fullname}#{self.fullname if fullname}</span>" 
+  	else
+			debut = self.name[0]
+			fin = self.name[1..-1] unless fullname
+			fin = self.fullname[1..-1] if fullname
+  		return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{fin}</span>" 
+  	end
+  end
+  
+  def linked_name
+  	if !self.corrector?
+  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{self.name unless fullname}#{self.fullname if fullname}</span></a>"
+  	else
+  		debut = self.name[0]
+			fin = self.name[1..-1] unless fullname
+			fin = self.fullname[1..-1] if fullname
+  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{fin}</span></a>" 
+  	end
+  end
 
   private
 

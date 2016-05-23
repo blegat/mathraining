@@ -44,7 +44,7 @@ $(window).scroll(scrollHandler);
         <% other = u %>
       <% end %>
     <% end %>
-    <h3>Discussion avec <% colored_link(other) %></h3>
+    <h3>Discussion avec <%= raw(other.linked_name) %></h3>
 
     <% @tchatmessage = Tchatmessage.new %>
 

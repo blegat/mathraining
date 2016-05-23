@@ -117,7 +117,7 @@
 
     <!-- Auteur du sujet -->
     <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
-      <% colored_link(s.user) %>
+      <%= raw(s.user.linked_name) %>
     </td>
 
     <!-- Nombre de messages -->
@@ -139,7 +139,7 @@
 
     <!-- Dernier message -->
     <td class="hidden-xs" style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
-      <% colored_link(qui) %>
+      <%= raw(qui.linked_name) %>
     </td>
 
     <!-- Date du dernier message -->
@@ -160,7 +160,7 @@
       <!-- Dernier message -->
       <tr>
       <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle; padding-bottom:5px; border-bottom:1px dashed grey;">
-        <% colored_link(qui) %>
+        <%= raw(qui.linked_name) %>
       </td>
       </tr>
 
