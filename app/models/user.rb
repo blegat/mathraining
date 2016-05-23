@@ -24,6 +24,8 @@
 #  follow_message  :boolean
 #
 
+include ERB::Util
+
 class User < ActiveRecord::Base
   attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion, :country, :year, :rating, :forumseen, :last_connexion, :follow_message
 
@@ -200,23 +202,23 @@ class User < ActiveRecord::Base
   
   def colored_name(fullname = false)
   	if !self.corrector?
-  		return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{self.name unless fullname}#{self.fullname if fullname}</span>" 
+  		return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name) unless fullname}#{html_escape(self.fullname) if fullname}</span>" 
   	else
 			debut = self.name[0]
 			fin = self.name[1..-1] unless fullname
 			fin = self.fullname[1..-1] if fullname
-  		return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{fin}</span>" 
+  		return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>" 
   	end
   end
   
   def linked_name
   	if !self.corrector?
-  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{self.name unless fullname}#{self.fullname if fullname}</span></a>"
+  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name) unless fullname}#{html_escape(self.fullname) if fullname}</span></a>"
   	else
   		debut = self.name[0]
 			fin = self.name[1..-1] unless fullname
 			fin = self.fullname[1..-1] if fullname
-  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{fin}</span></a>" 
+  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>" 
   	end
   end
 
