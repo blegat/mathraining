@@ -130,19 +130,41 @@
 <% end %>
 </div>
 
-<!-- Si administrateur -->
+<!-- Si administrateur ou correcteur ayant résolu -->
 
-<% if signed_in? && current_user.sk.admin? %>
+<% if signed_in? && (current_user.sk.admin? || current_user.sk.corrector? && @resolu) %>
 
   <!-- Explication -->
-  <h3>Éléments de solution</h3>
+  
+<script type="text/javascript">
+function showStuff() {
+    document.getElementById("explanation").style.display = 'inline';
+    document.getElementById("show").style.display = 'none';
+    document.getElementById("hide").style.display = 'inline';
+}
+function hideStuff() {
+    document.getElementById("explanation").style.display = 'none';
+    document.getElementById("show").style.display = 'inline';
+    document.getElementById("hide").style.display = 'none';
+}
+</script>
+  
+  <a href='#' id='show' onclick='showStuff(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a>
+  <a href='#' id='hide' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(); return false;'>Éléments de solution (pour les correcteurs)</a>
+  <span id='explanation' style='display:none;'><br/><br/>
   <% if @problem.explanation.size == 0 %>
-    <p style="color:orange;"><b>Pas d'éléments disponibles </b> : Aidez vos collègues en rédigeant les grandes idées de la solution!</p>
+    <span style="color:orange; font-weight:bold;">Pas d'éléments disponibles.</span>
   <% else %>
     <%= raw(htmlise(@problem.explanation)) %>
-    <br/>
   <% end %>
-  <br/>
+  </span>
+  <br/><br/>
+  
+<% end %>
+  
+<!-- Si administrateur -->
+  
+<% if signed_in? && current_user.sk.admin? %>
 
   <!-- Modifier/Supprimer/... -->
 
