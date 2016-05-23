@@ -44,8 +44,6 @@ html>body tbody.scroll {
 <% else %>
   <% actualrating = @user.rating %>
   <% niveau = @user.level %>
-  
-  <%= h(current_user.sk.name) %>
 
   <!-- Titre avec le nom et le niveau -->
   <h1><%= raw(@user.colored_name) %><span style="margin-left:30px; color:<%= niveau[:color] %>;">-</span><span style="margin-left:30px; color:<%= niveau[:color] %>;"><%= niveau[:name] if @user.sex == 0 %><%= niveau[:femininename] if @user.sex != 0 %></span>
