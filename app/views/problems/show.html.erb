@@ -148,16 +148,16 @@ function hideStuff() {
     document.getElementById("hide").style.display = 'none';
 }
 </script>
-  
-  <a href='#' id='show' onclick='showStuff(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a>
-  <a href='#' id='hide' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(); return false;'>Éléments de solution (pour les correcteurs)</a>
-  <span id='explanation' style='display:none;'><br/><br/>
+
   <% if @problem.explanation.size == 0 %>
-    <span style="color:orange; font-weight:bold;">Pas d'éléments disponibles.</span>
+    <span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span>
   <% else %>
+  	<a href='#' id='show' onclick='showStuff(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a>
+  	<a href='#' id='hide' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(); return false;'>Éléments de solution (pour les correcteurs)</a>
+  	<span id='explanation' style='display:none;'><br/><br/>
     <%= raw(htmlise(@problem.explanation)) %>
+  	</span>
   <% end %>
-  </span>
   <br/><br/>
   
 <% end %>
@@ -182,9 +182,9 @@ function hideStuff() {
         <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
       <% end %>
     </center>
-    <br/>
 
     <% if !@problem.online %>
+    	<br/>
       <center>
         <% if !has_pre %>
           <%= button_to "Mettre en ligne", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
