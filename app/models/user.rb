@@ -213,11 +213,10 @@ class User < ActiveRecord::Base
   
   def linked_name
   	if !self.corrector?
-  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name) unless fullname}#{html_escape(self.fullname) if fullname}</span></a>"
+  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name)}</span></a>"
   	else
   		debut = self.name[0]
-			fin = self.name[1..-1] unless fullname
-			fin = self.fullname[1..-1] if fullname
+			fin = self.name[1..-1]
   		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>" 
   	end
   end
