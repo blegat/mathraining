@@ -210,7 +210,7 @@ Votre navigateur ne supporte pas les canvas.
 
 <% dernier = -1 %>
 <% number = 0 %>
-<% User.order("last_connexion DESC, last_name, first_name").all.each do |u| %>
+<% User.order("last_connexion DESC, last_name, first_name").where(:email_confirm => true).each do |u| %>
   <% lc = u.last_connexion %>
   <% number = number+1 %>
   <% if lc != dernier %>
@@ -225,7 +225,7 @@ Votre navigateur ne supporte pas les canvas.
     <% end %>
     <% dernier = lc %>
   <% end %>
-  <b><%= link_to u.name, u, {:style => "color:#{u.level[:color]}" } %></b><br/>
+  <%= raw(u.linked_name) %><br/>
 <% end %>
 
 <h3>Dernières résolutions (deux derniers jours)</h3>
@@ -258,7 +258,7 @@ Votre navigateur ne supporte pas les canvas.
   <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
   <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
   <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
-  <td><span style="font-weight:bold;"><%= link_to a[:qui].name, a[:qui], :style => "color:#{a[:qui].level[:color]}" %></span></td>
+  <td><%= raw(a[:qui].linked_name) %></td>
   <td style="width:340px;"><%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %> <%= "(#{a[:chapter]})" %></td>
   <td style="width:50px;">
   <center>
