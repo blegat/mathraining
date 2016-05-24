@@ -40,9 +40,9 @@ html>body tbody.scroll {
     <span style="float:right;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default" %></span>
   <% end %>
   </h1>
-  <%= @user.name %> est administrateur.<br/>
+  <%= @user.name %> est <%= "administrateur" if @user.sex == 0 %><%= "administratrice" if @user.sex == 1 %>.<br/>
   <% if nb_corrections > 0 %>
-    <br/>Il a participé à la correction de <b><%= nb_corrections %></b> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à lui!<br/>
+    <br/><%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> a participé à la correction de <b><%= nb_corrections %></b> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %>!<br/>
   <% end %>
   
 <!-- Si c'est un étudiant -->
@@ -62,7 +62,7 @@ html>body tbody.scroll {
   </h1>
   
   <% if nb_corrections > 0 %>
-    <%= @user.name %> a participé à la correction de <b><%= nb_corrections %></b> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à lui!<br/>
+    <%= @user.name %> a participé à la correction de <b><%= nb_corrections %></b> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %>!<br/>
   <% end %>
 
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
