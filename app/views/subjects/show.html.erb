@@ -40,7 +40,7 @@ function hideStuff(id) {
 <% else %>
   <% @chapitre = @subject.chapter %>
   <% @section = @subject.chapter.section %>
-   - <%= @chapitre.name %>
+   - <%= link_to @chapitre.name, @chapitre, target: '_blank' %>
 <% end %>
 </td>
 </tr>
