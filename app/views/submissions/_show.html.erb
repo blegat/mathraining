@@ -40,7 +40,7 @@ function showSoumissionNormal(id) {
 
 <!-- Si administrateur, on propose de réserver la soumission -->
 <% @unactivate = 0 %>
-<% if (current_user.sk.admin || current_user.sk.corrector) && @submission.status == 0 && @submission.visible %>
+<% if current_user.sk != @submission.user && @submission.status == 0 && @submission.visible %>
   <% f = @submission.followings.first %>
   <% if f.nil? %>
     <div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
