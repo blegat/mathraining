@@ -66,12 +66,16 @@ class UsersController < ApplicationController
   # Supprimer un utilisateur : il faut être root
   def destroy
     @user = User.find(params[:id])
-    skinner = User.where(skin: @user.id)
-    skinner.each do |s|
-      s.update_attribute(:skin, 0)
-    end
-    @user.destroy
-    flash[:success] = "Utilisateur supprimé."
+    if !@user.root?
+		  skinner = User.where(skin: @user.id)
+		  skinner.each do |s|
+		    s.update_attribute(:skin, 0)
+		  end
+		  @user.destroy
+		  flash[:success] = "Utilisateur supprimé."
+		else
+			flash[:danger] = "Il n'est pas possible de supprimer un root."
+		end
     redirect_to users_path
   end
 

@@ -734,7 +734,7 @@ html>body tbody.scroll {
         <%= link_to "Rendre l'accès à cet utilisateur", user_reactivate_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre l'accès au site à #{@user.name}?" } %>
       <% end %>
     <% end %>
-    <% if current_user.sk.root? %>
+    <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to 'Supprimer cet utilisateur', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Privilégiez une interdiction d'accès si possible. Etes-vous sûr de vouloir supprimer #{@user.name}?" }, :style => "color:red;" %>
