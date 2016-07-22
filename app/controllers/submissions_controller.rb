@@ -2,8 +2,8 @@
 class SubmissionsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_problem
-  before_filter :admin_user, only: [:destroy, :star, :unstar]
-  before_filter :corrector_user, only: [:read, :unread, :reserve, :unreserve]
+  before_filter :admin_user, only: [:destroy]
+  before_filter :corrector_user, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
   before_filter :not_solved, only: [:create]
   before_filter :can_submit, only: [:create]
   before_filter :has_access, only: [:create]
@@ -375,7 +375,6 @@ class SubmissionsController < ApplicationController
 
   # Marquer comme lu
   def read
-    @submission = Submission.find(params[:submission_id])
     un_read(true, "lue")
     if @submission.status == 3
       @submission.status = 1
@@ -385,13 +384,11 @@ class SubmissionsController < ApplicationController
 
   # Marquer comme non lu
   def unread
-    @submission = Submission.find(params[:submission_id])
     un_read(false, "non lue")
   end
 
   # Marquer comme élégant
   def star
-    @submission = Submission.find(params[:submission_id])
     @submission.star = true
     @submission.save
     redirect_to problem_path(@problem, :sub => @submission)
@@ -399,7 +396,6 @@ class SubmissionsController < ApplicationController
 
   # Marquer comme non élégant
   def unstar
-    @submission = Submission.find(params[:submission_id])
     @submission.star = false
     @submission.save
     redirect_to problem_path(@problem, :sub => @submission)
@@ -407,7 +403,6 @@ class SubmissionsController < ApplicationController
 
   # Réserver la soumission
   def reserve
-    @submission = Submission.find(params[:submission_id])
     if @submission.followings.count > 0
       flash[:danger] = "Cette soumission a déjà été réservée."
       redirect_to problem_path(@problem, :sub => @submission)
@@ -424,7 +419,6 @@ class SubmissionsController < ApplicationController
 
   # Dé-réserver la soumission
   def unreserve
-    @submission = Submission.find(params[:submission_id])
     f = @submission.followings.first
     if @submission.status != 0 || f.nil? || f.user != current_user.sk
       redirect_to problem_path(@problem, :sub => @submission)
@@ -524,6 +518,7 @@ class SubmissionsController < ApplicationController
   end
   
   def corrector_user
-  	redirect_to root_path unless current_user.sk.admin or current_user.sk.corrector
+  	@submission = Submission.find(params[:submission_id])
+  	redirect_to root_path unless current_user.sk.admin or (current_user.sk.corrector && current_user.sk.pb_solved?(@submission.problem) && current_user.sk != @submission.user)
   end
 end

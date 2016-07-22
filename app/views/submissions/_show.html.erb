@@ -165,7 +165,7 @@ function showSoumissionNormal(id) {
 <% end %>
 
 <!-- Marquer comme lu ou non lu -->
-<% if current_user.sk.admin || (current_user.sk.corrector && @resolu) %>
+<% if current_user.sk.admin || (current_user.sk.corrector && @resolu && current_user.sk != @submission.user) %>
   <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %>
     <% if !following.nil? && following.read && @submission.status != 0 %>
       <center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission), :class => "btn btn-default btn-grey" %></center>
@@ -191,7 +191,7 @@ function showSoumissionNormal(id) {
 <% end %>
 
 <!-- Marquer la soumission comme élégante -->
-<% if current_user.sk.admin? && @submission.status == 2 %>
+<% if (current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk)) && @submission.status == 2 %>
   <br/><center>
     <% if @submission.star %>
       <center><%= link_to 'Ne plus marquer comme élégant', problem_submission_unstar_path(@problem, @submission), :class => "btn btn-default btn-grey" %></center>
