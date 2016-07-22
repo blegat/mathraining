@@ -1,6 +1,7 @@
 #encoding: utf-8
 class TchatmessagesController < DiscussionsController
   before_filter :signed_in_user
+  before_filter :notskin_user, only: [:create]
   before_filter :is_involved_2, only: [:create]
 
   def create
@@ -47,5 +48,12 @@ class TchatmessagesController < DiscussionsController
     if !current_user.sk.discussions.include?(@discussion)
       redirect_to new_discussion_path
     end
+  end
+  
+  def is_not_other
+  	if current_user.other
+  		flash[:danger] = "Vous êtes dans la peau de quelqu'un d'autre!"
+  		redirect_to @discussion
+  	end
   end
 end
