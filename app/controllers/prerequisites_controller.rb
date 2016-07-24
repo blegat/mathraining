@@ -50,7 +50,7 @@ class PrerequisitesController < ApplicationController
       flash[:info] = "Choisissez un chapitre."
       redirect_to graph_prerequisites_path(:fondement => params[:fondement]) and return
     end
-    if chapter.online && prerequisite.online
+    if chapter.online && !prerequisite.section.fondation
       flash[:danger] = "Vous ne pouvez pas supprimer un prérequis non fondamental à un chapitre en ligne."
       redirect_to graph_prerequisites_path(:fondement => params[:fondement]) and return
     end
