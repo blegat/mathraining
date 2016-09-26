@@ -3,13 +3,13 @@
 <!-- Prénom -->
 <div class="form-group">
   <%= f.label :first_name %>
-  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other) %>
+  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other && !current_user.root) %>
 </div>
 
 <!-- Nom -->
 <div class="form-group">
   <%= f.label :last_name %>
-  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other)%>
+  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other && !current_user.root)%>
 </div>
 
 <!-- Voir nom entier? -->
@@ -23,7 +23,7 @@
 <!-- Email -->
 <div class="form-group">
   <%= f.label :email %>
-  <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other) %>
+  <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other && !current_user.root) %>
 </div>
 
 <!-- Sexe -->
