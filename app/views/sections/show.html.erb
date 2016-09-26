@@ -579,26 +579,5 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 <center>
 <%= button_to "Ajouter un chapitre", new_section_chapter_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>
 </center>
-<br/>
-
-<!-- Statistiques -->
-<h3>Statistiques (uniquement visibles des administrateurs)</h3>
-<h4>Exercices</h4>
-<ul>
-<li>Nombre d'exercices dans chaque niveau : <%= @nb2_n1/2 %> / <%= @nb2_n2/2 %> / <%= @nb2_n3/2 %> / <%= @nb2_n4/2 %></li>
-<li>Nombre total d'exercices : <%= @nb_exercices/2 %></li>
-<% if !@fondation %>
-<li>Nombre total de points : <%= @nb_points_exercices/2 %></li>
-<% end %>
-</ul>
-
-<% if !@fondation %>
-<h4>Problèmes</h4>
-<ul>
-<li>Nombre de problèmes dans chaque niveau : <%= @nb_n1 %> / <%= @nb_n2 %> / <%= @nb_n3 %> / <%= @nb_n4 %> / <%= @nb_n5 %></li>
-<li>Nombre total de problèmes : <%= @nb_problemes %></li>
-<li>Nombre total de points : <%= @nb_points_problemes %></li>
-</ul>
-<% end %>
 
 <% end %>
