@@ -203,7 +203,7 @@ html>body tbody.scroll {
       <% pt = exo.value %>
       <% pt = 0 if allsec[allchap[exo.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
-        <% nb_erreur = nb_erreur + min(e.nb_guess-1, 20) %>
+        <% nb_erreur = nb_erreur + [e.nb_guess-1, 20].min %>
         <% nb_e = nb_e+1 %>
 				<% dernier = e.resolutiontime.in_time_zone %>
         <% if premier.nil? %>
@@ -219,7 +219,7 @@ html>body tbody.scroll {
       <% pt = 0 if allsec[allchap[qcm.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
-        <% nb_erreur = nb_erreur + min(q.nb_guess-1, 20) %>
+        <% nb_erreur = nb_erreur + [q.nb_guess-1, 20].min %>
 				<% dernier = q.resolutiontime.in_time_zone %>
         <% if premier.nil? %>
           <% premier = q.resolutiontime.in_time_zone %>
