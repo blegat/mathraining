@@ -131,9 +131,14 @@ html>body tbody.scroll {
 	<% allex = Array.new %>
 	<% allqcm = Array.new %>
 	<% allpb = Array.new %>
+	
+	<% maxscore = Array.new %>
+	<% numberexo = 0 %>
+	<% numberpb = 0 %>
 
 	<% Section.all.each do |s| %>
 	  <% allsec[s.id] = s %>
+	  <% maxscore[s.id] = 0 %>
 	<% end %>
 
 	<% Chapter.all.each do |c| %>
@@ -142,14 +147,28 @@ html>body tbody.scroll {
 
 	<% Exercise.all.each do |e| %>
 		<% allex[e.id] = e %>
+		<% chap = allchap[e.chapter_id] %>
+		<% if chap.online && e.online %>
+			<% maxscore[chap.section_id] += e.value %>
+			<% numberexo = numberexo+1 %>
+		<% end %>
 	<% end %>
 
 	<% Qcm.all.each do |q| %>
 	  <% allqcm[q.id] = q %>
+	  <% chap = allchap[q.chapter_id] %>
+		<% if chap.online && q.online %>
+			<% maxscore[chap.section_id] += q.value %>
+			<% numberexo = numberexo+1 %>
+		<% end %>
 	<% end %>
 
 	<% Problem.all.each do |p| %>
 	  <% allpb[p.id] = p %>
+	  <% if p.online %>
+	  	<% maxscore[p.section_id] += p.value %>
+	  	<% numberpb = numberpb+1 %>
+	  <% end %>
 	<% end %>
 
 	<% premier = nil %>
@@ -395,98 +414,75 @@ html>body tbody.scroll {
 
   </div>
 
-  <!-- Affichage du score et du camembert -->
+  <!-- Affichage du score et des statistiques -->
   <div class="col-lg-5 col-sm-12 col-xs-12">
 
-  <center><p style="font-size:24px; margin-top:80px;">Score : <%= actualrating %></p></center>
+  <center><p style="font-size:24px; margin-top:60px;">Score : <%= actualrating %></p></center>
   <br/>
 
   <!-- Si le score n'est pas 0, on affiche le camembert -->
   <% if actualrating > 0 %>
-
-    <% p = Pointspersection.where(:user_id => @user) %>
-    <% total = 0 %>
-    <% possible2 = SortedSet.new %>
-
-    <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
-      <% rate = p.where(:section_id => s.id).first.points %>
-      <% total = total + rate %>
-
-      <% possible2.add([rate, s.name, s.id]) %>
-    <% end %>
-
-    <!-- Canvas pour camembert -->
-    <center>
-    <canvas id="Camembert" width="240" height="240">
-    Votre navigateur ne supporte pas les canvas.
-    </canvas>
-    </center>
-
-    <center>
-
-    <!-- Légende du camembert (cas normal) -->
-    <table class="table table-bordered hidden-xs" style="width:360px; margin-top:20px;">
-    <% p = Pointspersection.where(:user_id => @user) %>
-    <tr>
-    <% i = 0 %>
-    <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
-      <% rate = p.where(:section_id => s.id).first.points %>
-      <td style="width:180px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td>
-      <% i = i+1 %>
-      <% if i == 2 || i == 4 %>
-        </tr><tr>
-      <% end %>
-    <% end %>
-    </tr>
-    </table>
-
-    <!-- Légende du camembert (cas gsm) -->
-    <table class="table table-bordered visible-xs" style="width:250px; margin-top:20px;">
-    <% p = Pointspersection.where(:user_id => @user) %>
-    <% Section.order(:id).where(:fondation => false).to_a.each do |s| %>
-      <% rate = p.where(:section_id => s.id).first.points %>
-      <tr><td style="width:250px; text-align:center; background-color:<%= colors[s.id-1] %>"><%= s.name %></td></tr>
-    <% end %>
-    </table>
-
-    </center>
-
-    <!-- Script pour le camembert -->
-    <script>
-    var d=document.getElementById("Camembert");
-    var ctx=d.getContext("2d");
-
-    // Cercle
-    ctx.beginPath();
-    ctx.arc(120, 120, 115, 0, 2 * Math.PI, false);
-    ctx.fillStyle = 'white';
-    ctx.fill();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = '#888888';
-    ctx.stroke();
-    prec = 0;
-
-    // Chaque quartier
-    <% while !possible2.empty? %>
-      <% if (possible2.first)[0] > 0 %>
-        ctx.beginPath();
-        ctx.arc(120,120,115, prec, prec + (2 * Math.PI * <%= (possible2.first)[0] %>) / <%= total %>, false);
-        prec = prec + (2 * Math.PI * <%= (possible2.first)[0] %>) / <%= total %>;
-        ctx.lineTo(120, 120);
-        ctx.closePath();
-        ctx.fillStyle= "<%= colors[(possible2.first)[2]-1] %>";
-        ctx.fill();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle="#888888";
-        ctx.stroke();
-      <% end %>
-      <% possible2.delete(possible2.first) %>
-    <% end %>
-
-    </script>
-
+  
+  	<% p = Pointspersection.where(:user_id => @user) %>
+  	
+  	<table class="table table-bordered">
+  	<tr><th colspan="2" style="text-align:center;">Progression par type</th></tr>
+  	<tr>
+  	<td style="width:160px;">Exercices</td>
+  	<td>
+  	<% pct = numberexo == 0 ? 0 : 100*nb_e/numberexo.to_f %>
+  	<div class="progress" style="margin-bottom:0px;">  		
+		<div class="progress-bar" role="progressbar"
+		aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
+			<% if pct <= 10 %>
+				<span style="margin-left:10px"><%= nb_e %>/<%= numberexo %></span>
+			<% else %>
+				<%= nb_e %>/<%= numberexo %>
+			<% end %>
+		</div>
+		</div>
+		</td>
+		</tr>
+		
+		<td style="width:160px;">Problèmes</td>
+  	<td>
+  	<% pct = numberpb == 0 ? 0 : 100*nb_p/numberpb.to_f %>
+  	<div class="progress" style="margin-bottom:0px;">  		
+		<div class="progress-bar" role="progressbar"
+		aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
+			<% if pct <= 10 %>
+				<span style="margin-left:10px"><%= nb_p %>/<%= numberpb %></span>
+			<% else %>
+				<%= nb_p %>/<%= numberpb %>
+			<% end %>
+		</div>
+		</div>
+		</td>
+  	</tr>
+  	
+  	<table class="table table-bordered">
+  	<tr><th colspan="2" style="text-align:center;">Progression par section</th></tr>
+  	<% Section.order(:id).where(:fondation => false).each do |s| %>
+  		<tr>
+  		<td style="width:160px;"><%= s.name %></td>
+  		<% rate = p.where(:section_id => s.id).first.points %>
+  		<td>
+  		<% pct = maxscore[s.id] == 0 ? 0 : 100*rate/maxscore[s.id].to_f %>
+  		<div class="progress" style="margin-bottom:0px;">  		
+			<div class="progress-bar" role="progressbar"
+			aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= colors[s.id] %>; color:black;">
+				<% if pct.floor > 0 %>
+					<%= pct.floor %> %
+				<% end %>
+			</div>
+			</div>
+			</td>
+  		</tr>
+  	<% end %>
+  	</table>
+  	
   <% end %>
-
+  
   <!-- Date d'inscription -->
   <br/>
   <center>Inscription : <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %></center><br/>
