@@ -429,10 +429,8 @@ html>body tbody.scroll {
 		<div class="progress-bar" role="progressbar"
 		aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
 		  <% if nb_e == 0 %>
-			<% elsif pct <= 25 %>
-				<span style="margin-left:10px"><%= nb_e %>/<%= numberexo %></span>
 			<% else %>
-				<%= nb_e %>/<%= numberexo %>
+				<span style="margin-left:5px"><%= nb_e %>/<%= numberexo %></span>
 			<% end %>
 		</div>
 		</div>
@@ -446,10 +444,8 @@ html>body tbody.scroll {
 		<div class="progress-bar" role="progressbar"
 		aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
 		  <% if nb_p == 0 %>
-			<% elsif pct <= 25 %>
-				<span style="margin-left:10px"><%= nb_p %>/<%= numberpb %></span>
 			<% else %>
-				<%= nb_p %>/<%= numberpb %>
+				<span style="margin-left:5px"><%= nb_p %>/<%= numberpb %></span>
 			<% end %>
 		</div>
 		</div>
@@ -468,10 +464,8 @@ html>body tbody.scroll {
 			<div class="progress-bar" role="progressbar"
 			aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= colors[s.id-1] %>; color:black;">
 				<% if pct.floor == 0 	%>
-				<% elsif pct <= 15 %>
-					<span style="margin-left:10px"><%= pct.floor %>%</span>
 				<% else %>
-					<%= pct.floor %>%
+					<span style="margin-left:5px"><%= pct.floor %>%</span>
 				<% end %>
 			</div>
 			</div>
@@ -496,6 +490,13 @@ html>body tbody.scroll {
     <div class="row">
 
     <div class="col-sm-12 col-xs-12">
+    
+    <% if current_user.sk.admin %>
+    	<h2>Informations</h2>
+    	<%= @user.country %> - <%= @user.year %><br/>
+    	<%= moyenne_erreurs %> erreurs/exercice<br/>
+    	<%= "Wépion" if @user.wepion %> <%= " - Groupe " << @user.group if @user.group != "" %>
+    <% end %>
 
     <h2>Évolution</h2>
     <br/>
