@@ -1,9 +1,5 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
-<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
-
-<% abreviation = ["C", "G", "TN", "A", "EF", "I"] %>
-
 <% provide(:title, 'Correcteurs') %>
 <h1>Correcteurs</h1>
 
@@ -14,11 +10,5 @@
 <% twoweeksago = Date.today - 14 %>
 
 <% User.where("admin = ? OR corrector = ?", true, true).each do |c| %>
-	<% nb_corrections = c.followings.count %>
-	<% nb_recent = c.followings.where("created_at > ?", twoweeksago).count %>
-	<% first_connection = c.followings.order(:created_at).first.created_at %>
-	<% last_connection = c.followings.order(:created_at).last.created_at %>
-	<% correctors.push({:number => nb_corrections, :number_recent => nb_recent, :first => first_connection, :last => last_connection, :user => c}) %>
+
 <% end %>
-
-
