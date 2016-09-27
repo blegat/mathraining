@@ -10,5 +10,8 @@
 <% twoweeksago = Date.today - 14 %>
 
 <% User.where("admin = ? OR corrector = ?", true, true).each do |c| %>
-
+	<% nb_corrections = c.followings.count %>
+	<% nb_recent = c.followings.where("created_at > ?", twoweeksago).count %>
+	<% first_connection = c.followings.order(:created_at).first.created_at %>
+	<% last_connection = c.followings.order(:created_at).last.created_at %>
 <% end %>
