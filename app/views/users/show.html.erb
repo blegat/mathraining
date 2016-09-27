@@ -2,6 +2,8 @@
 
 <% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
 
+<% abreviation = ["Combinatoire", "Géométrie", "Théorie des nombres", "Algèbre", "Équations Fonct.", "Inégalités"] %>
+
 <% provide(:title, @user.name) %>
 
 <% t1 = Time.now %>
@@ -464,13 +466,13 @@ html>body tbody.scroll {
   	<tr><th colspan="2" style="text-align:center;">Progression par section</th></tr>
   	<% Section.order(:id).where(:fondation => false).each do |s| %>
   		<tr>
-  		<td style="width:160px;"><%= s.name %></td>
+  		<td style="width:160px;"><%= abreviation[s.id-1] %></td>
   		<% rate = p.where(:section_id => s.id).first.points %>
   		<td>
   		<% pct = maxscore[s.id] == 0 ? 0 : 100*rate/maxscore[s.id].to_f %>
   		<div class="progress" style="margin-bottom:0px;">  		
 			<div class="progress-bar" role="progressbar"
-			aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= colors[s.id] %>; color:black;">
+			aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= colors[s.id-1] %>; color:black;">
 				<% if pct.floor > 0 %>
 					<%= pct.floor %> %
 				<% end %>
