@@ -150,7 +150,7 @@ html>body tbody.scroll {
 	<% Exercise.all.each do |e| %>
 		<% allex[e.id] = e %>
 		<% chap = allchap[e.chapter_id] %>
-		<% if chap.online && e.online %>
+		<% if chap.online && !allsec[chap.section_id].fondation && e.online %>
 			<% maxscore[chap.section_id] += e.value %>
 			<% numberexo = numberexo+1 %>
 		<% end %>
@@ -159,7 +159,7 @@ html>body tbody.scroll {
 	<% Qcm.all.each do |q| %>
 	  <% allqcm[q.id] = q %>
 	  <% chap = allchap[q.chapter_id] %>
-		<% if chap.online && q.online %>
+		<% if chap.online && !allsec[chap.section_id].fondation && q.online %>
 			<% maxscore[chap.section_id] += q.value %>
 			<% numberexo = numberexo+1 %>
 		<% end %>
