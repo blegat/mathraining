@@ -1,0 +1,18 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<% provide(:title, 'Correcteurs') %>
+<h1>Groupes Wépion</h1>
+
+A titre informatif, voici les élèves constituant les groupes A et B cette année. Ces listes ne sont visibles que par les étudiants desdits groupes et les professeurs.
+
+<!-- On parcourt les deux groupes -->
+
+<h2>Groupe A</h2>
+<% User.where(:group => "A").order(:first_name).each do |u| %>
+<%= raw(u.linked_name) %><br/>
+<% end %>
+
+<h2>Groupe B</h2>
+<% User.where(:group => "B").order(:first_name).each do |u| %>
+<%= raw(u.linked_name) %><br/>
+<% end %>

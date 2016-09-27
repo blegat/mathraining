@@ -1,13 +1,14 @@
 #encoding: utf-8
 
 class UsersController < ApplicationController
-  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group]
+  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :correctors, :groups]
   before_filter :correct_user, only: [:edit, :update]
   before_filter :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
   before_filter :corrector_user, only: [:notifications_new, :notifications_update]
   before_filter :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector]
   before_filter :signed_out_user, only: [:new, :create, :password_forgotten]
   before_filter :unactivate_admin, only: [:unactivate, :reactivate]
+  before_filter :group_user, only: [:groups]
 
   # Index de tous les users avec scores
   def index
@@ -247,6 +248,9 @@ class UsersController < ApplicationController
     @user.toggle!(:active)
     redirect_to @user
   end
+  
+  def groups
+  end
 
   ########## PARTIE PRIVEE ##########
   private
@@ -266,6 +270,10 @@ class UsersController < ApplicationController
   
   def corrector_user
   	redirect_to root_path unless current_user.sk.admin or current_user.sk.corrector
+  end
+  
+  def group_user
+  	redirect_to root_path unless current_user.sk.admin or current_user.sk.group != ""
   end
 
   # Vérifie qu'on ne désactive pas un admin

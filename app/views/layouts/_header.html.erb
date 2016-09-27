@@ -203,6 +203,9 @@
         <li><%= link_to "Scores", users_path %></li>
         <li><%= link_to "Résolutions récentes", solvedproblems_path %></li>
         <li><%= link_to "Correcteurs", correctors_path %></li>
+        <% if signed_in? && (current_user.sk.admin || current_user.sk.group != " ") %>
+          <li><%= link_to "Groupes Wépion", groups_path %></li>
+        <% end %>
         <li><%= link_to "Fréquentation du site", frequentation_path %></li>
       </ul>
       </li>

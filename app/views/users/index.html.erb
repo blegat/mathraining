@@ -143,10 +143,7 @@
     <td class="hidden-xs hidden-sm"><center><%= user.year if user.year > 0 %><%= "?" if user.year == 0 %></center></td>
     <td class="hidden-xs hidden-sm"><center>
       <% if user.wepion %>
-        W
-        <% if user.group != "" %>
-          - <%= user.group %>
-        <% end %>
+        W<%= user.group %>
       <% end %>
     </center></td>
   <% end %>
