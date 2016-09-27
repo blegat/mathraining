@@ -12,6 +12,8 @@ Mathraining::Application.routes.draw do
   resources :solvedproblems, only: [:index]
 
   resources :pictures, only: [:index, :show, :new, :create, :destroy]
+  
+  resources :correctors, only: [:index]
 
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]
   match '/feed' => 'actualities#feed', :via => [:get], as: :feed, defaults: { :format => 'atom' }
@@ -145,6 +147,7 @@ Mathraining::Application.routes.draw do
     match '/reactivate', to: 'users#reactivate', :via => [:get], as: :reactivate
     match '/take_skin', to: 'users#take_skin', :via => [:get], as: :take_skin
     match '/leave_skin', to: 'users#leave_skin', :via => [:get], as: :leave_skin
+    match '/change_group', to: 'users#change_group', :via => [:get], as: :change_group
   end
 
   resources :virtualtests do

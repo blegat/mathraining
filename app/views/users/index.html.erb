@@ -144,6 +144,9 @@
     <td class="hidden-xs hidden-sm"><center>
       <% if user.wepion %>
         W
+        <% if user.group != "" %>
+          - <%= user.group %>
+        <% end %>
       <% end %>
     </center></td>
   <% end %>
@@ -181,9 +184,9 @@
       <% inscription = u.created_at %>
       <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %> :
       <% if u.email_confirm %>
-        <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b><%= "(banni)" if !u.active %></b><br/>
+        <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b><%= "(banni)" if !u.active %></b><br/>
         <% else %>
-        <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b>(email non confirmé) <%= "(banni)" if !u.active %></b><br/>
+        <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(email non confirmé) <%= "(banni)" if !u.active %></b><br/>
       <% end %>
     <% end %>
   <% end %>
@@ -195,9 +198,9 @@
     <% inscription = u.created_at %>
     <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %> :
     <% if u.email_confirm %>
-      <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b><%= "(banni)" if !u.active %></b><br/>
+      <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b><%= "(banni)" if !u.active %></b><br/>
     <% else %>
-      <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %>) <b>(email non confirmé) <%= "(banni)" if !u.active %></b><br/>
+      <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(email non confirmé) <%= "(banni)" if !u.active %></b><br/>
     <% end %>
     <% rank = rank + 1 %>
   <% end %>

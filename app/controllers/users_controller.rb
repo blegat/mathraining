@@ -1,9 +1,9 @@
 #encoding: utf-8
 
 class UsersController < ApplicationController
-  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector]
+  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group]
   before_filter :correct_user, only: [:edit, :update]
-  before_filter :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion]
+  before_filter :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
   before_filter :corrector_user, only: [:notifications_new, :notifications_update]
   before_filter :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector]
   before_filter :signed_out_user, only: [:new, :create, :password_forgotten]
@@ -101,6 +101,8 @@ class UsersController < ApplicationController
     if !@user.admin?
       if @user.wepion
         flash[:success] = "Utilisateur retiré du groupe Wépion."
+        @user.group = ""
+        @user.save
       else
         flash[:success] = "Utilisateur ajouté au groupe Wépion."
       end
@@ -120,6 +122,16 @@ class UsersController < ApplicationController
       end
       @user.toggle!(:corrector)
     end
+    redirect_to @user
+  end
+  
+  # Changer de groupe
+  def change_group
+    @user = User.find(params[:user_id])
+    g = params[:group]
+    @user.group = g
+    @user.save
+    flash[:success] = "Utilisateur changé de groupe."
     redirect_to @user
   end
 
