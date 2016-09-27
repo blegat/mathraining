@@ -484,6 +484,22 @@ html>body tbody.scroll {
   </div>
 
   </div>
+  
+  
+  <% if current_user.sk.admin %>
+  	<div class="row">
+  	<div class="col-sm-12 col-xs-12">
+   	<h2>Informations</h2>
+   	<%= @user.country %> - <%= @user.year %><br/>
+   	<% if act.size > 0 %>
+   		<%= moyenne_erreurs %> erreurs/exercice<br/>
+   	<% end %>
+   	<% lastco = @user.last_connexion %>
+   	Dernière connexion : <%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %><br/>
+   	<%= "Groupe Wépion" if @user.wepion %> <%= " - Groupe " << @user.group if @user.group != "" %>
+  	</div>
+  	</div>
+  <% end %>
 
   <!-- Si l'étudiant a un score non égal à 0, on montre son évolution -->
   <% if actualrating > 0 %>
@@ -491,13 +507,6 @@ html>body tbody.scroll {
     <div class="row">
 
     <div class="col-sm-12 col-xs-12">
-    
-    <% if current_user.sk.admin %>
-    	<h2>Informations</h2>
-    	<%= @user.country %> - <%= @user.year %><br/>
-    	<%= moyenne_erreurs %> erreurs/exercice<br/>
-    	<%= "Wépion" if @user.wepion %> <%= " - Groupe " << @user.group if @user.group != "" %>
-    <% end %>
 
     <h2>Évolution</h2>
     <br/>

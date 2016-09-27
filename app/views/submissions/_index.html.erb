@@ -17,10 +17,42 @@ html>body tbody.scroll {
 
 <!-- Si administrateur : peut voir toutes les soumissions correctes -->
 <% if current_user.sk.admin %>
-  <h3>Soumissions correctes</h3>
-  <% submissions = problem.submissions.where(visible: true, status: 2).order('created_at DESC') %>
+	<h3>Soumissions étoilées</h3>
+	<% submissions = problem.submissions.where(visible: true, status: 2, star: true).order('created_at DESC') %>
   <% if submissions.empty? %>
-    <p>Aucune soumission correcte.</p>
+    <p>Aucune soumission.</p>
+  <% else %>
+    <!-- Large -->
+    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px;">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody class="scroll">
+    <% submissions.each do |s| %>
+        <% @situation = 3 %>
+        <%= render 'submissions/showadmin', s: s, nom: true %>
+      <% end %>
+    </tbody>
+    </table>
+
+    <!-- Petit -->
+    <table class="table table-bordered visible-sm visible-xs" style="width:340px;">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody class="scroll">
+    <% submissions.each do |s| %>
+        <% @situation = 3 %>
+        <%= render 'submissions/showadmin', s: s, nom: true %>
+      <% end %>
+    </tbody>
+    </table>
+  <% end %>
+  
+  <h3>Soumissions correctes</h3>
+  <% submissions = problem.submissions.where(visible: true, status: 2, star: false).order('created_at DESC') %>
+  <% if submissions.empty? %>
+    <p>Aucune soumission.</p>
   <% else %>
     <!-- Large -->
     <table class="table table-bordered hidden-sm hidden-xs" style="width:840px;">
@@ -140,10 +172,10 @@ html>body tbody.scroll {
 
   <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
   <% if current_user.sk.pb_solved?(problem) %>
-
-    <h3>Autres soumissions correctes</h3>
-    <% @new = false %>
-    <% submissions = problem.submissions.where('user_id != ? AND status = 2', current_user.sk).order('created_at DESC') %>
+  
+  	<h3>Soumissions étoilées</h3>
+  	<% @new = false %>
+    <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, true).order('created_at DESC') %>
 
     <% if !submissions.empty? %>
       <!-- Large -->
@@ -172,7 +204,41 @@ html>body tbody.scroll {
       </tbody>
       </table>
     <% else %>
-    Vous êtes le seul à avoir résolu ce problème.
+    	Aucune soumission.
+    <% end %>
+
+    <h3>Autres soumissions correctes</h3>
+    <% @new = false %>
+    <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, false).order('created_at DESC') %>
+
+    <% if !submissions.empty? %>
+      <!-- Large -->
+      <table class="table table-bordered hidden-xs hidden-sm" style="width:840px;">
+      <thead class="fixed">
+      <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
+      </thead>
+      <tbody class="scroll">
+      <% submissions.each do |s| %>
+        <% @situation = 3 %>
+        <%= render 'submissions/showadmin', s: s, nom: true %>
+      <% end %>
+      </tbody>
+      </table>
+
+      <!-- Petit -->
+      <table class="table table-bordered visible-xs visible-sm" style="width:340px;">
+      <thead class="fixed">
+      <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+      </thead>
+      <tbody class="scroll">
+      <% submissions.each do |s| %>
+        <% @situation = 3 %>
+        <%= render 'submissions/showadmin', s: s, nom: true %>
+      <% end %>
+      </tbody>
+      </table>
+    <% else %>
+    	Aucune soumission.
     <% end %>
 
   <% end %>
@@ -185,7 +251,7 @@ html>body tbody.scroll {
 	<h3>Soumissions erronées ou en attente</h3>
   <% submissions = problem.submissions.where('status != 2 AND visible = ?', true).order('created_at DESC') %>
   <% if submissions.empty? %>
-    <p>Aucune soumission erronée ou en attente.</p>
+    <p>Aucune soumission.</p>
   <% else %>
     <!-- Large -->
     <table class="table table-bordered hidden-sm hidden-xs" style="width:840px;">
