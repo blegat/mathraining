@@ -203,7 +203,7 @@ html>body tbody.scroll {
       <% pt = exo.value %>
       <% pt = 0 if allsec[allchap[exo.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
-        <% nb_erreur = nb_erreur + (e.nb_guess-1) %>
+        <% nb_erreur = nb_erreur + min(e.nb_guess-1, 20) %>
         <% nb_e = nb_e+1 %>
 				<% dernier = e.resolutiontime.in_time_zone %>
         <% if premier.nil? %>
@@ -219,7 +219,7 @@ html>body tbody.scroll {
       <% pt = 0 if allsec[allchap[qcm.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
-        <% nb_erreur = nb_erreur + (q.nb_guess-1) %>
+        <% nb_erreur = nb_erreur + min(q.nb_guess-1, 20) %>
 				<% dernier = q.resolutiontime.in_time_zone %>
         <% if premier.nil? %>
           <% premier = q.resolutiontime.in_time_zone %>
@@ -410,12 +410,13 @@ html>body tbody.scroll {
 
   <!-- Affichage du score et des statistiques -->
   <div class="col-lg-5 col-sm-12 col-xs-12">
-
-  <center><p style="font-size:24px; margin-top:20px;">Score : <%= actualrating %></p></center>
-  <br/>
-
-  <!-- Si le score n'est pas 0, on affiche le camembert -->
-  <% if actualrating > 0 %>
+	
+	<!-- Si le score vaut 0, on n'affiche pas tout -->
+	<% if actualrating == 0 %>
+		<center><p style="font-size:24px; margin-top:60px;">Score : 0</p></center>
+  <% else %>
+  	<center><p style="font-size:24px; margin-top:20px;">Score : <%= actualrating %></p></center>
+ 		<br/>
   
   	<% p = Pointspersection.where(:user_id => @user) %>
   	
