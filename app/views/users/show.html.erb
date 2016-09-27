@@ -273,16 +273,8 @@ html>body tbody.scroll {
         <% parquoi = "minute" %>
       <% end %>
     <% end %>
-
-    <!-- Nombre d'exercices et de problèmes résolus -->
-    <%= @user.name %> a résolu <b><%= nb_e %></b> exercice<%= "s (non fondamentaux)" if nb_e > 1 %><%= " (non fondamental)" if nb_e == 1 %><%= "." if nb_p == 0 %>
-    <% if nb_p > 0 %>
-      et <b><%= nb_p %></b> problème<%= "s" if nb_p > 1 %>.
-    <% end %>
-    <% if signed_in? && current_user.sk.admin? && nb_e > 0 %>
-      <br/>[Uniquement administrateurs : Moyenne de <b><%= (100*nb_erreur/nb_e.to_f).round / 100.0 %></b> erreurs/exercice]
-    <% end %>
-    <br/><br/>
+    
+    <% moyenne_erreurs = (nb_erreur/nb_e.to_f).round(2) %>
 
 
     <!-- Début du tableau des résolutions (cas normal) -->
@@ -419,7 +411,7 @@ html>body tbody.scroll {
   <!-- Affichage du score et des statistiques -->
   <div class="col-lg-5 col-sm-12 col-xs-12">
 
-  <center><p style="font-size:24px; margin-top:60px;">Score : <%= actualrating %></p></center>
+  <center><p style="font-size:24px; margin-top:20px;">Score : <%= actualrating %></p></center>
   <br/>
 
   <!-- Si le score n'est pas 0, on affiche le camembert -->
@@ -436,7 +428,8 @@ html>body tbody.scroll {
   	<div class="progress" style="margin-bottom:0px;">  		
 		<div class="progress-bar" role="progressbar"
 		aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
-			<% if pct <= 10 %>
+		  <% if nb_e == 0 %>
+			<% elsif pct <= 25 %>
 				<span style="margin-left:10px"><%= nb_e %>/<%= numberexo %></span>
 			<% else %>
 				<%= nb_e %>/<%= numberexo %>
@@ -452,7 +445,8 @@ html>body tbody.scroll {
   	<div class="progress" style="margin-bottom:0px;">  		
 		<div class="progress-bar" role="progressbar"
 		aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
-			<% if pct <= 10 %>
+		  <% if nb_p == 0 %>
+			<% elsif pct <= 25 %>
 				<span style="margin-left:10px"><%= nb_p %>/<%= numberpb %></span>
 			<% else %>
 				<%= nb_p %>/<%= numberpb %>
@@ -473,8 +467,11 @@ html>body tbody.scroll {
   		<div class="progress" style="margin-bottom:0px;">  		
 			<div class="progress-bar" role="progressbar"
 			aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= colors[s.id-1] %>; color:black;">
-				<% if pct.floor > 0 %>
-					<%= pct.floor %> %
+				<% if pct.floor == 0 	%>
+				<% elsif pct <= 15 %>
+					<span style="margin-left:10px"><%= pct.floor %>%</span>
+				<% else %>
+					<%= pct.floor %>%
 				<% end %>
 			</div>
 			</div>
