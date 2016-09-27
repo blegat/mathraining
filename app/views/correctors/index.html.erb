@@ -21,18 +21,4 @@
 	<% correctors.push({:number => nb_corrections, :number_recent => nb_recent, :first => first_connection, :last => last_connection, :user => c}) %>
 <% end %>
 
-<table class="table table-bordered" style="margin-top:20px; max-width:700px;">
-<tr><th>Nom</th><th style="text-align:center;">Corrections</th><th style="text-align:center;">≤ 2 sem.</th><th>Première</th><th>Dernière</th></tr>
 
-<% correctors.sort_by{|e| -e[:number]}.each do |c| %>
-	<tr style="background-color:#F1F1F1;">
-	<td><%= raw(c[:user].linked_name) %></td>
-	<td style="text-align:center;"><%= c[:number] %></td>
-	<td style="text-align:center;"><%= c[:number_recent] %></td>
-	<% date = c[:first] %>
-	<td><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
-	<% date = c[:last] %>
-	<td><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
-	</tr>
-<% end %>
-</table>
