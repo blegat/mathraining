@@ -23,7 +23,6 @@
 <tr><th>Nom</th><th style="text-align:center;">Corrections</th><th style="text-align:center;">≤ 2 sem.</th><th>Première</th><th>Dernière</th></tr>
 
 <% correctors.sort_by{|e| -e[:number]}.each do |c| %>
-	<%= 3*1.5 %>
   <% if c[:number_recent] > 140 %>
   	<tr style="background-color:rgb(40,250,40)">
   <% else %>
