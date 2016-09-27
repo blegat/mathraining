@@ -12,5 +12,5 @@
 <% User.where("admin = ? OR corrector = ?", true, true).each do |c| %>
 	<% nb_corrections = c.followings.count %>
 	<% nb_recent = c.followings.where("created_at > ?", twoweeksago).count %>
-	<%= first_connection = c.followings %>
+	<%= first_connection = c.followings.first %>
 <% end %>
