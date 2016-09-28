@@ -1,7 +1,7 @@
-<p>Bonjour <%= @user.first_name %>,</p>
+Bonjour <%= @user.first_name %>,<br/><br/>
 
-<p><%= @qui %> a posté un nouveau message sur le sujet '<%= @subject.title %>' que vous suivez. Vous pouvez lire ce message dans son contexte <%= link_to "ici", subject_url(@subject, :host => "www.mathraining.be", :page => @page, :anchor => @id) %>.</p>
+<%= @qui %> a posté un nouveau message sur le sujet '<%= @subject.title %>' que vous suivez. Vous pouvez lire ce message dans son contexte <%= link_to "ici", subject_url(@subject, :host => "www.mathraining.be", :page => @page, :anchor => @id) %>.<br/><br/>
 
-<p>Si vous ne désirez plus suivre ce sujet, cliquez <%= link_to "ici", remove_followingsubject_url(:subject_id => @subject, :host => "www.mathraining.be") %>.</p>
+Si vous ne désirez plus suivre ce sujet, cliquez <%= link_to "ici", remove_followingsubject_url(:subject_id => @subject, :host => "www.mathraining.be") %>.<br/><br/>
 
-<p>L'équipe Mathraining.</p>
+L'équipe Mathraining.

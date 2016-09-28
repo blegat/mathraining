@@ -108,8 +108,22 @@ class MessagesController < ApplicationController
 
       tot = @subject.messages.count
       page = [0,((tot-1)/10).floor].max + 1
-
+      
+      if current_user.sk.admin?
+		    if params.has_key?(:groupeA)
+		    	User.where(:group => "A").each do |u|
+		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver
+		    	end
+		    end
+		    if params.has_key?(:groupeB)
+		    	User.where(:group => "B").each do |u|
+		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver
+		    	end
+		    end
+		  end
+      
       flash[:success] = "Votre message a bien été posté."
+      
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
 
     # Si il y a eu un problème : on supprime les pièces jointes

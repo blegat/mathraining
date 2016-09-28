@@ -61,9 +61,6 @@ class SubjectsController < ApplicationController
   # Créer un sujet
   def new
     @subject = Subject.new
-    if current_user.sk.admin?
-      @subject.admin = true
-    end
     if @section.nil?
       @preselect = 0
     elsif @chapter.nil?
@@ -185,6 +182,20 @@ class SubjectsController < ApplicationController
         @subject.admin = false
         @subject.save
       end
+      
+      if current_user.sk.admin?
+		    if params.has_key?(:groupeA)
+		    	User.where(:group => "A").each do |u|
+		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver
+		    	end
+		    end
+		    if params.has_key?(:groupeB)
+		    	User.where(:group => "B").each do |u|
+		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver
+		    	end
+		    end
+		  end
+      
       flash[:success] = "Votre sujet a bien été posté."
 
       redirect_to subject_path(@subject, :q => q)

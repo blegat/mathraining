@@ -173,7 +173,7 @@ html>body tbody.scroll {
   <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
   <% if current_user.sk.pb_solved?(problem) %>
   
-  	<h3>Soumissions étoilées</h3>
+  	<h3>Autres soumissions, étoilées</h3>
   	<% @new = false %>
     <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, true).order('created_at DESC') %>
 
@@ -207,7 +207,7 @@ html>body tbody.scroll {
     	Aucune soumission.
     <% end %>
 
-    <h3>Autres soumissions correctes</h3>
+    <h3>Autres soumissions, correctes</h3>
     <% @new = false %>
     <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, false).order('created_at DESC') %>
 

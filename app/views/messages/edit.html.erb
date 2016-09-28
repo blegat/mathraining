@@ -1,5 +1,6 @@
 <% provide(:title, 'Modifier un message') %>
 
+<% @new = false %>
 <% q = 0 %>
 <% if(params.has_key?:q) %>
   <% q = params[:q].to_i %>

@@ -1,7 +1,7 @@
-<p>Bonjour <%= @user.first_name %>,</p>
+Bonjour <%= @user.first_name %>,<br/><br/>
 
-<p><%= @qui %> vous a envoyé un message sur Mathraining. Vous pouvez lire ce message <%= link_to "ici", discussion_url(@id, :host => "www.mathraining.be") %>.</p>
+<%= @qui %> vous a envoyé un message sur Mathraining. Vous pouvez lire ce message <%= link_to "ici", discussion_url(@id, :host => "www.mathraining.be") %>.<br/><br/>
 
-<p>Si vous ne désirez plus recevoir d'e-mail lorsqu'un message vous est envoyé sur le site, cliquez <%= link_to "ici", remove_followingmessage_url(:host => "www.mathraining.be") %>.</p>
+Si vous ne désirez plus recevoir d'e-mail lorsqu'un message vous est envoyé sur le site, cliquez <%= link_to "ici", remove_followingmessage_url(:host => "www.mathraining.be") %>.<br/><br/>
 
-<p>L'équipe Mathraining.</p>
+L'équipe Mathraining.

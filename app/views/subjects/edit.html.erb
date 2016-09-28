@@ -1,10 +1,10 @@
-<% provide(:title, 'Modifier un sujet') %>
-
 <% q = 0 %>
+<% @new = false %>
 <% if(params.has_key?:q) %>
   <% q = params[:q].to_i %>
 <% end %>
 
+<% provide(:title, 'Modifier un sujet') %>
 <h1>
 <span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
 <span style="font-size:24px;"><%= link_to @subject.title, subject_path(@subject, :q => q) %> ></span>
