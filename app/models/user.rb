@@ -46,7 +46,7 @@ class User < ActiveRecord::Base
   has_many :followings, dependent: :destroy
   has_many :followed_submissions, through: :followings, source: :submission
   has_many :notifs, dependent: :destroy
-  has_many :subjects, dependent: :destroy
+  has_many :subjects
   has_many :messages, dependent: :destroy
   has_many :followingsubjects, dependent: :destroy
   has_many :followed_subjects, through: :followingsubjects, source: :subject

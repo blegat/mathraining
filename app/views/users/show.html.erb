@@ -486,7 +486,7 @@ html>body tbody.scroll {
   </div>
   
   
-  <% if current_user.sk.admin %>
+  <% if signed_in? && current_user.sk.admin %>
   	<div class="row">
   	<div class="col-sm-12 col-xs-12">
    	<h2>Informations</h2>

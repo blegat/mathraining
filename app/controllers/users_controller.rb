@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 class UsersController < ApplicationController
-  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :correctors, :groups]
+  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :groups]
   before_filter :correct_user, only: [:edit, :update]
   before_filter :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
   before_filter :corrector_user, only: [:notifications_new, :notifications_update]
@@ -12,6 +12,12 @@ class UsersController < ApplicationController
 
   # Index de tous les users avec scores
   def index
+  	if signed_in? && current_user.sk.root?
+  		oneweekago = Date.today - 7
+  		User.where("email_confirm = ? AND created_at < ?", false, oneweekago).each do |u|
+  			u.destroy
+  		end
+  	end
   end
 
   # S'inscrire au site : il faut être en ligne
@@ -36,7 +42,7 @@ class UsersController < ApplicationController
         UserMailer.registration_confirmation(@user.id).deliver
       end
 
-  	  flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
+  	  flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
   	  redirect_to root_path
   	else
   	  render 'new'
@@ -250,6 +256,9 @@ class UsersController < ApplicationController
   end
   
   def groups
+  end
+  
+  def correctors
   end
 
   ########## PARTIE PRIVEE ##########
