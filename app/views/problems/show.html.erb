@@ -136,18 +136,18 @@
 
   <!-- Explication -->
   
-<script type="text/javascript">
-function showStuff() {
-    document.getElementById("explanation").style.display = 'inline';
-    document.getElementById("show").style.display = 'none';
-    document.getElementById("hide").style.display = 'inline';
-}
-function hideStuff() {
-    document.getElementById("explanation").style.display = 'none';
-    document.getElementById("show").style.display = 'inline';
-    document.getElementById("hide").style.display = 'none';
-}
-</script>
+	<script type="text/javascript">
+	function showStuff() {
+ 	   document.getElementById("explanation").style.display = 'inline';
+ 	   document.getElementById("show").style.display = 'none';
+ 	   document.getElementById("hide").style.display = 'inline';
+	}
+	function hideStuff() {
+  	 document.getElementById("explanation").style.display = 'none';
+ 		 document.getElementById("show").style.display = 'inline';
+ 	   document.getElementById("hide").style.display = 'none';
+	}
+	</script>
 
   <% if @problem.explanation.size == 0 %>
     <span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span>
