@@ -66,6 +66,20 @@ if !Rails.env.production?
 		end
 	end
 	
+	# Problèmes
+	problem = Array.new
+	for i in 1..6
+		problem[i] = Array.new
+		for j in 1..5
+			problem[i][j] = Array.new
+			for k in 1..4
+				problem[i][j][k] = Problem.new(statement: "Trouver la valeur de " + i.to_s + " + " + j.to_s + " + " + k.to_s + ".", online: true, level: j, explanation: "Il s'avère que la réponse est " + (i+j+k).to_s + ".", number: i*1000 + j*100 + k*20, origin: "La nuit des temps.")
+				problem[i][j][k].section = section[i]
+				problem[i][j][k].save
+			end
+		end
+	end
+	
 	# Root
 	root = User.create(first_name: "Root", last_name: "Root", email: "root@root.com", password: "foobar", password_confirmation: "foobar", root: true, admin: true, year: 1990, country: "Belgique")
 	
@@ -98,7 +112,67 @@ if !Rails.env.production?
 						user[i].rating = user[i].rating + 3*l
 						user[i].save
 					end
-					
+				end
+			end
+		end
+		
+		for j in 1..6
+			for k in 1..5
+				for l in 1..4
+					r = Random.rand(10)
+					if r == 0
+						# Soumission correcte
+						rr = Random.rand(30)
+						sub = Submission.new(content: "C'est facile, il suffit d'effectuer " + j.to_s + " + " + k.to_s + " qui donne " + (j+k).to_s + ", puis on ajoute " + l.to_s + " et cela donne " + (j+k+l).to_s + ".", status: (rr == 0 ? 0 : 2), intest: false, visible: true, score: -1, lastcomment: (rr != 0 ? DateTime.now : DateTime.now + 1/1440.0), star: (rr != 0 and Random.rand(5) == 0))
+						sub.problem = problem[j][k][l]
+						sub.user = user[i]
+						sub.save
+						if rr != 0
+							# Dans ce cas c'est corrigé (sinon en attente)
+							solved = Solvedproblem.new(resolutiontime: DateTime.now, truetime: DateTime.now)
+							solved.user = user[i]
+							solved.problem = problem[j][k][l]
+							solved.submission = sub
+							solved.save
+							
+							corrector = (Random.rand(2) == 0 ? admin : root)
+							
+							correction = Correction.new(content: "Parfait!")
+							correction.user = corrector
+							correction.submission = sub
+							correction.save
+							
+							following = Following.new(read: true)
+							following.user = corrector
+							following.submission = sub
+							following.save
+							
+							user[i].rating = user[i].rating + 15*k
+							user[i].save
+						end
+					elsif r == 1
+						# Soumission fausse
+						rr = Random.rand(30)
+						sub = Submission.new(content: "C'est facile, il suffit d'effectuer " + j.to_s + " + " + k.to_s + " qui donne " + (j+k+1).to_s + ", puis on ajoute " + l.to_s + " et cela donne " + (j+k+l+1).to_s + ".", status: (rr == 0 ? 0 : 1), intest: false, visible: true, score: -1, lastcomment: (rr != 0 ? DateTime.now : DateTime.now + 1/1440.0), star: false)
+						sub.problem = problem[j][k][l]
+						sub.user = user[i]
+						sub.save
+						if rr != 0
+							# Dans ce cas c'est corrigé (sinon en attente)
+							
+							corrector = (Random.rand(2) == 0 ? admin : root)
+							
+							correction = Correction.new(content: "Il y a une petite erreur quelquepart...")
+							correction.user = corrector
+							correction.submission = sub
+							correction.save
+							
+							following = Following.new(read: true)
+							following.user = corrector
+							following.submission = sub
+							following.save
+						end
+					end
 				end
 			end
 		end

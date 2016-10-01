@@ -12,7 +12,7 @@
 #
 
 class Message < ActiveRecord::Base
-  attr_accessible :content
+  attr_accessible :content, :created_at # To migrate subjects
 
   # BELONGS_TO, HAS_MANY
 

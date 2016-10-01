@@ -113,6 +113,15 @@ function showSujetNormal(id) {
         <%= link_to "Modifier ce sujet", edit_subject_path(s, :q => q) %>
         <% if current_user.sk.admin? %>
           | <%= link_to "Supprimer ce sujet", subject_path(s), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce sujet et tous les messages qui vont avec ?" }  %>
+          | <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Migrer ce sujet</a>
+          <span id='formulaire' style="display:none;">
+          <%= form_tag subject_migrate_path(s), method: :get, :class => "form-inline" do %>
+            Migrer ce sujet vers le sujet numéro
+            <%= hidden_field_tag "q", q %>
+            <%= number_field_tag "migreur", nil, min: 1, max: 10000 %>
+            <%= submit_tag "Do it!", data: { confirm: "Etes-vous sûr de vouloir migrer ce sujet? Etes-vous sûr de l'id du sujet receveur?"} %>
+          <% end %>
+          </span>
         <% end %>
     </center>
     </td></tr>

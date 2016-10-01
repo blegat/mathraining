@@ -8,11 +8,12 @@
 #  user_id        :integer
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  resolutiontime :datetime
+#  resolutiontime :datetime   (Heure d'acceptation)
+#  truetime       :datetime   (Heure de résolution : dernier commentaire avant l'acceptation)
 #
 
 class Solvedproblem < ActiveRecord::Base
-  attr_accessible :resolutiontime
+  attr_accessible :resolutiontime, :truetime
 
   # BELONGS_TO, HAS_MANY
 

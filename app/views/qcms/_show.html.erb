@@ -56,8 +56,24 @@ function hideStuff() {
   <% end %>
   <br/><br/>
   
-  <!-- Essais des étudiants -->
-  <h4>Essais</h4>
+  <!-- Essais des élèves -->
+  <script type="text/javascript">
+	function showStuff() {
+ 	   document.getElementById("explanation").style.display = 'inline';
+ 	   document.getElementById("show").style.display = 'none';
+ 	   document.getElementById("hide").style.display = 'inline';
+	}
+	function hideStuff() {
+  	 document.getElementById("explanation").style.display = 'none';
+ 		 document.getElementById("show").style.display = 'inline';
+ 	   document.getElementById("hide").style.display = 'none';
+	}
+	</script>
+	
+	<br/>
+  <a href='#' id='show' onclick='showStuff(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Essais des étudiants</a>
+  <a href='#' id='hide' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(); return false;'>Essais des étudiants</a>
+  <span id='explanation' style='display:none;'><br/><br/>
   Corrects :
   <% compte = 0 %>
   <% f.solvedqcms.order(:updated_at).all.each do |se| %>
@@ -101,6 +117,7 @@ function hideStuff() {
   <% if compte == 0 %>
     <%= "Aucun utilisateur bloqué." %>
   <% end %>
+  </span>
   <br/><br/>
   
   <!-- Explication -->

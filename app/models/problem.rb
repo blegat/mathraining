@@ -13,7 +13,7 @@
 #  section_id     :integer
 #  number         :integer
 #  virtualtest_id :integer
-#  position       :integer
+#  position       :integer   (Pour les tests virtuels!)
 #
 
 include ApplicationHelper

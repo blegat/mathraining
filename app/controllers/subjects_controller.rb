@@ -3,7 +3,7 @@ class SubjectsController < ApplicationController
   before_filter :signed_in_user
   before_filter :admin_subject_user, only: [:show]
   before_filter :author, only: [:edit, :update, :destroy]
-  before_filter :admin_user, only: [:destroy]
+  before_filter :admin_user, only: [:destroy, :migrate]
   before_filter :notskin_user, only: [:create, :update]
 
   # Voir tous les sujets
@@ -362,6 +362,35 @@ class SubjectsController < ApplicationController
     flash[:success] = "Sujet supprimé."
 
     redirect_to subjects_path(:q => q)
+  end
+  
+  # Migrer un sujet vers un autre : il faut être root (disons admin)
+  def migrate
+  	q = 0
+    if(params.has_key?:q)
+      q = params[:q].to_i
+    end
+    
+  	@subject = Subject.find(params[:subject_id])
+  	autre_id = params[:migreur].to_i
+  	@migreur = Subject.find(autre_id)
+  	
+  	premier_message = Message.new(content: @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]", created_at: @subject.created_at)
+  	premier_message.user = @subject.user
+  	premier_message.subject = @migreur
+  	premier_message.save
+  	
+  	@subject.messages.each do |m|
+  		newm = Message.new(content: m.content, created_at: m.created_at)
+  		newm.user = m.user
+  		newm.subject = @migreur
+  		newm.save
+  		m.delete
+  	end
+  	
+  	@subject.delete
+  	
+  	redirect_to subject_path(@migreur, :q => q)
   end
 
   ########## PARTIE PRIVEE ##########

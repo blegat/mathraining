@@ -135,6 +135,7 @@ Mathraining::Application.routes.draw do
 
   resources :subjects do
     resources :messages, only: [:new, :edit, :create, :update, :destroy]
+    match '/migrate', to: 'subjects#migrate', :via => [:get], as: :migrate
   end
 
   resources :users do
