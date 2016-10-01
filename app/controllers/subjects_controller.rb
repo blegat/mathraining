@@ -380,7 +380,7 @@ class SubjectsController < ApplicationController
   	premier_message.subject = @migreur
   	premier_message.save
   	
-  	@subject.messages.each do |m|
+  	@subject.messages.order(:id).each do |m|
   		newm = Message.new(content: m.content, created_at: m.created_at)
   		newm.user = m.user
   		newm.subject = @migreur
