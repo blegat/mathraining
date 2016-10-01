@@ -47,12 +47,12 @@ function hideStuff() {
   
   <!-- Essais des élèves -->
   <script type="text/javascript">
-	function showStuff() {
+	function showStuff2() {
  	   document.getElementById("explanation2").style.display = 'inline';
  	   document.getElementById("show2").style.display = 'none';
  	   document.getElementById("hide2").style.display = 'inline';
 	}
-	function hideStuff() {
+	function hideStuff2() {
   	 document.getElementById("explanation2").style.display = 'none';
  		 document.getElementById("show2").style.display = 'inline';
  	   document.getElementById("hide2").style.display = 'none';
@@ -60,8 +60,8 @@ function hideStuff() {
 	</script>
 	
 	<br/>
-	<a href='#' id='show2' onclick='showStuff(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Essais des étudiants</a>
-  <a href='#' id='hide2' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(); return false;'>Essais des étudiants</a>
+	<a href='#' id='show2' onclick='showStuff2(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Essais des étudiants</a>
+  <a href='#' id='hide2' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff2(); return false;'>Essais des étudiants</a>
   <span id='explanation2' style='display:none;'><br/><br/>
   Corrects :
   <% compte = 0 %>
