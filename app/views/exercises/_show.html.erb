@@ -71,20 +71,14 @@ function hideStuff() {
         <%= " - " %>
       <% end %>
       <% compte = compte+1 %>
-      <b>
-      <% if se.user.admin %>
-        <%= se.user.name %>
-      <% else %>
-        <%= link_to se.user.name, se.user, {:style => "color:#{se.user.level[:color]}" } %>
-      <% end %>
-      </b>
+      <%= raw(se.user.linked_name) %>
       <%= "(#{se.nb_guess-1})" if se.nb_guess-1 > 0 %>
     <% end %>
   <% end %>
   <% if compte == 0 %>
     <%= "Aucune résolution." %>
   <% end %>
-  <br />
+  <br/><br/>
   Incorrects :
   <% compte = 0 %>
   <% f.solvedexercises.order(:updated_at).all.each do |se| %>
@@ -93,13 +87,7 @@ function hideStuff() {
         <%= " - " %>
       <% end %>
       <% compte = compte+1 %>
-      <b>
-      <% if se.user.admin %>
-        <%= se.user.name %>
-      <% else %>
-        <%= link_to se.user.name, se.user, {:style => "color:#{se.user.level[:color]}" } %>
-      <% end %>
-      </b>
+      <%= raw(se.user.linked_name) %>
       (<%= se.nb_guess %>)
     <% end %>
   <% end %>
