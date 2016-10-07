@@ -86,7 +86,7 @@ class User < ActiveRecord::Base
   end
 
   def pb_solved?(problem)
-    return self.solvedproblems.include?(problem)
+    return (self.solvedproblems.where(:problem_id => problem).count > 0)
   end
 
   def chap_solved?(chapter)
