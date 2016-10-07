@@ -35,11 +35,8 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :theories
   has_and_belongs_to_many :chapters, -> {uniq}
   has_many :solvedexercises, dependent: :destroy
-  has_many :exercises, through: :solvedexercises
   has_many :solvedqcms, dependent: :destroy
-  has_many :qcms, through: :solvedqcms
   has_many :solvedproblems, dependent: :destroy
-  has_many :problems, through: :solvedproblems
   has_many :pictures
   has_many :pointspersections, dependent: :destroy
   has_many :submissions, dependent: :destroy
@@ -89,7 +86,7 @@ class User < ActiveRecord::Base
   end
 
   def pb_solved?(problem)
-    return self.problems.include?(problem)
+    return self.solvedproblems.include?(problem)
   end
 
   def chap_solved?(chapter)
