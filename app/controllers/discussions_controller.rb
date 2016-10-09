@@ -4,7 +4,7 @@ class DiscussionsController < ApplicationController
   before_filter :is_involved, only: [:show]
 
   def show
-    par_page = 10
+    par_page = 4
     quelle_page = 1
     if (params.has_key?:page)
       quelle_page = params[:page].to_i

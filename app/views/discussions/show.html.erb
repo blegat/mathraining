@@ -5,7 +5,17 @@
 
 var scrollHandler = function () {
   var more_posts_url = $('.pagination .next_page a').attr('href')
-  if(more_posts_url.length > 0 && $(window).scrollTop() > $(document).height() - $(window).height() - 10)
+  
+  var compenser = 0
+  if($(window).width() >= 768)
+  {
+  	if(document.getElementById('menu').offsetHeight > document.getElementById('messages').offsetHeight)
+  	{
+  		compenser = document.getElementById('menu').offsetHeight - document.getElementById('messages').offsetHeight + 20
+  	}
+  }
+  
+  if(more_posts_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 10 - compenser)
   {
     $('.toreplace').html('<br/>Chargement des messages anciens...')
     $.getScript(more_posts_url + "?nonread=<%= params[:nonread] %>")
@@ -31,12 +41,12 @@ $(window).scroll(scrollHandler);
 
 <% @nouveau = false %>
 
-<div class="row" style="height:80%;">
+<div class="row" style="height:80%;" id="menu">
   <div class="col-md-3 col-sm-3 col-xs-12">
     <%= render 'menu' %>
   </div>
 
-  <div class="col-md-9 col-sm-9 col-xs-12">
+  <div class="col-md-9 col-sm-9 col-xs-12" id="messages">
 
     <% other = current_user.sk %>
     <% @discussion.users.each do |u| %>
