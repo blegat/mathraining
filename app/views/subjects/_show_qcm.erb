@@ -30,7 +30,7 @@ function hideStuff2() {
 	</div>
 
 <% else %>
-	<% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
+	<% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
 	<% if current_user.sk.admin? %>
 		<div style="background-color:#D9D9FF; padding:10px; border:1px solid blue;">
 		<center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 3, :which => f.id), :target => "_blank" %> :</i></center>
