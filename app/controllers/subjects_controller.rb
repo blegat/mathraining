@@ -115,6 +115,7 @@ class SubjectsController < ApplicationController
     	@subject.section = nil
     	@subject.chapter = nil
     	@subject.exercise = nil
+    	@subject.qcm = nil
     else
     	section_id = category_id/1000
     	@subject.category = nil
@@ -123,18 +124,22 @@ class SubjectsController < ApplicationController
     	if chapter_id == 0
     		@subject.chapter = nil
     		@subject.exercise = nil
+    		@subject.qcm = nil
     	else
     		@subject.chapter = Chapter.find(chapter_id)
     		exercise_id = params[:subject][:exercise_id].to_i
     		if exercise_id == 0
     			@subject.exercise = nil
+    			@subject.qcm = nil
     		else
     			type = exercise_id / 1000
     			exercise_id = exercise_id % 1000
     			if type == 2
     				@subject.exercise = Exercise.find(exercise_id)
+    				@subject.qcm = nil
     			else
     				@subject.qcm = Qcm.find(exercise_id)
+    				@subject.exercise = nil
     			end
     		end
     	end
@@ -251,6 +256,7 @@ class SubjectsController < ApplicationController
 		  	@subject.section = nil
 		  	@subject.chapter = nil
 		  	@subject.exercise = nil
+		  	@subject.qcm = nil
 		  else
 		  	section_id = category_id/1000
 		  	@subject.category = nil
@@ -259,18 +265,22 @@ class SubjectsController < ApplicationController
 		  	if chapter_id == 0
 		  		@subject.chapter = nil
 		  		@subject.exercise = nil
+		  		@subject.qcm = nil
 		  	else
 		  		@subject.chapter = Chapter.find(chapter_id)
 		  		exercise_id = params[:subject][:exercise_id].to_i
 		  		if exercise_id == 0
 		  			@subject.exercise = nil
+		  			@subject.qcm = nil
 		  		else
 		  			type = exercise_id / 1000
 		  			exercise_id = exercise_id % 1000
 		  			if type == 2
 		  				@subject.exercise = Exercise.find(exercise_id)
+		  				@subject.qcm = nil
 		  			else
 		  				@subject.qcm = Qcm.find(exercise_id)
+		  				@subject.exercise = nil
 		  			end
 		  		end
 		  	end
