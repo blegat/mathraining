@@ -55,7 +55,7 @@
     oldSel.add(opt, null);
 		<% s.chapters.where(:online => true).order(:name).each do |c| %>
 			var opt = document.createElement('option');
-      opt.text = "<%= c.name %>"
+      opt.text = "<%= c.name.html_safe %>"
       opt.value = <%= c.id %>
       oldSel.add(opt, null);
 		<% end %>

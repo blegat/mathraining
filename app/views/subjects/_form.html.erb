@@ -78,7 +78,7 @@ function checkExercise() {
 	
 	<div class="form-group">
 		<%= f.label "Chapitre", :disabled => current_user.other, :id => "label_chap" %>
-		<%= f.select(:chapter_id, options_for_select(listechap, presel2), {}, { :class => "form-control", :style => "width:100%; max-width:400px", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
+		<%= f.select(:chapter_id, options_for_select(listechap, presel2).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
 	</div>
 <% else %>
 	<div class="form-group">
@@ -137,7 +137,7 @@ function checkExercise() {
 		<%= f.label "Exercice", :disabled => current_user.other, :id => "label_exo" %>
 		<div id="alert" style="color:red; display:none; margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
 		<div id="alert2" style="color:orange; display:<%= "" if cache %><%= "none" if !cache %>; margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
-		<%= f.select(:exercise_id, options_for_select(listeexo, presel3), {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkExercise();")}) %>
+		<%= f.select(:exercise_id, options_for_select(listeexo, presel3).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkExercise();")}) %>
 	</div>
 <% else %>
 	<div class="form-group">
