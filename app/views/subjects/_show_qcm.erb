@@ -1,10 +1,10 @@
 <script type="text/javascript">
-function showStuff() {
+function showStuff2() {
     document.getElementById("indice").style.display = 'inline';
     document.getElementById("show").style.display = 'none';
     document.getElementById("hide").style.display = 'inline';
 }
-function hideStuff() {
+function hideStuff2() {
     document.getElementById("indice").style.display = 'none';
     document.getElementById("show").style.display = 'inline';
     document.getElementById("hide").style.display = 'none';
@@ -45,8 +45,8 @@ function hideStuff() {
 	<!-- Enoncé -->
 	<div>
 		<%= raw(htmlise(f.statement).
-		gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
-		gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+		gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff2(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
+		gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff2(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 	</div>
 	
 	<ul>
