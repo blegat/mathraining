@@ -12,6 +12,8 @@ Créer un sujet
 
 <span style="color:red;">Veillez à ne dévoiler aucune solution à un exercice ou un problème. Si vous devez donner des éléments de solution pour expliquer un souci, écrivez-les en <i>texte caché</i>.</span><br/><br/>
 
+<% @edit = false %>
+
 <%= form_for @subject, :url => subjects_path(@subject, :action => :create, :q => q), :html => { :multipart => true } do |f| %>
   <%= render 'form', f: f %>
   <span id="fooBar"></span>

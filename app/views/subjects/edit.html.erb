@@ -17,6 +17,8 @@ Modifier le sujet
   <span style="color:red;">Ce sujet n'est pas le vôtre. Modifiez-le uniquement si cela est nécessaire (mauvais emplacement, divulgation d'une réponse,...)</span><br/><br/>
 <% end %>
 
+<% @edit = true %>
+
 <!-- Formulaire -->
 <%= form_for @subject, :url => subject_path(@subject, :action => :update, :q => q), :html => { :multipart => true } do |f| %>
   <%= render 'form', f: f %>

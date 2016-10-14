@@ -27,7 +27,9 @@
 <% end %>
 
 <h1>Forum
-<% if @section.nil? %>
+<% if !@category.nil? %>
+   - <%= @category.name %>
+<% elsif @section.nil? %>
 
 <% elsif @chapitre.nil? %>
    - <%= @section.name %>
@@ -37,24 +39,32 @@
 </h1>
 
 <!-- Calcul de la liste des sections et chapitres -->
+<% liste0 = Array.new %>
+
+<% liste0.push(["Afficher tous les sujets", 0]) %>
+
 <% liste = Array.new %>
 
-<% liste.push(["Afficher tous les sujets", 0]) %>
+<% Category.order(:id).each do |c| %>
+	<% liste.push([c.name, 1000000*c.id]) %>
+<% end %>
+
+<% liste2 = Array.new %>
 
 <% Section.where(:fondation => true).to_a.each do |s| %>
-    <% liste.push([s.name, 1000*s.id]) %>
+    <% liste2.push([s.name, 1000*s.id]) %>
     <% s.chapters.order(:name).to_a.each do |c| %>
       <% if c.online || current_user.sk.admin? %>
-        <% liste.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
+        <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
       <% end %>
     <% end %>
 <% end %>
 
 <% Section.where(:fondation => false).order(:id).to_a.each do |s| %>
-    <% liste.push([s.name, 1000*s.id]) %>
+    <% liste2.push([s.name, 1000*s.id]) %>
     <% s.chapters.order(:name).to_a.each do |c| %>
       <% if c.online || current_user.sk.admin? %>
-        <% liste.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
+        <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
       <% end %>
     <% end %>
 <% end %>
@@ -62,7 +72,7 @@
 <!-- Trier selon section ou chapitre -->
 <form action="" method="get" class="form-inline" name="research">
   N'afficher que les sujets relatifs à la section ou au chapitre :
-  <%= select_tag :q, options_for_select(liste, q).html_safe, :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
+  <%= select_tag :q, grouped_options_for_select([["Tout afficher",liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], q).html_safe, :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
 </form>
 
 
@@ -102,7 +112,9 @@
       <% end %>
 
       <%= link_to s.title, subject_path(s, :q => q) %>
-        <% if s.section.nil? %>
+      	<% if !s.category.nil? %>
+      	  - <%= s.category.name %>
+        <% elsif s.section.nil? %>
 
         <% elsif s.chapter.nil? %>
           - <%= s.section.name %>
@@ -226,6 +238,12 @@
 <center>
   <%= link_to "Créer un sujet", new_subject_path(:q => q), class: 'btn btn-lg btn-default btn-grey' %>
 </center>
+
+<!-- Modifier les catégories -->
+<% if current_user.sk.root? %>
+	<br/>
+	<center><%= link_to "Modifier les catégories", categories_path %></center>
+<% end %>
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->
 <% if !current_user.other && current_user.sk.combien_forum > 0 %>

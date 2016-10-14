@@ -8,21 +8,26 @@ class SubjectsController < ApplicationController
 
   # Voir tous les sujets
   def index
+  	cherche_category = -1
     cherche_section = -1
     cherche_chapitre = -1
     cherche_personne = false
     q = -1
-
+		
+		@category = nil
     @chapitre = nil
     @section = nil
     if(params.has_key?:q)
       q = params[:q].to_i
-      if q > 999
+      if q > 999999
+      	cherche_category = q/1000000
+      	@category = Category.find(cherche_category)
+      elsif q > 999
         cherche_section = q/1000
-        @section = Section.find_by_id(cherche_section)
+        @section = Section.find(cherche_section)
       elsif q > 0
         cherche_chapitre = q
-        @chapitre = Chapter.find_by_id(cherche_chapitre)
+        @chapitre = Chapter.find(cherche_chapitre)
         @section = @chapitre.section
       else
         cherche_personne = true
@@ -35,7 +40,7 @@ class SubjectsController < ApplicationController
     @importants = Array.new
     Subject.where(important: true).order("lastcomment DESC").to_a.each do |s|
       if ((signed_in? && current_user.sk.admin?) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
-        if cherche_personne || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
+        if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @importants.push(s)
         end
       end
@@ -44,7 +49,7 @@ class SubjectsController < ApplicationController
     @subjects = Array.new
     Subject.where(important: false).order("lastcomment DESC").to_a.each do |s|
       if (signed_in? && current_user.sk.admin?) || !s.admin && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
-        if cherche_personne || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
+        if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @subjects.push(s)
         end
       end
@@ -92,40 +97,47 @@ class SubjectsController < ApplicationController
       redirect_to root_path and return
     end
 
-    @subject = Subject.new(params[:subject].except(:chapter_id))
+    @subject = Subject.new(params[:subject].except(:chapter_id, :category_id, :exercise_id))
     @subject.user = current_user.sk
     @subject.lastcomment = DateTime.current
 
     if @subject.admin
       @subject.wepion = false # On n'autorise pas wépion si admin
     end
-
+    
     if @subject.title.size > 0
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
     end
-
-    chapter_id = params[:subject][:chapter_id].to_i
-    if chapter_id != 0
-      if chapter_id > 999
-        @section = Section.find_by_id(chapter_id/1000)
-        if @section.nil?
-          redirect_to root_path and return
-        else
-          @subject.section = @section
-        end
-      else
-        @chapitre = Chapter.find_by_id(chapter_id)
-        if @chapitre.nil?
-          redirect_to root_path and return
-        else
-          @subject.chapter = @chapitre
-          @subject.section = @chapitre.section
-          if !@subject.chapter.online && !@subject.admin?
-            flash[:info] = "Chapitre en construction : sujet réservé aux administrateurs."
-            @subject.admin = true
-          end
-        end
-      end
+    
+    category_id = params[:subject][:category_id].to_i
+    if category_id < 1000
+    	@subject.category = Category.find(category_id)
+    	@subject.section = nil
+    	@subject.chapter = nil
+    	@subject.exercise = nil
+    else
+    	section_id = category_id/1000
+    	@subject.category = nil
+    	@subject.section = Section.find(section_id)
+    	chapter_id = params[:subject][:chapter_id].to_i
+    	if chapter_id == 0
+    		@subject.chapter = nil
+    		@subject.exercise = nil
+    	else
+    		@subject.chapter = Chapter.find(chapter_id)
+    		exercise_id = params[:subject][:exercise_id].to_i
+    		if exercise_id == 0
+    			@subject.exercise = nil
+    		else
+    			type = exercise_id / 1000
+    			exercise_id = exercise_id % 1000
+    			if type == 2
+    				@subject.exercise = Exercise.find(exercise_id)
+    			else
+    				@subject.qcm = Qcm.find(exercise_id)
+    			end
+    		end
+    	end
     end
 
     # Gérer les pièces jointes
@@ -224,7 +236,7 @@ class SubjectsController < ApplicationController
       redirect_to root_path
     end
 
-    if @subject.update_attributes(params[:subject].except(:chapter_id))
+    if @subject.update_attributes(params[:subject].except(:chapter_id, :category_id, :exercise_id))
 
       if @subject.admin
         @subject.wepion = false # On n'autorise pas wépion si admin
@@ -233,36 +245,38 @@ class SubjectsController < ApplicationController
 
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
 
-      chapter_id = params[:subject][:chapter_id].to_i
-      if chapter_id != 0
-        if chapter_id > 999
-          section = Section.find_by_id(chapter_id/1000)
-          if section.nil?
-            redirect_to root_path and return
-          else
-            @subject.chapter = nil
-            @subject.section = section
-            @subject.save
-          end
-        else
-          chapitre = Chapter.find_by_id(chapter_id)
-          if chapitre.nil?
-            redirect_to root_path and return
-          else
-            @subject.chapter = chapitre
-            @subject.section = chapitre.section
-            @subject.save
-            if !chapitre.online? && !@subject.admin?
-              @subject.admin = true
-              @subject.save
-              flash[:info] = "Chapitre en construction : sujet réservé aux administrateurs."
-            end
-          end
-        end
-      else
-        @subject.chapter = nil
-        @subject.save
-      end
+      category_id = params[:subject][:category_id].to_i
+		  if category_id < 1000
+		  	@subject.category = Category.find(category_id)
+		  	@subject.section = nil
+		  	@subject.chapter = nil
+		  	@subject.exercise = nil
+		  else
+		  	section_id = category_id/1000
+		  	@subject.category = nil
+		  	@subject.section = Section.find(section_id)
+		  	chapter_id = params[:subject][:chapter_id].to_i
+		  	if chapter_id == 0
+		  		@subject.chapter = nil
+		  		@subject.exercise = nil
+		  	else
+		  		@subject.chapter = Chapter.find(chapter_id)
+		  		exercise_id = params[:subject][:exercise_id].to_i
+		  		if exercise_id == 0
+		  			@subject.exercise = nil
+		  		else
+		  			type = exercise_id / 1000
+		  			exercise_id = exercise_id % 1000
+		  			if type == 2
+		  				@subject.exercise = Exercise.find(exercise_id)
+		  			else
+		  				@subject.qcm = Qcm.find(exercise_id)
+		  			end
+		  		end
+		  	end
+		  end
+		  
+		  @subject.save
 
       if !current_user.sk.admin? && @subject.admin? # Hack
         @subject.admin = false

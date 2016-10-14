@@ -15,6 +15,8 @@
 #  important   :boolean
 #  section_id  :integer
 #  wepion      :boolean
+#  category_id :integer
+#  exercise_id :integer
 #
 
 class Subject < ActiveRecord::Base
@@ -26,6 +28,9 @@ class Subject < ActiveRecord::Base
   belongs_to :user
   belongs_to :chapter
   belongs_to :section
+  belongs_to :category
+  belongs_to :exercise
+  belongs_to :qcm
   has_many :followingsubjects, dependent: :destroy
   has_many :following_users, through: :followingsubjects, source: :user
   has_many :subjectfiles, dependent: :destroy

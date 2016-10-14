@@ -24,6 +24,7 @@ class Qcm < ActiveRecord::Base
   has_many :choices, dependent: :destroy
   has_many :solvedqcms, dependent: :destroy
   has_many :users, :through => :solvedqcms
+  has_one :subject
 
   # VALIDATIONS
 

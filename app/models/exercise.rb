@@ -23,6 +23,7 @@ class Exercise < ActiveRecord::Base
   belongs_to :chapter
   has_many :solvedexercises, dependent: :destroy
   has_many :users, through: :solvedexercises
+  has_one :subject
 
   # VALIDATIONS
 

@@ -1,0 +1,47 @@
+<% provide(:title, "Modifier les catégories de sujets") %>
+
+<h1>
+<span style="font-size:16px;"><%= link_to "Forum", subjects_path %> ></span>
+Modifier les catégories
+</h1>
+
+<!-- Réponse -->
+<h3>Catégories</h3>	
+<table cellpadding="5">
+<tr><th></th><th></th><th></th><th></th></tr>
+
+<% Category.order(:id).each do |c| %>
+  <%= form_for(c) do |g| %>
+    <tr>
+      <td style="width:15px;">
+        -
+      </td>
+      <td style="padding:5px;">
+        <%= g.text_field :name, :class => "form-control", :style => "width:200px;" %>
+      </td>
+      <td>
+        <%= g.submit "Modifier cette catégorie", class: "btn btn-primary" %>
+      </td>
+      <td style="padding:10px;">
+        <%= link_to "Supprimer cette catégorie", c, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cette catégorie?" } %>
+      </td>
+    </tr>
+  <% end %>
+<% end %>
+
+  <tr>
+  <%= form_for(:category) do |f| %>
+    <td>
+    </td>
+    <td style="padding:5px;">
+      <%= f.text_field :name, :class => "form-control", :style => "width:200px;"  %>
+    </td>
+    <td>
+      <%= f.submit "Ajouter cette catégorie", class: "btn btn-primary" %>
+    </td>
+    <td>
+    </td>
+  <% end %>
+  </tr>
+
+</table>

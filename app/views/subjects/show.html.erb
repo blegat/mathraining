@@ -30,8 +30,13 @@ function hideStuff(id) {
 <span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
 </td>
 <td style="padding-left:10px; vertical-align:top;">
+
 <%= @subject.title %>
-<% if @subject.section.nil? %>
+
+<% if !@subject.category.nil? %>
+	<% @category = @subject.category %>
+   - <%= @category.name %>
+<% elsif @subject.section.nil? %>
 
 <% elsif @subject.chapter.nil? %>
   <% @chapitre = nil %>
@@ -72,6 +77,12 @@ function hideStuff(id) {
 <%= will_paginate @messages, :style => "margin-top:-20px;", :class => "hidden-xs", :inner_window => 2 %>
 <%= will_paginate @messages, :style => "margin-top:-20px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1 %>
 </center>
+
+<% if !@subject.exercise.nil? %>
+	<%= render 'show_exo', f: @subject.exercise %>
+<% elsif !@subject.qcm.nil? %>
+	<%= render 'show_qcm', f: @subject.qcm %>
+<% end %>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->
 <% if ((!params.has_key?:page) || (params[:page] == '1')) %>

@@ -1,0 +1,60 @@
+<script type="text/javascript">
+function showStuff() {
+    document.getElementById("indice").style.display = 'inline';
+    document.getElementById("show").style.display = 'none';
+    document.getElementById("hide").style.display = 'inline';
+}
+function hideStuff() {
+    document.getElementById("indice").style.display = 'none';
+    document.getElementById("show").style.display = 'inline';
+    document.getElementById("hide").style.display = 'none';
+}
+</script>
+
+<!-- On vérifie que cet exercice peut bien être vu -->
+<% if (f.online && f.chapter.online) || (signed_in? && current_user.sk.admin?) %>
+
+<% c = f.chapter %>
+<% exovisible = true %>
+
+<% if !current_user.sk.admin? %>
+	<% c.prerequisites.each do |p| %>
+ 		<% exovisible = false if !p.section.fondation && !current_user.sk.chapters.exists?(p) %>
+  <% end %>
+<% end %>
+
+<% if !exovisible %>
+
+	<div style="background-color:#FFCCCC; padding:10px; border:1px solid red;">
+	<center><i>Ce sujet fait référence à un exercice auquel vous n'avez pas accès.</i></center>
+	</div>
+
+<% else %>
+	<% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
+	<% if current_user.sk.admin? %>
+		<div style="background-color:#D9D9FF; padding:10px; border:1px solid blue;">
+		<center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 2, :which => f.id), :target => "_blank" %> :</i></center>
+	<% elsif exo.size > 0 && exo.first.correct? %>
+		<div style="background-color:#CCFFCC; padding:10px; border:1px solid green;">
+		<center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 2, :which => f.id), :target => "_blank" %>, que vous avez résolu :</i></center>
+	<% else %>
+		<div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
+		<center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 2, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</i></center>
+	<% end %>
+	<hr/>
+	<!-- Enoncé -->
+	<div>
+		<%= raw(htmlise(f.statement).
+		gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
+		gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+	</div>
+	
+	<% if f.decimal %>
+		<br/>(On demande une réponse <b>décimale</b> au millième près)
+	<% else %>
+		<br/>(On demande une réponse <b>entière</b>)
+	<% end %>
+	</div>
+<% end %>
+<br/>
+<% end %>
