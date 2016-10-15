@@ -47,9 +47,10 @@
 
 <!-- Nom (si on l'affiche) -->
 <% if nom %>
-<td style="font-weight:bold; width:200px">
+<td style="width:200px">
   <%= raw(s.user.linked_name) %>
-  <%= "*" if s.user.wepion && current_user.sk.admin? %>
+  <%= "(A)" if s.user.group == "A" && (current_user.sk.admin? || current_user.sk.corrector?) %>
+  <%= "(B)" if s.user.group == "B" && (current_user.sk.admin? || current_user.sk.corrector?) %>
 </td>
 
 <!-- Correcteur (si on l'affiche) -->
