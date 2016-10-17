@@ -23,31 +23,26 @@ function hideStuff2() {
   <% end %>
 <% end %>
 
+<table class="table table-bordered">
 <% if !exovisible %>
 
-	<div style="background-color:#FFCCCC; padding:10px; border:1px solid red;">
-	<center><i>Ce sujet fait référence à un exercice auquel vous n'avez pas accès.</i></center>
-	</div>
+	<tr><td style="background-color:#FFCCCC; padding:10px;"><center><i>Ce sujet fait référence à un exercice auquel vous n'avez pas accès.</i></center></td></tr>
+	</table>
 
 <% else %>
 	<% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
 	<% if current_user.sk.admin? %>
-		<div style="background-color:#D9D9FF; padding:10px; border:1px solid blue;">
-		<center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 3, :which => f.id), :target => "_blank" %> :</i></center>
+		<tr><td style="background-color:#D9D9FF; padding:10px;"><center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 3, :which => f.id), :target => "_blank" %> :</i></center></td></tr>
 	<% elsif exo.size > 0 && exo.first.correct? %>
-		<div style="background-color:#CCFFCC; padding:10px; border:1px solid green;">
-		<center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 3, :which => f.id), :target => "_blank" %>, que vous avez résolu :</i></center>
+		<tr><td style="background-color:#CCFFCC; padding:10px;"><center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 3, :which => f.id), :target => "_blank" %>, que vous avez résolu :</i></center></td></tr>
 	<% else %>
-		<div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
-		<center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 3, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</i></center>
+		<tr><td style="background-color:#FFFFAA; padding:10px;"><center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 3, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</i></center></td></tr>
 	<% end %>
-	<hr/>
 	<!-- Enoncé -->
-	<div>
+	<tr><td style="padding:10px;">
 		<%= raw(htmlise(f.statement).
 		gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff2(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
 		gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff2(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
-	</div>
 	
 	<ul>
  	<% f.choices.order(:id).each do |c| %>
@@ -62,7 +57,7 @@ function hideStuff2() {
  	  (<b>Une seule</b> réponse correcte)
 	<% end %>
 	
-	</div>
+	</td></tr>
 <% end %>
-<br/>
+</table>
 <% end %>
