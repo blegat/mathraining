@@ -42,7 +42,7 @@ function hideStuff2() {
 	<!-- Enoncé -->
 	<tr><td style="padding:10px;">
 		<%= raw(htmlise(f.statement).
-		gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff2(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').
+		gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff2(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a><br/>').
 		gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff2(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 
 	<% if f.decimal %>
