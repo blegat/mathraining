@@ -7,6 +7,7 @@ var Preview = {
 
   timeout: null,     // store setTimout id
   mjRunning: false,  // true when MathJax is processing
+  needUpdate: false, // true when MathJax needs to re-run
   oldText: null,     // used to check if an update is needed
 
   //
@@ -51,11 +52,16 @@ var Preview = {
   //
   CreatePreview: function () {
     Preview.timeout = null;
-    if (this.mjRunning) return;
+    if (this.mjRunning)
+    {
+      this.needUpdate = true;
+      return;
+    }
     var text = document.getElementById("MathInput").value.replace(/<hr>[ \r]*\n/g,'<hr>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/<\/h2>[ \r]*\n/g,'</h2>').replace(/<\/h3>[ \r]*\n/g,'</h3>').replace(/<\/h4>[ \r]*\n/g,'</h4>').replace(/<\/ol>[ \r]*\n/g, '</ol>').replace(/\n[ \r]*<\/ol>/g, '</ol>').replace(/<\/ul>[ \r]*\n/g, '</ul>').replace(/\n[ \r]*<\/ul>/g, '</ul>').replace(/\n(\040)*<li>/g, '<li>').replace(/<evidence>[ \r]*\n/g, '<evidence>').replace(/<\/evidence>[ \r]*\n/g, '</evidence>').replace(/<evidence>/g, '<div class="evidence">').replace(/<\/evidence>/g, '</div>').replace(/\n/g, '<br/>');
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
     this.mjRunning = true;
+    this.needUpdate = false;
     MathJax.Hub.Queue(
       ["Typeset",MathJax.Hub,this.buffer],
       ["PreviewDone",this]
@@ -72,6 +78,8 @@ var Preview = {
   PreviewDone: function () {
     this.mjRunning = false;
     this.SwapBuffers();
+    if(this.needUpdate)
+      this.CreatePreview();
   }
 
 };
