@@ -46,6 +46,8 @@
   <% recent[u.id] = 0 %>
 <% end %>
 
+<% t2 = Time.now %>
+
 <% Solvedproblem.where("truetime > ?", twoweeksago).order("truetime DESC").each do |s| %>
   <% recent[s.user_id] += s.problem.value %>
 <% end %>
@@ -63,6 +65,8 @@
     <% recent[s.user_id] += qcm.value %>
   <% end %>
 <% end %>
+
+<% t3 = Time.now %>
 
 <% Problem.where("online = ?", true).each do |p| %>
   <% maxscore[p.section_id] += p.value %>
@@ -82,7 +86,7 @@
   <% end %>
 <% end %>
 
-<% t2 = Time.now %>
+<% t4 = Time.now %>
 
 <% oldlevel = {:id => -1} %>
 
@@ -185,7 +189,7 @@
   <b>Aucun utilisateur classé.</b>
 <% end %>
 
-<% t3 = Time.now %>
+<% t5 = Time.now %>
 
 <!-- Si root : bouton pour modifier les niveaux et couleurs, et pour recalculer les scores -->
 <% if signed_in? && current_user.sk.root %>
@@ -245,10 +249,12 @@
 
 <% end %>
 
-<% t4 = Time.now %>
+<% t6 = Time.now %>
 
 <% if montretemps == 1 %>
   <br/>Temps de chargement 1 : <%= t2-t1 %> secondes.
   <br/>Temps de chargement 2 : <%= t3-t2 %> secondes.
   <br/>Temps de chargement 3 : <%= t4-t3 %> secondes.
+  <br/>Temps de chargement 4 : <%= t5-t4 %> secondes.
+  <br/>Temps de chargement 5 : <%= t6-t5 %> secondes.
 <% end %>
