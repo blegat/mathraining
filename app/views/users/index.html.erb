@@ -82,6 +82,8 @@
   <% end %>
 <% end %>
 
+<% t2 = Time.now %>
+
 <% oldlevel = {:id => -1} %>
 
 <!-- On parcourt tous les utilisateurs (non admins) en ordre de points décroissants -->
@@ -183,6 +185,8 @@
   <b>Aucun utilisateur classé.</b>
 <% end %>
 
+<% t3 = Time.now %>
+
 <!-- Si root : bouton pour modifier les niveaux et couleurs, et pour recalculer les scores -->
 <% if signed_in? && current_user.sk.root %>
   <center>
@@ -241,8 +245,10 @@
 
 <% end %>
 
-<% t2 = Time.now %>
+<% t4 = Time.now %>
 
 <% if montretemps == 1 %>
-  <br/>Temps de chargement : <%= t2-t1 %> secondes.
+  <br/>Temps de chargement 1 : <%= t2-t1 %> secondes.
+  <br/>Temps de chargement 2 : <%= t3-t2 %> secondes.
+  <br/>Temps de chargement 3 : <%= t4-t3 %> secondes.
 <% end %>
