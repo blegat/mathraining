@@ -8,6 +8,12 @@
 
 <% t1 = Time.now %>
 
+<!-- Test pour la performance -->
+<% montretemps = 0 %>
+<% if(params.has_key?:montretemps) %>
+  <% montretemps = params[:montretemps].to_i %>
+<% end %>
+
 <h1>Scores</h1>
 
 <% def vowel(x) %>
