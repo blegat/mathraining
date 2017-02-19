@@ -5,6 +5,9 @@
 <% abreviation = ["C", "G", "TN", "A", "EF", "I"] %>
 
 <% provide(:title, 'Scores') %>
+
+<% t1 = Time.now %>
+
 <h1>Scores</h1>
 
 <% def vowel(x) %>
@@ -230,4 +233,10 @@
     <% end %>
   <% end %>
 
+<% end %>
+
+<% t2 = Time.now %>
+
+<% if montretemps == 1 %>
+  <br/>Temps de chargement : <%= t2-t1 %> secondes.
 <% end %>
