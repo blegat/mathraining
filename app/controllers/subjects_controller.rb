@@ -412,6 +412,9 @@ class SubjectsController < ApplicationController
   		m.delete
   	end
   	
+  	@migreur.lastcomment = [@migreur.lastcomment, @subject.lastcomment].max
+  	@migreur.save
+  	
   	@subject.delete
   	
   	redirect_to subject_path(@migreur, :q => q)
