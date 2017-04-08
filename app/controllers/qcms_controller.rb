@@ -210,6 +210,9 @@ class QcmsController < QuestionsController
     @qcm = Qcm.find(params[:qcm_id])
     @qcm.online = true
     @qcm.save
+    @section = @qcm.chapter.section
+    @section.max_score = @section.max_score + @qcm.value
+    @section.save
     redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id)
   end
 

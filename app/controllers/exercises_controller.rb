@@ -120,6 +120,9 @@ class ExercisesController < QuestionsController
     @exercise = Exercise.find(params[:exercise_id])
     @exercise.online = true
     @exercise.save
+    @section = @exercise.chapter.section
+    @section.max_score = @section.max_score + @exercise.value
+    @section.save
     redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
   end
   

@@ -86,6 +86,14 @@ class ChaptersController < ApplicationController
   def put_online
     @chapter.online = true
     @chapter.save
+    @section = @chapter.section
+    @chapter.exercises.each do |e|
+    	@section.max_score = @section.max_score + e.value
+    end
+    @chapter.qcms.each do |q|
+    	@section.max_score = @section.max_score + q.value
+    end
+    @section.save
     redirect_to @chapter
   end
   

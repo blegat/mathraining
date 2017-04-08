@@ -197,6 +197,31 @@ class UsersController < ApplicationController
         point_attribution(user)
       end
     end
+    Section.all.each do |s|
+    	s.max_score = 0
+    	if !s.fondation?
+    		s.problems.each do |p|
+    			if p.online?
+		  			s.max_score = s.max_score + p.value
+		  		end
+		  	end
+		  	s.chapters.each do |c|
+		  		if c.online?
+		  			c.exercises.each do |e|
+		  				if e.online?
+		  					s.max_score = s.max_score + e.value
+		  				end
+		  			end
+		  			c.qcms.each do |q|
+		  				if q.online?
+		  					s.max_score = s.max_score + q.value
+		  				end
+		  			end
+		  		end
+		  	end
+		  end
+    	s.save
+    end
     redirect_to users_path
   end
 

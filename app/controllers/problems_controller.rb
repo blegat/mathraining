@@ -109,6 +109,9 @@ class ProblemsController < QuestionsController
   def put_online
     @problem.online = true
     @problem.save
+    @section = @problem.section
+    @section.max_score = @section.max_score + @problem.value
+    @section.save
     redirect_to problem_path(@problem)
   end
 
