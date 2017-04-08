@@ -22,11 +22,7 @@ class ExercisesController < QuestionsController
   def create
     @chapter = Chapter.find(params[:chapter_id])
     @exercise = Exercise.new
-    if @chapter.online
-      @exercise.online = false
-    else
-      @exercise.online = true
-    end
+    @exercise.online = false
     
     @exercise.chapter_id = params[:chapter_id]
     @exercise.statement = params[:exercise][:statement]
@@ -64,7 +60,7 @@ class ExercisesController < QuestionsController
     @exercise = Exercise.find(params[:id])
     @exercise.statement = params[:exercise][:statement]
 
-    unless @exercise.chapter.online && @exercise.online
+    unless @exercise.online
       if params[:exercise][:decimal] == '1'
         @exercise.decimal = true
       else
@@ -75,9 +71,9 @@ class ExercisesController < QuestionsController
     end
 
     if @exercise.decimal
-      @exercise.answer = params[:exercise][:answer].gsub(",",".").to_f unless @exercise.chapter.online && @exercise.online
+      @exercise.answer = params[:exercise][:answer].gsub(",",".").to_f unless @exercise.online
     else
-      @exercise.answer = params[:exercise][:answer].gsub(",",".").to_i unless @exercise.chapter.online && @exercise.online
+      @exercise.answer = params[:exercise][:answer].gsub(",",".").to_i unless @exercise.online
     end
     
     if @exercise.save
@@ -88,20 +84,20 @@ class ExercisesController < QuestionsController
     end
   end
 
-  # Supprimer un exercice : il faut être admin, voire root si en ligne
-  def destroy
-    @chapter = @exercise.chapter
-    if @exercise.online && @exercise.chapter.online
-      @exercise.destroy
-      User.all.each do |user|
-        point_attribution(user)
-      end
-    else
-      @exercise.destroy
-    end
-    flash[:success] = "Exercice supprimé."
-    redirect_to @chapter
-  end
+  # Supprimer un exercice : il faut être admin, voire root si en ligne (en fait plus possible!)
+  #def destroy
+  #  @chapter = @exercise.chapter
+  #  if @exercise.online && @exercise.chapter.online
+  #    @exercise.destroy
+  #    User.all.each do |user|
+  #      point_attribution(user)
+  #    end
+  #  else
+  #    @exercise.destroy
+  #  end
+  #  flash[:success] = "Exercice supprimé."
+  #  redirect_to @chapter
+  #end
   
   # Ordre moins : il faut être admin
   def order_minus
@@ -149,7 +145,7 @@ class ExercisesController < QuestionsController
   # Vérifie qu'on est root si l'exercice est en ligne
   def root_exercise_user
     @exercise = Exercise.find(params[:id])
-    redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) if (!current_user.sk.root && @exercise.online && @exercise.chapter.online)
+    redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) if (!current_user.sk.root && @exercise.online)
   end
   
   # Bete fonction maximum

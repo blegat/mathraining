@@ -12,7 +12,7 @@ function hideStuff() {
 </script>
 
 <!-- On vérifie que ce qcm peut bien être vu -->
-<% if (f.online && f.chapter.online) || (signed_in? && current_user.sk.admin?) %>
+<% if f.online || (signed_in? && current_user.sk.admin?) %>
 
 <% pt = f.value %>
 
@@ -122,7 +122,7 @@ function hideStuff() {
   <!-- Modifier/Supprimer/... -->
   <div class="noprint">
   <center>
-    <% if @chapter.online && f.online %>
+    <% if f.online %>
       <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." }  %> |
       <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
       <%= link_to "Modifier l'explication", qcm_explanation_path(f) %>

@@ -20,11 +20,7 @@ class QcmsController < QuestionsController
   def create
     @chapter = Chapter.find(params[:chapter_id])
     @qcm = Qcm.new
-    if @chapter.online
-      @qcm.online = false
-    else
-      @qcm.online = true
-    end
+    @qcm.online = false
     @qcm.chapter = @chapter
     @qcm.statement = params[:qcm][:statement]
     @qcm.level = params[:qcm][:level]
@@ -57,7 +53,7 @@ class QcmsController < QuestionsController
   def update
     @qcm = Qcm.find(params[:id])
     @qcm.statement = params[:qcm][:statement]
-    if !@qcm.chapter.online || !@qcm.online
+    unless @qcm.online
       @qcm.level = params[:qcm][:level]
       if params[:qcm][:many_answers] == '1'
         @qcm.many_answers = true
@@ -101,7 +97,7 @@ class QcmsController < QuestionsController
   # Supprimer un qcm
   def destroy
     @chapter = @qcm.chapter
-    if @qcm.online && @qcm.chapter.online
+    if @qcm.online
       @qcm.destroy
       User.all.each do |user|
         point_attribution(user)
@@ -239,13 +235,13 @@ class QcmsController < QuestionsController
   # Il faut être root pour supprimer un qcm en ligne
   def root_qcm_user
     @qcm = Qcm.find(params[:id])
-    redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) if (!current_user.sk.root && @qcm.online && @qcm.chapter.online)
+    redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) if (!current_user.sk.root && @qcm.online)
   end
 
   # Vérifie que le qcm est en ligne
   def online_qcm
     @qcm = Qcm.find(params[:qcm_id])
-    if @qcm.online && @qcm.chapter.online
+    if @qcm.online
       redirect_to chapter_path(@qcm.chapter)
     end
   end

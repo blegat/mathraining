@@ -24,11 +24,7 @@ class TheoriesController < ApplicationController
       flash.now[:danger] = "Chapitre inexistant."
       render 'new' and return
     end
-    if @chapter.online
-      @theory.online = false
-    else
-      @theory.online = true
-    end
+    @theory.online = false
     @theory.chapter = @chapter
     if @chapter.theories.empty?
       @theory.position = 1

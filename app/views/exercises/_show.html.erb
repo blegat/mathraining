@@ -12,7 +12,7 @@ function hideStuff() {
 </script>
 
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if (f.online && f.chapter.online) || (signed_in? && current_user.sk.admin?) %>
+<% if f.online || (signed_in? && current_user.sk.admin?) %>
 
 <% pt = f.value %>
 
@@ -110,12 +110,12 @@ function hideStuff() {
   <!-- Modifier / Supprimer -->
   <div class="noprint">
   <center>
-    <% if @chapter.online && f.online %>
+    <% if f.online %>
       <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
       | <%= link_to "Modifier l'explication", exercise_explanation_path(f) %>
-      <% if current_user.sk.root %>
+      <!-- <% if current_user.sk.root %>
         | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Attention, cet exercice est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
-      <% end %>
+      <% end %> -->
     <% else %>
       <%= link_to "Modifier cet exercice", edit_exercise_path(f) %>
       | <%= link_to "Modifier l'explication", exercise_explanation_path(f) %>

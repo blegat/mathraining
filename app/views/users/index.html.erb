@@ -35,15 +35,18 @@
 
 <% Section.all.each do |s| %>
   <% allsec2[s.id] = s %>
-  <% maxscore[s.id] = 0 %>
+  <% maxscore[s.id] = s.max_score %>
 <% end %>
 
 <% Chapter.all.each do |c| %>
   <% allchap[c.id] = c %>
 <% end %>
 
+<% persection = Array.new %>
+
 <% User.all.each do |u| %>
   <% recent[u.id] = 0 %>
+  <% persection[u.id] = Array.new %>
 <% end %>
 
 <% t2 = Time.now %>
@@ -68,22 +71,8 @@
 
 <% t3 = Time.now %>
 
-<% Problem.where("online = ?", true).each do |p| %>
-  <% maxscore[p.section_id] += p.value %>
-<% end %>
-
-<% Exercise.where("online = ?", true).each do |e| %>
-  <% chap = allchap[e.chapter_id] %>
-  <% if chap.online %>
-  	<% maxscore[chap.section_id] += e.value %>
-  <% end %>
-<% end %>
-
-<% Qcm.where("online = ?", true).each do |e| %>
-  <% chap = allchap[e.chapter_id] %>
-  <% if chap.online %>
-  	<% maxscore[chap.section_id] += e.value %>
-  <% end %>
+<% Pointspersection.all.each do |p| %>
+	<% persection[p.user_id][p.section_id] = p.points %>
 <% end %>
 
 <% t4 = Time.now %>
@@ -140,7 +129,6 @@
   <!-- Score -->
   <td><center><%= rating %></center></td>
 
-  <% p = Pointspersection.where(:user_id => user).order(:section_id) %>
   <% total = 0 %>
   <% allsec.each do |s| %>
     <td class="hidden-xs" style="text-align:center;">
@@ -148,7 +136,7 @@
         <% if m == 0 %>
           -
         <% else %>
-          <% rate = p.where(:section_id => s.id).first.points %>
+          <% rate = persection[user.id][s.id] %>
           <% if rate == 0 %>
             -
           <% else %>
