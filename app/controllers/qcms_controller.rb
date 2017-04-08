@@ -94,17 +94,10 @@ class QcmsController < QuestionsController
     end
   end
 
-  # Supprimer un qcm
+  # Supprimer un qcm (plus possible si en ligne)
   def destroy
     @chapter = @qcm.chapter
-    if @qcm.online
-      @qcm.destroy
-      User.all.each do |user|
-        point_attribution(user)
-      end
-    else
-      @qcm.destroy
-    end
+    @qcm.destroy
     flash[:success] = "QCM supprimé."
     redirect_to @chapter
   end

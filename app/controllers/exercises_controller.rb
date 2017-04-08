@@ -84,20 +84,13 @@ class ExercisesController < QuestionsController
     end
   end
 
-  # Supprimer un exercice : il faut être admin, voire root si en ligne (en fait plus possible!)
-  #def destroy
-  #  @chapter = @exercise.chapter
-  #  if @exercise.online && @exercise.chapter.online
-  #    @exercise.destroy
-  #    User.all.each do |user|
-  #      point_attribution(user)
-  #    end
-  #  else
-  #    @exercise.destroy
-  #  end
-  #  flash[:success] = "Exercice supprimé."
-  #  redirect_to @chapter
-  #end
+  # Supprimer un exercice : il faut être admin, voire root si en ligne (plus possible si en ligne)
+  def destroy
+    @chapter = @exercise.chapter
+    @exercise.destroy
+    flash[:success] = "Exercice supprimé."
+    redirect_to @chapter
+  end
   
   # Ordre moins : il faut être admin
   def order_minus
