@@ -329,7 +329,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
     <% compteur = 0 %>
     <% liste = chap[encours].theories.order(:position) %>
     <% liste.each do |t| %>
-      <% if t.online %>
+      <% if t.online || !chap[encours].online %>
         <% if compteur == 0 %>
           <ul>
         <% end %>
@@ -366,7 +366,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
     <% compteur = 0 %>
     <% liste = chap[encours].theories.order(:position) %>
     <% liste.each do |t| %>
-      <% if t.online %>
+      <% if t.online || !chap[encours].online %>
         <% if compteur == 0 %>
           <ul>
         <% end %>
