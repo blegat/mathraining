@@ -90,7 +90,7 @@
   	
   	<span style="font-size:18px;">Sous le titre <%= "d\'" if vowel(newlevel.name[0]) %><%= "de " unless vowel(newlevel.name[0]) %><span style="color:<%= newlevel.color %>;"><%= newlevel.name %></span>...</span>
   	
-    <% if signed_in? && current_user.sk.admin %>
+    <% if @ss && current_user.sk.admin %>
       <table class="table table-bordered" style="max-width:1000px; margin-top:20px;">
       <tr><th style="width:20px;"></th><th style="width:230px;">Nom</th><th style="width:90px;"><center>Score</center></th>
         <% allsec.each do |s| %>
@@ -122,7 +122,7 @@
   <td><center><%= "#{ rank }." if rating != previouspoint %></center></td>
 
   <!-- Nom -->
-  <td><%= raw(user.linked_name) %> <%= "(banni)" if signed_in? && current_user.sk.admin? && !user.active %></td>
+  <td><%= raw(user.linked_name) %> <%= "(banni)" if @ss && current_user.sk.admin? && !user.active %></td>
 
   <% previouspoint = rating %>
 
@@ -156,7 +156,7 @@
   </td>
 
   <!-- Admin -->
-  <% if signed_in? && current_user.sk.admin %>
+  <% if @ss && current_user.sk.admin %>
     <td class="hidden-xs hidden-sm"><center><%= user.country %><%= "?" if user.country.nil? %></center></td>
     <td class="hidden-xs hidden-sm"><center><%= user.year if user.year > 0 %><%= "?" if user.year == 0 %></center></td>
     <td class="hidden-xs hidden-sm"><center>
@@ -180,7 +180,7 @@
 <% t5 = Time.now %>
 
 <!-- Si root : bouton pour modifier les niveaux et couleurs, et pour recalculer les scores -->
-<% if signed_in? && current_user.sk.root %>
+<% if @ss && current_user.sk.root %>
   <center>
   <br/>
   <%= button_to "Modifier les niveaux et couleurs", colors_path, method: :get, class: 'btn btn-default btn-grey' %>
@@ -191,7 +191,7 @@
 <% end %>
 
 <!-- Si administrateur -->
-<% if signed_in? && current_user.sk.admin %>
+<% if @ss && current_user.sk.admin %>
   <br/><center><b> --- Cette partie n'est visible que des administrateurs --- </b></center>
 
   <% if current_user.sk.root %>
@@ -231,7 +231,7 @@
 
   <% User.where(:admin => true).order(:last_name).each do |user| %>
     <% if user.admin %>
-      <%= raw(user.linked_name) %> <%= "(email non confirmé)" unless user.email_confirm %> <%= "(banni)" if signed_in? && current_user.sk.admin? && !user.active %><br/>
+      <%= raw(user.linked_name) %> <%= "(email non confirmé)" unless user.email_confirm %> <%= "(banni)" if @ss && current_user.sk.admin? && !user.active %><br/>
     <% end %>
   <% end %>
 

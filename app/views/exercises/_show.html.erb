@@ -12,7 +12,7 @@ function hideStuff() {
 </script>
 
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if f.online || (signed_in? && current_user.sk.admin?) %>
+<% if f.online || (@ss && current_user.sk.admin?) %>
 
 <% pt = f.value %>
 
@@ -30,7 +30,7 @@ function hideStuff() {
 </div><br/>
 
 <!-- Si administrateur -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if @ss && current_user.sk.admin? %>
 
   <!-- Réponse -->
   <h4>Réponse</h4>
@@ -161,7 +161,7 @@ function hideStuff() {
   </div>
 
 <!-- Si étudiant inscrit -->
-<% elsif signed_in? %>
+<% elsif @ss %>
 
   <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => id) %>
   

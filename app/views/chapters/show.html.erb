@@ -36,14 +36,15 @@
 
       <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item active" if type == 10 %>
       <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item" unless type == 10 %>
-
-      <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item", :target => "_blank" %>
-
+			
+      <% if @ss %>
+        <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item", :target => "_blank" %>
+      <% end %>
       <!-- Points théoriques -->
       <% compteur = 0 %>
       <% listex = @chapter.theories.order(:position) %>
       <% listex.each do |f| %>
-        <% if f.online || (signed_in? && current_user.sk.admin?) %>
+        <% if f.online || (@ss && current_user.sk.admin?) %>
 
           <% if compteur == 0 %>
             <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Points théoriques</h4>
@@ -52,7 +53,7 @@
           <% compteur = compteur + 1 %>
 
           <% lu = false %>
-          <% if signed_in? && !current_user.sk.admin? %>
+          <% if @ss && !current_user.sk.admin? %>
             <% if current_user.sk.theories.exists?(f.id) %>
               <% lu = true %>
             <% end %>
@@ -62,14 +63,14 @@
             <% number = i %>
             <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-warning active" if !f.online %>
             <% if f.online %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success active" if signed_in? && !current_user.sk.admin? && lu %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item active" unless signed_in? && !current_user.sk.admin? && lu %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success active" if @ss && !current_user.sk.admin? && lu %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item active" unless @ss && !current_user.sk.admin? && lu %>
             <% end %>
           <% else %>
             <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-warning" if !f.online %>
             <% if f.online %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success" if signed_in? && !current_user.sk.admin? && lu %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item" unless signed_in? && !current_user.sk.admin? && lu %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success" if @ss && !current_user.sk.admin? && lu %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item" unless @ss && !current_user.sk.admin? && lu %>
             <% end %>
           <% end %>
 
@@ -81,9 +82,9 @@
       <!-- Peut-on voit les exercices? -->
       <% exovisibles = true %>
 
-      <% if !signed_in? || !current_user.sk.admin? %>
+      <% if !@ss || !current_user.sk.admin? %>
         <% @chapter.prerequisites.each do |p| %>
-          <% exovisibles = false if !p.section.fondation && (!signed_in? || !current_user.sk.chapters.exists?(p)) %>
+          <% exovisibles = false if !p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p)) %>
         <% end %>
       <% end %>
 
@@ -115,7 +116,7 @@
         <!-- Exercice (pas QCM) -->
         <% if encours == 1 %>
           <% f = liste[un] %>
-          <% if f.online || (signed_in? && current_user.sk.admin?) %>
+          <% if f.online || (@ss && current_user.sk.admin?) %>
 
             <% if compteur == 0 %>
               <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Exercices</h4>
@@ -125,7 +126,7 @@
 
             <% if exovisibles %>
               <% if f.online %>
-                <% if signed_in? %>
+                <% if @ss %>
                   <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
                   <% if exo.size > 0 %>
                     <% exo = exo.first %>
@@ -168,7 +169,7 @@
         <!-- QCM -->
         <% else %>
           <% f = liste2[deux] %>
-          <% if f.online || (signed_in? && current_user.sk.admin?) %>
+          <% if f.online || (@ss && current_user.sk.admin?) %>
 
             <% if compteur == 0 %>
               <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Exercices</h4>
@@ -178,7 +179,7 @@
 
             <% if exovisibles %>
               <% if f.online %>
-                <% if signed_in? %>
+                <% if @ss %>
                   <% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
                   <% if exo.size > 0 %>
                     <% exo = exo.first %>
@@ -222,7 +223,7 @@
 
       <% end %>
 
-      <% if !@chapter.section.fondation && exovisibles && pasfait == 0 && signed_in? && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter) %>
+      <% if !@chapter.section.fondation && exovisibles && pasfait == 0 && @ss && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter) %>
         <% current_user.sk.chapters << @chapter %>
       <% end %>
 
@@ -241,7 +242,7 @@
         <br/><span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
         <% prems = true %>
         <% @chapter.prerequisites.each do |p| %>
-          <% if (!p.section.fondation && (!signed_in? || !current_user.sk.chapters.exists?(p))) %>
+          <% if (!p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p))) %>
             <%= " - " if !prems %>
             <%= p.name %>
             <% prems = false %>
@@ -286,7 +287,7 @@
 <!-- Ajouter quelque chose -->
 <div class="noprint">
 <center>
-  <% if signed_in? && current_user.sk.admin? %>
+  <% if @ss && current_user.sk.admin? %>
     <br/>
     Ajouter un :
     <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |

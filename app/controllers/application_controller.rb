@@ -12,7 +12,9 @@ class ApplicationController < ActionController::Base
 
   # Vérifie que l'utilisateur n'a pas eu son compte désactivé.
   def active_user
-    if signed_in? && !current_user.active
+  	$allcolors = Color.order(:pt).to_a
+  	@ss = signed_in?
+    if @ss && !current_user.active
       flash[:danger] = "Ce compte a été désactivé et n'est plus accessible."
       sign_out
       redirect_to root_path
