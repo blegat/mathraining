@@ -51,18 +51,18 @@
 
 <% t2 = Time.now %>
 
-<% Solvedproblem.where("truetime > ?", twoweeksago).order("truetime DESC").each do |s| %>
+<% Solvedproblem.includes(:problem).where("truetime > ?", twoweeksago).order("truetime DESC").each do |s| %>
   <% recent[s.user_id] += s.problem.value %>
 <% end %>
 
-<% Solvedexercise.where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
+<% Solvedexercise.includes(:exercise).where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
   <% exo = s.exercise %>
   <% if s.correct && !allsec2[allchap[exo.chapter_id].section_id].fondation %>
     <% recent[s.user_id] += exo.value %>
   <% end %>
 <% end %>
 
-<% Solvedqcm.where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
+<% Solvedqcm.includes(:qcm).where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
   <% qcm = s.qcm %>
   <% if s.correct && !allsec2[allchap[qcm.chapter_id].section_id].fondation %>
     <% recent[s.user_id] += qcm.value %>
