@@ -7,6 +7,7 @@ var PreviewSafe = {
 
   timeout: null,     // store setTimout id
   mjRunning: false,  // true when MathJax is processing
+  needUpdate: false, // true when MathJax needs to re-run
   oldText: null,     // used to check if an update is needed
 
   //
@@ -51,7 +52,11 @@ var PreviewSafe = {
   //
   CreatePreview: function () {
     Preview.timeout = null;
-    if (this.mjRunning) return;
+    if (this.mjRunning)
+    {
+      this.needUpdate = true;
+      return;
+    }
     
     var text = document.getElementById("MathInput").value.replace(/</g,'&lt').replace(/>/g,'&gt')
     var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
@@ -62,6 +67,7 @@ var PreviewSafe = {
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
     this.mjRunning = true;
+    this.needUpdate = false;
     MathJax.Hub.Queue(
       ["Typeset",MathJax.Hub,this.buffer],
       ["PreviewDone",this]
@@ -78,6 +84,8 @@ var PreviewSafe = {
   PreviewDone: function () {
     this.mjRunning = false;
     this.SwapBuffers();
+    if(this.needUpdate)
+      this.CreatePreview();
   }
 
 };
