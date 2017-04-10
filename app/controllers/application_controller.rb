@@ -59,32 +59,123 @@ class ApplicationController < ActionController::Base
     redirect_to root_path unless current_user.sk.root
   end
   
-  #def point_attribution_all
-  #	newrating = Array.new
-  #	newpartial = Array.new
-  #	exercise_value = Array.new
-  #	qcm_value = Array.new
-  #	n_section = Section.count
-  #	
-  #	(1..n_section).each do |i|
-  #		newpartial[i] = Array.new
-  #	end
-  #	
-  #	User.all.each do |u|
-  #		newrating[u.id] = 0
-  #		(1..n_section).each do |i|
-  #			newpartial[i][u.id] = 0
-  #		end
-  #	end
-  #	
-  #	Exercise.all.each do |e|
-  #		
-  #end
-
+  # Recalcule les scores de tout le monde
+  def point_attribution_all
+  	newrating = Array.new
+  	newpartial = Array.new
+  	existpartial = Array.new
+  	exercise_value = Array.new
+  	exercise_section = Array.new
+  	qcm_value = Array.new
+  	qcm_section = Array.new
+  	problem_value = Array.new
+  	problem_section = Array.new
+  	sectionid = Array.new
+  	n_section = Section.count
+  	
+  	(1..n_section).each do |i|
+  		newpartial[i] = Array.new
+  		existpartial[i] = Array.new
+  	end
+  	
+  	User.all.each do |u|
+  		newrating[u.id] = 0
+  		(1..n_section).each do |i|
+  			newpartial[i][u.id] = 0
+  			existpartial[i][u.id] = false
+  		end
+  	end
+  	
+  	Pointspersection.all.each do |p|
+  		existpartial[p.section_id][p.user_id] = true
+  	end
+  	
+  	User.all.each do |u|
+  		(1..n_section).each do |i|
+  			if !existpartial[i][u.id]
+  				newpoint = Pointspersection.new
+       	 	newpoint.points = 0
+        	newpoint.section_id = i
+        	user.pointspersections << newpoint
+  			end
+  		end
+  	end
+  	
+  	Chapter.all.each do |c|
+    	sectionid[c.id] = c.section_id
+    end
+    
+  	Exercise.all.each do |e|
+  		exercise_value[e.id] = e.value
+  		exercise_section[e.id] = sectionid[e.chapter_id]
+  	end
+  	
+  	Qcm.all.each do |q|
+  		qcm_value[q.id] = q.value
+  		qcm_section[q.id] = sectionid[q.chapter_id]
+  	end
+  	
+  	Problem.all.each do |p|
+  		problem_value[p.id] = p.value
+  		problem_section[p.id] = p.section_id
+  	end
+  	
+  	Solvedexercise.all.each do |e|
+  		if e.correct
+        pt = exercise_value[e.exercise_id]
+        u = e.user_id
+        s = exercise_section[e.exercise_id]
+        newrating[u] = newrating[u] + pt
+        newpartial[s][u] = newpartial[s][u] + pt
+  		end
+  	end
+  	
+  	Solvedqcm.all.each do |q|
+  		if q.correct
+        pt = qcm_value[q.qcm_id]
+        u = q.user_id
+        s = qcm_section[q.qcm_id]
+        newrating[u] = newrating[u] + pt
+        newpartial[s][u] = newpartial[s][u] + pt
+  		end
+  	end
+  	
+  	Solvedproblem.all.each do |p|
+  		pt = problem_value[p.problem_id]
+  		u = p.user_id
+  		s = problem_section[p.problem_id]
+  		newrating[u] = newrating[u] + pt
+      newpartial[s][u] = newpartial[s][u] + pt
+  	end
+  	
+  	warning = ""
+  	
+  	Pointspersection.all.each do |p|
+  		if newpartial[p.section_id][p.user_id] != p.points
+  			p.points = newpartial[p.section_id][p.user_id]
+  			p.save
+  		end
+  	end
+  	
+  	User.all.each do |u|
+  		if newrating[u.id] != u.rating
+  			warning = warning + "Le rating de #{u.name} a changé... "
+  			u.rating = newrating[u.id]
+  			u.save
+  		end
+  	end
+  	
+  	if(warning.size > 0)
+  		flash[:danger] = warning
+  	end
+  end
+	
+	# Recalcule les scores de user
   def point_attribution(user)
     user.rating = 0
     partials = user.pointspersections
     partial = Array.new
+    sectionid = Array.new
 
     Section.all.each do |s|
       partial[s.id] = partials.where(:section_id => s.id).first
@@ -97,13 +188,17 @@ class ApplicationController < ActionController::Base
       end
       partial[s.id].points = 0
     end
+    
+    Chapter.all.each do |c|
+    	sectionid[c.id] = c.section_id
+    end
 
     user.solvedexercises.includes(:exercise).each do |e|
       if e.correct
         exo = e.exercise
         pt = exo.value
         user.rating = user.rating + pt
-        partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
+        partial[sectionid[exo.chapter_id]].points = partial[sectionid[exo.chapter_id]].points + pt
       end
     end
 
@@ -112,7 +207,7 @@ class ApplicationController < ActionController::Base
         qcm = q.qcm
         pt = qcm.value
         user.rating = user.rating + pt
-        partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
+        partial[sectionid[qcm.chapter_id]].points = partial[sectionid[qcm.chapter_id]].points + pt
       end
     end
 
@@ -120,7 +215,7 @@ class ApplicationController < ActionController::Base
       problem = p.problem
       pt = problem.value
       user.rating = user.rating + pt;
-      partial[problem.section.id].points = partial[problem.section.id].points + pt
+      partial[problem.section_id].points = partial[problem.section_id].points + pt
     end
 
     user.save

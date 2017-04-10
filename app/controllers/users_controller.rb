@@ -194,7 +194,7 @@ class UsersController < ApplicationController
   def recompute_scores
     User.all.each do |user|
       if !user.admin?
-        point_attribution(user)
+      	point_attribution_all
       end
     end
     Section.all.each do |s|
