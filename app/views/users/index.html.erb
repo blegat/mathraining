@@ -28,18 +28,10 @@
 <% recent = Array.new %>
 <% twoweeksago = Date.today - 14 %>
 
-<% allsec2 = Array.new %>
-<% allchap = Array.new %>
-
 <% maxscore = Array.new %>
 
 <% Section.all.each do |s| %>
-  <% allsec2[s.id] = s %>
   <% maxscore[s.id] = s.max_score %>
-<% end %>
-
-<% Chapter.all.each do |c| %>
-  <% allchap[c.id] = c %>
 <% end %>
 
 <% persection = Array.new %>
@@ -56,15 +48,15 @@
 <% end %>
 
 <% Solvedexercise.includes(:exercise).where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
-  <% exo = s.exercise %>
-  <% if s.correct && !allsec2[allchap[exo.chapter_id].section_id].fondation %>
+  <% if s.correct %>
+  	<% exo = s.exercise %>
     <% recent[s.user_id] += exo.value %>
   <% end %>
 <% end %>
 
 <% Solvedqcm.includes(:qcm).where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
-  <% qcm = s.qcm %>
-  <% if s.correct && !allsec2[allchap[qcm.chapter_id].section_id].fondation %>
+  <% if s.correct %>
+  	<% qcm = s.qcm %>
     <% recent[s.user_id] += qcm.value %>
   <% end %>
 <% end %>

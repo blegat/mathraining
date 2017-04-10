@@ -131,7 +131,6 @@ html>body tbody.scroll {
   <% nb_e = 0 %>
   <% nb_p = 0 %>
   <% nb_erreur = 0 %>
-	<% allsec = Array.new %>
 	<% allchap = Array.new %>
 	<% allex = Array.new %>
 	<% allqcm = Array.new %>
@@ -142,7 +141,6 @@ html>body tbody.scroll {
 	<% numberpb = 0 %>
 
 	<% Section.all.each do |s| %>
-	  <% allsec[s.id] = s %>
 	  <% maxscore[s.id] = s.max_score %>
 	<% end %>
 
@@ -152,16 +150,14 @@ html>body tbody.scroll {
 
 	<% Exercise.all.each do |e| %>
 		<% allex[e.id] = e %>
-		<% chap = allchap[e.chapter_id] %>
-		<% if !allsec[chap.section_id].fondation && e.online %>
+		<% if e.level > 0 && e.online %>
 			<% numberexo = numberexo+1 %>
 		<% end %>
 	<% end %>
 
 	<% Qcm.all.each do |q| %>
 	  <% allqcm[q.id] = q %>
-	  <% chap = allchap[q.chapter_id] %>
-		<% if !allsec[chap.section_id].fondation && q.online %>
+		<% if q.level > 0 && q.online %>
 			<% numberexo = numberexo+1 %>
 		<% end %>
 	<% end %>
@@ -201,7 +197,6 @@ html>body tbody.scroll {
       <% e = exercises[e_encours] %>
 			<% exo = allex[e.exercise_id] %>
       <% pt = exo.value %>
-      <% pt = 0 if allsec[allchap[exo.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
         <% nb_erreur = nb_erreur + [e.nb_guess-1, 20].min %>
         <% nb_e = nb_e+1 %>
@@ -211,12 +206,11 @@ html>body tbody.scroll {
         <% end %>
       <% end %>
 			<% e_encours = e_encours + 1 %>
-      <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => allsec[allchap[exo.chapter_id].section_id].fondation}) %>
+      <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => (pt == 0)}) %>
 		<% elsif bestqui == 2 %>
       <% q = qcms[q_encours] %>
 			<% qcm = allqcm[q.qcm_id] %>
       <% pt = qcm.value %>
-      <% pt = 0 if allsec[allchap[qcm.chapter_id].section_id].fondation %>
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
         <% nb_erreur = nb_erreur + [q.nb_guess-1, 20].min %>
@@ -226,7 +220,7 @@ html>body tbody.scroll {
         <% end %>
       <% end %>
 			<% q_encours = q_encours + 1 %>
-      <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => allsec[allchap[qcm.chapter_id].section_id].fondation}) %>
+      <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => (pt == 0)}) %>
 		<% elsif bestqui == 3 %>
       <% p = problems[p_encours] %>
 			<% pb = allpb[p.problem_id] %>

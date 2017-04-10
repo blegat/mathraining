@@ -102,11 +102,7 @@ class ApplicationController < ActionController::Base
       if e.correct
         exo = e.exercise
         pt = exo.value
-
-        if !exo.chapter.section.fondation? # Pas un fondement
-          user.rating = user.rating + pt
-        end
-
+        user.rating = user.rating + pt
         partial[exo.chapter.section.id].points = partial[exo.chapter.section.id].points + pt
       end
     end
@@ -115,11 +111,7 @@ class ApplicationController < ActionController::Base
       if q.correct
         qcm = q.qcm
         pt = qcm.value
-
-        if !qcm.chapter.section.fondation? # Pas un fondement
-          user.rating = user.rating + pt
-        end
-
+        user.rating = user.rating + pt
         partial[qcm.chapter.section.id].points = partial[qcm.chapter.section.id].points + pt
       end
     end
@@ -127,9 +119,7 @@ class ApplicationController < ActionController::Base
     user.solvedproblems.includes(:problem).each do |p|
       problem = p.problem
       pt = problem.value
-
       user.rating = user.rating + pt;
-
       partial[problem.section.id].points = partial[problem.section.id].points + pt
     end
 
