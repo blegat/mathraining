@@ -31,7 +31,7 @@ class Exercise < ActiveRecord::Base
   validates :explanation, length: { maximum: 8000 }
   validates :answer, presence: true
   validates :position, presence: true, numericality: { greater_than_or_equal_to: 0 }
-  validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 4 }
+  validates :level, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 4 }
 
   # Retourne la valeur de l'exercice
   def value

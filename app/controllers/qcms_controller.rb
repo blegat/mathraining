@@ -24,6 +24,9 @@ class QcmsController < QuestionsController
     @qcm.chapter = @chapter
     @qcm.statement = params[:qcm][:statement]
     @qcm.level = params[:qcm][:level]
+    if @chapter.section.fondation?
+    	@qcm.level = 0
+    end
     @qcm.explanation = ""
     if params[:qcm][:many_answers] == '1'
       @qcm.many_answers = true
@@ -55,6 +58,9 @@ class QcmsController < QuestionsController
     @qcm.statement = params[:qcm][:statement]
     unless @qcm.online
       @qcm.level = params[:qcm][:level]
+      if @qcm.chapter.section.fondation?
+    	@qcm.level = 0
+    end
       if params[:qcm][:many_answers] == '1'
         @qcm.many_answers = true
       else

@@ -134,7 +134,7 @@ class User < ActiveRecord::Base
       return {color:"#000000"}
     end
     i = 0
-    actuallevel = $allcolors[1]
+    actuallevel = nil
     $allcolors.each do |c|
       if c.pt <= rating
         actuallevel = c

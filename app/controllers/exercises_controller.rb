@@ -27,6 +27,9 @@ class ExercisesController < QuestionsController
     @exercise.chapter_id = params[:chapter_id]
     @exercise.statement = params[:exercise][:statement]
     @exercise.level = params[:exercise][:level]
+    if @chapter.section.fondation?
+    	@exercise.level = 0
+    end
     @exercise.explanation = ""
     if params[:exercise][:decimal] == '1'
       @exercise.decimal = true
@@ -68,6 +71,9 @@ class ExercisesController < QuestionsController
       end
       
       @exercise.level = params[:exercise][:level]
+      if @exercise.chapter.section.fondation?
+    	  @exercise.level = 0
+   	  end
     end
 
     if @exercise.decimal

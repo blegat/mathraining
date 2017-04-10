@@ -58,6 +58,28 @@ class ApplicationController < ActionController::Base
   def root_user
     redirect_to root_path unless current_user.sk.root
   end
+  
+  #def point_attribution_all
+  #	newrating = Array.new
+  #	newpartial = Array.new
+  #	exercise_value = Array.new
+  #	qcm_value = Array.new
+  #	n_section = Section.count
+  #	
+  #	(1..n_section).each do |i|
+  #		newpartial[i] = Array.new
+  #	end
+  #	
+  #	User.all.each do |u|
+  #		newrating[u.id] = 0
+  #		(1..n_section).each do |i|
+  #			newpartial[i][u.id] = 0
+  #		end
+  #	end
+  #	
+  #	Exercise.all.each do |e|
+  #		
+  #end
 
   def point_attribution(user)
     user.rating = 0
@@ -76,7 +98,7 @@ class ApplicationController < ActionController::Base
       partial[s.id].points = 0
     end
 
-    user.solvedexercises.each do |e|
+    user.solvedexercises.includes(:exercise).each do |e|
       if e.correct
         exo = e.exercise
         pt = exo.value
@@ -89,7 +111,7 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    user.solvedqcms.each do |q|
+    user.solvedqcms.includes(:qcm).each do |q|
       if q.correct
         qcm = q.qcm
         pt = qcm.value
@@ -102,7 +124,7 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    user.solvedproblems.each do |p|
+    user.solvedproblems.includes(:problem).each do |p|
       problem = p.problem
       pt = problem.value
 

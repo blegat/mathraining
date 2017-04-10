@@ -31,7 +31,7 @@ class Qcm < ActiveRecord::Base
   validates :statement, presence: true, length: { maximum: 8000 }
   validates :explanation, length: { maximum: 8000 }
   validates :position, presence: true, numericality: { greater_than_or_equal_to: 0 }
-  validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 5 }
+  validates :level, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 5 }
 
   # Retourne la valeur du qcm
   def value
