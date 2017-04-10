@@ -192,11 +192,7 @@ class UsersController < ApplicationController
 
   # Recalculer tous les scores
   def recompute_scores
-    User.all.each do |user|
-      if !user.admin?
-      	point_attribution_all
-      end
-    end
+    point_attribution_all
     Section.all.each do |s|
     	s.max_score = 0
     	if !s.fondation?
