@@ -22,7 +22,7 @@ Modifier la structure des sections
   <% existe = Set.new %>
   <% maximum = 1 %>
   <% chapters = Array.new %>
-  <% Chapter.all.each do |chapter|%>
+  <% Chapter.includes(:section, :prerequisites).all.each do |chapter|%>
     <% unless chapter.section.fondation && !fondement %>
       <% chapters.push(chapter) %>
       <% if fondement %>
@@ -75,7 +75,7 @@ Modifier la structure des sections
   }
     
 
-  <% Chapter.all.each do |chapter| %>
+  <% Chapter.includes(:section).all.each do |chapter| %>
     <% unless chapter.section.fondation && !fondement %>
       couleur = 1+prereq[<%= chapter.id %>];
       couleurmaxi = <%= maximum %>;
@@ -139,12 +139,12 @@ Modifier la structure des sections
 <% liste = Array.new %>
 
 <!-- Création de la liste -->
-<% Section.where(:fondation => true).all.each do |s| %>
+<% Section.where(:fondation => true).each do |s| %>
   <% if !s.fondation || fondement %>
     <% liste2 = Array.new %>
     <% liste2.push(s.name) %>
     <% liste3 = Array.new %>
-    <% s.chapters.find(:all, :order => "name").each do |c| %>
+    <% s.chapters.order(:name).each do |c| %>
       <% liste3.push([c.name, c.id]) %>
     <% end %>
     <% liste2.push(liste3) %>
@@ -154,12 +154,12 @@ Modifier la structure des sections
 <% end %>
 
 
-<% Section.where(:fondation => false).order(:name).all.each do |s| %>
+<% Section.where(:fondation => false).order(:name).each do |s| %>
   <% if !s.fondation || fondement %>
     <% liste2 = Array.new %>
     <% liste2.push(s.name) %>
     <% liste3 = Array.new %>
-    <% s.chapters.find(:all, :order => "name").each do |c| %>
+    <% s.chapters.order(:name).each do |c| %>
       <% liste3.push([c.name, c.id]) %>
     <% end %>
     <% liste2.push(liste3) %>

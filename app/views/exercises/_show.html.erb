@@ -65,7 +65,7 @@ function hideStuff() {
   <span id='explanation2' style='display:none;'><br/><br/>
   Corrects :
   <% compte = 0 %>
-  <% f.solvedexercises.order(:updated_at).all.each do |se| %>
+  <% f.solvedexercises.includes(:user).order(:updated_at).all.each do |se| %>
     <% if se.correct %>
       <% if compte > 0 %>
         <%= " - " %>

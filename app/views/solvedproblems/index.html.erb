@@ -49,7 +49,7 @@ html>body tbody.scroll {
   <% end %>
 <% end %>
 
-<% Solvedproblem.where("truetime > ?", twoweeksago).order("truetime DESC").each do |s| %>
+<% Solvedproblem.includes(problem: :chapters).where("truetime > ?", twoweeksago).order("truetime DESC").each do |s| %>
   <% problem = s.problem %>
   <% user_id = s.user_id %>
   <% level = problem.level %>

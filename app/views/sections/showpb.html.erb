@@ -35,7 +35,7 @@
 <% compteur = 0 %>
 
 <!-- On parcourt tous les problèmes de ce niveau -->
-<% @section.problems.where(:level => level).order(:number).each do |p| %>
+<% @section.problems.includes(:chapters, :virtualtest).where(:level => level).order(:number).each do |p| %>
 
 <!-- Si le problème est en ligne (ou on est admin) -->
 <% if p.online? || (signed_in? && current_user.sk.admin?) %>
