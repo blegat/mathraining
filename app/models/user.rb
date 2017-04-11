@@ -158,7 +158,6 @@ class User < ActiveRecord::Base
 
   # Rend le nombre de nouveaux messages sur le forum
   def combien_forum
-    lastsubjects = Array.new
     compteur = 0
     if self.admin?
       lastsubjects = Subject.where("lastcomment > ?", self.forumseen)
@@ -168,11 +167,8 @@ class User < ActiveRecord::Base
       lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen)
     end
     lastsubjects.each do |s|
-      m = s.messages.order(:id).last
-      if m.nil?
-      m = s
-      end
-      if m.user.id != self.id
+      m = s.messages.order(:created_at).last || s
+      if m.user_id != self.id
         compteur = compteur+1
       end
     end

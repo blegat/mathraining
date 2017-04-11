@@ -50,7 +50,7 @@ html>body tbody.scroll {
   <% end %>
   
   <h3>Soumissions correctes</h3>
-  <% submissions = problem.submissions.where(visible: true, status: 2, star: false).order('created_at DESC') %>
+  <% submissions = problem.submissions.includes(:user, :problem).where(visible: true, status: 2, star: false).order('created_at DESC') %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>

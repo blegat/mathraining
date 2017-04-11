@@ -38,7 +38,7 @@ class SubjectsController < ApplicationController
     end
 
     @importants = Array.new
-    Subject.where(important: true).order("lastcomment DESC").to_a.each do |s|
+    Subject.includes(:user, :category, :section, :chapter).where(important: true).order("lastcomment DESC").to_a.each do |s|
       if ((signed_in? && current_user.sk.admin?) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @importants.push(s)
@@ -47,7 +47,7 @@ class SubjectsController < ApplicationController
     end
 
     @subjects = Array.new
-    Subject.where(important: false).order("lastcomment DESC").to_a.each do |s|
+    Subject.includes(:user, :category, :section, :chapter).where(important: false).order("lastcomment DESC").to_a.each do |s|
       if (signed_in? && current_user.sk.admin?) || !s.admin && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @subjects.push(s)

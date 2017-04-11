@@ -31,6 +31,8 @@ group :development, :test do
   gem 'sqlite3'
   gem 'rspec-rails', '3.0'
   gem 'random_record'
+  
+  gem 'bullet'
 end
 
 gem "annotate", "~> 2.5.0", group: :development

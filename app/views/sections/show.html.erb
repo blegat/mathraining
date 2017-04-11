@@ -429,7 +429,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 <% n = 0 %>
 
 <!-- On parcourt tous les chapitres -->
-<% Chapter.all.each do |c| %>
+<% Chapter.includes(:prerequisites).all.each do |c| %>
   <% if (c.online || (@ss && current_user.sk.admin)) && section_fondation[c.section_id] %>
     <% retiens[c.id] = n %>
     <% chap.push(c) %>
