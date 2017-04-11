@@ -40,7 +40,7 @@ Mathraining::Application.configure do
   # config.assets.debug = true
 
   # Enable SQL debugging
-  enable_sql_debugging = false # Set this to false if you don't want it
+  enable_sql_debugging = true # Set this to false if you don't want it
   config.after_initialize do
     Bullet.enable = true
     Bullet.alert = true
