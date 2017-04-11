@@ -22,7 +22,7 @@ class Tchatmessagefile < ActiveRecord::Base
     :hash_secret => "longSecretString"
   belongs_to :tchatmessage
   validates_attachment_presence :file
-  validates_attachment_size :file, :less_than => 10.megabytes
+  validates_attachment_size :file, :less_than => 5.megabytes
   validates_attachment_content_type :file, :content_type => ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf', 'application/zip', 'application/msword', 'text/plain']
 
   # Indique si la pièce jointe est une image (pour voir si on l'affiche ou non)
