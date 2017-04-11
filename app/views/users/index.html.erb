@@ -25,7 +25,7 @@
 <% rank = 1 %>
 <% previouspoint = -1 %>
 
-<% recent = Array.new %>
+<% recent = Array.new(User.last.id+1) %>
 <% twoweeksago = Date.today - 14 %>
 
 <% maxscore = Array.new %>
@@ -34,7 +34,7 @@
   <% maxscore[s.id] = s.max_score %>
 <% end %>
 
-<% persection = Array.new %>
+<% persection = Array.new(User.last.id+1) %>
 
 <% User.all.each do |u| %>
   <% recent[u.id] = 0 %>
@@ -43,18 +43,18 @@
 
 <% t2 = Time.now %>
 
-<% Solvedproblem.includes(:problem).where("truetime > ?", twoweeksago).order("truetime DESC").each do |s| %>
+<% Solvedproblem.includes(:problem).where("truetime > ?", twoweeksago).find_each do |s| %>
   <% recent[s.user_id] += s.problem.value %>
 <% end %>
 
-<% Solvedexercise.includes(:exercise).where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
+<% Solvedexercise.includes(:exercise).where("resolutiontime > ?", twoweeksago).find_each do |s| %>
   <% if s.correct %>
   	<% exo = s.exercise %>
     <% recent[s.user_id] += exo.value %>
   <% end %>
 <% end %>
 
-<% Solvedqcm.includes(:qcm).where("resolutiontime > ?", twoweeksago).order("resolutiontime DESC").each do |s| %>
+<% Solvedqcm.includes(:qcm).where("resolutiontime > ?", twoweeksago).find_each do |s| %>
   <% if s.correct %>
   	<% qcm = s.qcm %>
     <% recent[s.user_id] += qcm.value %>

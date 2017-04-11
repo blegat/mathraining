@@ -38,4 +38,20 @@ Mathraining::Application.configure do
 
   # Expands the lines which load the assets
   # config.assets.debug = true
+
+  # Enable SQL debugging
+  enable_sql_debugging = false # Set this to false if you don't want it
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.alert = true
+    Bullet.bullet_logger = true
+    Bullet.console = true
+    Bullet.rails_logger = true
+    Bullet.add_footer = true
+
+    Bullet.add_whitelist :type => :unused_eager_loading, :class_name => "Subject", :association => :chapter
+    Bullet.add_whitelist :type => :unused_eager_loading, :class_name => "Subject", :association => :section
+    Bullet.add_whitelist :type => :unused_eager_loading, :class_name => "Subject", :association => :exercise
+  end if enable_sql_debugging
+
 end

@@ -210,7 +210,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
 <% n = 0 %>
 
 <!-- Parcours tous les chapitres -->
-<% Chapter.all.each do |c| %>
+<% Chapter.includes(:prerequisites).all.each do |c| %>
   <% if (c.online || (@ss && current_user.sk.admin)) && !section_fondation[c.section_id] %>
     <% retiens[c.id] = n %>
     <% chap.push(c) %>
@@ -218,7 +218,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
     <% faisable.push(-1) %>
     <% faisable2.push(-1) %>
     <% nb_pre.push(0) %>
-    <% if c.section == @section %>
+    <% if c.section_id == @section.id %>
       <% affiche.push(true) %>
     <% else %>
       <% affiche.push(false) %>
@@ -429,7 +429,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 <% n = 0 %>
 
 <!-- On parcourt tous les chapitres -->
-<% Chapter.all.each do |c| %>
+<% Chapter.includes(:prerequisites).all.each do |c| %>
   <% if (c.online || (@ss && current_user.sk.admin)) && section_fondation[c.section_id] %>
     <% retiens[c.id] = n %>
     <% chap.push(c) %>

@@ -91,7 +91,7 @@
   <% if m.nil? %>
     <% m = s %>
   <% end %>
-  <% if current_user.sk.forumseen < s.lastcomment && m.user.id != current_user.sk.id %>
+  <% if current_user.sk.forumseen < s.lastcomment && m.user_id != current_user.sk.id %>
     <% style = "background-color:#FFFFBB;" %>
   <% end %>
   <tr style="<%= style %>">
