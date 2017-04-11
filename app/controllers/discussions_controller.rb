@@ -150,7 +150,7 @@ class DiscussionsController < ApplicationController
     end
 
     # On vérifie que les pièces jointes ne sont pas trop grosses
-    if totalsize > 5242880
+    if totalsize > 5.megabytes
       j = 1
       while j < i do
         attach[j-1].file.destroy
@@ -159,7 +159,7 @@ class DiscussionsController < ApplicationController
       end
 
       session[:ancientexte] = @content
-      flash[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)."
+      flash[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
       @erreur = true
       return
     end

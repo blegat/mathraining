@@ -151,7 +151,7 @@ class SubmissionsController < ApplicationController
       k = k+1
     end
 
-    if totalsize > 5242880
+    if totalsize > 5.megabytes
       j = 1
       while j < i do
         attach[j-1].file.destroy
@@ -160,7 +160,7 @@ class SubmissionsController < ApplicationController
       end
       session[:ancientexte] = params[:submission][:content]
       redirect_to problem_intest_path(@problem),
-          flash: {danger: "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)" } and return
+          flash: {danger: "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)" } and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
