@@ -6,9 +6,14 @@ class ApplicationController < ActionController::Base
 
   before_filter :active_user
   before_filter :check_up
+  before_filter :warning
 
   ########## PARTIE PRIVEE ##########
   private
+  
+  def warning
+  	flash[:info] = "Attention! Ce <b>vendredi 14 avril 2017</b>, une mise à jour du site aura lieu et celui-ci sera inaccessible pendant une bonne partie de la journée. Merci pour votre compréhension.".html_safe
+  end
 
   # Vérifie que l'utilisateur n'a pas eu son compte désactivé.
   def active_user
