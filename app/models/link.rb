@@ -10,7 +10,7 @@
 #
 
 class Link < ActiveRecord::Base
-  attr_accessible :nonread
+  # attr_accessible :nonread
 
   # BELONGS_TO, HAS_MANY
 

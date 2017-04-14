@@ -15,7 +15,7 @@
 include ApplicationHelper
 
 class Theory < ActiveRecord::Base
-  attr_accessible :content, :position, :title, :online
+  # attr_accessible :content, :position, :title, :online
 
   # BELONGS_TO, HAS_MANY
 

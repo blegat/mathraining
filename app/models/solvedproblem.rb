@@ -13,7 +13,7 @@
 #
 
 class Solvedproblem < ActiveRecord::Base
-  attr_accessible :resolutiontime, :truetime
+  # attr_accessible :resolutiontime, :truetime
 
   # BELONGS_TO, HAS_MANY
 

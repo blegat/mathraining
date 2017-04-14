@@ -12,10 +12,10 @@
 #
 
 class Color < ActiveRecord::Base
-  attr_accessible :pt, :name, :color, :font_color, :femininename
-  
+  # attr_accessible :pt, :name, :color, :font_color, :femininename
+
   # VALIDATIONS
-  
+
   validates :pt, presence: true
   validates :name, presence: true, length: { maximum: 255 }
   validates :femininename, presence: true, length: { maximum: 255 }

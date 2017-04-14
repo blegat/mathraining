@@ -16,7 +16,7 @@
 #
 
 class Exercise < ActiveRecord::Base
-  attr_accessible :answer, :decimal, :position, :statement, :online, :explanation, :level
+  # attr_accessible :answer, :decimal, :position, :statement, :online, :explanation, :level
 
   # BELONGS_TO, HAS_MANY
 

@@ -15,13 +15,13 @@
 #
 
 class Solvedexercise < ActiveRecord::Base
-  attr_accessible :correct, :guess, :nb_guess, :resolutiontime
-  
+  # attr_accessible :correct, :guess, :nb_guess, :resolutiontime
+
   # BELONGS_TO, HAS_MANY
-  
+
   belongs_to :exercise
   belongs_to :user
-  
+
   # VALIDATIONS
 
   validates :exercise_id, presence: true, uniqueness: { scope: :user_id }

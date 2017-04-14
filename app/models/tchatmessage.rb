@@ -11,7 +11,7 @@
 #
 
 class Tchatmessage < ActiveRecord::Base
-  attr_accessible :content
+  # attr_accessible :content
 
   # BELONGS_TO, HAS_MANY
 

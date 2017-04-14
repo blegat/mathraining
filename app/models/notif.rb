@@ -11,13 +11,13 @@
 #
 
 class Notif < ActiveRecord::Base
-  attr_accessible :submission_id
-  
+  # attr_accessible :submission_id
+
   # BELONGS_TO, HAS_MANY
-  
+
   belongs_to :user
   belongs_to :submission
-  
+
   # VALIDATIONS
 
   validates :submission_id, presence: true

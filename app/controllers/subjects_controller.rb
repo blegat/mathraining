@@ -13,7 +13,7 @@ class SubjectsController < ApplicationController
     cherche_chapitre = -1
     cherche_personne = false
     q = -1
-		
+
 		@category = nil
     @chapitre = nil
     @section = nil
@@ -97,18 +97,18 @@ class SubjectsController < ApplicationController
       redirect_to root_path and return
     end
 
-    @subject = Subject.new(params[:subject].except(:chapter_id, :category_id, :exercise_id))
+    @subject = Subject.new(params.require(:subject).permit(:title, :content, :admin, :important, :wepion))
     @subject.user = current_user.sk
     @subject.lastcomment = DateTime.current
 
     if @subject.admin
       @subject.wepion = false # On n'autorise pas wépion si admin
     end
-    
+
     if @subject.title.size > 0
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
     end
-    
+
     category_id = params[:subject][:category_id].to_i
     if category_id < 1000
     	@subject.category = Category.find(category_id)
@@ -199,7 +199,7 @@ class SubjectsController < ApplicationController
         @subject.admin = false
         @subject.save
       end
-      
+
       if current_user.sk.admin?
 		    if params.has_key?(:groupeA)
 		    	User.where(:group => "A").each do |u|
@@ -212,7 +212,7 @@ class SubjectsController < ApplicationController
 		    	end
 		    end
 		  end
-      
+
       flash[:success] = "Votre sujet a bien été posté."
 
       redirect_to subject_path(@subject, :q => q)
@@ -241,7 +241,7 @@ class SubjectsController < ApplicationController
       redirect_to root_path
     end
 
-    if @subject.update_attributes(params[:subject].except(:chapter_id, :category_id, :exercise_id))
+    if @subject.update_attributes(params.require(:subject).permit(:title, :content, :admin, :important, :wepion))
 
       if @subject.admin
         @subject.wepion = false # On n'autorise pas wépion si admin
@@ -285,7 +285,7 @@ class SubjectsController < ApplicationController
 		  		end
 		  	end
 		  end
-		  
+
 		  @subject.save
 
       if !current_user.sk.admin? && @subject.admin? # Hack
@@ -387,23 +387,23 @@ class SubjectsController < ApplicationController
 
     redirect_to subjects_path(:q => q)
   end
-  
+
   # Migrer un sujet vers un autre : il faut être root (disons admin)
   def migrate
   	q = 0
     if(params.has_key?:q)
       q = params[:q].to_i
     end
-    
+
   	@subject = Subject.find(params[:subject_id])
   	autre_id = params[:migreur].to_i
   	@migreur = Subject.find(autre_id)
-  	
+
   	premier_message = Message.new(content: @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]", created_at: @subject.created_at)
   	premier_message.user = @subject.user
   	premier_message.subject = @migreur
   	premier_message.save
-  	
+
   	@subject.messages.order(:id).each do |m|
   		newm = Message.new(content: m.content, created_at: m.created_at)
   		newm.user = m.user
@@ -411,12 +411,12 @@ class SubjectsController < ApplicationController
   		newm.save
   		m.delete
   	end
-  	
+
   	@migreur.lastcomment = [@migreur.lastcomment, @subject.lastcomment].max
   	@migreur.save
-  	
+
   	@subject.delete
-  	
+
   	redirect_to subject_path(@migreur, :q => q)
   end
 

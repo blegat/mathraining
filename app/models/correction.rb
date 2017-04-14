@@ -12,17 +12,17 @@
 #
 
 class Correction < ActiveRecord::Base
-  attr_accessible :content
-  
+  # attr_accessible :content
+
   # BELONGS_TO, HAS_MANY
-  
+
   belongs_to :user
   belongs_to :submission
   has_many :correctionfiles, dependent: :destroy
   has_many :fakecorrectionfiles, dependent: :destroy
-  
+
   # VALIDATIONS
-  
+
   validates :user_id, presence: true
   validates :submission_id, presence: true
   validates :content, presence: true, length: { maximum: 8000 }

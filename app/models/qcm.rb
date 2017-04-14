@@ -16,7 +16,7 @@
 #
 
 class Qcm < ActiveRecord::Base
-  attr_accessible :many_answers, :position, :statement, :online, :explanation, :level
+  # attr_accessible :many_answers, :position, :statement, :online, :explanation, :level
 
   # BELONGS_TO, HAS_MANY
 

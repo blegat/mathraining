@@ -12,13 +12,13 @@
 #
 
 class Following < ActiveRecord::Base
-  attr_accessible :read
-  
+  # attr_accessible :read
+
   # BELONGS_TO, HAS_MANY
 
   belongs_to :submission
   belongs_to :user
-  
+
   # VALIDATIONS
 
   validates :submission_id, presence: true

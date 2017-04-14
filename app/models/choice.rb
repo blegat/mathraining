@@ -11,13 +11,13 @@
 #
 
 class Choice < ActiveRecord::Base
-  attr_accessible :ans, :ok, :qcm_id
-  
+  # attr_accessible :ans, :ok, :qcm_id
+
   # BELONGS_TO, HAS_MANY
-  
+
   belongs_to :qcm
   has_and_belongs_to_many :solvedqcm
-  
+
   # VALIDATIONS
 
   validates :qcm_id, presence: true

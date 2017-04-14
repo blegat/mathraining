@@ -9,5 +9,5 @@
 #
 
 class Visitor < ActiveRecord::Base
-  attr_accessible :number, :date
+  # attr_accessible :number, :date
 end

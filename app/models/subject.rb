@@ -20,7 +20,7 @@
 #
 
 class Subject < ActiveRecord::Base
-  attr_accessible :content, :title, :lastcomment, :admin, :important, :wepion
+  # attr_accessible :content, :title, :lastcomment, :admin, :important, :wepion
 
   # BELONGS_TO, HAS_MANY
 

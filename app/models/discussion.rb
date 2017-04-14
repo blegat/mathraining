@@ -10,7 +10,7 @@
 #
 
 class Discussion < ActiveRecord::Base
-  attr_accessible :last_message
+  # attr_accessible :last_message
 
   # BELONGS_TO, HAS_MANY
 

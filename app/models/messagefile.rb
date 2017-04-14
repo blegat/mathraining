@@ -12,10 +12,10 @@
 #
 
 class Messagefile < ActiveRecord::Base
-  attr_accessible :file, :message_id
-  
+  # attr_accessible :file, :message_id
+
   # BELONGS_TO, HAS_MANY
-  
+
   has_attached_file :file,
     :path => ':rails_root/public/system/:attachment/:class/:id/:basename_:hash.:extension',
     :url => '/system/:attachment/:class/:id/:basename_:hash.:extension',
@@ -24,7 +24,7 @@ class Messagefile < ActiveRecord::Base
   validates_attachment_presence :file
   validates_attachment_size :file, :less_than => 5.megabytes
   validates_attachment_content_type :file, :content_type => ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf', 'application/zip', 'application/msword', 'text/plain']
-  
+
   # Indique si la pièce jointe est une image (pour voir si on l'affiche ou non)
   def is_image
    if self.file.content_type == 'image/jpeg' || self.file.content_type == 'image/jpg' || self.file.content_type == 'image/png' || self.file.content_type == 'image/gif' || self.file.content_type == 'image/bmp'

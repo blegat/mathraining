@@ -24,7 +24,7 @@ class MessagesController < ApplicationController
       q = params[:q].to_i
     end
 
-    @message = Message.new(params[:message])
+    @message = Message.new(params.require(:message).permit(:content))
     @message.user = current_user.sk
     @message.subject = @subject
 
@@ -108,7 +108,7 @@ class MessagesController < ApplicationController
 
       tot = @subject.messages.count
       page = [0,((tot-1)/10).floor].max + 1
-      
+
       if current_user.sk.admin?
 		    if params.has_key?(:groupeA)
 		    	User.where(:group => "A").each do |u|
@@ -121,9 +121,9 @@ class MessagesController < ApplicationController
 		    	end
 		    end
 		  end
-      
+
       flash[:success] = "Votre message a bien été posté."
-      
+
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
 
     # Si il y a eu un problème : on supprime les pièces jointes
@@ -146,7 +146,7 @@ class MessagesController < ApplicationController
     end
 
     # Si la modification du message réussit
-    if @message.update_attributes(params[:message])
+    if @message.update_attributes(params.require(:message).permit(:content))
 
       # On s'occupe des pièces jointes
       totalsize = 0

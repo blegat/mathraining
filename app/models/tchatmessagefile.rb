@@ -12,7 +12,7 @@
 #
 
 class Tchatmessagefile < ActiveRecord::Base
-  attr_accessible :file, :tchatmessage_id
+  # attr_accessible :file, :tchatmessage_id
 
   # BELONGS_TO, HAS_MANY
 

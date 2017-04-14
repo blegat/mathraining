@@ -53,7 +53,7 @@ Répondre
 <h2>Messages récents</h2>
 
 <!-- Affiche les 5 derniers messages -->
-<% messages = @subject.messages.order("id DESC").slice(0,5) %>
+<% messages = @subject.messages.order("id DESC").limit(5) %>
 
 <% messages.each do |m| %>
   <%= render 'subjects/message', m: m, canmodif: false %>
