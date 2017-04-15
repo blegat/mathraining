@@ -10,10 +10,11 @@ rvm:
 
 #script: "bundle exec rspec spec"
 env:
-  - DB=sqlite
-  - DB=mysql
-  - DB=postgresql
-  - SECRET_KEY_BASE=thisisnotasecret
+  RAILS_ENV=test
+  SECRET_KEY_BASE="$(bundle exec rake secret)"
+  # - DB=sqlite
+  # - DB=mysql
+  # - DB=postgresql
 script:
   - RAILS_ENV=test bundle exec rake db:migrate --trace
   - bundle exec rake db:test:prepare
