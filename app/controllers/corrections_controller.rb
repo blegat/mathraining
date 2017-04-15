@@ -67,7 +67,7 @@ class CorrectionsController < ApplicationController
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
 
-    correction = @submission.corrections.build(params[:correction])
+    correction = @submission.corrections.build(params.require(:correction).permit(:content))
     correction.user = current_user.sk
 
     # Si la sauvegarde se passe bien
