@@ -13,6 +13,7 @@ env:
   - DB=sqlite
   - DB=mysql
   - DB=postgresql
+  - SECRET_KEY_BASE=thisisnotasecret
 script:
   - RAILS_ENV=test bundle exec rake db:migrate --trace
   - bundle exec rake db:test:prepare
