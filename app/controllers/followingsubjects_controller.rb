@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class FollowingsubjectsController < ApplicationController
-  before_filter :signed_in_user
+  before_action :signed_in_user
 
   def add_followingsubject
     sub = Subject.find_by_id(params[:subject_id])

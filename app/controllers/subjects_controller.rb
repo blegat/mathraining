@@ -1,10 +1,10 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :admin_subject_user, only: [:show]
-  before_filter :author, only: [:edit, :update, :destroy]
-  before_filter :admin_user, only: [:destroy, :migrate]
-  before_filter :notskin_user, only: [:create, :update]
+  before_action :signed_in_user
+  before_action :admin_subject_user, only: [:show]
+  before_action :author, only: [:edit, :update, :destroy]
+  before_action :admin_user, only: [:destroy, :migrate]
+  before_action :notskin_user, only: [:create, :update]
 
   # Voir tous les sujets
   def index

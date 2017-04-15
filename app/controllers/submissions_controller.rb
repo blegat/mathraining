@@ -1,15 +1,15 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :get_problem
-  before_filter :admin_user, only: [:destroy]
-  before_filter :corrector_user, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
-  before_filter :not_solved, only: [:create]
-  before_filter :can_submit, only: [:create]
-  before_filter :has_access, only: [:create]
-  before_filter :enough_points, only: [:create]
-  before_filter :in_test, only: [:intest, :create_intest, :update_intest]
-  before_filter :brouillon, only: [:update_brouillon]
+  before_action :signed_in_user
+  before_action :get_problem
+  before_action :admin_user, only: [:destroy]
+  before_action :corrector_user, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
+  before_action :not_solved, only: [:create]
+  before_action :can_submit, only: [:create]
+  before_action :has_access, only: [:create]
+  before_action :enough_points, only: [:create]
+  before_action :in_test, only: [:intest, :create_intest, :update_intest]
+  before_action :brouillon, only: [:update_brouillon]
 
   # Créer une nouvelle soumission
   def create

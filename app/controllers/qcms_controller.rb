@@ -1,9 +1,9 @@
 #encoding: utf-8
 class QcmsController < QuestionsController
-  before_filter :signed_in_user
-  before_filter :admin_user
-  before_filter :online_qcm, only: [:add_choice, :remove_choice]
-  before_filter :root_qcm_user, only: [:destroy]
+  before_action :signed_in_user
+  before_action :admin_user
+  before_action :online_qcm, only: [:add_choice, :remove_choice]
+  before_action :root_qcm_user, only: [:destroy]
 
   # Créer un qcm
   def new

@@ -1,8 +1,8 @@
 #encoding: utf-8
 class TchatmessagesController < DiscussionsController
-  before_filter :signed_in_user
-  before_filter :notskin_user, only: [:create]
-  before_filter :is_involved_2, only: [:create]
+  before_action :signed_in_user
+  before_action :notskin_user, only: [:create]
+  before_action :is_involved_2, only: [:create]
 
   def create
     link = current_user.sk.links.where(:discussion_id => @discussion.id).first

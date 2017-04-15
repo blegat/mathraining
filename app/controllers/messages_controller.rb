@@ -1,12 +1,12 @@
 #encoding: utf-8
 class MessagesController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :admin_subject_user, only: [:new, :create]
-  before_filter :author, only: [:edit, :update]
-  before_filter :admin_user, only: [:destroy]
-  before_filter :valid_chapter
-  before_filter :online_chapter
-  before_filter :notskin_user, only: [:create, :update]
+  before_action :signed_in_user
+  before_action :admin_subject_user, only: [:new, :create]
+  before_action :author, only: [:edit, :update]
+  before_action :admin_user, only: [:destroy]
+  before_action :valid_chapter
+  before_action :online_chapter
+  before_action :notskin_user, only: [:create, :update]
 
   # Créer un message
   def new

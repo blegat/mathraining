@@ -1,7 +1,7 @@
 #encoding: utf-8
 class DiscussionsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :is_involved, only: [:show]
+  before_action :signed_in_user
+  before_action :is_involved, only: [:show]
 
   def show
     par_page = 10

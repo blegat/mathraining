@@ -1,12 +1,12 @@
 #encoding: utf-8
 class ProblemsController < QuestionsController
-  before_filter :signed_in_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_filter :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_filter :root_problem_user, only: [:destroy]
-  before_filter :has_access, only: [:show]
-  before_filter :online_problem, only: [:show]
-  before_filter :can_be_online, only: [:put_online]
-  before_filter :enough_points, only: [:show]
+  before_action :signed_in_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  before_action :root_problem_user, only: [:destroy]
+  before_action :has_access, only: [:show]
+  before_action :online_problem, only: [:show]
+  before_action :can_be_online, only: [:put_online]
+  before_action :enough_points, only: [:show]
 
   # Voir le problème : il faut avoir accès
   def show

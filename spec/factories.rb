@@ -134,6 +134,9 @@ FactoryGirl.define do
     sequence(:first_name) { |n| "Jean#{n}" }
     sequence(:last_name) { |n| "Dupont#{n}" }
     sequence(:email) { |n| "person_#{n}@example.com" }
+    sequence(:country) { "Belgique" }
+    sequence(:year) { "1992" }
+    
     password "foobar"
     password_confirmation "foobar"
     factory :admin do

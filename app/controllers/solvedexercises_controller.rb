@@ -1,10 +1,10 @@
 #encoding: utf-8
 class SolvedexercisesController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :before_create, only: [:create]
-  before_filter :before_update, only: [:update]
-  before_filter :online_chapter
-  before_filter :unlocked_chapter
+  before_action :signed_in_user
+  before_action :before_create, only: [:create]
+  before_action :before_update, only: [:update]
+  before_action :online_chapter
+  before_action :unlocked_chapter
 
   # On tente de résoudre un exercice
   def create

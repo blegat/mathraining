@@ -4,9 +4,9 @@ class ApplicationController < ActionController::Base
   include SessionsHelper
   include ApplicationHelper
 
-  before_filter :active_user
-  before_filter :check_up
-  before_filter :warning
+  before_action :active_user
+  before_action :check_up
+  before_action :warning
 
   ########## PARTIE PRIVEE ##########
   private

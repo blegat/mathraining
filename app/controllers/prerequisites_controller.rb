@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class PrerequisitesController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :admin_user
+  before_action :signed_in_user
+  before_action :admin_user
 
   # Graphe des prérequis
   def graph_prerequisites

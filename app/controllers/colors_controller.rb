@@ -1,7 +1,7 @@
 #encoding: utf-8
 class ColorsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :root_user
+  before_action :signed_in_user
+  before_action :root_user
 
   # Créer un niveau
   def create

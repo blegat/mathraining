@@ -1,8 +1,8 @@
 #encoding: utf-8
 class CorrectionfilesController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :have_access, only: [:download]
-  before_filter :root_user, only: [:fake_delete]
+  before_action :signed_in_user
+  before_action :have_access, only: [:download]
+  before_action :root_user, only: [:fake_delete]
 
   # Télécharger pièce jointe : vérifier qu'on est en ligne et qu'on a accès
   def download

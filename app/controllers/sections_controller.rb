@@ -1,8 +1,8 @@
 #encoding: utf-8
 class SectionsController < ApplicationController
-  before_filter :signed_in_user, only: [:edit, :update]
-  before_filter :recup
-  before_filter :admin_user, only: [:edit, :update]
+  before_action :signed_in_user, only: [:edit, :update]
+  before_action :recup
+  before_action :admin_user, only: [:edit, :update]
 
   # Montrer la section
   def show

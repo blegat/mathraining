@@ -1,14 +1,14 @@
 #encoding: utf-8
 
 class UsersController < ApplicationController
-  before_filter :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :groups]
-  before_filter :correct_user, only: [:edit, :update]
-  before_filter :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
-  before_filter :corrector_user, only: [:notifications_new, :notifications_update]
-  before_filter :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector]
-  before_filter :signed_out_user, only: [:new, :create, :password_forgotten]
-  before_filter :unactivate_admin, only: [:unactivate, :reactivate]
-  before_filter :group_user, only: [:groups]
+  before_action :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :groups]
+  before_action :correct_user, only: [:edit, :update]
+  before_action :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
+  before_action :corrector_user, only: [:notifications_new, :notifications_update]
+  before_action :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector]
+  before_action :signed_out_user, only: [:new, :create, :password_forgotten]
+  before_action :unactivate_admin, only: [:unactivate, :reactivate]
+  before_action :group_user, only: [:groups]
 
   # Index de tous les users avec scores
   def index
@@ -31,7 +31,8 @@ class UsersController < ApplicationController
 
   # S'inscrire au site 2 : il faut être hors ligne
   def create
-    @user = User.new(params[:user])
+    #@user = User.new(params[:user])
+   	@user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :sex, :year, :country, :password, :password_confirmation))
     @user.key = SecureRandom.urlsafe_base64
 
     # Don't do email and captcha in development and tests
@@ -62,7 +63,7 @@ class UsersController < ApplicationController
 
   # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
   def update
-    if @user.update_attributes(params[:user])
+    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :email, :sex, :year, :country, :password, :password_confirmation))
       flash[:success] = "Votre profil a bien été mis à jour."
       redirect_to root_path
     else
@@ -250,7 +251,7 @@ class UsersController < ApplicationController
       current_user.update_attribute(:skin, @user.id)
       flash[:success] = "Vous êtes maintenant dans la peau de #{@user.name}."
     end
-    redirect_to(:back)
+    redirect_back(fallback_location: root_path)
   end
 
   # Quitter la peau d'un utilisateur
@@ -259,7 +260,7 @@ class UsersController < ApplicationController
       current_user.update_attribute(:skin, 0)
       flash[:success] = "Vous êtes à nouveau dans votre peau."
     end
-    redirect_to(:back)
+    redirect_back(fallback_location: root_path)
   end
 
   # Désactiver un compte

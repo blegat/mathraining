@@ -4,7 +4,7 @@ gem 'rails', '5.0.1'
 #gem 'activeresource', '~> 4.1.0'
 # gem 'protected_attributes'
 gem "bootstrap-sass", "~> 3.2.0"
-gem 'bcrypt-ruby', '3.0.1'
+gem 'bcrypt-ruby', '3.1.2'
 gem 'faker', '1.0.1'
 gem 'will_paginate', '3.1.0'
 gem 'bootstrap-will_paginate', '0.0.10'
@@ -33,10 +33,10 @@ group :development, :test do
   gem 'random_record'
 
   gem 'bullet'
-  gem 'web-console', '~> 2.0'
 end
 
 gem "annotate", "~> 2.5.0", group: :development
+gem 'web-console', '~> 2.0', group: :development
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -49,13 +49,13 @@ end
 gem 'jquery-rails'
 
 group :test do
-  gem 'capybara', '2.2.0'
+  gem 'capybara', '2.12.1'
   gem 'factory_girl_rails', '4.1.0'
   gem 'database_cleaner', '0.7.0'
 end
 
 group :production do
-  gem 'pg', '~> 0.14.1'
+  gem 'pg', '~> 0.20.0'
 # http://stackoverflow.com/questions/9392939/pg-gem-fails-to-install
 # Centos 5 has a too old version of pg
 end

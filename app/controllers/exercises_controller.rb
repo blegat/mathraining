@@ -1,8 +1,8 @@
 #encoding: utf-8
 class ExercisesController < QuestionsController
-  before_filter :signed_in_user
-  before_filter :admin_user
-  before_filter :root_exercise_user, only: [:destroy]
+  before_action :signed_in_user
+  before_action :admin_user
+  before_action :root_exercise_user, only: [:destroy]
 
   # Créer un nouvel exercice : il faut être admin
   def new

@@ -1,8 +1,8 @@
 #encoding: utf-8
 class PicturesController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :admin_user
-  before_filter :good_person, only: [:show, :destroy]
+  before_action :signed_in_user
+  before_action :admin_user
+  before_action :good_person, only: [:show, :destroy]
 
   # Voir, il faut être la bonne personne
   def show

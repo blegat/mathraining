@@ -1,6 +1,6 @@
 #encoding: utf-8
 class SessionsController < ApplicationController
-  before_filter :signed_out_user, only: [:create, :new]
+  before_action :signed_out_user, only: [:create, :new]
 
   # Se connecter 1
   def new
@@ -13,19 +13,19 @@ class SessionsController < ApplicationController
     if user && user.authenticate(params[:session][:password])
       if !user.active
         flash[:danger] = "Ce compte a été désactivé et n'est plus accessible."
-        redirect_to(:back)
+        redirect_back(fallback_location: root_path)
       elsif user.email_confirm
         @remember_me = params[:session][:remember_me].to_i
         user.save
         sign_in user
-        redirect_to(:back)
+        redirect_back(fallback_location: root_path)
       else
         flash[:danger] = 'Vous devez activer votre compte via le mail qui vous a été envoyé.'
-        redirect_to(:back)
+        redirect_back(fallback_location: root_path)
       end
     else
       flash[:danger] = 'Email ou mot de passe invalide.'
-      redirect_to(:back)
+      redirect_back(fallback_location: root_path)
     end
   end
 

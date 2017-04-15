@@ -1,12 +1,12 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
-  before_filter :signed_in_user, only: [:new, :edit, :create, :update, :destroy, :warning, :put_online, :read]
-  before_filter :admin_user, only: [:new, :edit, :create, :update, :destroy, :warning, :put_online]
-  before_filter :chapter_exists1, only: [:show, :edit, :update, :destroy]
-  before_filter :chapter_exists2, only: [:export, :warning, :put_online, :read]
-  before_filter :delete_online, only: [:destroy]
-  before_filter :online_chapter, only: [:show, :export, :read]
-  before_filter :prerequisites_online, only: [:warning, :put_online]
+  before_action :signed_in_user, only: [:new, :edit, :create, :update, :destroy, :warning, :put_online, :read]
+  before_action :admin_user, only: [:new, :edit, :create, :update, :destroy, :warning, :put_online]
+  before_action :chapter_exists1, only: [:show, :edit, :update, :destroy]
+  before_action :chapter_exists2, only: [:export, :warning, :put_online, :read]
+  before_action :delete_online, only: [:destroy]
+  before_action :online_chapter, only: [:show, :export, :read]
+  before_action :prerequisites_online, only: [:warning, :put_online]
 
   # Voir un chapitre : il faut vérifier que le chapitre est en ligne (ou qu'on est admin)
   def show

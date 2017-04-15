@@ -1,7 +1,7 @@
 #encoding: utf-8
 class CategoriesController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :root_user
+  before_action :signed_in_user
+  before_action :root_user
   
   # Page des catégories
   def index
