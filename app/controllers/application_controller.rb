@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   private
   
   def warning
-  	flash[:info] = "Attention! Ce <b>vendredi 14 avril 2017</b>, une mise à jour du site aura lieu et celui-ci sera inaccessible pendant une bonne partie de la journée. Merci pour votre compréhension.".html_safe
+  	#flash[:info] = "Attention! Ce <b>vendredi 14 avril 2017</b>, une mise à jour du site aura lieu et celui-ci sera inaccessible pendant une bonne partie de la journée. Merci pour votre compréhension.".html_safe
   end
 
   # Vérifie que l'utilisateur n'a pas eu son compte désactivé.
