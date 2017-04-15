@@ -25,7 +25,8 @@
 <% rank = 1 %>
 <% previouspoint = -1 %>
 
-<% recent = Array.new(User.last.id+1) %>
+<% recent = Array.new(User.last.id+1) unless User.last.nil? %>
+<% recent = Array.new(1) %>
 <% twoweeksago = Date.today - 14 %>
 
 <% maxscore = Array.new %>
@@ -34,7 +35,8 @@
   <% maxscore[s.id] = s.max_score %>
 <% end %>
 
-<% persection = Array.new(User.last.id+1) %>
+<% persection = Array.new(User.last.id+1) unless User.last.nil? %>
+<% persection = Array.new(1) %>
 
 <% User.all.each do |u| %>
   <% recent[u.id] = 0 %>
