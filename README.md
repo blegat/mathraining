@@ -20,6 +20,7 @@ lisez la partie *Utilisation linéaire de Git* de
 > If you’re affected by any known bugs or are seeing odd behavior, you may want to consider uninstalling the RPMs for libxml2 and libxslt, and building them from source.
 http://nokogiri.org/tutorials/installing_nokogiri.html
 
-    $ sudo apt-get install libpq-dev
-
-    $ bundle install --without test development
+```sh
+$ sudo apt-get install libpq-dev
+$ bundle install --without test development
+```
