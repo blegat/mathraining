@@ -247,7 +247,7 @@ class SubmissionsController < ApplicationController
       @erreur = false
     end
 
-    if @submission.update_attributes(params[:submission])
+    if @submission.update_attributes(params.require(:submission).permit(:content))
 
       totalsize = 0
 
