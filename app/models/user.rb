@@ -100,7 +100,7 @@ class User < ActiveRecord::Base
 
   # Rend le statut pour un certain test virtuel
   def status(virtualtest)
-    x = Takentest.where(:user_id => self.id, :virtualtest_id => virtualtest.id).first
+    x = Takentest.where(:user_id => self.id, :virtualtest_id => virtualtest).first
     if x.nil?
       return -1
     else

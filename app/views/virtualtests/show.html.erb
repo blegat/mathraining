@@ -2,7 +2,7 @@
 
 <% provide(:title, "Test virtuel ##{ @virtualtest.number }") %>
 
-<% statut = current_user.sk.status(@virtualtest) %>
+<% statut = current_user.sk.status(@virtualtest.id) %>
 
 <!-- Script pour chronomètre -->
 <% if !current_user.sk.admin? && statut >= 0 %>

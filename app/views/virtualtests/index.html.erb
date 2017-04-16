@@ -54,7 +54,7 @@
   <!-- Si on a accès à ce test virtuel -->
   <% if access %>
     <% compteur = compteur + 1 %>
-    <% status = current_user.sk.status(t) %>
+    <% status = current_user.sk.status(t.id) %>
 
     <!-- Si (administrateur et en ligne) OU (étudiant et pas encore fait) : jaune -->
     <% if (current_user.sk.admin? && t.online?) || (!current_user.sk.admin? && status == -1) %>
