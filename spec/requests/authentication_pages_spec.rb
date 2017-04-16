@@ -18,7 +18,7 @@ describe "Authentication" do
       before { click_button "Connexion" }
 
       describe "after visiting another page" do
-        before { page.first(".navbar-brand").click }
+        before { click_link('Scores') }
         it { should_not have_selector('div.alert.alert-error') }
       end
     end

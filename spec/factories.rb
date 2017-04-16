@@ -5,9 +5,14 @@ FactoryGirl.define do
     content "contenu"
   end
   
+  # Category
+  factory :category do
+  	sequence(:name) { |n| "Categorie #{n}" }
+  end
+  
   # Chapter
   factory :chapter do
-    sequence(:name) { |n| "Chapitre#{n}" }
+    sequence(:name) { |n| "Chapitre #{n}" }
     level 1
   end
   
@@ -106,6 +111,12 @@ FactoryGirl.define do
     content "Contenu"
     association :user
     lastcomment DateTime.current
+    association :category
+    #category_id 1
+    chapter_id 0
+    section_id 0
+    qcm_id 0
+    exercise_id 0
     factory :admin_subject do
       admin true
     end

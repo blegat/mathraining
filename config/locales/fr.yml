@@ -34,7 +34,11 @@ fr:
         statement: "Enoncé"
         level: "Niveau"
       subject:
+        title: "Titre"
         content: "Message"
+        category_id: "Catégorie"
+        chapter_id: "Chapitre"
+        exercise_id: "Exercice"
       qcm:
         statement: "Enoncé"
         level: "Niveau"

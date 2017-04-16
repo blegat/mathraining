@@ -45,6 +45,7 @@
   <% remove_exercise_field() %>
 	<% if cat < 1000 %>
 		<% remove_chapter_field() %>
+		<% normal_title() %>
 	<% else %>
 		var oldSel = document.getElementById("subject_chapter_id");
 		<% section = cat/1000 %>

@@ -58,7 +58,7 @@ function checkExercise() {
 
 <!-- Catégorie -->
 <div class="form-group">
-  <%= f.label "Catégorie", :disabled => current_user.other %>
+  <%= f.label :category_id, :disabled => current_user.other %>
   <%= f.select(:category_id, grouped_options_for_select([['En dehors des cours', liste], ['En lien avec les cours', liste2]], presel), {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkCategory();") }) %>
 </div>
 
@@ -77,12 +77,12 @@ function checkExercise() {
 	<% end %>
 	
 	<div class="form-group">
-		<%= f.label "Chapitre", :disabled => current_user.other, :id => "label_chap" %>
+		<%= f.label :chapter_id, :disabled => current_user.other, :id => "label_chap" %>
 		<%= f.select(:chapter_id, options_for_select(listechap, presel2).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
 	</div>
 <% else %>
 	<div class="form-group">
-		<%= f.label "Chapitre", :disabled => current_user.other, :style => "display:none;", :id => "label_chap" %>
+		<%= f.label :chapter_id, :disabled => current_user.other, :style => "display:none;", :id => "label_chap" %>
 		<%= f.select(:chapter_id, options_for_select([]), {}, { :class => "form-control", :style => "width:100%; max-width:400px; display:none;", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
 	</div>
 <% end %>
@@ -134,14 +134,14 @@ function checkExercise() {
 	<% end %>
 	
 	<div class="form-group">
-		<%= f.label "Exercice", :disabled => current_user.other, :id => "label_exo" %>
+		<%= f.label :exercise_id, :disabled => current_user.other, :id => "label_exo" %>
 		<div id="alert" style="color:red; display:none; margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
 		<div id="alert2" style="color:orange; display:<%= "" if cache %><%= "none" if !cache %>; margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
 		<%= f.select(:exercise_id, options_for_select(listeexo, presel3).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkExercise();")}) %>
 	</div>
 <% else %>
 	<div class="form-group">
-		<%= f.label "Exercice", :disabled => current_user.other, :style => "display:none;", :id => "label_exo" %>
+		<%= f.label :exercise_id, :disabled => current_user.other, :style => "display:none;", :id => "label_exo" %>
 		<div id="alert" style="color:red; display:none; margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
 		<div id="alert2" style="color:orange; display:none; margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
 		<%= f.select(:exercise_id, options_for_select([]), {}, { :class => "form-control", :style => "width:100%; max-width:400px; display:none;", :disabled => current_user.other, :onchange => ("javascript: checkExercise();")}) %>
@@ -151,13 +151,13 @@ function checkExercise() {
 <!-- Titre -->
 <% if presel3 > 0 %>
 	<div class="form-group">
-		<%= f.label :titre, :disabled => current_user.other %>
-		<%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled" %>
+		<%= f.label :title, :disabled => current_user.other %>
+		<%= f.text_field :title, :class => "form-control", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled" %>
 		<input type="hidden" id="hidden_title" name="subject[title]" value="<%= txt %>" />
 	</div>
 <% else %>
 	<div class="form-group">
-		<%= f.label :titre, :disabled => current_user.other %>
+		<%= f.label :title, :disabled => current_user.other %>
 		<%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :style => "width:100%; max-width:400px;" %>
 		<input type="hidden" id="hidden_title" name="" value="" />
 	</div>
@@ -165,7 +165,7 @@ function checkExercise() {
 
 <!-- Message -->
 <div class="form-group">
-  <%= f.label :message, :disabled => current_user.other %>
+  <%= f.label :content, :disabled => current_user.other %>
   <div class="well" id="MathPreview"></div>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <%= render 'subjects/smiley', hiddentext: true %>
