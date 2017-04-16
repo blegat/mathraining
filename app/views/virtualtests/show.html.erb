@@ -6,7 +6,7 @@
 
 <!-- Script pour chronomètre -->
 <% if !current_user.sk.admin? && statut >= 0 %>
-  <% initial = Takentest.find_by(user_id: current_user.sk.id, virtualtest_id: @virtualtest.id).takentime %>
+  <% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => @virtualtest.id).first.takentime %>
   <% depart = initial.to_i %>
 <% else %>
   <% depart = 0 %>

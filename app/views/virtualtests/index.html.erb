@@ -101,7 +101,7 @@
 
     <!-- Si étudiant et déjà commencé (ou fini) -->
     <% if !current_user.sk.admin? && status >= 0 %>
-      <% initial = Takentest.find_by(user_id: current_user.sk.id, virtualtest_id: t.id).takentime %>
+      <% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => t.id).first.takentime %>
       <% depart = initial.to_i %>
     <% end %>
 
