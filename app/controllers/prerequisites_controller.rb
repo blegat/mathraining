@@ -9,8 +9,8 @@ class PrerequisitesController < ApplicationController
 
   # Ajouter un prérequis
   def add_prerequisite
-    chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
-    prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
+    chapter = Chapter.find(params[:prerequisite][:chapter_id])
+    prerequisite = Chapter.find(params[:prerequisite][:prerequisite_id])
     if prerequisite.nil? || chapter.nil?
       flash[:info] = "Choisissez un chapitre."
       redirect_to graph_prerequisites_path(:fondement => params[:fondement]) and return
@@ -44,8 +44,8 @@ class PrerequisitesController < ApplicationController
     else
       fond = 0
     end
-    chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
-    prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
+    chapter = Chapter.find(params[:prerequisite][:chapter_id])
+    prerequisite = Chapter.find(params[:prerequisite][:prerequisite_id])
     if prerequisite.nil? || chapter.nil?
       flash[:info] = "Choisissez un chapitre."
       redirect_to graph_prerequisites_path(:fondement => params[:fondement]) and return

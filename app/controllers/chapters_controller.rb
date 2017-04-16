@@ -117,7 +117,7 @@ class ChaptersController < ApplicationController
   
   # Vérifie que le chapitre existe (et le récupère)
   def chapter_exists1
-    @chapter = Chapter.find_by_id(params[:id])
+    @chapter = Chapter.find(params[:id])
     @section = @chapter.section
     if @section.fondation?
   	  @fondation = true

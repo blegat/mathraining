@@ -444,7 +444,7 @@ class SubmissionsController < ApplicationController
 
   # Peut voir la soumission
   def can_see
-    @submission = Submission.find_by_id(params[:id])
+    @submission = Submission.find(params[:id])
     if ((@submission.status == -1 && !current_user.sk.admin?) || (@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.pb_solved?(@problem) && !current_user.sk.admin))
       redirect_to root_path
     end

@@ -29,7 +29,7 @@ class ProblemsController < QuestionsController
     @problem.statement = params[:problem][:statement]
     @problem.origin = params[:problem][:origin]
     @problem.level = params[:problem][:level]
-    @section = Section.find_by_id(params[:section_id])
+    @section = Section.find(params[:section_id])
     @problem.online = false
     @problem.section = @section
 

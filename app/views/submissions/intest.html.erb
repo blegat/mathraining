@@ -2,7 +2,7 @@
 
 <% statut = current_user.sk.status(@virtualtest) %>
 
-<% depart = Takentest.find_by(user_id: current_user.sk.id, virtualtest_id: @virtualtest.id).takentime.to_i %>
+<% depart = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => @virtualtest.id).first.takentime.to_i %>
 
 <script type="text/javascript">
 function RemainingTime(){

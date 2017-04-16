@@ -19,7 +19,7 @@ class TheoriesController < ApplicationController
     @theory = Theory.new
     @theory.title = params[:theory][:title]
     @theory.content = params[:theory][:content]
-    @chapter = Chapter.find_by_id(params[:chapter_id])
+    @chapter = Chapter.find(params[:chapter_id])
     if @chapter.nil?
       flash.now[:danger] = "Chapitre inexistant."
       render 'new' and return

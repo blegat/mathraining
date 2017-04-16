@@ -150,7 +150,7 @@ class CorrectionsController < ApplicationController
 
       # On gère les notifications
       if current_user.sk != @submission.user
-        following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
+        following = Following.where(:user_id => current_user.sk.id, :submission_id => @submission.id).first
         if following.nil?
           following = Following.new
           following.user = current_user.sk
@@ -211,7 +211,7 @@ class CorrectionsController < ApplicationController
 
   # Vérifie qu'il s'agit du bon utilisateur ou d'un admin ou d'un correcteur
   def correct_user
-    @submission = Submission.find_by_id(params[:submission_id])
+    @submission = Submission.find(params[:submission_id])
     if @submission.nil? || (@submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@submission.problem)))
       redirect_to root_path
     end
