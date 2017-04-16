@@ -143,6 +143,10 @@ FactoryGirl.define do
       admin true
       root false
     end
+    factory :root do
+    	admin true
+    	root true
+    end
   end
   
   # Virtualtest

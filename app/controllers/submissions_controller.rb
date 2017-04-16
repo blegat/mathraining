@@ -346,8 +346,8 @@ class SubmissionsController < ApplicationController
 
   # Lu et non lu
   def un_read(read, msg)
-    following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
-    if following
+    following = Following.where(:user_id => current_user.sk, :submission_id => @submission).first
+    if !following.nil?
       following.read = read
       if following.save
         flash[:success] = "Soumission marquée comme #{msg}."

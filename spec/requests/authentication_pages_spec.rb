@@ -6,10 +6,11 @@ describe "Authentication" do
   subject { page }
 
   describe "signin page" do
-    before { visit signin_path }
+    before { visit root_path }
 
-    it { should have_selector('h1',    text: 'Connexion') }
+    it { should have_link('Connexion') }
   end
+  
   describe "signin" do
     before { visit root_path }
 
@@ -29,7 +30,7 @@ describe "Authentication" do
       it { should have_link('Scores', href: users_path) }
       it { should have_link('Compte', href: edit_user_path(user)) }
       it { should have_link('Déconnexion', href: signout_path) }
-      it { should_not have_link('Connexion', href: signin_path) }
+      it { should_not have_link('Connexion') }
       describe "followed by signout" do
         before { click_link "Déconnexion" }
         it { should have_link('Connexion') }

@@ -33,7 +33,7 @@ class User < ActiveRecord::Base
 
   has_secure_password
   has_and_belongs_to_many :theories
-  has_and_belongs_to_many :chapters, -> {uniq}
+  has_and_belongs_to_many :chapters
   has_many :solvedexercises, dependent: :destroy
   has_many :solvedqcms, dependent: :destroy
   has_many :solvedproblems, dependent: :destroy

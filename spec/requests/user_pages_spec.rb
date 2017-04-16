@@ -5,13 +5,68 @@ describe "User pages" do
 
   subject { page }
 
-  describe "delete" do
-    let (:admin) { FactoryGirl.create(:admin) }
+  describe "admin delete" do 
+  	let(:admin) { FactoryGirl.create(:admin) }  
+    let(:user) { FactoryGirl.create(:user) } 
+    
     before do
-      sign_in admin
+		  sign_in admin
+		end
+		
+		# IDEM AS BELOW
+		describe "a student" do
+			before do
+				visit user_path(user)
+			end
+			it { should_not have_link("Supprimer") }
     end
-    specify "an admin should not be able to destroy himself" do
-      expect { visit user_path(admin, :method => :delete) }.not_to change(User, :count)
+    
+    # IDEM AS BELOW
+    describe "himself" do
+    	before do
+				visit user_path(admin)
+			end
+      it { should_not have_link("Supprimer") }
+    end
+
+  end
+  
+  describe "root delete" do 
+    let(:user) { FactoryGirl.create(:user) } 
+    let(:root) { FactoryGirl.create(:root) }  
+    let(:other_root) { FactoryGirl.create(:root) }  
+    let(:admin) { FactoryGirl.create(:admin) }  
+    
+    before do
+		  sign_in root
+		  visit user_path(user)
+		  # visit user_path(user, :method => :delete)
+		end
+    
+    # DOES visit user_path(user, :method => :delete) MEAN ANYTHING?
+    describe "a student" do
+    	before do
+    		visit user_path(user)
+    	end
+    	specify do
+    		expect { click_link "Supprimer" }.to change(User, :count).by(-1)
+    	end
+    end
+    
+    describe "an admin" do
+    	before do
+    		visit user_path(admin)
+    	end
+    	specify do
+    		expect { click_link "Supprimer" }.to change(User, :count).by(-1)
+    	end
+    end
+    
+    describe "an other root" do
+    	before do
+    		visit user_path(other_root)
+    	end
+    	it { should_not have_link("Supprimer") }
     end
 
   end
@@ -29,7 +84,6 @@ describe "User pages" do
     it { should have_selector('h1',    text: 'Scores') }
 
     describe "pagination" do
-
 
       it "should list each user" do
         User.where(:admin => false).each do |user|
@@ -98,6 +152,7 @@ describe "User pages" do
       end
     end
   end
+  
   describe "edit" do
     let(:user) { FactoryGirl.create(:user) }
     before do
