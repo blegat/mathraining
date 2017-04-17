@@ -50,8 +50,5 @@ describe Section do
     before { @sec.chapters << chap1 }
     specify { @sec.chapters.should include(chap1) }
     specify { @sec.chapters.should_not include(chap2) }
-    describe "when it is added to a chapter" do
-      let (:chap3) { FactoryGirl.create(:chapter) }
-    end
   end
 end

@@ -50,9 +50,7 @@ describe Chapter do
   end
   describe "when name is already taken" do
     before do
-      other_chap = Chapter.new(name: @chap.name,
-                               description: "Other description",
-                               level: 2)
+      other_chap = Chapter.new(name: @chap.name, description: "Other description", level: 2)
       other_chap.save
     end
     it { should_not be_valid }

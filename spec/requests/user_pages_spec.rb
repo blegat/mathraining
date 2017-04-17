@@ -5,7 +5,7 @@ describe "User pages" do
 
   subject { page }
 
-  describe "admin delete" do 
+  describe "admin deletes" do 
   	let(:admin) { FactoryGirl.create(:admin) }  
     let(:user) { FactoryGirl.create(:user) } 
     
@@ -13,7 +13,6 @@ describe "User pages" do
 		  sign_in admin
 		end
 		
-		# IDEM AS BELOW
 		describe "a student" do
 			before do
 				visit user_path(user)
@@ -21,7 +20,6 @@ describe "User pages" do
 			it { should_not have_link("Supprimer") }
     end
     
-    # IDEM AS BELOW
     describe "himself" do
     	before do
 				visit user_path(admin)
@@ -31,7 +29,7 @@ describe "User pages" do
 
   end
   
-  describe "root delete" do 
+  describe "root deletes" do 
     let(:user) { FactoryGirl.create(:user) } 
     let(:root) { FactoryGirl.create(:root) }  
     let(:other_root) { FactoryGirl.create(:root) }  
@@ -40,10 +38,8 @@ describe "User pages" do
     before do
 		  sign_in root
 		  visit user_path(user)
-		  # visit user_path(user, :method => :delete)
 		end
     
-    # DOES visit user_path(user, :method => :delete) MEAN ANYTHING?
     describe "a student" do
     	before do
     		visit user_path(user)
@@ -81,18 +77,7 @@ describe "User pages" do
       visit users_path
     end
 
-    it { should have_selector('h1',    text: 'Scores') }
-
-    describe "pagination" do
-
-      it "should list each user" do
-        User.where(:admin => false).each do |user|
-          if user.rating > 0
-            page.should have_selector('tr', text: user.name)
-          end
-        end
-      end
-    end
+    it { should have_selector('h1', text: 'Scores') }
   end
 
   describe "profile page" do
@@ -104,14 +89,8 @@ describe "User pages" do
       visit user_path(other_user)
     end
 
-    it { should have_selector('h1',    text: other_user.name) }
+    it { should have_selector('h1', text: other_user.name) }
 
-  end
-
-  describe "signup page" do
-    before { visit signup_path }
-
-    it { should have_selector('h1',    text: 'Inscription') }
   end
 
   describe "signup" do
@@ -133,9 +112,9 @@ describe "User pages" do
 
     describe "with valid information" do
       before do
-        fill_in "Prénom",         with: "Example"
-        fill_in "Nom",         with: "User"
-        # IL y a deux fois ces champs :(
+        fill_in "Prénom", with: "Example"
+        fill_in "Nom", with: "User"
+        # Il y a deux fois ces champs (pour la connexion et l'inscription)
         page.all(:fillable_field, 'Email').last.set("user@example.com")
         page.all(:fillable_field, 'Mot de passe').last.set("foobar")
         fill_in "Confirmation du mot de passe", with: "foobar"
@@ -146,9 +125,7 @@ describe "User pages" do
       end
       describe "after saving the user" do
         before { click_button submit }
-        let(:user) { User.find_by_email('user@example.com') }
-
-        it { should have_link('Connexion') }
+        it { should have_content('confirmer votre inscription') }
       end
     end
   end
@@ -161,7 +138,7 @@ describe "User pages" do
     end
 
     describe "page" do
-      it { should have_selector('h1',    text: "Actualisez votre profil") }
+      it { should have_selector('h1', text: "Actualisez votre profil") }
     end
 
     describe "with valid information" do
@@ -169,16 +146,17 @@ describe "User pages" do
 
       it { should have_content('bien') }
     end
-    describe "with valid information" do
+    
+    describe "with new valid information" do
       let(:new_first_name)  { "New First Name" }
       let(:new_last_name)  { "New Last Name" }
       let(:new_name)  { "#{new_first_name} #{new_last_name}" }
       let(:new_email) { "new@example.com" }
       before do
-        fill_in "Prénom",             with: new_first_name
-        fill_in "Nom",             with: new_last_name
-        fill_in "Email",            with: new_email
-        fill_in "Mot de passe",         with: user.password
+        fill_in "Prénom", with: new_first_name
+        fill_in "Nom", with: new_last_name
+        fill_in "Email", with: new_email
+        fill_in "Mot de passe", with: user.password
         fill_in "Confirmation du mot de passe", with: user.password
         click_button "Mettre à jour"
       end

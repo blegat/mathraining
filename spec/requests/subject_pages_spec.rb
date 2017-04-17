@@ -11,98 +11,77 @@ describe "Subject pages" do
   let(:other_admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
   let!(:category) { FactoryGirl.create(:category) }
-  let(:sub) { FactoryGirl.create(:subject) }
+  let!(:sub) { FactoryGirl.create(:subject) }
   let!(:exercise) { FactoryGirl.create(:exercise) }
   
   describe "visitor" do
   	describe "visit forum" do
-			before do
-				visit subjects_path
-			end
+			before { visit subjects_path }
 			it { should_not have_selector('h1', text: 'Forum') }
 		end
   	
   	describe "creates a subject" do
-			before do
-				visit new_subject_path
-			end
+			before { visit new_subject_path }
 			it { should_not have_selector('h1', text: 'Créer un sujet') }
 		end
 		
 		describe "sees a subject" do
-			before do
-				visit subject_path(sub)
-			end
+			before { visit subject_path(sub) }
 			it { should_not have_selector('div', text: 'Contenu') }
 		end
   end
   
   describe "user" do
-		before do
-			sign_in user
-		end
+		before { sign_in user }
 		
 		describe "visit forum" do
-			before do
-				visit subjects_path
-			end
+			before { visit subjects_path }
 			it { should have_selector('h1', text: 'Forum') }
 		end
 		
-		describe "creates a subject" do	
-			before do
-				visit new_subject_path
-				fill_in "Titre", with: "Mon titre"
-				fill_in "MathInput", with: "Mon message"
-				select category.name, from: "Catégorie"
-				click_button "Créer"
+		describe "creates a subject" do
+			before { visit subjects_path }
+			it { should have_link("Créer un sujet") }
+			
+			describe "on the page" do
+				before { click_link("Créer un sujet") }
+				it { should have_selector('h1', text: 'Créer un sujet') }
+				
+				describe "after submission" do
+					before { create_subject(category) }
+					it { should have_selector('div', text: 'Mon message') }
+				end
 			end
-			it { should have_selector('div', text: 'Mon message') }
 		end
 		
-		describe "update his subject" do
-			before do
-				sub.user = user
-				sub.save
-				visit edit_subject_path(sub)
-				fill_in "Titre", with: "Mon nouveau titre"
-				fill_in "MathInput", with: "Mon nouveau message"
-				click_button "Editer"
-			end
-			it { should have_selector('div', text: 'Mon nouveau message') }
-		end
-		
-		describe "sees a subject" do
-			before do
-				visit subject_path(sub)
-			end
-			it { should have_selector('div', text: 'Contenu') }
-		end
-		
-		describe "edits his subject" do
-			before do
-				sub.user = user
-				sub.save
-				visit edit_subject_path(sub)
-			end
-			it { should have_selector('h1', text: 'Modifier le sujet') }
-		end
-		
-		describe "edits a subject of someone else" do
-			before do
-				visit edit_subject_path(sub)
-			end
-			it { should_not have_selector('h1', text: 'Modifier le sujet') }
-		end
-		
-		describe "tries do edit/delete his subject" do
+		describe "edits/deletes his subject" do
 			before do
 				sub.user = user
 				sub.save
 				visit subject_path(sub)
 			end
-			it { should_not have_link('Supprimer ce sujet') }
 			it { should have_link('Modifier ce sujet') }
+			it { should_not have_link('Supprimer ce sujet') }
+			
+			describe "on the page" do
+				before { click_link("Modifier ce sujet") }
+				it { should have_selector('h1', text: 'Modifier un sujet') }
+				
+				describe "after submission" do
+					before { update_subject(sub) }
+					it { should have_selector('div', text: 'Mon nouveau message') }
+				end
+			end
+		end
+		
+		describe "edits the subject of someone else" do
+			before { visit subject_path(sub) }
+			it { should_not have_link("Modifier ce sujet") }
+			
+			describe "on the page" do
+				before { visit edit_subject_path(sub) }
+				it { should_not have_selector('h1', text: 'Modifier un sujet') }
+			end
 		end
 		
 		# A test with javascript seems too ambitious for the moment...
@@ -122,111 +101,94 @@ describe "Subject pages" do
 	end
   
   describe "admin" do
-  	before do
-  		sign_in admin
+  	before { sign_in admin }
+  	
+  	describe "edits/deletes the subject of a student" do
+  		before { visit subject_path(sub) }
+  		it { should have_link('Modifier ce sujet') }
+			it { should have_link('Supprimer ce sujet') }
+			
+			specify do
+				expect { click_link('Supprimer ce sujet') }.to change(Subject, :count).by(-1)
+			end	
+			
+			describe "on the page" do
+				before { click_link("Modifier ce sujet") }
+				it { should have_selector('h1', text: 'Modifier un sujet') }
+				
+				describe "after submission" do
+					before { update_subject(sub) }
+					it { should have_selector('div', text: 'Mon nouveau message') }
+				end
+			end
   	end
   	
-  	describe "edits the subject of a student" do
-  		before do
-  			visit edit_subject_path(sub)
-  		end
-  		it { should have_selector('h1', text: 'Modifier le sujet') }
-  	end
-  	
-  	describe "edits his subject" do
+  	describe "edits/deletes his subject" do
   		before do
   			sub.user = admin
   			sub.save
-  			visit edit_subject_path(sub)
+  			visit subject_path(sub)
   		end
-  		it { should have_selector('h1', text: 'Modifier le sujet') }
+  		it { should have_link('Modifier ce sujet') }
+			it { should have_link('Supprimer ce sujet') }
+			
+			specify do
+				expect { click_link('Supprimer ce sujet') }.to change(Subject, :count).by(-1)
+			end	
+			
+			describe "on the page" do
+				before { click_link("Modifier ce sujet") }
+				it { should have_selector('h1', text: 'Modifier un sujet') }
+				
+				describe "after submission" do
+					before { update_subject(sub) }
+					it { should have_selector('div', text: 'Mon nouveau message') }
+				end
+			end
   	end
   	
-  	describe "edits the subject of another admin" do
+  	describe "edits/deletes the subject of another admin" do
   		before do
   			sub.user = other_admin
   			sub.save
-  			visit edit_subject_path(sub)
+  			visit subject_path(sub)
   		end
-  		it { should_not have_selector('h1', text: 'Modifier le sujet') }
-  	end
-  	
-  	describe "tries do edit/delete the subject of a student" do
-			before do
-				visit subject_path(sub)
-			end
-			it { should have_link('Supprimer ce sujet') }
-			it { should have_link('Modifier ce sujet') }
-		end
-		
-		describe "tries do edit/delete the subject of a student" do
-			before do
-				visit subject_path(sub)
-			end
-			it { should have_link('Supprimer ce sujet') }
-			it { should have_link('Modifier ce sujet') }
-		end
-		
-		describe "tries do edit/delete his subject" do
-			before do
-				sub.user = admin
-				sub.save
-				visit subject_path(sub)
-			end
-			it { should have_link('Supprimer ce sujet') }
-			it { should have_link('Modifier ce sujet') }
-		end
-		
-		describe "tries do edit/delete the subject of another admin" do
-			before do
-				sub.user = other_admin
-				sub.save
-				visit subject_path(sub)
-			end
+  		it { should_not have_link('Modifier ce sujet') }
 			it { should_not have_link('Supprimer ce sujet') }
-			it { should_not have_link('Modifier ce sujet') }
-		end
+			
+			describe "on the page" do
+				before { visit edit_subject_path(sub) }
+				it { should_not have_selector('h1', text: 'Modifier un sujet') }
+			end
+  	end
   end
   
   describe "root" do
-  	before do
-  		sign_in root
-  	end
+  	before { sign_in root }
   	
-  	describe "edits the subject of a student" do
-  		before do
-  			visit edit_subject_path(sub)
-  		end
-  		it { should have_selector('h1', text: 'Modifier le sujet') }
-  	end
-  	
-  	describe "edits his subject" do
-  		before do
-  			sub.user = root
-  			sub.save
-  			visit edit_subject_path(sub)
-  		end
-  		it { should have_selector('h1', text: 'Modifier le sujet') }
-  	end
-  	
-  	describe "edits the subject of another root" do
+  	describe "edits/deletes the subject of another root" do
   		before do
   			sub.user = other_root
   			sub.save
-  			visit edit_subject_path(sub)
+  			visit subject_path(sub)
   		end
-  		it { should have_selector('h1', text: 'Modifier le sujet') }
-  	end
-		
-		describe "tries do edit/delete the subject of another root" do
-			before do
-				sub.user = other_root
-				sub.save
-				visit subject_path(sub)
-			end
+  		it { should have_link('Modifier ce sujet') }
 			it { should have_link('Supprimer ce sujet') }
-			it { should have_link('Modifier ce sujet') }
-		end
+			
+			specify do
+				expect { click_link('Supprimer ce sujet') }.to change(Subject, :count).by(-1)
+			end	
+			
+			describe "on the page" do
+				before { click_link("Modifier ce sujet") }
+				it { should have_selector('h1', text: 'Modifier un sujet') }
+				
+				describe "after submission" do
+					before { update_subject(sub) }
+					it { should have_selector('div', text: 'Mon nouveau message') }
+				end
+			end
+  	end
   end
 
 end
