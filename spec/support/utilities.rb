@@ -7,6 +7,11 @@ def sign_in(user)
   click_button "Connexion"
 end
 
+def sign_out
+	visit root_path
+	click_link "Déconnexion"
+end
+
 RSpec::Matchers.define :have_error_message do |message|
   match do |page|
     page.should have_selector('div.alert.alert-error', text: message)
