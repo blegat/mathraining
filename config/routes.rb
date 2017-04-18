@@ -142,8 +142,7 @@ Mathraining::Application.routes.draw do
     match '/add_administrator', to: 'users#create_administrator', :via => [:get], as: :add_administrator
     match '/switch_wepion', to: 'users#switch_wepion', :via => [:get], as: :switch_wepion
     match '/switch_corrector', to: 'users#switch_corrector', :via => [:get], as: :switch_corrector
-    match '/unactivate', to: 'users#unactivate', :via => [:get], as: :unactivate
-    match '/reactivate', to: 'users#reactivate', :via => [:get], as: :reactivate
+    match '/switchactivate', to: 'users#switchactivate', :via => [:get], as: :switchactivate
     match '/take_skin', to: 'users#take_skin', :via => [:get], as: :take_skin
     match '/leave_skin', to: 'users#leave_skin', :via => [:get], as: :leave_skin
     match '/change_group', to: 'users#change_group', :via => [:get], as: :change_group

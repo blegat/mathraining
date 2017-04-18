@@ -10,7 +10,7 @@
 #  image       :string(255)
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Section do
   before { @sec = FactoryGirl.build(:section) }

@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   before_action :corrector_user, only: [:notifications_new, :notifications_update]
   before_action :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector]
   before_action :signed_out_user, only: [:new, :create, :password_forgotten]
-  before_action :unactivate_admin, only: [:unactivate, :reactivate]
+  before_action :unactivate_admin, only: [:switchactivate]
   before_action :group_user, only: [:groups]
 
   # Index de tous les users avec scores
@@ -263,15 +263,8 @@ class UsersController < ApplicationController
     redirect_back(fallback_location: root_path)
   end
 
-  # Désactiver un compte
-  def unactivate
-    @user = User.find(params[:user_id])
-    @user.toggle!(:active)
-    redirect_to @user
-  end
-
-  # Réactiver un compte
-  def reactivate
+  # Désactiver / Réactiver un compte
+  def switchactivate
     @user = User.find(params[:user_id])
     @user.toggle!(:active)
     redirect_to @user

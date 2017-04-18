@@ -9,7 +9,7 @@
 #  updated_at  :datetime         not null
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Actuality do
   before { @actuality = FactoryGirl.build(:actuality) }

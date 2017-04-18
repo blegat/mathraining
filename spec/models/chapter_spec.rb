@@ -12,7 +12,7 @@
 #  section_id  :integer
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chapter do
 

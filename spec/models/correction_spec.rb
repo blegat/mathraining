@@ -10,7 +10,7 @@
 #  updated_at    :datetime         not null
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Correction do
   before { @c = FactoryGirl.build(:correction) }

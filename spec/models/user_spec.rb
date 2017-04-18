@@ -13,7 +13,7 @@
 #  updated_at      :datetime         not null
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe User do
 
@@ -34,7 +34,7 @@ describe User do
   it { should be_valid }
   it { should_not be_admin }
 
-  describe "when admin attribute is set to 'true'" do
+  describe "when admin attribute is set to true" do
     before do
       @user.save!
       @user.toggle!(:admin)
@@ -96,7 +96,7 @@ describe User do
     before { @user.password = @user.password_confirmation = " " }
     it { should_not be_valid }
   end
-  describe "when password doesn't match confirmation" do
+  describe "when password does not match confirmation" do
     before { @user.password_confirmation = "mismatch" }
     it { should_not be_valid }
   end
@@ -117,7 +117,7 @@ describe User do
       it { should_not == user_for_invalid_password }
     end
   end
-  describe "with a password that's too short" do
+  describe "with a password that is too short" do
     before { @user.password = @user.password_confirmation = "a" * 5 }
     it { should be_invalid }
   end

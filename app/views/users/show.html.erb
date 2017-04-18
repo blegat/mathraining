@@ -729,15 +729,15 @@ html>body tbody.scroll {
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if @user.active %>
-        <%= link_to "Interdire l'accès", user_unactivate_path(@user), data: { confirm: "Etes-vous sûr de vouloir interdire l'accès au site à #{@user.name}?" } %>
+        <%= link_to "Interdire l'accès", user_switchactivate_path(@user), data: { confirm: "Etes-vous sûr de vouloir interdire l'accès au site à #{@user.name}?" } %>
       <% else %>
-        <%= link_to "Rendre l'accès", user_reactivate_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre l'accès au site à #{@user.name}?" } %>
+        <%= link_to "Rendre l'accès", user_switchactivate_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre l'accès au site à #{@user.name}?" } %>
       <% end %>
     <% end %>
     <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Privilégiez une interdiction d'accès si possible. Etes-vous sûr de vouloir supprimer #{@user.name}?" }, :style => "color:red;" %>
+      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Privilégiez une interdiction d'accès si possible. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) sur le forum, tout sera supprimé! Etes-vous sûr de vouloir supprimer #{@user.name}?" }, :style => "color:red;" %>
     <% end %>
     <% if @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>

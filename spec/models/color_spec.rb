@@ -10,7 +10,7 @@
 #  femininename :string(255)
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Color do
   before { @color = FactoryGirl.build(:color) }

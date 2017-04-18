@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'spec_helper'
+require "spec_helper"
 
 describe "Discussion pages" do
 
@@ -15,7 +15,7 @@ describe "Discussion pages" do
   describe "visitor" do
 		describe "sees discussions" do
 			before { visit new_discussion_path }
-			it { should_not have_selector('h1', text: 'Messages') }
+			it { should_not have_selector("h1", text: "Messages") }
 		end
   end
   
@@ -23,11 +23,11 @@ describe "Discussion pages" do
   	before { sign_in user }
   	describe "creates a discussion" do
   		before { visit new_discussion_path }
-  		it { should have_selector('h3', text: "Nouvelle discussion") }
+  		it { should have_selector("h3", text: "Nouvelle discussion") }
   		describe "after submission" do
   			before { create_discussion(other_user, content) }
-  			it { should have_selector('h3', text: other_user.name) }
-  			it { should have_selector('div', text: content) }
+  			it { should have_selector("h3", text: other_user.name) }
+  			it { should have_selector("div", text: content) }
   		end
   	end
   	
@@ -36,16 +36,16 @@ describe "Discussion pages" do
   			d = create_discussion_between(user, other_user, content, content2)
   			visit discussion_path(d)
   		end
-  		it { should have_selector('h3', text: other_user.name) }
-  		it { should have_selector('div', text: content) }
+  		it { should have_selector("h3", text: other_user.name) }
+  		it { should have_selector("div", text: content) }
   		describe "after submission" do
   			before { answer_discussion(content3) }
-  			it { should have_selector('div', text: content3) }
+  			it { should have_selector("div", text: content3) }
   		end
   		describe "creates a discussion that already existed" do
   			before { create_discussion(other_user, content3) }
-  			it { should have_selector('div', text: content2) }
-  			it { should have_selector('div', text: content3) }
+  			it { should have_selector("div", text: content2) }
+  			it { should have_selector("div", text: content3) }
   		end
   	end
   	
@@ -54,7 +54,7 @@ describe "Discussion pages" do
   			d = create_discussion_between(other_user, other_user2, content, content2)
   			visit discussion_path(d)
   		end
-  		it { should_not have_selector('div', text: content) }
+  		it { should_not have_selector("div", text: content) }
   	end
   end
 	
