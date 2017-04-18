@@ -1,0 +1,41 @@
+	<% n_real = s.myfiles.count %>
+  <% n_fake = s.fakefiles.count %>
+
+  <% if n_real + n_fake > 0 %>
+    <% if n_real + n_fake == 1 %>
+      <br/><br/><b>1 pièce jointe :</b><br/>
+    <% else %>
+      <br/><br/><b><%= n_real + n_fake %> pièces jointes :</b><br/>
+    <% end %>
+    <% s.myfiles.order(:id).each do |f| %>
+      <%= link_to f.file_file_name, download_myfile_path(f) %>
+      (<%= (f.file_file_size / 1.kilobyte).round(1) %> ko)
+      <% if current_user.sk.root? %>
+         - <%= link_to 'Supprimer le contenu', myfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
+      <% end %>
+      <br/>
+    <% end %>
+    <% s.fakefiles.order(:id).each do |f| %>
+      <span style="color:#0000BB;"><%= f.file_file_name %> (<%= (f.file_file_size / 1.kilobyte).round(1) %> ko, désactivée)</span><br/>
+    <% end %>
+		
+    <!-- Afficher les pièces jointes images -->
+    <% s.myfiles.order(:id).each do |f| %>
+      <% if f.is_image %>
+        <hr/>
+        <center><%= f.file_file_name %><br/><br/>
+        <% if f.myfiletable_type == "Tchatmessage" %>
+          <%= image_tag f.file.url, :class => "visible-lg", :style => "max-width:750px;" %>
+          <%= image_tag f.file.url, :class => "visible-md", :style => "max-width:600px;" %>
+          <%= image_tag f.file.url, :class => "visible-sm", :style => "max-width:460px;" %>
+          <%= image_tag f.file.url, :class => "visible-xs", :style => "width:90%;" %>
+        <% else %>
+          <%= image_tag f.file.url, :class => "visible-lg", :style => "max-width:900px;" %>
+          <%= image_tag f.file.url, :class => "visible-md", :style => "max-width:800px;" %>
+          <%= image_tag f.file.url, :class => "visible-sm", :style => "max-width:600px;" %>
+          <%= image_tag f.file.url, :class => "visible-xs", :style => "width:90%;" %>
+        <% end %>
+        </center>
+      <% end %>
+    <% end %>
+  <% end %>

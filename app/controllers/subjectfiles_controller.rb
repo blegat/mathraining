@@ -11,6 +11,7 @@ class SubjectfilesController < ApplicationController
   
   # Supprimer la pièce jointe fictivement
   def fake_delete
+  	@thing = Subjectfile.find(params[:subjectfile_id])
     @subject = @thing.subject
     @fakething = Fakesubjectfile.new
     @fakething.subject = @thing.subject

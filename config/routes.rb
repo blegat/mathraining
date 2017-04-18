@@ -72,6 +72,13 @@ Mathraining::Application.routes.draw do
       match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
     end
   end
+  
+  resources :myfiles, only: [] do
+  	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:get], as: :fake_delete
+  	member do
+  		get :download
+  	end
+  end
 
   resources :submissionfiles, only: [] do
     match '/fake_delete', to: 'submissionfiles#fake_delete', :via => [:get], as: :fake_delete
@@ -184,7 +191,7 @@ Mathraining::Application.routes.draw do
 
   match '/frequentation', to: 'static_pages#frequentation', :via => [:get]
 
-  match '/pieces_jointes', to: 'submissionfiles#seeall', :via => [:get]
+  match '/pieces_jointes', to: 'myfiles#seeall', :via => [:get]
 
   match '/compare', to: 'users#compare', :via => [:get]
 

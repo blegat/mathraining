@@ -20,6 +20,8 @@ class Correction < ActiveRecord::Base
   belongs_to :submission
   has_many :correctionfiles, dependent: :destroy
   has_many :fakecorrectionfiles, dependent: :destroy
+  has_many :myfiles, as: :myfiletable, dependent: :destroy
+  has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 
   # VALIDATIONS
 

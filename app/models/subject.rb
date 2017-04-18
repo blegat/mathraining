@@ -35,6 +35,8 @@ class Subject < ActiveRecord::Base
   has_many :following_users, through: :followingsubjects, source: :user
   has_many :subjectfiles, dependent: :destroy
   has_many :fakesubjectfiles, dependent: :destroy
+  has_many :myfiles, as: :myfiletable, dependent: :destroy
+  has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 
   # VALIDATIONS
 

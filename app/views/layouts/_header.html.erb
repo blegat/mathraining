@@ -42,19 +42,7 @@
         <!-- Pièces jointes -->
         <% if current_user.sk.root? %>
           <% total = 0 %>
-          <% Submissionfile.all.to_a.each do |f| %>
-            <% total = total + f.file_file_size %>
-          <% end %>
-          <% Correctionfile.all.to_a.each do |f| %>
-            <% total = total + f.file_file_size %>
-          <% end %>
-          <% Messagefile.all.to_a.each do |f| %>
-            <% total = total + f.file_file_size %>
-          <% end %>
-          <% Subjectfile.all.to_a.each do |f| %>
-            <% total = total + f.file_file_size %>
-          <% end %>
-          <% Tchatmessagefile.all.to_a.each do |f| %>
+          <% Myfile.all.to_a.each do |f| %>
             <% total = total + f.file_file_size %>
           <% end %>
 
@@ -111,19 +99,7 @@
           <form class="form-inline" role="search">
           <% if current_user.sk.root? %>
             <% total = 0 %>
-            <% Submissionfile.all.to_a.each do |f| %>
-              <% total = total + f.file_file_size %>
-            <% end %>
-            <% Correctionfile.all.to_a.each do |f| %>
-              <% total = total + f.file_file_size %>
-            <% end %>
-            <% Messagefile.all.to_a.each do |f| %>
-              <% total = total + f.file_file_size %>
-            <% end %>
-            <% Subjectfile.all.to_a.each do |f| %>
-              <% total = total + f.file_file_size %>
-            <% end %>
-            <% Tchatmessagefile.all.to_a.each do |f| %>
+            <% Myfile.all.to_a.each do |f| %>
               <% total = total + f.file_file_size %>
             <% end %>
 

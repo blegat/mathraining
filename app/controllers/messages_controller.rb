@@ -39,45 +39,15 @@ class MessagesController < ApplicationController
       flash.now[:danger] = "Un nouveau message a été posté avant le vôtre! Veuillez en prendre connaissance ci-dessous avant de poster votre message."
       render 'new' and return
     end
-
-    # Pièces jointes une par une
-    attach = Array.new
-    totalsize = 0
-
-    i = 1
-    k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
-        attach.push()
-        attach[i-1] = Messagefile.new(:file => params["file#{k}".to_sym])
-        if !attach[i-1].save
-          j = 1
-          while j < i do
-            attach[j-1].file.destroy
-            attach[j-1].destroy
-            j = j+1
-          end
-          nom = params["file#{k}".to_sym].original_filename
-          flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          render 'new' and return
-        end
-        totalsize = totalsize + attach[i-1].file_file_size
-
-        i = i+1
-      end
-      k = k+1
-    end
-
-    # On vérifie que les pièces jointes ne sont pas trop grosses
-    if totalsize > 5.megabytes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
-
-      flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
+    
+    # Pièces jointes
+    @error = false
+    @error_message = ""
+    
+    attach = create_files # Fonction commune pour toutes les pièces jointes
+    
+    if @error
+    	flash.now[:danger] = @error_message
       render 'new' and return
     end
 
@@ -86,8 +56,8 @@ class MessagesController < ApplicationController
 
       # On enregistre les pièces jointes
       j = 1
-      while j < i do
-        attach[j-1].message = @message
+      while j < attach.size()+1 do
+        attach[j-1].update_attribute(:myfiletable, @message)
         attach[j-1].save
         j = j+1
       end
@@ -128,12 +98,7 @@ class MessagesController < ApplicationController
 
     # Si il y a eu un problème : on supprime les pièces jointes
     else
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+      destroyfiles(attach, attach.size()+1)
       render 'new'
     end
   end
@@ -147,64 +112,18 @@ class MessagesController < ApplicationController
 
     # Si la modification du message réussit
     if @message.update_attributes(params.require(:message).permit(:content))
-
-      # On s'occupe des pièces jointes
-      totalsize = 0
-
-      @message.messagefiles.each do |sf|
-        if params["prevfile#{sf.id}".to_sym].nil?
-          sf.file.destroy
-          sf.destroy
-        else
-          totalsize = totalsize + sf.file_file_size
-        end
-      end
-
-      @message.fakemessagefiles.each do |sf|
-        if params["prevfakefile#{sf.id}".to_sym].nil?
-          sf.destroy
-        end
-      end
-
-      attach = Array.new
-
-      i = 1
-      k = 1
-      while !params["hidden#{k}".to_sym].nil? do
-        if !params["file#{k}".to_sym].nil?
-          attach.push()
-          attach[i-1] = Messagefile.new(:file => params["file#{k}".to_sym])
-          attach[i-1].message = @message
-          if !attach[i-1].save
-            j = 1
-            while j < i do
-              attach[j-1].file.destroy
-              attach[j-1].destroy
-              j = j+1
-            end
-            @message.reload
-            nom = params["file#{k}".to_sym].original_filename
-            flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-            render 'edit' and return
-          end
-          totalsize = totalsize + attach[i-1].file_file_size
-
-          i = i+1
-        end
-        k = k+1
-      end
-
-      if totalsize > 5242880
-        j = 1
-        while j < i do
-          attach[j-1].file.destroy
-          attach[j-1].destroy
-          j = j+1
-        end
-        @message.reload
-        flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)."
+    
+    	# Pièces jointes
+			@error = false
+			@error_message = ""
+			
+			attach = update_files(@message, "Message") # Fonction commune pour toutes les pièces jointes
+			
+			if @error
+				@message.reload
+				flash.now[:danger] = @error_message
         render 'edit' and return
-      end
+			end
 
       flash[:success] = "Votre message a bien été modifié."
       tot = @message.subject.messages.where("id <= ?", @message.id).count
@@ -228,9 +147,13 @@ class MessagesController < ApplicationController
     @message = Message.find(params[:id])
     @subject = @message.subject
 
-    @message.messagefiles.each do |f|
+    @message.myfiles.each do |f|
       f.file.destroy
       f.destroy
+    end
+    
+    @message.fakefiles.each do |f|
+    	f.destroy
     end
 
     @message.destroy

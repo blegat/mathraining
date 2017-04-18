@@ -119,47 +119,15 @@ class DiscussionsController < ApplicationController
     @tchatmessage.discussion = @discussion
     @erreur = false
 
-    # Pièces jointes une par une
-    attach = Array.new
-    totalsize = 0
-
-    i = 1
-    k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
-        attach.push()
-        attach[i-1] = Tchatmessagefile.new(:file => params["file#{k}".to_sym])
-        if !attach[i-1].save
-          j = 1
-          while j < i do
-            attach[j-1].file.destroy
-            attach[j-1].destroy
-            j = j+1
-          end
-          session[:ancientexte] = @content
-          nom = params["file#{k}".to_sym].original_filename
-          flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          @erreur = true
-          return
-        end
-        totalsize = totalsize + attach[i-1].file_file_size
-
-        i = i+1
-      end
-      k = k+1
-    end
-
-    # On vérifie que les pièces jointes ne sont pas trop grosses
-    if totalsize > 5.megabytes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
-
+		# Pièces jointes
+    @error = false
+    @error_message = ""
+    
+    attach = create_files # Fonction commune pour toutes les pièces jointes
+    
+    if @error
+    	flash.now[:danger] = @error_message
       session[:ancientexte] = @content
-      flash[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
       @erreur = true
       return
     end
@@ -167,22 +135,16 @@ class DiscussionsController < ApplicationController
     # Si le message a bien été sauvé
     if @tchatmessage.save
 
-      # On enregistre les pièces jointes
+     # On enregistre les pièces jointes
       j = 1
-      while j < i do
-        attach[j-1].tchatmessage = @tchatmessage
+      while j < attach.size()+1 do
+        attach[j-1].update_attribute(:myfiletable, @tchatmessage)
         attach[j-1].save
         j = j+1
       end
     else
       @erreur = true
-      # On supprime les pièces jointes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+      destroyfiles(attach, attach.size()+1)
       session[:ancientexte] = @content
       if @content.size == 0
         flash[:danger] = "Votre message est vide."

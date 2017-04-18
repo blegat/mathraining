@@ -72,9 +72,9 @@ Problème <%= @numero %>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <%= render 'subjects/smiley', hiddentext: false %>
   <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
+    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
   <% else %>
-    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
+    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
   <% end %>
   </div>
   
@@ -109,24 +109,7 @@ Problème <%= @numero %>
   </div>
   
   <!-- Pièces jointes -->
-  <% if @submission.submissionfiles.count + @submission.fakesubmissionfiles.count > 0 %>
-    <b>Pièces jointes (décochez pour supprimer)</b><br/>
-    <% @submission.submissionfiles.each do |sf| %>
-      <label class="checkbox-inline">
-        <input type="checkbox" name="prevfile<%= sf.id %>" value="1" checked="checked" />
-        <%= link_to sf.file_file_name, download_submissionfile_path(sf) %>
-      </label>
-      <br/>
-    <% end %>
-    <% @submission.fakesubmissionfiles.each do |sf| %>
-      <label class="checkbox-inline">
-        <input type="checkbox" name="prevfakefile<%= sf.id %>" value="1" checked="checked" />
-        <span style="color:#0000BB;"><%= sf.file_file_name %> (désactivée)</span>
-      </label>
-      <br/>
-    <% end %>
-    <br/>
-  <% end %>
+  <%= render 'subjects/files', s: @submission %>
   <span id="fooBar"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
   <br /><br/>

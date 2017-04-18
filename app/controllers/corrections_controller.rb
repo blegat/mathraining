@@ -28,42 +28,15 @@ class CorrectionsController < ApplicationController
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
 
-    # On parcourt toutes les pièces jointes
-    i = 1
-    k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
-        attach.push()
-        attach[i-1] = Correctionfile.new(:file => params["file#{k}".to_sym])
-        if !attach[i-1].save
-          j = 1
-          while j < i do
-            attach[j-1].file.destroy
-            attach[j-1].destroy
-            j = j+1
-          end
-          nom = params["file#{k}".to_sym].original_filename
-          session[:ancientexte] = params[:correction][:content]
-          flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          redirect_to problem_path(@submission.problem, :sub => @submission) and return
-        end
-        totalsize = totalsize + attach[i-1].file_file_size
-
-        i = i+1
-      end
-      k = k+1
-    end
-
-    # On vérifie la taille des pièces jointes
-    if totalsize > 5.megabytes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
-      session[:ancientexte] = params[:correction][:content]
-      flash[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
+		# Pièces jointes
+    @error = false
+    @error_message = ""
+    
+    attach = create_files # Fonction commune pour toutes les pièces jointes
+    
+    if @error
+    	flash.now[:danger] = @error_message
+    	session[:ancientexte] = params[:correction][:content]
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
 
@@ -74,9 +47,8 @@ class CorrectionsController < ApplicationController
     if correction.save
       # On enregistre les pièces jointes
       j = 1
-      while j < i do
-        attach[j-1].correction = correction
-        attach[j-1].save
+      while j < attach.size()+1 do
+        attach[j-1].update_attribute(:myfiletable, correction)
         j = j+1
       end
 
@@ -185,13 +157,7 @@ class CorrectionsController < ApplicationController
 
     # Si il y a eu une erreur au moment de sauver
     else
-      # On supprime les pièces jointes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+      destroyfiles(attach, attach.size()+1)
       session[:ancientexte] = params[:correction][:content]
       if params[:correction][:content].size == 0
         flash[:danger] = "Votre réponse est vide."

@@ -228,4 +228,96 @@ class ApplicationController < ActionController::Base
       partial[s.id].save
     end
   end
+  
+  # Gérer les pièces jointes
+  def create_files
+    attach = Array.new
+    totalsize = 0
+    
+    i = 1
+    k = 1
+    while !params["hidden#{k}".to_sym].nil? do
+      if !params["file#{k}".to_sym].nil?
+        attach.push()
+        attach[i-1] = Myfile.new(:file => params["file#{k}".to_sym])
+        if !attach[i-1].save
+          destroy_files(attach, i)
+          nom = params["file#{k}".to_sym].original_filename
+          @error = true
+          @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          return [];
+        end
+        totalsize = totalsize + attach[i-1].file_file_size
+
+        i = i+1
+      end
+      k = k+1
+    end
+
+    if totalsize > 5.megabytes
+      destroy_files(attach, i)			
+			@error = true
+			@error_message = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
+			return [];
+    end
+    
+    return attach
+  end
+  
+  def update_files(about, type)
+  	totalsize = 0
+  	about.myfiles.each do |f|
+      if params["prevfile#{f.id}".to_sym].nil?
+        f.file.destroy
+        f.destroy
+      else
+        totalsize = totalsize + f.file_file_size
+      end
+    end
+
+   	about.fakefiles.each do |f|
+      if params["prevfakefile#{f.id}".to_sym].nil?
+        f.destroy
+      end
+    end
+
+    attach = Array.new
+
+    i = 1
+    k = 1
+    while !params["hidden#{k}".to_sym].nil? do
+      if !params["file#{k}".to_sym].nil?
+        attach.push()
+        attach[i-1] = Myfile.new(:file => params["file#{k}".to_sym])
+        attach[i-1].myfiletable = about
+        if !attach[i-1].save
+        	destroy_files(attach, i)
+          nom = params["file#{k}".to_sym].original_filename
+          @error = true
+          @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          return []
+        end
+        totalsize = totalsize + attach[i-1].file_file_size
+
+        i = i+1
+      end
+      k = k+1
+    end
+
+    if totalsize > 5.megabytes
+      destroy_files(attach, i)
+      @error = true
+      @error_message = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)"
+      return []
+    end
+  end
+  
+  def destroy_files(attach, i)
+  	j = 1
+    while j < i do
+      attach[j-1].file.destroy
+      attach[j-1].destroy
+      j = j+1
+    end
+  end
 end
