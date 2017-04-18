@@ -1,6 +1,7 @@
 Mathraining
 ============
 [![Build Status](https://secure.travis-ci.org/blegat/mathraining.png)](http://travis-ci.org/blegat/mathraining)
+[![codecov](https://codecov.io/gh/blegat/mathraining/branch/master/graph/badge.svg)](https://codecov.io/gh/blegat/mathraining)
 
 Description
 -----------
