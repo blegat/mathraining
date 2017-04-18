@@ -32,3 +32,6 @@ doc/
 
 # Schema
 /db/schema.rb
+
+# SimpleCov
+coverage
