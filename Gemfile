@@ -41,7 +41,7 @@ gem 'web-console', '~> 2.0', group: :development
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
-  gem 'sass-rails',   '~> 5.0.0'
+  gem 'sass-rails',   '~> 5.0.1'
   gem 'coffee-rails', '~> 4.2.1'
   gem 'uglifier', '>= 1.2.3'
 end

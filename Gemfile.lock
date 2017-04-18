@@ -292,7 +292,7 @@ DEPENDENCIES
   resque-web
   resque_mailer
   rspec-rails (= 3.5)
-  sass-rails (~> 5.0.0)
+  sass-rails (~> 5.0.1)
   selenium-webdriver (= 3.3.0)
   simplecov
   sqlite3
