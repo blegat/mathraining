@@ -33,8 +33,6 @@ class Subject < ActiveRecord::Base
   belongs_to :qcm
   has_many :followingsubjects, dependent: :destroy
   has_many :following_users, through: :followingsubjects, source: :user
-  has_many :subjectfiles, dependent: :destroy
-  has_many :fakesubjectfiles, dependent: :destroy
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 

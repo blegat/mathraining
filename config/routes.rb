@@ -80,41 +80,6 @@ Mathraining::Application.routes.draw do
   	end
   end
 
-  resources :submissionfiles, only: [] do
-    match '/fake_delete', to: 'submissionfiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
-  end
-
-  resources :correctionfiles, only: [] do
-    match '/fake_delete', to: 'correctionfiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
-  end
-
-  resources :subjectfiles, only: [] do
-    match '/fake_delete', to: 'subjectfiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
-  end
-
-  resources :messagefiles, only: [] do
-    match '/fake_delete', to: 'messagefiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
-  end
-
-  resources :tchatmessagefiles, only: [] do
-    match '/fake_delete', to: 'tchatmessagefiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
-  end
-
  # mathjax 'mathjax'
 
   resources :prerequisites, only: []

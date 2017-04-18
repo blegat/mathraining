@@ -17,8 +17,6 @@ class Tchatmessage < ActiveRecord::Base
 
   belongs_to :discussion
   belongs_to :user
-  has_many :tchatmessagefiles, dependent: :destroy
-  has_many :faketchatmessagefiles, dependent: :destroy
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 
