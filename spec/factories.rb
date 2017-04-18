@@ -112,7 +112,6 @@ FactoryGirl.define do
     association :user
     lastcomment DateTime.current
     association :category
-    #category_id 1
     chapter_id 0
     section_id 0
     qcm_id 0

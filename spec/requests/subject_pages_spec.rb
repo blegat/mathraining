@@ -12,7 +12,15 @@ describe "Subject pages" do
   let(:user) { FactoryGirl.create(:user) }
   let!(:category) { FactoryGirl.create(:category) }
   let!(:sub) { FactoryGirl.create(:subject) }
+  let(:sub_user) { FactoryGirl.create(:subject, user: user) }
+  let(:sub_admin) { FactoryGirl.create(:subject, user: admin) }
+  let(:sub_other_admin) { FactoryGirl.create(:subject, user: other_admin) }
+  let(:sub_other_root) { FactoryGirl.create(:subject, user: other_root) }
   let!(:exercise) { FactoryGirl.create(:exercise) }
+  let(:title) { "Mon titre" }
+  let(:content) { "Mon message" }
+  let(:newtitle) { "Mon nouveau titre" }
+  let(:newcontent) { "Mon nouveau message" }
   
   describe "visitor" do
   	describe "visit forum" do
@@ -48,18 +56,14 @@ describe "Subject pages" do
 				it { should have_selector('h1', text: 'Créer un sujet') }
 				
 				describe "after submission" do
-					before { create_subject(category) }
-					it { should have_selector('div', text: 'Mon message') }
+					before { create_subject(category, title, content) }
+					it { should have_selector('div', text: content) }
 				end
 			end
 		end
 		
 		describe "edits/deletes his subject" do
-			before do
-				sub.user = user
-				sub.save
-				visit subject_path(sub)
-			end
+			before { visit subject_path(sub_user) }
 			it { should have_link('Modifier ce sujet') }
 			it { should_not have_link('Supprimer ce sujet') }
 			
@@ -68,8 +72,8 @@ describe "Subject pages" do
 				it { should have_selector('h1', text: 'Modifier un sujet') }
 				
 				describe "after submission" do
-					before { update_subject(sub) }
-					it { should have_selector('div', text: 'Mon nouveau message') }
+					before { update_subject(sub_user, newtitle, newcontent) }
+					it { should have_selector('div', text: newcontent) }
 				end
 			end
 		end
@@ -117,18 +121,14 @@ describe "Subject pages" do
 				it { should have_selector('h1', text: 'Modifier un sujet') }
 				
 				describe "after submission" do
-					before { update_subject(sub) }
-					it { should have_selector('div', text: 'Mon nouveau message') }
+					before { update_subject(sub, newtitle, newcontent) }
+					it { should have_selector('div', text: newcontent) }
 				end
 			end
   	end
   	
   	describe "edits/deletes his subject" do
-  		before do
-  			sub.user = admin
-  			sub.save
-  			visit subject_path(sub)
-  		end
+  		before { visit subject_path(sub_admin) }
   		it { should have_link('Modifier ce sujet') }
 			it { should have_link('Supprimer ce sujet') }
 			
@@ -141,23 +141,19 @@ describe "Subject pages" do
 				it { should have_selector('h1', text: 'Modifier un sujet') }
 				
 				describe "after submission" do
-					before { update_subject(sub) }
-					it { should have_selector('div', text: 'Mon nouveau message') }
+					before { update_subject(sub_admin, newtitle, newcontent) }
+					it { should have_selector('div', text: newcontent) }
 				end
 			end
   	end
   	
   	describe "edits/deletes the subject of another admin" do
-  		before do
-  			sub.user = other_admin
-  			sub.save
-  			visit subject_path(sub)
-  		end
+  		before { visit subject_path(sub_other_admin) }
   		it { should_not have_link('Modifier ce sujet') }
 			it { should_not have_link('Supprimer ce sujet') }
 			
 			describe "on the page" do
-				before { visit edit_subject_path(sub) }
+				before { visit edit_subject_path(sub_other_admin) }
 				it { should_not have_selector('h1', text: 'Modifier un sujet') }
 			end
   	end
@@ -167,11 +163,7 @@ describe "Subject pages" do
   	before { sign_in root }
   	
   	describe "edits/deletes the subject of another root" do
-  		before do
-  			sub.user = other_root
-  			sub.save
-  			visit subject_path(sub)
-  		end
+  		before { visit subject_path(sub_other_root) }
   		it { should have_link('Modifier ce sujet') }
 			it { should have_link('Supprimer ce sujet') }
 			
@@ -184,8 +176,8 @@ describe "Subject pages" do
 				it { should have_selector('h1', text: 'Modifier un sujet') }
 				
 				describe "after submission" do
-					before { update_subject(sub) }
-					it { should have_selector('div', text: 'Mon nouveau message') }
+					before { update_subject(sub_other_root, newtitle, newcontent) }
+					it { should have_selector('div', text: newcontent) }
 				end
 			end
   	end

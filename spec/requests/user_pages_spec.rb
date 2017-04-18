@@ -164,10 +164,10 @@ describe "User pages" do
       it { should have_selector('h1', text: 'Actualités') }
       it { should have_selector('div.alert.alert-success') }
       it { should have_link('Déconnexion', href: signout_path) }
-      specify { user.reload.first_name.should  == new_first_name }
-      specify { user.reload.last_name.should  == new_last_name }
-      specify { user.reload.name.should  == new_name }
-      specify { user.reload.email.should == new_email }
+      specify { expect(user.reload.first_name).to eq(new_first_name) }
+      specify { expect(user.reload.last_name).to eq(new_last_name) }
+      specify { expect(user.reload.name).to eq(new_name) }
+      specify { expect(user.reload.email).to eq(new_email) }
     end
   end
 

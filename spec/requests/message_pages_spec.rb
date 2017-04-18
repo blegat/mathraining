@@ -11,7 +11,13 @@ describe "Message pages" do
   let(:other_admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
   let(:sub) { FactoryGirl.create(:subject) }
-  let(:message) { FactoryGirl.create(:message) }
+  let(:mes) { FactoryGirl.create(:message) }
+  let(:mes_user) { FactoryGirl.create(:message, user: user) }
+  let(:mes_admin) { FactoryGirl.create(:message, user: admin) }
+  let(:mes_other_admin) { FactoryGirl.create(:message, user: other_admin) }
+  let(:mes_other_root) { FactoryGirl.create(:message, user: other_root) }
+  let(:content) { "Ma réponse" }
+  let(:newcontent) { "Ma nouvelle réponse" }
   
   describe "visitor" do
 		describe "creates a message" do
@@ -31,18 +37,14 @@ describe "Message pages" do
 				it { should have_selector('h1', text: 'Répondre') }
 				
 				describe "after submission" do
-					before { create_message(sub) }
-					it { should have_selector('div', text: "Ma réponse") }
+					before { create_message(sub, content) }
+					it { should have_selector('div', text: content) }
 				end
 			end
 		end
 		
 		describe "edits/deletes his message" do
-			before do
-				message.user = user
-				message.save
-				visit subject_path(message.subject)
-			end
+			before { visit subject_path(mes_user.subject) }
 			it { should have_link('Modifier ce message') }
 			it { should_not have_link('Supprimer ce message') }
 			
@@ -51,18 +53,18 @@ describe "Message pages" do
 				it { should have_selector('h1', text: 'Modifier un message') }
 				
 				describe "after submission" do
-					before { update_message(message.subject, message) }
-					it { should have_selector('div', text: "Ma nouvelle réponse") }
+					before { update_message(mes_user.subject, mes_user, newcontent) }
+					it { should have_selector('div', text: newcontent) }
 				end
 			end
 		end
 		
 		describe "edits the message of someone else" do
-			before { visit subject_path(message.subject) }
+			before { visit subject_path(mes.subject) }
 			it { should_not have_link("Modifier ce message") }
 			
 			describe "on the page" do
-				before { visit edit_subject_message_path(message.subject, message) }
+				before { visit edit_subject_message_path(mes.subject, mes) }
 				it { should_not have_selector('h1', text: 'Modifier un message') }
 			end
 		end
@@ -72,7 +74,7 @@ describe "Message pages" do
 		before { sign_in admin }
 		
 		describe "edits/deletes the message of a student" do
-			before { visit subject_path(message.subject) }
+			before { visit subject_path(mes.subject) }
 			it { should have_link('Modifier ce message') }
 			it { should have_link('Supprimer ce message') }
 			
@@ -85,18 +87,14 @@ describe "Message pages" do
 				it { should have_selector('h1', text: 'Modifier un message') }
 				
 				describe "after submission" do
-					before { update_message(message.subject, message) }
-					it { should have_selector('div', text: "Ma nouvelle réponse") }
+					before { update_message(mes.subject, mes, newcontent) }
+					it { should have_selector('div', text: newcontent) }
 				end
 			end
 		end
 		
 		describe "edits/deletes his message" do
-			before do
-				message.user = admin
-				message.save
-				visit subject_path(message.subject)
-			end
+			before { visit subject_path(mes_admin.subject) }
 			it { should have_link('Modifier ce message') }
 			it { should have_link('Supprimer ce message') }
 			
@@ -109,23 +107,19 @@ describe "Message pages" do
 				it { should have_selector('h1', text: 'Modifier un message') }
 				
 				describe "after submission" do
-					before { update_message(message.subject, message) }
-					it { should have_selector('div', text: "Ma nouvelle réponse") }
+					before { update_message(mes_admin.subject, mes_admin, newcontent) }
+					it { should have_selector('div', text: newcontent) }
 				end
 			end
 		end
 		
 		describe "edits/delete the message of another admin" do
-			before do
-				message.user = other_admin
-				message.save
-				visit subject_path(message.subject)
-			end
+			before { visit subject_path(mes_other_admin.subject) }
 			it { should_not have_link("Modifier ce message") }
 			it { should_not have_link("Supprimer ce message") }
 			
 			describe "on the page" do
-				before { visit edit_subject_message_path(message.subject, message) }
+				before { visit edit_subject_message_path(mes_other_admin.subject, mes_other_admin) }
 				it { should_not have_selector('h1', text: 'Modifier un message') }
 			end
 		end
@@ -134,11 +128,7 @@ describe "Message pages" do
 	describe "root" do
 		before { sign_in root }
 		describe "edits/deletes the message of another root" do
-			before do
-				message.user = other_root
-				message.save
-				visit subject_path(message.subject)
-			end
+			before { visit subject_path(mes_other_root.subject) }
 			it { should have_link('Modifier ce message') }
 			it { should have_link('Supprimer ce message') }
 			
@@ -151,8 +141,8 @@ describe "Message pages" do
 				it { should have_selector('h1', text: 'Modifier un message') }
 				
 				describe "after submission" do
-					before { update_message(message.subject, message) }
-					it { should have_selector('div', text: "Ma nouvelle réponse") }
+					before { update_message(mes_other_root.subject, mes_other_root, newcontent) }
+					it { should have_selector('div', text: newcontent) }
 				end
 			end
 		end

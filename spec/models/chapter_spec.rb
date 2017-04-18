@@ -106,16 +106,16 @@ describe Chapter do
       # chap < chap1 < (chap2 & chap3)
     end
     describe "recursive_prerequisites should be correct" do
-      specify { @chap.recursive_prerequisites.should include(chap1.id) }
-      specify { @chap.recursive_prerequisites.should include(chap2.id) }
-      specify { @chap.recursive_prerequisites.should include(chap3.id) }
-      specify { @chap.recursive_prerequisites.should_not include(chap4.id) }
+      specify { expect(@chap.recursive_prerequisites).to include(chap1.id) }
+      specify { expect(@chap.recursive_prerequisites).to include(chap2.id) }
+      specify { expect(@chap.recursive_prerequisites).to include(chap3.id) }
+      specify { expect(@chap.recursive_prerequisites).not_to include(chap4.id) }
     end
     describe "available_prerequisites should be correct" do
-      specify { @chap.available_prerequisites.should_not include(chap1) }
-      specify { @chap.available_prerequisites.should_not include(chap2) }
-      specify { @chap.available_prerequisites.should_not include(chap3) }
-      specify { @chap.available_prerequisites.should include(chap4) }
+      specify { expect(@chap.available_prerequisites).not_to include(chap1) }
+      specify { expect(@chap.available_prerequisites).not_to include(chap2) }
+      specify { expect(@chap.available_prerequisites).not_to include(chap3) }
+      specify { expect(@chap.available_prerequisites).to include(chap4) }
     end
   end
 

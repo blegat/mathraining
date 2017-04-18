@@ -48,7 +48,7 @@ describe Section do
     let (:chap1) { FactoryGirl.create(:chapter) }
     let (:chap2) { FactoryGirl.create(:chapter) }
     before { @sec.chapters << chap1 }
-    specify { @sec.chapters.should include(chap1) }
-    specify { @sec.chapters.should_not include(chap2) }
+    specify { expect(@sec.chapters).to include(chap1) }
+    specify { expect(@sec.chapters).not_to include(chap2) }
   end
 end
