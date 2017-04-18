@@ -36,6 +36,7 @@ class Problem < ActiveRecord::Base
   validates :number, presence: true
   validates :statement, presence: true, length: { maximum: 8000 }
   validates :explanation, length: { maximum: 8000 }
+  validates :origin, length: { maximum: 255 }
   validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 5 }
 
   # Retourne la valeur du problème

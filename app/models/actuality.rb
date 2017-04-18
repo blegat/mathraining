@@ -16,5 +16,5 @@ class Actuality < ActiveRecord::Base
   # VALIDATIONS
 
   validates :title, presence: true, length: { maximum: 255 }
-  validates :content, presence: true
+  validates :content, presence: true, length: { maximum: 8000 }
 end
