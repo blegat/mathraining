@@ -119,14 +119,14 @@ class DiscussionsController < ApplicationController
     @tchatmessage.discussion = @discussion
     @erreur = false
 
-		# Pièces jointes
+    # Pièces jointes
     @error = false
     @error_message = ""
-    
+
     attach = create_files # Fonction commune pour toutes les pièces jointes
-    
+
     if @error
-    	flash.now[:danger] = @error_message
+      flash.now[:danger] = @error_message
       session[:ancientexte] = @content
       @erreur = true
       return
@@ -135,7 +135,7 @@ class DiscussionsController < ApplicationController
     # Si le message a bien été sauvé
     if @tchatmessage.save
 
-     # On enregistre les pièces jointes
+      # On enregistre les pièces jointes
       j = 1
       while j < attach.size()+1 do
         attach[j-1].update_attribute(:myfiletable, @tchatmessage)

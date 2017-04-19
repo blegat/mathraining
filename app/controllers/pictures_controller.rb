@@ -12,7 +12,7 @@ class PicturesController < ApplicationController
   def new
     @pic = Picture.new
   end
-  
+
   # Créer 2
   def create
     @pic = Picture.new(params[:picture])
@@ -31,7 +31,7 @@ class PicturesController < ApplicationController
     @pic.destroy
     redirect_to pictures_path
   end
-  
+
   ########## PARTIE PRIVEE ##########
   private
 

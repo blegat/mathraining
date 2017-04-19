@@ -11,20 +11,20 @@ class ChaptersController < ApplicationController
   # Voir un chapitre : il faut vérifier que le chapitre est en ligne (ou qu'on est admin)
   def show
   end
-  
+
   # Créer un chapitre : il faut vérifier que l'on est admin
   def new
-  	@section = Section.find(params[:section_id])
+    @section = Section.find(params[:section_id])
     @chapter = Chapter.new
   end
-  
+
   # Editer un chapitre : il faut vérifier que l'on est admin
   def edit
   end
 
   # Créer un chapitre 2 : il faut vérifier que l'on est admin
   def create
-    @section = Section.find(params[:section_id])    
+    @section = Section.find(params[:section_id])
     @chapter = Chapter.new(params[:chapter])
     @chapter.section_id = params[:section_id]
     if @chapter.save
@@ -34,7 +34,7 @@ class ChaptersController < ApplicationController
       render 'new'
     end
   end
-  
+
   # Editer un chapitre 2 : il faut vérifier que l'on est admin
   def update
     if @chapter.update_attributes(params[:chapter])
@@ -44,16 +44,16 @@ class ChaptersController < ApplicationController
       render 'edit'
     end
   end
-  
+
   # Supprimer un chapitre : il faut vérifier que l'on est admin (et que le chapitre n'est pas en ligne)
   def destroy
     @chapter = Chapter.find(params[:id])
     @chapter.destroy
-    
+
     Theory.where(:chapter_id => params[:id]).each do |t|
       t.destroy
     end
-    
+
     Exercise.where(:chapter_id => params[:id]).each do |e|
       e.destroy
     end
@@ -67,11 +67,11 @@ class ChaptersController < ApplicationController
     flash[:success] = "Chapitre supprimé."
     redirect_to section_path(@section)
   end
-  
+
   # Warning : il faut vérifier qu'on est admin
   def warning
   end
-  
+
   # Marquer tout le chapitre comme lu : il faut être inscrit et que le chapitre existe et soit en ligne
   def read
     @chapter.theories.each do |t|
@@ -81,30 +81,30 @@ class ChaptersController < ApplicationController
     end
     redirect_to chapter_path(@chapter, :type => 10)
   end
-  
+
   # Mettre en ligne : il faut vérifier qu'on est admin
   def put_online
     @chapter.online = true
     @chapter.save
     @section = @chapter.section
     @chapter.exercises.each do |e|
-    	@section.max_score = @section.max_score + e.value
-    	e.online = true
-    	e.save
+      @section.max_score = @section.max_score + e.value
+      e.online = true
+      e.save
     end
     @chapter.qcms.each do |q|
-    	@section.max_score = @section.max_score + q.value
-    	q.online = true
-    	q.save
+      @section.max_score = @section.max_score + q.value
+      q.online = true
+      q.save
     end
     @chapter.theories.each do |t|
-    	t.online = true
-    	t.save
+      t.online = true
+      t.save
     end
     @section.save
     redirect_to @chapter
   end
-  
+
   # Exporter : comme show
   def export
     # Remove spaces and tabs at end of line
@@ -114,21 +114,21 @@ class ChaptersController < ApplicationController
 
   ########## PARTIE PRIVEE ##########
   private
-  
+
   # Vérifie que le chapitre existe (et le récupère)
   def chapter_exists1
     @chapter = Chapter.find(params[:id])
     @section = @chapter.section
     if @section.fondation?
-  	  @fondation = true
-  	else
+      @fondation = true
+    else
       @fondation = false
     end
     if @chapter.nil?
       redirect_to root_path and return
     end
   end
-  
+
   # Vérifie que le chapitre existe (et le récupère)
   def chapter_exists2
     @chapter = Chapter.find(params[:chapter_id])
@@ -146,7 +146,7 @@ class ChaptersController < ApplicationController
   def delete_online
     redirect_to root_path if @chapter.online
   end
-  
+
   # Vérifie avant de mettre en ligne que les prérequis sont en ligne
   def prerequisites_online
     @chapter.prerequisites.each do |p|
@@ -159,5 +159,5 @@ class ChaptersController < ApplicationController
       redirect_to @chapter and return
     end
   end
-  
+
 end

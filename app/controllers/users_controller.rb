@@ -12,17 +12,17 @@ class UsersController < ApplicationController
 
   # Index de tous les users avec scores
   def index
-  	if signed_in? && current_user.sk.root?
-  		oneweekago = Date.today - 7
-  		User.where("email_confirm = ? AND created_at < ?", false, oneweekago).each do |u|
-  			u.destroy
-  		end
-  	end
+    if signed_in? && current_user.sk.root?
+      oneweekago = Date.today - 7
+      User.where("email_confirm = ? AND created_at < ?", false, oneweekago).each do |u|
+        u.destroy
+      end
+    end
   end
 
   # S'inscrire au site : il faut être en ligne
   def new
-  	@user = User.new
+    @user = User.new
   end
 
   # Modifier son compte : il faut être en ligne et que ce soit la bonne personne
@@ -32,22 +32,22 @@ class UsersController < ApplicationController
   # S'inscrire au site 2 : il faut être hors ligne
   def create
     #@user = User.new(params[:user])
-   	@user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :sex, :year, :country, :password, :password_confirmation))
+    @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :sex, :year, :country, :password, :password_confirmation))
     @user.key = SecureRandom.urlsafe_base64
 
     # Don't do email and captcha in development and tests
     @user.email_confirm = !Rails.env.production?
 
-  	if (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
+    if (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       if Rails.env.production?
         UserMailer.registration_confirmation(@user.id).deliver
       end
 
-  	  flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
-  	  redirect_to root_path
-  	else
-  	  render 'new'
-  	end
+      flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
+      redirect_to root_path
+    else
+      render 'new'
+    end
   end
 
   # Voir un utilisateur
@@ -75,15 +75,15 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find(params[:id])
     if !@user.root?
-		  skinner = User.where(skin: @user.id)
-		  skinner.each do |s|
-		    s.update_attribute(:skin, 0)
-		  end
-		  @user.destroy
-		  flash[:success] = "Utilisateur supprimé."
-		else
-			flash[:danger] = "Il n'est pas possible de supprimer un root."
-		end
+      skinner = User.where(skin: @user.id)
+      skinner.each do |s|
+        s.update_attribute(:skin, 0)
+      end
+      @user.destroy
+      flash[:success] = "Utilisateur supprimé."
+    else
+      flash[:danger] = "Il n'est pas possible de supprimer un root."
+    end
     redirect_to users_path
   end
 
@@ -118,7 +118,7 @@ class UsersController < ApplicationController
     end
     redirect_to @user
   end
-  
+
   # Ajouter / Enlever des correcteurs
   def switch_corrector
     @user = User.find(params[:user_id])
@@ -132,7 +132,7 @@ class UsersController < ApplicationController
     end
     redirect_to @user
   end
-  
+
   # Changer de groupe
   def change_group
     @user = User.find(params[:user_id])
@@ -164,7 +164,7 @@ class UsersController < ApplicationController
       if @user.email_confirm
         @user.update_attribute(:key, SecureRandom.urlsafe_base64)
         UserMailer.forgot_password(@user.id).deliver if Rails.env.production?
-  	    flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
+        flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
       else
         flash[:danger] = "Veuillez d'abord confirmer votre adresse mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
       end
@@ -195,29 +195,29 @@ class UsersController < ApplicationController
   def recompute_scores
     point_attribution_all
     Section.all.each do |s|
-    	s.max_score = 0
-    	if !s.fondation?
-    		s.problems.each do |p|
-    			if p.online?
-		  			s.max_score = s.max_score + p.value
-		  		end
-		  	end
-		  	s.chapters.each do |c|
-		  		if c.online?
-		  			c.exercises.each do |e|
-		  				if e.online?
-		  					s.max_score = s.max_score + e.value
-		  				end
-		  			end
-		  			c.qcms.each do |q|
-		  				if q.online?
-		  					s.max_score = s.max_score + q.value
-		  				end
-		  			end
-		  		end
-		  	end
-		  end
-    	s.save
+      s.max_score = 0
+      if !s.fondation?
+        s.problems.each do |p|
+          if p.online?
+            s.max_score = s.max_score + p.value
+          end
+        end
+        s.chapters.each do |c|
+          if c.online?
+            c.exercises.each do |e|
+              if e.online?
+                s.max_score = s.max_score + e.value
+              end
+            end
+            c.qcms.each do |q|
+              if q.online?
+                s.max_score = s.max_score + q.value
+              end
+            end
+          end
+        end
+      end
+      s.save
     end
     redirect_to users_path
   end
@@ -269,10 +269,10 @@ class UsersController < ApplicationController
     @user.toggle!(:active)
     redirect_to @user
   end
-  
+
   def groups
   end
-  
+
   def correctors
   end
 
@@ -291,13 +291,13 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     redirect_to root_path unless current_user.sk.id == @user.id
   end
-  
+
   def corrector_user
-  	redirect_to root_path unless current_user.sk.admin or current_user.sk.corrector
+    redirect_to root_path unless current_user.sk.admin or current_user.sk.corrector
   end
-  
+
   def group_user
-  	redirect_to root_path unless current_user.sk.admin or current_user.sk.group != ""
+    redirect_to root_path unless current_user.sk.admin or current_user.sk.group != ""
   end
 
   # Vérifie qu'on ne désactive pas un admin

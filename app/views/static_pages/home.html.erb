@@ -5,15 +5,15 @@
 
   <div class="col-lg-7 col-sm-7 col-xs-12">
   <center>
-   <%= image_tag "mathraining.gif", :style => "width:100%; max-width:342px;" %>
+  <%= image_tag "mathraining.gif", :style => "width:100%; max-width:342px;" %>
   </center>
   </div>
   <div class="col-lg-5 col-sm-5 col-xs-12">
   <% tot = 0 %>
   <% number = 0 %>
   <% User.where("admin = ? AND rating > 0", false).each do |u| %>
-  	<% tot = tot + u.rating %>
-  	<% number = number + 1 %>
+    <% tot = tot + u.rating %>
+    <% number = number + 1 %>
   <% end %>
   <center>
   <table style="font-size:16px; border:2px dashed black; margin-top:25px; margin-bottom:10px;">

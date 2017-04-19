@@ -17,9 +17,9 @@ class Myfile < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   has_attached_file :file,
-    :path => ':rails_root/public/system/:attachment/:class/:id/:basename_:hash.:extension',
-    :url => '/system/:attachment/:class/:id/:basename_:hash.:extension',
-    :hash_secret => "longSecretString"
+  :path => ':rails_root/public/system/:attachment/:class/:id/:basename_:hash.:extension',
+  :url => '/system/:attachment/:class/:id/:basename_:hash.:extension',
+  :hash_secret => "longSecretString"
   belongs_to :myfiletable, polymorphic: true
 
   # VALIDATIONS
@@ -30,10 +30,10 @@ class Myfile < ActiveRecord::Base
 
   # Indique si la pièce jointe est une image (pour voir si on l'affiche ou non)
   def is_image
-   if self.file.content_type == 'image/jpeg' || self.file.content_type == 'image/jpg' || self.file.content_type == 'image/png' || self.file.content_type == 'image/gif' || self.file.content_type == 'image/bmp'
-     return true
-   else
-     return false
-   end
+    if self.file.content_type == 'image/jpeg' || self.file.content_type == 'image/jpg' || self.file.content_type == 'image/png' || self.file.content_type == 'image/gif' || self.file.content_type == 'image/bmp'
+      return true
+    else
+      return false
+    end
   end
 end

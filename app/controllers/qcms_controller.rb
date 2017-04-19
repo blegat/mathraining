@@ -10,12 +10,12 @@ class QcmsController < QuestionsController
     @chapter = Chapter.find(params[:chapter_id])
     @qcm = Qcm.new
   end
-  
+
   # Editer un qcm
   def edit
     @qcm = Qcm.find(params[:id])
   end
-  
+
   # Créer un qcm 2
   def create
     @chapter = Chapter.find(params[:chapter_id])
@@ -25,7 +25,7 @@ class QcmsController < QuestionsController
     @qcm.statement = params[:qcm][:statement]
     @qcm.level = params[:qcm][:level]
     if @chapter.section.fondation?
-    	@qcm.level = 0
+      @qcm.level = 0
     end
     @qcm.explanation = ""
     if params[:qcm][:many_answers] == '1'
@@ -59,8 +59,8 @@ class QcmsController < QuestionsController
     unless @qcm.online
       @qcm.level = params[:qcm][:level]
       if @qcm.chapter.section.fondation?
-    	@qcm.level = 0
-    end
+        @qcm.level = 0
+      end
       if params[:qcm][:many_answers] == '1'
         @qcm.many_answers = true
       else
@@ -227,7 +227,7 @@ class QcmsController < QuestionsController
       render 'explanation'
     end
   end
-  
+
   ########## PARTIE PRIVEE ##########
   private
 
@@ -244,7 +244,7 @@ class QcmsController < QuestionsController
       redirect_to chapter_path(@qcm.chapter)
     end
   end
-  
+
   # Bete maximum
   def maximum(a, b)
     if a > b

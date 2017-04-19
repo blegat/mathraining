@@ -11,8 +11,8 @@
 <% end %>
 
 <% def clear_exercise_field() %>
-	var oldSel = document.getElementById("subject_exercise_id");
-	while (oldSel.options.length > 0) {
+  var oldSel = document.getElementById("subject_exercise_id");
+  while (oldSel.options.length > 0) {
     oldSel.remove(oldSel.options.length - 1);
   }
   document.getElementById("alert").style.display = "none"
@@ -20,60 +20,60 @@
 <% end %>
 
 <% def remove_exercise_field() %>
-	document.getElementById("subject_exercise_id").style.display = "none";
-	document.getElementById("label_exo").style.display = "none"
+  document.getElementById("subject_exercise_id").style.display = "none";
+  document.getElementById("label_exo").style.display = "none"
 <% end %>
 
 <% def normal_title() %>
- 	document.getElementById("subject_title").disabled = ""
-	document.getElementById("subject_title").name = "subject[title]"
-	document.getElementById("hidden_title").name = "osef"
+  document.getElementById("subject_title").disabled = ""
+  document.getElementById("subject_title").name = "subject[title]"
+  document.getElementById("hidden_title").name = "osef"
 <% end %>
 
 <% def forced_title() %>
-	document.getElementById("subject_title").name = "osef"
-	document.getElementById("subject_title").value = "<%= params[:txt] %>"
-	document.getElementById("subject_title").disabled = "disabled"
-	document.getElementById("hidden_title").name = "subject[title]"
-	document.getElementById("hidden_title").value = "<%= params[:txt] %>"
+  document.getElementById("subject_title").name = "osef"
+  document.getElementById("subject_title").value = "<%= params[:txt] %>"
+  document.getElementById("subject_title").disabled = "disabled"
+  document.getElementById("hidden_title").name = "subject[title]"
+  document.getElementById("hidden_title").value = "<%= params[:txt] %>"
 <% end %>
 
 <% if params.has_key?:cat %>
-	<% cat = params[:cat].to_i %>
-	<% clear_chapter_field() %>
-	<% clear_exercise_field() %>
+  <% cat = params[:cat].to_i %>
+  <% clear_chapter_field() %>
+  <% clear_exercise_field() %>
   <% remove_exercise_field() %>
-	<% if cat < 1000 %>
-		<% remove_chapter_field() %>
-		<% normal_title() %>
-	<% else %>
-		var oldSel = document.getElementById("subject_chapter_id");
-		<% section = cat/1000 %>
-		<% s = Section.find(section) %>
-		var opt = document.createElement('option');
+  <% if cat < 1000 %>
+    <% remove_chapter_field() %>
+    <% normal_title() %>
+  <% else %>
+    var oldSel = document.getElementById("subject_chapter_id");
+    <% section = cat/1000 %>
+    <% s = Section.find(section) %>
+    var opt = document.createElement('option');
     opt.text = "Aucun chapitre en particulier"
     opt.value = 0
     oldSel.add(opt, null);
-		<% s.chapters.where(:online => true).order(:name).each do |c| %>
-			var opt = document.createElement('option');
+    <% s.chapters.where(:online => true).order(:name).each do |c| %>
+      var opt = document.createElement('option');
       opt.text = "<%= c.name.html_safe %>"
       opt.value = <%= c.id %>
       oldSel.add(opt, null);
-		<% end %>
-		oldSel.style.display = "inline";
-		document.getElementById("label_chap").style.display = "block"
-		<% normal_title() %>
-	<% end %>
+    <% end %>
+    oldSel.style.display = "inline";
+    document.getElementById("label_chap").style.display = "block"
+    <% normal_title() %>
+  <% end %>
 <% elsif params.has_key?:chap %>
   <% chap = params[:chap].to_i %>
   <% clear_exercise_field() %>
   <% if chap == 0 %>
-  	<% normal_title() %>
-		<% remove_exercise_field() %>
+    <% normal_title() %>
+    <% remove_exercise_field() %>
   <% else %>
-		<% c = Chapter.find(chap) %>
-		var oldSel2 = document.getElementById("subject_exercise_id");
-		var opt = document.createElement('option');
+    <% c = Chapter.find(chap) %>
+    var oldSel2 = document.getElementById("subject_exercise_id");
+    var opt = document.createElement('option');
     opt.text = "Aucun exercice en particulier"
     opt.value = 0
     oldSel2.add(opt, null);
@@ -87,50 +87,50 @@
     <% end %>
     
     <% if exovisibles %>
-		  <% allexo = Array.new %>
-		  <% cache = false %>
-			<% c.exercises.where(:online => true).each do |e| %>
-				<% if (e.subject.nil? || ((params.has_key?:exo_id) && e.id == params[:exo_id].to_i)) %>
-					<% allexo.push([e.position, 2, e.id, true]) %>
-				<% else %>
-					<% cache = true %>
-					<% allexo.push([e.position, 2, e.id, false]) %>
-				<% end %>
-			<% end %>
-			<% c.qcms.where(:online => true).each do |q| %>
-				<% if (q.subject.nil? || ((params.has_key?:qcm_id) && q.id == params[:qcm_id].to_i)) %>
-					<% allexo.push([q.position, 3, q.id, true]) %>
-				<% else %>
-					<% cache = true %>
-					<% allexo.push([q.position, 3, q.id, false]) %>
-				<% end %>
-			<% end %>
-			<% sorted = allexo.sort %>
-			<% i = 1 %>
-			<% sorted.each do |e| %>
-				<% if e[3] %>
-					var opt = document.createElement('option');
-				  opt.text = "Exercice <%= i %>"
-				  opt.value = <%= e[1]*1000 + e[2] %>
-				  oldSel2.add(opt, null);
-				 <% end %>
-		    <% i = i+1 %>
-			<% end %>
-			<% if cache %>
-				document.getElementById("alert2").style.display = "block"
-			<% end %>
-		<% else %>
-			document.getElementById("alert").style.display = "block"
-		<% end %>
-		oldSel2.style.display = "inline";
-		document.getElementById("label_exo").style.display = "block"
-		<% normal_title() %>
+      <% allexo = Array.new %>
+      <% cache = false %>
+      <% c.exercises.where(:online => true).each do |e| %>
+        <% if (e.subject.nil? || ((params.has_key?:exo_id) && e.id == params[:exo_id].to_i)) %>
+          <% allexo.push([e.position, 2, e.id, true]) %>
+        <% else %>
+          <% cache = true %>
+          <% allexo.push([e.position, 2, e.id, false]) %>
+        <% end %>
+      <% end %>
+      <% c.qcms.where(:online => true).each do |q| %>
+        <% if (q.subject.nil? || ((params.has_key?:qcm_id) && q.id == params[:qcm_id].to_i)) %>
+          <% allexo.push([q.position, 3, q.id, true]) %>
+        <% else %>
+          <% cache = true %>
+          <% allexo.push([q.position, 3, q.id, false]) %>
+        <% end %>
+      <% end %>
+      <% sorted = allexo.sort %>
+      <% i = 1 %>
+      <% sorted.each do |e| %>
+        <% if e[3] %>
+          var opt = document.createElement('option');
+          opt.text = "Exercice <%= i %>"
+          opt.value = <%= e[1]*1000 + e[2] %>
+          oldSel2.add(opt, null);
+        <% end %>
+        <% i = i+1 %>
+      <% end %>
+      <% if cache %>
+        document.getElementById("alert2").style.display = "block"
+      <% end %>
+    <% else %>
+      document.getElementById("alert").style.display = "block"
+    <% end %>
+    oldSel2.style.display = "inline";
+    document.getElementById("label_exo").style.display = "block"
+    <% normal_title() %>
   <% end %>
 <% elsif params.has_key?:exo %>
-	<% exo = params[:exo].to_i %>
-	<% if exo > 0 %>
-		<% forced_title() %>
-	<% else %>
-		<% normal_title() %>
-	<% end %>
+  <% exo = params[:exo].to_i %>
+  <% if exo > 0 %>
+    <% forced_title() %>
+  <% else %>
+    <% normal_title() %>
+  <% end %>
 <% end %>

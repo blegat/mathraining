@@ -25,11 +25,11 @@
   <% if f.online %>
     <h3><%= i %>. <%= f.title %></h3>
     <div>
-    <% if i <= 2 %>
+      <% if i <= 2 %>
       <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="form-group"><div class="well" id="MathPreview"></div> <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div> <textarea id="MathInput" class="form-control" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>')) %>
-    <% else %>
+      <% else %>
       <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<center><i>Voir plus haut.</i></center>')) %>
-    <% end %>
+      <% end %>
     </div><br/>
     <% i = i+1 %>
   <% end %>
@@ -38,19 +38,17 @@
 <br/>
 
 <center>
-
-<!-- Marquer comme lu -->
-<% if !@ss || !current_user.sk.admin? %>
-  <% if @ss %>
-    <%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
-  <% else %>
-    <button type=button disabled=true class="btn btn-default btn-grey">Marquer toute la théorie comme lue</button><br/>
+  <!-- Marquer comme lu -->
+  <% if !@ss || !current_user.sk.admin? %>
+    <% if @ss %>
+      <%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
+    <% else %>
+      <button type=button disabled=true class="btn btn-default btn-grey">Marquer toute la théorie comme lue</button><br/>
+    <% end %>
   <% end %>
-<% end %>
 
-<!-- Exporter en LaTeX (viré) -->
-<% button_to "Exporter en .tex (version beta)", chapter_export_path(@chapter), class: "btn-primary" %>
-
+  <!-- Exporter en LaTeX (viré) -->
+  <% button_to "Exporter en .tex (version beta)", chapter_export_path(@chapter), class: "btn-primary" %>
 </center>
 
 <% if !@ss || !current_user.sk.admin? %>

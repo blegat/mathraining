@@ -39,15 +39,15 @@ class MessagesController < ApplicationController
       flash.now[:danger] = "Un nouveau message a été posté avant le vôtre! Veuillez en prendre connaissance ci-dessous avant de poster votre message."
       render 'new' and return
     end
-    
+
     # Pièces jointes
     @error = false
     @error_message = ""
-    
+
     attach = create_files # Fonction commune pour toutes les pièces jointes
-    
+
     if @error
-    	flash.now[:danger] = @error_message
+      flash.now[:danger] = @error_message
       render 'new' and return
     end
 
@@ -80,23 +80,23 @@ class MessagesController < ApplicationController
       page = [0,((tot-1)/10).floor].max + 1
 
       if current_user.sk.admin?
-		    if params.has_key?(:groupeA)
-		    	User.where(:group => "A").each do |u|
-		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver
-		    	end
-		    end
-		    if params.has_key?(:groupeB)
-		    	User.where(:group => "B").each do |u|
-		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver
-		    	end
-		    end
-		  end
+        if params.has_key?(:groupeA)
+          User.where(:group => "A").each do |u|
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver
+          end
+        end
+        if params.has_key?(:groupeB)
+          User.where(:group => "B").each do |u|
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver
+          end
+        end
+      end
 
       flash[:success] = "Votre message a bien été posté."
 
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
 
-    # Si il y a eu un problème : on supprime les pièces jointes
+      # Si il y a eu un problème : on supprime les pièces jointes
     else
       destroyfiles(attach, attach.size()+1)
       render 'new'
@@ -112,18 +112,18 @@ class MessagesController < ApplicationController
 
     # Si la modification du message réussit
     if @message.update_attributes(params.require(:message).permit(:content))
-    
-    	# Pièces jointes
-			@error = false
-			@error_message = ""
-			
-			attach = update_files(@message, "Message") # Fonction commune pour toutes les pièces jointes
-			
-			if @error
-				@message.reload
-				flash.now[:danger] = @error_message
+
+      # Pièces jointes
+      @error = false
+      @error_message = ""
+
+      attach = update_files(@message, "Message") # Fonction commune pour toutes les pièces jointes
+
+      if @error
+        @message.reload
+        flash.now[:danger] = @error_message
         render 'edit' and return
-			end
+      end
 
       flash[:success] = "Votre message a bien été modifié."
       tot = @message.subject.messages.where("id <= ?", @message.id).count
@@ -131,7 +131,7 @@ class MessagesController < ApplicationController
 
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
 
-    # Si il y a eu un bug
+      # Si il y a eu un bug
     else
       render 'edit'
     end
@@ -151,9 +151,9 @@ class MessagesController < ApplicationController
       f.file.destroy
       f.destroy
     end
-    
+
     @message.fakefiles.each do |f|
-    	f.destroy
+      f.destroy
     end
 
     @message.destroy

@@ -7,7 +7,7 @@ class ActualitiesController < ApplicationController
   def new
     @actuality = Actuality.new
   end
-  
+
   # Editer une actualité : que pour les admins
   def edit
     @actuality = Actuality.find(params[:id])
@@ -23,7 +23,7 @@ class ActualitiesController < ApplicationController
       render 'new'
     end
   end
-  
+
   # Editer une actualité 2 : que pour les admins
   def update
     @actuality = Actuality.find(params[:id])
@@ -34,7 +34,7 @@ class ActualitiesController < ApplicationController
       render 'edit'
     end
   end
-  
+
   # Supprimer une actualité : que pour les admins
   def destroy
     @actuality = Actuality.find(params[:id])

@@ -17,7 +17,7 @@ class Pointspersection < ActiveRecord::Base
   belongs_to :user
 
   # VALIDATIONS
-
+  
   validates :points, presence: true
   validates :section_id, presence: true
 end

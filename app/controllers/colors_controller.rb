@@ -5,8 +5,8 @@ class ColorsController < ApplicationController
 
   # Créer un niveau
   def create
-     @color = Color.new(params[:color])
-     if @color.save
+    @color = Color.new(params[:color])
+    if @color.save
       flash[:success] = "Niveau et couleur ajoutés."
       redirect_to colors_path
     else
@@ -14,7 +14,7 @@ class ColorsController < ApplicationController
       redirect_to colors_path
     end
   end
-  
+
   # Modifier un niveau
   def update
     @color = Color.find(params[:id])
@@ -26,7 +26,7 @@ class ColorsController < ApplicationController
       redirect_to colors_path
     end
   end
-  
+
   # Supprimer un niveau
   def destroy
     @color = Color.find(params[:id])

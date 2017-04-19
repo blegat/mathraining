@@ -28,15 +28,15 @@ class CorrectionsController < ApplicationController
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
 
-		# Pièces jointes
+    # Pièces jointes
     @error = false
     @error_message = ""
-    
+
     attach = create_files # Fonction commune pour toutes les pièces jointes
-    
+
     if @error
-    	flash.now[:danger] = @error_message
-    	session[:ancientexte] = params[:correction][:content]
+      flash.now[:danger] = @error_message
+      session[:ancientexte] = params[:correction][:content]
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
 
@@ -73,15 +73,15 @@ class CorrectionsController < ApplicationController
         @submission.save
         m = ''
 
-      # Si admin et nouvelle soumission : cela dépend du bouton
+        # Si admin et nouvelle soumission : cela dépend du bouton
       elsif (current_user.sk != @submission.user) and (@submission.status == 0 or @submission.status == 3) and
         (params[:commit] == "Poster et refuser la soumission" or
-         params[:commit] == "Poster et laisser la soumission comme erronée")
+        params[:commit] == "Poster et laisser la soumission comme erronée")
         @submission.status = 1
         @submission.save
         m = ' et soumission marquée comme incorrecte'
 
-      # Si soumission erronée et on accepte : devient correcte
+        # Si soumission erronée et on accepte : devient correcte
       elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
         @submission.status = 2
         @submission.save
@@ -155,7 +155,7 @@ class CorrectionsController < ApplicationController
       flash[:success] = "Réponse postée#{m}."
       redirect_to problem_path(@submission.problem, :sub => @submission)
 
-    # Si il y a eu une erreur au moment de sauver
+      # Si il y a eu une erreur au moment de sauver
     else
       destroyfiles(attach, attach.size()+1)
       session[:ancientexte] = params[:correction][:content]

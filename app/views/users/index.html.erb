@@ -51,14 +51,14 @@
 
 <% Solvedexercise.includes(:exercise).where("resolutiontime > ?", twoweeksago).find_each do |s| %>
   <% if s.correct %>
-  	<% exo = s.exercise %>
+    <% exo = s.exercise %>
     <% recent[s.user_id] += exo.value %>
   <% end %>
 <% end %>
 
 <% Solvedqcm.includes(:qcm).where("resolutiontime > ?", twoweeksago).find_each do |s| %>
   <% if s.correct %>
-  	<% qcm = s.qcm %>
+    <% qcm = s.qcm %>
     <% recent[s.user_id] += qcm.value %>
   <% end %>
 <% end %>
@@ -78,12 +78,12 @@
   <!-- Si premier, on commence le tableau -->
   <% newlevel = user.level %>
   <% if newlevel[:id] != oldlevel[:id] %>
-  	<% if rank > 1 %>
-  		</table>
-  	<% end %>
+    <% if rank > 1 %>
+      </table>
+    <% end %>
   	
-  	<span style="font-size:18px;">Sous le titre <%= "d\'" if vowel(newlevel.name[0]) %><%= "de " unless vowel(newlevel.name[0]) %><span style="color:<%= newlevel.color %>;"><%= newlevel.name %></span>...</span>
-  	
+    <span style="font-size:18px;">Sous le titre <%= "d\'" if vowel(newlevel.name[0]) %><%= "de " unless vowel(newlevel.name[0]) %><span style="color:<%= newlevel.color %>;"><%= newlevel.name %></span>...</span>
+    	
     <% if @ss && current_user.sk.admin %>
       <table class="table table-bordered" style="max-width:1000px; margin-top:20px;">
       <tr><th style="width:20px;"></th><th style="width:230px;">Nom</th><th style="width:90px;"><center>Score</center></th>

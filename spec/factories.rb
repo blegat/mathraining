@@ -7,7 +7,7 @@ FactoryGirl.define do
   
   # Category
   factory :category do
-  	sequence(:name) { |n| "Categorie #{n}" }
+    sequence(:name) { |n| "Categorie #{n}" }
   end
   
   # Chapter
@@ -154,8 +154,8 @@ FactoryGirl.define do
       root false
     end
     factory :root do
-    	admin true
-    	root true
+      admin true
+      root true
     end
   end
   

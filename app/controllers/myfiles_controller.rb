@@ -8,10 +8,10 @@ class MyfilesController < ApplicationController
   def download
     send_file @thing.file.path, :type => @thing.file_content_type, :filename => @thing.file_file_name
   end
-  
+
   # Supprimer la pièce jointe fictivement
   def fake_delete
-  	@thing = Myfile.find(params[:myfile_id])
+    @thing = Myfile.find(params[:myfile_id])
     @fakething = Fakefile.new
     @fakething.fakefiletable_type = @thing.myfiletable_type
     @fakething.fakefiletable_id = @thing.myfiletable_id
@@ -22,42 +22,42 @@ class MyfilesController < ApplicationController
     @fakething.save
     @thing.file.destroy
     @thing.destroy
-    
-    if @fakething.fakefiletable_type == "Subject"
-    	@subject = @fakething.fakefiletable
-		  q = 0
-		  if(params.has_key?:q)
-		    q = params[:q].to_i
-		  end
-		  
-		  flash[:success] = "Contenu de la pièce jointe supprimé."
-		  redirect_to subject_path(@subject, :q => q)
-		elsif @fakething.fakefiletable_type == "Message"
-			@message = @fakething.fakefiletable
-			tot = @message.subject.messages.where("id <= ?", @message.id).count
-		  page = [0,((tot-1)/10).floor].max + 1
-		  
-		  q = 0
-		  if(params.has_key?:q)
-		    q = params[:q].to_i
-		  end
 
-		  flash[:success] = "Contenu de la pièce jointe supprimé."
-		  redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
-		elsif @fakething.fakefiletable_type == "Tchatmessage"
-			flash[:success] = "Contenu de la pièce jointe supprimé."
-    	redirect_to pieces_jointes_path
+    if @fakething.fakefiletable_type == "Subject"
+      @subject = @fakething.fakefiletable
+      q = 0
+      if(params.has_key?:q)
+        q = params[:q].to_i
+      end
+
+      flash[:success] = "Contenu de la pièce jointe supprimé."
+      redirect_to subject_path(@subject, :q => q)
+    elsif @fakething.fakefiletable_type == "Message"
+      @message = @fakething.fakefiletable
+      tot = @message.subject.messages.where("id <= ?", @message.id).count
+      page = [0,((tot-1)/10).floor].max + 1
+
+      q = 0
+      if(params.has_key?:q)
+        q = params[:q].to_i
+      end
+
+      flash[:success] = "Contenu de la pièce jointe supprimé."
+      redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
+    elsif @fakething.fakefiletable_type == "Tchatmessage"
+      flash[:success] = "Contenu de la pièce jointe supprimé."
+      redirect_to pieces_jointes_path
     elsif @fakething.fakefiletable_type == "Submission"
-    	@submission = @fakething.fakefiletable
-    	flash[:success] = "Contenu de la pièce jointe supprimé."
-    	redirect_to problem_path(@submission.problem, :sub => @submission)
-    elsif @fakething.fakefiletable_type == "Correction"
-    	@submission = @fakething.fakefiletable.submission
-    	flash[:success] = "Contenu de la pièce jointe supprimé."
+      @submission = @fakething.fakefiletable
+      flash[:success] = "Contenu de la pièce jointe supprimé."
       redirect_to problem_path(@submission.problem, :sub => @submission)
-		end
+    elsif @fakething.fakefiletable_type == "Correction"
+      @submission = @fakething.fakefiletable.submission
+      flash[:success] = "Contenu de la pièce jointe supprimé."
+      redirect_to problem_path(@submission.problem, :sub => @submission)
+    end
   end
-  
+
   # Voir toutes les pièces jointes
   def seeall
     @list = Array.new
@@ -80,16 +80,16 @@ class MyfilesController < ApplicationController
   def have_access
     @thing = Myfile.find(params[:id])
     if @thing.myfiletable_type == "Subject"
-		  redirect_to root_path if (!current_user.sk.admin? && @thing.myfiletable.admin)
-		elsif @thing.myfiletable_type == "Message"
-    	redirect_to root_path if (!current_user.sk.admin? && @thing.myfiletable.subject.admin)
-   	elsif @thing.myfiletable_type == "Tchatmessage"
-   		redirect_to root_path if (!current_user.sk.admin? && !current_user.sk.discussions.include?(@thing.myfiletable.discussion))
-   	elsif @thing.myfiletable_type == "Submission"
-   		redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.myfiletable.user || current_user.sk.pb_solved?(@thing.myfiletable.problem))
-   	elsif @thing.myfiletable_type == "Correction"
-   		redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.myfiletable.submission.user || current_user.sk.pb_solved?(@thing.myfiletable.submission.problem))
+      redirect_to root_path if (!current_user.sk.admin? && @thing.myfiletable.admin)
+    elsif @thing.myfiletable_type == "Message"
+      redirect_to root_path if (!current_user.sk.admin? && @thing.myfiletable.subject.admin)
+    elsif @thing.myfiletable_type == "Tchatmessage"
+      redirect_to root_path if (!current_user.sk.admin? && !current_user.sk.discussions.include?(@thing.myfiletable.discussion))
+    elsif @thing.myfiletable_type == "Submission"
+      redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.myfiletable.user || current_user.sk.pb_solved?(@thing.myfiletable.problem))
+    elsif @thing.myfiletable_type == "Correction"
+      redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.myfiletable.submission.user || current_user.sk.pb_solved?(@thing.myfiletable.submission.problem))
     end
   end
-  
+
 end

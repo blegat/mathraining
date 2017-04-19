@@ -111,16 +111,16 @@ class User < ActiveRecord::Base
 
   # Rend les notifications
   def notifications_new
-  	if sk.admin
-  		Submission.where(status: 0, visible: true)
-  	else
-  		newsub = Array.new
-			Submission.where(status: 0, visible: true).each do |s|
-				if sk.admin || (sk.corrector && sk.pb_solved?(s.problem))
-    			newsub.push(s)
-    		end
-    	end
-    	newsub
+    if sk.admin
+      Submission.where(status: 0, visible: true)
+    else
+      newsub = Array.new
+      Submission.where(status: 0, visible: true).each do |s|
+        if sk.admin || (sk.corrector && sk.pb_solved?(s.problem))
+          newsub.push(s)
+        end
+      end
+      newsub
     end
   end
 
@@ -195,25 +195,25 @@ class User < ActiveRecord::Base
   end
 
   def colored_name(fullname = false)
-  	if !self.corrector?
-  		return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name) unless fullname}#{html_escape(self.fullname) if fullname}</span>"
-  	else
-			debut = self.name[0]
-			fin = self.name[1..-1] unless fullname
-			fin = self.fullname[1..-1] if fullname
-  		return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
-  	end
+    if !self.corrector?
+      return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name) unless fullname}#{html_escape(self.fullname) if fullname}</span>"
+    else
+      debut = self.name[0]
+      fin = self.name[1..-1] unless fullname
+      fin = self.fullname[1..-1] if fullname
+      return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
+    end
   end
 
   def linked_name(fullname = false)
-  	if !self.corrector?
-  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name)}</span></a>"
-  	else
-  		debut = self.name[0]
-			fin = self.name[1..-1] unless fullname
-			fin = self.fullname[1..-1] if fullname
-  		return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>"
-  	end
+    if !self.corrector?
+      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name)}</span></a>"
+    else
+      debut = self.name[0]
+      fin = self.name[1..-1] unless fullname
+      fin = self.fullname[1..-1] if fullname
+      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>"
+    end
   end
 
   private
@@ -221,7 +221,7 @@ class User < ActiveRecord::Base
   # Créer un token aléatoire
   def create_remember_token
     begin
-    self.remember_token = SecureRandom.urlsafe_base64
+      self.remember_token = SecureRandom.urlsafe_base64
     end while User.exists?(:remember_token => self.remember_token)
   end
 
@@ -234,11 +234,11 @@ class User < ActiveRecord::Base
       self.pointspersections << newpoint
     end
   end
-  
+
   # Détruire les discussions de cet utilisateur
   def destroy_discussions
-  	self.discussions.each do |d|
-  		d.destroy
-  	end
+    self.discussions.each do |d|
+      d.destroy
+    end
   end
 end

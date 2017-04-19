@@ -29,9 +29,9 @@
   <!-- Dans un test virtuel ou non -->
   <% if !@problem.online? %>
     <%= form_for(:problem, :url => problem_add_virtualtest_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
-	  <div class="form-inline">
-	    <% selectionne = 0 %>
-	    <% vt = @problem.virtualtest %>
+    <div class="form-inline">
+      <% selectionne = 0 %>
+      <% vt = @problem.virtualtest %>
         <% if vt.nil? %>
           Ce problème ne fait partie d'aucun test virtuel.
         <% else %>
@@ -67,24 +67,24 @@
   </ul>
 
   <% if !@problem.online %>
-	<% liste = Array.new %>
+  <% liste = Array.new %>
 
-	<% Section.where(:fondation => false).all.each do |s| %>
-	  <% if !s.fondation || fondement %>
-		<% liste2 = Array.new %>
-		<% liste2.push(s.name) %>
-		<% liste3 = Array.new %>
-		<% s.chapters.order(:name).each do |c| %>
-		  <% liste3.push([c.name, c.id]) %>
-		<% end %>
-		<% liste2.push(liste3) %>
+  <% Section.where(:fondation => false).all.each do |s| %>
+    <% if !s.fondation || fondement %>
+    <% liste2 = Array.new %>
+    <% liste2.push(s.name) %>
+    <% liste3 = Array.new %>
+    <% s.chapters.order(:name).each do |c| %>
+      <% liste3.push([c.name, c.id]) %>
+    <% end %>
+    <% liste2.push(liste3) %>
 
-		<% liste.push(liste2) %>
-		<% end %>
-	<% end %>
+    <% liste.push(liste2) %>
+    <% end %>
+  <% end %>
 
-	<%= form_for("chapter_problem", :url => problem_add_prerequisite_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
-	  <div class="form-inline">
+  <%= form_for("chapter_problem", :url => problem_add_prerequisite_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
+    <div class="form-inline">
         Ajouter le prérequis :
         <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, {:prompt => true, :class => "form-control"}) %>
         <%= f.submit "OK", class: "btn btn-primary" %>
@@ -136,34 +136,34 @@
 
   <!-- Explication -->
   
-	<script type="text/javascript">
-	function showStuff() {
- 	   document.getElementById("explanation").style.display = 'inline';
- 	   document.getElementById("show").style.display = 'none';
- 	   document.getElementById("hide").style.display = 'inline';
-	}
-	function hideStuff() {
-  	 document.getElementById("explanation").style.display = 'none';
- 		 document.getElementById("show").style.display = 'inline';
- 	   document.getElementById("hide").style.display = 'none';
-	}
-	</script>
+  <script type="text/javascript">
+  function showStuff() {
+    document.getElementById("explanation").style.display = 'inline';
+    document.getElementById("show").style.display = 'none';
+    document.getElementById("hide").style.display = 'inline';
+  }
+  function hideStuff() {
+    document.getElementById("explanation").style.display = 'none';
+    document.getElementById("show").style.display = 'inline';
+    document.getElementById("hide").style.display = 'none';
+  }
+  </script>
 
   <% if @problem.explanation.size == 0 %>
     <span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span>
   <% else %>
-  	<a href='#' id='show' onclick='showStuff(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a>
-  	<a href='#' id='hide' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(); return false;'>Éléments de solution (pour les correcteurs)</a>
-  	<span id='explanation' style='display:none;'><br/><br/>
+    <a href='#' id='show' onclick='showStuff(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a>
+    <a href='#' id='hide' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(); return false;'>Éléments de solution (pour les correcteurs)</a>
+    <span id='explanation' style='display:none;'><br/><br/>
     <%= raw(htmlise(@problem.explanation)) %>
-  	</span>
+    </span>
   <% end %>
   <br/><br/>
   
 <% end %>
-  
+
 <!-- Si administrateur -->
-  
+
 <% if signed_in? && current_user.sk.admin? %>
 
   <!-- Modifier/Supprimer/... -->

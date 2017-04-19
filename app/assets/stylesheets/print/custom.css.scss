@@ -1,6 +1,5 @@
 @import "bootstrap";
 
-
 /* universal */
 
 html {
@@ -19,51 +18,51 @@ $gray: #cccccc;
 $grayDarker: #999999;
 
 footer {
-	margin-top: 45px;
-	padding-top: 5px;
-	border-top: 1px solid $grayMediumLight;
-	color: $grayLight;
-	a {
-		color: $gray;
+  margin-top: 45px;
+  padding-top: 5px;
+  border-top: 1px solid $grayMediumLight;
+  color: $grayLight;
+  a {
+    color: $gray;
 
-		&:hover {
-			color: $grayDarker;
-		}
-	}
+    &:hover {
+      color: $grayDarker;
+    }
+  }
 
-	small {
-		float: left;
-	}
+  small {
+    float: left;
+  }
 
-	ul {
-		float: right;
-		list-style: none;
+  ul {
+    float: right;
+    list-style: none;
 
-		li {
-			float: left;
-			margin-left: 10px;
-		}
-	}
+    li {
+      float: left;
+      margin-left: 10px;
+    }
+  }
 }
 
 /* miscellaneous */
 
 @mixin box_sizing {
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .debug_dump {
-	clear: both;
-	float: left;
-	width: 100%;
-	margin-top: 45px;
-	@include box_sizing;
+  clear: both;
+  float: left;
+  width: 100%;
+  margin-top: 45px;
+  @include box_sizing;
 }
 
 div.evidence {
-    border: 1px dashed black;
-    padding:7px;
-    background-color: #F0FFFF;
+  border: 1px dashed black;
+  padding:7px;
+  background-color: #F0FFFF;
 }

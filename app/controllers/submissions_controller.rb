@@ -13,15 +13,15 @@ class SubmissionsController < ApplicationController
 
   # Créer une nouvelle soumission
   def create
-  	# Pièces jointes
+    # Pièces jointes
     @error = false
     @error_message = ""
-    
+
     attach = create_files # Fonction commune pour toutes les pièces jointes
-    
+
     if @error
-    	flash.now[:danger] = @error_message
-    	session[:ancientexte] = params[:submission][:content]
+      flash.now[:danger] = @error_message
+      session[:ancientexte] = params[:submission][:content]
       redirect_to problem_path(@problem, :sub => 0), flash: {danger: @error.message } and return
     end
 
@@ -51,7 +51,7 @@ class SubmissionsController < ApplicationController
         redirect_to problem_path(@problem, :sub => submission.id)
       end
 
-    # Si il y a eu une erreur
+      # Si il y a eu une erreur
     else
       destroyfiles(attach, attach.size()+1)
       session[:ancientexte] = params[:submission][:content]
@@ -89,15 +89,15 @@ class SubmissionsController < ApplicationController
 
   # Faire une nouvelle soumission
   def create_intest
-  	# Pièces jointes
+    # Pièces jointes
     @error = false
     @error_message = ""
-    
+
     attach = create_files # Fonction commune pour toutes les pièces jointes
-    
+
     if @error
-    	flash.now[:danger] = @error_message
-    	session[:ancientexte] = params[:submission][:content]
+      flash.now[:danger] = @error_message
+      session[:ancientexte] = params[:submission][:content]
       redirect_to problem_intest_path(@problem), flash: {danger: @error.message } and return
     end
 
@@ -186,15 +186,15 @@ class SubmissionsController < ApplicationController
           f.destroy
         end
       end
-    
+
       @error = false
       @error_message = ""
-    
+
       update_files(@submission, "Submission") # Fonction commune pour toutes les pièces jointes
-    
+
       if @error
-      	flash[:danger] = @error_message
-      	session[:ancientexte] = params[:submission][:content]
+        flash[:danger] = @error_message
+        session[:ancientexte] = params[:submission][:content]
         redirect_to lepath and return
       end
 
@@ -205,7 +205,7 @@ class SubmissionsController < ApplicationController
         flash[:success] = "Votre brouillon a bien été enregistré."
         redirect_to lepath
       else
-      	@submission.status = 0
+        @submission.status = 0
         @submission.created_at = DateTime.current
         @submission.lastcomment = @submission.created_at
         @submission.visible = true
@@ -398,9 +398,9 @@ class SubmissionsController < ApplicationController
       redirect_to root_path if score < 200
     end
   end
-  
+
   def corrector_user
-  	@submission = Submission.find(params[:submission_id])
-  	redirect_to root_path unless current_user.sk.admin or (current_user.sk.corrector && current_user.sk.pb_solved?(@submission.problem) && current_user.sk != @submission.user)
+    @submission = Submission.find(params[:submission_id])
+    redirect_to root_path unless current_user.sk.admin or (current_user.sk.corrector && current_user.sk.pb_solved?(@submission.problem) && current_user.sk != @submission.user)
   end
 end

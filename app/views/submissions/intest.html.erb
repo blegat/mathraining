@@ -62,61 +62,61 @@ Problème <%= @numero %>
 <!-- S'il s'agit d'une nouvelle soumission -->
 <% if @neworedit == 0 %>
 
-<%= form_for :submission, url: problem_create_intest_path(@problem), :html => { :multipart => true } do |f| %>
+  <%= form_for :submission, url: problem_create_intest_path(@problem), :html => { :multipart => true } do |f| %>
 
-<!-- Soumettre une solution -->
-<h3>Solution</h3>
-  La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
-  <div class="form-group">
-  <div class="well" id="MathPreview"></div>
-  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-  <%= render 'subjects/smiley', hiddentext: false %>
-  <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
-  <% else %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
-  <% end %>
-  </div>
-  
-  <!-- Pièces jointes -->
-  <span id="fooBar"></span>
-  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="true"' if current_user.other %> />
-  <br /><br/>
+  <!-- Soumettre une solution -->
+  <h3>Solution</h3>
+    La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
+    <div class="form-group">
+    <div class="well" id="MathPreview"></div>
+    <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+    <%= render 'subjects/smiley', hiddentext: false %>
+    <% if @ancientexte.nil? %>
+      <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
+    <% else %>
+      <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
+    <% end %>
+    </div>
+    
+    <!-- Pièces jointes -->
+    <span id="fooBar"></span>
+    <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="true"' if current_user.other %> />
+    <br /><br/>
 
-  Vous pourrez modifier cette solution tant que vous le voudrez dans le temps imparti.<br/><br/>
+    Vous pourrez modifier cette solution tant que vous le voudrez dans le temps imparti.<br/><br/>
 
-  <%= f.submit "Enregistrer cette solution", class: "btn btn-primary", :disabled => current_user.other %>
-  
+    <%= f.submit "Enregistrer cette solution", class: "btn btn-primary", :disabled => current_user.other %>
+    
 <% end %>
 
 <!-- Si on modifie une solution -->
 <% else %>
 
-<%= form_for :submission, url: problem_submission_update_intest_path(@problem, @submission), :html => { :multipart => true } do |f| %>
+  <%= form_for :submission, url: problem_submission_update_intest_path(@problem, @submission), :html => { :multipart => true } do |f| %>
 
-<!-- Modifier la solution -->
-<h3>Solution</h3>
-  La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
-  <div class="form-group">
-  <div class="well" id="MathPreview"></div>
-  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-  <%= render 'subjects/smiley', hiddentext: false %>
-  <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
-  <% else %>
-    <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
+  <!-- Modifier la solution -->
+  <h3>Solution</h3>
+    La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
+    <div class="form-group">
+    <div class="well" id="MathPreview"></div>
+    <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+    <%= render 'subjects/smiley', hiddentext: false %>
+    <% if @ancientexte.nil? %>
+      <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
+    <% else %>
+      <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
+    <% end %>
+    </div>
+    
+    <!-- Pièces jointes -->
+    <%= render 'subjects/files', s: @submission %>
+    <span id="fooBar"></span>
+    <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
+    <br /><br/>
+
+    <%= f.submit "Enregistrer cette solution", class: "btn btn-primary", :disabled => current_user.other %>
+    
   <% end %>
-  </div>
-  
-  <!-- Pièces jointes -->
-  <%= render 'subjects/files', s: @submission %>
-  <span id="fooBar"></span>
-  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
-  <br /><br/>
-
-  <%= f.submit "Enregistrer cette solution", class: "btn btn-primary", :disabled => current_user.other %>
-  
-<% end %>
 
 <% end %>
 

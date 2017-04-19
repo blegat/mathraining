@@ -57,7 +57,7 @@ var PreviewSafe = {
       this.needUpdate = true;
       return;
     }
-    
+
     var text = document.getElementById("MathInput").value.replace(/</g,'&lt').replace(/>/g,'&gt')
     var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
     while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, '<div style="background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;"><a style="display:inline;" class="btn btn-default btn-grey">$1</a><br/><br/>$2</div>');
@@ -85,7 +85,7 @@ var PreviewSafe = {
     this.mjRunning = false;
     this.SwapBuffers();
     if(this.needUpdate)
-      this.CreatePreview();
+    this.CreatePreview();
   }
 
 };
@@ -96,9 +96,9 @@ var PreviewSafe = {
 PreviewSafe.callback = MathJax.Callback(["CreatePreview",PreviewSafe]);
 PreviewSafe.callback.autoReset = true;  // make sure it can run more than once
 
-  function safefakeupdate(){
-    var stop = document.getElementById('stop');
-    if (stop.checked){
-        PreviewSafe.Update();
-    }
+function safefakeupdate(){
+  var stop = document.getElementById('stop');
+  if (stop.checked){
+    PreviewSafe.Update();
   }
+}

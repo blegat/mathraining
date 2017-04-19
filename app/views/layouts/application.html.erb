@@ -3,13 +3,13 @@
   <head>
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
-     tex2jax: {
-       inlineMath: [ ['$','$'] ],
-       processEscapes: true
-     },
-     "HTML-CSS": {
-      mtextFontInherit: true
-     }
+      tex2jax: {
+        inlineMath: [ ['$','$'] ],
+        processEscapes: true
+      },
+      "HTML-CSS": {
+        mtextFontInherit: true
+      }
     })
     </script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -19,22 +19,22 @@
     <%= javascript_include_tag "application" %>
     <%= yield :javascript_includes %>
     <%= csrf_meta_tags %>
-	<%= render 'layouts/shim' %>
+  <%= render 'layouts/shim' %>
 
-	<% # mathjax_tag %>
+  <% # mathjax_tag %>
     <%= auto_discovery_link_tag :atom, "/feed" %>
     <%= auto_discovery_link_tag :rss, "/feed.rss" %>
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-	  <%= render 'layouts/header' %>
-	  <div class="container">
+    <%= render 'layouts/header' %>
+    <div class="container">
         <% flash.each do |key, value| %>
           <%= content_tag(:div, value, class: "alert alert-#{key}", style: "padding:10px; margin-top:20px;") %>
         <% end %>
         <%= yield %>
         <%= render 'layouts/footer' %>
         <%= debug(params) if Rails.env.development? %>
-	  </div>
+    </div>
   </body>
 </html>

@@ -9,7 +9,7 @@ class ExercisesController < QuestionsController
     @chapter = Chapter.find(params[:chapter_id])
     @exercise = Exercise.new
   end
-  
+
   # Editer un exercice : il faut être admin
   def edit
     @exercise = Exercise.find(params[:id])
@@ -17,18 +17,18 @@ class ExercisesController < QuestionsController
       @exercise.answer = @exercise.answer.to_i
     end
   end
-  
+
   # Créer un nouvel exercice 2 : il faut être admin
   def create
     @chapter = Chapter.find(params[:chapter_id])
     @exercise = Exercise.new
     @exercise.online = false
-    
+
     @exercise.chapter_id = params[:chapter_id]
     @exercise.statement = params[:exercise][:statement]
     @exercise.level = params[:exercise][:level]
     if @chapter.section.fondation?
-    	@exercise.level = 0
+      @exercise.level = 0
     end
     @exercise.explanation = ""
     if params[:exercise][:decimal] == '1'
@@ -57,7 +57,7 @@ class ExercisesController < QuestionsController
       render 'new'
     end
   end
-  
+
   # Editer un exercice 2 : il faut être admin
   def update
     @exercise = Exercise.find(params[:id])
@@ -69,11 +69,11 @@ class ExercisesController < QuestionsController
       else
         @exercise.decimal = false
       end
-      
+
       @exercise.level = params[:exercise][:level]
       if @exercise.chapter.section.fondation?
-    	  @exercise.level = 0
-   	  end
+        @exercise.level = 0
+      end
     end
 
     if @exercise.decimal
@@ -81,7 +81,7 @@ class ExercisesController < QuestionsController
     else
       @exercise.answer = params[:exercise][:answer].gsub(",",".").to_i unless @exercise.online
     end
-    
+
     if @exercise.save
       flash[:success] = "Exercice modifié."
       redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
@@ -97,13 +97,13 @@ class ExercisesController < QuestionsController
     flash[:success] = "Exercice supprimé."
     redirect_to @chapter
   end
-  
+
   # Ordre moins : il faut être admin
   def order_minus
     @exercise = Exercise.find(params[:exercise_id])
     order_op(true, true, @exercise)
   end
-  
+
   # Ordre plus : il faut être admin
   def order_plus
     @exercise = Exercise.find(params[:exercise_id])
@@ -120,12 +120,12 @@ class ExercisesController < QuestionsController
     @section.save
     redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id)
   end
-  
+
   # Modifier l'explication : il faut être admin
   def explanation
     @exercise = Exercise.find(params[:exercise_id])
   end
-  
+
   # Modifier l'explication 2 : il faut être admin
   def update_explanation
     @exercise = Exercise.find(params[:exercise_id])
@@ -140,13 +140,13 @@ class ExercisesController < QuestionsController
 
   ########## PARTIE PRIVEE ##########
   private
-  
+
   # Vérifie qu'on est root si l'exercice est en ligne
   def root_exercise_user
     @exercise = Exercise.find(params[:id])
     redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) if (!current_user.sk.root && @exercise.online)
   end
-  
+
   # Bete fonction maximum
   def maximum(a, b)
     if a > b

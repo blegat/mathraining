@@ -230,7 +230,7 @@
 </center>
 
 <% if @subjects.size + @importants.size == 0 %>
-<br/><b>Aucun sujet</b><br/><br/>
+  <br/><b>Aucun sujet</b><br/><br/>
 <% end %>
 
 
@@ -241,8 +241,8 @@
 
 <!-- Modifier les catégories -->
 <% if current_user.sk.root? %>
-	<br/>
-	<center><%= link_to "Modifier les catégories", categories_path %></center>
+  <br/>
+  <center><%= link_to "Modifier les catégories", categories_path %></center>
 <% end %>
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->

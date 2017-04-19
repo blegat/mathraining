@@ -18,14 +18,14 @@
 <style type="text/css">
 
 html>body thead.fixed tr {
-	display: block;
+  display: block;
 }
 
 html>body tbody.scroll {
-	display: block;
-	max-height: 440px;
-	overflow-y: scroll;
-	width: 100%;
+  display: block;
+  max-height: 440px;
+  overflow-y: scroll;
+  width: 100%;
 }
 </style>
 
@@ -131,45 +131,45 @@ html>body tbody.scroll {
   <% nb_e = 0 %>
   <% nb_p = 0 %>
   <% nb_erreur = 0 %>
-	<% allchap = Array.new %>
-	<% allex = Array.new %>
-	<% allqcm = Array.new %>
-	<% allpb = Array.new %>
+  <% allchap = Array.new %>
+  <% allex = Array.new %>
+  <% allqcm = Array.new %>
+  <% allpb = Array.new %>
 	
-	<% maxscore = Array.new %>
-	<% numberexo = 0 %>
-	<% numberpb = 0 %>
+  <% maxscore = Array.new %>
+  <% numberexo = 0 %>
+  <% numberpb = 0 %>
 
-	<% Section.all.each do |s| %>
-	  <% maxscore[s.id] = s.max_score %>
-	<% end %>
+  <% Section.all.each do |s| %>
+    <% maxscore[s.id] = s.max_score %>
+  <% end %>
 
-	<% Chapter.all.each do |c| %>
-	  <% allchap[c.id] = c %>
-	<% end %>
+  <% Chapter.all.each do |c| %>
+    <% allchap[c.id] = c %>
+  <% end %>
 
-	<% Exercise.all.each do |e| %>
-		<% allex[e.id] = e %>
-		<% if e.level > 0 && e.online %>
-			<% numberexo = numberexo+1 %>
-		<% end %>
-	<% end %>
+  <% Exercise.all.each do |e| %>
+    <% allex[e.id] = e %>
+    <% if e.level > 0 && e.online %>
+      <% numberexo = numberexo+1 %>
+    <% end %>
+  <% end %>
 
-	<% Qcm.all.each do |q| %>
-	  <% allqcm[q.id] = q %>
-		<% if q.level > 0 && q.online %>
-			<% numberexo = numberexo+1 %>
-		<% end %>
-	<% end %>
+  <% Qcm.all.each do |q| %>
+    <% allqcm[q.id] = q %>
+    <% if q.level > 0 && q.online %>
+      <% numberexo = numberexo+1 %>
+    <% end %>
+  <% end %>
 
-	<% Problem.all.each do |p| %>
-	  <% allpb[p.id] = p %>
-	  <% if p.online %>
-	  	<% numberpb = numberpb+1 %>
-	  <% end %>
-	<% end %>
+  <% Problem.all.each do |p| %>
+    <% allpb[p.id] = p %>
+    <% if p.online %>
+      <% numberpb = numberpb+1 %>
+    <% end %>
+  <% end %>
 
-	<% premier = nil %>
+  <% premier = nil %>
   <% dernier = nil %>
 
   <% (1..(exercises_size+qcms_size+problems_size)).each do |i| %>
@@ -195,35 +195,35 @@ html>body tbody.scroll {
 
     <% if bestqui == 1 %>
       <% e = exercises[e_encours] %>
-			<% exo = allex[e.exercise_id] %>
+      <% exo = allex[e.exercise_id] %>
       <% pt = exo.value %>
       <% if pt > 0 %>
         <% nb_erreur = nb_erreur + [e.nb_guess-1, 20].min %>
         <% nb_e = nb_e+1 %>
-				<% dernier = e.resolutiontime.in_time_zone %>
+        <% dernier = e.resolutiontime.in_time_zone %>
         <% if premier.nil? %>
           <% premier = e.resolutiontime.in_time_zone %>
         <% end %>
       <% end %>
-			<% e_encours = e_encours + 1 %>
+      <% e_encours = e_encours + 1 %>
       <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => (pt == 0)}) %>
-		<% elsif bestqui == 2 %>
+    <% elsif bestqui == 2 %>
       <% q = qcms[q_encours] %>
-			<% qcm = allqcm[q.qcm_id] %>
+      <% qcm = allqcm[q.qcm_id] %>
       <% pt = qcm.value %>
       <% if pt > 0 %>
         <% nb_e = nb_e+1 %>
         <% nb_erreur = nb_erreur + [q.nb_guess-1, 20].min %>
-				<% dernier = q.resolutiontime.in_time_zone %>
+        <% dernier = q.resolutiontime.in_time_zone %>
         <% if premier.nil? %>
           <% premier = q.resolutiontime.in_time_zone %>
         <% end %>
       <% end %>
-			<% q_encours = q_encours + 1 %>
-      <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => (pt == 0)}) %>
-		<% elsif bestqui == 3 %>
+      <% q_encours = q_encours + 1 %>
+      <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id, :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => (pt == 0)}) %>
+    <% elsif bestqui == 3 %>
       <% p = problems[p_encours] %>
-			<% pb = allpb[p.problem_id] %>
+      <% pb = allpb[p.problem_id] %>
       <% pt = pb.value %>
       <% nb_p = nb_p+1 %>
       <% peutvoir = enough_points %>
@@ -236,11 +236,11 @@ html>body tbody.scroll {
       <% if t != 0 && (!signed_in? || !current_user.sk.admin?) %>
         <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
       <% end %>
-			<% p_encours = p_encours + 1 %>
-			<% dernier = p.truetime.in_time_zone %>
-			<% if premier.nil? %>
-				<% premier = p.truetime.in_time_zone %>
-			<% end %>
+      <% p_encours = p_encours + 1 %>
+      <% dernier = p.truetime.in_time_zone %>
+      <% if premier.nil? %>
+        <% premier = p.truetime.in_time_zone %>
+      <% end %>
       <% act.push({:time => p.truetime, :type => 4, :id => p.problem_id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
     <% end %>
   <% end %>
@@ -405,70 +405,70 @@ html>body tbody.scroll {
   <!-- Affichage du score et des statistiques -->
   <div class="col-lg-5 col-sm-12 col-xs-12">
 	
-	<!-- Si le score vaut 0, on n'affiche pas tout -->
-	<% if actualrating == 0 %>
-		<center><p style="font-size:24px; margin-top:60px;">Score : 0</p></center>
+  <!-- Si le score vaut 0, on n'affiche pas tout -->
+  <% if actualrating == 0 %>
+    <center><p style="font-size:24px; margin-top:60px;">Score : 0</p></center>
   <% else %>
-  	<center><p style="font-size:24px; margin-top:20px;">Score : <%= actualrating %></p></center>
- 		<br/>
-  
-  	<% p = Pointspersection.where(:user_id => @user) %>
-  	
-  	<table class="table table-bordered">
-  	<tr><th colspan="2" style="text-align:center;">Progression par type</th></tr>
-  	<tr>
-  	<td style="width:160px;">Exercices</td>
-  	<td>
-  	<% pct = numberexo == 0 ? 0 : 100*nb_e/numberexo.to_f %>
-  	<div class="progress" style="margin-bottom:0px;">  		
-		<div class="progress-bar" role="progressbar"
-		aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
-		  <% if nb_e == 0 %>
-			<% else %>
-				<span style="margin-left:5px"><%= nb_e %>/<%= numberexo %></span>
-			<% end %>
-		</div>
-		</div>
-		</td>
-		</tr>
+    <center><p style="font-size:24px; margin-top:20px;">Score : <%= actualrating %></p></center>
+    <br/>
+    
+    <% p = Pointspersection.where(:user_id => @user) %>
+    
+    <table class="table table-bordered">
+    <tr><th colspan="2" style="text-align:center;">Progression par type</th></tr>
+    <tr>
+    <td style="width:160px;">Exercices</td>
+    <td>
+    <% pct = numberexo == 0 ? 0 : 100*nb_e/numberexo.to_f %>
+    <div class="progress" style="margin-bottom:0px;">  		
+    <div class="progress-bar" role="progressbar"
+    aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
+      <% if nb_e == 0 %>
+      <% else %>
+        <span style="margin-left:5px"><%= nb_e %>/<%= numberexo %></span>
+      <% end %>
+    </div>
+    </div>
+    </td>
+    </tr>
 		
-		<td style="width:160px;">Problèmes</td>
-  	<td>
-  	<% pct = numberpb == 0 ? 0 : 100*nb_p/numberpb.to_f %>
-  	<div class="progress" style="margin-bottom:0px;">  		
-		<div class="progress-bar" role="progressbar"
-		aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
-		  <% if nb_p == 0 %>
-			<% else %>
-				<span style="margin-left:5px"><%= nb_p %>/<%= numberpb %></span>
-			<% end %>
-		</div>
-		</div>
-		</td>
-  	</tr>
-  	
-  	<table class="table table-bordered">
-  	<tr><th colspan="2" style="text-align:center;">Progression par section</th></tr>
-  	<% Section.order(:id).where(:fondation => false).each do |s| %>
-  		<tr>
-  		<td style="width:160px;"><%= abreviation[s.id-1] %></td>
-  		<% rate = p.where(:section_id => s.id).first.points %>
-  		<td>
-  		<% pct = maxscore[s.id] == 0 ? 0 : 100*rate/maxscore[s.id].to_f %>
-  		<div class="progress" style="margin-bottom:0px;">  		
-			<div class="progress-bar" role="progressbar"
-			aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= colors[s.id-1] %>; color:black;">
-				<% if pct.floor == 0 	%>
-				<% else %>
-					<span style="margin-left:5px"><%= pct.floor %>%</span>
-				<% end %>
-			</div>
-			</div>
-			</td>
-  		</tr>
-  	<% end %>
-  	</table>
-  	
+    <td style="width:160px;">Problèmes</td>
+    <td>
+    <% pct = numberpb == 0 ? 0 : 100*nb_p/numberpb.to_f %>
+    <div class="progress" style="margin-bottom:0px;">  		
+    <div class="progress-bar" role="progressbar"
+    aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
+      <% if nb_p == 0 %>
+      <% else %>
+        <span style="margin-left:5px"><%= nb_p %>/<%= numberpb %></span>
+      <% end %>
+    </div>
+    </div>
+    </td>
+    </tr>
+    
+    <table class="table table-bordered">
+    <tr><th colspan="2" style="text-align:center;">Progression par section</th></tr>
+    <% Section.order(:id).where(:fondation => false).each do |s| %>
+      <tr>
+      <td style="width:160px;"><%= abreviation[s.id-1] %></td>
+      <% rate = p.where(:section_id => s.id).first.points %>
+      <td>
+      <% pct = maxscore[s.id] == 0 ? 0 : 100*rate/maxscore[s.id].to_f %>
+      <div class="progress" style="margin-bottom:0px;">
+      <div class="progress-bar" role="progressbar"
+      aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= colors[s.id-1] %>; color:black;">
+        <% if pct.floor == 0 	%>
+        <% else %>
+          <span style="margin-left:5px"><%= pct.floor %>%</span>
+        <% end %>
+      </div>
+      </div>
+      </td>
+      </tr>
+    <% end %>
+    </table>
+    
   <% end %>
   
   <!-- Date d'inscription -->
@@ -481,18 +481,18 @@ html>body tbody.scroll {
   
   
   <% if signed_in? && current_user.sk.admin %>
-  	<div class="row">
-  	<div class="col-sm-12 col-xs-12">
-   	<h2>Informations</h2>
-   	<%= @user.country %> - <%= @user.year %><br/>
-   	<% if act.size > 0 %>
-   		<%= moyenne_erreurs %> erreurs/exercice<br/>
-   	<% end %>
-   	<% lastco = @user.last_connexion %>
-   	Dernière connexion : <%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %><br/>
-   	<%= "Groupe Wépion" if @user.wepion %> <%= " - Groupe " << @user.group if @user.group != "" %>
-  	</div>
-  	</div>
+    <div class="row">
+    <div class="col-sm-12 col-xs-12">
+      <h2>Informations</h2>
+      <%= @user.country %> - <%= @user.year %><br/>
+    <% if act.size > 0 %>
+      <%= moyenne_erreurs %> erreurs/exercice<br/>
+    <% end %>
+    <% lastco = @user.last_connexion %>
+    Dernière connexion : <%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %><br/>
+    <%= "Groupe Wépion" if @user.wepion %> <%= " - Groupe " << @user.group if @user.group != "" %>
+    </div>
+    </div>
   <% end %>
 
   <!-- Si l'étudiant a un score non égal à 0, on montre son évolution -->

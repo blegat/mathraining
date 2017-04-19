@@ -9,10 +9,10 @@ var scrollHandler = function () {
   var compenser = 0
   if($(window).width() >= 768)
   {
-  	if(document.getElementById('menu').offsetHeight > document.getElementById('messages').offsetHeight)
-  	{
-  		compenser = document.getElementById('menu').offsetHeight - document.getElementById('messages').offsetHeight
-  	}
+    if(document.getElementById('menu').offsetHeight > document.getElementById('messages').offsetHeight)
+    {
+      compenser = document.getElementById('menu').offsetHeight - document.getElementById('messages').offsetHeight
+    }
   }
   
   if(more_posts_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 10 - compenser)

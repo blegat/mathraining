@@ -31,9 +31,9 @@ class UserMailer < AsyncMailer
     @id = id
     mail(to: @user.email, subject: "Mathraining - Nouveau message de " + @qui, from: "mathraining@mathraining.be")
   end
-  
+
   def new_message_group(userid, subjectid, qui, id)
-  	@user = User.find(userid)
+    @user = User.find(userid)
     @subject = Subject.find(subjectid)
     @qui = qui
     @id = id
@@ -41,5 +41,5 @@ class UserMailer < AsyncMailer
     @page = [0,((@tot-1)/10).floor].max + 1
     mail(to: @user.email, subject: "Mathraining - Message à l'attention des élèves de Wépion", from: "mathraining@mathraining.be")
   end
-  	
+
 end
