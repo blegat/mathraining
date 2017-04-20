@@ -39,9 +39,7 @@ class UsersController < ApplicationController
     @user.email_confirm = !Rails.env.production?
 
     if (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
-      if Rails.env.production?
-        UserMailer.registration_confirmation(@user.id).deliver
-      end
+      UserMailer.registration_confirmation(@user.id).deliver if Rails.env.production?
 
       flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
       redirect_to root_path

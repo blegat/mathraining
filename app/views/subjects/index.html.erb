@@ -246,7 +246,7 @@
 <% end %>
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->
-<% if !current_user.other && current_user.sk.combien_forum > 0 %>
+<% if !current_user.other && current_user.sk.combien_forum[1] %>
   <% current_user.sk.forumseen = DateTime.current %>
   <% current_user.sk.save %>
 <% end %>

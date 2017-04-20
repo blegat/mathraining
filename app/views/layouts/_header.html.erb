@@ -161,10 +161,10 @@
 
       <!-- Forum -->
       <% if @ss %>
-        <% combien_nouveau = current_user.sk.combien_forum %>
+        <% combien_nouveau = current_user.sk.combien_forum[0] %>
       <% end %>
 
-      <% if @ss && current_user.sk.combien_forum == 0%>
+      <% if @ss && combien_nouveau == 0 %>
         <li><%= link_to "Forum", subjects_path %></li>
       <% elsif @ss %>
         <li style="font-weight:bold;"><%= link_to "Forum (#{combien_nouveau})", subjects_path %></li>

@@ -172,12 +172,12 @@ class SubjectsController < ApplicationController
       if current_user.sk.admin?
         if params.has_key?(:groupeA)
           User.where(:group => "A").each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver if Rails.env.production?
           end
         end
         if params.has_key?(:groupeB)
           User.where(:group => "B").each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver if Rails.env.production?
           end
         end
       end

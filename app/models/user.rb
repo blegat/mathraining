@@ -160,6 +160,7 @@ class User < ActiveRecord::Base
   # Rend le nombre de nouveaux messages sur le forum
   def combien_forum
     compteur = 0
+    update_date = false
     if self.admin?
       lastsubjects = Subject.where("lastcomment > ?", self.forumseen)
     elsif self.wepion?
@@ -172,8 +173,9 @@ class User < ActiveRecord::Base
       if m.user_id != self.id
         compteur = compteur+1
       end
+      update_date = true
     end
-    return compteur
+    return [compteur, update_date]
   end
 
   # Rend la peau de l'utilisateur : current_user.sk à mettre quasi partout
