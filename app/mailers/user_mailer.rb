@@ -39,7 +39,7 @@ class UserMailer < AsyncMailer
     @id = id
     @tot = @subject.messages.count
     @page = [0,((@tot-1)/10).floor].max + 1
-    mail(to: @user.email, subject: "Mathraining - Message à l'attention des élèves de Wépion", from: "mathraining@mathraining.be")
+    mail(to: "contact@mathraining.be", subject: "Mathraining - Message à l'attention des élèves de Wépion", from: "mathraining@mathraining.be")
   end
 
 end
