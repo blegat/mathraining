@@ -39,7 +39,7 @@ class UsersController < ApplicationController
     @user.email_confirm = !Rails.env.production?
 
     if (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
-      UserMailer.registration_confirmation(@user.id).deliver if Rails.env.production?
+      UserMailer.registration_confirmation(@user.id).deliver_later if Rails.env.production?
 
       flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
       redirect_to root_path
@@ -161,7 +161,7 @@ class UsersController < ApplicationController
     if @user
       if @user.email_confirm
         @user.update_attribute(:key, SecureRandom.urlsafe_base64)
-        UserMailer.forgot_password(@user.id).deliver if Rails.env.production?
+        UserMailer.forgot_password(@user.id).deliver_later if Rails.env.production?
         flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
       else
         flash[:danger] = "Veuillez d'abord confirmer votre adresse mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."

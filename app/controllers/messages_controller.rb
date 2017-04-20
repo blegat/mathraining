@@ -68,7 +68,7 @@ class MessagesController < ApplicationController
           if (@subject.admin && !u.admin) || (@subject.wepion && !u.wepion && !u.admin)
             # Ce n'est pas vraiment normal qu'il suive ce sujet
           else
-            UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.name, @message.content, @message.id).deliver if Rails.env.production?
+            UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.name, @message.content, @message.id).deliver_later if Rails.env.production?
           end
         end
       end
@@ -82,12 +82,12 @@ class MessagesController < ApplicationController
       if current_user.sk.admin?
         if params.has_key?(:groupeA)
           User.where(:group => "A").each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver if Rails.env.production?
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver_later if Rails.env.production?
           end
         end
         if params.has_key?(:groupeB)
           User.where(:group => "B").each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver if Rails.env.production?
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver_later if Rails.env.production?
           end
         end
       end
