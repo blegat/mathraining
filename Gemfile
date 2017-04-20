@@ -21,6 +21,7 @@ gem 'eventmachine', "1.2.3"
 gem "resque", "~> 1.27.3"
 gem 'resque_mailer'
 gem 'resque-web', require: 'resque_web'
+gem 'resque_action_mailer_backend'
 
 # Markdown
 #gem 'redcarpet' # server-side

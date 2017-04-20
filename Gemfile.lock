@@ -186,6 +186,9 @@ GEM
       resque
       sass-rails
       twitter-bootstrap-rails
+    resque_action_mailer_backend (0.0.3)
+      actionmailer (>= 2.2.0)
+      resque (>= 1.8.0)
     resque_mailer (2.4.2)
       actionmailer (>= 3.0)
     rspec-core (3.5.4)
@@ -291,6 +294,7 @@ DEPENDENCIES
   recaptcha (~> 4.1.0)
   resque (~> 1.27.3)
   resque-web
+  resque_action_mailer_backend
   resque_mailer
   rspec-rails (= 3.5)
   sass-rails (~> 5.0.1)
