@@ -25,7 +25,7 @@ class ChaptersController < ApplicationController
   # Créer un chapitre 2 : il faut vérifier que l'on est admin
   def create
     @section = Section.find(params[:section_id])
-    @chapter = Chapter.new(params[:chapter])
+    @chapter = Chapter.new(params.require(:chapter).permit(:name, :description, :level))
     @chapter.section_id = params[:section_id]
     if @chapter.save
       flash[:success] = "Chapitre ajouté."
@@ -37,7 +37,7 @@ class ChaptersController < ApplicationController
 
   # Editer un chapitre 2 : il faut vérifier que l'on est admin
   def update
-    if @chapter.update_attributes(params[:chapter])
+    if @chapter.update_attributes(params.require(:chapter).permit(:name, :description, :level))
       flash[:success] = "Chapitre modifié."
       redirect_to chapter_path(@chapter)
     else

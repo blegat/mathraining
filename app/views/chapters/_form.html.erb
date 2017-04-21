@@ -2,7 +2,7 @@
 
 <!-- Titre -->
 <div class="form-group">
-  <%= f.label :titre %>
+  <%= f.label :name %>
   <%= f.text_field :name, :class => "form-control", :style => "width:100%; max-width:400px;" %>
 </div>
 
@@ -17,6 +17,6 @@
 
 <!-- Niveau -->
 <div class="form-group">
-  <%= f.label "Niveau (entier entre 0 et 10, celui-ci ne sera affiché nulle part et servira juste à départager certains ex-aequo dans le classement des chapitres selon les prérequis)" %>
+  <%= f.label :level %>
   <%= f.number_field :level, :class => "form-control", :style => "width:50px;" %>
 </div>

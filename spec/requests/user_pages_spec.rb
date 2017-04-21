@@ -69,27 +69,6 @@ describe "User pages" do
     end
   end
 
-  describe "index" do
-    before(:all) { 30.times { FactoryGirl.create(:user) } }
-    after(:all)  { User.delete_all }
-
-    before(:each) do
-      sign_in user
-      visit users_path
-    end
-
-    it { should have_selector("h1", text: "Scores") }
-  end
-
-  describe "profile page" do
-    before do
-      sign_in(user)
-      visit user_path(other_user)
-    end
-
-    it { should have_selector("h1", text: other_user.name) }
-  end
-
   describe "signup" do
     before { visit signup_path }
 
@@ -130,9 +109,7 @@ describe "User pages" do
       visit edit_user_path(user)
     end
 
-    describe "page" do
-      it { should have_selector("h1", text: "Actualisez votre profil") }
-    end
+    it { should have_selector("h1", text: "Actualisez votre profil") }
 
     describe "with valid information" do
       before { click_button "Mettre à jour" }
@@ -152,15 +129,16 @@ describe "User pages" do
         fill_in "Mot de passe", with: user.password
         fill_in "Confirmation du mot de passe", with: user.password
         click_button "Mettre à jour"
+        user.reload
       end
 
       it { should have_selector("h1", text: "Actualités") }
       it { should have_selector("div.alert.alert-success") }
       it { should have_link("Déconnexion", href: signout_path) }
-      specify { expect(user.reload.first_name).to eq(new_first_name) }
-      specify { expect(user.reload.last_name).to eq(new_last_name) }
-      specify { expect(user.reload.name).to eq(new_name) }
-      specify { expect(user.reload.email).to eq(new_email) }
+      specify { expect(user.first_name).to eq(new_first_name) }
+      specify { expect(user.last_name).to eq(new_last_name) }
+      specify { expect(user.name).to eq(new_name) }
+      specify { expect(user.email).to eq(new_email) }
     end
   end
 

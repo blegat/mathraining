@@ -12,6 +12,8 @@ FactoryGirl.define do
   
   # Chapter
   factory :chapter do
+    association :section
+    description "Une description"
     sequence(:name) { |n| "Chapitre #{n}" }
     level 1
   end

@@ -22,70 +22,22 @@ describe "Subject pages" do
   let(:newtitle) { "Mon nouveau titre" }
   let(:newcontent) { "Mon nouveau message" }
   
-  describe "visitor" do
-    describe "visit forum" do
-      before { visit subjects_path }
-      it { should_not have_selector("h1", text: "Forum") }
-    end
-
-    describe "creates a subject" do
-      before { visit new_subject_path }
-      it { should_not have_selector("h1", text: "Créer un sujet") }
-    end
-
-    describe "sees a subject" do
-      before { visit subject_path(sub) }
-      it { should_not have_selector("div", text: "Contenu") }
-    end
-  end
-
   describe "user" do
     before { sign_in user }
 
-    describe "visit forum" do
-      before { visit subjects_path }
-      it { should have_selector("h1", text: "Forum") }
-    end
-
     describe "creates a subject" do
-      before { visit subjects_path }
-      it { should have_link("Créer un sujet") }
-
-      describe "on the page" do
-        before { click_link("Créer un sujet") }
-        it { should have_selector("h1", text: "Créer un sujet") }
-
-        describe "after submission" do
-          before { create_subject(category, title, content) }
-          it { should have_selector("div", text: content) }
-        end
-      end
+      before { create_subject(category, title, content) }
+      it { should have_selector("div", text: content) }
     end
 
-    describe "edits/deletes his subject" do
-      before { visit subject_path(sub_user) }
-      it { should have_link("Modifier ce sujet") }
-      it { should_not have_link("Supprimer ce sujet") }
-
-      describe "on the page" do
-        before { click_link("Modifier ce sujet") }
-        it { should have_selector("h1", text: "Modifier un sujet") }
-
-        describe "after submission" do
-          before { update_subject(sub_user, newtitle, newcontent) }
-          it { should have_selector("div", text: newcontent) }
-        end
-      end
+    describe "edits his subject" do
+      before { update_subject(sub_user, newtitle, newcontent) }
+      it { should have_selector("div", text: newcontent) }
     end
 
     describe "edits the subject of someone else" do
-      before { visit subject_path(sub) }
-      it { should_not have_link("Modifier ce sujet") }
-
-      describe "on the page" do
-        before { visit edit_subject_path(sub) }
-        it { should_not have_selector("h1", text: "Modifier un sujet") }
-      end
+      before { visit edit_subject_path(sub) }
+      it { should_not have_selector("h1", text: "Modifier un sujet") }
     end
 
     # A test with javascript seems too ambitious for the moment...
@@ -107,51 +59,24 @@ describe "Subject pages" do
   describe "admin" do
     before { sign_in admin }
 
-    describe "edits/deletes the subject of a student" do
+    describe "deletes the subject of a student" do
       before { visit subject_path(sub) }
-      it { should have_link("Modifier ce sujet") }
-      it { should have_link("Supprimer ce sujet") }
-
       specify{ expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
-
-      describe "on the page" do
-        before { click_link("Modifier ce sujet") }
-        it { should have_selector("h1", text: "Modifier un sujet") }
-
-        describe "after submission" do
-          before { update_subject(sub, newtitle, newcontent) }
-          it { should have_selector("div", text: newcontent) }
-        end
-      end
+    end
+    
+    describe "edits the subject of a student" do
+      before { update_subject(sub, newtitle, newcontent) }
+      it { should have_selector("div", text: newcontent) }
     end
 
-    describe "edits/deletes his subject" do
+    describe "deletes his subject" do
       before { visit subject_path(sub_admin) }
-      it { should have_link("Modifier ce sujet") }
-      it { should have_link("Supprimer ce sujet") }
-
       specify {	expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
-
-      describe "on the page" do
-        before { click_link("Modifier ce sujet") }
-        it { should have_selector("h1", text: "Modifier un sujet") }
-
-        describe "after submission" do
-          before { update_subject(sub_admin, newtitle, newcontent) }
-          it { should have_selector("div", text: newcontent) }
-        end
-      end
     end
-
-    describe "edits/deletes the subject of another admin" do
-      before { visit subject_path(sub_other_admin) }
-      it { should_not have_link("Modifier ce sujet") }
-      it { should_not have_link("Supprimer ce sujet") }
-
-      describe "on the page" do
-        before { visit edit_subject_path(sub_other_admin) }
-        it { should_not have_selector("h1", text: "Modifier un sujet") }
-      end
+    
+    describe "edits his subject" do
+      before { update_subject(sub_admin, newtitle, newcontent) }
+      it { should have_selector("div", text: newcontent) }
     end
 
     describe "deletes a subject with a message (DEPENDENCY)" do
@@ -164,22 +89,14 @@ describe "Subject pages" do
   describe "root" do
     before { sign_in root }
 
-    describe "edits/deletes the subject of another root" do
+    describe "deletes the subject of another root" do
       before { visit subject_path(sub_other_root) }
-      it { should have_link("Modifier ce sujet") }
-      it { should have_link("Supprimer ce sujet") }
-
       specify { expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
-
-      describe "on the page" do
-        before { click_link("Modifier ce sujet") }
-        it { should have_selector("h1", text: "Modifier un sujet") }
-
-        describe "after submission" do
-          before { update_subject(sub_other_root, newtitle, newcontent) }
-          it { should have_selector("div", text: newcontent) }
-        end
-      end
+    end
+    
+    describe "edits the subject of another admin" do
+      before { update_subject(sub_other_root, newtitle, newcontent) }
+      it { should have_selector("div", text: newcontent) }
     end
   end
 

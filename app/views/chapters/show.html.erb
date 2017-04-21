@@ -84,7 +84,7 @@
 
         <% if !@ss || !current_user.sk.admin? %>
           <% @chapter.prerequisites.each do |p| %>
-            <% exovisibles = false if !p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p)) %>
+            <% exovisibles = false if !p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p.id)) %>
           <% end %>
         <% end %>
 
@@ -223,7 +223,7 @@
 
         <% end %>
 
-        <% if !@chapter.section.fondation && exovisibles && pasfait == 0 && @ss && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter) %>
+        <% if !@chapter.section.fondation && exovisibles && pasfait == 0 && @ss && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
           <% current_user.sk.chapters << @chapter %>
         <% end %>
 
@@ -242,7 +242,7 @@
         <br/><span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
         <% prems = true %>
         <% @chapter.prerequisites.each do |p| %>
-          <% if (!p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p))) %>
+          <% if (!p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p.id))) %>
             <%= " - " if !prems %>
             <%= p.name %>
             <% prems = false %>
