@@ -19,4 +19,13 @@ describe "Static pages" do
 		before { visit contact_path }
 		it { should have_selector("h1", text: "Contact") }
 	end
+	
+	describe "Stats page" do
+	  let(:root) { FactoryGirl.create(:root) }
+	  before do
+	    sign_in root
+	    visit stats_path
+	  end
+	  it { should have_selector("h1", text: "Statistiques") }
+	end
 end
