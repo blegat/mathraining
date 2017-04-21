@@ -654,15 +654,14 @@ html>body tbody.scroll {
             ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
           <% end %>
           }
-
-          <% (0..22).each do |i| %>
-            ctx.beginPath();
-            ctx.moveTo(pct*<%= 50+w %>, pct*<%= 20*i+5 %>);
-            ctx.lineTo(pct*<%= 50+w %>, pct*<%= 20*i+15 %>);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'white';
-            ctx.stroke();
-          <% end %>
+          ctx.setLineDash([10, 10]);
+          ctx.beginPath();
+          ctx.moveTo(pct*<%= 50+w %>, pct*5);
+          ctx.lineTo(pct*<%= 50+w %>, pct*455);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'white';
+          ctx.stroke();
+          ctx.setLineDash([]);
           <% previousw = w %>
         <% end %>
       <% end %>
@@ -671,27 +670,37 @@ html>body tbody.scroll {
       <% r = 0 %>
       <% previousr = r %>
       <% h = 450 %>
+      
+      ctx.beginPath();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'black';
+      ctx.moveTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
 
-      <% prevw = w %>
-      <% prevh = h %>
-
-      // De gauche vers la droite : on met les points
+      // De gauche vers la droite : on trace le graphe
       <% actperday.reverse.each do |a| %>
         <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
         <% r = previousr + a[:pt] %>
         <% previousr = r %>
         <% h = 450 - 450*(r/maxi) %>
-        ctx.beginPath();
-        ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevh+5 %>);
         ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'black';
-        ctx.stroke();
-        ctx.beginPath();
+      <% end %>
+      
+      ctx.stroke();
+      
+      <% w = 3 %>
+      <% r = 0 %>
+      <% previousr = r %>
+      <% h = 450 %>
+      
+      // De gauche vers la droite : on met les points
+      <% actperday.reverse.each do |a| %>
+        <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+        <% r = previousr + a[:pt] %>
+        <% previousr = r %>
+        <% h = 450 - 450*(r/maxi) %>  
+        ctx.beginPath();      
         ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
         ctx.fill();
-        <% prevw = w %>
-        <% prevh = h %>
       <% end %>
 
       }

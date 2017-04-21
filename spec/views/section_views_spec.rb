@@ -13,6 +13,7 @@ describe "Section views" do
     describe "visit sections/index" do
       before { visit section_path(section) }
       it { should have_selector("h1", text: section.name) }
+      it { should_not have_link("Modifier l'introduction") }
       it { should_not have_button("Ajouter un chapitre") }
     end
   end
@@ -23,6 +24,7 @@ describe "Section views" do
     describe "visit sections/index" do
       before { visit section_path(section) }
       it { should have_selector("h1", text: section.name) }
+      it { should_not have_link("Modifier l'introduction") }
       it { should_not have_button("Ajouter un chapitre") }
     end
   end
@@ -33,6 +35,7 @@ describe "Section views" do
     describe "visit sections/index" do
       before { visit section_path(section) }
       it { should have_selector("h1", text: section.name) }
+      it { should have_link("Modifier l'introduction") }
       it { should have_button("Ajouter un chapitre") }
     end
   end

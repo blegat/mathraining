@@ -22,6 +22,13 @@ describe "Subject pages" do
   let(:newtitle) { "Mon nouveau titre" }
   let(:newcontent) { "Mon nouveau message" }
   
+  describe "visitor" do
+    describe "tries to create a subject" do
+      before { visit new_subject_path }
+      it { should_not have_selector("h1", text: "Créer un sujet") }
+    end
+  end
+  
   describe "user" do
     before { sign_in user }
 
@@ -35,7 +42,7 @@ describe "Subject pages" do
       it { should have_selector("div", text: newcontent) }
     end
 
-    describe "edits the subject of someone else" do
+    describe "tries to edit the subject of someone else" do
       before { visit edit_subject_path(sub) }
       it { should_not have_selector("h1", text: "Modifier un sujet") }
     end
@@ -77,6 +84,11 @@ describe "Subject pages" do
     describe "edits his subject" do
       before { update_subject(sub_admin, newtitle, newcontent) }
       it { should have_selector("div", text: newcontent) }
+    end
+    
+    describe "tries to edit the subject of another admin" do
+      before { visit edit_subject_path(sub_other_admin) }
+      it { should_not have_selector("h1", text: "Modifier un sujet") }
     end
 
     describe "deletes a subject with a message (DEPENDENCY)" do

@@ -40,16 +40,6 @@ describe "Chapter views" do
       it { should_not have_link("exercice") }
       it { should_not have_link("QCM") }
     end 
-    
-    describe "visit chapter/new" do
-      before { visit new_section_chapter_path(section) }
-      it { should_not have_selector("h1", text: "Créer un chapitre") }
-    end
-    
-    describe "visits chapter/edit" do
-      before { visit edit_chapter_path(offline_chapter) }
-      it { should_not have_selector("h1", text: "Modifier") }
-    end
   end
 
   describe "admin" do
@@ -74,15 +64,5 @@ describe "Chapter views" do
       it { should have_link("exercice") }
       it { should have_link("QCM") }
     end 
-    
-    describe "visits chapter/new" do
-      before { visit new_section_chapter_path(section) }
-      it { should have_selector("h1", text: "Créer un chapitre") }
-    end
-    
-    describe "visits chapter/edit" do
-      before { visit edit_chapter_path(online_chapter) }
-      it { should have_selector("h1", text: "Modifier") }
-    end
   end
 end

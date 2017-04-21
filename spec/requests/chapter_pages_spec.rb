@@ -24,9 +24,14 @@ describe "Chapter pages" do
   describe "user" do
     before { sign_in user }
     
-    describe "creates a chapter" do
+    describe "tries to create a chapter" do
       before { visit new_section_chapter_path(section) }
       it { should_not have_selector("h1", text: "Créer un chapitre") }
+    end
+    
+    describe "tries to edit a chapter" do
+      before { visit edit_chapter_path(offline_chapter) }
+      it { should_not have_selector("h1", text: "Modifier") }
     end
   end
 

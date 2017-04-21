@@ -11,40 +11,39 @@ describe "User pages" do
   let(:other_root) { FactoryGirl.create(:root) }
   let(:admin) { FactoryGirl.create(:admin) }
 
-  describe "admin deletes" do
+  describe "admin" do
     before { sign_in admin }
 
-    describe "a student" do
+    describe "tries to delete a student" do
       before { visit user_path(user) }
       it { should_not have_link("Supprimer") }
     end
     
-    describe "himself" do
+    describe "tries to delete himself" do
       before { visit user_path(admin) }
       it { should_not have_link("Supprimer") }
     end
-
   end
 
-  describe "root deletes" do
+  describe "root" do
     before { sign_in root }
 
-    describe "a student" do
+    describe "deletes a student" do
       before { visit user_path(user) }
       specify {	expect { click_link "Supprimer" }.to change(User, :count).by(-1) }
     end
 
-    describe "an admin" do
+    describe "deletes an admin" do
       before { visit user_path(admin) }
       specify { expect { click_link "Supprimer" }.to change(User, :count).by(-1) }
     end
 
-    describe "an other root" do
+    describe "tries to delete another root" do
       before { visit user_path(other_root) }
       it { should_not have_link("Supprimer") }
     end
 
-    describe "a student with a subject with a message (DEPENDENCY)" do
+    describe "deletes a student with a subject with a message (DEPENDENCY)" do
       let!(:sub) { FactoryGirl.create(:subject, user: user) }
       let!(:mes) { FactoryGirl.create(:message, subject: sub, user: other_user) }
       before { visit user_path(user) }
@@ -52,13 +51,13 @@ describe "User pages" do
       specify {	expect { click_link "Supprimer" }.to change(Message, :count).by(-1) }
     end
 
-    describe "a student with a message (DEPENDENCY)" do
+    describe "deletes a student with a message (DEPENDENCY)" do
       let!(:mes) { FactoryGirl.create(:message, user: user) }
       before { visit user_path(user) }
       specify { expect { click_link "Supprimer" }.to change(Message, :count).by(-1) }
     end
 
-    describe "a student with a discussion with tchatmessages (DEPENDENCY)" do
+    describe "deletes a student with a discussion with tchatmessages (DEPENDENCY)" do
       before do
         create_discussion_between(user, other_user, "Coucou mon ami", "Salut mon poto")
         visit user_path(user)
@@ -69,22 +68,20 @@ describe "User pages" do
     end
   end
 
-  describe "signup" do
+  describe "visitor" do
     before { visit signup_path }
 
-    let(:submit) { "Créer mon compte" }
-
-    describe "with invalid information" do
-      specify { expect { click_button submit }.not_to change(User, :count) }
+    describe "signup with invalid information" do
+      specify { expect { click_button "Créer mon compte" }.not_to change(User, :count) }
       describe "after submission" do
-        before { click_button submit }
+        before { click_button "Créer mon compte" }
 
         it { should have_selector("h1", text: "Inscription") }
         it { should have_content("erreur") }
       end
     end
 
-    describe "with valid information" do
+    describe "signup with with valid information" do
       before do
         fill_in "Prénom", with: "Example"
         fill_in "Nom", with: "User"
@@ -94,35 +91,24 @@ describe "User pages" do
         fill_in "Confirmation du mot de passe", with: "foobar"
       end
 
-      specify { expect { click_button submit }.to change(User, :count).by(1) }
+      specify { expect { click_button "Créer mon compte" }.to change(User, :count).by(1) }
       describe "after saving the user" do
-        before { click_button submit }
+        before { click_button "Créer mon compte" }
         it { should have_content("confirmer votre inscription") }
       end
     end
   end
 
-  describe "edit" do
-    let(:user) { FactoryGirl.create(:user) }
-    before do
-      sign_in user
-      visit edit_user_path(user)
-    end
-
-    it { should have_selector("h1", text: "Actualisez votre profil") }
-
-    describe "with valid information" do
-      before { click_button "Mettre à jour" }
-
-      it { should have_content("bien") }
-    end
-
-    describe "with new valid information" do
-      let(:new_first_name)  { "New First Name" }
-      let(:new_last_name)  { "New Last Name" }
-      let(:new_name)  { "#{new_first_name} #{new_last_name}" }
-      let(:new_email) { "new@example.com" }
+  describe "user" do
+    let(:new_first_name)  { "New First Name" }
+    let(:new_last_name)  { "New Last Name" }
+    let(:new_name)  { "#{new_first_name} #{new_last_name}" }
+    let(:new_email) { "new@example.com" }
+    before { sign_in user }
+    
+    describe "edits his information" do
       before do
+        visit edit_user_path(user)
         fill_in "Prénom", with: new_first_name
         fill_in "Nom", with: new_last_name
         fill_in "Email", with: new_email
@@ -131,7 +117,7 @@ describe "User pages" do
         click_button "Mettre à jour"
         user.reload
       end
-
+      
       it { should have_selector("h1", text: "Actualités") }
       it { should have_selector("div.alert.alert-success") }
       it { should have_link("Déconnexion", href: signout_path) }
@@ -141,5 +127,4 @@ describe "User pages" do
       specify { expect(user.email).to eq(new_email) }
     end
   end
-
 end

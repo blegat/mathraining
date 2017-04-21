@@ -21,9 +21,11 @@ Votre navigateur ne supporte pas les canvas.
 
 <% maxivisitor = 0 %>
 <% premierjour = @visiteurs[0].date %>
-<% dernierjour = DateTime.now.in_time_zone.to_date %>
+<% dernierjour = DateTime.now.in_time_zone.to_date - 1 %>
 
-<% if premierjour != dernierjour %>
+<% if premierjour < dernierjour %>
+
+<% @visiteurs = @visiteurs.take @visiteurs.size()-1 %>
 
 <% @visiteurs.each do |v| %>
   <% if v.number_user > maxivisitor %>
@@ -78,21 +80,19 @@ Votre navigateur ne supporte pas les canvas.
   ctx.fillStyle = 'black';
   ctx.textAlign = 'right';
 
+  ctx.setLineDash([10, 10]);
   ctx.beginPath();
-
+  
   <% while encours > 0 %>
     <% haut = [450 - 450*(encours/maxi), 0].max %>
-
-    <% (0..40).each do |i| %>
-    ctx.moveTo(pct*<%= 45 + 20*i+5 %>, pct*<%= haut+5 %>);
-    ctx.lineTo(pct*<%= 45 + 20*i+15 if 45 + 20*i+15 < 856 %><%= 856 if 45 + 20*i+15 >= 856 %>, pct*<%= haut+5 %>);
-    <% end %>
-
+    ctx.moveTo(pct*50, pct*<%= haut+5 %>);
+    ctx.lineTo(pct*856, pct*<%= haut+5 %>);
     ctx.fillText(<%= encours %>,pct*44,pct*<%= haut+10 %>);
     <% encours = encours - tranche %>
   <% end %>
 
   ctx.stroke();
+  ctx.setLineDash([]);
 
   // On trace maintenant le graphique
   ctx.strokeStyle = 'black';
@@ -103,17 +103,18 @@ Votre navigateur ne supporte pas les canvas.
   <% last = dernierjour %>
   <% entre = (last-first).to_i %>
   // On parcourt de droite à gauche
+  
   <% encours = @visiteurs.size()-1 %>
 
-  <% prevw = 0 %>
   <% printw = 10000 %>
   <% prevhadmin = 0 %>
-  <% prevhuser = 0 %>
 
-  ctx.fillStyle = 'red';
-  ctx.strokeStyle = 'red';
+  ctx.fillStyle = 'orange';
+  ctx.strokeStyle = 'orange';
   ctx.font = "12px Arial";
   ctx.textAlign = 'center';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
   <% j = 0 %>
   <% (0..entre).each do |i| %>
     <% if (last - @visiteurs[encours].date).to_i == i %>
@@ -124,32 +125,25 @@ Votre navigateur ne supporte pas les canvas.
     <% end %>
     <% w = 3 + 800*(entre-i)/(entre) %>
     <% huser = 450 - 450*(nbuser/maxi) %>
-    ctx.beginPath();
-    ctx.arc(pct*<%= 50+w %>, pct*<%= huser+5 %>, 3, 0, 2 * Math.PI, true);
-    <% if i == 1 %>
-      ctx.fillStyle = 'orange';
+    <% if i == 0 %>
+      ctx.moveTo(pct*<%= 50+w %>, pct*<%= huser+5 %>);
     <% end %>
-    ctx.fill();
     <% if i > 0 %>
-      ctx.beginPath();
-      ctx.moveTo(pct*<%= 50+prevw %>, pct*<%= prevhuser+5 %>);
       ctx.lineTo(pct*<%= 50+w %>, pct*<%= huser+5 %>);
-      ctx.lineWidth = 2;
-      <% if i == 2 %>
-        ctx.strokeStyle = 'orange';
-      <% end %>
-      ctx.stroke();
     <% end %>
-    <% prevw = w %>
-    <% prevhuser = huser %>
   <% end %>
+  
+  ctx.stroke();
 
   ctx.fillStyle = 'black';
   ctx.lineWidth = 0.5;
   ctx.strokeStyle = 'grey';
+  
+  ctx.setLineDash([10, 10]);
+  ctx.beginPath();
 
   <% encours = @visiteurs.size()-1 %>
-  ctx.beginPath();
+  
   <% (0..entre).each do |i| %>
     <% w = 3 + 800*(entre-i)/(entre) %>
     <% if (last - @visiteurs[encours].date).to_i == i && w < printw - 50 %>
@@ -158,17 +152,19 @@ Votre navigateur ne supporte pas les canvas.
       if (pct > 0.8 || (pct > 0.7 && <%= j % 2 == 1 %>)){
         ctx.fillText("<%= "0" if courant.day < 10 %><%= courant.day %>/<%= "0" if courant.month < 10 %><%= courant.month %>/<%= "0" if (courant.year % 2000) < 10 %><%= (courant.year % 2000) %>",pct*<%= 50+w %>,pct*471);
       }
-      <% (0..22).each do |i| %>
-        ctx.moveTo(pct*<%= 50+w %>, pct*<%= 20*i+5 %>);
-        ctx.lineTo(pct*<%= 50+w %>, pct*<%= 20*i+15 %>);
-      <% end %>
+      
+      ctx.moveTo(pct*<%= 50+w %>, pct*5);
+      ctx.lineTo(pct*<%= 50+w %>, pct*455);
+      
       <% printw = w %>
     <% end %>
     <% if (last - @visiteurs[encours].date).to_i == i %>
       <% encours = encours-1 %>
     <% end %>
   <% end %>
+  
   ctx.stroke();
+  ctx.setLineDash([]);
 
   }
 

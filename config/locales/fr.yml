@@ -43,7 +43,7 @@ fr:
         statement: "Enoncé"
         level: "Niveau"
       section:
-        description: "Description"
+        description: "Introduction"
         name: "Nom"
       theory:
         title: "Titre"

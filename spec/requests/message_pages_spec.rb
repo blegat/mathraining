@@ -19,6 +19,13 @@ describe "Message pages" do
   let(:content) { "Ma réponse" }
   let(:newcontent) { "Ma nouvelle réponse" }
   
+  describe "visitor" do 
+    describe "tries to create a message" do
+      before { visit new_subject_message_path(sub) }
+      it { should_not have_selector("h1", text: "Répondre") }
+    end
+  end
+  
   describe "user" do
     before { sign_in user }
     describe "creates a message" do
@@ -29,6 +36,11 @@ describe "Message pages" do
     describe "edits his message" do
       before { update_message(mes_user.subject, mes_user, newcontent) }
       it { should have_selector("div", text: newcontent) }
+    end
+    
+    describe "tries to edit the message of someone else" do
+      before { visit edit_subject_message_path(mes.subject, mes) }
+      it { should_not have_selector("h1", text: "Modifier un message") }
     end
   end
 
@@ -53,6 +65,11 @@ describe "Message pages" do
     describe "edits his message" do
       before { update_message(mes_admin.subject, mes_admin, newcontent) }
       it { should have_selector("div", text: newcontent) }
+    end
+    
+    describe "tries to edit the message of another admin" do
+      before { visit edit_subject_message_path(mes_other_admin.subject, mes_other_admin) }
+      it { should_not have_selector("h1", text: "Modifier un message") }
     end
   end
 
