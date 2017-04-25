@@ -188,7 +188,7 @@ class SubjectsController < ApplicationController
 
       # Si il y a eu une erreur
     else
-      destroyfiles(attach, attach.size()+1)
+      destroy_files(attach, attach.size()+1)
       @preselect = params[:subject][:chapter_id].to_i
       render 'new'
     end

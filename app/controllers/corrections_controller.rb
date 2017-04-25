@@ -157,7 +157,7 @@ class CorrectionsController < ApplicationController
 
       # Si il y a eu une erreur au moment de sauver
     else
-      destroyfiles(attach, attach.size()+1)
+      destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:correction][:content]
       if params[:correction][:content].size == 0
         flash[:danger] = "Votre réponse est vide."

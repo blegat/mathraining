@@ -53,7 +53,7 @@ class SubmissionsController < ApplicationController
 
       # Si il y a eu une erreur
     else
-      destroyfiles(attach, attach.size()+1)
+      destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         flash[:danger] = "Votre soumission est vide."
@@ -117,7 +117,7 @@ class SubmissionsController < ApplicationController
       flash[:success] = "Votre solution a bien été enregistrée."
       redirect_to virtualtest_path(@t, :p => @problem.id)
     else
-      destroyfiles(attach, attach.size()+1)
+      destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         flash[:danger] = "Votre soumission est vide."

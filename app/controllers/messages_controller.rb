@@ -98,7 +98,7 @@ class MessagesController < ApplicationController
 
       # Si il y a eu un problème : on supprime les pièces jointes
     else
-      destroyfiles(attach, attach.size()+1)
+      destroy_files(attach, attach.size()+1)
       render 'new'
     end
   end

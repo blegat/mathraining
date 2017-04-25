@@ -144,7 +144,7 @@ class DiscussionsController < ApplicationController
       end
     else
       @erreur = true
-      destroyfiles(attach, attach.size()+1)
+      destroy_files(attach, attach.size()+1)
       session[:ancientexte] = @content
       if @content.size == 0
         flash[:danger] = "Votre message est vide."
