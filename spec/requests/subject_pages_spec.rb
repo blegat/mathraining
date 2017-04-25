@@ -46,21 +46,27 @@ describe "Subject pages" do
       before { visit edit_subject_path(sub) }
       it { should_not have_selector("h1", text: "Modifier un sujet") }
     end
-
-    # A test with javascript seems too ambitious for the moment...
-    #describe "creates a subject associated to an exercise" do
-    #	before do
-    #		Capybara.current_driver = Capybara.javascript_driver
-    #		visit new_subject_path
-    #		select exercise.chapter.section, from: "Catégorie"
-    #		select exercise.chapter, from: "Chapitre"
-    #		select exercise.name, from: "Exercice"
-    #		fill_in "Titre", with: title
-    #		fill_in "MathInput", with: content
-    #		click_button "Créer"
-    #	end
-    #	it { should have_selector("div", text: content }
-    #end
+    
+    describe "creates a subject associated to an exercise JAVASCRIPT" do
+      before(:all) { Capybara.current_driver = Capybara.javascript_driver }
+      #it { should_not have_content("invalide") }
+      before do
+        exercise.chapter.online = true
+        exercise.chapter.save
+        exercise.online = true
+        exercise.save
+        create_subject_associated(exercise, title, content)
+      end
+      
+      # FAILURE : sign_in fails because user does not exist (see spec_helper.rb for some comments)
+      #it "should render the subject" do
+      #  should have_selector("h1", text: exercise.chapter.name)
+      #  should have_selector("h1", text: "Exercice 1")
+      #  should have_selector("div", text: exercise.statement)
+      #  should have_selector("div", text: content)
+      #end
+      after(:all) { Capybara.use_default_driver }
+    end
   end
 
   describe "admin" do
@@ -68,7 +74,7 @@ describe "Subject pages" do
 
     describe "deletes the subject of a student" do
       before { visit subject_path(sub) }
-      specify{ expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
+      specify { expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
     end
     
     describe "edits the subject of a student" do

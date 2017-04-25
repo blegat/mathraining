@@ -57,9 +57,11 @@ describe "Chapter pages" do
         click_button "Editer"
         offline_chapter.reload
       end
-      specify { expect(offline_chapter.name).to eq(newtitle) }
-      specify { expect(offline_chapter.description).to eq(newdescription) }
-      specify { expect(offline_chapter.level).to eq(newlevel) }
+      specify do
+        expect(offline_chapter.name).to eq(newtitle)
+        expect(offline_chapter.description).to eq(newdescription)
+        expect(offline_chapter.level).to eq(newlevel)
+      end
     end
   end
 end

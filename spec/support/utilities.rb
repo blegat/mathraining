@@ -2,8 +2,9 @@ include ApplicationHelper
 
 def sign_in(user)
   visit root_path
-  fill_in "Email", with: user.email
-  fill_in "Mot de passe", with: user.password
+  click_link "Connexion"
+  fill_in "tf1", with: user.email
+  fill_in "tf2", with: user.password
   click_button "Connexion"
 end
 
@@ -22,6 +23,16 @@ end
 def create_subject(cat, title, content)
   visit new_subject_path
   select cat.name, from: "Catégorie"
+  fill_in "Titre", with: title
+  fill_in "MathInput", with: content
+  click_button "Créer"
+end
+
+def create_subject_associated(exo, title, content)
+  visit new_subject_path
+  select exo.chapter.section.name, from: "Catégorie"
+  select exo.chapter.name, from: "Chapitre"
+  select "Exercice 1", from: "Exercice"
   fill_in "Titre", with: title
   fill_in "MathInput", with: content
   click_button "Créer"

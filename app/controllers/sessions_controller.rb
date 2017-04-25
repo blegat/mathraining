@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
   # Se connecter 2
   def create
     user = User.where(:email => params[:session][:email]).first
-
+    
     if user && user.authenticate(params[:session][:password])
       if !user.active
         flash[:danger] = "Ce compte a été désactivé et n'est plus accessible."
@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
         redirect_back(fallback_location: root_path)
       end
     else
-      flash[:danger] = 'Email ou mot de passe invalide.'
+      flash[:danger] = "Email ou mot de passe invalide, user = #{User.count}."
       redirect_back(fallback_location: root_path)
     end
   end

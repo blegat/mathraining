@@ -47,4 +47,16 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   
   config.include Rails.application.routes.url_helpers
+  
+  Capybara.javascript_driver = :webkit
+  
+  config.use_transactional_fixtures = true # If we put false then the javascript stuff (sometimes) work but many other tests fail. If we put true the javascript does not work because the database is empty
+  
+  #DatabaseCleaner.strategy = :truncation
 end
+
+Capybara::Webkit.configure do |config|
+  config.block_unknown_urls
+  config.debug = false
+end
+
