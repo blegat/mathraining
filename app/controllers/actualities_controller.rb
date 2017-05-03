@@ -15,7 +15,7 @@ class ActualitiesController < ApplicationController
   
   # Création d'une actualité 2 : que pour les admins
   def create
-    @actuality = Actuality.create(params[:actuality])
+    @actuality = Actuality.create(params.require(:actuality).permit(:title, :content))
     if @actuality.save
       flash[:success] = "Actualité ajoutée."
       redirect_to root_path
@@ -27,7 +27,7 @@ class ActualitiesController < ApplicationController
   # Editer une actualité 2 : que pour les admins
   def update
     @actuality = Actuality.find(params[:id])
-    if @actuality.update_attributes(params[:actuality])
+    if @actuality.update_attributes(params.require(:actuality).permit(:title, :content))
       flash[:success] = "Actualité modifiée."
       redirect_to root_path
     else
