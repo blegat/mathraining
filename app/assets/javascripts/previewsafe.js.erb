@@ -84,8 +84,7 @@ var PreviewSafe = {
   PreviewDone: function () {
     this.mjRunning = false;
     this.SwapBuffers();
-    if(this.needUpdate)
-    this.CreatePreview();
+    if(this.needUpdate) this.CreatePreview();
   }
 
 };
