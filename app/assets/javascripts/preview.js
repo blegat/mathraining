@@ -51,7 +51,6 @@ var Preview = {
   //    typesetting.  After it is done, call PreviewDone.
   //
   CreatePreview: function () {
-    window.alert("sometext");
     Preview.timeout = null;
     if (this.mjRunning)
     {
