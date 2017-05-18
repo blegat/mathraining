@@ -110,10 +110,10 @@ class CorrectionsController < ApplicationController
         pb = @submission.problem
         brouillon = pb.submissions.where('user_id = ? AND status = -1', @submission.user).first
         if !brouillon.nil?
-          brouillon.submissionfiles.each do |f|
+          brouillon.myfiles.each do |f|
             f.destroy
           end
-          brouillon.fakesubmissionfiles.each do |f|
+          brouillon.fakefiles.each do |f|
             f.destroy
           end
           brouillon.destroy

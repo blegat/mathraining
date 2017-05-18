@@ -79,12 +79,12 @@ class ProblemsController < QuestionsController
     @section = @problem.section
 
     @problem.submissions.each do |s|
-      s.submissionfiles.each do |f|
+      s.myfiles.each do |f|
         f.file.destroy
         f.destroy
       end
       s.corrections.each do |c|
-        c.correctionfiles.each do |f|
+        c.myfiles.each do |f|
           f.file.destroy
           f.destroy
         end

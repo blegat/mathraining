@@ -138,10 +138,10 @@ class SubmissionsController < ApplicationController
       @context = 2
       update_submission
     elsif params[:commit] == "Supprimer ce brouillon"
-      @submission.submissionfiles.each do |f|
+      @submission.myfiles.each do |f|
         f.destroy
       end
-      @submission.fakesubmissionfiles.each do |f|
+      @submission.fakefiles.each do |f|
         f.destroy
       end
       @submission.delete
