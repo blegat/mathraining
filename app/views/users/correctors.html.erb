@@ -29,7 +29,7 @@ En <span style="color:green;">vert</span>, les soumissions correctes, en <span s
   <% if diff < 31 %>
     <% if s.status == 0 %>
       <% numberdontknow[diff] = numberdontknow[diff] + 1 %>
-    <% elsif s.status == 1 %>
+    <% elsif s.status == 2 %>
       <% numbercorrect[diff] = numbercorrect[diff] + 1 %>
     <% else %>
       <% numberincorrect[diff] = numberincorrect[diff] + 1 %>
