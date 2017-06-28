@@ -15,7 +15,7 @@ class PicturesController < ApplicationController
 
   # Créer 2
   def create
-    @pic = Picture.new(params[:picture])
+    @pic = Picture.new((params.require(:picture).permit(:user_id, :image)))
     if @pic.save
       flash[:success] = "Image ajoutée."
       redirect_to @pic
