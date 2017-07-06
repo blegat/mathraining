@@ -93,23 +93,27 @@ Votre navigateur ne supporte pas les canvas.
   
   <% for i in (0..30) do %>
     ctx.beginPath();
-    ctx.rect(pct*<%= 50+26*i %>, pct*455, pct*26, -pct*<%= 450*numbercorrect[30-i]/maxi %>);
+    ctx.rect(pct*<%= 50+26*i %>, pct*455, pct*26, -pct*<%= (450*numbercorrect[30-i])/maxi %>);
     ctx.fillStyle = 'green';
     ctx.fill();
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'black';
     ctx.stroke();
     
+    <% avant = (450*numbercorrect[30-i])/maxi %>
+    
     ctx.beginPath();
-    ctx.rect(pct*<%= 50+26*i %>, pct*<%= 455 - 450*numbercorrect[30-i]/maxi %>, pct*26, -pct*<%= 450*numberincorrect[30-i]/maxi %>);
+    ctx.rect(pct*<%= 50+26*i %>, pct*<%= 455 - avant %>, pct*26, -pct*<%= (450*(numbercorrect[30-i]+numberincorrect[30-i]))/maxi - avant %>);
     ctx.fillStyle = 'red';
     ctx.fill();
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'black';
     ctx.stroke();
     
+    <% avant = (450*(numbercorrect[30-i]+numberincorrect[30-i]))/maxi %>
+    
     ctx.beginPath();
-    ctx.rect(pct*<%= 50+26*i %>, pct*<%= 455 - 450*numbercorrect[30-i]/maxi - 450*numberincorrect[30-i]/maxi %>, pct*26, -pct*<%= 450*numberdontknow[30-i]/maxi %>);
+    ctx.rect(pct*<%= 50+26*i %>, pct*<%= 455 - avant %>, pct*26, -pct*<%= (450*(numberdontknow[30-i]+numbercorrect[30-i]+numberincorrect[30-i]))/maxi - avant %>);
     ctx.fillStyle = 'grey';
     ctx.fill();
     ctx.lineWidth = 1;
