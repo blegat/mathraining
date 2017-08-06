@@ -107,7 +107,7 @@
     <center><h3 style="margin-top:20px; margin-bottom:15px;">
     <%= link_to "Problème ##{ p.number }", problem_path(p, :sub => solution.submission_id) unless solution == nil %>
     <%= link_to "Problème ##{ p.number }", problem_path(p) if solution == nil %>
-    <%= p.solvedproblems.count if current_user.sk.root? %>
+    <%= "(#{p.solvedproblems.count} sol.)" if current_user.sk.root? %>
     <% if !p.virtualtest.nil? %>
       - <%= link_to "Test virtuel ##{p.virtualtest.number}", p.virtualtest %>
     <% end %>
