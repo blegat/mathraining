@@ -746,7 +746,7 @@ html>body tbody.scroll {
     <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Privilégiez une interdiction d'accès si possible. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} messages sur le forum, tout sera supprimé! Etes-vous sûr de vouloir supprimer #{@user.name}?" }, :style => "color:red;" %>
+      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Privilégiez une interdiction d'accès si possible. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé! Etes-vous sûr de vouloir supprimer #{@user.name}?" }, :style => "color:red;" %>
     <% end %>
     <% if @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>
