@@ -25,7 +25,7 @@ Veuillez commencer par les soumissions les plus anciennes, c'est-à-dire le plus
   <table class="table table-bordered">
   <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm">Correcteur(s)</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
   <% @notifications.each do |n| %>
-    <% if current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem) %>
+    <% if current_user.sk.corrector && (!current_user.sk.pb_solved?(n.problem) || (n.intest && n.status == 0)) %>
 
       <tr style="background-color:#E0E0E0;">
       	

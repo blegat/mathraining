@@ -115,8 +115,8 @@ class User < ActiveRecord::Base
       Submission.where(status: 0, visible: true)
     else
       newsub = Array.new
-      Submission.where(status: 0, visible: true).each do |s|
-        if sk.admin || (sk.corrector && sk.pb_solved?(s.problem))
+      Submission.where(status: 0, visible: true, intest: false).each do |s|
+        if sk.corrector && sk.pb_solved?(s.problem)
           newsub.push(s)
         end
       end
