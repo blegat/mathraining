@@ -252,7 +252,7 @@ html>body tbody.scroll {
 	<% if current_user.sk.admin %>
     <% submissions = problem.submissions.where('status != 2 AND visible = ?', true).order('created_at DESC') %>
   <% else %>
-    <% submissions = problem.submissions.where('status != 2 AND visible = ? AND intest = ?', true, false).order('created_at DESC') %>
+    <% submissions = problem.submissions.where('status != 2 AND visible = ? AND (intest = ? OR status != 0)', true, false).order('created_at DESC') %>
   <% end %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
