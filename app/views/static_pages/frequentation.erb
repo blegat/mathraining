@@ -28,8 +28,8 @@ Votre navigateur ne supporte pas les canvas.
 <% @visiteurs = @visiteurs.take @visiteurs.size()-1 %>
 
 <% @visiteurs.each do |v| %>
-  <% if v.number_user > maxivisitor %>
-    <% maxivisitor = v.number_user %>
+  <% if v.number_user + v.number_admin > maxivisitor %>
+    <% maxivisitor = v.number_user + v.number_admin %>
   <% end %>
 <% end %>
 
@@ -83,6 +83,10 @@ Votre navigateur ne supporte pas les canvas.
   ctx.setLineDash([10, 10]);
   ctx.beginPath();
   
+  if (pct < 0.7){
+    ctx.font="9px Arial";
+  }
+  
   <% while encours > 0 %>
     <% haut = [450 - 450*(encours/maxi), 0].max %>
     ctx.moveTo(pct*50, pct*<%= haut+5 %>);
@@ -90,6 +94,8 @@ Votre navigateur ne supporte pas les canvas.
     ctx.fillText(<%= encours %>,pct*44,pct*<%= haut+10 %>);
     <% encours = encours - tranche %>
   <% end %>
+  
+  ctx.font="14px Arial";
 
   ctx.stroke();
   ctx.setLineDash([]);
@@ -118,7 +124,7 @@ Votre navigateur ne supporte pas les canvas.
   <% j = 0 %>
   <% (0..entre).each do |i| %>
     <% if (last - @visiteurs[encours].date).to_i == i %>
-      <% nbuser = @visiteurs[encours].number_user %>
+      <% nbuser = @visiteurs[encours].number_user + @visiteurs[encours].number_admin %>
       <% encours = encours-1 %>
     <% else %>
       <% nbuser = 0 %>
