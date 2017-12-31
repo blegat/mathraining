@@ -5,7 +5,11 @@
 
   <div class="col-lg-7 col-sm-7 col-xs-12">
   <center>
-  <%= image_tag "mathraining.gif", :style => "width:100%; max-width:342px;" %>
+  <% if DateTime.now.in_time_zone.month == 1 or params[:bonneannee].to_i == 2018 %>
+    <%= image_tag "mathraining-newyear.gif", :style => "width:100%; max-width:400px;" %>
+  <% else %>
+    <%= image_tag "mathraining.gif", :style => "width:100%; max-width:342px;" %>
+  <% end %>
   </center>
   </div>
   <div class="col-lg-5 col-sm-5 col-xs-12">
