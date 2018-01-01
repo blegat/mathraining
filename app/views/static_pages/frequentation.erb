@@ -260,8 +260,8 @@ Votre navigateur ne supporte pas les canvas.
         <% w = convert_to_week(s.updated_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
-      xxx = <%= ruby_to_javascript_string(xx) %>;
-      yyy = <%= ruby_to_javascript(yy) %>;
+      xxx = <%= ruby_to_javascript_string(xx[0..-1]) %>;
+      yyy = <%= ruby_to_javascript(yy[0..-2]) %>;
       drawGraph(xxx, yyy, '#myCanvas2', 'contenant2', 'blue');
       
       <% yy = [] %>
@@ -273,7 +273,7 @@ Votre navigateur ne supporte pas les canvas.
         <% w = convert_to_week(s.created_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
-      yyy = <%= ruby_to_javascript(yy) %>;
+      yyy = <%= ruby_to_javascript(yy[0..-2]) %>;
       drawGraph(xxx, yyy, '#myCanvas3', 'contenant3', 'red');
     <% end %>
   }
