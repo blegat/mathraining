@@ -31,6 +31,19 @@ Votre navigateur ne supporte pas les canvas.
 </div>
 </center>
 
+<h3>Soumissions aux problèmes</h3>
+
+Ci-dessous, le nombre de soumissions par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
+
+<center>
+<!-- Endroit pour dessiner la fréquentation -->
+<div id="contenant3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas3" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+</center>
+
 <% @premierlundi = Date.parse('8-12-2014') %>
 
 <% def convert_date(courant) %><%= "0" if courant.day < 10 %><%= courant.day %>/<%= "0" if courant.month < 10 %><%= courant.month %>/<%= "0" if (courant.year % 2000) < 10 %><%= (courant.year % 2000) %><% end %>
@@ -209,6 +222,21 @@ Votre navigateur ne supporte pas les canvas.
         yyy.push(<%= yy[i] %>);
       <% end %>
       drawGraph(xxx, yyy, '#myCanvas2', 'contenant2', 'blue');
+      
+      yyy = [];
+      <% yy = [] %>
+      <% (0..(lastweek-1)).each do |i| %>
+        <% yy[i] = 0 %>
+      <% end %>
+      <% yy[lastweek] = 0 %>
+      <% Submission.all.each do |s| %>
+        <% w = convert_to_week(s.created_at.to_date) %>
+        <% yy[w] = yy[w]+1 %>
+      <% end %>
+      <% (0..(lastweek-1)).each do |i| %>
+        yyy.push(<%= yy[i] %>);
+      <% end %>
+      drawGraph(xxx, yyy, '#myCanvas3', 'contenant2', 'red');
     <% end %>
   }
 
