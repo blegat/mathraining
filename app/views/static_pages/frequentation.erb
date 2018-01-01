@@ -46,11 +46,45 @@ Votre navigateur ne supporte pas les canvas.
 
 <% @premierlundi = Date.parse('8-12-2014') %>
 
-<% def convert_date(courant) %><%= "0" if courant.day < 10 %><%= courant.day %>/<%= "0" if courant.month < 10 %><%= courant.month %>/<%= "0" if (courant.year % 2000) < 10 %><%= (courant.year % 2000) %><% end %>
+<% def convert_date(courant) %>
+  <% d = "" %>
+  <% d = d+"0" if courant.day < 10 %>
+  <% d = d+courant.day.to_s + "/" %>
+  <% d = d + "0" if courant.month < 10 %>
+  <% d = d + courant.month.to_s + "/" %>
+  <% d = d + "0" if (courant.year % 2000) < 10 %>
+  <% d = d + (courant.year % 2000).to_s %>
+  <% return d; %>
+<% end %>
 
 <% def convert_to_week(courant) %>
   <% return ((courant-@premierlundi).to_i/7).floor %>
 <% end %>
+
+<% def ruby_to_javascript(arr) %>
+  <% t = "[" %>
+  <% prems = true %>
+  <% arr.each do |a| %>
+    <% t = t + "," if !prems %>
+    <% prems = false %>
+    <% t = t + a.to_s %>
+  <% end %>
+  <% t = t + "]" %>
+  <% return t.html_safe %>
+<% end %>
+
+<% def ruby_to_javascript_string(arr) %>
+  <% t = "[" %>
+  <% prems = true %>
+  <% arr.each do |a| %>
+    <% t = t + "," if !prems %>
+    <% prems = false %>
+    <% t = t + "'" + a + "'" %>
+  <% end %>
+  <% t = t + "]" %>
+  <% return t.html_safe %>
+<% end %>
+
 
 <script type="text/javascript">
 
@@ -184,6 +218,8 @@ Votre navigateur ne supporte pas les canvas.
     <!-- Graphique de la fréquentation -->
     var xxx = [];
     var yyy = [];
+    <% xx = Array.new %>
+    <% yy = Array.new %>
     <% @visiteurs = Visitor.order("date").to_a %>
     <% premierjour = @visiteurs[0].date %>
     <% dernierjour = DateTime.now.in_time_zone.to_date - 1 %>
@@ -192,26 +228,28 @@ Votre navigateur ne supporte pas les canvas.
       <% @visiteurs = @visiteurs.take @visiteurs.size()-1 %>
       <% @visiteurs.each do |v| %>
         <% ((prev+1)..(v.date-1)).each do |missing| %>
-          yyy.push(0);
-          xxx.push("<% convert_date(missing) %>");
+          <% yy.push(0) %>
+          <% xx.push(convert_date(missing)) %>
         <% end %>
-        yyy.push(<%= v.number_user + v.number_admin %>);
-        xxx.push("<% convert_date(v.date) %>");
+        <% yy.push(v.number_user + v.number_admin) %>
+        <% xx.push(convert_date(v.date)) %>
         <% prev = v.date %>
       <% end %>
       <% ((prev+1)..dernierjour).each do |missing| %>
-        yyy.push(0);
-        xxx.push("<% convert_date(missing) %>");
+        <% yy.push(0) %>
+          <% xx.push(convert_date(missing)) %>
       <% end %>
+      xxx = <%= ruby_to_javascript_string(xx) %>;
+      yyy = <%= ruby_to_javascript(yy) %>;
       drawGraph(xxx, yyy, '#myCanvas1', 'contenant1', 'orange');
       
-      xxx = [];
-      yyy = [];
-      <% yy = Array.new %>
+      
+      <% yy = [] %>
+      <% xx = [] %>
       <% lastweek = convert_to_week(DateTime.now.in_time_zone.to_date) %>
       <% (0..(lastweek-1)).each do |i| %>
         <% yy[i] = 0 %>
-        xxx.push("<% convert_date(@premierlundi+7*i) %>");
+        <% xx.push(convert_date(@premierlundi+7*i)) %>
       <% end %>
       <% yy[lastweek] = 0 %>
       <% Solvedexercise.where(:correct => true).each do |s| %>
@@ -222,12 +260,10 @@ Votre navigateur ne supporte pas les canvas.
         <% w = convert_to_week(s.updated_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
-      <% (0..(lastweek-1)).each do |i| %>
-        yyy.push(<%= yy[i] %>);
-      <% end %>
+      xxx = <%= ruby_to_javascript_string(xx) %>;
+      yyy = <%= ruby_to_javascript(yy) %>;
       drawGraph(xxx, yyy, '#myCanvas2', 'contenant2', 'blue');
       
-      yyy = [];
       <% yy = [] %>
       <% (0..(lastweek-1)).each do |i| %>
         <% yy[i] = 0 %>
@@ -237,9 +273,7 @@ Votre navigateur ne supporte pas les canvas.
         <% w = convert_to_week(s.created_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
-      <% (0..(lastweek-1)).each do |i| %>
-        yyy.push(<%= yy[i] %>);
-      <% end %>
+      yyy = <%= ruby_to_javascript(yy) %>;
       drawGraph(xxx, yyy, '#myCanvas3', 'contenant3', 'red');
     <% end %>
   }
