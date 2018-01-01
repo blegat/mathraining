@@ -218,6 +218,10 @@ Votre navigateur ne supporte pas les canvas.
         <% w = convert_to_week(s.updated_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
+      <% Solvedqcm.where(:correct => true).each do |s| %>
+        <% w = convert_to_week(s.updated_at.to_date) %>
+        <% yy[w] = yy[w]+1 %>
+      <% end %>
       <% (0..(lastweek-1)).each do |i| %>
         yyy.push(<%= yy[i] %>);
       <% end %>
@@ -236,7 +240,7 @@ Votre navigateur ne supporte pas les canvas.
       <% (0..(lastweek-1)).each do |i| %>
         yyy.push(<%= yy[i] %>);
       <% end %>
-      drawGraph(xxx, yyy, '#myCanvas3', 'contenant2', 'red');
+      drawGraph(xxx, yyy, '#myCanvas3', 'contenant3', 'red');
     <% end %>
   }
 
