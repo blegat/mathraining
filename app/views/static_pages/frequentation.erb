@@ -3,7 +3,9 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
 
-<h1>Fréquentation du site</h1>
+<h1>Statistiques diverses</h1>
+
+<h3>Fréquentation du site</h3>
 
 Le graphique suivant reprend le nombre d'utilisateurs connectés chaque jour sur le site, depuis le 19 mars 2015.<br/><br/>
 
@@ -16,13 +18,32 @@ Votre navigateur ne supporte pas les canvas.
 </div>
 </center>
 
+<h3>Résolutions d'exercices</h3>
+
+Ci-dessous, le nombre d'exercices résolus par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
+
+<center>
+<!-- Endroit pour dessiner la fréquentation -->
+<div id="contenant2" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas2" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+</center>
+
+<% @premierlundi = Date.parse('8-12-2014') %>
+
 <% def convert_date(courant) %><%= "0" if courant.day < 10 %><%= courant.day %>/<%= "0" if courant.month < 10 %><%= courant.month %>/<%= "0" if (courant.year % 2000) < 10 %><%= (courant.year % 2000) %><% end %>
+
+<% def convert_to_week(courant) %>
+  <% return ((courant-@premierlundi).to_i/7).floor %>
+<% end %>
 
 <script type="text/javascript">
 
   $(document).ready( function(){
   
-  function drawGraph(abs, val, namec, namecont) {
+  function drawGraph(abs, val, namec, namecont, couleur) {
     var c = $(namec);
     var ctx = c.get(0).getContext('2d');
     var container = $(c).parent();
@@ -98,8 +119,8 @@ Votre navigateur ne supporte pas les canvas.
     // On parcourt de droite à gauche
     encours = val.length-1;
   
-    ctx.fillStyle = 'orange';
-    ctx.strokeStyle = 'orange';
+    ctx.fillStyle = couleur;
+    ctx.strokeStyle = couleur;
     ctx.font = "12px Arial";
     ctx.textAlign = 'center';
     ctx.lineWidth = 3;
@@ -147,13 +168,13 @@ Votre navigateur ne supporte pas les canvas.
   $(window).resize( respondCanvas );
 
   function respondCanvas(){
-    <!-- Script pour le graphique de l'évolution -->
+    <!-- Graphique de la fréquentation -->
     var xxx = [];
     var yyy = [];
     <% @visiteurs = Visitor.order("date").to_a %>
     <% premierjour = @visiteurs[0].date %>
-    <% prev = premierjour %>
     <% dernierjour = DateTime.now.in_time_zone.to_date - 1 %>
+    <% prev = premierjour %>
     <% if premierjour < dernierjour %>
       <% @visiteurs = @visiteurs.take @visiteurs.size()-1 %>
       <% @visiteurs.each do |v| %>
@@ -169,7 +190,25 @@ Votre navigateur ne supporte pas les canvas.
         yyy.push(0);
         xxx.push("<% convert_date(missing) %>");
       <% end %>
-      drawGraph(xxx, yyy, '#myCanvas1', 'contenant1');
+      drawGraph(xxx, yyy, '#myCanvas1', 'contenant1', 'orange');
+      
+      xxx = [];
+      yyy = [];
+      <% yy = Array.new %>
+      <% lastweek = convert_to_week(DateTime.now.in_time_zone.to_date) %>
+      <% (0..(lastweek-1)).each do |i| %>
+        <% yy[i] = 0 %>
+        xxx.push("<% convert_date(@premierlundi+7*i) %>");
+      <% end %>
+      <% yy[lastweek] = 0 %>
+      <% Solvedexercise.where(:correct => true).each do |s| %>
+        <% w = convert_to_week(s.updated_at.to_date) %>
+        <% yy[w] = yy[w]+1 %>
+      <% end %>
+      <% (0..(lastweek-1)).each do |i| %>
+        yyy.push(<%= yy[i] %>);
+      <% end %>
+      drawGraph(xxx, yyy, '#myCanvas2', 'contenant2', 'blue');
     <% end %>
   }
 
