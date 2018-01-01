@@ -252,11 +252,11 @@ Votre navigateur ne supporte pas les canvas.
         <% xx.push(convert_date(@premierlundi+7*i)) %>
       <% end %>
       <% yy[lastweek] = 0 %>
-      <% Solvedexercise.where(:correct => true).each do |s| %>
+      <% Solvedexercise.select("updated_at").where(:correct => true).each do |s| %>
         <% w = convert_to_week(s.updated_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
-      <% Solvedqcm.where(:correct => true).each do |s| %>
+      <% Solvedqcm.select("updated_at").where(:correct => true).each do |s| %>
         <% w = convert_to_week(s.updated_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
@@ -269,7 +269,7 @@ Votre navigateur ne supporte pas les canvas.
         <% yy[i] = 0 %>
       <% end %>
       <% yy[lastweek] = 0 %>
-      <% Submission.all.each do |s| %>
+      <% Submission.select("created_at").all.each do |s| %>
         <% w = convert_to_week(s.created_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
