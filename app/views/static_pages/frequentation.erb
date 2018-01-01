@@ -106,7 +106,7 @@ Votre navigateur ne supporte pas les canvas.
     ctx.beginPath();
   
     while(encours >= 0) {
-      var w = 3 + 800*encours/(val.length);
+      var w = 3 + 800*encours/(val.length-1);
       var huser = 450 - 450*(val[encours]/maxi);
       if(encours == 0) {
         ctx.moveTo(pct*(50+w), pct*(huser+5));
@@ -129,10 +129,12 @@ Votre navigateur ne supporte pas les canvas.
     var printw = 10000;
     
     while(encours >= 0) {
-      var w = 3 + 800*encours/(val.length);
+      var w = 3 + 800*encours/(val.length-1);
       if((w < printw - 50 && pct > 0.8) || (w < printw - 100 && pct > 0.7)) {
         ctx.fillText(abs[encours],pct*(50+w),pct*471);
         printw = w;
+        ctx.moveTo(pct*(50+w), pct*5);
+        ctx.lineTo(pct*(50+w), pct*455);
       }
       encours = encours-1;
     }
