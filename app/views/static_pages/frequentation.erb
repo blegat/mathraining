@@ -264,13 +264,16 @@ Votre navigateur ne supporte pas les canvas.
       <% end %>
       <% yy[lastweek] = 0 %>
       <% t4 = Time.now %>
-      <% Solvedexercise.select("updated_at").where(:correct => true).each do |s| %>
-        <% w = convert_to_week(s.updated_at.to_date) %>
+      <% v = Solvedexercise.where(:correct => true).pluck("updated_at") %>
+      <% v.each do |d| %>
+        <% w = convert_to_week(d.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
+      
       <% t5 = Time.now %>
-      <% Solvedqcm.select("updated_at").where(:correct => true).each do |s| %>
-        <% w = convert_to_week(s.updated_at.to_date) %>
+      <% v = Solvedqcm.where(:correct => true).pluck("updated_at") %>
+      <% v.each do |d| %>
+        <% w = convert_to_week(d.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
       xxx = <%= ruby_to_javascript_string(xx[0..-1]) %>;
@@ -284,8 +287,9 @@ Votre navigateur ne supporte pas les canvas.
         <% yy[i] = 0 %>
       <% end %>
       <% yy[lastweek] = 0 %>
-      <% Submission.select("created_at").all.each do |s| %>
-        <% w = convert_to_week(s.created_at.to_date) %>
+      <% v = Submission.pluck("created_at") %>
+      <% v.each do |d| %>
+        <% w = convert_to_week(d.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
       yyy = <%= ruby_to_javascript(yy[0..-2]) %>;
