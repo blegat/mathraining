@@ -3,6 +3,14 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
 
+<% t1 = Time.now %>
+
+<!-- Test pour la performance -->
+<% montretemps = 0 %>
+<% if(params.has_key?:montretemps) %>
+  <% montretemps = params[:montretemps].to_i %>
+<% end %>
+
 <h1>Statistiques diverses</h1>
 
 <h3>Fréquentation du site</h3>
@@ -213,6 +221,8 @@ Votre navigateur ne supporte pas les canvas.
 
   //Run function when browser  resize
   $(window).resize( respondCanvas );
+  
+  <% t2 = Time.now %>
 
   function respondCanvas(){
     <!-- Graphique de la fréquentation -->
@@ -243,6 +253,7 @@ Votre navigateur ne supporte pas les canvas.
       yyy = <%= ruby_to_javascript(yy) %>;
       drawGraph(xxx, yyy, '#myCanvas1', 'contenant1', 'orange');
       
+      <% t3 = Time.now %>
       
       <% yy = [] %>
       <% xx = [] %>
@@ -252,10 +263,12 @@ Votre navigateur ne supporte pas les canvas.
         <% xx.push(convert_date(@premierlundi+7*i)) %>
       <% end %>
       <% yy[lastweek] = 0 %>
+      <% t4 = Time.now %>
       <% Solvedexercise.select("updated_at").where(:correct => true).each do |s| %>
         <% w = convert_to_week(s.updated_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
       <% end %>
+      <% t5 = Time.now %>
       <% Solvedqcm.select("updated_at").where(:correct => true).each do |s| %>
         <% w = convert_to_week(s.updated_at.to_date) %>
         <% yy[w] = yy[w]+1 %>
@@ -263,6 +276,8 @@ Votre navigateur ne supporte pas les canvas.
       xxx = <%= ruby_to_javascript_string(xx[0..-1]) %>;
       yyy = <%= ruby_to_javascript(yy[0..-2]) %>;
       drawGraph(xxx, yyy, '#myCanvas2', 'contenant2', 'blue');
+      
+      <% t6 = Time.now %>
       
       <% yy = [] %>
       <% (0..(lastweek-1)).each do |i| %>
@@ -276,6 +291,8 @@ Votre navigateur ne supporte pas les canvas.
       yyy = <%= ruby_to_javascript(yy[0..-2]) %>;
       drawGraph(xxx, yyy, '#myCanvas3', 'contenant3', 'red');
     <% end %>
+    
+    <% t7 = Time.now %>
   }
 
   //Initial call
@@ -284,3 +301,7 @@ Votre navigateur ne supporte pas les canvas.
   });
 
 </script>
+
+<% if montretemps == 1 %>
+  <br/>Temps de chargement : <%= t2-t1 %>, <%= t3-t2 %>, <%= t4-t3 %>, <%= t5-t4 %>, <%= t6-t5 %>, <%= t7-t6 %> secondes.
+<% end %>
