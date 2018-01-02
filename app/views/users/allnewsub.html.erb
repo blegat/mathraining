@@ -1,20 +1,24 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
-<% provide(:title, "Soumissions") %>
+<% provide(:title, "À lire") %>
 <h1>
   <% if @new %>
-    Toutes les soumissions
+    Soumissions <span style="font-size:20px;"> - <%= link_to "Tout voir", allsub_path %></span>
   <% else %>
-    Soumissions auxquelles vous participez
+    Commentaires <span style="font-size:20px;"> - <%= link_to "Tout voir", allmysub_path %></span>
   <% end %>
 </h1>
 
-Veuillez commencer par les soumissions les plus anciennes, c'est-à-dire le plus bas dans la liste suivante.<br/><br/>
+<% @AFFICHE_WARNING = 1 %>
 
-<center>
-  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1 %>
-</center>
+<% if @notifications.size == 0 %>
+<% if @new %>
+  Il n'y a plus rien à corriger, beau boulot!
+<% else %>
+  Vous n'avez aucun nouveau commentaire à lire.
+<% end %>
+<% else %>
+
 
 <!-- Si on affiche toutes les soumissions -->
 <% if @new %>
@@ -82,7 +86,4 @@ Veuillez commencer par les soumissions les plus anciennes, c'est-à-dire le plus
   </div>
 <% end %>
 
-<center>
-  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1 %>
-</center>
+<% end %>

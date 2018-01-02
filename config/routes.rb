@@ -2,8 +2,10 @@ require "resque_web"
 
 Mathraining::Application.routes.draw do
 
-  match '/notifications_new', to: 'users#notifications_new', :via => [:get], as: :notifications_new
-  match '/notifications_update', to: 'users#notifications_update', :via => [:get], as: :notifications_update
+  match '/allsub', to: 'users#allsub', :via => [:get], as: :allsub
+  match '/allmysub', to: 'users#allmysub', :via => [:get], as: :allmysub
+  match '/allnewsub', to: 'users#allnewsub', :via => [:get], as: :allnewsub
+  match '/allmynewsub', to: 'users#allmynewsub', :via => [:get], as: :allmynewsub
 
   match '/notifs', to: 'users#notifs_show', :via => [:get], as: :notifs_show
 

@@ -1,10 +1,10 @@
 #encoding: utf-8
 
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :notifications_new, :notifications_update, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :groups]
+  before_action :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :allsub, :allmysub, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :groups]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
-  before_action :corrector_user, only: [:notifications_new, :notifications_update]
+  before_action :corrector_user, only: [:allsub, :allmysub]
   before_action :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector]
   before_action :signed_out_user, only: [:new, :create, :password_forgotten]
   before_action :unactivate_admin, only: [:switchactivate]
@@ -220,18 +220,32 @@ class UsersController < ApplicationController
     redirect_to users_path
   end
 
-  # Voir les nouvelles notifications (admin)
-  def notifications_new
+  # Voir toutes les soumissions (admin)
+  def allsub
     @notifications = Submission.includes(:user, :problem, followings: :user).where(visible: true).order("lastcomment DESC").paginate(page: params[:page]).to_a
     @new = true
-    render :notifications
+    render :allsub
   end
 
-  # Voir les notifications pour les modifs (admin)
-  def notifications_update
+  # Voir les soumissions auxquelles on participe (admin)
+  def allmysub
     @notifications = current_user.sk.followed_submissions.includes(:user, :problem).where("status > 0").order("lastcomment DESC").paginate(page: params[:page]).to_a
     @new = false
-    render :notifications
+    render :allsub
+  end
+  
+  # Voir toutes les nouvelles soumissions (admin)
+  def allnewsub
+    @notifications = Submission.includes(:user, :problem, followings: :user).where(status: 0, visible: true).order("lastcomment").to_a
+    @new = true
+    render :allnewsub
+  end
+
+  # Voir les nouveaux commentaires des soumissions auxquelles on participe (admin)
+  def allmynewsub
+    @notifications = current_user.sk.followed_submissions.includes(:user, :problem).where("status = 3").order("lastcomment").to_a
+    @new = false
+    render :allnewsub
   end
 
   # Voir les notifications (étudiant)

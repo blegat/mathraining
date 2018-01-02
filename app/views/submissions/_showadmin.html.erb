@@ -2,6 +2,8 @@
 
 <% abreviation = ["Comb.", "Géom.", "Th. Nb.", "Alg.", "Eq. Fct.", "Inég."] %>
 
+<% today = DateTime.now.in_time_zone.to_date %>
+
 <!-- Situation vaut : 3 si on est dans l'index des soumissions, 1 si on affiche tout, 2 si on affiche que celles auxquelles on participe -->
 
 <!-- Couleur -->
@@ -27,7 +29,12 @@
 
 <!-- Icone -->
 <td style="width:70px; text-align:center;" class="<%= "hidden-xs hidden-sm" if @situation <= 2 %>">
-	<%= image_tag s.icon %>
+	<% if defined? @AFFICHE_WARNING %>
+	  <% x = (today - s.lastcomment.in_time_zone.to_date).to_i %>
+	  <span style="<%= "font-weight:bold;" if x >= 3 %> <%= "color:orange;" if (x >= 5 and x < 7) %><%= "color:red;" if x >= 7 %>">J-<%= x %></span>
+	<% else %>
+	  <%= image_tag s.icon %>
+	<% end %>
 </td>
 
 <!-- Date de soumission -->

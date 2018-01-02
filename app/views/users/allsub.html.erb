@@ -3,13 +3,11 @@
 <% provide(:title, "Soumissions") %>
 <h1>
   <% if @new %>
-    Toutes les soumissions
+    Soumissions (tout)
   <% else %>
-    Soumissions auxquelles vous participez
+    Commentaires (tout)
   <% end %>
 </h1>
-
-Veuillez commencer par les soumissions les plus anciennes, c'est-à-dire le plus bas dans la liste suivante.<br/><br/>
 
 <center>
   <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
