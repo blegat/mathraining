@@ -236,7 +236,7 @@ class UsersController < ApplicationController
   
   # Voir toutes les nouvelles soumissions (admin)
   def allnewsub
-    @notifications = Submission.includes(:user, :problem, followings: :user).where(status: 0, visible: true).order("lastcomment").to_a
+    @notifications = Submission.includes(:user, :problem, followings: :user).where(status: 0, visible: true).order("created_at").to_a
     @new = true
     render :allnewsub
   end

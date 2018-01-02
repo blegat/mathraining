@@ -30,7 +30,11 @@
 <!-- Icone -->
 <td style="width:70px; text-align:center;" class="<%= "hidden-xs hidden-sm" if @situation <= 2 %>">
 	<% if defined? @AFFICHE_WARNING %>
-	  <% x = (today - s.lastcomment.in_time_zone.to_date).to_i %>
+	  <% if @situation == 1 %>
+	    <% x = (today - s.created_at.in_time_zone.to_date).to_i %>
+	  <% else %>
+	    <% x = (today - s.lastcomment.in_time_zone.to_date).to_i %>
+	  <% end %>
 	  <span style="<%= "font-weight:bold;" if x >= 3 %> <%= "color:orange;" if (x >= 5 and x < 7) %><%= "color:red;" if x >= 7 %>">J-<%= x %></span>
 	<% else %>
 	  <%= image_tag s.icon %>

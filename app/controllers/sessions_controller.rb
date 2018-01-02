@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
         redirect_back(fallback_location: root_path)
       end
     else
-      flash[:danger] = "Email ou mot de passe invalide, user = #{User.count}."
+      flash[:danger] = "Email ou mot de passe invalide."
       redirect_back(fallback_location: root_path)
     end
   end
