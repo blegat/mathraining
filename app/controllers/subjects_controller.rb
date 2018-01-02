@@ -39,7 +39,7 @@ class SubjectsController < ApplicationController
 
     @importants = Array.new
     Subject.includes(:user, :category, :section, :chapter).where(important: true).order("lastcomment DESC").to_a.each do |s|
-      if ((signed_in? && current_user.sk.admin?) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
+      if ((signed_in? && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @importants.push(s)
         end
@@ -48,7 +48,7 @@ class SubjectsController < ApplicationController
 
     @subjects = Array.new
     Subject.includes(:user, :category, :section, :chapter).where(important: false).order("lastcomment DESC").to_a.each do |s|
-      if (signed_in? && current_user.sk.admin?) || !s.admin && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
+      if ((signed_in? && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @subjects.push(s)
         end
@@ -164,7 +164,7 @@ class SubjectsController < ApplicationController
         attach[j-1].update_attribute(:myfiletable, @subject)
         j = j+1
       end
-      if !current_user.sk.admin? && @subject.admin? # Hack
+      if !current_user.sk.admin? && !current_user.sk.corrector? && @subject.admin? # Hack
         @subject.admin = false
         @subject.save
       end
@@ -201,7 +201,7 @@ class SubjectsController < ApplicationController
       q = params[:q].to_i
     end
 
-    if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
+    if !current_user.sk.admin? && !current_user.sk.corrector? && !params[:subject][:important].nil? # Hack
       redirect_to root_path
     end
 
@@ -252,7 +252,7 @@ class SubjectsController < ApplicationController
 
       @subject.save
 
-      if !current_user.sk.admin? && @subject.admin? # Hack
+      if !current_user.sk.admin? && !current_user.sk.corrector? && @subject.admin? # Hack
         @subject.admin = false
         @subject.save
       end
@@ -349,7 +349,7 @@ class SubjectsController < ApplicationController
 
   def admin_subject_user
     @subject = Subject.find(params[:id])
-    redirect_to root_path unless ((signed_in? && current_user.sk.admin?) || !@subject.admin)
+    redirect_to root_path unless ((signed_in? && (current_user.sk.admin? || current_user.sk.corrector?)) || !@subject.admin)
   end
 
   def author

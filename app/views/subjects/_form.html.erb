@@ -23,11 +23,6 @@ function checkExercise() {
 }
 </script>
 
-<% iciadmin = false %>
-<% if current_user.sk.admin? && (@subject.user.nil? || @subject.user.admin?) %>
-  <% iciadmin = true %>
-<% end %>
-
 <%= render 'shared/error_messages', object: f.object %>
 
 <!-- Calcul de la liste des sections et chapitres -->
@@ -172,11 +167,11 @@ function checkExercise() {
   <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => current_user.other %>
   
   <!-- Case admin et case premier lieu -->
-  <% if iciadmin %>
+  <% if current_user.sk.admin || current_user.sk.corrector %>
     <br/>
     <label class="checkbox-inline">
       <%= f.check_box :admin, :disabled => current_user.other %>
-      Cochez si ce sujet est réservé aux administrateurs.
+      Cochez si ce sujet est réservé aux correcteurs.
     </label>
   <% end %>
 

@@ -161,8 +161,10 @@ class User < ActiveRecord::Base
   def combien_forum
     compteur = 0
     update_date = false
-    if self.admin?
+    if self.admin? or (self.corrector? and self.wepion?)
       lastsubjects = Subject.where("lastcomment > ?", self.forumseen)
+    elsif self.corrector?
+      lastsubjects = Subject.where("wepion = ? AND lastcomment > ?", false, self.forumseen)
     elsif self.wepion?
       lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen)
     else

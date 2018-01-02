@@ -194,7 +194,7 @@ class MessagesController < ApplicationController
   # Il faut être admin si le sujet est pour admin
   def admin_subject_user
     @subject = Subject.find(params[:subject_id])
-    redirect_to root_path unless (current_user.sk.admin? || !@subject.admin)
+    redirect_to root_path unless (current_user.sk.admin? || current_user.sk.corrector? || !@subject.admin)
   end
 
   # Il faut être l'auteur ou admin pour modifier un message
