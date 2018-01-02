@@ -11,17 +11,12 @@
 
 <% @AFFICHE_WARNING = 1 %>
 
-<% if @notifications.size == 0 %>
-<% if @new %>
-  Il n'y a plus rien à corriger, beau boulot!
-<% else %>
-  Vous n'avez aucun nouveau commentaire à lire.
-<% end %>
-<% else %>
-
-
 <!-- Si on affiche toutes les soumissions -->
 <% if @new %>
+
+  <% if @notifications.size == 0 %>
+    Il n'y a plus rien à corriger, beau boulot!
+  <% else %>
 
   <% @situation = 1 %>
   <div class="row">
@@ -64,26 +59,70 @@
   </table>
   </div>
   </div>
+  
+  <% end %>
 
 <!-- Si on affiche les soumissions auxquelles on participe -->
 <% else %>
 
-  <% @situation = 2 %>
+  <h3>Qui vous concernent</h3>
+  
+  <% tome = Array.new %>
   <% @follow = Array.new %>
   <% current_user.sk.followings.where(:read => false).each do |f| %>
     <% @follow.push(f.submission_id) %>
   <% end %>
-
-  <div class="row">
-  <div class="col-xs-12 col-sm-12">
-  <table class="table table-bordered">
-  <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
+  
+  <% first_mine = true %>
+  
+  <% @situation = 2 %>
+  
   <% @notifications.each do |n| %>
-    <%= render 'submissions/showadmin', s: n, nom: true %>
+    <% if @follow.include?(n.id) %>
+      <% tome.push(n.id) %>
+      <% if first_mine %>
+        <div class="row">
+        <div class="col-xs-12 col-sm-12">
+        <table class="table table-bordered">
+        <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
+      <% end %>
+      <%= render 'submissions/showadmin', s: n, nom: true %>
+      <% first_mine = false %>
+    <% end %>
   <% end %>
-  </table>
-  </div>
-  </div>
-<% end %>
-
+  
+  <% if !first_mine %>
+    </table>
+    </div>
+    </div>
+  <% else %>
+    Vous n'avez aucun nouveau commentaire à lire.  
+  <% end %>
+  
+  <h3>Autres commentaires non lus</h3>
+  
+  <% first_other = true %>
+  
+  <% @situation = 22 %>
+  
+  <% @notifications_other.each do |n| %>
+    <% if(!tome.include?(n.id)) %>
+      <% if first_other %>
+        <div class="row">
+        <div class="col-xs-12 col-sm-12">
+        <table class="table table-bordered">
+        <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm">Correcteur(s)</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
+      <% end %>
+      <%= render 'submissions/showadmin', s: n, nom: true %>
+      <% first_other = false %>
+    <% end %>
+  <% end %>
+  
+  <% if !first_other %>
+    </table>
+    </div>
+    </div>
+  <% else %>
+    Aucun autre commentaire non lu.
+  <% end %>
 <% end %>
