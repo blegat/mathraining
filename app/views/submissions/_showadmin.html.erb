@@ -15,11 +15,19 @@
   <% @situation = 2 %>
 <% end %>
 
+<% if (defined? @CAN_SEE) && !@CAN_SEE %>
+  <% can_see = false %>
+<% else %>
+  <% can_see = true %>
+<% end %>
 
 <!-- Couleur -->
 
+<!-- Si non-visible : gris -->
+<% if !can_see %>
+  <tr style="background-color:#E0E0E0;">
 <!-- Si nouveau commentaire non lu et situation = 2 : toujours jaune -->
-<% if @situation == 2 && @follow.include?(s.id) %>
+<% elsif @situation == 2 && @follow.include?(s.id) %>
   <tr class="warning">
 <!-- Si status = 2 (accepté) : toujours vert -->
 <% elsif s.status == 2 %>
@@ -67,7 +75,7 @@
 </td>
 
 <!-- Nom (si on l'affiche) -->
-<% if nom %>
+<% if nom && can_see %>
 <td style="width:200px">
   <%= raw(s.user.linked_name) %>
   <%= "(A)" if s.user.group == "A" && (current_user.sk.admin? || current_user.sk.corrector?) %>
@@ -88,17 +96,22 @@
 <% end %>
 
 <!-- Section et niveau (si on l'affiche) -->
-<% if @situation == 1 || @situation == 2 %>
+<% if (@situation == 1 || @situation == 2) %>
   <td class="hidden-xs hidden-sm" style="text-align:center; width:100px;">
     <%= abreviation[s.problem.section_id-1] %>
     <%= s.problem.level %>
   </td>
 <% end %>
 
-<!-- Voir -->
+<% elsif !can_see %>
+  <td> </td>
+  <td class="hidden-xs hidden-sm"> </td>
+  <td class="hidden-xs hidden-sm"> </td>
 <% end %>
+
+<!-- Voir -->
 <td style="text-align:center; width:54px;">
-<%= link_to "Voir", problem_path(s.problem, :sub => s.id) %>
+<%= link_to "Voir", problem_path(s.problem, :sub => s.id) if can_see %>
 </td>
 
 </tr>
