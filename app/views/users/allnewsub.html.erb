@@ -103,9 +103,8 @@
   
   <% first_other = true %>
   
-  <% @situation = 22 %>
-  
   <% @notifications_other.each do |n| %>
+    <% @situation = 22 %>
     <% if(!tome.include?(n.id)) %>
       <% if first_other %>
         <div class="row">
