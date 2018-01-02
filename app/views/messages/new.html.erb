@@ -50,18 +50,27 @@ Répondre
 <% end %>
 
 <!-- Messages récents -->
-<h2>Messages récents</h2>
+<h2>Messages précédents</h2>
 
-<!-- Affiche les 5 derniers messages -->
-<% messages = @subject.messages.order("id DESC").limit(5) %>
+<!-- Affiche les 4 derniers messages -->
+<% messages = @subject.messages.order("id DESC").limit(4) %>
 
 <% messages.each do |m| %>
   <%= render 'subjects/message', m: m, canmodif: false %>
 <% end %>
 
-<!-- Si moins de 5 messages, on affiche le sujet également -->
-<% if messages.size < 5 %>
-  <%= render 'subjects/subject', s: @subject, canmodif: false %>
+<!-- Si plus de 4 messages, on affiche le nombre de messages manquants -->
+<% numb = @subject.messages.count %>
+<% if numb >= 5 %>
+<center>.<br/>.<br/>(<%= numb-4 %> message<%= "s" if numb >= 6 %>)<br/>.<br/>.<br/><br/></center>
+<% end %>
+
+<%= render 'subjects/subject', s: @subject, canmodif: false %>
+
+<% if !@subject.exercise.nil? %>
+	<%= render 'subjects/show_exo', f: @subject.exercise %>
+<% elsif !@subject.qcm.nil? %>
+	<%= render 'subjects/show_qcm', f: @subject.qcm %>
 <% end %>
 
 <script>
