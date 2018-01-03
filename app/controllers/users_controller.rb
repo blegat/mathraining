@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub]
-  before_action :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector]
+  before_action :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector, :validate_name]
   before_action :signed_out_user, only: [:new, :create, :password_forgotten]
   before_action :unactivate_admin, only: [:switchactivate]
   before_action :group_user, only: [:groups]
@@ -62,8 +62,14 @@ class UsersController < ApplicationController
   # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
   def update
     if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :email, :sex, :year, :country, :password, :password_confirmation))
-      flash[:success] = "Votre profil a bien été mis à jour."
-      redirect_to root_path
+      flash[:success] = "Votre profil a bien été mis à jour. #{current_user.root?}"
+      if(current_user.root? and current_user.other)
+        @user.update_attribute(:valid_name, true)
+        current_user.update_attribute(:skin, 0)
+        redirect_to validate_name_path
+      else
+        redirect_to root_path
+      end
     else
       render 'edit'
     end
@@ -287,6 +293,18 @@ class UsersController < ApplicationController
   end
 
   def correctors
+  end
+  
+  def validate_name
+    u = User.where(:admin => false, :valid_name => false, :email_confirm => true).first
+    if(!u.nil?)
+      current_user.update_attribute(:skin, u.id)
+      redirect_to edit_user_path(u)
+    else
+      current_user.update_attribute(:skin, 0)
+      flash[:success] = "Aucun nom à valider!"
+      redirect_to root_path
+    end
   end
 
   ########## PARTIE PRIVEE ##########

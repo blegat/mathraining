@@ -234,6 +234,9 @@
             <li><%= link_to "Profil", current_user.sk %></li>
           <% end %>
           <li><%= link_to "Compte", edit_user_path(current_user.sk) %></li>
+          <% if current_user.sk.root? %>
+            <li><%= link_to "Valider noms", validate_name_path %></li>
+          <% end %>
           <li class="divider"></li>
           <li>
           <%= link_to "Déconnexion", signout_path, method: "delete" %>

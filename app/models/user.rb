@@ -22,9 +22,22 @@
 #  wepion          :boolean
 #  last_connexion  :date
 #  follow_message  :boolean
+#  valid_name      :boolean
 #
 
 include ERB::Util
+
+class NoNumberValidator < ActiveModel::Validator
+  def validate(record)
+    [record.first_name, record.last_name].each do |r|
+      [1..r.size].each do |i|
+        if(r[i] =~ /[[:digit:]]/)
+          record.errors[:base] << "Prénom et Nom ne peuvent pas contenir de chiffres"
+        end
+      end
+    end
+  end
+end
 
 class User < ActiveRecord::Base
   # attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion, :country, :year, :rating, :forumseen, :last_connexion, :follow_message
@@ -61,6 +74,7 @@ class User < ActiveRecord::Base
 
   validates :first_name, presence: true, length: { maximum: 32 }
   validates :last_name, presence: true, length: { maximum: 32 }
+  validates_with NoNumberValidator
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
   validates :password, length: { minimum: 6 }, on: :create
