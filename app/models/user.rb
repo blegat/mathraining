@@ -30,10 +30,17 @@ include ERB::Util
 class NoNumberValidator < ActiveModel::Validator
   def validate(record)
     [record.first_name, record.last_name].each do |r|
-      [1..r.size].each do |i|
+      ok = false
+      [0..(r.size-1)].each do |i|
         if(r[i] =~ /[[:digit:]]/)
           record.errors[:base] << "Prénom et Nom ne peuvent pas contenir de chiffres"
         end
+        if(r[i] =~/[[:alpha:]]/)
+          ok = true
+        end
+      end
+      if(not ok)
+        record.errors[:base] << "Prénom et Nom doivent contenir au moins une lettre"
       end
     end
   end
