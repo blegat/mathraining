@@ -143,8 +143,8 @@ FactoryGirl.define do
   
   # User
   factory :user do
-    sequence(:first_name) { |n| "Jean#{n}" }
-    sequence(:last_name) { |n| "Dupont#{n}" }
+    sequence(:first_name) { |n| "Jean#{(("a".."z").to_a)[n%26]}" }
+    sequence(:last_name) { |n| "Dupont}" }
     sequence(:email) { |n| "person_#{n}@example.com" }
     country "Belgique" 
     year 1992

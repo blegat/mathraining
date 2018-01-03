@@ -62,7 +62,7 @@ class UsersController < ApplicationController
   # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
   def update
     if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :email, :sex, :year, :country, :password, :password_confirmation))
-      flash[:success] = "Votre profil a bien été mis à jour. #{current_user.root?}"
+      flash[:success] = "Votre profil a bien été mis à jour."
       if(current_user.root? and current_user.other)
         @user.update_attribute(:valid_name, true)
         current_user.update_attribute(:skin, 0)
