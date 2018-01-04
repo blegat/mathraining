@@ -28,11 +28,29 @@ Votre navigateur ne supporte pas les canvas.
 
 <h3>Résolutions d'exercices</h3>
 
-(En maintenance)
+Ci-dessous, le nombre d'exercices résolus par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
+
+<center>
+<!-- Endroit pour dessiner la fréquentation -->
+<div id="contenant2" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas2" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+</center>
 
 <h3>Soumissions aux problèmes</h3>
 
-(En maintenance)
+Ci-dessous, le nombre de soumissions par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
+
+<center>
+<!-- Endroit pour dessiner la fréquentation -->
+<div id="contenant3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas3" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+</center>
 
 <% @premierlundi = Date.parse('8-12-2014') %>
 
@@ -237,8 +255,45 @@ Votre navigateur ne supporte pas les canvas.
       
       <% t3 = Time.now %>
       
+      <% yy = [] %>
+      <% xx = [] %>
+      <% lastweek = convert_to_week(DateTime.now.in_time_zone.to_date) %>
+      <% (0..(lastweek-1)).each do |i| %>
+        <% yy[i] = 0 %>
+        <% xx.push(convert_date(@premierlundi+7*i)) %>
+      <% end %>
+      <% yy[lastweek] = 0 %>
+      <% t4 = Time.now %>
+      <% v = Solvedexercise.where(:correct => true).pluck("updated_at") %>
+      <% v.each do |d| %>
+        <% w = convert_to_week(d.to_date) %>
+        <% yy[w] = yy[w]+1 %>
+      <% end %>
+      
+      <% t5 = Time.now %>
+      <% v = Solvedqcm.where(:correct => true).pluck("updated_at") %>
+      <% v.each do |d| %>
+        <% w = convert_to_week(d.to_date) %>
+        <% yy[w] = yy[w]+1 %>
+      <% end %>
+      xxx = <%= ruby_to_javascript_string(xx[0..-1]) %>;
+      yyy = <%= ruby_to_javascript(yy[0..-2]) %>;
+      drawGraph(xxx, yyy, '#myCanvas2', 'contenant2', 'blue');
+      
       <% t6 = Time.now %>
       
+      <% yy = [] %>
+      <% (0..(lastweek-1)).each do |i| %>
+        <% yy[i] = 0 %>
+      <% end %>
+      <% yy[lastweek] = 0 %>
+      <% v = Submission.pluck("created_at") %>
+      <% v.each do |d| %>
+        <% w = convert_to_week(d.to_date) %>
+        <% yy[w] = yy[w]+1 %>
+      <% end %>
+      yyy = <%= ruby_to_javascript(yy[0..-2]) %>;
+      drawGraph(xxx, yyy, '#myCanvas3', 'contenant3', 'red');
     <% end %>
     
     <% t7 = Time.now %>
