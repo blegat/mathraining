@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :allsub, :allmysub, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :groups]
+  before_action :signed_in_user, only: [:destroy, :edit, :update, :create_administrator, :recompute_scores, :allsub, :allmysub, :notifs_show, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :groups, :load_all_users]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub]

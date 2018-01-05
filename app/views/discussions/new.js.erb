@@ -1,0 +1,26 @@
+var dest = document.getElementById("destinataire");
+
+/* Remove all options from the select list */
+
+var choisi = dest.options[dest.selectedIndex].value;
+
+for(i = dest.options.length - 1 ; i >= 1 ; i--)
+{
+    dest.remove(i);
+}
+
+<% User.where("id != ?", current_user.sk.id).order(:first_name).each do |u| %>
+  var opt = document.createElement('option');
+  opt.text = "<%= u.fullname %>";
+  opt.value = <%= u.id %>;
+  if(<%= u.id %> == choisi) {
+    opt.selected = "selected";
+  }
+  dest.add(opt, null);
+<% end %>
+
+var lien = document.getElementById("show_all");
+lien.style.display = "none"
+
+var thanks = document.getElementById("thanks");
+thanks.style.display = "inline"

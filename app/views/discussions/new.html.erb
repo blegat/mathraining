@@ -7,6 +7,14 @@
   <% end %>
 </h1>
 
+<script type="text/javascript">
+
+var myFunction = function () {
+  $.getScript("<%= new_discussion_url %>");
+}
+</script>
+
+
 <% @nouveau = true %>
 
 <div class="row">
@@ -29,7 +37,10 @@
 
       <div class="form-inline">
         <%= f.label :destinataire %><br/>
-        <%= select_tag :destinataire, options_for_select(User.where("id != ?", current_user.sk.id).order(:first_name).collect {|u| [ u.name, u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-control" %>
+        <% mtn = DateTime.now.to_date - 14 %>
+        <%= select_tag :destinataire, options_for_select(User.where("id != ? AND last_connexion >= ?", current_user.sk.id, mtn).order(:first_name).collect {|u| [ u.name, u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-control" %>
+        <a href="javascript:myFunction()" style="margin-left:10px;" id="show_all">Afficher les utilisateurs inactifs</a>
+        <span style="margin-left:10px; display:none;" id="thanks">À votre service!</span>
       </div><br/>
 
       <div class="form-group">
