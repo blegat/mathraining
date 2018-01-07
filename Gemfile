@@ -15,6 +15,9 @@ gem "recaptcha", "~> 4.1.0", :require => "recaptcha/rails"
 gem 'thin'
 gem "nokogiri", "~> 1.7.1"
 
+# Doing tasks every monday...
+gem 'whenever', :require => false
+
 # Otherwise it doesn't work
 gem 'eventmachine', "1.2.3"
 

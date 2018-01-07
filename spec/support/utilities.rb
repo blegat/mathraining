@@ -51,7 +51,10 @@ def create_message(sub, content)
 end
 
 def create_discussion(user, content)
+  user.last_connexion = DateTime.now
+  user.save
   visit new_discussion_path
+  click_link "Afficher les utilisateurs inactifs"
   select user.name, from: "destinataire"
   fill_in "MathInput", with: content
   click_button "Envoyer"

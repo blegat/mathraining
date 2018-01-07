@@ -124,8 +124,6 @@ Mathraining::Application.routes.draw do
     match '/change_group', to: 'users#change_group', :via => [:get], as: :change_group
   end
   
-  match '/load_all_users', to: 'users#load_all_users', :via => [:get], as: :load_all_users
-  
   match '/groups', to: 'users#groups', :via => [:get], as: :groups
   match '/correctors', to: 'users#correctors', :via => [:get], as: :correctors
 
