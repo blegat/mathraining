@@ -3,14 +3,6 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
 
-<% t1 = Time.now %>
-
-<!-- Test pour la performance -->
-<% montretemps = 0 %>
-<% if(params.has_key?:montretemps) %>
-  <% montretemps = params[:montretemps].to_i %>
-<% end %>
-
 <h1>Statistiques diverses</h1>
 
 <h3>Fréquentation du site</h3>
@@ -28,13 +20,42 @@ Votre navigateur ne supporte pas les canvas.
 
 <h3>Résolutions d'exercices</h3>
 
-(En maintenance)
+Ci-dessous, le nombre d'exercices résolus par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
+
+<center>
+<!-- Endroit pour dessiner la fréquentation -->
+<div id="contenant2" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas2" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+</center>
 
 <h3>Soumissions aux problèmes</h3>
 
-(En maintenance)
+Ci-dessous, le nombre de soumissions par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
 
-<% @premierlundi = Date.parse('8-12-2014') %>
+<center>
+<!-- Endroit pour dessiner la fréquentation -->
+<div id="contenant3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas3" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+</center>
+
+<h3>Temps de correction</h3>
+
+Chaque soumission à un problème doit être corrigée par un correcteur. Le graphique ci-dessous donne, pour chaque semaine depuis le 8 décembre 2014, le temps moyen de correction d'une soumission (en jours).<br/><br/>
+
+<center>
+<!-- Endroit pour dessiner la fréquentation -->
+<div id="contenant4" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas4" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+</center>
 
 <% def convert_date(courant) %>
   <% d = "" %>
@@ -45,10 +66,6 @@ Votre navigateur ne supporte pas les canvas.
   <% d = d + "0" if (courant.year % 2000) < 10 %>
   <% d = d + (courant.year % 2000).to_s %>
   <% return d; %>
-<% end %>
-
-<% def convert_to_week(courant) %>
-  <% return ((courant-@premierlundi).to_i/7).floor %>
 <% end %>
 
 <% def ruby_to_javascript(arr) %>
@@ -155,6 +172,7 @@ Votre navigateur ne supporte pas les canvas.
 
     // On parcourt de droite à gauche
     encours = val.length-1;
+    premier = true
   
     ctx.fillStyle = couleur;
     ctx.strokeStyle = couleur;
@@ -166,11 +184,14 @@ Votre navigateur ne supporte pas les canvas.
     while(encours >= 0) {
       var w = 3 + 800*encours/(val.length-1);
       var huser = 450 - 450*(val[encours]/maxi);
-      if(encours == 0) {
-        ctx.moveTo(pct*(50+w), pct*(huser+5));
-      }
-      else {
-        ctx.lineTo(pct*(50+w), pct*(huser+5));
+      if(val[encours] >= 0) {
+        if(premier) {
+          ctx.moveTo(pct*(50+w), pct*(huser+5));
+          premier = false;
+        }
+        else {
+          ctx.lineTo(pct*(50+w), pct*(huser+5));
+        }
       }
       encours = encours-1;
     }  
@@ -203,8 +224,6 @@ Votre navigateur ne supporte pas les canvas.
 
   //Run function when browser  resize
   $(window).resize( respondCanvas );
-  
-  <% t2 = Time.now %>
 
   function respondCanvas(){
     <!-- Graphique de la fréquentation -->
@@ -235,13 +254,30 @@ Votre navigateur ne supporte pas les canvas.
       yyy = <%= ruby_to_javascript(yy) %>;
       drawGraph(xxx, yyy, '#myCanvas1', 'contenant1', 'orange');
       
-      <% t3 = Time.now %>
+      <% xx = Array.new %>
+      <% yy = Array.new %>
+      <% yy2 = Array.new %>
+      <% yy3 = Array.new %>
+      <% Record.order(:date).each do |r| %>
+        <% xx.push(convert_date(r.date)) %>
+        <% yy.push(r.number_solved) %>
+        <% yy2.push(r.number_submission) %>
+        <% if r.correction_time.nil? %>
+          <% yy3.push(-1) %>
+        <% else %>
+          <% yy3.push(r.correction_time) %>
+        <% end %>
+      <% end %>
+      xxx = <%= ruby_to_javascript_string(xx) %>;
+      yyy = <%= ruby_to_javascript(yy) %>;
+      drawGraph(xxx, yyy, '#myCanvas2', 'contenant2', 'blue');
       
-      <% t4 = Time.now %>
+      yyy = <%= ruby_to_javascript(yy2) %>;
+      drawGraph(xxx, yyy, '#myCanvas3', 'contenant3', 'red');
       
+      yyy = <%= ruby_to_javascript(yy3) %>;
+      drawGraph(xxx, yyy, '#myCanvas4', 'contenant4', 'green');
     <% end %>
-    
-    <% t5 = Time.now %>
   }
 
   //Initial call
@@ -250,7 +286,3 @@ Votre navigateur ne supporte pas les canvas.
   });
 
 </script>
-
-<% if montretemps == 1 %>
-  <br/>Temps de chargement : <%= t2-t1 %>, <%= t3-t2 %>, <%= t4-t3 %>, <%= t5-t4 %> secondes.
-<% end %>
