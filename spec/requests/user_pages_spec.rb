@@ -1,141 +1,130 @@
 # -*- coding: utf-8 -*-
-require 'spec_helper'
+require "spec_helper"
 
 describe "User pages" do
 
   subject { page }
 
-  describe "delete" do
-    let (:admin) { FactoryGirl.create(:admin) }
-    before do
-      sign_in admin
+  let(:user) { FactoryGirl.create(:user) }
+  let(:other_user) { FactoryGirl.create(:user) }
+  let(:root) { FactoryGirl.create(:root) }
+  let(:other_root) { FactoryGirl.create(:root) }
+  let(:admin) { FactoryGirl.create(:admin) }
+
+  describe "admin" do
+    before { sign_in admin }
+
+    describe "tries to delete a student" do
+      before { visit user_path(user) }
+      it { should_not have_link("Supprimer") }
     end
-    specify "an admin should not be able to destroy himself" do
-      expect { visit user_path(admin, :method => :delete) }.not_to change(User, :count)
-    end
-
-  end
-
-  describe "index" do
-    let (:user) { FactoryGirl.create(:user) }
-    before(:all) { 30.times { FactoryGirl.create(:user) } }
-    after(:all)  { User.delete_all }
-
-    before(:each) do
-      sign_in user
-      visit users_path
-    end
-
-    it { should have_selector('h1',    text: 'Scores') }
-
-    describe "pagination" do
-
-
-      it "should list each user" do
-        User.where(:admin => false).each do |user|
-          if user.rating > 0
-            page.should have_selector('tr', text: user.name)
-          end
-        end
-      end
+    
+    describe "tries to delete himself" do
+      before { visit user_path(admin) }
+      it { should_not have_link("Supprimer") }
     end
   end
 
-  describe "profile page" do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:other_user) { FactoryGirl.create(:user) }
+  describe "root" do
+    before { sign_in root }
 
-    before do
-      sign_in(user)
-      visit user_path(other_user)
+    describe "deletes a student" do
+      before { visit user_path(user) }
+      specify {	expect { click_link "Supprimer" }.to change(User, :count).by(-1) }
     end
 
-    it { should have_selector('h1',    text: other_user.name) }
-
-  end
-
-  describe "signup page" do
-    before { visit signup_path }
-
-    it { should have_selector('h1',    text: 'Inscription') }
-  end
-
-  describe "signup" do
-    before { visit signup_path }
-
-    let(:submit) { "Créer mon compte" }
-
-    describe "with invalid information" do
-      it "should not create a user" do
-        expect { click_button submit }.not_to change(User, :count)
-      end
-      describe "after submission" do
-        before { click_button submit }
-
-        it { should have_selector('h1', text: 'Inscription') }
-        it { should have_content('erreur') }
-      end
+    describe "deletes an admin" do
+      before { visit user_path(admin) }
+      specify { expect { click_link "Supprimer" }.to change(User, :count).by(-1) }
     end
 
-    describe "with valid information" do
+    describe "tries to delete another root" do
+      before { visit user_path(other_root) }
+      it { should_not have_link("Supprimer") }
+    end
+
+    describe "deletes a student with a subject with a message (DEPENDENCY)" do
+      let!(:sub) { FactoryGirl.create(:subject, user: user) }
+      let!(:mes) { FactoryGirl.create(:message, subject: sub, user: other_user) }
+      before { visit user_path(user) }
+      specify { expect { click_link "Supprimer" }.to change(Subject, :count).by(-1) }
+      specify {	expect { click_link "Supprimer" }.to change(Message, :count).by(-1) }
+    end
+
+    describe "deletes a student with a message (DEPENDENCY)" do
+      let!(:mes) { FactoryGirl.create(:message, user: user) }
+      before { visit user_path(user) }
+      specify { expect { click_link "Supprimer" }.to change(Message, :count).by(-1) }
+    end
+
+    describe "deletes a student with a discussion with tchatmessages (DEPENDENCY)" do
       before do
-        fill_in "Prénom",         with: "Example"
-        fill_in "Nom",         with: "User"
-        # IL y a deux fois ces champs :(
-        page.all(:fillable_field, 'Email').last.set("user@example.com")
-        page.all(:fillable_field, 'Mot de passe').last.set("foobar")
+        create_discussion_between(user, other_user, "Coucou mon ami", "Salut mon poto")
+        visit user_path(user)
+      end
+      specify { expect { click_link "Supprimer" }.to change(Link, :count).by(-2) }
+      specify { expect { click_link "Supprimer" }.to change(Discussion, :count).by(-1) }
+      specify { expect { click_link "Supprimer" }.to change(Tchatmessage, :count).by(-2) }
+    end
+  end
+
+  describe "visitor" do
+    before { visit signup_path }
+
+    describe "signup with invalid information" do
+      specify { expect { click_button "Créer mon compte" }.not_to change(User, :count) }
+      describe "after submission" do
+        before { click_button "Créer mon compte" }
+
+        it { should have_selector("h1", text: "Inscription") }
+        it { should have_content("erreur") }
+      end
+    end
+
+    describe "signup with with valid information" do
+      before do
+        fill_in "Prénom", with: "Example"
+        fill_in "Nom", with: "User"
+        # Il y a deux fois ces champs (pour la connexion et l"inscription)
+        page.all(:fillable_field, "Email").last.set("user@example.com")
+        page.all(:fillable_field, "Mot de passe").last.set("foobar")
         fill_in "Confirmation du mot de passe", with: "foobar"
       end
 
-      it "should create a user" do
-        expect { click_button submit }.to change(User, :count).by(1)
-      end
+      specify { expect { click_button "Créer mon compte" }.to change(User, :count).by(1) }
       describe "after saving the user" do
-        before { click_button submit }
-        let(:user) { User.find_by_email('user@example.com') }
-
-        it { should have_link('Connexion') }
+        before { click_button "Créer mon compte" }
+        it { should have_content("confirmer votre inscription") }
       end
     end
   end
-  describe "edit" do
-    let(:user) { FactoryGirl.create(:user) }
-    before do
-      sign_in user
-      visit edit_user_path(user)
-    end
 
-    describe "page" do
-      it { should have_selector('h1',    text: "Actualisez votre profil") }
-    end
-
-    describe "with valid information" do
-      before { click_button "Mettre à jour" }
-
-      it { should have_content('bien') }
-    end
-    describe "with valid information" do
-      let(:new_first_name)  { "New First Name" }
-      let(:new_last_name)  { "New Last Name" }
-      let(:new_name)  { "#{new_first_name} #{new_last_name}" }
-      let(:new_email) { "new@example.com" }
+  describe "user" do
+    let(:new_first_name)  { "New First Name" }
+    let(:new_last_name)  { "New Last Name" }
+    let(:new_name)  { "#{new_first_name} #{new_last_name}" }
+    let(:new_email) { "new@example.com" }
+    before { sign_in user }
+    
+    describe "edits his information" do
       before do
-        fill_in "Prénom",             with: new_first_name
-        fill_in "Nom",             with: new_last_name
-        fill_in "Email",            with: new_email
-        fill_in "Mot de passe",         with: user.password
+        visit edit_user_path(user)
+        fill_in "Prénom", with: new_first_name
+        fill_in "Nom", with: new_last_name
+        fill_in "Email", with: new_email
+        fill_in "Mot de passe", with: user.password
         fill_in "Confirmation du mot de passe", with: user.password
         click_button "Mettre à jour"
+        user.reload
       end
-
-      it { should have_selector('h1', text: 'Actualités') }
-      it { should have_selector('div.alert.alert-success') }
-      it { should have_link('Déconnexion', href: signout_path) }
-      specify { user.reload.first_name.should  == new_first_name }
-      specify { user.reload.last_name.should  == new_last_name }
-      specify { user.reload.name.should  == new_name }
-      specify { user.reload.email.should == new_email }
+      
+      it { should have_selector("h1", text: "Actualités") }
+      it { should have_selector("div.alert.alert-success") }
+      it { should have_link("Déconnexion", href: signout_path) }
+      specify { expect(user.first_name).to eq(new_first_name) }
+      specify { expect(user.last_name).to eq(new_last_name) }
+      specify { expect(user.name).to eq(new_name) }
+      specify { expect(user.email).to eq(new_email) }
     end
   end
-
 end

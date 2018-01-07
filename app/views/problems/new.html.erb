@@ -15,13 +15,13 @@ Créer un problème
     <div class="well" id="MathPreview"></div>
     <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
     <%= render 'theories/font' %>
-    <%= f.text_area :statement, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
+    <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
   </div>
   
   <!-- Origine -->
   <div class="form-group">
     <%= f.label "Origine" %>
-    <%= f.text_field :origin, :class => "form-control", :style => "width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
+    <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
   </div>
 
   <!-- Niveau -->

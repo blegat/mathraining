@@ -7,6 +7,14 @@
   <% end %>
 </h1>
 
+<script type="text/javascript">
+
+var showAllUsers = function () {
+  $.getScript("<%= new_discussion_url %>");
+}
+</script>
+
+
 <% @nouveau = true %>
 
 <div class="row">
@@ -29,7 +37,10 @@
 
       <div class="form-inline">
         <%= f.label :destinataire %><br/>
-        <%= select_tag :destinataire, options_for_select(User.where("id != ?", current_user.sk.id).order(:first_name).collect {|u| [ u.name, u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-control" %>
+        <% mtn = DateTime.now.to_date - 14 %>
+        <%= select_tag :destinataire, options_for_select(User.where("id != ? AND (last_connexion >= ? OR id = ?)", current_user.sk.id, mtn, params[:qui].to_i).order(:first_name).collect {|u| [ u.name, u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-control" %>
+        <%= link_to "Afficher les utilisateurs inactifs", "javascript:showAllUsers()", style: "margin-left:10px;", id: "show_all" %>
+        <span style="margin-left:10px; display:none;" id="thanks">À votre service!</span>
       </div><br/>
 
       <div class="form-group">
@@ -38,9 +49,9 @@
         <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
         <%= render 'subjects/smiley', hiddentext: false %>
         <% if @ancientexte.nil? %>
-          <textarea name="content" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ></textarea>
+          <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ></textarea>
         <% else %>
-          <textarea name="content" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte %></textarea>
+          <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte %></textarea>
         <% end %>
       </div>
 

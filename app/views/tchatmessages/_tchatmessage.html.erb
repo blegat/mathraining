@@ -43,36 +43,6 @@ function showMessageNormal(id) {
 </div>
 
 <!-- Pièces jointes -->
-<% n_message = m.tchatmessagefiles.count %>
-<% n_fake = m.faketchatmessagefiles.count %>
-
-<% if n_message + n_fake > 0 %>
-  <% if n_message + n_fake == 1 %>
-    <br/><br/><b>1 pièce jointe :</b><br/>
-  <% else %>
-    <br/><br/><b><%= n_message + n_fake %> pièces jointes :</b><br/>
-  <% end %>
-  <% m.tchatmessagefiles.order(:id).each do |f| %>
-    <%= link_to f.file_file_name, download_tchatmessagefile_path(f) %>
-    (<%= (f.file_file_size / 1000.0).round(1) %> ko)
-    <br/>
-  <% end %>
-  <% m.faketchatmessagefiles.order(:id).each do |f| %>
-    <span style="color:#0000BB;"><%= f.file_file_name %> (<%= (f.file_file_size / 1000.0).round(1) %> ko, désactivée)</span><br/>
-  <% end %>
-<% end %>
-
-<!-- Afficher les pièces jointes images -->
-<% m.tchatmessagefiles.order(:id).each do |f| %>
-  <% if f.is_image %>
-    <hr style="color:grey; border-top: dashed 1px;" />
-    <center><%= f.file_file_name %><br/><br/>
-    <%= image_tag f.file.url, :class => "visible-lg", :style => "max-width:750px;" %>
-    <%= image_tag f.file.url, :class => "visible-md", :style => "max-width:600px;" %>
-    <%= image_tag f.file.url, :class => "visible-sm", :style => "max-width:460px;" %>
-    <%= image_tag f.file.url, :class => "visible-xs", :style => "width:90%;" %>
-    </center>
-  <% end %>
-<% end %>
+<%= render '/subjects/show_files', s: m %>
 
 </div>

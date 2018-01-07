@@ -5,9 +5,16 @@ FactoryGirl.define do
     content "contenu"
   end
   
+  # Category
+  factory :category do
+    sequence(:name) { |n| "Categorie #{n}" }
+  end
+  
   # Chapter
   factory :chapter do
-    sequence(:name) { |n| "Chapitre#{n}" }
+    association :section
+    description "Une description"
+    sequence(:name) { |n| "Chapitre #{n}" }
     level 1
   end
   
@@ -106,6 +113,11 @@ FactoryGirl.define do
     content "Contenu"
     association :user
     lastcomment DateTime.current
+    association :category
+    chapter_id 0
+    section_id 0
+    qcm_id 0
+    exercise_id 0
     factory :admin_subject do
       admin true
     end
@@ -131,14 +143,21 @@ FactoryGirl.define do
   
   # User
   factory :user do
-    sequence(:first_name) { |n| "Jean#{n}" }
-    sequence(:last_name) { |n| "Dupont#{n}" }
+    sequence(:first_name) { |n| "Jean#{(("a".."z").to_a)[(n/26).to_i]}#{(("a".."z").to_a)[n%26]}" }
+    sequence(:last_name) { |n| "Dupont" }
     sequence(:email) { |n| "person_#{n}@example.com" }
+    country "Belgique" 
+    year 1992
+    rating 0
     password "foobar"
     password_confirmation "foobar"
     factory :admin do
       admin true
       root false
+    end
+    factory :root do
+      admin true
+      root true
     end
   end
   

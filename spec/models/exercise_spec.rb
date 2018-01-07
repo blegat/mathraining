@@ -15,7 +15,7 @@
 #  level       :integer
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Exercise do
   before { @ex = FactoryGirl.build(:exercise) }

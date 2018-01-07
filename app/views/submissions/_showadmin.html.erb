@@ -2,12 +2,32 @@
 
 <% abreviation = ["Comb.", "Géom.", "Th. Nb.", "Alg.", "Eq. Fct.", "Inég."] %>
 
+<% today = DateTime.now.in_time_zone.to_date %>
+
 <!-- Situation vaut : 3 si on est dans l'index des soumissions, 1 si on affiche tout, 2 si on affiche que celles auxquelles on participe -->
+<!-- Vaut 22 au lieu de 2 dans le cas particulier des commentaires non-lus d'autres personnes -->
+
+<% see_correctors = false %>
+<% if @situation == 1 or @situation == 22 %>
+  <% see_correctors = true %>
+<% end %>
+<% if @situation == 22 %>
+  <% @situation = 2 %>
+<% end %>
+
+<% if (defined? @CAN_SEE) && !@CAN_SEE %>
+  <% can_see = false %>
+<% else %>
+  <% can_see = true %>
+<% end %>
 
 <!-- Couleur -->
 
+<!-- Si non-visible : gris -->
+<% if !can_see %>
+  <tr style="background-color:#E0E0E0;">
 <!-- Si nouveau commentaire non lu et situation = 2 : toujours jaune -->
-<% if @situation == 2 && @follow.include?(s.id) %>
+<% elsif @situation == 2 && @follow.include?(s.id) %>
   <tr class="warning">
 <!-- Si status = 2 (accepté) : toujours vert -->
 <% elsif s.status == 2 %>
@@ -27,7 +47,16 @@
 
 <!-- Icone -->
 <td style="width:70px; text-align:center;" class="<%= "hidden-xs hidden-sm" if @situation <= 2 %>">
-	<%= image_tag s.icon %>
+	<% if defined? @AFFICHE_WARNING %>
+	  <% if @situation == 1 %>
+	    <% x = (today - s.created_at.in_time_zone.to_date).to_i %>
+	  <% else %>
+	    <% x = (today - s.lastcomment.in_time_zone.to_date).to_i %>
+	  <% end %>
+	  <span style="<%= "font-weight:bold;" if x >= 3 %> <%= "color:orange;" if (x >= 5 and x < 7) %><%= "color:red;" if x >= 7 %>">J-<%= x %></span>
+	<% else %>
+	  <%= image_tag s.icon %>
+	<% end %>
 </td>
 
 <!-- Date de soumission -->
@@ -46,7 +75,7 @@
 </td>
 
 <!-- Nom (si on l'affiche) -->
-<% if nom %>
+<% if nom && can_see %>
 <td style="width:200px">
   <%= raw(s.user.linked_name) %>
   <%= "(A)" if s.user.group == "A" && (current_user.sk.admin? || current_user.sk.corrector?) %>
@@ -54,7 +83,7 @@
 </td>
 
 <!-- Correcteur (si on l'affiche) -->
-<% if @situation == 1 %>
+<% if see_correctors %>
   <td class="hidden-xs hidden-sm">
   <% premier = true %>
   <% s.followings.each do |f| %>
@@ -67,17 +96,22 @@
 <% end %>
 
 <!-- Section et niveau (si on l'affiche) -->
-<% if @situation == 1 || @situation == 2 %>
+<% if (@situation == 1 || @situation == 2) %>
   <td class="hidden-xs hidden-sm" style="text-align:center; width:100px;">
     <%= abreviation[s.problem.section_id-1] %>
     <%= s.problem.level %>
   </td>
 <% end %>
 
-<!-- Voir -->
+<% elsif !can_see %>
+  <td> </td>
+  <td class="hidden-xs hidden-sm"> </td>
+  <td class="hidden-xs hidden-sm"> </td>
 <% end %>
+
+<!-- Voir -->
 <td style="text-align:center; width:54px;">
-<%= link_to "Voir", problem_path(s.problem, :sub => s.id) %>
+<%= link_to "Voir", problem_path(s.problem, :sub => s.id) if can_see %>
 </td>
 
 </tr>

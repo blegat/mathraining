@@ -9,10 +9,10 @@ var scrollHandler = function () {
   var compenser = 0
   if($(window).width() >= 768)
   {
-  	if(document.getElementById('menu').offsetHeight > document.getElementById('messages').offsetHeight)
-  	{
-  		compenser = document.getElementById('menu').offsetHeight - document.getElementById('messages').offsetHeight
-  	}
+    if(document.getElementById('menu').offsetHeight > document.getElementById('messages').offsetHeight)
+    {
+      compenser = document.getElementById('menu').offsetHeight - document.getElementById('messages').offsetHeight
+    }
   }
   
   if(more_posts_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 10 - compenser)
@@ -21,6 +21,7 @@ var scrollHandler = function () {
     $.getScript(more_posts_url + "?nonread=<%= params[:nonread] %>")
   }
 }
+
 
 $(window).scroll(scrollHandler);
 </script>
@@ -72,9 +73,9 @@ $(window).scroll(scrollHandler);
         <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
         <%= render 'subjects/smiley', hiddentext: false %>
         <% if @ancientexte.nil? %>
-          <textarea name="content" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ></textarea>
+          <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ></textarea>
         <% else %>
-          <textarea name="content" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte %></textarea>
+          <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte %></textarea>
         <% end %>
       </div>
 

@@ -10,7 +10,7 @@
 #  image       :string(255)
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Section do
   before { @sec = FactoryGirl.build(:section) }
@@ -48,10 +48,7 @@ describe Section do
     let (:chap1) { FactoryGirl.create(:chapter) }
     let (:chap2) { FactoryGirl.create(:chapter) }
     before { @sec.chapters << chap1 }
-    specify { @sec.chapters.should include(chap1) }
-    specify { @sec.chapters.should_not include(chap2) }
-    describe "when it is added to a chapter" do
-      let (:chap3) { FactoryGirl.create(:chapter) }
-    end
+    specify { expect(@sec.chapters).to include(chap1) }
+    specify { expect(@sec.chapters).not_to include(chap2) }
   end
 end

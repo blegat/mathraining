@@ -1,7 +1,7 @@
 #encoding: utf-8
 class DiscussionsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :is_involved, only: [:show]
+  before_action :signed_in_user
+  before_action :is_involved, only: [:show]
 
   def show
     par_page = 10
@@ -119,47 +119,15 @@ class DiscussionsController < ApplicationController
     @tchatmessage.discussion = @discussion
     @erreur = false
 
-    # Pièces jointes une par une
-    attach = Array.new
-    totalsize = 0
+    # Pièces jointes
+    @error = false
+    @error_message = ""
 
-    i = 1
-    k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
-        attach.push()
-        attach[i-1] = Tchatmessagefile.new(:file => params["file#{k}".to_sym])
-        if !attach[i-1].save
-          j = 1
-          while j < i do
-            attach[j-1].file.destroy
-            attach[j-1].destroy
-            j = j+1
-          end
-          session[:ancientexte] = @content
-          nom = params["file#{k}".to_sym].original_filename
-          flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          @erreur = true
-          return
-        end
-        totalsize = totalsize + attach[i-1].file_file_size
+    attach = create_files # Fonction commune pour toutes les pièces jointes
 
-        i = i+1
-      end
-      k = k+1
-    end
-
-    # On vérifie que les pièces jointes ne sont pas trop grosses
-    if totalsize > 5.megabytes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
-
+    if @error
+      flash.now[:danger] = @error_message
       session[:ancientexte] = @content
-      flash[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
       @erreur = true
       return
     end
@@ -169,20 +137,14 @@ class DiscussionsController < ApplicationController
 
       # On enregistre les pièces jointes
       j = 1
-      while j < i do
-        attach[j-1].tchatmessage = @tchatmessage
+      while j < attach.size()+1 do
+        attach[j-1].update_attribute(:myfiletable, @tchatmessage)
         attach[j-1].save
         j = j+1
       end
     else
       @erreur = true
-      # On supprime les pièces jointes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+      destroy_files(attach, attach.size()+1)
       session[:ancientexte] = @content
       if @content.size == 0
         flash[:danger] = "Votre message est vide."
@@ -198,7 +160,7 @@ class DiscussionsController < ApplicationController
 
     if !@erreur
       if @destinataire.follow_message
-        UserMailer.new_followed_tchatmessage(@destinataire.id, current_user.sk.name, @tchatmessage.content, @discussion.id).deliver
+        UserMailer.new_followed_tchatmessage(@destinataire.id, current_user.sk.name, @tchatmessage.content, @discussion.id).deliver if Rails.env.production?
       end
     end
   end

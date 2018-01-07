@@ -1,14 +1,14 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe ApplicationHelper do
 
-	describe "full_title" do
-		it "should include the page title" do
-			full_title("foo").should =~ /foo/
-		end
+  describe "full_title" do
+    it "should include the page title" do
+      expect(full_title("foo")).to include("foo")
+    end
 
-		it "should not include a bar for the home page" do
-			full_title("").should_not =~ /\|/
-		end
-	end
+    it "should not include a bar for the home page" do
+      expect(full_title("")).not_to include("|")
+    end
+  end
 end

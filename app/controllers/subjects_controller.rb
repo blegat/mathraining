@@ -1,27 +1,27 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :admin_subject_user, only: [:show]
-  before_filter :author, only: [:edit, :update, :destroy]
-  before_filter :admin_user, only: [:destroy, :migrate]
-  before_filter :notskin_user, only: [:create, :update]
+  before_action :signed_in_user
+  before_action :admin_subject_user, only: [:show]
+  before_action :author, only: [:edit, :update, :destroy]
+  before_action :admin_user, only: [:destroy, :migrate]
+  before_action :notskin_user, only: [:create, :update]
 
   # Voir tous les sujets
   def index
-  	cherche_category = -1
+    cherche_category = -1
     cherche_section = -1
     cherche_chapitre = -1
     cherche_personne = false
     q = -1
 
-		@category = nil
+    @category = nil
     @chapitre = nil
     @section = nil
     if(params.has_key?:q)
       q = params[:q].to_i
       if q > 999999
-      	cherche_category = q/1000000
-      	@category = Category.find(cherche_category)
+        cherche_category = q/1000000
+        @category = Category.find(cherche_category)
       elsif q > 999
         cherche_section = q/1000
         @section = Section.find(cherche_section)
@@ -39,7 +39,7 @@ class SubjectsController < ApplicationController
 
     @importants = Array.new
     Subject.includes(:user, :category, :section, :chapter).where(important: true).order("lastcomment DESC").to_a.each do |s|
-      if ((signed_in? && current_user.sk.admin?) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
+      if ((signed_in? && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @importants.push(s)
         end
@@ -48,7 +48,7 @@ class SubjectsController < ApplicationController
 
     @subjects = Array.new
     Subject.includes(:user, :category, :section, :chapter).where(important: false).order("lastcomment DESC").to_a.each do |s|
-      if (signed_in? && current_user.sk.admin?) || !s.admin && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
+      if ((signed_in? && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @subjects.push(s)
         end
@@ -111,78 +111,48 @@ class SubjectsController < ApplicationController
 
     category_id = params[:subject][:category_id].to_i
     if category_id < 1000
-    	@subject.category = Category.find(category_id)
-    	@subject.section = nil
-    	@subject.chapter = nil
-    	@subject.exercise = nil
-    	@subject.qcm = nil
+      @subject.category = Category.find(category_id)
+      @subject.section = nil
+      @subject.chapter = nil
+      @subject.exercise = nil
+      @subject.qcm = nil
     else
-    	section_id = category_id/1000
-    	@subject.category = nil
-    	@subject.section = Section.find(section_id)
-    	chapter_id = params[:subject][:chapter_id].to_i
-    	if chapter_id == 0
-    		@subject.chapter = nil
-    		@subject.exercise = nil
-    		@subject.qcm = nil
-    	else
-    		@subject.chapter = Chapter.find(chapter_id)
-    		exercise_id = params[:subject][:exercise_id].to_i
-    		if exercise_id == 0
-    			@subject.exercise = nil
-    			@subject.qcm = nil
-    		else
-    			type = exercise_id / 1000
-    			exercise_id = exercise_id % 1000
-    			if type == 2
-    				@subject.exercise = Exercise.find(exercise_id)
-    				@subject.qcm = nil
-    			else
-    				@subject.qcm = Qcm.find(exercise_id)
-    				@subject.exercise = nil
-    			end
-    		end
-    	end
-    end
-
-    # Gérer les pièces jointes
-    attach = Array.new
-    totalsize = 0
-
-    i = 1
-    k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
-        attach.push()
-        attach[i-1] = Subjectfile.new(:file => params["file#{k}".to_sym])
-        if !attach[i-1].save
-          j = 1
-          while j < i do
-            attach[j-1].file.destroy
-            attach[j-1].destroy
-            j = j+1
+      section_id = category_id/1000
+      @subject.category = nil
+      @subject.section = Section.find(section_id)
+      chapter_id = params[:subject][:chapter_id].to_i
+      if chapter_id == 0
+        @subject.chapter = nil
+        @subject.exercise = nil
+        @subject.qcm = nil
+      else
+        @subject.chapter = Chapter.find(chapter_id)
+        exercise_id = params[:subject][:exercise_id].to_i
+        if exercise_id == 0
+          @subject.exercise = nil
+          @subject.qcm = nil
+        else
+          type = exercise_id / 1000
+          exercise_id = exercise_id % 1000
+          if type == 2
+            @subject.exercise = Exercise.find(exercise_id)
+            @subject.qcm = nil
+          else
+            @subject.qcm = Qcm.find(exercise_id)
+            @subject.exercise = nil
           end
-          nom = params["file#{k}".to_sym].original_filename
-          flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          @preselect = params[:subject][:chapter_id].to_i
-          render 'new' and return
         end
-        totalsize = totalsize + attach[i-1].file_file_size
-
-        i = i+1
       end
-      k = k+1
     end
 
-    if totalsize > 5.megabytes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+    # Pièces jointes
+    @error = false
+    @error_message = ""
 
-      flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
+    attach = create_files # Fonction commune pour toutes les pièces jointes
+
+    if @error
+      flash.now[:danger] = @error_message
       @preselect = params[:subject][:chapter_id].to_i
       render 'new' and return
     end
@@ -190,54 +160,48 @@ class SubjectsController < ApplicationController
     # Si on parvient à enregistrer
     if @subject.save
       j = 1
-      while j < i do
-        attach[j-1].subject = @subject
-        attach[j-1].save
+      while j < attach.size()+1 do
+        attach[j-1].update_attribute(:myfiletable, @subject)
         j = j+1
       end
-      if !current_user.sk.admin? && @subject.admin? # Hack
+      if !current_user.sk.admin? && !current_user.sk.corrector? && @subject.admin? # Hack
         @subject.admin = false
         @subject.save
       end
 
       if current_user.sk.admin?
-		    if params.has_key?(:groupeA)
-		    	User.where(:group => "A").each do |u|
-		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver
-		    	end
-		    end
-		    if params.has_key?(:groupeB)
-		    	User.where(:group => "B").each do |u|
-		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver
-		    	end
-		    end
-		  end
+        if params.has_key?(:groupeA)
+          User.where(:group => "A").each do |u|
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver if Rails.env.production?
+          end
+        end
+        if params.has_key?(:groupeB)
+          User.where(:group => "B").each do |u|
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver if Rails.env.production?
+          end
+        end
+      end
 
       flash[:success] = "Votre sujet a bien été posté."
 
       redirect_to subject_path(@subject, :q => q)
 
-    # Si il y a eu une erreur
+      # Si il y a eu une erreur
     else
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+      destroy_files(attach, attach.size()+1)
       @preselect = params[:subject][:chapter_id].to_i
       render 'new'
     end
   end
 
-  # Modifier un sujet
+  # Editer un sujet 2
   def update
     q = 0
     if(params.has_key?:q)
       q = params[:q].to_i
     end
 
-    if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
+    if !current_user.sk.admin? && !current_user.sk.corrector? && !params[:subject][:important].nil? # Hack
       redirect_to root_path
     end
 
@@ -251,103 +215,57 @@ class SubjectsController < ApplicationController
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
 
       category_id = params[:subject][:category_id].to_i
-		  if category_id < 1000
-		  	@subject.category = Category.find(category_id)
-		  	@subject.section = nil
-		  	@subject.chapter = nil
-		  	@subject.exercise = nil
-		  	@subject.qcm = nil
-		  else
-		  	section_id = category_id/1000
-		  	@subject.category = nil
-		  	@subject.section = Section.find(section_id)
-		  	chapter_id = params[:subject][:chapter_id].to_i
-		  	if chapter_id == 0
-		  		@subject.chapter = nil
-		  		@subject.exercise = nil
-		  		@subject.qcm = nil
-		  	else
-		  		@subject.chapter = Chapter.find(chapter_id)
-		  		exercise_id = params[:subject][:exercise_id].to_i
-		  		if exercise_id == 0
-		  			@subject.exercise = nil
-		  			@subject.qcm = nil
-		  		else
-		  			type = exercise_id / 1000
-		  			exercise_id = exercise_id % 1000
-		  			if type == 2
-		  				@subject.exercise = Exercise.find(exercise_id)
-		  				@subject.qcm = nil
-		  			else
-		  				@subject.qcm = Qcm.find(exercise_id)
-		  				@subject.exercise = nil
-		  			end
-		  		end
-		  	end
-		  end
+      if category_id < 1000
+        @subject.category = Category.find(category_id)
+        @subject.section = nil
+        @subject.chapter = nil
+        @subject.exercise = nil
+        @subject.qcm = nil
+      else
+        section_id = category_id/1000
+        @subject.category = nil
+        @subject.section = Section.find(section_id)
+        chapter_id = params[:subject][:chapter_id].to_i
+        if chapter_id == 0
+          @subject.chapter = nil
+          @subject.exercise = nil
+          @subject.qcm = nil
+        else
+          @subject.chapter = Chapter.find(chapter_id)
+          exercise_id = params[:subject][:exercise_id].to_i
+          if exercise_id == 0
+            @subject.exercise = nil
+            @subject.qcm = nil
+          else
+            type = exercise_id / 1000
+            exercise_id = exercise_id % 1000
+            if type == 2
+              @subject.exercise = Exercise.find(exercise_id)
+              @subject.qcm = nil
+            else
+              @subject.qcm = Qcm.find(exercise_id)
+              @subject.exercise = nil
+            end
+          end
+        end
+      end
 
-		  @subject.save
+      @subject.save
 
-      if !current_user.sk.admin? && @subject.admin? # Hack
+      if !current_user.sk.admin? && !current_user.sk.corrector? && @subject.admin? # Hack
         @subject.admin = false
         @subject.save
       end
 
-      totalsize = 0
+      # Pièces jointes
+      @error = false
+      @error_message = ""
 
-      @subject.subjectfiles.each do |sf|
-        if params["prevfile#{sf.id}".to_sym].nil?
-          sf.file.destroy
-          sf.destroy
-        else
-          totalsize = totalsize + sf.file_file_size
-        end
-      end
+      attach = update_files(@subject, "Subject") # Fonction commune pour toutes les pièces jointes
 
-      @subject.fakesubjectfiles.each do |sf|
-        if params["prevfakefile#{sf.id}".to_sym].nil?
-          sf.destroy
-        end
-      end
-
-      attach = Array.new
-
-      i = 1
-      k = 1
-      while !params["hidden#{k}".to_sym].nil? do
-        if !params["file#{k}".to_sym].nil?
-          attach.push()
-          attach[i-1] = Subjectfile.new(:file => params["file#{k}".to_sym])
-          attach[i-1].subject = @subject
-          if !attach[i-1].save
-            j = 1
-            while j < i do
-              attach[j-1].file.destroy
-              attach[j-1].destroy
-              j = j+1
-            end
-            nom = params["file#{k}".to_sym].original_filename
-            @subject.reload
-            flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-            @preselect = params[:subject][:chapter_id].to_i
-            render 'edit' and return
-          end
-          totalsize = totalsize + attach[i-1].file_file_size
-
-          i = i+1
-        end
-        k = k+1
-      end
-
-      if totalsize > 5242880
-        j = 1
-        while j < i do
-          attach[j-1].file.destroy
-          attach[j-1].destroy
-          j = j+1
-        end
+      if @error
         @subject.reload
-        flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)"
+        flash.now[:danger] = @error_message
         @preselect = params[:subject][:chapter_id].to_i
         render 'edit' and return
       end
@@ -368,14 +286,19 @@ class SubjectsController < ApplicationController
       q = params[:q].to_i
     end
 
-    @subject.delete
-    @subject.subjectfiles.each do |f|
+    @subject.myfiles.each do |f|
       f.file.destroy
       f.destroy
     end
+    @subject.fakefiles.each do |f|
+      f.destroy
+    end
     @subject.messages.each do |m|
-      m.messagefiles.each do |f|
+      m.myfiles.each do |f|
         f.file.destroy
+        f.destroy
+      end
+      m.fakefiles.each do |f|
         f.destroy
       end
       m.destroy
@@ -383,6 +306,7 @@ class SubjectsController < ApplicationController
     @subject.followingsubjects.each do |f|
       f.destroy
     end
+    @subject.destroy
     flash[:success] = "Sujet supprimé."
 
     redirect_to subjects_path(:q => q)
@@ -390,34 +314,34 @@ class SubjectsController < ApplicationController
 
   # Migrer un sujet vers un autre : il faut être root (disons admin)
   def migrate
-  	q = 0
+    q = 0
     if(params.has_key?:q)
       q = params[:q].to_i
     end
 
-  	@subject = Subject.find(params[:subject_id])
-  	autre_id = params[:migreur].to_i
-  	@migreur = Subject.find(autre_id)
+    @subject = Subject.find(params[:subject_id])
+    autre_id = params[:migreur].to_i
+    @migreur = Subject.find(autre_id)
 
-  	premier_message = Message.new(content: @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]", created_at: @subject.created_at)
-  	premier_message.user = @subject.user
-  	premier_message.subject = @migreur
-  	premier_message.save
+    premier_message = Message.new(content: @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]", created_at: @subject.created_at)
+    premier_message.user = @subject.user
+    premier_message.subject = @migreur
+    premier_message.save
 
-  	@subject.messages.order(:id).each do |m|
-  		newm = Message.new(content: m.content, created_at: m.created_at)
-  		newm.user = m.user
-  		newm.subject = @migreur
-  		newm.save
-  		m.delete
-  	end
+    @subject.messages.order(:id).each do |m|
+      newm = Message.new(content: m.content, created_at: m.created_at)
+      newm.user = m.user
+      newm.subject = @migreur
+      newm.save
+      m.delete
+    end
 
-  	@migreur.lastcomment = [@migreur.lastcomment, @subject.lastcomment].max
-  	@migreur.save
+    @migreur.lastcomment = [@migreur.lastcomment, @subject.lastcomment].max
+    @migreur.save
 
-  	@subject.delete
+    @subject.delete
 
-  	redirect_to subject_path(@migreur, :q => q)
+    redirect_to subject_path(@migreur, :q => q)
   end
 
   ########## PARTIE PRIVEE ##########
@@ -425,7 +349,7 @@ class SubjectsController < ApplicationController
 
   def admin_subject_user
     @subject = Subject.find(params[:id])
-    redirect_to root_path unless ((signed_in? && current_user.sk.admin?) || !@subject.admin)
+    redirect_to root_path unless ((signed_in? && (current_user.sk.admin? || current_user.sk.corrector?)) || !@subject.admin)
   end
 
   def author

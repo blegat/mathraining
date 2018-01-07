@@ -26,8 +26,8 @@ class Submission < ActiveRecord::Base
   has_many :followings, dependent: :destroy
   has_many :followers, through: :followings, source: :user
   has_many :notifs, dependent: :destroy
-  has_many :submissionfiles, dependent: :destroy
-  has_many :fakesubmissionfiles, dependent: :destroy
+  has_many :myfiles, as: :myfiletable, dependent: :destroy
+  has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 
   # VALIDATIONS
 

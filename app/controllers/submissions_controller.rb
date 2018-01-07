@@ -1,57 +1,28 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :get_problem
-  before_filter :admin_user, only: [:destroy]
-  before_filter :corrector_user, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
-  before_filter :not_solved, only: [:create]
-  before_filter :can_submit, only: [:create]
-  before_filter :has_access, only: [:create]
-  before_filter :enough_points, only: [:create]
-  before_filter :in_test, only: [:intest, :create_intest, :update_intest]
-  before_filter :brouillon, only: [:update_brouillon]
+  before_action :signed_in_user
+  before_action :get_problem
+  before_action :admin_user, only: [:destroy]
+  before_action :corrector_user, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
+  before_action :not_solved, only: [:create]
+  before_action :can_submit, only: [:create]
+  before_action :has_access, only: [:create]
+  before_action :enough_points, only: [:create]
+  before_action :in_test, only: [:intest, :create_intest, :update_intest]
+  before_action :brouillon, only: [:update_brouillon]
 
   # Créer une nouvelle soumission
   def create
     # Pièces jointes
-    attach = Array.new
-    totalsize = 0
+    @error = false
+    @error_message = ""
 
-    i = 1
-    k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
-        attach.push()
-        attach[i-1] = Submissionfile.new(:file => params["file#{k}".to_sym])
-        if !attach[i-1].save
-          j = 1
-          while j < i do
-            attach[j-1].file.destroy
-            attach[j-1].destroy
-            j = j+1
-          end
-          nom = params["file#{k}".to_sym].original_filename
-          session[:ancientexte] = params[:submission][:content]
-          redirect_to problem_path(@problem, :sub => 0),
-            flash: {danger: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
-        end
-        totalsize = totalsize + attach[i-1].file_file_size
+    attach = create_files # Fonction commune pour toutes les pièces jointes
 
-        i = i+1
-      end
-      k = k+1
-    end
-
-    if totalsize > 5242880
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+    if @error
+      flash.now[:danger] = @error_message
       session[:ancientexte] = params[:submission][:content]
-      redirect_to problem_path(@problem, :sub => 0),
-          flash: {danger: "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)" } and return
+      redirect_to problem_path(@problem, :sub => 0), flash: {danger: @error.message } and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
@@ -66,8 +37,8 @@ class SubmissionsController < ApplicationController
     # Si on réussit à sauver
     if submission.save
       j = 1
-      while j < i do
-        attach[j-1].submission = submission
+      while j < attach.size()+1 do
+        attach[j-1].update_attribute(:myfiletable, submission)
         attach[j-1].save
         j = j+1
       end
@@ -80,14 +51,9 @@ class SubmissionsController < ApplicationController
         redirect_to problem_path(@problem, :sub => submission.id)
       end
 
-    # Si il y a eu une erreur
+      # Si il y a eu une erreur
     else
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+      destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         flash[:danger] = "Votre soumission est vide."
@@ -123,44 +89,16 @@ class SubmissionsController < ApplicationController
 
   # Faire une nouvelle soumission
   def create_intest
-    attach = Array.new
-    totalsize = 0
+    # Pièces jointes
+    @error = false
+    @error_message = ""
 
-    i = 1
-    k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
-        attach.push()
-        attach[i-1] = Submissionfile.new(:file => params["file#{k}".to_sym])
-        if !attach[i-1].save
-          j = 1
-          while j < i do
-            attach[j-1].file.destroy
-            attach[j-1].destroy
-            j = j+1
-          end
-          nom = params["file#{k}".to_sym].original_filename
-          session[:ancientexte] = params[:submission][:content]
-          redirect_to problem_intest_path(@problem),
-            flash: {danger: "Votre pièce jointe '#{nom}' ne respecte pas les conditions." } and return
-        end
-        totalsize = totalsize + attach[i-1].file_file_size
+    attach = create_files # Fonction commune pour toutes les pièces jointes
 
-        i = i+1
-      end
-      k = k+1
-    end
-
-    if totalsize > 5.megabytes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+    if @error
+      flash.now[:danger] = @error_message
       session[:ancientexte] = params[:submission][:content]
-      redirect_to problem_intest_path(@problem),
-          flash: {danger: "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)" } and return
+      redirect_to problem_intest_path(@problem), flash: {danger: @error.message } and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
@@ -171,20 +109,15 @@ class SubmissionsController < ApplicationController
 
     if submission.save
       j = 1
-      while j < i do
-        attach[j-1].submission = submission
+      while j < attach.size()+1 do
+        attach[j-1].update_attribute(:myfiletable, submission)
         attach[j-1].save
         j = j+1
       end
       flash[:success] = "Votre solution a bien été enregistrée."
       redirect_to virtualtest_path(@t, :p => @problem.id)
     else
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+      destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         flash[:danger] = "Votre soumission est vide."
@@ -205,10 +138,10 @@ class SubmissionsController < ApplicationController
       @context = 2
       update_submission
     elsif params[:commit] == "Supprimer ce brouillon"
-      @submission.submissionfiles.each do |f|
+      @submission.myfiles.each do |f|
         f.destroy
       end
-      @submission.fakesubmissionfiles.each do |f|
+      @submission.fakefiles.each do |f|
         f.destroy
       end
       @submission.delete
@@ -217,17 +150,6 @@ class SubmissionsController < ApplicationController
     else
       @context = 3
       update_submission
-      if @erreur
-        redirect_to problem_path(@problem, :sub => 0)
-      else
-        @submission.status = 0
-        @submission.created_at = DateTime.current
-        @submission.lastcomment = @submission.created_at
-        @submission.visible = true
-        @submission.save
-        flash[:success] = "Votre solution a bien été soumise."
-        redirect_to problem_path(@problem, :sub => @submission.id)
-      end
     end
   end
 
@@ -244,80 +166,36 @@ class SubmissionsController < ApplicationController
     elsif @context == 2
       lepath = problem_path(@problem, :sub => 0)
     else
-      @erreur = false
+      lepath = problem_path(@problem, :sub => 0)
     end
 
-    if @submission.update_attributes(params[:submission])
-
+    if @submission.update_attributes(params.require(:submission).permit(:content))
       totalsize = 0
 
-      @submission.submissionfiles.each do |sf|
-        if params["prevfile#{sf.id}".to_sym].nil?
-          sf.file.destroy
-          sf.destroy
+      @submission.myfiles.each do |f|
+        if params["prevfile#{f.id}".to_sym].nil?
+          f.file.destroy
+          f.destroy
         else
-          totalsize = totalsize + sf.file_file_size
+          totalsize = totalsize + f.file_file_size
         end
       end
 
-      @submission.fakesubmissionfiles.each do |sf|
-        if params["prevfakefile#{sf.id}".to_sym].nil?
-          sf.destroy
+      @submission.fakefiles.each do |f|
+        if params["prevfakefile#{f.id}".to_sym].nil?
+          f.destroy
         end
       end
 
-      attach = Array.new
+      @error = false
+      @error_message = ""
 
-      i = 1
-      k = 1
-      while !params["hidden#{k}".to_sym].nil? do
-        if !params["file#{k}".to_sym].nil?
-          attach.push()
-          attach[i-1] = Submissionfile.new(:file => params["file#{k}".to_sym])
-          if !attach[i-1].save
-            j = 1
-            while j < i do
-              attach[j-1].file.destroy
-              attach[j-1].destroy
-              j = j+1
-            end
-            nom = params["file#{k}".to_sym].original_filename
-            session[:ancientexte] = params[:submission][:content]
-            flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-            if @context < 3
-              redirect_to lepath and return
-            else
-              @erreur = true
-            end
-          end
-          totalsize = totalsize + attach[i-1].file_file_size
+      update_files(@submission, "Submission") # Fonction commune pour toutes les pièces jointes
 
-          i = i+1
-        end
-        k = k+1
-      end
-
-      if totalsize > 5242880
-        j = 1
-        while j < i do
-          attach[j-1].file.destroy
-          attach[j-1].destroy
-          j = j+1
-        end
+      if @error
+        flash[:danger] = @error_message
         session[:ancientexte] = params[:submission][:content]
-        flash[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)"
-        if @context < 3
-          redirect_to lepath and return
-        else
-          @erreur = true
-        end
-      end
-
-      j = 1
-      while j < i do
-        attach[j-1].submission = @submission
-        attach[j-1].save
-        j = j+1
+        redirect_to lepath and return
       end
 
       if @context == 1
@@ -326,6 +204,14 @@ class SubmissionsController < ApplicationController
       elsif @context == 2
         flash[:success] = "Votre brouillon a bien été enregistré."
         redirect_to lepath
+      else
+        @submission.status = 0
+        @submission.created_at = DateTime.current
+        @submission.lastcomment = @submission.created_at
+        @submission.visible = true
+        @submission.save
+        flash[:success] = "Votre solution a bien été soumise."
+        redirect_to problem_path(@problem, :sub => @submission.id)
       end
     else
       session[:ancientexte] = params[:submission][:content]
@@ -336,18 +222,14 @@ class SubmissionsController < ApplicationController
       else
         flash[:danger] = "Une erreur est survenue."
       end
-      if @context < 3
-        redirect_to lepath
-      else
-        @erreur = true
-      end
+      redirect_to lepath
     end
   end
 
   # Lu et non lu
   def un_read(read, msg)
-    following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
-    if following
+    following = Following.where(:user_id => current_user.sk, :submission_id => @submission).first
+    if !following.nil?
       following.read = read
       if following.save
         flash[:success] = "Soumission marquée comme #{msg}."
@@ -444,7 +326,7 @@ class SubmissionsController < ApplicationController
 
   # Peut voir la soumission
   def can_see
-    @submission = Submission.find_by_id(params[:id])
+    @submission = Submission.find(params[:id])
     if ((@submission.status == -1 && !current_user.sk.admin?) || (@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.pb_solved?(@problem) && !current_user.sk.admin))
       redirect_to root_path
     end
@@ -516,9 +398,9 @@ class SubmissionsController < ApplicationController
       redirect_to root_path if score < 200
     end
   end
-  
+
   def corrector_user
-  	@submission = Submission.find(params[:submission_id])
-  	redirect_to root_path unless current_user.sk.admin or (current_user.sk.corrector && current_user.sk.pb_solved?(@submission.problem) && current_user.sk != @submission.user)
+    @submission = Submission.find(params[:submission_id])
+    redirect_to root_path unless current_user.sk.admin or (current_user.sk.corrector && current_user.sk.pb_solved?(@submission.problem) && current_user.sk != @submission.user)
   end
 end

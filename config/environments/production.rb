@@ -66,6 +66,8 @@ Mathraining::Application.configure do
   
   config.eager_load = true
   
+  # For deliver_later to work :
+  config.active_job.queue_adapter = :resque
   
   Paperclip.options[:command_path] = "/usr/local/bin/"
 end

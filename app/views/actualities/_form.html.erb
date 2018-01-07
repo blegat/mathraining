@@ -12,5 +12,5 @@
   <div class="well" id="MathPreview"></div>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <%= render 'theories/font' %>
-  <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
 </div>

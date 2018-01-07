@@ -2,14 +2,14 @@
 <style type="text/css">
 
 html>body thead.fixed tr {
-	display: block;
+  display: block;
 }
 
 html>body tbody.scroll {
-	display: block;
-	max-height: 440px;
-	overflow-y: scroll;
-	width: 100%;
+  display: block;
+  max-height: 440px;
+  overflow-y: scroll;
+  width: 100%;
 }
 </style>
 
@@ -249,7 +249,11 @@ html>body tbody.scroll {
 <% if current_user.sk.admin || (current_user.sk.corrector && current_user.sk.pb_solved?(problem)) %>
 
 	<h3>Soumissions erronées ou en attente</h3>
-  <% submissions = problem.submissions.where('status != 2 AND visible = ?', true).order('created_at DESC') %>
+	<% if current_user.sk.admin %>
+    <% submissions = problem.submissions.where('status != 2 AND visible = ?', true).order('created_at DESC') %>
+  <% else %>
+    <% submissions = problem.submissions.where('status != 2 AND visible = ? AND (intest = ? OR status != 0)', true, false).order('created_at DESC') %>
+  <% end %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>

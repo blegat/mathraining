@@ -67,6 +67,7 @@
     <% compteur = compteur+1 %>
 
     <% resolu = false %>
+    <% brouillon = false %>
 
     <% solution = current_user.sk.solution(p) %>
 
@@ -82,8 +83,12 @@
     <!-- Si connecté -->
     <% elsif signed_in? %>
       <% sub = current_user.sk.submissions.where("problem_id = ? AND status >= 0", p.id).order('created_at') %>
+      <% br = current_user.sk.submissions.where("problem_id = ? AND status = -1", p.id).count %>
+      <% if br > 0 %>
+        <% brouillon = true %>
+      <% end %>
 
-      <!-- Si aucune soumission (ou admin) : jaune, ou bleu si brouillon -->
+      <!-- Si aucune soumission (ou admin) : jaune -->
       <% if sub.size == 0 || current_user.sk.admin? %>
         <div style="border:1px solid black; border-radius:10px; padding:15px; padding-top:0px; background-color:#FFFFD0;">
       <% else %>
@@ -107,6 +112,7 @@
     <center><h3 style="margin-top:20px; margin-bottom:15px;">
     <%= link_to "Problème ##{ p.number }", problem_path(p, :sub => solution.submission_id) unless solution == nil %>
     <%= link_to "Problème ##{ p.number }", problem_path(p) if solution == nil %>
+    <%= "(#{p.solvedproblems.count} sol.)" if current_user.sk.root? %>
     <% if !p.virtualtest.nil? %>
       - <%= link_to "Test virtuel ##{p.virtualtest.number}", p.virtualtest %>
     <% end %>
@@ -127,6 +133,7 @@
     <% end %>
 
     <!-- Enoncé -->
+    <%= raw("<i>(Brouillon enregistré)</i>") if brouillon %>
     <%= raw(htmlise(p.statement)) %>
 
     <% taille = p.statement.size() %>
@@ -171,6 +178,5 @@
   <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>
   </center>
 <% end %>
-
 
 <% end %>

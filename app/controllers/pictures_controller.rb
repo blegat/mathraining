@@ -1,8 +1,8 @@
 #encoding: utf-8
 class PicturesController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :admin_user
-  before_filter :good_person, only: [:show, :destroy]
+  before_action :signed_in_user
+  before_action :admin_user
+  before_action :good_person, only: [:show, :destroy]
 
   # Voir, il faut être la bonne personne
   def show
@@ -12,10 +12,10 @@ class PicturesController < ApplicationController
   def new
     @pic = Picture.new
   end
-  
+
   # Créer 2
   def create
-    @pic = Picture.new(params[:picture])
+    @pic = Picture.new((params.require(:picture).permit(:user_id, :image)))
     if @pic.save
       flash[:success] = "Image ajoutée."
       redirect_to @pic
@@ -31,7 +31,7 @@ class PicturesController < ApplicationController
     @pic.destroy
     redirect_to pictures_path
   end
-  
+
   ########## PARTIE PRIVEE ##########
   private
 

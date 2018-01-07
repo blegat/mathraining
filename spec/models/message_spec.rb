@@ -11,7 +11,7 @@
 #  admin_user :boolean
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Message do
 

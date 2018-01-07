@@ -1,22 +1,162 @@
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
-<% provide(:title, 'Correcteurs') %>
-<h1>Correcteurs</h1>
+<% provide(:title, 'Corrections') %>
+<h1>Corrections</h1>
+
+En <span style="color:green;">vert</span>, les soumissions correctes, en <span style="color:red;">rouge</span> les soumissions incorrectes, et en <span style="color:grey;">gris</span> les soumissions en attente de correction.<br/><br/>
 
 <!-- On parcourt tous les correcteurs -->
 
 <% correctors = [] %>
+<% numbercorrect = Array.new %>
+<% numberincorrect = Array.new %>
+<% numberdontknow = Array.new %>
 
-<% twoweeksago = Date.today - 14 %>
+<% for i in (0..30) do %>
+  <% numbercorrect[i] = 0 %>
+  <% numberincorrect[i] = 0 %>
+  <% numberdontknow[i] = 0 %>
+<% end %>
+
+<% today = Time.current.to_date %>
+<% twoweeksago = today - 14 %>
+<% amonthago = today - 32 %>
+
+<% Submission.where("created_at > ? AND visible = ?", amonthago, true).each do |s| %>
+  <% date = s.created_at.in_time_zone %>
+  <% realdate = Date.new(date.year, date.month, date.day) %>
+  <% diff = (today - realdate).to_i %>
+  <% if diff < 31 %>
+    <% if s.status == 0 %>
+      <% numberdontknow[diff] = numberdontknow[diff] + 1 %>
+    <% elsif s.status == 2 %>
+      <% numbercorrect[diff] = numbercorrect[diff] + 1 %>
+    <% else %>
+      <% numberincorrect[diff] = numberincorrect[diff] + 1 %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% maxi = 0 %>
+<% for i in (0..30) do %>
+  <% if numbercorrect[i] + numberincorrect[i] + numberdontknow[i] > maxi %>
+    <% maxi = numbercorrect[i] + numberincorrect[i] + numberdontknow[i] %>
+  <% end %>
+<% end %>
+
+<% maxi = maxi + 1 %>
+
+<center>
+
+<!-- Endroit pour dessiner le graphique des corrections -->
+<div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+
+</center>
+
+
+<script type="text/javascript">
+  $(document).ready( function(){
+
+  //Get the canvas & context
+  var c = $('#myCanvas');
+  var ctx = c.get(0).getContext('2d');
+  var container = $(c).parent();
+
+  //Run function when browser  resize
+  $(window).resize( respondCanvas );
+
+  function respondCanvas(){
+  c.attr('width', $(container).width() ); //max width
+  c.attr('height', 480*$(container).width()/900.0); //max height
+
+  document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
+
+  //Redraw & reposition content
+  var x = c.width();
+  var y = c.height();
+
+  var pct = c.width()/900.0;
+  
+  ctx.beginPath();
+  ctx.rect(pct*50, pct*5, pct*806, pct*450);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'black';
+  ctx.stroke();
+  
+  // Entre 50 et 856 --> largeur totale 806, à diviser en 31 : 26 pixel par rectangle
+  
+  <% for i in (0..30) do %>
+    ctx.beginPath();
+    ctx.rect(pct*<%= 50+26*i %>, pct*455, pct*26, -pct*<%= (450*numbercorrect[30-i])/maxi %>);
+    ctx.fillStyle = 'green';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+    
+    <% avant = (450*numbercorrect[30-i])/maxi %>
+    
+    ctx.beginPath();
+    ctx.rect(pct*<%= 50+26*i %>, pct*<%= 455 - avant %>, pct*26, -pct*<%= (450*(numbercorrect[30-i]+numberincorrect[30-i]))/maxi - avant %>);
+    ctx.fillStyle = 'red';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+    
+    <% avant = (450*(numbercorrect[30-i]+numberincorrect[30-i]))/maxi %>
+    
+    ctx.beginPath();
+    ctx.rect(pct*<%= 50+26*i %>, pct*<%= 455 - avant %>, pct*26, -pct*<%= (450*(numberdontknow[30-i]+numbercorrect[30-i]+numberincorrect[30-i]))/maxi - avant %>);
+    ctx.fillStyle = 'grey';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+  <% end %>
+  
+  ctx.font="12px Arial";
+  ctx.fillStyle = 'black';
+  ctx.textAlign = 'center';
+  
+  if (pct > 0.7){
+  ctx.fillText("aujourd'hui",pct*(856-13),pct*471);
+  ctx.fillText("il y a 10 jours",pct*(856-13-10*26),pct*471);
+  ctx.fillText("il y a 20 jours",pct*(856-13-20*26),pct*471);
+  ctx.fillText("il y a 30 jours",pct*(856-13-30*26),pct*471);
+  }
+  
+  ctx.textAlign = 'right';
+  <% i = maxi - 1 %>
+  <% while(i > 0) %>
+    ctx.fillText("<%= i %>", pct*43,pct*(<%= 455-450*i/maxi %>+4));
+    <% i = i - 10 %>
+  <% end %>
+  
+  }
+
+  //Initial call
+  respondCanvas();
+
+  });
+</script>
+
+<h2>Correcteurs</h2>
 
 <% User.where("admin = ? OR corrector = ?", true, true).each do |c| %>
-	<% nb_corrections = c.followings.count %>
-	<% nb_recent = c.followings.where("created_at > ?", twoweeksago).count %>
-	<% if nb_corrections > 0 %>
-		<% first_connection = c.followings.order(:created_at).first.created_at.in_time_zone %>
-		<% last_connection = c.followings.order(:created_at).last.created_at.in_time_zone %>
-		<% correctors.push({:number => nb_corrections, :number_recent => nb_recent, :first => first_connection, :last => last_connection, :user => c}) %>
-	<% end %>
+  <% nb_corrections = c.followings.count %>
+  <% nb_recent = c.followings.where("created_at > ?", twoweeksago).count %>
+  <% if nb_corrections > 0 %>
+    <% first_connection = c.followings.order(:created_at).first.created_at.in_time_zone %>
+    <% last_connection = c.followings.order(:created_at).last.created_at.in_time_zone %>
+    <% correctors.push({:number => nb_corrections, :number_recent => nb_recent, :first => first_connection, :last => last_connection, :user => c}) %>
+  <% end %>
 <% end %>
 
 <table class="table table-bordered" style="margin-top:20px; max-width:700px;">
@@ -24,17 +164,17 @@
 
 <% correctors.sort_by{|e| -e[:number]}.each do |c| %>
   <% if c[:number_recent] > 140 %>
-  	<tr style="background-color:rgb(40,250,40)">
+    <tr style="background-color:rgb(40,250,40)">
   <% else %>
-		<tr style="background-color:rgb(<%= (250-c[:number_recent]*1.5).round %>,250,<%= (250-c[:number_recent]*1.5).round %>)">
-	<% end %>
-	<td><%= raw(c[:user].linked_name) %></td>
-	<td style="text-align:center;"><%= c[:number] %></td>
-	<td style="text-align:center;"><%= c[:number_recent] %></td>
-	<% date = c[:first] %>
-	<td><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
-	<% date = c[:last] %>
-	<td><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
-	</tr>
+    <tr style="background-color:rgb(<%= (250-c[:number_recent]*1.5).round %>,250,<%= (250-c[:number_recent]*1.5).round %>)">
+  <% end %>
+  <td><%= raw(c[:user].linked_name) %></td>
+  <td style="text-align:center;"><%= c[:number] %></td>
+  <td style="text-align:center;"><%= c[:number_recent] %></td>
+  <% date = c[:first] %>
+  <td><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+  <% date = c[:last] %>
+  <td><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+  </tr>
 <% end %>
 </table>

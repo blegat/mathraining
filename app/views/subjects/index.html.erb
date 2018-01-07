@@ -101,11 +101,11 @@
       <% if s.admin? || s.wepion? %>
         <table style="border:none; padding:0px; margin:0px;"><tr><td style="border:none; vertical-align:middle; padding:0px; padding-right:5px;">
         <% if s.admin? %>
-          <span class="hidden-xs label label-warning">Admin</span>
-          <span class="visible-xs label label-warning">A</span>
+          <span class="hidden-sm label label-warning">Correcteurs</span>
+          <span class="visible-sm label label-warning">C</span>
         <% elsif s.wepion? %>
-          <span class="hidden-xs label label-success">Wépion</span>
-          <span class="visible-xs label label-success">W</span>
+          <span class="hidden-sm label label-success">Wépion</span>
+          <span class="visible-sm label label-success">W</span>
         <% end %>
         </td>
         <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
@@ -230,7 +230,7 @@
 </center>
 
 <% if @subjects.size + @importants.size == 0 %>
-<br/><b>Aucun sujet</b><br/><br/>
+  <br/><b>Aucun sujet</b><br/><br/>
 <% end %>
 
 
@@ -241,12 +241,12 @@
 
 <!-- Modifier les catégories -->
 <% if current_user.sk.root? %>
-	<br/>
-	<center><%= link_to "Modifier les catégories", categories_path %></center>
+  <br/>
+  <center><%= link_to "Modifier les catégories", categories_path %></center>
 <% end %>
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->
-<% if !current_user.other && current_user.sk.combien_forum > 0 %>
+<% if !current_user.other && current_user.sk.combien_forum[1] %>
   <% current_user.sk.forumseen = DateTime.current %>
   <% current_user.sk.save %>
 <% end %>

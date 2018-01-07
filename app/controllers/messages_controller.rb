@@ -1,12 +1,12 @@
 #encoding: utf-8
 class MessagesController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :admin_subject_user, only: [:new, :create]
-  before_filter :author, only: [:edit, :update]
-  before_filter :admin_user, only: [:destroy]
-  before_filter :valid_chapter
-  before_filter :online_chapter
-  before_filter :notskin_user, only: [:create, :update]
+  before_action :signed_in_user
+  before_action :admin_subject_user, only: [:new, :create]
+  before_action :author, only: [:edit, :update]
+  before_action :admin_user, only: [:destroy]
+  before_action :valid_chapter
+  before_action :online_chapter
+  before_action :notskin_user, only: [:create, :update]
 
   # Créer un message
   def new
@@ -40,44 +40,14 @@ class MessagesController < ApplicationController
       render 'new' and return
     end
 
-    # Pièces jointes une par une
-    attach = Array.new
-    totalsize = 0
+    # Pièces jointes
+    @error = false
+    @error_message = ""
 
-    i = 1
-    k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
-        attach.push()
-        attach[i-1] = Messagefile.new(:file => params["file#{k}".to_sym])
-        if !attach[i-1].save
-          j = 1
-          while j < i do
-            attach[j-1].file.destroy
-            attach[j-1].destroy
-            j = j+1
-          end
-          nom = params["file#{k}".to_sym].original_filename
-          flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          render 'new' and return
-        end
-        totalsize = totalsize + attach[i-1].file_file_size
+    attach = create_files # Fonction commune pour toutes les pièces jointes
 
-        i = i+1
-      end
-      k = k+1
-    end
-
-    # On vérifie que les pièces jointes ne sont pas trop grosses
-    if totalsize > 5.megabytes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
-
-      flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
+    if @error
+      flash.now[:danger] = @error_message
       render 'new' and return
     end
 
@@ -86,8 +56,8 @@ class MessagesController < ApplicationController
 
       # On enregistre les pièces jointes
       j = 1
-      while j < i do
-        attach[j-1].message = @message
+      while j < attach.size()+1 do
+        attach[j-1].update_attribute(:myfiletable, @message)
         attach[j-1].save
         j = j+1
       end
@@ -98,7 +68,7 @@ class MessagesController < ApplicationController
           if (@subject.admin && !u.admin) || (@subject.wepion && !u.wepion && !u.admin)
             # Ce n'est pas vraiment normal qu'il suive ce sujet
           else
-            UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.name, @message.content, @message.id).deliver
+            UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.name, @message.content, @message.id).deliver if Rails.env.production?
           end
         end
       end
@@ -110,30 +80,25 @@ class MessagesController < ApplicationController
       page = [0,((tot-1)/10).floor].max + 1
 
       if current_user.sk.admin?
-		    if params.has_key?(:groupeA)
-		    	User.where(:group => "A").each do |u|
-		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver
-		    	end
-		    end
-		    if params.has_key?(:groupeB)
-		    	User.where(:group => "B").each do |u|
-		    		UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver
-		    	end
-		    end
-		  end
+        if params.has_key?(:groupeA)
+          User.where(:group => "A").each do |u|
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver if Rails.env.production?
+          end
+        end
+        if params.has_key?(:groupeB)
+          User.where(:group => "B").each do |u|
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver if Rails.env.production?
+          end
+        end
+      end
 
       flash[:success] = "Votre message a bien été posté."
 
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
 
-    # Si il y a eu un problème : on supprime les pièces jointes
+      # Si il y a eu un problème : on supprime les pièces jointes
     else
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+      destroy_files(attach, attach.size()+1)
       render 'new'
     end
   end
@@ -148,61 +113,15 @@ class MessagesController < ApplicationController
     # Si la modification du message réussit
     if @message.update_attributes(params.require(:message).permit(:content))
 
-      # On s'occupe des pièces jointes
-      totalsize = 0
+      # Pièces jointes
+      @error = false
+      @error_message = ""
 
-      @message.messagefiles.each do |sf|
-        if params["prevfile#{sf.id}".to_sym].nil?
-          sf.file.destroy
-          sf.destroy
-        else
-          totalsize = totalsize + sf.file_file_size
-        end
-      end
+      attach = update_files(@message, "Message") # Fonction commune pour toutes les pièces jointes
 
-      @message.fakemessagefiles.each do |sf|
-        if params["prevfakefile#{sf.id}".to_sym].nil?
-          sf.destroy
-        end
-      end
-
-      attach = Array.new
-
-      i = 1
-      k = 1
-      while !params["hidden#{k}".to_sym].nil? do
-        if !params["file#{k}".to_sym].nil?
-          attach.push()
-          attach[i-1] = Messagefile.new(:file => params["file#{k}".to_sym])
-          attach[i-1].message = @message
-          if !attach[i-1].save
-            j = 1
-            while j < i do
-              attach[j-1].file.destroy
-              attach[j-1].destroy
-              j = j+1
-            end
-            @message.reload
-            nom = params["file#{k}".to_sym].original_filename
-            flash.now[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-            render 'edit' and return
-          end
-          totalsize = totalsize + attach[i-1].file_file_size
-
-          i = i+1
-        end
-        k = k+1
-      end
-
-      if totalsize > 5242880
-        j = 1
-        while j < i do
-          attach[j-1].file.destroy
-          attach[j-1].destroy
-          j = j+1
-        end
+      if @error
         @message.reload
-        flash.now[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/524288.0).round(3)} Mo)."
+        flash.now[:danger] = @error_message
         render 'edit' and return
       end
 
@@ -212,7 +131,7 @@ class MessagesController < ApplicationController
 
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
 
-    # Si il y a eu un bug
+      # Si il y a eu un bug
     else
       render 'edit'
     end
@@ -228,8 +147,12 @@ class MessagesController < ApplicationController
     @message = Message.find(params[:id])
     @subject = @message.subject
 
-    @message.messagefiles.each do |f|
+    @message.myfiles.each do |f|
       f.file.destroy
+      f.destroy
+    end
+
+    @message.fakefiles.each do |f|
       f.destroy
     end
 
@@ -271,7 +194,7 @@ class MessagesController < ApplicationController
   # Il faut être admin si le sujet est pour admin
   def admin_subject_user
     @subject = Subject.find(params[:subject_id])
-    redirect_to root_path unless (current_user.sk.admin? || !@subject.admin)
+    redirect_to root_path unless (current_user.sk.admin? || current_user.sk.corrector? || !@subject.admin)
   end
 
   # Il faut être l'auteur ou admin pour modifier un message

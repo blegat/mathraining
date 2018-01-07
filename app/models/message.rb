@@ -18,8 +18,8 @@ class Message < ActiveRecord::Base
 
   belongs_to :subject
   belongs_to :user
-  has_many :messagefiles, dependent: :destroy
-  has_many :fakemessagefiles, dependent: :destroy
+  has_many :myfiles, as: :myfiletable, dependent: :destroy
+  has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 
   # VALIDATIONS
 

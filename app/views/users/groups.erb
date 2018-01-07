@@ -3,71 +3,71 @@
 <% provide(:title, 'Groupes Wépion') %>
 <h1>Groupes Wépion</h1>
 
-A titre informatif, voici les élèves constituant les groupes A et B cette année. Ces listes ne sont visibles que par les étudiants desdits groupes et les professeurs.
+À titre informatif, voici les élèves constituant les groupes A et B cette année. Ces listes ne sont visibles que par les étudiants desdits groupes et les professeurs.
 
 <!-- On parcourt les deux groupes -->
 
 <% if current_user.sk.admin? %>
 <br/><br/>
 <% if (!params.has_key?:details) %>
-	<center><%= link_to "Afficher les détails", groups_path(:details => 1) %></center>
+  <center><%= link_to "Afficher les détails", groups_path(:details => 1) %></center>
 <% else %>
-	<center><%= link_to "Masquer les détails", groups_path %></center>
+  <center><%= link_to "Masquer les détails", groups_path %></center>
 <% end %>
 <% end %>
 
 <% if (params.has_key?:details) && current_user.sk.admin? %>
 
-	<h2>Groupe A</h2>
-	<table class="table table-bordered">
-	<tr style="background-color:#EEEEEE"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
-	<% User.where(:group => "A").order("rating DESC").each do |u| %>
-		<tr>
-		<td><%= raw(u.linked_name(true)) %></td>
-		<td><%= u.rating %></td>
-		<td><%= u.email %></td>
-		<% lastco = u.last_connexion %>
-		<td>
-		<% if lastco.in_time_zone.year < 2010 %>
-			Jamais
-		<% else %>
-			<%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %>
-		<% end %>
-		</td>
-		</tr>
-	<% end %>
-	</table>
+  <h2>Groupe A</h2>
+  <table class="table table-bordered">
+  <tr style="background-color:#EEEEEE"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
+  <% User.where(:group => "A").order("rating DESC").each do |u| %>
+    <tr>
+    <td><%= raw(u.linked_name(true)) %></td>
+    <td><%= u.rating %></td>
+    <td><%= u.email %></td>
+    <% lastco = u.last_connexion %>
+    <td>
+    <% if lastco.in_time_zone.year < 2010 %>
+      Jamais
+    <% else %>
+      <%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %>
+    <% end %>
+    </td>
+    </tr>
+  <% end %>
+  </table>
 
-	<h2>Groupe B</h2>
-	<table class="table table-bordered">
-	<tr style="background-color:#EEEEEE"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
-	<% User.where(:group => "B").order("rating DESC").each do |u| %>
-		<tr>
-		<td><%= raw(u.linked_name(true)) %></td>
-		<td><%= u.rating %></td>
-		<td><%= u.email %></td>
-		<% lastco = u.last_connexion %>
-		<td>
-		<% if lastco.in_time_zone.year < 2010 %>
-			Jamais
-		<% else %>
-			<%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %>
-		<% end %>
-		</td>
-		</tr>
-	<% end %>
-	</table>
+  <h2>Groupe B</h2>
+  <table class="table table-bordered">
+  <tr style="background-color:#EEEEEE"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
+  <% User.where(:group => "B").order("rating DESC").each do |u| %>
+    <tr>
+    <td><%= raw(u.linked_name(true)) %></td>
+    <td><%= u.rating %></td>
+    <td><%= u.email %></td>
+    <% lastco = u.last_connexion %>
+    <td>
+    <% if lastco.in_time_zone.year < 2010 %>
+      Jamais
+    <% else %>
+      <%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %>
+    <% end %>
+    </td>
+    </tr>
+  <% end %>
+  </table>
 
 <% else %>
 
-	<h2>Groupe A</h2>
-	<% User.where(:group => "A").order(:first_name).each do |u| %>
-		<%= raw(u.linked_name) %><br/>
-	<% end %>
+  <h2>Groupe A</h2>
+  <% User.where(:group => "A").order(:first_name).each do |u| %>
+    <%= raw(u.linked_name) %><br/>
+  <% end %>
 
-	<h2>Groupe B</h2>
-	<% User.where(:group => "B").order(:first_name).each do |u| %>
-		<%= raw(u.linked_name) %><br/>
-	<% end %>
+  <h2>Groupe B</h2>
+  <% User.where(:group => "B").order(:first_name).each do |u| %>
+    <%= raw(u.linked_name) %><br/>
+  <% end %>
 
 <% end %>

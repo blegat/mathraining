@@ -1,29 +1,29 @@
 /**
- * Springy v1.2.0
- *
- * Copyright (c) 2010 Dennis Hotson
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+* Springy v1.2.0
+*
+* Copyright (c) 2010 Dennis Hotson
+*
+* Permission is hereby granted, free of charge, to any person
+* obtaining a copy of this software and associated documentation
+* files (the "Software"), to deal in the Software without
+* restriction, including without limitation the rights to use,
+* copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the
+* Software is furnished to do so, subject to the following
+* conditions:
+*
+* The above copyright notice and this permission notice shall be
+* included in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+* OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 // Enable strict mode for EC5 compatible browsers
 "use strict";
@@ -43,22 +43,22 @@ var Node = function(id, data) {
 	this.id = id;
 	this.data = (data !== undefined) ? data : {};
 
-// Data fields used by layout algorithm in this file:
-// this.data.mass
-// Data used by default renderer in springyui.js
-// this.data.label
+	// Data fields used by layout algorithm in this file:
+	// this.data.mass
+	// Data used by default renderer in springyui.js
+	// this.data.label
 };
 
 var Edge = function(id, source, target, data) {
 	this.id = id;
-				/** @type {Node} */
+	/** @type {Node} */
 	this.source = source;
 	this.target = target;
 	this.data = (data !== undefined) ? data : {};
 
-// Edge data field used by layout alorithm
-// this.data.length
-// this.data.type
+	// Edge data field used by layout alorithm
+	// this.data.length
+	// this.data.type
 };
 
 Graph.prototype.addNode = function(node) {
@@ -101,7 +101,7 @@ Graph.prototype.addEdge = function(edge) {
 
 	exists = false;
 	this.adjacency[edge.source.id][edge.target.id].forEach(function(e) {
-			if (edge.id === e.id) { exists = true; }
+		if (edge.id === e.id) { exists = true; }
 	});
 
 	if (!exists) {
@@ -146,37 +146,37 @@ Graph.prototype.newEdge = function(source, target, data) {
 
 // add nodes and edges from JSON object
 Graph.prototype.loadJSON = function(json) {
-/**
-Springy's simple JSON format for graphs.
+	/**
+	Springy's simple JSON format for graphs.
 
-historically, Springy uses separate lists
-of nodes and edges:
+	historically, Springy uses separate lists
+	of nodes and edges:
 
 	{
-		"nodes": [
-			"center",
-			"left",
-			"right",
-			"up",
-			"satellite"
-		],
-		"edges": [
-			["center", "left"],
-			["center", "right"],
-			["center", "up"]
-		]
-	}
+	"nodes": [
+	"center",
+	"left",
+	"right",
+	"up",
+	"satellite"
+],
+"edges": [
+["center", "left"],
+["center", "right"],
+["center", "up"]
+]
+}
 
 **/
-	// parse if a string is passed (EC5+ browsers)
-	if (typeof json == 'string' || json instanceof String) {
-		json = JSON.parse( json );
-	}
+// parse if a string is passed (EC5+ browsers)
+if (typeof json == 'string' || json instanceof String) {
+	json = JSON.parse( json );
+}
 
-	if ('nodes' in json || 'edges' in json) {
-		this.addNodes.apply(this, json['nodes']);
-		this.addEdges.apply(this, json['edges']);
-	}
+if ('nodes' in json || 'edges' in json) {
+	this.addNodes.apply(this, json['nodes']);
+	this.addEdges.apply(this, json['edges']);
+}
 }
 
 
@@ -184,72 +184,72 @@ of nodes and edges:
 Graph.prototype.getEdges = function(node1, node2) {
 	if (node1.id in this.adjacency
 		&& node2.id in this.adjacency[node1.id]) {
-		return this.adjacency[node1.id][node2.id];
-	}
-
-	return [];
-};
-
-// remove a node and it's associated edges from the graph
-Graph.prototype.removeNode = function(node) {
-	if (node.id in this.nodeSet) {
-		delete this.nodeSet[node.id];
-	}
-
-	for (var i = this.nodes.length - 1; i >= 0; i--) {
-		if (this.nodes[i].id === node.id) {
-			this.nodes.splice(i, 1);
+			return this.adjacency[node1.id][node2.id];
 		}
-	}
 
-	this.detachNode(node);
+		return [];
+	};
 
-};
-
-// removes edges associated with a given node
-Graph.prototype.detachNode = function(node) {
-	var tmpEdges = this.edges.slice();
-	tmpEdges.forEach(function(e) {
-		if (e.source.id === node.id || e.target.id === node.id) {
-			this.removeEdge(e);
+	// remove a node and it's associated edges from the graph
+	Graph.prototype.removeNode = function(node) {
+		if (node.id in this.nodeSet) {
+			delete this.nodeSet[node.id];
 		}
-	}, this);
 
-	this.notify();
-};
-
-// remove a node and it's associated edges from the graph
-Graph.prototype.removeEdge = function(edge) {
-	for (var i = this.edges.length - 1; i >= 0; i--) {
-		if (this.edges[i].id === edge.id) {
-			this.edges.splice(i, 1);
+		for (var i = this.nodes.length - 1; i >= 0; i--) {
+			if (this.nodes[i].id === node.id) {
+				this.nodes.splice(i, 1);
+			}
 		}
-	}
 
-	for (var x in this.adjacency) {
-		for (var y in this.adjacency[x]) {
-			var edges = this.adjacency[x][y];
+		this.detachNode(node);
 
-			for (var j=edges.length - 1; j>=0; j--) {
-				if (this.adjacency[x][y][j].id === edge.id) {
-					this.adjacency[x][y].splice(j, 1);
+	};
+
+	// removes edges associated with a given node
+	Graph.prototype.detachNode = function(node) {
+		var tmpEdges = this.edges.slice();
+		tmpEdges.forEach(function(e) {
+			if (e.source.id === node.id || e.target.id === node.id) {
+				this.removeEdge(e);
+			}
+		}, this);
+
+		this.notify();
+	};
+
+	// remove a node and it's associated edges from the graph
+	Graph.prototype.removeEdge = function(edge) {
+		for (var i = this.edges.length - 1; i >= 0; i--) {
+			if (this.edges[i].id === edge.id) {
+				this.edges.splice(i, 1);
+			}
+		}
+
+		for (var x in this.adjacency) {
+			for (var y in this.adjacency[x]) {
+				var edges = this.adjacency[x][y];
+
+				for (var j=edges.length - 1; j>=0; j--) {
+					if (this.adjacency[x][y][j].id === edge.id) {
+						this.adjacency[x][y].splice(j, 1);
+					}
 				}
 			}
 		}
-	}
 
-	this.notify();
-};
+		this.notify();
+	};
 
-/* Merge a list of nodes and edges into the current graph. eg.
-var o = {
+	/* Merge a list of nodes and edges into the current graph. eg.
+	var o = {
 	nodes: [
-		{id: 123, data: {type: 'user', userid: 123, displayname: 'aaa'}},
-		{id: 234, data: {type: 'user', userid: 234, displayname: 'bbb'}}
-	],
-	edges: [
-		{from: 0, to: 1, type: 'submitted_design', directed: true, data: {weight: }}
-	]
+	{id: 123, data: {type: 'user', userid: 123, displayname: 'aaa'}},
+	{id: 234, data: {type: 'user', userid: 234, displayname: 'bbb'}}
+],
+edges: [
+{from: 0, to: 1, type: 'submitted_design', directed: true, data: {weight: }}
+]
 }
 */
 Graph.prototype.merge = function(data) {
@@ -263,10 +263,10 @@ Graph.prototype.merge = function(data) {
 		var to = nodes[e.to];
 
 		var id = (e.directed)
-			? (id = e.type + "-" + from.id + "-" + to.id)
-			: (from.id < to.id) // normalise id for non-directed edges
-				? e.type + "-" + from.id + "-" + to.id
-				: e.type + "-" + to.id + "-" + from.id;
+		? (id = e.type + "-" + from.id + "-" + to.id)
+		: (from.id < to.id) // normalise id for non-directed edges
+		? e.type + "-" + from.id + "-" + to.id
+		: e.type + "-" + to.id + "-" + from.id;
 
 		var edge = this.addEdge(new Edge(id, from, to, e.data));
 		edge.data.type = e.type;
@@ -462,206 +462,205 @@ Layout.requestAnimationFrame = __bind(window.requestAnimationFrame ||
 	}, window);
 
 
-// start simulation
-Layout.ForceDirected.prototype.start = function(render, done) {
-	var t = this;
+	// start simulation
+	Layout.ForceDirected.prototype.start = function(render, done) {
+		var t = this;
 
-	if (this._started) return;
-	this._started = true;
-	this._stop = false;
+		if (this._started) return;
+		this._started = true;
+		this._stop = false;
 
-	Layout.requestAnimationFrame(function step() {
-		t.applyCoulombsLaw();
-		t.applyHookesLaw();
-		t.attractToCentre();
-		t.updateVelocity(0.03);
-		t.updatePosition(0.03);
+		Layout.requestAnimationFrame(function step() {
+			t.applyCoulombsLaw();
+			t.applyHookesLaw();
+			t.attractToCentre();
+			t.updateVelocity(0.03);
+			t.updatePosition(0.03);
 
-		if (render !== undefined) {
-			render();
-		}
-
-		// stop simulation when energy of the system goes below a threshold
-		if (t._stop || t.totalEnergy() < 0.01) {
-			t._started = false;
-			if (done !== undefined) { done(); }
-		} else {
-			Layout.requestAnimationFrame(step);
-		}
-	});
-};
-
-Layout.ForceDirected.prototype.stop = function() {
-	this._stop = true;
-}
-
-// Find the nearest point to a particular position
-Layout.ForceDirected.prototype.nearest = function(pos) {
-	var min = {node: null, point: null, distance: null};
-	var t = this;
-	this.graph.nodes.forEach(function(n){
-		var point = t.point(n);
-		var distance = point.p.subtract(pos).magnitude();
-
-		if (min.distance === null || distance < min.distance) {
-			min = {node: n, point: point, distance: distance};
-		}
-	});
-
-	return min;
-};
-
-// returns [bottomleft, topright]
-Layout.ForceDirected.prototype.getBoundingBox = function() {
-	var bottomleft = new Vector(-2,-2);
-	var topright = new Vector(2,2);
-
-	this.eachNode(function(n, point) {
-		if (point.p.x < bottomleft.x) {
-			bottomleft.x = point.p.x;
-		}
-		if (point.p.y < bottomleft.y) {
-			bottomleft.y = point.p.y;
-		}
-		if (point.p.x > topright.x) {
-			topright.x = point.p.x;
-		}
-		if (point.p.y > topright.y) {
-			topright.y = point.p.y;
-		}
-	});
-
-	var padding = topright.subtract(bottomleft).multiply(0.07); // ~5% padding
-
-	return {bottomleft: bottomleft.subtract(padding), topright: topright.add(padding)};
-};
-
-
-// Vector
-var Vector = function(x, y) {
-	this.x = x;
-	this.y = y;
-};
-
-Vector.random = function() {
-	return new Vector(10.0 * (Math.random() - 0.5), 10.0 * (Math.random() - 0.5));
-};
-
-Vector.prototype.add = function(v2) {
-	return new Vector(this.x + v2.x, this.y + v2.y);
-};
-
-Vector.prototype.subtract = function(v2) {
-	return new Vector(this.x - v2.x, this.y - v2.y);
-};
-
-Vector.prototype.multiply = function(n) {
-	return new Vector(this.x * n, this.y * n);
-};
-
-Vector.prototype.divide = function(n) {
-	return new Vector((this.x / n) || 0, (this.y / n) || 0); // Avoid divide by zero errors..
-};
-
-Vector.prototype.magnitude = function() {
-	return Math.sqrt(this.x*this.x + this.y*this.y);
-};
-
-Vector.prototype.normal = function() {
-	return new Vector(-this.y, this.x);
-};
-
-Vector.prototype.normalise = function() {
-	return this.divide(this.magnitude());
-};
-
-// Point
-Layout.ForceDirected.Point = function(position, mass) {
-	this.p = position; // position
-	this.m = mass; // mass
-	this.v = new Vector(0, 0); // velocity
-	this.a = new Vector(0, 0); // acceleration
-};
-
-Layout.ForceDirected.Point.prototype.applyForce = function(force) {
-	this.a = this.a.add(force.divide(this.m));
-};
-
-// Spring
-Layout.ForceDirected.Spring = function(point1, point2, length, k) {
-	this.point1 = point1;
-	this.point2 = point2;
-	this.length = length; // spring length at rest
-	this.k = k; // spring constant (See Hooke's law) .. how stiff the spring is
-};
-
-// Layout.ForceDirected.Spring.prototype.distanceToPoint = function(point)
-// {
-// 	// hardcore vector arithmetic.. ohh yeah!
-// 	// .. see http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment/865080#865080
-// 	var n = this.point2.p.subtract(this.point1.p).normalise().normal();
-// 	var ac = point.p.subtract(this.point1.p);
-// 	return Math.abs(ac.x * n.x + ac.y * n.y);
-// };
-
-// Renderer handles the layout rendering loop
-function Renderer(layout, clear, drawEdge, drawNode) {
-	this.layout = layout;
-	this.clear = clear;
-	this.drawEdge = drawEdge;
-	this.drawNode = drawNode;
-
-	this.layout.graph.addGraphListener(this);
-}
-
-Renderer.prototype.graphChanged = function(e) {
-	this.start();
-};
-
-Renderer.prototype.start = function() {
-	var t = this;
-	this.layout.start(function render() {
-		t.clear();
-
-		t.layout.eachEdge(function(edge, spring) {
-			t.drawEdge(edge, spring.point1.p, spring.point2.p);
-		});
-
-		t.layout.eachNode(function(node, point) {
-			t.drawNode(node, point.p);
-		});
-	});
-};
-
-Renderer.prototype.stop = function() {
-	this.layout.stop();
-};
-
-// Array.forEach implementation for IE support..
-//https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/forEach
-if ( !Array.prototype.forEach ) {
-	Array.prototype.forEach = function( callback, thisArg ) {
-		var T, k;
-		if ( this == null ) {
-			throw new TypeError( " this is null or not defined" );
-		}
-		var O = Object(this);
-		var len = O.length >>> 0; // Hack to convert O.length to a UInt32
-		if ( {}.toString.call(callback) != "[object Function]" ) {
-			throw new TypeError( callback + " is not a function" );
-		}
-		if ( thisArg ) {
-			T = thisArg;
-		}
-		k = 0;
-		while( k < len ) {
-			var kValue;
-			if ( k in O ) {
-				kValue = O[ k ];
-				callback.call( T, kValue, k, O );
+			if (render !== undefined) {
+				render();
 			}
-			k++;
-		}
-	};
-}
 
+			// stop simulation when energy of the system goes below a threshold
+			if (t._stop || t.totalEnergy() < 0.01) {
+				t._started = false;
+				if (done !== undefined) { done(); }
+			} else {
+				Layout.requestAnimationFrame(step);
+			}
+		});
+	};
+
+	Layout.ForceDirected.prototype.stop = function() {
+		this._stop = true;
+	}
+
+	// Find the nearest point to a particular position
+	Layout.ForceDirected.prototype.nearest = function(pos) {
+		var min = {node: null, point: null, distance: null};
+		var t = this;
+		this.graph.nodes.forEach(function(n){
+			var point = t.point(n);
+			var distance = point.p.subtract(pos).magnitude();
+
+			if (min.distance === null || distance < min.distance) {
+				min = {node: n, point: point, distance: distance};
+			}
+		});
+
+		return min;
+	};
+
+	// returns [bottomleft, topright]
+	Layout.ForceDirected.prototype.getBoundingBox = function() {
+		var bottomleft = new Vector(-2,-2);
+		var topright = new Vector(2,2);
+
+		this.eachNode(function(n, point) {
+			if (point.p.x < bottomleft.x) {
+				bottomleft.x = point.p.x;
+			}
+			if (point.p.y < bottomleft.y) {
+				bottomleft.y = point.p.y;
+			}
+			if (point.p.x > topright.x) {
+				topright.x = point.p.x;
+			}
+			if (point.p.y > topright.y) {
+				topright.y = point.p.y;
+			}
+		});
+
+		var padding = topright.subtract(bottomleft).multiply(0.07); // ~5% padding
+
+		return {bottomleft: bottomleft.subtract(padding), topright: topright.add(padding)};
+	};
+
+
+	// Vector
+	var Vector = function(x, y) {
+		this.x = x;
+		this.y = y;
+	};
+
+	Vector.random = function() {
+		return new Vector(10.0 * (Math.random() - 0.5), 10.0 * (Math.random() - 0.5));
+	};
+
+	Vector.prototype.add = function(v2) {
+		return new Vector(this.x + v2.x, this.y + v2.y);
+	};
+
+	Vector.prototype.subtract = function(v2) {
+		return new Vector(this.x - v2.x, this.y - v2.y);
+	};
+
+	Vector.prototype.multiply = function(n) {
+		return new Vector(this.x * n, this.y * n);
+	};
+
+	Vector.prototype.divide = function(n) {
+		return new Vector((this.x / n) || 0, (this.y / n) || 0); // Avoid divide by zero errors..
+	};
+
+	Vector.prototype.magnitude = function() {
+		return Math.sqrt(this.x*this.x + this.y*this.y);
+	};
+
+	Vector.prototype.normal = function() {
+		return new Vector(-this.y, this.x);
+	};
+
+	Vector.prototype.normalise = function() {
+		return this.divide(this.magnitude());
+	};
+
+	// Point
+	Layout.ForceDirected.Point = function(position, mass) {
+		this.p = position; // position
+		this.m = mass; // mass
+		this.v = new Vector(0, 0); // velocity
+		this.a = new Vector(0, 0); // acceleration
+	};
+
+	Layout.ForceDirected.Point.prototype.applyForce = function(force) {
+		this.a = this.a.add(force.divide(this.m));
+	};
+
+	// Spring
+	Layout.ForceDirected.Spring = function(point1, point2, length, k) {
+		this.point1 = point1;
+		this.point2 = point2;
+		this.length = length; // spring length at rest
+		this.k = k; // spring constant (See Hooke's law) .. how stiff the spring is
+	};
+
+	// Layout.ForceDirected.Spring.prototype.distanceToPoint = function(point)
+	// {
+	// 	// hardcore vector arithmetic.. ohh yeah!
+	// 	// .. see http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment/865080#865080
+	// 	var n = this.point2.p.subtract(this.point1.p).normalise().normal();
+	// 	var ac = point.p.subtract(this.point1.p);
+	// 	return Math.abs(ac.x * n.x + ac.y * n.y);
+	// };
+
+	// Renderer handles the layout rendering loop
+	function Renderer(layout, clear, drawEdge, drawNode) {
+		this.layout = layout;
+		this.clear = clear;
+		this.drawEdge = drawEdge;
+		this.drawNode = drawNode;
+
+		this.layout.graph.addGraphListener(this);
+	}
+
+	Renderer.prototype.graphChanged = function(e) {
+		this.start();
+	};
+
+	Renderer.prototype.start = function() {
+		var t = this;
+		this.layout.start(function render() {
+			t.clear();
+
+			t.layout.eachEdge(function(edge, spring) {
+				t.drawEdge(edge, spring.point1.p, spring.point2.p);
+			});
+
+			t.layout.eachNode(function(node, point) {
+				t.drawNode(node, point.p);
+			});
+		});
+	};
+
+	Renderer.prototype.stop = function() {
+		this.layout.stop();
+	};
+
+	// Array.forEach implementation for IE support..
+	//https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/forEach
+	if ( !Array.prototype.forEach ) {
+		Array.prototype.forEach = function( callback, thisArg ) {
+			var T, k;
+			if ( this == null ) {
+				throw new TypeError( " this is null or not defined" );
+			}
+			var O = Object(this);
+			var len = O.length >>> 0; // Hack to convert O.length to a UInt32
+			if ( {}.toString.call(callback) != "[object Function]" ) {
+				throw new TypeError( callback + " is not a function" );
+			}
+			if ( thisArg ) {
+				T = thisArg;
+			}
+			k = 0;
+			while( k < len ) {
+				var kValue;
+				if ( k in O ) {
+					kValue = O[ k ];
+					callback.call( T, kValue, k, O );
+				}
+				k++;
+			}
+		};
+	}

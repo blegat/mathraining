@@ -15,7 +15,7 @@ class Point < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   belongs_to :user
-
+  
   # VALIDATIONS
 
   validates :rating, presence: true

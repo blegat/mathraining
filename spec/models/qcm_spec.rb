@@ -12,7 +12,7 @@
 #  online       :boolean          default(FALSE)
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Qcm do
   before { @qcm = FactoryGirl.build(:qcm) }

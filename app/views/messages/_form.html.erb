@@ -10,13 +10,13 @@
   <div class="well" id="MathPreview"></div>
   <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
   <%= render 'subjects/smiley', hiddentext: true %>
-  <%= f.text_area :content, :value => @message.content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => current_user.other %>
+  <%= f.text_area :content, :value => @message.content, :maxlength => "8000", :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => current_user.other %>
 
 <!-- Case mails aux groupes A et/ou B -->
 <% if current_user.sk.admin && @new %>
 	<br/>
   <label class="checkbox-inline">
-  	<input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
+    <input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
     Prévenir tout le groupe A de ce nouveau message par mail.
   </label>
   <br/>

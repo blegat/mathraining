@@ -1,8 +1,8 @@
 #encoding: utf-8
 class TchatmessagesController < DiscussionsController
-  before_filter :signed_in_user
-  before_filter :notskin_user, only: [:create]
-  before_filter :is_involved_2, only: [:create]
+  before_action :signed_in_user
+  before_action :notskin_user, only: [:create]
+  before_action :is_involved_2, only: [:create]
 
   def create
     link = current_user.sk.links.where(:discussion_id => @discussion.id).first
@@ -22,7 +22,7 @@ class TchatmessagesController < DiscussionsController
     @content = params[:content]
 
     send_message
-
+    
     if @erreur
       redirect_to @discussion
     else
@@ -49,11 +49,11 @@ class TchatmessagesController < DiscussionsController
       redirect_to new_discussion_path
     end
   end
-  
+
   def is_not_other
-  	if current_user.other
-  		flash[:danger] = "Vous êtes dans la peau de quelqu'un d'autre!"
-  		redirect_to @discussion
-  	end
+    if current_user.other
+      flash[:danger] = "Vous êtes dans la peau de quelqu'un d'autre!"
+      redirect_to @discussion
+    end
   end
 end

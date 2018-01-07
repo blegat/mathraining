@@ -1,0 +1,106 @@
+<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
+
+<% provide(:title, "À lire") %>
+<h1>
+  <% if @new %>
+    Soumissions <span style="font-size:20px;"> - <%= link_to "Tout voir", allsub_path %></span>
+  <% else %>
+    Commentaires <span style="font-size:20px;"> - <%= link_to "Tout voir", allmysub_path %></span>
+  <% end %>
+</h1>
+
+<% @AFFICHE_WARNING = 1 %>
+
+<!-- Si on affiche toutes les soumissions -->
+<% if @new %>
+
+  <% if @notifications.size == 0 %>
+    Il n'y a plus rien à corriger, beau boulot!
+  <% else %>
+
+  <% @situation = 1 %>
+  <div class="row">
+  <div class="col-sm-12 col-xs-12">
+  <table class="table table-bordered">
+  <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm">Correcteur(s)</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
+  <% @notifications.each do |n| %>
+    <% if current_user.sk.corrector && (!current_user.sk.pb_solved?(n.problem) || (n.intest && n.status == 0)) %>
+      <% @CAN_SEE = false %>
+    <% else %>
+      <% @CAN_SEE = true %>
+    <% end %>
+    <%= render 'submissions/showadmin', s: n, nom: true %>
+  <% end %>
+  </table>
+  </div>
+  </div>
+  
+  <% end %>
+
+<!-- Si on affiche les soumissions auxquelles on participe -->
+<% else %>
+  <h3>Qui vous concernent</h3>
+  
+  <% tome = Array.new %>
+  <% @follow = Array.new %>
+  <% current_user.sk.followings.where(:read => false).each do |f| %>
+    <% @follow.push(f.submission_id) %>
+  <% end %>
+  
+  <% first_mine = true %>
+  
+  <% @situation = 2 %>
+  
+  <% @notifications.each do |n| %>
+    <% if @follow.include?(n.id) %>
+      <% tome.push(n.id) %>
+      <% if first_mine %>
+        <div class="row">
+        <div class="col-xs-12 col-sm-12">
+        <table class="table table-bordered">
+        <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
+      <% end %>
+      <%= render 'submissions/showadmin', s: n, nom: true %>
+      <% first_mine = false %>
+    <% end %>
+  <% end %>
+  
+  <% if !first_mine %>
+    </table>
+    </div>
+    </div>
+  <% else %>
+    Vous n'avez aucun nouveau commentaire à lire.  
+  <% end %>
+  
+  <h3>Autres commentaires non lus</h3>
+  
+  <% first_other = true %>
+  
+  <% @notifications_other.each do |n| %>
+    <% @situation = 22 %>
+    <% if(!tome.include?(n.id)) %>
+      <% if first_other %>
+        <div class="row">
+        <div class="col-xs-12 col-sm-12">
+        <table class="table table-bordered">
+        <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm">Correcteur(s)</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
+      <% end %>
+      <% if current_user.sk.corrector && (!current_user.sk.pb_solved?(n.problem) || (n.intest && n.status == 0)) %>
+        <% @CAN_SEE = false %>
+      <% else %>
+        <% @CAN_SEE = true %>
+      <% end %>
+      <%= render 'submissions/showadmin', s: n, nom: true %>
+      <% first_other = false %>
+    <% end %>
+  <% end %>
+  
+  <% if !first_other %>
+    </table>
+    </div>
+    </div>
+  <% else %>
+    Aucun autre commentaire non lu.
+  <% end %>
+<% end %>

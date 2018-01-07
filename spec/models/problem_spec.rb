@@ -12,7 +12,7 @@
 #  online     :boolean          default(FALSE)
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Problem do
   before { @p = FactoryGirl.build(:problem) }

@@ -53,7 +53,7 @@ function hideStuff(id) {
 </td>
 
 <td class="hidden-xs" style="padding-left:15px; text-align:right;">
-<% if !current_user.followed_subjects.exists?(@subject) %>
+<% if !current_user.followed_subjects.exists?(@subject.id) %>
   <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
   <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
@@ -65,7 +65,7 @@ function hideStuff(id) {
 </h1>
 
 <div class="visible-xs" style="text-align:center;">
-<% if !current_user.followed_subjects.exists?(@subject) %>
+<% if !current_user.followed_subjects.exists?(@subject.id) %>
   <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
   <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>

@@ -2,8 +2,12 @@ require "resque_web"
 
 Mathraining::Application.routes.draw do
 
-  match '/notifications_new', to: 'users#notifications_new', :via => [:get], as: :notifications_new
-  match '/notifications_update', to: 'users#notifications_update', :via => [:get], as: :notifications_update
+  match '/allsub', to: 'users#allsub', :via => [:get], as: :allsub
+  match '/allmysub', to: 'users#allmysub', :via => [:get], as: :allmysub
+  match '/allnewsub', to: 'users#allnewsub', :via => [:get], as: :allnewsub
+  match '/allmynewsub', to: 'users#allmynewsub', :via => [:get], as: :allmynewsub
+  
+  match '/validate_name', to: 'users#validate_name', :via => [:get], as: :validate_name
 
   match '/notifs', to: 'users#notifs_show', :via => [:get], as: :notifs_show
 
@@ -72,40 +76,12 @@ Mathraining::Application.routes.draw do
       match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
     end
   end
-
-  resources :submissionfiles, only: [] do
-    match '/fake_delete', to: 'submissionfiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
-  end
-
-  resources :correctionfiles, only: [] do
-    match '/fake_delete', to: 'correctionfiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
-  end
-
-  resources :subjectfiles, only: [] do
-    match '/fake_delete', to: 'subjectfiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
-  end
-
-  resources :messagefiles, only: [] do
-    match '/fake_delete', to: 'messagefiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
-  end
-
-  resources :tchatmessagefiles, only: [] do
-    match '/fake_delete', to: 'tchatmessagefiles#fake_delete', :via => [:get], as: :fake_delete
-    member do
-      get :download
-    end
+  
+  resources :myfiles, only: [] do
+  	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:get], as: :fake_delete
+  	member do
+  		get :download
+  	end
   end
 
  # mathjax 'mathjax'
@@ -142,8 +118,7 @@ Mathraining::Application.routes.draw do
     match '/add_administrator', to: 'users#create_administrator', :via => [:get], as: :add_administrator
     match '/switch_wepion', to: 'users#switch_wepion', :via => [:get], as: :switch_wepion
     match '/switch_corrector', to: 'users#switch_corrector', :via => [:get], as: :switch_corrector
-    match '/unactivate', to: 'users#unactivate', :via => [:get], as: :unactivate
-    match '/reactivate', to: 'users#reactivate', :via => [:get], as: :reactivate
+    match '/switchactivate', to: 'users#switchactivate', :via => [:get], as: :switchactivate
     match '/take_skin', to: 'users#take_skin', :via => [:get], as: :take_skin
     match '/leave_skin', to: 'users#leave_skin', :via => [:get], as: :leave_skin
     match '/change_group', to: 'users#change_group', :via => [:get], as: :change_group
@@ -185,7 +160,7 @@ Mathraining::Application.routes.draw do
 
   match '/frequentation', to: 'static_pages#frequentation', :via => [:get]
 
-  match '/pieces_jointes', to: 'submissionfiles#seeall', :via => [:get]
+  match '/pieces_jointes', to: 'myfiles#seeall', :via => [:get]
 
   match '/compare', to: 'users#compare', :via => [:get]
 

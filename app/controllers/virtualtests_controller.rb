@@ -1,15 +1,15 @@
 #encoding: utf-8
 class VirtualtestsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :admin_user, only: [:new, :create, :edit, :update, :destroy, :put_online, :destroy]
-  before_filter :recup, only: [:show, :destroy]
-  before_filter :recup2, only: [:begin_test]
-  before_filter :has_access, only: [:show, :begin_test]
-  before_filter :online_test, only: [:show, :begin_test]
-  before_filter :can_begin, only: [:begin_test]
-  before_filter :can_be_online, only: [:put_online]
-  before_filter :delete_online, only: [:destroy]
-  before_filter :enough_points, only: [:show, :begin_test]
+  before_action :signed_in_user
+  before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :put_online, :destroy]
+  before_action :recup, only: [:show, :destroy]
+  before_action :recup2, only: [:begin_test]
+  before_action :has_access, only: [:show, :begin_test]
+  before_action :online_test, only: [:show, :begin_test]
+  before_action :can_begin, only: [:begin_test]
+  before_action :can_be_online, only: [:put_online]
+  before_action :delete_online, only: [:destroy]
+  before_action :enough_points, only: [:show, :begin_test]
 
   # Voir tous les tests virtuels
   def index

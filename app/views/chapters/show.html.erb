@@ -12,223 +12,223 @@
 <% end %>
 
 <h1>
-<span class="noprint">
-<span style="font-size:16px;">Théorie ></span>
-<span style="font-size:24px;"><%= link_to @section.name, @section %> ></span>
-</span>
-<%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
+  <span class="noprint">
+    <span style="font-size:16px;">Théorie ></span>
+    <span style="font-size:24px;"><%= link_to @section.name, @section %> ></span>
+  </span>
+  <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
 </h1>
 
 <div class="row">
 
   <!-- MENU -->
   <div class="noprint">
-  <div class="col-md-2 col-sm-3 col-xs-12">
-    <div class="list-group">
-      <% number = 0 %>
-      <% number2 = 0 %>
-      <% i = 1 %>
-      <br/>
-      <h4 class="list-group-item-heading" style="margin-bottom:10px;">Général</h4>
+    <div class="col-md-2 col-sm-3 col-xs-12">
+      <div class="list-group">
+        <% number = 0 %>
+        <% number2 = 0 %>
+        <% i = 1 %>
+        <br/>
+        <h4 class="list-group-item-heading" style="margin-bottom:10px;">Général</h4>
 
-      <%= link_to "Introduction", chapter_path(@chapter), :class => "list-group-item active" if type == 0 %>
-      <%= link_to "Introduction", chapter_path(@chapter), :class => "list-group-item" unless type == 0 %>
+        <%= link_to "Introduction", chapter_path(@chapter), :class => "list-group-item active" if type == 0 %>
+        <%= link_to "Introduction", chapter_path(@chapter), :class => "list-group-item" unless type == 0 %>
 
-      <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item active" if type == 10 %>
-      <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item" unless type == 10 %>
-			
-      <% if @ss %>
-        <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item", :target => "_blank" %>
-      <% end %>
-      <!-- Points théoriques -->
-      <% compteur = 0 %>
-      <% listex = @chapter.theories.order(:position) %>
-      <% listex.each do |f| %>
-        <% if f.online || (@ss && current_user.sk.admin?) %>
+        <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item active" if type == 10 %>
+        <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item" unless type == 10 %>
 
-          <% if compteur == 0 %>
-            <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Points théoriques</h4>
-          <% end %>
-
-          <% compteur = compteur + 1 %>
-
-          <% lu = false %>
-          <% if @ss && !current_user.sk.admin? %>
-            <% if current_user.sk.theories.exists?(f.id) %>
-              <% lu = true %>
-            <% end %>
-          <% end %>
-
-          <% if type == 1 && f.id == id %>
-            <% number = i %>
-            <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-warning active" if !f.online %>
-            <% if f.online %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success active" if @ss && !current_user.sk.admin? && lu %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item active" unless @ss && !current_user.sk.admin? && lu %>
-            <% end %>
-          <% else %>
-            <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-warning" if !f.online %>
-            <% if f.online %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success" if @ss && !current_user.sk.admin? && lu %>
-              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item" unless @ss && !current_user.sk.admin? && lu %>
-            <% end %>
-          <% end %>
-
-          <% i = i + 1 %>
+        <% if @ss %>
+          <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item", :target => "_blank" %>
         <% end %>
-      <% end %>
-
-
-      <!-- Peut-on voit les exercices? -->
-      <% exovisibles = true %>
-
-      <% if !@ss || !current_user.sk.admin? %>
-        <% @chapter.prerequisites.each do |p| %>
-          <% exovisibles = false if !p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p)) %>
-        <% end %>
-      <% end %>
-
-      <!-- Exercices -->
-      <% compteur = 0 %>
-      <% liste = @chapter.exercises.order(:position) %>
-      <% liste2 = @chapter.qcms.order(:position) %>
-      <% un = 0 %>
-      <% deux = 0 %>
-      <% j = 1 %>
-      <% pasfait = 0 %>
-      <% (1..(liste.size+liste2.size)).each do |i| %>
-
-        <% encours = 0 %>
-        <% if un >= liste.size %>
-          <% encours = 2 %>
-        <% else %>
-          <% if deux >= liste2.size %>
-            <% encours = 1 %>
-          <% else %>
-            <% if liste[un].position < liste2[deux].position %>
-              <% encours = 1 %>
-            <% else %>
-              <% encours = 2 %>
-            <% end %>
-          <% end %>
-        <% end %>
-
-        <!-- Exercice (pas QCM) -->
-        <% if encours == 1 %>
-          <% f = liste[un] %>
+        <!-- Points théoriques -->
+        <% compteur = 0 %>
+        <% listex = @chapter.theories.order(:position) %>
+        <% listex.each do |f| %>
           <% if f.online || (@ss && current_user.sk.admin?) %>
 
             <% if compteur == 0 %>
-              <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Exercices</h4>
+              <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Points théoriques</h4>
             <% end %>
 
             <% compteur = compteur + 1 %>
 
-            <% if exovisibles %>
+            <% lu = false %>
+            <% if @ss && !current_user.sk.admin? %>
+              <% if current_user.sk.theories.exists?(f.id) %>
+                <% lu = true %>
+              <% end %>
+            <% end %>
+
+            <% if type == 1 && f.id == id %>
+              <% number = i %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-warning active" if !f.online %>
               <% if f.online %>
-                <% if @ss %>
-                  <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
-                  <% if exo.size > 0 %>
-                    <% exo = exo.first %>
-                    <% if exo.correct && !current_user.sk.admin? %>
-                      <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-success active" if f.id == id && type == 2 %>
-                      <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-success" unless f.id == id && type == 2 %>
-                    <% elsif !current_user.sk.admin? %>
-                      <% pasfait = pasfait + 1 %>
-                      <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-danger active" if f.id == id && type == 2 %>
-                      <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-danger" unless f.id == id && type == 2 %>
+                <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success active" if @ss && !current_user.sk.admin? && lu %>
+                <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item active" unless @ss && !current_user.sk.admin? && lu %>
+              <% end %>
+            <% else %>
+              <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-warning" if !f.online %>
+              <% if f.online %>
+                <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-success" if @ss && !current_user.sk.admin? && lu %>
+                <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item" unless @ss && !current_user.sk.admin? && lu %>
+              <% end %>
+            <% end %>
+
+            <% i = i + 1 %>
+          <% end %>
+        <% end %>
+
+
+        <!-- Peut-on voit les exercices? -->
+        <% exovisibles = true %>
+
+        <% if !@ss || !current_user.sk.admin? %>
+          <% @chapter.prerequisites.each do |p| %>
+            <% exovisibles = false if !p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p.id)) %>
+          <% end %>
+        <% end %>
+
+        <!-- Exercices -->
+        <% compteur = 0 %>
+        <% liste = @chapter.exercises.order(:position) %>
+        <% liste2 = @chapter.qcms.order(:position) %>
+        <% un = 0 %>
+        <% deux = 0 %>
+        <% j = 1 %>
+        <% pasfait = 0 %>
+        <% (1..(liste.size+liste2.size)).each do |i| %>
+
+          <% encours = 0 %>
+          <% if un >= liste.size %>
+            <% encours = 2 %>
+          <% else %>
+            <% if deux >= liste2.size %>
+              <% encours = 1 %>
+            <% else %>
+              <% if liste[un].position < liste2[deux].position %>
+                <% encours = 1 %>
+              <% else %>
+                <% encours = 2 %>
+              <% end %>
+            <% end %>
+          <% end %>
+
+          <!-- Exercice (pas QCM) -->
+          <% if encours == 1 %>
+            <% f = liste[un] %>
+            <% if f.online || (@ss && current_user.sk.admin?) %>
+
+              <% if compteur == 0 %>
+                <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Exercices</h4>
+              <% end %>
+
+              <% compteur = compteur + 1 %>
+
+              <% if exovisibles %>
+                <% if f.online %>
+                  <% if @ss %>
+                    <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
+                    <% if exo.size > 0 %>
+                      <% exo = exo.first %>
+                      <% if exo.correct && !current_user.sk.admin? %>
+                        <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-success active" if f.id == id && type == 2 %>
+                        <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-success" unless f.id == id && type == 2 %>
+                      <% elsif !current_user.sk.admin? %>
+                        <% pasfait = pasfait + 1 %>
+                        <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-danger active" if f.id == id && type == 2 %>
+                        <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-danger" unless f.id == id && type == 2 %>
+                      <% else %>
+                        <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item active" if f.id == id && type == 2 %>
+                        <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item" unless f.id == id && type == 2 %>
+                      <% end %>
                     <% else %>
+                      <% pasfait = pasfait + 1 %>
                       <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item active" if f.id == id && type == 2 %>
                       <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item" unless f.id == id && type == 2 %>
                     <% end %>
                   <% else %>
-                    <% pasfait = pasfait + 1 %>
                     <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item active" if f.id == id && type == 2 %>
                     <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item" unless f.id == id && type == 2 %>
                   <% end %>
                 <% else %>
-                  <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item active" if f.id == id && type == 2 %>
-                  <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item" unless f.id == id && type == 2 %>
+                  <%= link_to "Exercice", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-warning active" if f.id == id && type == 2 %>
+                  <%= link_to "Exercice", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-warning" unless f.id == id && type == 2 %>
                 <% end %>
               <% else %>
-                <%= link_to "Exercice", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-warning active" if f.id == id && type == 2 %>
-                <%= link_to "Exercice", chapter_path(@chapter, :type => 2, :which => f.id), :class => "list-group-item list-group-item-warning" unless f.id == id && type == 2 %>
+                <span class="list-group-item disabled"><%= "Exercice #{j}" %></span>
               <% end %>
+
+              <% if f.id == id  && type == 2 %>
+                <% number = j %>
+                <% number2 = i %>
+              <% end %>
+              <% j = j+1 if f.online %>
+            <% end %>
+            <% un = un + 1 %>
+
+            <!-- QCM -->
             <% else %>
-              <span class="list-group-item disabled"><%= "Exercice #{j}" %></span>
-            <% end %>
+              <% f = liste2[deux] %>
+              <% if f.online || (@ss && current_user.sk.admin?) %>
 
-            <% if f.id == id  && type == 2 %>
-              <% number = j %>
-              <% number2 = i %>
-            <% end %>
-            <% j = j+1 if f.online %>
-          <% end %>
-          <% un = un + 1 %>
+                <% if compteur == 0 %>
+                  <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Exercices</h4>
+                <% end %>
 
-        <!-- QCM -->
-        <% else %>
-          <% f = liste2[deux] %>
-          <% if f.online || (@ss && current_user.sk.admin?) %>
+                <% compteur = compteur+1 %>
 
-            <% if compteur == 0 %>
-              <br/><h4 class="list-group-item-heading" style="margin-bottom:10px;">Exercices</h4>
-            <% end %>
-
-            <% compteur = compteur+1 %>
-
-            <% if exovisibles %>
-              <% if f.online %>
-                <% if @ss %>
-                  <% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
-                  <% if exo.size > 0 %>
-                    <% exo = exo.first %>
-                    <% if exo.correct && !current_user.sk.admin? %>
-                      <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-success active" if f.id == id && type == 3 %>
-                      <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-success" unless f.id == id && type == 3 %>
-                    <% elsif !current_user.sk.admin? %>
-                      <% pasfait = pasfait + 1 %>
-                      <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-danger active" if f.id == id && type == 3 %>
-                      <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-danger" unless f.id == id && type == 3 %>
+                <% if exovisibles %>
+                  <% if f.online %>
+                    <% if @ss %>
+                      <% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
+                      <% if exo.size > 0 %>
+                        <% exo = exo.first %>
+                        <% if exo.correct && !current_user.sk.admin? %>
+                          <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-success active" if f.id == id && type == 3 %>
+                          <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-success" unless f.id == id && type == 3 %>
+                        <% elsif !current_user.sk.admin? %>
+                          <% pasfait = pasfait + 1 %>
+                          <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-danger active" if f.id == id && type == 3 %>
+                          <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-danger" unless f.id == id && type == 3 %>
+                        <% else %>
+                          <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item active" if f.id == id && type == 3 %>
+                          <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item" unless f.id == id && type == 3 %>
+                        <% end %>
+                      <% else %>
+                        <% pasfait = pasfait + 1 %>
+                        <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item active" if f.id == id && type == 3 %>
+                        <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item" unless f.id == id && type == 3 %>
+                      <% end %>
                     <% else %>
                       <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item active" if f.id == id && type == 3 %>
                       <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item" unless f.id == id && type == 3 %>
                     <% end %>
                   <% else %>
-                    <% pasfait = pasfait + 1 %>
-                    <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item active" if f.id == id && type == 3 %>
-                    <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item" unless f.id == id && type == 3 %>
+                    <%= link_to "Exercice", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-warning active" if f.id == id && type == 3 %>
+                    <%= link_to "Exercice", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-warning" unless f.id == id && type == 3 %>
                   <% end %>
                 <% else %>
-                  <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item active" if f.id == id && type == 3 %>
-                  <%= link_to "Exercice #{j}", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item" unless f.id == id && type == 3 %>
+                  <span class="list-group-item disabled"><%= "Exercice #{j}" %></span>
                 <% end %>
-              <% else %>
-                <%= link_to "Exercice", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-warning active" if f.id == id && type == 3 %>
-                <%= link_to "Exercice", chapter_path(@chapter, :type => 3, :which => f.id), :class => "list-group-item list-group-item-warning" unless f.id == id && type == 3 %>
+
+
+                <% if f.id == id  && type == 3 %>
+                  <% number = j %>
+                  <% number2 = i %>
+                <% end %>
+                <% j = j+1 if f.online %>
               <% end %>
-            <% else %>
-              <span class="list-group-item disabled"><%= "Exercice #{j}" %></span>
-            <% end %>
-
-
-            <% if f.id == id  && type == 3 %>
-              <% number = j %>
-              <% number2 = i %>
-            <% end %>
-            <% j = j+1 if f.online %>
+            <% deux = deux + 1 %>
           <% end %>
-          <% deux = deux + 1 %>
+
         <% end %>
 
-      <% end %>
+        <% if !@chapter.section.fondation && exovisibles && pasfait == 0 && @ss && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
+          <% current_user.sk.chapters << @chapter %>
+        <% end %>
 
-      <% if !@chapter.section.fondation && exovisibles && pasfait == 0 && @ss && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter) %>
-        <% current_user.sk.chapters << @chapter %>
-      <% end %>
-
+      </div>
     </div>
-  </div>
   </div>
 
   <div class="col-md-10 col-sm-9 col-xs-12">
@@ -242,7 +242,7 @@
         <br/><span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
         <% prems = true %>
         <% @chapter.prerequisites.each do |p| %>
-          <% if (!p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p))) %>
+          <% if (!p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p.id))) %>
             <%= " - " if !prems %>
             <%= p.name %>
             <% prems = false %>
@@ -286,18 +286,18 @@
 
 <!-- Ajouter quelque chose -->
 <div class="noprint">
-<center>
-  <% if @ss && current_user.sk.admin? %>
-    <br/>
-    Ajouter un :
-    <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
-    <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
-    <%= link_to "QCM", new_chapter_qcm_path(@chapter) %>
+  <center>
+    <% if @ss && current_user.sk.admin? %>
+      <br/>
+      Ajouter un :
+      <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
+      <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
+      <%= link_to "QCM", new_chapter_qcm_path(@chapter) %>
 
-    <% if !@chapter.online %>
-      <br/><br/>
-      <%= button_to "Mettre ce chapitre en ligne", chapter_warning_path(@chapter), method: :get, class: 'btn btn-lg btn-default btn-grey	' %>
+      <% if !@chapter.online %>
+        <br/><br/>
+        <%= button_to "Mettre ce chapitre en ligne", chapter_warning_path(@chapter), method: :get, class: 'btn btn-lg btn-default btn-grey	' %>
+      <% end %>
     <% end %>
-  <% end %>
-</center>
+  </center>
 </div>

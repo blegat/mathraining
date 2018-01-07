@@ -1,8 +1,8 @@
 #encoding: utf-8
 class CorrectionsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :correct_user
-  before_filter :notskin_user, only: [:create]
+  before_action :signed_in_user
+  before_action :correct_user
+  before_action :notskin_user, only: [:create]
 
   # Créer une correction : il faut être soit admin, soit correcteur, soit l'étudiant de la soumission
   def create
@@ -28,55 +28,27 @@ class CorrectionsController < ApplicationController
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
 
-    # On parcourt toutes les pièces jointes
-    i = 1
-    k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
-        attach.push()
-        attach[i-1] = Correctionfile.new(:file => params["file#{k}".to_sym])
-        if !attach[i-1].save
-          j = 1
-          while j < i do
-            attach[j-1].file.destroy
-            attach[j-1].destroy
-            j = j+1
-          end
-          nom = params["file#{k}".to_sym].original_filename
-          session[:ancientexte] = params[:correction][:content]
-          flash[:danger] = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          redirect_to problem_path(@submission.problem, :sub => @submission) and return
-        end
-        totalsize = totalsize + attach[i-1].file_file_size
+    # Pièces jointes
+    @error = false
+    @error_message = ""
 
-        i = i+1
-      end
-      k = k+1
-    end
+    attach = create_files # Fonction commune pour toutes les pièces jointes
 
-    # On vérifie la taille des pièces jointes
-    if totalsize > 5.megabytes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+    if @error
+      flash.now[:danger] = @error_message
       session[:ancientexte] = params[:correction][:content]
-      flash[:danger] = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
 
-    correction = @submission.corrections.build(params[:correction])
+    correction = @submission.corrections.build(params.require(:correction).permit(:content))
     correction.user = current_user.sk
 
     # Si la sauvegarde se passe bien
     if correction.save
       # On enregistre les pièces jointes
       j = 1
-      while j < i do
-        attach[j-1].correction = correction
-        attach[j-1].save
+      while j < attach.size()+1 do
+        attach[j-1].update_attribute(:myfiletable, correction)
         j = j+1
       end
 
@@ -101,15 +73,15 @@ class CorrectionsController < ApplicationController
         @submission.save
         m = ''
 
-      # Si admin et nouvelle soumission : cela dépend du bouton
+        # Si admin et nouvelle soumission : cela dépend du bouton
       elsif (current_user.sk != @submission.user) and (@submission.status == 0 or @submission.status == 3) and
         (params[:commit] == "Poster et refuser la soumission" or
-         params[:commit] == "Poster et laisser la soumission comme erronée")
+        params[:commit] == "Poster et laisser la soumission comme erronée")
         @submission.status = 1
         @submission.save
         m = ' et soumission marquée comme incorrecte'
 
-      # Si soumission erronée et on accepte : devient correcte
+        # Si soumission erronée et on accepte : devient correcte
       elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
         @submission.status = 2
         @submission.save
@@ -138,10 +110,10 @@ class CorrectionsController < ApplicationController
         pb = @submission.problem
         brouillon = pb.submissions.where('user_id = ? AND status = -1', @submission.user).first
         if !brouillon.nil?
-          brouillon.submissionfiles.each do |f|
+          brouillon.myfiles.each do |f|
             f.destroy
           end
-          brouillon.fakesubmissionfiles.each do |f|
+          brouillon.fakefiles.each do |f|
             f.destroy
           end
           brouillon.destroy
@@ -150,7 +122,7 @@ class CorrectionsController < ApplicationController
 
       # On gère les notifications
       if current_user.sk != @submission.user
-        following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission)
+        following = Following.where(:user_id => current_user.sk.id, :submission_id => @submission.id).first
         if following.nil?
           following = Following.new
           following.user = current_user.sk
@@ -183,15 +155,9 @@ class CorrectionsController < ApplicationController
       flash[:success] = "Réponse postée#{m}."
       redirect_to problem_path(@submission.problem, :sub => @submission)
 
-    # Si il y a eu une erreur au moment de sauver
+      # Si il y a eu une erreur au moment de sauver
     else
-      # On supprime les pièces jointes
-      j = 1
-      while j < i do
-        attach[j-1].file.destroy
-        attach[j-1].destroy
-        j = j+1
-      end
+      destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:correction][:content]
       if params[:correction][:content].size == 0
         flash[:danger] = "Votre réponse est vide."
@@ -211,7 +177,7 @@ class CorrectionsController < ApplicationController
 
   # Vérifie qu'il s'agit du bon utilisateur ou d'un admin ou d'un correcteur
   def correct_user
-    @submission = Submission.find_by_id(params[:submission_id])
+    @submission = Submission.find(params[:submission_id])
     if @submission.nil? || (@submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@submission.problem)))
       redirect_to root_path
     end

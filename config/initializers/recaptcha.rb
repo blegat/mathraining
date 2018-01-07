@@ -1,5 +1,5 @@
 Recaptcha.configure do |config|
-  config.public_key  = '6Lc4wucSAAAAABz6NLwneQU8lb2ddnEIblWELqcx'
-  config.private_key = ENV['PRIVATE_KEY']
+  config.site_key  = '6LctwucSAAAAAPiI_Zq5pA4nwPfK928l6-5JjTLU'
+  config.secret_key = ENV['CAPTCHA_PRIVATE_KEY']
   # config.proxy = 'http://myproxy.com.au:8080'
 end

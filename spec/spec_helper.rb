@@ -1,8 +1,16 @@
-# This file is copied to spec/ when you run 'rails generate rspec:install'
-ENV["RAILS_ENV"] ||= 'test'
+require "simplecov"
+SimpleCov.start "rails"
+
+if ENV["CI"] == "true"
+  require "codecov"
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
+
+# This file is copied to spec/ when you run "rails generate rspec:install"
+ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
-require 'rspec/rails'
-require 'rspec/autorun'
+require "rspec/rails"
+# require "rspec/autorun"
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -17,10 +25,10 @@ RSpec.configure do |config|
   # config.mock_with :flexmock
   # config.mock_with :rr
 
-  # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
+  # Remove this line if you"re not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
-  # If you're not using ActiveRecord, or you'd prefer not to run each of your
+  # If you"re not using ActiveRecord, or you"d prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
   config.use_transactional_fixtures = true
@@ -39,4 +47,16 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   
   config.include Rails.application.routes.url_helpers
+  
+  Capybara.javascript_driver = :webkit
+  
+  config.use_transactional_fixtures = true # If we put false then the javascript stuff (sometimes) work but many other tests fail. If we put true the javascript does not work because the database is empty
+  
+  #DatabaseCleaner.strategy = :truncation
 end
+
+Capybara::Webkit.configure do |config|
+  config.block_unknown_urls
+  config.debug = false
+end
+

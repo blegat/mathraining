@@ -26,24 +26,7 @@ Modifier un message
   <%= render 'form', f: f %>
 
   <!-- Pièces jointes -->
-  <% if @message.messagefiles.count + @message.fakemessagefiles.count > 0 %>
-    <b>Pièces jointes (décochez pour supprimer)</b><br/>
-    <% @message.messagefiles.order(:id).each do |sf| %>
-      <label class="checkbox-inline">
-        <input type="checkbox" name="prevfile<%= sf.id %>" value="1" checked="checked" />
-        <%= link_to sf.file_file_name, download_messagefile_path(sf) %>
-      </label>
-      <br/>
-    <% end %>
-    <% @message.fakemessagefiles.order(:id).each do |sf| %>
-      <label class="checkbox-inline">
-        <input type="checkbox" name="prevfakefile<%= sf.id %>" value="1" checked="checked" />
-        <span style="color:#0000BB;"><%= sf.file_file_name %> (désactivée)</span>
-      </label>
-      <br/>
-    <% end %>
-    <br/>
-  <% end %>
+  <%= render 'subjects/files', s: @message %>
   <span id="fooBar"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="disabled"' if current_user.other %> />
   <br /><br/>

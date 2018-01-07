@@ -1,0 +1,77 @@
+# -*- coding: utf-8 -*-
+require "spec_helper"
+
+describe "User views" do
+
+  subject { page }
+
+  let(:user) { FactoryGirl.create(:user) }
+  let(:other_user) { FactoryGirl.create(:user) }
+  let(:admin) { FactoryGirl.create(:admin) }
+  let(:root) { FactoryGirl.create(:root) }
+  
+  describe "visitor" do
+    describe "visit user/index" do
+      before { visit users_path }
+      it { should have_selector("h1", text: "Scores") }
+    end
+
+    describe "visit user/show" do
+      before { visit user_path(user) }
+      it { should have_selector("h1", text: user.name) }
+      it { should_not have_button("Envoyer un message") }
+    end
+  end
+  
+  describe "user" do
+    before { sign_in user }
+    
+    describe "visit user/index" do
+      before { visit users_path }
+      it { should_not have_selector("h2", text: "Inscriptions récentes") }
+      it { should_not have_selector("h2", text: "Utilisateurs non classés") }
+      it { should_not have_selector("h2", text: "Administrateurs") }
+    end
+
+    describe "visit user/show" do
+      before { visit user_path(user) }
+      it { should have_selector("h1", text: user.name) }
+      it { should_not have_selector("h2", text: "Informations") }
+      it { should_not have_link("Envoyer un message") }
+      it { should_not have_content(user.email) }
+    end
+    
+    describe "visit user/show of somebody else" do
+      before { visit user_path(other_user) }
+      it { should have_link("Envoyer un message") }
+    end
+  end
+  
+  describe "admin" do
+    before { sign_in admin }
+    
+    describe "visit user/index" do
+      before { visit users_path }
+      it { should_not have_selector("h2", text: "Inscriptions récentes") }
+      it { should have_selector("h2", text: "Utilisateurs non classés") }
+      it { should have_selector("h2", text: "Administrateurs") }
+      it { should_not have_link("Recalculer tous les ratings") }
+    end
+
+    describe "visit user/show" do
+      before { visit user_path(user) }
+      it { should have_selector("h2", text: "Informations") }
+      it { should have_content(user.email) }
+    end    
+  end
+  
+  describe "root" do
+    before { sign_in root }
+    
+    describe "visit user/index" do
+      before { visit users_path }
+      it { should have_selector("h2", text: "Inscriptions récentes") }
+      it { should have_link("Recalculer tous les ratings") }
+    end
+  end
+end

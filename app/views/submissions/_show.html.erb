@@ -114,40 +114,7 @@ function showSoumissionNormal(id) {
 </div>
 
 <!-- Pièces jointes -->
-<% n_submission = @submission.submissionfiles.count %>
-<% n_fake = @submission.fakesubmissionfiles.count %>
-<% if n_submission + n_fake > 0 %>
-  <% if n_submission + n_fake == 1 %>
-    <br/><br/><b>1 pièce jointe :</b><br/>
-  <% else %>
-    <br/><br/><b><%= n_submission + n_fake %> pièces jointes :</b><br/>
-  <% end %>
-  <% @submission.submissionfiles.order(:id).each do |f| %>
-    <%= link_to f.file_file_name, download_submissionfile_path(f) %>
-    (<%= (f.file_file_size / 1000.0).round(1) %> ko)
-    <% if current_user.sk.root? %>
-       - <%= link_to 'Supprimer le contenu', submissionfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
-    <% end %>
-    <br/>
-  <% end %>
-  <% @submission.fakesubmissionfiles.order(:id).each do |f| %>
-    <span style="color:#0000BB;"><%= f.file_file_name %> (<%= (f.file_file_size / 1000.0).round(1) %> ko, désactivée)</span><br/>
-  <% end %>
-
-  <!-- Afficher les pièces jointes images -->
-  <% @submission.submissionfiles.order(:id).each do |f| %>
-    <% if f.is_image %>
-    <hr/>
-    <center><%= f.file_file_name %><br/><br/>
-    <%= image_tag f.file.url, :class => "visible-lg", :style => "max-width:900px;" %>
-    <%= image_tag f.file.url, :class => "visible-md", :style => "max-width:800px;" %>
-    <%= image_tag f.file.url, :class => "visible-sm", :style => "max-width:600px;" %>
-    <%= image_tag f.file.url, :class => "visible-xs", :style => "width:90%;" %>
-    </center>
-    <% end %>
-  <% end %>
-<% end %>
-
+<%= render 'subjects/show_files', s: @submission %>
 </td></tr>
 
 </table>
@@ -165,7 +132,8 @@ function showSoumissionNormal(id) {
 
 <!-- Marquer comme lu ou non lu -->
 <% if current_user.sk.admin || (current_user.sk.corrector && @resolu && current_user.sk != @submission.user) %>
-  <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %>
+  <!-- <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %> NE MARCHE PLUS -->
+  <% following = Following.where(:user_id => current_user.sk, :submission_id => @submission).first %>
     <% if !following.nil? && following.read && @submission.status != 0 %>
       <center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission), :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
     <% elsif !following.nil? && @submission.status != 0 %>

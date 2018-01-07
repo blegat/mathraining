@@ -12,7 +12,7 @@
 #  online     :boolean          default(FALSE)
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Theory do
   before { @theo = FactoryGirl.build(:theory) }
@@ -54,17 +54,6 @@ describe Theory do
   describe "when position is negative" do
     before { @theo.position = -1 }
     it { should_not be_valid }
-  end
-  describe "when position is already taken with the same chapter" do
-    before { FactoryGirl.create(:theory,
-                                chapter: @theo.chapter,
-                                position: @theo.position) }
-    it { should_not be_valid }
-  end
-  describe "when position is already taken with a different chapter" do
-    before { FactoryGirl.create(:theory,
-                                position: @theo.position) }
-    it { should be_valid }
   end
 
 end

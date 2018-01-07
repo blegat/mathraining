@@ -10,7 +10,7 @@
 #  updated_at    :datetime         not null
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Following do
 
@@ -38,8 +38,7 @@ describe Following do
 
   # User & submission
   describe "when user and submission are already taken" do
-    before { FactoryGirl.create(:following, user: @f.user,
-                                submission: @f.submission) }
+    before { FactoryGirl.create(:following, user: @f.user, submission: @f.submission) }
     it { should_not be_valid }
   end
 

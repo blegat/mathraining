@@ -10,11 +10,11 @@ var Joint = {
     //Assign different attributes to the element.
     element.setAttribute("type", "file");
     element.setAttribute("name", "file"+this.i);
-    
+
     element2.setAttribute("type", "hidden");
     element2.setAttribute("name", "hidden"+this.i);
     element2.setAttribute("value", "ok");
- 
+
     var foo = document.getElementById("fooBar");
     var br = document.createElement("br");
 

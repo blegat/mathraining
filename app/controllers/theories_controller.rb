@@ -1,7 +1,7 @@
 #encoding: utf-8
 class TheoriesController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :admin_user, only: [:new, :edit, :create, :update, :destroy, :order_minus, :order_plus, :put_online]
+  before_action :signed_in_user
+  before_action :admin_user, only: [:new, :edit, :create, :update, :destroy, :order_minus, :order_plus, :put_online]
 
   # Créer une théorie
   def new
@@ -19,7 +19,7 @@ class TheoriesController < ApplicationController
     @theory = Theory.new
     @theory.title = params[:theory][:title]
     @theory.content = params[:theory][:content]
-    @chapter = Chapter.find_by_id(params[:chapter_id])
+    @chapter = Chapter.find(params[:chapter_id])
     if @chapter.nil?
       flash.now[:danger] = "Chapitre inexistant."
       render 'new' and return

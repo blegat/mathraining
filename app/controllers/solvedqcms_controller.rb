@@ -1,9 +1,9 @@
 #encoding: utf-8
 class SolvedqcmsController < ApplicationController
-  before_filter :signed_in_user
-  before_filter :before_all
-  before_filter :online_chapter
-  before_filter :unlocked_chapter
+  before_action :signed_in_user
+  before_action :before_all
+  before_action :online_chapter
+  before_action :unlocked_chapter
 
   # On tente de résoudre un qcm (pour la première fois)
   def create
