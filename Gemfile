@@ -13,7 +13,7 @@ gem 'rails-i18n'
 gem "paperclip"
 gem "recaptcha", "~> 4.1.0", :require => "recaptcha/rails"
 gem 'thin'
-gem "nokogiri", "~> 1.7.1"
+gem "nokogiri", "~> 1.8.1"
 
 # Doing tasks every monday...
 gem 'whenever', :require => false
