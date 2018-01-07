@@ -19,6 +19,6 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 1.minutes do
+every :monday, :at => '2am' do
   runner "Record.update"
 end
