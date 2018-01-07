@@ -1,9 +1,5 @@
 # inspired from
 # http://stackoverflow.com/questions/9321153/rails-database-setup-on-travis-ci
-branches:
-  only:
-    - 'master'
-
 language: ruby
 rvm:
   - 1.9.3
