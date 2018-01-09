@@ -180,7 +180,7 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
       <% e = a[1] %>
       <% pct = 0 %>
       <% pct = e.nb_firstguess.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
-      <% pct2 = [1.6*pct,1].min %>
+      <% pct2 = [1.4*pct,1].min %>
       <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);">
       <% if ordered_cansee[i] %>
         <%= link_to "#{(100*pct).round(1)}%", chapter_path(chapter, :type => a[0], :which => e.id), :style => "color:rgb(0,0,200);" %>
