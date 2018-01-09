@@ -1,61 +1,146 @@
-<% provide(:title, 'Fréquentation du site') %>
+<% provide(:title, 'Difficulté des exercices') %>
 
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
+<h1>Difficulté des exercices</h1>
+Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants l'ayant résolu au premier essai.<br/>
 
-<h1>Statistiques diverses</h1>
+<% debloque = Array.new %>
+<% if signed_in? and !current_user.sk.admin? %>
+  <% current_user.sk.chapters.each do |c| %>
+    <% debloque[c.id] = 1 %>
+  <% end %>
+<% end %>
 
-<h3>Fréquentation du site</h3>
+<% is_fond = Array.new %>
+<% Section.all.each do |section| %>
+  <% is_fond[section.id] = section.fondation? %>
+<% end %>
 
-Le graphique suivant reprend le nombre d'utilisateurs connectés chaque jour sur le site, depuis le 19 mars 2015.<br/><br/>
+<% Section.where(:fondation => false).order(:id).each do |section| %>
+  <h3><%= section.name %></h3>
+  <% chap = Array.new %>
+  <% ordered_chap = Array.new %>
+  <% reverse = Array.new %>
+  <% pre = Array.new %>
+  <% taken = Array.new %>
+  <% cansee = Array.new %>
+  <% ordered_cansee = Array.new %>
+  <% n = 0 %>
+  <% section.chapters.where(:online => true).order(:level).each do |chapter| %>
+    <% chap.push(chapter) %>
+    <% reverse[chapter.id] = n %>
+    <% pre[n] = Array.new %>
+    <% taken[n] = false %>
+    <% cansee[n] = true %>
+    <% chapter.prerequisites.each do |p| %>
+      <% if !signed_in? or (!is_fond[p.section_id] and !current_user.sk.admin? and debloque[p.id].nil?) %>
+        <% cansee[n] = false %>
+      <% end %>
+      <% if p.section == section %>
+        <% pre[n].push(p.id) %>
+      <% end %>
+    <% end %>
+    <% n = n+1 %>
+  <% end %>
+  
+  <% (0..(n-1)).each do |i| %>
+    <% (0..(n-1)).each do |j| %>
+      <% if !taken[j] %>
+        <% ok = true %>
+        <% pre[j].each do |p| %>
+          <% if !taken[reverse[p]] %>
+            <% ok = false %>
+          <% end %>
+        <% end %>
+        <% if ok %>
+          <% taken[j] = true %>
+          <% ordered_chap.push(chap[j]) %>
+          <% ordered_cansee.push(cansee[j]) %>
+          <% break %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  
+  <% allexo = Array.new %>
+  <% maxexo = 0 %>
+  
+  <% i = 0 %>
+  <% ordered_chap.each do |chapter| %>
+    <% allexo[i] = Array.new %>
+    <% liste = chapter.exercises.order(:position).where(:online => true) %>
+    <% liste2 = chapter.qcms.order(:position).where(:online => true) %>
+    <% un = 0 %>
+    <% deux = 0 %>
+    <% j = 1 %>
+    <% k = 1 %>
 
-<center>
-<!-- Endroit pour dessiner la fréquentation -->
-<div id="contenant1" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-<canvas id="myCanvas1" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
-Votre navigateur ne supporte pas les canvas.
-</canvas>
-</div>
-</center>
+    <% compteur = 0 %>
 
-<h3>Résolutions d'exercices</h3>
-
-Ci-dessous, le nombre d'exercices résolus par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
-
-<center>
-<!-- Endroit pour dessiner la fréquentation -->
-<div id="contenant2" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-<canvas id="myCanvas2" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
-Votre navigateur ne supporte pas les canvas.
-</canvas>
-</div>
-</center>
-
-<h3>Soumissions aux problèmes</h3>
-
-Ci-dessous, le nombre de soumissions par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
-
-<center>
-<!-- Endroit pour dessiner la fréquentation -->
-<div id="contenant3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-<canvas id="myCanvas3" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
-Votre navigateur ne supporte pas les canvas.
-</canvas>
-</div>
-</center>
-
-<h3>Temps de correction</h3>
-
-Chaque soumission à un problème doit être corrigée par un correcteur. Le graphique ci-dessous donne, pour chaque semaine depuis le 8 décembre 2014, le temps moyen de correction d'une soumission (en jours).<br/><br/>
-
-<center>
-<!-- Endroit pour dessiner la fréquentation -->
-<div id="contenant4" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-<canvas id="myCanvas4" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
-Votre navigateur ne supporte pas les canvas.
-</canvas>
-</div>
-</center>
+    <% (1..(liste.size+liste2.size)).each do |ii| %>
+      <% encours = 0 %>
+      <% if un >= liste.size %>
+        <% encours = 2 %>
+      <% else %>
+        <% if deux >= liste2.size %>
+          <% encours = 1 %>
+        <% else %>
+          <% if liste[un].position < liste2[deux].position %>
+            <% encours = 1 %>
+          <% else %>
+            <% encours = 2 %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <% if encours == 1 %>
+        <% f = liste[un] %>
+        <% allexo[i].push([2,f]) %>
+        <% un = un+1 %>
+      <% else %>
+        <% f = liste2[deux] %>
+        <% allexo[i].push([3,f]) %>
+        <% deux = deux+1 %>
+      <% end %>
+    <% end %>
+    
+    <% if(allexo[i].size > maxexo) %>
+      <% maxexo = allexo[i].size %>
+    <% end %>
+    <% i = i+1 %>
+  <% end %>
+  
+  <table class="table table-bordered" style="width:<%= 300+50*maxexo %>px;">
+  <tr><th style="width;300px;">Chapitre</th>
+  <% (1..maxexo).each do |i| %>
+    <th style="text-align:center; width:50px;">Ex. <%= i %></th>
+  <% end %>
+  </tr>
+  
+  <% i = 0 %>
+  <% ordered_chap.each do |chapter| %>
+    <tr style="background-color:rgb(250,250,250);">
+    <td><%= link_to chapter.name, chapter %></td>
+    <% allexo[i].each do |a| %>
+      <% e = a[1] %>
+      <% pct = 0 %>
+      <% pct = e.nb_firstguess.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
+      <% pct2 = [1.4*pct,1].min %>
+      <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);">
+      <% if ordered_cansee[i] %>
+        <%= link_to "#{(100*pct).round(0)}%", chapter_path(chapter, :type => a[0], :which => e.id), :style => "color:rgb(0,0,200);" %>
+      <% else %>
+        <%= (100*pct).round(0) %>%
+      <% end %>
+      </td>
+    <% end %>
+    <% (allexo[i].size..maxexo-1).each do |j| %>
+    <td style="text-align:center;">-</td>
+    <% end %>
+    </tr>
+    <% i = i+1 %>
+  <% end %>
+  </table>
+  
+<% end %>
 
 
 <% def convert_date(courant) %>

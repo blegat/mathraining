@@ -194,9 +194,7 @@
         <li><%= link_to "Scores", users_path %></li>
         <li><%= link_to "Résolutions récentes", solvedproblems_path %></li>
         <li><%= link_to "Corrections", correctors_path %></li>
-        <% if @ss && (current_user.sk.admin || current_user.sk.group != "") %>
-          <li><%= link_to "Groupes Wépion", groups_path %></li>
-        <% end %>
+        <li><%= link_to "Difficulté des exercices", exostats_path %></li>
         <li><%= link_to "Statistiques diverses", frequentation_path %></li>
       </ul>
       </li>
@@ -234,6 +232,9 @@
             <li><%= link_to "Profil", current_user.sk %></li>
           <% end %>
           <li><%= link_to "Compte", edit_user_path(current_user.sk) %></li>
+          <% if @ss && (current_user.sk.admin || current_user.sk.group != "") %>
+            <li><%= link_to "Groupes Wépion", groups_path %></li>
+          <% end %>
           <% if current_user.sk.root? %>
             <li><%= link_to "Valider noms", validate_name_path %></li>
           <% end %>

@@ -159,7 +159,8 @@ Mathraining::Application.routes.draw do
   match '/stats', to: 'static_pages#statistics', :via => [:get]
 
   match '/frequentation', to: 'static_pages#frequentation', :via => [:get]
-
+  match '/exostats', to: 'static_pages#exostats', :via => [:get]
+  
   match '/pieces_jointes', to: 'myfiles#seeall', :via => [:get]
 
   match '/compare', to: 'users#compare', :via => [:get]
