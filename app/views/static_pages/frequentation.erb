@@ -60,6 +60,18 @@ Votre navigateur ne supporte pas les canvas.
 <h3>Difficulté des exercices</h3>
 Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants l'ayant résolu au premier essai.<br/><br/>
 
+<% debloque = Array.new %>
+<% if signed_in? and !current_user.sk.admin? %>
+  <% current_user.sk.chapters.each do |c| %>
+    <% debloque[c.id] = 1 %>
+  <% end %>
+<% end %>
+
+<% is_fond = Array.new %>
+<% Section.all.each do |section| %>
+  <% is_fond[section.id] = section.fondation? %>
+<% end %>
+
 <% Section.where(:fondation => false).each do |section| %>
   <h4><%= section.name %></h4>
   <% chap = Array.new %>
@@ -67,13 +79,19 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
   <% reverse = Array.new %>
   <% pre = Array.new %>
   <% taken = Array.new %>
+  <% cansee = Array.new %>
+  <% ordered_cansee = Array.new %>
   <% n = 0 %>
   <% section.chapters.where(:online => true).order(:level).each do |chapter| %>
     <% chap.push(chapter) %>
     <% reverse[chapter.id] = n %>
     <% pre[n] = Array.new %>
     <% taken[n] = false %>
+    <% cansee[n] = true %>
     <% chapter.prerequisites.each do |p| %>
+      <% if !signed_in? or (!is_fond[p.section_id] and !current_user.sk.admin? and debloque[p.id].nil?) %>
+        <% cansee[n] = false %>
+      <% end %>
       <% if p.section == section %>
         <% pre[n].push(p.id) %>
       <% end %>
@@ -93,6 +111,7 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
         <% if ok %>
           <% taken[j] = true %>
           <% ordered_chap.push(chap[j]) %>
+          <% ordered_cansee.push(cansee[j]) %>
           <% break %>
         <% end %>
       <% end %>
@@ -131,12 +150,13 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
       <% end %>
       <% if encours == 1 %>
         <% f = liste[un] %>
+        <% allexo[i].push([2,f]) %>
         <% un = un+1 %>
       <% else %>
         <% f = liste2[deux] %>
+        <% allexo[i].push([3,f]) %>
         <% deux = deux+1 %>
       <% end %>
-      <% allexo[i].push(f) %>
     <% end %>
     
     <% if(allexo[i].size > maxexo) %>
@@ -151,15 +171,23 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
     <th style="text-align:center; width:70px;">Ex. <%= i %></th>
   <% end %>
   </tr>
+  
   <% i = 0 %>
   <% ordered_chap.each do |chapter| %>
     <tr style="background-color:rgb(250,250,250);">
-    <td><%= chapter.name %></td>
-    <% allexo[i].each do |e| %>
+    <td><%= link_to chapter.name, chapter %></td>
+    <% allexo[i].each do |a| %>
+      <% e = a[1] %>
       <% pct = 0 %>
       <% pct = e.nb_firstguess.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
       <% pct2 = [1.6*pct,1].min %>
-      <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);"><%= (100*pct).round(1) %>%</td>
+      <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);">
+      <% if ordered_cansee[i] %>
+        <%= link_to "#{(100*pct).round(1)}%", chapter_path(chapter, :type => a[0], :which => e.id), :style => "color:rgb(0,0,200);" %>
+      <% else %>
+        <%= (100*pct).round(1) %>%
+      <% end %>
+      </td>
     <% end %>
     <% (allexo[i].size..maxexo-1).each do |j| %>
     <td style="text-align:center;">-</td>
