@@ -40,9 +40,12 @@ class SolvedexercisesController < ApplicationController
       end
     end
 
+    exercise.nb_tries = exercise.nb_tries+1
     if link.correct
+      exercise.nb_firstguess = exercise.nb_firstguess+1
       point_attribution(current_user.sk, exercise)
     end
+    exercise.save
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
   end

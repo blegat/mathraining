@@ -76,10 +76,13 @@ class SolvedqcmsController < ApplicationController
         link.choices << choice
       end
     end
-
+    
+    qcm.nb_tries = exercise.nb_tries+1
     if link.correct
+      qcm.nb_firstguess = exercise.nb_firstguess+1
       point_attribution(current_user.sk, qcm)
     end
+    qcm.save
 
     redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id)
   end

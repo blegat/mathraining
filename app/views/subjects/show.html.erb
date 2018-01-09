@@ -33,6 +33,7 @@ function hideStuff(id) {
 
 <%= @subject.title %>
 
+<span style="font-size:20px;">
 <% if !@subject.category.nil? %>
 	<% @category = @subject.category %>
    - <%= @category.name %>
@@ -45,8 +46,9 @@ function hideStuff(id) {
 <% else %>
   <% @chapitre = @subject.chapter %>
   <% @section = @subject.chapter.section %>
-   - <%= link_to @chapitre.name, @chapitre, target: '_blank' %>
+  - <%= link_to @chapitre.name, @chapitre, target: '_blank' %>
 <% end %>
+</span>
 </td>
 </tr>
 </table>
