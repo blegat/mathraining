@@ -165,10 +165,10 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
     <% i = i+1 %>
   <% end %>
   
-  <table class="table table-bordered" style="width:<%= 300+70*maxexo %>px;">
+  <table class="table table-bordered" style="width:<%= 300+50*maxexo %>px;">
   <tr><th style="width;300px;">Chapitre</th>
   <% (1..maxexo).each do |i| %>
-    <th style="text-align:center; width:70px;">Ex. <%= i %></th>
+    <th style="text-align:center; width:50px;">Ex. <%= i %></th>
   <% end %>
   </tr>
   
@@ -183,9 +183,9 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
       <% pct2 = [1.4*pct,1].min %>
       <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);">
       <% if ordered_cansee[i] %>
-        <%= link_to "#{(100*pct).round(1)}%", chapter_path(chapter, :type => a[0], :which => e.id), :style => "color:rgb(0,0,200);" %>
+        <%= link_to "#{(100*pct).round(0)}%", chapter_path(chapter, :type => a[0], :which => e.id), :style => "color:rgb(0,0,200);" %>
       <% else %>
-        <%= (100*pct).round(1) %>%
+        <%= (100*pct).round(0) %>%
       <% end %>
       </td>
     <% end %>
