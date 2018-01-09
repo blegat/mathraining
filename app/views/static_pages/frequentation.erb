@@ -72,7 +72,7 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
   <% is_fond[section.id] = section.fondation? %>
 <% end %>
 
-<% Section.where(:fondation => false).each do |section| %>
+<% Section.where(:fondation => false).order(:id).each do |section| %>
   <h4><%= section.name %></h4>
   <% chap = Array.new %>
   <% ordered_chap = Array.new %>
