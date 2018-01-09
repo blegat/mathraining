@@ -59,6 +59,7 @@ Votre navigateur ne supporte pas les canvas.
 
 <h3>Difficulté des exercices</h3>
 Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants l'ayant résolu au premier essai.<br/><br/>
+
 <% Section.where(:fondation => false).each do |section| %>
   <h4><%= section.name %></h4>
   <% chap = Array.new %>
@@ -130,8 +131,10 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
       <% end %>
       <% if encours == 1 %>
         <% f = liste[un] %>
+        <% un = un+1 %>
       <% else %>
         <% f = liste2[deux] %>
+        <% deux = deux+1 %>
       <% end %>
       <% allexo[i].push(f) %>
     <% end %>
@@ -139,7 +142,6 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
     <% if(allexo[i].size > maxexo) %>
       <% maxexo = allexo[i].size %>
     <% end %>
-    
     <% i = i+1 %>
   <% end %>
   
@@ -156,7 +158,7 @@ Les tableaux suivants donnent, pour chaque exercice, le pourcentage d'étudiants
     <% allexo[i].each do |e| %>
       <% pct = 0 %>
       <% pct = e.nb_firstguess.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
-      <% pct2 = [2*pct,1].min %>
+      <% pct2 = [1.6*pct,1].min %>
       <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);"><%= (100*pct).round(1) %>%</td>
     <% end %>
     <% (allexo[i].size..maxexo-1).each do |j| %>
