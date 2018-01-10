@@ -16,11 +16,15 @@ function hideStuff() {
 
 <% pt = f.value %>
 
-<% if @fondation %>
-<h3>Exercice <%= number %></h3>
-<% else %>
-<h3>Exercice <%= number %> <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span></h3>
+<% pct = 0 %>
+<% pct = f.nb_firstguess.to_f / f.nb_tries.to_f if f.nb_tries > 0 %>
+<% pct2 = [1.4*pct,1].min %>
+
+<h3>Exercice <%= number %>
+<% if !@fondation %>
+<span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
 <% end %>
+ <span style="margin-left:20px; font-size:20px; color:rgb(<%= 0+((1-pct2)*255).to_i %>,<%= 0+(pct2*225).to_i %>,0);">(<%= (100*pct).round(0) %>% de réussite au premier essai)</span></h3>
 
 <!-- Enoncé -->
 <div>

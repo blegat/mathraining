@@ -37,7 +37,6 @@ describe "Chapter views" do
       it { should_not have_link("Modifier les prérequis") }
       it { should_not have_link("Modifier le nom, le niveau ou l'introduction de ce chapitre") }
       it { should_not have_link("point théorique") }
-      it { should_not have_link("exercice") }
       it { should_not have_link("QCM") }
     end 
   end
@@ -51,7 +50,6 @@ describe "Chapter views" do
       it { should have_link("Modifier les prérequis") }
       it { should have_link("Modifier le nom, le niveau ou l'introduction de ce chapitre") }
       it { should have_link("point théorique") }
-      it { should have_link("exercice") }
       it { should have_link("QCM") }
     end
     
@@ -61,7 +59,6 @@ describe "Chapter views" do
       it { should have_link("Modifier les prérequis") }
       it { should have_link("Modifier le nom, le niveau ou l'introduction de ce chapitre") }
       it { should have_link("point théorique") }
-      it { should have_link("exercice") }
       it { should have_link("QCM") }
     end 
   end
