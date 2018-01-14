@@ -77,9 +77,9 @@ class SolvedqcmsController < ApplicationController
       end
     end
     
-    qcm.nb_tries = exercise.nb_tries+1
+    qcm.nb_tries = qcm.nb_tries+1
     if link.correct
-      qcm.nb_firstguess = exercise.nb_firstguess+1
+      qcm.nb_firstguess = qcm.nb_firstguess+1
       point_attribution(current_user.sk, qcm)
     end
     qcm.save
