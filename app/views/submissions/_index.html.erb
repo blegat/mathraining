@@ -13,6 +13,17 @@ html>body tbody.scroll {
 }
 </style>
 
+<script type="text/javascript">
+var showCorrect = function () {
+  document.getElementById("btn_correct").style.display = 'none';
+  document.getElementById("all_correct").style.display = 'block';
+}
+var showFalse = function () {
+  document.getElementById("btn_false").style.display = 'none';
+  document.getElementById("all_false").style.display = 'block';
+}
+</script>
+
 <!-- Cette page affiche toutes les soumissions que l'utilisateur peut voir pour le problème problem -->
 
 <!-- Si administrateur : peut voir toutes les soumissions correctes -->
@@ -49,13 +60,14 @@ html>body tbody.scroll {
     </table>
   <% end %>
   
-  <h3>Soumissions correctes</h3>
+  <h3>Autres soumissions correctes</h3>
   <% submissions = problem.submissions.includes(:user, :problem).where(visible: true, status: 2, star: false).order('created_at DESC') %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>
+    <%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()", id: "btn_correct" %>
     <!-- Large -->
-    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px;">
+    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px; display:none;" id="all_correct">
     <thead class="fixed">
     <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
@@ -68,7 +80,7 @@ html>body tbody.scroll {
     </table>
 
     <!-- Petit -->
-    <table class="table table-bordered visible-sm visible-xs" style="width:340px;">
+    <table class="table table-bordered visible-sm visible-xs" style="width:340px; display:none;" id="all_correct">
     <thead class="fixed">
     <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
@@ -212,8 +224,9 @@ html>body tbody.scroll {
     <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, false).order('created_at DESC') %>
 
     <% if !submissions.empty? %>
+      <%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()", id: "btn_correct" %>
       <!-- Large -->
-      <table class="table table-bordered hidden-xs hidden-sm" style="width:840px;">
+      <table class="table table-bordered hidden-xs hidden-sm" style="width:840px; display:none;" id="all_correct">
       <thead class="fixed">
       <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
       </thead>
@@ -226,7 +239,7 @@ html>body tbody.scroll {
       </table>
 
       <!-- Petit -->
-      <table class="table table-bordered visible-xs visible-sm" style="width:340px;">
+      <table class="table table-bordered visible-xs visible-sm" style="width:340px; display:none;" id="all_correct">
       <thead class="fixed">
       <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
       </thead>
@@ -257,8 +270,9 @@ html>body tbody.scroll {
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>
+    <%= link_to "Afficher les soumissions erronées ou en attente", "javascript:showFalse()", id: "btn_false" %>
     <!-- Large -->
-    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px;">
+    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px; display:none;" id="all_false">
     <thead class="fixed">
     <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
@@ -271,7 +285,7 @@ html>body tbody.scroll {
     </table>
 
     <!-- Petit -->
-    <table class="table table-bordered visible-sm visible-xs" style="width:340px;">
+    <table class="table table-bordered visible-sm visible-xs" style="width:340px; display:none;" id="all_false">
     <thead class="fixed">
     <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>

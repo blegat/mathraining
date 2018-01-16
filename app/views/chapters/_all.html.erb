@@ -11,8 +11,8 @@
 <% end %>
 
 <br/>
-<!-- Introduction -->
-<h3>Introduction</h3>
+<!-- Résumé -->
+<h3>Résumé</h3>
 <div>
   <%= raw(htmlise(@chapter.description)) %>
 </div>
@@ -53,5 +53,5 @@
 
 <% if !@ss || !current_user.sk.admin? %>
   <hr>
-  Des questions? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id) %> dédié à ce chapitre!<br/><br/>
+  Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id) %> !<br/><br/>
 <% end %>

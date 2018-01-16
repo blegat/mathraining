@@ -31,8 +31,8 @@
         <br/>
         <h4 class="list-group-item-heading" style="margin-bottom:10px;">Général</h4>
 
-        <%= link_to "Introduction", chapter_path(@chapter), :class => "list-group-item active" if type == 0 %>
-        <%= link_to "Introduction", chapter_path(@chapter), :class => "list-group-item" unless type == 0 %>
+        <%= link_to "Résumé", chapter_path(@chapter), :class => "list-group-item active" if type == 0 %>
+        <%= link_to "Résumé", chapter_path(@chapter), :class => "list-group-item" unless type == 0 %>
 
         <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item active" if type == 10 %>
         <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item" unless type == 10 %>
@@ -233,7 +233,7 @@
 
   <div class="col-md-10 col-sm-9 col-xs-12">
 
-    <!-- INTRODUCTION -->
+    <!-- RESUME -->
 
     <% if type == 0 %>
       <%= render 'intro' %>

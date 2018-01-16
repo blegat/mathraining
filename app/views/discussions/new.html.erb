@@ -40,7 +40,7 @@ var showAllUsers = function () {
         <% mtn = DateTime.now.to_date - 14 %>
         <%= select_tag :destinataire, options_for_select(User.where("id != ? AND (last_connexion >= ? OR id = ?)", current_user.sk.id, mtn, params[:qui].to_i).order(:first_name).collect {|u| [ u.name, u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-control" %>
         <%= link_to "Afficher les utilisateurs inactifs", "javascript:showAllUsers()", style: "margin-left:10px;", id: "show_all" %>
-        <span style="margin-left:10px; display:none;" id="thanks">À votre service!</span>
+        <span style="margin-left:10px; display:none;" id="thanks">À votre service !</span>
       </div><br/>
 
       <div class="form-group">
