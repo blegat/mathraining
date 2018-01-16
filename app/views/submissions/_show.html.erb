@@ -43,7 +43,7 @@ function showSoumissionNormal(id) {
   <% f = @submission.followings.first %>
   <% if f.nil? %>
     <div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
-    Avant de corriger cette soumission, prévenez les autres que vous vous en occupez!
+    Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !
     <% @unactivate = 1 %>
     <%= link_to 'Réserver cette soumission', problem_submission_reserve_path(@problem, @submission), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
     </div>
