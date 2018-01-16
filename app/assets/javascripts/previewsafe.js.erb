@@ -1,3 +1,4 @@
+var allowhide = true
 
 var PreviewSafe = {
   delay: 150,        // delay after keystroke before updating
@@ -59,8 +60,10 @@ var PreviewSafe = {
     }
 
     var text = document.getElementById("MathInput").value.replace(/</g,'&lt').replace(/>/g,'&gt')
-    var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
-    while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, '<div style="background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;"><a style="display:inline;" class="btn btn-default btn-grey">$1</a><br/><br/>$2</div>');
+    if(allowhide) {
+      var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
+      while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, '<div style="background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;"><a style="display:inline;" class="btn btn-default btn-grey">$1</a><br/><br/>$2</div>');
+    }
     text = text.replace(/\[b\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/b\]/gmi, '<b>$1</b>').replace(/\[u\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/u\]/gmi, '<u>$1</u>').replace(/\[i\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/i\]/gmi, '<i>$1</i>').replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/\n/g, '<br/>').replace(/\:\-\)/g,'<%= image_tag "Smiley1.gif", :width => "20px", :height => "20px" %>').replace(/\:\-\(/g,'<%= image_tag "Smiley2.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[D]/g,'<%= image_tag "Smiley3.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[O]/g,'<%= image_tag "Smiley4.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[P]/g,'<%= image_tag "Smiley5.gif", :width => "20px", :height => "20px" %>').replace(/\:\'\(/g,'<%= image_tag "Smiley6.gif", :width => "20px", :height => "20px" %>').replace(/\;\-\)/g,'<%= image_tag "Smiley7.gif", :width => "20px", :height => "20px" %>').replace(/\:\-\|/g,'<%= image_tag "Smiley8.gif", :width => "20px", :height => "20px" %>').replace(/[3]\:\[/g,'<%= image_tag "Smiley9.gif", :width => "20px", :height => "20px" %>');
 
 

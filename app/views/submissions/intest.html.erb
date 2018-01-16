@@ -58,6 +58,8 @@ Problème <%= @numero %>
   <div style="margin-bottom:30px;">
   <%= raw(htmlise(@problem.statement)) %>
   </div>
+  
+<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
 
 <!-- S'il s'agit d'une nouvelle soumission -->
 <% if @neworedit == 0 %>

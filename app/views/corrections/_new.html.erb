@@ -1,3 +1,5 @@
+<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
+
 <h4>Poster un commentaire</h4>
 <%= form_for :correction, url: problem_submission_corrections_path(@problem, @submission), :html => { :multipart => true } do |f| %>
   <div class="form-group">

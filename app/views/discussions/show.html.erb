@@ -1,6 +1,8 @@
 <% link = current_user.sk.links.where(:discussion_id => @discussion.id).first %>
 <% params[:nonread] = link.nonread %>
 
+<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
+
 <script type="text/javascript">
 
 var scrollHandler = function () {
@@ -21,7 +23,6 @@ var scrollHandler = function () {
     $.getScript(more_posts_url + "?nonread=<%= params[:nonread] %>")
   }
 }
-
 
 $(window).scroll(scrollHandler);
 </script>
