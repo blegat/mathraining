@@ -87,6 +87,8 @@ class User < ActiveRecord::Base
   validates :password, length: { minimum: 6 }, on: :create
   validates :password, length: { minimum: 6 }, on: :update, allow_blank: true
   validates :password_confirmation, presence: true, on: :create
+  validates :year, presence: true
+  validates :country, presence: true
 
   # Nom complet, avec seulement l'initiale s'il faut
   def name

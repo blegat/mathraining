@@ -410,7 +410,7 @@ var actualize = function () {
 </script>
 
 
-<% if current_user.sk.root? %>
+<% if signed_in? && current_user.sk.root? %>
   <br/>
   <center><%= link_to "Actualiser les graphes", "javascript:actualize()", id: "btn_actualize" %>
   <span style="display:none; margin-left:20px;" id="done">Voilà ! Actualisez la page pour voir les nouveaux graphes.</span></center>

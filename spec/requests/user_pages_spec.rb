@@ -85,6 +85,8 @@ describe "User pages" do
       before do
         fill_in "Prénom", with: "Example"
         fill_in "Nom", with: "User"
+        select "Belgique", from: "Pays"
+        select "1977", from: "Année de naissance"
         # Il y a deux fois ces champs (pour la connexion et l"inscription)
         page.all(:fillable_field, "Email").last.set("user@example.com")
         page.all(:fillable_field, "Mot de passe").last.set("foobar")
