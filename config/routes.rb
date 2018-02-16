@@ -152,8 +152,8 @@ Mathraining::Application.routes.draw do
 
   get 'pb_sections/:id', to: 'sections#showpb', as: :pb_sections
 
+  match '/legal', to: 'static_pages#legal', :via => [:get]
   match '/about', to: 'static_pages#about', :via => [:get]
-
   match '/contact', to: 'static_pages#contact', :via => [:get]
 
   match '/stats', to: 'static_pages#statistics', :via => [:get]
