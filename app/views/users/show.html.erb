@@ -34,11 +34,11 @@ html>body tbody.scroll {
 <!-- Si c'est un administrateur -->
 <% if @user.admin %>
   <h1><b><%= @user.name %></b>
-  <% if current_user.sk.root? %>
+  <% if signed_in? && current_user.sk.root? %>
     <span style="font-size:18px; margin-left:100px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
   <% end %>
 
-  <% if current_user.sk != @user %>
+  <% if signed_in? && current_user.sk != @user %>
     <span style="float:right;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default" %></span>
   <% end %>
   </h1>
