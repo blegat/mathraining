@@ -57,7 +57,17 @@ module SessionsHelper
 
   def signed_in_user
     unless signed_in?
-      redirect_to root_path, danger: "Vous devez être connecté."
+      store_location
+      flash[:danger] = "Vous devez être connecté pour accéder à cette page."
+      redirect_to signin_path
+    end
+  end
+  
+  # Dans le cas d'une page compromettante (du type "rendre quelqu'un administrateur"), on ne permet pas une redirection douteuse
+  def signed_in_user_danger
+    unless signed_in?
+      flash[:danger] = "Vous ne pouvez pas effectuer cette opération de cette manière sans être préalablement connecté."
+      redirect_to root_path
     end
   end
 
@@ -67,8 +77,14 @@ module SessionsHelper
   end
 
   def redirect_back_or(default)
-    redirect_to(session[:return_to] || default)
+    retour = session[:return_to]
     session.delete(:return_to)
+    # On redirige vers la page "retour" si et seulement si on vient de la page signin!
+    if(retour and params[:redirection] == "/signin")
+      redirect_to(retour)
+    else
+      redirect_back(fallback_location: default)
+    end
   end
 
   def store_location

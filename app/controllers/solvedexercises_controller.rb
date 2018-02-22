@@ -1,6 +1,6 @@
 #encoding: utf-8
 class SolvedexercisesController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user_danger, only: [:create, :update]
   before_action :before_create, only: [:create]
   before_action :before_update, only: [:update]
   before_action :online_chapter

@@ -1,9 +1,9 @@
 <% provide(:title, "Connexion") %>
 
-<!-- Juste pour Nicolas sur son gsm qui bugge : personne ne devrait arriver ici sinon -->
+<!-- On est redirigé ici si on essaye d'accéder à une page qui nécessite d'être connecté -->
 <h1>Connexion</h1>
 
-<%= form_for(:session, url: sessions_path) do |f| %>
+<%= form_for(:session, url: sessions_path(redirection: request.original_fullpath)) do |f| %>
   <div class="form-group">
     <%= f.label :email %>
     <%= f.email_field :email, :class => "form-control", :style => "width:200px;" %>
@@ -13,13 +13,18 @@
     <%= f.label :password, "Mot de passe" %>
     <%= f.password_field :password, :class => "form-control", :style => "width:200px;" %>
   </div>
-
-  <%= link_to "Mot de passe oublié?", forgot_password_path %>
-  <br/><br/>
+  
+  <div class="form-group">
+    <%= f.check_box :remember_me %>
+    Garder ma session active
+  </div>
   <%= f.submit "Connexion", class: "btn btn-lg btn-primary" %>
 <% end %>
 
 <br/>
+<%= link_to "J'ai oublié mon mot de passe", forgot_password_path %>
+
+<br/><br/>
 
 Pas encore inscrit? <%= link_to "Inscrivez-vous", signup_path %> maintenant!
 

@@ -1,6 +1,7 @@
 #encoding: utf-8
 class QcmsController < QuestionsController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:new, :edit, :manage_choices, :explanation]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_choice, :add_choice, :switch_choice, :update_choice, :order_minus, :order_plus, :put_online, :update_explanation]
   before_action :admin_user
   before_action :online_qcm, only: [:add_choice, :remove_choice]
   before_action :root_qcm_user, only: [:destroy]

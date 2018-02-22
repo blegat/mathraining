@@ -1,6 +1,7 @@
 #encoding: utf-8
 class DiscussionsController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:show, :new]
+  before_action :signed_in_user_danger, only: [:create]
   before_action :is_involved, only: [:show]
 
   def show

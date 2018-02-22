@@ -1,6 +1,7 @@
 #encoding: utf-8
 class ActualitiesController < ApplicationController
-  before_action :signed_in_user, only: [:destroy, :update, :edit, :new, :create]
+  before_action :signed_in_user, only: [:edit, :new]
+  before_action :signed_in_user_danger, only: [:destroy, :update, :create]
   before_action :admin_user, only: [:destroy, :update, :edit, :new, :create]
 
   # Création d'une actualité : que pour les admins

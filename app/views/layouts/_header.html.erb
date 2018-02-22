@@ -253,7 +253,7 @@
           <!-- Formulaire pour se connecter -->
           <ul class="dropdown-menu">
             <li style="padding:15px; padding-bottom:5px; padding-top:10px;">
-            <%= form_for(:session, url: sessions_path) do |f| %>
+            <%= form_for(:session, url: sessions_path(redirection: request.original_fullpath)) do |f| %>
               <%= f.email_field :email, :placeholder => "Email", :class => "form-control", :style => "width:200px;", :id => "tf1" %>
 
               <%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control", :style => "margin-top:10px; width:200px;", :id => "tf2" %>

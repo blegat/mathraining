@@ -56,12 +56,18 @@ class ApplicationController < ActionController::Base
 
   # Vérifie qu'on est administrateur
   def admin_user
-    redirect_to root_path unless current_user.sk.admin?
+    if(!current_user.sk.admin)
+      flash[:danger] = "Vous n'avez pas accès à cette page."
+      redirect_to root_path
+    end
   end
 
   # Vérifie que l'on est root
   def root_user
-    redirect_to root_path unless current_user.sk.root
+    if(!current_user.sk.root)
+      flash[:danger] = "Vous n'avez pas accès à cette page."
+      redirect_to root_path
+    end
   end
 
   # Recalcule les scores de tout le monde

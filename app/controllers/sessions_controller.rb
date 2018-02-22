@@ -1,5 +1,6 @@
 #encoding: utf-8
 class SessionsController < ApplicationController
+  before_action :signed_in_user_danger, only: [:destroy]
   before_action :signed_out_user, only: [:create, :new]
 
   # Se connecter 1
@@ -18,7 +19,7 @@ class SessionsController < ApplicationController
         @remember_me = params[:session][:remember_me].to_i
         user.save
         sign_in user
-        redirect_back(fallback_location: root_path)
+        redirect_back_or(root_path)
       else
         flash[:danger] = 'Vous devez activer votre compte via le mail qui vous a été envoyé.'
         redirect_back(fallback_location: root_path)

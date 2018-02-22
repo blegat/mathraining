@@ -1,6 +1,7 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
-  before_action :signed_in_user, only: [:new, :edit, :create, :update, :destroy, :warning, :put_online, :read]
+  before_action :signed_in_user, only: [:new, :edit, :warning, :read]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online]
   before_action :admin_user, only: [:new, :edit, :create, :update, :destroy, :warning, :put_online]
   before_action :chapter_exists1, only: [:show, :edit, :update, :destroy]
   before_action :chapter_exists2, only: [:export, :warning, :put_online, :read]

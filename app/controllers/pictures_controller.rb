@@ -1,6 +1,7 @@
 #encoding: utf-8
 class PicturesController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:show, :new]
+  before_action :signed_in_user_danger, only: [:create, :destroy]
   before_action :admin_user
   before_action :good_person, only: [:show, :destroy]
 

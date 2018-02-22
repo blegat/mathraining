@@ -1,6 +1,6 @@
 #encoding: utf-8
 class CorrectionsController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user_danger, only: [:create]
   before_action :correct_user
   before_action :notskin_user, only: [:create]
 

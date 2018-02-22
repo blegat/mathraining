@@ -1,6 +1,6 @@
 #encoding: utf-8
 class TchatmessagesController < DiscussionsController
-  before_action :signed_in_user
+  before_action :signed_in_user_danger, only: [:create]
   before_action :notskin_user, only: [:create]
   before_action :is_involved_2, only: [:create]
 

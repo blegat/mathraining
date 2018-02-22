@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class FollowingsubjectsController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user_danger, only: [:add_followingsubject, :remove_followingsubject, :add_followingmessage, :remove_followingmessage]
 
   def add_followingsubject
     sub = Subject.find(params[:subject_id])

@@ -1,6 +1,6 @@
 #encoding: utf-8
 class SolvedqcmsController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user_danger, only: [:create, :update]
   before_action :before_all
   before_action :online_chapter
   before_action :unlocked_chapter

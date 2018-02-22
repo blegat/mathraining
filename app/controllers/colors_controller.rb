@@ -1,7 +1,11 @@
 #encoding: utf-8
 class ColorsController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:index]
+  before_action :signed_in_user_danger, only: [:destroy, :update, :create]
   before_action :root_user
+  
+  def index
+  end
 
   # Créer un niveau
   def create

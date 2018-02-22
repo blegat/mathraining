@@ -1,6 +1,7 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:intest]
+  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy]
   before_action :get_problem
   before_action :admin_user, only: [:destroy]
   before_action :corrector_user, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
@@ -160,101 +161,6 @@ class SubmissionsController < ApplicationController
     update_submission
   end
 
-  def update_submission
-    if @context == 1
-      lepath = problem_intest_path(@problem)
-    elsif @context == 2
-      lepath = problem_path(@problem, :sub => 0)
-    else
-      lepath = problem_path(@problem, :sub => 0)
-    end
-
-    if @submission.update_attributes(params.require(:submission).permit(:content))
-      totalsize = 0
-
-      @submission.myfiles.each do |f|
-        if params["prevfile#{f.id}".to_sym].nil?
-          f.file.destroy
-          f.destroy
-        else
-          totalsize = totalsize + f.file_file_size
-        end
-      end
-
-      @submission.fakefiles.each do |f|
-        if params["prevfakefile#{f.id}".to_sym].nil?
-          f.destroy
-        end
-      end
-
-      @error = false
-      @error_message = ""
-
-      update_files(@submission, "Submission") # Fonction commune pour toutes les pièces jointes
-
-      if @error
-        flash[:danger] = @error_message
-        session[:ancientexte] = params[:submission][:content]
-        redirect_to lepath and return
-      end
-
-      if @context == 1
-        flash[:success] = "Votre solution a bien été modifiée."
-        redirect_to virtualtest_path(@t, :p => @problem.id)
-      elsif @context == 2
-        flash[:success] = "Votre brouillon a bien été enregistré."
-        redirect_to lepath
-      else
-        @submission.status = 0
-        @submission.created_at = DateTime.current
-        @submission.lastcomment = @submission.created_at
-        @submission.visible = true
-        @submission.save
-        flash[:success] = "Votre solution a bien été soumise."
-        redirect_to problem_path(@problem, :sub => @submission.id)
-      end
-    else
-      session[:ancientexte] = params[:submission][:content]
-      if params[:submission][:content].size == 0
-        flash[:danger] = "Votre soumission est vide."
-      elsif params[:submission][:content].size > 8000
-        flash[:danger] = "Votre soumission doit faire moins de 8000 caractères."
-      else
-        flash[:danger] = "Une erreur est survenue."
-      end
-      redirect_to lepath
-    end
-  end
-
-  # Lu et non lu
-  def un_read(read, msg)
-    following = Following.where(:user_id => current_user.sk, :submission_id => @submission).first
-    if !following.nil?
-      following.read = read
-      if following.save
-        flash[:success] = "Soumission marquée comme #{msg}."
-        redirect_to problem_path(@problem, :sub => @submission)
-      else
-        flash[:danger] = "Un problème est apparu."
-        redirect_to problem_path(@problem, :sub => @submission)
-      end
-    elsif !read
-      following = Following.new
-      following.user = current_user.sk
-      following.submission = @submission
-      following.read = read
-      if following.save
-        flash[:success] = "Soumission marquée comme #{msg}."
-        redirect_to problem_path(@problem, :sub => @submission)
-      else
-        flash[:danger] = "Un problème est apparu."
-        redirect_to problem_path(@problem, :sub => @submission)
-      end
-    else
-      redirect_to root_path
-    end
-  end
-
   # Marquer comme lu
   def read
     un_read(true, "lue")
@@ -402,5 +308,100 @@ class SubmissionsController < ApplicationController
   def corrector_user
     @submission = Submission.find(params[:submission_id])
     redirect_to root_path unless current_user.sk.admin or (current_user.sk.corrector && current_user.sk.pb_solved?(@submission.problem) && current_user.sk != @submission.user)
+  end
+  
+  def update_submission
+    if @context == 1
+      lepath = problem_intest_path(@problem)
+    elsif @context == 2
+      lepath = problem_path(@problem, :sub => 0)
+    else
+      lepath = problem_path(@problem, :sub => 0)
+    end
+
+    if @submission.update_attributes(params.require(:submission).permit(:content))
+      totalsize = 0
+
+      @submission.myfiles.each do |f|
+        if params["prevfile#{f.id}".to_sym].nil?
+          f.file.destroy
+          f.destroy
+        else
+          totalsize = totalsize + f.file_file_size
+        end
+      end
+
+      @submission.fakefiles.each do |f|
+        if params["prevfakefile#{f.id}".to_sym].nil?
+          f.destroy
+        end
+      end
+
+      @error = false
+      @error_message = ""
+
+      update_files(@submission, "Submission") # Fonction commune pour toutes les pièces jointes
+
+      if @error
+        flash[:danger] = @error_message
+        session[:ancientexte] = params[:submission][:content]
+        redirect_to lepath and return
+      end
+
+      if @context == 1
+        flash[:success] = "Votre solution a bien été modifiée."
+        redirect_to virtualtest_path(@t, :p => @problem.id)
+      elsif @context == 2
+        flash[:success] = "Votre brouillon a bien été enregistré."
+        redirect_to lepath
+      else
+        @submission.status = 0
+        @submission.created_at = DateTime.current
+        @submission.lastcomment = @submission.created_at
+        @submission.visible = true
+        @submission.save
+        flash[:success] = "Votre solution a bien été soumise."
+        redirect_to problem_path(@problem, :sub => @submission.id)
+      end
+    else
+      session[:ancientexte] = params[:submission][:content]
+      if params[:submission][:content].size == 0
+        flash[:danger] = "Votre soumission est vide."
+      elsif params[:submission][:content].size > 8000
+        flash[:danger] = "Votre soumission doit faire moins de 8000 caractères."
+      else
+        flash[:danger] = "Une erreur est survenue."
+      end
+      redirect_to lepath
+    end
+  end
+
+  # Lu et non lu
+  def un_read(read, msg)
+    following = Following.where(:user_id => current_user.sk, :submission_id => @submission).first
+    if !following.nil?
+      following.read = read
+      if following.save
+        flash[:success] = "Soumission marquée comme #{msg}."
+        redirect_to problem_path(@problem, :sub => @submission)
+      else
+        flash[:danger] = "Un problème est apparu."
+        redirect_to problem_path(@problem, :sub => @submission)
+      end
+    elsif !read
+      following = Following.new
+      following.user = current_user.sk
+      following.submission = @submission
+      following.read = read
+      if following.save
+        flash[:success] = "Soumission marquée comme #{msg}."
+        redirect_to problem_path(@problem, :sub => @submission)
+      else
+        flash[:danger] = "Un problème est apparu."
+        redirect_to problem_path(@problem, :sub => @submission)
+      end
+    else
+      redirect_to root_path
+    end
   end
 end

@@ -1,6 +1,7 @@
 #encoding: utf-8
 class VirtualtestsController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:index, :show, :new, :edit]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :begin_test]
   before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :put_online, :destroy]
   before_action :recup, only: [:show, :destroy]
   before_action :recup2, only: [:begin_test]

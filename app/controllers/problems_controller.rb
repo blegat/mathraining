@@ -1,6 +1,7 @@
 #encoding: utf-8
 class ProblemsController < QuestionsController
-  before_action :signed_in_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  before_action :signed_in_user, only: [:edit, :new, :explanation]
+  before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order_minus, :order_plus, :put_online, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_action :root_problem_user, only: [:destroy]
   before_action :has_access, only: [:show]

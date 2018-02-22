@@ -1,6 +1,7 @@
 #encoding: utf-8
 class ExercisesController < QuestionsController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:new, :edit, :explanation]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order_minus, :order_plus, :put_online, :update_explanation]
   before_action :admin_user
   before_action :root_exercise_user, only: [:destroy]
 

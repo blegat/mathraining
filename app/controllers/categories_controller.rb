@@ -1,6 +1,7 @@
 #encoding: utf-8
 class CategoriesController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:index]
+  before_action :signed_in_user_danger, only: [:destroy, :update, :create]
   before_action :root_user
 
   # Page des catégories

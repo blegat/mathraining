@@ -1,6 +1,7 @@
 #encoding: utf-8
 class MessagesController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:new, :edit] 
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy]
   before_action :admin_subject_user, only: [:new, :create]
   before_action :author, only: [:edit, :update]
   before_action :admin_user, only: [:destroy]

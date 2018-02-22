@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 class PrerequisitesController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:graph_prerequisites]
+  before_action :signed_in_user_danger, only: [:add_prerequisite, :remove_prerequisite]
   before_action :admin_user
 
   # Graphe des prérequis

@@ -1,6 +1,7 @@
 #encoding: utf-8
 class TheoriesController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:new, :edit]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order_minus, :order_plus, :put_online, :read, :unread, :latex]
   before_action :admin_user, only: [:new, :edit, :create, :update, :destroy, :order_minus, :order_plus, :put_online]
 
   # Créer une théorie

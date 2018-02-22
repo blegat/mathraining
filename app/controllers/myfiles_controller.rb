@@ -1,6 +1,7 @@
 #encoding: utf-8
 class MyfilesController < ApplicationController
-  before_action :signed_in_user
+  before_action :signed_in_user, only: [:seeall]
+  before_action :signed_in_user_danger, only: [:download, :fake_delete]
   before_action :have_access, only: [:download]
   before_action :root_user, only: [:fake_delete]
 
