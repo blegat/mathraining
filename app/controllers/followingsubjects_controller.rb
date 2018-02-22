@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 class FollowingsubjectsController < ApplicationController
-  before_action :signed_in_user_danger, only: [:add_followingsubject, :remove_followingsubject, :add_followingmessage, :remove_followingmessage]
+  before_action :signed_in_user, only: [:remove_followingsubject, :remove_followingmessage]
+  before_action :signed_in_user_danger, only: [:add_followingsubject, :add_followingmessage]
 
   def add_followingsubject
     sub = Subject.find(params[:subject_id])
@@ -9,12 +10,9 @@ class FollowingsubjectsController < ApplicationController
     fol.subject = sub
     fol.user = current_user.sk
     fol.save
-
-    if request.env["HTTP_REFERER"]
-      redirect_to(:back)
-    else
-      redirect_to subject_path(sub)
-    end
+    
+    flash[:success] = "Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."
+    redirect_back(fallback_location: subject_path(sub))
   end
 
   def remove_followingsubject
@@ -23,34 +21,25 @@ class FollowingsubjectsController < ApplicationController
     if !x.nil?
       x.destroy
     end
-
-    if request.env["HTTP_REFERER"]
-      redirect_to(:back)
-    else
-      redirect_to subject_path(sub)
-    end
+    
+    flash[:success] = "Vous ne recevrez maintenant plus d'e-mail concernant ce sujet."
+    redirect_back(fallback_location: subject_path(sub))
   end
 
   def add_followingmessage
     current_user.sk.follow_message = true
     current_user.sk.save
-
-    if request.env["HTTP_REFERER"]
-      redirect_to(:back)
-    else
-      redirect_to new_discussion_path
-    end
+    
+    flash[:success] = "Vous recevrez dorénavant un e-mail à chaque nouveau message privé."
+    redirect_back(fallback_location: new_discussion_path)
   end
 
   def remove_followingmessage
     current_user.sk.follow_message = false
     current_user.sk.save
-
-    if request.env["HTTP_REFERER"]
-      redirect_to(:back)
-    else
-      redirect_to new_discussion_path
-    end
+    
+    flash[:success] = "Vous ne recevrez maintenant plus d'e-mail lors d'un nouveau message privé."
+    redirect_back(fallback_location: new_discussion_path)
   end
 
 end
