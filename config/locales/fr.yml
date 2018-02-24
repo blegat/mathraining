@@ -59,3 +59,4 @@ fr:
   will_paginate:
     previous_label: "Page précédente"
     next_label: "Page suivante"
+    page_gap: "..."

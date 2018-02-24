@@ -11,7 +11,7 @@
 
 <center>
   <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1 %>
+  <%= will_paginate @notifications, :style => "margin-top:15px; margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <!-- Si on affiche toutes les soumissions -->
@@ -57,5 +57,5 @@
 
 <center>
   <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv.", :inner_window => 1 %>
+  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>

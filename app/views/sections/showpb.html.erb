@@ -63,6 +63,8 @@
   <% if visible %>
     <% if compteur == 0 %>
       Chaque problème de niveau <%= level %> vaut <%= p.value %> points.<br/><br/>
+    <% else %>
+      <br/>
     <% end %>
     <% compteur = compteur+1 %>
 
@@ -155,13 +157,12 @@
       <% if p.origin.nil? || p.origin.size == 0 %>
         Inconnue)
       <% else %>
-    <b><%= p.origin %></b>)
-  <% end %>
-  </i>
-<% end %>
+        <b><%= p.origin %></b>)
+      <% end %>
+      </i>
+    <% end %>
 
     </div>
-    <br/>
     <% end %>
   <% end %>
 <% end %>
@@ -169,11 +170,14 @@
 <% if compteur == 0 %>
   Aucun problème de niveau <%= level %> n'est disponible.<br/><br/>
 <% end %>
-
+<% if level < 5 %>
+  <br/>
+<% end %>
 <% end %>
 
 <!-- Ajouter un problème -->
 <% if signed_in? && current_user.sk.admin? %>
+  <br/>
   <center>
   <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>
   </center>

@@ -52,6 +52,6 @@
 </center>
 
 <% if !@ss || !current_user.sk.admin? %>
-  <hr>
-  Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id) %> !<br/><br/>
+  <hr style="border-top:1px dashed lightgray;" />
+  Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id) %> !
 <% end %>

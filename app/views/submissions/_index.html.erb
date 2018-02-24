@@ -17,10 +17,12 @@ html>body tbody.scroll {
 var showCorrect = function () {
   document.getElementById("btn_correct").style.display = 'none';
   document.getElementById("all_correct").style.display = 'block';
+  document.getElementById("all_correct2").style.display = 'block';
 }
 var showFalse = function () {
   document.getElementById("btn_false").style.display = 'none';
   document.getElementById("all_false").style.display = 'block';
+  document.getElementById("all_false2").style.display = 'block';
 }
 </script>
 
@@ -80,7 +82,7 @@ var showFalse = function () {
     </table>
 
     <!-- Petit -->
-    <table class="table table-bordered visible-sm visible-xs" style="width:340px; display:none;" id="all_correct">
+    <table class="table table-bordered hidden-md hidden-lg" style="width:340px; display:none;" id="all_correct2">
     <thead class="fixed">
     <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
@@ -239,7 +241,7 @@ var showFalse = function () {
       </table>
 
       <!-- Petit -->
-      <table class="table table-bordered visible-xs visible-sm" style="width:340px; display:none;" id="all_correct">
+      <table class="table table-bordered hidden-md hidden-lg" style="width:340px; display:none;" id="all_correct2">
       <thead class="fixed">
       <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
       </thead>
@@ -285,7 +287,7 @@ var showFalse = function () {
     </table>
 
     <!-- Petit -->
-    <table class="table table-bordered visible-sm visible-xs" style="width:340px; display:none;" id="all_false">
+    <table class="table table-bordered hidden-md hidden-lg" style="width:340px; display:none;" id="all_false2">
     <thead class="fixed">
     <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>

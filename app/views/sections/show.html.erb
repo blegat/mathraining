@@ -41,9 +41,7 @@
   <% compteur = 0 %>
 
   <% (1..(liste.size+liste2.size)).each do |i| %>
-
     <% @nb_exercices = @nb_exercices + 1 %>
-
     <% encours = 0 %>
     <% if un >= liste.size %>
       <% encours = 2 %>
@@ -58,7 +56,6 @@
         <% end %>
       <% end %>
     <% end %>
-
     <% if encours == 1 %>
       <% f = liste[un] %>
       <% @nb_points_exercices = @nb_points_exercices + f.value %>
@@ -66,11 +63,8 @@
       <% @nb2_n2 = @nb2_n2 + 1 if f.level == 2 %>
       <% @nb2_n3 = @nb2_n3 + 1 if f.level == 3 %>
       <% @nb2_n4 = @nb2_n4 + 1 if f.level == 4 %>
-
       <% if f.online || (@ss && current_user.sk.admin?) %>
-
         <% compteur = compteur + 1 %>
-
         <% if k % 8 == 1 && k > 1 %>
           </div>
           <br/>
@@ -79,7 +73,6 @@
           <center>
           <div class="btn-group">
         <% end %>
-
         <% if acces %>
           <% if !@ss %>
             <button class="btn btn-default btn-grey" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= j %></button>
@@ -98,28 +91,22 @@
               <button class="btn btn-default btn-grey" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= j %></button>
             <% end %>
           <% end %>
-
         <% else %>
           <button class="btn disabled"><%= j %></button>
         <% end %>
-
         <% j = j+1 if f.online %>
         <% k = k+1 %>
       <% end %>
       <% un = un + 1 %>
     <% else %>
-
       <% f = liste2[deux] %>
       <% @nb_points_exercices = @nb_points_exercices + f.value %>
       <% @nb2_n1 = @nb2_n1 + 1 if f.level == 1 %>
       <% @nb2_n2 = @nb2_n2 + 1 if f.level == 2 %>
       <% @nb2_n3 = @nb2_n3 + 1 if f.level == 3 %>
       <% @nb2_n4 = @nb2_n4 + 1 if f.level == 4 %>
-
       <% if f.online || (@ss && current_user.sk.admin?) %>
-
         <% compteur = compteur + 1 %>
-
         <% if k % 8 == 1 && k > 1 %>
           </div>
           <br/>
@@ -128,7 +115,6 @@
           <center>
           <div class="btn-group">
         <% end %>
-
         <% if acces %>
           <% if !@ss %>
             <button class="btn btn-default btn-grey" onclick="location.href='<%= chapter_path(chapter, :type => 3, :which => f.id) %>'"><%= j %></button>
@@ -152,13 +138,10 @@
         <% end %>
         <% j = j+1 if f.online %>
         <% k = k+1 %>
-
       <% end %>
       <% deux = deux + 1 %>
     <% end %>
-
   <% end %>
-
 
 <% if compteur == 0 %>
   <center><p><i> Aucun exercice. </i></p></center>

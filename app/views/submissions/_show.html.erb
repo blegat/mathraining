@@ -45,11 +45,13 @@ function showSoumissionNormal(id) {
     <div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
     Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !
     <% @unactivate = 1 %>
+    <div class="visible-xs" style="height:7px;"></div>
     <%= link_to 'Réserver cette soumission', problem_submission_reserve_path(@problem, @submission), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
     </div>
   <% elsif f.user == current_user.sk %>
     <div style="background-color:#CCFFCC; padding:10px; border:1px solid green;">
     Vous avez réservé cette soumission pour la corriger.
+    <div class="visible-xs" style="height:7px;"></div>
     <%= link_to 'Annuler ma réservation', problem_submission_unreserve_path(@problem, @submission), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
     </div>
   <% else %>

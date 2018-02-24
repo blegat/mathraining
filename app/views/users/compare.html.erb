@@ -651,9 +651,13 @@ html>body tbody.scroll {
 
   <form action="/compare" method="get" class="form-inline" name="research">
     Comparer
+    <div class="visible-xs" style="height:5px;"></div>
     <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <div class="visible-xs" style="height:5px;"></div>
     avec
+    <div class="visible-xs" style="height:5px;"></div>
     <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
+    <div class="visible-xs" style="height:7px;"></div>
     <%= button_tag "Comparer!", class: "btn btn btn-primary", name: "" %>
   </form>
 
