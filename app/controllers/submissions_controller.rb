@@ -192,16 +192,15 @@ class SubmissionsController < ApplicationController
   # Réserver la soumission
   def reserve
     if @submission.followings.count > 0
-      flash[:danger] = "Cette soumission a déjà été réservée."
-      redirect_to problem_path(@problem, :sub => @submission)
+      @correct_name = @submission.followings.first.user.name
+      @what = 2
     else
       f = Following.new
       f.user = current_user.sk
       f.submission = @submission
       f.read = true
       f.save
-      flash[:success] = "Soumission réservée."
-      redirect_to problem_path(@problem, :sub => @submission)
+      @what = 3
     end
   end
 
@@ -209,11 +208,10 @@ class SubmissionsController < ApplicationController
   def unreserve
     f = @submission.followings.first
     if @submission.status != 0 || f.nil? || f.user != current_user.sk
-      redirect_to problem_path(@problem, :sub => @submission)
+      @what = 0
     else
       Following.delete(f.id)
-      flash[:success] = "Réservation annulée."
-      redirect_to problem_path(@problem, :sub => @submission)
+      @what = 1
     end
   end
 

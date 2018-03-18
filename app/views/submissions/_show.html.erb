@@ -9,6 +9,15 @@ function showSoumissionNormal(id) {
 }
 </script>
 
+<script type="text/javascript">
+var reserve = function () {
+  $.getScript("<%= reserve_url(:submission_id => @submission) %>");
+}
+var unreserve = function () {
+  $.getScript("<%= unreserve_url(:submission_id => @submission) %>");
+}
+</script>
+
 <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 <!-- Enlève la notification de l'étudiant s'il faut -->
@@ -39,27 +48,36 @@ function showSoumissionNormal(id) {
 
 <!-- Si administrateur, on propose de réserver la soumission -->
 <% @unactivate = 0 %>
+<% reservation_case = 0 %>
+<% corrector_name = "" %>
 <% if current_user.sk != @submission.user && @submission.status == 0 && @submission.visible %>
   <% f = @submission.followings.first %>
   <% if f.nil? %>
-    <div style="background-color:#FFFFAA; padding:10px; border:1px solid orange;">
-    Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !
+    <% reservation_case = 1 %>
     <% @unactivate = 1 %>
-    <div class="visible-xs" style="height:7px;"></div>
-    <%= link_to 'Réserver cette soumission', problem_submission_reserve_path(@problem, @submission), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
-    </div>
   <% elsif f.user == current_user.sk %>
-    <div style="background-color:#CCFFCC; padding:10px; border:1px solid green;">
+    <% reservation_case = 3 %>
+  <% else %>
+    <% reservation_case = 2 %>
+    <% @unactivate = 2 %>
+    <% corrector_name = f.user.name %>
+  <% end %>
+  
+  <div id="correct1" style="background-color:#FFFFAA; padding:10px; border:1px solid orange; <%= "display:none;" if reservation_case != 1 %>">
+    Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !
+    <div class="visible-xs" style="height:7px;"></div>
+    <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver cette soumission</button>
+  </div>
+  
+  <div id="correct2" style="background-color:#FFCCCC; padding:10px; border:1px solid red; <%= "display:none;" if reservation_case != 2 %>">
+    Cette soumission est en train d'être corrigée par <b><%= corrector_name %></b>.
+  </div>
+  
+  <div id="correct3" style="background-color:#CCFFCC; padding:10px; border:1px solid green; <%= "display:none;" if reservation_case != 3 %>">
     Vous avez réservé cette soumission pour la corriger.
     <div class="visible-xs" style="height:7px;"></div>
-    <%= link_to 'Annuler ma réservation', problem_submission_unreserve_path(@problem, @submission), :class => "btn btn-default btn-grey", :style => "margin-left:30px;" %>
-    </div>
-  <% else %>
-    <div style="background-color:#FFCCCC; padding:10px; border:1px solid red;">
-    <% @unactivate = 2 %>
-    Cette soumission est en train d'être corrigée par <b><%= f.user.name %></b>.
-    </div>
-  <% end %>
+    <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler ma soumission</button>
+  </div>
 <% end %>
 
 <!-- Si étudiant et soumission non correcte -->

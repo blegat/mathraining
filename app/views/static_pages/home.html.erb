@@ -44,8 +44,8 @@
 <% end %>
 
 <center>
-<%= will_paginate actualities, :style => "margin-top:-10px;", :class => "hidden-xs" %>
-<%= will_paginate actualities, :style => "margin-top:-10px;", :class => "visible-xs", :previous_label => "Préc.", :next_label => "Suiv." %>
+<%= will_paginate actualities, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
+<%= will_paginate actualities, :style => "margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 

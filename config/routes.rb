@@ -51,7 +51,9 @@ Mathraining::Application.routes.draw do
     match '/latex', to: 'theories#latex', :via => [:get], as: :latex
   end
 
-  resources :submissions, only: [:destroy]
+  resources :submissions, only: [:destroy];
+  match '/reserve', to: 'submissions#reserve', :via => [:get], as: :reserve
+  match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
 
   resources :problems, only: [:update, :edit, :destroy, :show] do
     match '/delete_prerequsite', to: 'problems#delete_prerequisite', :via => [:get], as: :delete_prerequisite
@@ -72,8 +74,6 @@ Mathraining::Application.routes.draw do
       match '/unread', to: 'submissions#unread', :via => [:get], as: :unread
       match '/star', to: 'submissions#star', :via => [:get], as: :star
       match '/unstar', to: 'submissions#unstar', :via => [:get], as: :unstar
-      match '/reserve', to: 'submissions#reserve', :via => [:get], as: :reserve
-      match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
     end
   end
   

@@ -1,0 +1,23 @@
+var correct1 = document.getElementById("correct1");
+var correct2 = document.getElementById("correct2");
+var correct3 = document.getElementById("correct3");
+
+var MI = document.getElementById("MathInput");
+var PJ = document.getElementById("PJ");
+var B1 = document.getElementById("B1");
+var B2 = document.getElementById("B2");
+
+correct1.style.display = "none"
+correct2.style.display = "none"
+correct3.style.display = "none"
+
+<% if @what == 0 %>
+  correct2.innerHTML = "Une erreur est survenue."
+  correct2.style.display = "block"
+<% elsif @what == 1 %>
+  correct1.style.display = "block"
+  MI.disabled = true
+  PJ.disabled = true
+  B1.disabled = true
+  B2.disabled = true
+<% end %>
