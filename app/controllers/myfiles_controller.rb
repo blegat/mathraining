@@ -17,10 +17,7 @@ class MyfilesController < ApplicationController
   def update
     @myfile = Myfile.find(params[:id])
     if !params["file"].nil?
-      d = @myfile.file_updated_at
       if(@myfile.update_attributes(file: params["file".to_sym]))
-        @myfile.file_updated_at = d
-        @myfile.save
         flash[:success] = "C'est remplacé !"
       else
       flash[:danger] = "Une condition n'est pas respectée..."
