@@ -71,13 +71,9 @@ $(window).scroll(scrollHandler);
 
       <div class="form-group">
         <div class="well" id="MathPreview"></div>
-        <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+        <div class="well hidden-preview" id="MathBuffer"></div>
         <%= render 'subjects/smiley', hiddentext: false %>
-        <% if @ancientexte.nil? %>
-          <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ></textarea>
-        <% else %>
-          <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte %></textarea>
-        <% end %>
+        <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
       </div>
 
       <span id="fooBar"></span>

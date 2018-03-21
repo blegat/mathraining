@@ -41,7 +41,6 @@ Mathraining::Application.routes.draw do
     match '/update_explanation', to: "exercises#update_explanation", :via => [:patch], as: :update_explanation
   end
 
-
   resources :theories, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'theories#order_plus', :via => [:get], as: :order_plus
     match '/order_minus', to: 'theories#order_minus', :via => [:get], as: :order_minus

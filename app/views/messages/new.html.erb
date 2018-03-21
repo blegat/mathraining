@@ -11,7 +11,6 @@ function hideStuff(id) {
 }
 </script>
 
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 <% provide(:title, 'Répondre') %>
 
 <% @nb_indice = 0 %>
@@ -26,8 +25,8 @@ function hideStuff(id) {
 <% page = [0,((tot-1)/10).floor].max + 1 %>
 
 <h1>
-<span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
-<span style="font-size:24px;"><%= link_to @subject.title, subject_path(@subject, :anchor => "bottom", :page => page, :q => q) %> ></span>
+<span class="title-first"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
+<span class="title-second"><%= link_to @subject.title, subject_path(@subject, :anchor => "bottom", :page => page, :q => q) %> ></span>
 Répondre
 </h1>
 

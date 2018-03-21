@@ -1,15 +1,4 @@
 <script type="text/javascript">
-function showSoumissionAnormal(id) {
-    document.getElementById("anormalsoumission" + id).style.display = 'inline';
-    document.getElementById("normalsoumission" + id).style.display = 'none';
-}
-function showSoumissionNormal(id) {
-    document.getElementById("normalsoumission" + id).style.display = 'inline';
-    document.getElementById("anormalsoumission" + id).style.display = 'none';
-}
-</script>
-
-<script type="text/javascript">
 var reserve = function () {
   $.getScript("<%= reserve_url(:submission_id => @submission) %>");
 }
@@ -17,8 +6,6 @@ var unreserve = function () {
   $.getScript("<%= unreserve_url(:submission_id => @submission) %>");
 }
 </script>
-
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
 
 <!-- Enlève la notification de l'étudiant s'il faut -->
 <% if @submission.user == current_user.sk %>
@@ -86,20 +73,19 @@ var unreserve = function () {
 <% end %>
 
 <!-- Affichage de la soumission -->
-<table class="table table-bordered" style="margin-top:20px;">
+<table class="table table-bordered message">
 
 <!-- Cas normal -->
 <tr class="info hidden-xs">
 
 <!-- Nom -->
-<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+<td class="author">
   <%= raw(@submission.user.linked_name) %>
 </td>
 
 <!-- Date -->
-<td style="vertical-align:middle; text-align:right; font-size:18px; padding-right:15px; border-left:none;">
-<% date = @submission.created_at.in_time_zone %>
-<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+<td class="date">
+<%= Message.write_date(@submission.created_at.in_time_zone) %>
 </td>
 </tr>
 
@@ -107,30 +93,29 @@ var unreserve = function () {
 
 <!-- Nom -->
 <tr class="info visible-xs">
-<td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+<td class="author">
   <%= raw(@submission.user.linked_name) %>
 </td>
 
 <!-- Date -->
 </tr>
 <tr class="info visible-xs">
-<td style="vertical-align:middle; text-align:right; font-size:18px; padding-right:15px; border-left:none;">
-<% date = @submission.created_at.in_time_zone %>
-<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+<td class="date">
+<%= Message.write_date(@submission.created_at.in_time_zone) %>
 </td>
 </tr>
 
 <!-- Contenu de la soumission -->
-<tr><td colspan="2" style="padding:15px;">
+<tr><td colspan="2" class="content">
 
-<div id="normalsoumission<%= @submission.id %>" style="display:inline;">
+<div id="normal<%= -@submission.id %>" style="display:inline;">
 <%= raw(bbcode(@submission.content)) %>
-<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSoumissionAnormal(<%= @submission.id %>); return false;'>(Montrer le code)</a></div>
+<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showAnormal(<%= -@submission.id %>)'>(Montrer le code)</a></div>
 </div>
 
-<div class="tex2jax_ignore" id="anormalsoumission<%= @submission.id %>" style="display:none;">
+<div class="tex2jax_ignore" id="anormal<%= -@submission.id %>" style="display:none;">
 <%= raw((h @submission.content).gsub(/\n/, '<br/>')) %>
-<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSoumissionNormal(<%= @submission.id %>); return false;'>(Cacher le code)</a></div>
+<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showNormal(<%= -@submission.id %>)'>(Cacher le code)</a></div>
 </div>
 
 <!-- Pièces jointes -->
@@ -173,7 +158,7 @@ var unreserve = function () {
 <!-- Supprimer la soumission : pas possible si correcte -->
 <% if current_user.sk.admin? && @submission.status != 2 && @submission.status >= 0 && !@submission.intest %>
   <br/><center>
-  <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cette soumission? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :style => "color:red;" %>
+  <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette soumission ? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :style => "color:red;" %>
   </center>
 <% end %>
 

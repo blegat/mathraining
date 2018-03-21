@@ -326,4 +326,16 @@ class ApplicationController < ActionController::Base
       j = j+1
     end
   end
+  
+  def truncate(m)
+    x = m.size
+    while(x >= 0 && (m[x-1] == " " || m[x-1] == "\n" || m[x-1] == "\r")) do
+      x = x-1
+    end
+    if(x >= 0) then
+      return m[0..(x-1)]
+    else
+      return " "
+    end
+  end
 end

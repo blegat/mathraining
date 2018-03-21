@@ -1,7 +1,7 @@
 <!-- Prérequis -->
 <h3>Prérequis</h3>
 <% if @chapter.prerequisites.count == 0 %>
-  <p>Aucun prérequis</p>
+  <p>Aucun prérequis</p><br/>
 <% else %>
   <ul>
     <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
@@ -10,12 +10,9 @@
   </ul>
 <% end %>
 
-<br/>
 <!-- Résumé -->
 <h3>Résumé</h3>
-<div>
-  <%= raw(htmlise(@chapter.description)) %>
-</div>
+<p><%= raw(htmlise(@chapter.description)) %></p>
 <br/>
 
 <!-- Toutes les théories -->
@@ -24,13 +21,13 @@
 <% listex.each do |f| %>
   <% if f.online %>
     <h3><%= i %>. <%= f.title %></h3>
-    <div>
+    <p>
       <% if i <= 2 %>
-      <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="form-group"><div class="well" id="MathPreview"></div> <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div> <textarea id="MathInput" class="form-control" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>')) %>
+      <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="form-group"><div class="well" id="MathPreview"></div> <div class="well hidden-preview" id="MathBuffer"></div> <textarea id="MathInput" class="form-control" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>')) %>
       <% else %>
       <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<center><i>Voir plus haut.</i></center>')) %>
       <% end %>
-    </div><br/>
+    </p><br/>
     <% i = i+1 %>
   <% end %>
 <% end %>
@@ -40,11 +37,7 @@
 <center>
   <!-- Marquer comme lu -->
   <% if !@ss || !current_user.sk.admin? %>
-    <% if @ss %>
-      <%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
-    <% else %>
-      <button type=button disabled=true class="btn btn-default btn-grey">Marquer toute la théorie comme lue</button><br/>
-    <% end %>
+    <%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => (!@ss || current_user.other) %>
   <% end %>
 
   <!-- Exporter en LaTeX (viré) -->

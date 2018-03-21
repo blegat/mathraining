@@ -1,0 +1,47 @@
+<%= render 'shared/error_messages', object: f.object %>
+<!-- Enoncé -->
+<div class="form-group">
+  <%= f.label "Énoncé" %>
+  <div class="well" id="MathPreview"></div>
+  <div class="well hidden-preview" id="MathBuffer"></div>
+  <%= render 'theories/font' %>
+  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
+</div>
+
+<!-- Si déjà en ligne -->
+<% if !exercise.nil? && exercise.chapter.online && exercise.online %>
+  <!-- Réponse -->
+  Réponse : 
+  <% if exercise.decimal %>
+    <% vraidecimal = true %>
+    <% if exercise.answer - exercise.answer.to_i <= 0.00001 && exercise.answer.to_i - exercise.answer <= 0.00001 %>
+      <% vraidecimal = false %>
+    <% end %>
+    <span style="font-size:16px;"><%= exercise.answer if vraidecimal %><%= exercise.answer.to_i if !vraidecimal %></span> (réponse <b>décimale</b> au millième près)
+  <% else %>
+    <span style="font-size:16px;"><%= exercise.answer.to_i %></span> (réponse <b>entière</b>)
+  <% end %>
+  <br/><br/>
+    
+  <!-- Niveau -->
+  Niveau de l'exercice : <b><%= exercise.level %></b><br/><br/>
+  
+<!-- Si pas encore en ligne -->
+<% else %>
+  <!-- Réponse -->
+  <div class="form-group">
+    <%= f.label "Réponse" %>
+    <%= f.text_field :answer, :class => "form-control", :style => "width:100px;" %>
+  </div>
+  <label class="checkbox-inline">
+    <%= f.check_box(:decimal) %>
+    Cochez si la réponse est décimale
+  </label>
+  <br/><br/>
+    
+  <!-- Niveau -->
+  <div class="form-group">
+    <%= f.label "Niveau (entre 1 et 4)" %>
+    <%= f.number_field :level, :class => "form-control", :style => "width:50px;", :min => 1, :max => 4 %>
+  </div>
+<% end %>

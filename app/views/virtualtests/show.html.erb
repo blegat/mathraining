@@ -1,6 +1,4 @@
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
-<% provide(:title, "Test virtuel ##{ @virtualtest.number }") %>
+<% provide(:title, "Test ##{ @virtualtest.number }") %>
 
 <% statut = current_user.sk.status(@virtualtest.id) %>
 
@@ -12,50 +10,12 @@
   <% depart = 0 %>
 <% end %>
 
-<script type="text/javascript">
-  function RemainingTime(){
-
-  if (!Date.now) {
-      Date.now = function() { return new Date().getTime(); }
-  }
-
-  var d = Math.floor(Date.now() / 1000)
-
-  var reste = <%= @virtualtest.duration * 60 %> - d + <%= depart %>
-
-  if (reste < 0) {
-    document.getElementById('clockbox').innerHTML = "Temps écoulé"
-  }
-  else {
-    var resteh = Math.floor(reste / 3600)
-    reste = reste - 3600 * resteh
-    var restem = Math.floor(reste / 60)
-    var restes = reste - 60 * restem
-  
-    if(resteh < 10){ afficheh = "0" + resteh }
-    else { afficheh = resteh }
-  
-    if(restem < 10){ affichem = "0" + restem }
-    else { affichem = restem }
-  
-    if(restes < 10){ affiches = "0" + restes }
-    else { affiches = restes }
-  
-    document.getElementById('clockbox').innerHTML = afficheh + "h" + affichem + ":" + affiches
-  }
-
-  }
-
-  window.onload=function(){
-  RemainingTime();
-  setInterval(RemainingTime,1000);
-  }
-</script>
+<%= render 'virtualtests/clock', depart: depart %>
 
 <% compteur = 0 %>
 
 <h1>
-<span style="font-size:16px;"><%= link_to "Tests virtuels", virtualtests_path %> ></span>
+<span class="title-first"><%= link_to "Tests virtuels", virtualtests_path %> ></span>
 Test #<%= @virtualtest.number %>
 </h1>
 
@@ -99,11 +59,11 @@ Test #<%= @virtualtest.number %>
     <%= button_to "Mettre en ligne", virtualtest_put_online_path(@virtualtest), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
     (Problèmes doivent être en ligne)
   <% else %>
-    <%= button_to "Mettre en ligne", virtualtest_put_online_path(@virtualtest), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Etes vous sûr de vouloir mettre ce test virtuel en ligne? Vous ne pourrez alors plus le modifier!" } %>
+    <%= button_to "Mettre en ligne", virtualtest_put_online_path(@virtualtest), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
   <% end %>
   
   <br/><br/>
-  <%= link_to "Modifier ce test", edit_virtualtest_path(@virtualtest) %> - <%= link_to "Supprimer ce test", @virtualtest, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce test virtuel? Cela ne supprimera pas les problèmes associés." } %>
+  <%= link_to "Modifier ce test", edit_virtualtest_path(@virtualtest) %> - <%= link_to "Supprimer ce test", @virtualtest, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce test virtuel ? Cela ne supprimera pas les problèmes associés." } %>
   <br/><br/>
   Pour ajouter un problème à ce test, ajouter d'abord le problème dans la section Problèmes, puis indiquer sur sa page qu'il appartient à ce test (<b>avant</b> de mettre le problème en ligne). 
   </center>
@@ -111,7 +71,7 @@ Test #<%= @virtualtest.number %>
 
 <!-- Si étudiant et pas encore commencé le test : propose de commencer -->
 <% if !current_user.sk.admin? && statut == -1 %>
-  <br/><center><%= button_to "Commencer ce test", virtualtest_begin_test_path(@virtualtest), method: :get, class: 'btn btn-lg btn-default btn-grey', disabled: current_user.other, data: { confirm: "Etes vous certain de vouloir commencer ce test? Soyez sûr d'avoir #{@virtualtest.duration / 60}h#{"0" if (@virtualtest.duration % 60) < 10}#{@virtualtest.duration % 60} devant vous!" } %></center>
+  <br/><center><%= button_to "Commencer ce test", virtualtest_begin_test_path(@virtualtest), method: :get, class: 'btn btn-lg btn-default btn-grey', disabled: current_user.other, data: { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{@virtualtest.duration / 60}h#{"0" if (@virtualtest.duration % 60) < 10}#{@virtualtest.duration % 60} devant vous !" } %></center>
 
 <!-- Si étudiant et test en cours : chrono -->
 <% elsif !current_user.sk.admin? && statut == 0 %>
@@ -126,8 +86,7 @@ Test #<%= @virtualtest.number %>
   <td width="50%" style="font-size:18px;">
   <center>
   Test commencé le
-  <% date = initial.in_time_zone %>
-  <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+  <%= Message.write_date(initial.in_time_zone) %>
   </center>
   </td>
   <td width="50%">

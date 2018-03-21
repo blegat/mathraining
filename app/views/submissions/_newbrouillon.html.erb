@@ -6,26 +6,16 @@
 
   <!-- Nouvelle soumission -->
   <h3>Nouvelle soumission</h3>
-  La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
-  <div class="form-group">
-  <div class="well" id="MathPreview"></div>
-  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-  <%= render 'subjects/smiley', hiddentext: false %>
-  <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
-  <% else %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
-  <% end %>
-  </div>
+  <%= render 'submissions/form', f: f %>
 
   <%= render 'subjects/files', s: @submission %>
   <span id="fooBar"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
   <br/><br/>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", style: "margin-bottom:5px;", :disabled => (!signed_in? || current_user.other), data: { confirm: "Etes-vous sûr de vouloir soumettre cette solution?" } %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", style: "margin-bottom:5px;", :disabled => (!signed_in? || current_user.other), data: { confirm: "Êtes-vous sûr de vouloir soumettre cette solution ?" } %>
   <%= f.submit "Enregistrer le brouillon", class: "btn btn-default btn-grey", style: "margin-bottom:5px;", :disabled => (!signed_in? || current_user.other) %>
-  <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger", style: "margin-bottom:5px;", :disabled => (!signed_in? || current_user.other), data: { confirm: "Etes-vous sûr de vouloir supprimer ce brouillon?" } %>
+  <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger", style: "margin-bottom:5px;", :disabled => (!signed_in? || current_user.other), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce brouillon ?" } %>
 <% end %>
 
 <script>

@@ -10,10 +10,101 @@ body {
   padding-top: 50px;
 }
 
+/* ACTUALITIES */
+
+table.actuality {
+  margin-top:20px;
+}
+
+table.actuality td.title {
+  font-size:26px;
+  font-weight:bold;
+  padding-left:15px;
+  border-right:none;
+}
+
+table.actuality td.date {
+  vertical-align:middle;
+  text-align:right;
+  font-size:18px;
+  border-left:none;
+  padding-right:15px;
+}
+
+table.actuality td.content {
+  padding:15px;
+}
+
+table.actuality td.modify {
+  text-align:center;
+}
+
+/* MESSAGE */
+
+table.message {
+  margin-top:20px;
+}
+
+table.message td.author {
+  font-size:20px;
+  font-weight:bold;
+  padding:10px;
+  padding-left:15px;
+  border-right:none;
+}
+
+table.message td.date {
+  vertical-align:middle;
+  text-align:right;
+  font-size:18px;
+  border-left:none;
+  padding-right:15px;
+}
+
+table.message td.content {
+  padding:15px;
+}
+
+table.message td.modify {
+  text-align:center;
+}
+
+/* TITLES */
+
+.title-first {
+  font-size:18px;
+}
+
+.title-second {
+  font-size:24px;
+}
+
+.title-third {
+  font-size:30px;
+}
+
+/* MENU CHAPITRE */
+
+.chap-menu h4 {
+  margin-bottom:10px;
+}
+
+/* PREVIEW */
+
+.hidden-preview {
+  visibility:hidden;
+  position:absolute;
+  top:0;
+  left:0;
+}
+
+/* BOUTON */
+
 .btn-grey {
   background-color: #f5f5f5;
 }
 
+/* DISCUSSIONS */
 .jaune {
   background-color: #FFFFBB;
 }
@@ -21,6 +112,7 @@ body {
 .jaune:hover {
   background-color: #F2F2AA !important;
 }
+
 
 /* footer */
 

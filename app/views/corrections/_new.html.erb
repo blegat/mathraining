@@ -4,7 +4,7 @@
 <%= form_for :correction, url: problem_submission_corrections_path(@problem, @submission), :html => { :multipart => true } do |f| %>
   <div class="form-group">
     <div class="well" id="MathPreview"></div>
-    <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+    <div class="well hidden-preview" id="MathBuffer"></div>
     <%= render 'subjects/smiley', hiddentext: false %>
 
     <% @ancientexte = session[:ancientexte] %>
@@ -28,12 +28,12 @@
     <% case @submission.status %>
     <% when 1 ## Faux %>
       <%= f.submit "Poster", class: "btn btn-primary", style: "margin-bottom:5px;", :disabled => current_user.other %>
-      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", style: "margin-bottom:5px;", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."}, :disabled => current_user.other %>
+      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", style: "margin-bottom:5px;", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => current_user.other %>
     <% when 2 ## Correct %>
       <%= f.submit "Poster", class: "btn btn-primary", :disabled => current_user.other %>
     <% when 3 ## Nouveau commentaire %>
       <%= f.submit "Poster et laisser la soumission comme erronée", class: "btn btn-danger", style: "margin-bottom:5px;", :disabled => current_user.other %>
-      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", style: "margin-bottom:5px;", data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."}, :disabled => current_user.other %>
+      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", style: "margin-bottom:5px;", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => current_user.other %>
     <% else ## Pas encore corrigé %>
       <% if @submission.intest && @submission.score == -1 %>
       <div class="form-group">
@@ -51,7 +51,7 @@
       Veuillez accepter ou refuser la solution indépendamment du score attribué, comme pour un problème normal. On acceptera donc essentiellement les solutions ayant obtenu un 7, mais des exceptions (dans un sens comme dans l'autre) restent possibles.<br/><br/>
       <% end %>
       <%= f.submit "Poster et refuser la soumission", id: "B1", class: "btn btn-danger", style: "margin-bottom:5px;", :disabled => (@unactivate > 0 || current_user.other) %>
-      <%= f.submit "Poster et accepter la soumission", id: "B2", class: "btn btn-success", style: "margin-bottom:5px;", :disabled => (@unactivate > 0 || current_user.other), data: {confirm: "Etes-vous sûr de vouloir accepter cette soumission? Vous ne pourrez plus revenir en arrière."} %>
+      <%= f.submit "Poster et accepter la soumission", id: "B2", class: "btn btn-success", style: "margin-bottom:5px;", :disabled => (@unactivate > 0 || current_user.other), data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."} %>
     <% end %>
 
   <!-- Si étudiant, simple bouton -->

@@ -1,7 +1,7 @@
 <!-- Prérequis -->
 <h3>Prérequis</h3>
 <% if @chapter.prerequisites.count == 0 %>
-  <p>Aucun prérequis</p>
+  <p>Aucun prérequis</p><br/>
 <% else %>
   <ul>
     <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
@@ -10,7 +10,6 @@
   </ul>
 <% end %>
 
-<br/>
 <!-- Modifier les prérequis -->
 <% if signed_in? && current_user.sk.admin? %>
   <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>
@@ -18,22 +17,18 @@
 
 <!-- Résumé -->
 <h3>Résumé</h3>
-<div>
-  <%= raw(htmlise(@chapter.description)) %>
-</div>
-<br/><br/>
+<p><%= raw(htmlise(@chapter.description)) %></p>
+<br/>
 
 <!-- Modifier / Supprimer -->
 <% if signed_in? && current_user.sk.admin? %>
   <br/>
+  <center>
   <% if !@chapter.online %>
-    <center>
-      <%= link_to "Modifier le nom, le niveau ou le résumé de ce chapitre", edit_chapter_path(@chapter) %> |
-      <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce chapitre?" } %><br />
-    </center>
+    <%= link_to "Modifier le nom, le niveau ou le résumé de ce chapitre", edit_chapter_path(@chapter) %> |
+    <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce chapitre ?" } %>
   <% else %>
-    <center>
-      <%= link_to "Modifier le nom, le niveau ou le résumé de ce chapitre", edit_chapter_path(@chapter) %><br />
-    </center>
+    <%= link_to "Modifier le nom, le niveau ou le résumé de ce chapitre", edit_chapter_path(@chapter) %>
   <% end %>
+  <br/>
 <% end %>

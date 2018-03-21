@@ -11,7 +11,7 @@ Pour récupérer l'url d'une de vos images, cliquez dessus.<br/><br/>
 
   <div class="col-md-3 col-sm-4 col-xs-6">
   <%= link_to image_tag(p.image.url, :style => "margin-bottom:15px; width:100%;"), p %>
-  <center><%= link_to "Supprimer cette image", p, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous)! Etes-vous sûr de vouloir supprimer cette image ?" } %></center><br/><br/>
+  <center><%= link_to "Supprimer cette image", p, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous) ! Êtes-vous sûr de vouloir supprimer cette image ?" } %></center><br/><br/>
   </div>
 
   <% if i % 4 == 3 %>

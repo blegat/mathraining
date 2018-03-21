@@ -1,7 +1,3 @@
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
-<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
-
 <% provide(:title, "#{@user[1].name} vs #{@user[2].name}") %>
 
 <% t1 = Time.now %>
@@ -292,10 +288,10 @@ html>body tbody.scroll {
         <% zero = false %>
 
         <!-- Affichage de la ligne -->
-        <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+        <tr style="background-color:<%= Section.color(a[:section]) %>;">
 
         <!-- Date -->
-        <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+        <td style="width:150px;"><%= Message.write_date_only(date) %></td>
 
         <!-- Quoi -->
         <td style="width:340px;">
@@ -348,10 +344,10 @@ html>body tbody.scroll {
         <% if !resolu[3-qui][a[:type]-1][a[:id]] %>
         <% date = a[:time].in_time_zone %>
 
-        <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+        <tr style="background-color:<%= Section.color(a[:section]) %>;">
 
         <!-- Date -->
-        <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+        <td style="width:150px;"><%= Message.write_date_only(date) %></td>
 
         <!-- Quoi -->
         <td style="width:140px;">

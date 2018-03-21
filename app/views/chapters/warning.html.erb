@@ -1,9 +1,9 @@
 <% provide(:title, "Mise en ligne d'un chapitre".html_safe) %>
 
 <h1>
-  <span style="font-size:16px;">Théorie ></span>
-  <span style="font-size:24px;"><%= link_to @chapter.section.name, @chapter.section %> ></span>
-  <span style="font-size:32px;"><%= link_to @chapter.name, @chapter %> ></span>
+  <span class="title-first">Théorie ></span>
+  <span class="title-second"><%= link_to @chapter.section.name, @chapter.section %> ></span>
+  <span class="title-third"><%= link_to @chapter.name, @chapter %> ></span>
   Mise en ligne
 </h1>
 
@@ -20,7 +20,6 @@ Une fois cela fait, les utilisateurs auront accès à tous les composants du cha
 <% end %>
 
 <h3>Prérequis</h3>
-
 Les prérequis fondamentaux sont là à titre d'information (puisqu'il n'est pas nécessaire de valider un prérequis fondamental pour avoir accès à ce chapitre).
 Ils pourront donc toujours être modifiés par la suite. Par contre, les autres prérequis sont très importants et ne doivent pas être négligés.
 Vous devez absolument indiquer les prérequis nécessaires à ce chapitre avant de le mettre en ligne. Ceux-ci ne seront plus modifiables par la suite.
@@ -32,7 +31,6 @@ Veillez donc à ne pas en oublier. Par exemple, les chapitres sans prérequis se
 Une fois ce chapitre en ligne, il sera toujours possible d'y ajouter des points théoriques, exercices, et QCMs. Ceux-ci passeront d'abord par une période "en construction" lors de laquelle les utilisateurs n'y auront pas encore accès.
 
 <h3>Points théoriques</h3>
-
 Il sera toujours possible d'ajouter, modifier, et supprimer les points théoriques de ce chapitre.
 Cela dit, il est évidemment préférable qu'à la mise en ligne de ce chapitre, les points théoriques soient finalisés.
 
@@ -56,5 +54,5 @@ Cela dit, il est évidemment préférable qu'à la mise en ligne de ce chapitre,
 <% end %>
 <br/>
 <center>
-  <%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), method: :get, class: 'btn-danger btn-lg', data: {confirm: "Etes-vous sûr de vouloir mettre ce chapitre en ligne?"} %>
+  <%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), method: :get, class: 'btn-danger btn-lg', data: {confirm: "Êtes-vous sûr de vouloir mettre ce chapitre en ligne ?"} %>
 </center>

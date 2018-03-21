@@ -14,19 +14,8 @@ function hideStuff() {
 <!-- On vérifie que cet exercice peut bien être vu -->
 <% if f.online || (@ss && current_user.sk.admin?) %>
 
-<% pt = f.value %>
-
-<% pct = 0 %>
-<% pct = f.nb_firstguess.to_f / f.nb_tries.to_f if f.nb_tries > 0 %>
-<% pct2 = [1.4*pct,1].min %>
-
-<h3>Exercice <%= number %>
-<% if !@fondation %>
-<span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
-<% end %>
- <span class="hidden-xs" style="margin-left:20px; font-size:20px; color:rgb(<%= 0+((1-pct2)*255).to_i %>,<%= 0+(pct2*225).to_i %>,0);">(<%= (100*pct).round(0) %>% de réussite au premier essai)</span>
- <br class="visible-xs" />
- <span class="visible-xs" style="margin-top:5px;font-size:20px; color:rgb(<%= 0+((1-pct2)*255).to_i %>,<%= 0+(pct2*225).to_i %>,0);">(<%= (100*pct).round(0) %>% de réussite au 1<sup>er</sup> essai)</span></h3>
+<!-- Titre -->
+<%= render 'exercises/title', f: f, number: number %>
 
 <!-- Enoncé -->
 <div>
@@ -51,121 +40,8 @@ function hideStuff() {
   <% end %>
   <br/><br/>
   
-  <!-- Essais des élèves -->
-  <script type="text/javascript">
-  function showStuff2() {
-    document.getElementById("explanation2").style.display = 'inline';
-    document.getElementById("show2").style.display = 'none';
-    document.getElementById("hide2").style.display = 'inline';
-  }
-  function hideStuff2() {
-    document.getElementById("explanation2").style.display = 'none';
-    document.getElementById("show2").style.display = 'inline';
-     document.getElementById("hide2").style.display = 'none';
-    
-  }
-	</script>
-	
-	<br/>
-	<a href='#' id='show2' onclick='showStuff2(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Essais des étudiants</a>
-  <a href='#' id='hide2' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff2(); return false;'>Essais des étudiants</a>
-  <span id='explanation2' style='display:none;'><br/><br/>
-  Corrects :
-  <% compte = 0 %>
-  <% f.solvedexercises.includes(:user).order(:updated_at).all.each do |se| %>
-    <% if se.correct %>
-      <% if compte > 0 %>
-        <%= " - " %>
-      <% end %>
-      <% compte = compte+1 %>
-      <%= raw(se.user.linked_name) %>
-      <%= "(#{se.nb_guess-1})" if se.nb_guess-1 > 0 %>
-    <% end %>
-  <% end %>
-  <% if compte == 0 %>
-    <%= "Aucune résolution." %>
-  <% end %>
-  <br/><br/>
-  Incorrects :
-  <% compte = 0 %>
-  <% f.solvedexercises.order(:updated_at).all.each do |se| %>
-    <% if !se.correct %>
-      <% if compte > 0 %>
-        <%= " - " %>
-      <% end %>
-      <% compte = compte+1 %>
-      <%= raw(se.user.linked_name) %>
-      (<%= se.nb_guess %>)
-    <% end %>
-  <% end %>
-  <% if compte == 0 %>
-    <%= "Aucun utilisateur bloqué." %>
-  <% end %>
-  </span>
-  <br/><br/>
-  
-  <!-- Explication -->
-  <h4>Explication</h4>
-  <% if f.explanation.size == 0 %>
-    <p style="color:orange;"><b>Pas d'explication</b></p>
-  <% else %>
-    <%= raw(htmlise(f.explanation)) %>
-    <br/>
-  <% end %>
-  <br/>
-  
-  <!-- Modifier / Supprimer -->
-  <div class="noprint">
-  <center>
-    <% if f.online %>
-      <%= link_to "Modifier cet exercice", edit_exercise_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
-      | <%= link_to "Modifier l'explication", exercise_explanation_path(f) %>
-      <!-- <% if current_user.sk.root %>
-        | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Attention, cet exercice est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
-      <% end %> -->
-    <% else %>
-      <%= link_to "Modifier cet exercice", edit_exercise_path(f) %>
-      | <%= link_to "Modifier l'explication", exercise_explanation_path(f) %>
-      | <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cet exercice?" } %>
-    <% end %>
-  </center>
-  <br/>
-  
-  <!-- Déplacer -->
-  <% if number2 > 1 %>
-    <% up = true %>
-  <% else %>
-    <% up = false %>
-  <% end %>
-
-  <% if number2 < liste.size + liste2.size %>
-    <% down = true %>
-  <% else %>
-    <% down = false %>
-  <% end %>
-
-  <% if (up || down) %>
-    <center>
-      Déplacer cet exercice vers le
-      <% if up %>
-        <%= link_to "haut", exercise_order_minus_path(f) %>
-        <% if down %>
-          | <%= link_to "bas", exercise_order_plus_path(f) %>
-        <% end %>
-      <% else %>
-        <%= link_to "bas", exercise_order_plus_path(f) %>
-      <% end %>
-    </center> <br/>
-  <% end %>
-  
-  <!-- Mettre en ligne -->
-  <% if !f.online && @chapter.online %>
-    <center>
-      <%= button_to "Mettre en ligne", exercise_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
-    </center> <br/>
-  <% end %>
-
-  </div>
+  <!-- Pour les admins -->
+  <%= render 'exercises/admin', f: f, type: 2, number2: number2, number_tot: liste.size + liste2.size %>
 
 <!-- Si étudiant inscrit -->
 <% elsif @ss %>
@@ -178,13 +54,13 @@ function hideStuff() {
     
     <!-- Si l'exercice est déjà résolu -->
     <% if exo.correct? %>
-      <% if exo.nb_guess-1 > 1 %>
-        <p style="color:green;"><b>Vous avez résolu cet exercice après <%= exo.nb_guess-1 %> erreurs.</b><br/><br/></p>
-      <% elsif exo.nb_guess-1 == 1 %>
-        <p style="color:green;"><b>Vous avez résolu cet exercice après 1 erreur.</b><br/><br/></p>
+      <p style="color:green;"><b>
+      <% if exo.nb_guess-1 > 0 %>
+        Vous avez résolu cet exercice après <%= exo.nb_guess-1 %> erreur<%= "s" if exo.nb_guess-1 > 1 %>.
       <% else %>
-        <p style="color:green;"><b>Vous avez résolu cet exercice du premier coup!</b><br/><br/></p>
+        Vous avez résolu cet exercice du premier coup!
       <% end %>
+      </b><br/><br/></p>
       
       <!-- Réponse -->
       <h4>Réponse</h4>
@@ -208,43 +84,14 @@ function hideStuff() {
       
     <!-- Si l'étudiant s'est déjà trompé -->
     <% else %>
-
-      <!-- Réponse -->
-      <% if f.decimal %>
-        On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
-        <% val = exo.guess %>
-      <% else %>
-        <% val = exo.guess.to_i %>
-      <% end %>
-
-      <%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
-        <%= g.label "Votre réponse : ", :disabled => current_user.other %>
-        <%= g.text_field :guess, class: "form-control", style: "width:70px; margin-left:5px;", value: val, :disabled => current_user.other %>
-        <div class="visible-xs" style="height:7px;"></div>
-        <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => current_user.other %>
-      <% end %>
-      <br/>
-
-      <p style="color:red;">Votre réponse (<b><%= val %></b>) est erronée. Vous avez déjà commis <%= exo.nb_guess %> erreur<%= "s" if exo.nb_guess > 1 %>.</p>
-
+      <%= render 'exercises/question', f: f, exo: exo %>
     <% end %>
 
   <!-- Si l'étudiant n'a pas encore essayé l'exercice -->
   <% else %>
   
-    <!-- Réponse -->
-    <% if f.decimal %>
-      On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
-    <% end %>
-
-    <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
-      <%= g.hidden_field :exercise_id, value: f.id %>
-      <%= g.label "Votre réponse : ", :disabled => current_user.other %>
-      <%= g.text_field :guess, class: "form-control", style: "width:70px; margin-left:5px;", :disabled => current_user.other %>
-      <div class="visible-xs" style="height:7px;"></div>
-      <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => current_user.other %>
-    <% end %>
-
+    <% exo = Solvedexercise.new %>
+    <%= render 'exercises/question', f: f, exo: exo %>
   <% end %>
 
   <hr style="border-top:1px dashed lightgray;" />
@@ -253,22 +100,11 @@ function hideStuff() {
 <!-- Si étudiant non inscrit -->
 <% else %>
 
-  <!-- Réponse -->
-  <% if f.decimal %>
-    On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
-  <% end %>
+  <% exo = Solvedexercise.new %>
+  <%= render 'exercises/question', f: f, exo: exo %>
   
-  <%= form_for(:solvedexercise, url: solvedexercises_path, :html => {:class => "form-inline"}) do |g| %>
-    <%= g.hidden_field :exercise_id, value: f.id %>
-    <%= g.label :guess, "Votre réponse : " %>
-    <%= g.text_field :guess, class: "form-control", style: "width:70px; margin-left:5px;", :disabled => true %>
-    <div class="visible-xs" style="height:7px;"></div>
-    <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => true %>
-  <% end %>
-  
-<hr style="border-top:1px dashed lightgray;" />
-<center>Pour pouvoir répondre aux exercices, vous devez être connecté.</center>
-
+  <hr style="border-top:1px dashed lightgray;" />
+  <center>Pour pouvoir répondre aux exercices, vous devez être connecté.</center>
 <% end %>
 
 <% end %>

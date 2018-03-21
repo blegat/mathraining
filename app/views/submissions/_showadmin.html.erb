@@ -1,6 +1,4 @@
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
-<% abreviation = ["Comb.", "Géom.", "Th. Nb.", "Alg.", "Eq. Fct.", "Inég."] %>
+<% abreviation = ["Comb.", "Géom.", "Th. Nb.", "Alg.", "Éq. Fct.", "Inég."] %>
 
 <% today = DateTime.now.in_time_zone.to_date %>
 
@@ -61,8 +59,7 @@
 
 <!-- Date de soumission -->
 <td class="hidden-xs hidden-sm" style="width:250px;">
-<% date = s.created_at.in_time_zone %>
-<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+<%= Message.write_date(s.created_at.in_time_zone) %>
 <% if s.intest && (current_user.sk.admin? || current_user.sk.corrector) %>
 - <b> TEST</b>
 <% end %>
@@ -70,8 +67,7 @@
 
 <!-- Dernière activité -->
 <td class="<%= "hidden-xs hidden-sm" if @situation >= 3 %>" style="width:250px;">
-<% date = s.lastcomment.in_time_zone %>
-<%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+<%= Message.write_date(s.lastcomment.in_time_zone) %>
 </td>
 
 <!-- Nom (si on l'affiche) -->

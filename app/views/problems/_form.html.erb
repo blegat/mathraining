@@ -1,0 +1,26 @@
+<%= render 'shared/error_messages', object: f.object %>
+
+<!-- Enoncé -->
+<div class="form-group">
+  <%= f.label "Énoncé" %>
+  <div class="well" id="MathPreview"></div>
+  <div class="well hidden-preview" id="MathBuffer"></div>
+  <%= render 'theories/font' %>
+  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
+</div>
+  
+<!-- Origine -->
+<div class="form-group">
+  <%= f.label "Origine" %> (Compétition (format long) - Année - Numéro du problème : laisser blanc si d'origine inconnue)
+  <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
+</div>
+
+<!-- Niveau -->
+<% if !problem.nil? && problem.online %>
+  Niveau (entre 1 et 5) : <b><%= problem.level %></b><br/><br/>
+<% else %>
+  <div class="form-group">
+  <%= f.label "Niveau (entre 1 et 5)" %>
+  <%= f.number_field :level, :class => "form-control", :style => "width:50px;", :min => 1, :max => 5 %>
+  </div>
+<% end %>

@@ -14,19 +14,8 @@ function hideStuff() {
 <!-- On vérifie que ce qcm peut bien être vu -->
 <% if f.online || (@ss && current_user.sk.admin?) %>
 
-<% pt = f.value %>
-
-<% pct = 0 %>
-<% pct = f.nb_firstguess.to_f / f.nb_tries.to_f if f.nb_tries > 0 %>
-<% pct2 = [1.4*pct,1].min %>
-
-<h3>Exercice <%= number %>
-<% if !@fondation %>
-<span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
-<% end %>
- <span class="hidden-xs" style="margin-left:20px; font-size:20px; color:rgb(<%= 0+((1-pct2)*255).to_i %>,<%= 0+(pct2*225).to_i %>,0);">(<%= (100*pct).round(0) %>% de réussite au premier essai)</span>
- <br class="visible-xs" />
- <span class="visible-xs" style="margin-top:5px;font-size:20px; color:rgb(<%= 0+((1-pct2)*255).to_i %>,<%= 0+(pct2*225).to_i %>,0);">(<%= (100*pct).round(0) %>% de réussite au 1<sup>er</sup> essai)</span></h3>
+<!-- Titre -->
+<%= render 'exercises/title', f: f, number: number %>
 
 <!-- Enoncé -->
 <div>
@@ -62,125 +51,9 @@ function hideStuff() {
   <% end %>
   <br/><br/>
   
-  <!-- Essais des élèves -->
-  <script type="text/javascript">
-	function showStuff2() {
- 	   document.getElementById("explanation2").style.display = 'inline';
- 	   document.getElementById("show2").style.display = 'none';
- 	   document.getElementById("hide2").style.display = 'inline';
-	}
-	function hideStuff2() {
-  	 document.getElementById("explanation2").style.display = 'none';
- 		 document.getElementById("show2").style.display = 'inline';
- 	   document.getElementById("hide2").style.display = 'none';
-	}
-	</script>
-	
-	<br/>
-  <a href='#' id='show2' onclick='showStuff2(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Essais des étudiants</a>
-  <a href='#' id='hide2' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff2(); return false;'>Essais des étudiants</a>
-  <span id='explanation2' style='display:none;'><br/><br/>
-  Corrects :
-  <% compte = 0 %>
-  <% f.solvedqcms.order(:updated_at).all.each do |se| %>
-    <% if se.correct %>
-      <% if compte > 0 %>
-        <%= " - " %>
-      <% end %>
-      <% compte = compte+1 %>
-      <%= raw(se.user.linked_name) %>
-      <%= "(#{se.nb_guess-1})" if se.nb_guess-1 > 0 %>
-    <% end %>
-  <% end %>
-  <% if compte == 0 %>
-    <%= "Aucune résolution." %>
-  <% end %>
-  <br/><br/>
-  Incorrects :
-  <% compte = 0 %>
-  <% f.solvedqcms.order(:updated_at).all.each do |se| %>
-    <% if !se.correct %>
-      <% if compte > 0 %>
-        <%= " - " %>
-      <% end %>
-      <% compte = compte+1 %>
-      <%= raw(se.user.linked_name) %>
-      (<%= se.nb_guess %>)
-    <% end %>
-  <% end %>
-  <% if compte == 0 %>
-    <%= "Aucun utilisateur bloqué." %>
-  <% end %>
-  </span>
-  <br/><br/>
+  <!-- Pour les admins -->
+  <%= render 'exercises/admin', f: f, type: 3, number2: number2, number_tot: liste.size + liste2.size %>
   
-  <!-- Explication -->
-  <h4>Explication</h4>
-  <% if f.explanation.size == 0 %>
-    <p style="color:orange;"><b>Pas d'explication</b></p>
-  <% else %>
-    <%= raw(htmlise(f.explanation)) %>
-    <br/>
-  <% end %>
-
-  <br/>
-  
-  <!-- Modifier/Supprimer/... -->
-  <div class="noprint">
-  <center>
-    <% if f.online %>
-      <%= link_to "Modifier ce QCM", edit_qcm_path(f), data: { confirm: "Attention, ce QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." }  %> |
-      <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f), data: { confirm: "Attention, QCM étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
-      <%= link_to "Modifier l'explication", qcm_explanation_path(f) %>
-      <!-- <% if current_user.sk.root %>
-        | <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Attention, ce QCM est visible des utilisateurs. Etes-vous sûr de vouloir le supprimer? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
-      <% end %> -->
-    <% else %>
-      <%= link_to "Modifier ce QCM", edit_qcm_path(f) %> |
-      <%= link_to "Modifier les réponses de ce QCM", qcm_manage_choices_path(f) %> |
-      <%= link_to "Modifier l'explication", qcm_explanation_path(f) %> |
-      <%= link_to "Supprimer ce QCM", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce QCM?" } %>
-    <% end %>
-  </center>
-
-  <br/>
-
-  <!-- Déplacer -->
-  <% if number2 > 1 %>
-    <% up = true %>
-  <% else %>
-    <% up = false %>
-  <% end %>
-
-  <% if number2 < liste.size + liste2.size %>
-    <% down = true %>
-  <% else %>
-    <% down = false %>
-  <% end %>
-
-  <% if (up || down) %>
-    <center>
-      Déplacer ce QCM vers le
-      <% if up %>
-        <%= link_to "haut", qcm_order_minus_path(f) %>
-        <% if down %>
-          | <%= link_to "bas", qcm_order_plus_path(f) %>
-        <% end %>
-      <% else %>
-        <%= link_to "bas", qcm_order_plus_path(f) %>
-      <% end %>
-    </center> <br/>
-  <% end %>
-
-  <!-- Mettre en ligne -->
-  <% if !f.online && @chapter.online %>
-    <center>
-      <%= button_to "Mettre en ligne", qcm_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de ce qcm par la suite. Etes vous sûr de vouloir le mettre en ligne?" } %>
-    </center> <br/>
-  <% end %>
-
-  </div>
-
 <!-- Si étudiant inscrit -->
 <% elsif @ss %>
 
@@ -193,17 +66,16 @@ function hideStuff() {
     <!-- Si déjà résolu -->
     <% if sol.correct? %>
 
-      <% if sol.nb_guess-1 > 1 %>
-        <p style="color:green;"><b>Vous avez résolu cet exercice après <%= sol.nb_guess-1 %> erreurs.</b><br/><br/></p>
-      <% elsif sol.nb_guess-1 == 1 %>
-        <p style="color:green;"><b>Vous avez résolu cet exercice après 1 erreur.</b><br/><br/></p>
+      <p style="color:green;"><b>
+      <% if sol.nb_guess-1 > 0 %>
+        Vous avez résolu cet exercice après <%= sol.nb_guess-1 %> erreur<%= "s" if sol.nb_guess-1 > 1 %>.
       <% else %>
-        <p style="color:green;"><b>Vous avez résolu cet exercice du premier coup!</b><br/><br/></p>
+        Vous avez résolu cet exercice du premier coup!
       <% end %>
+      </b><br/><br/></p>
       
       <!-- Réponse -->
       <h4>Réponse</h4>
-
       <ul>
         <% f.choices.order(:id).each do |c| %>
           <li style="padding:5px;">
@@ -229,74 +101,13 @@ function hideStuff() {
     
     <!-- Si déjà essayé -->
     <% else %>
-
-      <% if f.many_answers %>
-
-        <% anciens = sol.choices %>
-
-        <%= form_for sol do |x| %>
-          <b>Plusieurs réponses sont possibles.</b><br/><br/>
-          <% f.choices.order(:id).each do |c| %>
-            <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-            <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-              <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if current_user.other %>>
-              <%= raw(c.ans) %>
-            </label><br/>
-          <% end %>
-          <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
-        <% end %>
-      <% else %>
-        <% choice = sol.choices.first %>
-        <%= form_for sol do |x| %>
-          <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-          <% f.choices.order(:id).each do |c| %>
-            <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-              <input type="radio" name="ans" value="<%= c.id %>" <%= "checked" if c.id == choice.id %> <%= "disabled=\"true\"" if current_user.other %>>
-              <%= raw(c.ans) %>
-            </label><br/>
-          <% end %>
-          <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
-        <% end %>
-
-      <% end %>
-
-      <br/>
-
-      <p style="color:red;">Votre réponse est erronée. Vous avez déjà commis <%= sol.nb_guess %> erreur<%= "s" if sol.nb_guess > 1 %>.</p>
-
+      <%= render 'qcms/question', f: f, sol: sol, anciens: sol.choices %> 
     <% end %>
     
   <!-- Si pas encore essayé -->
   <% else %>
-
-    <% if f.many_answers %>
-      <b>Plusieurs réponses sont possibles.</b><br/><br/>
-      <% sol = Solvedqcm.new %>
-      <%= form_for sol do |x| %>
-        <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-        <% f.choices.order(:id).each do |c| %>
-          <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-            <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "disabled=\"true\"" if current_user.other %>>
-            <%= raw(c.ans) %>
-          </label><br/>
-        <% end %>
-        <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
-      <% end %>
-    <% else %>
-      <% sol = Solvedqcm.new %>
-      <%= form_for sol do |x| %>
-        <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-        <% f.choices.order(:id).each do |c| %>
-          <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-            <input type="radio" name="ans" value="<%= c.id %>" <%= "disabled=\"true\"" if current_user.other %>>
-            <%= raw(c.ans) %>
-          </label><br/>
-        <% end %>
-        <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if current_user.other %>>Soumettre</button>
-      <% end %>
-
-    <% end %>
-
+    <% sol = Solvedqcm.new %>
+    <%= render 'qcms/question', f: f, sol: sol, anciens: sol.choices %>
   <% end %>
 
   <hr style="border-top:1px dashed lightgray;" />
@@ -304,36 +115,11 @@ function hideStuff() {
 
 <!-- Si étudiant non connecté -->
 <% else %>
-  <% if f.many_answers %>
-    <b>Plusieurs réponses sont possibles.</b><br/><br/>
-    <form action="<%= solvedqcms_path %>" method="post">
-      <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-      <% f.choices.order(:id).each do |c| %>
-        <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-          <input type="checkbox" name="ans[<%= c.id %>]" value="ok" disabled="true">
-          <%= raw(c.ans) %>
-        </label><br/>
-      <% end %>
-      <br/><button class="btn btn-primary" type="submit" disabled="true">Soumettre</button>
-    </form>
-  <% else %>
-    <% sol = Solvedqcm.new %>
-    <%= form_for sol do |x| %>
-      <input type="hidden" name="qcm_id" value="<%= f.id %>" />
-      <% f.choices.order(:id).each do |c| %>
-        <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-          <input type="radio" name="ans" value="<%= c.id %>" disabled="true">
-          <%= raw(c.ans) %>
-        </label><br/>
-      <% end %>
-      <br/><button class="btn btn-primary" type="submit" disabled="true">Soumettre</button>
-    <% end %>
-  <% end %>
+  <% sol = Solvedqcm.new %>
+  <%= render 'qcms/question', f: f, sol: sol, anciens: sol.choices %>
   
   <hr style="border-top:1px dashed lightgray;" />
   <center>Pour pouvoir répondre aux exercices, vous devez être connecté.</center>
-
-
 <% end %>
 
 <% end %>

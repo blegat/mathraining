@@ -1,35 +1,21 @@
-<script type="text/javascript">
-function showSujetAnormal(id) {
-    document.getElementById("anormalsujet" + id).style.display = 'inline';
-    document.getElementById("normalsujet" + id).style.display = 'none';
-}
-function showSujetNormal(id) {
-    document.getElementById("normalsujet" + id).style.display = 'inline';
-    document.getElementById("anormalsujet" + id).style.display = 'none';
-}
-</script>
-
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
 <% q = 0 %>
 <% if(params.has_key?:q) %>
   <% q = params[:q].to_i %>
 <% end %>
 
-<table class="table table-bordered">
+<table class="table table-bordered message">
 
   <!-- Cas normal -->
   <tr class="hidden-xs info">
 
   <!-- Nom -->
-  <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+  <td class="author">
     <%= raw(s.user.linked_name) %>
   </td>
 
   <!-- Date -->
-  <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
-  <% date = s.created_at.in_time_zone %>
-  <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+  <td class="date">
+  <%= Message.write_date(s.created_at.in_time_zone) %>
   </td>
   </tr>
 
@@ -37,35 +23,34 @@ function showSujetNormal(id) {
 
   <!-- Nom -->
   <tr class="visible-xs info">
-  <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+  <td class="author">
     <%= raw(s.user.linked_name) %>
   </td>
   </tr>
 
   <!-- Date -->
   <tr class="visible-xs info">
-  <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
-  <% date = s.created_at.in_time_zone %>
-  <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+  <td class="date">
+  <%= Message.write_date(s.created_at.in_time_zone) %>
   </td>
   </tr>
 
   <!-- Contenu du message -->
-  <tr><td colspan="2" style="padding:15px;">
+  <tr><td colspan="2" class="content">
   <div>
   <% bb = bbcode(s.content) %>
   <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div style='background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;'><a href='#' id='show#{@nb_indice}' onclick='showStuff(#{@nb_indice}); return false;' style='display:inline;' class='btn btn-default btn-grey'>#{$1}</a><a href='#' id='hide#{@nb_indice}' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(#{@nb_indice}); return false;'>#{$1}</a><span id='indice#{@nb_indice}' style='display:none;'><br/><br/>#{$2}</span></div>"} %>
   <% @nb_indice = @nb_indice+1 %>
   <% end %>
 
-  <div id="normalsujet<%= s.id %>" style="display:inline;">
+  <div id="normal<%= -s.id %>" style="display:inline;">
   <%= raw(bb) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSujetAnormal(<%= s.id %>); return false;'>(Montrer le code)</a></div>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showAnormal(<%= -s.id %>)'>(Montrer le code)</a></div>
   </div>
 
-  <div class="tex2jax_ignore" id="anormalsujet<%= s.id %>" style="display:none;">
+  <div class="tex2jax_ignore" id="anormal<%= -s.id %>" style="display:none;">
   <%= raw((h s.content).gsub(/\n/, '<br/>')) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showSujetNormal(<%= s.id %>); return false;'>(Cacher le code)</a></div>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showNormal(<%= -s.id %>)'>(Cacher le code)</a></div>
   </div>
 
   <!-- Pièces jointes -->
@@ -75,22 +60,20 @@ function showSujetNormal(id) {
 
   <!-- Si on peut modifier -->
   <% if canmodif && (s.user == current_user.sk || (current_user.sk.admin && !s.user.admin) || current_user.sk.root) %>
-    <tr><td colspan="2">
-    <center>
-        <%= link_to "Modifier ce sujet", edit_subject_path(s, :q => q) %>
-        <% if current_user.sk.admin? %>
-          | <%= link_to "Supprimer ce sujet", subject_path(s), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce sujet et tous les messages qui vont avec ?" }  %>
-          | <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Migrer ce sujet</a>
-          <span id='formulaire' style="display:none;">
-          <%= form_tag subject_migrate_path(s), method: :get, :class => "form-inline" do %>
-            Migrer ce sujet vers le sujet numéro
-            <%= hidden_field_tag "q", q %>
-            <%= number_field_tag "migreur", nil, min: 1, max: 10000 %>
-            <%= submit_tag "Do it!", data: { confirm: "Etes-vous sûr de vouloir migrer ce sujet? Etes-vous sûr de l'id du sujet receveur?"} %>
-          <% end %>
-          </span>
+    <tr><td colspan="2" class="modify">
+      <%= link_to "Modifier ce sujet", edit_subject_path(s, :q => q) %>
+      <% if current_user.sk.admin? %>
+        | <%= link_to "Supprimer ce sujet", subject_path(s), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce sujet et tous les messages qui vont avec ?" }  %>
+        | <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Migrer ce sujet</a>
+        <span id='formulaire' style="display:none;">
+        <%= form_tag subject_migrate_path(s), method: :get, :class => "form-inline" do %>
+          Migrer ce sujet vers le sujet numéro
+          <%= hidden_field_tag "q", q %>
+          <%= number_field_tag "migreur", nil, min: 1, max: 10000 %>
+          <%= submit_tag "Do it !", data: { confirm: "Êtes-vous sûr de vouloir migrer ce sujet ? Êtes-vous sûr de l'id du sujet receveur ?"} %>
         <% end %>
-    </center>
+        </span>
+      <% end %>
     </td></tr>
   <% end %>
 

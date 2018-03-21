@@ -1,22 +1,18 @@
 <% if f.online || (@ss && current_user.sk.admin?) %>
-  <h3><%= f.title %> </h3>
-  <div>
-    <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="form-group"><div class="well" id="MathPreview"></div> <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div> <textarea id="MathInput" class="form-control" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>') )%>
-  </div>
+  <h3><%= f.title %></h3>
+  <p><%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="form-group"><div class="well" id="MathPreview"></div> <div class="well hidden-preview" id="MathBuffer"></div> <textarea id="MathInput" class="form-control" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>') )%>
+  </p>
   <br/>
 
   <div class="noprint">
-  
   <!-- Si administrateur -->
   <% if @ss && current_user.sk.admin? %>
     <br/>
-    
-    <!-- Modifier/Supprimer -->
     <center>
+    <!-- Modifier/Supprimer -->
       <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> |
-      <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce point théorique?" } %>
-    </center>
-    <br/>
+      <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce point théorique ?" } %>
+    <br/><br/>
     
     <!-- Déplacer -->
     <% if number > 1 %>
@@ -32,37 +28,33 @@
     <% end %>
 
     <% if up || down %>
-      <center>
-        Déplacer ce point théorique vers le
-        <% if up %>
-          <%= link_to "haut", theory_order_minus_path(f) %>
-          <% if down %>
-            | <%= link_to "bas", theory_order_plus_path(f) %>
-          <% end %>
-        <% else %>
-          <%= link_to "bas", theory_order_plus_path(f) %>
+      Déplacer ce point théorique vers le
+      <% if up %>
+        <%= link_to "haut", theory_order_minus_path(f) %>
+        <% if down %>
+          | <%= link_to "bas", theory_order_plus_path(f) %>
         <% end %>
-      </center> <br/>
+      <% else %>
+        <%= link_to "bas", theory_order_plus_path(f) %>
+      <% end %>
+      <br/><br/>
     <% end %>
     
     <!-- Mettre en ligne -->
     <% if !f.online && @chapter.online %>
-      <center>
-        <%= button_to "Mettre en ligne", theory_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Etes vous sûr de vouloir rendre ce point théorique visible par les utilisateurs?" } %>
-      </center> <br/>
+      <%= button_to "Mettre en ligne", theory_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
+      <br/>
     <% end %>
+    </center>
   
   <!-- Si étudiant -->
   <% else %>
-    <div class="noprint">
     <br/>
     <center>
       <% if @ss && current_user.sk.theories.exists?(id) %>
         <%= button_to "Marquer comme non lu", theory_unread_path(f), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
-      <% elsif @ss %>
-        <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
       <% else %>
-        <button type=button disabled=true class="btn btn-default btn-grey">Marquer comme lu</button>
+        <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn-default btn-grey', :disabled => (!@ss || current_user.other) %>
       <% end %>
     </center>
 
@@ -70,7 +62,6 @@
       <hr style="border-top:1px dashed lightgray;" />
       Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> !
     <% end %>
-    </div>
   <% end %>
 
   </div>

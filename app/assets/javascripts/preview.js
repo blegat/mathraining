@@ -26,8 +26,8 @@ var Preview = {
   SwapBuffers: function () {
     var buffer = this.preview, preview = this.buffer;
     this.buffer = buffer; this.preview = preview;
-    buffer.style.visibility = "hidden"; buffer.style.position = "absolute";
-    preview.style.position = ""; preview.style.visibility = "";
+    buffer.classList.add("hidden-preview");
+    preview.classList.remove("hidden-preview");
   },
 
   //

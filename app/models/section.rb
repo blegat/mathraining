@@ -24,4 +24,9 @@ class Section < ActiveRecord::Base
 
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
   validates :description, length: { maximum: 8000 }
+  
+  def self.color(x)
+    colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF", "#F5F5F5"]
+    return colors[x-1];
+  end
 end

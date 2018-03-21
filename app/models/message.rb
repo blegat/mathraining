@@ -26,4 +26,14 @@ class Message < ActiveRecord::Base
   validates :content, presence: true, length: { maximum: 8000 }
   validates :user_id, presence: true
   validates :subject_id, presence: true
+  
+  def self.write_date(date)
+    mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+    return "#{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}"
+  end
+  
+  def self.write_date_only(date)
+    mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+    return "#{ date.day } #{ mois[date.month-1]} #{date.year}"
+  end
 end

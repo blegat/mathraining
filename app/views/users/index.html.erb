@@ -1,18 +1,6 @@
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
-<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
-
 <% abreviation = ["C", "G", "TN", "A", "EF", "I"] %>
 
 <% provide(:title, 'Scores') %>
-
-<% t1 = Time.now %>
-
-<!-- Test pour la performance -->
-<% montretemps = 0 %>
-<% if(params.has_key?:montretemps) %>
-  <% montretemps = params[:montretemps].to_i %>
-<% end %>
 
 <h1>Scores</h1>
 
@@ -43,8 +31,6 @@
   <% persection[u.id] = Array.new %>
 <% end %>
 
-<% t2 = Time.now %>
-
 <% Solvedproblem.includes(:problem).where("truetime > ?", twoweeksago).find_each do |s| %>
   <% recent[s.user_id] += s.problem.value %>
 <% end %>
@@ -63,13 +49,9 @@
   <% end %>
 <% end %>
 
-<% t3 = Time.now %>
-
 <% Pointspersection.all.each do |p| %>
 	<% persection[p.user_id][p.section_id] = p.points %>
 <% end %>
-
-<% t4 = Time.now %>
 
 <% oldlevel = {:id => -1} %>
 
@@ -171,8 +153,6 @@
   <b>Aucun utilisateur classé.</b>
 <% end %>
 
-<% t5 = Time.now %>
-
 <!-- Si root : bouton pour modifier les niveaux et couleurs, et pour recalculer les scores -->
 <% if @ss && current_user.sk.root %>
   <center>
@@ -193,7 +173,7 @@
     <h2>Inscriptions récentes</h2>
     <% User.order("created_at DESC").where(:admin => false).first(10).each do |u| %>
       <% inscription = u.created_at %>
-      <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %> :
+      <%= Message.write_date_only(inscription.in_time_zone) %> :
       <% if u.email_confirm %>
         <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b><%= "(banni)" if !u.active %></b><br/>
         <% else %>
@@ -207,7 +187,7 @@
   <% rank = 1 %>
   <% User.order("created_at DESC").where(:admin => false, :rating => 0).each do |u| %>
     <% inscription = u.created_at %>
-    <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %> :
+    <%= Message.write_date_only(inscription.in_time_zone) %> :
     <% if u.email_confirm %>
       <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b><%= "(banni)" if !u.active %></b><br/>
     <% else %>
@@ -229,14 +209,4 @@
     <% end %>
   <% end %>
 
-<% end %>
-
-<% t6 = Time.now %>
-
-<% if montretemps == 1 %>
-  <br/>Temps de chargement 1 : <%= t2-t1 %> secondes.
-  <br/>Temps de chargement 2 : <%= t3-t2 %> secondes.
-  <br/>Temps de chargement 3 : <%= t4-t3 %> secondes.
-  <br/>Temps de chargement 4 : <%= t5-t4 %> secondes.
-  <br/>Temps de chargement 5 : <%= t6-t5 %> secondes.
 <% end %>

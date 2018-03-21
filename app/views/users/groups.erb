@@ -1,5 +1,3 @@
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
 <% provide(:title, 'Groupes Wépion') %>
 <h1>Groupes Wépion</h1>
 
@@ -31,7 +29,7 @@
     <% if lastco.in_time_zone.year < 2010 %>
       Jamais
     <% else %>
-      <%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %>
+      <%= Message.write_date_only(lastco.in_time_zone) %>
     <% end %>
     </td>
     </tr>
@@ -51,7 +49,7 @@
     <% if lastco.in_time_zone.year < 2010 %>
       Jamais
     <% else %>
-      <%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %>
+      <%= Message.write_date_only(lastco.in_time_zone) %>
     <% end %>
     </td>
     </tr>

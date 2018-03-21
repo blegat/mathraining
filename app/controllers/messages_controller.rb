@@ -25,6 +25,7 @@ class MessagesController < ApplicationController
       q = params[:q].to_i
     end
 
+    params[:message][:content] = truncate(params[:message][:content])
     @message = Message.new(params.require(:message).permit(:content))
     @message.user = current_user.sk
     @message.subject = @subject
@@ -112,6 +113,7 @@ class MessagesController < ApplicationController
     end
 
     # Si la modification du message réussit
+    params[:message][:content] = truncate(params[:message][:content])
     if @message.update_attributes(params.require(:message).permit(:content))
 
       # Pièces jointes

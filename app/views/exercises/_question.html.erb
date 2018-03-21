@@ -1,0 +1,21 @@
+<!-- Réponse -->
+<% val = nil %>
+<% if f.decimal %>
+  On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
+  <% val = exo.guess %>
+<% else %>
+  <% val = exo.guess.to_i if !exo.guess.nil? %>
+<% end %>
+
+<%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
+  <%= g.hidden_field :exercise_id, value: f.id if val.nil? %>
+  <%= g.label "Votre réponse : ", :disabled => !@ss || current_user.other %>
+  <%= g.text_field :guess, class: "form-control", style: "width:70px; margin-left:5px;", value: val, :disabled => !@ss || current_user.other %>
+  <div class="visible-xs" style="height:7px;"></div>
+  <%= g.submit "Soumettre", class: "btn btn-primary", :disabled => !@ss || current_user.other %>
+<% end %>
+
+<% if !exo.nb_guess.nil? %>
+  <br/>
+  <p style="color:red;">Votre réponse (<b><%= val %></b>) est erronée. Vous avez déjà commis <%= exo.nb_guess %> erreur<%= "s" if exo.nb_guess > 1 %></p>
+<% end %>

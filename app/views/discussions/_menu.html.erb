@@ -1,10 +1,9 @@
-<div class="list-group">
+<div class="list-group chap-menu">
   <br/>
-  <h4 class="list-group-item-heading" style="margin-bottom:10px;">Nouveau message</h4>
-  <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item active" if @nouveau %>
-  <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item" if !@nouveau %>
+  <h4 class="list-group-item-heading">Nouveau message</h4>
+  <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item #{"active" if @nouveau}" %>
   <br/>
-  <h4 class="list-group-item-heading" style="margin-bottom:10px;">Discussions</h4>
+  <h4 class="list-group-item-heading">Discussions</h4>
 
   <% number = Array.new %>
 
@@ -23,22 +22,10 @@
     <% end %>
 
     <% texte = d.tchatmessages.order("created_at DESC").first.content %>
-
-    <% if d == @discussion %>
-      <%= link_to d, :class => "list-group-item active" do %>
-        <b><%= other.name %></b><br/>
-          <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
-      <% end %>
-    <% elsif d != @discussion && number[d.id] > 0 %>
-      <%= link_to d, :class => "list-group-item jaune" do %>
-        <b><%= "#{other.name} (#{number[d.id]})" %></b><br/>
-        <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
-      <% end %>
-    <% else %>
-      <%= link_to d, :class => "list-group-item" do %>
-        <b><%= other.name %></b><br/>
-        <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
-      <% end %>
+    
+    <%= link_to d, :class => "list-group-item #{"active" if d == @discussion} #{"jaune" if number[d.id] > 0 && d != @discussion}" do %>
+      <b><%= other.name %><%= " (#{number[d.id]})" if number[d.id] > 0 && d != @discussion %></b><br/>
+      <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
     <% end %>
     <% combien = combien + 1 %>
   <% end %>

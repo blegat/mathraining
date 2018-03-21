@@ -1,20 +1,20 @@
 <% provide(:title, "Modifier la solution d'un problème") %>
 
 <h1>
-<span style="font-size:16px;">Problèmes ></span>
-<span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
-<span style="font-size:32px;"><%= link_to "Problème ##{ @problem.number }", @problem %> ></span>
+<span class="title-first">Problèmes ></span>
+<span class="title-second"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
+<span class="title-third"><%= link_to "Problème ##{ @problem.number }", @problem %> ></span>
 Modifier la solution
 </h1>
 
 <!-- Enoncé -->
-<h3>Enoncé</h3>
+<h3>Énoncé</h3>
 <div style="margin-bottom:30px;">
 <%= raw(htmlise(@problem.statement)) %>
 </div>
 
 <!-- Explication -->
-<h3>Eléments de solution</h3>
+<h3>Éléments de solution</h3>
 Ce champ ne sera visible <u>que par les autres administrateurs</u>.
 Son but est de donner les grandes idées de la solution afin de faciliter la tâche des autres administrateurs voulant corriger des solutions d'étudiants à ce problème.<br/><br/>
 
@@ -22,7 +22,7 @@ Son but est de donner les grandes idées de la solution afin de faciliter la tâ
   <%= render 'shared/error_messages', object: f.object %>
   <div class="form-group">
     <div class="well" id="MathPreview"></div>
-    <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+    <div class="well hidden-preview" id="MathBuffer"></div>
     <%= render 'theories/font' %>
     <%= f.text_area :explanation, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
   </div>

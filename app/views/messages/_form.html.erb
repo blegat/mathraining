@@ -8,7 +8,7 @@
 <div class="form-group">
   <%= f.label :message, :disabled => current_user.other %>
   <div class="well" id="MathPreview"></div>
-  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+  <div class="well hidden-preview" id="MathBuffer"></div>
   <%= render 'subjects/smiley', hiddentext: true %>
   <%= f.text_area :content, :value => @message.content, :maxlength => "8000", :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => current_user.other %>
 

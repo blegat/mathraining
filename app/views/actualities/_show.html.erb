@@ -1,40 +1,36 @@
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
-<table class="table table-bordered" style="margin-top:20px;">
+<table class="table table-bordered actuality">
 
   <!-- Cas normal -->
   <tr class="info hidden-xs">
     <!-- Titre -->
-    <td style="font-size:26px; font-weight:bold; padding-left:15px; border-right:none;">
+    <td class="title">
       <%= f.title %>
     </td>
 
     <!-- Date -->
-    <td style="vertical-align:middle; text-align:right; font-size:18px; border-left:none; padding-right:15px;">
-      <% date = f.created_at.in_time_zone %>
-      <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+    <td class="date">
+      <%= Message.write_date(f.created_at.in_time_zone) %>
     </td>
   </tr>
 
   <!-- Cas gsm : titre et date sur des lignes différentes -->
   <!-- Titre -->
   <tr class="info visible-xs">
-    <td style="font-size:26px; font-weight:bold; padding-left:15px; border-right:none;">
+    <td class="title">
       <%= f.title %>
     </td>
   </tr>
 
   <!-- Date -->
   <tr class="info visible-xs">
-    <td style="vertical-align:middle; text-align:right; font-size:18px; border-left:none; padding-right:15px;">
-      <% date = f.created_at.in_time_zone %>
-      <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+    <td class="date">
+      <%= Message.write_date(f.created_at.in_time_zone) %>
     </td>
   </tr>
 
   <!-- Contenu -->
   <tr>
-    <td style="padding:15px;" colspan="2">
+    <td class="content" colspan="2">
       <div>
         <%= raw(htmlise(f.content)) %>
       </div>
@@ -44,11 +40,9 @@
   <!-- Modifier / Supprimer -->
   <% if signed_in? && current_user.sk.admin? %>
     <tr>
-      <td colspan="2">
-        <center>
-          <%= link_to "Modifier cette actualité", edit_actuality_path(f) %> |
-          <%= link_to "Supprimer cette actualité", f, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cette actualité?" } %>
-        </center>
+      <td class="modify" colspan="2">
+          <%= link_to "Modifier l'actualité", edit_actuality_path(f) %> |
+          <%= link_to "Supprimer l'actualité", f, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette actualité ?" } %>
       </td>
     </tr>
   <% end %>

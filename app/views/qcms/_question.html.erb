@@ -1,0 +1,31 @@
+<% if f.many_answers %>
+  <%= form_for sol do |x| %>
+    <b>Plusieurs réponses sont possibles.</b><br/><br/>
+    <% f.choices.order(:id).each do |c| %>
+      <input type="hidden" name="qcm_id" value="<%= f.id %>" />
+      <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+        <input type="checkbox" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if !@ss || current_user.other %>>
+        <%= raw(c.ans) %>
+      </label><br/>
+    <% end %>
+    <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if !@ss || current_user.other %>>Soumettre</button>
+  <% end %>
+<% else %>
+  <% choice = sol.choices.first %>
+  <%= form_for sol do |x| %>
+    <input type="hidden" name="qcm_id" value="<%= f.id %>" />
+    <% f.choices.order(:id).each do |c| %>
+      <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+        <input type="radio" name="ans" value="<%= c.id %>" <%= "checked" if !choice.nil? && c.id == choice.id %> <%= "disabled=\"true\"" if !@ss || current_user.other %>>
+        <%= raw(c.ans) %>
+      </label><br/>
+    <% end %>
+    <br/><button class="btn btn-primary" type="submit" <%= "disabled=\"true\"" if !@ss || current_user.other %>>Soumettre</button>
+  <% end %>
+
+<% end %>
+
+<% if !sol.nb_guess.nil? %>
+  <br/>
+  <p style="color:red;">Votre réponse est erronée. Vous avez déjà commis <%= sol.nb_guess %> erreur<%= "s" if sol.nb_guess > 1 %>.</p>
+<% end %>

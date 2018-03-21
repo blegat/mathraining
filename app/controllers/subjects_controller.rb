@@ -97,7 +97,9 @@ class SubjectsController < ApplicationController
     if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path and return
     end
-
+    
+    params[:subject][:title] = truncate(params[:subject][:title])
+    params[:subject][:content] = truncate(params[:subject][:content])
     @subject = Subject.new(params.require(:subject).permit(:title, :content, :admin, :important, :wepion))
     @subject.user = current_user.sk
     @subject.lastcomment = DateTime.current
@@ -206,6 +208,8 @@ class SubjectsController < ApplicationController
       redirect_to root_path
     end
 
+    params[:subject][:title] = truncate(params[:subject][:title])
+    params[:subject][:content] = truncate(params[:subject][:content])
     if @subject.update_attributes(params.require(:subject).permit(:title, :content, :admin, :important, :wepion))
 
       if @subject.admin

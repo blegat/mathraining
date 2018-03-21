@@ -10,8 +10,8 @@
 <% page = [0,((tot-1)/10).floor].max + 1 %>
 
 <h1>
-<span style="font-size:16px;"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
-<span style="font-size:24px;"><%= link_to @message.subject.title, subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q) %> ></span>
+<span class="title-first"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
+<span class="title-second"><%= link_to @message.subject.title, subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q) %> ></span>
 Modifier un message
 </h1>
 

@@ -1,16 +1,3 @@
-<script type="text/javascript">
-function showCorrectionAnormal(id) {
-    document.getElementById("anormalcorrection" + id).style.display = 'inline';
-    document.getElementById("normalcorrection" + id).style.display = 'none';
-}
-function showCorrectionNormal(id) {
-    document.getElementById("normalcorrection" + id).style.display = 'inline';
-    document.getElementById("anormalcorrection" + id).style.display = 'none';
-}
-</script>
-
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
 <h4>Commentaires</h4>
 
 <% if @submission.corrections.count == 0 %>
@@ -23,7 +10,7 @@ function showCorrectionNormal(id) {
 
   <% @lastid = correction.id %>
 
-  <table class="table table-bordered" style="margin-top:20px;">
+  <table class="table table-bordered message">
 
   <!-- Cas normal -->
   <% if correction.user == @submission.user %>
@@ -33,14 +20,13 @@ function showCorrectionNormal(id) {
   <% end %>
 
   <!-- Nom -->
-  <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+  <td class="author">
   <%= raw(correction.user.linked_name) %>
   </td>
 
   <!-- Date -->
-  <td style="vertical-align:middle; text-align:right; font-size:18px; padding-right:15px; border-left:none;">
-  <% date = correction.created_at.in_time_zone %>
-  <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+  <td class="date">
+  <%= Message.write_date(correction.created_at.in_time_zone) %>
   </td>
   </tr>
 
@@ -53,7 +39,7 @@ function showCorrectionNormal(id) {
     <tr class="danger visible-xs">
   <% end %>
 
-  <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+  <td class="author">
   <%= raw(correction.user.linked_name) %>
   </td>
   </tr>
@@ -64,23 +50,22 @@ function showCorrectionNormal(id) {
   <% else %>
     <tr class="danger visible-xs">
   <% end %>
-  <td style="vertical-align:middle; text-align:right; font-size:18px; padding-right:15px; border-left:none;">
-  <% date = correction.created_at.in_time_zone %>
-  <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+  <td class="date">
+  <%= Message.write_date(correction.created_at.in_time_zone) %>
   </td>
   </tr>
 
   <!-- Contenu du commentaire -->
-  <tr><td colspan="2" style="padding:15px;">
+  <tr><td colspan="2" class="content">
 
-  <div id="normalcorrection<%= correction.id %>" style="display:inline;">
+  <div id="normal<%= correction.id %>" style="display:inline;">
   <%= raw(bbcode(correction.content)) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showCorrectionAnormal(<%= correction.id %>); return false;'>(Montrer le code)</a></div>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showAnormal(<%= correction.id %>)'>(Montrer le code)</a></div>
   </div>
 
-  <div class="tex2jax_ignore" id="anormalcorrection<%= correction.id %>" style="display:none;">
+  <div class="tex2jax_ignore" id="anormal<%= correction.id %>" style="display:none;">
   <%= raw((h correction.content).gsub(/\n/, '<br/>')) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showCorrectionNormal(<%= correction.id %>); return false;'>(Cacher le code)</a></div>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showNormal(<%= correction.id %>)'>(Cacher le code)</a></div>
   </div>
 
   <!-- Pièces jointes -->

@@ -10,8 +10,8 @@
 <% @resolu = current_user.sk.pb_solved?(@problem) %>
 
 <h1>
-<span style="font-size:16px;">Problèmes ></span>
-<span style="font-size:24px;"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
+<span class="title-first">Problèmes ></span>
+<span class="title-second"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
 <%= "Problème ##{ @problem.number }" %>
 
 <% if !@problem.virtualtest.nil? %>
@@ -61,7 +61,7 @@
   <ul>
   <% @problem.chapters.each do |c| %>
   <% has_pre = true %>
-  <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span style='color:orange;'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Etes-vous sûr de vouloir supprimer ce prérequis?"} if !@problem.online %></li>
+  <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span style='color:orange;'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"} if !@problem.online %></li>
   <% enligne_ok = false if !c.online %>
   <% end %>
   </ul>
@@ -171,15 +171,15 @@
   <div class="noprint">
     <center>
       <% if @problem.online %>
-        <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %>
-        | <%= link_to "Modifier la solution", problem_explanation_path(@problem) %>
+        <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
+        <%= link_to "Modifier la solution", problem_explanation_path(@problem) %>
         <% if current_user.sk.root %>
-           | <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Attention, ce problème est visible des utilisateurs. Etes-vous sûr de vouloir supprimer ce problème? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
+           | <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Attention, ce problème est visible des utilisateurs. Êtes-vous sûr de vouloir supprimer ce problème ? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
         <% end %>
       <% else %>
-        <%= link_to "Modifier ce problème", edit_problem_path(@problem) %>
-        | <%= link_to "Modifier la solution", problem_explanation_path(@problem) %> |
-        <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce problème?" } %>
+        <%= link_to "Modifier ce problème", edit_problem_path(@problem) %> |
+        <%= link_to "Modifier la solution", problem_explanation_path(@problem) %> |
+        <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
       <% end %>
     </center>
 
@@ -193,7 +193,7 @@
           <%= button_to "Mettre en ligne", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
           (Chapitres prérequis doivent être en ligne)
         <% else %>
-          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Etes vous sûr de vouloir rendre ce problème visible par les utilisateurs? Vous ne pourrez alors plus changer ses prérequis!" } %>
+          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
         <% end %>
       </center> <br/>
     <% end %>

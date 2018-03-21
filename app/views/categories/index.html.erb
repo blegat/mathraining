@@ -1,7 +1,7 @@
 <% provide(:title, "Modifier les catégories de sujets") %>
 
 <h1>
-  <span style="font-size:16px;"><%= link_to "Forum", subjects_path %> ></span>
+  <span class="title-first"><%= link_to "Forum", subjects_path %> ></span>
   Modifier les catégories
 </h1>
 
@@ -23,7 +23,7 @@
           <%= g.submit "Modifier cette catégorie", class: "btn btn-primary" %>
         </td>
         <td style="padding:10px;">
-          <%= link_to "Supprimer cette catégorie", c, method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer cette catégorie?" } %>
+          <%= link_to "Supprimer cette catégorie", c, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette catégorie ?" } %>
         </td>
       </tr>
     <% end %>

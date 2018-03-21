@@ -4,7 +4,7 @@ function showStuff() {
     document.getElementById("show").style.display = 'none';
     document.getElementById("hide").style.display = 'inline';
 }
-function hideStuff(id, text, btn) {
+function hideStuff() {
     document.getElementById("indice").style.display = 'none';
     document.getElementById("show").style.display = 'inline';
     document.getElementById("hide").style.display = 'none';
@@ -14,24 +14,24 @@ function hideStuff(id, text, btn) {
 <% provide(:title, "Modifier les choix du QCM") %>
 
 <h1>
-<span style="font-size:16px;">Théorie ></span>
-<span style="font-size:24px;"><%= link_to @qcm.chapter.section.name, @qcm.chapter.section %> ></span>
-<span style="font-size:32px;"><%= link_to @qcm.chapter.name, chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %> ></span>
-Modifier des choix
+<span class="title-first">Théorie ></span>
+<span class="title-second"><%= link_to @qcm.chapter.section.name, @qcm.chapter.section %> ></span>
+<span class="title-third"><%= link_to @qcm.chapter.name, chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %> ></span>
+Choix
 </h1>
 
-Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne saurait être enregistrée.<br/><br/>
+Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne saurait être enregistrée.<br/>
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>	
 <%= raw(htmlise(@qcm.statement).gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 
-<br/><br/>
+<br/>
 
 <!-- Réponse -->
 <h3>Réponse</h3>	
 <table cellpadding="5">
-<tr><th></th><th></th><th style="padding:5px; text-align:center;">Rép?</th><th></th><th></th><th></th></tr>
+<tr><th></th><th></th><th style="padding:5px; text-align:center;">Rép ?</th><th></th><th></th><th></th></tr>
 <% i = 0 %>
 <% @qcm.choices.order(:id).each do |f| %>
   <%= form_for(f, url: qcm_update_choice_path(@qcm, f)) do |g| %>

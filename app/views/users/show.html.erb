@@ -1,7 +1,3 @@
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
-<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
-
 <% abreviation = ["Combinatoire", "Géométrie", "Théorie des nombres", "Algèbre", "Équations Fonct.", "Inégalités"] %>
 
 <% provide(:title, @user.name) %>
@@ -270,7 +266,6 @@ html>body tbody.scroll {
     
     <% moyenne_erreurs = (nb_erreur/nb_e.to_f).round(2) %>
 
-
     <!-- Début du tableau des résolutions (cas normal) -->
     <table class="table table-bordered hidden-xs" style="width:606px;">
     <thead class="fixed">
@@ -304,10 +299,10 @@ html>body tbody.scroll {
     <% end %>
 
     <!-- Affichage de la ligne -->
-    <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+    <tr style="background-color:<%= Section.color(a[:section]) %>;">
 
     <!-- Date -->
-    <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+    <td style="width:150px;"><%= Message.write_date_only(date) %></td>
 
     <!-- Heure -->
     <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
@@ -361,10 +356,10 @@ html>body tbody.scroll {
   <% act.each do |a| %>
     <% date = a[:time].in_time_zone %>
 
-    <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
+    <tr style="background-color:<%= Section.color(a[:section]) %>;">
 
     <!-- Date -->
-    <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+    <td style="width:150px;"><%= Message.write_date_only(date) %></td>
 
     <!-- Quoi -->
     <td style="width:140px;">
@@ -457,7 +452,7 @@ html>body tbody.scroll {
       <% pct = maxscore[s.id] == 0 ? 0 : 100*rate/maxscore[s.id].to_f %>
       <div class="progress" style="margin-bottom:0px;">
       <div class="progress-bar" role="progressbar"
-      aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= colors[s.id-1] %>; color:black;">
+      aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= Section.color(s.id) %>; color:black;">
         <% if pct.floor == 0 	%>
         <% else %>
           <span style="margin-left:5px"><%= pct.floor %>%</span>
@@ -473,7 +468,7 @@ html>body tbody.scroll {
   
   <!-- Date d'inscription -->
   <br/>
-  <center>Inscription : <%= inscription.in_time_zone.day %> <%= mois[inscription.in_time_zone.month-1] %> <%= inscription.in_time_zone.year %></center><br/>
+  <center>Inscription : <%= Message.write_date_only(inscription.in_time_zone) %></center><br/>
 
   </div>
 
@@ -489,7 +484,7 @@ html>body tbody.scroll {
       <%= moyenne_erreurs %> erreurs/exercice<br/>
     <% end %>
     <% lastco = @user.last_connexion %>
-    Dernière connexion : <%= lastco.in_time_zone.day %> <%= mois[lastco.in_time_zone.month-1] %> <%= lastco.in_time_zone.year %><br/>
+    Dernière connexion : <%= Message.write_date_only(lastco.in_time_zone) %><br/>
     <%= "Groupe Wépion" if @user.wepion %> <%= " - Groupe " << @user.group if @user.group != "" %>
     </div>
     </div>
@@ -742,15 +737,15 @@ html>body tbody.scroll {
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if @user.active %>
-        <%= link_to "Interdire l'accès", user_switchactivate_path(@user), data: { confirm: "Etes-vous sûr de vouloir interdire l'accès au site à #{@user.name}?" } %>
+        <%= link_to "Interdire l'accès", user_switchactivate_path(@user), data: { confirm: "Êtes-vous sûr de vouloir interdire l'accès au site à #{@user.name} ?" } %>
       <% else %>
-        <%= link_to "Rendre l'accès", user_switchactivate_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre l'accès au site à #{@user.name}?" } %>
+        <%= link_to "Rendre l'accès", user_switchactivate_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre l'accès au site à #{@user.name} ?" } %>
       <% end %>
     <% end %>
     <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Privilégiez une interdiction d'accès si possible. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé! Etes-vous sûr de vouloir supprimer #{@user.name}?" }, :style => "color:red;" %>
+      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Privilégiez une interdiction d'accès si possible. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :style => "color:red;" %>
     <% end %>
     <% if @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>
@@ -760,15 +755,15 @@ html>body tbody.scroll {
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} administrateur? Vous ne pourrez plus revenir en arrière!"}, :style => "color:red;" %>
+      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :style => "color:red;" %>
     <% end %>
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if !@user.corrector %>
-        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Etes-vous sûr de vouloir rendre #{@user.name} correcteur?"}, :style => "color:red;" %>
+        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :style => "color:red;" %>
       <% else %>
-        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Etes-vous sûr de vouloir retirer #{@user.name} des correcteurs?"}, :style => "color:red;" %>
+        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :style => "color:red;" %>
       <% end %>
     <% end %>
     <% if current_user.sk.admin && !@user.admin %>

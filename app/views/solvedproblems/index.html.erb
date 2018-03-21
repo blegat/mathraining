@@ -1,8 +1,3 @@
-<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
-<% abreviation = ["Comb.", "Géom.", "Th. Nb.", "Alg.", "Eq. Fct.", "Inég."] %>
-
 <% provide(:title, 'Problèmes récemment résolus') %>
 <h1>Problèmes récemment résolus</h1>
 
@@ -75,13 +70,13 @@ html>body tbody.scroll {
   <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:200px;">Qui</th><th style="width:96px;"><center>Problème</center></th></tr>
   <tbody class="scroll">
   <% table[level].each do |t| %>
-    <tr style="background-color: <%= colors[t[:section]-1] %>;">
+    <tr style="background-color: <%= Section.color(t[:section]) %>;">
     <!-- Date -->
     <% date = t[:time].in_time_zone %>
-    <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %></td>
+    <td style="width:150px;"><%= Message.write_date_only(date) %></td>
 
     <!-- Heure -->
-    <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
+    <td style="width:50px;"><center><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
 
     <!-- Qui -->
     <% user = User.find(t[:user_id]) %>

@@ -4,49 +4,13 @@
 
 <% depart = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => @virtualtest.id).first.takentime.to_i %>
 
-<script type="text/javascript">
-function RemainingTime(){
+<%= render 'virtualtests/clock', depart: depart %>
 
-if (!Date.now) {
-    Date.now = function() { return new Date().getTime(); }
-}
-
-var d = Math.floor(Date.now() / 1000)
-
-var reste = <%= @virtualtest.duration * 60 %> - d + <%= depart %>
-
-if (reste < 0) {
-  document.getElementById('clockbox').innerHTML = "Temps écoulé"
-}
-else {
-  var resteh = Math.floor(reste / 3600)
-  reste = reste - 3600 * resteh
-  var restem = Math.floor(reste / 60)
-  var restes = reste - 60 * restem
-  
-  if(resteh < 10){ afficheh = "0" + resteh }
-  else { afficheh = resteh }
-  
-  if(restem < 10){ affichem = "0" + restem }
-  else { affichem = restem }
-  
-  if(restes < 10){ affiches = "0" + restes }
-  else { affiches = restes }
-  
-  document.getElementById('clockbox').innerHTML = afficheh + "h" + affichem + ":" + affiches
-}
-
-}
-
-window.onload=function(){
-RemainingTime();
-setInterval(RemainingTime,1000);
-}
-</script>
+<% provide(:title, "Test ##{ @virtualtest.number }") %>
 
 <h1>
-<span style="font-size:16px;"><%= link_to "Tests virtuels", virtualtests_path %> ></span>
-<span style="font-size:24px;"><%= link_to "Test virtuel ##{@virtualtest.number}", virtualtest_path(@virtualtest, :p => @problem.id) %> ></span>
+<span class="title-first"><%= link_to "Tests virtuels", virtualtests_path %> ></span>
+<span class="title-second"><%= link_to "Test ##{@virtualtest.number}", virtualtest_path(@virtualtest, :p => @problem.id) %> ></span>
 Problème <%= @numero %>
 </h1>
 
@@ -68,22 +32,12 @@ Problème <%= @numero %>
 
   <!-- Soumettre une solution -->
   <h3>Solution</h3>
-    La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
-    <div class="form-group">
-    <div class="well" id="MathPreview"></div>
-    <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-    <%= render 'subjects/smiley', hiddentext: false %>
-    <% if @ancientexte.nil? %>
-      <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
-    <% else %>
-      <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
-    <% end %>
-    </div>
+    <%= render 'submissions/form', f: f %>
     
     <!-- Pièces jointes -->
     <span id="fooBar"></span>
     <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="true"' if current_user.other %> />
-    <br /><br/>
+    <br/><br/>
 
     Vous pourrez modifier cette solution tant que vous le voudrez dans le temps imparti.<br/><br/>
 
@@ -98,23 +52,13 @@ Problème <%= @numero %>
 
   <!-- Modifier la solution -->
   <h3>Solution</h3>
-    La façon la plus simple et la plus jolie de nous faire parvenir votre preuve est de l'écrire en $\LaTeX$. <br/><%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous apprend à écrire toutes les formules mathématiques dont vous avez besoin en un rien de temps!<br/><br/>
-    <div class="form-group">
-    <div class="well" id="MathPreview"></div>
-    <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
-    <%= render 'subjects/smiley', hiddentext: false %>
-    <% if @ancientexte.nil? %>
-      <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
-    <% else %>
-      <%= f.text_area :content, :class => "form-control", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => (!signed_in? || current_user.other) %>
-    <% end %>
-    </div>
+    <%= render 'submissions/form', f: f %>
     
     <!-- Pièces jointes -->
     <%= render 'subjects/files', s: @submission %>
     <span id="fooBar"></span>
-    <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
-    <br /><br/>
+    <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="true"' if current_user.other %> />
+    <br/><br/>
 
     <%= f.submit "Enregistrer cette solution", class: "btn btn-primary", :disabled => current_user.other %>
     

@@ -5,6 +5,7 @@ class TchatmessagesController < DiscussionsController
   before_action :is_involved_2, only: [:create]
 
   def create
+    params[:content] = truncate(params[:content])
     link = current_user.sk.links.where(:discussion_id => @discussion.id).first
     if link.nonread > 0
       session[:ancientexte] = params[:content]

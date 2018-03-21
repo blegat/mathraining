@@ -1,0 +1,17 @@
+<% pt = f.value %>
+
+<% pct = 0 %>
+<% pct = f.nb_firstguess.to_f / f.nb_tries.to_f if f.nb_tries > 0 %>
+<% pct2 = [1.4*pct,1].min %>
+
+<h3>Exercice <%= number %>
+<% if !@fondation %>
+<span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
+<% end %>
+
+<% if f.online %>
+  <span class="hidden-xs" style="margin-left:20px; font-size:20px; color:rgb(<%= 0+((1-pct2)*255).to_i %>,<%= 0+(pct2*225).to_i %>,0);">(<%= (100*pct).round(0) %>% de réussite au premier essai)</span>
+  <br class="visible-xs" />
+  <span class="visible-xs" style="margin-top:5px;font-size:20px; color:rgb(<%= 0+((1-pct2)*255).to_i %>,<%= 0+(pct2*225).to_i %>,0);">(<%= (100*pct).round(0) %>% de réussite au 1<sup>er</sup> essai)</span>
+<% end %>
+</h3>

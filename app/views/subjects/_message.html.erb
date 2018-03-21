@@ -1,35 +1,21 @@
-<script type="text/javascript">
-function showMessageAnormal(id) {
-    document.getElementById("anormalmessage" + id).style.display = 'inline';
-    document.getElementById("normalmessage" + id).style.display = 'none';
-}
-function showMessageNormal(id) {
-    document.getElementById("normalmessage" + id).style.display = 'inline';
-    document.getElementById("anormalmessage" + id).style.display = 'none';
-}
-</script>
-
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
 <% q = 0 %>
 <% if(params.has_key?:q) %>
   <% q = params[:q].to_i %>
 <% end %>
 
-<table class="table table-bordered">
+<table class="table table-bordered message">
 
   <!-- Cas normal -->
   <tr class="hidden-xs info">
 
   <!-- Nom -->
-  <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+  <td class="author">
     <%= raw(m.user.linked_name) %>
   </td>
 
   <!-- Date -->
-  <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
-  <% date = m.created_at.in_time_zone %>
-  <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+  <td class="date">
+  <%= Message.write_date(m.created_at.in_time_zone) %>
   </td>
   </tr>
 
@@ -37,35 +23,34 @@ function showMessageNormal(id) {
 
   <!-- Nom -->
   <tr class="visible-xs info">
-  <td style="font-size:20px; font-weight:bold; padding:10px; padding-left:15px; border-right:none;">
+  <td class="author">
     <%= raw(m.user.linked_name) %>
   </td>
   </tr>
 
   <!-- Date -->
   <tr class="visible-xs info">
-  <td style="vertical-align:middle; text-align:right; font-size:20px; padding-right:15px; border-left:none;">
-  <% date = m.created_at.in_time_zone %>
-  <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+  <td class="date">
+  <%= Message.write_date(m.created_at.in_time_zone) %>
   </td>
   </tr>
 
   <!-- Contenu du message -->
-  <tr><td colspan="2" style="padding:15px;">
+  <tr><td colspan="2" class="content">
   <div>
   <% bb = bbcode(m.content) %>
   <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div style='background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;'><a href='#' id='show#{@nb_indice}' onclick='showStuff(#{@nb_indice}); return false;' style='display:inline;' class='btn btn-default btn-grey'>#{$1}</a><a href='#' id='hide#{@nb_indice}' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(#{@nb_indice}); return false;'>#{$1}</a><span id='indice#{@nb_indice}' style='display:none;'><br/><br/>#{$2}</span></div>"} %>
   <% @nb_indice = @nb_indice+1 %>
   <% end %>
 
-  <div id="normalmessage<%= m.id %>" style="display:inline;">
+  <div id="normal<%= m.id %>" style="display:inline;">
   <%= raw(bb) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showMessageAnormal(<%= m.id %>); return false;'>(Montrer le code)</a></div>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showAnormal(<%= m.id %>)'>(Montrer le code)</a></div>
   </div>
 
-  <div class="tex2jax_ignore" id="anormalmessage<%= m.id %>" style="display:none;">
+  <div class="tex2jax_ignore" id="anormal<%= m.id %>" style="display:none;">
   <%= raw((h m.content).gsub(/\n/, '<br/>')) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='showMessageNormal(<%= m.id %>); return false;'>(Cacher le code)</a></div>
+  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showNormal(<%= m.id %>)'>(Cacher le code)</a></div>
   </div>
 
   <!-- Pièces jointes -->
@@ -75,13 +60,11 @@ function showMessageNormal(id) {
 
   <!-- Si on peut modifier -->
   <% if canmodif && (m.user == current_user.sk || (current_user.sk.admin && !m.user.admin) || current_user.sk.root) %>
-    <tr><td colspan="2">
-    <center>
-        <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m, :q => q) %>
-        <% if current_user.sk.admin? %>
-           | <%= link_to "Supprimer ce message", subject_message_path(@subject, m), method: :delete, data: { confirm: "Etes-vous sûr de vouloir supprimer ce message ?" }  %>
-        <% end %>
-    </center>
+    <tr><td colspan="2" class="modify">
+      <%= link_to "Modifier ce message", edit_subject_message_path(@subject, m, :q => q) %>
+      <% if current_user.sk.admin? %>
+         | <%= link_to "Supprimer ce message", subject_message_path(@subject, m), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>
+      <% end %>
     </td></tr>
   <% end %>
 

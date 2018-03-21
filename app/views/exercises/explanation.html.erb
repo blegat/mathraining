@@ -14,17 +14,17 @@ function hideStuff() {
 <% provide(:title, "Modifier l'explication d'un exercice".html_safe) %>
 
 <h1>
-<span style="font-size:16px;">Théorie ></span>
-<span style="font-size:24px;"><%= link_to @exercise.chapter.section.name, @exercise.chapter.section %> ></span>
-<span style="font-size:32px;"><%= link_to @exercise.chapter.name, chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) %> ></span>
-Modifier une explication
+<span class="title-first">Théorie ></span>
+<span class="title-second"><%= link_to @exercise.chapter.section.name, @exercise.chapter.section %> ></span>
+<span class="title-third"><%= link_to @exercise.chapter.name, chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) %> ></span>
+Explication
 </h1>
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
 <%= raw(htmlise(@exercise.statement).gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
 
-<br/><br/>
+<br/>
 
 <!-- Réponse -->
 <h3>Réponse</h3>
@@ -37,7 +37,7 @@ Modifier une explication
   <% else %>
     <span style="font-size:16px;"><%= @exercise.answer.to_i %></span> (On demande une réponse <b>entière</b>)
   <% end %>
-<br/><br/>
+<br/>
 
 <!-- Explication -->
 <h3>Explication</h3>
@@ -47,7 +47,7 @@ Modifier une explication
 
   <div class="form-group">
   <div class="well" id="MathPreview"></div>
-  <div class="well" id="MathBuffer" style="visibility:hidden; position:absolute; top:0; left: 0"></div>
+  <div class="well hidden-preview" id="MathBuffer"></div>
   <%= render 'theories/font' %>
   <%= f.text_area :explanation, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
 

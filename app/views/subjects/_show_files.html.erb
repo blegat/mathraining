@@ -11,7 +11,7 @@
       <%= link_to f.file_file_name, download_myfile_path(f) %>
       (<%= (f.file_file_size / 1.kilobyte).round(1) %> ko)
       <% if current_user.sk.root? %>
-         - <%= link_to 'Supprimer le contenu', myfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Etes-vous sûr de vouloir continuer?"}, :style => "color:red;" %>
+         - <%= link_to 'Supprimer le contenu', myfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Êtes-vous sûr de vouloir continuer ?"}, :style => "color:red;" %>
       <% end %>
       <br/>
     <% end %>

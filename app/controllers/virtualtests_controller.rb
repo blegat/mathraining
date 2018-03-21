@@ -139,7 +139,7 @@ class VirtualtestsController < ApplicationController
     if current_user.sk.status(@virtualtest) >= 0
       redirect_to @virtualtest
     elsif Takentest.where(user_id: current_user.sk.id, status: 0).count > 0
-      flash[:danger] = "Vous avez déjà un test virtuel en cours!"
+      flash[:danger] = "Vous avez déjà un test virtuel en cours !"
       redirect_to @virtualtest
     end
   end

@@ -14,6 +14,7 @@ class SubmissionsController < ApplicationController
 
   # Créer une nouvelle soumission
   def create
+    params[:submission][:content] = truncate(params[:submission][:content])
     # Pièces jointes
     @error = false
     @error_message = ""
@@ -90,6 +91,7 @@ class SubmissionsController < ApplicationController
 
   # Faire une nouvelle soumission
   def create_intest
+    params[:submission][:content] = truncate(params[:submission][:content])
     # Pièces jointes
     @error = false
     @error_message = ""
@@ -316,7 +318,8 @@ class SubmissionsController < ApplicationController
     else
       lepath = problem_path(@problem, :sub => 0)
     end
-
+    
+    params[:submission][:content] = truncate(params[:submission][:content])
     if @submission.update_attributes(params.require(:submission).permit(:content))
       totalsize = 0
 

@@ -1,8 +1,5 @@
 <% provide(:title, 'Statistiques') %>
 
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-<% colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF"] %>
-
 <% if signed_in? && current_user.sk.admin %>
 
 <h1>Statistiques</h1>
@@ -56,8 +53,8 @@
 
 <% act.each do |a| %>
  <% date = a[:time].in_time_zone %>
-  <tr style="background-color:<%= "#F5F5F5" if a[:fondation] %> <%= colors[a[:section]-1] if !a[:fondation] %>;">
-  <td style="width:150px;"><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> </td>
+  <tr style="background-color:<%= Section.color(a[:section]) %>;">
+  <td style="width:150px;"><%= Message.write_date_only(date) %> </td>
   <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
   <td><%= raw(a[:qui].linked_name) %></td>
   <td style="width:340px;"><%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %> <%= "(#{a[:chapter]})" %></td>

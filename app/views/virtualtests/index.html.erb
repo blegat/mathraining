@@ -7,8 +7,6 @@
 </style>
 </head>
 
-<% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
-
 <% provide(:title, 'Tests virtuels') %>
 
 <% compteur = 0 %>
@@ -107,46 +105,9 @@
 
     <!-- Si étudiant et en cours : chrono -->
     <% if !current_user.sk.admin? && status == 0 %>
-
-      <script type="text/javascript">
-        function RemainingTime(){
-
-        if (!Date.now) {
-          Date.now = function() { return new Date().getTime(); }
-        }
-
-        var d = Math.floor(Date.now() / 1000)
-
-        var reste = <%= t.duration * 60 %> - d + <%= depart %>
-
-        if (reste < 0) {
-          document.getElementById('clockbox').innerHTML = "Temps écoulé"
-        }
-        else {
-          var resteh = Math.floor(reste / 3600)
-          reste = reste - 3600 * resteh
-          var restem = Math.floor(reste / 60)
-          var restes = reste - 60 * restem
-
-          if(resteh < 10){ afficheh = "0" + resteh }
-          else { afficheh = resteh }
-
-          if(restem < 10){ affichem = "0" + restem }
-          else { affichem = restem }
-
-          if(restes < 10){ affiches = "0" + restes }
-          else { affiches = restes }
-
-          document.getElementById('clockbox').innerHTML = afficheh + "h" + affichem + ":" + affiches
-        }
-
-        }
-
-        window.onload=function(){
-        RemainingTime();
-        setInterval(RemainingTime,1000);
-        }
-      </script>
+      
+      <% @virtualtest = t %>
+      <%= render 'virtualtests/clock', depart: depart %>
 
       <br/><br/>
       <center><span style="font-size:20px;">Temps restant : <b><span id="clockbox">--h--:--</span></b></span></center>
@@ -163,8 +124,7 @@
       <td width="50%" style="font-size:18px;">
       <center>
       Test commencé le
-      <% date = initial.in_time_zone %>
-      <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+      <%= Message.write_date(initial.in_time_zone) %>
       </center>
       </td>
       <td width="50%">
@@ -233,7 +193,7 @@
           <tr style="background-color:white;">
         <% end %>
         <% u = tt.user %>
-        <td><% date = tt.takentime.in_time_zone %><%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></td>
+        <td><%= Message.write_date(tt.takentime.in_time_zone) %></td>
         <td style="text-align:center;"><%= "Oui" if tt.status == 1 %><%= "Non" if tt.status == 0 %></td>
         <td><b><%= raw(u.linked_name) %></b></td>
         <% totalexiste = true %>
