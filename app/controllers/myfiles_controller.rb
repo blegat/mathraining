@@ -1,13 +1,30 @@
 #encoding: utf-8
 class MyfilesController < ApplicationController
   before_action :signed_in_user, only: [:seeall]
-  before_action :signed_in_user_danger, only: [:download, :fake_delete]
+  before_action :signed_in_user_danger, only: [:download, :fake_delete, :edit, :update]
   before_action :have_access, only: [:download]
-  before_action :root_user, only: [:fake_delete]
+  before_action :root_user, only: [:fake_delete, :edit, :update]
 
   # Télécharger le pièce jointe
   def download
     send_file @thing.file.path, :type => @thing.file_content_type, :filename => @thing.file_file_name
+  end
+  
+  def edit
+    @myfile = Myfile.find(params[:id])
+  end
+  
+  def update
+    @myfile = Myfile.find(params[:id])
+    if !params["file"].nil?
+      if(@myfile.update_attribute(:file, params["file".to_sym]))
+        redirect_to pieces_jointes_path
+      else
+      redirect_to edit_myfile_path(@myfile)
+      end
+    else
+      redirect_to edit_myfile_path(@myfile)
+    end
   end
 
   # Supprimer la pièce jointe fictivement

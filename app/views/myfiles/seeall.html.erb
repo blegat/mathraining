@@ -71,6 +71,7 @@ Pièces jointes
   <center>
   <% if l[1] %>
     <%= (l[2].file_file_size / 1.kilobyte).round(1) %> ko
+    <%= link_to "(R)", edit_myfile_path(l[2]) %>
   <% else %>
     <span style="color:grey;">(<%= (l[2].file_file_size / 1.kilobyte).round(1) %> ko)</span>
   <% end %>

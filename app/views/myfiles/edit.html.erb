@@ -1,0 +1,12 @@
+<h1>Remplacer un fichier</h1>
+
+<% truncated = @myfile.file_file_name.size > 30 ? [@myfile.file_file_name[0,20],@myfile.file_file_name[-7,7]].join("...") : @myfile.file_file_name %>
+
+<p>Vous vous apprêtez à remplacer le fichier suivant : <%= link_to truncated, download_myfile_path(@myfile) %>.</p>
+
+<%= form_for @myfile, :html => { :multipart => true } do |f| %>
+  <label name="file">Nouveau fichier</label>
+  <input type="file" name="file">
+  <br/>
+  <%= f.submit "Remplacer", class: "btn btn-lg btn-primary" %>
+<% end %>

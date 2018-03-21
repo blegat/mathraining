@@ -76,7 +76,7 @@ Mathraining::Application.routes.draw do
     end
   end
   
-  resources :myfiles, only: [] do
+  resources :myfiles, only: [:edit, :update] do
   	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:get], as: :fake_delete
   	member do
   		get :download
