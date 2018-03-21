@@ -17,14 +17,15 @@ class MyfilesController < ApplicationController
   def update
     @myfile = Myfile.find(params[:id])
     if !params["file"].nil?
-      if(@myfile.update_attribute(:file, params["file".to_sym]))
-        redirect_to pieces_jointes_path
+      if(@myfile.update_attributes(file: params["file".to_sym]))
+        flash[:success] = "C'est remplacé !"
       else
-      redirect_to edit_myfile_path(@myfile)
+      flash[:danger] = "Une condition n'est pas respectée..."
       end
     else
-      redirect_to edit_myfile_path(@myfile)
+      flash[:danger] = "Pièce jointe vide."
     end
+    redirect_to edit_myfile_path(@myfile)
   end
 
   # Supprimer la pièce jointe fictivement
