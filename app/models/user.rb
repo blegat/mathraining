@@ -306,7 +306,7 @@ class User < ActiveRecord::Base
     Problem.all.each do |p|
       problem_value[p.id] = p.value
       problem_section[p.id] = p.section_id
-      max_score[p.section_id] = max_score[p.section_id] + p.value if p.value
+      max_score[p.section_id] = max_score[p.section_id] + p.value if p.online
     end
 
     Solvedexercise.all.each do |e|
