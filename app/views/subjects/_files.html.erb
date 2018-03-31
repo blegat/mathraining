@@ -1,14 +1,14 @@
 <% if s.myfiles.count + s.fakefiles.count > 0 %>
   <b>Pièces jointes (décochez pour supprimer)</b><br/>
   <% s.myfiles.order(:id).each do |f| %>
-    <label class="checkbox-inline">
+    <label style="font-weight:normal;">
       <input type="checkbox" name="prevfile<%= f.id %>" value="1" checked="checked" />
       <%= link_to f.file_file_name, download_myfile_path(f) %>
     </label>
     <br/>
   <% end %>
   <% s.fakefiles.order(:id).each do |f| %>
-    <label class="checkbox-inline">
+      <label style="font-weight:normal;">
       <input type="checkbox" name="prevfakefile<%= f.id %>" value="1" checked="checked" />
       <span style="color:#0000BB;"><%= f.file_file_name %> (désactivée)</span>
     </label>

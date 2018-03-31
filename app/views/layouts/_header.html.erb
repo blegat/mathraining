@@ -47,9 +47,9 @@
           <% end %>
 
           <% if total < 1000000 %>
-            <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:15px;" %>
+            <%= link_to (total/1000.0).round(1).to_s + " ko", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:15px;" %>
           <% else %>
-            <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:15px;" %>
+            <%= link_to (total/1000000.0).round(2).to_s + " Mo", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:15px;" %>
           <% end %>
         <% end %>
         
@@ -74,16 +74,14 @@
       <% end %>
 
       <ul class="nav navbar-nav navbar-right">
-
+      
+      <!-- Dans le cas gsm -->
       <% if @ss and (current_user.sk.admin || current_user.sk.corrector) %>
 
-        <!-- Dans le cas gsm -->
         <li class="visible-xs visible-sm">
         <form role="search" style="margin-left:15px; margin-bottom:5px;">
         
         <!-- Nouvelles soumissions -->
-        <% notifications_new = current_user.sk.notifications_new.count %>
-        <% notifications_update = current_user.sk.notifications_update.count %>
         <% if notifications_new != 0 %>
           <%= link_to "#{notifications_new}", allnewsub_path, class: "btn btn-danger" %>
         <% else %>
@@ -97,15 +95,10 @@
         
         <!-- Pièces jointes -->
         <% if current_user.sk.root? %>
-          <% total = 0 %>
-          <% Myfile.all.to_a.each do |f| %>
-            <% total = total + f.file_file_size %>
-          <% end %>
-
           <% if total < 1000000 %>
-            <%= link_to (total/1000.0).round(1).to_s + " ko", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:10px;" %>
+            <%= link_to (total/1000.0).round(1).to_s + " ko", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:10px;" %>
           <% else %>
-            <%= link_to (total/1000000.0).round(2).to_s + " Mo", pieces_jointes_path, class: "btn btn-default btn-grey", style: "margin-left:10px;" %>
+            <%= link_to (total/1000000.0).round(2).to_s + " Mo", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:10px;" %>
           <% end %>
         <% end %>
         

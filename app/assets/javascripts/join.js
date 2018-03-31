@@ -1,7 +1,7 @@
 // Fonction pour les pièces jointes
 var Joint = {
   i: 1,
-  add: function() {
+  add: function(elem) {
 
     //Create an input type dynamically.
     var element = document.createElement("input");
@@ -15,7 +15,11 @@ var Joint = {
     element2.setAttribute("name", "hidden"+this.i);
     element2.setAttribute("value", "ok");
 
-    var foo = document.getElementById("fooBar");
+    if(elem == undefined)
+      var foo = document.getElementById("fooBar");
+    else
+      var foo = elem;
+    
     var br = document.createElement("br");
 
     if(this.i == 1)

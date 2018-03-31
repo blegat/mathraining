@@ -39,9 +39,6 @@
   <% if !@ss || !current_user.sk.admin? %>
     <%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => (!@ss || current_user.other) %>
   <% end %>
-
-  <!-- Exporter en LaTeX (viré) -->
-  <% button_to "Exporter en .tex (version beta)", chapter_export_path(@chapter), class: "btn-primary" %>
 </center>
 
 <% if !@ss || !current_user.sk.admin? %>

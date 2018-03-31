@@ -1,4 +1,4 @@
-<div class="list-group chap-menu">
+<div class="list-group chap-menu" style="margin-bottom:0px;">
   <br/>
   <h4 class="list-group-item-heading">Nouveau message</h4>
   <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item #{"active" if @nouveau}" %>
@@ -21,11 +21,13 @@
       <% end %>
     <% end %>
 
-    <% texte = d.tchatmessages.order("created_at DESC").first.content %>
+    <% date = d.tchatmessages.order("created_at DESC").first.created_at %>
     
     <%= link_to d, :class => "list-group-item #{"active" if d == @discussion} #{"jaune" if number[d.id] > 0 && d != @discussion}" do %>
       <b><%= other.name %><%= " (#{number[d.id]})" if number[d.id] > 0 && d != @discussion %></b><br/>
-      <div class="tex2jax_ignore" style="margin-top:3px;"><%= texte.truncate(30) if !current_user.other %></div>
+      
+      <div style="margin-top:5px;"><%= write_date(date.in_time_zone) %></div>
+      
     <% end %>
     <% combien = combien + 1 %>
   <% end %>

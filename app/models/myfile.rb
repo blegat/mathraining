@@ -36,4 +36,27 @@ class Myfile < ActiveRecord::Base
       return false
     end
   end
+  
+  def fake_del
+    ff = Fakefile.new
+    ff.fakefiletable_type = self.myfiletable_type
+    ff.fakefiletable_id = self.myfiletable_id
+    ff.file_file_name = self.file_file_name
+    ff.file_content_type = self.file_content_type
+    ff.file_file_size = self.file_file_size
+    ff.file_updated_at = self.file_updated_at
+    ff.save
+    self.file.destroy
+    self.destroy
+    return ff
+  end
+  
+  def self.fake_dels
+    ajd = DateTime.now.to_date
+    Myfile.where(:myfiletable_type => "Tchatmessage").each do |f|
+      if f.file_updated_at + 28 < ajd
+        f.fake_del
+      end
+    end
+  end
 end

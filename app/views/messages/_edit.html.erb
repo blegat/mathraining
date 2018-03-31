@@ -1,0 +1,11 @@
+<%= form_for [m.subject, m], :url => subject_message_path(m.subject, m, :action => :update, :q => @q), :html => { :multipart => true, :style => "margin-top:20px;" }  do |f| %>
+  <%= render 'messages/form', f: f, m: m %>
+
+  <!-- Pièces jointes -->
+  <%= render 'subjects/files', s: m %>
+  <span id="fooBar<%= @champ %>"></span>
+  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add(document.getElementById('fooBar<%= @champ %>'))" <%= 'disabled="disabled"' if current_user.other %> />
+  <br /><br/>
+  <%= f.submit "Éditer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+  <button class="btn btn-lg btn-default btn-grey" onclick="return Rolling.hideActual();">Annuler</button>
+<% end %>

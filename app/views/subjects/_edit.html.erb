@@ -1,0 +1,16 @@
+<% @edit = true %>
+
+<!-- Formulaire -->
+<%= form_for @subject, :url => subject_path(@subject, :action => :update, :q => @q), :html => { :multipart => true, :style => "margin-top:20px;" } do |f| %>
+  <%= render 'subjects/form', f: f %>
+  
+  <!-- Pièces jointes -->
+  <%= render 'subjects/files', s: @subject %>
+  
+  <span id="fooBar"></span>
+  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add(document.getElementById('fooBar<%= @champ %>'))"/>
+  <br/><br/>
+  <%= f.submit "Éditer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+  <button class="btn btn-lg btn-default btn-grey" onclick="return Rolling.hideActual();">Annuler</button>
+<% end %>
+

@@ -24,7 +24,7 @@ Son but est de donner les grandes idées de la solution afin de faciliter la tâ
     <div class="well" id="MathPreview"></div>
     <div class="well hidden-preview" id="MathBuffer"></div>
     <%= render 'theories/font' %>
-    <%= f.text_area :explanation, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
+    <%= f.text_area :explanation, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
   </div>
   <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
 <% end %>

@@ -23,7 +23,26 @@ function checkExercise() {
 }
 </script>
 
-<%= render 'shared/error_messages', object: f.object %>
+<% if @champ.nil? %>
+  <% @champ = "" %>
+<% end %>
+
+<% erreur = false %>
+
+<% if !session["errorSubject"].nil? %>
+  <% erreur = true %>
+  <% erreurs = session["errorSubject"] %>
+  <div id="error_explanation">
+    <div class="alert alert-danger">
+      Le formulaire contient <%= pluralize(erreurs.count, "erreur") %>.
+    <ul>
+    <% erreurs.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+    </div>
+  </div>
+<% end %>
 
 <!-- Calcul de la liste des sections et chapitres -->
 <% liste = Array.new %>
@@ -43,7 +62,9 @@ function checkExercise() {
 
 <% presel = 0 %>
 
-<% if @edit %>
+<% if erreur %>
+  <% presel = session[:oldAll][:category_id].to_i %>
+<% elsif @edit %>
   <% if !@subject.section_id.nil? %>
     <% presel = 1000*@subject.section_id %>
   <% elsif !@subject.category_id.nil? %>
@@ -58,19 +79,29 @@ function checkExercise() {
 </div>
 
 <% presel2 = 0 %>
+<% seechap = false %>
 
 <!-- Chapitre -->
-<% if @edit && presel > 999 %>
-  <% listechap = Array.new %>
-  <% listechap.push(["Aucun chapitre en particulier", 0]) %>
-  <% @subject.section.chapters.order(:name).each do |c| %>
-    <% listechap.push([c.name, c.id]) %>
+<% if erreur && presel > 999 %>
+  <% sect = Section.find(presel/1000) %>
+  <% seechap = true %>
+  <% if !session[:oldAll][:chapter_id].nil? %>
+    <% presel2 = session[:oldAll][:chapter_id].to_i %>
   <% end %>
-  
+<% elsif @edit && presel > 999 %>
+  <% sect = @subject.section %>
+  <% seechap = true %>
   <% if !@subject.chapter_id.nil? %>
     <% presel2 = @subject.chapter_id %>
   <% end %>
-  
+<% end %>
+
+<% if seechap %>
+  <% listechap = Array.new %>
+  <% listechap.push(["Aucun chapitre en particulier", 0]) %>
+  <% sect.chapters.order(:name).each do |c| %>
+    <% listechap.push([c.name, c.id]) %>
+  <% end %>  
   <div class="form-group">
     <%= f.label :chapter_id, :disabled => current_user.other, :id => "label_chap" %>
     <%= f.select(:chapter_id, options_for_select(listechap, presel2).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
@@ -84,23 +115,30 @@ function checkExercise() {
 
 <% presel3 = 0 %>
 <% txt = "" %>
+<% seeexo = false %>
 
 <!-- Exercice -->
-<% if @edit && presel2 > 0 %>
-
+<% if erreur && presel2 > 0 %>
+  <% seeexo = true %>
+  <% chap = Chapter.find(presel2) %>
+  <% presel3 = session[:oldAll][:exercise_id].to_i %>
+<% elsif @edit && presel2 > 0 %>
+  <% seeexo = true %>
+  <% chap = @subject.chapter %>
   <% if !@subject.exercise_id.nil? %>
     <% presel3 = 2000 + @subject.exercise_id %>
   <% end %>
   <% if !@subject.qcm_id.nil? %>
     <% presel3 = 3000 + @subject.qcm_id %>
   <% end %>
-  
+<% end %>
+
+<% if seeexo %>
   <% cache = false %>
   <% listeexo = Array.new %>
   <% listeexo.push(["Aucun exercice en particulier", 0]) %>
-  <% c = @subject.chapter %>
   <% allexo = Array.new %>
-  <% c.exercises.where(:online => true).each do |e| %>
+  <% chap.exercises.where(:online => true).each do |e| %>
     <% if (e.subject.nil? || 2000+e.id == presel3) %>
       <% allexo.push([e.position, 2, e.id, true]) %>
     <% else %>
@@ -108,7 +146,7 @@ function checkExercise() {
       <% allexo.push([e.position, 2, e.id, false]) %>
     <% end %>
   <% end %>
-  <% c.qcms.where(:online => true).each do |q| %>
+  <% chap.qcms.where(:online => true).each do |q| %>
     <% if (q.subject.nil? || 3000+q.id == presel3) %>
       <% allexo.push([q.position, 3, q.id, true]) %>
     <% else %>
@@ -147,47 +185,78 @@ function checkExercise() {
 <% if presel3 > 0 %>
   <div class="form-group">
     <%= f.label :title, :disabled => current_user.other %>
-    <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled" %>
+    <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled", :value => txt %>
     <input type="hidden" id="hidden_title" name="subject[title]" value="<%= txt %>" />
   </div>
 <% else %>
+  <% tit = "" %>
+  <% if erreur %>
+    <% tit = session[:oldAll][:title] %>
+  <% elsif @edit %>
+    <% tit = @subject.title %>
+  <% end %>
   <div class="form-group">
     <%= f.label :title, :disabled => current_user.other %>
-    <%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;" %>
+    <%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :value => tit %>
     <input type="hidden" id="hidden_title" name="" value="" />
   </div>
 <% end %>
 
 <!-- Message -->
 <div class="form-group">
+  <% cont = "" %>
+  <% if erreur %>
+    <% cont = session[:oldAll][:content] %>
+  <% elsif @edit %>
+    <% cont = @subject.content %>
+  <% end %>
   <%= f.label :content, :disabled => current_user.other %>
-  <div class="well" id="MathPreview"></div>
-  <div class="well hidden-preview" id="MathBuffer"></div>
+  <div class="well" id="MathPreview<%= @champ %>"></div>
+  <div class="well hidden-preview" id="MathBuffer<%= @champ %>"></div>
   <%= render 'subjects/smiley', hiddentext: true %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "safefakeupdate()", :disabled => current_user.other %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput#{@champ}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
   
-  <!-- Case admin et case premier lieu -->
+  <!-- Case admin -->
   <% if current_user.sk.admin || current_user.sk.corrector %>
+    <% checked = "" %>
+    <% if erreur %>
+      <% checked = "checked" if session[:oldAll][:admin].to_i == 1 %>
+    <% elsif @edit %>
+      <% checked = "checked" if @subject.admin %>
+    <% end %>
     <br/>
-    <label class="checkbox-inline">
-      <%= f.check_box :admin, :disabled => current_user.other %>
+    <label style="font-weight:normal;">
+      <%= f.check_box :admin, :disabled => current_user.other, :checked => checked %>
       Cochez si ce sujet est réservé aux correcteurs.
     </label>
   <% end %>
 
+  <!-- Case important -->
   <% if current_user.sk.admin? %>
+    <% checked = "" %>
+    <% if erreur %>
+      <% checked = "checked" if session[:oldAll][:important].to_i == 1 %>
+    <% elsif @edit %>
+      <% checked = "checked" if @subject.important %>
+    <% end %>
     <br/>
-    <label class="checkbox-inline">
-      <%= f.check_box :important, :disabled => current_user.other %>
+    <label style="font-weight:normal;">
+      <%= f.check_box :important, :disabled => current_user.other, :checked => checked %>
       Cochez si ce sujet doit toujours apparaître en premier lieu.
     </label>
   <% end %>
   
   <!-- Case wépion -->
   <% if current_user.sk.wepion || current_user.sk.admin? %>
+    <% checked = "" %>
+    <% if erreur %>
+      <% checked = "checked" if session[:oldAll][:wepion].to_i == 1 %>
+    <% elsif @edit %>
+      <% checked = "checked" if @subject.wepion %>
+    <% end %>
     <br/>
-    <label class="checkbox-inline">
-      <%= f.check_box :wepion, :disabled => current_user.other %>
+    <label style="font-weight:normal;">
+      <%= f.check_box :wepion, :disabled => current_user.other, :checked => checked %>
       Cochez si ce sujet est destiné aux étudiants de Wépion.
     </label>
   <% end %>
@@ -195,14 +264,40 @@ function checkExercise() {
   <!-- Case mails aux groupes A et/ou B -->
   <% if current_user.sk.admin && @new %>
   	<br/>
-    <label class="checkbox-inline">
+    <label style="font-weight:normal;">
     	<input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
       Prévenir tout le groupe A de ce nouveau message par mail.
     </label>
     <br/>
-    <label class="checkbox-inline">
+    <label style="font-weight:normal;">
       <input type="checkbox" id="groupeB" name="groupeB" value="B" <%= 'disabled="true"' if current_user.other %> >
       Prévenir tout le groupe B de ce nouveau message par mail.
     </label>
   <% end %>
 </div>
+
+<% if !session["errorSubject"].nil? %>
+  <% if @edit %>
+    <script>
+      Rolling.develop_quick("<%= @champ %>");
+    </script>
+  <% end %>
+  <% session.delete("errorSubject") %>
+  <% session.delete("oldAll") %>
+<% end %>
+
+<% if !session["successSubject"].nil? %>
+  <% if @edit %>
+    <script>
+      Rolling.showus("<%= @champ %>");
+    </script>
+  <% end %>
+  <% session.delete("successSubject") %>
+<% end %>
+
+<% if !@edit %>
+  <script>
+  PreviewSafe.Init();
+  PreviewSave.Update();
+  </script>
+<% end %>

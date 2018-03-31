@@ -14,9 +14,13 @@ var PreviewSafe = {
   //
   //  Get the preview and buffer DIV's
   //
-  Init: function () {
-    this.preview = document.getElementById("MathPreview");
-    this.buffer = document.getElementById("MathBuffer");
+  Init: function (s) {
+    if(s == undefined)
+      s = "";
+    this.preview = document.getElementById("MathPreview" + s);
+    this.buffer = document.getElementById("MathBuffer" + s);
+    this.input = document.getElementById("MathInput" + s);
+    this.stop = document.getElementById("stop" + s);
   },
 
   //
@@ -59,10 +63,10 @@ var PreviewSafe = {
       return;
     }
 
-    var text = document.getElementById("MathInput").value.replace(/</g,'&lt').replace(/>/g,'&gt')
+    var text = this.input.value.replace(/</g,'&lt').replace(/>/g,'&gt')
     if(allowhide) {
       var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
-      while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, '<div style="background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;"><a style="display:inline;" class="btn btn-default btn-grey">$1</a><br/><br/>$2</div>');
+      while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, "<div class='clue'><div><a href='#' onclick='return false;' class='btn btn-default btn-grey'>$1</a></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$2</div></div></div>");
     }
     text = text.replace(/\[b\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/b\]/gmi, '<b>$1</b>').replace(/\[u\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/u\]/gmi, '<u>$1</u>').replace(/\[i\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/i\]/gmi, '<i>$1</i>').replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/\n/g, '<br/>').replace(/\:\-\)/g,'<%= image_tag "Smiley1.gif", :width => "20px", :height => "20px" %>').replace(/\:\-\(/g,'<%= image_tag "Smiley2.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[D]/g,'<%= image_tag "Smiley3.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[O]/g,'<%= image_tag "Smiley4.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[P]/g,'<%= image_tag "Smiley5.gif", :width => "20px", :height => "20px" %>').replace(/\:\'\(/g,'<%= image_tag "Smiley6.gif", :width => "20px", :height => "20px" %>').replace(/\;\-\)/g,'<%= image_tag "Smiley7.gif", :width => "20px", :height => "20px" %>').replace(/\:\-\|/g,'<%= image_tag "Smiley8.gif", :width => "20px", :height => "20px" %>').replace(/[3]\:\[/g,'<%= image_tag "Smiley9.gif", :width => "20px", :height => "20px" %>');
 
@@ -77,9 +81,6 @@ var PreviewSafe = {
     );
   },
 
-  // var text = document.getElementById("MathInput").value.replace(/\n/g, '<br/>');
-
-
   //
   //  Indicate that MathJax is no longer running,
   //  and swap the buffers to show the results.
@@ -88,7 +89,13 @@ var PreviewSafe = {
     this.mjRunning = false;
     this.SwapBuffers();
     if(this.needUpdate) this.CreatePreview();
+  },
+  
+  MyUpdate: function(){
+  if (this.stop.checked){
+    this.Update();
   }
+}
 
 };
 
@@ -97,10 +104,3 @@ var PreviewSafe = {
 //
 PreviewSafe.callback = MathJax.Callback(["CreatePreview",PreviewSafe]);
 PreviewSafe.callback.autoReset = true;  // make sure it can run more than once
-
-function safefakeupdate(){
-  var stop = document.getElementById('stop');
-  if (stop.checked){
-    PreviewSafe.Update();
-  }
-}

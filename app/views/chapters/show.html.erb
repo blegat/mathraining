@@ -19,7 +19,7 @@
   <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
 </h1>
 
-<div class="row">
+<div class="row" style="margin:0px;">
 
   <!-- MENU -->
   <div class="col-md-2 col-sm-3 col-xs-12 noprint list-group chap-menu">
@@ -68,7 +68,7 @@
       <% end %>
     <% end %>
 
-    <!-- Peut-on voit les exercices? -->
+    <!-- Peut-on voir les exercices? -->
     <% exovisibles = true %>
     <% if !@ss || !current_user.sk.admin? %>
       <% @chapter.prerequisites.each do |p| %>
@@ -154,6 +154,8 @@
       
     <% if !@chapter.section.fondation && exovisibles && pasfait == 0 && @ss && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
       <% current_user.sk.chapters << @chapter %>
+      <% @chapter.nb_solved = @chapter.nb_solved + 1 %>
+      <% @chapter.save %>
     <% end %>
   </div>
     

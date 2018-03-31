@@ -17,7 +17,7 @@ var scrollHandler = function () {
     }
   }
   
-  if(more_posts_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 10 - compenser)
+  if(more_posts_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 20 - compenser)
   {
     $('.toreplace').html('<br/>Chargement des messages anciens...')
     $.getScript(more_posts_url + "?nonread=<%= params[:nonread] %>")
@@ -44,11 +44,11 @@ $(window).scroll(scrollHandler);
 <% @nouveau = false %>
 
 <div class="row" style="height:80%;" id="menu">
-  <div class="col-md-3 col-sm-3 col-xs-12">
+  <div class="col-md-3 col-sm-4 col-xs-12">
     <%= render 'menu' %>
   </div>
 
-  <div class="col-md-9 col-sm-9 col-xs-12" id="messages">
+  <div class="col-md-9 col-sm-8 col-xs-12" id="messages">
 
     <% other = current_user.sk %>
     <% @discussion.users.each do |u| %>
@@ -73,7 +73,7 @@ $(window).scroll(scrollHandler);
         <div class="well" id="MathPreview"></div>
         <div class="well hidden-preview" id="MathBuffer"></div>
         <%= render 'subjects/smiley', hiddentext: false %>
-        <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+        <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
       </div>
 
       <span id="fooBar"></span>
@@ -104,7 +104,6 @@ $(window).scroll(scrollHandler);
 
   </div>
 </div>
-
 
 <script>
 PreviewSafe.Init();

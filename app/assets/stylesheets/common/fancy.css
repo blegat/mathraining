@@ -1,0 +1,62 @@
+/* NEW */
+
+.jaune {
+  background-color: #fffad2;
+}
+
+.jaune:hover {
+  background-color: #fff5cd !important;
+}
+
+.evidence {
+  border: 1px dashed black;
+  padding:7px;
+  background-color: #F0FFFF;
+}
+
+.result-title {
+  border: 1px solid rgb(4,136,212);
+  font-weight:bold;
+  padding:7px;
+  padding-left:9px;
+  background-color:rgb(4,136,212);
+  color:white;
+}
+
+.result-content {
+  padding:7px;
+  padding-left:9px;
+  background-color:rgb(233,244,255);
+  border: 1px solid rgb(4,136,212);
+}
+
+.remark-title {
+  border: 1px solid rgb(113,186,186);
+  font-weight:bold;
+  padding:7px;
+  padding-left:9px;
+  background-color:rgb(113,186,186);
+  color:white;
+}
+
+.remark-content {
+  padding:7px;
+  padding-left:9px;
+  background-color:rgb(240,255,255);
+  border: 1px solid rgb(113,186,186);
+}
+
+.proof-title {
+  border: 1px solid #dddddd;
+  font-weight:bold;
+  padding:7px;
+  padding-left:9px;
+  background-color:#eeeeee;
+}
+
+.proof-content {
+  padding:7px;
+  padding-left:9px;
+  border: 1px solid #dddddd;
+  border-top:none;
+}

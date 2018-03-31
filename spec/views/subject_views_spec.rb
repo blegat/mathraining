@@ -46,7 +46,7 @@ describe "Subject views" do
     describe "visits subject/show of someone else" do
       before { visit subject_path(sub) }
       it { should_not have_link("Modifier ce sujet") }
-      it { should have_link("Répondre") }
+      it { should have_button("Répondre") }
     end
   end
 

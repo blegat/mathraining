@@ -20,12 +20,12 @@ var showAllUsers = function () {
 
 <div class="row">
   <div class="noprint">
-  <div class="col-md-3 col-sm-3 col-xs-12">
+  <div class="col-md-3 col-sm-4 col-xs-12">
     <%= render 'menu' %>
   </div>
   </div>
 
-  <div class="col-md-9 col-sm-9 col-xs-12">
+  <div class="col-md-9 col-sm-8 col-xs-12">
 
     <h3>Nouvelle discussion</h3>
 
@@ -50,7 +50,7 @@ var showAllUsers = function () {
         <div class="well" id="MathPreview"></div>
         <div class="well hidden-preview" id="MathBuffer"></div>
         <%= render 'subjects/smiley', hiddentext: false %>
-        <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="safefakeupdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+        <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
       </div>
 
       <span id="fooBar"></span>

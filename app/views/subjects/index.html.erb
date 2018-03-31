@@ -2,9 +2,8 @@
 
 <!-- Fonction qui affiche la date du message -->
 <% def affiche_date(date, datenow) %>
-  <% mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"] %>
   <% if (datenow - date).floor >= 24*60*60 %>
-    <%= date.day %> <%= mois[date.month-1] %> <%= date.year %> à <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %>
+    <%= write_date(date) %>
   <% elsif (datenow - date).floor >= 60*60 %>
     <% minute = ((datenow - date)/60).floor %>
     <% heure = (minute / 60).floor %>
@@ -93,7 +92,7 @@
     <% m = s %>
   <% end %>
   <% if current_user.sk.forumseen < s.lastcomment && m.user_id != current_user.sk.id %>
-    <% style = "background-color:#FFFFBB;" %>
+    <% style = "background-color:#fffad2;" %>
   <% end %>
   <tr style="<%= style %>">
 

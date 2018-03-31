@@ -1,24 +1,34 @@
-<a href="#!" onClick="JavaScript: TAinsert('[b]','[/b]','MathInput'); safefakeupdate();"><%= image_tag "bold.jpg", :title => "Gras", :style=>"margin-left:5px;" %></a>
-<a href="#!" onClick="JavaScript: TAinsert('[i]','[/i]','MathInput'); safefakeupdate();"><%= image_tag "italics.jpg", :title => "Italique" %></a>
-<a href="#!" onClick="JavaScript: TAinsert('[u]','[/u]','MathInput'); safefakeupdate();"><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
-<a href="#!" onClick="JavaScript: TAinsert('[url=http://www.exemple.com]','[/url]','MathInput'); safefakeupdate();"><%= image_tag "link.jpg", :title => "Lien", :style=>"margin-left:10px; margin-right:15px;" %></a>
+<div class="row smiley-content">
 
-<% if hiddentext %>
-<a href="#!" onClick="JavaScript: TAinsert('[hide=Texte caché]\n','\n[/hide]','MathInput'); safefakeupdate();">Texte caché</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<% if @champ.nil? %>
+  <% @champ = "" %>
 <% end %>
 
-<br class="visible-xs" />
-      
-<a href="#!" onClick="JavaScript: TAinsert(' :-)','','MathInput'); safefakeupdate();"><%= image_tag "Smiley1.gif", :title => ":-)", :style=>"margin-left:5px;" %></a>
-<a href="#!" onClick="JavaScript: TAinsert(' :-(','','MathInput'); safefakeupdate();"><%= image_tag "Smiley2.gif", :title => ":-(" %></a>
-<a href="#!" onClick="JavaScript: TAinsert(' ;-)','','MathInput'); safefakeupdate();"><%= image_tag "Smiley7.gif", :title => ";-)" %></a>
-<a href="#!" onClick="JavaScript: TAinsert(' :\'(','','MathInput'); safefakeupdate();"><%= image_tag "Smiley6.gif", :title => ":'(" %></a>
-<a href="#!" onClick="JavaScript: TAinsert(' :-D','','MathInput'); safefakeupdate();"><%= image_tag "Smiley3.gif", :title => ":-D" %></a>
-<a href="#!" onClick="JavaScript: TAinsert(' :-O','','MathInput'); safefakeupdate();"><%= image_tag "Smiley4.gif", :title => ":-O" %></a>
-<a href="#!" onClick="JavaScript: TAinsert(' :-P','','MathInput'); safefakeupdate();"><%= image_tag "Smiley5.gif", :title => ":-P" %></a>
-<a href="#!" onClick="JavaScript: TAinsert(' :-|','','MathInput'); safefakeupdate();"><%= image_tag "Smiley8.gif", :title => ":-|" %></a>
-<a href="#!" onClick="JavaScript: TAinsert(' 3:[','','MathInput'); safefakeupdate();"><%= image_tag "Smiley9.gif", :title => "3:[", :style=>"margin-right:10px;" %></a>
+<div class="smiley">
+<a href="#!" onClick="JavaScript: Insert.insert('[b]','[/b]','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "bold.jpg", :title => "Gras" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert('[i]','[/i]','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "italics.jpg", :title => "Italique" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert('[u]','[/u]','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert('[url=http://www.exemple.com]','[/url]','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "link.jpg", :title => "Lien", :style=>"margin-left:10px;" %></a>
 
-<br class="visible-xs" />
+<% if hiddentext %>
+<a href="#!" onClick="JavaScript: Insert.insert('[hide=Texte caché]\n','\n[/hide]','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();" style="margin-left:15px;">Texte caché</a>
+<% end %>
+</div>
 
-<label class="checkbox-inline" style="margin-left:7px;"><input type="checkbox" id="stop" name="stop" onclick="safefakeupdate()" checked="checked" /> Activer la prévisualisation</label>
+<div class="smiley">
+<a href="#!" onClick="JavaScript: Insert.insert(' :-)','','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "Smiley1.gif", :title => ":-)" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert(' :-(','','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "Smiley2.gif", :title => ":-(" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert(' ;-)','','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "Smiley7.gif", :title => ";-)" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert(' :\'(','','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "Smiley6.gif", :title => ":'(" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert(' :-D','','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "Smiley3.gif", :title => ":-D" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert(' :-O','','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "Smiley4.gif", :title => ":-O" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert(' :-P','','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "Smiley5.gif", :title => ":-P" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert(' :-|','','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "Smiley8.gif", :title => ":-|" %></a>
+<a href="#!" onClick="JavaScript: Insert.insert(' 3:[','','MathInput<%= @champ %>'); PreviewSafe.MyUpdate();"><%= image_tag "Smiley9.gif", :title => "3:[" %></a>
+</div>
+
+<div class="smiley">
+<label style="margin-left:10px; margin-right:10px; font-weight:normal;"><input type="checkbox" id="stop<%= @champ %>" name="stop" onclick="PreviewSafe.MyUpdate()" checked="checked" style="margin-right:5px;" />Prévisualisation</label>
+</div>
+
+</div>

@@ -116,7 +116,7 @@
           <% if rate == 0 %>
             -
           <% else %>
-            <%= 100*rate/m %> %
+            <%= 100*rate/m %>%
           <% end %>
         <% end %>
     </td>
@@ -173,7 +173,7 @@
     <h2>Inscriptions récentes</h2>
     <% User.order("created_at DESC").where(:admin => false).first(10).each do |u| %>
       <% inscription = u.created_at %>
-      <%= Message.write_date_only(inscription.in_time_zone) %> :
+      <%= write_date_only(inscription.in_time_zone) %> :
       <% if u.email_confirm %>
         <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b><%= "(banni)" if !u.active %></b><br/>
         <% else %>
@@ -187,7 +187,7 @@
   <% rank = 1 %>
   <% User.order("created_at DESC").where(:admin => false, :rating => 0).each do |u| %>
     <% inscription = u.created_at %>
-    <%= Message.write_date_only(inscription.in_time_zone) %> :
+    <%= write_date_only(inscription.in_time_zone) %> :
     <% if u.email_confirm %>
       <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b><%= "(banni)" if !u.active %></b><br/>
     <% else %>

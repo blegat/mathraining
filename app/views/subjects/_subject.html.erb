@@ -1,80 +1,21 @@
-<% q = 0 %>
-<% if(params.has_key?:q) %>
-  <% q = params[:q].to_i %>
+<% @champ = "EditSubject" %>
+
+<div id="the<%= @champ %>" style="overflow:hidden;">
+
+<% if !@subject.exercise.nil? %>
+	<%= render 'subjects/show_exo', f: @subject.exercise, type: 2 %>
+<% elsif !@subject.qcm.nil? %>
+	<%= render 'subjects/show_exo', f: @subject.qcm, type: 3 %>
 <% end %>
 
-<table class="table table-bordered message">
+<%= render 'subjects/content', ms: s, kind: "subject" %>
 
-  <!-- Cas normal -->
-  <tr class="hidden-xs info">
+</div>
 
-  <!-- Nom -->
-  <td class="author">
-    <%= raw(s.user.linked_name) %>
-  </td>
-
-  <!-- Date -->
-  <td class="date">
-  <%= Message.write_date(s.created_at.in_time_zone) %>
-  </td>
-  </tr>
-
-  <!-- Cas gsm -->
-
-  <!-- Nom -->
-  <tr class="visible-xs info">
-  <td class="author">
-    <%= raw(s.user.linked_name) %>
-  </td>
-  </tr>
-
-  <!-- Date -->
-  <tr class="visible-xs info">
-  <td class="date">
-  <%= Message.write_date(s.created_at.in_time_zone) %>
-  </td>
-  </tr>
-
-  <!-- Contenu du message -->
-  <tr><td colspan="2" class="content">
-  <div>
-  <% bb = bbcode(s.content) %>
-  <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div style='background-color:#FFFFCC; margin-top:10px; border:1px solid orange; padding:10px;'><a href='#' id='show#{@nb_indice}' onclick='showStuff(#{@nb_indice}); return false;' style='display:inline;' class='btn btn-default btn-grey'>#{$1}</a><a href='#' id='hide#{@nb_indice}' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(#{@nb_indice}); return false;'>#{$1}</a><span id='indice#{@nb_indice}' style='display:none;'><br/><br/>#{$2}</span></div>"} %>
-  <% @nb_indice = @nb_indice+1 %>
-  <% end %>
-
-  <div id="normal<%= -s.id %>" style="display:inline;">
-  <%= raw(bb) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showAnormal(<%= -s.id %>)'>(Montrer le code)</a></div>
+<% if @canmodif %>
+  <div id="form<%= @champ %>" style="overflow:hidden; height:0px;">
+  <% @edit = true %>
+  <%= render 'subjects/edit', s: s %>
   </div>
+<% end %>
 
-  <div class="tex2jax_ignore" id="anormal<%= -s.id %>" style="display:none;">
-  <%= raw((h s.content).gsub(/\n/, '<br/>')) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showNormal(<%= -s.id %>)'>(Cacher le code)</a></div>
-  </div>
-
-  <!-- Pièces jointes -->
-  <%= render 'subjects/show_files', s: s %>
-  </div>
-  </td></tr>
-
-  <!-- Si on peut modifier -->
-  <% if canmodif && (s.user == current_user.sk || (current_user.sk.admin && !s.user.admin) || current_user.sk.root) %>
-    <tr><td colspan="2" class="modify">
-      <%= link_to "Modifier ce sujet", edit_subject_path(s, :q => q) %>
-      <% if current_user.sk.admin? %>
-        | <%= link_to "Supprimer ce sujet", subject_path(s), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce sujet et tous les messages qui vont avec ?" }  %>
-        | <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Migrer ce sujet</a>
-        <span id='formulaire' style="display:none;">
-        <%= form_tag subject_migrate_path(s), method: :get, :class => "form-inline" do %>
-          Migrer ce sujet vers le sujet numéro
-          <%= hidden_field_tag "q", q %>
-          <%= number_field_tag "migreur", nil, min: 1, max: 10000 %>
-          <%= submit_tag "Do it !", data: { confirm: "Êtes-vous sûr de vouloir migrer ce sujet ? Êtes-vous sûr de l'id du sujet receveur ?"} %>
-        <% end %>
-        </span>
-      <% end %>
-    </td></tr>
-  <% end %>
-
-</table>

@@ -1,4 +1,3 @@
-
 var Preview = {
   delay: 150,        // delay after keystroke before updating
 
@@ -16,6 +15,8 @@ var Preview = {
   Init: function () {
     this.preview = document.getElementById("MathPreview");
     this.buffer = document.getElementById("MathBuffer");
+    this.input = document.getElementById("MathInput");
+    this.stop = document.getElementById('stop');
   },
 
   //
@@ -57,7 +58,8 @@ var Preview = {
       this.needUpdate = true;
       return;
     }
-    var text = document.getElementById("MathInput").value.replace(/<hr>[ \r]*\n/g,'<hr>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/<\/h2>[ \r]*\n/g,'</h2>').replace(/<\/h3>[ \r]*\n/g,'</h3>').replace(/<\/h4>[ \r]*\n/g,'</h4>').replace(/<\/ol>[ \r]*\n/g, '</ol>').replace(/\n[ \r]*<\/ol>/g, '</ol>').replace(/<\/ul>[ \r]*\n/g, '</ul>').replace(/\n[ \r]*<\/ul>/g, '</ul>').replace(/\n(\040)*<li>/g, '<li>').replace(/<evidence>[ \r]*\n/g, '<evidence>').replace(/<\/evidence>[ \r]*\n/g, '</evidence>').replace(/<evidence>/g, '<div class="evidence">').replace(/<\/evidence>/g, '</div>').replace(/\n/g, '<br/>');
+    var text = this.input.value.replace(/<hr>[ \r]*\n/g,'<hr>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/<\/h2>[ \r]*\n/g,'</h2>').replace(/<\/h3>[ \r]*\n/g,'</h3>').replace(/<\/h4>[ \r]*\n/g,'</h4>').replace(/<\/ol>[ \r]*\n/g, '</ol>').replace(/\n[ \r]*<\/ol>/g, '</ol>').replace(/<\/ul>[ \r]*\n/g, '</ul>').replace(/\n[ \r]*<\/ul>/g, '</ul>').replace(/\n(\040)*<li>/g, '<li>').replace(/<evidence>[ \r]*\n/g, '<evidence>').replace(/<\/evidence>[ \r]*\n/g, '</evidence>').replace(/<evidence>/g, '<div class="evidence">').replace(/<\/evidence>/g, '</div>').replace(/<result>[ \r]*\n/g, '<result>').replace(/<\/result>[ \r]*\n/g, '</result>').replace(/<proof>[ \r]*\n/g, '<proof>').replace(/<\/proof>[ \r]*\n/g, '</proof>').replace(/<remark>[ \r]*\n/g, '<remark>').replace(/<\/remark>[ \r]*\n/g, '</remark>').replace(/<statement>[ \r]*\n/g, '<statement>').replace(/<\/indice>[ \r]*\n/g, '</indice>').replace(/\n/g, '<br/>').replace(/<result>(.*?)<statement>(.*?)<\/result>/g, "<div class='result-title'>$1</div><div class='result-content'>$2</div>").replace(/<proof>(.*?)<statement>(.*?)<\/proof>/g, "<div class='proof-title'>$1</div><div class='proof-content'>$2</div>").replace(/<remark>(.*?)<statement>(.*?)<\/remark>/g, "<div class='remark-title'>$1</div><div class='remark-content'>$2</div>").replace(/<indice>(.*?)<\/indice>/g, "<div class='clue-bis'><div><a href='#' onclick='return false;' class='btn btn-default btn-grey'>Indice</a></div><div id='indice0' class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$1</div></div></div>")
+    
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
     this.mjRunning = true;
@@ -68,9 +70,6 @@ var Preview = {
     );
   },
 
-  // var text = document.getElementById("MathInput").value.replace(/\n/g, '<br/>');
-
-
   //
   //  Indicate that MathJax is no longer running,
   //  and swap the buffers to show the results.
@@ -80,7 +79,13 @@ var Preview = {
     this.SwapBuffers();
     if(this.needUpdate)
     this.CreatePreview();
+  },
+  
+  MyUpdate: function() {
+  if (this.stop.checked){
+    this.Update();
   }
+}
 
 };
 
@@ -89,10 +94,3 @@ var Preview = {
 //
 Preview.callback = MathJax.Callback(["CreatePreview",Preview]);
 Preview.callback.autoReset = true;  // make sure it can run more than once
-
-function fakeupdate(){
-  var stop = document.getElementById('stop');
-  if (stop.checked){
-    Preview.Update();
-  }
-}

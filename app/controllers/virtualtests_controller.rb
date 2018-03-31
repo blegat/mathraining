@@ -11,6 +11,7 @@ class VirtualtestsController < ApplicationController
   before_action :can_be_online, only: [:put_online]
   before_action :delete_online, only: [:destroy]
   before_action :enough_points, only: [:show, :begin_test]
+  before_action :in_test, only: [:show]
 
   # Voir tous les tests virtuels
   def index
@@ -56,10 +57,10 @@ class VirtualtestsController < ApplicationController
     @virtualtest = Virtualtest.find(params[:id])
     @virtualtest.duration = params[:virtualtest][:duration]
     if @virtualtest.save
-      flash[:success] = "Test virtuel ajouté."
-      redirect_to @virtualtest
+      flash[:success] = "Test virtuel modifié."
+      redirect_to virtualtests_path
     else
-      render 'new'
+      render 'edit'
     end
   end
 
@@ -71,6 +72,7 @@ class VirtualtestsController < ApplicationController
       p.save
     end
     @virtualtest.destroy
+    flash[:success] = "Test virtuel supprimé."
     redirect_to virtualtests_path
   end
 
@@ -78,7 +80,8 @@ class VirtualtestsController < ApplicationController
   def put_online
     @virtualtest.online = true
     @virtualtest.save
-    redirect_to @virtualtest
+    flash[:success] = "Test virtuel mis en ligne."
+    redirect_to virtualtests_path
   end
 
   # Commencer le test
@@ -102,6 +105,11 @@ class VirtualtestsController < ApplicationController
 
   def recup2
     @virtualtest = Virtualtest.find(params[:virtualtest_id])
+  end
+  
+  # Vérifie que le test est en cours
+  def in_test
+    redirect_to virtualtests_path if current_user.sk.admin || current_user.sk.status(@virtualtest.id) != 0
   end
 
   # Vérifie qu'on a accès à ce test
@@ -140,7 +148,7 @@ class VirtualtestsController < ApplicationController
       redirect_to @virtualtest
     elsif Takentest.where(user_id: current_user.sk.id, status: 0).count > 0
       flash[:danger] = "Vous avez déjà un test virtuel en cours !"
-      redirect_to @virtualtest
+      redirect_to virtualtests_path
     end
   end
 

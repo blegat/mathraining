@@ -1,7 +1,7 @@
 <hr style="margin-top:3px; margin-bottom:3px;"/>
 
 <% if @compteur <= params[:nonread].to_i %>
-  <div style="padding:8px; background-color:#FFFFBB; overflow-y:hidden;">
+  <div style="padding:8px; background-color:#fffad2; overflow-y:hidden;">
 <% else %>
   <div style="padding:8px; overflow-y:hidden; overflow-x:visible">
 <% end %>
@@ -12,7 +12,7 @@
 
 <!-- Qui et quand -->
 <div style="text-align:right; float:right;">&nbsp;
-  <%= Message.write_date(m.created_at.in_time_zone) %>
+  <%= write_date(m.created_at.in_time_zone) %>
 </div>
 
 <div style="margin-bottom:10px;"><b><%= m.user.name %></b></div>

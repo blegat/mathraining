@@ -26,42 +26,36 @@ html>body tbody.scroll {
 </style>
 
 <% nb_corrections = @user.followings.count %>
-
-<!-- Si c'est un administrateur -->
-<% if @user.admin %>
-  <h1><b><%= @user.name %></b>
-  <% if signed_in? && current_user.sk.root? %>
-    <span style="font-size:18px; margin-left:100px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
-  <% end %>
-
-  <% if signed_in? && current_user.sk != @user %>
-    <span style="float:right;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default" %></span>
-  <% end %>
-  </h1>
-  <%= @user.name %> est <%= "administrateur" if @user.sex == 0 %><%= "administratrice" if @user.sex == 1 %>.<br/>
-  <% if nb_corrections > 0 %>
-    <br/><%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> a participé à la correction de <b><%= nb_corrections %></b> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !<br/>
-  <% end %>
   
-<!-- Si c'est un étudiant -->
-<% else %>
+<% if !@user.admin %>
   <% actualrating = @user.rating %>
   <% niveau = @user.level %>
+  <% couleur = niveau[:color] %>
+  <% status = niveau[:name] if @user.sex == 0 %>
+  <% status = niveau[:femininename] if @user.sex == 1 %>
+<% else %>
+  <% couleur = "black" %>
+  <% status = "Administrateur" if @user.sex == 0 %>
+  <% status = "Administratrice" if @user.sex == 1 %>
+<% end %>
 
-  <!-- Titre avec le nom et le niveau -->
-  <h1><%= raw(@user.colored_name) %><span style="margin-left:30px; color:<%= niveau[:color] %>;">-</span><span style="margin-left:30px; color:<%= niveau[:color] %>;"><%= niveau[:name] if @user.sex == 0 %><%= niveau[:femininename] if @user.sex != 0 %></span>
-  <% if signed_in? && current_user.sk.admin %>
-    <span style="color:<%= niveau[:color] %>; margin-left:100px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
-  <% end %>
+<!-- Titre avec le nom et le niveau -->
+<h1><%= raw(@user.colored_name) %>
+<span style="margin-left:25px; color:<%= couleur %>;">-</span><span style="margin-left:30px; color:<%= couleur %>;"><%= status %></span>
+<% if signed_in? && current_user.sk.admin && (!@user.admin || current_user.sk.root) %>
+  <span style="color:<%= couleur %>; margin-left:50px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
+<% end %>
 
-  <% if signed_in? && current_user.sk != @user %>
-    <span style="float:right;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default" %></span>
-  <% end %>
-  </h1>
+<% if signed_in? && current_user.sk != @user %>
+  <span style="float:right;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey" %></span>
+<% end %>
+</h1>
   
-  <% if nb_corrections > 0 %>
-    <%= @user.name %> a participé à la correction de <b><%= nb_corrections %></b> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !<br/>
-  <% end %>
+<% if nb_corrections > 0 %>
+  <%= @user.name %> a participé à la correction de <b><%= nb_corrections %></b> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !<br/>
+<% end %>
+
+<% if !@user.admin %>
 
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
   <% cansee = Array.new %>
@@ -302,7 +296,7 @@ html>body tbody.scroll {
     <tr style="background-color:<%= Section.color(a[:section]) %>;">
 
     <!-- Date -->
-    <td style="width:150px;"><%= Message.write_date_only(date) %></td>
+    <td style="width:150px;"><%= write_date_only(date) %></td>
 
     <!-- Heure -->
     <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
@@ -359,7 +353,7 @@ html>body tbody.scroll {
     <tr style="background-color:<%= Section.color(a[:section]) %>;">
 
     <!-- Date -->
-    <td style="width:150px;"><%= Message.write_date_only(date) %></td>
+    <td style="width:150px;"><%= write_date_only(date) %></td>
 
     <!-- Quoi -->
     <td style="width:140px;">
@@ -468,7 +462,7 @@ html>body tbody.scroll {
   
   <!-- Date d'inscription -->
   <br/>
-  <center>Inscription : <%= Message.write_date_only(inscription.in_time_zone) %></center><br/>
+  <center><b>Inscription</b> : <%= write_date_only(inscription.in_time_zone) %></center><br/>
 
   </div>
 
@@ -484,7 +478,7 @@ html>body tbody.scroll {
       <%= moyenne_erreurs %> erreurs/exercice<br/>
     <% end %>
     <% lastco = @user.last_connexion %>
-    Dernière connexion : <%= Message.write_date_only(lastco.in_time_zone) %><br/>
+    Dernière connexion : <%= write_date_only(lastco.in_time_zone) %><br/>
     <%= "Groupe Wépion" if @user.wepion %> <%= " - Groupe " << @user.group if @user.group != "" %>
     </div>
     </div>

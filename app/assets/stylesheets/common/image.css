@@ -1,0 +1,28 @@
+/* IMAGES */
+
+@media (max-width: 767.99px) {
+  .image-pj {
+    width:100%;
+  }
+  .image-pj2 {
+    width:100%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.99px) {
+  .image-pj {
+    max-width:450px;
+  }
+  .image-pj2 {
+    max-width:680px;
+  }
+}
+
+@media (min-width: 992px) {
+  .image-pj {
+    max-width:670px;
+  }
+  .image-pj2 {
+    max-width:900px;
+  }
+}

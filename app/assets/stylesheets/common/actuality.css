@@ -1,0 +1,29 @@
+/* ACTUALITIES */
+
+table.actuality {
+  margin-top:20px;
+}
+
+table.actuality td.title {
+  font-size:26px;
+  font-weight:bold;
+  padding-left:15px;
+  border-right:none;
+}
+
+table.actuality td.date {
+  vertical-align:middle;
+  text-align:right;
+  font-size:18px;
+  border-left:none;
+  padding-right:15px;
+}
+
+table.actuality td.content {
+  padding:15px;
+}
+
+table.actuality td.modify {
+  text-align:center;
+}
+

@@ -1,171 +1,185 @@
 <% provide(:title, @section.name) %>
 
-<% @nb_exercices = 0 %>
-<% @nb_points_exercices = 0 %>
-
-<% @nb2_n1 = 0 %>
-<% @nb2_n2 = 0 %>
-<% @nb2_n3 = 0 %>
-<% @nb2_n4 = 0 %>
-
-<% @nb_n1 = 0 %>
-<% @nb_n2 = 0 %>
-<% @nb_n3 = 0 %>
-<% @nb_n4 = 0 %>
-<% @nb_n5 = 0 %>
-
-<% @nb_problemes = 0 %>
-<% @nb_points_problemes = 0 %>
-
-<% @section.problems.each do |p| %>
-	<% @nb_n1 = @nb_n1 + 1 if p.level == 1 %>
-	<% @nb_n2 = @nb_n2 + 1 if p.level == 2 %>
-	<% @nb_n3 = @nb_n3 + 1 if p.level == 3 %>
-	<% @nb_n4 = @nb_n4 + 1 if p.level == 4 %>
-	<% @nb_n5 = @nb_n5 + 1 if p.level == 5 %>
-
-	<% @nb_problemes = @nb_problemes+1 %>
-	<% @nb_points_problemes = @nb_points_problemes+p.value %>
-<% end %>
-
 <!-- Fonction pour afficher les exercices d'un chapitre -->
 <% def affiche_exercices(chapter, acces) %>
-
-  <% liste = chapter.exercises.order(:position) %>
-  <% liste2 = chapter.qcms.order(:position) %>
-  <% un = 0 %>
-  <% deux = 0 %>
+  <% liste = Array.new %>
+  <% liste[1] = chapter.exercises.order(:position) %>
+  <% liste[2] = chapter.qcms.order(:position) %>
+  <% where = Array.new %>
+  <% where[1] = 0 %>
+  <% where[2] = 0 %>
   <% j = 1 %>
   <% k = 1 %>
 
   <% compteur = 0 %>
 
-  <% (1..(liste.size+liste2.size)).each do |i| %>
-    <% @nb_exercices = @nb_exercices + 1 %>
+  <% (1..(liste[1].size+liste[2].size)).each do |i| %>
     <% encours = 0 %>
-    <% if un >= liste.size %>
+    <% if where[1] >= liste[1].size %>
       <% encours = 2 %>
     <% else %>
-      <% if deux >= liste2.size %>
+      <% if where[2] >= liste[2].size %>
         <% encours = 1 %>
       <% else %>
-        <% if liste[un].position < liste2[deux].position %>
+        <% if liste[1][where[1]].position < liste[2][where[2]].position %>
           <% encours = 1 %>
         <% else %>
           <% encours = 2 %>
         <% end %>
       <% end %>
     <% end %>
-    <% if encours == 1 %>
-      <% f = liste[un] %>
-      <% @nb_points_exercices = @nb_points_exercices + f.value %>
-      <% @nb2_n1 = @nb2_n1 + 1 if f.level == 1 %>
-      <% @nb2_n2 = @nb2_n2 + 1 if f.level == 2 %>
-      <% @nb2_n3 = @nb2_n3 + 1 if f.level == 3 %>
-      <% @nb2_n4 = @nb2_n4 + 1 if f.level == 4 %>
-      <% if f.online || (@ss && current_user.sk.admin?) %>
-        <% compteur = compteur + 1 %>
-        <% if k % 8 == 1 && k > 1 %>
-          </div>
-          <br/>
-          <div class="btn-group" style="margin-top:5px;">
-        <% elsif k == 1 %>
-          <center>
-          <div class="btn-group">
-        <% end %>
-        <% if acces %>
-          <% if !@ss %>
-            <button class="btn btn-default btn-grey" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= j %></button>
-          <% else %>
-            <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
-            <% if exo.size > 0 && ! current_user.sk.admin? %>
-              <% exo = exo.first %>
-              <% if exo.correct %>
-                <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= j %></button>
-              <% else %>
-                <button class="btn-danger btn" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= j %></button>
-              <% end %>
-            <% elsif !f.online %>
-              <button class="btn-warning btn" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= '!' %></button>
-            <% else %>
-              <button class="btn btn-default btn-grey" onclick="location.href='<%= chapter_path(chapter, :type => 2, :which => f.id) %>'"><%= j %></button>
-            <% end %>
-          <% end %>
-        <% else %>
-          <button class="btn disabled"><%= j %></button>
-        <% end %>
-        <% j = j+1 if f.online %>
-        <% k = k+1 %>
+    
+    <% f = liste[encours][where[encours]] %>
+    <% if f.online || (@ss && current_user.sk.admin?) %>
+      <% compteur = compteur + 1 %>
+      <% if k % 8 == 1 && k > 1 %>
+        </div>
+        <br/>
+        <div class="btn-group" style="margin-top:5px;">
+      <% elsif k == 1 %>
+        <center>
+        <div class="btn-group"  style="margin-top:3px;">
       <% end %>
-      <% un = un + 1 %>
-    <% else %>
-      <% f = liste2[deux] %>
-      <% @nb_points_exercices = @nb_points_exercices + f.value %>
-      <% @nb2_n1 = @nb2_n1 + 1 if f.level == 1 %>
-      <% @nb2_n2 = @nb2_n2 + 1 if f.level == 2 %>
-      <% @nb2_n3 = @nb2_n3 + 1 if f.level == 3 %>
-      <% @nb2_n4 = @nb2_n4 + 1 if f.level == 4 %>
-      <% if f.online || (@ss && current_user.sk.admin?) %>
-        <% compteur = compteur + 1 %>
-        <% if k % 8 == 1 && k > 1 %>
-          </div>
-          <br/>
-          <div class="btn-group" style="margin-top:5px;">
-        <% elsif k == 1 %>
-          <center>
-          <div class="btn-group">
-        <% end %>
-        <% if acces %>
-          <% if !@ss %>
-            <button class="btn btn-default btn-grey" onclick="location.href='<%= chapter_path(chapter, :type => 3, :which => f.id) %>'"><%= j %></button>
-          <% else %>
-            <% qcm = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) %>
-            <% if qcm.size > 0 && ! current_user.sk.admin? %>
-              <% qcm = qcm.first %>
-              <% if qcm.correct %>
-                <button class="btn-success btn" onclick="location.href='<%= chapter_path(chapter, :type => 3, :which => f.id) %>'"><%= j %></button>
-              <% else %>
-                <button class="btn-danger btn" onclick="location.href='<%= chapter_path(chapter, :type => 3, :which => f.id) %>'"><%= j %></button>
-              <% end %>
-            <% elsif !f.online %>
-              <button class="btn-warning btn" onclick="location.href='<%= chapter_path(chapter, :type => 3, :which => f.id) %>'"><%= '!' %></button>
-            <% else %>
-              <button class="btn btn-default btn-grey" onclick="location.href='<%= chapter_path(chapter, :type => 3, :which => f.id) %>'"><%= j %></button>
-            <% end %>
-          <% end %>
+      <% if acces %>
+        <% classe = "" %>  
+        <% if !@ss %>
+          <% classe = "btn btn-default btn-grey" %>  
         <% else %>
-          <button class="btn disabled"><%= j %></button>
+          <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) if encours == 1 %>
+          <% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) if encours == 2 %>
+          <% if exo.size > 0 && ! current_user.sk.admin? %>
+            <% exo = exo.first %>
+            <% if exo.correct %>
+              <% classe = "btn-success btn" %>
+            <% else %>
+              <% classe = "btn-danger btn" %>
+            <% end %>
+          <% elsif !f.online %>
+            <% classe = "btn-warning btn" %>
+          <% else %>
+            <% classe = "btn btn-default btn-grey" %>
+          <% end %>
         <% end %>
-        <% j = j+1 if f.online %>
-        <% k = k+1 %>
+        
+        <button class="<%= classe %>" onclick="location.href='<%= chapter_path(chapter, :type => encours+1, :which => f.id) %>'"><%= j if f.online %><%= "!" if !f.online %></button>
+      <% else %>
+        <button class="btn disabled"><%= j %></button>
       <% end %>
-      <% deux = deux + 1 %>
+      <% j = j+1 if f.online %>
+      <% k = k+1 %>
+    <% end %>
+    <% where[encours] = where[encours] + 1 %> 
+  <% end %>
+
+  <% if compteur == 0 %>
+    <center><p><i> Aucun exercice. </i></p></center>
+  <% else %>
+    </div>
+    </center>
+  <% end %>
+<% end %>
+
+<% def affiche_chapitre(c, lecas, classe, section_fondation, fond) %>
+  <table class="table table-bordered chapter <%= classe %>">
+  <tr><td class="title">
+  <center><h3><%= link_to c.name, c %><%= " (en construction)" if lecas == 2 %></h3></center>
+  </td></tr>
+  
+  <tr><td class="real-content">
+  <div class="row intro">
+  <%= raw(htmlise(c.description)) %>
+  <% if lecas == 4 %>
+    <br/><br/>
+    <b>Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
+    <% prems = true %>
+    <% c.prerequisites.each do |p| %>
+      <% if (!section_fondation[p.section_id] && (!@ss || !current_user.sk.chapters.exists?(p))) %>
+        <%= " - " if !prems %>
+        <i><%= p.name %></i>
+        <% prems = false %>
+      <% end %>
+    <% end %>
+    </b>
+  <% end %>
+  </div>
+    
+  <div class="row content">
+  
+  <% if fond %>
+    <div style="width:10%;"></div>
+  <% end %>
+  
+  <div class="module left-part">
+  <center><h4>Théorie</h4></center>
+  <!-- Théorie -->
+  <% compteur = 0 %>
+  <% liste = c.theories.order(:position) %>
+  <% liste.each do |t| %>
+    <% if t.online || !c.online %>
+      <% if compteur == 0 %>
+        <ul>
+      <% end %>
+      <% compteur = compteur + 1 %>
+      <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @ss && current_user.sk.theories.exists?(t) %></li>
     <% end %>
   <% end %>
 
-<% if compteur == 0 %>
-  <center><p><i> Aucun exercice. </i></p></center>
-<% else %>
+  <% if compteur == 0 %>
+    <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
+  <% else %>
+    </ul>
+  <% end %>    
   </div>
-  </center>
-<% end %>
-
-
+  
+  <% if fond %>
+    <div style="width:12%;"></div>
+  <% end %>
+    
+  <div class="module <%= "middle-part" if !fond %><%= "right-part" if fond %>">
+  <center><h4>Exercices</h4></center>
+  <!-- Exercices -->
+  <% if lecas < 4 %>
+    <% affiche_exercices(c,true) %>
+  <% else %>
+    <% affiche_exercices(c,false) %>
+  <% end %>
+  </div>
+  
+  <% if fond %>
+    <div style="width:10%;"></div>
+  <% else %>
+    <div class="module right-part">
+    <center><h4>Statistiques</h4></center>
+    <!-- Statistiques -->
+    <center>
+    Complété par <b><%= c.nb_solved %></b> personne<%= "s" if c.nb_solved > 1 %><br/>
+    <% if c.nb_solved > 0 %>
+      Taux de réussite : <b><%= (c.nb_solved*100)/c.nb_tries %></b>%
+    <% end %>
+    </center>
+    </div>
+  <% end %>
+  </div>
+  </td></tr>
+  </table>
 <% end %>
 
 <h1>
+<button class="information-tag" onclick="return Info.toggle();">?</button>
 <span class="title-first">Théorie ></span>
 <%= @section.name %>
 </h1>
 
+<%= render 'infofond' if @fondation %>
+<%= render 'info' unless @fondation %>
 
 <!-- Introduction -->
 <h3>Introduction</h3>
 <%= raw(htmlise(@section.description)) %>
-<br/><br/>
+<br/>
 
 <% if @ss && current_user.sk.admin? %>
-<%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/><br/>
+<br/><%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/>
 <% end %>
 
 <!-- Chapitres -->
@@ -178,8 +192,6 @@
 
 <!-- Si chapitre non fondamental -->
 <% if !@fondation %>
-
-L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses chapitres prérequis ont été complétés, c'est-à-dire quand tous les exercices de ceux-ci ont été résolus.<br/><br/>
 
 <% chap = Array.new %>
 <% debloque = Array.new %>
@@ -243,144 +255,30 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
 
   <!-- Si on peut l'afficher -->
   <% if affiche[encours] %>
-
+    <% lecas = 0 %>
+    <% classe = "" %>
     <!-- Si on peut le faire -->
     <% if faisable[encours] <= 1 || (@ss && current_user.sk.admin) %>
-
-    <% lecas = 0 %>
-
-      <!-- Si on l'a déà résolu : en vert -->
+      <!-- Si on l'a déjà résolu : en vert -->
       <% if faisable[encours] == 0 && (!@ss || !current_user.sk.admin) %>
-        <table style="border-radius:15px; background-color:#DDFFDD; border-collapse:separate;" class="table">
         <% lecas = 1 %>
-
+        <% classe = "greeny" %>
       <!-- Si il n'est pas en ligne : en orange -->
       <% elsif !chap[encours].online %>
-        <table style="border-radius:15px; background-color:#FFEEAA; border-collapse:separate;" class="table">
         <% lecas = 2 %>
-
+        <% classe = "orangey" %>
       <!-- Sinon : en jaune -->
       <% else %>
-        <table style="border-radius:15px; background-color:#FFFFD0; border-collapse:separate;" class="table">
         <% lecas = 3 %>
+        <% classe = "yellowy" %>
       <% end %>
-
-      <tr>
-      <td colspan="2" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
-      <% if lecas == 1 %>
-        <%= image_tag "V.gif", :style => "margin-left:10px;" %>
-      <% elsif lecas == 2 %>
-        (en construction)
-      <% end %>
-      </h3></center>
-      <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;">
-        <%= raw(htmlise(chap[encours].description)) %>
-      </div>
-      </td>
-      </tr>
-
     <!-- Si on ne peut pas le faire : en gris -->
     <% else %>
-      <table style="border-radius:20px; background-color:#EEEEEE; border-collapse:separate;" class="table">
-      <tr>
-      <td colspan="2" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %></h3></center>
-      <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;"><%= raw(chap[encours].description.gsub(/\$\$[ \r]*\n/,'$$ ').gsub(/<\/ol>[ \r]*\n/, '</ol>').gsub(/\n[ \r]*<\/ol>/, '</ol>').gsub(/<\/ul>[ \r]*\n/, '</ul>').gsub(/\n[ \r]*<\/ul>/, '</ul>').gsub(/\n[ \r]*<li>/, '<li>').gsub(/\n/, '<br/>')) %>
-      <br/><br/>
-      <span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
-      <% prems = true %>
-      <% chap[encours].prerequisites.each do |p| %>
-        <% if (!section_fondation[p.section_id] && (!@ss || !current_user.sk.chapters.exists?(p))) %>
-          <%= " - " if !prems %>
-          <%= p.name %>
-          <% prems = false %>
-        <% end %>
-      <% end %>
-      </span>
-      </div>
-      </td>
-      </tr>
+      <% lecas = 4 %>
+      <% classe = "greyy" %>
     <% end %>
-
-    <!-- Affichage du chapitre -->
-
-    <!-- Cas normal -->
-
-    <!-- Théorie -->
-    <tr class="hidden-xs">
-    <td class="col-sm-6" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px solid black; border-bottom-left-radius:15px; border-right:1px dashed black;">
-    <center><h4>Théorie</h4></center>
-    <% compteur = 0 %>
-    <% liste = chap[encours].theories.order(:position) %>
-    <% liste.each do |t| %>
-      <% if t.online || !chap[encours].online %>
-        <% if compteur == 0 %>
-          <ul>
-        <% end %>
-        <% compteur = compteur + 1 %>
-        <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @ss && current_user.sk.theories.exists?(t) %></li>
-      <% end %>
-    <% end %>
-
-    <% if compteur == 0 %>
-      <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
-    <% else %>
-      </ul>
-    <% end %>
-
-    </td>
-
-    <!-- Exercices -->
-    <td class="col-sm-6" style="padding-bottom:20px; border-bottom:1px solid black; border-right:1px solid black; border-bottom-right-radius:15px;">
-    <center><h4>Exercices</h4></center>
-    <% if faisable[encours] <= 1 || (@ss && current_user.sk.admin?) %>
-      <% affiche_exercices(chap[encours],true) %>
-    <% else %>
-      <% affiche_exercices(chap[encours],false) %>
-    <% end %>
-    </td>
-    </tr>
-
-    <!-- Cas gsm -->
-
-    <!-- Théorie -->
-    <tr class="visible-xs">
-    <td class="col-xs-12" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px dashed black; border-right:1px solid black;">
-    <center><h4>Théorie</h4></center>
-    <% compteur = 0 %>
-    <% liste = chap[encours].theories.order(:position) %>
-    <% liste.each do |t| %>
-      <% if t.online || !chap[encours].online %>
-        <% if compteur == 0 %>
-          <ul>
-        <% end %>
-        <% compteur = compteur + 1 %>
-        <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @ss && current_user.sk.theories.exists?(t) %></li>
-      <% end %>
-    <% end %>
-
-    <% if compteur == 0 %>
-      <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
-    <% else %>
-      </ul>
-    <% end %>
-
-    </td>
-    </tr>
-
-    <!-- Exercices -->
-    <tr class="visible-xs">
-    <td class="col-xs-12" style="padding-bottom:20px; border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-bottom-left-radius:15px; border-bottom-right-radius:15px;">
-    <center><h4>Exercices</h4></center>
-    <% if faisable[encours] <= 1 || (@ss && current_user.sk.admin?) %>
-      <% affiche_exercices(chap[encours],true) %>
-    <% else %>
-      <% affiche_exercices(chap[encours],false) %>
-    <% end %>
-    </td>
-    </tr>
-
-    </table>
-
+    
+    <% affiche_chapitre(chap[encours], lecas, classe, section_fondation, false) %>
   <% end %>
   <% debloque[encours].each do |d| %>
     <% nb_pre[d] = nb_pre[d] - 1 %>
@@ -397,7 +295,7 @@ L'accès aux exercices d'un chapitre est autorisé à partir du moment où ses c
 <% end %>
 
 
-<!-- Si chapitre fondamental -->
+<!-- Si section fondamentale -->
 <% else %>
 
 Tous les exercices sont ici directement accessibles.<br/><br/>
@@ -448,100 +346,19 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
   <% encours = (possible.first)[2] %>
   <% possible.delete(possible.first) %>
   <% lecas = 0 %>
-
+  <% classe = "" %>
   <!-- Si pas en ligne : orange -->
   <% if !chap[encours].online %>
-    <table style="border-radius:15px; background-color:#FFEEAA; border-collapse:separate;" class="table">
+    <% classe = "orangey" %>
     <% lecas = 2 %>
 
   <!-- Sinon : jaune -->
   <% else %>
-    <table style="border-radius:15px; background-color:#FFFFD0; border-collapse:separate;" class="table">
+    <% classe = "yellowy" %>
     <% lecas = 3 %>
   <% end %>
-  <tr>
-  <td colspan="2" style="border-top:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top-left-radius:15px; border-top-right-radius:15px; border-bottom:1px dashed black;"><center><h3 style="margin-top:15px; margin-bottom:20px;"><%= link_to chap[encours].name, chap[encours] %>
-  <% if lecas == 1 %>
-    <%= image_tag "V.gif", :style => "margin-left:10px;" %>
-  <% elsif lecas == 2 %>
-    (en construction)
-  <% end %>
-  </h3></center>
-  <div style="padding-left:15px; padding-right:15px; padding-bottom:10px;">
-    <%= raw(htmlise(chap[encours].description)) %>
-  </div>
-  </td>
-  </tr>
-
-  <!-- Cas normal -->
-
-  <!-- Théorie -->
-  <tr class="hidden-xs">
-  <td class="col-sm-6" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px solid black; border-bottom-left-radius:15px; border-right:1px dashed black;">
-  <center><h4>Théorie</h4></center>
-  <% compteur = 0 %>
-  <% liste = chap[encours].theories.order(:position) %>
-  <% liste.each do |t| %>
-    <% if t.online %>
-      <% if compteur == 0 %>
-        <ul>
-      <% end %>
-      <% compteur = compteur + 1 %>
-      <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @ss && current_user.sk.theories.exists?(t) %></li>
-    <% end %>
-  <% end %>
-
-  <% if compteur == 0 %>
-    <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
-  <% else %>
-    </ul>
-  <% end %>
-  </td>
-
-  <!-- Exercices -->
-  <td class="col-sm-6  col-xs-6" style="padding-bottom:20px; border-bottom:1px solid black; border-right:1px solid black; border-bottom-right-radius:15px;">
-  <center><h4>Exercices</h4></center>
-  <% affiche_exercices(chap[encours],true) %>
-  </td>
-  </tr>
-
-  <!-- Cas gsm -->
-
-  <!-- Théorie -->
-  <tr class="visible-xs">
-  <td class="col-xs-12" style="padding-bottom:5px; border-left:1px solid black; border-bottom:1px dashed black; border-right:1px solid black;">
-  <center><h4>Théorie</h4></center>
-
-  <% compteur = 0 %>
-  <% liste = chap[encours].theories.order(:position) %>
-  <% liste.each do |t| %>
-    <% if t.online %>
-      <% if compteur == 0 %>
-        <ul>
-      <% end %>
-      <% compteur = compteur + 1 %>
-      <li><%= link_to t.title, chapter_path(chap[encours], :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @ss && current_user.sk.theories.exists?(t) %></li>
-    <% end %>
-  <% end %>
-
-  <% if compteur == 0 %>
-    <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
-  <% else %>
-    </ul>
-  <% end %>
-  </td>
-  </tr>
-
-  <!-- Exercices -->
-  <tr class="visible-xs">
-  <td class="col-xs-12" style="padding-bottom:20px; border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-bottom-left-radius:15px; border-bottom-right-radius:15px;">
-  <center><h4>Exercices</h4></center>
-  <% affiche_exercices(chap[encours],true) %>
-  </td>
-  </tr>
-
-
-  </table>
+  
+  <% affiche_chapitre(chap[encours], lecas, classe, section_fondation, true) %>
 
   <% debloque[encours].each do |d| %>
     <% nb_pre[d] = nb_pre[d] - 1 %>

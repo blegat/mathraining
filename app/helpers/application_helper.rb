@@ -124,7 +124,7 @@ module ApplicationHelper
 
   # Pour les trucs coté admins
   def htmlise(m)
-    m.gsub(/<hr>[ \r]*\n/,'<hr>').
+    m2 = m.gsub(/<hr>[ \r]*\n/,'<hr>').
     gsub(/\\\][ \r]*\n/,'\] ').
     gsub(/\$\$[ \r]*\n/,'$$ ').
     gsub(/<\/h2>[ \r]*\n/,'</h2>').
@@ -138,6 +138,40 @@ module ApplicationHelper
     gsub(/<evidence>[ \r]*\n/, '<evidence>').
     gsub(/<\/evidence>[ \r]*\n/, '</evidence>').
     gsub(/<evidence>/, '<div class="evidence">').
-    gsub(/<\/evidence>/, '</div>').gsub(/\n/, '<br/>')
+    gsub(/<\/evidence>/, '</div>').
+    gsub(/<\/result>[ \r]*\n/, '</result>').
+    gsub(/<\/proof>[ \r]*\n/, '</proof>').
+    gsub(/<\/remark>[ \r]*\n/, '</remark>').
+    gsub(/<statement>[ \r]*\n/, '<statement>')
+    
+    while m2.sub!(/<result>(.*?)<statement>(.*?)<\/result>/mi) {"<div class='result-title'>#{$1}</div><div class='result-content'>#{$2}</div>"}
+    end
+    
+    while m2.sub!(/<proof>(.*?)<statement>(.*?)<\/proof>/mi) {"<div class='proof-title'>#{$1}</div><div class='proof-content'>#{$2}</div>"}
+    end
+    
+    while m2.sub!(/<remark>(.*?)<statement>(.*?)<\/remark>/mi) {"<div class='remark-title'>#{$1}</div><div class='remark-content'>#{$2}</div>"}
+    end
+    
+    return m2.gsub(/\n/, '<br/>')
+  end
+  
+  def replace_indice(m)
+    m2 = m.gsub(/<\/indice>[ \r]*<br\/>/, "</indice>")
+    
+    while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(0)' class='btn btn-default btn-grey'>Indice</a></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
+    end
+    
+    return m2
+  end
+  
+  def write_date(date)
+    mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+    return "#{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}"
+  end
+  
+  def write_date_only(date)
+    mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+    return "#{ date.day } #{ mois[date.month-1]} #{date.year}"
   end
 end

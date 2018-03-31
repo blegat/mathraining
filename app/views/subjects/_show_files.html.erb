@@ -9,7 +9,12 @@
     <% end %>
     <% s.myfiles.order(:id).each do |f| %>
       <%= link_to f.file_file_name, download_myfile_path(f) %>
-      (<%= (f.file_file_size / 1.kilobyte).round(1) %> ko)
+      (<%= (f.file_file_size / 1.kilobyte).round(1) %>
+      <% if f.myfiletable_type == "Tchatmessage" %>
+        ko, <i>expire le <%= write_date_only(f.file_updated_at.to_date + 28) %></i>)
+      <% else %>
+        ko)
+      <% end %>
       <% if current_user.sk.root? %>
          - <%= link_to 'Supprimer le contenu', myfile_fake_delete_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Êtes-vous sûr de vouloir continuer ?"}, :style => "color:red;" %>
       <% end %>
@@ -25,15 +30,9 @@
         <hr/>
         <center><%= f.file_file_name %><br/><br/>
         <% if f.myfiletable_type == "Tchatmessage" %>
-          <%= image_tag f.file.url, :class => "visible-lg", :style => "max-width:750px;" %>
-          <%= image_tag f.file.url, :class => "visible-md", :style => "max-width:600px;" %>
-          <%= image_tag f.file.url, :class => "visible-sm", :style => "max-width:460px;" %>
-          <%= image_tag f.file.url, :class => "visible-xs", :style => "width:90%;" %>
+          <%= image_tag f.file.url, :class => "image-pj" %>
         <% else %>
-          <%= image_tag f.file.url, :class => "visible-lg", :style => "max-width:900px;" %>
-          <%= image_tag f.file.url, :class => "visible-md", :style => "max-width:800px;" %>
-          <%= image_tag f.file.url, :class => "visible-sm", :style => "max-width:600px;" %>
-          <%= image_tag f.file.url, :class => "visible-xs", :style => "width:90%;" %>
+          <%= image_tag f.file.url, :class => "image-pj2" %>
         <% end %>
         </center>
       <% end %>

@@ -92,6 +92,10 @@ def answer_discussion(content) # Should be on the page of the discussion!
   click_button "Envoyer"
 end
 
+def visit_exercise(exo)
+  visit chapter_path(exo.chapter, :type => 2, :which => exo.id)
+end
+
 RSpec::Matchers.define :have_error_message do |message|
   match do |page|
     page.should have_selector("div.alert.alert-error", text: message)

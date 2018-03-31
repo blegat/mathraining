@@ -46,6 +46,21 @@ class SolvedexercisesController < ApplicationController
       point_attribution(current_user.sk, exercise)
     end
     exercise.save
+    
+    # On augmente chapter.nb_tries si c'est le premier exercice essayé
+    already = false
+    chapter = exercise.chapter
+    chapter.exercises.each do |e|
+      already = true if(e != exercise && Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => e.id).count > 0)
+    end
+    chapter.qcms.each do |q|
+      already = true if(Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => q.id).count > 0)
+    end
+    
+    unless already
+      chapter.nb_tries = chapter.nb_tries+1
+      chapter.save
+    end
 
     redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id)
   end

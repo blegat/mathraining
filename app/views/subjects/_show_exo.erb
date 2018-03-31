@@ -1,16 +1,3 @@
-<script type="text/javascript">
-function showStuff2() {
-    document.getElementById("indice").style.display = 'inline';
-    document.getElementById("show").style.display = 'none';
-    document.getElementById("hide").style.display = 'inline';
-}
-function hideStuff2() {
-    document.getElementById("indice").style.display = 'none';
-    document.getElementById("show").style.display = 'inline';
-    document.getElementById("hide").style.display = 'none';
-}
-</script>
-
 <!-- On vérifie que cet exercice peut bien être vu -->
 <% if (f.online && f.chapter.online) || (signed_in? && current_user.sk.admin?) %>
   
@@ -23,32 +10,49 @@ function hideStuff2() {
     <% end %>
   <% end %>
 
-  <table class="table table-bordered">
   <% if !exovisible %>
-    
-    <tr><td style="background-color:#FFCCCC; padding:10px;"><center><i>Ce sujet fait référence à un exercice auquel vous n'avez pas accès.</i></center></td></tr>
+    <table class="table table-bordered reference greyy">
+    <tr><td class="title">Ce sujet fait référence à un exercice auquel vous n'avez pas accès.</td></tr>
     </table>
 	
   <% else %>
     <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
 	
     <% if current_user.sk.admin? %>
-      <tr><td style="background-color:#D9D9FF; padding:10px;"><center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 2, :which => f.id), :target => "_blank" %> :</i></center></td></tr>
+      <table class="table table-bordered reference yellowy">
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => type, :which => f.id), :target => "_blank" %> :</td></tr>
     <% elsif exo.size > 0 && exo.first.correct? %>
-      <tr><td style="background-color:#CCFFCC; padding:10px;"><center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 2, :which => f.id), :target => "_blank" %>, que vous avez résolu :</i></center></td></tr>
+      <table class="table table-bordered reference greeny">
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => type, :which => f.id), :target => "_blank" %>, que vous avez résolu :</td></tr>
+    <% elsif exo.size > 0 %>
+      <table class="table table-bordered reference redy">
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => type, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
     <% else %>
-      <tr><td style="background-color:#FFFFAA; padding:10px;"><center><i>Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 2, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</i></center></td></tr>
+      <table class="table table-bordered reference yellowy">
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => type, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
     <% end %>
     <!-- Enoncé -->
     <tr><td style="padding:10px;">
-      <%= raw(htmlise(f.statement).
-      gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff2(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a><br/>').
-      gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff2(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+    <div style="margin-bottom:15px;"><%= raw(replace_indice(htmlise(f.statement))) %></div>
 
-    <% if f.decimal %>
-      <br/>(On demande une réponse <b>décimale</b> au millième près)
+    <% if type == 2 %>
+      <% if f.decimal %>
+        (On demande une réponse <b>décimale</b> au millième près)
+      <% else %>
+        (On demande une réponse <b>entière</b>)
+      <% end %>
     <% else %>
-      <br/>(On demande une réponse <b>entière</b>)
+      <ul>
+      <% f.choices.order(:id).each do |c| %>
+        <li style="padding:5px;">
+        <%= raw(c.ans) %>
+      <% end %>
+      </ul>
+      <% if f.many_answers %>
+        (<b>Plusieurs</b> réponses possibles)
+      <% else %>
+        (<b>Une seule</b> réponse correcte)
+      <% end %>
     <% end %>
     </td></tr>
   <% end %>

@@ -13,7 +13,7 @@ class SubmissionsController < ApplicationController
   before_action :brouillon, only: [:update_brouillon]
 
   # Créer une nouvelle soumission
-  def create
+  def create  
     params[:submission][:content] = truncate(params[:submission][:content])
     # Pièces jointes
     @error = false
@@ -22,9 +22,9 @@ class SubmissionsController < ApplicationController
     attach = create_files # Fonction commune pour toutes les pièces jointes
 
     if @error
-      flash.now[:danger] = @error_message
+      flash[:danger] = @error_message
       session[:ancientexte] = params[:submission][:content]
-      redirect_to problem_path(@problem, :sub => 0), flash: {danger: @error.message } and return
+      redirect_to problem_path(@problem, :sub => 0) and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
@@ -59,14 +59,10 @@ class SubmissionsController < ApplicationController
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         flash[:danger] = "Votre soumission est vide."
-        redirect_to problem_path(@problem, :sub => 0)
-      elsif params[:submission][:content].size > 8000
-        flash[:danger] = "Votre soumission doit faire moins de 8000 caractères."
-        redirect_to problem_path(@problem, :sub => 0)
       else
         flash[:danger] = "Une erreur est survenue."
-        redirect_to problem_path(@problem, :sub => 0)
       end
+      redirect_to problem_path(@problem, :sub => 0)
     end
   end
 
@@ -91,6 +87,13 @@ class SubmissionsController < ApplicationController
 
   # Faire une nouvelle soumission
   def create_intest
+    oldsub = @problem.submissions.where(user_id: current_user.sk.id, intest: true).first
+    if !oldsub.nil?
+      @submission = oldsub
+      @context = 1
+      update_submission
+      return
+    end
     params[:submission][:content] = truncate(params[:submission][:content])
     # Pièces jointes
     @error = false
@@ -99,9 +102,9 @@ class SubmissionsController < ApplicationController
     attach = create_files # Fonction commune pour toutes les pièces jointes
 
     if @error
-      flash.now[:danger] = @error_message
+      flash[:danger] = @error_message
       session[:ancientexte] = params[:submission][:content]
-      redirect_to problem_intest_path(@problem), flash: {danger: @error.message } and return
+      redirect_to problem_intest_path(@problem) and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
@@ -124,14 +127,10 @@ class SubmissionsController < ApplicationController
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         flash[:danger] = "Votre soumission est vide."
-        redirect_to problem_intest_path(@problem)
-      elsif params[:submission][:content].size > 8000
-        flash[:danger] = "Votre soumission doit faire moins de 8000 caractères."
-        redirect_to problem_intest_path(@problem)
       else
         flash[:danger] = "Une erreur est survenue."
-        redirect_to problem_intest_path(@problem)
       end
+      redirect_to problem_intest_path(@problem)
     end
   end
 
@@ -285,7 +284,7 @@ class SubmissionsController < ApplicationController
     if @t.nil?
       redirect_to root_path
     else
-      redirect_to @t if current_user.sk.status(@t) != 0
+      redirect_to virtual_tests_path if current_user.sk.status(@t) != 0
     end
   end
 
@@ -368,8 +367,6 @@ class SubmissionsController < ApplicationController
       session[:ancientexte] = params[:submission][:content]
       if params[:submission][:content].size == 0
         flash[:danger] = "Votre soumission est vide."
-      elsif params[:submission][:content].size > 8000
-        flash[:danger] = "Votre soumission doit faire moins de 8000 caractères."
       else
         flash[:danger] = "Une erreur est survenue."
       end

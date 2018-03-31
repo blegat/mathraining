@@ -1,12 +1,13 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
-  before_action :signed_in_user, only: [:index, :show, :new, :edit]
+  before_action :signed_in_user, only: [:index, :show, :new]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate]
   before_action :admin_subject_user, only: [:show]
-  before_action :author, only: [:edit, :update, :destroy]
+  before_action :author, only: [:update, :destroy]
   before_action :admin_user, only: [:destroy, :migrate]
   before_action :notskin_user, only: [:create, :update]
-
+  before_action :get_q, only: [:create, :update, :destroy, :migrate]
+  
   # Voir tous les sujets
   def index
     cherche_category = -1
@@ -67,33 +68,10 @@ class SubjectsController < ApplicationController
   # Créer un sujet
   def new
     @subject = Subject.new
-    if @section.nil?
-      @preselect = 0
-    elsif @chapter.nil?
-      @preselect = 1000*@section
-    else
-      @preselect = @chapter
-    end
-  end
-
-  # Editer un sujet
-  def edit
-    if @subject.section.nil?
-      @preselect = 0
-    elsif @subject.chapter.nil?
-      @preselect = 1000*@subject.section.id
-    else
-      @preselect = @subject.chapter.id
-    end
   end
 
   # Créer un sujet 2
   def create
-    q = 0
-    if(params.has_key?:q)
-      q = params[:q].to_i
-    end
-
     if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
       redirect_to root_path and return
     end
@@ -155,9 +133,7 @@ class SubjectsController < ApplicationController
     attach = create_files # Fonction commune pour toutes les pièces jointes
 
     if @error
-      flash.now[:danger] = @error_message
-      @preselect = params[:subject][:chapter_id].to_i
-      render 'new' and return
+      error_create([@error_message]) and return
     end
 
     # Si on parvient à enregistrer
@@ -173,37 +149,28 @@ class SubjectsController < ApplicationController
       end
 
       if current_user.sk.admin?
-        if params.has_key?(:groupeA)
-          User.where(:group => "A").each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver if Rails.env.production?
-          end
-        end
-        if params.has_key?(:groupeB)
-          User.where(:group => "B").each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver if Rails.env.production?
+        for g in ["A", "B"] do
+          if params.has_key?("groupe" + g)
+            User.where(:group => g).each do |u|
+              UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, 0).deliver if Rails.env.production?
+            end
           end
         end
       end
 
       flash[:success] = "Votre sujet a bien été posté."
 
-      redirect_to subject_path(@subject, :q => q)
+      redirect_to subject_path(@subject, :q => @q)
 
       # Si il y a eu une erreur
     else
       destroy_files(attach, attach.size()+1)
-      @preselect = params[:subject][:chapter_id].to_i
-      render 'new'
+      error_create(@subject.errors.full_messages) and return
     end
   end
 
   # Editer un sujet 2
   def update
-    q = 0
-    if(params.has_key?:q)
-      q = params[:q].to_i
-    end
-
     if !current_user.sk.admin? && !current_user.sk.corrector? && !params[:subject][:important].nil? # Hack
       redirect_to root_path
     end
@@ -269,28 +236,18 @@ class SubjectsController < ApplicationController
       attach = update_files(@subject, "Subject") # Fonction commune pour toutes les pièces jointes
 
       if @error
-        @subject.reload
-        flash.now[:danger] = @error_message
-        @preselect = params[:subject][:chapter_id].to_i
-        render 'edit' and return
+        error_update([@error_message]) and return
       end
-
       flash[:success] = "Votre sujet a bien été modifié."
-
-      redirect_to subject_path(@subject, :q => q)
+      session["successSubject"] = "ok"
+      redirect_to subject_path(@subject, :q => @q)
     else
-      @preselect = params[:subject][:chapter_id].to_i
-      render 'edit'
+      error_update(@subject.errors.full_messages) and return
     end
   end
 
   # Supprimer un sujet : il faut être admin
   def destroy
-    q = 0
-    if(params.has_key?:q)
-      q = params[:q].to_i
-    end
-
     @subject.myfiles.each do |f|
       f.file.destroy
       f.destroy
@@ -314,16 +271,11 @@ class SubjectsController < ApplicationController
     @subject.destroy
     flash[:success] = "Sujet supprimé."
 
-    redirect_to subjects_path(:q => q)
+    redirect_to subjects_path(:q => @q)
   end
 
   # Migrer un sujet vers un autre : il faut être root (disons admin)
   def migrate
-    q = 0
-    if(params.has_key?:q)
-      q = params[:q].to_i
-    end
-
     @subject = Subject.find(params[:subject_id])
     autre_id = params[:migreur].to_i
     @migreur = Subject.find(autre_id)
@@ -346,11 +298,28 @@ class SubjectsController < ApplicationController
 
     @subject.delete
 
-    redirect_to subject_path(@migreur, :q => q)
+    redirect_to subject_path(@migreur, :q => @q)
   end
 
   ########## PARTIE PRIVEE ##########
   private
+  
+  def error_create(err)
+    session["errorSubject"] = err
+    session[:oldAll] = params[:subject]
+    redirect_to new_subject_path(:q => @q)
+  end
+  
+  def error_update(err)
+    session["errorSubject"] = err
+    session[:oldAll] = params[:subject]
+    redirect_to subject_path(@subject, :q => @q)
+  end
+  
+  def get_q
+    @q = 0
+    @q = params[:q].to_i if params.has_key?:q
+  end
 
   def admin_subject_user
     @subject = Subject.find(params[:id])

@@ -7,52 +7,10 @@
   Mise en ligne
 </h1>
 
-Vous vous apprêtez à mettre un chapitre en ligne.
+Vous vous apprêtez à mettre un chapitre en ligne.<br/><br/>
 
-Une fois cela fait, les utilisateurs auront accès à tous les composants du chapitre et pourront entre autres commencer à résoudre les exercices et QCMs qui leur sont proposés. Il ne sera alors plus envisageable pour un administrateur de modifier le chapitre autant qu'il ne le pouvait lorsque le chapitre était en construction (en particulier, vous ne pourrez plus le supprimer). Avant de faire cette opération, <b>nous vous demandons donc de prendre connaissance de ce que vous pourrez et ne pourrez plus faire une fois ce chapitre mis en ligne.</b>
+<b>Merci de contacter un responsable du site avant de faire cette opération lourde de conséquence !</b><br/><br/>
 
-<h3>Sections</h3>
-<% if @chapter.section.fondation %>
-  Ce chapitre est <u>fondamental</u>. Il sera accessible par tout le monde, et ne comptera pas dans le score des utilisateurs. Il doit donc s'agir d'un chapitre dont la lecture n'est pas nécessaire, mais aide à rendre le niveau à des élèves moins expérimentés.
-<% else %>
-  Ce chapitre appartient à la section <%= @chapter.section.name %>.
-  Il ne sera accessible que par les utilisateurs ayant déjà complété les chapitres qui lui sont prérequis.
-<% end %>
-
-<h3>Prérequis</h3>
-Les prérequis fondamentaux sont là à titre d'information (puisqu'il n'est pas nécessaire de valider un prérequis fondamental pour avoir accès à ce chapitre).
-Ils pourront donc toujours être modifiés par la suite. Par contre, les autres prérequis sont très importants et ne doivent pas être négligés.
-Vous devez absolument indiquer les prérequis nécessaires à ce chapitre avant de le mettre en ligne. Ceux-ci ne seront plus modifiables par la suite.
-Si l'un de ces prérequis n'a pas encore été créé et le sera par la suite, ne mettez pas celui-ci en ligne!
-En effet, ce sont les prérequis qui déterminent lorsqu'un utilisateur aura accès à ce chapitre.
-Veillez donc à ne pas en oublier. Par exemple, les chapitres sans prérequis seront directement accessibles à tout le monde, et il ne peut dès lors s'agir que d'un chapitre compréhensible par un étudiant de 5ème année n'ayant suivi aucun cours supplémentaires (autre que les fondements éventuels).
-
-<h3>Généralités</h3>
-Une fois ce chapitre en ligne, il sera toujours possible d'y ajouter des points théoriques, exercices, et QCMs. Ceux-ci passeront d'abord par une période "en construction" lors de laquelle les utilisateurs n'y auront pas encore accès.
-
-<h3>Points théoriques</h3>
-Il sera toujours possible d'ajouter, modifier, et supprimer les points théoriques de ce chapitre.
-Cela dit, il est évidemment préférable qu'à la mise en ligne de ce chapitre, les points théoriques soient finalisés.
-
-<h3>Exercices et QCMs</h3>
-<% if !@chapter.section.fondation %>
-  Les exercices et QCMs permettront aux utilisateurs de débloquer les chapitres dont celui-ci est un prérequis. Ils doivent donc être impérativement :
-  <ul>
-    <li>
-      <b>Corrects.</b> Une imprécision dans l'énoncé ou les réponses (dans le cas d'un QCM) pourra toujours être modifiée, mais la <u>réponse</u> elle-même est définitive. Si un exercice se révèle totalement faux (et non légèrement modifiable pour le rendre correct) après la mise en ligne de ce chapitre, il vous faudra le <u>supprimer</u> (avec l'aide d'un webmaster, pour les raisons citées plus haut) et le remplacer.
-    </li>
-    <li>
-      <b>En nombre suffisant.</b> Ni trop, ni trop peu. Ils doivent couvrir la matière pour vérifier la bonne compréhension de l'utilisateur. Pour un chapitre théorique, une petite dizaine d'exercices ou QCMs seraient les bienvenus. Cependant, s'il s'agit d'un chapitre de haut niveau (peu théorique et essentiellement destiné à divers problèmes), il n'est pas nécessaire d'en créer autant.
-    </li>
-    <li>
-      <b>De difficulté appropriée.</b> Le but ici n'est pas de déterminer les meilleurs utilisateurs, mais de leur donner un bon bagage théorique. Ces exercices doivent donc juste vérifier la bonne compréhension de la théorie. Un exercice difficile n'est pas le bienvenu puisqu'il fermerait les portes des chapitres suivants aux utilisateurs. Les exercices simples, quant à eux, peuvent être une bonne chose. Il ne vous est par exemple pas interdit de créer un QCM à peu d'entrées (même un vrai ou faux) pour appuyer sur un point théorique qu'il vous semble important de bien comprendre.
-    </li>
-  </ul>
-  Il sera toujours possible de rajouter un exercice ou QCM une fois le chapitre mis en ligne, si vous jugez que cela est nécessaire, mais il est tout de même préférable qu'ils soient déjà finalisés maintenant.<br/><br/>
-<% else %>
-  Vu que ce chapitre est fondamental, les exercices et QCMs sont juste là à titre d'entraînement.<br/><br/>
-<% end %>
-<br/>
 <center>
   <%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), method: :get, class: 'btn-danger btn-lg', data: {confirm: "Êtes-vous sûr de vouloir mettre ce chapitre en ligne ?"} %>
 </center>

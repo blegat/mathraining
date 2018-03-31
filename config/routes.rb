@@ -18,7 +18,6 @@ Mathraining::Application.routes.draw do
   resources :pictures, only: [:index, :show, :new, :create, :destroy]
 
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]
-  match '/feed' => 'actualities#feed', :via => [:get], as: :feed, defaults: { :format => 'atom' }
 
   resources :qcms, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'qcms#order_plus', :via => [:get], as: :order_plus
@@ -76,7 +75,7 @@ Mathraining::Application.routes.draw do
     end
   end
   
-  resources :myfiles, only: [:edit, :update] do
+  resources :myfiles, only: [:edit, :update, :show, :index] do
   	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:get], as: :fake_delete
   	member do
   		get :download
@@ -98,7 +97,6 @@ Mathraining::Application.routes.draw do
 
   resources :chapters, only: [:show, :update, :edit, :destroy] do
     match '/warning', to: 'chapters#warning', :via => [:get]
-    match '/export', to: 'chapters#export', :via => [:post]
     match '/put_online', to: 'chapters#put_online', :via => [:get]
 
     match '/read', to: 'chapters#read', :via => [:get]
@@ -108,8 +106,8 @@ Mathraining::Application.routes.draw do
     resources :qcms, only: [:new, :create]
   end
 
-  resources :subjects do
-    resources :messages, only: [:new, :edit, :create, :update, :destroy]
+  resources :subjects, only: [:index, :show, :new, :create, :update, :destroy] do
+    resources :messages, only: [:create, :update, :destroy]
     match '/migrate', to: 'subjects#migrate', :via => [:get], as: :migrate
   end
 
@@ -159,8 +157,6 @@ Mathraining::Application.routes.draw do
 
   match '/frequentation', to: 'static_pages#frequentation', :via => [:get]
   match '/exostats', to: 'static_pages#exostats', :via => [:get]
-  
-  match '/pieces_jointes', to: 'myfiles#seeall', :via => [:get]
 
   match '/compare', to: 'users#compare', :via => [:get]
 

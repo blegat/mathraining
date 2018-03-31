@@ -3,7 +3,7 @@ class ExercisesController < QuestionsController
   before_action :signed_in_user, only: [:new, :edit, :explanation]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order_minus, :order_plus, :put_online, :update_explanation]
   before_action :admin_user
-  before_action :root_exercise_user, only: [:destroy]
+  before_action :offline_exercise, only: [:destroy]
 
   # Créer un nouvel exercice : il faut être admin
   def new
@@ -49,7 +49,7 @@ class ExercisesController < QuestionsController
       need = Qcm.where("chapter_id = ?", params[:chapter_id]).order('position').reverse_order.first
       before2 = need.position
     end
-    @exercise.position = maximum(before, before2)+1
+    @exercise.position = [before, before2].max + 1
     @chapter = Chapter.find(params[:chapter_id])
     if @exercise.save
       flash[:success] = "Exercice ajouté."
@@ -91,7 +91,7 @@ class ExercisesController < QuestionsController
     end
   end
 
-  # Supprimer un exercice : il faut être admin, voire root si en ligne (plus possible si en ligne)
+  # Supprimer un exercice : il faut être admin
   def destroy
     @chapter = @exercise.chapter
     @exercise.destroy
@@ -142,18 +142,9 @@ class ExercisesController < QuestionsController
   ########## PARTIE PRIVEE ##########
   private
 
-  # Vérifie qu'on est root si l'exercice est en ligne
-  def root_exercise_user
+  # Vérifie que l'exercice est hors-ligne
+  def offline_exercise
     @exercise = Exercise.find(params[:id])
-    redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) if (!current_user.sk.root && @exercise.online)
-  end
-
-  # Bete fonction maximum
-  def maximum(a, b)
-    if a > b
-      return a
-    else
-      return b
-    end
+    redirect_to chapter_path(@exercise.chapter, :type => 2, :which => @exercise.id) if @exercise.online
   end
 end

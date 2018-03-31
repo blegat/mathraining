@@ -15,7 +15,7 @@
 <%= "Problème ##{ @problem.number }" %>
 
 <% if !@problem.virtualtest.nil? %>
-- <%= link_to "Test ##{@problem.virtualtest.number}", @problem.virtualtest %>
+- Test #<%= @problem.virtualtest.number %>
 <% end %>
   <%= "(en construction)" if !@problem.online %>
   <% if !signed_in? || !current_user.sk.admin %>
@@ -135,31 +135,14 @@
 <% if signed_in? && (current_user.sk.admin? || current_user.sk.corrector? && @resolu) %>
 
   <!-- Explication -->
-  
-  <script type="text/javascript">
-  function showStuff() {
-    document.getElementById("explanation").style.display = 'inline';
-    document.getElementById("show").style.display = 'none';
-    document.getElementById("hide").style.display = 'inline';
-  }
-  function hideStuff() {
-    document.getElementById("explanation").style.display = 'none';
-    document.getElementById("show").style.display = 'inline';
-    document.getElementById("hide").style.display = 'none';
-  }
-  </script>
-
   <% if @problem.explanation.size == 0 %>
-    <span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span>
+    <span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span><br/>
   <% else %>
-    <a href='#' id='show' onclick='showStuff(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a>
-    <a href='#' id='hide' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff(); return false;'>Éléments de solution (pour les correcteurs)</a>
-    <span id='explanation' style='display:none;'><br/><br/>
+    <div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(0)' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a></div><div id='indice0' class='clue-hide'><div class='clue-content'>
     <%= raw(htmlise(@problem.explanation)) %>
-    </span>
+    </div></div></div>
   <% end %>
-  <br/><br/>
-  
+  <br/>
 <% end %>
 
 <!-- Si administrateur -->
@@ -173,9 +156,6 @@
       <% if @problem.online %>
         <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
         <%= link_to "Modifier la solution", problem_explanation_path(@problem) %>
-        <% if current_user.sk.root %>
-           | <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Attention, ce problème est visible des utilisateurs. Êtes-vous sûr de vouloir supprimer ce problème ? Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)." }, :style => "color:red;" %>
-        <% end %>
       <% else %>
         <%= link_to "Modifier ce problème", edit_problem_path(@problem) %> |
         <%= link_to "Modifier la solution", problem_explanation_path(@problem) %> |

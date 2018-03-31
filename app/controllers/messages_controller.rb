@@ -1,30 +1,16 @@
 #encoding: utf-8
 class MessagesController < ApplicationController
-  before_action :signed_in_user, only: [:new, :edit] 
   before_action :signed_in_user_danger, only: [:create, :update, :destroy]
-  before_action :admin_subject_user, only: [:new, :create]
-  before_action :author, only: [:edit, :update]
+  before_action :admin_subject_user, only: [:create]
+  before_action :author, only: [:update]
   before_action :admin_user, only: [:destroy]
   before_action :valid_chapter
   before_action :online_chapter
   before_action :notskin_user, only: [:create, :update]
-
-  # Créer un message
-  def new
-    @message = Message.new
-  end
-
-  # Editer un message
-  def edit
-  end
+  before_action :get_q, only: [:create, :update, :destroy]
 
   # Créer un message 2
   def create
-    q = 0
-    if(params.has_key?:q)
-      q = params[:q].to_i
-    end
-
     params[:message][:content] = truncate(params[:message][:content])
     @message = Message.new(params.require(:message).permit(:content))
     @message.user = current_user.sk
@@ -38,8 +24,7 @@ class MessagesController < ApplicationController
     end
 
     if lastid != params[:lastmessage].to_i
-      flash.now[:danger] = "Un nouveau message a été posté avant le vôtre! Veuillez en prendre connaissance ci-dessous avant de poster votre message."
-      render 'new' and return
+      error_create(["Un nouveau message a été posté avant le vôtre ! Veuillez en prendre connaissance ci-dessous avant de poster votre message."]) and return
     end
 
     # Pièces jointes
@@ -49,8 +34,7 @@ class MessagesController < ApplicationController
     attach = create_files # Fonction commune pour toutes les pièces jointes
 
     if @error
-      flash.now[:danger] = @error_message
-      render 'new' and return
+      error_create([@error_message]) and return
     end
 
     # Si le message a bien été sauvé
@@ -78,40 +62,30 @@ class MessagesController < ApplicationController
       @subject.lastcomment = DateTime.current
       @subject.save
 
-      tot = @subject.messages.count
-      page = [0,((tot-1)/10).floor].max + 1
-
       if current_user.sk.admin?
-        if params.has_key?(:groupeA)
-          User.where(:group => "A").each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver if Rails.env.production?
-          end
-        end
-        if params.has_key?(:groupeB)
-          User.where(:group => "B").each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver if Rails.env.production?
+        for g in ["A", "B"] do
+          if params.has_key?("groupe" + g)
+            User.where(:group => g).each do |u|
+              UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver if Rails.env.production?
+            end
           end
         end
       end
-
+      
+      page = getLastPage(@subject)
       flash[:success] = "Votre message a bien été posté."
-
-      redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
+      session["successNewMessage"] = "ok"
+      redirect_to subject_path(@message.subject, :page => page, :q => @q)
 
       # Si il y a eu un problème : on supprime les pièces jointes
     else
       destroy_files(attach, attach.size()+1)
-      render 'new'
+      error_create(@message.errors.full_messages)
     end
   end
 
   # Editer un message 2
   def update
-    q = 0
-    if(params.has_key?:q)
-      q = params[:q].to_i
-    end
-
     # Si la modification du message réussit
     params[:message][:content] = truncate(params[:message][:content])
     if @message.update_attributes(params.require(:message).permit(:content))
@@ -123,30 +97,23 @@ class MessagesController < ApplicationController
       attach = update_files(@message, "Message") # Fonction commune pour toutes les pièces jointes
 
       if @error
-        @message.reload
-        flash.now[:danger] = @error_message
-        render 'edit' and return
+        error_update([@error_message]) and return
       end
-
+      
+      @message.reload
       flash[:success] = "Votre message a bien été modifié."
-      tot = @message.subject.messages.where("id <= ?", @message.id).count
-      page = [0,((tot-1)/10).floor].max + 1
-
-      redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => q)
+      session["successEditMessage#{@message.id}"] = "ok"
+      page = getPage(@message)
+      redirect_to subject_path(@message.subject, :page => page, :q => @q)
 
       # Si il y a eu un bug
     else
-      render 'edit'
+      error_update(@message.errors.full_messages) and return
     end
   end
 
   # Supprimer un message : il faut être admin
   def destroy
-    q = 0
-    if(params.has_key?:q)
-      q = params[:q].to_i
-    end
-
     @message = Message.find(params[:id])
     @subject = @message.subject
 
@@ -168,12 +135,41 @@ class MessagesController < ApplicationController
       @subject.lastcomment = @subject.created_at
       @subject.save
     end
-
-    redirect_to subject_path(@subject, :q => q)
+    redirect_to subject_path(@subject, :q => @q)
   end
 
   ########## PARTIE PRIVEE ##########
   private
+  
+  def error_create(err)
+    session["errorNewMessage"] = err
+    session[:oldContent] = params[:message][:content]
+    page = getLastPage(@subject)
+    redirect_to subject_path(@subject, :page => page, :q => @q)
+  end
+  
+  def error_update(err)
+    session["errorEditMessage#{@message.id}"] = err
+    @message.reload
+    session[:oldContent] = params[:message][:content]
+    page = getPage(@message)
+    redirect_to subject_path(@message.subject, :page => page, :q => @q) and return
+  end
+  
+  def get_q
+    @q = 0
+    @q = params[:q].to_i if params.has_key?:q
+  end
+  
+  def getLastPage(s)
+    tot = s.messages.count
+    return [0,((tot-1)/10).floor].max + 1
+  end
+  
+  def getPage(m)
+    tot = m.subject.messages.where("id <= ?", m.id).count
+    return [0,((tot-1)/10).floor].max + 1
+  end
 
   # Il faut que le chapitre existe
   def valid_chapter

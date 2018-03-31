@@ -92,4 +92,40 @@ class Chapter < ActiveRecord::Base
       end
     end
   end
+  
+   
+  # A utiliser en ligne de commande pour recalculer les nb_tries et nb_solved
+  def self.compute_stats
+    a = Array.new
+    Chapter.where(:online => true).each do |c|
+      users = Set.new
+      c.exercises.each do |e|
+        e.users.each do |u|
+          users.add(u.id)
+        end
+      end
+      c.qcms.each do |q|
+        q.users.each do |u|
+          users.add(u.id)
+        end
+      end
+      nb_tries = users.size
+      nb_solved = c.users.count
+      if(c.nb_tries != nb_tries || c.nb_solved != nb_solved)
+        a[c.id] = [c.id, c.nb_tries, nb_tries, c.nb_solved, nb_solved]
+      end
+    end
+    return a
+  end
+  
+  # A utiliser en ligne de commande après la fonction précédente pour appliquer les changements
+  def self.save_stats(a)
+    Chapter.where(:online => true).each do |c|
+      if(!a[c.id].nil?)
+        c.nb_tries = a[c.id][2]
+        c.nb_solved = a[c.id][4]
+        c.save
+      end
+    end
+  end
 end

@@ -1,0 +1,85 @@
+<% provide(:title, 'Pièces jointes') %>
+
+<h1>
+Pièces jointes
+</h1>
+
+<center>
+<%= will_paginate @list, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
+<%= will_paginate @list, :style => "margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+</center>
+</center>
+
+<table class="table table-bordered">
+<tr><th class="hidden-xs">Date</th><th>Qui</th><th class="hidden-xs">Où</th><th class="hidden-xs">Quoi</th><th><center>Taille</center></th><th><center></center></th></tr>
+
+<!-- Affiche toutes les pièces jointes du site -->
+<% @list.each do |f| %>
+
+  <% about = f.myfiletable %>
+  <% date = f.file_updated_at %>
+  <% type = f.myfiletable_type %>
+  <% name = f.file_file_name %>
+  <% size = f.file_file_size %>
+
+  <!-- Si pas tchat : vert -->
+  <% if type != "Tchatmessage" %>
+    <tr style="background-color:#DDFFDD;">
+  <% else %>
+    <tr style="background-color:#E2E2FF;">
+  <% end %>
+
+  <!-- Date -->
+  <td class="hidden-xs">
+  <%= write_date(date.in_time_zone) %>
+  </td>
+
+  <!-- Qui -->
+  <td style="font-weight:bold;">
+
+  <% qui = about.user %>
+
+  <%= raw(qui.linked_name) %>
+  </td>
+
+  <!-- Où? Forum ou soumission? -->
+  <td class="hidden-xs">
+  <% if type == "Subject" || type == "Message" %>
+    Forum
+  <% elsif type == "Submission" && about.status == -1 %>
+    Brouillon
+  <% elsif type == "Submission" || type == "Correction" %>
+    Soumission
+  <% else %>
+    Message personnel
+  <% end %>
+  </td>
+
+  <!-- Télécharger -->
+  <td class="hidden-xs">
+  <% truncated = name.size > 30 ? [name[0,20],name[-7,7]].join("...") : name %>
+  <%= link_to truncated, download_myfile_path(f) %>
+  </td>
+
+  <!-- Taille -->
+  <td>
+  <center>
+  <%= (size / 1.kilobyte).round(1) %> ko
+  <%= link_to "(R)", edit_myfile_path(f), :target => "_blank" %>
+  </center>
+  </td>
+
+  <!-- Voir dans le contexte -->
+  <td style="text-align:center;">
+  <% if type != "Tchatmessage" %>
+    <%= link_to "Voir", f %>
+  <% else %>
+    -
+  <% end %>
+  </td>
+
+  </tr>
+
+<% end %>
+
+</table>

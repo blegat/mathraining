@@ -75,35 +75,11 @@ class ProblemsController < QuestionsController
     end
   end
 
-  # Supprimer un problème : il faut être admin, voire root
+  # Supprimer un problème : seulement si hors-ligne, et il faut être admin
   def destroy
-    @section = @problem.section
-
-    @problem.submissions.each do |s|
-      s.myfiles.each do |f|
-        f.file.destroy
-        f.destroy
-      end
-      s.corrections.each do |c|
-        c.myfiles.each do |f|
-          f.file.destroy
-          f.destroy
-        end
-        c.destroy
-      end
-      s.destroy
-    end
-
-    if @problem.online
-      @problem.destroy
-      User.all.each do |user|
-        point_attribution(user)
-      end
-    else
-      @problem.destroy
-    end
+    @problem.destroy
     flash[:success] = "Problème supprimé."
-    redirect_to pb_sections_path(@section)
+    redirect_to pb_sections_path(@problem.section)
   end
 
   # Mettre un problème en ligne : il faut qu'il puisse l'être
@@ -179,7 +155,7 @@ class ProblemsController < QuestionsController
     @problem2 = @t.problems.where("position < ?", @problem.position).order('position').reverse_order.first
     swap_position(@problem, @problem2)
     flash[:success] = "Problème déplacé vers la droite."
-    redirect_to virtualtest_path(@t, :p => @problem.id)
+    redirect_to virtualtests_path
   end
 
   # Déplacer dans un test virtuel
@@ -189,16 +165,16 @@ class ProblemsController < QuestionsController
     @problem2 = @t.problems.where("position > ?", @problem.position).order('position').first
     swap_position(@problem, @problem2)
     flash[:success] = "Problème déplacé vers la gauche."
-    redirect_to virtualtest_path(@t, :p => @problem.id)
+    redirect_to virtualtests_path
   end
 
   ########## PARTIE PRIVEE ##########
   private
 
-  # Vérifie qu'on est root si on veut supprimer un problème en ligne
+  # Vérifie que le problème est hors-ligne pour le supprimer
   def root_problem_user
     @problem = Problem.find(params[:id])
-    redirect_to problem_path(@problem) if (!current_user.sk.root && @problem.online && @problem.chapter.online)
+    redirect_to problem_path(@problem) if @problem.online
   end
 
   # Vérifie qu'on peut voir ce problème

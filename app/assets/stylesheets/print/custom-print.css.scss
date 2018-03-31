@@ -1,3 +1,5 @@
+@import "bootstrap";
+
 .noprint
 {
   display: none;
@@ -19,4 +21,8 @@ a:link:after, a:visited:after
 {
   margin-bottom:2cm;
   margin-top:2cm;
+}
+
+.debug_dump {
+	display:none;
 }

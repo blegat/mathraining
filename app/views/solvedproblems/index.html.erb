@@ -65,18 +65,18 @@ html>body tbody.scroll {
 <% (1..5).each do |level| %>
   <div class="col-lg-6 col-sm-12 col-xs-12">
   <h3>Problèmes de niveau <%= level %></h3>
-  <table class="table table-bordered" style="width:496px;">
+  <table class="table table-bordered" style="width:auto;">
   <thead class="fixed">
-  <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:200px;">Qui</th><th style="width:96px;"><center>Problème</center></th></tr>
+  <tr><th style="width:150px;" class="hidden-xs">Date</th><th style="width:50px;" class="hidden-xs"><center>Heure</center></th><th style="width:200px;">Qui</th><th style="width:96px;"><center>Problème</center></th></tr>
   <tbody class="scroll">
   <% table[level].each do |t| %>
     <tr style="background-color: <%= Section.color(t[:section]) %>;">
     <!-- Date -->
     <% date = t[:time].in_time_zone %>
-    <td style="width:150px;"><%= Message.write_date_only(date) %></td>
+    <td style="width:150px;" class="hidden-xs"><%= write_date_only(date) %></td>
 
     <!-- Heure -->
-    <td style="width:50px;"><center><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
+    <td style="width:50px;" class="hidden-xs"><center><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
 
     <!-- Qui -->
     <% user = User.find(t[:user_id]) %>

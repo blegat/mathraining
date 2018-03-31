@@ -1,0 +1,82 @@
+<table class="table table-bordered message" style="margin-bottom:0px;">
+
+  <!-- Cas normal -->
+  <% coul = "info" %>
+  <% coul = "danger" if kind == "correction" and ms.user != @submission.user %>
+  <tr class="hidden-xs <%= coul %>">
+
+  <!-- Nom -->
+  <td class="author"><%= raw(ms.user.linked_name) %></td>
+
+  <!-- Date -->
+  <td class="date"><%= write_date(ms.created_at.in_time_zone) %></td>
+  </tr>
+
+  <!-- Cas gsm -->
+
+  <!-- Nom -->
+  <tr class="visible-xs <%= coul %>"><td class="author"><%= raw(ms.user.linked_name) %></td></tr>
+
+  <!-- Date -->
+  <tr class="visible-xs <%= coul %>"><td class="date"><%= write_date(ms.created_at.in_time_zone) %></td></tr>
+
+  <!-- Contenu du message -->
+  <tr><td colspan="2" class="content">
+  <div>
+    
+  <% bb = bbcode(ms.content) %>
+  <% if kind == "subject" or kind == "message" %>
+    <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div class='clue'><div><a href='#' onclick='return Clue.toggle(#{@nb_indice})' class='btn btn-default btn-grey'>#{$1}</a></div><div id='indice#{@nb_indice}' class='clue-hide'><div class='clue-content'>#{$2}</div></div></div>"} %>
+      <% @nb_indice = @nb_indice+1 %>
+    <% end %>
+  <% end %>
+  
+  <% theid = -ms.id if kind == "subject" or kind == "submission" %>
+  <% theid = ms.id if kind == "message" or kind == "correction" %>
+  
+  <!-- Version compilée -->
+  <div id="normal<%= theid %>" style="display:inline;">
+  <%= raw(bb) %>
+  <div style="text-align:right; float:right; margin-top:3px;">&nbsp; <a href='#' onclick='return ShowCode.showAnormal(<%= theid %>)'>(Montrer le code)</a></div>
+  </div>
+
+  <!-- Version non-compilée (code) -->
+  <div class="tex2jax_ignore" id="anormal<%= theid %>" style="display:none;">
+  <%= raw((h ms.content).gsub(/\n/, '<br/>')) %>
+  <div style="text-align:right; float:right; margin-top:3px;">&nbsp; <a href='#' onclick='return ShowCode.showNormal(<%= theid %>)'>(Cacher le code)</a></div>
+  </div>
+
+  <!-- Pièces jointes -->
+  <%= render 'subjects/show_files', s: ms %>
+  </div>
+  </td></tr>
+  
+  <% if kind == "subject" or kind == "message" %>
+    <!-- Si on peut modifier -->
+    <% @canmodif = (ms.user == current_user.sk || (current_user.sk.admin && !ms.user.admin) || current_user.sk.root) %>
+    <% if @canmodif %>
+      <tr><td colspan="2" class="modify">
+        <% if kind == "subject" %>
+          <a href='#' onclick='return Rolling.develop("<%= @champ %>")'>Modifier ce sujet</a>
+          <% if current_user.sk.admin? %>
+            | <%= link_to "Supprimer ce sujet", subject_path(ms), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce sujet et tous les messages associés ?" }  %>
+            | <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Migrer ce sujet</a>
+            <span id='formulaire' style="display:none;">
+            <%= form_tag subject_migrate_path(ms), method: :get, :class => "form-inline", :style => "margin-top:5px;" do %>
+              Migrer ce sujet vers le sujet numéro
+              <%= hidden_field_tag "q", @q %>
+              <%= number_field_tag "migreur", nil, min: 1, max: 10000 %>
+              <%= submit_tag "Do it !", data: { confirm: "Êtes-vous sûr de vouloir migrer ce sujet ? Êtes-vous sûr de l'id du sujet receveur ?"} %>
+            <% end %>
+            </span>
+          <% end %>
+        <% else %>
+          <a href='#' onclick='return Rolling.develop("<%= @champ %>")'>Modifier ce message</a>
+          <% if current_user.sk.admin? %>
+             | <%= link_to "Supprimer ce message", subject_message_path(@subject, ms), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>
+          <% end %>
+        <% end %>
+      </td></tr>
+    <% end %>
+  <% end %>
+</table>

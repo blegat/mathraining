@@ -1,16 +1,3 @@
-<script type="text/javascript">
-function showStuff() {
-    document.getElementById("indice").style.display = 'inline';
-    document.getElementById("show").style.display = 'none';
-    document.getElementById("hide").style.display = 'inline';
-}
-function hideStuff() {
-    document.getElementById("indice").style.display = 'none';
-    document.getElementById("show").style.display = 'inline';
-    document.getElementById("hide").style.display = 'none';
-}
-</script>
-
 <!-- On vérifie que ce qcm peut bien être vu -->
 <% if f.online || (@ss && current_user.sk.admin?) %>
 
@@ -19,7 +6,7 @@ function hideStuff() {
 
 <!-- Enoncé -->
 <div>
-  <%= raw(htmlise(f.statement).gsub(/<\/indice>[ \r]*/, '<br/><br/></span><a href="#" id="hide" style="display:none;" onclick="hideStuff(); return false;" class="btn btn-default btn-grey">Cacher l\'indice</a>').gsub(/<indice>/, '<a href="#" id="show" onclick="showStuff(); return false;" class="btn btn-default btn-grey">Montrer un indice</a><span id="indice" style="display:none;"><u>Indice</u> : ')) %>
+  <%= raw(replace_indice(htmlise(f.statement))) %>
 </div>
 <br/>
 

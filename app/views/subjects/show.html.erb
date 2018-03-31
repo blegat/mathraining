@@ -1,38 +1,20 @@
-<script type="text/javascript">
-function showStuff(id) {
-    document.getElementById("indice" + id).style.display = 'inline';
-    document.getElementById("show" + id).style.display = 'none';
-    document.getElementById("hide" + id).style.display = 'inline';
-}
-function hideStuff(id) {
-    document.getElementById("indice" + id).style.display = 'none';
-    document.getElementById("show" + id).style.display = 'inline';
-    document.getElementById("hide" + id).style.display = 'none';
-}
-</script>
-
 <% provide(:title, @subject.title.html_safe) %>
 
-<% @nb_indice = 0 %>
+<% @nb_indice = 1 %>
 
-<% q = 0 %>
-<% if(params.has_key?:q) %>
-  <% q = params[:q].to_i %>
-<% end %>
+<% @q = 0 %>
+<% @q = params[:q].to_i if params.has_key?:q %>
 
-<!-- Titre avec un tableau pour que l'alignement soit joli si le titre fait plus d'une ligne -->
-<h1 style="margin-bottom:15px;">
+<!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
+<h1 style="margin-bottom:0px;">
 <table style="width:100%;">
 <tr><td>
 <table>
 <tr>
-<td nowrap style="vertical-align:top;">
-<span class="title-first"><%= link_to "Forum", subjects_path(:q => q) %> ></span>
-</td>
-<td style="padding-left:10px; vertical-align:top;">
 
+<td style="vertical-align:top;">
+<span class="title-first"><%= link_to "Forum", subjects_path(:q => @q) %> ></span>
 <%= @subject.title %>
-
 <span style="font-size:20px;">
 <% if !@subject.category.nil? %>
 	<% @category = @subject.category %>
@@ -49,6 +31,7 @@ function hideStuff(id) {
   - <%= link_to @chapitre.name, @chapitre, target: '_blank' %>
 <% end %>
 </span>
+</h1>
 </td>
 </tr>
 </table>
@@ -64,7 +47,6 @@ function hideStuff(id) {
 
 </tr>
 </table>
-</h1>
 
 <div class="visible-xs" style="text-align:center;">
 <% if !current_user.followed_subjects.exists?(@subject.id) %>
@@ -72,39 +54,40 @@ function hideStuff(id) {
 <% else %>
   <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
 <% end %>
-<br/><br/>
+<br/>
 </div>
 
-<center>
-<%= will_paginate @messages, :style => "margin-top:-20px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @messages, :style => "margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
-</center>
+</h1>
 
-<% if !@subject.exercise.nil? %>
-	<%= render 'show_exo', f: @subject.exercise %>
-<% elsif !@subject.qcm.nil? %>
-	<%= render 'show_qcm', f: @subject.qcm %>
-<% end %>
+<center>
+<%= will_paginate @messages, :style => "margin-top:-5px; margin-bottom:-25px;", :class => "hidden-xs", :inner_window => 2 %>
+<%= will_paginate @messages, :style => "margin-top:15px; margin-bottom:-5px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+</center>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->
 <% if ((!params.has_key?:page) || (params[:page] == '1')) %>
-  <%= render 'subject', s: @subject, canmodif: true %>
+  <%= render 'subjects/subject', s: @subject %>
+<% else %>
+  <% if !@subject.exercise.nil? %>
+	  <%= render 'subjects/show_exo', f: @subject.exercise, type: 2 %>
+  <% elsif !@subject.qcm.nil? %>
+	  <%= render 'subjects/show_exo', f: @subject.qcm, type: 3 %>
+  <% end %>
 <% end %>
 
 <!-- On affiche les messages -->
 <% @messages.each do |m| %>
-  <a name="<%= m.id %>"></a>
-  <%= render 'message', m: m, canmodif: true %>
+  <%= render 'subjects/message', m: m %>
+<% end %>
+
+<% if @messages.current_page == @messages.total_pages %>
+  <!-- Répondre -->
+  <%= render 'messages/new' %>
 <% end %>
 
 <center>
-<%= will_paginate @messages, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @messages, :style => "margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
-</center>
-
-<!-- Répondre -->
-<center>
-  <%= link_to "Répondre", new_subject_message_path(@subject, :q => q), class: 'btn btn-lg btn-default btn-grey' %>
+<%= will_paginate @messages, :style => "margin-top:0px; margin-bottom:-25px;", :class => "hidden-xs", :inner_window => 2 %>
+<%= will_paginate @messages, :style => "margin-top:15px; margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <a name="bottom"></a>

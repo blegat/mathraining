@@ -242,6 +242,151 @@ class User < ActiveRecord::Base
       return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>"
     end
   end
+  
+  # A utiliser en ligne de commande
+  def self.compute_scores
+    newrating = Array.new
+    newpartial = Array.new
+    existpartial = Array.new
+    exercise_value = Array.new
+    exercise_section = Array.new
+    qcm_value = Array.new
+    qcm_section = Array.new
+    problem_value = Array.new
+    problem_section = Array.new
+    sectionid = Array.new
+    n_section = Section.count
+    max_score = Array.new
+
+    (1..n_section).each do |i|
+      newpartial[i] = Array.new
+      existpartial[i] = Array.new
+      max_score[i] = 0
+    end
+
+    User.all.each do |u|
+      newrating[u.id] = 0
+      (1..n_section).each do |i|
+        newpartial[i][u.id] = 0
+        existpartial[i][u.id] = false
+      end
+    end
+
+    Pointspersection.all.each do |p|
+      existpartial[p.section_id][p.user_id] = true
+    end
+
+    User.all.each do |u|
+      (1..n_section).each do |i|
+        if !existpartial[i][u.id]
+          newpoint = Pointspersection.new
+          newpoint.points = 0
+          newpoint.section_id = i
+          user.pointspersections << newpoint
+        end
+      end
+    end
+
+    Chapter.all.each do |c|
+      sectionid[c.id] = c.section_id
+    end
+
+    Exercise.all.each do |e|
+      exercise_value[e.id] = e.value
+      exercise_section[e.id] = sectionid[e.chapter_id]
+      max_score[sectionid[e.chapter_id]] = max_score[sectionid[e.chapter_id]] + e.value if e.online
+    end
+
+    Qcm.all.each do |q|
+      qcm_value[q.id] = q.value
+      qcm_section[q.id] = sectionid[q.chapter_id]
+      max_score[sectionid[q.chapter_id]] = max_score[sectionid[q.chapter_id]] + q.value if q.online
+    end
+
+    Problem.all.each do |p|
+      problem_value[p.id] = p.value
+      problem_section[p.id] = p.section_id
+      max_score[p.section_id] = max_score[p.section_id] + p.value if p.value
+    end
+
+    Solvedexercise.all.each do |e|
+      if e.correct
+        pt = exercise_value[e.exercise_id]
+        u = e.user_id
+        s = exercise_section[e.exercise_id]
+        newrating[u] = newrating[u] + pt
+        newpartial[s][u] = newpartial[s][u] + pt
+      end
+    end
+
+    Solvedqcm.all.each do |q|
+      if q.correct
+        pt = qcm_value[q.qcm_id]
+        u = q.user_id
+        s = qcm_section[q.qcm_id]
+        newrating[u] = newrating[u] + pt
+        newpartial[s][u] = newpartial[s][u] + pt
+      end
+    end
+
+    Solvedproblem.all.each do |p|
+      pt = problem_value[p.problem_id]
+      u = p.user_id
+      s = problem_section[p.problem_id]
+      newrating[u] = newrating[u] + pt
+      newpartial[s][u] = newpartial[s][u] + pt
+    end
+
+    warning = ""
+    
+    Section.all.each do |s|
+      if(max_score[s.id] != s.max_score)
+        warning = warning + "Le score maximal de la section #{s.id} va changer : #{max_score[s.id]} au lieu de #{s.max_score}. "
+      end
+    end
+
+    Pointspersection.all.each do |p|
+      if newpartial[p.section_id][p.user_id] != p.points
+        warning = warning + "Le rating de ... (#{p.user_id}) pour la section #{p.section_id} va changer : #{newpartial[p.section_id][p.user_id]} au lieu de #{p.points}. "
+      end
+    end
+
+    User.all.each do |u|
+      if newrating[u.id] != u.rating
+        warning = warning + "Le rating de #{u.name} (#{u.id}) va changer : #{newrating[u.id]} au lieu de {u.rating}. "
+      end
+    end
+    
+    return [warning, max_score, newrating, newpartial]
+  end
+  
+  # A utiliser en ligne de commande, après la fonction précédente et après avoir vérifié le warning... Pour vérifier qu'il n'y a eu aucun changement de score pendant l'exécution des fonctions, on pourra réutiliser compute_scores et vérifier que le warning est vide...
+  def self.apply_scores(quadruple)
+    max_score = quadruple[1]
+    newrating = quadruple[2]
+    newpartial = quadruple[3]
+    
+    Section.all.each do |s|
+      if(max_score[s.id] != s.max_score)
+        s.max_score = max_score[s.id]
+        s.save
+      end
+    end
+    
+    Pointspersection.all.each do |p|
+      if newpartial[p.section_id][p.user_id] != p.points
+        p.points = newpartial[p.section_id][p.user_id]
+        p.save
+      end
+    end
+
+    User.all.each do |u|
+      if newrating[u.id] != u.rating
+        u.rating = newrating[u.id]
+        u.save
+      end
+    end
+  end
 
   private
 

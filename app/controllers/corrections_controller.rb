@@ -36,7 +36,7 @@ class CorrectionsController < ApplicationController
     attach = create_files # Fonction commune pour toutes les pièces jointes
 
     if @error
-      flash.now[:danger] = @error_message
+      flash[:danger] = @error_message
       session[:ancientexte] = params[:correction][:content]
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
@@ -162,14 +162,10 @@ class CorrectionsController < ApplicationController
       session[:ancientexte] = params[:correction][:content]
       if params[:correction][:content].size == 0
         flash[:danger] = "Votre réponse est vide."
-        redirect_to problem_path(@submission.problem, :sub => @submission)
-      elsif params[:correction][:content].size > 8000
-        flash[:danger] = "Votre réponse doit faire moins de 8000 caractères."
-        redirect_to problem_path(@submission.problem, :sub => @submission)
       else
         flash[:danger] = "Une erreur est survenue."
-        redirect_to problem_path(@submission.problem, :sub => @submission)
       end
+      redirect_to problem_path(@submission.problem, :sub => @submission)
     end
   end
 

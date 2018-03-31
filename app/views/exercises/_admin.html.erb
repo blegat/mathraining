@@ -1,23 +1,6 @@
 <!-- Essais des élèves -->
 <% if f.online %>
-
-<script type="text/javascript">
-function showStuff2() {
-  document.getElementById("explanation2").style.display = 'inline';
-  document.getElementById("show2").style.display = 'none';
-  document.getElementById("hide2").style.display = 'inline';
-}
-function hideStuff2() {
-  document.getElementById("explanation2").style.display = 'none';
-  document.getElementById("show2").style.display = 'inline';
-   document.getElementById("hide2").style.display = 'none';
-  
-}
-</script>
-<br/>
-<a href='#' id='show2' onclick='showStuff2(); return false;' style='display:inline;' class='btn btn-default btn-grey'>Essais des étudiants</a>
-<a href='#' id='hide2' style='display:none;' class='btn btn-default btn-grey' onclick='hideStuff2(); return false;'>Essais des étudiants</a>
-<span id='explanation2' style='display:none;'><br/><br/>
+<div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(1)' class='btn btn-default btn-grey'>Essais des étudiants</a></div><div id='indice1' class='clue-hide'><div class='clue-content'>
 Corrects :
 <% compte = 0 %>
 <% tries = f.solvedexercises.includes(:user).order(:updated_at).all if type == 2 %>
@@ -54,7 +37,8 @@ Incorrects :
   <%= "Aucun utilisateur bloqué." %>
 <% end %>
 </span>
-<br/><br/>
+</div></div></div>
+<br/>
 
 <% end %>
   

@@ -1,0 +1,21 @@
+/* TEXTE CACHE #fcfcfc #fffad2 */
+
+.clue {
+  background-color:#fffad2;
+  padding:7px;
+  border:1px solid #dddddd;
+  margin-top:10px;
+}
+
+.clue-bis {
+}
+
+.clue-hide {
+  height:0;
+  overflow:hidden;    
+}
+  
+.clue-content {
+  margin-top:12px;
+  padding-left:5px;
+}

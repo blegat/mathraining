@@ -1,0 +1,29 @@
+/* SMILEY */
+
+.smiley-content {
+  margin:0px;
+  margin-top:-5px;
+  width:100%;
+}
+
+@media (min-width: 992px) {
+  .smiley-content {
+    display:-webkit-box;
+    display:-mot-box;
+    display:-ms-flexbox;
+    display:-webkit-flex;
+    display:flex;
+  }
+  
+  .smiley {
+    padding-right:20px;
+  }
+}
+
+@media (max-width: 991.99px) {
+  .smiley {
+    margin-bottom:3px;
+    text-align:center;
+    width:100%;
+  }
+}

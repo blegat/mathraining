@@ -9,69 +9,7 @@
 <% @submission.corrections.order(:created_at).each do |correction| %>
 
   <% @lastid = correction.id %>
-
-  <table class="table table-bordered message">
-
-  <!-- Cas normal -->
-  <% if correction.user == @submission.user %>
-    <tr class="info hidden-xs">
-  <% else %>
-    <tr class="danger hidden-xs">
-  <% end %>
-
-  <!-- Nom -->
-  <td class="author">
-  <%= raw(correction.user.linked_name) %>
-  </td>
-
-  <!-- Date -->
-  <td class="date">
-  <%= Message.write_date(correction.created_at.in_time_zone) %>
-  </td>
-  </tr>
-
-  <!-- Cas gsm -->
-
-  <!-- Nom -->
-  <% if correction.user == @submission.user %>
-    <tr class="info visible-xs">
-  <% else %>
-    <tr class="danger visible-xs">
-  <% end %>
-
-  <td class="author">
-  <%= raw(correction.user.linked_name) %>
-  </td>
-  </tr>
-
-  <!-- Date -->
-  <% if correction.user == @submission.user %>
-    <tr class="info visible-xs">
-  <% else %>
-    <tr class="danger visible-xs">
-  <% end %>
-  <td class="date">
-  <%= Message.write_date(correction.created_at.in_time_zone) %>
-  </td>
-  </tr>
-
-  <!-- Contenu du commentaire -->
-  <tr><td colspan="2" class="content">
-
-  <div id="normal<%= correction.id %>" style="display:inline;">
-  <%= raw(bbcode(correction.content)) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showAnormal(<%= correction.id %>)'>(Montrer le code)</a></div>
-  </div>
-
-  <div class="tex2jax_ignore" id="anormal<%= correction.id %>" style="display:none;">
-  <%= raw((h correction.content).gsub(/\n/, '<br/>')) %>
-  <div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showNormal(<%= correction.id %>)'>(Cacher le code)</a></div>
-  </div>
-
-  <!-- Pièces jointes -->
-  <%= render 'subjects/show_files', s: correction %>
-  </td></tr>
-
-  </table>
-
+  
+  <%= render 'subjects/content', ms: correction, kind: "correction" %>
+  
 <% end %>

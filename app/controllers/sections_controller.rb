@@ -1,6 +1,6 @@
 #encoding: utf-8
 class SectionsController < ApplicationController
-  before_action :signed_in_user, only: [:edit]
+  before_action :signed_in_user, only: [:edit, :showpb]
   before_action :signed_in_user_danger, only: [:update]
   before_action :recup
   before_action :admin_user, only: [:edit, :update]

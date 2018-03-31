@@ -11,7 +11,7 @@ Modifier
 
   <div class="form-group">
     <%= f.label :name %>
-    <%= f.text_field :name, :class => "form-control", :maxlength => "255", :style => "width:400px;" %>
+    <%= f.text_field :name, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;" %>
   </div>
 
   <div class="form-group">
@@ -19,9 +19,9 @@ Modifier
     <div class="well" id="MathPreview"></div>
     <div class="well hidden-preview" id="MathBuffer"></div>
     <%= render 'theories/font' %>
-    <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "fakeupdate()" %>
+    <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
   </div>
-  <%= f.submit "Editer", class: "btn btn-lg btn-primary" %>
+  <%= f.submit "Éditer", class: "btn btn-lg btn-primary" %>
 <% end %>
 
 <script>

@@ -5,13 +5,13 @@ class DiscussionsController < ApplicationController
   before_action :is_involved, only: [:show]
 
   def show
-    par_page = 10
-    quelle_page = 1
+    nb_mes = 10
+    page = 1
     if (params.has_key?:page)
-      quelle_page = params[:page].to_i
+      page = params[:page].to_i
     end
-    @tchatmessages = @discussion.tchatmessages.order("created_at DESC").paginate(page: quelle_page, per_page: par_page)
-    @compteur = (quelle_page-1) * par_page + 1
+    @tchatmessages = @discussion.tchatmessages.order("created_at DESC").paginate(page: page, per_page: nb_mes)
+    @compteur = (page-1) * nb_mes + 1
 
     respond_to do |format|
       format.html
@@ -128,7 +128,7 @@ class DiscussionsController < ApplicationController
     attach = create_files # Fonction commune pour toutes les pièces jointes
 
     if @error
-      flash.now[:danger] = @error_message
+      flash[:danger] = @error_message
       session[:ancientexte] = @content
       @erreur = true
       return
@@ -150,14 +150,10 @@ class DiscussionsController < ApplicationController
       session[:ancientexte] = @content
       if @content.size == 0
         flash[:danger] = "Votre message est vide."
-        return
-      elsif @content.size > 8000
-        flash[:danger] = "Votre message doit faire moins de 8000 caractères."
-        return
       else
         flash[:danger] = "Une erreur est survenue."
-        return
       end
+      return
     end
 
     if !@erreur

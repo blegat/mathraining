@@ -3,46 +3,28 @@
   <!-- Cas normal -->
   <tr class="info hidden-xs">
     <!-- Titre -->
-    <td class="title">
-      <%= f.title %>
-    </td>
+    <td class="title"><%= f.title %></td>
 
     <!-- Date -->
-    <td class="date">
-      <%= Message.write_date(f.created_at.in_time_zone) %>
-    </td>
+    <td class="date"><%= write_date(f.created_at.in_time_zone) %></td>
   </tr>
 
   <!-- Cas gsm : titre et date sur des lignes différentes -->
   <!-- Titre -->
-  <tr class="info visible-xs">
-    <td class="title">
-      <%= f.title %>
-    </td>
-  </tr>
+  <tr class="info visible-xs"><td class="title"><%= f.title %></td></tr>
 
   <!-- Date -->
-  <tr class="info visible-xs">
-    <td class="date">
-      <%= Message.write_date(f.created_at.in_time_zone) %>
-    </td>
-  </tr>
+  <tr class="info visible-xs"><td class="date"><%= write_date(f.created_at.in_time_zone) %></td></tr>
 
   <!-- Contenu -->
-  <tr>
-    <td class="content" colspan="2">
-      <div>
-        <%= raw(htmlise(f.content)) %>
-      </div>
-    </td>
-  </tr>
+  <tr><td class="content" colspan="2"><div><%= raw(htmlise(f.content)) %></div></td></tr>
 
   <!-- Modifier / Supprimer -->
   <% if signed_in? && current_user.sk.admin? %>
     <tr>
       <td class="modify" colspan="2">
-          <%= link_to "Modifier l'actualité", edit_actuality_path(f) %> |
-          <%= link_to "Supprimer l'actualité", f, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette actualité ?" } %>
+        <%= link_to "Modifier l'actualité", edit_actuality_path(f) %> |
+        <%= link_to "Supprimer l'actualité", f, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette actualité ?" } %>
       </td>
     </tr>
   <% end %>

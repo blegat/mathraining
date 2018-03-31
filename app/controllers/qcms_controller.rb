@@ -4,7 +4,7 @@ class QcmsController < QuestionsController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_choice, :add_choice, :switch_choice, :update_choice, :order_minus, :order_plus, :put_online, :update_explanation]
   before_action :admin_user
   before_action :online_qcm, only: [:add_choice, :remove_choice]
-  before_action :root_qcm_user, only: [:destroy]
+  before_action :offline_qcm, only: [:destroy]
 
   # Créer un qcm
   def new
@@ -44,7 +44,7 @@ class QcmsController < QuestionsController
       need = @chapter.qcms.order('position').reverse_order.first
       before2 = need.position
     end
-    @qcm.position = maximum(before, before2) + 1
+    @qcm.position = [before, before2].max + 1
     if @qcm.save
       flash[:success] = "QCM ajouté."
       redirect_to qcm_manage_choices_path(@qcm)
@@ -233,25 +233,14 @@ class QcmsController < QuestionsController
   private
 
   # Il faut être root pour supprimer un qcm en ligne
-  def root_qcm_user
+  def offline_qcm
     @qcm = Qcm.find(params[:id])
-    redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) if (!current_user.sk.root && @qcm.online)
+    redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) if @qcm.online
   end
 
   # Vérifie que le qcm est en ligne
   def online_qcm
     @qcm = Qcm.find(params[:qcm_id])
-    if @qcm.online
-      redirect_to chapter_path(@qcm.chapter)
-    end
-  end
-
-  # Bete maximum
-  def maximum(a, b)
-    if a > b
-      return a
-    else
-      return b
-    end
+    redirect_to chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) if @qcm.online
   end
 end
