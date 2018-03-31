@@ -54,7 +54,7 @@ class Myfile < ActiveRecord::Base
   def self.fake_dels
     ajd = DateTime.now.to_date
     Myfile.where(:myfiletable_type => "Tchatmessage").each do |f|
-      if f.file_updated_at + 28 < ajd
+      if f.file_updated_at.to_date + 28 < ajd
         f.fake_del
       end
     end
