@@ -19,6 +19,7 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every :monday, :at => '2am' do
+every :day, :at => '2am' do
   runner "Record.update"
+  runner "Myfile.fake_dels"
 end
