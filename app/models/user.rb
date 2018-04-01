@@ -353,7 +353,7 @@ class User < ActiveRecord::Base
 
     User.all.each do |u|
       if newrating[u.id] != u.rating
-        warning = warning + "Le rating de #{u.name} (#{u.id}) va changer : #{newrating[u.id]} au lieu de {u.rating}. "
+        warning = warning + "Le rating de #{u.name} (#{u.id}) va changer : #{newrating[u.id]} au lieu de #{u.rating}. "
       end
     end
     
