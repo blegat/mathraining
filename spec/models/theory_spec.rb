@@ -42,7 +42,7 @@ describe Theory do
     it { should_not be_valid }
   end
   describe "when content is too long" do
-    before { @theo.content = "a" * 8001 }
+    before { @theo.content = "a" * 16001 }
     it { should_not be_valid }
   end
 

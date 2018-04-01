@@ -80,7 +80,7 @@ var unreserve = function () {
 <% if @submission.intest && @submission.score != -1 && (current_user.sk.admin? || current_user.sk == @submission.user) %>
 <br/>
 <h4>Score obtenu</h4>
-<center><div style="padding:3px; font-size:24px; border:1px solid orange; background-color:#FFFFCC;"><%= @submission.score %> / 7</span></center>
+<center><div style="padding:3px; font-size:24px; border:1px solid #dddddd; background-color:#fffad2;"><%= @submission.score %> / 7</span></center>
 <% end %>
 
 <!-- Affichage des corrections -->
