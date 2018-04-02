@@ -35,7 +35,7 @@
   <% theid = ms.id if kind == "message" or kind == "correction" %>
   
   <!-- Version compilée -->
-  <div id="normal<%= theid %>" style="display:inline;">
+  <div id="normal<%= theid %>" style="display:block;">
   <%= raw(bb) %>
   <div style="text-align:right; float:right; margin-top:3px;">&nbsp; <a href='#' onclick='return ShowCode.showAnormal(<%= theid %>)'>(Montrer le code)</a></div>
   </div>

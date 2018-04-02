@@ -18,14 +18,14 @@
 <div style="margin-bottom:10px;"><b><%= m.user.name %></b></div>
 
   <!-- Contenu du message -->
-<div id="normal<%= m.id %>" style="display:inline;">
+<div id="normal<%= m.id %>" style="display:block;">
 <%= raw(bbcode(m.content)) %>
-<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showAnormal(<%= m.id %>)'>(Montrer le code)</a></div>
+<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return ShowCode.showAnormal(<%= m.id %>)'>(Montrer le code)</a></div>
 </div>
 
 <div class="tex2jax_ignore" id="anormal<%= m.id %>" style="display:none;">
 <%= raw((h m.content).gsub(/\n/, '<br/>')) %>
-<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return showNormal(<%= m.id %>)'>(Cacher le code)</a></div>
+<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return ShowCode.showNormal(<%= m.id %>)'>(Cacher le code)</a></div>
 </div>
 
 <!-- Pièces jointes -->
