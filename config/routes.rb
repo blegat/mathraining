@@ -141,7 +141,9 @@ Mathraining::Application.routes.draw do
 
   resources :colors, only: [:index, :create, :update, :destroy]
 
-  resources :discussions, only: [:new, :create, :show]
+  resources :discussions, only: [:new, :create, :show] do
+    match '/unread', to: 'discussions#unread', :via => [:get], as: :unread
+  end
   resources :tchatmessages, only: [:create]
   resources :links, only: []
 

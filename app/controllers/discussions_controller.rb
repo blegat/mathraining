@@ -1,8 +1,8 @@
 #encoding: utf-8
 class DiscussionsController < ApplicationController
   before_action :signed_in_user, only: [:show, :new]
-  before_action :signed_in_user_danger, only: [:create]
-  before_action :is_involved, only: [:show]
+  before_action :signed_in_user_danger, only: [:create, :unread]
+  before_action :is_involved, only: [:show, :unread]
 
   def show
     nb_mes = 10
@@ -100,12 +100,20 @@ class DiscussionsController < ApplicationController
       end
     end
   end
+  
+  # Marquer comme non lu
+  def unread
+    l = current_user.sk.links.where(:discussion_id => @discussion.id).first
+    l.nonread = l.nonread + 1
+    l.save
+    redirect_to new_discussion_path
+  end
 
   ########## PARTIE PRIVEE ##########
   private
 
   def is_involved
-    @discussion = Discussion.find(params[:id])
+    @discussion = Discussion.find(!params[:discussion_id].nil? ? params[:discussion_id] : params[:id])
     if !current_user.sk.discussions.include?(@discussion)
       redirect_to new_discussion_path
     elsif current_user.other

@@ -82,6 +82,7 @@ $(window).scroll(scrollHandler);
       <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
       <br/><br/>
       <%= f.submit "Envoyer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+      <%= link_to 'Marquer comme non lu', discussion_unread_path(@discussion), :class => "btn btn-default btn-grey", :style => "float:right;", :disabled => current_user.other %>
     <% end %>
 
     <br/>

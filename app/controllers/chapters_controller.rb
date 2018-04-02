@@ -3,8 +3,7 @@ class ChaptersController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :warning, :read]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online]
   before_action :admin_user, only: [:new, :edit, :create, :update, :destroy, :warning, :put_online]
-  before_action :chapter_exists1, only: [:show, :edit, :update, :destroy]
-  before_action :chapter_exists2, only: [:warning, :put_online, :read]
+  before_action :chapter_exists, only: [:show, :edit, :update, :destroy, :warning, :put_online, :read]
   before_action :delete_online, only: [:destroy]
   before_action :online_chapter, only: [:show, :read]
   before_action :prerequisites_online, only: [:warning, :put_online]
@@ -110,8 +109,8 @@ class ChaptersController < ApplicationController
   private
 
   # Vérifie que le chapitre existe (et le récupère)
-  def chapter_exists1
-    @chapter = Chapter.find(params[:id])
+  def chapter_exists
+    @chapter = Chapter.find(!params[:chapter_id].nil? ? params[:chapter_id] : params[:id])
     @section = @chapter.section
     if @section.fondation?
       @fondation = true
@@ -122,15 +121,7 @@ class ChaptersController < ApplicationController
       redirect_to root_path and return
     end
   end
-
-  # Vérifie que le chapitre existe (et le récupère)
-  def chapter_exists2
-    @chapter = Chapter.find(params[:chapter_id])
-    if @chapter.nil?
-      redirect_to root_path and return
-    end
-  end
-
+  
   # Vérifie que le chapitre est en ligne (ou qu'on est admin)
   def online_chapter
     redirect_to root_path unless ((signed_in? && current_user.sk.admin?) || @chapter.online)

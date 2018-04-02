@@ -21,27 +21,21 @@
 <% listex.each do |f| %>
   <% if f.online %>
     <h3><%= i %>. <%= f.title %></h3>
-    <p>
+    <div>
       <% if i <= 2 %>
       <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="form-group"><div class="well" id="MathPreview"></div> <div class="well hidden-preview" id="MathBuffer"></div> <textarea id="MathInput" class="form-control" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>')) %>
       <% else %>
       <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<center><i>Voir plus haut.</i></center>')) %>
       <% end %>
-    </p><br/>
+    </div><br/>
     <% i = i+1 %>
   <% end %>
 <% end %>
 
-<br/>
-
-<center>
-  <!-- Marquer comme lu -->
-  <% if !@ss || !current_user.sk.admin? %>
-    <%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => (!@ss || current_user.other) %>
-  <% end %>
-</center>
-
 <% if !@ss || !current_user.sk.admin? %>
+  <!-- Marquer comme lu -->
+  <center><%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => (!@ss || current_user.other) %></center>
+  
   <hr style="border-top:1px dashed lightgray;" />
   Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id) %> !
 <% end %>

@@ -39,5 +39,4 @@ class SectionsController < ApplicationController
       @fondation = false
     end
   end
-
 end
