@@ -32,7 +32,7 @@ class DiscussionsController < ApplicationController
   end
 
   def create
-    params[:content] = truncate(params[:content])
+    params[:content].strip! if !params[:content].nil?
     if params[:destinataire].to_i == 0
       session[:ancientexte] = params[:content]
       flash[:danger] = "Veuillez choisir un destinataire."

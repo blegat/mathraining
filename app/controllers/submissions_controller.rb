@@ -13,8 +13,8 @@ class SubmissionsController < ApplicationController
   before_action :brouillon, only: [:update_brouillon]
 
   # Créer une nouvelle soumission
-  def create  
-    params[:submission][:content] = truncate(params[:submission][:content])
+  def create
+    params[:submission][:content].strip! if !params[:submission][:content].nil?
     # Pièces jointes
     @error = false
     @error_message = ""
@@ -94,7 +94,7 @@ class SubmissionsController < ApplicationController
       update_submission
       return
     end
-    params[:submission][:content] = truncate(params[:submission][:content])
+    params[:submission][:content].strip! if !params[:submission][:content].nil?
     # Pièces jointes
     @error = false
     @error_message = ""
@@ -193,8 +193,12 @@ class SubmissionsController < ApplicationController
   # Réserver la soumission
   def reserve
     if @submission.followings.count > 0
-      @correct_name = @submission.followings.first.user.name
-      @what = 2
+      if(@submission.followings.first.user == current_user.sk)
+        @what = 3
+      else
+        @correct_name = @submission.followings.first.user.name
+        @what = 2
+      end
     else
       f = Following.new
       f.user = current_user.sk
@@ -318,7 +322,7 @@ class SubmissionsController < ApplicationController
       lepath = problem_path(@problem, :sub => 0)
     end
     
-    params[:submission][:content] = truncate(params[:submission][:content])
+    params[:submission][:content].strip! if !params[:submission][:content].nil?
     if @submission.update_attributes(params.require(:submission).permit(:content))
       totalsize = 0
 

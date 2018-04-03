@@ -11,7 +11,7 @@ class MessagesController < ApplicationController
 
   # Créer un message 2
   def create
-    params[:message][:content] = truncate(params[:message][:content])
+    params[:message][:content].strip! if !params[:message][:content].nil?
     @message = Message.new(params.require(:message).permit(:content))
     @message.user = current_user.sk
     @message.subject = @subject
@@ -87,7 +87,7 @@ class MessagesController < ApplicationController
   # Editer un message 2
   def update
     # Si la modification du message réussit
-    params[:message][:content] = truncate(params[:message][:content])
+    params[:message][:content].strip! if !params[:message][:content].nil?
     if @message.update_attributes(params.require(:message).permit(:content))
 
       # Pièces jointes

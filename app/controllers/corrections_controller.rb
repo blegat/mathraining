@@ -6,7 +6,7 @@ class CorrectionsController < ApplicationController
 
   # Créer une correction : il faut être soit admin, soit correcteur, soit l'étudiant de la soumission
   def create
-    params[:correction][:content] = truncate(params[:correction][:content])
+    params[:correction][:content].strip! if !params[:correction][:content].nil?
     attach = Array.new
     totalsize = 0
 
