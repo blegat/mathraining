@@ -1,0 +1,7 @@
+.myoverflow {
+  overflow-y:hidden;
+}
+
+.well {
+  overflow-x:auto;
+}

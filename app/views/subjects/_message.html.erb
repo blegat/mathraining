@@ -1,11 +1,11 @@
 <% @champ = "EditMessage#{m.id}" %>
 
-<div id="the<%= @champ %>" style="overflow-y:hidden;">
+<div id="the<%= @champ %>" class="myoverflow">
 <%= render 'subjects/content', ms: m, kind: "message" %>
 </div>
 
 <% if @canmodif %>
-  <div id="form<%= @champ %>" style="overflow-y:hidden; height:0px; width:300px!important;">
+  <div id="form<%= @champ %>" class="myoverflow" style="height:0px;">
   <%= render 'messages/edit', m: m %>
   </div>
 <% end %>
