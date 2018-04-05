@@ -22,7 +22,6 @@
 
   <!-- Contenu du message -->
   <tr><td colspan="2" class="content">
-  <div>
     
   <% bb = bbcode(ms.content) %>
   <% if kind == "subject" or kind == "message" %>
@@ -47,8 +46,7 @@
   </div>
 
   <!-- Pièces jointes -->
-  <%= render 'subjects/show_files', s: ms %>
-  </div>
+  <%= render 'subjects/show_files', s: ms %>  
   </td></tr>
   
   <% if kind == "subject" or kind == "message" %>

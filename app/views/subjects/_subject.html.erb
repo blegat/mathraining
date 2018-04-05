@@ -1,6 +1,6 @@
 <% @champ = "EditSubject" %>
 
-<div id="the<%= @champ %>" style="overflow:hidden;">
+<div id="the<%= @champ %>" style="overflow-y:hidden;">
 
 <% if !@subject.exercise.nil? %>
 	<%= render 'subjects/show_exo', f: @subject.exercise, type: 2 %>
@@ -13,7 +13,7 @@
 </div>
 
 <% if @canmodif %>
-  <div id="form<%= @champ %>" style="overflow:hidden; height:0px;">
+  <div id="form<%= @champ %>" style="overflow-y:hidden; height:0px;">
   <% @edit = true %>
   <%= render 'subjects/edit', s: s %>
   </div>

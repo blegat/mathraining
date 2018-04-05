@@ -1,10 +1,10 @@
 <% @champ = "NewMessage" %>
 
-<div id="the<%= @champ %>" style="overflow:hidden; text-align:center;">
+<div id="the<%= @champ %>" style="overflow-y:hidden; text-align:center;">
 <button onclick='return Rolling.develop("<%= @champ %>")' class='btn btn-lg btn-default btn-grey' style='margin-top:15px; margin-bottom:1px;'>Répondre</button>
 </div>
 
-<div id="form<%= @champ %>" style="overflow:hidden; height:0px;">
+<div id="form<%= @champ %>" style="overflow-y:hidden; height:0px;">
 
 <% @message = Message.new %>
 <%= form_for [@subject, @message], :url => subject_messages_path(@subject, @message, :action => :create, :q => @q), :html => { :multipart => true, :style => "margin-top:20px;" } do |f| %>

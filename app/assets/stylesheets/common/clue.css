@@ -12,7 +12,7 @@
 
 .clue-hide {
   height:0;
-  overflow:hidden;    
+  overflow-y:hidden;    
 }
   
 .clue-content {
