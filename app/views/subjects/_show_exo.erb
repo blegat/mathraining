@@ -16,8 +16,9 @@
     </table>
 	
   <% else %>
-    <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) %>
-	
+    <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) if type == 2 %>
+	  <% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) if type == 3 %>
+	  
     <% if current_user.sk.admin? %>
       <table class="table table-bordered reference yellowy">
       <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => type, :which => f.id), :target => "_blank" %> :</td></tr>
