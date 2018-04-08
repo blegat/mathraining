@@ -8,7 +8,6 @@ class SolvedqcmsController < ApplicationController
   # On tente de résoudre un qcm (pour la première fois)
   def create
     qcm = @qcm2
-    user = current_user.sk
 
     previous = Solvedqcm.where(:qcm_id => qcm, :user_id => current_user.sk).count
     if previous > 0
@@ -16,8 +15,8 @@ class SolvedqcmsController < ApplicationController
     end
 
     link = Solvedqcm.new
-    link.user_id = user.id
-    link.qcm_id = qcm.id
+    link.user = current_user.sk
+    link.qcm = qcm
     link.nb_guess = 1
     link.resolutiontime = DateTime.now
 
@@ -88,10 +87,10 @@ class SolvedqcmsController < ApplicationController
     already = false
     chapter = qcm.chapter
     chapter.exercises.each do |e|
-      already = true if(Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => e.id).count > 0)
+      already = true if(Solvedexercise.where(:user => current_user.sk, :exercise => e).count > 0)
     end
     chapter.qcms.each do |q|
-      already = true if(q != qcm.id && Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => q.id).count > 0)
+      already = true if(q != qcm && Solvedqcm.where(:user => current_user.sk, :qcm => q).count > 0)
     end
     
     unless already
@@ -106,9 +105,9 @@ class SolvedqcmsController < ApplicationController
   def update
     qcm = @qcm2
     user = current_user.sk
-    link = Solvedqcm.where(:user_id => user, :qcm_id => qcm).first
+    link = Solvedqcm.where(:user => user, :qcm => qcm).first
 
-    if link.correct
+    if link.nil? or link.correct
       redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
     end
 

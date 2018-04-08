@@ -56,34 +56,4 @@ class Record < ActiveRecord::Base
       end
     end
   end
-  
-  def self.exo_guesses
-    Exercise.where(:online => true).each do |e|
-      nb_tries = 0
-      nb_firstguess = 0
-      e.solvedexercises.each do |s|
-        nb_tries = nb_tries+1
-        if(s.correct and s.nb_guess == 1)
-          nb_firstguess = nb_firstguess+1
-        end
-      end
-      e.nb_tries = nb_tries
-      e.nb_firstguess = nb_firstguess
-      e.save
-    end
-    
-    Qcm.where(:online => true).each do |q|
-      nb_tries = 0
-      nb_firstguess = 0
-      q.solvedqcms.each do |s|
-        nb_tries = nb_tries+1
-        if(s.correct and s.nb_guess == 1)
-          nb_firstguess = nb_firstguess+1
-        end
-      end
-      q.nb_tries = nb_tries
-      q.nb_firstguess = nb_firstguess
-      q.save
-    end
-  end
 end

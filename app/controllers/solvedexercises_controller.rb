@@ -17,8 +17,8 @@ class SolvedexercisesController < ApplicationController
     end
 
     link = Solvedexercise.new
-    link.user_id = user.id
-    link.exercise_id = exercise.id
+    link.user = current_user.sk
+    link.exercise = exercise
     link.guess = params[:solvedexercise][:guess].gsub(",",".").to_f
     link.nb_guess = 1
     link.resolutiontime = DateTime.now
@@ -51,10 +51,10 @@ class SolvedexercisesController < ApplicationController
     already = false
     chapter = exercise.chapter
     chapter.exercises.each do |e|
-      already = true if(e != exercise && Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => e.id).count > 0)
+      already = true if(e != exercise && Solvedexercise.where(:user => current_user.sk, :exercise => e).count > 0)
     end
     chapter.qcms.each do |q|
-      already = true if(Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => q.id).count > 0)
+      already = true if(Solvedqcm.where(:user => current_user.sk, :qcm => q).count > 0)
     end
     
     unless already
@@ -69,7 +69,6 @@ class SolvedexercisesController < ApplicationController
   def update
     exercise = @exercise2
     link = @link2
-    user = link.user
 
     if link.correct
       redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id) and return
@@ -129,6 +128,7 @@ class SolvedexercisesController < ApplicationController
     @link2 = Solvedexercise.find(params[:id])
     @exercise2 = @link2.exercise
     @chapter = @exercise2.chapter
+    redirect_to chapter_path(@chapter, :type => 2, :which => @exercise2.id) if @link2.user != current_user.sk
   end
 
   # Il faut que le chapitre soit en ligne
