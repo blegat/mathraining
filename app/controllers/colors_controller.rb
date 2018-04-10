@@ -9,7 +9,7 @@ class ColorsController < ApplicationController
 
   # Créer un niveau
   def create
-    @color = Color.new(params[:color])
+    @color = Color.new(params.require(:color).permit(:pt, :name, :femininename, :color, :font_color))
     if @color.save
       flash[:success] = "Niveau et couleur ajoutés."
       redirect_to colors_path
@@ -22,7 +22,7 @@ class ColorsController < ApplicationController
   # Modifier un niveau
   def update
     @color = Color.find(params[:id])
-    if @color.update_attributes(params[:color])
+    if @color.update_attributes(params.require(:color).permit(:pt, :name, :femininename, :color, :font_color))
       flash[:success] = "Niveau et couleur modifiés."
       redirect_to colors_path
     else
