@@ -13,12 +13,6 @@ class UsersController < ApplicationController
 
   # Index de tous les users avec scores
   def index
-    if signed_in? && current_user.sk.root?
-      oneweekago = Date.today - 7
-      User.where("email_confirm = ? AND created_at < ?", false, oneweekago).each do |u|
-        u.destroy
-      end
-    end
   end
 
   # S'inscrire au site : il faut être en ligne

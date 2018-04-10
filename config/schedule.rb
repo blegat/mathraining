@@ -22,4 +22,5 @@
 every :day, :at => '2am' do
   runner "Record.update"
   runner "Myfile.fake_dels"
+  runner "User.delete_unconfirmed"
 end
