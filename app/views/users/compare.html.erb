@@ -452,14 +452,6 @@ html>body tbody.scroll {
 
     var pct = c.width()/900.0;
 
-    ctx.beginPath();
-    ctx.rect(pct*50, pct*5, pct*806, pct*450);
-    ctx.fillStyle = 'white';
-    ctx.fill();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'black';
-    ctx.stroke();
-
     <% i = 1 %>
 
     var prec = 1000;
@@ -479,14 +471,6 @@ html>body tbody.scroll {
               ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
               prec = pct * <%= haut %>;
             }
-
-          ctx.beginPath();
-          ctx.moveTo(pct*50, pct*<%= haut+5 %>);
-          ctx.lineTo(pct*856, pct*<%= haut+5 %>);
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = 'white';
-          ctx.stroke();
-
           }
         <% end %>
       <% end %>
@@ -526,6 +510,12 @@ html>body tbody.scroll {
     <% enc = Array.new %>
     <% enc[1] = 0 %>
     <% enc[2] = 0 %>
+    
+    ctx.setLineDash([10, 10]);
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    
     <% (1..(actperday[1].size+actperday[2].size)).each do |i| %>
       <% qui = 0 %>
       <% if enc[1] >= actperday[1].size %>
@@ -556,30 +546,27 @@ html>body tbody.scroll {
           ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
         <% end %>
         }
-          ctx.setLineDash([10, 10]);
-          ctx.beginPath();
           ctx.moveTo(pct*<%= 50+w %>, pct*5);
           ctx.lineTo(pct*<%= 50+w %>, pct*455);
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = 'white';
-          ctx.stroke();
-          ctx.setLineDash([]);
         <% previousw = w %>
       <% end %>
     <% end %>
+    
+    ctx.stroke();
+    ctx.setLineDash([]);
 
     <% [1,2].each do |qui| %>
 
     // On trace maintenant le graphique
     <% if qui == 1 %>
-      ctx.fillStyle = 'black';
-      ctx.strokeStyle = 'black';
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = 'white';
     <% else %>
-      ctx.fillStyle = 'blue';
-      ctx.strokeStyle = 'blue';
+      ctx.fillStyle = 'yellow';
+      ctx.strokeStyle = 'yellow';
     <% end %>
 
-    ctx.font="14px Arial";
+    ctx.font="bold 14px Arial";
     ctx.textAlign = 'left';
     ctx.fillText("<%= @user[qui].name %>",pct*<%= 65 %>,pct*10+<%=qui*20 %>);
 
@@ -598,7 +585,7 @@ html>body tbody.scroll {
     <% h = 450 %>
 
     ctx.beginPath();
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     
     ctx.moveTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
 
@@ -625,11 +612,17 @@ html>body tbody.scroll {
       <% previousr = r %>
       <% h = 450 - 450*(r/maxi) %>
       ctx.beginPath();
-      ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
+      ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 4, 0, 2 * Math.PI, true);
       ctx.fill();
     <% end %>
 
     <% end %>
+    
+    ctx.beginPath();
+    ctx.rect(pct*50, pct*5, pct*806, pct*450);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
 
     }
 

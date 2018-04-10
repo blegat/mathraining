@@ -153,14 +153,11 @@
   <b>Aucun utilisateur classé.</b>
 <% end %>
 
-<!-- Si root : bouton pour modifier les niveaux et couleurs, et pour recalculer les scores -->
+<!-- Si root : bouton pour modifier les niveaux et couleurs -->
 <% if @ss && current_user.sk.root %>
+  <br/>
   <center>
-  <br/>
   <%= button_to "Modifier les niveaux et couleurs", colors_path, method: :get, class: 'btn btn-default btn-grey' %>
-  <br/>
-  <%= link_to 'Recalculer tous les ratings', recompute_scores_path, data: { confirm: "Veillez à avoir une connexion stable et à ne pas interrompre l'opération (cela risque de durer un petit peu de temps)."}, :style => "color:red;" %>
-  <br/>
   </center>
 <% end %>
 

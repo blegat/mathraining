@@ -551,14 +551,6 @@ html>body tbody.scroll {
 
       var pct = c.width()/900.0;
 
-      ctx.beginPath();
-      ctx.rect(pct*50, pct*5, pct*806, pct*450);
-      ctx.fillStyle = 'white';
-      ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'black';
-      ctx.stroke();
-
       <% i = 1 %>
 
       var prec = 1000;
@@ -578,14 +570,6 @@ html>body tbody.scroll {
                 ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
                 prec = pct * <%= haut %>;
               }
-
-            ctx.beginPath();
-            ctx.moveTo(pct*50, pct*<%= haut+5 %>);
-            ctx.lineTo(pct*856, pct*<%= haut+5 %>);
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'white';
-            ctx.stroke();
-
             }
           <% end %>
         <% end %>
@@ -609,8 +593,6 @@ html>body tbody.scroll {
 
 
       // On trace maintenant le graphique
-      ctx.fillStyle = 'black';
-      ctx.strokeStyle = 'black';
 
       <% last = actperday.first[:time].to_time.to_i %>
 
@@ -624,16 +606,20 @@ html>body tbody.scroll {
       <% end %>
 
       <% previousw = 2000 %>
+      
+      ctx.font="12px Arial";
+      ctx.fillStyle = 'black';
+      ctx.textAlign = 'center';
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
 
       // De droite vers la gauche : calcul où on met les verticales pointillées
       <% actperday.each do |a| %>
         <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
 
         <% if previousw - w > 50 %>
-          ctx.font="12px Arial";
-          ctx.fillStyle = 'black';
-          ctx.textAlign = 'center';
-
           if (pct > 0.7){
           <% if parquoi == "jour" %>
             ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
@@ -643,17 +629,14 @@ html>body tbody.scroll {
             ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
           <% end %>
           }
-          ctx.setLineDash([10, 10]);
-          ctx.beginPath();
           ctx.moveTo(pct*<%= 50+w %>, pct*5);
           ctx.lineTo(pct*<%= 50+w %>, pct*455);
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = 'white';
-          ctx.stroke();
-          ctx.setLineDash([]);
           <% previousw = w %>
         <% end %>
       <% end %>
+      
+      ctx.stroke();
+      ctx.setLineDash([]);
 
       <% w = 3 %>
       <% r = 0 %>
@@ -661,8 +644,9 @@ html>body tbody.scroll {
       <% h = 450 %>
       
       ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 3;
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = 'white';
       ctx.moveTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
 
       // De gauche vers la droite : on trace le graphe
@@ -688,9 +672,16 @@ html>body tbody.scroll {
         <% previousr = r %>
         <% h = 450 - 450*(r/maxi) %>  
         ctx.beginPath();      
-        ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
+        ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 4, 0, 2 * Math.PI, true);
         ctx.fill();
       <% end %>
+      
+      // Contour du canvas
+      ctx.beginPath();
+      ctx.rect(pct*50, pct*5, pct*806, pct*450);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
 
       }
 

@@ -39,7 +39,7 @@
 
 <center>
   <div style="width:850px; height:450px; position:relative;">
-    <canvas id="myCanvas" width="806" height="450" style="position:absolute; left:30px; top: 0px; border:1px solid #000000;">
+    <canvas id="myCanvas" width="806" height="450" style="position:absolute; left:30px; top: 0px;">
       Votre navigateur ne supporte pas les canvas.
     </canvas>
 
@@ -95,19 +95,10 @@ var ctx=c.getContext("2d");
   <% i = i+1 %>
 <% end %>
 
-<% i = 1 %>
-<% @niveaux.each do |n| %>
-  <% if i > 1 %>
-    <% haut = [450 - 450*(n.pt/maxi), 0].max %>
-    <% if haut > 0 %>
-      ctx.beginPath();
-      ctx.moveTo(0, <%= haut %>);
-      ctx.lineTo(806, <%= haut %>);
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'white';
-      ctx.stroke();
-    <% end %>
-  <% end %>
-  <% i = i+1 %>
-<% end %>
+// Contour du canvas
+ctx.beginPath();
+ctx.rect(1*0, 1*0, 1*806, 1*450);
+ctx.lineWidth = 2;
+ctx.strokeStyle = 'black';
+ctx.stroke();
 </script>
