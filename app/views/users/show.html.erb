@@ -644,7 +644,7 @@ html>body tbody.scroll {
       <% h = 450 %>
       
       ctx.beginPath();
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.5;
       ctx.fillStyle = 'white';
       ctx.strokeStyle = 'white';
       ctx.moveTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
@@ -672,7 +672,7 @@ html>body tbody.scroll {
         <% previousr = r %>
         <% h = 450 - 450*(r/maxi) %>  
         ctx.beginPath();      
-        ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 4, 0, 2 * Math.PI, true);
+        ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
         ctx.fill();
       <% end %>
       
