@@ -78,9 +78,9 @@
     <% bef = User.where("rating > 0 AND rating <= ? AND admin = ?", current_user.sk.rating, false).count %>
     <% pct = 100*(bef-0.5)/tot_nb.to_f %>
     <% if pct < 50 %>
-      <div style="position:absolute; left:<%= pct %>%; color:white; font-weight:bold; margin-top:1px; pointer-events:none;">&#9668; Vous êtes ici</div>
+      <div style="position:absolute; left:<%= pct %>%; color:white; font-weight:bold; margin-top:1px; pointer-events:none; margin-left:-3px;">&#9668; Vous êtes ici</div>
     <% else %>
-      <div style="position:absolute; right:<%= 100-pct %>%; color:white; font-weight:bold; margin-top:1px; pointer-events:none;">Vous êtes ici &#9658;</div>
+      <div style="position:absolute; right:<%= 100-pct %>%; color:white; font-weight:bold; margin-top:1px; pointer-events:none; margin-right:-3px;">Vous êtes ici &#9658;</div>
     <% end %>
   <% end %>
   </div>
