@@ -2,8 +2,6 @@
 
 <% provide(:title, 'Scores') %>
 
-<h1>Scores</h1>
-
 <% def vowel(x) %>
   <% return (x == 'A' || x == 'E' || x == 'I' || x == 'O' || x == 'U') %>
 <% end %>
@@ -53,9 +51,60 @@
 	<% persection[p.user_id][p.section_id] = p.points %>
 <% end %>
 
+<% nb = Array.new %>
+<% tot_nb = 0 %>
+<% (0..($allcolors.size-1)).each do |i| %>
+  <% if i < $allcolors.size-1 %>
+    <% nb[i] = User.where("rating >= ? AND rating < ? AND admin = ?", [$allcolors[i].pt, 1].max, $allcolors[i+1].pt, false).count %>
+  <% else %>
+    <% nb[i] = User.where("rating >= ? AND admin = ?", $allcolors[i].pt, false).count %>
+  <% end %>
+  <% tot_nb = tot_nb + nb[i] %>
+<% end %>
+
+<% if tot_nb > 0 %>
+  <h1>Répartition des scores</h1>
+  
+  <div style="position:relative;">
+  <div class="progress" style="margin-bottom:0px; height:20px; position:relative; margin-top:20px; margin-bottom:30px;">	
+  <% sum_nb = 0 %>	
+  <% (0..($allcolors.size-1)).each do |i| %>
+    <% if nb[i] > 0 %>
+      <div class="progress-bar" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= 100*nb[i]/tot_nb.to_f %>%; background-color:<%= $allcolors[i].color %>;" onmouseenter="Level.show(<%= i %>)" onmouseleave="Level.hide(<%= i %>)"></div>
+    <% end %>
+  <% end %>
+  
+  <% if signed_in? && !current_user.sk.admin && current_user.sk.rating > 0 %>
+    <% bef = User.where("rating > 0 AND rating <= ? AND admin = ?", current_user.sk.rating, false).count %>
+    <% pct = 100*(bef-0.5)/tot_nb.to_f %>
+    <% if pct < 50 %>
+      <div style="position:absolute; left:<%= pct %>%; color:white; font-weight:bold; margin-top:1px; pointer-events:none;">&#9668; Vous êtes ici</div>
+    <% else %>
+      <div style="position:absolute; right:<%= 100-pct %>%; color:white; font-weight:bold; margin-top:1px; pointer-events:none;">Vous êtes ici &#9658;</div>
+    <% end %>
+  <% end %>
+  </div>
+  
+  <% sum_nb = 0 %>	
+  <% (0..($allcolors.size-1)).each do |i| %>
+    <% if nb[i] > 0 %>
+      <% pct1 = 100*sum_nb/tot_nb.to_f %>
+      <% sum_nb = sum_nb+nb[i] %>
+      <% pct2 = 100*sum_nb/tot_nb.to_f %>
+      <% pct_moy = (pct1+pct2)/2.0 %> 
+      <div class="level" id="level<%= i %>" style="<%= "left: #{pct_moy}%;" if pct_moy <= 50 %><%= "right: #{100-pct_moy}%;" unless pct_moy <= 50 %> color:<%= $allcolors[i].color %>"><%= pluriel($allcolors[i].name) %> : <b><%= nb[i] %></b></div>
+    <% end %>
+  <% end %>
+  </div>
+  
+<% end %>
+
+<h1>Utilisateurs classés</h1>
+
 <% oldlevel = {:id => -1} %>
 
 <!-- On parcourt tous les utilisateurs (non admins) en ordre de points décroissants -->
+
 <% User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").each do |user| %>
   <!-- Si premier, on commence le tableau -->
   <% newlevel = user.level %>

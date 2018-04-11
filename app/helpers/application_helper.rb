@@ -174,4 +174,16 @@ module ApplicationHelper
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     return "#{ date.day } #{ mois[date.month-1]} #{date.year}"
   end
+  
+  def pluriel(level)
+    newlevel = ""
+    (0..level.size-1).each do |i|
+      if level[i] == ' '
+        newlevel += 's'
+      end
+      newlevel += level[i]
+    end
+    newlevel += 's'
+    return newlevel
+  end
 end

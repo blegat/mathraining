@@ -1,0 +1,11 @@
+.level {
+  border:1px solid black;
+  background-color:#EEEEEE;
+  padding:3px;
+  padding-right:7px;
+  padding-left:7px;
+  display:none;
+  position:absolute; 
+  top:23px;
+  font-weight:bold;
+}

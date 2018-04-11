@@ -13,7 +13,7 @@ describe "User views" do
   describe "visitor" do
     describe "visit user/index" do
       before { visit users_path }
-      it { should have_selector("h1", text: "Scores") }
+      it { should have_selector("h1", text: "Utilisateurs classés") }
     end
 
     describe "visit user/show" do
@@ -55,7 +55,7 @@ describe "User views" do
       it { should_not have_selector("h2", text: "Inscriptions récentes") }
       it { should have_selector("h2", text: "Utilisateurs non classés") }
       it { should have_selector("h2", text: "Administrateurs") }
-      it { should_not have_link("Recalculer tous les ratings") }
+      it { should_not have_button("Modifier les niveaux et couleurs") }
     end
 
     describe "visit user/show" do
@@ -71,7 +71,7 @@ describe "User views" do
     describe "visit user/index" do
       before { visit users_path }
       it { should have_selector("h2", text: "Inscriptions récentes") }
-      it { should have_link("Recalculer tous les ratings") }
+      it { should have_button("Modifier les niveaux et couleurs") }
     end
   end
 end
