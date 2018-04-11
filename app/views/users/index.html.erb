@@ -66,7 +66,7 @@
   <h1>Répartition des scores</h1>
   
   <div style="position:relative;">
-  <div class="progress" style="margin-bottom:0px; height:20px; position:relative; margin-top:20px; margin-bottom:30px;">	
+  <div class="progress" style="margin-bottom:0px; height:20px; position:relative; margin-top:20px; margin-bottom:32px;">	
   <% sum_nb = 0 %>	
   <% (0..($allcolors.size-1)).each do |i| %>
     <% if nb[i] > 0 %>
@@ -92,7 +92,12 @@
       <% sum_nb = sum_nb+nb[i] %>
       <% pct2 = 100*sum_nb/tot_nb.to_f %>
       <% pct_moy = (pct1+pct2)/2.0 %> 
-      <div class="level" id="level<%= i %>" style="<%= "left: #{pct_moy}%;" if pct_moy <= 50 %><%= "right: #{100-pct_moy}%;" unless pct_moy <= 50 %> color:<%= $allcolors[i].color %>"><%= pluriel($allcolors[i].name) %> : <b><%= nb[i] %></b></div>
+      <table class="level" id="level<%= i %>" style="<%= "left: #{pct_moy}%;" if pct_moy <= 50 %><%= "right: #{100-pct_moy}%;" unless pct_moy <= 50 %>">
+      <tr><td class="level-up" style="<%= "border-left:2px solid #{$allcolors[i].color};" if pct_moy <= 50 %><%= "border-right:2px solid #{$allcolors[i].color};" unless pct_moy <= 50 %>"></td></tr>
+      <tr><td class="level-in" style="border:2px solid <%= $allcolors[i].color %>; color:<%= $allcolors[i].color %>">
+      <%= pluriel($allcolors[i].name) %> : <%= nb[i] %>
+      </td></tr>
+      </table>
     <% end %>
   <% end %>
   </div>

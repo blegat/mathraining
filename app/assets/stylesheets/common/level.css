@@ -1,11 +1,17 @@
 .level {
-  border:1px solid black;
+  display:none;
+  position:absolute; 
+  top:20px;
+}
+
+.level-up {
+  height:4px;
+}
+
+.level-in {
   background-color:#EEEEEE;
   padding:3px;
   padding-right:7px;
   padding-left:7px;
-  display:none;
-  position:absolute; 
-  top:23px;
   font-weight:bold;
 }
