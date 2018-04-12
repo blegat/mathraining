@@ -262,7 +262,7 @@ function checkExercise() {
   <% end %>
   
   <!-- Case mails aux groupes A et/ou B -->
-  <% if current_user.sk.admin && @new %>
+  <% if current_user.sk.admin && !@edit %>
   	<br/>
     <label style="font-weight:normal;">
     	<input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
