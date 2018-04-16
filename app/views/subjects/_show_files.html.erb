@@ -3,11 +3,11 @@
 
   <% if n_real + n_fake > 0 %>
     <% if n_real + n_fake == 1 %>
-      <br/><br/><b>1 pièce jointe :</b><br/>
+      <br/><b>1 pièce jointe :</b><br/>
     <% else %>
-      <br/><br/><b><%= n_real + n_fake %> pièces jointes :</b><br/>
+      <br/><b><%= n_real + n_fake %> pièces jointes :</b><br/>
     <% end %>
-    <% s.myfiles.order(:id).each do |f| %>
+    <% s.myfiles.order(:file_file_name).each do |f| %>
       <%= link_to f.file_file_name, download_myfile_path(f) %>
       (<%= (f.file_file_size / 1.kilobyte).round(1) %>
       <% if f.myfiletable_type == "Tchatmessage" %>
@@ -20,12 +20,12 @@
       <% end %>
       <br/>
     <% end %>
-    <% s.fakefiles.order(:id).each do |f| %>
+    <% s.fakefiles.order(:file_file_name).each do |f| %>
       <span style="color:#0000BB;"><%= f.file_file_name %> (<%= (f.file_file_size / 1.kilobyte).round(1) %> ko, désactivée)</span><br/>
     <% end %>
 		
     <!-- Afficher les pièces jointes images -->
-    <% s.myfiles.order(:id).each do |f| %>
+    <% s.myfiles.order(:file_file_name).each do |f| %>
       <% if f.is_image %>
         <hr/>
         <center><%= f.file_file_name %><br/><br/>
