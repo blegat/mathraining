@@ -37,7 +37,7 @@
   <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput#{@champ}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
 
 <!-- Case mails aux groupes A et/ou B -->
-<% if current_user.sk.admin && @new %>
+<% if current_user.sk.admin && @new && !@subject.admin %>
 	<br/>
   <label style="font-weight:normal;">
     <input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >

@@ -8,6 +8,7 @@
 
 <% @message = Message.new %>
 <%= form_for [@subject, @message], :url => subject_messages_path(@subject, @message, :action => :create, :q => @q), :html => { :multipart => true, :style => "margin-top:20px;" } do |f| %>
+  <% @new = true %>
   <%= render 'messages/form', f: f, m: @message %>
   <span id="fooBar<%= @champ %>"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add(document.getElementById('fooBar<%= @champ %>'))" <%= 'disabled="disabled"' if current_user.other %> />

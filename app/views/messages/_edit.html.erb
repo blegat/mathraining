@@ -1,4 +1,5 @@
 <%= form_for [m.subject, m], :url => subject_message_path(m.subject, m, :action => :update, :q => @q), :html => { :multipart => true, :style => "margin-top:20px;" }  do |f| %>
+  <% @new = false %>
   <%= render 'messages/form', f: f, m: m %>
 
   <!-- Pièces jointes -->
