@@ -1,8 +1,8 @@
 #encoding: utf-8
 class ProblemsController < QuestionsController
-  before_action :signed_in_user, only: [:show, :edit, :new, :explanation]
-  before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order_minus, :order_plus, :put_online, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  before_action :signed_in_user, only: [:show, :edit, :new, :explanation, :markscheme]
+  before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order_minus, :order_plus, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_action :root_problem_user, only: [:destroy]
   before_action :has_access, only: [:show]
   before_action :online_problem, only: [:show]
@@ -85,6 +85,9 @@ class ProblemsController < QuestionsController
   # Mettre un problème en ligne : il faut qu'il puisse l'être
   def put_online
     @problem.online = true
+    if @problem.virtualtest_id == 0
+      @problem.markscheme = ""
+    end
     @problem.save
     @section = @problem.section
     @section.max_score = @section.max_score + @problem.value
@@ -96,16 +99,33 @@ class ProblemsController < QuestionsController
   def explanation
     @problem = Problem.find(params[:problem_id])
   end
+  
+  # Modifier le marking scheme d'un problème
+  def markscheme
+    @problem = Problem.find(params[:problem_id])
+  end
 
   # Modifier l'explication d'un problème 2
   def update_explanation
     @problem = Problem.find(params[:problem_id])
     @problem.explanation = params[:problem][:explanation]
     if @problem.save
-      flash[:success] = "Solution officielle modifiée."
+      flash[:success] = "Élements de solution modifiés."
       redirect_to problem_path(@problem)
     else
       render 'explanation'
+    end
+  end
+  
+  # Modifier le marking scheme d'un problème 2
+  def update_markscheme
+    @problem = Problem.find(params[:problem_id])
+    @problem.markscheme = params[:problem][:markscheme]
+    if @problem.save
+      flash[:success] = "Marking scheme modifié."
+      redirect_to problem_path(@problem)
+    else
+      render 'markscheme'
     end
   end
 

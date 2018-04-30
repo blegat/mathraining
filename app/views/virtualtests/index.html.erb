@@ -14,7 +14,7 @@ Tests virtuels</h1>
 <!-- On vérifie que l'on a 200 points ou plus -->
 <% if !current_user.sk.admin? && current_user.sk.rating < 200 %>
 
-<div style="color:red; font-weight:bold;">
+<div style="font-weight:bold;">
 Les tests virtuels ne sont pas accessibles aux utilisateurs ayant un score inférieur à 200.
 </div>
 

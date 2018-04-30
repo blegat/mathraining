@@ -1,10 +1,10 @@
-<% provide(:title, "Modifier la solution d'un problème") %>
+<% provide(:title, "Modifier le marking scheme d'un problème") %>
 
 <h1>
 <span class="title-first">Problèmes ></span>
 <span class="title-second"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
 <span class="title-third"><%= link_to "Problème ##{ @problem.number }", @problem %> ></span>
-Modifier la solution
+Modifier le marking scheme
 </h1>
 
 <!-- Enoncé -->
@@ -15,16 +15,21 @@ Modifier la solution
 
 <!-- Explication -->
 <h3>Éléments de solution</h3>
-Ce champ ne sera visible <u>que par les administrateurs et correcteurs</u>.
-Son but est de donner les grandes idées de la solution afin de faciliter la tâche des correcteurs.<br/><br/>
+<div style="margin-bottom:30px;">
+<%= raw(htmlise(@problem.explanation)) %>
+</div>
 
-<%= form_for(@problem, url: problem_update_explanation_path) do |f| %>
+<!-- Marking scheme -->
+<h3>Marking scheme</h3>
+Ce champ ne sera visible <u>que par les administrateurs</u>.<br/><br/>
+
+<%= form_for(@problem, url: problem_update_markscheme_path) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>
   <div class="form-group">
     <div class="well" id="MathPreview"></div>
     <div class="well hidden-preview" id="MathBuffer"></div>
     <%= render 'theories/font' %>
-    <%= f.text_area :explanation, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+    <%= f.text_area :markscheme, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
   </div>
   <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
 <% end %>

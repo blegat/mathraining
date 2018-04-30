@@ -156,9 +156,15 @@
       <% if @problem.online %>
         <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
         <%= link_to "Modifier la solution", problem_explanation_path(@problem) %>
+        <% if !@problem.virtualtest.nil? %>
+          | <%= link_to "Modifier le marking scheme", problem_markscheme_path(@problem) %>
+        <% end %>
       <% else %>
         <%= link_to "Modifier ce problème", edit_problem_path(@problem) %> |
         <%= link_to "Modifier la solution", problem_explanation_path(@problem) %> |
+        <% if !@problem.virtualtest.nil? %>
+          <%= link_to "Modifier le marking scheme", problem_markscheme_path(@problem) %> |
+        <% end %>
         <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
       <% end %>
     </center>

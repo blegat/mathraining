@@ -60,7 +60,9 @@ Mathraining::Application.routes.draw do
     match '/order_minus', to: 'problems#order_minus', :via => [:get], as: :order_minus
     match '/put_online', to: 'problems#put_online', :via => [:get], as: :put_online
     match '/explanation', to: "problems#explanation", :via => [:get]
+    match '/markscheme', to: "problems#markscheme", :via => [:get]
     match '/update_explanation', to: "problems#update_explanation", :via => [:patch], as: :update_explanation
+    match '/update_markscheme', to: "problems#update_markscheme", :via => [:patch], as: :update_markscheme
     match '/add_virtualtest', to: 'problems#add_virtualtest', :via => [:post], as: :add_virtualtest
     match '/intest', to: 'submissions#intest', :via => [:get], as: :intest
     match '/create_intest', to: 'submissions#create_intest', :via => [:post], as: :create_intest
