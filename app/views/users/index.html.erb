@@ -106,11 +106,35 @@
 
 <h1>Utilisateurs classés</h1>
 
+
+<!-- On parcourt tous les utilisateurs (non admins) en ordre de points décroissants, avec de l'aléatoire pour les ex-aequo -->
+
+<% ordered_users = Array.new %>
+<% encours = Array.new %>
+<% r = Random.new(Date.today.to_time.to_i) %>
+<% max_rating = -1 %>
+<% max_user = User.where("admin = ?", false).order("rating DESC").first %>
+<% if !max_user.nil? %>
+  <% max_rating = max_user.rating %>
+<% end %>
+
+<% User.where("rating = ? AND admin = ?", max_rating, false).each do |user| %>
+  <% alea = r.rand() if !signed_in? || current_user.sk != user %>
+  <% alea = 0 if signed_in? && current_user.sk == user %>
+  <% encours.push([alea, user]) %>
+<% end %>
+
+<% encours.sort! %>
+<% encours.each do |u| %>
+  <% ordered_users.push(u[1]) %>
+<% end %>
+
+<% arr = User.where("rating != 0 AND rating != ? AND admin = ?", max_rating, false).order("rating DESC, last_name ASC, first_name ASC").to_a %>
+<% ordered_users.push(*arr) %> 
+
 <% oldlevel = {:id => -1} %>
 
-<!-- On parcourt tous les utilisateurs (non admins) en ordre de points décroissants -->
-
-<% User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").each do |user| %>
+<% ordered_users.each do |user| %>
   <!-- Si premier, on commence le tableau -->
   <% newlevel = user.level %>
   <% if newlevel[:id] != oldlevel[:id] %>
