@@ -119,7 +119,7 @@
 <% end %>
 
 <% User.where("rating = ? AND admin = ?", max_rating, false).each do |user| %>
-  <% alea = r.rand() if !signed_in? || current_user.sk != user %>
+  <% alea = r.rand() %>
   <% alea = 0 if signed_in? && current_user.sk == user %>
   <% encours.push([alea, user]) %>
 <% end %>
