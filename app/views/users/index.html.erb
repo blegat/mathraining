@@ -106,12 +106,11 @@
 
 <h1>Utilisateurs classés</h1>
 
-
-<!-- On parcourt tous les utilisateurs (non admins) en ordre de points décroissants, avec de l'aléatoire pour les ex-aequo -->
+<!-- On parcourt tous les utilisateurs (non admins) en ordre de points décroissants, avec de l'aléatoire pour les ex-aequo en première place -->
 
 <% ordered_users = Array.new %>
 <% encours = Array.new %>
-<% r = Random.new(Date.today.to_time.to_i) %>
+<% r = Random.new(Date.today.in_time_zone.to_time.to_i) %>
 <% max_rating = -1 %>
 <% max_user = User.where("admin = ?", false).order("rating DESC").first %>
 <% if !max_user.nil? %>

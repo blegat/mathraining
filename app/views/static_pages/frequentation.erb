@@ -95,7 +95,7 @@ Votre navigateur ne supporte pas les canvas.
 
   var graphique = [,,,];
   
-  function drawGraph(n) {
+  function drawGraph(n, batonnets) {
   var abs = graphique[n][0];
   var val = graphique[n][1];
   var namec = graphique[n][2];
@@ -182,23 +182,31 @@ Votre navigateur ne supporte pas les canvas.
   ctx.font = "12px Arial";
   ctx.textAlign = 'center';
   ctx.lineWidth = 3;
-  ctx.beginPath();
 
   while(encours >= 0) {
     var w = 3 + 800*encours/(val.length-1);
     var huser = 450 - 450*(val[encours]/maxi);
     if(val[encours] >= 0) {
-      if(premier) {
-        ctx.moveTo(pct*(50+w), pct*(huser+5));
-        premier = false;
+      if(batonnets) {
+        var halfwidth = 400/(val.length-1);
+        ctx.fillRect(pct*(50+w-halfwidth),pct*(huser+5),pct*(2*halfwidth),pct*450*(val[encours]/maxi));
       }
       else {
-        ctx.lineTo(pct*(50+w), pct*(huser+5));
+        if(premier) {
+          ctx.beginPath();
+          ctx.moveTo(pct*(50+w), pct*(huser+5));
+          premier = false;
+        }
+        else {
+          ctx.lineTo(pct*(50+w), pct*(huser+5));
+        }
       }
     }
     encours = encours-1;
-  }  
-  ctx.stroke();
+  } 
+  if(!batonnets) { 
+    ctx.stroke();
+  }
   
   ctx.fillStyle = 'black';
   ctx.lineWidth = 0.5;
@@ -297,7 +305,7 @@ Votre navigateur ne supporte pas les canvas.
     }
   }
   
-  function listen(n) {
+  function listen(n, batonnets) {
     var c = $(graphique[n][2]);
     var canvas = c.get(0);
     
@@ -307,22 +315,23 @@ Votre navigateur ne supporte pas les canvas.
       var mouseX = evt.clientX - rect.left;
       var mouseY = evt.clientY - rect.top;
       if(mouseX >= 50*pct && mouseX <= 856*pct && mouseY >= 5*pct && mouseY <= 455*pct) {
-        drawGraph(n);
+        drawGraph(n, batonnets);
         showXY(n, mouseX/pct, mouseY/pct)
       }
       else {
-        drawGraph(n);
+        drawGraph(n, batonnets);
       }
     });
     canvas.addEventListener("mouseleave", function(){
-      drawGraph(n);
+      drawGraph(n, batonnets);
     });
   }
   
   function listen_all() {
-    for(i = 0; i <= 3; i++) {
-      listen(i);
-    }
+    listen(0, false);
+    listen(1, true);
+    listen(2, true);
+    listen(3, false);
   }
   
   <!-- Calcul des graphiques -->
@@ -382,10 +391,10 @@ Votre navigateur ne supporte pas les canvas.
   
   function respondCanvas(){
     <% if premierjour < dernierjour %>     
-      drawGraph(0);
-      drawGraph(1);
-      drawGraph(2);
-      drawGraph(3);
+      drawGraph(0, false);
+      drawGraph(1, true);
+      drawGraph(2, true);
+      drawGraph(3, false);
     <% end %>
   }
   
