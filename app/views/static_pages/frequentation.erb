@@ -162,9 +162,26 @@ Votre navigateur ne supporte pas les canvas.
     ctx.fillText(encours,pct*44,pct*(haut+10));
     encours = encours - tranche;
   }
-  
-  ctx.font="14px Arial";
 
+  ctx.stroke();
+  
+  ctx.font="12px Arial";
+  ctx.beginPath();
+  
+  encours = val.length-1;
+  var printw = 10000;
+  
+  while(encours >= 0) {
+    var w = 3 + 800*encours/(val.length-1);
+    if((w < printw - 50 && pct > 0.8) || (w < printw - 100 && pct > 0.7)) {
+      ctx.fillText(abs[encours],pct*(50+w),pct*471);
+      printw = w;
+      ctx.moveTo(pct*(50+w), pct*5);
+      ctx.lineTo(pct*(50+w), pct*455);
+    }
+    encours = encours-1;
+  }
+  
   ctx.stroke();
   ctx.setLineDash([]);
     
@@ -181,7 +198,7 @@ Votre navigateur ne supporte pas les canvas.
   ctx.strokeStyle = couleur;
   ctx.font = "12px Arial";
   ctx.textAlign = 'center';
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 2;
 
   while(encours >= 0) {
     var w = 3 + 800*encours/(val.length-1);
@@ -189,7 +206,9 @@ Votre navigateur ne supporte pas les canvas.
     if(val[encours] >= 0) {
       if(batonnets) {
         var halfwidth = 400/(val.length-1);
-        ctx.fillRect(pct*(50+w-halfwidth),pct*(huser+5),pct*(2*halfwidth),pct*450*(val[encours]/maxi));
+        var gg = Math.round(pct*(50+w-halfwidth));
+        var dd = Math.round(pct*(50+w+halfwidth));
+        ctx.fillRect(gg,pct*(huser+5),dd-gg,pct*450*(val[encours]/maxi));
       }
       else {
         if(premier) {
@@ -207,32 +226,14 @@ Votre navigateur ne supporte pas les canvas.
   if(!batonnets) { 
     ctx.stroke();
   }
-  
-  ctx.fillStyle = 'black';
-  ctx.lineWidth = 0.5;
-  ctx.strokeStyle = 'grey';
-  
-  ctx.setLineDash([10, 10]);
-  ctx.beginPath();
-  
-  encours = val.length-1;
-  var printw = 10000;
-  
-  while(encours >= 0) {
-    var w = 3 + 800*encours/(val.length-1);
-    if((w < printw - 50 && pct > 0.8) || (w < printw - 100 && pct > 0.7)) {
-      ctx.fillText(abs[encours],pct*(50+w),pct*471);
-      printw = w;
-      ctx.moveTo(pct*(50+w), pct*5);
-      ctx.lineTo(pct*(50+w), pct*455);
-    }
-    encours = encours-1;
+  else {
+    ctx.beginPath();
+    ctx.rect(pct*50, pct*5, pct*806, pct*450);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
   }
   
-  
-  
-  ctx.stroke();
-  ctx.setLineDash([]);
   }
   
   function showXY(n, x, y) {
@@ -298,8 +299,8 @@ Votre navigateur ne supporte pas les canvas.
       
       ctx.beginPath();
       ctx.rect(pointx-2,pointy-2,4,4);
-      ctx.strokeStyle = couleur;
-      ctx.fillStyle = couleur;
+      ctx.strokeStyle = "black";
+      ctx.fillStyle = "black";
       ctx.fill();
       ctx.stroke();
     }
