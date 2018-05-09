@@ -16,7 +16,7 @@ gem 'thin'
 gem "nokogiri", "~> 1.8.1"
 
 # Doing tasks every monday...
-gem 'whenever', :require => false
+gem 'whenever'
 
 # Otherwise it doesn't work
 gem 'eventmachine', "1.2.3"
