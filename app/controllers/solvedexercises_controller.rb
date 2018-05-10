@@ -3,6 +3,7 @@ class SolvedexercisesController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update]
   before_action :before_create, only: [:create]
   before_action :before_update, only: [:update]
+  before_action :waiting_time, only: [:update]
   before_action :online_chapter
   before_action :unlocked_chapter
 
@@ -10,11 +11,6 @@ class SolvedexercisesController < ApplicationController
   def create
     exercise = @exercise2
     user = current_user.sk
-
-    previous = Solvedexercise.where(:exercise_id => @exercise2, :user_id => current_user.sk).count
-    if previous > 0
-      redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id) and return
-    end
 
     link = Solvedexercise.new
     link.user = current_user.sk
@@ -70,10 +66,6 @@ class SolvedexercisesController < ApplicationController
     exercise = @exercise2
     link = @link2
 
-    if link.correct
-      redirect_to chapter_path(exercise.chapter, :type => 2, :which => exercise.id) and return
-    end
-
     if link.guess != params[:solvedexercise][:guess].gsub(",",".").to_f
       link.nb_guess = link.nb_guess + 1
       link.guess = params[:solvedexercise][:guess].gsub(",",".").to_f
@@ -122,13 +114,24 @@ class SolvedexercisesController < ApplicationController
   def before_create
     @exercise2 = Exercise.find(params[:solvedexercise][:exercise_id])
     @chapter = @exercise2.chapter
+    
+    previous = Solvedexercise.where(:exercise_id => @exercise2, :user_id => current_user.sk).count
+    if previous > 0
+      redirect_to chapter_path(@chapter, :type => 2, :which => @exercise2.id)
+    end
   end
 
   def before_update
     @link2 = Solvedexercise.find(params[:id])
     @exercise2 = @link2.exercise
     @chapter = @exercise2.chapter
-    redirect_to chapter_path(@chapter, :type => 2, :which => @exercise2.id) if @link2.user != current_user.sk
+    redirect_to chapter_path(@chapter, :type => 2, :which => @exercise2.id) if @link2.user != current_user.sk or @link2.correct
+  end
+  
+  def waiting_time
+    if @link2.nb_guess >= 3 && DateTime.now.in_time_zone < @link2.updated_at + 175
+      redirect_to chapter_path(@chapter, :type => 2, :which => @exercise2.id)
+    end
   end
 
   # Il faut que le chapitre soit en ligne

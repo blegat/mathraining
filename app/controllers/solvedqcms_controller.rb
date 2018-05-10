@@ -1,18 +1,15 @@
 #encoding: utf-8
 class SolvedqcmsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update]
-  before_action :before_all
+  before_action :before_create, only: [:create]
+  before_action :before_update, only: [:update]
+  before_action :waiting_time, only: [:update]
   before_action :online_chapter
   before_action :unlocked_chapter
 
   # On tente de résoudre un qcm (pour la première fois)
   def create
     qcm = @qcm2
-
-    previous = Solvedqcm.where(:qcm_id => qcm, :user_id => current_user.sk).count
-    if previous > 0
-      redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
-    end
 
     link = Solvedqcm.new
     link.user = current_user.sk
@@ -104,12 +101,7 @@ class SolvedqcmsController < ApplicationController
   # On tente de résoudre un qcm une nouvelle fois
   def update
     qcm = @qcm2
-    user = current_user.sk
-    link = Solvedqcm.where(:user => user, :qcm => qcm).first
-
-    if link.nil? or link.correct
-      redirect_to chapter_path(qcm.chapter, :type => 3, :which => qcm.id) and return
-    end
+    link = @link2
 
     link.nb_guess = link.nb_guess + 1
     link.resolutiontime = DateTime.now
@@ -201,10 +193,30 @@ class SolvedqcmsController < ApplicationController
   ########## PARTIE PRIVEE ##########
   private
 
-  # On récupère le qcm et le chapitre
-  def before_all
+  # On récupère le qcm et le chapitre  
+  def before_create
     @qcm2 = Qcm.find(params[:qcm_id])
     @chapter = @qcm2.chapter
+    previous = Solvedqcm.where(:qcm_id => @qcm2, :user_id => current_user.sk).count
+    if previous > 0
+      redirect_to chapter_path(@chapter, :type => 3, :which => @qcm2.id)
+    end
+  end
+  
+  def before_update
+    @qcm2 = Qcm.find(params[:qcm_id])
+    @chapter = @qcm2.chapter
+    @link2 = Solvedqcm.where(:user => current_user.sk, :qcm => @qcm2).first
+
+    if @link2.nil? or @link2.correct
+      redirect_to chapter_path(@chapter, :type => 3, :which => @qcm2.id)
+    end
+  end
+  
+  def waiting_time
+    if @link2.nb_guess >= 3 && DateTime.now.in_time_zone < @link2.updated_at + 175
+      redirect_to chapter_path(@chapter, :type => 2, :which => @exercise2.id)
+    end
   end
 
   # Il faut que le chapitre soit en ligne
