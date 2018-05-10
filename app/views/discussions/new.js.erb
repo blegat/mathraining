@@ -11,7 +11,7 @@ for(i = dest.options.length - 1 ; i >= 1 ; i--)
 
 <% User.where("id != ?", current_user.sk.id).order(:first_name).each do |u| %>
   var opt = document.createElement('option');
-  opt.text = "<%= u.name %>";
+  opt.text = "<%= u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }" %>";
   opt.value = <%= u.id %>;
   if(<%= u.id %> == choisi) {
     opt.selected = "selected";
