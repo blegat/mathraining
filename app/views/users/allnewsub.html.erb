@@ -17,8 +17,6 @@
   <% else %>
 
   <% @situation = 1 %>
-  <div class="row">
-  <div class="col-sm-12 col-xs-12">
   <table class="table table-bordered">
   <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm">Correcteur(s)</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
   <% @notifications.each do |n| %>
@@ -30,8 +28,6 @@
     <%= render 'submissions/showadmin', s: n, nom: true %>
   <% end %>
   </table>
-  </div>
-  </div>
   
   <% end %>
 
@@ -53,8 +49,6 @@
     <% if @follow.include?(n.id) %>
       <% tome.push(n.id) %>
       <% if first_mine %>
-        <div class="row">
-        <div class="col-xs-12 col-sm-12">
         <table class="table table-bordered">
         <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
       <% end %>
@@ -65,8 +59,6 @@
   
   <% if !first_mine %>
     </table>
-    </div>
-    </div>
   <% else %>
     Vous n'avez aucun nouveau commentaire à lire.  
   <% end %>
@@ -79,8 +71,6 @@
     <% @situation = 22 %>
     <% if(!tome.include?(n.id)) %>
       <% if first_other %>
-        <div class="row">
-        <div class="col-xs-12 col-sm-12">
         <table class="table table-bordered">
         <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm">Correcteur(s)</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
       <% end %>
@@ -96,8 +86,6 @@
   
   <% if !first_other %>
     </table>
-    </div>
-    </div>
   <% else %>
     Aucun autre commentaire non lu.
   <% end %>

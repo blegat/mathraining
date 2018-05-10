@@ -16,8 +16,6 @@
 <% if @new %>
 
   <% @situation = 1 %>
-  <div class="row">
-  <div class="col-sm-12 col-xs-12">
   <table class="table table-bordered">
   <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm">Correcteur(s)</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
   <% @notifications.each do |n| %>
@@ -29,8 +27,6 @@
     <%= render 'submissions/showadmin', s: n, nom: true %>
   <% end %>
   </table>
-  </div>
-  </div>
 
 <!-- Si on affiche les soumissions auxquelles on participe -->
 <% else %>
@@ -41,19 +37,15 @@
     <% @follow.push(f.submission_id) %>
   <% end %>
 
-  <div class="row">
-  <div class="col-xs-12 col-sm-12">
   <table class="table table-bordered">
   <tr><th class="hidden-xs hidden-sm" style="text-align:center;">Statut</th><th class="hidden-xs hidden-sm">Date de la soumission</th><th>Dernière activité</th><th>Qui</th><th class="hidden-xs hidden-sm" style="text-align:center;">Type</th><th></th></tr>
   <% @notifications.each do |n| %>
     <%= render 'submissions/showadmin', s: n, nom: true %>
   <% end %>
   </table>
-  </div>
-  </div>
 <% end %>
 
 <center>
-  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-  <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+  <%= will_paginate @notifications, :style => "margin-top:-10px; margin-bottom:-20px;", :class => "hidden-xs", :inner_window => 2 %>
+  <%= will_paginate @notifications, :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
