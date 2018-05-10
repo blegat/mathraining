@@ -44,11 +44,11 @@
 
 <form action="<%= compare_path %>" method="get" class="form-inline">
   <div class="visible-xs" style="height:5px;"></div>
-  <%= select_tag :id1, grouped_options_for_select(all_users, id1), :class => "select2", :style => "margin-left:10px; margin-right:10px;" %>
+  <%= select_tag :id1, grouped_options_for_select(all_users, id1), :class => "form-control select2", :style => "margin-left:10px; margin-right:10px; width:300px;" %>
   <div class="visible-xs" style="height:5px;"></div>
   vs
   <div class="visible-xs" style="height:5px;"></div>
-  <%= select_tag :id2, grouped_options_for_select(all_users, id2), :class => "select2", :style => "margin-left:10px; margin-right:10px;" %>
+  <%= select_tag :id2, grouped_options_for_select(all_users, id2), :class => "form-control select2", :style => "margin-left:10px; margin-right:10px; width:300px;" %>
   <div class="visible-xs" style="height:7px;"></div>
   <%= button_tag "Go !", class: "btn btn btn-primary", name: "" %>
 </form>

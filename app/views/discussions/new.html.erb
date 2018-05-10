@@ -39,7 +39,7 @@ var showAllUsers = function () {
       <div class="form-inline">
         <%= f.label :destinataire %><br/>
         <% mtn = DateTime.now.to_date - 14 %>
-        <%= select_tag :destinataire, options_for_select(User.where("id != ? AND (last_connexion >= ? OR id = ?)", current_user.sk.id, mtn, params[:qui].to_i).order(:first_name).collect {|u| [ u.name, u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-control" %>
+        <%= select_tag :destinataire, options_for_select(User.where("id != ? AND (last_connexion >= ? OR id = ?)", current_user.sk.id, mtn, params[:qui].to_i).order(:first_name).collect {|u| [ u.name, u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-control select2", :style => "width:300px;" %>
         <div class="visible-xs" style="height:7px;"></div>
         <%= link_to "Afficher les utilisateurs inactifs", "javascript:showAllUsers()", style: "margin-left:10px;", id: "show_all" %>
         <span style="margin-left:10px; display:none;" id="thanks">À votre service !</span>
@@ -52,6 +52,16 @@ var showAllUsers = function () {
         <%= render 'subjects/smiley', hiddentext: false %>
         <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
       </div>
+      
+      <script type="text/javascript">
+      $(document).ready(function() {
+      $('.select2').select2({
+        theme: "bootstrap",
+        language: "fr",
+        width: "300"
+      });
+      });
+      </script>
 
       <span id="fooBar"></span>
 
