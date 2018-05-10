@@ -25,7 +25,7 @@ html>body tbody.scroll {
 
 <!-- Si il y a un administrateur -->
 <% if @user[1].admin || @user[2].admin || @user[1].rating == 0 || @user[2].rating == 0 %>
-  <!-- On ne compare pas avec un administrateur! -->
+  <!-- On ne compare pas avec un administrateur ! -->
 
 
 <!-- Si ce sont des étudiants -->
@@ -35,14 +35,7 @@ html>body tbody.scroll {
 
   <h2>Autre comparaison</h2>
 
-  <form action="/compare" method="get" class="form-inline" name="research">
-    Comparer
-    <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user[1].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
-    avec
-    <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user[2].id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
-    <%= button_tag "Comparer!", class: "btn btn btn-primary", name: "" %>
-  </form>
-
+  <%= render 'compare_form', id1: @user[1].id, id2: @user[2].id %>
 
 <% else %>
   <% actualrating = [] %>
