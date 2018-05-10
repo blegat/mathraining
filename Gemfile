@@ -52,6 +52,8 @@ end
 
 gem 'jquery-rails'
 
+gem 'select2-rails'
+
 gem 'activerecord-session_store'
 
 group :test do

@@ -1,0 +1,64 @@
+<% ordered_users = Array.new %>
+<% encours = Array.new %>
+<% r = Random.new(Date.today.in_time_zone.to_time.to_i) %>
+<% max_rating = -1 %>
+<% max_user = User.where("admin = ?", false).order("rating DESC").first %>
+<% if !max_user.nil? %>
+  <% max_rating = max_user.rating %>
+<% end %>
+
+<% User.where("rating = ? AND admin = ?", max_rating, false).each do |user| %>
+  <% alea = r.rand() %>
+  <% alea = 0 if signed_in? && current_user.sk == user %>
+  <% encours.push([alea, user]) %>
+<% end %>
+
+<% encours.sort! %>
+<% encours.each do |u| %>
+  <% ordered_users.push(u[1]) %>
+<% end %>
+
+<% arr = User.where("rating != 0 AND rating != ? AND admin = ?", max_rating, false).order("rating DESC, last_name ASC, first_name ASC").to_a %>
+<% ordered_users.push(*arr) %>
+    
+<% users_by_level = Array.new %>
+    
+<% Color.all.each do |c| %>
+  <% users_by_level[c.id] = Array.new %>
+<% end %>
+    
+<% oldlevel = {:id => -1} %>
+<% rank = 0 %>
+
+<% ordered_users.each do |user| %>
+  <% users_by_level[user.level[:id]].push([ user.name + " (" + user.rating.to_s + ")", user.id ]); %>
+<% end %>
+    
+<% all_users = Array.new %>
+    
+<% Color.order("pt DESC").each do |c| %>
+  <% if users_by_level[c.id].size > 0 %>
+    <% all_users.push([pluriel(c.name), users_by_level[c.id]]) %>
+  <% end %>
+<% end %>
+
+<form action="<%= compare_path %>" method="get" class="form-inline">
+  <div class="visible-xs" style="height:5px;"></div>
+  <%= select_tag :id1, grouped_options_for_select(all_users, id1), :class => "select2", :style => "margin-left:10px; margin-right:10px;" %>
+  <div class="visible-xs" style="height:5px;"></div>
+  vs
+  <div class="visible-xs" style="height:5px;"></div>
+  <%= select_tag :id2, grouped_options_for_select(all_users, id2), :class => "select2", :style => "margin-left:10px; margin-right:10px;" %>
+  <div class="visible-xs" style="height:7px;"></div>
+  <%= button_tag "Go !", class: "btn btn btn-primary", name: "" %>
+</form>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$('.select2').select2({
+  theme: "bootstrap",
+  language: "fr",
+  width: "300"
+});
+});
+</script>

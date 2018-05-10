@@ -696,18 +696,8 @@ html>body tbody.scroll {
     </div>
 
     <h2>Comparaison</h2>
-
-    <form action="<%= compare_path %>" method="get" class="form-inline">
-      Comparer
-      <div class="visible-xs" style="height:5px;"></div>
-      <%= select_tag :id1, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }, @user.id), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
-      <div class="visible-xs" style="height:5px;"></div>
-      avec
-      <div class="visible-xs" style="height:5px;"></div>
-      <%= select_tag :id2, options_for_select(User.where("rating != 0 AND admin = ?", false).order("rating DESC, last_name ASC, first_name ASC").collect {|u| [ u.name, u.id ] }), :class => "form-control", :style => "margin-left:10px; margin-right:10px;" %>
-      <div class="visible-xs" style="height:7px;"></div>
-      <%= button_tag "Comparer !", class: "btn btn btn-primary", name: "" %>
-    </form>
+    
+    <%= render 'compare_form', id1: @user.id, id2: -1 %>
 
   <% end %>
 
@@ -715,7 +705,7 @@ html>body tbody.scroll {
 
 <!-- Si administrateur, différentes options -->
 <% if signed_in? && current_user.sk.admin? %>
-  <br/><br/>
+  <br/>
   <center>
   <% i = 0 %>
     <% if !@user.root && (!@user.admin || current_user.sk.root) %>
