@@ -110,7 +110,7 @@ class UsersController < ApplicationController
       skinner.each do |s|
         s.update_attribute(:skin, 0)
       end
-      flash[:success] = "Utilisateur promu au rang d'administrateur!"
+      flash[:success] = "Utilisateur promu au rang d'administrateur !"
     end
     redirect_to users_path
   end
@@ -164,7 +164,7 @@ class UsersController < ApplicationController
     elsif @user.key.to_s != params[:key].to_s
       flash[:danger] = "Le lien d'activation est erroné."
     else
-      flash[:info] = "Ce compte est déjà actif!"
+      flash[:info] = "Ce compte est déjà actif !"
     end
     redirect_to root_path
   end
@@ -326,7 +326,7 @@ class UsersController < ApplicationController
       redirect_to edit_user_path(u)
     else
       current_user.update_attribute(:skin, 0)
-      flash[:success] = "Aucun nom à valider!"
+      flash[:success] = "Aucun nom à valider !"
       redirect_to root_path
     end
   end

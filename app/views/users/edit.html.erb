@@ -5,3 +5,9 @@
   <%= render 'form', f: f, modif: true %>
   <%= f.submit "Mettre à jour", class: "btn btn-lg btn-primary", :disabled => (current_user.other && !current_user.root) %>
 <% end %>
+
+<hr>
+
+Si vous désirez modifier votre adresse email ou supprimer votre compte, merci de nous contacter à l'adresse<br/><br/>
+<center><%= image_tag "contact.jpg", :style => "width:250px;" %></center><br/>
+pour en faire la demande.

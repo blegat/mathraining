@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
     $allcolors = Color.order(:pt).to_a
     @ss = signed_in?
     pp = request.fullpath.to_s
-    if @ss && current_user.consent.nil? && current_user.admin && pp != "/accept_legal" && pp != "/legal" && pp != "/about" && pp != "/contact" && pp != "/signout"
+    if @ss && current_user.consent.nil? && pp != "/accept_legal" && pp != "/legal" && pp != "/about" && pp != "/contact" && pp != "/signout"
       render 'users/read_legal'
     end
   end

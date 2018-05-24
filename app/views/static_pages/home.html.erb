@@ -16,7 +16,7 @@
   <% number = 0 %>
   <% User.where("admin = ? AND rating > 0", false).each do |u| %>
     <% tot = tot + u.rating %>
-    <% number = number + 1 %>
+    <% number = number + 1 if u.active %>
   <% end %>
   <center>
   <table class="home-stats">

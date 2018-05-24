@@ -7,7 +7,7 @@
   <% max_rating = max_user.rating %>
 <% end %>
 
-<% User.where("rating = ? AND admin = ?", max_rating, false).order(:id).each do |user| %>
+<% User.where("rating = ? AND admin = ? AND active = ?", max_rating, false, true).order(:id).each do |user| %>
   <% alea = r.rand() %>
   <% alea = 0 if signed_in? && current_user.sk == user %>
   <% encours.push([alea, user]) %>
@@ -18,7 +18,7 @@
   <% ordered_users.push(u[1]) %>
 <% end %>
 
-<% arr = User.where("rating != 0 AND rating != ? AND admin = ?", max_rating, false).order("rating DESC, last_name ASC, first_name ASC").to_a %>
+<% arr = User.where("rating != 0 AND rating != ? AND admin = ? AND active = ?", max_rating, false, true).order("rating DESC, last_name ASC, first_name ASC").to_a %>
 <% ordered_users.push(*arr) %>
     
 <% users_by_level = Array.new %>
