@@ -74,8 +74,11 @@ describe "User pages" do
     describe "signup with invalid information" do
       specify { expect { click_button "Créer mon compte" }.not_to change(User, :count) }
       describe "after submission" do
-        before { click_button "Créer mon compte" }
-
+        before do
+          find(:css, "#consent1[value='1']").set(true)
+          find(:css, "#consent2[value='2']").set(true)
+          click_button "Créer mon compte"
+        end
         it { should have_selector("h1", text: "Inscription") }
         it { should have_content("erreur") }
       end
@@ -89,8 +92,11 @@ describe "User pages" do
         select "1977", from: "Année de naissance"
         # Il y a deux fois ces champs (pour la connexion et l"inscription)
         page.all(:fillable_field, "Email").last.set("user@example.com")
+        page.all(:fillable_field, "Confirmation de l'email").last.set("user@example.com")
         page.all(:fillable_field, "Mot de passe").last.set("foobar")
         fill_in "Confirmation du mot de passe", with: "foobar"
+        find(:css, "#consent1[value='1']").set(true)
+        find(:css, "#consent2[value='2']").set(true)
       end
 
       specify { expect { click_button "Créer mon compte" }.to change(User, :count).by(1) }
@@ -105,7 +111,6 @@ describe "User pages" do
     let(:new_first_name)  { "New First Name" }
     let(:new_last_name)  { "New Last Name" }
     let(:new_name)  { "#{new_first_name} #{new_last_name}" }
-    let(:new_email) { "new@example.com" }
     before { sign_in user }
     
     describe "edits his information" do
@@ -113,7 +118,6 @@ describe "User pages" do
         visit edit_user_path(user)
         fill_in "Prénom", with: new_first_name
         fill_in "Nom", with: new_last_name
-        fill_in "Email", with: new_email
         fill_in "Mot de passe", with: user.password
         fill_in "Confirmation du mot de passe", with: user.password
         click_button "Mettre à jour"
@@ -126,7 +130,6 @@ describe "User pages" do
       specify { expect(user.first_name).to eq(new_first_name) }
       specify { expect(user.last_name).to eq(new_last_name) }
       specify { expect(user.name).to eq(new_name) }
-      specify { expect(user.email).to eq(new_email) }
     end
   end
 end

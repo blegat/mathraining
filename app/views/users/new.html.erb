@@ -57,6 +57,6 @@ Pour vous inscrire, il vous suffit de posséder une adresse mail valide. Un mail
     </label>
   </div>
 
-  <%= f.submit "Créer mon compte", class: "btn btn-lg btn-primary", id: "send-button", disabled: true %>
+  <%= f.submit "Créer mon compte", class: "btn btn-lg btn-primary", id: "send-button", disabled: !Rails.env.test? %>
   <script>checkChecked()</script>
 <% end %>

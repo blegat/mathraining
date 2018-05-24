@@ -146,11 +146,13 @@ FactoryGirl.define do
     sequence(:first_name) { |n| "Jean#{(("a".."z").to_a)[(n/26).to_i]}#{(("a".."z").to_a)[n%26]}" }
     sequence(:last_name) { |n| "Dupont" }
     sequence(:email) { |n| "person_#{n}@example.com" }
+    sequence(:email_confirmation) { |n| "person_#{n}@example.com" }
     country "Belgique" 
     year 1992
     rating 0
     password "foobar"
     password_confirmation "foobar"
+    consent DateTime.now
     factory :admin do
       admin true
       root false

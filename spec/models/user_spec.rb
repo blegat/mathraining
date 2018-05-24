@@ -17,7 +17,7 @@ require "spec_helper"
 
 describe User do
 
-  before { @user = User.new(first_name: "Example", last_name:"User", email: "test@example.com", password: "foobar", password_confirmation: "foobar", country: "Belgium", year: "1977") }
+  before { @user = User.new(first_name: "Example", last_name:"User", email: "test@example.com", email_confirmation: "test@example.com", password: "foobar", password_confirmation: "foobar", country: "Belgium", year: "1977") }
 
   subject { @user }
 
@@ -69,6 +69,7 @@ describe User do
       addresses = %w[user@foo,com user_at_foo.org example.user@foo.foo@bar_baz.com foo@bar+baz.com]
       addresses.each do |invalid_address|
       	@user.email = invalid_address
+      	@user.email_confirmation = invalid_address
       	expect(@user).not_to be_valid
       end
     end
@@ -79,6 +80,7 @@ describe User do
       addresses = %w[user@foo.COM A_US-ER@f.b.org frst.lst@foo.jp a+b@baz.cn]
       addresses.each do |valid_address|
         @user.email = valid_address
+        @user.email_confirmation = valid_address
         expect(@user).to be_valid
       end
     end
@@ -86,7 +88,8 @@ describe User do
   describe "when email address is already taken" do
     before do
       user_with_same_email = @user.dup
-      user_with_same_email.email.upcase!
+      user_with_same_email.email = user_with_same_email.email.upcase
+      user_with_same_email.email_confirmation = user_with_same_email.email
       user_with_same_email.save
     end
 
@@ -126,6 +129,7 @@ describe User do
 
     it "should be saved as all lower-case" do
       @user.email = mixed_case_email
+      @user.email_confirmation = mixed_case_email
       @user.save
       expect(@user.email).to eq(mixed_case_email.downcase)
     end

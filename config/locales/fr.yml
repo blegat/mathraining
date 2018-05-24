@@ -52,6 +52,7 @@ fr:
         first_name: "Prénom"
         last_name: "Nom"
         sex: "Genre"
+        email_confirmation: "Confirmation de l'email"
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
         year: "Année de naissance"

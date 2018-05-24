@@ -84,9 +84,11 @@ class User < ActiveRecord::Base
   validates_with NoNumberValidator
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }, on: :create
+  validates :email_confirmation, presence: true, on: :create
   validates :password, length: { minimum: 6 }, on: :create
   validates :password, length: { minimum: 6 }, on: :update, allow_blank: true
   validates :password_confirmation, presence: true, on: :create
+  validates_confirmation_of :email
   validates :year, presence: true
   validates :country, presence: true
 

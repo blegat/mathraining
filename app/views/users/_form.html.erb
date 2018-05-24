@@ -33,6 +33,14 @@
 <% end %>
 </div>
 
+<!-- Confirmation email -->
+<% if !modif %>
+<div class="form-group">
+  <%= f.label :email_confirmation %>
+  <%= f.email_field :email_confirmation, :class => "form-control", :style => "width:200px;", :disabled => modif %>
+</div>
+<% end %>
+
 <!-- Sexe -->
 <div class="form-group">
   <%= f.label :sex %><br/>

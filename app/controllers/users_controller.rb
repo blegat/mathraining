@@ -26,7 +26,7 @@ class UsersController < ApplicationController
   # S'inscrire au site 2 : il faut être hors ligne
   def create
     #@user = User.new(params[:user])
-    @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :sex, :year, :country, :password, :password_confirmation))
+    @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :email_confirmation, :sex, :year, :country, :password, :password_confirmation))
     @user.key = SecureRandom.urlsafe_base64
 
     # Don't do email and captcha in development and tests
