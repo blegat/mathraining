@@ -25,7 +25,7 @@ class CorrectionsController < ApplicationController
 
     if lastid != params[:lastcomment].to_i
       session[:ancientexte] = params[:correction][:content]
-      flash[:danger] = "Un nouveau commentaire a été posté avant le vôtre! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire."
+      flash[:danger] = "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire."
       redirect_to problem_path(@submission.problem, :sub => @submission) and return
     end
 
@@ -107,7 +107,7 @@ class CorrectionsController < ApplicationController
         end
         m = ' et soumission marquée comme correcte'
 
-        # On supprime les brouillons!
+        # On supprime les brouillons !
         pb = @submission.problem
         brouillon = pb.submissions.where('user_id = ? AND status = -1', @submission.user).first
         if !brouillon.nil?

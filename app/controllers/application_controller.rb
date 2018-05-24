@@ -4,9 +4,9 @@ class ApplicationController < ActionController::Base
   include SessionsHelper
   include ApplicationHelper
 
-  before_action :active_user
+  before_action :has_consent
   before_action :check_up
-  before_action :warning
+  #before_action :warning
 
   ########## PARTIE PRIVEE ##########
   private
@@ -14,15 +14,13 @@ class ApplicationController < ActionController::Base
   def warning
     #flash[:info] = "Attention! Ce <b>vendredi 14 avril 2017</b>, une mise à jour du site aura lieu et celui-ci sera inaccessible pendant une bonne partie de la journée. Merci pour votre compréhension.".html_safe
   end
-
-  # Vérifie que l'utilisateur n'a pas eu son compte désactivé.
-  def active_user
+  
+  def has_consent
     $allcolors = Color.order(:pt).to_a
     @ss = signed_in?
-    if @ss && !current_user.active
-      flash[:danger] = "Ce compte a été désactivé et n'est plus accessible."
-      sign_out
-      redirect_to root_path
+    pp = request.fullpath.to_s
+    if @ss && current_user.consent.nil? && current_user.admin && pp != "/accept_legal" && pp != "/legal" && pp != "/about" && pp != "/contact" && pp != "/signout"
+      render 'users/read_legal'
     end
   end
 

@@ -1,14 +1,13 @@
 #encoding: utf-8
 
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups]
-  before_action :signed_in_user_danger, only: [:destroy, :update, :create_administrator, :recompute_scores, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group]
+  before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups, :read_legal]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :recompute_scores, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub]
-  before_action :root_user, only: [:create_administrator, :recompute_scores, :destroy, :switch_corrector, :validate_name]
+  before_action :root_user, only: [:create_administrator, :recompute_scores, :destroy, :destroydata, :switch_corrector, :validate_name]
   before_action :signed_out_user, only: [:new, :create, :password_forgotten]
-  before_action :unactivate_admin, only: [:switchactivate]
   before_action :group_user, only: [:groups]
 
   # Index de tous les users avec scores
@@ -32,10 +31,16 @@ class UsersController < ApplicationController
 
     # Don't do email and captcha in development and tests
     @user.email_confirm = !Rails.env.production?
-
-    if (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
+    
+    if !params.has_key?("consent1") || !params.has_key?("consent2")
+      flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir créer un compte."
+      render 'new'
+    elsif (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       UserMailer.registration_confirmation(@user.id).deliver if Rails.env.production?
-
+      
+      @user.consent = DateTime.now
+      @user.save
+      
       flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
       redirect_to root_path
     else
@@ -46,6 +51,9 @@ class UsersController < ApplicationController
   # Voir un utilisateur
   def show
     @user = User.find(params[:id])
+    if !@user.active
+      redirect_to root_path
+    end
   end
 
   def compare
@@ -58,7 +66,7 @@ class UsersController < ApplicationController
   def update
     old_last_name = @user.last_name
     old_first_name = @user.first_name
-    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :email, :sex, :year, :country, :password, :password_confirmation))
+    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :country, :password, :password_confirmation))
       flash[:success] = "Votre profil a bien été mis à jour."
       if(current_user.root? and current_user.other)
         @user.update_attribute(:valid_name, true)
@@ -264,7 +272,7 @@ class UsersController < ApplicationController
   # Prendre la peau d'un utilisateur
   def take_skin
     @user = User.find(params[:user_id])
-    if @user.admin?
+    if @user.admin || !@user.active
       flash[:danger] = "Pas autorisé..."
     else
       current_user.update_attribute(:skin, @user.id)
@@ -282,11 +290,27 @@ class UsersController < ApplicationController
     redirect_back(fallback_location: root_path)
   end
 
-  # Désactiver / Réactiver un compte
-  def switchactivate
+  # Supprimer les données d'un compte
+  def destroydata
     @user = User.find(params[:user_id])
-    @user.toggle!(:active)
-    redirect_to @user
+    if @user.active
+      flash[:success] = "Les données personnelles de #{@user.name} ont été supprimées."
+      @user.active = false
+      @user.email = @user.id.to_s
+      @user.first_name = "Compte"
+      @user.last_name = "Supprimé"
+      @user.year = "0"
+      @user.country = "-"
+      @user.seename = 1
+      @user.wepion = false
+      @user.valid_name = true
+      @user.follow_message = false
+      @user.save
+      @user.followingsubjects.each do |f|
+        f.destroy
+      end
+    end
+    redirect_to users_path
   end
 
   def groups
@@ -303,6 +327,21 @@ class UsersController < ApplicationController
     else
       current_user.update_attribute(:skin, 0)
       flash[:success] = "Aucun nom à valider!"
+      redirect_to root_path
+    end
+  end
+  
+  def read_legal
+  end
+  
+  def accept_legal
+    if !params.has_key?("consent1") || !params.has_key?("consent2")
+      flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir continuer sur le site."
+      render 'read_legal'
+    else
+      user = current_user
+      user.consent = DateTime.now
+      user.save
       redirect_to root_path
     end
   end
@@ -329,14 +368,5 @@ class UsersController < ApplicationController
 
   def group_user
     redirect_to root_path unless current_user.sk.admin or current_user.sk.group != ""
-  end
-
-  # Vérifie qu'on ne désactive pas un admin
-  def unactivate_admin
-    @user = User.find(params[:user_id])
-    if @user.admin? && !current_user.sk.root
-      flash[:danger] = "Opération interdite envers les administrateurs."
-      redirect_to root_path
-    end
   end
 end

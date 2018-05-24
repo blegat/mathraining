@@ -55,9 +55,9 @@
 <% tot_nb = 0 %>
 <% (0..($allcolors.size-1)).each do |i| %>
   <% if i < $allcolors.size-1 %>
-    <% nb[i] = User.where("rating >= ? AND rating < ? AND admin = ?", [$allcolors[i].pt, 1].max, $allcolors[i+1].pt, false).count %>
+    <% nb[i] = User.where("rating >= ? AND rating < ? AND admin = ? AND active = ?", [$allcolors[i].pt, 1].max, $allcolors[i+1].pt, false, true).count %>
   <% else %>
-    <% nb[i] = User.where("rating >= ? AND admin = ?", $allcolors[i].pt, false).count %>
+    <% nb[i] = User.where("rating >= ? AND admin = ? AND active = ?", $allcolors[i].pt, false, true).count %>
   <% end %>
   <% tot_nb = tot_nb + nb[i] %>
 <% end %>
@@ -112,12 +112,12 @@
 <% encours = Array.new %>
 <% r = Random.new(Date.today.in_time_zone.to_time.to_i) %>
 <% max_rating = -1 %>
-<% max_user = User.where("admin = ?", false).order("rating DESC").first %>
+<% max_user = User.where("admin = ? AND active = ?", false, true).order("rating DESC").first %>
 <% if !max_user.nil? %>
   <% max_rating = max_user.rating %>
 <% end %>
 
-<% User.where("rating = ? AND admin = ?", max_rating, false).each do |user| %>
+<% User.where("rating = ? AND admin = ? AND active = ?", max_rating, false, true).order(:id).each do |user| %>
   <% alea = r.rand() %>
   <% alea = 0 if signed_in? && current_user.sk == user %>
   <% encours.push([alea, user]) %>
@@ -128,7 +128,7 @@
   <% ordered_users.push(u[1]) %>
 <% end %>
 
-<% arr = User.where("rating != 0 AND rating != ? AND admin = ?", max_rating, false).order("rating DESC, last_name ASC, first_name ASC").to_a %>
+<% arr = User.where("rating != 0 AND rating != ? AND admin = ? AND active = ?", max_rating, false, true).order("rating DESC, last_name ASC, first_name ASC").to_a %>
 <% ordered_users.push(*arr) %> 
 
 <% oldlevel = {:id => -1} %>
@@ -175,7 +175,7 @@
   <td><center><%= "#{ rank }." if rating != previouspoint %></center></td>
 
   <!-- Nom -->
-  <td><%= raw(user.linked_name) %> <%= "(banni)" if @ss && current_user.sk.admin? && !user.active %></td>
+  <td><%= raw(user.linked_name) %></td>
 
   <% previouspoint = rating %>
 
@@ -245,13 +245,13 @@
   <% if current_user.sk.root %>
     <!-- Inscriptions récentes -->
     <h2>Inscriptions récentes</h2>
-    <% User.order("created_at DESC").where(:admin => false).first(10).each do |u| %>
+    <% User.order("created_at DESC").where(:admin => false, :active => true).first(10).each do |u| %>
       <% inscription = u.created_at %>
       <%= write_date_only(inscription.in_time_zone) %> :
       <% if u.email_confirm %>
-        <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b><%= "(banni)" if !u.active %></b><br/>
+        <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <br/>
         <% else %>
-        <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(email non confirmé) <%= "(banni)" if !u.active %></b><br/>
+        <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(email non confirmé)</b><br/>
       <% end %>
     <% end %>
   <% end %>
@@ -259,13 +259,13 @@
   <h2>Utilisateurs non classés</h2>
 
   <% rank = 1 %>
-  <% User.order("created_at DESC").where(:admin => false, :rating => 0).each do |u| %>
+  <% User.order("created_at DESC").where(:admin => false, :active => true, :rating => 0).each do |u| %>
     <% inscription = u.created_at %>
     <%= write_date_only(inscription.in_time_zone) %> :
     <% if u.email_confirm %>
-      <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b><%= "(banni)" if !u.active %></b><br/>
+      <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <br/>
     <% else %>
-      <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(email non confirmé) <%= "(banni)" if !u.active %></b><br/>
+      <%= raw(u.linked_name) %> (<%= u.country %><%= "?" if u.country.nil? %>, <%= u.year if u.year > 0 %><%= "?" if u.year == 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(email non confirmé)</b><br/>
     <% end %>
     <% rank = rank + 1 %>
   <% end %>
@@ -277,10 +277,8 @@
   <!-- Administrateurs -->
   <h2>Administrateurs</h2>
 
-  <% User.where(:admin => true).order(:last_name).each do |user| %>
-    <% if user.admin %>
-      <%= raw(user.linked_name) %> <%= "(email non confirmé)" unless user.email_confirm %> <%= "(banni)" if @ss && current_user.sk.admin? && !user.active %><br/>
-    <% end %>
+  <% User.where(:admin => true, :active => true).order(:last_name).each do |user| %>
+    <%= raw(user.linked_name) %> <%= "(email non confirmé)" unless user.email_confirm %><br/>
   <% end %>
 
 <% end %>

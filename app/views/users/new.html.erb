@@ -1,3 +1,17 @@
+<script type="text/javascript">
+function checkChecked() {
+    var c1 = document.getElementById("consent1").checked;
+    var c2 = document.getElementById("consent2").checked;
+    var bt = document.getElementById("send-button");
+    if(c1 && c2) {
+      bt.disabled = false;
+    }
+    else {
+      bt.disabled = true;
+    }
+}
+</script>
+
 <% provide(:title, 'Inscription') %>
 
 <div style="padding:15px; background-color:#eeeeee; border:1px solid #dddddd; margin-top:15px;">
@@ -30,6 +44,19 @@ Pour vous inscrire, il vous suffit de posséder une adresse mail valide. Un mail
     <%= recaptcha_tags :display => { :theme => "clean" } %>
     <br/>
   <% end %>
+  
+  <!-- Lire et accepter la politique de confidentialité -->
+  <div class="form-group">
+    <label style="font-weight:normal;">
+    	<input type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
+      J'ai lu et j'accepte la <%= link_to "politique de confidentialité", legal_path, :target => "_blank" %> de Mathraining.
+    </label><br/>
+    <label style="font-weight:normal;">
+    	<input type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
+      J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", legal_path, :target => "_blank" %> avec mon tuteur légal.
+    </label>
+  </div>
 
-  <%= f.submit "Créer mon compte", class: "btn btn-lg btn-primary" %>
+  <%= f.submit "Créer mon compte", class: "btn btn-lg btn-primary", id: "send-button", disabled: true %>
+  <script>checkChecked()</script>
 <% end %>

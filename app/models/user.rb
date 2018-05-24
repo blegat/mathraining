@@ -83,7 +83,7 @@ class User < ActiveRecord::Base
   validates :last_name, presence: true, length: { maximum: 32 }
   validates_with NoNumberValidator
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-  validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
+  validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }, on: :create
   validates :password, length: { minimum: 6 }, on: :create
   validates :password, length: { minimum: 6 }, on: :update, allow_blank: true
   validates :password_confirmation, presence: true, on: :create
@@ -222,7 +222,9 @@ class User < ActiveRecord::Base
   end
 
   def colored_name(fullname = false)
-    if !self.corrector?
+    if !self.active?
+      return "<span style='color:#BBBB00; font-weight:bold;'>Compte supprimé</span>"
+    elsif !self.corrector?
       return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name) unless fullname}#{html_escape(self.fullname) if fullname}</span>"
     else
       debut = self.name[0]
@@ -233,7 +235,9 @@ class User < ActiveRecord::Base
   end
 
   def linked_name(fullname = false)
-    if !self.corrector?
+    if !self.active?
+      return "<span style='color:#BBBB00; font-weight:bold;'>Compte supprimé</span>"
+    elsif !self.corrector?
       return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name)}</span></a>"
     else
       debut = self.name[0]

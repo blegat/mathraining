@@ -51,7 +51,7 @@ fr:
       user:
         first_name: "Prénom"
         last_name: "Nom"
-        sex: "Sexe"
+        sex: "Genre"
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
         year: "Année de naissance"

@@ -708,19 +708,13 @@ html>body tbody.scroll {
   <br/>
   <center>
   <% i = 0 %>
-    <% if !@user.root && (!@user.admin || current_user.sk.root) %>
-      <%= " | " if i > 0 %>
-      <% i = i+1 %>
-      <% if @user.active %>
-        <%= link_to "Interdire l'accès", user_switchactivate_path(@user), data: { confirm: "Êtes-vous sûr de vouloir interdire l'accès au site à #{@user.name} ?" } %>
-      <% else %>
-        <%= link_to "Rendre l'accès", user_switchactivate_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre l'accès au site à #{@user.name} ?" } %>
-      <% end %>
-    <% end %>
     <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Ne supprimez un utilisateur que s'il s'agit d'un robot ou d'une personne mal intentionnée. Cette action supprimera tous ses messages et toutes ses données. Privilégiez une interdiction d'accès si possible. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :style => "color:red;" %>
+      <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse email, son nom, son pays et son année de naissance. Êtes-vous sûr de vouloir continuer ?" }, :style => "color:red;" %>
+      <%= " | " if i > 0 %>
+      <% i = i+1 %>
+      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :style => "color:red;" %>
     <% end %>
     <% if @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>

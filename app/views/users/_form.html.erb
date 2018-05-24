@@ -14,25 +14,36 @@
 
 <!-- Voir nom entier? -->
 <div class="form-group">
+  <label style="font-weight:normal;">
   <%= f.radio_button :seename, 1 %>
-  Apparaître avec mon nom entier sur le site.<br/>
+  Apparaître avec mon nom entier sur le site.
+  </label><br/>
+  <label style="font-weight:normal;">
   <%= f.radio_button :seename, 0 %>
   N'afficher que l'initiale de mon nom de famille.
+  </label>
 </div>
 
 <!-- Email -->
 <div class="form-group">
   <%= f.label :email %>
-  <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other && !current_user.root) %>
+  <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :disabled => modif %>
+<% if modif %>
+  <div style="margin-top:10px;">(Pour modifier votre adresse email, merci de prendre contact avec un administrateur.)</div>
+<% end %>
 </div>
 
 <!-- Sexe -->
 <div class="form-group">
   <%= f.label :sex %><br/>
+  <label style="font-weight:normal;">
   <%= f.radio_button :sex, 0 %>
   <span style="margin-right:10px;">Masculin</span>
+  </label>
+  <label style="font-weight:normal;">
   <%= f.radio_button :sex, 1 %>
   Féminin
+  </label>
 </div>
 
 <!-- Année de naissance -->
@@ -41,8 +52,8 @@
   <% liste = Array.new %>
   <% date = DateTime.current %>
   <% lastyear = date.year %>
-  <% (1900 .. lastyear).each do |i| %>
-    <% liste.push(i) %>
+  <% (0..(lastyear-1900)).each do |i| %>
+    <% liste.push(lastyear-i) %>
   <% end %>
   <%= f.select(:year, liste, { :include_blank => "Choisir..." }, { :class => "form-control", :style => "width:100px;"}) %>
 </div>
