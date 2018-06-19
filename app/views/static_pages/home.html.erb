@@ -1,19 +1,5 @@
 <!-- Gros titre Mathraining -->
 
-<script>
-var y = 0;
-fiesta = function()
-{
-  y = (y+5)%360;
-  $('#fiesta').css('transform', "rotateY("+y+"deg)");
-}
-
-window.onload = function()
-{
-  setInterval(fiesta, 50);
-}
-</script>
-
 <div class="home">
 
 	<div class="row">
@@ -35,7 +21,7 @@ window.onload = function()
   <% end %>
   <center>
   <table class="home-stats">
-  <tr><td class="left" id="fiesta" style="color:red;"><%= number %></td><td class="right">utilisateurs classés</td></tr>
+  <tr><td class="left"><%= number %></td><td class="right">utilisateurs classés</td></tr>
   <tr><td class="left"><%= Solvedproblem.count %></td><td class="right">problèmes résolus</td></tr>
   <tr><td class="left"><%= Solvedexercise.where("correct = ?", true).count + Solvedqcm.where("correct = ?", true).count %></td><td class="right">exercices résolus</td></tr>
   <tr><td class="left"><%= tot %></td><td class="right">points distribués</td></tr>

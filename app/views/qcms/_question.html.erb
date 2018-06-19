@@ -7,7 +7,7 @@
 
 <% if f.many_answers %>
   <%= form_for sol do |x| %>
-    <b>Plusieurs réponses sont possibles.</b><br/><br/>
+    <b>Cochez chaque proposition correcte.</b><br/><br/>
     <% f.choices.order(:id).each do |c| %>
       <input type="hidden" name="qcm_id" value="<%= f.id %>" />
       <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
