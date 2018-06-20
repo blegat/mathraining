@@ -142,7 +142,6 @@ html>body tbody.scroll {
       <% trouve = false %>
       <% besttime = 0 %>
       <% bestqui = -1 %>
-
       <% if e_encours < exercises.size && (!trouve || exercises[e_encours].resolutiontime.to_i > besttime) %>
         <% besttime = exercises[e_encours].resolutiontime.to_i %>
         <% trouve = true %>
@@ -158,7 +157,6 @@ html>body tbody.scroll {
         <% trouve = true %>
         <% bestqui = 3 %>
       <% end %>
-
       <% if bestqui == 1 %>
         <% e = exercises[e_encours] %>
         <% exo = allex[e.exercise_id] %>
@@ -254,10 +252,8 @@ html>body tbody.scroll {
 
       <!-- On parcourt les actes un par un (cas normal) -->
       <% act[qui].each do |a| %>
-
         <!-- Rassemblement par date des actes -->
         <% date = a[:time].in_time_zone %>
-
         <% if parquoi == "jour" %>
           <% dateday = Time.zone.local(date.year, date.month, date.day, 0, 0, 0) %>
         <% elsif parquoi == "heure" %>
@@ -265,7 +261,6 @@ html>body tbody.scroll {
         <% else %>
           <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, date.min, 0) %>
         <% end %>
-
         <% if a[:pt] > 0 %>
           <% if dateday != previousdate %>
             <% encours = encours+1 %>
@@ -277,44 +272,41 @@ html>body tbody.scroll {
         <% end %>
 
         <% if !resolu[3-qui][a[:type]-1][a[:id]] %>
+          <% zero = false %>
 
-        <% zero = false %>
+          <!-- Affichage de la ligne -->
+          <tr style="background-color:<%= Section.color(a[:section]) %>;">
 
-        <!-- Affichage de la ligne -->
-        <tr style="background-color:<%= Section.color(a[:section]) %>;">
+          <!-- Date -->
+          <td style="width:150px;"><%= write_date_only(date) %></td>
 
-        <!-- Date -->
-        <td style="width:150px;"><%= write_date_only(date) %></td>
-
-        <!-- Quoi -->
-        <td style="width:340px;">
-        <% if a[:type] <= 3 %>
-          <% if cansee[a[:c_id]] %>
-            <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+          <!-- Quoi -->
+          <td style="width:340px;">
+          <% if a[:type] <= 3 %>
+            <% if cansee[a[:c_id]] %>
+              <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+            <% else %>
+              Exercice
+            <% end %>
+            <%= "(#{a[:chapter]})" %>
           <% else %>
-            Exercice
+            <% if a[:peutvoir] %>
+              <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
+            <% else %>
+              Problème #<%= a[:number] %>
+            <% end %>
+            <%= "(Niveau #{a[:level]})" %>
           <% end %>
-          <%= "(#{a[:chapter]})" %>
-        <% else %>
-          <% if a[:peutvoir] %>
-            <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
-          <% else %>
-            Problème #<%= a[:number] %>
-          <% end %>
-          <%= "(Niveau #{a[:level]})" %>
+          </td>
+
+          <!-- Points -->
+          <td style="width:50px;">
+          <center>
+            <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
+          </center>
+          </td>
+          </tr>
         <% end %>
-        </td>
-
-        <!-- Points -->
-        <td style="width:50px;">
-        <center>
-          <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
-        </center>
-        </td>
-        </tr>
-
-        <% end %>
-
       <% end %>
 
       <% if zero %>
@@ -333,39 +325,37 @@ html>body tbody.scroll {
 
       <!-- On parcourt les actes un par un (cas gsm) -->
       <% act[qui].each do |a| %>
-
         <% if !resolu[3-qui][a[:type]-1][a[:id]] %>
-        <% date = a[:time].in_time_zone %>
+          <% date = a[:time].in_time_zone %>
+          <tr style="background-color:<%= Section.color(a[:section]) %>;">
 
-        <tr style="background-color:<%= Section.color(a[:section]) %>;">
+          <!-- Date -->
+          <td style="width:150px;"><%= write_date_only(date) %></td>
 
-        <!-- Date -->
-        <td style="width:150px;"><%= write_date_only(date) %></td>
-
-        <!-- Quoi -->
-        <td style="width:140px;">
-        <% if a[:type] <= 3 %>
-          <% if cansee[a[:c_id]] %>
-            <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+          <!-- Quoi -->
+          <td style="width:140px;">
+          <% if a[:type] <= 3 %>
+            <% if cansee[a[:c_id]] %>
+              <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+            <% else %>
+              Exercice
+            <% end %>
           <% else %>
-            Exercice
+            <% if a[:peutvoir] %>
+              <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
+            <% else %>
+              Problème #<%= a[:number] %>
+            <% end %>
           <% end %>
-        <% else %>
-          <% if a[:peutvoir] %>
-            <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
-          <% else %>
-            Problème #<%= a[:number] %>
-          <% end %>
-        <% end %>
-        </td>
+          </td>
 
-        <!-- Points -->
-        <td style="width:50px;">
-        <center>
-          <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
-        </center>
-        </td>
-        </tr>
+          <!-- Points -->
+          <td style="width:50px;">
+          <center>
+            <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
+          </center>
+          </td>
+          </tr>
         <% end %>
 
       <% end %>

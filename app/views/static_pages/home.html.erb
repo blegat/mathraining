@@ -44,14 +44,14 @@
 <% end %>
 
 <center>
-<%= will_paginate actualities, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate actualities, :style => "margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+<%= will_paginate actualities, :style => "margin-top:-20px; margin-bottom:-30px;", :class => "hidden-xs", :inner_window => 2 %>
+<%= will_paginate actualities, :style => "margin-top:-5px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 
 <!-- Ajouter une actualité -->
 <% if signed_in? && current_user.sk.admin? %>
-<center><%= link_to "Ajouter une actualité", new_actuality_path, :class => "btn btn-grey btn-default btn-lg" %></center>
+<center><%= link_to "Ajouter une actualité", new_actuality_path, :class => "btn btn-grey btn-default btn-lg", :style => "margin-top:15px;" %></center>
 <% end %>	
 
 

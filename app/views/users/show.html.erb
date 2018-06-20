@@ -166,7 +166,6 @@ html>body tbody.scroll {
     <% trouve = false %>
     <% besttime = 0 %>
     <% bestqui = -1 %>
-
     <% if e_encours < exercises_size && (!trouve || exercises[e_encours].resolutiontime.to_i > besttime) %>
       <% besttime = exercises[e_encours].resolutiontime.to_i %>
       <% trouve = true %>
@@ -182,7 +181,6 @@ html>body tbody.scroll {
       <% trouve = true %>
       <% bestqui = 3 %>
     <% end %>
-
     <% if bestqui == 1 %>
       <% e = exercises[e_encours] %>
       <% exo = allex[e.exercise_id] %>
@@ -270,10 +268,8 @@ html>body tbody.scroll {
 
   <!-- On parcourt les actes un par un (cas normal) -->
   <% act.each do |a| %>
-
     <!-- Rassemblement par date des actes -->
     <% date = a[:time].in_time_zone %>
-
     <% if parquoi == "jour" %>
       <% dateday = Time.zone.local(date.year, date.month, date.day, 0, 0, 0) %>
     <% elsif parquoi == "heure" %>
@@ -281,7 +277,6 @@ html>body tbody.scroll {
     <% else %>
       <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, date.min, 0) %>
     <% end %>
-
     <% if a[:pt] > 0 %>
       <% if dateday != previousdate %>
         <% encours = encours+1 %>
@@ -299,7 +294,7 @@ html>body tbody.scroll {
     <td style="width:150px;"><%= write_date_only(date) %></td>
 
     <!-- Heure -->
-    <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
+    <td style="width:50px; text-align:center;"><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></td>
 
     <!-- Quoi -->
     <td style="width:340px;">
@@ -321,11 +316,7 @@ html>body tbody.scroll {
     </td>
 
     <!-- Points -->
-    <td style="width:50px;">
-    <center>
-      <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
-    </center>
-    </td>
+    <td style="width:50px; text-align:center;"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
     </tr>
 
   <% end %>
@@ -341,7 +332,7 @@ html>body tbody.scroll {
   <% if act.size > 0 %>
     <table class="table table-bordered visible-xs" style="width:356px;">
     <thead class="fixed">
-    <tr><th style="width:150px;">Date</th><th style="width:140px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
+    <tr><th style="width:150px;">Date</th><th style="width:140px;">Quoi</th><th style="width:66px; text-align:center;">Points</th></tr>
     </thead>
     <tbody class="scroll">
   <% end %>
@@ -373,11 +364,7 @@ html>body tbody.scroll {
     </td>
 
     <!-- Points -->
-    <td style="width:50px;">
-    <center>
-      <%= "+ #{a[:pt]}" if a[:pt] > 0 %>
-    </center>
-    </td>
+    <td style="width:50px; text-align:center;"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
     </tr>
 
   <% end %>

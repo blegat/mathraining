@@ -184,19 +184,18 @@
 
   <% total = 0 %>
   <% allsec.each do |s| %>
-    <td class="hidden-xs" style="text-align:center;">
-        <% m = maxscore[s.id] %>
-        <% if m == 0 %>
-          -
-        <% else %>
-          <% rate = persection[user.id][s.id] %>
-          <% if rate == 0 %>
-            -
-          <% else %>
-            <%= 100*rate/m %>%
-          <% end %>
-        <% end %>
-    </td>
+    <% m = maxscore[s.id] %>
+    <% if m == 0 %>
+      <% toprint = "-" %>
+    <% else %>
+      <% rate = persection[user.id][s.id] %>
+      <% if rate == 0 %>
+        <% toprint = "-" %>
+      <% else %>
+        <% toprint = (100*rate/m).to_s + "%" %>
+      <% end %>
+    <% end %>
+    <td class="hidden-xs" style="text-align:center;"><%= toprint %></td>
   <% end %>
 
   <!-- Activité récente -->
