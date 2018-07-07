@@ -24,7 +24,7 @@ class MessagesController < ApplicationController
     end
 
     if lastid != params[:lastmessage].to_i
-      error_create(["Un nouveau message a été posté avant le vôtre ! Veuillez en prendre connaissance ci-dessous avant de poster votre message."]) and return
+      error_create(["Un nouveau message a été posté avant le vôtre ! Veuillez en prendre connaissance avant de poster votre message."]) and return
     end
 
     # Pièces jointes

@@ -20,6 +20,50 @@
       messageStyle: "simple" 
     })
     </script>
+    
+    <!-- Fix for the bug on Safari/IOS : will be included in the version 2.7.5 of Mathjax -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Register.StartupHook("HTML-CSS Jax Ready", function () {
+      var HTMLCSS = MathJax.OutputJax["HTML-CSS"];
+      var postTranslate = HTMLCSS.postTranslate;
+      HTMLCSS.Augment({
+        postTranslate: function (state, partial) {
+          var scripts = state.jax[this.id];
+          for (var i = state.HTMLCSSlast, m = state.HTMLCSSeqn; i < m; i++) {
+            var script = scripts[i];
+            if (script && script.parentNode && script.MathJax.elementJax) {
+              if (script.MathJax.preview) {
+                script.MathJax.preview.innerHTML = "";
+                delete script.MathJax.preview;
+              }
+            }
+          }
+          postTranslate.call(this, state, partial);
+        }
+      });
+    });
+    MathJax.Hub.Register.StartupHook("CommonHTML Jax Ready", function () {
+      var CHTML = MathJax.OutputJax.CommonHTML;
+      var postTranslate = CHTML.postTranslate;
+      CHTML.Augment({
+        postTranslate: function (state) {
+          var scripts = state.jax[this.id];
+          for (var i = state.CHTMLlast, m = state.CHTMLeqn; i < m; i++) {
+            var script = scripts[i];
+            if (script && script.MathJax.elementJax) {
+              var data = script.MathJax.elementJax.CHTML;
+              if (data.preview) {
+                data.preview.innerHTML = "";
+                delete data.preview;
+              }
+            }
+          }
+          postTranslate.call(this, state);
+        }
+      });
+    });
+    </script>
+    
     <!-- <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script>
