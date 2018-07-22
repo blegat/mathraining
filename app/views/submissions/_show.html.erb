@@ -77,10 +77,24 @@ var unreserve = function () {
 <%= render 'subjects/content', ms: @submission, kind: "submission" %>
 
 <!-- Si soumission en test avec score, on affiche le score -->
-<% if @submission.intest && @submission.score != -1 && (current_user.sk.admin? || current_user.sk == @submission.user) %>
+<% if @submission.intest && @submission.score != -1 && (current_user.sk.admin? || current_user.sk.corrector? || current_user.sk == @submission.user) %>
 <br/>
 <h4>Score obtenu</h4>
 <center><div style="padding:3px; font-size:24px; border:1px solid #dddddd; background-color:#fffad2;"><%= @submission.score %> / 7</span></center>
+
+<% if current_user.sk.root? %>
+  <div style="text-align:center; margin-top:10px; margin-bottom:-10px;">
+  <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Modifier ce score</a>
+  <span id='formulaire' style="display:none;">
+  <%= form_tag problem_submission_update_score_path(@problem, @submission), method: :get, :class => "form-inline", :style => "margin-top:5px;" do %>
+    Nouveau score :
+    <%= number_field_tag "new_score", @submission.score, min: 0, max: 7 %>
+    <%= submit_tag "Do it !", data: { confirm: "Êtes-vous sûr de vouloir modifier le score obtenu ?"} %>
+  <% end %>
+  </span>
+  </div>
+<% end %>
+
 <% end %>
 
 <!-- Affichage des corrections -->
@@ -112,6 +126,13 @@ var unreserve = function () {
 <% if current_user.sk.admin? && @submission.status != 2 && @submission.status >= 0 %>
   <br/><center>
   <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette soumission ? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :style => "color:red;" %>
+  </center>
+<% end %>
+
+<!-- Repasser une soumission comme erronée -->
+<% if current_user.sk.root? && @submission.status == 2 %>
+  <br/><center>
+  <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ? L'utilisateur a peut-être déjà lu les solutions des autres." }, :style => "color:red;" %>
   </center>
 <% end %>
 

@@ -264,11 +264,7 @@ var showFalse = function () {
 <% if current_user.sk.admin || (current_user.sk.corrector && current_user.sk.pb_solved?(problem)) %>
 
 	<h3>Soumissions erronées ou en attente</h3>
-	<% if current_user.sk.admin %>
-    <% submissions = problem.submissions.where('status != 2 AND visible = ?', true).order('created_at DESC') %>
-  <% else %>
-    <% submissions = problem.submissions.where('status != 2 AND visible = ? AND (intest = ? OR status != 0)', true, false).order('created_at DESC') %>
-  <% end %>
+	<% submissions = problem.submissions.where('status != 2 AND visible = ?', true).order('created_at DESC') %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>

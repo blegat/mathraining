@@ -75,6 +75,8 @@ Mathraining::Application.routes.draw do
       match '/unread', to: 'submissions#unread', :via => [:get], as: :unread
       match '/star', to: 'submissions#star', :via => [:get], as: :star
       match '/unstar', to: 'submissions#unstar', :via => [:get], as: :unstar
+      match '/update_score', to: 'submissions#update_score', :via => [:get], as: :update_score
+      match '/uncorrect', to: 'submissions#uncorrect', :via => [:get], as: :uncorrect
     end
   end
   

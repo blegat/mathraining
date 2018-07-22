@@ -138,10 +138,10 @@ class User < ActiveRecord::Base
   def notifications_new
     if sk.admin
       Submission.where(status: 0, visible: true)
-    else
+    elsif sk.corrector
       newsub = Array.new
-      Submission.where(status: 0, visible: true, intest: false).each do |s|
-        if sk.corrector && sk.pb_solved?(s.problem)
+      Submission.where(status: 0, visible: true).each do |s|
+        if sk.pb_solved?(s.problem)
           newsub.push(s)
         end
       end

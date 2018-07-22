@@ -1,8 +1,9 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
   before_action :signed_in_user, only: [:intest]
-  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy]
+  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect]
   before_action :get_problem
+  before_action :root_user, only: [:update_score, :uncorrect]
   before_action :admin_user, only: [:destroy]
   before_action :corrector_user, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
   before_action :not_solved, only: [:create]
@@ -229,6 +230,63 @@ class SubmissionsController < ApplicationController
     @submission.destroy
     redirect_to problem_path(@problem)
   end
+  
+  # Modifier le score d'une soumission à un test
+  def update_score
+    @submission = Submission.find(params[:submission_id])
+    if @submission.intest && @submission.score != -1
+      @submission.score = params[:new_score].to_i
+      @submission.save
+    end
+    redirect_to problem_path(@problem, :sub => @submission)
+  end
+  
+  # Marquer une soumission correct comme erronée
+  def uncorrect
+    @submission = Submission.find(params[:submission_id])
+    u = @submission.user
+    if @submission.status == 2
+      @submission.status = 1
+      @submission.save
+      nb_corr = Submission.where(:problem => @problem, :user => u, :status => 2).count
+      if nb_corr == 0
+        # Si c'était la seule soumission correcte, alors il faut agir et baisser le score
+        sp = Solvedproblem.where(:submission => @submission).first
+        sp.destroy
+        u.rating = u.rating - @problem.value
+        u.save
+        pps = Pointspersection.where(:user => u, :section_id => @problem.section).first
+        pps.points = pps.points - @problem.value
+        pps.save
+      else
+        # Si il y a d'autres soumissions il faut peut-être modifier le submission_id du Solvedproblem correspondant
+        sp = Solvedproblem.where(:problem => @problem, :user => u).first
+        if sp.submission == @submission
+          which = -1
+          resolutiontime = nil
+          truetime = nil
+          Submission.where(:problem => @problem, :user => u, :status => 2).each do |s| 
+            lastcomm = s.corrections.where("user_id != ?", u.id).order(:created_at).last
+            if(which == -1 || lastcomm.created_at < resolutiontime)
+              which = s.id
+              resolutiontime = lastcomm.created_at
+              usercomm = s.corrections.where("user_id = ? AND created_at < ?", u.id, resolutiontime).last
+              if usercomm.nil?
+                truetime = s.created_at
+              else
+                truetime = usercomm.created_at
+              end
+            end
+          end
+          sp.submission_id = which
+          sp.resolutiontime = resolutiontime
+          sp.truetime = truetime
+          sp.save
+        end
+      end
+    end
+    redirect_to problem_path(@problem, :sub => @submission)
+  end
 
   ########## PARTIE PRIVEE ##########
   private
@@ -288,7 +346,7 @@ class SubmissionsController < ApplicationController
     if @t.nil?
       redirect_to root_path
     else
-      redirect_to virtual_tests_path if current_user.sk.status(@t) != 0
+      redirect_to virtualtests_path if current_user.sk.status(@t) != 0
     end
   end
 

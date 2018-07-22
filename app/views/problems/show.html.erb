@@ -227,7 +227,7 @@
   <% @submission = Submission.find_by_id(soumission) %>
 
   <!-- On vérifie que l'on peut la regarder -->
-  <% if signed_in? && @submission.problem == @problem && (@submission.status >= 0 || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.status == 2) || current_user.sk.admin || (current_user.sk.corrector && @resolu && @submission.visible && (!@submission.intest || @submission.score >= 0))) %>
+  <% if signed_in? && @submission.problem == @problem && (@submission.status >= 0 || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.status == 2) || current_user.sk.admin || (current_user.sk.corrector && @resolu && @submission.visible)) %>
     <hr>
     <%= render 'submissions/show' %>
   <% end %>
