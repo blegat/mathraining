@@ -26,11 +26,19 @@ var Joint = {
     {
       var avert = document.createElement("p");
       var bold = document.createElement("b");
-      var text = document.createTextNode("Taille totale autorisée : 5 Mo. Types de fichier autorisés : zip, pdf, doc, gif, jpg, png, bmp, txt.");
+      var text = document.createTextNode("Taille maximale par fichier : 1 Mo.");
+      var text2 = document.createTextNode("Taille totale autorisée : 5 Mo.");
+      var text3 = document.createTextNode("Types de fichier autorisés : zip, pdf, doc, gif, jpg, png, bmp, txt.");
       bold.appendChild(text);
+      bold.appendChild(br);
+      bold.appendChild(text2);
+      bold.appendChild(br);
+      bold.appendChild(text3);
       avert.appendChild(bold);
       foo.appendChild(avert);
       foo.appendChild(br);
+      
+      foo.innerHTML = "<p>Types de fichier autorisés : zip, pdf, doc, gif, jpg, png, bmp, txt.<br/>Taille maximale autorisée : 1 Mo par fichier, 5 Mo au total.<br/><b>(Pensez à compresser vos fichiers s'ils sont trop volumineux !)</b></p>";
     }
 
     this.i = this.i+1;
