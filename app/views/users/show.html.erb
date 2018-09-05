@@ -40,14 +40,18 @@ html>body tbody.scroll {
 <% end %>
 
 <!-- Titre avec le nom et le niveau -->
+
 <h1><%= raw(@user.colored_name) %>
-<span style="margin-left:25px; color:<%= couleur %>;">-</span><span style="margin-left:30px; color:<%= couleur %>;"><%= status %></span>
+
+<span style="margin-left:30px; color:<%= couleur %>;">-</span>
+
+<span style="margin-left:30px; color:<%= couleur %>;"><%= status %></span>
 <% if signed_in? && current_user.sk.admin && (!@user.admin || current_user.sk.root) %>
   <span style="color:<%= couleur %>; margin-left:50px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
 <% end %>
 
 <% if signed_in? && current_user.sk != @user %>
-  <span style="float:right;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey" %></span>
+  <span style="float:right; margin-left:20px;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey" %></span>
 <% end %>
 </h1>
   
@@ -449,8 +453,12 @@ html>body tbody.scroll {
   
   <!-- Date d'inscription -->
   <br/>
-  <center><b>Inscription</b> : <%= write_date_only(inscription.in_time_zone) %></center><br/>
-
+  <center><b>Inscription</b> : <%= write_date_only(inscription.in_time_zone) %>
+  <span style="margin-left:10px; margin-right:10px;">-</span> 
+  <b>Pays</b> :
+  <% drapeau = "countries/" + @user.country.code + ".png" %>
+  <%= image_tag drapeau, :title => @user.country.name, :height => "15px;", :style => "margin-left:3px;" %>
+  <br/></center>
   </div>
 
   </div>
@@ -460,7 +468,7 @@ html>body tbody.scroll {
     <div class="row">
     <div class="col-sm-12 col-xs-12">
       <h2>Informations</h2>
-      <%= @user.country %> - <%= @user.year %><br/>
+      <%= @user.country.name %> - <%= @user.year %><br/>
     <% if act.size > 0 %>
       <%= moyenne_erreurs %> erreurs/exercice<br/>
     <% end %>

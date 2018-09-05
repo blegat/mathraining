@@ -26,8 +26,11 @@ class UsersController < ApplicationController
   # S'inscrire au site 2 : il faut être hors ligne
   def create
     #@user = User.new(params[:user])
-    @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :email_confirmation, :sex, :year, :country, :password, :password_confirmation))
+    @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :email_confirmation, :sex, :year, :password, :password_confirmation))
     @user.key = SecureRandom.urlsafe_base64
+    
+    c = Country.find(params[:user][:country])
+    @user.country = c
 
     # Don't do email and captcha in development and tests
     @user.email_confirm = !Rails.env.production?
@@ -66,7 +69,9 @@ class UsersController < ApplicationController
   def update
     old_last_name = @user.last_name
     old_first_name = @user.first_name
-    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :country, :password, :password_confirmation))
+    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation))
+      c = Country.find(params[:user][:country])
+      @user.update_attribute(:country, c)
       flash[:success] = "Votre profil a bien été mis à jour."
       if(current_user.root? and current_user.other)
         @user.update_attribute(:valid_name, true)

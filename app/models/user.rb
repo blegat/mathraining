@@ -69,7 +69,8 @@ class User < ActiveRecord::Base
   has_many :followed_subjects, through: :followingsubjects, source: :subject
   has_many :links
   has_many :discussions, through: :links # dependent: :destroy does NOT destroy the associated discussions, but only the link!
-
+  belongs_to :country
+  
   # BEFORE, AFTER
 
   before_save { self.email.downcase! }
