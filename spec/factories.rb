@@ -18,9 +18,9 @@ FactoryGirl.define do
     level 1
   end
   
-  # Choice
-  factory :choice do
-    association :qcm
+  # Item
+  factory :item do
+    association :question
     ans "42"
     ok false
   end
@@ -85,13 +85,6 @@ FactoryGirl.define do
     online false
   end
   
-  # Qcm
-  factory :qcm do
-    association :chapter
-    statement "a"
-    sequence(:position) { |n| n }
-  end
-  
   # Section
   factory :section do
     sequence(:name) { |n| "Section#{n}" }
@@ -122,8 +115,6 @@ FactoryGirl.define do
     association :category
     chapter_id 0
     section_id 0
-    qcm_id 0
-    exercise_id 0
     question_id 0
     factory :admin_subject do
       admin true

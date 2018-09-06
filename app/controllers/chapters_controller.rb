@@ -83,12 +83,7 @@ class ChaptersController < ApplicationController
     @chapter.online = true
     @chapter.save
     @section = @chapter.section
-    @chapter.exercises.each do |e|
-      @section.max_score = @section.max_score + e.value
-      e.online = true
-      e.save
-    end
-    @chapter.qcms.each do |q|
+    @chapter.questions.each do |q|
       @section.max_score = @section.max_score + q.value
       q.online = true
       q.save

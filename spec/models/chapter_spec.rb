@@ -26,8 +26,7 @@ describe Chapter do
   it { should respond_to(:description) }
   it { should respond_to(:level) }
   it { should respond_to(:theories) }
-  it { should respond_to(:exercises) }
-  it { should respond_to(:qcms) }
+  it { should respond_to(:questions) }
   it { should respond_to(:prerequisites) }
   it { should respond_to(:backwards) }
   it { should respond_to(:available_prerequisites) }

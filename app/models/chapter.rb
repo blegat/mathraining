@@ -24,8 +24,6 @@ class Chapter < ActiveRecord::Base
 
   # Un chapitre a des théories, exercices et qcms
   has_many :theories, dependent: :destroy
-  has_many :exercises, dependent: :destroy
-  has_many :qcms, dependent: :destroy
   has_many :questions, dependent: :destroy
 
   # Prérequis des chapitres
@@ -100,12 +98,7 @@ class Chapter < ActiveRecord::Base
     a = Array.new
     Chapter.where(:online => true).each do |c|
       users = Set.new
-      c.exercises.each do |e|
-        e.users.each do |u|
-          users.add(u.id)
-        end
-      end
-      c.qcms.each do |q|
+      c.questions.each do |q|
         q.users.each do |u|
           users.add(u.id)
         end

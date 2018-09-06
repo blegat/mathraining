@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: choices
+# Table name: items
 #
 #  id         :integer          not null, primary key
 #  ans        :string(255)
@@ -12,20 +12,20 @@
 
 require "spec_helper"
 
-describe Choice do
-  before { @c = FactoryGirl.build(:choice) }
+describe Item do
+  before { @c = FactoryGirl.build(:item) }
 
   subject { @c }
 
-  it { should respond_to(:qcm) }
+  it { should respond_to(:question) }
   it { should respond_to(:ans) }
   it { should respond_to(:ok) }
 
   it { should be_valid }
 
   # Qcm
-  describe "when qcm is not present" do
-    before { @c.qcm = nil }
+  describe "when question is not present" do
+    before { @c.question = nil }
     it { should_not be_valid }
   end
 

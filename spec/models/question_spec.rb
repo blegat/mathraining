@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Exercise do
+describe Question do
   before { @ex = FactoryGirl.build(:question) }
 
   subject { @ex }

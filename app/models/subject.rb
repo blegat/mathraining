@@ -16,7 +16,7 @@
 #  section_id  :integer
 #  wepion      :boolean
 #  category_id :integer
-#  exercise_id :integer
+#  question_id :integer
 #
 
 class Subject < ActiveRecord::Base
@@ -29,8 +29,6 @@ class Subject < ActiveRecord::Base
   belongs_to :chapter
   belongs_to :section
   belongs_to :category
-  belongs_to :exercise
-  belongs_to :qcm
   belongs_to :question
   has_many :followingsubjects, dependent: :destroy
   has_many :following_users, through: :followingsubjects, source: :user
