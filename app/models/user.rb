@@ -377,8 +377,14 @@ class User < ActiveRecord::Base
   end
   
   def self.delete_unconfirmed
+    # Utilisateurs n'ayant pas confirmé leur mail après une semaine
     oneweekago = Date.today - 7
     User.where("email_confirm = ? AND created_at < ?", false, oneweekago).each do |u|
+      u.destroy
+    end
+    # Utilisateurs ayant confirmé mais n'étant jamais venu après un mois (rating = 0 est normalement redondant)
+    onemonthago = Date.today - 31
+    User.where("admin = ? AND rating = ? AND created_at < ? AND last_connexion < ?", false, 0, onemonthago, "2012-01-01").each do |u|
       u.destroy
     end
   end
