@@ -95,8 +95,7 @@ class SubjectsController < ApplicationController
       @subject.category = Category.find(category_id)
       @subject.section = nil
       @subject.chapter = nil
-      @subject.exercise = nil
-      @subject.qcm = nil
+      @subject.question = nil
     else
       section_id = category_id/1000
       @subject.category = nil
@@ -104,24 +103,14 @@ class SubjectsController < ApplicationController
       chapter_id = params[:subject][:chapter_id].to_i
       if chapter_id == 0
         @subject.chapter = nil
-        @subject.exercise = nil
-        @subject.qcm = nil
+        @subject.question = nil
       else
         @subject.chapter = Chapter.find(chapter_id)
-        exercise_id = params[:subject][:exercise_id].to_i
-        if exercise_id == 0
-          @subject.exercise = nil
-          @subject.qcm = nil
+        question_id = params[:subject][:question_id].to_i
+        if question_id == 0
+          @subject.question = nil
         else
-          type = exercise_id / 1000
-          exercise_id = exercise_id % 1000
-          if type == 2
-            @subject.exercise = Exercise.find(exercise_id)
-            @subject.qcm = nil
-          else
-            @subject.qcm = Qcm.find(exercise_id)
-            @subject.exercise = nil
-          end
+          @subject.question = Question.find(question_id)
         end
       end
     end
@@ -191,8 +180,7 @@ class SubjectsController < ApplicationController
         @subject.category = Category.find(category_id)
         @subject.section = nil
         @subject.chapter = nil
-        @subject.exercise = nil
-        @subject.qcm = nil
+        @subject.question = nil
       else
         section_id = category_id/1000
         @subject.category = nil
@@ -200,24 +188,14 @@ class SubjectsController < ApplicationController
         chapter_id = params[:subject][:chapter_id].to_i
         if chapter_id == 0
           @subject.chapter = nil
-          @subject.exercise = nil
-          @subject.qcm = nil
+          @subject.question = nil
         else
           @subject.chapter = Chapter.find(chapter_id)
-          exercise_id = params[:subject][:exercise_id].to_i
-          if exercise_id == 0
-            @subject.exercise = nil
-            @subject.qcm = nil
+          question_id = params[:subject][:question_id].to_i
+          if question_id == 0
+            @subject.question = nil
           else
-            type = exercise_id / 1000
-            exercise_id = exercise_id % 1000
-            if type == 2
-              @subject.exercise = Exercise.find(exercise_id)
-              @subject.qcm = nil
-            else
-              @subject.qcm = Qcm.find(exercise_id)
-              @subject.exercise = nil
-            end
+            @subject.question = Question.find(question_id)
           end
         end
       end

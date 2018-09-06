@@ -2,34 +2,12 @@
 
 <!-- Fonction pour afficher les exercices d'un chapitre -->
 <% def affiche_exercices(chapter, acces) %>
-  <% liste = Array.new %>
-  <% liste[1] = chapter.exercises.order(:position) %>
-  <% liste[2] = chapter.qcms.order(:position) %>
-  <% where = Array.new %>
-  <% where[1] = 0 %>
-  <% where[2] = 0 %>
   <% j = 1 %>
   <% k = 1 %>
 
   <% compteur = 0 %>
 
-  <% (1..(liste[1].size+liste[2].size)).each do |i| %>
-    <% encours = 0 %>
-    <% if where[1] >= liste[1].size %>
-      <% encours = 2 %>
-    <% else %>
-      <% if where[2] >= liste[2].size %>
-        <% encours = 1 %>
-      <% else %>
-        <% if liste[1][where[1]].position < liste[2][where[2]].position %>
-          <% encours = 1 %>
-        <% else %>
-          <% encours = 2 %>
-        <% end %>
-      <% end %>
-    <% end %>
-    
-    <% f = liste[encours][where[encours]] %>
+  <% chapter.questions.order(:position).each do |f| %>
     <% if f.online || (@ss && current_user.sk.admin?) %>
       <% compteur = compteur + 1 %>
       <% if k % 8 == 1 && k > 1 %>
@@ -45,8 +23,7 @@
         <% if !@ss %>
           <% classe = "btn btn-default btn-grey" %>  
         <% else %>
-          <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) if encours == 1 %>
-          <% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) if encours == 2 %>
+          <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id) %>
           <% if exo.size > 0 && ! current_user.sk.admin? %>
             <% exo = exo.first %>
             <% if exo.correct %>
@@ -61,14 +38,13 @@
           <% end %>
         <% end %>
         
-        <button class="<%= classe %>" onclick="location.href='<%= chapter_path(chapter, :type => encours+1, :which => f.id) %>'"><%= j if f.online %><%= "!" if !f.online %></button>
+        <button class="<%= classe %>" onclick="location.href='<%= chapter_path(chapter, :type => 5, :which => f.id) %>'"><%= j if f.online %><%= "!" if !f.online %></button>
       <% else %>
         <button class="btn disabled"><%= j %></button>
       <% end %>
       <% j = j+1 if f.online %>
       <% k = k+1 %>
     <% end %>
-    <% where[encours] = where[encours] + 1 %> 
   <% end %>
 
   <% if compteur == 0 %>

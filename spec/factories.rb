@@ -41,11 +41,17 @@ FactoryGirl.define do
     content "Foobar"
   end
   
-  # Exercise
-  factory :exercise do
+  factory :country do
+    name "France"
+    code "fr"
+  end
+  
+  # Question
+  factory :question do
     association :chapter
     statement "Foobar"
     decimal false
+    many_answers false
     answer 42
     sequence(:position) { |n| n }
     level 1
@@ -92,9 +98,9 @@ FactoryGirl.define do
     description "Description"
   end
   
-  # Solved exercise
-  factory :solvedexercise do
-    association :exercise
+  # Solved question
+  factory :solvedquestion do
+    association :question
     association :user
     correct false
     guess 42
@@ -118,6 +124,7 @@ FactoryGirl.define do
     section_id 0
     qcm_id 0
     exercise_id 0
+    question_id 0
     factory :admin_subject do
       admin true
     end
@@ -147,7 +154,8 @@ FactoryGirl.define do
     sequence(:last_name) { |n| "Dupont" }
     sequence(:email) { |n| "person_#{n}@example.com" }
     sequence(:email_confirmation) { |n| "person_#{n}@example.com" }
-    country "Belgique" 
+    old_country "Belgique"
+    association :country
     year 1992
     rating 0
     password "foobar"

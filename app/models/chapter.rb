@@ -26,6 +26,7 @@ class Chapter < ActiveRecord::Base
   has_many :theories, dependent: :destroy
   has_many :exercises, dependent: :destroy
   has_many :qcms, dependent: :destroy
+  has_many :questions, dependent: :destroy
 
   # Prérequis des chapitres
   has_many :prerequisites_associations, class_name: "Prerequisite", dependent: :destroy

@@ -22,7 +22,7 @@ class Record < ActiveRecord::Base
       r = Record.new
       r.date = lundiencours
       r.number_submission = Submission.where("status != -1 AND created_at >= ? AND created_at < ?", lundiencours.to_time.to_datetime, lundiapres.to_time.to_datetime).count
-      r.number_solved = Solvedexercise.where("correct = ? AND resolutiontime >= ? AND resolutiontime < ?", true, lundiencours.to_time.to_datetime, lundiapres.to_time.to_datetime).count + Solvedqcm.where("correct = ? AND resolutiontime >= ? AND resolutiontime < ?", true, lundiencours.to_time.to_datetime, lundiapres.to_time.to_datetime).count
+      r.number_solved = Solvedquestion.where("correct = ? AND resolutiontime >= ? AND resolutiontime < ?", true, lundiencours.to_time.to_datetime, lundiapres.to_time.to_datetime).count
       r.complete = false
       r.save
       lundiencours = lundiapres

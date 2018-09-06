@@ -10,8 +10,8 @@
 	document.getElementById("label_chap").style.display = "none"
 <% end %>
 
-<% def clear_exercise_field() %>
-  var oldSel = document.getElementById("subject_exercise_id");
+<% def clear_question_field() %>
+  var oldSel = document.getElementById("subject_question_id");
   while (oldSel.options.length > 0) {
     oldSel.remove(oldSel.options.length - 1);
   }
@@ -19,8 +19,8 @@
   document.getElementById("alert2").style.display = "none"
 <% end %>
 
-<% def remove_exercise_field() %>
-  document.getElementById("subject_exercise_id").style.display = "none";
+<% def remove_question_field() %>
+  document.getElementById("subject_question_id").style.display = "none";
   document.getElementById("label_exo").style.display = "none"
 <% end %>
 
@@ -41,8 +41,8 @@
 <% if params.has_key?:cat %>
   <% cat = params[:cat].to_i %>
   <% clear_chapter_field() %>
-  <% clear_exercise_field() %>
-  <% remove_exercise_field() %>
+  <% clear_question_field() %>
+  <% remove_question_field() %>
   <% if cat < 1000 %>
     <% remove_chapter_field() %>
     <% normal_title() %>
@@ -66,13 +66,13 @@
   <% end %>
 <% elsif params.has_key?:chap %>
   <% chap = params[:chap].to_i %>
-  <% clear_exercise_field() %>
+  <% clear_question_field() %>
   <% if chap == 0 %>
     <% normal_title() %>
-    <% remove_exercise_field() %>
+    <% remove_question_field() %>
   <% else %>
     <% c = Chapter.find(chap) %>
-    var oldSel2 = document.getElementById("subject_exercise_id");
+    var oldSel2 = document.getElementById("subject_question_id");
     var opt = document.createElement('option');
     opt.text = "Aucun exercice en particulier"
     opt.value = 0
@@ -87,32 +87,16 @@
     <% end %>
     
     <% if exovisibles %>
-      <% allexo = Array.new %>
       <% cache = false %>
-      <% c.exercises.where(:online => true).each do |e| %>
-        <% if (e.subject.nil? || ((params.has_key?:exo_id) && e.id == params[:exo_id].to_i)) %>
-          <% allexo.push([e.position, 2, e.id, true]) %>
-        <% else %>
-          <% cache = true %>
-          <% allexo.push([e.position, 2, e.id, false]) %>
-        <% end %>
-      <% end %>
-      <% c.qcms.where(:online => true).each do |q| %>
-        <% if (q.subject.nil? || ((params.has_key?:qcm_id) && q.id == params[:qcm_id].to_i)) %>
-          <% allexo.push([q.position, 3, q.id, true]) %>
-        <% else %>
-          <% cache = true %>
-          <% allexo.push([q.position, 3, q.id, false]) %>
-        <% end %>
-      <% end %>
-      <% sorted = allexo.sort %>
       <% i = 1 %>
-      <% sorted.each do |e| %>
-        <% if e[3] %>
+      <% c.questions.where(:online => true).order(:position).each do |e| %>
+        <% if (e.subject.nil? || ((params.has_key?:exo_id) && e.id == params[:exo_id].to_i)) %>
           var opt = document.createElement('option');
           opt.text = "Exercice <%= i %>"
-          opt.value = <%= e[1]*1000 + e[2] %>
+          opt.value = <%= e.id %>
           oldSel2.add(opt, null);
+        <% else %>
+          <% cache = true %>
         <% end %>
         <% i = i+1 %>
       <% end %>

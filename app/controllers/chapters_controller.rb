@@ -53,13 +53,9 @@ class ChaptersController < ApplicationController
     Theory.where(:chapter_id => params[:id]).each do |t|
       t.destroy
     end
-
-    Exercise.where(:chapter_id => params[:id]).each do |e|
-      e.destroy
-    end
-
-    Qcm.where(:chapter_id => params[:id]).each do |q|
-      Choice.where(:qcm_id => q.id).each do |c|
+    
+    Question.where(:chapter_id => params[:id]).each do |q|
+      Item.where(:question_id => q.id).each do |c|
         c.destroy
       end
       q.destroy

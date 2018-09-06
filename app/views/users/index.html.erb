@@ -40,17 +40,10 @@
   <% recent[s.user_id] += s.problem.value %>
 <% end %>
 
-<% Solvedexercise.includes(:exercise).where("resolutiontime > ?", twoweeksago).find_each do |s| %>
+<% Solvedquestion.includes(:question).where("resolutiontime > ?", twoweeksago).find_each do |s| %>
   <% if s.correct %>
-    <% exo = s.exercise %>
+    <% exo = s.question %>
     <% recent[s.user_id] += exo.value %>
-  <% end %>
-<% end %>
-
-<% Solvedqcm.includes(:qcm).where("resolutiontime > ?", twoweeksago).find_each do |s| %>
-  <% if s.correct %>
-    <% qcm = s.qcm %>
-    <% recent[s.user_id] += qcm.value %>
   <% end %>
 <% end %>
 

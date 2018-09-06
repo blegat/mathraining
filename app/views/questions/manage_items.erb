@@ -1,9 +1,9 @@
-<% provide(:title, "Modifier les choix du QCM") %>
+<% provide(:title, "Modifier les choix de l'exercice") %>
 
 <h1>
 <span class="title-first">Théorie ></span>
-<span class="title-second"><%= link_to @qcm.chapter.section.name, @qcm.chapter.section %> ></span>
-<span class="title-third"><%= link_to @qcm.chapter.name, chapter_path(@qcm.chapter, :type => 3, :which => @qcm.id) %> ></span>
+<span class="title-second"><%= link_to @question.chapter.section.name, @question.chapter.section %> ></span>
+<span class="title-third"><%= link_to @question.chapter.name, chapter_path(@question.chapter, :type => 5, :which => @question.id) %> ></span>
 Choix
 </h1>
 
@@ -11,7 +11,7 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>	
-<%= raw(replace_indice(htmlise(@qcm.statement))) %>
+<%= raw(replace_indice(htmlise(@question.statement))) %>
 <br/>
 
 <!-- Réponse -->
@@ -19,8 +19,8 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
 <table cellpadding="5">
 <tr><th></th><th></th><th style="padding:5px; text-align:center;">Rép ?</th><th></th><th></th><th></th></tr>
 <% i = 0 %>
-<% @qcm.choices.order(:id).each do |f| %>
-  <%= form_for(f, url: qcm_update_choice_path(@qcm, f)) do |g| %>
+<% @question.items.order(:id).each do |f| %>
+  <%= form_for(f, url: question_update_item_path(@question, f)) do |g| %>
     <tr>
       <td style="width:15px;">
         -
@@ -40,18 +40,18 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
       <td>
         <%= g.submit "Modifier ce choix", class: "btn btn-primary" %>
       </td>
-      <% unless @qcm.chapter.online && @qcm.online %>
+      <% unless @question.chapter.online && @question.online %>
         <td style="padding:10px;">
           <% if f.ok %>
-            <% if @qcm.many_answers %>
-              <%= link_to "Rendre ce choix erroné", qcm_switch_choice_path(@qcm, f) %>
+            <% if @question.many_answers %>
+              <%= link_to "Rendre ce choix erroné", question_switch_item_path(@question, f) %>
             <% end %>
           <% else %>
-            <%= link_to "Rendre ce choix correct", qcm_switch_choice_path(@qcm, f) %>
+            <%= link_to "Rendre ce choix correct", question_switch_item_path(@question, f) %>
           <% end %>
         </td>
         <td style="padding:10px;">
-          <%= link_to "Supprimer ce choix", qcm_remove_choice_path(@qcm, f) %>
+          <%= link_to "Supprimer ce choix", question_remove_item_path(@question, f) %>
         </td>
       <% end %>
     </tr>
@@ -60,10 +60,10 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
 <% end %>
 
 <!-- Si pas encore en ligne, on peut ajouter un choix -->
-<% unless @qcm.chapter.online && @qcm.online %>
+<% unless @question.chapter.online && @question.online %>
 
   <tr>
-  <%= form_for(:choice, url: qcm_add_choice_path(@qcm)) do |f| %>
+  <%= form_for(:item, url: question_add_item_path(@question)) do |f| %>
     <td>
     </td>
     <td style="padding:5px;">

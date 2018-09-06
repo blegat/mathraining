@@ -1,0 +1,67 @@
+<% total_waiting = 180 %>
+<% if !exo.nb_guess.nil? && exo.nb_guess >= 3 && DateTime.now.in_time_zone < exo.updated_at + total_waiting %>
+  <% needtowait = true %>
+<% else %>
+  <% needtowait = false %>
+<% end %>
+
+<% if !f.is_qcm %>
+  <!-- pas QCM -->
+  <% val = nil %>
+  <% if f.decimal %>
+    On vous demande une réponse <b>décimale</b> (précise au millième près).<br/><br/>
+    <% val = exo.guess %>
+  <% else %>
+    <% val = exo.guess.to_i if !exo.guess.nil? %>
+  <% end %>
+
+  <%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
+    <input type="hidden" name="question_id" value="<%= f.id %>" />
+    <%= g.label "Votre réponse : ", :class => "todisable", :disabled => !@ss || current_user.other || needtowait %>
+    <%= g.text_field :guess, class: "form-control todisable", style: "width:70px; margin-left:5px;", value: val, :disabled => !@ss || current_user.other || needtowait %>
+    <div class="visible-xs" style="height:7px;"></div>
+    <%= g.submit "Soumettre", class: "btn btn-primary todisable", :disabled => !@ss || current_user.other || needtowait %>
+  <% end %>
+  
+<% else %>
+  <!-- QCM -->
+  <% anciens = exo.items %>
+  <% if f.many_answers %>
+    <%= form_for exo do |x| %>
+      <b>Cochez chaque proposition correcte.</b><br/><br/>
+      <% f.items.order(:id).each do |c| %>
+        <input type="hidden" name="question_id" value="<%= f.id %>" />
+        <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+          <input type="checkbox" class="todisable" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if !@ss || current_user.other || needtowait %>>
+          <%= raw(c.ans) %>
+        </label><br/>
+      <% end %>
+      <br/><button class="btn btn-primary todisable" type="submit" <%= "disabled=\"true\"" if !@ss || current_user.other || needtowait %>>Soumettre</button>
+    <% end %>
+  <% else %>
+    <% item = exo.items.first %>
+    <%= form_for exo do |x| %>
+      <input type="hidden" name="question_id" value="<%= f.id %>" />
+      <% f.items.order(:id).each do |c| %>
+        <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
+          <input type="radio" class="todisable" name="ans" value="<%= c.id %>" <%= "checked" if !item.nil? && c.id == item.id %> <%= "disabled=\"true\"" if !@ss || current_user.other || needtowait %>>
+          <%= raw(c.ans) %>
+        </label><br/>
+      <% end %>
+      <br/><button class="btn btn-primary todisable" type="submit" <%= "disabled=\"true\"" if !@ss || current_user.other || needtowait %>>Soumettre</button>
+    <% end %>
+
+  <% end %>
+<% end %>
+
+<% if !exo.nb_guess.nil? %>
+  <br/>
+  <p style="color:red;">Votre réponse <%= ("(<b>" + val.to_s + "</b>)").html_safe if !f.is_qcm %> est erronée. Vous avez déjà commis <b><%= exo.nb_guess %></b> erreur<%= "s" if exo.nb_guess > 1 %>.</p>
+  
+  <p style="color:red;">À partir de la troisième erreur, vous devez attendre trois minutes avant chaque nouvelle tentative.</p>
+  
+  <% if needtowait %>
+    <%= render 'questions/waiting', exo: exo, total_waiting: total_waiting %>
+  <% end %>
+  
+<% end %>

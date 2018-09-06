@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Subject views" do
+describe "Exercise views" do
 
   subject { page }
 
@@ -12,17 +12,17 @@ describe "Subject views" do
   let(:user) { FactoryGirl.create(:user) }
   let(:section) { FactoryGirl.create(:section) }
   let(:online_chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:online_exercise) { FactoryGirl.create(:exercise, chapter: online_chapter, online: true, position: 1) }
-  let!(:offline_exercise) { FactoryGirl.create(:exercise, chapter: online_chapter, online: false, position: 2) }
+  let!(:online_exercise) { FactoryGirl.create(:question, chapter: online_chapter, online: true, position: 1) }
+  let!(:offline_exercise) { FactoryGirl.create(:question, chapter: online_chapter, online: false, position: 2) }
 
   describe "visitor" do
     describe "visits online exercise" do
-      before { visit_exercise(online_exercise) }
+      before { visit_question(online_exercise) }
       it { should have_selector("div", text: online_exercise.statement) }
     end
     
     describe "visits offline exercise" do
-      before { visit_exercise(offline_exercise) }
+      before { visit_question(offline_exercise) }
       it { should_not have_selector("div", text: offline_exercise.statement) }
     end
   end
@@ -30,7 +30,7 @@ describe "Subject views" do
   describe "user" do
     before { sign_in user }
     describe "visits online exercise" do
-      before { visit_exercise(online_exercise) }
+      before { visit_question(online_exercise) }
       it { should have_selector("div", text: online_exercise.statement) }
       it { should_not have_link("Modifier cet exercice") }
       it { should_not have_link("bas") }
@@ -40,7 +40,7 @@ describe "Subject views" do
   describe "admin" do
     before { sign_in admin }
     describe "visits online exercise" do
-      before { visit_exercise(online_exercise) }
+      before { visit_question(online_exercise) }
       it { should have_selector("div", text: online_exercise.statement) }
       it { should have_link("Modifier cet exercice") }
       it { should have_link("bas") }
@@ -48,7 +48,7 @@ describe "Subject views" do
     end
     
     describe "visits offline exercise" do
-      before { visit_exercise(offline_exercise) }
+      before { visit_question(offline_exercise) }
       it { should have_selector("div", text: offline_exercise.statement) }
       it { should have_link("Modifier cet exercice") }
       it { should_not have_link("bas") }

@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: exercises
+# Table name: questions
 #
 #  id          :integer          not null, primary key
 #  statement   :text
@@ -13,18 +13,20 @@
 #  online      :boolean          default(FALSE)
 #  explanation :text
 #  level       :integer
+# ...
 #
 
 require "spec_helper"
 
 describe Exercise do
-  before { @ex = FactoryGirl.build(:exercise) }
+  before { @ex = FactoryGirl.build(:question) }
 
   subject { @ex }
 
   it { should respond_to(:statement) }
   it { should respond_to(:position) }
   it { should respond_to(:chapter) }
+  it { should respond_to(:many_answers) }
   it { should respond_to(:decimal) }
   it { should respond_to(:answer) }
   it { should respond_to(:online) }

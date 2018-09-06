@@ -7,19 +7,17 @@ function checkCategory() {
 function checkChapter() {
     var e = document.getElementById("subject_chapter_id");
     var chapter = e.options[e.selectedIndex].value
-    <% if @edit && !@subject.exercise_id.nil? %>
-    	$.getScript("<%= new_subject_url %>?chap=" + chapter + "&exo_id=<%= @subject.exercise_id %>")
-    <% elsif @edit && !@subject.qcm_id.nil? %>
-    	$.getScript("<%= new_subject_url %>?chap=" + chapter + "&qcm_id=<%= @subject.qcm_id %>")
+    <% if @edit && !@subject.question_id.nil? %>
+    	$.getScript("<%= new_subject_url %>?chap=" + chapter + "&exo_id=<%= @subject.question_id %>")
     <% else %>
     	$.getScript("<%= new_subject_url %>?chap=" + chapter)
     <% end %>
 }
-function checkExercise() {
-    var e = document.getElementById("subject_exercise_id");
-    var exercise = e.options[e.selectedIndex].value
+function checkQuestion() {
+    var e = document.getElementById("subject_question_id");
+    var question = e.options[e.selectedIndex].value
     var txt = e.options[e.selectedIndex].text
-    $.getScript("<%= new_subject_url %>?exo=" + exercise + "&txt=" + txt)
+    $.getScript("<%= new_subject_url %>?exo=" + question + "&txt=" + txt)
 }
 </script>
 
@@ -121,15 +119,12 @@ function checkExercise() {
 <% if erreur && presel2 > 0 %>
   <% seeexo = true %>
   <% chap = Chapter.find(presel2) %>
-  <% presel3 = session[:oldAll][:exercise_id].to_i %>
+  <% presel3 = session[:oldAll][:question_id].to_i %>
 <% elsif @edit && presel2 > 0 %>
   <% seeexo = true %>
   <% chap = @subject.chapter %>
-  <% if !@subject.exercise_id.nil? %>
-    <% presel3 = 2000 + @subject.exercise_id %>
-  <% end %>
-  <% if !@subject.qcm_id.nil? %>
-    <% presel3 = 3000 + @subject.qcm_id %>
+  <% if !@subject.question_id.nil? %>
+    <% presel3 = @subject.question_id %>
   <% end %>
 <% end %>
 
@@ -137,47 +132,31 @@ function checkExercise() {
   <% cache = false %>
   <% listeexo = Array.new %>
   <% listeexo.push(["Aucun exercice en particulier", 0]) %>
-  <% allexo = Array.new %>
-  <% chap.exercises.where(:online => true).each do |e| %>
-    <% if (e.subject.nil? || 2000+e.id == presel3) %>
-      <% allexo.push([e.position, 2, e.id, true]) %>
-    <% else %>
-      <% cache = true %>
-      <% allexo.push([e.position, 2, e.id, false]) %>
-    <% end %>
-  <% end %>
-  <% chap.qcms.where(:online => true).each do |q| %>
-    <% if (q.subject.nil? || 3000+q.id == presel3) %>
-      <% allexo.push([q.position, 3, q.id, true]) %>
-    <% else %>
-      <% cache = true %>
-      <% allexo.push([q.position, 3, q.id, false]) %>
-    <% end %>
-  <% end %>
-  <% sorted = allexo.sort %>
   <% i = 1 %>
-  <% sorted.each do |e| %>
-    <% if e[3] %>
-      <% listeexo.push(["Exercice #{i}", e[1]*1000+e[2]]) %>
-      <% if presel3 == e[1]*1000+e[2] %>
+  <% chap.questions.where(:online => true).order(:position).each do |e| %>
+    <% if (e.subject.nil? || e.id == presel3) %>
+      <% listeexo.push(["Exercice #{i}", e.id]) %>
+      <% if presel3 == e.id %>
         <% txt = "Exercice #{i}" %>
       <% end %>
+    <% else %>
+      <% cache = true %>
     <% end %>
     <% i = i+1 %>
   <% end %>
 
   <div class="form-group">
-    <%= f.label :exercise_id, :disabled => current_user.other, :id => "label_exo" %>
+    <%= f.label :question_id, :disabled => current_user.other, :id => "label_exo" %>
     <div id="alert" style="color:red; display:none; margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
     <div id="alert2" style="color:orange; display:<%= "" if cache %><%= "none" if !cache %>; margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
-    <%= f.select(:exercise_id, options_for_select(listeexo, presel3).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkExercise();")}) %>
+    <%= f.select(:question_id, options_for_select(listeexo, presel3).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkQuestion();")}) %>
   </div>
 <% else %>
   <div class="form-group">
-    <%= f.label :exercise_id, :disabled => current_user.other, :style => "display:none;", :id => "label_exo" %>
+    <%= f.label :question_id, :disabled => current_user.other, :style => "display:none;", :id => "label_exo" %>
     <div id="alert" style="color:red; display:none; margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
     <div id="alert2" style="color:orange; display:none; margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
-    <%= f.select(:exercise_id, options_for_select([]), {}, { :class => "form-control", :style => "width:100%; max-width:400px; display:none;", :disabled => current_user.other, :onchange => ("javascript: checkExercise();")}) %>
+    <%= f.select(:question_id, options_for_select([]), {}, { :class => "form-control", :style => "width:100%; max-width:400px; display:none;", :disabled => current_user.other, :onchange => ("javascript: checkQuestion();")}) %>
   </div>
 <% end %>
 

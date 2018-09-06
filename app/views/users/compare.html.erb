@@ -88,15 +88,14 @@ html>body tbody.scroll {
     <% enough_points = true %>
   <% end %>
 
-  <!-- On va parcourir tous les exercices, qcms et problèmes -->
+  <!-- On va parcourir tous les exercices et problèmes -->
 
   <% act = Array.new %>
   <% resolu = Array.new %>
 
   <% allsec = Array.new %>
   <% allchap = Array.new %>
-  <% allex = Array.new %>
-  <% allqcm = Array.new %>
+  <% allques = Array.new %>
   <% allpb = Array.new %>
 
   <% Section.all.each do |s| %>
@@ -107,12 +106,8 @@ html>body tbody.scroll {
     <% allchap[c.id] = c %>
   <% end %>
 
-  <% Exercise.all.each do |e| %>
-    <% allex[e.id] = e %>
-  <% end %>
-
-  <% Qcm.all.each do |q| %>
-    <% allqcm[q.id] = q %>
+  <% Question.all.each do |q| %>
+    <% allques[q.id] = q %>
   <% end %>
 
   <% Problem.all.each do |p| %>
@@ -126,66 +121,44 @@ html>body tbody.scroll {
 
     <% act[qui] = Array.new %>
     <% resolu[qui] = Array.new %>
-    <% resolu[qui][1] = Array.new %>
-    <% resolu[qui][2] = Array.new %>
-    <% resolu[qui][3] = Array.new %>
+    <% resolu[qui][5] = Array.new %>
+    <% resolu[qui][4] = Array.new %>
 
-    <% exercises = @user[qui].solvedexercises.where(:correct => true).order("resolutiontime DESC") %>
-    <% qcms = @user[qui].solvedqcms.where(:correct => true).order("resolutiontime DESC") %>
+    <% questions = @user[qui].solvedquestions.where(:correct => true).order("resolutiontime DESC") %>
     <% problems = @user[qui].solvedproblems.order("truetime DESC") %>
 
-    <% e_encours = 0 %>
     <% q_encours = 0 %>
     <% p_encours = 0 %>
 
-    <% (1..(exercises.size+qcms.size+problems.size)).each do |i| %>
+    <% (1..(questions.size+problems.size)).each do |i| %>
       <% trouve = false %>
       <% besttime = 0 %>
       <% bestqui = -1 %>
-      <% if e_encours < exercises.size && (!trouve || exercises[e_encours].resolutiontime.to_i > besttime) %>
-        <% besttime = exercises[e_encours].resolutiontime.to_i %>
+      <% if q_encours < questions.size && (!trouve || questions[q_encours].resolutiontime.to_i > besttime) %>
+        <% besttime = questions[q_encours].resolutiontime.to_i %>
         <% trouve = true %>
-        <% bestqui = 1 %>
-      <% end %>
-      <% if q_encours < qcms.size && (!trouve || qcms[q_encours].resolutiontime.to_i > besttime) %>
-        <% besttime = qcms[q_encours].resolutiontime.to_i %>
-        <% trouve = true %>
-        <% bestqui = 2 %>
+        <% bestqui = 5 %>
       <% end %>
       <% if p_encours < problems.size && (!trouve || problems[p_encours].truetime.to_i > besttime) %>
         <% besttime = problems[p_encours].truetime.to_i %>
         <% trouve = true %>
-        <% bestqui = 3 %>
+        <% bestqui = 4 %>
       <% end %>
-      <% if bestqui == 1 %>
-        <% e = exercises[e_encours] %>
-        <% exo = allex[e.exercise_id] %>
-        <% pt = exo.value %>
-        <% pt = 0 if allsec[allchap[exo.chapter_id].section_id].fondation %>
-        <% if pt > 0 %>
-          <% dernier = e.resolutiontime.in_time_zone %>
-          <% if premier.nil? %>
-            <% premier = e.resolutiontime.in_time_zone %>
-          <% end %>
-          <% act[qui].push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => allsec[allchap[exo.chapter_id].section_id].fondation}) %>
-        <% resolu[qui][1][e.exercise_id] = true %>
-        <% end %>
-        <% e_encours = e_encours + 1 %>
-      <% elsif bestqui == 2 %>
-        <% q = qcms[q_encours] %>
-        <% qcm = allqcm[q.qcm_id] %>
-        <% pt = qcm.value %>
-        <% pt = 0 if allsec[allchap[qcm.chapter_id].section_id].fondation %>
+      <% if bestqui == 5 %>
+        <% q = questions[q_encours] %>
+        <% question = allques[q.question_id] %>
+        <% pt = question.value %>
+        <% pt = 0 if allsec[allchap[question.chapter_id].section_id].fondation %>
         <% if pt > 0 %>
           <% dernier = q.resolutiontime.in_time_zone %>
           <% if premier.nil? %>
             <% premier = q.resolutiontime.in_time_zone %>
           <% end %>
-          <% act[qui].push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id,  :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => allsec[allchap[qcm.chapter_id].section_id].fondation}) %>
-          <% resolu[qui][2][q.qcm_id] = true %>
+          <% act[qui].push({:time => q.resolutiontime, :type => 5, :id => q.question_id,  :pt => pt, :chapter => allchap[question.chapter_id].name, :c_id => question.chapter_id, :section => allchap[question.chapter_id].section_id, :fondation => allsec[allchap[question.chapter_id].section_id].fondation}) %>
+          <% resolu[qui][5][q.question_id] = true %>
         <% end %>
         <% q_encours = q_encours + 1 %>
-      <% elsif bestqui == 3 %>
+      <% elsif bestqui == 4 %>
         <% p = problems[p_encours] %>
         <% pb = allpb[p.problem_id] %>
         <% pt = pb.value %>
@@ -205,7 +178,7 @@ html>body tbody.scroll {
           <% premier = p.truetime.in_time_zone %>
         <% end %>
         <% act[qui].push({:time => p.truetime, :type => 4, :id => p.problem_id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
-        <% resolu[qui][3][p.problem_id] = true %>
+        <% resolu[qui][4][p.problem_id] = true %>
       <% end %>
     <% end %>
 
@@ -271,7 +244,7 @@ html>body tbody.scroll {
           <% previousdate = dateday %>
         <% end %>
 
-        <% if !resolu[3-qui][a[:type]-1][a[:id]] %>
+        <% if !resolu[3-qui][a[:type]][a[:id]] %>
           <% zero = false %>
 
           <!-- Affichage de la ligne -->
@@ -282,9 +255,9 @@ html>body tbody.scroll {
 
           <!-- Quoi -->
           <td style="width:340px;">
-          <% if a[:type] <= 3 %>
+          <% if a[:type] == 5 %>
             <% if cansee[a[:c_id]] %>
-              <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+              <%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %>
             <% else %>
               Exercice
             <% end %>
@@ -325,7 +298,7 @@ html>body tbody.scroll {
 
       <!-- On parcourt les actes un par un (cas gsm) -->
       <% act[qui].each do |a| %>
-        <% if !resolu[3-qui][a[:type]-1][a[:id]] %>
+        <% if !resolu[3-qui][a[:type]][a[:id]] %>
           <% date = a[:time].in_time_zone %>
           <tr style="background-color:<%= Section.color(a[:section]) %>;">
 
@@ -334,9 +307,9 @@ html>body tbody.scroll {
 
           <!-- Quoi -->
           <td style="width:140px;">
-          <% if a[:type] <= 3 %>
+          <% if a[:type] == 5 %>
             <% if cansee[a[:c_id]] %>
-              <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+              <%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %>
             <% else %>
               Exercice
             <% end %>

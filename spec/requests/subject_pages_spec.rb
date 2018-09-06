@@ -16,7 +16,7 @@ describe "Subject pages" do
   let(:sub_admin) { FactoryGirl.create(:subject, user: admin) }
   let(:sub_other_admin) { FactoryGirl.create(:subject, user: other_admin) }
   let(:sub_other_root) { FactoryGirl.create(:subject, user: other_root) }
-  let!(:exercise) { FactoryGirl.create(:exercise) }
+  let!(:exercise) { FactoryGirl.create(:question) }
   let(:title) { "Mon titre" }
   let(:content) { "Mon message" }
   let(:newtitle) { "Mon nouveau titre" }

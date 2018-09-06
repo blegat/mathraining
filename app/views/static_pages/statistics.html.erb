@@ -32,21 +32,15 @@
 
 <% activite = Array.new %>
 
-<% Solvedexercise.where("correct = ? AND resolutiontime > ?", true, today).each do |e| %>
-  <% pt = e.exercise.value %>
-  <% pt = 0 if e.exercise.chapter.section.fondation %>
-  <% activite.push({:time => e.resolutiontime, :qui => e.user, :type => 2, :id => e.exercise.id, :pt => pt, :chapter => e.exercise.chapter.name, :c_id => e.exercise.chapter.id, :section => e.exercise.chapter.section.id, :fondation => e.exercise.chapter.section.fondation}) %>
-<% end %>
-
-<% Solvedqcm.where("correct = ? AND resolutiontime > ?", true, today).each do |q| %>
-  <% pt = q.qcm.value %>
-  <% pt = 0 if q.qcm.chapter.section.fondation %>
-  <% activite.push({:time => q.resolutiontime, :qui => q.user, :type => 3, :id => q.qcm.id, :pt => pt, :chapter => q.qcm.chapter.name, :c_id => q.qcm.chapter.id, :section => q.qcm.chapter.section.id, :fondation => q.qcm.chapter.section.fondation}) %>
+<% Solvedquestion.where("correct = ? AND resolutiontime > ?", true, today).each do |q| %>
+  <% pt = q.question.value %>
+  <% pt = 0 if q.question.chapter.section.fondation %>
+  <% activite.push({:time => q.resolutiontime, :qui => q.user, :id => q.question.id, :pt => pt, :chapter => q.question.chapter.name, :c_id => q.question.chapter.id, :section => q.question.chapter.section.id, :fondation => q.question.chapter.section.fondation}) %>
 <% end %>
 
 <% act = activite.sort{ |a, b| b[:time] <=> a[:time]} %>
 
-<!-- Affiche tous les exercices (et qcms) résolus dans les deux/trois derniers jours -->
+<!-- Affiche tous les exercices résolus dans les deux/trois derniers jours -->
 
 <table class="table table-bordered" style="width:866px;">
   <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:200px;">Qui</th><th style="width:400px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
@@ -57,7 +51,7 @@
   <td style="width:150px;"><%= write_date_only(date) %> </td>
   <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
   <td><%= raw(a[:qui].linked_name) %></td>
-  <td style="width:340px;"><%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %> <%= "(#{a[:chapter]})" %></td>
+  <td style="width:340px;"><%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %> <%= "(#{a[:chapter]})" %></td>
   <td style="width:50px;">
   <center>
     <%= "+ #{a[:pt]}" if a[:pt] > 0 %>

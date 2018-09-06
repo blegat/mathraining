@@ -78,34 +78,10 @@
 
     <!-- Exercices -->
     <% compteur = 0 %>
-    <% liste = Array.new %>
-    <% liste[1] = @chapter.exercises.order(:position) %>
-    <% liste[2] = @chapter.qcms.order(:position) %>
-    <% where = Array.new %>
-    <% where[1] = 0 %>
-    <% where[2] = 0 %>
     <% j = 1 %>
+    <% i = 1 %>
     <% pasfait = 0 %>
-    <% (1..(liste[1].size+liste[2].size)).each do |i| %>
-
-      <% encours = 0 %>
-      <% if where[1] >= liste[1].size %>
-        <% encours = 2 %>
-      <% else %>
-        <% if where[2] >= liste[2].size %>
-          <% encours = 1 %>
-        <% else %>
-          <% if liste[1][where[1]].position < liste[2][where[2]].position %>
-            <% encours = 1 %>
-          <% else %>
-            <% encours = 2 %>
-          <% end %>
-        <% end %>
-      <% end %>
-
-      <!-- Exercice (pas QCM) si encours = 1 -->
-      <!-- QCM (pas exercice) si encours = 2 -->
-      <% f = liste[encours][where[encours]] %>
+    <% @chapter.questions.order(:position).each do |f| %>
       <% if f.online || (@ss && current_user.sk.admin?) %>
 
         <% if compteur == 0 %>
@@ -116,7 +92,7 @@
 
         <% if exovisibles %>
           <% actif = "" %>
-          <% if f.id == id && type == encours+1 %>
+          <% if f.id == id && type == 5 %>
             <% actif = "active" %>
             <% number = j %>
             <% number2 = i %>
@@ -125,8 +101,7 @@
           <% kind = "" %>
           <% if f.online %>
             <% if @ss %>
-              <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) if encours == 1 %>
-              <% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) if encours == 2 %>
+              <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id) %>
               <% if exo.size > 0 %>
                 <% exo = exo.first %>
                 <% if exo.correct && !current_user.sk.admin? %>
@@ -142,14 +117,13 @@
           <% else %>
             <% kind = "list-group-item-warning" %>
           <% end %>
-          <%= link_to "Exercice #{j if f.online}", chapter_path(@chapter, :type => encours+1, :which => f.id), :class => "list-group-item #{kind} #{actif}" %>
+          <%= link_to "Exercice #{j if f.online}", chapter_path(@chapter, :type => 5, :which => f.id), :class => "list-group-item #{kind} #{actif}" %>
         <% else %>
           <span class="list-group-item disabled"><%= "Exercice #{j}" %></span>
         <% end %> 
         <% j = j+1 if f.online %>
+        <% i = i+1 %>
       <% end %>
-        
-      <% where[encours] = where[encours] + 1 %>
     <% end %>
       
     <% if !@chapter.section.fondation && exovisibles && pasfait == 0 && @ss && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
@@ -193,18 +167,11 @@
       <%= render 'theories/show', f: f, number: number, id: id %>
     <% end %>
 
-    <!-- EXERCICES -->
+    <!-- QUESTIONS -->
 
-    <% if type == 2 && @chapter.exercises.exists?(id) && exovisibles %>
-      <% f = Exercise.find(id) %>
-      <%= render 'exercises/show', f: f, number: number, number2: number2, liste: liste[1], liste2: liste[2], id: id %>
-    <% end %>
-
-    <!-- QCMS -->
-
-    <% if type == 3 && @chapter.qcms.exists?(id) && exovisibles %>
-      <% f = Qcm.find(id) %>
-      <%= render 'qcms/show', f: f, number: number, number2: number2, liste: liste[1], liste2: liste[2], id: id %>
+    <% if type == 5 && @chapter.questions.exists?(id) && exovisibles %>
+      <% f = Question.find(id) %>
+      <%= render 'questions/show', f: f, number: number, number2: number2, number_tot: @chapter.questions.count, id: id %>
     <% end %>
 
   </div>
@@ -217,8 +184,8 @@
       <br/>
       Ajouter un :
       <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
-      <%= link_to "exercice", new_chapter_exercise_path(@chapter) %> |
-      <%= link_to "QCM", new_chapter_qcm_path(@chapter) %>
+      <%= link_to "exercice", new_chapter_question_path(@chapter) %> |
+      <%= link_to "QCM", new_chapter_question_path(@chapter, :qcm => 1) %>
 
       <% if !@chapter.online %>
         <br/><br/>

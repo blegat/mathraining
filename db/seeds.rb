@@ -20,6 +20,10 @@ section[5] = Section.create(name: "Équations fonctionnelles", description: "", 
 section[6] = Section.create(name: "Inégalités", description: "", fondation: false)
 section[7] = Section.create(name: "Fondements", description: "", fondation: true)
 
+if !Rails.env.test?
+  Country.create(name: "Belgique", code: "be")
+end
+
 if !Rails.env.production?
 
 	# Actualités
@@ -45,21 +49,21 @@ if !Rails.env.production?
 			qcm[i][j] = Array.new
 			choice[i][j] = Array.new
 			for k in 1..4
-				exercice[i][j][k] = Exercise.new(statement: "Quelle est la valeur de " + k.to_s + "?", decimal: (k % 2 == 1), answer: k, position: k, online: true, explanation: "C'est du bon sens!", level: k)
+				exercice[i][j][k] = Question.new(statement: "Quelle est la valeur de " + k.to_s + "?", decimal: (k % 2 == 1), answer: k, position: k, online: true, explanation: "C'est du bon sens!", level: k, many_answers: false)
 				exercice[i][j][k].chapter = chapitre[i][j]
 				exercice[i][j][k].save
 			end
 			
 			# Qcms
 			for k in 1..3
-				qcm[i][j][k] = Qcm.new(statement: "Quelle est la valeur de " + k.to_s + "?", many_answers: (k % 2 == 1), position: 4+k, online: true, explanation: "C'est du bon sens!", level: k)
+				qcm[i][j][k] = Question.new(statement: "Quelle est la valeur de " + k.to_s + "?", many_answers: (k % 2 == 1), position: 4+k, online: true, explanation: "C'est du bon sens!", level: k, decimal: false, answer: 0)
 				qcm[i][j][k].chapter = chapitre[i][j]
 				qcm[i][j][k].save
 				choice[i][j][k] = Array.new
 				
 				for l in 1..3
-					choice[i][j][k][l] = Choice.new(ans: l.to_s, ok: (k == l))
-					choice[i][j][k][l].qcm = qcm[i][j][k]
+					choice[i][j][k][l] = Item.new(ans: l.to_s, ok: (k == l))
+					choice[i][j][k][l].question = qcm[i][j][k]
 					choice[i][j][k][l].save
 				end
 			end
@@ -100,13 +104,13 @@ if !Rails.env.production?
 				for l in 1..4
 					r = Random.rand(2)
 					if r == 0
-						solved = Solvedexercise.new(guess: 18, correct: false, nb_guess: Random.rand(3)+1)
-						solved.exercise = exercice[j][k][l]
+						solved = Solvedquestion.new(guess: 18, correct: false, nb_guess: Random.rand(3)+1)
+						solved.question = exercice[j][k][l]
 						solved.user = user[i]
 						solved.save
 					else
-						solved = Solvedexercise.new(guess: l, correct: true, nb_guess: Random.rand(3)+1, resolutiontime: DateTime.now)
-						solved.exercise = exercice[j][k][l]
+						solved = Solvedquestion.new(guess: l, correct: true, nb_guess: Random.rand(3)+1, resolutiontime: DateTime.now)
+						solved.question = exercice[j][k][l]
 						solved.user = user[i]
 						solved.save
 						user[i].rating = user[i].rating + 3*l

@@ -2,7 +2,7 @@
 <% if f.online || (@ss && current_user.sk.admin?) %>
 
 <!-- Titre -->
-<%= render 'exercises/title', f: f, number: number %>
+<%= render 'questions/title', f: f, number: number %>
 
 <!-- Enoncé -->
 <div>
@@ -14,24 +14,17 @@
 
   <!-- Réponse -->
   <h4>Réponse</h4>
-  <% if f.decimal %>
-    <% vraidecimal = true %>
-    <% if f.answer - f.answer.to_i <= 0.00001 && f.answer.to_i - f.answer <= 0.00001 %>
-      <% vraidecimal = false %>
-    <% end %>
-    <span style="font-size:16px;"><%= f.answer if vraidecimal %><%= f.answer.to_i if !vraidecimal %></span> (On demande une réponse <b>décimale</b> au millième près)
-  <% else %>
-    <span style="font-size:16px;"><%= f.answer.to_i %></span> (On demande une réponse <b>entière</b>)
-  <% end %>
+  
+  <%= render 'questions/admin_answers', f: f %>
   <br/><br/>
   
   <!-- Pour les admins -->
-  <%= render 'exercises/admin', f: f, type: 2, number2: number2, number_tot: liste.size + liste2.size %>
+  <%= render 'questions/admin', f: f, number2: number2, number_tot: number_tot %>
 
 <!-- Si étudiant inscrit -->
 <% elsif @ss %>
 
-  <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => id) %>
+  <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => id) %>
   
   <!-- Si il y a déjà eu au moins un essai -->
   <% if exo.size > 0 %>
@@ -49,19 +42,40 @@
       
       <!-- Réponse -->
       <h4>Réponse</h4>
-      <% if f.decimal %>
-        <% vraidecimal = true %>
-        <% if f.answer - f.answer.to_i <= 0.00001 && f.answer.to_i - f.answer <= 0.00001 %>
-          <% vraidecimal = false %>
+      
+      <% if !f.is_qcm %>
+        <!-- pas QCM -->
+        <% if f.decimal %>
+          <% vraidecimal = true %>
+          <% if f.answer - f.answer.to_i <= 0.00001 && f.answer.to_i - f.answer <= 0.00001 %>
+            <% vraidecimal = false %>
+          <% end %>
+          <span style="font-size:16px;"><%= f.answer if vraidecimal %><%= f.answer.to_i if !vraidecimal %></span> (On demande une réponse <b>décimale</b> au millième près)
+        <% else %>
+          <span style="font-size:16px;"><%= f.answer.to_i %></span> (On demande une réponse <b>entière</b>)
         <% end %>
-        <span style="font-size:16px;"><%= f.answer if vraidecimal %><%= f.answer.to_i if !vraidecimal %></span> (On demande une réponse <b>décimale</b> au millième près)
+        <br/>
       <% else %>
-        <span style="font-size:16px;"><%= f.answer.to_i %></span> (On demande une réponse <b>entière</b>)
+        <!-- QCM -->
+        <ul>
+          <% f.items.order(:id).each do |c| %>
+            <li style="padding:5px;">
+            <%= raw(c.ans) %>
+
+            <% if c.ok %>
+              <%= image_tag "V.gif", :style => "margin-left:10px;" %>
+            <% end %>
+            <% if !c.ok && f.many_answers %>
+              <%= image_tag "X.gif", :style => "margin-left:10px;" %>
+            <% end %>
+            </li>
+          <% end %>
+        </ul>
       <% end %>
+      
+      <!-- Explication -->
       <% if f.explanation.size > 0 %>
-        <br/><br/>
-        
-        <!-- Explication -->
+        <br/>
         <h4>Explication</h4>
         <%= raw(htmlise(f.explanation)) %>
       <% end %>
@@ -69,14 +83,14 @@
       
     <!-- Si l'étudiant s'est déjà trompé -->
     <% else %>
-      <%= render 'exercises/question', f: f, exo: exo %>
+      <%= render 'questions/question', f: f, exo: exo %>
     <% end %>
 
   <!-- Si l'étudiant n'a pas encore essayé l'exercice -->
   <% else %>
   
-    <% exo = Solvedexercise.new %>
-    <%= render 'exercises/question', f: f, exo: exo %>
+    <% exo = Solvedquestion.new %>
+    <%= render 'questions/question', f: f, exo: exo %>
   <% end %>
 
   <hr style="border-top:1px dashed lightgray;" />
@@ -85,8 +99,8 @@
 <!-- Si étudiant non inscrit -->
 <% else %>
 
-  <% exo = Solvedexercise.new %>
-  <%= render 'exercises/question', f: f, exo: exo %>
+  <% exo = Solvedquestion.new %>
+  <%= render 'questions/question', f: f, exo: exo %>
   
   <hr style="border-top:1px dashed lightgray;" />
   <center>Pour pouvoir répondre aux exercices, vous devez être connecté.</center>

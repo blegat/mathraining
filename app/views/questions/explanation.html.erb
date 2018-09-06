@@ -1,0 +1,40 @@
+<% provide(:title, "Modifier l'explication d'un exercice".html_safe) %>
+
+<h1>
+<span class="title-first">Théorie ></span>
+<span class="title-second"><%= link_to @question.chapter.section.name, @question.chapter.section %> ></span>
+<span class="title-third"><%= link_to @question.chapter.name, chapter_path(@question.chapter, :type => 5, :which => @question.id) %> ></span>
+Explication
+</h1>
+
+<!-- Enoncé -->
+<h3>Énoncé</h3>
+<%= raw(replace_indice(htmlise(@question.statement))) %>
+<br/>
+
+<!-- Réponse -->
+<h3>Réponse</h3>
+
+<%= render 'questions/admin_answers', f: @question %>
+
+<br/>
+
+<!-- Explication -->
+<h3>Explication</h3>
+
+<%= form_for(@question, url: question_update_explanation_path) do |f| %>
+  <%= render 'shared/error_messages', object: f.object %>
+
+  <div class="form-group">
+  <div class="well" id="MathPreview"></div>
+  <div class="well hidden-preview" id="MathBuffer"></div>
+  <%= render 'theories/font' %>
+  <%= f.text_area :explanation, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  </div>
+  <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
+<% end %>
+
+<script>
+Preview.Init();
+Preview.Update();
+</script>

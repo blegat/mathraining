@@ -108,26 +108,22 @@ html>body tbody.scroll {
   <div class="col-lg-7 col-sm-12 col-xs-12">
   <h2>Résolutions</h2>
 
-  <!-- On va parcourir tous les exercices, qcms et problèmes -->
+  <!-- On va parcourir tous les exercices et problèmes -->
 
-  <% exercises = @user.solvedexercises.where(:correct => true).order("resolutiontime DESC") %>
-  <% exercises_size = exercises.size %>
-  <% qcms = @user.solvedqcms.where(:correct => true).order("resolutiontime DESC") %>
-  <% qcms_size = qcms.size %>
+  <% questions = @user.solvedquestions.where(:correct => true).order("resolutiontime DESC") %>
+  <% questions_size = questions.size %>
   <% problems = @user.solvedproblems.order("truetime DESC") %>
   <% problems_size = problems.size %>
 
   <% act = Array.new %>
-  <% e_encours = 0 %>
   <% q_encours = 0 %>
   <% p_encours = 0 %>
 
-  <% nb_e = 0 %>
+  <% nb_q = 0 %>
   <% nb_p = 0 %>
   <% nb_erreur = 0 %>
   <% allchap = Array.new %>
-  <% allex = Array.new %>
-  <% allqcm = Array.new %>
+  <% allques = Array.new %>
   <% allpb = Array.new %>
 	
   <% maxscore = Array.new %>
@@ -142,15 +138,8 @@ html>body tbody.scroll {
     <% allchap[c.id] = c %>
   <% end %>
 
-  <% Exercise.all.each do |e| %>
-    <% allex[e.id] = e %>
-    <% if e.level > 0 && e.online %>
-      <% numberexo = numberexo+1 %>
-    <% end %>
-  <% end %>
-
-  <% Qcm.all.each do |q| %>
-    <% allqcm[q.id] = q %>
+  <% Question.all.each do |q| %>
+    <% allques[q.id] = q %>
     <% if q.level > 0 && q.online %>
       <% numberexo = numberexo+1 %>
     <% end %>
@@ -166,54 +155,35 @@ html>body tbody.scroll {
   <% premier = nil %>
   <% dernier = nil %>
 
-  <% (1..(exercises_size+qcms_size+problems_size)).each do |i| %>
+  <% (1..(questions_size+problems_size)).each do |i| %>
     <% trouve = false %>
     <% besttime = 0 %>
     <% bestqui = -1 %>
-    <% if e_encours < exercises_size && (!trouve || exercises[e_encours].resolutiontime.to_i > besttime) %>
-      <% besttime = exercises[e_encours].resolutiontime.to_i %>
+    <% if q_encours < questions_size && (!trouve || questions[q_encours].resolutiontime.to_i > besttime) %>
+      <% besttime = questions[q_encours].resolutiontime.to_i %>
       <% trouve = true %>
-      <% bestqui = 1 %>
-    <% end %>
-    <% if q_encours < qcms_size && (!trouve || qcms[q_encours].resolutiontime.to_i > besttime) %>
-      <% besttime = qcms[q_encours].resolutiontime.to_i %>
-      <% trouve = true %>
-      <% bestqui = 2 %>
+      <% bestqui = 5 %>
     <% end %>
     <% if p_encours < problems_size && (!trouve || problems[p_encours].truetime.to_i > besttime) %>
       <% besttime = problems[p_encours].truetime.to_i %>
       <% trouve = true %>
-      <% bestqui = 3 %>
+      <% bestqui = 4 %>
     <% end %>
-    <% if bestqui == 1 %>
-      <% e = exercises[e_encours] %>
-      <% exo = allex[e.exercise_id] %>
+    <% if bestqui == 5 %>
+      <% q = questions[q_encours] %>
+      <% exo = allques[q.question_id] %>
       <% pt = exo.value %>
       <% if pt > 0 %>
-        <% nb_erreur = nb_erreur + [e.nb_guess-1, 20].min %>
-        <% nb_e = nb_e+1 %>
-        <% dernier = e.resolutiontime.in_time_zone %>
-        <% if premier.nil? %>
-          <% premier = e.resolutiontime.in_time_zone %>
-        <% end %>
-      <% end %>
-      <% e_encours = e_encours + 1 %>
-      <% act.push({:time => e.resolutiontime, :type => 2, :id => e.exercise_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => (pt == 0)}) %>
-    <% elsif bestqui == 2 %>
-      <% q = qcms[q_encours] %>
-      <% qcm = allqcm[q.qcm_id] %>
-      <% pt = qcm.value %>
-      <% if pt > 0 %>
-        <% nb_e = nb_e+1 %>
         <% nb_erreur = nb_erreur + [q.nb_guess-1, 20].min %>
+        <% nb_q = nb_q+1 %>
         <% dernier = q.resolutiontime.in_time_zone %>
         <% if premier.nil? %>
           <% premier = q.resolutiontime.in_time_zone %>
         <% end %>
       <% end %>
       <% q_encours = q_encours + 1 %>
-      <% act.push({:time => q.resolutiontime, :type => 3, :id => q.qcm_id, :pt => pt, :chapter => allchap[qcm.chapter_id].name, :c_id => qcm.chapter_id, :section => allchap[qcm.chapter_id].section_id, :fondation => (pt == 0)}) %>
-    <% elsif bestqui == 3 %>
+      <% act.push({:time => q.resolutiontime, :type => 5, :id => q.question_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => (pt == 0)}) %>
+    <% elsif bestqui == 4 %>
       <% p = problems[p_encours] %>
       <% pb = allpb[p.problem_id] %>
       <% pt = pb.value %>
@@ -260,7 +230,7 @@ html>body tbody.scroll {
       <% end %>
     <% end %>
     
-    <% moyenne_erreurs = (nb_erreur/nb_e.to_f).round(2) %>
+    <% moyenne_erreurs = (nb_erreur/nb_q.to_f).round(2) %>
 
     <!-- Début du tableau des résolutions (cas normal) -->
     <table class="table table-bordered hidden-xs" style="width:606px;">
@@ -302,9 +272,9 @@ html>body tbody.scroll {
 
     <!-- Quoi -->
     <td style="width:340px;">
-    <% if a[:type] <= 3 %>
+    <% if a[:type] == 5 %>
       <% if cansee[a[:c_id]] %>
-        <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+        <%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %>
       <% else %>
         Exercice
       <% end %>
@@ -352,9 +322,9 @@ html>body tbody.scroll {
 
     <!-- Quoi -->
     <td style="width:140px;">
-    <% if a[:type] <= 3 %>
+    <% if a[:type] == 5 %>
       <% if cansee[a[:c_id]] %>
-        <%= link_to "Exercice", chapter_path(a[:c_id], :type => a[:type], :which => a[:id]) %>
+        <%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %>
       <% else %>
         Exercice
       <% end %>
@@ -399,13 +369,13 @@ html>body tbody.scroll {
     <tr>
     <td style="width:160px;">Exercices</td>
     <td>
-    <% pct = numberexo == 0 ? 0 : 100*nb_e/numberexo.to_f %>
+    <% pct = numberexo == 0 ? 0 : 100*nb_q/numberexo.to_f %>
     <div class="progress" style="margin-bottom:0px;">  		
     <div class="progress-bar" role="progressbar"
     aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
-      <% if nb_e == 0 %>
+      <% if nb_q == 0 %>
       <% else %>
-        <span style="margin-left:5px"><%= nb_e %>/<%= numberexo %></span>
+        <span style="margin-left:5px"><%= nb_q %>/<%= numberexo %></span>
       <% end %>
     </div>
     </div>

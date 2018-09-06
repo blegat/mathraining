@@ -68,10 +68,8 @@
 <% if ((!params.has_key?:page) || (params[:page] == '1')) %>
   <%= render 'subjects/subject', s: @subject %>
 <% else %>
-  <% if !@subject.exercise.nil? %>
-	  <%= render 'subjects/show_exo', f: @subject.exercise, type: 2 %>
-  <% elsif !@subject.qcm.nil? %>
-	  <%= render 'subjects/show_exo', f: @subject.qcm, type: 3 %>
+  <% if !@subject.question.nil? %>
+	  <%= render 'subjects/show_exo', f: @subject.question %>
   <% end %>
 <% end %>
 

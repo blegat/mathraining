@@ -1,5 +1,5 @@
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if (f.online && f.chapter.online) || (signed_in? && current_user.sk.admin?) %>
+<% if f.online || (signed_in? && current_user.sk.admin?) %>
   
   <% c = f.chapter %>
   <% exovisible = true %>
@@ -16,27 +16,26 @@
     </table>
 	
   <% else %>
-    <% exo = Solvedexercise.where(:user_id => current_user.sk.id, :exercise_id => f.id) if type == 2 %>
-	  <% exo = Solvedqcm.where(:user_id => current_user.sk.id, :qcm_id => f.id) if type == 3 %>
+    <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id) %>
 	  
     <% if current_user.sk.admin? %>
       <table class="table table-bordered reference yellowy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => type, :which => f.id), :target => "_blank" %> :</td></tr>
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => f.id), :target => "_blank" %> :</td></tr>
     <% elsif exo.size > 0 && exo.first.correct? %>
       <table class="table table-bordered reference greeny">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => type, :which => f.id), :target => "_blank" %>, que vous avez résolu :</td></tr>
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => f.id), :target => "_blank" %>, que vous avez résolu :</td></tr>
     <% elsif exo.size > 0 %>
       <table class="table table-bordered reference redy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => type, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
     <% else %>
       <table class="table table-bordered reference yellowy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => type, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
     <% end %>
     <!-- Enoncé -->
     <tr><td style="padding:10px;">
     <div style="margin-bottom:15px;"><%= raw(replace_indice(htmlise(f.statement))) %></div>
 
-    <% if type == 2 %>
+    <% if !f.is_qcm %>
       <% if f.decimal %>
         (On demande une réponse <b>décimale</b> au millième près)
       <% else %>
@@ -44,7 +43,7 @@
       <% end %>
     <% else %>
       <ul>
-      <% f.choices.order(:id).each do |c| %>
+      <% f.items.order(:id).each do |c| %>
         <li style="padding:5px;">
         <%= raw(c.ans) %>
       <% end %>

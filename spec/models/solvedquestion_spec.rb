@@ -1,26 +1,26 @@
 # == Schema Information
 #
-# Table name: solvedexercises
+# Table name: solvedquestions
 #
 #  id          :integer          not null, primary key
 #  user_id     :integer
-#  exercise_id :integer
+#  question_id :integer
 #  guess       :float
 #  correct     :boolean
 #  nb_guess    :integer
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#
+# ...
 
 require "spec_helper"
 
-describe Solvedexercise do
+describe Solvedquestion do
 
-  before { @se = FactoryGirl.build(:solvedexercise) }
+  before { @se = FactoryGirl.build(:solvedquestion) }
 
   subject { @se }
 
-  it { should respond_to(:exercise) }
+  it { should respond_to(:question) }
   it { should respond_to(:user) }
   it { should respond_to(:correct) }
   it { should respond_to(:guess) }
@@ -30,7 +30,7 @@ describe Solvedexercise do
 
   # Exercise
   describe "when exercise is not present" do
-    before { @se.exercise = nil }
+    before { @se.question = nil }
     it { should_not be_valid }
   end
 

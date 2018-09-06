@@ -56,6 +56,7 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :chapters
   has_many :solvedexercises, dependent: :destroy
   has_many :solvedqcms, dependent: :destroy
+  has_many :solvedquestions, dependent: :destroy
   has_many :solvedproblems, dependent: :destroy
   has_many :pictures
   has_many :pointspersections, dependent: :destroy
@@ -255,10 +256,8 @@ class User < ActiveRecord::Base
     newrating = Array.new
     newpartial = Array.new
     existpartial = Array.new
-    exercise_value = Array.new
-    exercise_section = Array.new
-    qcm_value = Array.new
-    qcm_section = Array.new
+    question_value = Array.new
+    question_section = Array.new
     problem_value = Array.new
     problem_section = Array.new
     sectionid = Array.new
@@ -297,16 +296,10 @@ class User < ActiveRecord::Base
     Chapter.all.each do |c|
       sectionid[c.id] = c.section_id
     end
-
-    Exercise.all.each do |e|
-      exercise_value[e.id] = e.value
-      exercise_section[e.id] = sectionid[e.chapter_id]
-      max_score[sectionid[e.chapter_id]] = max_score[sectionid[e.chapter_id]] + e.value if e.online
-    end
-
-    Qcm.all.each do |q|
-      qcm_value[q.id] = q.value
-      qcm_section[q.id] = sectionid[q.chapter_id]
+    
+    Question.all.each do |q|
+      question_value[q.id] = q.value
+      question_section[q.id] = sectionid[q.chapter_id]
       max_score[sectionid[q.chapter_id]] = max_score[sectionid[q.chapter_id]] + q.value if q.online
     end
 
@@ -316,21 +309,11 @@ class User < ActiveRecord::Base
       max_score[p.section_id] = max_score[p.section_id] + p.value if p.online
     end
 
-    Solvedexercise.all.each do |e|
-      if e.correct
-        pt = exercise_value[e.exercise_id]
-        u = e.user_id
-        s = exercise_section[e.exercise_id]
-        newrating[u] = newrating[u] + pt
-        newpartial[s][u] = newpartial[s][u] + pt
-      end
-    end
-
-    Solvedqcm.all.each do |q|
+    Solvedquestion.all.each do |q|
       if q.correct
-        pt = qcm_value[q.qcm_id]
+        pt = question_value[q.question_id]
         u = q.user_id
-        s = qcm_section[q.qcm_id]
+        s = question_section[q.question_id]
         newrating[u] = newrating[u] + pt
         newpartial[s][u] = newpartial[s][u] + pt
       end

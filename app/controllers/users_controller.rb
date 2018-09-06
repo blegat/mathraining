@@ -2,11 +2,11 @@
 
 class UsersController < ApplicationController
   before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups, :read_legal]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :recompute_scores, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub]
-  before_action :root_user, only: [:create_administrator, :recompute_scores, :destroy, :destroydata, :switch_corrector, :validate_name]
+  before_action :root_user, only: [:create_administrator, :destroy, :destroydata, :switch_corrector, :validate_name]
   before_action :signed_out_user, only: [:new, :create, :password_forgotten]
   before_action :group_user, only: [:groups]
 
@@ -29,8 +29,10 @@ class UsersController < ApplicationController
     @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :email_confirmation, :sex, :year, :password, :password_confirmation))
     @user.key = SecureRandom.urlsafe_base64
     
-    c = Country.find(params[:user][:country])
-    @user.country = c
+    if(!params[:user][:country].nil? && params[:user][:country].to_i > 0)
+      c = Country.find(params[:user][:country])
+      @user.country = c
+    end
 
     # Don't do email and captcha in development and tests
     @user.email_confirm = !Rails.env.production?
@@ -206,37 +208,6 @@ class UsersController < ApplicationController
       flash[:success] = "Veuillez changer immédiatement de mot de passe."
       redirect_to edit_user_path(@user)
     end
-  end
-
-  # Recalculer tous les scores
-  def recompute_scores
-    point_attribution_all
-    Section.all.each do |s|
-      s.max_score = 0
-      if !s.fondation?
-        s.problems.each do |p|
-          if p.online?
-            s.max_score = s.max_score + p.value
-          end
-        end
-        s.chapters.each do |c|
-          if c.online?
-            c.exercises.each do |e|
-              if e.online?
-                s.max_score = s.max_score + e.value
-              end
-            end
-            c.qcms.each do |q|
-              if q.online?
-                s.max_score = s.max_score + q.value
-              end
-            end
-          end
-        end
-      end
-      s.save
-    end
-    redirect_to users_path
   end
 
   # Voir toutes les soumissions (admin)

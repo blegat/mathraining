@@ -14,6 +14,7 @@ Mathraining::Application.routes.draw do
 
   resources :solvedexercises, only: [:create, :update]
   resources :solvedqcms, only: [:create, :update]
+  resources :solvedquestions, only: [:create, :update]
   resources :solvedproblems, only: [:index]
 
   resources :pictures, only: [:index, :show, :new, :create, :destroy]
@@ -39,6 +40,19 @@ Mathraining::Application.routes.draw do
     match '/put_online', to: 'exercises#put_online', :via => [:get], as: :put_online
     match '/explanation', to: "exercises#explanation", :via => [:get]
     match '/update_explanation', to: "exercises#update_explanation", :via => [:patch], as: :update_explanation
+  end
+  
+  resources :questions, only: [:update, :edit, :destroy] do
+    match '/order_plus', to: 'questions#order_plus', :via => [:get], as: :order_plus
+    match '/order_minus', to: 'questions#order_minus', :via => [:get], as: :order_minus
+    match '/put_online', to: 'questions#put_online', :via => [:get], as: :put_online
+    match '/explanation', to: "questions#explanation", :via => [:get]
+    match '/update_explanation', to: "questions#update_explanation", :via => [:patch], as: :update_explanation
+    match '/manage_items', to: "questions#manage_items", :via => [:get]
+    match '/add_item', to: "questions#add_item", :via => [:post]
+    match '/update_item/:id', to: "questions#update_item", :via => [:patch], as: :update_item
+    match '/remove_item/:id', to: "questions#remove_item", :via => [:get], as: :remove_item
+    match '/switch_item/:id', to: "questions#switch_item", :via => [:get], as: :switch_item
   end
 
   resources :theories, only: [:update, :edit, :destroy] do
@@ -109,6 +123,7 @@ Mathraining::Application.routes.draw do
     resources :theories, only: [:new, :create]
     resources :exercises, only: [:new, :create]
     resources :qcms, only: [:new, :create]
+    resources :questions, only: [:new, :create]
   end
 
   resources :subjects, only: [:index, :show, :new, :create, :update, :destroy] do
