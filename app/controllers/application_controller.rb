@@ -6,17 +6,17 @@ class ApplicationController < ActionController::Base
 
   before_action :has_consent
   before_action :check_up
-  before_action :warning
+  #before_action :warning
 
   ########## PARTIE PRIVEE ##########
   private
 
-  def warning
-    flash[:info] = "Le site est en maintenance pour quelques minutes... Merci de votre patience !".html_safe
-    if !signed_in? || !current_user.root?
-      redirect_to root_path if request.path != "/"
-    end
-  end
+  #def warning
+  #  flash[:info] = "Le site est en maintenance pour quelques minutes... Merci de votre patience !".html_safe
+  #  if !signed_in? || !current_user.root?
+  #    redirect_to root_path if request.path != "/"
+  #  end
+  #end
   
   def has_consent
     $allcolors = Color.order(:pt).to_a
