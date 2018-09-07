@@ -14,7 +14,13 @@
   <% end %>
 <% end %>
 
-<% if User.where("admin = ? AND active = ? AND rating > 0 AND rating < ?", false, true, @previouspoint).count > 0 %>
+<% if @pays == 0 %>
+  <% remaining = User.where("admin = ? AND active = ? AND rating > 0 AND rating < ?", false, true, @previouspoint).count %>
+<% else %>
+  <% remaining = User.where("admin = ? AND active = ? AND rating > 0 AND rating < ? AND country_id = ?", false, true, @previouspoint, @pays).count %>
+<% end %>
+
+<% if remaining > 0 %>
   $("#charge_more").attr("href", "<%= users_url(:from => @previouspoint - 1, :rank => @rank, :country => @pays) %>");
 <% else %>
   $("#charge_more").attr("href", "");
