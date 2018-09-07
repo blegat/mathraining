@@ -8,7 +8,7 @@
 var scrollHandler = function () {
   var more_posts_url = $('.pagination .next_page a').attr('href')
   
-  var compenser = 0
+  var compenser = 80 // Because I could not solve bug on Android/Chrome
   if($(window).width() >= 768)
   {
     if(document.getElementById('menu').offsetHeight > document.getElementById('messages').offsetHeight)
@@ -16,13 +16,6 @@ var scrollHandler = function () {
       compenser = document.getElementById('menu').offsetHeight - document.getElementById('messages').offsetHeight
     }
   }
-  
-  <% if current_user.sk.root %>
-    if($(window).scrollTop() + $(window).height() > $(document).height() - 20 - compenser - 200)
-    {
-      window.alert(String(Math.round($(window).scrollTop() + $(window).height())) + " (" + String(Math.round($(window).scrollTop())) + "+" + String(Math.round($(window).height())) + ") - " + String(Math.round($(document).height() - 20 - compenser)))
-    }
-  <% end %>
   
   if(more_posts_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 20 - compenser)
   {
