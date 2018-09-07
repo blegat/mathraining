@@ -18,9 +18,9 @@ var scrollHandler = function () {
   }
   
   <% if current_user.sk.root %>
-    if($(window).scrollTop() + $(window).height() > $(document).height() - 20 - compenser - 500)
+    if($(window).scrollTop() + $(window).height() > $(document).height() - 20 - compenser - 200)
     {
-      window.alert(String($(window).scrollTop() + $(window).height()) + " - " + String($(document).height() - 20 - compenser))
+      window.alert(String(Math.round($(window).scrollTop() + $(window).height())) + " (" + String(Math.round($(window).scrollTop())) + "+" + String(Math.round($(window).height())) + ") - " + String(Math.round($(document).height() - 20 - compenser)))
     }
   <% end %>
   
