@@ -177,6 +177,7 @@ $(window).scroll(scrollHandler);
   <% disp_end = "block" %>
 <% end %>
 
+<div id="for_admin" style="display:<%= disp_end %>;">
 <!-- Si root : bouton pour modifier les niveaux et couleurs -->
 <% if @ss && current_user.sk.root %>
   <br/>
@@ -187,7 +188,6 @@ $(window).scroll(scrollHandler);
 
 <!-- Si administrateur -->
 <% if @ss && current_user.sk.admin %>
-  <div id="for_admin" style="display:<%= disp_end %>;">
   <br/><center><b> --- Cette partie n'est visible que des administrateurs --- </b></center>
 
   <% if current_user.sk.root %>
