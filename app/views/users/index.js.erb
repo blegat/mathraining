@@ -1,0 +1,24 @@
+<% @allcountries = Array.new %>
+<% Country.all.each do |c| %>
+  <% @allcountries[c.id] = [c.name, c.code] %>
+<% end %>
+
+<% i = 0 %>
+<% Color.order("pt DESC").each do |c| %>
+  <% if i < @ordered_users.size && @ordered_users[i].rating >= c.pt %>
+    $("#div<%= c.id %>").css("display", "block");
+  <% end %>
+  <% while i < @ordered_users.size && @ordered_users[i].rating >= c.pt %>
+    $("#table<%= c.id %> tbody").append('<%= j render "line", user: @ordered_users[i] %>');
+    <% i = i+1 %>
+  <% end %>
+<% end %>
+
+<% if User.where("admin = ? AND active = ? AND rating > 0 AND rating < ?", false, true, @previouspoint).count > 0 %>
+  $("#charge_more").attr("href", "<%= users_url(:from => @previouspoint - 1, :rank => @rank, :country => @pays) %>");
+<% else %>
+  $("#charge_more").attr("href", "");
+  $("#for_admin").css("display", "block");
+<% end %>
+
+$('.toreplace').html('')

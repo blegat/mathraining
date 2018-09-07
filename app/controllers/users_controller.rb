@@ -12,6 +12,121 @@ class UsersController < ApplicationController
 
   # Index de tous les users avec scores
   def index
+    @pays = 0
+    if(params.has_key?:country)
+      @pays = params[:country].to_i
+    end
+    
+    @rank = 1
+    if(params.has_key?:rank)
+      @rank = params[:rank].to_i
+    end
+    
+    @allsec = Section.order(:id).where(:fondation => false).to_a
+
+    @previouspoint = -1
+
+    if User.last.nil?
+      @recent = Array.new(1)
+      @persection = Array.new(1)
+    else
+      @recent = Array.new(User.last.id+1)
+      @persection = Array.new(User.last.id+1)
+    end
+    twoweeksago = Date.today - 14
+
+    @maxscore = Array.new
+
+    Section.all.each do |s|
+      @maxscore[s.id] = s.max_score
+    end
+    
+    # Number of people to load on each "page"
+    nb_load = 100
+
+    @ordered_users = Array.new
+    # If first page: first download the best students in random order
+    if !params.has_key?(:from)
+      r = Random.new(Date.today.in_time_zone.to_time.to_i)
+      max_rating = -1
+      if @pays == 0
+        max_user = User.where("admin = ? AND active = ?", false, true).order("rating DESC").first
+      else
+        max_user = User.where("admin = ? AND active = ? AND country_id = ?", false, true, @pays).order("rating DESC").first
+      end
+
+      if !max_user.nil?
+        max_rating = max_user.rating
+      end
+
+      if @pays == 0
+        mylist = User.where("rating = ? AND admin = ? AND active = ?", max_rating, false, true).order(:id)
+      else
+        mylist = User.where("rating = ? AND admin = ? AND active = ? AND country_id = ?", max_rating, false, true, @pays).order(:id)
+      end
+      
+      encours = Array.new
+      mylist.each do |user|
+        alea = r.rand()
+        alea = 0 if signed_in? && current_user.sk == user
+        encours.push([alea, user])
+      end
+
+      encours.sort!
+      encours.each do |u|
+        @ordered_users.push(u[1])
+      end
+      nb_load = [nb_load - encours.size, 0].max
+      from = max_rating - 1
+    else
+      from = params[:from].to_i
+    end
+    
+    # Get following users    
+    if @pays == 0
+      prov = User.where("rating != 0 AND rating <= ? AND admin = ? AND active = ?", from, false, true).order("rating DESC, last_name ASC, first_name ASC").limit(nb_load).last
+    else
+      prov = User.where("rating != 0 AND rating <= ? AND admin = ? AND active = ? AND country_id = ?", from, false, true, @pays).order("rating DESC, last_name ASC, first_name ASC").limit(nb_load).last
+    end
+    
+    if !prov.nil?
+      to = prov.rating
+    else
+      to = 1
+    end
+    
+    if @pays == 0
+      arr = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ?", from, to, false, true).order("rating DESC, last_name ASC, first_name ASC").to_a
+    else
+      arr = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ? AND country_id = ?", from, to, false, true, @pays).order("rating DESC, last_name ASC, first_name ASC").to_a
+    end
+    
+    @ordered_users.push(*arr)
+    
+    ids = Array.new
+    
+    @ordered_users.each do |u|
+      ids.push(u.id)
+      @recent[u.id] = 0
+      @persection[u.id] = Array.new
+    end
+
+    Solvedproblem.where(:user_id => ids).includes(:problem).where("truetime > ?", twoweeksago).find_each do |s|
+      @recent[s.user_id] += s.problem.value
+    end
+
+    Solvedquestion.where(:user_id => ids).includes(:question).where("resolutiontime > ?", twoweeksago).find_each do |s|
+      if s.correct
+        exo = s.question
+        @recent[s.user_id] += exo.value
+      end
+    end
+
+    Pointspersection.where(:user_id => ids).all.each do |p|
+	    @persection[p.user_id][p.section_id] = p.points
+    end
+    
+    
   end
 
   # S'inscrire au site : il faut être en ligne
