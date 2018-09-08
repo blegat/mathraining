@@ -198,7 +198,7 @@ class SolvedquestionsController < ApplicationController
         else
           link.correct = false
           link.save
-          item = Choice.find(params[:ans])
+          item = Item.find(params[:ans])
           link.items.clear
           link.items << item
         end
