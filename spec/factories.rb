@@ -23,6 +23,7 @@ FactoryGirl.define do
     association :question
     ans "42"
     ok false
+    sequence(:position) { |n| n }
   end
   
   # Color
