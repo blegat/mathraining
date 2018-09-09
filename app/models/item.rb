@@ -8,6 +8,7 @@
 #  question_id:integer
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  position   :integer
 #
 
 class Item < ActiveRecord::Base
@@ -23,5 +24,6 @@ class Item < ActiveRecord::Base
   validates :question_id, presence: true
   validates :ans, presence: true, length: { maximum: 255 }
   validates :ok, inclusion: { in: [true, false] }
+  validates :position, presence: true
 
 end

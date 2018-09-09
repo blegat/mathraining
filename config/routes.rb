@@ -53,6 +53,8 @@ Mathraining::Application.routes.draw do
     match '/update_item/:id', to: "questions#update_item", :via => [:patch], as: :update_item
     match '/remove_item/:id', to: "questions#remove_item", :via => [:get], as: :remove_item
     match '/switch_item/:id', to: "questions#switch_item", :via => [:get], as: :switch_item
+    match '/up_item/:id', to: "questions#up_item", :via => [:get], as: :up_item
+    match '/down_item/:id', to: "questions#down_item", :via => [:get], as: :down_item
   end
 
   resources :theories, only: [:update, :edit, :destroy] do

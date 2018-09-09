@@ -12,7 +12,7 @@
 <% else %>
   <!-- QCM -->
   <ul>
-    <% f.items.order(:id).each do |c| %>
+    <% f.items.order(:position).each do |c| %>
       <li style="padding:5px;">
       <%= raw(c.ans) %>
 

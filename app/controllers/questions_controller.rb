@@ -1,7 +1,7 @@
 #encoding: utf-8
 class QuestionsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :explanation]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_item, :add_item, :switch_item, :update_item, :order_minus, :order_plus, :put_online, :update_explanation]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_item, :add_item, :switch_item, :update_item, :order_minus, :order_plus, :put_online, :update_explanation, :up_item, :down_item]
   before_action :admin_user
   before_action :online_question, only: [:add_item, :remove_item]
   before_action :offline_question, only: [:destroy]
@@ -158,6 +158,12 @@ class QuestionsController < ApplicationController
     @item.question_id = params[:question_id]
     @item.ok = params[:item][:ok]
     @item.ans = params[:item][:ans]
+    last_pos = 0
+    last_item = @question.items.order(:position).last
+    if !last_item.nil?
+      last_pos = last_item.position
+    end
+    @item.position = last_pos+1
     if !@question.many_answers && @item.ok && @question.items.count > 0
       flash[:info] = "La réponse correcte a maintenant changé (une seule réponse est possible pour cet exercice)."
       # Two good answer
@@ -196,6 +202,18 @@ class QuestionsController < ApplicationController
     end
     @item.save
     redirect_to question_manage_items_path(params[:question_id])
+  end
+  
+  # Déplacer un choix vers le haut
+  def up_item 
+    @item = Item.find(params[:id])
+    order_op2(true, @item)
+  end
+  
+  # Déplacer un choix vers le bas
+  def down_item
+    @item = Item.find(params[:id])
+    order_op2(false, @item)
   end
 
   # Modifier un choix
@@ -265,6 +283,7 @@ class QuestionsController < ApplicationController
     redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id) if @question.online
   end
   
+  # Modification de l'ordre des exercices
   def order_op(haut, question)
     if haut
       sign = '<'
@@ -287,6 +306,31 @@ class QuestionsController < ApplicationController
       flash[:info] = "Exercice déjà le plus #{name} possible."
     end
     redirect_to chapter_path(question.chapter, :type => 5, :which => question.id)
+  end
+  
+  # Modification de l'ordre des choix d'un QCM
+  def order_op2(haut, item)
+    if haut
+      sign = '<'
+      fun = lambda { |x, y| x > y }
+      name = 'haut'
+    else
+      sign = '>'
+      fun = lambda { |x, y| x < y }
+      name = 'bas'
+    end
+    if item.question.items.exists?(["position #{sign} ?", item.position])
+      if haut
+        item2 = item.question.items.where("position #{sign} ?", item.position).order('position').reverse_order.first
+      else
+        item2 = item.question.items.where("position #{sign} ?", item.position).order('position').first
+      end
+      swap_position(item, item2)
+      flash[:success] = "Choix déplacé vers le #{name}."
+    else
+      flash[:info] = "Choix déjà le plus #{name} possible."
+    end
+    redirect_to question_manage_items_path(params[:question_id])
   end
 
   def swap_position(a, b)

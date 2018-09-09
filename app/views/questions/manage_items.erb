@@ -17,9 +17,10 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
 <!-- Réponse -->
 <h3>Réponse</h3>	
 <table cellpadding="5">
-<tr><th></th><th></th><th style="padding:5px; text-align:center;">Rép ?</th><th></th><th></th><th></th></tr>
+<tr><th></th><th></th><th style="padding:5px; text-align:center;">Rép ?</th><th></th><th></th><th></th><th></th></tr>
 <% i = 0 %>
-<% @question.items.order(:id).each do |f| %>
+<% nb_item = @question.items.count %>
+<% @question.items.order(:position).each do |f| %>
   <%= form_for(f, url: question_update_item_path(@question, f)) do |g| %>
     <tr>
       <td style="width:15px;">
@@ -40,7 +41,13 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
       <td>
         <%= g.submit "Modifier ce choix", class: "btn btn-primary" %>
       </td>
-      <% unless @question.chapter.online && @question.online %>
+      <td style="padding:10px;">
+        <%= "Déplacer vers le : " if nb_item > 1 %>
+        <%= link_to "haut", question_up_item_path(@question, f) if i > 0 %>
+        <%= " - " if i > 0 && i < nb_item-1 %>
+        <%= link_to "bas", question_down_item_path(@question, f) if i < nb_item-1 %>
+      </td>
+      <% unless @question.online %>
         <td style="padding:10px;">
           <% if f.ok %>
             <% if @question.many_answers %>
@@ -60,7 +67,7 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
 <% end %>
 
 <!-- Si pas encore en ligne, on peut ajouter un choix -->
-<% unless @question.chapter.online && @question.online %>
+<% unless @question.online %>
 
   <tr>
   <%= form_for(:item, url: question_add_item_path(@question)) do |f| %>
@@ -76,6 +83,8 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
     </td>
     <td>
       <%= f.submit "Ajouter ce choix", class: "btn btn-primary" %>
+    </td>
+    <td>
     </td>
     <td>
     </td>
