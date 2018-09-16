@@ -3,14 +3,8 @@
   <tr class="warning">
 <% elsif s.status == 2 %>
   <tr class="success">
-<% elsif s.status == 1 %>
-  <tr class="danger">
 <% else %>
-  <% if current_user.sk.admin? %>
-  <tr class="info">
-  <% else %>
   <tr class="danger">
-  <% end %>
 <% end %>
 
 <!-- Icone -->
@@ -27,7 +21,7 @@
 </td>
 
 <!-- Dernière activité -->
-<td class="hidden-xs hidden-sm" style="width:250px;">
+<td class="hidden-xs" style="width:250px;">
 <%= write_date(s.lastcomment.in_time_zone) %>
 </td>
 

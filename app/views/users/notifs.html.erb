@@ -18,28 +18,14 @@ html>body tbody.scroll {
 }
 </style>
 
-<!-- Large -->
-<table class="table table-bordered hidden-xs hidden-sm" style="width:640px;">
+<table class="table table-bordered" style="width:auto;">
 <thead class="fixed">
-<tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:70px;"></th></tr>
+<tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th class="hidden-xs" style="width:250px;">Dernière activité</th><th style="width:70px;"></th></tr>
 </thead>
 <tbody class="scroll">
 <% @new = true %>
 <% @notifs.each do |n| %>
-  <%= render 'submissions/showuser', s: n.submission, nom: false %>
-<% end %>
-</tbody>
-</table>
-
-<!-- Petit -->
-<table class="table table-bordered visible-xs visible-sm" style="width:390px;">
-<thead class="fixed">
-<tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:70px;"></th></tr>
-</thead>
-<tbody class="scroll">
-<% @new = true %>
-<% @notifs.each do |n| %>
-  <%= render 'submissions/showuser', s: n.submission, nom: false %>
+  <%= render 'submissions/showuser', s: n.submission %>
 <% end %>
 </tbody>
 </table>

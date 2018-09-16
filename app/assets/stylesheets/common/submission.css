@@ -1,0 +1,25 @@
+/* IMAGES */
+
+@media (max-width: 991px) {
+  .submission-line {
+    width:340px;
+  }
+}
+
+@media (min-width: 992px) {
+  .submission-line {
+    width:840px;
+  }
+}
+
+@media (max-width: 991px) {
+  .coucou-grand {
+    display:none;
+  }
+}
+
+@media (min-width: 992px) {
+  .coucou-petit {
+    display:none;
+  }
+}

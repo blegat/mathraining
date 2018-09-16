@@ -25,18 +25,6 @@
   <% q = 0 %>
 <% end %>
 
-<h1>Forum
-<% if !@category.nil? %>
-   - <%= @category.name %>
-<% elsif @section.nil? %>
-
-<% elsif @chapitre.nil? %>
-   - <%= @section.name %>
-<% else %>
-   - <%= @chapitre.name %>
-<% end %>
-</h1>
-
 <!-- Calcul de la liste des sections et chapitres -->
 <% liste0 = Array.new %>
 
@@ -68,129 +56,25 @@
     <% end %>
 <% end %>
 
-<!-- Trier selon section ou chapitre -->
-<form action="" method="get" class="form-inline" name="research">
-  N'afficher que les sujets relatifs à la section ou au chapitre :
-  <div class="visible-xs visible-sm" style="height:7px;"></div>
+<h1>Forum
+<% if !@category.nil? %>
+   - <%= @category.name %>
+<% elsif @section.nil? %>
+
+<% elsif @chapitre.nil? %>
+   - <%= @section.name %>
+<% else %>
+   - <%= @chapitre.name %>
+<% end %>
+
+<!-- Trier selon section, chapitre, catégorie... -->
+<span style="float:right; margin-left:20px; margin-top:5px; margin-bottom:20px;">
+<form action="" method="get" name="research">
   <%= select_tag :q, grouped_options_for_select([["Tout afficher",liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], q).html_safe, :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
 </form>
+</span>
 
-
-<!-- Fonction qui affiche un sujet -->
-
-<% def affiche_sujet(s) %>
-  <% q = -1 %>
-  <% if(params.has_key?:q) %>
-    <% q = params[:q].to_i %>
-  <% else %>
-    <% q = 0 %>
-  <% end %>
-
-  <!-- S'agit-il d'un nouveau message? On le met dans style -->
-  <% m = s.messages.order(:id).last %>
-  <% if m.nil? %>
-    <% m = s %>
-  <% end %>
-  <% if current_user.sk.forumseen < s.lastcomment && m.user_id != current_user.sk.id %>
-    <% style = "background-color:#fffad2;" %>
-  <% end %>
-  <tr style="<%= style %>">
-
-    <!-- Titre du sujet, + "admin" s'il le faut -->
-    <td style="vertical-align:middle;">
-      <% if s.admin? || s.wepion? %>
-        <table style="border:none; padding:0px; margin:0px;"><tr><td style="border:none; vertical-align:middle; padding:0px; padding-right:5px;">
-        <% if s.admin? %>
-          <span class="hidden-xs hidden-sm label label-warning">Correcteurs</span>
-          <span class="visible-xs visible-sm label label-warning">C</span>
-        <% elsif s.wepion? %>
-          <span class="hidden-xs hidden-sm label label-success">Wépion</span>
-          <span class="visible-xs visible-sm label label-success">W</span>
-        <% end %>
-        </td>
-        <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
-      <% end %>
-
-      <%= link_to s.title, subject_path(s, :q => q) %>
-      	<% if !s.category.nil? %>
-      	  - <%= s.category.name %>
-        <% elsif s.section.nil? %>
-
-        <% elsif s.chapter.nil? %>
-          - <%= s.section.name %>
-        <% else %>
-          - <%= s.chapter.name %>
-        <% end %>
-
-      <% if s.admin? || s.wepion? %>
-        </td></tr></table>
-      <% end %>
-    </td>
-
-    <!-- Auteur du sujet -->
-    <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
-      <%= raw(s.user.linked_name) %>
-    </td>
-
-    <!-- Nombre de messages -->
-    <td class="hidden-xs" style="text-align:center; vertical-align:middle;">
-      <%= x = s.messages.count %>
-    </td>
-
-    <% if x > 0 %>
-      <% last = s.messages.order(:id).last %>
-      <% qui = last.user %>
-      <% date = last.created_at.in_time_zone %>
-    <% else %>
-      <% qui = s.user %>
-      <% date = s.created_at.in_time_zone %>
-    <% end %>
-    <% datenow = Time.zone.now %>
-
-    <!-- Cas normal -->
-
-    <!-- Dernier message -->
-    <td class="hidden-xs" style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
-      <%= raw(qui.linked_name) %>
-    </td>
-
-    <!-- Date du dernier message -->
-    <td class="hidden-xs" style="width:200px; text-align:center; vertical-align:middle;">
-      <% tot = s.messages.count %>
-      <% page = [0,((tot-1)/10).floor].max + 1 %>
-
-      <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
-        <% affiche_date(date, datenow) %>
-      <% end %>
-    </td>
-
-    <!-- Cas gsm -->
-
-    <td class="visible-xs" style="width:200px;">
-    <table style="width:100%;">
-
-      <!-- Dernier message -->
-      <tr>
-      <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle; padding-bottom:5px; border-bottom:1px dashed grey;">
-        <%= raw(qui.linked_name) %>
-      </td>
-      </tr>
-
-      <!-- Date du derinier message -->
-      <tr>
-      <td style="width:200px; text-align:center; vertical-align:middle; padding-top:5px;">
-        <% tot = s.messages.count %>
-        <% page = [0,((tot-1)/10).floor].max + 1 %>
-
-          <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
-            <% affiche_date(date, datenow) %>
-          <% end %>
-      </td>
-      </tr>
-    </table>
-    </td>
-  </tr>
-<% end %>
+</h1>
 
 <!-- Affichage des sujets importants -->
 <% if @importants.size > 0 %>
@@ -199,11 +83,11 @@
       <td style="text-align:center;">Sujet important</td>
       <td class="hidden-xs" style="width:180px; text-align:center;">Auteur</td>
       <td class="hidden-xs" style="width:50px; text-align:center;">Rép.</td>
-      <td class="hidden-xs" style="text-align:center;" colspan="2">Dernière contribution</td>
-      <td class="visible-xs" style="text-align:center;">Dernière contribution</td>
+      <td class="hidden-small" style="text-align:center;" colspan="2">Dernière contribution</td>
+      <td class="hidden-large" style="text-align:center;">Dernière contribution</td>
     </tr>
     <% @importants.each do |s| %>
-      <% affiche_sujet(s) %>
+      <%= render 'line', s: s, q: q %>
     <% end %>
   </table>
 <% end %>
@@ -215,11 +99,11 @@
       <td style="text-align:center;">Sujet</td>
       <td class="hidden-xs" style="width:180px; text-align:center;">Auteur</td>
       <td class="hidden-xs" style="width:50px; text-align:center;">Rép.</td>
-      <td class="hidden-xs" style="text-align:center;" colspan="2">Dernière contribution</td>
-      <td class="visible-xs" style="text-align:center;">Dernière contribution</td>
+      <td class="hidden-small" style="text-align:center;" colspan="2">Dernière contribution</td>
+      <td class="hidden-large" style="text-align:center;">Dernière contribution</td>
     </tr>
     <% @subjectsfalse.each do |s| %>
-      <% affiche_sujet(s) %>
+      <%= render 'line', s: s, q: q %>
     <% end %>
   </table>
 <% end %>

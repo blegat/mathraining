@@ -197,10 +197,12 @@
   <%= render 'submissions/index', problem: @problem if signed_in? %>
 
   <!-- Si pas encore résolu le problème -->
+  <% @brouillon = false %>
   <% unless (signed_in? && @resolu) || (signed_in? && !@newsub) %>
     <% if !signed_in? %>
     <br/>
     <% end %>
+    <% @brouillon = true if @problem.submissions.where('user_id = ? AND status < 0', current_user.sk).count > 0 %>
     <% if !@brouillon %>
       <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
     <% else %>

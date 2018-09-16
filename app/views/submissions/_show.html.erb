@@ -53,7 +53,7 @@ var unreserve = function () {
   <div id="correct1" style="background-color:#fffad2; padding:10px; border:1px solid #dddddd;
 ; <%= "display:none;" if reservation_case != 1 %>">
     Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !
-    <div class="visible-xs" style="height:7px;"></div>
+    <div class="hidden-large" style="height:7px;"></div>
     <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver cette soumission</button>
   </div>
   
@@ -63,7 +63,7 @@ var unreserve = function () {
   
   <div id="correct3" style="background-color:#d7efd9; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 3 %>">
     Vous avez réservé cette soumission pour la corriger.
-    <div class="visible-xs" style="height:7px;"></div>
+    <div class="hidden-large" style="height:7px;"></div>
     <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler ma réservation</button>
   </div>
 <% end %>

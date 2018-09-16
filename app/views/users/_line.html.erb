@@ -40,7 +40,7 @@
 <% end %>
 
 <!-- Activité récente -->
-<td class="hidden-xs hidden-sm">
+<td class="hidden-small">
 <center>
   <% if @recent[user.id] > 0 %>
     + <%= @recent[user.id] %>
@@ -50,8 +50,8 @@
 
 <!-- Admin -->
 <% if @ss && current_user.sk.admin %>
-  <td class="hidden-xs hidden-sm"><center><%= user.year if user.year > 0 %><%= "?" if user.year == 0 %></center></td>
-  <td class="hidden-xs hidden-sm"><center>
+  <td class="hidden-small"><center><%= user.year if user.year > 0 %><%= "?" if user.year == 0 %></center></td>
+  <td class="hidden-small"><center>
     <% if user.wepion %>
       W<%= user.group %>
     <% end %>

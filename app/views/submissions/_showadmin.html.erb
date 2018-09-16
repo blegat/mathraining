@@ -6,14 +6,14 @@
 <!-- Vaut 22 au lieu de 2 dans le cas particulier des commentaires non-lus d'autres personnes -->
 
 <% see_correctors = false %>
-<% if @situation == 1 or @situation == 22 %>
+<% if situation == 1 or situation == 22 %>
   <% see_correctors = true %>
 <% end %>
-<% if @situation == 22 %>
-  <% @situation = 2 %>
+<% if situation == 22 %>
+  <% situation = 2 %>
 <% end %>
 
-<% if (defined? @CAN_SEE) && !@CAN_SEE %>
+<% if (defined? can_see) && !can_see %>
   <% can_see = false %>
 <% else %>
   <% can_see = true %>
@@ -21,21 +21,22 @@
 
 <!-- Couleur -->
 
-<!-- Si non-visible : gris -->
 <% if !can_see %>
-  <tr style="background-color:#E0E0E0;">
-<!-- Si nouveau commentaire non lu et situation = 2 : toujours jaune -->
-<% elsif @situation == 2 && @follow.include?(s.id) %>
-  <tr class="warning">
-<!-- Si status = 2 (accepté) : toujours vert -->
+  <tr style="background-color:#E0E0E0;"> <!-- Si non-visible : gris -->
+<% elsif situation == 2 && @follow.include?(s.id) %>
+  <tr class="warning"> <!-- Si nouveau commentaire non lu et situation = 2 : toujours jaune -->
 <% elsif s.status == 2 %>
-  <tr class="success">
-<!-- Si status = 1 (refusé) : toujours rouge -->
+  <tr class="success"> <!-- Si status = 2 (accepté) : toujours vert -->
 <% elsif s.status == 1 %>
-  <tr class="danger">
-<!-- Si status = 0 (pas encore corrigé) : toujours jaune -->
+  <tr class="danger"> <!-- Si status = 1 (refusé) : toujours rouge -->
 <% elsif s.status == 0 %>
-  <tr class="warning">
+  <% if situation != 1 || s.followings.count == 0 %>
+    <tr class="warning"> <!-- Si status = 0 (pas encore corrigé) : toujours jaune, sauf si... -->
+  <% elsif s.followings.first.user == current_user.sk %>
+    <tr style="background-color:#f3ffd9;"> <!-- si réservé par moi : un peu plus vert -->
+  <% else %>
+    <tr style="background-color:#ffeedb;"> <!-- si réservé par quelqu'un d'autre : un peu plus rouge -->
+  <% end %>
 <!-- Si status = 3 (nouveau commentaire jamais lu) : bleu si on est admin, rouge si on est pas admin -->
 <% elsif s.status == 3 && current_user.sk != s.user %>
   <tr class="info">
@@ -44,9 +45,9 @@
 <% end %>
 
 <!-- Icone -->
-<td style="width:70px; text-align:center;" class="<%= "hidden-xs hidden-sm" if @situation <= 2 %>">
+<td style="width:70px; text-align:center;">
 	<% if defined? @AFFICHE_WARNING %>
-	  <% if @situation == 1 %>
+	  <% if situation == 1 %>
 	    <% x = (today - s.created_at.in_time_zone.to_date).to_i %>
 	  <% else %>
 	    <% x = (today - s.lastcomment.in_time_zone.to_date).to_i %>
@@ -58,7 +59,7 @@
 </td>
 
 <!-- Date de soumission -->
-<td class="hidden-xs hidden-sm" style="width:250px;">
+<td class="hidden-small" style="width:250px;">
 <%= write_date(s.created_at.in_time_zone) %>
 <% if s.intest && (current_user.sk.admin? || current_user.sk.corrector) %>
 - <b> TEST</b>
@@ -66,43 +67,41 @@
 </td>
 
 <!-- Dernière activité -->
-<td class="<%= "hidden-xs hidden-sm" if @situation >= 3 %>" style="width:250px;">
+<td class="hidden-small" style="width:250px;">
 <%= write_date(s.lastcomment.in_time_zone) %>
 </td>
 
-<!-- Nom (si on l'affiche) -->
-<% if nom && can_see %>
-<td style="width:200px">
-  <%= raw(s.user.linked_name) %>
-  <%= "(A)" if s.user.group == "A" && (current_user.sk.admin? || current_user.sk.corrector?) %>
-  <%= "(B)" if s.user.group == "B" && (current_user.sk.admin? || current_user.sk.corrector?) %>
-</td>
+<!-- Si on peut voir cette ligne -->
+<% if can_see %>
+  <!-- Nom -->
+  <td style="width:200px">
+    <%= raw(s.user.linked_name) %>
+  </td>
 
-<!-- Correcteur (si on l'affiche) -->
-<% if see_correctors %>
-  <td class="hidden-xs hidden-sm">
-  <% premier = true %>
-  <% s.followings.each do |f| %>
-    <%= " - " if !premier %>
-    <%= "Réservé par " if s.status == 0 && premier %>
-    <%= raw(f.user.linked_name) %>
-    <% premier = false %>
+  <!-- Correcteur (si on l'affiche) -->
+  <% if see_correctors %>
+    <td class="hidden-small">
+    <% premier = true %>
+    <% s.followings.each do |f| %>
+      <%= " - " if !premier %>
+      <%= raw(f.user.linked_name) %>
+      <% premier = false %>
+    <% end %>
+    </td>
   <% end %>
-  </td>
-<% end %>
 
-<!-- Section et niveau (si on l'affiche) -->
-<% if (@situation == 1 || @situation == 2) %>
-  <td class="hidden-xs hidden-sm" style="text-align:center; width:100px;">
-    <%= abreviation[s.problem.section_id-1] %>
-    <%= s.problem.level %>
-  </td>
-<% end %>
+  <!-- Section et niveau (si on l'affiche) -->
+  <% if (situation == 1 || situation == 2) %>
+    <td style="text-align:center; width:100px;">
+      <%= abreviation[s.problem.section_id-1] %>
+      <%= s.problem.level %>
+    </td>
+  <% end %>
 
-<% elsif !can_see %>
+<% else %>
   <td> </td>
-  <td class="hidden-xs hidden-sm"> </td>
-  <td class="hidden-xs hidden-sm"> </td>
+  <td> </td>
+  <td class="hidden-small"> </td>
 <% end %>
 
 <!-- Voir -->

@@ -16,13 +16,13 @@ html>body tbody.scroll {
 <script type="text/javascript">
 var showCorrect = function () {
   document.getElementById("btn_correct").style.display = 'none';
-  document.getElementById("all_correct").style.display = 'block';
-  document.getElementById("all_correct2").style.display = 'block';
+  document.getElementById("all_correct").style.display = 'table';
+  document.getElementById("all_correct").style.width = 'auto';
 }
 var showFalse = function () {
   document.getElementById("btn_false").style.display = 'none';
-  document.getElementById("all_false").style.display = 'block';
-  document.getElementById("all_false2").style.display = 'block';
+  document.getElementById("all_false").style.display = 'table';
+  document.getElementById("all_false").style.width = 'auto';
 }
 </script>
 
@@ -35,28 +35,13 @@ var showFalse = function () {
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>
-    <!-- Large -->
-    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px;">
+    <table class="table table-bordered" style="width:auto;">
     <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th style="width:250px;" class="hidden-small">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
     <tbody class="scroll">
     <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
-      <% end %>
-    </tbody>
-    </table>
-
-    <!-- Petit -->
-    <table class="table table-bordered visible-sm visible-xs" style="width:340px;">
-    <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
-    </thead>
-    <tbody class="scroll">
-    <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
+        <%= render 'submissions/showadmin', s: s, situation: 3 %>
       <% end %>
     </tbody>
     </table>
@@ -68,28 +53,13 @@ var showFalse = function () {
     <p>Aucune soumission.</p>
   <% else %>
     <%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()", id: "btn_correct" %>
-    <!-- Large -->
-    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px; display:none;" id="all_correct">
+    <table class="table table-bordered" style="width:840px; display:none;" id="all_correct">
     <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
     <tbody class="scroll">
     <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
-      <% end %>
-    </tbody>
-    </table>
-
-    <!-- Petit -->
-    <table class="table table-bordered hidden-md hidden-lg" style="width:340px; display:none;" id="all_correct2">
-    <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
-    </thead>
-    <tbody class="scroll">
-    <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
+        <%= render 'submissions/showadmin', s: s, situation: 3 %>
       <% end %>
     </tbody>
     </table>
@@ -99,121 +69,42 @@ var showFalse = function () {
 <% else %>
 
   <!-- Dernières soumissions de l'étudiant en question -->
-  <h3>Vos dernières soumissions</h3>
   <% @newsub = true %>
-  <% brouillon = false %>
-  <% aucun = true %>
-  <% encours = Submission.new %>
-  <% submissions = problem.submissions.where('user_id = ?', current_user.sk).order('created_at') %>
-  <% @new = true %>
+  <% submissions = problem.submissions.where('user_id = ? AND status >= 0', current_user.sk).order('created_at DESC') %>
 
-  <!-- Large -->
   <% if !submissions.empty? %>
-    <% @new = true %>
-      <% submissions.each do |s| %>
-        <% if s.status > 0 %>
-          <% if aucun %>
-            <table class="table table-bordered hidden-xs hidden-sm" style="width:640px;">
-            <thead class="fixed">
-            <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:70px;"></th></tr>
-            </thead>
-            <tbody class="scroll">
-          <% end %>
-          <%= render 'submissions/showuser', s: s, nom: false %>
-          <% aucun = false %>
-        <% elsif s.status == 0 %>
-          <% @newsub = false %>
-          <% encours = s %>
-        <% else %>
-          <% @brouillon = true %>
-        <% end %>
-      <% end %>
-    <% if !aucun %>
-      </tbody>
-      </table>
-    <% end %>
-  <% end %>
-
-  <!-- Petit -->
-  <% aucun = true %>
-  <% if !submissions.empty? %>
-      <% submissions.each do |s| %>
-        <% if s.status > 0 %>
-          <% if aucun %>
-            <table class="table table-bordered visible-xs visible-sm" style="width:390px;">
-            <thead class="fixed">
-            <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:70px;"></th></tr>
-            </thead>
-            <tbody class="scroll">
-          <% end %>
-          <%= render 'submissions/showuser', s: s, nom: false %>
-          <% aucun = false %>
-        <% end %>
-      <% end %>
-    <% if !aucun %>
-      </tbody>
-      </table>
-    <% end %>
-  <% end %>
-
-  <% if aucun %>
-    Aucune soumission précédente.<br/><br/>
-  <% end %>
-
-  <!-- Si il y a une soumission en cours, on l'affiche -->
-  <% unless @newsub %>
-    <h3>Soumission en cours</h3>
-    <!-- Large -->
-    <table class="table table-bordered hidden-xs hidden-sm" style="width:640px;">
+    <h3>Vos soumissions</h3>
+    
+    <table class="table table-bordered" style="width:auto;">
     <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:70px;"></th></tr>
+    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;" class="hidden-xs">Dernière activité</th><th style="width:70px;"></th></tr>
     </thead>
     <tbody class="scroll">
-    <%= render 'submissions/showuser', s: encours, nom: false %>
+    <% submissions.each do |s| %>
+      <%= render 'submissions/showuser', s: s %>
+      <% if s.status == 0 %>
+        <% @newsub = false %>
+      <% end %>
+    <% end %>
     </tbody>
     </table>
 
-    <!-- Petit -->
-    <table class="table table-bordered visible-xs visible-sm" style="width:390px;">
-    <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:70px;"></th></tr>
-    </thead>
-    <tbody class="scroll">
-    <%= render 'submissions/showuser', s: encours, nom: false %>
-    </tbody>
-    </table>
   <% end %>
 
   <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
   <% if current_user.sk.pb_solved?(problem) %>
   
   	<h3>Autres soumissions, étoilées</h3>
-  	<% @new = false %>
     <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, true).order('created_at DESC') %>
 
     <% if !submissions.empty? %>
-      <!-- Large -->
-      <table class="table table-bordered hidden-xs hidden-sm" style="width:840px;">
+      <table class="table table-bordered" style="width:auto;">
       <thead class="fixed">
-      <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
+      <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
       </thead>
       <tbody class="scroll">
       <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
-      <% end %>
-      </tbody>
-      </table>
-
-      <!-- Petit -->
-      <table class="table table-bordered visible-xs visible-sm" style="width:340px;">
-      <thead class="fixed">
-      <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
-      </thead>
-      <tbody class="scroll">
-      <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
+        <%= render 'submissions/showadmin', s: s, situation: 3 %>
       <% end %>
       </tbody>
       </table>
@@ -222,33 +113,17 @@ var showFalse = function () {
     <% end %>
 
     <h3>Autres soumissions, correctes</h3>
-    <% @new = false %>
     <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, false).order('created_at DESC') %>
 
     <% if !submissions.empty? %>
       <%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()", id: "btn_correct" %>
-      <!-- Large -->
-      <table class="table table-bordered hidden-xs hidden-sm" style="width:840px; display:none;" id="all_correct">
+      <table class="table table-bordered" style="width:auto; display:none;" id="all_correct">
       <thead class="fixed">
-      <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
+      <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
       </thead>
       <tbody class="scroll">
       <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
-      <% end %>
-      </tbody>
-      </table>
-
-      <!-- Petit -->
-      <table class="table table-bordered hidden-md hidden-lg" style="width:340px; display:none;" id="all_correct2">
-      <thead class="fixed">
-      <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
-      </thead>
-      <tbody class="scroll">
-      <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
+        <%= render 'submissions/showadmin', s: s, situation: 3 %>
       <% end %>
       </tbody>
       </table>
@@ -269,28 +144,13 @@ var showFalse = function () {
     <p>Aucune soumission.</p>
   <% else %>
     <%= link_to "Afficher les soumissions erronées ou en attente", "javascript:showFalse()", id: "btn_false" %>
-    <!-- Large -->
-    <table class="table table-bordered hidden-sm hidden-xs" style="width:840px; display:none;" id="all_false">
+    <table class="table table-bordered" style="width:auto; display:none;" id="all_false">
     <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
     <tbody class="scroll">
     <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
-      <% end %>
-    </tbody>
-    </table>
-
-    <!-- Petit -->
-    <table class="table table-bordered hidden-md hidden-lg" style="width:340px; display:none;" id="all_false2">
-    <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
-    </thead>
-    <tbody class="scroll">
-    <% submissions.each do |s| %>
-        <% @situation = 3 %>
-        <%= render 'submissions/showadmin', s: s, nom: true %>
+        <%= render 'submissions/showadmin', s: s, situation: 3 %>
       <% end %>
     </tbody>
     </table>

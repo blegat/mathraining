@@ -232,10 +232,10 @@ html>body tbody.scroll {
     
     <% moyenne_erreurs = (nb_erreur/nb_q.to_f).round(2) %>
 
-    <!-- Début du tableau des résolutions (cas normal) -->
-    <table class="table table-bordered hidden-xs" style="width:606px;">
+    <!-- Début du tableau des résolutions -->
+    <table class="table table-bordered" style="width:auto;">
     <thead class="fixed">
-    <tr><th style="width:150px;">Date</th><th style="width:50px;"><center>Heure</center></th><th style="width:340px;">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
+    <tr><th style="width:150px;">Date</th><th class="hidden-xs" style="width:50px;"><center>Heure</center></th><th class="user-show-quoi">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
     </thead>
     <tbody class="scroll">
   <% end %>
@@ -268,24 +268,24 @@ html>body tbody.scroll {
     <td style="width:150px;"><%= write_date_only(date) %></td>
 
     <!-- Heure -->
-    <td style="width:50px; text-align:center;"><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></td>
+    <td class="hidden-xs" style="width:50px; text-align:center;"><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></td>
 
     <!-- Quoi -->
-    <td style="width:340px;">
+    <td class="user-show-quoi">
     <% if a[:type] == 5 %>
       <% if cansee[a[:c_id]] %>
         <%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %>
       <% else %>
         Exercice
       <% end %>
-      <%= "(#{a[:chapter]})" %>
+      <span class="hidden-xs"><%= "(#{a[:chapter]})" %></span>
     <% else %>
       <% if a[:peutvoir] %>
         <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
       <% else %>
         Problème #<%= a[:number] %>
       <% end %>
-      <%= "(Niveau #{a[:level]})" %>
+      <span class="hidden-xs"><%= "(Niveau #{a[:level]})" %></span>
     <% end %>
     </td>
 
@@ -299,55 +299,7 @@ html>body tbody.scroll {
     </tbody>
     </table>
   <% else %>
-    <div class="hidden-xs"><b>Aucune activité.</b></div>
-  <% end %>
-
-  <!-- Début du tableau des résolutions (cas gsm) -->
-  <% if act.size > 0 %>
-    <table class="table table-bordered visible-xs" style="width:356px;">
-    <thead class="fixed">
-    <tr><th style="width:150px;">Date</th><th style="width:140px;">Quoi</th><th style="width:66px; text-align:center;">Points</th></tr>
-    </thead>
-    <tbody class="scroll">
-  <% end %>
-
-  <!-- On parcourt les actes un par un (cas gsm) -->
-  <% act.each do |a| %>
-    <% date = a[:time].in_time_zone %>
-
-    <tr style="background-color:<%= Section.color(a[:section]) %>;">
-
-    <!-- Date -->
-    <td style="width:150px;"><%= write_date_only(date) %></td>
-
-    <!-- Quoi -->
-    <td style="width:140px;">
-    <% if a[:type] == 5 %>
-      <% if cansee[a[:c_id]] %>
-        <%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %>
-      <% else %>
-        Exercice
-      <% end %>
-    <% else %>
-      <% if a[:peutvoir] %>
-        <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
-      <% else %>
-        Problème #<%= a[:number] %>
-      <% end %>
-    <% end %>
-    </td>
-
-    <!-- Points -->
-    <td style="width:50px; text-align:center;"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
-    </tr>
-
-  <% end %>
-
-  <% if act.size > 0 %>
-    </tbody>
-    </table>
-  <% else %>
-    <div class="visible-xs"><b>Aucune activité.</b></div>
+    <div><b>Aucune activité.</b></div>
   <% end %>
 
   </div>

@@ -22,7 +22,7 @@
 
       <!-- Dans le cas normal -->
       <% if @ss and (current_user.sk.admin || current_user.sk.corrector) %>
-        <form class="navbar-form navbar-left hidden-xs hidden-sm" role="search">
+        <form class="navbar-form navbar-left hidden-small" role="search">
 
         <!-- Nouvelles soumissions -->
 
@@ -67,7 +67,7 @@
       <% if @ss && !current_user.sk.admin? && !current_user.sk.corrector? %>
         <% noti = current_user.sk.notifs.count %>
         <% if noti != 0 %>
-          <form class="navbar-form navbar-left hidden-xs hidden-sm" role="search">
+          <form class="navbar-form navbar-left hidden-small" role="search">
           <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info" %>
           </form>
         <% end %>
@@ -78,7 +78,7 @@
       <!-- Dans le cas gsm -->
       <% if @ss and (current_user.sk.admin || current_user.sk.corrector) %>
 
-        <li class="visible-xs visible-sm">
+        <li class="hidden-large">
         <form role="search" style="margin-left:15px; margin-bottom:5px;">
         
         <!-- Nouvelles soumissions -->
@@ -118,7 +118,7 @@
       <% if @ss && !current_user.sk.admin? && !current_user.sk.corrector? %>
         <% noti = current_user.sk.notifs.count %>
         <% if noti != 0 %>
-          <form role="search" class="visible-xs visible-sm" style="margin-left:15px; margin-bottom:5px;">
+          <form role="search" class="hidden-large" style="margin-left:15px; margin-bottom:5px;">
           <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info" %>
           </form>
         <% end %>
