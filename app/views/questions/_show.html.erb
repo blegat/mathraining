@@ -1,5 +1,5 @@
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if f.online || (@ss && current_user.sk.admin?) %>
+<% if f.online || (@ss && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter))) %>
 
 <!-- Titre -->
 <%= render 'questions/title', f: f, number: number %>
@@ -10,7 +10,7 @@
 </div><br/>
 
 <!-- Si administrateur -->
-<% if @ss && current_user.sk.admin? %>
+<% if !@chapter.online? || (@ss && current_user.sk.admin?) %>
 
   <!-- Réponse -->
   <h4>Réponse</h4>

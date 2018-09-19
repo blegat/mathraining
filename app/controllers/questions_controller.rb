@@ -2,19 +2,18 @@
 class QuestionsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :explanation]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_item, :add_item, :switch_item, :update_item, :order_minus, :order_plus, :put_online, :update_explanation, :up_item, :down_item]
-  before_action :admin_user
-  before_action :online_question, only: [:add_item, :remove_item]
-  before_action :offline_question, only: [:destroy]
+  before_action :get_stuffs_1, only: [:new, :create]
+  before_action :get_stuffs_2, only: [:edit, :update, :destroy]
+  before_action :get_stuffs_3, only: [:manage_items, :remove_item, :add_item, :switch_item, :up_item, :down_item, :update_item, :order_minus, :order_plus, :put_online, :explanation, :update_explanation]
+  before_action :creating_user
+  before_action :offline_question, only: [:add_item, :remove_item, :destroy]
 
   # Créer une question
   def new
-    @chapter = Chapter.find(params[:chapter_id])
-    @question = Question.new
   end
 
   # Editer une question
   def edit
-    @question = Question.find(params[:id])
     if !@question.decimal
       @question.answer = @question.answer.to_i
     end
@@ -22,8 +21,6 @@ class QuestionsController < ApplicationController
 
   # Créer une question 2
   def create
-    @chapter = Chapter.find(params[:chapter_id])
-    @question = Question.new
     @question.online = false
     @question.chapter = @chapter
     @question.statement = params[:question][:statement]
@@ -70,11 +67,10 @@ class QuestionsController < ApplicationController
 
   # Editer un exercice 2
   def update
-    @question = Question.find(params[:id])
     @question.statement = params[:question][:statement]
     unless @question.online
       @question.level = params[:question][:level]
-      if @question.chapter.section.fondation?
+      if @chapter.section.fondation?
         @question.level = 0
       end
       if @question.is_qcm
@@ -116,7 +112,7 @@ class QuestionsController < ApplicationController
     end
     
     if @question.save
-      redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     else
       render 'edit'
     end
@@ -124,7 +120,6 @@ class QuestionsController < ApplicationController
 
   # Supprimer un exercice (plus possible si en ligne)
   def destroy
-    @chapter = @question.chapter
     @question.destroy
     flash[:success] = "Exercice supprimé."
     redirect_to @chapter
@@ -132,7 +127,6 @@ class QuestionsController < ApplicationController
 
   # Page pour modifier les choix
   def manage_items
-    @question = Question.find(params[:question_id])
   end
 
   # Supprimer un choix
@@ -182,13 +176,12 @@ class QuestionsController < ApplicationController
     unless @item.save
       flash[:info] = "Un choix ne peut être vide."
     end
-    redirect_to question_manage_items_path(params[:question_id])
+    redirect_to question_manage_items_path(@question)
   end
 
   # Modifier la véracité d'un choix
   def switch_item
     @item = Item.find(params[:id])
-    @question = @item.question
     if !@question.many_answers
       @question.items.each do |f|
         if f.ok
@@ -201,7 +194,7 @@ class QuestionsController < ApplicationController
       @item.ok = !@item.ok
     end
     @item.save
-    redirect_to question_manage_items_path(params[:question_id])
+    redirect_to question_manage_items_path(@question)
   end
   
   # Déplacer un choix vers le haut
@@ -225,44 +218,39 @@ class QuestionsController < ApplicationController
     else
       flash[:danger] = "Un choix ne peut être vide."
     end
-    redirect_to question_manage_items_path(params[:question_id])
+    redirect_to question_manage_items_path(@question)
   end
 
   # Déplacer
   def order_minus
-    @question = Question.find(params[:question_id])
     order_op(true, @question)
   end
 
   # Déplacer
   def order_plus
-    @question = Question.find(params[:question_id])
     order_op(false, @question)
   end
 
   # Mettre en ligne
   def put_online
-    @question = Question.find(params[:question_id])
     @question.online = true
     @question.save
     @section = @question.chapter.section
     @section.max_score = @section.max_score + @question.value
     @section.save
-    redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id)
+    redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
   end
 
   # Modifier l'explication
   def explanation
-    @question = Question.find(params[:question_id])
   end
 
   # Modifier l'explication 2
   def update_explanation
-    @question = Question.find(params[:question_id])
     @question.explanation = params[:question][:explanation]
     if @question.save
       flash[:success] = "Explication modifiée."
-      redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     else
       render 'explanation'
     end
@@ -270,16 +258,24 @@ class QuestionsController < ApplicationController
 
   ########## PARTIE PRIVEE ##########
   private
-
-  # Il faut être root pour supprimer un exercice en ligne
-  def offline_question
+  
+  def get_stuffs_1
+    @question = Question.new
+    @chapter = Chapter.find(params[:chapter_id])
+  end
+  
+  def get_stuffs_2
     @question = Question.find(params[:id])
-    redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id) if @question.online
+    @chapter = @question.chapter
+  end
+  
+  def get_stuffs_3
+    @question = Question.find(params[:question_id])
+    @chapter = @question.chapter
   end
 
-  # Vérifie que l'exercice est en ligne
-  def online_question
-    @question = Question.find(params[:question_id])
+  # Vérifie que l'exercice n'est pas en ligne
+  def offline_question
     redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id) if @question.online
   end
   
@@ -339,5 +335,9 @@ class QuestionsController < ApplicationController
     b.position = x
     a.save
     b.save
+  end
+  
+  def creating_user
+    redirect_to root_path unless (signed_in? && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter))))
   end
 end

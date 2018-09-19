@@ -158,6 +158,8 @@ Mathraining::Application.routes.draw do
 
   match '/add_followingmessage', to: "followingsubjects#add_followingmessage", :via => [:get]
   match '/remove_followingmessage', to: "followingsubjects#remove_followingmessage", :via => [:get]
+  
+  resources :chaptercreations
 
   resources :sessions, only: [:new, :create, :destroy]
 

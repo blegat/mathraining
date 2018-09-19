@@ -21,14 +21,12 @@
 <br/>
 
 <!-- Modifier / Supprimer -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if signed_in? && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter))) %>
   <br/>
   <center>
-  <% if !@chapter.online %>
-    <%= link_to "Modifier le nom, le niveau ou le résumé de ce chapitre", edit_chapter_path(@chapter) %> |
-    <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce chapitre ?" } %>
-  <% else %>
-    <%= link_to "Modifier le nom, le niveau ou le résumé de ce chapitre", edit_chapter_path(@chapter) %>
+  <%= link_to "Modifier le nom, le niveau ou le résumé de ce chapitre", edit_chapter_path(@chapter) %>
+  <% if !@chapter.online && current_user.sk.admin? %>
+    - <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce chapitre ?" } %>
   <% end %>
-  <br/>
+  </center>
 <% end %>

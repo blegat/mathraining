@@ -2,25 +2,24 @@
 class TheoriesController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order_minus, :order_plus, :put_online, :read, :unread, :latex]
-  before_action :admin_user, only: [:new, :edit, :create, :update, :destroy, :order_minus, :order_plus, :put_online]
+  before_action :admin_user, only: [:put_online]
+  before_action :get_stuffs_1, only: [:new, :create]
+  before_action :get_stuffs_2, only: [:edit, :update, :destroy]
+  before_action :get_stuffs_3, only: [:order_minus, :order_plus, :read, :unread, :latex, :put_online]
+  before_action :creating_user, only: [:new, :edit, :create, :update, :destroy, :order_minus, :order_plus]
 
   # Créer une théorie
   def new
-    @theory = Theory.new
-    @chapter = Chapter.find(params[:chapter_id])
   end
 
   # Editer une théorie
   def edit
-    @theory = Theory.find(params[:id])
   end
 
   # Créer une théorie 2
   def create
-    @theory = Theory.new
     @theory.title = params[:theory][:title]
     @theory.content = params[:theory][:content]
-    @chapter = Chapter.find(params[:chapter_id])
     @theory.online = false
     @theory.chapter = @chapter
     if @chapter.theories.empty?
@@ -44,7 +43,7 @@ class TheoriesController < ApplicationController
     @theory.content = params[:theory][:content]
     if @theory.save
       flash[:success] = "Point théorique modifié."
-      redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
+      redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
     else
       render 'edit'
     end
@@ -52,8 +51,6 @@ class TheoriesController < ApplicationController
 
   # Supprimer une théorie
   def destroy
-    @theory = Theory.find(params[:id])
-    @chapter = @theory.chapter
     @theory.destroy
     flash[:success] = "Point théorique supprimé."
     redirect_to @chapter
@@ -61,47 +58,41 @@ class TheoriesController < ApplicationController
 
   # Mettre une théorie en ligne
   def put_online
-    @theory = Theory.find(params[:theory_id])
     @theory.online = true
     @theory.save
-    redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
+    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
   # Déplacer
   def order_minus
-    @theory = Theory.find(params[:theory_id])
-    @theory2 = @theory.chapter.theories.where("position < ?", @theory.position).order('position').reverse_order.first
+    @theory2 = @chapter.theories.where("position < ?", @theory.position).order('position').reverse_order.first
     swap_position(@theory, @theory2)
     flash[:success] = "Point théorique déplacé vers le haut."
-    redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
+    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
   # Déplacer
   def order_plus
-    @theory = Theory.find(params[:theory_id])
-    @theory2 = @theory.chapter.theories.where("position > ?", @theory.position).order('position').first
+    @theory2 = @chapter.theories.where("position > ?", @theory.position).order('position').first
     swap_position(@theory, @theory2)
     flash[:success] = "Point théorique déplacé vers le bas."
-    redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
+    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
   # Marquer comme lu
   def read
-    @theory = Theory.find(params[:theory_id])
     current_user.sk.theories << @theory
-    redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
+    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
   # Marquer comme non lu
   def unread
-    @theory = Theory.find(params[:theory_id])
     current_user.sk.theories.delete(@theory)
-    redirect_to chapter_path(@theory.chapter, :type => 1, :which => @theory.id)
+    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
   # Rendre en LaTeX
   def latex
-    @theory = Theory.find(params[:theory_id])
     render text: markdown_to_latex(@theory.content)
   end
 
@@ -114,6 +105,25 @@ class TheoriesController < ApplicationController
     b.position = x
     a.save
     b.save
+  end
+  
+  def get_stuffs_1
+    @theory = Theory.new
+    @chapter = Chapter.find(params[:chapter_id])
+  end
+  
+  def get_stuffs_2
+    @theory = Theory.find(params[:id])
+    @chapter = @theory.chapter
+  end
+  
+  def get_stuffs_3
+    @theory = Theory.find(params[:theory_id])
+    @chapter = @theory.chapter
+  end
+  
+  def creating_user
+    redirect_to root_path unless (signed_in? && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter))))
   end
 
 end

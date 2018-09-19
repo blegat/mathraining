@@ -32,7 +32,7 @@
   <% end %>
 <% end %>
 
-<% if !@ss || !current_user.sk.admin? %>
+<% if @chapter.online && (!@ss || !current_user.sk.admin?) %>
   <!-- Marquer comme lu -->
   <center><%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => (!@ss || current_user.other) %></center>
   

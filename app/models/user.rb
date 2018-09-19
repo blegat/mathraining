@@ -70,6 +70,9 @@ class User < ActiveRecord::Base
   has_many :discussions, through: :links # dependent: :destroy does NOT destroy the associated discussions, but only the link!
   belongs_to :country
   
+  has_many :chaptercreations, dependent: :destroy
+  has_many :creating_chapters, through: :chaptercreations, source: :chapter
+  
   # BEFORE, AFTER
 
   before_save { self.email.downcase! }

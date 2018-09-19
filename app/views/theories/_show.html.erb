@@ -1,4 +1,4 @@
-<% if f.online || (@ss && current_user.sk.admin?) %>
+<% if f.online || (@ss && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter))) %>
   <h3><%= f.title %></h3>
   <div>
   <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="form-group"><div class="well" id="MathPreview"></div> <div class="well hidden-preview" id="MathBuffer"></div> <textarea id="MathInput" class="form-control" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>') )%>
@@ -6,8 +6,8 @@
   <br/>
 
   <div class="noprint">
-  <!-- Si administrateur -->
-  <% if @ss && current_user.sk.admin? %>
+  <!-- Si administrateur ou hors-ligne (pour étudiant créateur) -->
+  <% if !@chapter.online? || (@ss && current_user.sk.admin?) %>
     <center>
     <!-- Modifier/Supprimer -->
       <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> |
