@@ -27,8 +27,12 @@
 <!-- Email -->
 <div class="form-group">
   <%= f.label :email %>
-  <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :disabled => modif %>
+  <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :disabled => ((modif && !current_user.admin?) || (signed_in? && current_user.other && !current_user.root))  %>
 </div>
+
+<% if(signed_in? && !current_user.other && current_user.admin?) %>
+  (Vous pouvez modifier votre adresse car vous êtes administrateur.)<br/><br/>
+<% end %>
 
 <!-- Confirmation email -->
 <% if !modif %>

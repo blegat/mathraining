@@ -186,7 +186,7 @@ class UsersController < ApplicationController
   def update
     old_last_name = @user.last_name
     old_first_name = @user.first_name
-    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation))
+    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation, :email))
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
       flash[:success] = "Votre profil a bien été mis à jour."

@@ -174,7 +174,7 @@ class ProblemsController < ApplicationController
     @t = @problem.virtualtest
     @problem2 = @t.problems.where("position < ?", @problem.position).order('position').reverse_order.first
     swap_position(@problem, @problem2)
-    flash[:success] = "Problème déplacé vers la droite."
+    flash[:success] = "Problème déplacé vers le haut."
     redirect_to virtualtests_path
   end
 
@@ -184,7 +184,7 @@ class ProblemsController < ApplicationController
     @t = @problem.virtualtest
     @problem2 = @t.problems.where("position > ?", @problem.position).order('position').first
     swap_position(@problem, @problem2)
-    flash[:success] = "Problème déplacé vers la gauche."
+    flash[:success] = "Problème déplacé vers le bas."
     redirect_to virtualtests_path
   end
 
@@ -244,5 +244,13 @@ class ProblemsController < ApplicationController
       score = current_user.sk.rating
       redirect_to root_path if score < 200
     end
+  end
+  
+  def swap_position(a, b)
+    x = a.position
+    a.position = b.position
+    b.position = x
+    a.save
+    b.save
   end
 end
