@@ -108,7 +108,7 @@ class SolvedquestionsController < ApplicationController
     # On augmente chapter.nb_tries si c'est le premier exercice essayé
     already = false
     chapter = question.chapter
-    chapter.questions.each do |q|
+    chapter.questions.where("id != ?", question.id).each do |q|
       already = true if(Solvedquestion.where(:user => current_user.sk, :question => q).count > 0)
     end
     
