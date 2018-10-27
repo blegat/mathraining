@@ -4,7 +4,7 @@
 <% pct = f.nb_firstguess.to_f / f.nb_tries.to_f if f.nb_tries > 0 %>
 <% pct2 = [1.4*pct,1].min %>
 
-<h3>Exercice <%= number %>
+<h3>Exercice <%= number if f.online? %>
 <% if !@fondation %>
 <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
 <% end %>
