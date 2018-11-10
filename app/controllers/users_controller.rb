@@ -159,6 +159,7 @@ class UsersController < ApplicationController
       UserMailer.registration_confirmation(@user.id).deliver if Rails.env.production?
       
       @user.consent = DateTime.now
+      @user.adapt_name
       @user.save
       
       flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
@@ -189,6 +190,8 @@ class UsersController < ApplicationController
     if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation, :email))
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
+      @user.adapt_name
+      @user.save
       flash[:success] = "Votre profil a bien été mis à jour."
       if(current_user.root? and current_user.other)
         @user.update_attribute(:valid_name, true)
@@ -460,4 +463,5 @@ class UsersController < ApplicationController
   def group_user
     redirect_to root_path unless current_user.sk.admin or current_user.sk.group != ""
   end
+  
 end

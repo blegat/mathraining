@@ -31,7 +31,7 @@ class NoNumberValidator < ActiveModel::Validator
   def validate(record)
     [record.first_name, record.last_name].each do |r|
       ok = false
-      [0..(r.size-1)].each do |i|
+      (0..(r.size-1)).each do |i|
         if(r[i] =~ /[[:digit:]]/)
           record.errors[:base] << "Prénom et Nom ne peuvent pas contenir de chiffres"
         end
@@ -223,6 +223,42 @@ class User < ActiveRecord::Base
       return true
     else
       return false
+    end
+  end
+  
+  def adapt_name
+    (0..1).each do |j|
+      if(j == 0)
+        r = self.first_name
+      else
+        r = self.last_name
+      end
+      previousLetter = false
+      
+      (0..(r.size-1)).each do |i|
+        if(r[i] =~/[[:alpha:]]/)
+          if(previousLetter)
+            r[i] = r[i].downcase
+          end
+          previousLetter = true
+        else
+          previousLetter = false
+        end
+      end
+      
+      while(r[0] == ' ')
+        r = r.slice(1..-1)
+      end
+      
+      while(r[r.size-1] == ' ')
+        r = r.slice(0..-2)
+      end
+      
+      if(j == 0)
+        self.first_name = r
+      else
+        self.last_name = r
+      end
     end
   end
 
