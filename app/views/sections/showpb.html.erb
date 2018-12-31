@@ -8,8 +8,16 @@
 
 <%= render 'infopb' %>
 
-<!-- On vérifie que l'on a 200 points ou plus -->
-<% if !current_user.sk.admin? && current_user.sk.rating < 200 %>
+<% if !signed_in? %>
+
+<!-- Si pas connecté, on ne peut rien voir -->
+<div style="margin-top:15px; font-weight:bold;">
+Les problèmes ne sont accessibles qu'aux utilisateurs connectés et ayant un score d'au moins 200.
+</div>
+
+<% elsif !current_user.sk.admin? && current_user.sk.rating < 200 %>
+
+<!-- Si moins de 200 points, on ne peut rien voir -->
 <div style="margin-top:15px; font-weight:bold;">
 Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieur à 200.
 </div>
@@ -126,7 +134,7 @@ Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieu
     
     <!-- Prérequis (si admin) -->
     <% if current_user.sk.admin? %>
-      <div class="row intro">
+      <div class="intro">
       <b>Prérequis : </b>
       <% prems = true %>
       <% p.chapters.each do |c| %>
@@ -138,7 +146,7 @@ Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieu
       <% end %>
       </div>
     <% elsif brouillon %>
-      <div class="row intro">
+      <div class="intro">
       <i>(Vous avez un brouillon enregistré pour ce problème.)</i>
       </div>
     <% end %>

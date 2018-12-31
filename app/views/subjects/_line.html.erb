@@ -41,7 +41,11 @@
 
   <!-- Auteur du sujet -->
   <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
-    <%= raw(s.user.linked_name) %>
+    <% if s.user_id > 0 %>
+      <%= raw(s.user.linked_name) %>
+    <% else %>
+      <b>Message automatique</b>
+    <% end %>
   </td>
 
   <!-- Nombre de messages -->
@@ -63,7 +67,11 @@
 
   <!-- Dernier message -->
   <td class="hidden-small" style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
-    <%= raw(qui.linked_name) %>
+    <% if !qui.nil? %>
+      <%= raw(qui.linked_name) %>
+    <% else %>
+      <b>Message automatique</b>
+    <% end %>
   </td>
 
   <!-- Date du dernier message -->
@@ -84,7 +92,11 @@
     <!-- Dernier message -->
     <tr>
     <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle; padding-bottom:5px; border-bottom:1px dashed grey;">
-      <%= raw(qui.linked_name) %>
+      <% if !qui.nil? %>
+        <%= raw(qui.linked_name) %>
+      <% else %>
+        <b>Message automatique</b>
+      <% end %>
     </td>
     </tr>
 

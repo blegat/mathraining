@@ -1,0 +1,22 @@
+<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
+
+<% @ancientexte = session[:ancientexte] %>
+<% session[:ancientexte] = nil %>
+
+<%= form_for :contestsolution, url: contestproblem_contestsolutions_path(@contestproblem), :html => { :multipart => true } do |f| %>
+  <h3>Ma solution</h3>
+  <%= render 'submissions/form', f: f %>
+
+  <!-- Pièces jointes -->
+  <span id="fooBar"></span>
+
+  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="disabled"' if current_user.other %> />
+  <br/><br/>
+
+  <%= f.submit "Enregistrer", class: "btn btn-primary", style: "margin-bottom:5px;", :disabled => current_user.other %>
+<% end %>
+
+<script>
+PreviewSafe.Init();
+PreviewSafe.Update();
+</script>

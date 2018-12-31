@@ -5,6 +5,9 @@
 <% if !@subject.question.nil? %>
 	<%= render 'subjects/show_exo', f: @subject.question %>
 <% end %>
+<% if !@subject.contest.nil? %>
+  <%= render 'subjects/show_contest', contest: @subject.contest %>
+<% end %>
 
 <%= render 'subjects/content', ms: s, kind: "subject" %>
 

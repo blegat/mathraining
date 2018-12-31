@@ -1,0 +1,130 @@
+<!-- Style pour la barre de défilement dans le tableau -->
+<style type="text/css">
+
+html>body thead.fixed tr {
+  display: block;
+}
+
+html>body tbody.scroll {
+  display: block;
+  max-height: 440px;
+  overflow-y: scroll;
+  width: 100%;
+}
+</style>
+
+<script type="text/javascript">
+var showCorrect = function () {
+  document.getElementById("btn_correct").style.display = 'none';
+  document.getElementById("all_correct").style.display = 'table';
+  document.getElementById("all_correct").style.width = 'auto';
+}
+var showFalse = function () {
+  document.getElementById("btn_false").style.display = 'none';
+  document.getElementById("all_false").style.display = 'table';
+  document.getElementById("all_false").style.width = 'auto';
+}
+</script>
+
+<!-- Cette page affiche toutes les solutions que l'utilisateur peut voir -->
+
+<% mine_is_star = false %>
+
+<!-- Votre solution -->
+<% if signed_in? && !@contest.is_organized_by_or_admin(current_user) && @contestproblem.status >= 3 %>
+  <% sol = @contestproblem.contestsolutions.where(:user => current_user.sk).first %>
+  <% if !sol.nil? %>
+    <h3>Votre solution</h3>
+    <table class="table table-bordered" style="width:auto;">
+    <tbody class="scroll">
+      <% if sol.star %>
+        <% mine_is_star = true %>
+      <% end %>
+      <%= render 'contestsolutions/showsmall', sol: sol %>
+    </tbody>
+    </table>
+  <% end %>
+<% end %>
+
+<!-- Solutions étoilées + correctes -->
+<% if @contestproblem.status == 4 || (@contestproblem.status == 3 && @contest.is_organized_by_or_root(current_user)) %>
+  <h3>
+  <% if mine_is_star %>
+    Autres solutions étoilées
+  <% else %>
+    Solutions étoilées
+  <% end %>
+  </h3>
+  <% starred = @contestproblem.contestsolutions.where("star = ? AND (official = ? OR user_id != ?)", true, true, current_user.sk.id).order(:user_id).all %>
+  <% if starred.count > 0 %>
+    <table class="table table-bordered" style="width:auto;">
+    <tbody class="scroll">
+    <% starred.each do |sol| %>
+      <%= render 'contestsolutions/showsmall', sol: sol %>
+    <% end %>
+    </tbody>
+    </table>
+  <% else %>
+    Aucune solution étoilée.
+  <% end %>
+  
+  <h3>Autres solutions correctes</h3>
+  <% good = @contestproblem.contestsolutions.where("star = ? AND correct = ? AND corrected = ? AND (official = ? OR user_id != ?)", false, true, true, true, current_user.sk.id).order(:user_id).all %>
+  <% if good.count > 0 %>
+    <%= link_to "Afficher les autres solutions correctes", "javascript:showCorrect()", id: "btn_correct" %>
+    <table class="table table-bordered" style="width:auto; display:none;" id="all_correct">
+    <tbody class="scroll">
+    <% good.each do |sol| %>
+      <%= render 'contestsolutions/showsmall', sol: sol %>
+    <% end %>
+    </tbody>
+    </table>
+  <% else %>
+    Aucune autre solution correcte.
+  <% end %>
+<% end %>
+
+<!-- Solutions erronées -->
+<% if @contestproblem.status >= 3 && @contest.is_organized_by_or_root(current_user) %>
+  <h3>Solutions erronées / non-publiques</h3>
+  <% bad = @contestproblem.contestsolutions.where(:correct => false, :corrected => true).order(:user_id).all %>
+  <% if bad.count > 0 %>
+    <%= link_to "Afficher les solutions erronées et non-publiques", "javascript:showFalse()", id: "btn_false" %>
+    <table class="table table-bordered" style="width:auto; display:none;" id="all_false">
+    <tbody class="scroll">
+    <% bad.each do |sol| %>
+      <%= render 'contestsolutions/showsmall', sol: sol %>
+    <% end %>
+    </tbody>
+    </table>
+  <% else %>
+    Aucune solution incorrecte.
+  <% end %>
+<% end %>
+
+<!-- Solutions non-corrigées - bouton "publier" -->
+<% if @contestproblem.status == 3 && @contest.is_organized_by_or_root(current_user) %>
+  <h3>Solutions à corriger</h3>
+  <% tocorrect = @contestproblem.contestsolutions.where(:corrected => false).order(:user_id).all %>
+  <% if tocorrect.count > 0 %>
+    <table class="table table-bordered" style="width:auto;">
+    <tbody class="scroll">
+    <% tocorrect.each do |sol| %>
+      <%= render 'contestsolutions/showsmall', sol: sol %>
+    <% end %>
+    </tbody>
+    </table>
+  <% else %>
+    Aucune solution à corriger.
+  <% end %>
+  
+  <% if tocorrect.count == 0 %>
+    <center>
+    <% if @contestproblem.contestsolutions.where(:star => true).count == 0 %>
+      <i>Il faut au minimum une solution étoilée pour publier les résultats</i>
+    <% else %>
+      <%= button_to "Publier les résultats", contestproblem_publish_results_path(@contestproblem), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir publier les corrections ? Attention ! Il ne sera plus possible de modifier les corrections après cela." }  %>
+    <% end %>
+    </center>
+  <% end %>
+<% end %>

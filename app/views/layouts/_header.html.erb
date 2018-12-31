@@ -149,23 +149,21 @@
       </li>
 
       <!-- Problèmes -->
-      <% if @ss %>
-        <li id="fat-menu" class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            Problèmes <b class="caret"></b>
-          </a>
-          <ul class="dropdown-menu">
-            <% Section.order(:id).to_a.each do |f| %>
-              <% if !f.fondation %>
-                <li><%= link_to f.name, pb_sections_path(f) %></li>
-              <% end %>
+      <li id="fat-menu" class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          Problèmes <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+          <% Section.order(:id).to_a.each do |f| %>
+            <% if !f.fondation %>
+              <li><%= link_to f.name, pb_sections_path(f) %></li>
             <% end %>
-            <li class="divider"></li>
-
-            <li><%= link_to "Tests virtuels", virtualtests_path %></li>
-          </ul>
-        </li>
-      <% end %>
+          <% end %>
+          <li class="divider"></li>
+          <li><%= link_to "Tests virtuels", virtualtests_path %></li>
+          <li><%= link_to "Concours", contests_path %></li>
+        </ul>
+      </li>
 
       <!-- Forum -->
       <% if @ss %>

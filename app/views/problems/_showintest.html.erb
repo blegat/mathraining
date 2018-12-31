@@ -5,65 +5,44 @@
   <%= raw(htmlise(@problem.statement)) %>
 </div>
 
-<!-- Si administrateur -->
-<% if current_user.sk.admin? %>
+<!-- Solution de l'étudiant -->
+<h3>Votre solution</h3>
+<% statut = current_user.sk.status(@virtualtest) %>
+<% @submission = Submission.where(user_id: current_user.sk.id, problem_id: @problem.id, intest: true).first %>
 
-  <!-- Explication -->
-  <h3>Éléments de solution</h3>
-  <% if @problem.explanation.size == 0 %>
-    <p style="color:orange;"><b>Pas d'éléments disponibles </b> : Aidez vos collègues en rédigeant les grandes idées de la solution!</p>
-  <% else %>
-    <%= raw(htmlise(@problem.explanation)) %>
-    <br/>
-  <% end %>
+<% solutionexists = true %>
 
-  <br/>Ce problème est le <%= link_to "problème ##{@problem.number}", problem_path(@problem) %>.
+<!-- Si une soumission a déjà été faite -->
+<% if !@submission.nil? %>
+  <div id="the" class="myoverflow" style="margin-top:-12px;">
+    <%= render 'subjects/content', ms: @submission, kind: "submission_in_test" %>
+  </div>
 
-<!-- Si étudiant -->
+<!-- Si pas encore de soumission -->
 <% else %>
+  <% solutionexists = false %>
+  <div id="the" class="myoverflow">
+  <!-- On propose d'écrire une solution -->
+  <span style="color:orange;">Vous n'avez pas encore envoyé de solution à ce problème.</span><br/><br/>
+  N'hésitez pas à écrire tout ce que vous trouvez même s'il ne s'agit pas d'une solution complète au problème ! Lors d'un vrai test ou d'une vraie compétition, vous rendrez également vos feuilles de brouillon et celles-ci pourront vous rapporter des points si elles contiennent des éléments pouvant mener à une solution.<br/><br/>
+  <center><button class="btn btn-default btn-grey" onclick='return Rolling.develop("")'>Écrire une solution</button></center>
+  </div>
+<% end %>
 
-  <!-- Solution de l'étudiant -->
-  <h3>Votre solution</h3>
-  <% statut = current_user.sk.status(@virtualtest) %>
-  <% @submission = Submission.where(user_id: current_user.sk.id, problem_id: @problem.id, intest: true).first %>
 
-  <!-- Si une soumission a déjà été faite -->
-  <% if !@submission.nil? %>
-    <%= raw(bbcode(@submission.content)) %>
+<% @ancientexte = session[:ancientexte] %>
 
-    <!-- Pièces jointes -->
-    <%= render 'subjects/show_files', s: @submission %>
+<div id="form" class="myoverflow" style="height:0px; <%= 'margin-top:12px;' if solutionexists %>">
+<% if solutionexists %>
+  <%= render 'submissions/edit_in_test' %>
+<% else %>
+  <%= render 'submissions/new_in_test' %>
+<% end %>
+</div>
 
-    <!-- Si on peut encore soumettre, on propose de modifier -->
-    <% if statut == 0 %>
-      <br/><br/><center><%= button_to "Modifier cette solution", problem_intest_path(@problem), method: :get, class: 'btn btn-default btn-grey' %></center>
-
-    <!-- Si on ne peut plus soumettre, on affiche le score -->
-    <% else %>
-      <h3>Score obtenu</h3>
-      <% if @submission.score == -1 %>
-        <center><div style="padding:3px; font-size:24px; border:1px solid orange; background-color:#FFFFCC;">En attente de correction</span></center>
-      <% else %>
-        <center><div style="padding:3px; font-size:24px; border:1px solid orange; background-color:#FFFFCC;"><%= @submission.score %> / 7</span></center>
-      <% end %>
-      <br/>Ce problème est le <%= link_to "problème ##{@problem.number}", problem_path(@problem, :sub => @submission.id) %>.
-    <% end %>
-
-  <!-- Si pas encore de soumission -->
-  <% else %>
-    <!-- Si on peut encore soumettre, on propose d'écrire une solution -->
-    <% if statut == 0 %>
-      <span style="color:orange;">Vous n'avez pas encore envoyé de solution à ce problème.</span><br/><br/>
-      N'hésitez pas à écrire tout ce que vous trouvez même s'il ne s'agit pas d'une solution complète au problème! Lors d'un vrai test ou d'une vraie compétition, vous rendrez également vos feuilles de brouillon et celles-ci pourront vous rapporter des points si elles contiennent des éléments pouvant mener à une solution.<br/><br/>
-      <center><%= button_to "Écrire une solution", problem_intest_path(@problem), method: :get, class: 'btn btn-default btn-grey' %></center>
-
-    <!-- Si on ne peut plus soumettre, on affiche score 0 -->
-    <% else %>
-      Aucune solution envoyée.<br/>
-      <h3>Score obtenu</h3>
-      <center><div style="padding:3px; font-size:24px; border:1px solid orange; background-color:#FFFFCC;">0 / 7</span></center>
-      <br/>Ce problème est le <%= link_to "problème ##{@problem.number}", problem_path(@problem) %>.
-    <% end %>
-  <% end %>
-
+<% if !session["ancientexte"].nil? %>
+  <script>
+    Rolling.develop_quick("");
+  </script>
+  <% session.delete("ancientexte") %>
 <% end %>

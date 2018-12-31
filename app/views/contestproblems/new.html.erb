@@ -1,0 +1,17 @@
+<% provide(:title, 'Créer un problème') %>
+
+<h1>
+<span class="title-first"><%= link_to "Concours", contests_path %> ></span>
+<span class="title-second"><%= link_to "Concours ##{@contest.number}", @contest %> ></span>
+Ajouter un problème
+</h1>
+
+<%= form_for(@contestproblem, url: contest_contestproblems_path) do |f| %>
+  <%= render 'form', f: f, status: 0, start_time: @contestproblem.start_time, end_time: @contestproblem.end_time %>
+  <%= f.submit "Ajouter", class: "btn btn-lg btn-primary" %>
+<% end %>
+    
+<script>
+PreviewSafe.Init();
+PreviewSafe.Update();
+</script>

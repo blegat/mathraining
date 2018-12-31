@@ -73,6 +73,11 @@ class User < ActiveRecord::Base
   has_many :chaptercreations, dependent: :destroy
   has_many :creating_chapters, through: :chaptercreations, source: :chapter
   
+  has_many :contestorganizations, dependent: :destroy
+  has_many :organized_contests, through: :contestorganizations, source: :contest
+  has_many :followingcontests, dependent: :destroy
+  has_many :followed_contests, through: :followingcontests, source: :contest
+  
   # BEFORE, AFTER
 
   before_save { self.email.downcase! }

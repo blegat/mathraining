@@ -1,0 +1,65 @@
+<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
+
+<% @was_reserved = false %>
+
+<script type="text/javascript">
+var reserve = function () {
+  $.getScript("<%= reserve_sol_url(:id => @contestsolution) %>");
+}
+var unreserve = function () {
+  $.getScript("<%= unreserve_sol_url(:id => @contestsolution) %>");
+}
+</script>
+
+<% res = @contestsolution.reservation %>
+<% if res == 0 %>
+  <% @was_reserved = true %>
+  <% reservation_case = 1 %>
+<% elsif res == current_user.sk.id %>
+  <% reservation_case = 3 %>
+<% else %>
+  <% @was_reserved = true %>
+  <% reservation_case = 2 %>
+  <% other_name = User.find(res).name %>
+<% end %>
+
+<% if !@contestsolution.official? %>
+<br/>
+<% end %>
+
+<div id="correct1" style="background-color:#fffad2; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 1 %>">
+  Cliquez ici pour réserver.
+  <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver</button>
+</div>
+
+<div id="correct2" style="background-color:#ffd9de; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 2 %>">
+  Réservé par <b><%= other_name %></b>.
+</div>
+
+<div id="correct3" style="background-color:#d7efd9; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 3 %>">
+  Cliquez ici pour annuler.
+  <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
+</div>
+<br/>
+  
+<%= form_for @contestcorrection, :html => { :multipart => true } do |f| %>
+
+<%= render 'contestcorrections/form', f: f %>
+
+<%= render 'subjects/files', s: @contestcorrection %>
+<span id="fooBar"></span>
+<input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" id="PJ" <%= 'disabled="disabled"' if @was_reserved %> />
+<br/><br/>
+
+<% if !@contestsolution.official? %>
+  <%= f.button "Enregistrer (en attente)", type: "submit", name: "status", value: "unknown", class: "btn btn-primary", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT1" %>
+  <%= f.button "Enregistrer (erronée)", type: "submit", name: "status", value: "bad", class: "btn btn-danger", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT2" %>
+  <%= f.button "Enregistrer (correcte)", type: "submit", name: "status", value: "good", class: "btn btn-success", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT3" %>
+  <%= f.button "Enregistrer (étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT4" %>
+<% else %>
+  <%= f.button "Enregistrer (non-publique)", type: "submit", name: "status", value: "bad", class: "btn btn-danger", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT2" %>
+  <%= f.button "Enregistrer (publique)", type: "submit", name: "status", value: "good", class: "btn btn-success", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT3" %>
+  <%= f.button "Enregistrer (publique étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT4" %>
+<% end %>
+<button class="btn btn-default btn-grey" style="margin-bottom:5px;" onclick="return Rolling.hideActual();">Annuler</button>
+<% end %>

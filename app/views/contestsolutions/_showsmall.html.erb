@@ -1,0 +1,33 @@
+<!-- Couleur -->
+<% if !sol.corrected || (sol.contestproblem.status < 4 && !@contest.is_organized_by_or_root(current_user)) %>
+  <tr class="warning">
+<% elsif sol.correct %>
+  <tr class="success">
+<% else %>
+  <tr class="danger">
+<% end %>
+
+<!-- Icone -->
+<td style="width:70px; text-align:center;">
+  <% if sol.contestproblem.status < 4 && !@contest.is_organized_by_or_root(current_user) %>
+    <%= image_tag "tiret.gif" %>
+  <% else %>
+    <%= image_tag sol.icon %>
+  <% end %>
+</td>
+
+<!-- Qui -->
+<td style="width:200px;">
+  <% if sol.official %>
+    <b>Solution officielle</b>
+  <% else %>
+    <%= raw(sol.user.linked_name) %>
+  <% end %>
+</td>
+
+<!-- Voir -->
+<td style="text-align:center; width:56px;">
+<%= link_to "Voir", contestproblem_path(sol.contestproblem, :sol => sol.id) %>
+</td>
+
+</tr>

@@ -20,27 +20,6 @@ Mathraining::Application.routes.draw do
   resources :pictures, only: [:index, :show, :new, :create, :destroy]
 
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]
-
-  resources :qcms, only: [:update, :edit, :destroy] do
-    match '/order_plus', to: 'qcms#order_plus', :via => [:get], as: :order_plus
-    match '/order_minus', to: 'qcms#order_minus', :via => [:get], as: :order_minus
-    match '/put_online', to: 'qcms#put_online', :via => [:get], as: :put_online
-    match '/explanation', to: "qcms#explanation", :via => [:get]
-    match '/update_explanation', to: "qcms#update_explanation", :via => [:patch], as: :update_explanation
-    match '/manage_choices', to: "qcms#manage_choices", :via => [:get]
-    match '/add_choice', to: "qcms#add_choice", :via => [:post]
-    match '/update_choice/:id', to: "qcms#update_choice", :via => [:patch], as: :update_choice
-    match '/remove_choice/:id', to: "qcms#remove_choice", :via => [:get], as: :remove_choice
-    match '/switch_choice/:id', to: "qcms#switch_choice", :via => [:get], as: :switch_choice
-  end
-
-  resources :exercises, only: [:update, :edit, :destroy] do
-    match '/order_plus', to: 'exercises#order_plus', :via => [:get], as: :order_plus
-    match '/order_minus', to: 'exercises#order_minus', :via => [:get], as: :order_minus
-    match '/put_online', to: 'exercises#put_online', :via => [:get], as: :put_online
-    match '/explanation', to: "exercises#explanation", :via => [:get]
-    match '/update_explanation', to: "exercises#update_explanation", :via => [:patch], as: :update_explanation
-  end
   
   resources :questions, only: [:update, :edit, :destroy] do
     match '/order_plus', to: 'questions#order_plus', :via => [:get], as: :order_plus
@@ -123,8 +102,6 @@ Mathraining::Application.routes.draw do
     match '/read', to: 'chapters#read', :via => [:get]
 
     resources :theories, only: [:new, :create]
-    resources :exercises, only: [:new, :create]
-    resources :qcms, only: [:new, :create]
     resources :questions, only: [:new, :create]
   end
 
@@ -150,6 +127,25 @@ Mathraining::Application.routes.draw do
     match '/put_online', to: 'virtualtests#put_online', :via => [:get], as: :put_online
     match '/begin_test', to: 'virtualtests#begin_test', :via => [:get], as: :begin_test
   end
+  
+  resources :contests do
+    match '/put_online', to: 'contests#put_online', :via => [:get], as: :put_online
+    match '/add_organizer', to: 'contests#add_organizer', :via => [:get], as: :add_organizer
+    match '/remove_organizer', to: 'contests#remove_organizer', :via => [:get], as: :remove_organizer
+    
+    resources :contestproblems, only: [:new, :create]
+  end
+  
+  resources :contestproblems, only: [:show, :edit, :update, :destroy] do
+  match '/publish_results', to: 'contestproblems#publish_results', :via => [:get], as: :publish_results
+    resources :contestsolutions, only: [:create]
+  end
+  
+  resources :contestsolutions, only: [:update, :destroy]
+  match '/reserve_sol', to: 'contestsolutions#reserve_sol', :via => [:get], as: :reserve_sol
+  match '/unreserve_sol', to: 'contestsolutions#unreserve_sol', :via => [:get], as: :unreserve_sol
+  
+  resources :contestcorrections, only: [:update]
 
   resources :followingsubjects
 
@@ -158,6 +154,11 @@ Mathraining::Application.routes.draw do
 
   match '/add_followingmessage', to: "followingsubjects#add_followingmessage", :via => [:get]
   match '/remove_followingmessage', to: "followingsubjects#remove_followingmessage", :via => [:get]
+  
+  resources :followingcontests
+  
+  match '/add_followingcontest', to: "followingcontests#add_followingcontest", :via => [:get]
+  match '/remove_followingcontest', to: "followingcontests#remove_followingcontest", :via => [:get]
   
   resources :chaptercreations
 

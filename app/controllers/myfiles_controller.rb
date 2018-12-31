@@ -24,6 +24,8 @@ class MyfilesController < ApplicationController
       tot = about.subject.messages.where("id <= ?", about.id).count
       page = [0,((tot-1)/10).floor].max + 1
       redirect_to subject_path(about.subject, :page => page, :message => about.id)
+    elsif type == "Contestsolution"
+      redirect_to contestproblem_path(about.contestproblem, :sol => about)
     else
       redirect_to myfiles_path
     end
@@ -51,12 +53,12 @@ class MyfilesController < ApplicationController
   def fake_delete
     @thing = Myfile.find(params[:myfile_id])
     @fakething = @thing.fake_del()
+    flash[:success] = "Contenu de la pièce jointe supprimé."
 
     if @fakething.fakefiletable_type == "Subject"
       @subject = @fakething.fakefiletable
       @q = 0
       @q = params[:q].to_i if params.has_key?:q
-      flash[:success] = "Contenu de la pièce jointe supprimé."
       redirect_to subject_path(@subject, :q => @q)
     elsif @fakething.fakefiletable_type == "Message"
       @message = @fakething.fakefiletable
@@ -64,19 +66,18 @@ class MyfilesController < ApplicationController
       page = [0,((tot-1)/10).floor].max + 1
       @q = 0
       @q = params[:q].to_i if params.has_key?:q
-      flash[:success] = "Contenu de la pièce jointe supprimé."
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => @q)
     elsif @fakething.fakefiletable_type == "Tchatmessage"
-      flash[:success] = "Contenu de la pièce jointe supprimé."
       redirect_to pieces_jointes_path
     elsif @fakething.fakefiletable_type == "Submission"
       @submission = @fakething.fakefiletable
-      flash[:success] = "Contenu de la pièce jointe supprimé."
       redirect_to problem_path(@submission.problem, :sub => @submission)
     elsif @fakething.fakefiletable_type == "Correction"
       @submission = @fakething.fakefiletable.submission
-      flash[:success] = "Contenu de la pièce jointe supprimé."
       redirect_to problem_path(@submission.problem, :sub => @submission)
+    elsif @fakething.fakefiletable_type == "Contestsolution"
+      @contestsolution = @fakething.fakefiletable
+      redirect_to contestproblem_path(@contestsolution.contestproblem, :sol => @contestsolution)
     end
   end
 
@@ -92,15 +93,20 @@ class MyfilesController < ApplicationController
   def have_access
     @thing = Myfile.find(params[:id])
     if @thing.myfiletable_type == "Subject"
-      redirect_to root_path if (!current_user.sk.admin? && @thing.myfiletable.admin)
+      redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && @thing.myfiletable.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && @thing.myfiletable.wepion)
     elsif @thing.myfiletable_type == "Message"
-      redirect_to root_path if (!current_user.sk.admin? && @thing.myfiletable.subject.admin)
+      redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && @thing.myfiletable.subject.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && @thing.myfiletable.subject.wepion)
     elsif @thing.myfiletable_type == "Tchatmessage"
-      redirect_to root_path if (!current_user.sk.admin? && !current_user.sk.discussions.include?(@thing.myfiletable.discussion))
+      redirect_to root_path if (!current_user.sk.root? && !current_user.sk.discussions.include?(@thing.myfiletable.discussion))
     elsif @thing.myfiletable_type == "Submission"
       redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.myfiletable.user || current_user.sk.pb_solved?(@thing.myfiletable.problem))
     elsif @thing.myfiletable_type == "Correction"
       redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.myfiletable.submission.user || current_user.sk.pb_solved?(@thing.myfiletable.submission.problem))
+    elsif @thing.myfiletable_type == "Contestsolution"
+      contestsolution = @thing.myfiletable
+      contestproblem = contestsolution.contestproblem
+      contest = contestproblem.contest
+      redirect_to root_path unless (contest.is_organized_by_or_root(current_user) || contestsolution.user == current_user.sk || contestproblem.status == 4)
     end
   end
 

@@ -1,0 +1,81 @@
+<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
+
+<%= render 'shared/error_messages', object: f.object %>
+
+<% def convert_date(date) %>
+  <% if date.nil? %>
+    <% return "" %>
+  <% else %>
+    <% return date.to_time.strftime('%d/%m/%Y %H:%M') %>
+  <% end %>
+<% end %>
+
+<% if status == 1 %>
+  <b>Attention : les dates pour ce problème ont déjà été publiées ! Merci de ne pas les modifier sauf nécessité absolue.</b><br/><br/>
+<% end %>
+
+<% if status >= 2 %>
+  <b>Attention : ce problème a déjà été publié ! Merci de ne le modifier qu'en cas de nécessité absolue.</b><br/><br/>
+<% end %>
+
+<!-- Enoncé -->
+<div class="form-group">
+  <%= f.label "Énoncé" %>
+  <div class="well" id="MathPreview"></div>
+  <div class="well hidden-preview" id="MathBuffer"></div>
+  <%= render 'subjects/smiley', hiddentext: false %>
+  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :placeholder => "Merci d'éviter les smileys dans les énoncés" %>
+</div>
+  
+<!-- Origine -->
+<div class="form-group">
+  <%= f.label "Origine" %> (Compétition (format long) - Année - Numéro du problème : laisser blanc si d'origine inconnue)
+  <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
+</div>
+
+<!-- Date de début -->
+<div class="form-group">
+  <%= f.label "Parution du problème" %>
+  <div class="input-group date" id="start_time" style='width:500px;'>
+    <%= f.text_field :start_time, :class => "form-control", :value => convert_date(start_time), :disabled => (status >= 2) %>
+    <span class="input-group-addon">
+      <span class="glyphicon glyphicon-calendar"></span>
+    </span>
+  </div>
+</div>
+
+<!-- Date de fin -->
+<div class="form-group">
+  <%= f.label "Date limite pour l'envoi des solutions" %>
+  <div class="input-group date" id="end_time" style="width:500px;">
+    <%= f.text_field :end_time, :class => "form-control", :value => convert_date(end_time), :disabled => (status >= 3)  %>
+    <span class="input-group-addon">
+      <span class="glyphicon glyphicon-calendar"></span>
+    </span>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(function () {
+    $('#start_time').datetimepicker({
+      format: 'DD/MM/YYYY HH:mm',
+      useCurrent: false
+    });
+    $('#end_time').datetimepicker({
+      format: 'DD/MM/YYYY HH:mm',
+      useCurrent: false //Important! See issue #1075
+    });
+    $("#start_time").on("dp.change", function (e) {
+      $('#end_time').data("DateTimePicker").minDate(e.date);
+    });
+    $("#end_time").on("dp.change", function (e) {
+      $('#start_time').data("DateTimePicker").maxDate(e.date);
+    });
+    <% if !start_time.nil? %>
+      $('#end_time').data("DateTimePicker").minDate('<%= convert_date(start_time) %>');
+    <% end %>
+    <% if !end_time.nil? %>
+      $('#start_time').data("DateTimePicker").maxDate('<%= convert_date(end_time) %>');
+    <% end %>
+  });
+</script>

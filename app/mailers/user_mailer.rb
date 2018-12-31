@@ -41,5 +41,12 @@ class UserMailer < AsyncMailer
     @page = [0,((@tot-1)/10).floor].max + 1
     mail(to: @user.email, subject: "Mathraining - Message à l'attention des élèves de Wépion", from: "mathraining@mathraining.be")
   end
+  
+  def new_followed_contestproblem(userid, contestproblemid)
+    @user = User.find(userid)
+    @contestproblem = Contestproblem.find(contestproblemid)
+    @contest = @contestproblem.contest
+    mail(to: @user.email, subject: "Mathraining - Concours #" + @contest.number.to_s + " - Problème #" + @contestproblem.number.to_s, from: "mathraining@mathraining.be")
+  end
 
 end

@@ -8,12 +8,16 @@ Tests virtuels</h1>
 
 <%= render 'infovt' %>
 
-<!-- Vérifie que l'on est connecté (ne sert normalement à rien) -->
-<% if signed_in? %>
+<% if !signed_in? %>
 
-<!-- On vérifie que l'on a 200 points ou plus -->
-<% if !current_user.sk.admin? && current_user.sk.rating < 200 %>
+<!-- Si pas connecté, on ne peut rien voir -->
+<div style="font-weight:bold;">
+Les tests virtuels ne sont accessibles qu'aux utilisateurs connectés et ayant un score d'au moins 200.
+</div>
 
+<% elsif !current_user.sk.admin? && current_user.sk.rating < 200 %>
+
+<!-- Si moins de 200 points, on ne peut rien voir -->
 <div style="font-weight:bold;">
 Les tests virtuels ne sont pas accessibles aux utilisateurs ayant un score inférieur à 200.
 </div>
@@ -74,7 +78,7 @@ Les tests virtuels ne sont pas accessibles aux utilisateurs ayant un score infé
     
     <!-- Prérequis (si admin) -->
     <% if current_user.sk.admin? %>
-      <div class="row intro">
+      <div class="intro">
       <b>Prérequis : </b>
       <% prems = true %>
       <% pre.each do |c| %>
@@ -273,8 +277,6 @@ Les tests virtuels ne sont pas accessibles aux utilisateurs ayant un score infé
 
 <% if compteur == 0 %>
   Aucun test virtuel n'est disponible.
-<% end %>
-
 <% end %>
 
 <% end %>

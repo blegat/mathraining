@@ -1,0 +1,126 @@
+<% provide(:title, 'Tests virtuels') %>
+
+<% compteur = 0 %>
+
+<h1>
+<button class="information-tag" onclick="return Info.toggle();">?</button>
+Concours</h1>
+
+<%= render 'infocontest' %>
+
+<% if !signed_in? || (!current_user.sk.admin? && current_user.sk.rating < 200) %>
+<div style="font-weight:bold; margin-bottom:15px;">
+Les problèmes des concours et leurs résultats sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.
+</div>
+<% end %>
+
+<% Contest.order("number DESC").all.each do |c| %>
+  <% if c.status > 0 || c.is_organized_by_or_admin(current_user) %>
+  
+    <% real_status = c.status %>
+    <% nb_prob = c.contestproblems.count %>
+    
+    <% if nb_prob > 0 %>
+      <% first_date = c.contestproblems.order(:number).first.start_time %>
+      <% last_date = DateTime.new(2000,1,1) %>
+      <% c.contestproblems.each do |p| %>
+        <% if last_date < p.end_time %>
+          <% last_date = p.end_time %>
+        <% end %>
+      <% end %>
+      <% if c.status == 1 %>
+        <% if DateTime.now < first_date %>
+          <% real_status = 0 %>
+        <% elsif DateTime.now > last_date %>
+          <% real_status = 2 %>
+        <% end %>
+      <% end %>
+    <% end %>
+    
+    <% if real_status == 0 %>
+      <% classe = "greyy" %>
+    <% elsif real_status == 1 %>
+      <% classe = "orangey" %>
+    <% elsif real_status == 2 %>
+      <% classe = "yellowy" %>
+    <% end %>
+    
+    <table class="table table-bordered virtualtest <%= classe %>">
+    <tr><td class="title">
+    <center><h3><%= link_to "Concours ##{c.number}", c %></h3></center>
+    </td></tr>
+    
+    <tr><td class="real-content">
+    
+    <div class="intro">
+    <%= raw(bbcode(c.description)) %>
+    </div>
+    
+    <div class="row content">
+    <div class="module left-info">
+    <h4>Informations</h4>
+    
+    <% if nb_prob > 0 %>
+      Début : <b><%= write_date_only(first_date) %></b><br/>
+      Fin : <b><%= write_date_only(last_date) %></b><br/>
+    <% end %>
+    <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %>
+    <% if real_status == 0 %>
+      (à venir)
+    <% elsif real_status == 1 %>
+      (en cours)
+    <% elsif real_status == 2 %>
+      (terminé)
+    <% end %>
+    
+    </div>
+    
+    <div class="module right-info">
+    <h4>Statistiques</h4>
+      <% nb_prob2 = c.contestproblems.where(:status => 4).count %>
+      <% if nb_prob2 == 0 %>
+        <i>Aucun problème corrigé</i>
+      <% else %>
+        <% if nb_prob2 < nb_prob %>
+          Après <%= nb_prob2 %> problème<%= 's' if nb_prob2 >= 2 %> :<br/>
+        <% else %>
+          À la fin du concours :<br/>
+        <% end %>
+        <% best = c.contestscores.where(:rank => 1).first %>
+        <% if best.nil? %>
+          <i>Personne n'a résolu de problème</i>
+        <% else %>
+          <% numtotal = c.contestscores.count %>
+          <b><%= numtotal %></b> participants classés<br/>
+          <% bestscore = best.score %>
+          <% numbest = c.contestscores.where(:rank => 1).count %>
+          Meilleur score : <b><%= bestscore %>/<%= nb_prob2 %></b> (<%= numbest %> fois)
+        <% end %>
+      <% end %>
+    </div>
+    </div>
+    
+    <div class="row content">
+      <div class="module bottom-part" style="text-align:left;">
+      Organisé par 
+      <% i = 0 %>
+      <% total = c.organizers.count %>
+      <% c.organizers.order(:last_name, :first_name).each do |o| %>
+        <% i = i+1 %>
+        <%= raw(o.linked_name) %><% if i == total - 1 %> et<% elsif i < total - 1 %>, <% else %>.<% end %>
+      <% end %>
+      </div>
+    </div>
+    
+    </td></tr></table>
+    
+    
+  <% end %>
+<% end %>
+
+<!-- Ajouter un concours -->
+<% if signed_in? && current_user.sk.admin? %>
+  <center>
+  <%= button_to "Ajouter un concours", new_contest_path, method: :get, class: 'btn btn-lg btn-default btn-grey' %>
+  </center>
+<% end %>

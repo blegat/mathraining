@@ -18,13 +18,13 @@
 - Test #<%= @problem.virtualtest.number %>
 <% end %>
   <%= "(en construction)" if !@problem.online %>
-  <% if !signed_in? || !current_user.sk.admin %>
+  <% if !current_user.sk.admin %>
   <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
   <% end %>
 </h1>
 
 <!-- Si administrateur -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if current_user.sk.admin? %>
 
   <!-- Dans un test virtuel ou non -->
   <% if !@problem.online? %>
@@ -116,15 +116,15 @@
     <br/><br/>
   <% end %>
 
-  <i>(Origine du problème :
+  <i>Origine du problème :
   <% if @problem.origin.nil? || @problem.origin.size == 0 %>
     <% if current_user.sk.admin? %>
-      <span style="color:orange;">Inconnue</span>)
+      <span style="color:orange;">Inconnue</span>
     <% else %>
-      Inconnue)
+      Inconnue
     <% end %>
   <% else %>
-    <b><%= @problem.origin %></b>)
+    <b><%= @problem.origin %></b>
   <% end %>
   </i>
 <% end %>
@@ -132,7 +132,7 @@
 
 <!-- Si administrateur ou correcteur ayant résolu -->
 
-<% if signed_in? && (current_user.sk.admin? || current_user.sk.corrector? && @resolu) %>
+<% if (current_user.sk.admin? || current_user.sk.corrector? && @resolu) %>
 
   <!-- Explication -->
   <% if @problem.explanation.size == 0 %>
@@ -147,7 +147,7 @@
 
 <!-- Si administrateur -->
 
-<% if signed_in? && current_user.sk.admin? %>
+<% if current_user.sk.admin? %>
 
   <!-- Modifier/Supprimer/... -->
 
@@ -194,29 +194,28 @@
 <% else %>
 
   <!-- Affiche les soumissions qu'on peut voir -->
-  <%= render 'submissions/index', problem: @problem if signed_in? %>
+  <%= render 'submissions/index', problem: @problem %>
 
   <!-- Si pas encore résolu le problème -->
   <% @brouillon = false %>
-  <% unless (signed_in? && @resolu) || (signed_in? && !@newsub) %>
-    <% if !signed_in? %>
-    <br/>
-    <% end %>
+  <% unless (@resolu || !@newsub) %>
     <% @brouillon = true if @problem.submissions.where('user_id = ? AND status < 0', current_user.sk).count > 0 %>
-    <% if !@brouillon %>
-      <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
-    <% else %>
-      <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Reprendre le brouillon</button>
+    <% if soumission != 0 %>
+      <% if !@brouillon %>
+        <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
+      <% else %>
+        <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Reprendre le brouillon</button>
+      <% end %>
     <% end %>
   <% end %>
 <% end %>
 
 <!-- Si on veut écrire une nouvelle soumission -->
 <% if soumission == 0 %>
-  <hr>
 
   <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
-  <% unless (signed_in? && @resolu) || (signed_in? && !@newsub) %>
+  <% unless (@resolu || !@newsub) %>
+    <hr>
     <% if !@brouillon %>
       <%= render 'submissions/new', problem: @problem %>
     <% else %>
@@ -229,7 +228,7 @@
   <% @submission = Submission.find_by_id(soumission) %>
 
   <!-- On vérifie que l'on peut la regarder -->
-  <% if signed_in? && @submission.problem == @problem && (@submission.status >= 0 || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.status == 2) || current_user.sk.admin || (current_user.sk.corrector && @resolu && @submission.visible)) %>
+  <% if @submission.problem == @problem && (@submission.status >= 0 || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.status == 2) || current_user.sk.admin || (current_user.sk.corrector && @resolu && @submission.visible)) %>
     <hr>
     <%= render 'submissions/show' %>
   <% end %>

@@ -50,8 +50,10 @@ Pièces jointes
     Brouillon
   <% elsif type == "Submission" || type == "Correction" %>
     Soumission
-  <% else %>
+  <% elsif type == "Tchatmessage" %>
     Message personnel
+  <% else %>
+    Solution
   <% end %>
   </td>
 

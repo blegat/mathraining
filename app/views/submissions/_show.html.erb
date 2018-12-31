@@ -1,12 +1,3 @@
-<script type="text/javascript">
-var reserve = function () {
-  $.getScript("<%= reserve_url(:submission_id => @submission) %>");
-}
-var unreserve = function () {
-  $.getScript("<%= unreserve_url(:submission_id => @submission) %>");
-}
-</script>
-
 <!-- Enlève la notification de l'étudiant s'il faut -->
 <% if @submission.user == current_user.sk %>
 	<% notif = current_user.sk.notifs.where(submission_id: @submission.id) %>
@@ -38,6 +29,15 @@ var unreserve = function () {
 <% reservation_case = 0 %>
 <% corrector_name = "" %>
 <% if current_user.sk != @submission.user && @submission.status == 0 && @submission.visible %>
+  <script type="text/javascript">
+  var reserve = function () {
+    $.getScript("<%= reserve_url(:submission_id => @submission) %>");
+  }
+  var unreserve = function () {
+    $.getScript("<%= unreserve_url(:submission_id => @submission) %>");
+  }
+  </script>
+  
   <% f = @submission.followings.first %>
   <% if f.nil? %>
     <% reservation_case = 1 %>

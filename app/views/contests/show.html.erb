@@ -1,0 +1,235 @@
+<% provide(:title, "Concours ##{ @contest.number }") %>
+
+<!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
+<h1 style="margin-bottom:0px;">
+<table style="width:100%;">
+<tr><td>
+<span class="title-first"><%= link_to "Concours", contests_path %> ></span>
+Concours #<%= @contest.number %>
+</td>
+
+<% if signed_in? %>
+  <td class="hidden-xs" style="padding-left:15px; text-align:right;">
+  <% if !current_user.followed_contests.exists?(@contest.id) %>
+    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+  <% else %>
+    <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
+  <% end %>
+  </td>
+<% end %>
+
+</tr>
+</table>
+</h1>
+
+<% if signed_in? %>
+  <div class="visible-xs" style="text-align:center; padding-top:10px;">
+  <% if !current_user.followed_contests.exists?(@contest.id) %>
+    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+  <% else %>
+    <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
+  <% end %>
+  </div>
+<% end %>
+
+<h3 style="margin-top:15px;">Description</h3>
+
+<%= raw(bbcode(@contest.description)) %>
+
+<br/><br/><i>Organisateurs du concours : </i>
+<% c = 0 %>
+<% total = @contest.organizers.count %>
+<% @contest.organizers.order(:last_name, :first_name).each do |o| %>
+  <% c = c+1 %>
+  <%= raw(o.linked_name) %><% if (signed_in? && current_user.sk.admin?) && @contest.status == 0 %> (<%= link_to "supprimer", contest_remove_organizer_path(@contest, :user_id => o.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
+<% end %>
+
+<% if signed_in? && current_user.sk.admin? && @contest.status == 0 %>
+<form action="<%= contest_add_organizer_path(@contest) %>" method="get" class="form-inline" style="margin-top:10px;">
+  <% mtn = DateTime.now.to_date - 14 %>
+  <%= select_tag :user_id, options_for_select(User.where("last_connexion >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Nouvel organisateur..."), -1), :class => "form-control select2", :style => "width:300px;" %>
+  <%= button_tag "Ajouter", class: "btn btn btn-primary", name: "" %>
+</form>
+<% end %>
+
+<% nb_prob = @contest.contestproblems.count %>
+<% nb_prob2 = @contest.contestproblems.where(:status => 4).count %>
+
+<% if nb_prob2 > 0 %>
+
+  <h3>Classement
+  <% if nb_prob2 == nb_prob %>
+    final
+  <% else %>
+    après <%= nb_prob2 %> problème<%= 's' if nb_prob2 >= 2 %>
+  <% end %>
+  </h3>
+  
+  <% if @contest.contestscores.count == 0 %>
+    Personne n'a résolu de problème.
+  <% else %>
+    
+    <% allprobs = @contest.contestproblems.order(:number) %>
+    
+    <table class="table table-bordered" style="width:<%= 20+230+20*nb_prob+60 %>px;">
+    <tr><th style="width:20px;"></th>
+    <th style="width:230px;">Nom</th>
+    <% (1..nb_prob).each do |i| %>
+      <th style="text-align:center; width:20px;">P<%= i %></th>
+    <% end %>
+    <th style="text-align:center; width:60px;">Score</th>
+    </tr>
+    
+    <% prevrank = 0 %>
+    <% @contest.contestscores.order(:rank, :user_id).each do |line| %>
+    <tr>
+    <td>
+    <% if prevrank != line.rank %>
+      <%= line.rank %>.
+      <% prevrank = line.rank %>
+    <% end %>
+    </td>
+    <td><%= raw(line.user.linked_name) %></td>
+    <% allprobs.each do |p| %>
+      <% sol = p.contestsolutions.where(:user => line.user, :correct => true).first %>
+      <% if p.status == 4 && !sol.nil? %>
+        <td style="background-color:#ddffdd; text-align:center;">
+        <%= link_to "V", contestproblem_path(p, :sol => sol) %>
+        </td>
+      <% elsif p.status == 4 %>
+        <td style="background-color:#ffdddd; text-align:center;"></td>
+      <% else %>
+        <td></td>
+      <% end %>
+    <% end %>
+    <td style="text-align:center;"><%= line.score %></td>
+    </tr>
+    <% end %>
+    </table>
+  <% end %>
+
+<% end %>
+
+<h3>Problèmes</h3>
+
+<% organizer = @contest.is_organized_by_or_admin(current_user) %>
+
+<% @contest.contestproblems.order(:number).each do |p| %>
+  <% can_see = 0 %>
+  <% if p.status <= 1 %>
+    <% classe = "greyy" %>
+  <% elsif p.status == 2 %>
+    <% classe = "orangey" %>
+    <% can_see = 1 %>
+  <% elsif p.status == 3 %>
+    <% classe = "yellowy" %>
+    <% can_see = 1 %>
+  <% else %>
+    <% classe = "yellowy" %>
+    <% can_see = 2 %>
+  <% end %>
+  
+  <% if organizer %>
+    <% can_see = 2 %>
+  <% end %>
+  
+  <table class="table table-bordered problem <%= classe %>">
+  <tr><td class="title">
+  <center><h3>
+  <% if can_see >= 1 %>
+    <%= link_to "Problème ##{p.number}", p %>
+  <% else %>
+     Problème #<%= p.number %>
+  <% end %>
+  </h3></center>
+  </td></tr>
+  
+  <tr><td class="real-content">
+  
+  <div class="intro">
+  <i>Solutions acceptées du <%= write_date(p.start_time) %> au <%= write_date(p.end_time) %>.</i>
+  </div>
+    
+  <% if can_see >= 1 %>
+    <div class="row content">
+    
+    <% taille = p.statement.size() %>
+    <% liste = false %>
+    <% if taille >= 5 %>
+      <% fin = p.statement[taille-5, taille-1] %>
+      <% if fin[3,4] == "$$" %>
+        <% liste = true %>
+      <% end %>
+    <% end %>
+    
+    <div class="module left-part" style="<%= "padding-bottom:0px !important;" if liste %>">
+    <center><h4>Énoncé</h4></center>
+    <%= raw(bbcode(p.statement)) %>
+    </div>
+    
+    <div class="module right-part">
+    <center><h4>Statistiques</h4></center>
+    <center>
+    <% if p.status >= 2 %>
+      <% nb_sol = p.contestsolutions.count - 1 %>
+      Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
+      <% if p.status == 4 %>
+        <% nb_cor = p.contestsolutions.where(:correct => true, :official => false).count %>
+        et résolu par <b><%= nb_cor %></b> d'entre elles<br/>
+      <% elsif p.status == 3 %>
+        En cours de correction
+      <% end %>
+    <% end %>
+    </center>
+    </div>    
+    </div>
+  <% end %>
+  
+  <% if can_see == 2 && !p.origin.nil? && p.origin != "" %>
+    <div class="row content">
+    <div class="module bottom-part">
+    Origine du problème : <b><%= p.origin %></b>
+    </div>
+    </div>
+  <% end %>
+  
+  </td></tr>
+  </table>
+<% end %>
+
+<% num = 0 %>
+
+<% if organizer %>
+  <br/>
+  <center>
+  <%= link_to "Modifier ce concours", edit_contest_path(@contest) %>
+  <% num = num+1 %>
+<% end %>
+
+<% if @contest.status == 0 && @contest.is_organized_by(current_user) %>
+  <% if num == 0 %>
+    <br/><br/><center>
+  <% else %>
+    - 
+  <% end %>
+  <%= link_to "Ajouter un problème", new_contest_contestproblem_path(@contest) %>
+  <% num = num+1 %>
+<% end %>
+
+<% if signed_in? && @contest.status == 0 && current_user.sk.admin? %>
+  <% if num == 0 %>
+    <br/><br/><center>
+  <% else %>
+    - 
+  <% end %>
+  <%= link_to "Mettre le concours en ligne", contest_put_online_path(@contest), data: { confirm: "Êtes-vous sûr de vouloir mettre ce concours en ligne ?" } %>
+  <% num = num+1 %>
+<% end %>
+
+<% if num > 0 %>
+  </center>
+<% end %>
+
+<% if @contest.status == 0 && @contest.is_organized_by(current_user) && !current_user.sk.admin? %>
+  <br/><center>Pour mettre le concours en ligne, contacter un administrateur</center>
+<% end %>

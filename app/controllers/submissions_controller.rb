@@ -1,16 +1,15 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
-  before_action :signed_in_user, only: [:intest]
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect]
   before_action :get_problem
   before_action :root_user, only: [:update_score, :uncorrect]
-  before_action :admin_user, only: [:destroy]
+  before_action :admin_user_or_in_test, only: [:destroy]
   before_action :corrector_user, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
   before_action :has_access, only: [:create]
   before_action :enough_points, only: [:create]
-  before_action :in_test, only: [:intest, :create_intest, :update_intest]
+  before_action :in_test, only: [:create_intest, :update_intest]
   before_action :brouillon, only: [:update_brouillon]
 
   # Créer une nouvelle soumission
@@ -67,25 +66,6 @@ class SubmissionsController < ApplicationController
     end
   end
 
-  # Voir une soumission pendant un test
-  def intest
-    @neworedit = 0
-    @submission = @problem.submissions.where(user_id: current_user.sk.id, intest: true).first
-    if @submission.nil?
-      @neworedit = 0
-    else
-      @neworedit = 1
-    end
-
-    @numero = 0
-    x = 1
-
-    @t.problems.order(:position).each do |p|
-      @numero = x if p.id == @problem.id
-      x = x+1
-    end
-  end
-
   # Faire une nouvelle soumission
   def create_intest
     oldsub = @problem.submissions.where(user_id: current_user.sk.id, intest: true).first
@@ -105,7 +85,7 @@ class SubmissionsController < ApplicationController
     if @error
       flash[:danger] = @error_message
       session[:ancientexte] = params[:submission][:content]
-      redirect_to problem_intest_path(@problem) and return
+      redirect_to virtualtest_path(@t, :p => @problem.id) and return
     end
 
     submission = @problem.submissions.build(content: params[:submission][:content])
@@ -131,7 +111,7 @@ class SubmissionsController < ApplicationController
       else
         flash[:danger] = "Une erreur est survenue."
       end
-      redirect_to problem_intest_path(@problem)
+      redirect_to virtualtest_path(@t, :p => @problem.id)
     end
   end
 
@@ -222,13 +202,15 @@ class SubmissionsController < ApplicationController
   end
 
   def destroy
-    @submission = Submission.find(params[:id])
-    @problem = @submission.problem
-    @submission.corrections.each do |c|
-      c.destroy
-    end
     @submission.destroy
-    redirect_to problem_path(@problem)
+    if current_user.sk.admin?
+      flash[:success] = "Soumission supprimée."
+      redirect_to problem_path(@problem)
+    else
+      # Etudiant en test
+      flash[:success] = "Solution supprimée."
+      redirect_to virtualtest_path(@t, :p => @problem.id)
+    end
   end
   
   # Modifier le score d'une soumission à un test
@@ -349,6 +331,14 @@ class SubmissionsController < ApplicationController
       redirect_to virtualtests_path if current_user.sk.status(@t) != 0
     end
   end
+  
+  def admin_user_or_in_test
+    @submission = Submission.find(params[:id])
+    @problem = @submission.problem
+    if !current_user.sk.admin?
+      in_test
+    end
+  end
 
   # Est-ce qu'on est propriétaire de ce brouillon?
   def brouillon
@@ -373,7 +363,7 @@ class SubmissionsController < ApplicationController
   
   def update_submission
     if @context == 1
-      lepath = problem_intest_path(@problem)
+      lepath = virtualtest_path(@t, :p => @problem.id) # update in test
     elsif @context == 2
       lepath = problem_path(@problem, :sub => 0)
     else
@@ -381,7 +371,8 @@ class SubmissionsController < ApplicationController
     end
     
     params[:submission][:content].strip! if !params[:submission][:content].nil?
-    if @submission.update_attributes(params.require(:submission).permit(:content))
+    @submission.content = params[:submission][:content]
+    if @submission.valid?
       totalsize = 0
 
       @submission.myfiles.each do |f|
@@ -402,13 +393,15 @@ class SubmissionsController < ApplicationController
       @error = false
       @error_message = ""
 
-      update_files(@submission, "Submission") # Fonction commune pour toutes les pièces jointes
+      update_files(@submission) # Fonction commune pour toutes les pièces jointes
 
       if @error
         flash[:danger] = @error_message
         session[:ancientexte] = params[:submission][:content]
         redirect_to lepath and return
       end
+      
+      @submission.save
 
       if @context == 1
         flash[:success] = "Votre solution a bien été modifiée."

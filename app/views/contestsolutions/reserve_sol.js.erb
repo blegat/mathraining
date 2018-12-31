@@ -1,0 +1,27 @@
+var correct1 = document.getElementById("correct1");
+var correct2 = document.getElementById("correct2");
+var correct3 = document.getElementById("correct3");
+
+var MI = document.getElementById("MathInput");
+var PJ = document.getElementById("PJ");
+var BT1 = document.getElementById("BT1");
+var BT2 = document.getElementById("BT2");
+var BT3 = document.getElementById("BT3");
+var BT4 = document.getElementById("BT4");
+
+<% if !@ok %>
+  correct1.style.display = "none"
+  correct2.innerHTML = "Réservé par <b><%= @correct_name %></b>."
+  correct2.style.display = "block"
+  correct3.style.display = "none"
+<% else %>
+  correct1.style.display = "none"
+  correct2.style.display = "none"
+  correct3.style.display = "block"
+  MI.disabled = false
+  PJ.disabled = false
+  if (BT1) { BT1.disabled = false }
+  BT2.disabled = false
+  BT3.disabled = false
+  BT4.disabled = false
+<% end %>

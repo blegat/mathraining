@@ -56,6 +56,8 @@ GEM
       sass (~> 3.2)
     bootstrap-will_paginate (0.0.10)
       will_paginate
+    bootstrap3-datetimepicker-rails (4.14.30)
+      momentjs-rails (>= 2.8.1)
     builder (3.2.3)
     bullet (5.5.1)
       activesupport (>= 3.0.0)
@@ -109,6 +111,9 @@ GEM
       sass (>= 3.2)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
+    glyphicons-rails (0.1.2)
+      sass (~> 3.3)
+      sass-rails
     i18n (0.9.1)
       concurrent-ruby (~> 1.0)
     jquery-rails (4.3.1)
@@ -135,6 +140,8 @@ GEM
     mimemagic (0.3.2)
     mini_portile2 (2.3.0)
     minitest (5.11.1)
+    momentjs-rails (2.20.1)
+      railties (>= 3.1)
     mono_logger (1.1.0)
     multi_json (1.12.1)
     nio4r (1.2.1)
@@ -297,6 +304,7 @@ DEPENDENCIES
   bcrypt-ruby (= 3.1.2)
   bootstrap-sass (~> 3.2.0)
   bootstrap-will_paginate (= 0.0.10)
+  bootstrap3-datetimepicker-rails (~> 4.14.30)
   bullet
   capybara (= 2.12.1)
   capybara-webkit
@@ -306,8 +314,10 @@ DEPENDENCIES
   eventmachine (= 1.2.3)
   factory_girl_rails (= 4.1.0)
   faker (= 1.0.1)
+  glyphicons-rails
   jquery-rails
   less-rails
+  momentjs-rails (>= 2.9.0)
   nokogiri (~> 1.8.1)
   paperclip (~> 5.1.0)
   pg (~> 0.20.0)

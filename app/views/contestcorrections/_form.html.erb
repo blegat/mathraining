@@ -1,0 +1,10 @@
+<div class="form-group">
+<div class="well" id="MathPreview"></div>
+<div class="well hidden-preview" id="MathBuffer"></div>
+<%= render 'subjects/smiley', hiddentext: false %>
+<% if @ancientexte.nil? %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (!signed_in? || current_user.other || @was_reserved) %>
+<% else %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (!signed_in? || current_user.other || @was_reserved) %>
+<% end %>
+</div>

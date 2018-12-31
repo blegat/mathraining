@@ -11,7 +11,6 @@
 <tr><td>
 <table>
 <tr>
-
 <td style="vertical-align:top;">
 <span class="title-first"><%= link_to "Forum", subjects_path(:q => @q) %> ></span>
 <%= @subject.title %>
@@ -31,7 +30,6 @@
   - <%= link_to @chapitre.name, @chapitre, target: '_blank' %>
 <% end %>
 </span>
-</h1>
 </td>
 </tr>
 </table>
@@ -47,14 +45,14 @@
 
 </tr>
 </table>
+</h1>
 
-<div class="visible-xs" style="text-align:center;">
+<div class="visible-xs" style="text-align:center; padding-top:10px;">
 <% if !current_user.followed_subjects.exists?(@subject.id) %>
   <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
   <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
 <% end %>
-<br/>
 </div>
 
 </h1>
@@ -70,6 +68,9 @@
 <% else %>
   <% if !@subject.question.nil? %>
 	  <%= render 'subjects/show_exo', f: @subject.question %>
+  <% end %>
+  <% if !@subject.contest.nil? %>
+    <%= render 'subjects/show_contest', contest: @subject.contest %>
   <% end %>
 <% end %>
 

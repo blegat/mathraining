@@ -1,10 +1,10 @@
 #encoding: utf-8
 class VirtualtestsController < ApplicationController
-  before_action :signed_in_user, only: [:index, :show, :new, :edit]
+  before_action :signed_in_user, only: [:show, :new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :begin_test]
   before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :put_online, :destroy]
-  before_action :recup, only: [:show, :destroy]
-  before_action :recup2, only: [:begin_test]
+  before_action :recup, only: [:show, :edit, :update, :destroy]
+  before_action :recup2, only: [:begin_test, :put_online]
   before_action :has_access, only: [:show, :begin_test]
   before_action :online_test, only: [:show, :begin_test]
   before_action :can_begin, only: [:begin_test]
@@ -28,7 +28,6 @@ class VirtualtestsController < ApplicationController
 
   # Editer un test virtuel
   def edit
-    @virtualtest = Virtualtest.find(params[:id])
   end
 
   # Créer un test virtuel 2
@@ -46,7 +45,7 @@ class VirtualtestsController < ApplicationController
 
     if @virtualtest.save
       flash[:success] = "Test virtuel ajouté."
-      redirect_to @virtualtest
+      redirect_to virtualtests_path
     else
       render 'new'
     end
@@ -54,7 +53,6 @@ class VirtualtestsController < ApplicationController
 
   # Editer un test virtuel 2
   def update
-    @virtualtest = Virtualtest.find(params[:id])
     @virtualtest.duration = params[:virtualtest][:duration]
     if @virtualtest.save
       flash[:success] = "Test virtuel modifié."
@@ -92,6 +90,11 @@ class VirtualtestsController < ApplicationController
     t.status = 0
     t.takentime = DateTime.now
     t.save
+    
+    c = Takentestcheck.new
+    c.takentest = t
+    c.save
+    
     redirect_to @virtualtest
   end
 
@@ -132,20 +135,19 @@ class VirtualtestsController < ApplicationController
 
   # Vérifie que le test peut être en ligne
   def can_be_online
-    @virtualtest = Virtualtest.find(params[:virtualtest_id])
     nb_prob = 0
     can_online = true
     @virtualtest.problems.each do |p|
       can_online = false if !p.online?
       nb_prob = nb_prob + 1
     end
-    redirect_to @virtualtest if !can_online || nb_prob == 0
+    redirect_to virtualtests_path if !can_online || nb_prob == 0
   end
 
   # Vérifie qu'on peut commencer le test
   def can_begin
     if current_user.sk.status(@virtualtest) >= 0
-      redirect_to @virtualtest
+      redirect_to virtualtests_path
     elsif Takentest.where(user_id: current_user.sk.id, status: 0).count > 0
       flash[:danger] = "Vous avez déjà un test virtuel en cours !"
       redirect_to virtualtests_path

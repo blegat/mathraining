@@ -10,7 +10,7 @@ class CategoriesController < ApplicationController
 
   # Créer une catégorie
   def create
-    @category = Category.new(params[:category])
+    @category = Category.new(params.require(:category).permit(:name))
     if @category.save
       flash[:success] = "Catégorie ajoutée."
       redirect_to categories_path
@@ -23,7 +23,7 @@ class CategoriesController < ApplicationController
   # Modifier un niveau
   def update
     @category = Category.find(params[:id])
-    if @category.update_attributes(params[:category])
+    if @category.update_attributes(params.require(:category).permit(:name))
       flash[:success] = "Catégorie modifiée."
       redirect_to categories_path
     else

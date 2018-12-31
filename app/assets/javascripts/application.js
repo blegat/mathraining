@@ -14,5 +14,7 @@
 //= require jquery_ujs
 //= require select2
 //= require select2_locale_fr
-//= require bootstrap
+//= require bootstrap-sprockets
+//= require moment
+//= require bootstrap-datetimepicker
 //= require_tree .

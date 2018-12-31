@@ -166,11 +166,15 @@ class SubjectsController < ApplicationController
     
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
-    if @subject.update_attributes(params.require(:subject).permit(:title, :content, :admin, :important, :wepion))
+    @subject.title = params[:subject][:title]
+    @subject.content = params[:subject][:content]
+    @subject.admin = params[:subject][:admin]
+    @subject.important = params[:subject][:important]
+    @subject.wepion = params[:subject][:wepion]
+    if @subject.valid?
 
       if @subject.admin
         @subject.wepion = false # On n'autorise pas wépion si admin
-        @subject.save
       end
 
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
@@ -211,7 +215,7 @@ class SubjectsController < ApplicationController
       @error = false
       @error_message = ""
 
-      attach = update_files(@subject, "Subject") # Fonction commune pour toutes les pièces jointes
+      attach = update_files(@subject) # Fonction commune pour toutes les pièces jointes
 
       if @error
         error_update([@error_message]) and return
@@ -285,13 +289,13 @@ class SubjectsController < ApplicationController
   def error_create(err)
     session["errorSubject"] = err
     session[:oldAll] = params[:subject]
-    redirect_to new_subject_path(:q => @q)
+    redirect_to new_subject_path(:q => @q) and return true
   end
   
   def error_update(err)
     session["errorSubject"] = err
     session[:oldAll] = params[:subject]
-    redirect_to subject_path(@subject, :q => @q)
+    redirect_to subject_path(@subject, :q => @q) and return true
   end
   
   def get_q

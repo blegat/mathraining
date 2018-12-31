@@ -88,18 +88,20 @@ class MessagesController < ApplicationController
   def update
     # Si la modification du message réussit
     params[:message][:content].strip! if !params[:message][:content].nil?
-    if @message.update_attributes(params.require(:message).permit(:content))
+    @message.content = params[:message][:content]
+    if @message.valid?
 
       # Pièces jointes
       @error = false
       @error_message = ""
 
-      attach = update_files(@message, "Message") # Fonction commune pour toutes les pièces jointes
+      attach = update_files(@message) # Fonction commune pour toutes les pièces jointes
 
       if @error
         error_update([@error_message]) and return
       end
       
+      @message.save
       @message.reload
       flash[:success] = "Votre message a bien été modifié."
       session["successEditMessage#{@message.id}"] = "ok"
@@ -145,7 +147,7 @@ class MessagesController < ApplicationController
     session["errorNewMessage"] = err
     session[:oldContent] = params[:message][:content]
     page = getLastPage(@subject)
-    redirect_to subject_path(@subject, :page => page, :q => @q)
+    redirect_to subject_path(@subject, :page => page, :q => @q) and return true
   end
   
   def error_update(err)
@@ -153,7 +155,7 @@ class MessagesController < ApplicationController
     @message.reload
     session[:oldContent] = params[:message][:content]
     page = getPage(@message)
-    redirect_to subject_path(@message.subject, :page => page, :q => @q) and return
+    redirect_to subject_path(@message.subject, :page => page, :q => @q) and return true
   end
   
   def get_q
