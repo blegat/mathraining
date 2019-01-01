@@ -28,7 +28,7 @@ describe "Section pages" do
         visit edit_section_path(section)
         fill_in "Nom", with: newtitle
         fill_in "MathInput", with: newdescription
-        click_button "Éditer"
+        click_button "Modifier"
         section.reload
       end
       specify { expect(section.name).to eq(newtitle) }

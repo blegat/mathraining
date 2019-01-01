@@ -54,7 +54,7 @@ describe "Chapter pages" do
         fill_in "Titre", with: newtitle
         fill_in "MathInput", with: newdescription
         fill_in "Niveau", with: newlevel
-        click_button "Éditer"
+        click_button "Modifier"
         offline_chapter.reload
       end
       specify do

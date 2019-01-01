@@ -72,7 +72,7 @@ class ChaptersController < ApplicationController
   # Marquer tout le chapitre comme lu : il faut être inscrit et que le chapitre existe et soit en ligne
   def read
     @chapter.theories.each do |t|
-      if t.online && !current_user.sk.theories.exists?(t)
+      if t.online && !current_user.sk.theories.exists?(t.id)
         current_user.sk.theories << t
       end
     end
@@ -116,7 +116,7 @@ class ChaptersController < ApplicationController
   
   # Vérifie que le chapitre est en ligne (ou qu'on est admin)
   def online_chapter
-    redirect_to root_path unless ((signed_in? && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter))) || @chapter.online)
+    redirect_to root_path unless ((signed_in? && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) || @chapter.online)
   end
 
   # Vérifie que le chapitre n'est pas en ligne pour pouvoir le supprimer
@@ -138,7 +138,7 @@ class ChaptersController < ApplicationController
   end
   
   def creating_user
-    redirect_to root_path unless (signed_in? && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter))))
+    redirect_to root_path unless (signed_in? && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter.id))))
   end
 
 end
