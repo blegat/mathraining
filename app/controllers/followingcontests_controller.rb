@@ -12,7 +12,7 @@ class FollowingcontestsController < ApplicationController
     fol.save
     
     flash[:success] = "Vous recevrez dorénavant un e-mail de rappel un jour avant la publication de chaque problème de ce concours."
-    redirect_back(fallback_location: contest_path(con))
+    redirect_to con
   end
 
   def remove_followingcontest
@@ -23,7 +23,7 @@ class FollowingcontestsController < ApplicationController
     end
     
     flash[:success] = "Vous ne recevrez maintenant plus d'e-mail concernant ce concours."
-    redirect_back(fallback_location: contest_path(con))
+    redirect_to con
   end
 
 end

@@ -9,9 +9,6 @@
 <h1 style="margin-bottom:0px;">
 <table style="width:100%;">
 <tr><td>
-<table>
-<tr>
-<td style="vertical-align:top;">
 <span class="title-first"><%= link_to "Forum", subjects_path(:q => @q) %> ></span>
 <%= @subject.title %>
 <span style="font-size:20px;">
@@ -30,9 +27,6 @@
   - <%= link_to @chapitre.name, @chapitre, target: '_blank' %>
 <% end %>
 </span>
-</td>
-</tr>
-</table>
 </td>
 
 <td class="hidden-xs" style="padding-left:15px; text-align:right;">

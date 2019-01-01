@@ -11,11 +11,11 @@
 Problème #<%= @contestproblem.number %>
 </h1>
 
-<center><i>Solutions acceptées du <%= write_date(@contestproblem.start_time) %> au <%= write_date(@contestproblem.end_time) %></i></center>
+<center><i>Solutions acceptées du <%= write_date_with_link(@contestproblem.start_time, @contest, @contestproblem) %> au <%= write_date_with_link(@contestproblem.end_time, @contest, @contestproblem) %> (heures belges)</i></center>
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
-<div style="margin-bottom:30px;">
+<div style="margin-bottom:10px;">
 <%= raw(bbcode(@contestproblem.statement)) %>
 
 <!-- Origine si organisateur ou root ou problème terminé -->
@@ -45,9 +45,18 @@ Problème #<%= @contestproblem.number %>
 
 </div>
 
+<!-- Chronomètre -->
+<% if @contestproblem.status == 2 %>
+  <%= render 'contests/clock', date_limit: @contestproblem.end_time.to_i, message_zero: "Temps écoulé", p_id: 0 %>
+  <br/><center><span style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></span></center>
+<% elsif @contestproblem.status <= 1 && @contest.status > 0 %>
+  <%= render 'contests/clock', date_limit: @contestproblem.start_time.to_i, message_zero: "En ligne", p_id: 0 %>
+  <br/><center><span style="font-size:20px;">Temps avant publication : <b><span id="clockbox0">--------</span></b></span></center>
+<% end %>
+
 <% if @contest.is_organized_by_or_root(current_user) %>
   <center>
-  <%= link_to "Modifier ce problème", edit_contestproblem_path(@contestproblem) %>
+  <br/><%= link_to "Modifier ce problème", edit_contestproblem_path(@contestproblem) %>
   <% if @contest.status == 0 %>
     | <%= link_to "Supprimer ce problème", @contestproblem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
   <% end %>

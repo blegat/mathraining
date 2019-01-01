@@ -1,6 +1,4 @@
-<% provide(:title, 'Tests virtuels') %>
-
-<% compteur = 0 %>
+<% provide(:title, 'Concours') %>
 
 <h1>
 <button class="information-tag" onclick="return Info.toggle();">?</button>
@@ -61,8 +59,8 @@ Les problèmes des concours et leurs résultats sont accessibles par tous, mais 
     <h4>Informations</h4>
     
     <% if nb_prob > 0 %>
-      Début : <b><%= write_date_only(first_date) %></b><br/>
-      Fin : <b><%= write_date_only(last_date) %></b><br/>
+      Début : <b><%= write_date_only_with_day(first_date) %></b><br/>
+      Fin : <b><%= write_date_only_with_day(last_date) %></b><br/>
     <% end %>
     <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %>
     <% if real_status == 0 %>
@@ -113,8 +111,6 @@ Les problèmes des concours et leurs résultats sont accessibles par tous, mais 
     </div>
     
     </td></tr></table>
-    
-    
   <% end %>
 <% end %>
 

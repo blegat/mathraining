@@ -1,5 +1,5 @@
 <script type="text/javascript">
-function RemainingTime(){
+function RemainingTime<%= p_id %>(){
 
 if (!Date.now) {
     Date.now = function() { return new Date().getTime(); }
@@ -7,33 +7,48 @@ if (!Date.now) {
 
 var d = Math.floor(Date.now() / 1000)
 
-var reste = <%= @virtualtest.duration * 60 %> - d + <%= depart %>
+var reste = <%= date_limit %> - d
 
 if (reste < 0) {
-  document.getElementById('clockbox').innerHTML = "Temps écoulé"
+  document.getElementById('clockbox<%= p_id %>').innerHTML = "<%= message_zero %>"
 }
 else {
-  var resteh = Math.floor(reste / 3600)
-  reste = reste - 3600 * resteh
-  var restem = Math.floor(reste / 60)
-  var restes = reste - 60 * restem
+  var restej = Math.floor(reste / 86400)
+  var actualize = false
   
-  if(resteh < 10){ afficheh = "0" + resteh }
-  else { afficheh = resteh }
-  
-  if(restem < 10){ affichem = "0" + restem }
-  else { affichem = restem }
-  
-  if(restes < 10){ affiches = "0" + restes }
-  else { affiches = restes }
-  
-  document.getElementById('clockbox').innerHTML = afficheh + "h" + affichem + ":" + affiches
+  if(restej > 1)
+  {
+    text = restej + " jours"
+  }
+  else
+  {
+    var resteh = Math.floor(reste / 3600)
+    reste = reste - 3600 * resteh
+    var restem = Math.floor(reste / 60)
+    var restes = reste - 60 * restem
+    
+    if(restem < 10){ affichem = "0" + restem }
+    else { affichem = restem }
+    
+    if(restes < 10){ affiches = "0" + restes }
+    else { affiches = restes }
+    
+    if(resteh > 0) { text = resteh + "h" + affichem + ":" + affiches }
+    else { text = affichem + ":" + affiches }
+    
+    actualize = true
+  }
+
+  document.getElementById('clockbox<%= p_id %>').innerHTML = text
+  return actualize
 }
 
 }
 
-window.onload=function(){
-RemainingTime();
-setInterval(RemainingTime,1000);
-}
+window.addEventListener("load",function(){
+  if(RemainingTime<%= p_id %>())
+  {
+    setInterval(RemainingTime<%= p_id %>,1000);
+  }
+},false);
 </script>

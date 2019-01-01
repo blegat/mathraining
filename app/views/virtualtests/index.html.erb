@@ -221,11 +221,11 @@ Les tests virtuels ne sont pas accessibles aux utilisateurs ayant un score infé
       <% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => t.id).first.takentime %>
       <% depart = initial.to_i %>
       <% @virtualtest = t %>
-      <%= render 'virtualtests/clock', depart: depart %>
+      <%= render 'contests/clock', date_limit: depart + 60*@virtualtest.duration, message_zero: "Temps écoulé", p_id: 0 %>
       
       <div class="row content">
       <div class="module bottom-part">
-      <span style="font-size:20px;">Temps restant : <b><span id="clockbox">--h--:--</span></b></span>
+      <span style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></span>
       </div>
       </div>
     <% end %>

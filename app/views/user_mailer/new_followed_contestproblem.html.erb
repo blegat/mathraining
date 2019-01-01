@@ -1,6 +1,6 @@
 Bonjour <%= @user.first_name %>,<br/><br/>
 
-Pour rappel, le Problème #<%= @contestproblem.number %> du <%= link_to "Concours ##{@contest.number}", contest_url(@contest, :host => "www.mathraining.be") %> sera publié le <%= write_date(@contestproblem.start_time) %>.<br/><br/>
+Pour rappel, le Problème #<%= @contestproblem.number %> du <%= link_to "Concours ##{@contest.number}", contest_url(@contest, :host => "www.mathraining.be") %> sera publié le <%= write_date_with_link(@contestproblem.start_time, @contest, @contestproblem) %>.<br/><br/>
 
 Si vous ne désirez plus suivre ce concours, cliquez <%= link_to "ici", remove_followingcontest_url(:contest_id => @contest, :host => "www.mathraining.be") %>.<br/><br/>
 

@@ -10,7 +10,7 @@ Concours #<%= @contest.number %>
 
 <% if signed_in? %>
   <td class="hidden-xs" style="padding-left:15px; text-align:right;">
-  <% if !current_user.followed_contests.exists?(@contest.id) %>
+  <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
     <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
     <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
@@ -24,7 +24,7 @@ Concours #<%= @contest.number %>
 
 <% if signed_in? %>
   <div class="visible-xs" style="text-align:center; padding-top:10px;">
-  <% if !current_user.followed_contests.exists?(@contest.id) %>
+  <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
     <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
     <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
@@ -147,7 +147,7 @@ Concours #<%= @contest.number %>
   <tr><td class="real-content">
   
   <div class="intro">
-  <i>Solutions acceptées du <%= write_date(p.start_time) %> au <%= write_date(p.end_time) %>.</i>
+  <i>Solutions acceptées du <%= write_date_with_link(p.start_time, @contest, p) %> au <%= write_date_with_link(p.end_time, @contest, p) %> (heures belges).</i>
   </div>
     
   <% if can_see >= 1 %>
@@ -183,6 +183,24 @@ Concours #<%= @contest.number %>
     </center>
     </div>    
     </div>
+  <% end %>
+  
+  <% if p.status <= 2 && @contest.status > 0 %>
+      <% if p.status <= 1 %>
+        <% date_limit = p.start_time.to_i %>
+        <% message_before = "Temps avant publication : " %>
+        <% message_zero = "En ligne" %>
+      <% else %>
+        <% date_limit = p.end_time.to_i %>
+        <% message_before = "Temps restant : " %>
+        <% message_zero = "Temps écoulé" %>
+      <% end %>
+      <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
+      <div class="row content">
+      <div class="module bottom-part">
+      <center><span style="font-size:20px;"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
+      </div>
+      </div>
   <% end %>
   
   <% if can_see == 2 && !p.origin.nil? && p.origin != "" %>

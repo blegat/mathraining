@@ -65,7 +65,11 @@ var showFalse = function () {
     </tbody>
     </table>
   <% else %>
-    Aucune solution étoilée.
+    <% if @contest.is_organized_by_or_root(current_user) %>
+      Aucune solution étoilée. <span style='color:orange;'>Il en faut au minimum une !</span>
+    <% else %>
+      Aucune <% "autre" if mine_is_star %> solution étoilée.
+    <% end %>
   <% end %>
   
   <h3>Autres solutions correctes</h3>

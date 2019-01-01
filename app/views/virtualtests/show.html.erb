@@ -5,7 +5,7 @@
 <!-- Script pour chronomètre -->
 <% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => @virtualtest.id).first.takentime %>
 <% depart = initial.to_i %>
-<%= render 'virtualtests/clock', depart: depart %>
+<%= render 'contests/clock', date_limit: depart + 60*@virtualtest.duration, message_zero: "Temps écoulé", p_id: 0 %>
 
 <% compteur = 0 %>
 
@@ -15,7 +15,7 @@ Test #<%= @virtualtest.number %>
 </h1>
 
 <!-- Chronomètre -->
-<br/><center><span style="font-size:20px;">Temps restant : <b><span id="clockbox">--h--:--</span></b></span></center>
+<br/><center><span style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></span></center>
 
 <% x = 1 %>
 <% numero = 0 %>

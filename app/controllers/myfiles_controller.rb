@@ -26,6 +26,8 @@ class MyfilesController < ApplicationController
       redirect_to subject_path(about.subject, :page => page, :message => about.id)
     elsif type == "Contestsolution"
       redirect_to contestproblem_path(about.contestproblem, :sol => about)
+    elsif type == "Contestcorrection"
+      redirect_to contestproblem_path(about.contestsolution.contestproblem, :sol => about.contestsolution)
     else
       redirect_to myfiles_path
     end
@@ -78,6 +80,9 @@ class MyfilesController < ApplicationController
     elsif @fakething.fakefiletable_type == "Contestsolution"
       @contestsolution = @fakething.fakefiletable
       redirect_to contestproblem_path(@contestsolution.contestproblem, :sol => @contestsolution)
+    elsif @fakething.fakefiletable_type == "Contestcorrection"
+      @contestsolution = @fakething.fakefiletable.contestsolution
+      redirect_to contestproblem_path(@contestsolution.contestproblem, :sol => @contestsolution)
     end
   end
 
@@ -107,6 +112,11 @@ class MyfilesController < ApplicationController
       contestproblem = contestsolution.contestproblem
       contest = contestproblem.contest
       redirect_to root_path unless (contest.is_organized_by_or_root(current_user) || contestsolution.user == current_user.sk || contestproblem.status == 4)
+    elsif @thing.myfiletable_type == "Contestcorrection"
+      contestsolution = @thing.myfiletable.contestsolution
+      contestproblem = contestsolution.contestproblem
+      contest = contestproblem.contest
+      redirect_to root_path unless (contest.is_organized_by_or_root(current_user) || contestproblem.status == 4)
     end
   end
 

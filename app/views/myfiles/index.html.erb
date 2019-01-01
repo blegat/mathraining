@@ -36,10 +36,12 @@ Pièces jointes
 
   <!-- Qui -->
   <td style="font-weight:bold;">
-
-  <% qui = about.user %>
-
-  <%= raw(qui.linked_name) %>
+  <% if type != "Contestcorrection" %>
+    <% qui = about.user %>
+    <%= raw(qui.linked_name) if !qui.nil? %>
+  <% else %>
+    <b>Organisateurs</b>
+  <% end %>
   </td>
 
   <!-- Où? Forum ou soumission? -->

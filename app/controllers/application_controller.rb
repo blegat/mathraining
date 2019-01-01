@@ -212,7 +212,7 @@ class ApplicationController < ActionController::Base
     mes = Message.new
     mes.subject = sub
     mes.user_id = 0
-    mes.content = "Le Problème ##{contestproblem.number} du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] sera publié dans un jour, c'est-à-dire le " + write_date(contestproblem.start_time) + "."
+    mes.content = "Le Problème ##{contestproblem.number} du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] sera publié dans un jour, c'est-à-dire le " + write_date_with_link_forum(contestproblem.start_time, contest, contestproblem) + " (heure belge)."
     mes.created_at = contestproblem.start_time - 1.day
     mes.save
     sub.lastcomment = mes.created_at
@@ -226,7 +226,7 @@ class ApplicationController < ActionController::Base
     mes = Message.new
     mes.subject = sub
     mes.user_id = 0
-    mes.content = "Le [url=" + contestproblem_url(contestproblem) + "]Problème ##{contestproblem.number}[/url] du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] est maintenant accessible, et les solutions sont acceptées jusqu'au " + write_date(contestproblem.end_time) + "."
+    mes.content = "Le [url=" + contestproblem_url(contestproblem) + "]Problème ##{contestproblem.number}[/url] du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] est maintenant accessible, et les solutions sont acceptées jusqu'au " + write_date_with_link_forum(contestproblem.end_time, contest, contestproblem) + " (heure belge)."
     mes.created_at = contestproblem.start_time
     mes.save
     sub.lastcomment = mes.created_at
