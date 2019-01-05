@@ -74,19 +74,19 @@ Concours #<%= @contest.number %>
       
       <% allprobs = @contest.contestproblems.order(:number) %>
       
-      <table class="table table-bordered" style="width:<%= 20+230+20*nb_prob+50 %>px;">
-      <tr><th style="width:20px;"></th>
+      <table class="table table-bordered" style="width:<%= 40+230+40*nb_prob+60 %>px;">
+      <tr><th style="width:40px;"></th>
       <th style="width:230px;">Nom</th>
       <% (1..nb_prob).each do |i| %>
-        <th style="text-align:center; width:20px;">P<%= i %></th>
+        <th style="text-align:center; width:40px;">P<%= i %></th>
       <% end %>
-      <th style="text-align:center; width:50px;">Total</th>
+      <th style="text-align:center; width:60px;">Total</th>
       </tr>
       
       <% prevrank = 0 %>
       <% @contest.contestscores.order(:rank, :user_id).each do |line| %>
       <tr>
-      <td>
+      <td style="text-align:center;">
       <% if prevrank != line.rank %>
         <%= line.rank %>.
         <% prevrank = line.rank %>
