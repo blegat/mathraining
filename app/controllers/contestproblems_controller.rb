@@ -260,7 +260,7 @@ class ContestproblemsController < ApplicationController
       elsif (i == nb_sol - 1)
         text = text + " et "
       else
-        text = text = ", "
+        text = text + ", "
       end
     end
     
