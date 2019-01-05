@@ -28,8 +28,8 @@
 </td>
 
 <td style="width:40px; text-align:center;">
-  <%= sol.score if !sol.official? %>
-  <%= '-' if sol.official? %>
+  <%= sol.score if !sol.official? && sol.score >= 0 %>
+  <%= '-' if sol.official? || sol.score < 0 %>
 </td>
 
 <!-- Voir -->
