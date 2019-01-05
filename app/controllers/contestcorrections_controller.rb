@@ -44,24 +44,38 @@ class ContestcorrectionsController < ApplicationController
       
       @contestcorrection.save
       
+      if !@contestsolution.official?
+        @contestsolution.score = params["score".to_sym].to_i
+      end
+      
       @contestsolution.reservation = 0
       
-      if params[:status] == "bad" 
-        @contestsolution.corrected = true
-        @contestsolution.correct = false
-        @contestsolution.star = false
+      if params[:status] == "bad"
+        if @contestsolution.official?
+          @contestsolution.corrected = true
+          @contestsolution.star = false
+          @contestsolution.score = 0
+        end
       elsif params[:status] == "good"
         @contestsolution.corrected = true
-        @contestsolution.correct = true
         @contestsolution.star = false
+        if @contestsolution.official?
+          @contestsolution.score = 7
+        end
       elsif params[:status] == "star"
         @contestsolution.corrected = true
-        @contestsolution.correct = true
         @contestsolution.star = true
+        if @contestsolution.official?
+          @contestsolution.score = 7
+        else
+          if @contestsolution.score < 7
+            @contestsolution.score = 7
+            flash[:info] = "Le score a été mis automatiquement à 7/7 (car solution étoilée)."
+          end
+        end
       elsif params[:status] == "unknown"
         if !@contestsolution.official?
           @contestsolution.corrected = false
-          @contestsolution.correct = false
           @contestsolution.star = false
         end
       end

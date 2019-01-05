@@ -3,11 +3,11 @@ var correct2 = document.getElementById("correct2");
 var correct3 = document.getElementById("correct3");
 
 var MI = document.getElementById("MathInput");
+var SC = document.getElementById("score");
 var PJ = document.getElementById("PJ");
 var BT1 = document.getElementById("BT1");
 var BT2 = document.getElementById("BT2");
 var BT3 = document.getElementById("BT3");
-var BT4 = document.getElementById("BT4");
 
 correct1.style.display = "block"
 correct2.style.display = "none"
@@ -15,7 +15,7 @@ correct3.style.display = "none"
 
 MI.disabled = true
 PJ.disabled = true
-if (BT1) { BT1.disabled = true }
+BT1.disabled = true
 BT2.disabled = true
 BT3.disabled = true
-BT4.disabled = true
+if(SC) { SC.disabled = true }

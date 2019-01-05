@@ -52,14 +52,13 @@ var unreserve = function () {
 <br/><br/>
 
 <% if !@contestsolution.official? %>
-  <%= f.button "Enregistrer (en attente)", type: "submit", name: "status", value: "unknown", class: "btn btn-primary", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT1" %>
-  <%= f.button "Enregistrer (erronée)", type: "submit", name: "status", value: "bad", class: "btn btn-danger", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT2" %>
-  <%= f.button "Enregistrer (correcte)", type: "submit", name: "status", value: "good", class: "btn btn-success", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT3" %>
-  <%= f.button "Enregistrer (étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT4" %>
+  <%= f.button "Enregistrer provisoirement", type: "submit", name: "status", value: "unknown", class: "btn btn-primary", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT1" %>
+  <%= f.button "Enregistrer", type: "submit", name: "status", value: "good", class: "btn btn-success", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT2" %>
+  <%= f.button "Enregistrer et étoiler (si 7/7)", type: "submit", name: "status", value: "star", class: "btn btn-warning", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT3" %>
 <% else %>
-  <%= f.button "Enregistrer (non-publique)", type: "submit", name: "status", value: "bad", class: "btn btn-danger", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT2" %>
-  <%= f.button "Enregistrer (publique)", type: "submit", name: "status", value: "good", class: "btn btn-success", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT3" %>
-  <%= f.button "Enregistrer (publique étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT4" %>
+  <%= f.button "Enregistrer (non-publique)", type: "submit", name: "status", value: "bad", class: "btn btn-danger", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT1" %>
+  <%= f.button "Enregistrer (publique)", type: "submit", name: "status", value: "good", class: "btn btn-success", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT2" %>
+  <%= f.button "Enregistrer (publique étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT3" %>
 <% end %>
 <button class="btn btn-default btn-grey" style="margin-bottom:5px;" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>

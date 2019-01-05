@@ -18,7 +18,7 @@ class Contestsolution < ActiveRecord::Base
 
   belongs_to :contestproblem
   belongs_to :user
-  has_one :contestcorrection
+  has_one :contestcorrection, dependent: :destroy
   
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
@@ -26,6 +26,7 @@ class Contestsolution < ActiveRecord::Base
   # VALIDATIONS
 
   validates :content, presence: true, length: { maximum: 8000 }
+  validates :score, presence: true, inclusion: { in: [-1, 0, 1, 2, 3, 4, 5, 6, 7] }
   
   # Rend l'icone correspondante
   def icon
@@ -34,7 +35,7 @@ class Contestsolution < ActiveRecord::Base
     else
       if star
         'star1.png'
-      elsif correct
+      elsif score == 7
         'V.gif'
       else
         'X.gif'

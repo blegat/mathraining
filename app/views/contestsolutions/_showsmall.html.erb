@@ -1,8 +1,10 @@
 <!-- Couleur -->
 <% if !sol.corrected || (sol.contestproblem.status < 4 && !@contest.is_organized_by_or_root(current_user)) %>
   <tr class="warning">
-<% elsif sol.correct %>
+<% elsif sol.score == 7 %>
   <tr class="success">
+<% elsif sol.score > 0 %>
+  <tr class="danger" style="background-color:orange;">
 <% else %>
   <tr class="danger">
 <% end %>
@@ -23,6 +25,11 @@
   <% else %>
     <%= raw(sol.user.linked_name) %>
   <% end %>
+</td>
+
+<td style="width:40px; text-align:center;">
+  <%= sol.score if !sol.official? %>
+  <%= '-' if sol.official? %>
 </td>
 
 <!-- Voir -->

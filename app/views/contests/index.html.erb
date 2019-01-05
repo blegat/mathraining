@@ -92,7 +92,7 @@ Les problèmes des concours et leurs résultats sont accessibles par tous, mais 
           <b><%= numtotal %></b> participants classés<br/>
           <% bestscore = best.score %>
           <% numbest = c.contestscores.where(:rank => 1).count %>
-          Meilleur score : <b><%= bestscore %>/<%= nb_prob2 %></b> (<%= numbest %> fois)
+          Meilleur score : <b><%= bestscore %>/<%= 7*nb_prob2 %></b> (<%= numbest %> fois)
         <% end %>
       <% end %>
     </div>

@@ -26,6 +26,7 @@ class Contestproblem < ActiveRecord::Base
 
   belongs_to :contest
   has_many :contestsolutions, dependent: :destroy
+  has_one :contestproblemcheck, dependent: :destroy
 
   # VALIDATIONS
 

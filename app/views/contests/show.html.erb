@@ -65,47 +65,57 @@ Concours #<%= @contest.number %>
   <% end %>
   </h3>
   
-  <% if @contest.contestscores.count == 0 %>
-    Personne n'a résolu de problème.
+  <% if !signed_in? %>
+    Le classement n'est visible que par les utilisateurs connectés.
   <% else %>
-    
-    <% allprobs = @contest.contestproblems.order(:number) %>
-    
-    <table class="table table-bordered" style="width:<%= 20+230+20*nb_prob+60 %>px;">
-    <tr><th style="width:20px;"></th>
-    <th style="width:230px;">Nom</th>
-    <% (1..nb_prob).each do |i| %>
-      <th style="text-align:center; width:20px;">P<%= i %></th>
-    <% end %>
-    <th style="text-align:center; width:60px;">Score</th>
-    </tr>
-    
-    <% prevrank = 0 %>
-    <% @contest.contestscores.order(:rank, :user_id).each do |line| %>
-    <tr>
-    <td>
-    <% if prevrank != line.rank %>
-      <%= line.rank %>.
-      <% prevrank = line.rank %>
-    <% end %>
-    </td>
-    <td><%= raw(line.user.linked_name) %></td>
-    <% allprobs.each do |p| %>
-      <% sol = p.contestsolutions.where(:user => line.user, :correct => true).first %>
-      <% if p.status == 4 && !sol.nil? %>
-        <td style="background-color:#ddffdd; text-align:center;">
-        <%= link_to "V", contestproblem_path(p, :sol => sol) %>
-        </td>
-      <% elsif p.status == 4 %>
-        <td style="background-color:#ffdddd; text-align:center;"></td>
-      <% else %>
-        <td></td>
+    <% if @contest.contestscores.count == 0 %>
+      Personne n'a résolu de problème.
+    <% else %>
+      
+      <% allprobs = @contest.contestproblems.order(:number) %>
+      
+      <table class="table table-bordered" style="width:<%= 20+230+20*nb_prob+50 %>px;">
+      <tr><th style="width:20px;"></th>
+      <th style="width:230px;">Nom</th>
+      <% (1..nb_prob).each do |i| %>
+        <th style="text-align:center; width:20px;">P<%= i %></th>
       <% end %>
+      <th style="text-align:center; width:50px;">Total</th>
+      </tr>
+      
+      <% prevrank = 0 %>
+      <% @contest.contestscores.order(:rank, :user_id).each do |line| %>
+      <tr>
+      <td>
+      <% if prevrank != line.rank %>
+        <%= line.rank %>.
+        <% prevrank = line.rank %>
+      <% end %>
+      </td>
+      <td><%= raw(line.user.linked_name) %></td>
+      <% allprobs.each do |p| %>
+        <% sol = p.contestsolutions.where("user_id = ? AND score > 0", line.user.id).first %>
+        <% if p.status == 4 && !sol.nil? %>
+          <% if sol.score == 7 %>
+            <td style="background-color:#ddffdd; text-align:center;">
+            <%= link_to "7", contestproblem_path(p, :sol => sol) %>
+            </td>
+          <% else %>
+            <td style="background-color:#ffeecc; text-align:center;">
+            <%= sol.score %>
+            </td>
+          <% end %>
+        <% elsif p.status == 4 %>
+          <td style="background-color:#ffdddd; text-align:center;"></td>
+        <% else %>
+          <td></td>
+        <% end %>
+      <% end %>
+      <td style="text-align:center;"><%= line.score %></td>
+      </tr>
+      <% end %>
+      </table>
     <% end %>
-    <td style="text-align:center;"><%= line.score %></td>
-    </tr>
-    <% end %>
-    </table>
   <% end %>
 
 <% end %>
@@ -136,7 +146,7 @@ Concours #<%= @contest.number %>
   <table class="table table-bordered problem <%= classe %>">
   <tr><td class="title">
   <center><h3>
-  <% if can_see >= 1 %>
+  <% if can_see >= 1 && signed_in? %>
     <%= link_to "Problème ##{p.number}", p %>
   <% else %>
      Problème #<%= p.number %>
@@ -174,8 +184,8 @@ Concours #<%= @contest.number %>
       <% nb_sol = p.contestsolutions.count - 1 %>
       Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
       <% if p.status == 4 %>
-        <% nb_cor = p.contestsolutions.where(:correct => true, :official => false).count %>
-        et résolu par <b><%= nb_cor %></b> d'entre elles<br/>
+        <% nb_perfect = p.contestsolutions.where(:score => 7, :official => false).count %>
+        Scores parfaits : <b><%= nb_perfect %></b>
       <% elsif p.status == 3 %>
         En cours de correction
       <% end %>

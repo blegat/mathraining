@@ -146,6 +146,8 @@ Mathraining::Application.routes.draw do
   match '/unreserve_sol', to: 'contestsolutions#unreserve_sol', :via => [:get], as: :unreserve_sol
   
   resources :contestcorrections, only: [:update]
+  
+  resources :contestorganizations
 
   resources :followingsubjects
 

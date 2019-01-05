@@ -8,3 +8,14 @@
   <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :value => @ancientexte, :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (!signed_in? || current_user.other || @was_reserved) %>
 <% end %>
 </div>
+
+<% if !@contestsolution.official? %>
+  <div class="form-group">
+  <label>Score attribué (sur 7)</label>
+  <% if @ancientexte.nil? %>
+    <input type="number" name="score" class="form-control" style="width:70px;" min="0" max="7" id="score" value="<%= @contestsolution.score if @contestsolution.score >= 0 %>" <%= 'disabled="disabled"' if (!signed_in? || current_user.other || @was_reserved) %> />
+  <% else %>
+    <input type="number" name="score" class="form-control" style="width:70px;" min="0" max="7" id="score" value="<%= @ancienscore %>" <%= 'disabled="disabled"' if (!signed_in? || current_user.other || @was_reserved) %> />
+  <% end %>
+  </div>
+<% end %>

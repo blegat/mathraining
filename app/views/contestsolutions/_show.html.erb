@@ -10,14 +10,10 @@
     (modifiable)
   <% elsif @contestproblem.status == 3 %>
     (en attente de correction)
-  <% elsif @contestproblem.status == 4 && @contestsolution.correct %>
-    (correcte)
+  <% elsif @contestproblem.status == 4 %>
     <% if @contestsolution.star %>
       <%= image_tag @contestsolution.icon %>
     <% end %>
-    <% can_see_correction = true %>
-  <% elsif @contestproblem.status == 4 && !@contestsolution.correct %>
-    (erronée)
     <% can_see_correction = true %>
   <% end %>
 <% else %>
@@ -28,18 +24,9 @@
 <% if @contest.is_organized_by_or_root(current_user) %>
   <% if !@contestsolution.corrected %>
     (à corriger)
-  <% elsif @contestsolution.correct %>
-    <% if !@contestsolution.official %>
-      (correcte)
-    <% else %>
+  <% elsif @contestsolution.official? %>
+    <% if @contestsolution.score == 7 %>
       (publique)
-    <% end %>
-    <% if @contestsolution.star %>
-      <%= image_tag @contestsolution.icon %>
-    <% end %>
-  <% else %>
-    <% if !@contestsolution.official %>
-      (erronée)
     <% else %>
       (non-publique)
     <% end %>

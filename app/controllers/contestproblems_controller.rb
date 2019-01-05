@@ -1,6 +1,6 @@
 #encoding: utf-8
 class ContestproblemsController < ApplicationController
-  before_action :signed_in_user, only: [:new, :edit]
+  before_action :signed_in_user, only: [:new, :edit, :show]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy]
   before_action :recup_contest, only: [:new, :create]
   before_action :recup, only: [:show, :edit, :update, :destroy]
@@ -194,7 +194,7 @@ class ContestproblemsController < ApplicationController
     userset = Set.new
     probs = @contest.contestproblems.where(:status => 4)
     probs.each do |p|
-      p.contestsolutions.where(:correct => true, :official => false).each do |s|
+      p.contestsolutions.where("score > 0 AND official = ?", false).each do |s|
         userset.add(s.user_id)
       end
     end
@@ -202,8 +202,9 @@ class ContestproblemsController < ApplicationController
     userset.each do |u|
       score = 0
       probs.each do |p|
-        if p.contestsolutions.where(:user_id => u, :correct => true).count > 0
-          score = score+1
+        sol =  p.contestsolutions.where(:user_id => u).first
+        if !sol.nil?
+          score = score + sol.score
         end
       end
       scores.push([-score, u])
@@ -240,18 +241,18 @@ class ContestproblemsController < ApplicationController
     mes.user_id = 0
     text = "Le [url=" + contestproblem_path(contestproblem) + "]Problème ##{contestproblem.number}[/url] du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] a été corrigé.\n\r\n\r"
     
-    nb_sol = contestproblem.contestsolutions.where(:official => false, :correct => true).count
+    nb_sol = contestproblem.contestsolutions.where("score = 7 AND official = ?", false).count
     
     if nb_sol == 0
-      text = text + "Ce problème n'a malheureusement été résolu par [b]personne[/b] !"
+      text = text + "Malheureusement [b]personne[/b] n'a obtenu la note maximale !"
     elsif nb_sol == 1
-      text = text + "Ce problème n'a été résolu que par [b]une seule[/b] personne : "
+      text = text + "Seule [b]une seule[/b] personne a obtenu la note maximale : "
     else
-      text = text + "Ce problème a été résolu par [b]" + nb_sol.to_s + "[/b] personnes : "
+      text = text + "Les [b]" + nb_sol.to_s + "[/b] personnes suivantes ont obtenu la note maximale : "
     end
     
     i = 0
-    contestproblem.contestsolutions.where(:official => false, :correct => true).order(:user_id).each do |s|
+    contestproblem.contestsolutions.where("score = 7 AND official = ?", false).order(:user_id).each do |s|
       text = text + s.user.name
       i = i+1
       if (i == nb_sol)
