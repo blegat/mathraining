@@ -168,9 +168,9 @@ class SubjectsController < ApplicationController
     params[:subject][:content].strip! if !params[:subject][:content].nil?
     @subject.title = params[:subject][:title]
     @subject.content = params[:subject][:content]
-    @subject.admin = params[:subject][:admin]
-    @subject.important = params[:subject][:important]
-    @subject.wepion = params[:subject][:wepion]
+    @subject.admin = params[:subject][:admin] if !params[:subject][:admin].nil?
+    @subject.important = params[:subject][:important] if !params[:subject][:important].nil?
+    @subject.wepion = params[:subject][:wepion] if !params[:subject][:wepion].nil?
     if @subject.valid?
 
       if @subject.admin
