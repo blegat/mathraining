@@ -124,7 +124,7 @@ class ContestcorrectionsController < ApplicationController
   end
   
   def can_update_correction
-    if @contestproblem.status != 3 && @contestproblem.status != 5
+    if @contestproblem.status != 3 && @contestproblem.status != 5 && !@contestsolution.official
       flash[:danger] = "Vous ne pouvez pas modifier cette correction."
       redirect_to @contestproblem
     end
