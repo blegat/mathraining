@@ -113,8 +113,12 @@ class ContestsolutionsController < ApplicationController
   end
 
   def destroy
-    flash[:success] = "Solution supprimée."
-    @contestsolution.destroy
+    if current_user.other
+      flash[:danger] = "Vous êtes dans la peau de quelqu'un d'autre !"
+    else
+      flash[:success] = "Solution supprimée."
+      @contestsolution.destroy
+    end
     redirect_to contestproblem_path(@contestproblem)
   end
   
@@ -185,7 +189,7 @@ class ContestsolutionsController < ApplicationController
   end
   
   def can_reserve
-    if @contestproblem.status != 3 && !@contestsolution.official?
+    if @contestproblem.status != 3 && @contestproblem.status != 5 && !@contestsolution.official?
       redirect_to @contestproblem
     end
   end

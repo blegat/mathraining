@@ -138,6 +138,8 @@ Mathraining::Application.routes.draw do
   
   resources :contestproblems, only: [:show, :edit, :update, :destroy] do
   match '/publish_results', to: 'contestproblems#publish_results', :via => [:get], as: :publish_results
+  match '/authorize_corrections', to: 'contestproblems#authorize_corrections', :via => [:get], as: :authorize_corrections
+  match '/unauthorize_corrections', to: 'contestproblems#unauthorize_corrections', :via => [:get], as: :unauthorize_corrections
     resources :contestsolutions, only: [:create]
   end
   

@@ -60,6 +60,13 @@ Problème #<%= @contestproblem.number %>
   <% if @contest.status == 0 %>
     | <%= link_to "Supprimer ce problème", @contestproblem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
   <% end %>
+  <% if current_user.sk.root? %>
+    <% if @contestproblem.status == 4 %>
+      | <%= link_to "Autoriser nouvelles corrections", contestproblem_authorize_corrections_path(@contestproblem) %>
+    <% elsif @contestproblem.status == 5 %>
+      | <%= link_to "Stopper nouvelles corrections", contestproblem_unauthorize_corrections_path(@contestproblem) %>
+    <% end %>
+  <% end %>
   </center>
 <% end %>
 
@@ -110,7 +117,7 @@ Problème #<%= @contestproblem.number %>
 <% if solution > 0 %>
   <% @contestsolution = Contestsolution.find(solution) %>
   <% if signed_in? && !@contestsolution.nil? && @contestsolution.contestproblem == @contestproblem %>
-    <% if @contestsolution.user == current_user.sk || current_user.sk.root? || (@contestproblem.status == 4 && @contestsolution.score == 7) || ((@contestproblem.status == 3 || @contestsolution.official?) && @contest.is_organized_by(current_user)) %>
+    <% if @contestsolution.user == current_user.sk || current_user.sk.root? || (@contestproblem.status >= 4 && @contestsolution.score == 7) || ((@contestproblem.status == 3 || @contestsolution.official?) && @contest.is_organized_by(current_user)) %>
       <hr>
       <%= render 'contestsolutions/show' %>
     <% end %>

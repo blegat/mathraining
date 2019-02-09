@@ -47,7 +47,7 @@ var showFalse = function () {
 <% end %>
 
 <!-- Solutions étoilées + correctes (7/7) -->
-<% if @contestproblem.status == 4 || (@contestproblem.status == 3 && @contest.is_organized_by_or_root(current_user)) %>
+<% if @contestproblem.status >= 4 || (@contestproblem.status == 3 && @contest.is_organized_by_or_root(current_user)) %>
   <h3>
   <% if mine_is_star %>
     Autres solutions étoilées

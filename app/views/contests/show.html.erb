@@ -36,7 +36,7 @@ Concours #<%= @contest.number %>
 
 <%= raw(bbcode(@contest.description)) %>
 
-<br/><br/><i>Organisateurs du concours : </i>
+<br/><br/><i>Organisateur du concours : </i>
 <% c = 0 %>
 <% total = @contest.organizers.count %>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
@@ -53,7 +53,7 @@ Concours #<%= @contest.number %>
 <% end %>
 
 <% nb_prob = @contest.contestproblems.count %>
-<% nb_prob2 = @contest.contestproblems.where(:status => 4).count %>
+<% nb_prob2 = @contest.contestproblems.where("status >= 4").count %>
 
 <% if nb_prob2 > 0 %>
 
@@ -74,7 +74,9 @@ Concours #<%= @contest.number %>
       
       <% allprobs = @contest.contestproblems.order(:number) %>
       
-      <table class="table table-bordered" style="width:<%= 40+230+40*nb_prob+60 %>px;">
+      <div style="width:100%; overflow-x:auto;">
+      
+      <table class="table table-bordered" style="width:<%= 40+230+40*nb_prob+60 %>px; margin-bottom:0px; margin-top:10px;">
       <tr><th style="width:40px;"></th>
       <th style="width:230px;">Nom</th>
       <% (1..nb_prob).each do |i| %>
@@ -95,7 +97,7 @@ Concours #<%= @contest.number %>
       <td><%= raw(line.user.linked_name) %></td>
       <% allprobs.each do |p| %>
         <% sol = p.contestsolutions.where("user_id = ? AND score > 0", line.user.id).first %>
-        <% if p.status == 4 && !sol.nil? %>
+        <% if p.status >= 4 && !sol.nil? %>
           <% if sol.score == 7 %>
             <td style="background-color:#ddffdd; text-align:center;">
             <%= link_to "7", contestproblem_path(p, :sol => sol) %>
@@ -105,7 +107,7 @@ Concours #<%= @contest.number %>
             <%= sol.score %>
             </td>
           <% end %>
-        <% elsif p.status == 4 %>
+        <% elsif p.status >= 4 %>
           <td style="background-color:#ffdddd; text-align:center;"></td>
         <% else %>
           <td></td>
@@ -115,6 +117,8 @@ Concours #<%= @contest.number %>
       </tr>
       <% end %>
       </table>
+      
+      </div>
     <% end %>
   <% end %>
 
@@ -148,6 +152,9 @@ Concours #<%= @contest.number %>
   <center><h3>
   <% if can_see >= 1 && signed_in? %>
     <%= link_to "Problème ##{p.number}", p %>
+    <% if current_user.sk.root? && p.status == 5 %>
+      (corrections modifiables)
+    <% end %>
   <% else %>
      Problème #<%= p.number %>
   <% end %>
@@ -183,7 +190,7 @@ Concours #<%= @contest.number %>
     <% if p.status >= 2 %>
       <% nb_sol = p.contestsolutions.count - 1 %>
       Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
-      <% if p.status == 4 %>
+      <% if p.status >= 4 %>
         <% nb_perfect = p.contestsolutions.where(:score => 7, :official => false).count %>
         Scores parfaits : <b><%= nb_perfect %></b>
       <% elsif p.status == 3 %>
@@ -198,7 +205,7 @@ Concours #<%= @contest.number %>
   <% if p.status <= 2 && @contest.status > 0 %>
       <% if p.status <= 1 %>
         <% date_limit = p.start_time.to_i %>
-        <% message_before = "Temps avant publication : " %>
+        <% message_before = "Publication dans : " %>
         <% message_zero = "En ligne" %>
       <% else %>
         <% date_limit = p.end_time.to_i %>

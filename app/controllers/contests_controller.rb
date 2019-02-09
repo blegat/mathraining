@@ -123,8 +123,12 @@ class ContestsController < ApplicationController
       flash[:danger] = "Un concours doit contenir au moins un problème !"
       redirect_to @contest
     elsif @contest.contestproblems.first.start_time < date_in_one_day
-      flash[:danger] = "Un concours ne peut être mis en ligne moins d'un jour avant le premier problème."
-      redirect_to @contest
+      if Rails.env.production?
+        flash[:danger] = "Un concours ne peut être mis en ligne moins d'un jour avant le premier problème."
+        redirect_to @contest
+      else
+        flash[:info] = "Un concours ne peut être mis en ligne moins d'un jour avant le premier problème (en production)."
+      end
     end
   end
 

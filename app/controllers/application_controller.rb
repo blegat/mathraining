@@ -233,4 +233,47 @@ class ApplicationController < ActionController::Base
     sub.save
   end
   
+  def compute_new_contest_rankings(contest)
+    userset = Set.new
+    probs = contest.contestproblems.where("status >= 4")
+    probs.each do |p|
+      p.contestsolutions.where("score > 0 AND official = ?", false).each do |s|
+        userset.add(s.user_id)
+      end
+    end
+    scores = Array.new
+    userset.each do |u|
+      score = 0
+      probs.each do |p|
+        sol =  p.contestsolutions.where(:user_id => u).first
+        if !sol.nil?
+          score = score + sol.score
+        end
+      end
+      scores.push([-score, u])
+    end
+    scores.sort!
+    prevscore = -1
+    i = 1
+    rank = 0
+    scores.each do |a|
+      score = -a[0]
+      u = a[1]
+      if score != prevscore
+        rank = i
+        prevscore = score
+      end
+      cs = Contestscore.where(:contest => @contest, :user_id => u).first
+      if cs.nil?
+        cs = Contestscore.new
+        cs.contest = contest
+        cs.user_id = u
+      end
+      cs.rank = rank
+      cs.score = score
+      cs.save
+      i = i+1
+    end
+  end
+  
 end

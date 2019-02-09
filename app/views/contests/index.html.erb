@@ -75,7 +75,7 @@ Les problèmes des concours et leurs résultats sont accessibles par tous, mais 
     
     <div class="module right-info">
     <h4>Statistiques</h4>
-      <% nb_prob2 = c.contestproblems.where(:status => 4).count %>
+      <% nb_prob2 = c.contestproblems.where("status >= 4").count %>
       <% if nb_prob2 == 0 %>
         <i>Aucun problème corrigé</i>
       <% else %>

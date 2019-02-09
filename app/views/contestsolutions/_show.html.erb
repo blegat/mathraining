@@ -10,7 +10,7 @@
     (modifiable)
   <% elsif @contestproblem.status == 3 %>
     (en attente de correction)
-  <% elsif @contestproblem.status == 4 %>
+  <% elsif @contestproblem.status >= 4 %>
     <% if @contestsolution.star %>
       <%= image_tag @contestsolution.icon %>
     <% end %>

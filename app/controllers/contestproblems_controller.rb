@@ -1,10 +1,11 @@
 #encoding: utf-8
 class ContestproblemsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :show]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :publish_results, :authorize_corrections, :unauthorize_corrections]
+  before_action :root_user, only: [:authorize_corrections, :unauthorize_corrections]
   before_action :recup_contest, only: [:new, :create]
   before_action :recup, only: [:show, :edit, :update, :destroy]
-  before_action :recup2, only: [:publish_results]
+  before_action :recup2, only: [:publish_results, :authorize_corrections, :unauthorize_corrections]
   before_action :is_organizer, only: [:new, :create, :publish_results]
   before_action :is_organizer_or_root, only: [:edit, :update, :destroy]
   before_action :offline_contest, only: [:new, :create, :destroy]
@@ -88,10 +89,28 @@ class ContestproblemsController < ApplicationController
     @contestproblem.status = 4
     @contestproblem.save
     
-    compute_new_rankings
+    compute_new_contest_rankings(@contest)
     
     automatic_results_published_post(@contestproblem)
     
+    redirect_to @contestproblem
+  end
+  
+  def authorize_corrections
+    if @contestproblem.status == 4
+      @contestproblem.status = 5
+      @contestproblem.save
+      flash[:success] = "Les organisateurs peuvent à présent modifier leurs corrections. N'oubliez pas de stopper cette autorisation temporaire quand ils ont terminé !"      
+    end      
+    redirect_to @contestproblem
+  end
+  
+  def unauthorize_corrections
+    if @contestproblem.status == 5
+      @contestproblem.status = 4
+      @contestproblem.save
+      flash[:success] = "Les organisateurs ne peuvent plus modifier leurs corrections."
+    end      
     redirect_to @contestproblem
   end
 
@@ -187,49 +206,6 @@ class ContestproblemsController < ApplicationController
       p.number = x
       p.save
       x = x+1
-    end
-  end
-  
-  def compute_new_rankings
-    userset = Set.new
-    probs = @contest.contestproblems.where(:status => 4)
-    probs.each do |p|
-      p.contestsolutions.where("score > 0 AND official = ?", false).each do |s|
-        userset.add(s.user_id)
-      end
-    end
-    scores = Array.new
-    userset.each do |u|
-      score = 0
-      probs.each do |p|
-        sol =  p.contestsolutions.where(:user_id => u).first
-        if !sol.nil?
-          score = score + sol.score
-        end
-      end
-      scores.push([-score, u])
-    end
-    scores.sort!
-    prevscore = -1
-    i = 1
-    rank = 0
-    scores.each do |a|
-      score = -a[0]
-      u = a[1]
-      if score != prevscore
-        rank = i
-        prevscore = score
-      end
-      cs = Contestscore.where(:contest => @contest, :user_id => u).first
-      if cs.nil?
-        cs = Contestscore.new
-        cs.contest = @contest
-        cs.user_id = u
-      end
-      cs.rank = rank
-      cs.score = score
-      cs.save
-      i = i+1
     end
   end
   
