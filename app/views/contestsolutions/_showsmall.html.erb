@@ -28,8 +28,12 @@
 </td>
 
 <td style="width:40px; text-align:center;">
-  <%= sol.score if cansee && !sol.official? && sol.score >= 0 %>
-  <%= '-' if !cansee || sol.official? || sol.score < 0 %>
+  <% cansee_score = false %>
+  <% if (cansee || @contest.is_organized_by_or_root(current_user)) && !sol.official? && sol.score >= 0 %>
+    <% cansee_score = true %>
+  <% end %>
+  <%= sol.score if cansee_score %>
+  <%= '-' if !cansee_score %>
 </td>
 
 <!-- Voir -->
