@@ -393,8 +393,6 @@ class UsersController < ApplicationController
       @user.email = @user.id.to_s
       @user.first_name = "Compte"
       @user.last_name = "Supprimé"
-      @user.year = "0"
-      @user.country = "-"
       @user.seename = 1
       @user.wepion = false
       @user.valid_name = true
