@@ -173,7 +173,7 @@ class ApplicationController < ActionController::Base
   def check_contests
     date_now = DateTime.now
     date_in_one_day = 1.day.from_now
-    Contestproblemcheck.all.each do |c|
+    Contestproblemcheck.all.order(:id).each do |c|
       p = c.contestproblem
       if p.status == 0
         if p.start_time <= date_in_one_day
@@ -199,7 +199,7 @@ class ApplicationController < ActionController::Base
           p.save
         end
       end
-      if p.status == 3
+      if p.status >= 3
         c.destroy # Should not happen in theory
       end
     end

@@ -61,7 +61,7 @@ class ContestsController < ApplicationController
   def put_online
     @contest.status = 1
     @contest.save
-    @contest.contestproblems.each do |p|
+    @contest.contestproblems.order(:number, :id).each do |p|
       c = Contestproblemcheck.new
       c.contestproblem = p
       c.save
@@ -146,7 +146,7 @@ class ContestsController < ApplicationController
     text = "Le [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url], organisé par "
     nb = contest.organizers.count
     i = 0
-    @contest.organizers.order(:last_name, :first_name).each do |o|
+    contest.organizers.order(:last_name, :first_name).each do |o|
       text = text + "[b]" + o.name + "[/b]"
       i = i+1
       if i == nb-1
@@ -156,8 +156,12 @@ class ContestsController < ApplicationController
       end
     end
     text = text + ", vient d'être mis en ligne. Il comporte [b]" + contest.contestproblems.count.to_s + " problème#{'s' if contest.contestproblems.count > 1}[/b] et démarrera le [b]" + write_date_only(contest.contestproblems.order(:number).first.start_time) + "[/b]. "
-    text = text + "La description du concours et les dates de tous les problèmes peuvent être trouvées sur la page du concours.\n\r\n\r"
+    text = text + " En voici la description :\n\r\n\r" + contest.description + "\n\r\n\r"
+    contest.contestproblems.order(:number).each do |p|
+      text = text + "Le Problème #" + p.number.to_s + " sera ouvert aux solutions du " + write_date_with_link_forum(p.start_time, contest, p) + " au " + write_date_with_link_forum(p.end_time, contest, p) + ".\n\r"
+    end
     
+    text = text + "Ces dates sont normalement définitives. Si toutefois elles venaient à changer alors une annonce sera faite pour prévenir tout le monde.\n\r\n\r"
     text = text + "Pour chaque problème du concours, un message automatique sera publié sur ce forum un jour avant sa publication, au moment de sa publication, et après sa correction. Si vous désirez également recevoir un rappel par e-mail un jour avant la publication de chaque problème, vous pouvez cliquer sur 'Suivre ce concours' en haut à droite de [url=" + contest_url(contest) + "]cette page[/url].\n\r\n\r"
     text = text + "Ce sujet peut être utilisé pour échanger vos commentaires sur le concours, mais il vous est demandé de ne pas vous entraider ;-)\n\r\n\r"
     text = text + "Bonne chance à tous, et surtout bon amusement ! :-)"
