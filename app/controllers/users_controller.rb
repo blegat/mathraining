@@ -308,7 +308,7 @@ class UsersController < ApplicationController
         @user.update_attribute(:key, SecureRandom.urlsafe_base64)
         @user.update_attribute(:recup_password_date_limit, DateTime.now)
         UserMailer.forgot_password(@user.id).deliver if Rails.env.production?
-        flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}"
+        flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if Rails.env.development?
         flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
       else
         flash[:danger] = "Veuillez d'abord confirmer votre adresse e-mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
