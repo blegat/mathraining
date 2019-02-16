@@ -187,13 +187,8 @@ class UsersController < ApplicationController
   def update
     old_last_name = @user.last_name
     old_first_name = @user.first_name
-    ok = true
-    if (!params[:user][:password].nil? && params[:user][:password].length > 0)
-      ok = @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation, :email))
-    else
-      ok = @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :email))
-    end
-    if ok
+
+    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation, :email))
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
       @user.adapt_name
@@ -358,7 +353,10 @@ class UsersController < ApplicationController
       flash[:danger] = "Vous avez mis trop de temps à modifier votre mot de passe. Veuillez réitérer votre demande de changement de mot de passe."
       redirect_to root_path
     else
-      if (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.update_attributes(params.require(:user).permit(:password, :password_confirmation))
+      if (params[:user][:password].nil? or params[:user][:password].length == 0)
+        session["errorChange"] = ["Mot de passe est vide"]
+        redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
+      elsif (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.update_attributes(params.require(:user).permit(:password, :password_confirmation))
         @user.update_attribute(:key, SecureRandom.urlsafe_base64)
         @user.update_attribute(:recup_password_date_limit, nil)
         flash[:success] = "Votre mot de passe vient d'être modifié. Vous pouvez maintenant vous connecter à votre compte."
