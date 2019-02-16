@@ -149,7 +149,7 @@ class UsersController < ApplicationController
       @user.country = c
     end
 
-    # Don't do email and captcha in development and tests
+    # Don't do e-mail and captcha in development and tests
     @user.email_confirm = !Rails.env.production?
     
     if !params.has_key?("consent1") || !params.has_key?("consent2")
@@ -187,7 +187,13 @@ class UsersController < ApplicationController
   def update
     old_last_name = @user.last_name
     old_first_name = @user.first_name
-    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation, :email))
+    ok = true
+    if (!params[:user][:password].nil? && params[:user][:password].length > 0)
+      ok = @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation, :email))
+    else
+      ok = @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :email))
+    end
+    if ok
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
       @user.adapt_name
@@ -300,10 +306,12 @@ class UsersController < ApplicationController
     if @user
       if @user.email_confirm
         @user.update_attribute(:key, SecureRandom.urlsafe_base64)
+        @user.update_attribute(:recup_password_date_limit, DateTime.now)
         UserMailer.forgot_password(@user.id).deliver if Rails.env.production?
+        flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}"
         flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
       else
-        flash[:danger] = "Veuillez d'abord confirmer votre adresse mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
+        flash[:danger] = "Veuillez d'abord confirmer votre adresse e-mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
       end
     else
       flash[:danger] = "Aucun utilisateur ne possède cette adresse."
@@ -312,20 +320,50 @@ class UsersController < ApplicationController
   end
 
   # Mot de passe oublié 2
-  def recup_password
-    @user = User.find(params[:id])
-    if @user.key.to_s != params[:key].to_s
-      flash[:danger] = "Ce lien n'est pas correct."
+  def recup_password  
+    @user = User.find(params[:user_id])
+    if @user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?
+      flash[:danger] = "Ce lien n'est pas valide (ou a déjà été utilisé)."
+      redirect_to root_path
+    elsif DateTime.now.in_time_zone > @user.recup_password_date_limit + 3600
+      flash[:danger] = "Ce lien n'est plus valide (il expirait après une heure). Veuillez en redemander un autre."
       redirect_to root_path
     else
-      @user.update_attribute(:key, SecureRandom.urlsafe_base64)
-      if signed_in?
-        sign_out
+      # Si le paramètre "signed_out" n'est pas présent alors on le rajoute
+      # C'est pour éviter le problème qui arrive si quelqu'un essaye de se connecter depuis cette page
+      # En effet quand on se connecte on est redirigé vers la page précédente, et celle-ci déconnectait immédiatement l'utilisateur...
+      if(params[:signed_out].nil?)
+        if(signed_in?)
+          sign_out
+        end
+        redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
+      elsif @ss
+        # Si on a "signed_out" et qu'on est connecté, ça veut dire qu'on vient de se connecter
+        redirect_to root_path
       end
-      sign_in @user
-      flash[:success] = "Veuillez changer immédiatement de mot de passe."
-      redirect_to edit_user_path(@user)
     end
+  end
+  
+  # Mot de passe oublié 3
+  def change_password
+    @user = User.find(params[:user_id])
+    if (@user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?)
+      redirect_to root_path
+    elsif DateTime.now.in_time_zone > @user.recup_password_date_limit + 3600
+      flash[:danger] = "Vous avez mis trop de temps à modifier votre mot de passe. Veuillez réitérer votre demande de changement de mot de passe."
+      redirect_to root_path
+    else
+      if (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.update_attributes(params.require(:user).permit(:password, :password_confirmation))
+        @user.update_attribute(:key, SecureRandom.urlsafe_base64)
+        @user.update_attribute(:recup_password_date_limit, nil)
+        flash[:success] = "Votre mot de passe vient d'être modifié. Vous pouvez maintenant vous connecter à votre compte."
+        redirect_to root_path
+      else
+        session["errorChange"] = @user.errors.full_messages
+        redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
+      end
+    end
+  
   end
 
   # Voir toutes les soumissions (admin)

@@ -36,17 +36,17 @@
   <%= render 'subjects/smiley', hiddentext: true %>
   <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput#{@champ}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
 
-<!-- Case mails aux groupes A et/ou B -->
+<!-- Case e-mails aux groupes A et/ou B -->
 <% if current_user.sk.admin && @new && !@subject.admin %>
 	<br/>
   <label style="font-weight:normal;">
     <input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
-    Prévenir tout le groupe A de ce nouveau message par mail.
+    Prévenir tout le groupe A de ce nouveau message par e-mail.
   </label>
   <br/>
   <label style="font-weight:normal;">
     <input type="checkbox" id="groupeB" name="groupeB" value="B" <%= 'disabled="true"' if current_user.other %> >
-    Prévenir tout le groupe B de ce nouveau message par mail.
+    Prévenir tout le groupe B de ce nouveau message par e-mail.
   </label>
 <% end %>
 </div>

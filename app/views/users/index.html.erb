@@ -203,7 +203,7 @@ $(window).scroll(scrollHandler);
       <% if u.email_confirm %>
         <%= raw(u.linked_name) %> (<%= @allcountries[u.country_id][0] %>, <%= u.year if u.year > 0 %><%= ", W" if u.wepion %><%= u.group %>) <br/>
         <% else %>
-        <%= raw(u.linked_name) %> (<%= @allcountries[u.country_id][0] %>, <%= u.year if u.year > 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(email non confirmé)</b><br/>
+        <%= raw(u.linked_name) %> (<%= @allcountries[u.country_id][0] %>, <%= u.year if u.year > 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(e-mail non confirmé)</b><br/>
       <% end %>
     <% end %>
   <% end %>
@@ -222,7 +222,7 @@ $(window).scroll(scrollHandler);
     <% if u.email_confirm %>
       <%= raw(u.linked_name) %> (<%= @allcountries[u.country_id][0] %>, <%= u.year if u.year > 0 %><%= ", W" if u.wepion %><%= u.group %>) <br/>
     <% else %>
-      <%= raw(u.linked_name) %> (<%= @allcountries[u.country_id][0] %>, <%= u.year if u.year > 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(email non confirmé)</b><br/>
+      <%= raw(u.linked_name) %> (<%= @allcountries[u.country_id][0] %>, <%= u.year if u.year > 0 %><%= ", W" if u.wepion %><%= u.group %>) <b>(e-mail non confirmé)</b><br/>
     <% end %>
     <% rank = rank + 1 %>
   <% end %>
@@ -236,7 +236,7 @@ $(window).scroll(scrollHandler);
     <h2>Administrateurs</h2>
 
     <% User.where(:admin => true, :active => true).order(:last_name).each do |user| %>
-      <%= raw(user.linked_name) %> <%= "(email non confirmé)" unless user.email_confirm %><br/>
+      <%= raw(user.linked_name) %> <%= "(e-mail non confirmé)" unless user.email_confirm %><br/>
     <% end %>
   <% end %>
   </div>

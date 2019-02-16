@@ -48,7 +48,7 @@ class MessagesController < ApplicationController
         j = j+1
       end
 
-      # Envoi d'un mail aux utilisateurs suivant le sujet
+      # Envoi d'un e-mail aux utilisateurs suivant le sujet
       @subject.following_users.each do |u|
         if u != current_user
           if (@subject.admin && !u.admin) || (@subject.wepion && !u.wepion && !u.admin)

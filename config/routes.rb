@@ -118,6 +118,8 @@ Mathraining::Application.routes.draw do
     match '/take_skin', to: 'users#take_skin', :via => [:get], as: :take_skin
     match '/leave_skin', to: 'users#leave_skin', :via => [:get], as: :leave_skin
     match '/change_group', to: 'users#change_group', :via => [:get], as: :change_group
+    match '/recup_password', to: 'users#recup_password', :via => [:get], as: :recup_password
+    match '/change_password', to: 'users#change_password', :via => [:post]
   end
   
   match '/groups', to: 'users#groups', :via => [:get], as: :groups
@@ -196,7 +198,6 @@ Mathraining::Application.routes.draw do
   match '/signout', to: 'sessions#destroy', via: :delete
   match '/activate', to: 'users#activate', :via => [:get]
   match '/forgot_password', to: 'users#forgot_password', :via => [:get]
-  match '/recup_password', to: 'users#recup_password', :via => [:get]
   match '/password_forgotten', to: 'users#password_forgotten', :via => [:post]
 
   match '/recompute_scores', to: 'users#recompute_scores', :via => [:get], as: :recompute_scores

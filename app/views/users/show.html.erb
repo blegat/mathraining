@@ -47,7 +47,7 @@ html>body tbody.scroll {
 
 <span style="margin-left:30px; color:<%= couleur %>;"><%= status %></span>
 <% if signed_in? && current_user.sk.admin && (!@user.admin || current_user.sk.root) %>
-  <span style="color:<%= couleur %>; margin-left:50px; font-size:18px;">(<%= @user.email %><%= " - email non confirmé" if !@user.email_confirm %>)</span>
+  <span style="color:<%= couleur %>; margin-left:50px; font-size:18px;">(<%= @user.email %><%= " - e-mail non confirmé" if !@user.email_confirm %>)</span>
 <% end %>
 
 <% if signed_in? && current_user.sk != @user %>
@@ -628,7 +628,7 @@ html>body tbody.scroll {
     <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse email et son nom. Êtes-vous sûr de vouloir continuer ?" }, :style => "color:red;" %>
+      <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :style => "color:red;" %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :style => "color:red;" %>

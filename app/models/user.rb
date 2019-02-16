@@ -94,7 +94,7 @@ class User < ActiveRecord::Base
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }, on: :create
   validates :email_confirmation, presence: true, on: :create
   validates :password, length: { minimum: 6 }, on: :create
-  validates :password, length: { minimum: 6 }, on: :update, allow_blank: true
+  validates :password, length: { minimum: 6 }, on: :update
   validates :password_confirmation, presence: true, on: :create
   validates_confirmation_of :email
   validates :year, presence: true
@@ -421,7 +421,7 @@ class User < ActiveRecord::Base
   end
   
   def self.delete_unconfirmed
-    # Utilisateurs n'ayant pas confirmé leur mail après une semaine
+    # Utilisateurs n'ayant pas confirmé leur e-mail après une semaine
     oneweekago = Date.today - 7
     User.where("email_confirm = ? AND created_at < ?", false, oneweekago).each do |u|
       u.destroy

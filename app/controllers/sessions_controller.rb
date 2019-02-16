@@ -21,7 +21,7 @@ class SessionsController < ApplicationController
         sign_in user
         redirect_back_or(root_path)
       else
-        flash[:danger] = 'Vous devez activer votre compte via le mail qui vous a été envoyé.'
+        flash[:danger] = "Vous devez activer votre compte via l'e-mail qui vous a été envoyé."
         redirect_back(fallback_location: root_path)
       end
     else

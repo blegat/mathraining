@@ -33,14 +33,13 @@ Les administrateurs se réservent par ailleurs le droit de bloquer l'accès au s
 
 <h1>Inscription</h1>
 
-Pour vous inscrire, il vous suffit de posséder une adresse mail valide. Un mail de confirmation vous sera envoyé à cette adresse.<br/><br/>
+Pour vous inscrire, il vous suffit de posséder une adresse e-mail valide. Un e-mail de confirmation vous sera envoyé à cette adresse.<br/><br/>
 
 <%= form_for(@user) do |f| %>
   <%= render 'form', f: f, modif: false %>
   
   <% if Rails.env.production? %>
-    <br/>
-    Veuillez prouver que vous êtes bien un humain.<br/><br/>
+    Veuillez prouver que vous n'êtes pas un robot.<br/><br/>
     <%= recaptcha_tags :display => { :theme => "clean" } %>
     <br/>
   <% end %>
