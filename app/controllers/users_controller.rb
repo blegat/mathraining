@@ -158,7 +158,8 @@ class UsersController < ApplicationController
     elsif (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       UserMailer.registration_confirmation(@user.id).deliver if Rails.env.production?
       
-      @user.consent = DateTime.now
+      @user.consent_date = DateTime.now
+      @user.last_policy_read = true
       @user.adapt_name
       @user.save
       
@@ -473,7 +474,8 @@ class UsersController < ApplicationController
       render 'read_legal'
     else
       user = current_user
-      user.consent = DateTime.now
+      user.consent_date = DateTime.now
+      user.last_policy_read = true
       user.save
       redirect_to root_path
     end

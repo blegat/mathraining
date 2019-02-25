@@ -23,8 +23,10 @@ class ApplicationController < ActionController::Base
     $allcolors = Color.order(:pt).to_a
     @ss = signed_in?
     pp = request.fullpath.to_s
-    if @ss && current_user.consent.nil? && pp != "/accept_legal" && pp != "/legal" && pp != "/about" && pp != "/contact" && pp != "/signout"
-      render 'users/read_legal'
+    if @ss && !current_user.last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
+      if Privacypolicy.where(:online => true).count > 0 # Si aucune privacy policy alors on ne redirige pas...
+        render 'users/read_legal'
+      end
     end
   end
 

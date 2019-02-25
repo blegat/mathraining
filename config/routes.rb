@@ -182,7 +182,6 @@ Mathraining::Application.routes.draw do
 
   get 'pb_sections/:id', to: 'sections#showpb', as: :pb_sections
 
-  match '/legal', to: 'static_pages#legal', :via => [:get]
   match '/about', to: 'static_pages#about', :via => [:get]
   match '/contact', to: 'static_pages#contact', :via => [:get]
 
@@ -203,6 +202,13 @@ Mathraining::Application.routes.draw do
   match '/recompute_scores', to: 'users#recompute_scores', :via => [:get], as: :recompute_scores
   
   resources :categories, only: [:index, :create, :update, :destroy]
+  
+  resources :privacypolicies do
+    match '/put_online', to: 'privacypolicies#put_online', :via => [:get], as: :put_online
+    match '/edit_description', to: "privacypolicies#edit_description", :via => [:get]
+    match '/update_description', to: "privacypolicies#update_description", :via => [:patch], as: :update_description
+  end
+  match '/last_policy', to: 'privacypolicies#last_policy', :via => [:get], as: :last_policy
 
   mount ResqueWeb::Engine => "/resque_web"
 

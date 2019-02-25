@@ -1,0 +1,24 @@
+<% provide(:title, 'Politique de confidentialité') %>
+
+<h1>Politique de confidentialité</h1>
+<% prev = Privacypolicy.where("online = ? AND publication < ?", true, @privacypolicy.publication).order("publication").last %>
+<% nex = Privacypolicy.where("online = ? AND publication > ?", true, @privacypolicy.publication).order("publication").first %>
+<center>
+<% if !prev.nil? %>
+  <%= link_to "Version du #{write_date_only(prev.publication)}", prev %> - 
+<% end %>
+<b>Version du <%= write_date_only(@privacypolicy.publication) %></b>
+<% if !nex.nil? %>
+  - <%= link_to "Version du #{write_date_only(nex.publication)}", nex %>
+<% else %>
+  (dernière version)
+<% end %>
+</center>
+
+<%= raw(htmlise(@privacypolicy.content)) %>
+
+<% if signed_in? && current_user.sk.root? %>
+<br/><center>
+<%= link_to "Mettre à jour la politique de confidentialité", privacypolicies_path %>
+</center>
+<% end %>

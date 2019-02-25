@@ -146,8 +146,8 @@
 <%= @section.name %>
 </h1>
 
-<%= render 'infofond' if @fondation %>
-<%= render 'info' unless @fondation %>
+<%= render 'infofond' if @section.fondation %>
+<%= render 'info' unless @section.fondation %>
 
 <!-- Introduction -->
 <h3>Introduction</h3>
@@ -167,7 +167,7 @@
 <% end %>
 
 <!-- Si chapitre non fondamental -->
-<% if !@fondation %>
+<% if !@section.fondation %>
 
 <% chap = Array.new %>
 <% debloque = Array.new %>

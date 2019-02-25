@@ -57,6 +57,9 @@ fr:
         password_confirmation: "Confirmation du mot de passe"
         year: "Année de naissance"
         country: "Pays"
+      privacypolicy:
+        content: "Contenu"
+        description: "Modifications"
   will_paginate:
     previous_label: "Page précédente"
     next_label: "Page suivante"

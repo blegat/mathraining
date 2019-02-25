@@ -1,0 +1,38 @@
+<% provide(:title, 'Gérer la politique de confidentialité') %>
+
+<h1>Gérer la politique de confidentialité</h1>
+
+<table class="table table-bordered">
+<tr><th style="width:120px; text-align:center;">Publication</th><th style="width:80px; text-align:center;">Texte</th><th>Modifications</th></tr>
+<% Privacypolicy.all.order(:publication).each do |p| %>
+<tr class="<%= 'success' if p.online? %><%= 'danger' unless p.online? %>">
+<td style="text-align:center;">
+<% if p.online %>
+  <%= write_date_only(p.publication) %>
+<% else %>
+  -
+<% end %>
+</td>
+<td style="text-align:center;">
+<% if p.online %>
+  <%= link_to "Voir", p %>
+<% else %>
+  <%= link_to "Modifier", edit_privacypolicy_path(p) %>
+<% end %>
+</td>
+<td>
+<%= raw(htmlise(p.description)) %>
+<br/><br/>
+<center><%= link_to "Modifier", privacypolicy_edit_description_path(p) %>
+<% if !p.online %>
+  - <%= link_to "Publier", privacypolicy_put_online_path(p), data: { confirm: "ATTENTION : Après la publication tous les utilisateurs devront signer la nouvelle politique de confidentialité. Êtes-vous sûr de vouloir publier cette nouvelle version ?" }, :style => "color:red;" %>
+<% end %>
+</center>
+</td>
+</tr>
+<% end %>
+</table>
+
+<% if Privacypolicy.where(:online => false).count == 0 %>
+  <center><%= button_to "Créer une nouvelle version", new_privacypolicy_path, method: :get, class: 'btn btn-lg btn-default btn-grey' %></center>
+<% end %>

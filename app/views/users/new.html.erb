@@ -48,11 +48,11 @@ Pour vous inscrire, il vous suffit de posséder une adresse e-mail valide. Un e-
   <div class="form-group">
     <label style="font-weight:normal;">
     	<input type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
-      J'ai lu et j'accepte la <%= link_to "politique de confidentialité", legal_path, :target => "_blank" %> de Mathraining.
+      J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> de Mathraining.
     </label><br/>
     <label style="font-weight:normal;">
     	<input type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
-      J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", legal_path, :target => "_blank" %> avec mon tuteur légal.
+      J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> avec mon tuteur légal.
     </label>
   </div>
 

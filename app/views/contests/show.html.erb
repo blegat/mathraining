@@ -36,9 +36,9 @@ Concours #<%= @contest.number %>
 
 <%= raw(bbcode(@contest.description)) %>
 
-<br/><br/><i>Organisateur du concours : </i>
 <% c = 0 %>
 <% total = @contest.organizers.count %>
+<br/><br/><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
   <% c = c+1 %>
   <%= raw(o.linked_name) %><% if (signed_in? && current_user.sk.admin?) && @contest.status == 0 %> (<%= link_to "supprimer", contest_remove_organizer_path(@contest, :user_id => o.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
