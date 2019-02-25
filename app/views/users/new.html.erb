@@ -3,10 +3,13 @@ function checkChecked() {
     var c1 = document.getElementById("consent1").checked;
     var c2 = document.getElementById("consent2").checked;
     var bt = document.getElementById("send-button");
+    var war = document.getElementById("warning");
     if(c1 && c2) {
+      warning.style.color = "white";
       bt.disabled = false;
     }
     else {
+      warning.style.color = "red";
       bt.disabled = true;
     }
 }
@@ -25,10 +28,10 @@ Ce site a à l'origine été créé pour les étudiants belges participant aux w
 <span style="color:#FF0000;">Il n'<b>est</b> par contre <b>pas destiné</b> :
 <ul>
 <li>aux élèves souhaitant s'entraîner aux Olympiades Mathématiques Belges, la matière enseignée n'ayant pas d'intérêt pour la résolution des problèmes de l'OMB ;</li>
-<li>aux élèves souhaitant s'entraîner en vue de passer l'examen d'entrée aux études d'ingénieurs civils, la matière enseignée n'étant d'<b>aucune utilité</b> pour cet examen.
+<li>aux élèves souhaitant s'entraîner en vue de passer l'examen d'entrée aux études d'ingénieur civil, la matière enseignée n'étant d'<b>aucune utilité</b> pour cet examen.
 </ul>
 </span>
-Les administrateurs se réservent par ailleurs le droit de bloquer l'accès au site aux personnes mal intentionnées ou utilisant le site de manière non appropriée.
+Les administrateurs se réservent par ailleurs le droit de bloquer l'accès au site aux personnes mal intentionnées ou utilisant le site de manière inappropriée.
 </div>
 
 <h1>Inscription</h1>
@@ -37,25 +40,8 @@ Pour vous inscrire, il vous suffit de posséder une adresse e-mail valide. Un e-
 
 <%= form_for(@user) do |f| %>
   <%= render 'form', f: f, modif: false %>
-  
-  <% if Rails.env.production? %>
-    Veuillez prouver que vous n'êtes pas un robot.<br/><br/>
-    <%= recaptcha_tags :display => { :theme => "clean" } %>
-    <br/>
-  <% end %>
-  
-  <!-- Lire et accepter la politique de confidentialité -->
-  <div class="form-group">
-    <label style="font-weight:normal;">
-    	<input type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
-      J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> de Mathraining.
-    </label><br/>
-    <label style="font-weight:normal;">
-    	<input type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
-      J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> avec mon tuteur légal.
-    </label>
-  </div>
 
   <%= f.submit "Créer mon compte", class: "btn btn-lg btn-primary", id: "send-button", disabled: !Rails.env.test? %>
+  <div id="warning" style="margin-top:15px; margin-bottom:5px; color:red;">Pour pouvoir vous inscrire, vous devez accepter la politique de confidentialité.</div>
   <script>checkChecked()</script>
 <% end %>

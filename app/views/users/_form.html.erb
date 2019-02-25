@@ -24,24 +24,6 @@
   </label>
 </div>
 
-<!-- Email -->
-<div class="form-group">
-  <%= f.label :email %>
-  <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :disabled => ((modif && !current_user.admin?) || (signed_in? && current_user.other && !current_user.root))  %>
-</div>
-
-<% if(signed_in? && !current_user.other && current_user.admin?) %>
-  (Vous pouvez modifier votre adresse car vous êtes administrateur.)<br/><br/>
-<% end %>
-
-<!-- Confirmation e-mail -->
-<% if !modif %>
-<div class="form-group">
-  <%= f.label :email_confirmation %>
-  <%= f.email_field :email_confirmation, :class => "form-control", :style => "width:200px;", :disabled => modif %>
-</div>
-<% end %>
-
 <!-- Sexe -->
 <div class="form-group">
   <%= f.label :sex %><br/>
@@ -74,18 +56,60 @@
   <%= f.select(:country, options_for_select(countries_array, @user.country_id), { :include_blank => "Choisir..." }, { :class => "form-control", :style => "width:250px;" }) %>
 </div>
 
-<% if modif %>
-  <br/>Si vous désirez modifier votre mot de passe, remplissez les champs suivants.<br/><br/>
+<!-- Email -->
+<div class="form-group">
+  <%= f.label :email %>
+  <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => ((modif && !current_user.admin?) || (signed_in? && current_user.other && !current_user.root))  %>
+</div>
+
+<% if(signed_in? && !current_user.other && current_user.admin?) %>
+  (Vous pouvez modifier votre adresse car vous êtes administrateur.)<br/><br/>
+<% end %>
+
+<!-- Confirmation e-mail -->
+<% if !modif %>
+<div class="form-group">
+  <%= f.label :email_confirmation %>
+  <%= f.email_field :email_confirmation, :class => "form-control", :style => "width:250px;", :disabled => modif %>
+</div>
 <% end %>
 
 <!-- Mot de passe -->
 <div class="form-group">
   <%= f.label :password %>
-  <%= f.password_field :password, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other) %>
+  <%= f.password_field :password, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
 <!-- Confirmation mot de passe -->
 <div class="form-group">
   <%= f.label :password_confirmation %>
-  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other) %>
+  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
+</div>
+
+<% if !modif && Rails.env.production? %>
+  Veuillez prouver que vous n'êtes pas un robot.<br/><br/>
+  <%= recaptcha_tags :display => { :theme => "clean" } %>
+  <br/>
+<% end %>
+
+<div class="form-group">
+  <!-- Accepter Google Analytics -->
+  <%= f.label :accept_analytics, :style => "font-weight:normal;" do %>
+    <%= f.check_box :accept_analytics %>
+    J'accepte de contribuer aux statistiques de visites anonymes de Mathraining en autorisant les cookies de Google Analytics.
+    Ces statistiques permettent uniquement aux administrateurs d'en savoir plus sur la manière dont les utilisateurs naviguent sur le site, mais elles ne permettent aucunement d'identifier les visiteurs.
+    Le nombre total de pages visitées par mois est par exemple un indicateur de la popularité du site, qui peut être mis en valeur à différentes occasions.
+  <% end %>
+
+  <% if !modif %>
+    <!-- Lire et accepter la politique de confidentialité -->
+    <label style="font-weight:normal;">
+    	<input type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
+      J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> de Mathraining.
+    </label><br/>
+    <label style="font-weight:normal;">
+    	<input type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
+      J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> avec mon tuteur légal.
+    </label>
+  <% end %>
 </div>

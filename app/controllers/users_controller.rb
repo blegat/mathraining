@@ -141,7 +141,7 @@ class UsersController < ApplicationController
   # S'inscrire au site 2 : il faut être hors ligne
   def create
     #@user = User.new(params[:user])
-    @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :email_confirmation, :sex, :year, :password, :password_confirmation))
+    @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :email_confirmation, :sex, :year, :password, :password_confirmation, :accept_analytics))
     @user.key = SecureRandom.urlsafe_base64
     
     if(!params[:user][:country].nil? && params[:user][:country].to_i > 0)
@@ -189,7 +189,7 @@ class UsersController < ApplicationController
     old_last_name = @user.last_name
     old_first_name = @user.first_name
 
-    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation, :email))
+    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation, :email, :accept_analytics))
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
       @user.adapt_name
