@@ -146,13 +146,13 @@ FactoryGirl.define do
     sequence(:last_name) { |n| "Dupont" }
     sequence(:email) { |n| "person_#{n}@example.com" }
     sequence(:email_confirmation) { |n| "person_#{n}@example.com" }
-    old_country "Belgique"
     association :country
     year 1992
     rating 0
     password "foobar"
     password_confirmation "foobar"
-    consent DateTime.now
+    consent_date DateTime.now
+    last_policy_read true
     factory :admin do
       admin true
       root false

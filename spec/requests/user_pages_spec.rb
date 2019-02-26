@@ -92,8 +92,8 @@ describe "User pages" do
         select country.name, from: "Pays"
         select "1977", from: "Année de naissance"
         # Il y a deux fois ces champs (pour la connexion et l"inscription)
-        page.all(:fillable_field, "Email").last.set("user@example.com")
-        page.all(:fillable_field, "Confirmation de l'email").last.set("user@example.com")
+        page.all(:fillable_field, "Adresse e-mail").last.set("user@example.com")
+        fill_in "Confirmation de l'adresse e-mail", with: "user@example.com"
         page.all(:fillable_field, "Mot de passe").last.set("foobar")
         fill_in "Confirmation du mot de passe", with: "foobar"
         find(:css, "#consent1[value='1']").set(true)
