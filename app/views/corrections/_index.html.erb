@@ -14,3 +14,22 @@
   <%= render 'subjects/content', ms: correction, kind: "correction" %>
   
 <% end %>
+
+<% if @submission.user == current_user.sk && @submission.status == 1 %>
+  <% last_correction = @submission.corrections.order(:created_at).last %>
+  <% if !last_correction.nil? && last_correction.user != current_user.sk %>
+  
+  <br/>
+  <div style="padding:15px; background-color:#eeeeee; border:1px solid #dddddd;">
+  Votre solution est erronée. Deux options s'offrent à vous :
+  <ul>
+  <li>Si l'idée générale de votre solution est correcte mais que vous devez apporter une justification complémentaire,
+  faire une modification ou corriger une erreur, alors rajoutez simplement un commentaire ci-dessous.</li>
+  <li>Si votre solution est totalement incorrecte et que vous souhaitez en écrire une nouvelle (essentiellement différente),
+  alors faites une nouvelle soumission.</li>
+  </ul>
+  <i>Merci de respecter cette règle pour éviter aux correcteurs de corriger deux solutions quasi identiques !</i>
+  </div>
+  
+  <% end %>
+<% end %>

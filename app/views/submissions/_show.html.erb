@@ -68,11 +68,6 @@
   </div>
 <% end %>
 
-<!-- Si étudiant et soumission non correcte -->
-<% if (@submission.status == 1 || @submission.status == 3) && current_user.sk == @submission.user %>
-  Vous pouvez tenter de corriger cette solution en postant un commentaire, ou soumettre une nouvelle solution.
-<% end %>
-
 <!-- Affichage de la soumission -->
 <%= render 'subjects/content', ms: @submission, kind: "submission" %>
 
@@ -80,7 +75,7 @@
 <% if @submission.intest && @submission.score != -1 && (current_user.sk.admin? || current_user.sk.corrector? || current_user.sk == @submission.user) %>
 <br/>
 <h4>Score obtenu</h4>
-<center><div style="padding:3px; font-size:24px; border:1px solid #dddddd; background-color:#fffad2;"><%= @submission.score %> / 7</span></center>
+<center><div style="padding:3px; font-size:24px; border:1px solid #dddddd; background-color:#fffad2;"><%= @submission.score %> / 7</center>
 
 <% if current_user.sk.root? %>
   <div style="text-align:center; margin-top:10px; margin-bottom:-10px;">
