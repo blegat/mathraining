@@ -2,6 +2,7 @@
 class SubjectsController < ApplicationController
   before_action :signed_in_user, only: [:index, :show, :new]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate]
+  before_action :get_subject, only: [:show, :update, :destroy]
   before_action :admin_subject_user, only: [:show]
   before_action :author, only: [:update, :destroy]
   before_action :admin_user, only: [:destroy, :migrate]
@@ -23,13 +24,22 @@ class SubjectsController < ApplicationController
       q = params[:q].to_i
       if q > 999999
         cherche_category = q/1000000
-        @category = Category.find(cherche_category)
+        @category = Category.find_by_id(cherche_category)
+        if @category.nil?
+          render 'errors/access_refused' and return
+        end
       elsif q > 999
         cherche_section = q/1000
-        @section = Section.find(cherche_section)
+        @section = Section.find_by_id(cherche_section)
+        if @section.nil?
+          render 'errors/access_refused' and return
+        end
       elsif q > 0
         cherche_chapitre = q
-        @chapitre = Chapter.find(cherche_chapitre)
+        @chapitre = Chapter.find_by_id(cherche_chapitre)
+        if @chapitre.nil? || !@chapitre.online?
+          render 'errors/access_refused' and return
+        end
         @section = @chapitre.section
       else
         cherche_personne = true
@@ -41,7 +51,7 @@ class SubjectsController < ApplicationController
 
     @importants = Array.new
     Subject.includes(:user, :category, :section, :chapter).where(important: true).order("lastcomment DESC").to_a.each do |s|
-      if ((signed_in? && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
+      if ((@signed_in && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (@signed_in && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @importants.push(s)
         end
@@ -50,7 +60,7 @@ class SubjectsController < ApplicationController
 
     @subjects = Array.new
     Subject.includes(:user, :category, :section, :chapter).where(important: false).order("lastcomment DESC").to_a.each do |s|
-      if ((signed_in? && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (signed_in? && (current_user.sk.admin? || current_user.sk.wepion)))
+      if ((@signed_in && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (@signed_in && (current_user.sk.admin? || current_user.sk.wepion)))
         if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @subjects.push(s)
         end
@@ -92,25 +102,37 @@ class SubjectsController < ApplicationController
 
     category_id = params[:subject][:category_id].to_i
     if category_id < 1000
-      @subject.category = Category.find(category_id)
+      @subject.category = Category.find_by_id(category_id)
+      if @subject.category.nil?
+        render 'errors/access_refused' and return
+      end
       @subject.section = nil
       @subject.chapter = nil
       @subject.question = nil
     else
       section_id = category_id/1000
       @subject.category = nil
-      @subject.section = Section.find(section_id)
+      @subject.section = Section.find_by_id(section_id)
+      if @subject.section.nil?
+        render 'errors/access_refused' and return
+      end
       chapter_id = params[:subject][:chapter_id].to_i
       if chapter_id == 0
         @subject.chapter = nil
         @subject.question = nil
       else
-        @subject.chapter = Chapter.find(chapter_id)
+        @subject.chapter = Chapter.find_by_id(chapter_id)
+        if @subject.chapter.nil? || !@subject.chapter.online
+          render 'errors/access_refused' and return
+        end
         question_id = params[:subject][:question_id].to_i
         if question_id == 0
           @subject.question = nil
         else
-          @subject.question = Question.find(question_id)
+          @subject.question = Question.find_by_id(question_id)
+          if @subject.question.nil? # Here we can check that the user has indeed access to the question but it is annoying to do
+            render 'errors/access_refused' and return
+          end
         end
       end
     end
@@ -181,25 +203,37 @@ class SubjectsController < ApplicationController
 
       category_id = params[:subject][:category_id].to_i
       if category_id < 1000
-        @subject.category = Category.find(category_id)
+        @subject.category = Category.find_by_id(category_id)
+        if @subject.category.nil?
+          render 'errors/access_refused' and return
+        end
         @subject.section = nil
         @subject.chapter = nil
         @subject.question = nil
       else
         section_id = category_id/1000
         @subject.category = nil
-        @subject.section = Section.find(section_id)
+        @subject.section = Section.find_by_id(section_id)
+        if @subject.section.nil?
+          render 'errors/access_refused' and return
+        end
         chapter_id = params[:subject][:chapter_id].to_i
         if chapter_id == 0
           @subject.chapter = nil
           @subject.question = nil
         else
-          @subject.chapter = Chapter.find(chapter_id)
+          @subject.chapter = Chapter.find_by_id(chapter_id)
+          if @subject.chapter.nil?
+            render 'errors/access_refused' and return
+          end
           question_id = params[:subject][:question_id].to_i
           if question_id == 0
             @subject.question = nil
           else
-            @subject.question = Question.find(question_id)
+            @subject.question = Question.find_by_id(question_id)
+            if @subject.question.nil? # Here we can check that the user has indeed access to the question but it is annoying to do
+              render 'errors/access_refused' and return
+            end
           end
         end
       end
@@ -256,12 +290,20 @@ class SubjectsController < ApplicationController
     redirect_to subjects_path(:q => @q)
   end
 
-  # Migrer un sujet vers un autre : il faut être root (disons admin)
+  # Migrer un sujet vers un autre : il faut être root
   def migrate
-    @subject = Subject.find(params[:subject_id])
+    @subject = Subject.find_by_id(params[:subject_id])
+    if @subject.nil?
+      render 'errors/access_refused' and return
+    end
     autre_id = params[:migreur].to_i
-    @migreur = Subject.find(autre_id)
-
+    @migreur = Subject.find_by_id(autre_id)
+    
+    if @migreur.nil?
+      flash[:danger] = "Ce sujet n'existe pas."
+      redirect_to @subject and return
+    end
+    
     premier_message = Message.new(content: @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]", created_at: @subject.created_at)
     premier_message.user = @subject.user
     premier_message.subject = @migreur
@@ -298,18 +340,27 @@ class SubjectsController < ApplicationController
     redirect_to subject_path(@subject, :q => @q) and return true
   end
   
+  def get_subject
+    @subject = Subject.find_by_id(params[:id])
+    if @subject.nil?
+      render 'errors/access_refused' and return
+    end
+  end
+  
   def get_q
     @q = 0
     @q = params[:q].to_i if params.has_key?:q
   end
 
   def admin_subject_user
-    @subject = Subject.find(params[:id])
-    redirect_to root_path unless ((signed_in? && (current_user.sk.admin? || current_user.sk.corrector?)) || !@subject.admin)
+    unless ((@signed_in && (current_user.sk.admin? || current_user.sk.corrector?)) || !@subject.admin)
+      render 'errors/access_refused' and return
+    end
   end
 
   def author
-    @subject = Subject.find(params[:id])
-    redirect_to subjects_path unless (current_user.sk == @subject.user || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root)
+    unless (current_user.sk == @subject.user || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root)
+      render 'errors/access_refused' and return
+    end
   end
 end

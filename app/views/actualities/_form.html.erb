@@ -2,13 +2,13 @@
 
 <!-- Titre -->
 <div class="form-group">
-  <%= f.label :titre %>
+  <%= f.label :title %>
   <%= f.text_field :title, :style => "width:100%; max-width:400px;", :class => "form-control" %>
 </div>
 
 <!-- Contenu -->
 <div class="form-group">
-  <%= f.label :contenu %>
+  <%= f.label :content %>
   <div class="well" id="MathPreview"></div>
   <div class="well hidden-preview" id="MathBuffer"></div>
   <%= render 'theories/font' %>

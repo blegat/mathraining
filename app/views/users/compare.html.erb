@@ -55,7 +55,7 @@ html>body tbody.scroll {
     <% section_fondation[s.id] = s.fondation %>
   <% end %>
 
-  <% if signed_in? && current_user.sk.admin %>
+  <% if @signed_in && current_user.sk.admin %>
     <% Chapter.all.to_a.each do |c| %>
       <% cansee[c.id] = true %>
     <% end %>
@@ -65,7 +65,7 @@ html>body tbody.scroll {
       <% debloque[c.id] = false %>
     <% end %>
 
-    <% if signed_in? %>
+    <% if @signed_in %>
       <% current_user.sk.chapters.each do |c| %>
         <% debloque[c.id] = true %>
       <% end %>
@@ -83,10 +83,7 @@ html>body tbody.scroll {
     <% end %>
   <% end %>
 
-  <% enough_points = false %>
-  <% if signed_in? && (current_user.sk.admin? || current_user.sk.rating >= 200) %>
-    <% enough_points = true %>
-  <% end %>
+  <% enough_points = has_enough_points %>
 
   <!-- On va parcourir tous les exercices et problèmes -->
 
@@ -164,13 +161,13 @@ html>body tbody.scroll {
         <% pt = pb.value %>
         <% peutvoir = enough_points %>
         <% t = pb.virtualtest_id %>
-        <% if t == 0 && (!signed_in? || !current_user.sk.admin?) %>
+        <% if t == 0 && (!@signed_in || !current_user.sk.admin?) %>
           <% pb.chapters.each do |c| %>
             <% peutvoir = false if !debloque[c.id] %>
           <% end %>
         <% end %>
-        <% if t != 0 && (!signed_in? || !current_user.sk.admin?) %>
-          <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
+        <% if t != 0 && (!@signed_in || !current_user.sk.admin?) %>
+          <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
         <% end %>
         <% p_encours = p_encours + 1 %>
         <% dernier = p.truetime.in_time_zone %>

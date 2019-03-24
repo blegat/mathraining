@@ -3,6 +3,7 @@ class ColorsController < ApplicationController
   before_action :signed_in_user, only: [:index]
   before_action :signed_in_user_danger, only: [:destroy, :update, :create]
   before_action :root_user
+  before_action :get_color, only: [:update, :destroy]
   
   def index
   end
@@ -21,7 +22,6 @@ class ColorsController < ApplicationController
 
   # Modifier un niveau
   def update
-    @color = Color.find(params[:id])
     if @color.update_attributes(params.require(:color).permit(:pt, :name, :femininename, :color, :font_color))
       flash[:success] = "Niveau et couleur modifiés."
       redirect_to colors_path
@@ -33,10 +33,19 @@ class ColorsController < ApplicationController
 
   # Supprimer un niveau
   def destroy
-    @color = Color.find(params[:id])
     @color.destroy
     flash[:success] = "Niveau et couleur supprimés."
     redirect_to colors_path
+  end
+  
+  ########## PARTIE PRIVEE ##########
+  private
+  
+  def get_color
+    @color = Color.find_by_id(params[:id])
+    if @color.nil?
+      render 'errors/access_refused' and return
+    end
   end
 
 end

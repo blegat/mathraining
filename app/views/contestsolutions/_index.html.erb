@@ -31,7 +31,7 @@ var showFalse = function () {
 <% mine_is_star = false %>
 
 <!-- Votre solution -->
-<% if signed_in? && !@contest.is_organized_by_or_admin(current_user) && @contestproblem.status >= 3 %>
+<% if @signed_in && !@contest.is_organized_by_or_admin(current_user) && @contestproblem.status >= 3 %>
   <% sol = @contestproblem.contestsolutions.where(:user => current_user.sk).first %>
   <% if !sol.nil? %>
     <h3>Votre solution</h3>

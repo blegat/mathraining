@@ -2,14 +2,16 @@
 class QuestionsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :explanation]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_item, :add_item, :switch_item, :update_item, :order_minus, :order_plus, :put_online, :update_explanation, :up_item, :down_item]
-  before_action :get_stuffs_1, only: [:new, :create]
-  before_action :get_stuffs_2, only: [:edit, :update, :destroy]
-  before_action :get_stuffs_3, only: [:manage_items, :remove_item, :add_item, :switch_item, :up_item, :down_item, :update_item, :order_minus, :order_plus, :put_online, :explanation, :update_explanation]
+  before_action :get_chapter, only: [:new, :create]
+  before_action :get_question, only: [:edit, :update, :destroy]
+  before_action :get_question2, only: [:manage_items, :remove_item, :add_item, :switch_item, :up_item, :down_item, :update_item, :order_minus, :order_plus, :put_online, :explanation, :update_explanation]
   before_action :creating_user
+  before_action :get_item, only: [:remove_item, :switch_item, :up_item, :down_item, :update_item]
   before_action :offline_question, only: [:add_item, :remove_item, :destroy]
 
   # Créer une question
   def new
+    @question = Question.new
   end
 
   # Editer une question
@@ -21,6 +23,7 @@ class QuestionsController < ApplicationController
 
   # Créer une question 2
   def create
+    @question = Question.new
     @question.online = false
     @question.chapter = @chapter
     @question.statement = params[:question][:statement]
@@ -131,7 +134,6 @@ class QuestionsController < ApplicationController
 
   # Supprimer un choix
   def remove_item
-    @item = Item.find(params[:id])
     if !@question.many_answers && @item.ok && @question.items.count > 1
       # No more good answer
       # We put one in random to true
@@ -181,7 +183,6 @@ class QuestionsController < ApplicationController
 
   # Modifier la véracité d'un choix
   def switch_item
-    @item = Item.find(params[:id])
     if !@question.many_answers
       @question.items.each do |f|
         if f.ok
@@ -199,19 +200,16 @@ class QuestionsController < ApplicationController
   
   # Déplacer un choix vers le haut
   def up_item 
-    @item = Item.find(params[:id])
     order_op2(true, @item)
   end
   
   # Déplacer un choix vers le bas
   def down_item
-    @item = Item.find(params[:id])
     order_op2(false, @item)
   end
 
   # Modifier un choix
   def update_item
-    @item = Item.find(params[:id])
     @item.ans = params[:item][:ans]
     if @item.save
       flash[:success] = "Réponse modifiée."
@@ -259,19 +257,34 @@ class QuestionsController < ApplicationController
   ########## PARTIE PRIVEE ##########
   private
   
-  def get_stuffs_1
-    @question = Question.new
-    @chapter = Chapter.find(params[:chapter_id])
+  def get_chapter
+    @chapter = Chapter.find_by_id(params[:chapter_id])
+    if @chapter.nil?
+      render 'errors/access_refused' and return
+    end
   end
   
-  def get_stuffs_2
-    @question = Question.find(params[:id])
+  def get_question
+    @question = Question.find_by_id(params[:id])
+    if @question.nil?
+      render 'errors/access_refused' and return
+    end
     @chapter = @question.chapter
   end
   
-  def get_stuffs_3
-    @question = Question.find(params[:question_id])
+  def get_question2
+    @question = Question.find_by_id(params[:question_id])
+    if @question.nil?
+      render 'errors/access_refused' and return
+    end
     @chapter = @question.chapter
+  end
+  
+  def get_item
+    @item = Item.find_by_id(params[:id])
+    if @item.nil?
+      render 'errors/access_refused' and return
+    end
   end
 
   # Vérifie que l'exercice n'est pas en ligne
@@ -328,16 +341,10 @@ class QuestionsController < ApplicationController
     end
     redirect_to question_manage_items_path(params[:question_id])
   end
-
-  def swap_position(a, b)
-    x = a.position
-    a.position = b.position
-    b.position = x
-    a.save
-    b.save
-  end
   
   def creating_user
-    redirect_to root_path unless (signed_in? && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter))))
+    unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter))))
+      render 'errors/access_refused' and return
+    end
   end
 end

@@ -1,8 +1,9 @@
 #encoding: utf-8
-
 class UsersController < ApplicationController
   before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups, :read_legal]
   before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group]
+  before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
+  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub]
@@ -68,7 +69,7 @@ class UsersController < ApplicationController
       encours = Array.new
       mylist.each do |user|
         alea = r.rand()
-        alea = 0 if signed_in? && current_user.sk == user
+        alea = 0 if @signed_in && current_user.sk == user
         encours.push([alea, user])
       end
 
@@ -140,7 +141,6 @@ class UsersController < ApplicationController
 
   # S'inscrire au site 2 : il faut être hors ligne
   def create
-    #@user = User.new(params[:user])
     @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :email_confirmation, :sex, :year, :password, :password_confirmation, :accept_analytics))
     @user.key = SecureRandom.urlsafe_base64
     
@@ -172,16 +172,15 @@ class UsersController < ApplicationController
 
   # Voir un utilisateur
   def show
-    @user = User.find(params[:id])
-    if !@user.active
-      redirect_to root_path
-    end
   end
 
   def compare
     @user = []
-    @user[1] = User.find(params[:id1])
-    @user[2] = User.find(params[:id2])
+    @user[1] = User.find_by_id(params[:id1])
+    @user[2] = User.find_by_id(params[:id2])
+    if @user[1].nil? || !@user[1].active || @user[2].nil? || !@user[2].active
+      render 'errors/access_refused' and return
+    end
   end
 
   # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
@@ -212,7 +211,6 @@ class UsersController < ApplicationController
 
   # Supprimer un utilisateur : il faut être root
   def destroy
-    @user = User.find(params[:id])
     if !@user.root?
       skinner = User.where(skin: @user.id)
       skinner.each do |s|
@@ -223,12 +221,11 @@ class UsersController < ApplicationController
     else
       flash[:danger] = "Il n'est pas possible de supprimer un root."
     end
-    redirect_to users_path
+    redirect_to @user
   end
 
   # Rendre administrateur : il faut être root
   def create_administrator
-    @user = User.find(params[:user_id])
     if @user.admin?
       flash[:danger] = "I see what you did here! Mais non ;-)"
     else
@@ -239,12 +236,11 @@ class UsersController < ApplicationController
       end
       flash[:success] = "Utilisateur promu au rang d'administrateur !"
     end
-    redirect_to users_path
+    redirect_to @user
   end
 
   # Ajouter / Enlever du groupe Wépion
   def switch_wepion
-    @user = User.find(params[:user_id])
     if !@user.admin?
       if @user.wepion
         flash[:success] = "Utilisateur retiré du groupe Wépion."
@@ -260,7 +256,6 @@ class UsersController < ApplicationController
 
   # Ajouter / Enlever des correcteurs
   def switch_corrector
-    @user = User.find(params[:user_id])
     if !@user.admin?
       if !@user.corrector
         flash[:success] = "Utilisateur ajouté aux correcteurs."
@@ -274,7 +269,6 @@ class UsersController < ApplicationController
 
   # Changer de groupe
   def change_group
-    @user = User.find(params[:user_id])
     g = params[:group]
     @user.group = g
     @user.save
@@ -284,7 +278,6 @@ class UsersController < ApplicationController
 
   # Activer son compte
   def activate
-    @user = User.find(params[:id])
     if !@user.email_confirm && @user.key.to_s == params[:key].to_s
       @user.toggle!(:email_confirm)
       flash[:success] = "Votre compte a bien été activé! Veuillez maintenant vous connecter."
@@ -322,7 +315,6 @@ class UsersController < ApplicationController
 
   # Mot de passe oublié 2
   def recup_password  
-    @user = User.find(params[:user_id])
     if @user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?
       flash[:danger] = "Ce lien n'est pas valide (ou a déjà été utilisé)."
       redirect_to root_path
@@ -334,11 +326,11 @@ class UsersController < ApplicationController
       # C'est pour éviter le problème qui arrive si quelqu'un essaye de se connecter depuis cette page
       # En effet quand on se connecte on est redirigé vers la page précédente, et celle-ci déconnectait immédiatement l'utilisateur...
       if(params[:signed_out].nil?)
-        if(signed_in?)
+        if @signed_in
           sign_out
         end
         redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
-      elsif @ss
+      elsif @signed_in
         # Si on a "signed_out" et qu'on est connecté, ça veut dire qu'on vient de se connecter
         redirect_to root_path
       end
@@ -347,8 +339,8 @@ class UsersController < ApplicationController
   
   # Mot de passe oublié 3
   def change_password
-    @user = User.find(params[:user_id])
     if (@user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?)
+      flash[:danger] = "Une erreur est survenue. Il semble que votre lien pour changer de mot de passe ne soit plus valide."
       redirect_to root_path
     elsif DateTime.now.in_time_zone > @user.recup_password_date_limit + 3600
       flash[:danger] = "Vous avez mis trop de temps à modifier votre mot de passe. Veuillez réitérer votre demande de changement de mot de passe."
@@ -407,7 +399,6 @@ class UsersController < ApplicationController
 
   # Prendre la peau d'un utilisateur
   def take_skin
-    @user = User.find(params[:user_id])
     if @user.admin || !@user.active
       flash[:danger] = "Pas autorisé..."
     else
@@ -428,7 +419,6 @@ class UsersController < ApplicationController
 
   # Supprimer les données d'un compte
   def destroydata
-    @user = User.find(params[:user_id])
     if @user.active
       flash[:success] = "Les données personnelles de #{@user.name} ont été supprimées."
       @user.active = false
@@ -444,7 +434,7 @@ class UsersController < ApplicationController
         f.destroy
       end
     end
-    redirect_to users_path
+    redirect_to root_path
   end
 
   def groups
@@ -484,25 +474,31 @@ class UsersController < ApplicationController
   ########## PARTIE PRIVEE ##########
   private
 
-  # Vérifie qu'on est pas connecté
-  def signed_out_user
-    if signed_in?
-      redirect_to root_path
+  def get_user
+    @user = User.find_by_id(params[:id])
+    if @user.nil? || !@user.active?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  def get_user2
+    @user = User.find_by_id(params[:user_id])
+    if @user.nil? || !@user.active?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Vérifie qu'il s'agit de la bonne personne
+  def correct_user
+    if current_user.sk.id != @user.id
+      render 'errors/access_refused' and return
     end
   end
 
-  # Vérifie qu'il s'agit de la bonne personne
-  def correct_user
-    @user = User.find(params[:id])
-    redirect_to root_path unless current_user.sk.id == @user.id
-  end
-
-  def corrector_user
-    redirect_to root_path unless current_user.sk.admin or current_user.sk.corrector
-  end
-
   def group_user
-    redirect_to root_path unless current_user.sk.admin or current_user.sk.group != ""
+    if !current_user.sk.admin && current_user.sk.group == ""
+      render 'errors/access_refused' and return
+    end
   end
   
 end

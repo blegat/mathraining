@@ -1,5 +1,5 @@
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if f.online || (@ss && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter))) %>
+<% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter))) %>
 
 <!-- Titre -->
 <%= render 'questions/title', f: f, number: number %>
@@ -10,7 +10,7 @@
 </div><br/>
 
 <!-- Si administrateur -->
-<% if !@chapter.online? || (@ss && current_user.sk.admin?) %>
+<% if !@chapter.online? || (@signed_in && current_user.sk.admin?) %>
 
   <!-- Réponse -->
   <h4>Réponse</h4>
@@ -22,7 +22,7 @@
   <%= render 'questions/admin', f: f, number2: number2, number_tot: number_tot %>
 
 <!-- Si étudiant inscrit -->
-<% elsif @ss %>
+<% elsif @signed_in %>
 
   <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => id) %>
   

@@ -1,5 +1,5 @@
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if f.online || (signed_in? && current_user.sk.admin?) %>
+<% if f.online || (@signed_in && current_user.sk.admin?) %>
   
   <% c = f.chapter %>
   <% exovisible = true %>

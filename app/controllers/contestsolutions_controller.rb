@@ -2,7 +2,7 @@
 class ContestsolutionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :reserve_sol, :unreserve_sol]
   before_action :get_contestproblem, only: [:create]
-  before_action :get_contestproblem2, only: [:update, :destroy, :reserve_sol, :unreserve_sol]
+  before_action :get_contestsolution, only: [:update, :destroy, :reserve_sol, :unreserve_sol]
   before_action :can_send_solution, only: [:create, :update]
   before_action :can_delete_solution, only: [:destroy]
   before_action :is_organizer, only: [:reserve_sol, :unreserve_sol]
@@ -147,12 +147,18 @@ class ContestsolutionsController < ApplicationController
 
   # Récupère le problème
   def get_contestproblem
-    @contestproblem = Contestproblem.find(params[:contestproblem_id])
+    @contestproblem = Contestproblem.find_by_id(params[:contestproblem_id])
+    if @contestproblem.nil?
+      render 'errors/access_refused' and return
+    end
     @contest = @contestproblem.contest
   end
   
-  def get_contestproblem2
-    @contestsolution = Contestsolution.find(params[:id])
+  def get_contestsolution
+    @contestsolution = Contestsolution.find_by_id(params[:id])
+    if @contestsolution.nil?
+      render 'errors/access_refused' and return
+    end
     @contestproblem = @contestsolution.contestproblem
     @contest = @contestproblem.contest
   end
@@ -184,7 +190,7 @@ class ContestsolutionsController < ApplicationController
   
   def is_organizer
     if !@contest.is_organized_by(current_user)
-      redirect_to @contestproblem
+      render 'errors/access_refused' and return
     end
   end
   

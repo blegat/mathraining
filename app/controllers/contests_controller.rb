@@ -3,9 +3,8 @@ class ContestsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :add_organizer, :remove_organizer]
   before_action :admin_user, only: [:new, :create, :destroy, :put_online, :add_organizer, :remove_organizer]
-  
-  before_action :recup, only: [:show, :edit, :update, :destroy]
-  before_action :recup2, only: [:put_online, :add_organizer, :remove_organizer]
+  before_action :get_contest, only: [:show, :edit, :update, :destroy]
+  before_action :get_contest2, only: [:put_online, :add_organizer, :remove_organizer]
   before_action :is_organizer_or_admin, only: [:edit, :update]
   before_action :can_see, only: [:show]
   before_action :can_be_online, only: [:put_online]
@@ -53,8 +52,8 @@ class ContestsController < ApplicationController
   # Supprimer un concours
   def destroy
     @contest.destroy
-    flash[:success] = "Test virtuel supprimé."
-    redirect_to virtualtests_path
+    flash[:success] = "Concours supprimé."
+    redirect_to contests_path
   end
 
   # Mettre en ligne
@@ -94,25 +93,31 @@ class ContestsController < ApplicationController
   private
 
   # On récupère
-  def recup
-    @contest = Contest.find(params[:id])
+  def get_contest
+    @contest = Contest.find_by_id(params[:id])
+    if @contest.nil?
+      render 'errors/access_refused' and return
+    end
   end
   
   # On récupère
-  def recup2
-    @contest = Contest.find(params[:contest_id])
+  def get_contest2
+    @contest = Contest.find_by_id(params[:contest_id])
+    if @contest.nil?
+      render 'errors/access_refused' and return
+    end
   end
   
   def is_organizer_or_admin
     if !@contest.is_organized_by_or_admin(current_user)
-      redirect_to @contest
+      render 'errors/access_refused' and return
     end
   end
   
   # Si le concours n'est pas en ligne et on n'est ni organisateur ni adminitrateur, on ne peut pas voir le concours
   def can_see
-    if (@contest.status == 0 && signed_in? && !@contest.is_organized_by_or_admin(current_user))
-      redirect_to contests_path
+    if (@contest.status == 0 && @signed_in && !@contest.is_organized_by_or_admin(current_user))
+      render 'errors/access_refused' and return
     end
   end
 
@@ -134,7 +139,9 @@ class ContestsController < ApplicationController
 
   # Vérifie qu'on ne supprime pas un concours en ligne
   def delete_online
-    redirect_to root_path if @contest.status > 0
+    if @contest.status > 0
+      render 'errors/access_refused' and return
+    end
   end
 
   

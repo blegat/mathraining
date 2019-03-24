@@ -2,7 +2,7 @@
 class SectionsController < ApplicationController
   before_action :signed_in_user, only: [:edit]
   before_action :signed_in_user_danger, only: [:update]
-  before_action :recup
+  before_action :get_section
   before_action :admin_user, only: [:edit, :update]
 
   # Montrer la section
@@ -31,8 +31,11 @@ class SectionsController < ApplicationController
   private
 
   # Récupérer la section
-  def recup
-    @section = Section.find(params[:id])
+  def get_section
+    @section = Section.find_by_id(params[:id])
+    if @section.nil?
+      render 'errors/access_refused' and return
+    end
     if @section.fondation
       @fondation = true
     else

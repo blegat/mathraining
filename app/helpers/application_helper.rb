@@ -210,4 +210,14 @@ module ApplicationHelper
     newlevel += 's'
     return newlevel
   end
+  
+  def has_enough_points
+    if !@signed_in
+      return false
+    elsif current_user.sk.admin?
+      return true
+    else
+      return (current_user.sk.rating >= 200)
+    end
+  end
 end

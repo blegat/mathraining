@@ -42,17 +42,6 @@ class Chapter < ActiveRecord::Base
   validates :description, length: { maximum: 8000 }
   validates :level, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10 }
 
-  # Nombre de prérequis (avec récursion) sans compter les fondements
-  def real_number_prerequisites
-    liste = recursive_prerequisites
-    Chapter.all.each do |c|
-      if c.section.fondation
-        liste.delete(c.id)
-      end
-    end
-    return liste.size
-  end
-
   # Nombre de prérequis (avec récursion)
   def number_prerequisites
     return recursive_prerequisites.size

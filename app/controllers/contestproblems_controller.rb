@@ -3,9 +3,9 @@ class ContestproblemsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :show]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :publish_results, :authorize_corrections, :unauthorize_corrections]
   before_action :root_user, only: [:authorize_corrections, :unauthorize_corrections]
-  before_action :recup_contest, only: [:new, :create]
-  before_action :recup, only: [:show, :edit, :update, :destroy]
-  before_action :recup2, only: [:publish_results, :authorize_corrections, :unauthorize_corrections]
+  before_action :get_contest, only: [:new, :create]
+  before_action :get_contestproblem, only: [:show, :edit, :update, :destroy]
+  before_action :get_contestproblem2, only: [:publish_results, :authorize_corrections, :unauthorize_corrections]
   before_action :is_organizer, only: [:new, :create, :publish_results]
   before_action :is_organizer_or_root, only: [:edit, :update, :destroy]
   before_action :offline_contest, only: [:new, :create, :destroy]
@@ -117,41 +117,50 @@ class ContestproblemsController < ApplicationController
   ########## PARTIE PRIVEE ##########
   private
   
-  def recup
-    @contestproblem = Contestproblem.find(params[:id])
+  def get_contestproblem
+    @contestproblem = Contestproblem.find_by_id(params[:id])
+    if @contestproblem.nil?
+      render 'errors/access_refused' and return
+    end
     @contest = @contestproblem.contest
   end
   
-  def recup2
-    @contestproblem = Contestproblem.find(params[:contestproblem_id])
+  def get_contestproblem2
+    @contestproblem = Contestproblem.find_by_id(params[:contestproblem_id])
+    if @contestproblem.nil?
+      render 'errors/access_refused' and return
+    end
     @contest = @contestproblem.contest
   end
   
-  def recup_contest
-    @contest = Contest.find(params[:contest_id])
+  def get_contest
+    @contest = Contest.find_by_id(params[:contest_id])
+    if @contest.nil?
+      render 'errors/access_refused' and return
+    end
   end
   
   def is_organizer
     if !@contest.is_organized_by(current_user)
-      redirect_to @contest
+      render 'errors/access_refused' and return
     end
   end
   
   def is_organizer_or_root
     if !@contest.is_organized_by_or_root(current_user)
-      redirect_to @contest
+      render 'errors/access_refused' and return
     end
   end
   
   def offline_contest
     if @contest.status > 0
-      redirect_to @contest
+      render 'errors/access_refused' and return
     end
   end
   
   def has_access
     if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.status <= 1
-      redirect_to contests_path
+      render 'errors/access_refused' and return
     end
   end
   
@@ -196,7 +205,7 @@ class ContestproblemsController < ApplicationController
     end
     if @contestproblem.contestsolutions.where(:corrected => false).count > 0
       flash[:danger] = "Toutes les solutions ne sont pas corrigées."
-      redirect_to @contesetproblem and return
+      redirect_to @contestproblem and return
     end
   end
   

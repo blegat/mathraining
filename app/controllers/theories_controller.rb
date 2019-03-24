@@ -3,13 +3,14 @@ class TheoriesController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order_minus, :order_plus, :put_online, :read, :unread, :latex]
   before_action :admin_user, only: [:put_online]
-  before_action :get_stuffs_1, only: [:new, :create]
-  before_action :get_stuffs_2, only: [:edit, :update, :destroy]
-  before_action :get_stuffs_3, only: [:order_minus, :order_plus, :read, :unread, :latex, :put_online]
+  before_action :get_chapter, only: [:new, :create]
+  before_action :get_theory, only: [:edit, :update, :destroy]
+  before_action :get_theory2, only: [:order_minus, :order_plus, :read, :unread, :latex, :put_online]
   before_action :creating_user, only: [:new, :edit, :create, :update, :destroy, :order_minus, :order_plus]
 
   # Créer une théorie
   def new
+    @theory = Theory.new
   end
 
   # Editer une théorie
@@ -18,6 +19,7 @@ class TheoriesController < ApplicationController
 
   # Créer une théorie 2
   def create
+    @theory = Theory.new
     @theory.title = params[:theory][:title]
     @theory.content = params[:theory][:content]
     @theory.online = false
@@ -38,7 +40,6 @@ class TheoriesController < ApplicationController
 
   # Editer une théorie 2
   def update
-    @theory = Theory.find(params[:id])
     @theory.title = params[:theory][:title]
     @theory.content = params[:theory][:content]
     if @theory.save
@@ -98,32 +99,34 @@ class TheoriesController < ApplicationController
 
   ########## PARTIE PRIVEE ##########
   private
-
-  def swap_position(a, b)
-    x = a.position
-    a.position = b.position
-    b.position = x
-    a.save
-    b.save
+  
+  def get_chapter
+    @chapter = Chapter.find_by_id(params[:chapter_id])
+    if @chapter.nil?
+      render 'errors/access_refused' and return
+    end
   end
   
-  def get_stuffs_1
-    @theory = Theory.new
-    @chapter = Chapter.find(params[:chapter_id])
-  end
-  
-  def get_stuffs_2
-    @theory = Theory.find(params[:id])
+  def get_theory
+    @theory = Theory.find_by_id(params[:id])
+    if @theory.nil?
+      render 'errors/access_refused' and return
+    end
     @chapter = @theory.chapter
   end
   
-  def get_stuffs_3
-    @theory = Theory.find(params[:theory_id])
+  def get_theory2
+    @theory = Theory.find_by_id(params[:theory_id])
+    if @theory.nil?
+      render 'errors/access_refused' and return
+    end
     @chapter = @theory.chapter
   end
   
   def creating_user
-    redirect_to root_path unless (signed_in? && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter))))
+    unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter))))
+      render 'errors/access_refused' and return
+    end
   end
 
 end

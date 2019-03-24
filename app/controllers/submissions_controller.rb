@@ -1,10 +1,12 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect]
-  before_action :get_problem
   before_action :root_user, only: [:update_score, :uncorrect]
   before_action :admin_user_or_in_test, only: [:destroy]
-  before_action :corrector_user, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
+  before_action :get_problem
+  before_action :get_submission, only: [:destroy]
+  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_brouillon, :update_intest, :update_score, :uncorrect]
+  before_action :corrector_user_having_access, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
   before_action :has_access, only: [:create]
@@ -138,7 +140,6 @@ class SubmissionsController < ApplicationController
 
   # Modifier une soumission
   def update_intest
-    @submission = Submission.find(params[:submission_id])
     @context = 1
     update_submission
   end
@@ -215,7 +216,6 @@ class SubmissionsController < ApplicationController
   
   # Modifier le score d'une soumission à un test
   def update_score
-    @submission = Submission.find(params[:submission_id])
     if @submission.intest && @submission.score != -1
       @submission.score = params[:new_score].to_i
       @submission.save
@@ -225,7 +225,6 @@ class SubmissionsController < ApplicationController
   
   # Marquer une soumission correct comme erronée
   def uncorrect
-    @submission = Submission.find(params[:submission_id])
     u = @submission.user
     if @submission.status == 2
       @submission.status = 1
@@ -273,14 +272,6 @@ class SubmissionsController < ApplicationController
   ########## PARTIE PRIVEE ##########
   private
 
-  # Peut voir la soumission
-  def can_see
-    @submission = Submission.find(params[:id])
-    if ((@submission.status == -1 && !current_user.sk.admin?) || (@submission.problem != @problem) || (@submission.user != current_user.sk && !current_user.sk.pb_solved?(@problem) && !current_user.sk.admin))
-      redirect_to root_path
-    end
-  end
-
   # Pas déjà résolu
   def not_solved
     redirect_to root_path if current_user.sk.pb_solved?(@problem)
@@ -291,26 +282,43 @@ class SubmissionsController < ApplicationController
     lastsub = Submission.where(:user_id => current_user.sk, :problem_id => @problem).order('created_at')
     redirect_to problem_path(@problem) if (!lastsub.empty? && lastsub.last.status == 0)
   end
+  
+  def get_submission
+    @submission = Submission.find_by_id(params[:id])
+    if @submission.nil?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  def get_submission2
+    @submission = Submission.find_by_id(params[:submission_id])
+    if @submission.nil?
+      render 'errors/access_refused' and return
+    end
+  end
 
   # Récupère le problème
   def get_problem
     if !params[:problem_id].nil?
-      @problem = Problem.find(params[:problem_id])
+      @problem = Problem.find_by_id(params[:problem_id])
+      if @problem.nil?
+        render 'errors/access_refused' and return
+      end
     end
   end
 
   # Vérifie qu'on peut voir le problème associé
   def has_access
     visible = true
-    if !signed_in? || !current_user.sk.admin?
+    if !@signed_in || !current_user.sk.admin?
       @problem.chapters.each do |c|
-        visible = false if !signed_in? || !current_user.sk.chap_solved?(c)
+        visible = false if !@signed_in || !current_user.sk.chap_solved?(c)
       end
     end
 
     t = @problem.virtualtest
     if !t.nil?
-      if !signed_in?
+      if !@signed_in
         visible = false
       elsif !current_user.sk.admin?
         if current_user.sk.status(t) <= 0
@@ -326,14 +334,13 @@ class SubmissionsController < ApplicationController
   def in_test
     @t = @problem.virtualtest
     if @t.nil?
-      redirect_to root_path
+      render 'errors/access_refused' and return
     else
       redirect_to virtualtests_path if current_user.sk.status(@t) != 0
     end
   end
   
   def admin_user_or_in_test
-    @submission = Submission.find(params[:id])
     @problem = @submission.problem
     if !current_user.sk.admin?
       in_test
@@ -342,23 +349,15 @@ class SubmissionsController < ApplicationController
 
   # Est-ce qu'on est propriétaire de ce brouillon?
   def brouillon
-    @submission = Submission.find(params[:submission_id])
-    unless !@submission.nil? && @submission.user == current_user.sk && @submission.problem == @problem && @submission.status == -1
+    unless @submission.user == current_user.sk && @submission.problem == @problem && @submission.status == -1
       redirect_to @problem
     end
   end
 
-  # Vérifie que l'on a assez de points si on est étudiant
-  def enough_points
-    if !current_user.sk.admin?
-      score = current_user.sk.rating
-      redirect_to root_path if score < 200
+  def corrector_user_having_access
+    unless current_user.sk.admin or (current_user.sk.corrector && current_user.sk.pb_solved?(@submission.problem) && current_user.sk != @submission.user)
+      render 'errors/access_refused' and return
     end
-  end
-
-  def corrector_user
-    @submission = Submission.find(params[:submission_id])
-    redirect_to root_path unless current_user.sk.admin or (current_user.sk.corrector && current_user.sk.pb_solved?(@submission.problem) && current_user.sk != @submission.user)
   end
   
   def update_submission

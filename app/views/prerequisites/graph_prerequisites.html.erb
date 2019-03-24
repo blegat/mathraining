@@ -1,15 +1,14 @@
 <% provide(:title, 'Graphe') %>
 
-<% fondement = false %>
-<% if((params.has_key?:fondement) && (params[:fondement].to_i == 1)) %>
-  <% fondement = true %>
-<% end %>
-
-
 <h1>
 <span class="title-first">Théorie ></span>
 Modifier la structure des sections
 </h1>
+
+<% allsections = Array.new %>
+<% Section.all.each do |s| %>
+  <% allsections[s.id] = s.fondation? %>
+<% end %>
 
 <!-- Graphique des prérequis -->
 <script>
@@ -22,19 +21,15 @@ Modifier la structure des sections
   <% existe = Set.new %>
   <% maximum = 1 %>
   <% chapters = Array.new %>
-  <% Chapter.includes(:section, :prerequisites).all.each do |chapter|%>
-    <% unless chapter.section.fondation && !fondement %>
+  <% Chapter.includes(:section, :prerequisites).all.each do |chapter| %>
+    <% unless allsections[chapter.section_id] %>
       <% chapters.push(chapter) %>
-      <% if fondement %>
-        prereq[<%= chapter.id %>] = <%= x = chapter.number_prerequisites() %>;
-      <% else %>
-        prereq[<%= chapter.id %>] = <%= x = chapter.real_number_prerequisites() %>;
-      <% end %>
+      prereq[<%= chapter.id %>] = <%= x = chapter.number_prerequisites() %>;
       <% if x+1 > maximum %>
         <% maximum = x+1 %>
       <% end %>
       <% existe.add(chapter.id) %>
-      fond[<%= chapter.id %>] = <%= chapter.section.fondation? %>
+      fond[<%= chapter.id %>] = <%= allsections[chapter.section_id] %>
     <% end %>
   <% end %>
 
@@ -76,17 +71,17 @@ Modifier la structure des sections
     
 
   <% Chapter.includes(:section).all.each do |chapter| %>
-    <% unless chapter.section.fondation && !fondement %>
+    <% unless allsections[chapter.section_id] %>
       couleur = 1+prereq[<%= chapter.id %>];
       couleurmaxi = <%= maximum %>;
       <% nom = chapter.name %>
       <% if nom.size > 25 %>
         <% nom = nom.slice(0..22) + "..." %>
       <% end %>
-      <% if chapter.section.fondation %>
-        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section.id - 1 %>)) <%= ", bold: true" if chapter.online %>});
+      <% if allsections[chapter.section_id] %>
+        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
       <% else %>
-        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section.id - 1 %>)) <%= ", bold: true" if chapter.online %>});
+        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
       <% end %>
       if(prereq[<%= chapter.id %>] == 0){
         graph.newEdge(depart, noeud[<%= chapter.id %>], {color: "#CCCCCC"});
@@ -124,13 +119,7 @@ Modifier la structure des sections
 </script>
 
 
-<!-- Afficher/Cacher les fondements -->
 <center>
-  <% if !fondement %>
-    <%= link_to "Afficher/modifier les fondements", graph_prerequisites_path(:fondement => 1) %>
-  <% else %>
-    <%= link_to "Cacher les fondements", graph_prerequisites_path %>
-  <% end %><br/><br/>
   <canvas id="structure" style="border:1px solid #c3c3c3;" width="1000" height="700">
   Votre navigateur ne supporte pas de canvas.
   </canvas>
@@ -140,7 +129,7 @@ Modifier la structure des sections
 
 <!-- Création de la liste -->
 <% Section.where(:fondation => true).each do |s| %>
-  <% if !s.fondation || fondement %>
+  <% if !s.fondation %>
     <% liste2 = Array.new %>
     <% liste2.push(s.name) %>
     <% liste3 = Array.new %>
@@ -155,7 +144,7 @@ Modifier la structure des sections
 
 
 <% Section.where(:fondation => false).order(:name).each do |s| %>
-  <% if !s.fondation || fondement %>
+  <% if !s.fondation %>
     <% liste2 = Array.new %>
     <% liste2.push(s.name) %>
     <% liste3 = Array.new %>
@@ -173,7 +162,7 @@ Modifier la structure des sections
   <!-- Ajouter un lien -->
   <div class="col-sm-6 col-xs-6">
     <center>
-      <%= form_for(:prerequisite, url: add_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
+      <%= form_for(:prerequisite, url: add_prerequisite_path) do |f| %>
         <h3> Ajouter un lien </h3>
         <div class="form-group">
         <%= f.label "Prérequis" %>
@@ -191,7 +180,7 @@ Modifier la structure des sections
   <!-- Supprimer un lien -->
   <div class="col-sm-6 col-xs-6">
     <center>
-      <%= form_for(:prerequisite, url: remove_prerequisite_path(:fondement => (fondement ? 1 : 0))) do |f| %>
+      <%= form_for(:prerequisite, url: remove_prerequisite_path) do |f| %>
         <h3> Supprimer un lien </h3>
         <div class="form-group">
         <%= f.label "Prérequis" %>

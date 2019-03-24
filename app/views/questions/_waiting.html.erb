@@ -11,7 +11,7 @@ function Activate() {
   var todisable = document.getElementsByClassName("todisable");
   var i;
   for (i = 0; i < todisable.length; i++) {
-    todisable[i].disabled = <%= !@ss || current_user.other %>;
+    todisable[i].disabled = <%= !@signed_in || current_user.other %>;
   }
   document.getElementById('waitbox').style.display = "none";
 }

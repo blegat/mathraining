@@ -205,11 +205,15 @@ Mathraining::Application.routes.draw do
   
   resources :privacypolicies do
     match '/put_online', to: 'privacypolicies#put_online', :via => [:get], as: :put_online
-    match '/edit_description', to: "privacypolicies#edit_description", :via => [:get]
-    match '/update_description', to: "privacypolicies#update_description", :via => [:patch], as: :update_description
+    match '/edit_description', to: 'privacypolicies#edit_description', :via => [:get]
+    match '/update_description', to: 'privacypolicies#update_description', :via => [:patch], as: :update_description
   end
   match '/last_policy', to: 'privacypolicies#last_policy', :via => [:get], as: :last_policy
+  
+  get '/404', to: 'errors#not_found'
+  get '/422', to: 'errors#unacceptable'
+  get '/500', to: 'errors#internal_error'
 
-  mount ResqueWeb::Engine => "/resque_web"
+  mount ResqueWeb::Engine => '/resque_web'
 
 end

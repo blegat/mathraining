@@ -46,11 +46,11 @@ html>body tbody.scroll {
 <span style="margin-left:30px; color:<%= couleur %>;">-</span>
 
 <span style="margin-left:30px; color:<%= couleur %>;"><%= status %></span>
-<% if signed_in? && current_user.sk.admin && (!@user.admin || current_user.sk.root) %>
+<% if @signed_in && current_user.sk.admin && (!@user.admin || current_user.sk.root) %>
   <span style="color:<%= couleur %>; margin-left:50px; font-size:18px;">(<%= @user.email %><%= " - e-mail non confirmé" if !@user.email_confirm %>)</span>
 <% end %>
 
-<% if signed_in? && current_user.sk != @user %>
+<% if @signed_in && current_user.sk != @user %>
   <span style="float:right; margin-left:20px;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey" %></span>
 <% end %>
 </h1>
@@ -69,7 +69,7 @@ html>body tbody.scroll {
     <% section_fondation[s.id] = s.fondation %>
   <% end %>
 
-  <% if signed_in? && current_user.sk.admin %>
+  <% if @signed_in && current_user.sk.admin %>
     <% Chapter.all.to_a.each do |c| %>
       <% cansee[c.id] = true %>
     <% end %>
@@ -79,7 +79,7 @@ html>body tbody.scroll {
       <% debloque[c.id] = false %>
     <% end %>
 
-    <% if signed_in? %>
+    <% if @signed_in %>
       <% current_user.sk.chapters.each do |c| %>
         <% debloque[c.id] = true %>
       <% end %>
@@ -97,10 +97,7 @@ html>body tbody.scroll {
     <% end %>
   <% end %>
 
-  <% enough_points = false %>
-  <% if signed_in? && (current_user.sk.admin? || current_user.sk.rating >= 200) %>
-    <% enough_points = true %>
-  <% end %>
+  <% enough_points = has_enough_points %>
 
   <!-- Affichage des résolutions -->
   <div class="row">
@@ -190,13 +187,13 @@ html>body tbody.scroll {
       <% nb_p = nb_p+1 %>
       <% peutvoir = enough_points %>
       <% t = pb.virtualtest_id %>
-      <% if t == 0 && (!signed_in? || !current_user.sk.admin?) %>
+      <% if t == 0 && (!@signed_in || !current_user.sk.admin?) %>
         <% pb.chapters.each do |c| %>
           <% peutvoir = false if !debloque[c.id] %>
         <% end %>
       <% end %>
-      <% if t != 0 && (!signed_in? || !current_user.sk.admin?) %>
-        <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
+      <% if t != 0 && (!@signed_in || !current_user.sk.admin?) %>
+        <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
       <% end %>
       <% p_encours = p_encours + 1 %>
       <% dernier = p.truetime.in_time_zone %>
@@ -386,7 +383,7 @@ html>body tbody.scroll {
   </div>
   
   
-  <% if signed_in? && current_user.sk.admin %>
+  <% if @signed_in && current_user.sk.admin %>
     <div class="row">
     <div class="col-sm-12 col-xs-12">
       <h2>Informations</h2>
@@ -621,7 +618,7 @@ html>body tbody.scroll {
 <% end %>
 
 <!-- Si administrateur, différentes options -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if @signed_in && current_user.sk.admin? %>
   <br/>
   <center>
   <% i = 0 %>

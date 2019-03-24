@@ -55,22 +55,6 @@ module SessionsHelper
     return @current_user
   end
 
-  def signed_in_user
-    unless signed_in?
-      store_location
-      flash[:danger] = "Vous devez être connecté pour accéder à cette page."
-      redirect_to signin_path
-    end
-  end
-  
-  # Dans le cas d'une page compromettante (du type "rendre quelqu'un administrateur"), on ne permet pas une redirection douteuse
-  def signed_in_user_danger
-    unless signed_in?
-      flash[:danger] = "Vous ne pouvez pas effectuer cette opération de cette manière sans être préalablement connecté."
-      redirect_to root_path
-    end
-  end
-
   def sign_out
     self.current_user = nil
     cookies.delete(:remember_token)

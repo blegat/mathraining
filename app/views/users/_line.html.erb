@@ -49,7 +49,7 @@
 </td>
 
 <!-- Admin -->
-<% if @ss && current_user.sk.admin %>
+<% if @signed_in && current_user.sk.admin %>
   <td class="hidden-small"><center><%= user.year if user.year > 0 %><%= "?" if user.year == 0 %></center></td>
   <td class="hidden-small"><center>
     <% if user.wepion %>

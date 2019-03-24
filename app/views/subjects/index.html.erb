@@ -40,19 +40,15 @@
 
 <% Section.where(:fondation => true).to_a.each do |s| %>
     <% liste2.push([s.name, 1000*s.id]) %>
-    <% s.chapters.order(:name).to_a.each do |c| %>
-      <% if c.online || current_user.sk.admin? %>
-        <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
-      <% end %>
+    <% s.chapters.where(:online => true).order(:name).to_a.each do |c| %>
+      <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
     <% end %>
 <% end %>
 
 <% Section.where(:fondation => false).order(:id).to_a.each do |s| %>
     <% liste2.push([s.name, 1000*s.id]) %>
-    <% s.chapters.order(:name).to_a.each do |c| %>
-      <% if c.online || current_user.sk.admin? %>
-        <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
-      <% end %>
+    <% s.chapters.where(:online => true).order(:name).to_a.each do |c| %>
+      <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
     <% end %>
 <% end %>
 

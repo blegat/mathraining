@@ -6,7 +6,7 @@ Concours</h1>
 
 <%= render 'infocontest' %>
 
-<% if !signed_in? || (!current_user.sk.admin? && current_user.sk.rating < 200) %>
+<% if !@signed_in || (!current_user.sk.admin? && current_user.sk.rating < 200) %>
 <div style="font-weight:bold; margin-bottom:15px;">
 Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.
 </div>
@@ -115,7 +115,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
 <% end %>
 
 <!-- Ajouter un concours -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if @signed_in && current_user.sk.admin? %>
   <center>
   <%= button_to "Ajouter un concours", new_contest_path, method: :get, class: 'btn btn-lg btn-default btn-grey' %>
   </center>

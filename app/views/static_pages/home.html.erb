@@ -50,7 +50,7 @@
 
 
 <!-- Ajouter une actualité -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if @signed_in && current_user.sk.admin? %>
 <center><%= link_to "Ajouter une actualité", new_actuality_path, :class => "btn btn-grey btn-default btn-lg", :style => "margin-top:15px;" %></center>
 <% end %>	
 

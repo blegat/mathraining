@@ -8,7 +8,7 @@
 
 <%= render 'infopb' %>
 
-<% if !signed_in? %>
+<% if !@signed_in %>
 
 <!-- Si pas connecté, on ne peut rien voir -->
 <div style="margin-top:15px; font-weight:bold;">
@@ -43,7 +43,7 @@ Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieu
 <!-- On parcourt tous les niveaux -->
 <% (1..5).each do |level| %>
 
-<h2>Niveau <%= level %></h2>
+<h3>Niveau <%= level %></h3>
 <% compteur = 0 %>
 
 <!-- On parcourt tous les problèmes de ce niveau -->
@@ -207,7 +207,7 @@ Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieu
 <% end %>
 
 <!-- Ajouter un problème -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if @signed_in && current_user.sk.admin? %>
   <br/>
   <center>
   <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>

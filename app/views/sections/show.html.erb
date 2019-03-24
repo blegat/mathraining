@@ -8,7 +8,7 @@
   <% compteur = 0 %>
 
   <% chapter.questions.order(:position).each do |f| %>
-    <% if f.online || (@ss && current_user.sk.admin?) %>
+    <% if f.online || (@signed_in && current_user.sk.admin?) %>
       <% compteur = compteur + 1 %>
       <% if k % 8 == 1 && k > 1 %>
         </div>
@@ -20,7 +20,7 @@
       <% end %>
       <% if acces %>
         <% classe = "" %>  
-        <% if !@ss %>
+        <% if !@signed_in %>
           <% classe = "btn btn-default btn-grey" %>  
         <% else %>
           <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id) %>
@@ -69,7 +69,7 @@
     <b>Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
     <% prems = true %>
     <% c.prerequisites.each do |p| %>
-      <% if (!section_fondation[p.section_id] && (!@ss || !current_user.sk.chapters.exists?(p))) %>
+      <% if (!section_fondation[p.section_id] && (!@signed_in || !current_user.sk.chapters.exists?(p))) %>
         <%= " - " if !prems %>
         <i><%= p.name %></i>
         <% prems = false %>
@@ -96,7 +96,7 @@
         <ul>
       <% end %>
       <% compteur = compteur + 1 %>
-      <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @ss && current_user.sk.theories.exists?(t) %></li>
+      <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @signed_in && current_user.sk.theories.exists?(t) %></li>
     <% end %>
   <% end %>
 
@@ -154,7 +154,7 @@
 <%= raw(htmlise(@section.description)) %>
 <br/>
 
-<% if @ss && current_user.sk.admin? %>
+<% if @signed_in && current_user.sk.admin? %>
 <br/><%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/>
 <% end %>
 
@@ -182,7 +182,7 @@
 
 <!-- Parcours tous les chapitres -->
 <% Chapter.includes(:prerequisites).all.each do |c| %>
-  <% if (c.online || (@ss && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(c)))) && !section_fondation[c.section_id] %>
+  <% if (c.online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(c)))) && !section_fondation[c.section_id] %>
     <% retiens[c.id] = n %>
     <% chap.push(c) %>
     <% debloque.push([]) %>
@@ -200,7 +200,7 @@
 
 <!-- Détermine ce qu'on peut voir ou ne pas voir -->
 <% (0..(n-1)).each do |i| %>
-  <% if (chap[i].online || (@ss && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(chap[i])))) %>
+  <% if (chap[i].online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(chap[i])))) %>
     <% premier = true %>
     <% chap[i].prerequisites.each do |p| %>
       <% if !section_fondation[p.section_id] %>
@@ -210,7 +210,7 @@
       <% end %>
     <% end %>
     <% if premier %>
-      <% if @ss && current_user.sk.chapters.exists?(chap[i]) %>
+      <% if @signed_in && current_user.sk.chapters.exists?(chap[i]) %>
         <% faisable[i] = 0 %>
       <% else %>
         <% faisable[i] = 1 %>
@@ -234,9 +234,9 @@
     <% lecas = 0 %>
     <% classe = "" %>
     <!-- Si on peut le faire -->
-    <% if faisable[encours] <= 1 || (@ss && current_user.sk.admin) %>
+    <% if faisable[encours] <= 1 || (@signed_in && current_user.sk.admin) %>
       <!-- Si on l'a déjà résolu : en vert -->
-      <% if faisable[encours] == 0 && (!@ss || !current_user.sk.admin) %>
+      <% if faisable[encours] == 0 && (!@signed_in || !current_user.sk.admin) %>
         <% lecas = 1 %>
         <% classe = "greeny" %>
       <!-- Si il n'est pas en ligne : en orange -->
@@ -261,7 +261,7 @@
     <% faisable[d] = [faisable[d], faisable[encours]+1].max %>
     <% faisable2[d] = [faisable2[d], faisable2[encours]+1].max %>
     <% if nb_pre[d] == 0 %>
-      <% if @ss && current_user.sk.chapters.exists?(chap[d]) %>
+      <% if @signed_in && current_user.sk.chapters.exists?(chap[d]) %>
         <% faisable[d] = 0 %>
       <% end %>
       <% possible.add([faisable[d], faisable2[d], chap[d].level, d]) %>
@@ -287,7 +287,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 
 <!-- On parcourt tous les chapitres -->
 <% Chapter.includes(:prerequisites).all.each do |c| %>
-  <% if (c.online || (@ss && current_user.sk.admin || current_user.sk.creating_chapters.exists?(c))) && section_fondation[c.section_id] %>
+  <% if (c.online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(c)))) && section_fondation[c.section_id] %>
     <% retiens[c.id] = n %>
     <% chap.push(c) %>
     <% debloque.push([]) %>
@@ -299,7 +299,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 
 <!-- Détermine ce qu'on peut voir ou ne pas voir -->
 <% (0..(n-1)).each do |i| %>
-  <% if (chap[i].online || (@ss && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(chap[i])))) %>
+  <% if (chap[i].online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(chap[i])))) %>
     <% premier = true %>
     <% chap[i].prerequisites.each do |p| %>
       <% if section_fondation[p.section_id] %>
@@ -349,7 +349,7 @@ Tous les exercices sont ici directement accessibles.<br/><br/>
 <% end %>
 
 <!-- Si administrateur -->
-<% if @ss && current_user.sk.admin? %>
+<% if @signed_in && current_user.sk.admin? %>
 
 <!-- Ajouter un chapitre -->
 <center>

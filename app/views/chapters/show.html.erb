@@ -30,20 +30,20 @@
     <h4 class="list-group-item-heading">Général</h4>
     <%= link_to "Résumé", chapter_path(@chapter), :class => "list-group-item #{ 'active' if type == 0}" %>
     <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item #{ 'active' if type == 10}" %>
-    <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item", :target => "_blank" if @ss %>
+    <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item", :target => "_blank" if @signed_in %>
 
     <!-- Points théoriques -->
     <% compteur = 0 %>
     <% listex = @chapter.theories.order(:position) %>
     <% listex.each do |f| %>
-      <% if f.online || (@ss && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+      <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
         <% if compteur == 0 %>
           <br/><h4 class="list-group-item-heading">Points théoriques</h4>
         <% end %>
         <% compteur = compteur + 1 %>
         
         <% lu = false %>
-        <% if @ss && !current_user.sk.admin? %>
+        <% if @signed_in && !current_user.sk.admin? %>
           <% if current_user.sk.theories.exists?(f.id) %>
             <% lu = true %>
           <% end %>
@@ -58,7 +58,7 @@
         <% kind = "" %>
         <% if !f.online %>
           <% kind = "list-group-item-warning" %>
-        <% elsif @ss && !current_user.sk.admin? && lu %>
+        <% elsif @signed_in && !current_user.sk.admin? && lu %>
           <% kind = "list-group-item-success" %>
         <% end %>
           
@@ -70,9 +70,9 @@
 
     <!-- Peut-on voir les exercices? -->
     <% exovisibles = true %>
-    <% if !@ss || !current_user.sk.admin? %>
+    <% if !@signed_in || !current_user.sk.admin? %>
       <% @chapter.prerequisites.each do |p| %>
-        <% exovisibles = false if !p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p.id)) %>
+        <% exovisibles = false if !p.section.fondation && (!@signed_in || !current_user.sk.chapters.exists?(p.id)) %>
       <% end %>
     <% end %>
 
@@ -82,7 +82,7 @@
     <% i = 1 %>
     <% pasfait = 0 %>
     <% @chapter.questions.order(:position).each do |f| %>
-      <% if f.online || (@ss && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+      <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
 
         <% if compteur == 0 %>
           <br/><h4 class="list-group-item-heading">Exercices</h4>
@@ -100,7 +100,7 @@
             
           <% kind = "" %>
           <% if f.online %>
-            <% if @ss %>
+            <% if @signed_in %>
               <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id) %>
               <% if exo.size > 0 %>
                 <% exo = exo.first %>
@@ -126,7 +126,7 @@
       <% end %>
     <% end %>
       
-    <% if !@chapter.section.fondation && @chapter.online? && exovisibles && pasfait == 0 && @ss && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
+    <% if !@chapter.section.fondation && @chapter.online? && exovisibles && pasfait == 0 && @signed_in && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
       <% current_user.sk.chapters << @chapter %>
       <% @chapter.nb_solved = @chapter.nb_solved + 1 %>
       <% @chapter.save %>
@@ -144,7 +144,7 @@
         <br/><span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
         <% prems = true %>
         <% @chapter.prerequisites.each do |p| %>
-          <% if (!p.section.fondation && (!@ss || !current_user.sk.chapters.exists?(p.id))) %>
+          <% if (!p.section.fondation && (!@signed_in || !current_user.sk.chapters.exists?(p.id))) %>
             <%= " - " if !prems %>
             <%= p.name %>
             <% prems = false %>
@@ -180,7 +180,7 @@
 <!-- Ajouter quelque chose -->
 <div class="noprint">
   <center>
-    <% if @ss && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+    <% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
       <br/>
       Ajouter un :
       <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |

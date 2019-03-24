@@ -3,7 +3,10 @@ class ProblemsController < ApplicationController
   before_action :signed_in_user, only: [:show, :edit, :new, :explanation, :markscheme]
   before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order_minus, :order_plus, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_action :root_problem_user, only: [:destroy]
+  before_action :get_problem, only: [:edit, :update, :show, :destroy]
+  before_action :get_problem2, only: [:explanation, :update_explanation, :markscheme, :update_markscheme, :order_minus, :order_plus, :delete_prerequisite, :add_prerequisite, :add_virtualtest, :put_online]
+  before_action :get_section, only: [:new, :create]
+  before_action :offline_problem, only: [:destroy]
   before_action :has_access, only: [:show]
   before_action :online_problem, only: [:show]
   before_action :can_be_online, only: [:put_online]
@@ -16,12 +19,10 @@ class ProblemsController < ApplicationController
   # Créer un problème : il faut être admin
   def new
     @problem = Problem.new
-    @section = Section.find(params[:section_id])
   end
 
   # Editer un problème : il faut être admin
   def edit
-    @problem = Problem.find(params[:id])
   end
 
   # Créer un problème 2 : il faut être admin
@@ -30,7 +31,6 @@ class ProblemsController < ApplicationController
     @problem.statement = params[:problem][:statement]
     @problem.origin = params[:problem][:origin]
     @problem.level = params[:problem][:level]
-    @section = Section.find(params[:section_id])
     @problem.online = false
     @problem.section = @section
 
@@ -52,7 +52,6 @@ class ProblemsController < ApplicationController
 
   # Editer un problème 2 : il faut être admin
   def update
-    @problem = Problem.find(params[:id])
     @problem.statement = params[:problem][:statement]
     @problem.origin = params[:problem][:origin]
 
@@ -97,17 +96,14 @@ class ProblemsController < ApplicationController
 
   # Modifier l'explication d'un problème
   def explanation
-    @problem = Problem.find(params[:problem_id])
   end
   
   # Modifier le marking scheme d'un problème
   def markscheme
-    @problem = Problem.find(params[:problem_id])
   end
 
   # Modifier l'explication d'un problème 2
   def update_explanation
-    @problem = Problem.find(params[:problem_id])
     @problem.explanation = params[:problem][:explanation]
     if @problem.save
       flash[:success] = "Élements de solution modifiés."
@@ -119,7 +115,6 @@ class ProblemsController < ApplicationController
   
   # Modifier le marking scheme d'un problème 2
   def update_markscheme
-    @problem = Problem.find(params[:problem_id])
     @problem.markscheme = params[:problem][:markscheme]
     if @problem.save
       flash[:success] = "Marking scheme modifié."
@@ -131,25 +126,26 @@ class ProblemsController < ApplicationController
 
   # Supprimer un prérequis
   def delete_prerequisite
-    @chapter = Chapter.find(params[:chapter_id])
-    @problem = Problem.find(params[:problem_id])
-    @problem.chapters.delete(@chapter)
+    @chapter = Chapter.find_by_id(params[:chapter_id])
+    if !@chapter.nil?
+      @problem.chapters.delete(@chapter)
+    end
     redirect_to @problem
   end
 
   # Ajouter un prérequis
   def add_prerequisite
-    @problem = Problem.find(params[:problem_id])
     if !params[:chapter_problem][:chapter_id].empty?
-      @chapter = Chapter.find(params[:chapter_problem][:chapter_id])
-      @problem.chapters << @chapter
+      @chapter = Chapter.find_by_id(params[:chapter_problem][:chapter_id])
+      if !@chapter.nil?
+        @problem.chapters << @chapter
+      end
     end
     redirect_to @problem
   end
 
   # Ajouter à un test virtuel
   def add_virtualtest
-    @problem = Problem.find(params[:problem_id])
     if !params[:problem][:virtualtest_id].empty?
       if params[:problem][:virtualtest_id].to_i == 0
         @problem.virtualtest_id = 0
@@ -170,7 +166,6 @@ class ProblemsController < ApplicationController
 
   # Déplacer dans un test virtuel
   def order_minus
-    @problem = Problem.find(params[:problem_id])
     @t = @problem.virtualtest
     @problem2 = @t.problems.where("position < ?", @problem.position).order('position').reverse_order.first
     swap_position(@problem, @problem2)
@@ -180,7 +175,6 @@ class ProblemsController < ApplicationController
 
   # Déplacer dans un test virtuel
   def order_plus
-    @problem = Problem.find(params[:problem_id])
     @t = @problem.virtualtest
     @problem2 = @t.problems.where("position > ?", @problem.position).order('position').first
     swap_position(@problem, @problem2)
@@ -190,26 +184,47 @@ class ProblemsController < ApplicationController
 
   ########## PARTIE PRIVEE ##########
   private
+  
+  def get_problem
+    @problem = Problem.find_by_id(params[:id])
+    if @problem.nil?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  def get_problem2
+    @problem = Problem.find_by_id(params[:problem_id])
+    if @problem.nil?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  def get_section
+    @section = Section.find_by_id(params[:section_id])
+    if @section.nil?
+      render 'errors/access_refused' and return
+    end
+  end
 
   # Vérifie que le problème est hors-ligne pour le supprimer
-  def root_problem_user
-    @problem = Problem.find(params[:id])
-    redirect_to problem_path(@problem) if @problem.online
+  def offline_problem
+    if @problem.online
+      render 'errors/access_refused' and return
+    end
   end
 
   # Vérifie qu'on peut voir ce problème
   def has_access
-    @problem = Problem.find(params[:id])
     visible = true
-    if !signed_in? || !current_user.sk.admin?
+    if !@signed_in || !current_user.sk.admin?
       @problem.chapters.each do |c|
-        visible = false if !signed_in? || !current_user.sk.chap_solved?(c)
+        visible = false if !@signed_in || !current_user.sk.chap_solved?(c)
       end
     end
 
     t = @problem.virtualtest
     if !t.nil?
-      if !signed_in?
+      if !@signed_in
         visible = false
       elsif !current_user.sk.admin?
         if current_user.sk.status(t) <= 0
@@ -218,17 +233,20 @@ class ProblemsController < ApplicationController
       end
     end
 
-    redirect_to root_path if !visible
+    if !visible
+      render 'errors/access_refused' and return
+    end
   end
 
   # Vérifie que le problème est en ligne
   def online_problem
-    redirect_to root_path if !@problem.online && !current_user.sk.admin
+    if !@problem.online && !current_user.sk.admin
+      render 'errors/access_refused' and return
+    end
   end
 
   # Vérifie que le problème peut être en ligne
   def can_be_online
-    @problem = Problem.find(params[:problem_id])
     ok = true
     nombre = 0
     @problem.chapters.each do |c|
@@ -236,21 +254,5 @@ class ProblemsController < ApplicationController
       ok = false if !c.online
     end
     redirect_to @problem if !ok || nombre == 0
-  end
-
-  # Vérifie que l'on a assez de points si on est étudiant
-  def enough_points
-    if !current_user.sk.admin?
-      score = current_user.sk.rating
-      redirect_to root_path if score < 200
-    end
-  end
-  
-  def swap_position(a, b)
-    x = a.position
-    a.position = b.position
-    b.position = x
-    a.save
-    b.save
   end
 end

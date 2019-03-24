@@ -14,25 +14,47 @@ class ApplicationController < ActionController::Base
 
   #def warning
   #  flash[:info] = "Le site est en maintenance pour quelques minutes... Merci de votre patience !".html_safe
-  #  if !signed_in? || !current_user.root?
+  #  if !@signed_in || !current_user.root?
   #    redirect_to root_path if request.path != "/"
   #  end
   #end
   
   def has_consent
     $allcolors = Color.order(:pt).to_a
-    @ss = signed_in?
+    @signed_in = signed_in?
     pp = request.fullpath.to_s
-    if @ss && !current_user.last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
+    if @signed_in && !current_user.last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
       if Privacypolicy.where(:online => true).count > 0 # Si aucune privacy policy alors on ne redirige pas...
-        render 'users/read_legal'
+        render 'users/read_legal' and return
       end
+    end
+  end
+  
+  def signed_in_user
+    unless @signed_in
+      store_location
+      flash[:danger] = "Vous devez être connecté pour accéder à cette page."
+      redirect_to signin_path
+    end
+  end
+  
+  # Dans le cas d'une page compromettante (du type "rendre quelqu'un administrateur"), on ne permet pas une redirection douteuse
+  def signed_in_user_danger
+    unless @signed_in
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Vérifie qu'on est pas connecté
+  def signed_out_user
+    if @signed_in
+      render 'errors/access_refused' and return
     end
   end
 
   # Vérifie qu'il ne s'agit pas d'un administrateur dans la peau de quelqu'un
   def notskin_user
-    if current_user.other
+    if @signed_in && current_user.other
       flash[:danger] = "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un."
       redirect_to(:back)
     end
@@ -40,18 +62,38 @@ class ApplicationController < ActionController::Base
 
   # Vérifie qu'on est administrateur
   def admin_user
-    if(!current_user.sk.admin)
-      flash[:danger] = "Vous n'avez pas accès à cette page."
-      redirect_to root_path
+    if !@signed_in || !current_user.sk.admin
+      render 'errors/access_refused' and return
     end
   end
 
   # Vérifie qu'on est root
   def root_user
-    if(!current_user.sk.root)
-      flash[:danger] = "Vous n'avez pas accès à cette page."
-      redirect_to root_path
+    if !@signed_in || !current_user.sk.root
+      render 'errors/access_refused' and return
     end
+  end
+  
+  # Vérifie qu'on est correcteur ou admin
+  def corrector_user
+    if !@signed_in || (!current_user.sk.admin && !current_user.sk.corrector)
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Vérifie que l'on a assez de points si on est étudiant
+  def enough_points
+    if !has_enough_points
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  def swap_position(a, b)
+    x = a.position
+    a.position = b.position
+    b.position = x
+    a.save
+    b.save
   end
 
   # Gérer les pièces jointes

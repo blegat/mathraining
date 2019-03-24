@@ -1,7 +1,8 @@
 #encoding: utf-8
 class MessagesController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy]
-  before_action :admin_subject_user, only: [:create]
+  before_action :get_subject, only: [:create]
+  before_action :get_message, only: [:update, :destroy]
   before_action :author, only: [:update]
   before_action :admin_user, only: [:destroy]
   before_action :valid_chapter
@@ -116,7 +117,6 @@ class MessagesController < ApplicationController
 
   # Supprimer un message : il faut être admin
   def destroy
-    @message = Message.find(params[:id])
     @subject = @message.subject
 
     @message.myfiles.each do |f|
@@ -158,6 +158,25 @@ class MessagesController < ApplicationController
     redirect_to subject_path(@message.subject, :page => page, :q => @q) and return true
   end
   
+  def get_message
+    @message = Message.find_by_id(params[:id])
+    if @message.nil?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Il faut être admin si le sujet est pour admin
+  def get_subject
+    @subject = Subject.find_by_id(params[:subject_id])
+    if @subject.nil?
+      render 'errors/access_refused' and return
+    end
+    
+    unless (current_user.sk.admin? || current_user.sk.corrector? || !@subject.admin)
+      render 'errors/access_refused' and return
+    end
+  end
+  
   def get_q
     @q = 0
     @q = params[:q].to_i if params.has_key?:q
@@ -180,7 +199,9 @@ class MessagesController < ApplicationController
       @chapter = nil
     else
       @chapter = Chapter.find_by_id(chapter_id)
-      redirect_to root_path if @chapter.nil?
+      if @chapter.nil?
+        render 'errors/access_refused' and return
+      end
     end
   end
 
@@ -189,18 +210,15 @@ class MessagesController < ApplicationController
     if @chapter.nil?
       return
     end
-    redirect_to sections_path unless (current_user.sk.admin? || @chapter.online)
-  end
-
-  # Il faut être admin si le sujet est pour admin
-  def admin_subject_user
-    @subject = Subject.find(params[:subject_id])
-    redirect_to root_path unless (current_user.sk.admin? || current_user.sk.corrector? || !@subject.admin)
+    unless (current_user.sk.admin? || @chapter.online)
+      render 'errors/access_refused' and return
+    end
   end
 
   # Il faut être l'auteur ou admin pour modifier un message
   def author
-    @message = Message.find(params[:id])
-    redirect_to subjects_path unless (current_user.sk == @message.user || (current_user.sk.admin && !@message.user.admin) || current_user.sk.root)
+    unless (current_user.sk == @message.user || (current_user.sk.admin && !@message.user.admin) || current_user.sk.root)
+      render 'errors/access_refused' and return
+    end
   end
 end

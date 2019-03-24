@@ -26,18 +26,15 @@ html>body tbody.scroll {
   <% table[level] = Array.new %>
 <% end %>
 
-<% enough_points = false %>
-<% if signed_in? && (current_user.sk.admin? || current_user.sk.rating >= 200) %>
-  <% enough_points = true %>
-<% end %>
+<% enough_points = has_enough_points %>
 
-<% if !signed_in? || !current_user.sk.admin %>
+<% if !@signed_in || !current_user.sk.admin %>
   <% debloque = Array.new %>
   <% Chapter.all.to_a.each do |c| %>
     <% debloque[c.id] = false %>
   <% end %>
 
-  <% if signed_in? %>
+  <% if @signed_in %>
     <% current_user.sk.chapters.each do |c| %>
       <% debloque[c.id] = true %>
     <% end %>
@@ -50,13 +47,13 @@ html>body tbody.scroll {
   <% level = problem.level %>
   <% peutvoir = enough_points %>
   <% t = problem.virtualtest_id %>
-  <% if t == 0 && (!signed_in? || !current_user.sk.admin?) %>
+  <% if t == 0 && (!@signed_in || !current_user.sk.admin?) %>
     <% problem.chapters.each do |c| %>
       <% peutvoir = false if !debloque[c.id] %>
     <% end %>
   <% end %>
-  <% if t != 0 && (!signed_in? || !current_user.sk.admin?) %>
-    <% peutvoir = false if (!signed_in? || current_user.sk.status(t) <= 0) %>
+  <% if t != 0 && (!@signed_in || !current_user.sk.admin?) %>
+    <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
   <% end %>
   <% table[level].push({:time => s.truetime, :user_id => user_id, :s_id => s.submission_id, :p_id => problem.id, :section => problem.section_id, :number => problem.number, :peutvoir => peutvoir}) %>
 <% end %>

@@ -81,6 +81,7 @@ FactoryGirl.define do
   
   # Problem
   factory :problem do
+    association :section
     statement "Foobar"
     level 1
     online false
@@ -90,6 +91,9 @@ FactoryGirl.define do
   factory :section do
     sequence(:name) { |n| "Section#{n}" }
     description "Description"
+    factory :fondation_section do
+      fondation true
+    end
   end
   
   # Solved question
@@ -121,7 +125,7 @@ FactoryGirl.define do
       admin true
     end
     factory :important_subject do
-      important :false
+      important false
     end
   end
   
@@ -160,6 +164,9 @@ FactoryGirl.define do
     factory :root do
       admin true
       root true
+    end
+    factory :advanced_user do
+      rating 200
     end
   end
   

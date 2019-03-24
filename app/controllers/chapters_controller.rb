@@ -5,6 +5,7 @@ class ChaptersController < ApplicationController
   before_action :admin_user, only: [:new, :create, :destroy, :warning, :put_online]
   before_action :get_chapter, only: [:show, :edit, :update, :destroy]
   before_action :get_chapter2, only: [:warning, :put_online, :read]
+  before_action :get_section, only: [:new, :create]
   before_action :delete_online, only: [:destroy]
   before_action :online_chapter, only: [:show, :read]
   before_action :prerequisites_online, only: [:warning, :put_online]
@@ -16,7 +17,6 @@ class ChaptersController < ApplicationController
 
   # Créer un chapitre : il faut vérifier que l'on est admin
   def new
-    @section = Section.find(params[:section_id])
     @chapter = Chapter.new
   end
 
@@ -26,7 +26,6 @@ class ChaptersController < ApplicationController
 
   # Créer un chapitre 2 : il faut vérifier que l'on est admin
   def create
-    @section = Section.find(params[:section_id])
     @chapter = Chapter.new(params.require(:chapter).permit(:name, :description, :level))
     @chapter.section_id = params[:section_id]
     if @chapter.save
@@ -49,7 +48,6 @@ class ChaptersController < ApplicationController
 
   # Supprimer un chapitre : il faut vérifier que l'on est admin (et que le chapitre n'est pas en ligne)
   def destroy
-    @chapter = Chapter.find(params[:id])
     @chapter.destroy
 
     Theory.where(:chapter_id => params[:id]).each do |t|
@@ -102,23 +100,40 @@ class ChaptersController < ApplicationController
   private
   
   def get_chapter
-    @chapter = Chapter.find(params[:id])
+    @chapter = Chapter.find_by_id(params[:id])
+    if @chapter.nil?
+      render 'errors/access_refused' and return
+    end
     @section = @chapter.section
   end
   
   def get_chapter2
-    @chapter = Chapter.find(params[:chapter_id])
+    @chapter = Chapter.find_by_id(params[:chapter_id])
+    if @chapter.nil?
+      render 'errors/access_refused' and return
+    end
     @section = @chapter.section
+  end
+  
+  def get_section
+    @section = Section.find_by_id(params[:section_id])
+    if @section.nil?
+      render 'errors/access_refused' and return
+    end
   end
 
   # Vérifie que le chapitre est en ligne (ou qu'on est admin)
   def online_chapter
-    redirect_to root_path unless ((signed_in? && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) || @chapter.online)
+    unless ((@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) || @chapter.online)
+      render 'errors/access_refused' and return
+    end
   end
 
   # Vérifie que le chapitre n'est pas en ligne pour pouvoir le supprimer
   def delete_online
-    redirect_to root_path if @chapter.online
+    if @chapter.online
+      render 'errors/access_refused' and return
+    end
   end
 
   # Vérifie avant de mettre en ligne que les prérequis sont en ligne
@@ -135,7 +150,9 @@ class ChaptersController < ApplicationController
   end
   
   def creating_user
-    redirect_to root_path unless (signed_in? && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter.id))))
+    unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter.id))))
+      render 'errors/access_refused' and return
+    end
   end
 
 end

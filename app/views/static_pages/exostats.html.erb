@@ -8,7 +8,7 @@ Les tableaux suivants donnent :
 </ul>
 
 <% debloque = Array.new %>
-<% if signed_in? and !current_user.sk.admin? %>
+<% if @signed_in and !current_user.sk.admin? %>
   <% current_user.sk.chapters.each do |c| %>
     <% debloque[c.id] = 1 %>
   <% end %>
@@ -36,7 +36,7 @@ Les tableaux suivants donnent :
     <% taken[n] = false %>
     <% cansee[n] = true %>
     <% chapter.prerequisites.each do |p| %>
-      <% if !signed_in? or (!is_fond[p.section_id] and !current_user.sk.admin? and debloque[p.id].nil?) %>
+      <% if !@signed_in or (!is_fond[p.section_id] and !current_user.sk.admin? and debloque[p.id].nil?) %>
         <% cansee[n] = false %>
       <% end %>
       <% if p.section == section %>

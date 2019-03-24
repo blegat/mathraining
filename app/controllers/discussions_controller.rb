@@ -2,6 +2,8 @@
 class DiscussionsController < ApplicationController
   before_action :signed_in_user, only: [:show, :new]
   before_action :signed_in_user_danger, only: [:create, :unread]
+  before_action :get_discussion, only: [:show]
+  before_action :get_discussion2, only: [:unread]
   before_action :is_involved, only: [:show, :unread]
 
   def show
@@ -21,7 +23,10 @@ class DiscussionsController < ApplicationController
 
   def new
     if (params.has_key?:qui)
-      other = User.find(params[:qui].to_i)
+      other = User.find_by_id(params[:qui].to_i)
+      if other.nil?
+        render 'errors/access_refused' and return
+      end
       current_user.sk.discussions.each do |d|
         if d.users.include?(other)
           redirect_to d and return
@@ -39,7 +44,10 @@ class DiscussionsController < ApplicationController
       redirect_to new_discussion_path and return
     else
 
-      @destinataire = User.find(params[:destinataire])
+      @destinataire = User.find_by_id(params[:destinataire])
+      if @destinataire.nil?
+        render 'errors/access_refused' and return
+      end
       deja = false
 
       current_user.sk.discussions.each do |d|
@@ -111,11 +119,24 @@ class DiscussionsController < ApplicationController
 
   ########## PARTIE PRIVEE ##########
   private
+  
+  def get_discussion
+    @discussion = Discussion.find_by_id(params[:id])
+    if @discussion.nil?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  def get_discussion2
+    @discussion = Discussion.find_by_id(params[:discussion_id])
+    if @discussion.nil?
+      render 'errors/access_refused' and return
+    end
+  end
 
   def is_involved
-    @discussion = Discussion.find(!params[:discussion_id].nil? ? params[:discussion_id] : params[:id])
     if !current_user.sk.discussions.include?(@discussion)
-      redirect_to new_discussion_path
+      render 'errors/access_refused' and return
     elsif current_user.other
       flash[:info] = "Vous ne pouvez pas voir les messages de #{current_user.sk.name}."
       redirect_to new_discussion_path

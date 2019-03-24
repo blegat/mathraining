@@ -111,7 +111,10 @@ class ContestcorrectionsController < ApplicationController
   private
 
   def get_contestcorrection
-    @contestcorrection = Contestcorrection.find(params[:id])
+    @contestcorrection = Contestcorrection.find_by_id(params[:id])
+    if @contestcorrection.nil?
+      render 'errors/access_refused' and return
+    end
     @contestsolution = @contestcorrection.contestsolution
     @contestproblem = @contestsolution.contestproblem
     @contest = @contestproblem.contest
@@ -119,7 +122,7 @@ class ContestcorrectionsController < ApplicationController
   
   def is_organizer
     if !@contest.is_organized_by(current_user)
-      redirect_to @contest
+      render 'errors/access_refused' and return
     end
   end
   

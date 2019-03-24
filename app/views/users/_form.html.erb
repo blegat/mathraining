@@ -3,13 +3,13 @@
 <!-- Prénom -->
 <div class="form-group">
   <%= f.label :first_name %>
-  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other && !current_user.root) %>
+  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (@signed_in && current_user.other && !current_user.root) %>
 </div>
 
 <!-- Nom -->
 <div class="form-group">
   <%= f.label :last_name %>
-  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (signed_in? && current_user.other && !current_user.root)%>
+  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (@signed_in && current_user.other && !current_user.root)%>
 </div>
 
 <!-- Voir nom entier? -->
@@ -59,10 +59,10 @@
 <!-- Email -->
 <div class="form-group">
   <%= f.label :email %>
-  <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => ((modif && !current_user.admin?) || (signed_in? && current_user.other && !current_user.root))  %>
+  <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => ((modif && !current_user.admin?) || (@signed_in && current_user.other && !current_user.root))  %>
 </div>
 
-<% if(signed_in? && !current_user.other && current_user.admin?) %>
+<% if(@signed_in && !current_user.other && current_user.admin?) %>
   (Vous pouvez modifier votre adresse car vous êtes administrateur.)<br/><br/>
 <% end %>
 
@@ -77,13 +77,13 @@
 <!-- Mot de passe -->
 <div class="form-group">
   <%= f.label :password %>
-  <%= f.password_field :password, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
+  <%= f.password_field :password, :class => "form-control", :style => "width:250px;", :disabled => (@signed_in && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
 <!-- Confirmation mot de passe -->
 <div class="form-group">
   <%= f.label :password_confirmation %>
-  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
+  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (@signed_in && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
 <% if !modif && Rails.env.production? %>

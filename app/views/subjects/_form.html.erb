@@ -97,7 +97,7 @@ function checkQuestion() {
 <% if seechap %>
   <% listechap = Array.new %>
   <% listechap.push(["Aucun chapitre en particulier", 0]) %>
-  <% sect.chapters.order(:name).each do |c| %>
+  <% sect.chapters.where(:online => true).order(:name).each do |c| %>
     <% listechap.push([c.name, c.id]) %>
   <% end %>  
   <div class="form-group">
@@ -129,25 +129,36 @@ function checkQuestion() {
 <% end %>
 
 <% if seeexo %>
+
+  <% exovisibles = true %>
+  <% if !current_user.sk.admin? %>
+    <% chap.prerequisites.each do |p| %>
+      <% exovisibles = false if !p.section.fondation && !current_user.sk.chapters.exists?(p) %>
+    <% end %>
+  <% end %>
+  
   <% cache = false %>
   <% listeexo = Array.new %>
   <% listeexo.push(["Aucun exercice en particulier", 0]) %>
-  <% i = 1 %>
-  <% chap.questions.where(:online => true).order(:position).each do |e| %>
-    <% if (e.subject.nil? || e.id == presel3) %>
-      <% listeexo.push(["Exercice #{i}", e.id]) %>
-      <% if presel3 == e.id %>
-        <% txt = "Exercice #{i}" %>
+  
+  <% if exovisibles %>
+    <% i = 1 %>
+    <% chap.questions.where(:online => true).order(:position).each do |e| %>
+      <% if (e.subject.nil? || e.id == presel3) %>
+        <% listeexo.push(["Exercice #{i}", e.id]) %>
+        <% if presel3 == e.id %>
+          <% txt = "Exercice #{i}" %>
+        <% end %>
+      <% else %>
+        <% cache = true %>
       <% end %>
-    <% else %>
-      <% cache = true %>
+      <% i = i+1 %>
     <% end %>
-    <% i = i+1 %>
   <% end %>
 
   <div class="form-group">
     <%= f.label :question_id, :disabled => current_user.other, :id => "label_exo" %>
-    <div id="alert" style="color:red; display:none; margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
+    <div id="alert" style="color:red; display:<%= "" if !exovisibles %><%= "none" if exovisibles %>; margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
     <div id="alert2" style="color:orange; display:<%= "" if cache %><%= "none" if !cache %>; margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
     <%= f.select(:question_id, options_for_select(listeexo, presel3).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkQuestion();")}) %>
   </div>

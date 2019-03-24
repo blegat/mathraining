@@ -3,6 +3,7 @@ class PicturesController < ApplicationController
   before_action :signed_in_user, only: [:show, :new]
   before_action :signed_in_user_danger, only: [:create, :destroy]
   before_action :admin_user
+  before_action :get_picture, only: [:show, :destroy]
   before_action :good_person, only: [:show, :destroy]
 
   # Voir, il faut être la bonne personne
@@ -27,7 +28,6 @@ class PicturesController < ApplicationController
 
   # Supprimer, il faut être la bonne personne
   def destroy
-    @pic = Picture.find(params[:id])
     @pic.image.destroy
     @pic.destroy
     redirect_to pictures_path
@@ -36,10 +36,18 @@ class PicturesController < ApplicationController
   ########## PARTIE PRIVEE ##########
   private
 
+  def get_picture
+    @pic = Picture.find_by_id(params[:id])
+    if @pic.nil?
+      render 'errors/access_refused' and return
+    end
+  end
+  
   # Vérifie qu'il s'agit de la bonne personne
   def good_person
-    @pic = Picture.find(params[:id])
-    redirect_to root_path unless @pic.user.id == current_user.sk.id
+    if @pic.user.id != current_user.sk.id
+      render 'errors/access_refused' and return
+    end
   end
 
 end

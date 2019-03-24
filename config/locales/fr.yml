@@ -2,16 +2,26 @@ fr:
   activerecord:
     models:
       actuality: "Actualité"
+      category: "Catégorie"
       chapter: "Chapitre"
+      color: "Couleur"
+      contest: "Concours"
+      contestcorrection: "Correction"
+      contestproblem: "Problème"
+      contestsolution: "Solution"
       correction: "Commentaire"
-      exercise: "Exercice"
+      discussion: "Discussion"
       message: "Message"
       prerequisite: "Prérequis"
+      privacypolicy: "Politique de confidentialité"
       problem: "Problème"
-      qcm: "QCM"
+      question: "Exercice"
       section: "Section"
-      subject: "Subject"
+      subject: "Sujet"
+      tchatmessage: "Message personnel"
+      theory: "Point théorique"
       user: "Utilisateur"
+      virtualtest: "Test virtuel"
     attributes:
       actuality:
         content: "Contenu"
@@ -20,18 +30,30 @@ fr:
         name: "Titre"
         level: "Niveau"
         description: "Description"
+      contest:
+        number: "Numéro"
+        description: "Description"
+      contestproblem:
+        statement: "Énoncé"
+        origin: "Origine"
+      contestsolution:
+        content: "Contenu"
       correction:
         content: "Commentaire"
-      exercise:
-        statement: "Enoncé"
+      question:
+        statement: "Énoncé"
         level: "Niveau"
         answer: "Réponse"
       message:
         content: "Message"
       prerequisite:
         prerequisite: "Prérequis"
+      privacypolicy:
+        content: "Contenu"
+        description: "Modifications"
       problem:
-        statement: "Enoncé"
+        statement: "Énoncé"
+        origin: "Origine"
         level: "Niveau"
       subject:
         title: "Titre"
@@ -39,9 +61,6 @@ fr:
         category_id: "Catégorie"
         chapter_id: "Chapitre"
         exercise_id: "Exercice"
-      qcm:
-        statement: "Enoncé"
-        level: "Niveau"
       section:
         description: "Introduction"
         name: "Nom"
@@ -58,9 +77,6 @@ fr:
         year: "Année de naissance"
         country: "Pays"
         email: "Adresse e-mail"
-      privacypolicy:
-        content: "Contenu"
-        description: "Modifications"
   will_paginate:
     previous_label: "Page précédente"
     next_label: "Page suivante"

@@ -17,10 +17,10 @@
 
   <%= form_for(exo, :html => {:class => "form-inline"}) do |g| %>
     <input type="hidden" name="question_id" value="<%= f.id %>" />
-    <%= g.label "Votre réponse : ", :class => "todisable", :disabled => !@ss || current_user.other || needtowait %>
-    <%= g.text_field :guess, class: "form-control todisable", style: "width:70px; margin-left:5px;", value: val, :disabled => !@ss || current_user.other || needtowait %>
+    <%= g.label "Votre réponse : ", :class => "todisable", :disabled => !@signed_in || current_user.other || needtowait %>
+    <%= g.text_field :guess, class: "form-control todisable", style: "width:70px; margin-left:5px;", value: val, :disabled => !@signed_in || current_user.other || needtowait %>
     <div class="visible-xs" style="height:7px;"></div>
-    <%= g.submit "Soumettre", class: "btn btn-primary todisable", :disabled => !@ss || current_user.other || needtowait %>
+    <%= g.submit "Soumettre", class: "btn btn-primary todisable", :disabled => !@signed_in || current_user.other || needtowait %>
   <% end %>
   
 <% else %>
@@ -32,11 +32,11 @@
       <% f.items.order(:position).each do |c| %>
         <input type="hidden" name="question_id" value="<%= f.id %>" />
         <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-          <input type="checkbox" class="todisable" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if !@ss || current_user.other || needtowait %>>
+          <input type="checkbox" class="todisable" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
           <%= raw(c.ans) %>
         </label><br/>
       <% end %>
-      <br/><button class="btn btn-primary todisable" type="submit" <%= "disabled=\"true\"" if !@ss || current_user.other || needtowait %>>Soumettre</button>
+      <br/><button class="btn btn-primary todisable" type="submit" <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>Soumettre</button>
     <% end %>
   <% else %>
     <% item = exo.items.first %>
@@ -44,11 +44,11 @@
       <input type="hidden" name="question_id" value="<%= f.id %>" />
       <% f.items.order(:position).each do |c| %>
         <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-          <input type="radio" class="todisable" name="ans" value="<%= c.id %>" <%= "checked" if !item.nil? && c.id == item.id %> <%= "disabled=\"true\"" if !@ss || current_user.other || needtowait %>>
+          <input type="radio" class="todisable" name="ans" value="<%= c.id %>" <%= "checked" if !item.nil? && c.id == item.id %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
           <%= raw(c.ans) %>
         </label><br/>
       <% end %>
-      <br/><button class="btn btn-primary todisable" type="submit" <%= "disabled=\"true\"" if !@ss || current_user.other || needtowait %>>Soumettre</button>
+      <br/><button class="btn btn-primary todisable" type="submit" <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>Soumettre</button>
     <% end %>
 
   <% end %>

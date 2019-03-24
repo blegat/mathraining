@@ -3,8 +3,8 @@ class VirtualtestsController < ApplicationController
   before_action :signed_in_user, only: [:show, :new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :begin_test]
   before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :put_online, :destroy]
-  before_action :recup, only: [:show, :edit, :update, :destroy]
-  before_action :recup2, only: [:begin_test, :put_online]
+  before_action :get_virtualtest, only: [:show, :edit, :update, :destroy]
+  before_action :get_virtualtest2, only: [:begin_test, :put_online]
   before_action :has_access, only: [:show, :begin_test]
   before_action :online_test, only: [:show, :begin_test]
   before_action :can_begin, only: [:begin_test]
@@ -102,12 +102,18 @@ class VirtualtestsController < ApplicationController
   private
 
   # On récupère
-  def recup
-    @virtualtest = Virtualtest.find(params[:id])
+  def get_virtualtest
+    @virtualtest = Virtualtest.find_by_id(params[:id])
+    if @virtualtest.nil?
+      render 'errors/access_refused' and return
+    end
   end
 
-  def recup2
-    @virtualtest = Virtualtest.find(params[:virtualtest_id])
+  def get_virtualtest2
+    @virtualtest = Virtualtest.find_by_id(params[:virtualtest_id])
+    if @virtualtest.nil?
+      render 'errors/access_refused' and return
+    end
   end
   
   # Vérifie que le test est en cours
@@ -124,13 +130,17 @@ class VirtualtestsController < ApplicationController
           visible = false if !current_user.sk.chap_solved?(c)
         end
       end
-      redirect_to root_path if !visible
+      if !visible
+        render 'errors/access_refused' and return
+      end
     end
   end
 
   # Vérifie que le test est en ligne ou qu'on est admin
   def online_test
-    redirect_to root_path if !@virtualtest.online && !current_user.sk.admin
+    if !@virtualtest.online && !current_user.sk.admin
+      render 'errors/access_refused' and return
+    end
   end
 
   # Vérifie que le test peut être en ligne
@@ -156,14 +166,8 @@ class VirtualtestsController < ApplicationController
 
   # Vérifie qu'on ne supprime pas un test en ligne
   def delete_online
-    redirect_to root_path if @virtualtest.online
-  end
-
-  # Vérifie que l'on a assez de points si on est étudiant
-  def enough_points
-    if !current_user.sk.admin?
-      score = current_user.sk.rating
-      redirect_to root_path if score < 200
+    if @virtualtest.online
+      render 'errors/access_refused' and return
     end
   end
 end

@@ -2,18 +2,19 @@
 class MyfilesController < ApplicationController
   before_action :signed_in_user, only: [:index, :show, :edit]
   before_action :signed_in_user_danger, only: [:download, :fake_delete, :update]
+  before_action :get_myfile, only: [:show, :edit, :update, :download]
+  before_action :get_myfile2, only: [:fake_delete]
   before_action :have_access, only: [:download]
   before_action :root_user, only: [:fake_delete, :edit, :update, :show, :index]
 
   # Télécharger le pièce jointe
   def download
-    send_file @thing.file.path, :type => @thing.file_content_type, :filename => @thing.file_file_name
+    send_file @myfile.file.path, :type => @myfile.file_content_type, :filename => @myfile.file_file_name
   end
   
   def show
-    f = Myfile.find(params[:id])
-    type = f.myfiletable_type
-    about = f.myfiletable
+    type = @myfile.myfiletable_type
+    about = @myfile.myfiletable
     if type == "Submission"
       redirect_to problem_path(about.problem, :sub => about)
     elsif type == "Correction"
@@ -34,11 +35,9 @@ class MyfilesController < ApplicationController
   end
   
   def edit
-    @myfile = Myfile.find(params[:id])
   end
   
   def update
-    @myfile = Myfile.find(params[:id])
     if !params["file"].nil?
       if(@myfile.update_attributes(file: params["file".to_sym]))
         flash[:success] = "C'est remplacé !"
@@ -53,8 +52,7 @@ class MyfilesController < ApplicationController
 
   # Supprimer la pièce jointe fictivement
   def fake_delete
-    @thing = Myfile.find(params[:myfile_id])
-    @fakething = @thing.fake_del()
+    @fakething = @myfile.fake_del
     flash[:success] = "Contenu de la pièce jointe supprimé."
 
     if @fakething.fakefiletable_type == "Subject"
@@ -93,27 +91,40 @@ class MyfilesController < ApplicationController
 
   ########## PARTIE PRIVEE ##########
   private
+  
+  def get_myfile
+    @myfile = Myfile.find_by_id(params[:id])
+    if @myfile.nil?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  def get_myfile2
+    @myfile = Myfile.find_by_id(params[:myfile_id])
+    if @myfile.nil?
+      render 'errors/access_refused' and return
+    end
+  end
 
   # Vérifie qu'on a accès à la pièce jointe (CHANGE !)
   def have_access
-    @thing = Myfile.find(params[:id])
-    if @thing.myfiletable_type == "Subject"
-      redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && @thing.myfiletable.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && @thing.myfiletable.wepion)
-    elsif @thing.myfiletable_type == "Message"
-      redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && @thing.myfiletable.subject.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && @thing.myfiletable.subject.wepion)
-    elsif @thing.myfiletable_type == "Tchatmessage"
-      redirect_to root_path if (!current_user.sk.root? && !current_user.sk.discussions.include?(@thing.myfiletable.discussion))
-    elsif @thing.myfiletable_type == "Submission"
-      redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.myfiletable.user || current_user.sk.pb_solved?(@thing.myfiletable.problem))
-    elsif @thing.myfiletable_type == "Correction"
-      redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @thing.myfiletable.submission.user || current_user.sk.pb_solved?(@thing.myfiletable.submission.problem))
-    elsif @thing.myfiletable_type == "Contestsolution"
-      contestsolution = @thing.myfiletable
+    if @myfile.myfiletable_type == "Subject"
+      redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && @myfile.myfiletable.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && @myfile.myfiletable.wepion)
+    elsif @myfile.myfiletable_type == "Message"
+      redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && @myfile.myfiletable.subject.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && @myfile.myfiletable.subject.wepion)
+    elsif @myfile.myfiletable_type == "Tchatmessage"
+      redirect_to root_path if (!current_user.sk.root? && !current_user.sk.discussions.include?(@myfile.myfiletable.discussion))
+    elsif @myfile.myfiletable_type == "Submission"
+      redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @myfile.myfiletable.user || current_user.sk.pb_solved?(@myfile.myfiletable.problem))
+    elsif @myfile.myfiletable_type == "Correction"
+      redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @myfile.myfiletable.submission.user || current_user.sk.pb_solved?(@myfile.myfiletable.submission.problem))
+    elsif @myfile.myfiletable_type == "Contestsolution"
+      contestsolution = @myfile.myfiletable
       contestproblem = contestsolution.contestproblem
       contest = contestproblem.contest
       redirect_to root_path unless (contest.is_organized_by_or_root(current_user) || contestsolution.user == current_user.sk || (contestproblem.status == 4 && contestsolution.score == 7))
-    elsif @thing.myfiletable_type == "Contestcorrection"
-      contestsolution = @thing.myfiletable.contestsolution
+    elsif @myfile.myfiletable_type == "Contestcorrection"
+      contestsolution = @myfile.myfiletable.contestsolution
       contestproblem = contestsolution.contestproblem
       contest = contestproblem.contest
       redirect_to root_path unless (contest.is_organized_by_or_root(current_user) || (contestproblem.status == 4 && (contestsolution.score == 7 || contestsolution.user == current_user.sk)))

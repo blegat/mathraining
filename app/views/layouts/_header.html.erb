@@ -21,7 +21,7 @@
     <div class="navbar-collapse collapse">
 
       <!-- Dans le cas normal -->
-      <% if @ss and (current_user.sk.admin || current_user.sk.corrector) %>
+      <% if @signed_in and (current_user.sk.admin || current_user.sk.corrector) %>
         <form class="navbar-form navbar-left hidden-small" role="search">
 
         <!-- Nouvelles soumissions -->
@@ -64,7 +64,7 @@
       <% end %>
       
       <!-- Corrections (pour les étudiants non-correcteurs) -->
-      <% if @ss && !current_user.sk.admin? && !current_user.sk.corrector? %>
+      <% if @signed_in && !current_user.sk.admin? && !current_user.sk.corrector? %>
         <% noti = current_user.sk.notifs.count %>
         <% if noti != 0 %>
           <form class="navbar-form navbar-left hidden-small" role="search">
@@ -76,7 +76,7 @@
       <ul class="nav navbar-nav navbar-right">
       
       <!-- Dans le cas gsm -->
-      <% if @ss and (current_user.sk.admin || current_user.sk.corrector) %>
+      <% if @signed_in and (current_user.sk.admin || current_user.sk.corrector) %>
 
         <li class="hidden-large">
         <form role="search" style="margin-left:15px; margin-bottom:5px;">
@@ -115,7 +115,7 @@
       <% end %>
       
       <!-- Corrections (pour les étudiants non-correcteurs) -->
-      <% if @ss && !current_user.sk.admin? && !current_user.sk.corrector? %>
+      <% if @signed_in && !current_user.sk.admin? && !current_user.sk.corrector? %>
         <% noti = current_user.sk.notifs.count %>
         <% if noti != 0 %>
           <form role="search" class="hidden-large" style="margin-left:15px; margin-bottom:5px;">
@@ -141,7 +141,7 @@
               <li><%= link_to f.name, f %></li>
             <% end %>
           <% end %>
-          <% if @ss && current_user.sk.admin? %>
+          <% if @signed_in && current_user.sk.admin? %>
           <li class="divider"></li>
           <li><%= link_to "Modifier la structure", graph_prerequisites_path %></li>
           <% end %>
@@ -166,13 +166,13 @@
       </li>
 
       <!-- Forum -->
-      <% if @ss %>
+      <% if @signed_in %>
         <% combien_nouveau = current_user.sk.combien_forum[0] %>
       <% end %>
 
-      <% if @ss && combien_nouveau == 0 %>
+      <% if @signed_in && combien_nouveau == 0 %>
         <li><%= link_to "Forum", subjects_path %></li>
-      <% elsif @ss %>
+      <% elsif @signed_in %>
         <li style="font-weight:bold;"><%= link_to "Forum (#{combien_nouveau})", subjects_path %></li>
       <% end %>
 
@@ -194,7 +194,7 @@
 
       <!-- Si connecté -->
 
-      <% if @ss %>
+      <% if @signed_in %>
 
         <% nonlu = current_user.sk.links.where("nonread != 0").count %>
         <% if nonlu == 0 %>
@@ -223,7 +223,7 @@
             <li><%= link_to "Profil", current_user.sk %></li>
           <% end %>
           <li><%= link_to "Compte", edit_user_path(current_user.sk) %></li>
-          <% if @ss && (current_user.sk.admin || current_user.sk.group != "") %>
+          <% if @signed_in && (current_user.sk.admin || current_user.sk.group != "") %>
             <li><%= link_to "Groupes Wépion", groups_path %></li>
           <% end %>
           <% if current_user.sk.root? %>

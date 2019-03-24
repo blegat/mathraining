@@ -67,5 +67,7 @@ module Mathraining
     config.time_zone = 'Brussels'
     
     I18n.config.enforce_available_locales = true
+    
+    config.exceptions_app = self.routes
   end
 end

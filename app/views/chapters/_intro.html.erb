@@ -11,7 +11,7 @@
 <% end %>
 
 <!-- Modifier les prérequis -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if @signed_in && current_user.sk.admin? %>
   <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>
 <% end %>
 
@@ -21,7 +21,7 @@
 <br/>
 
 <!-- Modifier / Supprimer -->
-<% if signed_in? && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter))) %>
+<% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter))) %>
   <br/>
   <center>
   <%= link_to "Modifier le nom, le niveau ou le résumé de ce chapitre", edit_chapter_path(@chapter) %>

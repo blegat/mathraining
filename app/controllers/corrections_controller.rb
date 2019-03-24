@@ -1,6 +1,7 @@
 #encoding: utf-8
 class CorrectionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create]
+  before_action :get_submission
   before_action :correct_user
   before_action :notskin_user, only: [:create]
 
@@ -171,12 +172,18 @@ class CorrectionsController < ApplicationController
 
   ########## PARTIE PRIVEE ##########
   private
+  
+  def get_submission
+    @submission = Submission.find_by_id(params[:submission_id])
+    if @submission.nil?
+      render 'errors/access_refused' and return
+    end
+  end
 
   # Vérifie qu'il s'agit du bon utilisateur ou d'un admin ou d'un correcteur
   def correct_user
-    @submission = Submission.find(params[:submission_id])
-    if @submission.nil? || (@submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@submission.problem)))
-      redirect_to root_path
+    if @submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@submission.problem))
+      render 'errors/access_refused' and return
     end
   end
 

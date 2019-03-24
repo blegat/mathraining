@@ -45,15 +45,18 @@ class TchatmessagesController < DiscussionsController
   private
 
   def is_involved_2
-    @discussion = Discussion.find(params[:tchatmessage][:discussion_id])
+    @discussion = Discussion.find_by_id(params[:tchatmessage][:discussion_id])
+    if @discussion.nil?
+      render 'errors/access_refused' and return
+    end
     if !current_user.sk.discussions.include?(@discussion)
-      redirect_to new_discussion_path
+      render 'errors/access_refused' and return
     end
   end
 
   def is_not_other
     if current_user.other
-      flash[:danger] = "Vous êtes dans la peau de quelqu'un d'autre!"
+      flash[:danger] = "Vous êtes dans la peau de quelqu'un d'autre !"
       redirect_to @discussion
     end
   end
