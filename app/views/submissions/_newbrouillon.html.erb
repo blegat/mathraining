@@ -12,11 +12,29 @@
   <span id="fooBar"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
   <br/><br/>
+  
+  <script type="text/javascript">
+  function checkChecked() {
+      var c = document.getElementById("consent").checked;
+      var bt = document.getElementById("send-button");
+      if(c && <%= !current_user.other %>) { bt.disabled = false; }
+      else { bt.disabled = true; }
+  }
+  </script>
+  
+  <label style="font-weight:normal;">
+    <input type="checkbox" id="consent" name="consent" value="1" onchange="javascript:checkChecked();">
+    Je comprends que les correcteurs du site sont bénévoles et vont corriger cette solution pendant leur temps libre pour me faire progresser.
+    Je certifie dès lors que cette solution est le fruit de mon travail et qu'elle ne provient pas d'une source extérieure.
+    Je garantis également que cette solution n'a pas déjà été soumise via un autre compte Mathraining.<sup>1</sup>
+  </label><br/><br/>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", style: "margin-bottom:5px;", :disabled => current_user.other, data: { confirm: "Êtes-vous sûr de vouloir soumettre cette solution ?" } %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", id: "send-button", style: "margin-bottom:5px;", :disabled => true, data: { confirm: "Êtes-vous sûr de vouloir soumettre cette solution ?" } %>
   <%= f.submit "Enregistrer le brouillon", class: "btn btn-default btn-grey", style: "margin-bottom:5px;", :disabled => current_user.other %>
   <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger", style: "margin-bottom:5px;", :disabled => current_user.other, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce brouillon ?" } %>
 <% end %>
+
+<br/><span style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui renvoient une solution déjà envoyée sur un précédent compte.</span>
 
 <script>
 PreviewSafe.Init();
