@@ -116,7 +116,7 @@ class ChaptersController < ApplicationController
   
   # Déplacer vers le haut
   def order_minus
-    chapter2 = @section.chapters.where("position < ?", @chapter.position).order('position').reverse_order.first
+    chapter2 = @section.chapters.where("level = ? AND position < ?", @chapter.level, @chapter.position).order('position').reverse_order.first
     swap_position(@chapter, chapter2)
     flash[:success] = "Chapitre déplacé vers le haut."
     redirect_to @chapter
@@ -124,7 +124,7 @@ class ChaptersController < ApplicationController
 
   # Déplacer vers le bas
   def order_plus
-    chapter2 = @section.chapters.where("position > ?", @chapter.position).order('position').first
+    chapter2 = @section.chapters.where("level = ? AND position > ?", @chapter.level, @chapter.position).order('position').first
     swap_position(@chapter, chapter2)
     flash[:success] = "Chapitre déplacé vers le bas."
     redirect_to @chapter
