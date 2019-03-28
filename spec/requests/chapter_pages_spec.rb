@@ -12,10 +12,10 @@ describe "Chapter pages" do
   let(:offline_chapter) { FactoryGirl.create(:chapter, section: section, online: false) }
   let(:title) { "Mon titre de chapitre" }
   let(:description) { "Ma description de chapitre" }
-  let(:level) { 5 }
+  let(:level) { 2 }
   let(:newtitle) { "Mon nouveau titre de chapitre" }
   let(:newdescription) { "Ma nouvelle description de chapitre" }
-  let(:newlevel) { 6 }
+  let(:newlevel) { 3 }
   
   describe "visitor" do
 

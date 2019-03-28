@@ -66,13 +66,13 @@ describe Chapter do
   end
 
   # Level
-  describe "when level is 0" do
-    before { @chap.level = 0 }
+  describe "when level is 1" do
+    before { @chap.level = 1 }
     it { should be_valid }
   end
   
-  describe "when level is 10" do
-    before { @chap.level = 10 }
+  describe "when level is 3" do
+    before { @chap.level = 3 }
     it { should be_valid }
   end
   
@@ -81,13 +81,13 @@ describe Chapter do
     it { should_not be_valid }
   end
 
-  describe "when level is negative" do
-    before { @chap.level = -1 }
+  describe "when level is zero" do
+    before { @chap.level = 0 }
     it { should_not be_valid }
   end
 
-  describe "when level is greater than 10" do
-    before { @chap.level = 11 }
+  describe "when level is greater than 3" do
+    before { @chap.level = 4 }
     it { should_not be_valid }
   end
 

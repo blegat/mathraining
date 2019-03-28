@@ -150,7 +150,7 @@
 <%= render 'info' unless @section.fondation %>
 
 <!-- Introduction -->
-<h3>Introduction</h3>
+<h2>Introduction</h2>
 <%= raw(htmlise(@section.description)) %>
 <br/>
 
@@ -159,194 +159,79 @@
 <% end %>
 
 <!-- Chapitres -->
-<h3>Chapitres</h3>
+<h2>Chapitres</h2>
+
+<% if @section.fondation %>
+  Tous les exercices sont ici directement accessibles.<br/><br/>
+<% else %>
+  Les chapitres de cette section sont ordonnés selon leur importance (des plus primordiaux aux plus avancés).
+<% end %>
 
 <% section_fondation = Array.new %>
 <% Section.all.to_a.each do |s| %>
   <% section_fondation[s.id] = s.fondation %>
 <% end %>
 
-<!-- Si chapitre non fondamental -->
-<% if !@section.fondation %>
-
-<% chap = Array.new %>
-<% debloque = Array.new %>
-<% faisable = Array.new %>
-<% faisable2 = Array.new %>
-<% affiche = Array.new %>
-<% nb_pre = Array.new %>
-<% possible = SortedSet.new %>
-<% retiens = Hash.new %>
-
-<% n = 0 %>
-
-<!-- Parcours tous les chapitres -->
-<% Chapter.includes(:prerequisites).all.each do |c| %>
-  <% if (c.online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(c)))) && !section_fondation[c.section_id] %>
-    <% retiens[c.id] = n %>
-    <% chap.push(c) %>
-    <% debloque.push([]) %>
-    <% faisable.push(-1) %>
-    <% faisable2.push(-1) %>
-    <% nb_pre.push(0) %>
-    <% if c.section_id == @section.id %>
-      <% affiche.push(true) %>
-    <% else %>
-      <% affiche.push(false) %>
-    <% end %>
-    <% n = n+1 %>
-  <% end %>
-<% end %>
-
-<!-- Détermine ce qu'on peut voir ou ne pas voir -->
-<% (0..(n-1)).each do |i| %>
-  <% if (chap[i].online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(chap[i])))) %>
-    <% premier = true %>
-    <% chap[i].prerequisites.each do |p| %>
-      <% if !section_fondation[p.section_id] %>
-        <% debloque[retiens[p.id]].push(i) %>
-        <% nb_pre[i] = nb_pre[i]+1 %>
+<% num_level = (@section.fondation ? 1 : 3) %>
+<% (1..num_level).each do |level| %>
+  <% premier = true %>
+  <% @section.chapters.where(:level => level).order(:position).each do |c| %>
+    <% if (c.online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(c)))) %>
+      <% if premier %>
+        <% if @section.fondation %>
+        
+        <% elsif level == 1 %>
+          <h3>Les essentiels</h3>
+          Les chapitres suivants reprennent la théorie essentielle relative à cette section.<br/><br/>
+        <% elsif level == 2 %>
+          <h3>Les classiques</h3>
+          Les chapitres suivants, un peu plus avancés, reprennent les résultats classiques de cette section.<br/><br/>
+        <% elsif level == 3 %>
+          <h3>Les pointus</h3>
+          Les chapitres suivants reprennent des notions plus rarement utiles en compétition mais qui peuvent devenir assez puissantes si bien maitrisées.<br/><br/>
+        <% end %>
         <% premier = false %>
       <% end %>
-    <% end %>
-    <% if premier %>
-      <% if @signed_in && current_user.sk.chapters.exists?(chap[i]) %>
-        <% faisable[i] = 0 %>
-      <% else %>
-        <% faisable[i] = 1 %>
+      
+      <% lecas = 0 %>
+      <% classe = "" %>
+      <% solved = false %>
+      
+      <% if @signed_in && !current_user.sk.admin? && current_user.sk.chapters.exists?(c) %>
+        <% solved = true %>
       <% end %>
-      <% faisable2[i] = 0 %>
-      <% possible.add([faisable[i], faisable2[i], chap[i].level, i]) %>
-    <% end %>
-  <% end %>
-<% end %>
-
-<% i = 0 %>
-
-<!-- On parcourt les chapitres dans l'ordre -->
-
-<% while !possible.empty? %>
-  <% encours = (possible.first)[3] %>
-  <% possible.delete(possible.first) %>
-
-  <!-- Si on peut l'afficher -->
-  <% if affiche[encours] %>
-    <% lecas = 0 %>
-    <% classe = "" %>
-    <!-- Si on peut le faire -->
-    <% if faisable[encours] <= 1 || (@signed_in && current_user.sk.admin) %>
-      <!-- Si on l'a déjà résolu : en vert -->
-      <% if faisable[encours] == 0 && (!@signed_in || !current_user.sk.admin) %>
+      
+      <% peut_voir = true %>
+      <% if !@signed_in || (!current_user.sk.admin? && !solved) %>
+        <% c.prerequisites.each do |p| %>
+          <% if !section_fondation[p.section_id] %>
+            <% if !@signed_in || !current_user.sk.chapters.exists?(p) %>
+              <% peut_voir = false %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      
+      <% if solved %>
         <% lecas = 1 %>
         <% classe = "greeny" %>
-      <!-- Si il n'est pas en ligne : en orange -->
-      <% elsif !chap[encours].online %>
+      <% elsif !c.online %>
         <% lecas = 2 %>
         <% classe = "orangey" %>
-      <!-- Sinon : en jaune -->
-      <% else %>
+      <% elsif peut_voir %>
         <% lecas = 3 %>
         <% classe = "yellowy" %>
+      <% else %>
+        <% lecas = 4 %>
+        <% classe = "greyy" %>
       <% end %>
-    <!-- Si on ne peut pas le faire : en gris -->
-    <% else %>
-      <% lecas = 4 %>
-      <% classe = "greyy" %>
-    <% end %>
-    
-    <% affiche_chapitre(chap[encours], lecas, classe, section_fondation, false) %>
-  <% end %>
-  <% debloque[encours].each do |d| %>
-    <% nb_pre[d] = nb_pre[d] - 1 %>
-    <% faisable[d] = [faisable[d], faisable[encours]+1].max %>
-    <% faisable2[d] = [faisable2[d], faisable2[encours]+1].max %>
-    <% if nb_pre[d] == 0 %>
-      <% if @signed_in && current_user.sk.chapters.exists?(chap[d]) %>
-        <% faisable[d] = 0 %>
-      <% end %>
-      <% possible.add([faisable[d], faisable2[d], chap[d].level, d]) %>
-    <% end %>
-  <% end %>
-  <% i = i+1 %>
-<% end %>
-
-
-<!-- Si section fondamentale -->
-<% else %>
-
-Tous les exercices sont ici directement accessibles.<br/><br/>
-
-<% chap = Array.new %>
-<% debloque = Array.new %>
-<% faisable = Array.new %>
-<% nb_pre = Array.new %>
-<% possible = SortedSet.new %>
-<% retiens = Hash.new %>
-
-<% n = 0 %>
-
-<!-- On parcourt tous les chapitres -->
-<% Chapter.includes(:prerequisites).all.each do |c| %>
-  <% if (c.online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(c)))) && section_fondation[c.section_id] %>
-    <% retiens[c.id] = n %>
-    <% chap.push(c) %>
-    <% debloque.push([]) %>
-    <% faisable.push(-1) %>
-    <% nb_pre.push(0) %>
-    <% n = n+1 %>
-  <% end %>
-<% end %>
-
-<!-- Détermine ce qu'on peut voir ou ne pas voir -->
-<% (0..(n-1)).each do |i| %>
-  <% if (chap[i].online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(chap[i])))) %>
-    <% premier = true %>
-    <% chap[i].prerequisites.each do |p| %>
-      <% if section_fondation[p.section_id] %>
-        <% debloque[retiens[p.id]].push(i) %>
-        <% nb_pre[i] = nb_pre[i]+1 %>
-        <% premier = false %>
-      <% end %>
-    <% end %>
-    <% if premier %>
-      <% possible.add([faisable[i], chap[i].level, i]) %>
+      
+      <% affiche_chapitre(c, lecas, classe, section_fondation, @section.fondation) %> 
+      
     <% end %>
   <% end %>
 <% end %>
 
-<% i = 0 %>
-
-<!-- On parcourt les chapitres dans l'ordre -->
-<% while !possible.empty? %>
-
-  <% encours = (possible.first)[2] %>
-  <% possible.delete(possible.first) %>
-  <% lecas = 0 %>
-  <% classe = "" %>
-  <!-- Si pas en ligne : orange -->
-  <% if !chap[encours].online %>
-    <% classe = "orangey" %>
-    <% lecas = 2 %>
-
-  <!-- Sinon : jaune -->
-  <% else %>
-    <% classe = "yellowy" %>
-    <% lecas = 3 %>
-  <% end %>
-  
-  <% affiche_chapitre(chap[encours], lecas, classe, section_fondation, true) %>
-
-  <% debloque[encours].each do |d| %>
-    <% nb_pre[d] = nb_pre[d] - 1 %>
-    <% faisable[d] = [faisable[d], faisable[encours]+1].max %>
-    <% if nb_pre[d] == 0 %>
-      <% possible.add([faisable[d], chap[d].level, d]) %>
-    <% end %>
-  <% end %>
-  <% i = i+1 %>
-<% end %>
-
-<% end %>
 
 <!-- Si administrateur -->
 <% if @signed_in && current_user.sk.admin? %>

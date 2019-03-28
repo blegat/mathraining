@@ -24,9 +24,25 @@
 <% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter))) %>
   <br/>
   <center>
-  <%= link_to "Modifier le nom, le niveau ou le résumé de ce chapitre", edit_chapter_path(@chapter) %>
+  <%= link_to "Modifier ce chapitre", edit_chapter_path(@chapter) %>
+  
+  <% total = @section.chapters.where(:level => @chapter.level).count %>
+  <% total_before = @section.chapters.where("level = ? AND position < ?", @chapter.level, @chapter.position).count %>
+  <% bas = false %>
+  <% haut = false %>
+  <% if total_before >= 1 %>
+    <% haut = true %>
+  <% end %>
+  <% if total_before < total - 1 %>
+    <% bas = true %>
+  <% end %>
+  
+  <% if haut || bas %>
+    | Déplacer vers le <%= link_to "haut", chapter_order_minus_path(@chapter) if haut %> <%= '-' if haut && bas %> <%= link_to "bas", chapter_order_plus_path(@chapter) if bas %>
+  <% end %>
+  
   <% if !@chapter.online && current_user.sk.admin? %>
-    - <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce chapitre ?" } %>
+    | <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce chapitre ?" } %>
   <% end %>
   </center>
 <% end %>

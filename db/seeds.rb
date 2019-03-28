@@ -39,8 +39,8 @@ if !Rails.env.production?
 		exercice[i] = Array.new
 		qcm[i] = Array.new
 		choice[i] = Array.new
-		for j in 1..4
-			chapitre[i][j] = Chapter.new(name: "Chapitre de la section " + i.to_s + ", numéro " + j.to_s, description: "C'est intéressant", level: j, online: true)
+		for j in 1..3
+			chapitre[i][j] = Chapter.new(name: "Chapitre de la section " + i.to_s + ", numéro " + j.to_s, description: "C'est intéressant", level: j, order: 1, online: true)
 			chapitre[i][j].section = section[i]
 			chapitre[i][j].save
 			

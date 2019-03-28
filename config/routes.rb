@@ -98,6 +98,8 @@ Mathraining::Application.routes.draw do
   resources :chapters, only: [:show, :update, :edit, :destroy] do
     match '/warning', to: 'chapters#warning', :via => [:get]
     match '/put_online', to: 'chapters#put_online', :via => [:get]
+    match '/order_plus', to: 'chapters#order_plus', :via => [:get], as: :order_plus
+    match '/order_minus', to: 'chapters#order_minus', :via => [:get], as: :order_minus
 
     match '/read', to: 'chapters#read', :via => [:get]
 

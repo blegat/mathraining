@@ -2,9 +2,9 @@
 class ChaptersController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :warning, :read]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online]
-  before_action :admin_user, only: [:new, :create, :destroy, :warning, :put_online]
+  before_action :admin_user, only: [:new, :create, :destroy, :warning, :put_online, :order_minus, :order_plus]
   before_action :get_chapter, only: [:show, :edit, :update, :destroy]
-  before_action :get_chapter2, only: [:warning, :put_online, :read]
+  before_action :get_chapter2, only: [:warning, :put_online, :read, :order_minus, :order_plus]
   before_action :get_section, only: [:new, :create]
   before_action :delete_online, only: [:destroy]
   before_action :online_chapter, only: [:show, :read]
@@ -26,8 +26,15 @@ class ChaptersController < ApplicationController
 
   # Créer un chapitre 2 : il faut vérifier que l'on est admin
   def create
+    last_chapter = @section.chapters.where(:level => params[:chapter][:level]).order(:position).last
+    if last_chapter.nil?
+      position = 1
+    else
+      position = last_chapter.order + 1
+    end
     @chapter = Chapter.new(params.require(:chapter).permit(:name, :description, :level))
     @chapter.section_id = params[:section_id]
+    @chapter.position = position
     if @chapter.save
       flash[:success] = "Chapitre ajouté."
       redirect_to chapter_path(@chapter)
@@ -38,7 +45,18 @@ class ChaptersController < ApplicationController
 
   # Editer un chapitre 2 : il faut vérifier que l'on est admin
   def update
+    old_level = @chapter.level
+    last_chapter = @section.chapters.where(:level => params[:chapter][:level]).order(:position).last
+    if last_chapter.nil?
+      position = 1
+    else
+      position = last_chapter.order + 1
+    end
     if @chapter.update_attributes(params.require(:chapter).permit(:name, :description, :level))
+      if old_level != @chapter.level
+        @chapter.position = position
+        @chapter.save
+      end
       flash[:success] = "Chapitre modifié."
       redirect_to chapter_path(@chapter)
     else
@@ -93,6 +111,22 @@ class ChaptersController < ApplicationController
       t.save
     end
     @section.save
+    redirect_to @chapter
+  end
+  
+  # Déplacer vers le haut
+  def order_minus
+    chapter2 = @section.chapters.where("position < ?", @chapter.position).order('position').reverse_order.first
+    swap_position(@chapter, chapter2)
+    flash[:success] = "Chapitre déplacé vers le haut."
+    redirect_to @chapter
+  end
+
+  # Déplacer vers le bas
+  def order_plus
+    chapter2 = @section.chapters.where("position > ?", @chapter.position).order('position').first
+    swap_position(@chapter, chapter2)
+    flash[:success] = "Chapitre déplacé vers le bas."
     redirect_to @chapter
   end
 

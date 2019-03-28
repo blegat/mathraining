@@ -35,7 +35,7 @@ describe "Chapter views" do
       before { visit chapter_path(online_chapter) }
       it { should have_selector("h1", text: online_chapter.name) }
       it { should_not have_link("Modifier les prérequis") }
-      it { should_not have_link("Modifier le nom, le niveau ou le résumé de ce chapitre") }
+      it { should_not have_link("Modifier ce chapitre") }
       it { should_not have_link("point théorique") }
       it { should_not have_link("QCM") }
     end 
@@ -48,7 +48,7 @@ describe "Chapter views" do
       before { visit chapter_path(offline_chapter) }
       it { should have_selector("h1", text: offline_chapter.name) }
       it { should have_link("Modifier les prérequis") }
-      it { should have_link("Modifier le nom, le niveau ou le résumé de ce chapitre") }
+      it { should have_link("Modifier ce chapitre") }
       it { should have_link("point théorique") }
       it { should have_link("QCM") }
     end
@@ -57,7 +57,7 @@ describe "Chapter views" do
       before { visit chapter_path(online_chapter) }
       it { should have_selector("h1", text: online_chapter.name) }
       it { should have_link("Modifier les prérequis") }
-      it { should have_link("Modifier le nom, le niveau ou le résumé de ce chapitre") }
+      it { should have_link("Modifier ce chapitre") }
       it { should have_link("point théorique") }
       it { should have_link("QCM") }
     end 
