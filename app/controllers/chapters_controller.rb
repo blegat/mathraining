@@ -30,7 +30,7 @@ class ChaptersController < ApplicationController
     if last_chapter.nil?
       position = 1
     else
-      position = last_chapter.order + 1
+      position = last_chapter.position + 1
     end
     @chapter = Chapter.new(params.require(:chapter).permit(:name, :description, :level))
     @chapter.section_id = params[:section_id]
@@ -50,7 +50,7 @@ class ChaptersController < ApplicationController
     if last_chapter.nil?
       position = 1
     else
-      position = last_chapter.order + 1
+      position = last_chapter.position + 1
     end
     if @chapter.update_attributes(params.require(:chapter).permit(:name, :description, :level))
       if old_level != @chapter.level

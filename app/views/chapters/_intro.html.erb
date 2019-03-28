@@ -1,7 +1,7 @@
 <!-- Prérequis -->
 <h3>Prérequis</h3>
 <% if @chapter.prerequisites.count == 0 %>
-  <p>Aucun prérequis</p><br/>
+  <p>Aucun prérequis.</p><br/>
 <% else %>
   <ul>
     <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
