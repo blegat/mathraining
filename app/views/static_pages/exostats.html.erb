@@ -29,7 +29,7 @@ Les tableaux suivants donnent :
   <% cansee = Array.new %>
   <% ordered_cansee = Array.new %>
   <% n = 0 %>
-  <% section.chapters.where(:online => true).order(:level).each do |chapter| %>
+  <% section.chapters.where(:online => true).order("level, position").each do |chapter| %>
     <% chap.push(chapter) %>
     <% reverse[chapter.id] = n %>
     <% pre[n] = Array.new %>

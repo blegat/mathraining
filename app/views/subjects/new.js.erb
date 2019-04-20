@@ -54,7 +54,7 @@
     opt.text = "Aucun chapitre en particulier"
     opt.value = 0
     oldSel.add(opt, null);
-    <% s.chapters.where(:online => true).order(:name).each do |c| %>
+    <% s.chapters.where(:online => true).order("level, position").each do |c| %>
       var opt = document.createElement('option');
       opt.text = "<%= c.name.html_safe %>"
       opt.value = <%= c.id %>

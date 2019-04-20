@@ -97,7 +97,7 @@ function checkQuestion() {
 <% if seechap %>
   <% listechap = Array.new %>
   <% listechap.push(["Aucun chapitre en particulier", 0]) %>
-  <% sect.chapters.where(:online => true).order(:name).each do |c| %>
+  <% sect.chapters.where(:online => true).order("level, position").each do |c| %>
     <% listechap.push([c.name, c.id]) %>
   <% end %>  
   <div class="form-group">
