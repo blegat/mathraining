@@ -24,7 +24,7 @@
   <tr><td class="left"><%= number %></td><td class="right">utilisateurs classés</td></tr>
   <tr><td class="left"><%= Solvedproblem.count %></td><td class="right">problèmes résolus</td></tr>
   <tr><td class="left"><%= Solvedquestion.where("correct = ?", true).count %></td><td class="right">exercices résolus</td></tr>
-  <tr><td class="left"><% if tot >= 1000000 %><%= link_to tot.to_s, "https://youtu.be/qSgmcHV5wPw?t=101", :target => "blank_", :style => "color:red;" %><% else %><%= tot %><% end %></td><td class="right">points distribués</td></tr>
+  <tr><td class="left"><%= tot %></td><td class="right">points distribués</td></tr>
   </table>
   </center>
   </div>
