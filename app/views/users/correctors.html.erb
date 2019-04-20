@@ -170,7 +170,7 @@ Votre navigateur ne supporte pas les canvas.
   <td><%= raw(c[:user].linked_name) %></td>
   <% epsilon = (premier ? 2 : 0) %>
   <td style="text-align:center;"><%= c[:number] + epsilon %></td>
-  <td style="text-align:center;"><%= c[:number_recent] %></td>
+  <td style="text-align:center;"><%= c[:number_recent] + epsilon %></td>
   <td class="hidden-xs"><%= write_date_only(c[:first]) %></td>
   <td class="hidden-xs"><%= write_date_only(c[:last]) %></td>
   </tr>
