@@ -55,7 +55,7 @@ Mathraining::Application.configure do
     Bullet.add_whitelist :type => :unused_eager_loading, :class_name => "Subject", :association => :exercise
   end if enable_sql_debugging
   
-   # Personalized logs 
+  # Personalized logs 
   config.log_tags = [ lambda { |req| Time.now}, :remote_ip ] # Include IP address in the logs
   config.log_level = :info # Set to :debug for more information (not sure it works with lograge)
   

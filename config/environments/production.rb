@@ -72,5 +72,19 @@ Mathraining::Application.configure do
   # Hide renderings from logs
   config.action_view.logger = nil
   
+  # Personalized logs 
+  config.log_tags = [ lambda { |req| Time.now}, :remote_ip ] # Include IP address in the logs
+  config.log_level = :info # Set to :debug for more information (not sure it works with lograge)
+  
+  # lograge is a gem for 'better' logs
+  config.lograge.enabled = true
+  config.lograge.custom_options = lambda do |event|
+    { params: event.payload[:params].except('controller', 'action', 'format', 'utf8') } # Include the form parameters
+  end
+  
+  config.lograge.custom_payload do |controller|
+    { current_user: controller.current_user.try(:id) } # Include the current_user.id
+  end
+  
   Paperclip.options[:command_path] = "/usr/local/bin/"
 end

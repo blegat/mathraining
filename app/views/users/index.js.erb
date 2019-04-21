@@ -22,6 +22,7 @@
 
 <% if remaining > 0 %>
   $("#charge_more").attr("href", "<%= users_url(:from => @previouspoint - 1, :rank => @rank, :country => @pays) %>");
+  $("#charge_more").attr("name", "<%= @rank %>");
 <% else %>
   $("#charge_more").attr("href", "");
   $("#for_admin").css("display", "block");
