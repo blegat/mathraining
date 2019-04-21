@@ -126,8 +126,6 @@ class UsersController < ApplicationController
     Pointspersection.where(:user_id => ids).all.each do |p|
 	    @persection[p.user_id][p.section_id] = p.points
     end
-    
-    
   end
 
   # S'inscrire au site : il faut être en ligne
@@ -152,6 +150,9 @@ class UsersController < ApplicationController
     # Don't do e-mail and captcha in development and tests
     @user.email_confirm = !Rails.env.production?
     
+    # Remove white spaces at start and end, and add '.' if needed
+    @user.adapt_name
+    
     if !params.has_key?("consent1") || !params.has_key?("consent2")
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir créer un compte."
       render 'new'
@@ -160,7 +161,6 @@ class UsersController < ApplicationController
       
       @user.consent_date = DateTime.now
       @user.last_policy_read = true
-      @user.adapt_name
       @user.save
       
       flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."

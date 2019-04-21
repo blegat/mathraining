@@ -259,6 +259,10 @@ class User < ActiveRecord::Base
         r = r.slice(0..-2)
       end
       
+      if(r.size == 1)
+        r = r + "."
+      end
+      
       if(j == 0)
         self.first_name = r
       else
