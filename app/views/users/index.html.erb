@@ -17,7 +17,7 @@ var scrollHandler = function () {
   var more_scores_url = $('#charge_more').attr('href')
   if(more_scores_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 100)
   {
-    chargeMore(more_scores_url, <% @number_by_load %>, -1)
+    chargeMore(more_scores_url, <%= @number_by_load %>, -1)
   }
 }
 
@@ -32,7 +32,7 @@ var goToLevel = function(lev, until) {
     if(next_rank <= until)
     {
       scroll_only = false
-      chargeMore(more_scores_url, Math.max(<% @number_by_load %>,until-next_rank+1), lev)
+      chargeMore(more_scores_url, Math.max(<%= @number_by_load %>,until-next_rank+1), lev)
     }
   }
   if(scroll_only)

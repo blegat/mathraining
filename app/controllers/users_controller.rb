@@ -13,7 +13,7 @@ class UsersController < ApplicationController
 
   # Index de tous les users avec scores
   def index
-    @number_by_load = 100
+    @number_by_load = 2
     @pays = 0
     if(params.has_key?:country)
       @pays = params[:country].to_i
