@@ -8,7 +8,7 @@
   <% compteur = 0 %>
 
   <% chapter.questions.order(:position).each do |f| %>
-    <% if f.online || (@signed_in && current_user.sk.admin?) %>
+    <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(chapter))) %>
       <% compteur = compteur + 1 %>
       <% if k % 8 == 1 && k > 1 %>
         </div>

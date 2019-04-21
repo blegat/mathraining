@@ -70,7 +70,7 @@
 
     <!-- Peut-on voir les exercices? -->
     <% exovisibles = true %>
-    <% if !@signed_in || !current_user.sk.admin? %>
+    <% if !@signed_in || !(current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id)) %>
       <% @chapter.prerequisites.each do |p| %>
         <% exovisibles = false if !p.section.fondation && (!@signed_in || !current_user.sk.chapters.exists?(p.id)) %>
       <% end %>

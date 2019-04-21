@@ -31,7 +31,7 @@ var showFalse = function () {
 <!-- Si administrateur : peut voir toutes les soumissions correctes -->
 <% if current_user.sk.admin %>
 	<h3>Soumissions étoilées</h3>
-	<% submissions = problem.submissions.where(visible: true, status: 2, star: true).order('created_at DESC') %>
+	<% submissions = problem.submissions.where(visible: true, status: 2, star: true).order('created_at') %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>

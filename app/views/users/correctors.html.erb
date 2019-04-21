@@ -160,7 +160,6 @@ Votre navigateur ne supporte pas les canvas.
 <table class="table table-bordered" style="margin-top:20px; width:auto;">
 <tr><th>Nom</th><th style="text-align:center;">Corrections</th><th style="text-align:center;">&le; 2 sem.</th><th class="hidden-xs">Première</th><th class="hidden-xs">Dernière</th></tr>
 
-<% premier = true %>
 <% correctors.sort_by{|e| -e[:number]}.each do |c| %>
   <% if c[:number_recent] > 140 %>
     <tr style="background-color:rgb(40,250,40)">
@@ -168,12 +167,10 @@ Votre navigateur ne supporte pas les canvas.
     <tr style="background-color:rgb(<%= (250-c[:number_recent]*1.5).round %>,250,<%= (250-c[:number_recent]*1.5).round %>)">
   <% end %>
   <td><%= raw(c[:user].linked_name) %></td>
-  <% epsilon = (premier ? 2 : 0) %>
-  <td style="text-align:center;"><%= c[:number] + epsilon %></td>
-  <td style="text-align:center;"><%= c[:number_recent] + epsilon %></td>
+  <td style="text-align:center;"><%= c[:number] %></td>
+  <td style="text-align:center;"><%= c[:number_recent] %></td>
   <td class="hidden-xs"><%= write_date_only(c[:first]) %></td>
   <td class="hidden-xs"><%= write_date_only(c[:last]) %></td>
   </tr>
-  <% premier = false %>
 <% end %>
 </table>
