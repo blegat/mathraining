@@ -6,28 +6,29 @@
   <tr><th></th><th style="padding:5px;">Seuil</th><th style="padding:5px;">Nom</th><th style="padding:5px;">Nom féminin</th><th style="padding:5px;">Couleur</th><th style="padding:5px;">Fond</th><th></th><th></th></tr>
   <% Color.order(:pt).each do |c| %>
     <tr>
-      <td style="padding-right:10px;"><%= i %><% i = i+1 %>.</td>
+      <td style="padding-right:10px;"><%= i %>.</td>
       <%= form_for(c) do |f| %>
-        <td><%= f.number_field :pt, :class => "form-control", :style => "width:75px; margin:0px;"%></td>
-        <td><%= f.text_field :name, :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
-        <td><%= f.text_field :femininename, :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
-        <td><%= f.text_field :color, :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px; color:#{c.color}; font-weight:bold;" %></td>
-        <td><%= f.text_field :font_color, :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px; background-color:#{c.font_color};" %></td>
-        <td><%= f.submit "Modifier", class: "btn btn-primary", style: "margin-left:10px;", onclick: "return confirm('Êtes-vous sûr de vouloir modifier ce niveau ?')" %></td>
+        <td><%= f.number_field :pt, :id => "pt_edit#{i}", :class => "form-control", :style => "width:75px; margin:0px;"%></td>
+        <td><%= f.text_field :name, :id => "name_edit#{i}", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
+        <td><%= f.text_field :femininename, :id => "femininename_edit#{i}", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
+        <td><%= f.text_field :color, :id => "color_edit#{i}", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px; color:#{c.color}; font-weight:bold;" %></td>
+        <td><%= f.text_field :font_color, :id => "font_color_edit#{i}", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px; background-color:#{c.font_color};" %></td>
+        <td><%= f.submit "Modifier", :id => "button_edit#{i}", class: "btn btn-primary", style: "margin-left:10px;", onclick: "return confirm('Êtes-vous sûr de vouloir modifier ce niveau ?')" %></td>
+        <% i = i+1 %>
       <% end %>
-      <td><%= link_to "Supprimer", c, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce niveau ?" } %> </td>
+      <td style="padding-left:10px;"><%= link_to "Supprimer", c, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce niveau ?" } %> </td>
     </tr>
   <% end %>
 
   <tr>
     <td style="padding-top:10px;"></td>
     <%= form_for(:color) do |f| %>
-      <td style="padding-top:10px;"><%= f.number_field :pt, :class => "form-control", :style => "width:75px; margin:0px;"%></td>
-      <td style="padding-top:10px;"><%= f.text_field :name, :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
-      <td style="padding-top:10px;"><%= f.text_field :femininename, :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
-      <td style="padding-top:10px;"><%= f.text_field :color, :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px;" %></td>
-      <td style="padding-top:10px;"><%= f.text_field :font_color, :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px;" %></td>
-      <td style="padding-top:10px;"><%= f.submit "Ajouter", style: "margin-left:10px;", class: "btn btn-primary",  onclick: "return confirm('Êtes-vous sûr de vouloir ajouter ce niveau ?')" %></td>
+      <td style="padding-top:10px;"><%= f.number_field :pt, :id => "pt_add", :class => "form-control", :style => "width:75px; margin:0px;"%></td>
+      <td style="padding-top:10px;"><%= f.text_field :name, :id => "name_add", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
+      <td style="padding-top:10px;"><%= f.text_field :femininename, :id => "femininename_add", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
+      <td style="padding-top:10px;"><%= f.text_field :color, :id => "color_add", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px;" %></td>
+      <td style="padding-top:10px;"><%= f.text_field :font_color, :id => "font_color_add", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px;" %></td>
+      <td style="padding-top:10px;"><%= f.submit "Ajouter", :id => "button_add", style: "margin-left:10px;", class: "btn btn-primary",  onclick: "return confirm('Êtes-vous sûr de vouloir ajouter ce niveau ?')" %></td>
     <% end %>
   </tr>
 

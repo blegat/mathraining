@@ -89,7 +89,7 @@ describe "Actuality pages" do
       specify { expect { click_link("Supprimer l'actualité") }.to change(Actuality, :count).by(-1) }
     end
     
-    describe "visit an equality that does not exist" do
+    describe "visit an actuality that does not exist" do
       before { visit edit_actuality_path(3000) }
       it { should have_selector("div.error", text: "Cette page n'existe pas ou vous n'y avez pas accès.") }
     end
