@@ -82,7 +82,7 @@
 
     <% if !current_user.sk.admin? %>
       <% c.prerequisites.each do |p| %>
-        <% exovisibles = false if !p.section.fondation && !current_user.sk.chapters.exists?(p) %>
+        <% exovisibles = false if !p.section.fondation && !current_user.sk.chapters.exists?(p.id) %>
       <% end %>
     <% end %>
     

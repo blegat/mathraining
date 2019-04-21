@@ -124,7 +124,7 @@ class TheoriesController < ApplicationController
   end
   
   def creating_user
-    unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter))))
+    unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter.id))))
       render 'errors/access_refused' and return
     end
   end

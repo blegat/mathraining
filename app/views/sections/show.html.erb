@@ -8,7 +8,7 @@
   <% compteur = 0 %>
 
   <% chapter.questions.order(:position).each do |f| %>
-    <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(chapter))) %>
+    <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(chapter.id))) %>
       <% compteur = compteur + 1 %>
       <% if k % 8 == 1 && k > 1 %>
         </div>
@@ -69,7 +69,7 @@
     <b>Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
     <% prems = true %>
     <% c.prerequisites.each do |p| %>
-      <% if (!section_fondation[p.section_id] && (!@signed_in || !current_user.sk.chapters.exists?(p))) %>
+      <% if (!section_fondation[p.section_id] && (!@signed_in || !current_user.sk.chapters.exists?(p.id))) %>
         <%= " - " if !prems %>
         <i><%= p.name %></i>
         <% prems = false %>
@@ -96,7 +96,7 @@
         <ul>
       <% end %>
       <% compteur = compteur + 1 %>
-      <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @signed_in && current_user.sk.theories.exists?(t) %></li>
+      <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @signed_in && current_user.sk.theories.exists?(t.id) %></li>
     <% end %>
   <% end %>
 
@@ -176,7 +176,7 @@
 <% (1..num_level).each do |level| %>
   <% premier = true %>
   <% @section.chapters.where(:level => level).order(:position).each do |c| %>
-    <% if (c.online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(c)))) %>
+    <% if (c.online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(c.id)))) %>
       <% if premier %>
         <% if @section.fondation %>
         
@@ -197,7 +197,7 @@
       <% classe = "" %>
       <% solved = false %>
       
-      <% if @signed_in && !current_user.sk.admin? && current_user.sk.chapters.exists?(c) %>
+      <% if @signed_in && !current_user.sk.admin? && current_user.sk.chapters.exists?(c.id) %>
         <% solved = true %>
       <% end %>
       
@@ -205,7 +205,7 @@
       <% if !@signed_in || (!current_user.sk.admin? && !solved) %>
         <% c.prerequisites.each do |p| %>
           <% if !section_fondation[p.section_id] %>
-            <% if !@signed_in || !current_user.sk.chapters.exists?(p) %>
+            <% if !@signed_in || !current_user.sk.chapters.exists?(p.id) %>
               <% peut_voir = false %>
             <% end %>
           <% end %>

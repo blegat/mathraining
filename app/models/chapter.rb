@@ -19,8 +19,8 @@ class Chapter < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   belongs_to :section # Chaque chapitre appartient à une unique section
-  has_and_belongs_to_many :users, -> { uniq } # Pour retenir quel utilisateur a débloqué quel chapitre
-  has_and_belongs_to_many :problems, -> { uniq } # Pour savoir les prérequis de tel problème
+  has_and_belongs_to_many :users, -> { distinct } # Pour retenir quel utilisateur a débloqué quel chapitre
+  has_and_belongs_to_many :problems, -> { distinct } # Pour savoir les prérequis de tel problème
   
   has_many :chaptercreations, dependent: :destroy # Création d'un chapitre par un non-admin
   has_many :creating_users, through: :chaptercreations, source: :user

@@ -21,7 +21,7 @@
 <br/>
 
 <!-- Modifier / Supprimer -->
-<% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter))) %>
+<% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
   <br/>
   <center>
   <%= link_to "Modifier ce chapitre", edit_chapter_path(@chapter) %>

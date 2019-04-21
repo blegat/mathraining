@@ -50,7 +50,7 @@ class PrerequisitesController < ApplicationController
       flash[:danger] = "Vous ne pouvez pas supprimer un prérequis non fondamental à un chapitre en ligne."
       redirect_to graph_prerequisites_path and return
     end
-    if chapter.prerequisites.exists?(prerequisite)
+    if chapter.prerequisites.exists?(prerequisite.id)
       chapter.prerequisites.delete(prerequisite)
       flash[:success] = "Lien supprimé."
     else

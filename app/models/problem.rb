@@ -23,7 +23,7 @@ class Problem < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY
 
-  has_and_belongs_to_many :chapters, -> {uniq}
+  has_and_belongs_to_many :chapters, -> {distinct}
   belongs_to :section
   belongs_to :virtualtest
 

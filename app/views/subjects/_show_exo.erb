@@ -6,7 +6,7 @@
   
   <% if !current_user.sk.admin? %>
     <% c.prerequisites.each do |p| %>
-      <% exovisible = false if !p.section.fondation && !current_user.sk.chapters.exists?(p) %>
+      <% exovisible = false if !p.section.fondation && !current_user.sk.chapters.exists?(p.id) %>
     <% end %>
   <% end %>
 

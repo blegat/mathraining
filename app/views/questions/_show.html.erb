@@ -1,5 +1,5 @@
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter))) %>
+<% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
 
 <!-- Titre -->
 <%= render 'questions/title', f: f, number: number %>

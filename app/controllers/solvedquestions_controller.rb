@@ -94,7 +94,7 @@ class SolvedquestionsController < ApplicationController
   def unlocked_chapter
     if !current_user.sk.admin?
       @chapter.prerequisites.each do |p|
-        if (!p.section.fondation && !current_user.sk.chapters.exists?(p))
+        if (!p.section.fondation && !current_user.sk.chapters.exists?(p.id))
           redirect_to root_path and return
         end
       end
@@ -123,7 +123,7 @@ class SolvedquestionsController < ApplicationController
             if !c.ok
               good_guess = false
             end
-            if !first_sub && !@link.items.exists?(c)
+            if !first_sub && !@link.items.exists?(c.id)
               autre = true
             end
           else
@@ -131,7 +131,7 @@ class SolvedquestionsController < ApplicationController
             if c.ok
               good_guess = false
             end
-            if !first_sub && @link.items.exists?(c)
+            if !first_sub && @link.items.exists?(c.id)
               autre = true
             end
           end

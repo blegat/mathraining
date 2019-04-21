@@ -28,7 +28,7 @@ class Prerequisite < ActiveRecord::Base
   # Vérifie qu'il n'y a pas de boucle
   def no_loop
     unless chapter.nil? or prerequisite.nil?
-      stack = can_go_from_to(prerequisite, chapter, Set.new)
+      stack = can_go_from_to(prerequisite, chapter, Set.new, prerequisite, chapter)
       unless stack.nil?
         stack.push(chapter.name)
         errors.add(:prerequisite, " : #{prerequisite.name} -> #{chapter.name} forme la boucle #{stack_to_s(stack)}")
@@ -39,7 +39,7 @@ class Prerequisite < ActiveRecord::Base
   # Vérifie que ce n'est pas redondant
   def not_redundant
     unless chapter.nil? or prerequisite.nil?
-      stack = can_go_from_to(chapter, prerequisite, Set.new)
+      stack = can_go_from_to(chapter, prerequisite, Set.new, prerequisite, chapter)
       unless stack.nil?
         errors.add(:prerequisite, " : #{prerequisite.name} -> #{chapter.name} est redondant avec #{stack_to_s(stack)}")
       end
@@ -52,9 +52,9 @@ class Prerequisite < ActiveRecord::Base
       targets = Set.new
       recursive_prerequisites(prerequisite, targets)
       stack1 = Array.new
-      pre = backward_check(chapter, targets, Set.new, stack1)
+      pre = backward_check(chapter, targets, Set.new, stack1, prerequisite, chapter)
       unless pre.nil?
-        stack2 = can_go_from_to(prerequisite, pre, Set.new)
+        stack2 = can_go_from_to(prerequisite, pre, Set.new, prerequisite, chapter)
         stack = stack2 + stack1.reverse
         back = stack1.first
         errors.add(:prerequisite, " : #{prerequisite.name} -> #{chapter.name} rend #{pre.name} -> #{back} redondant en formant la boucle #{stack_to_s(stack)}. Veuillez supprimer ce lien avant de rajouter celui-ci.")
@@ -64,7 +64,10 @@ class Prerequisite < ActiveRecord::Base
 
   private
 
-  def can_go_from_to(current, target, visited)
+  # It seems that, during the validation of chapter.prerequisites << prerequisite, sometimes
+  # chapter already has prerequisite in its prerequisites. So we register the new_prerequisite
+  # and new_chapter to remember that we cannot use this edge in the graph
+  def can_go_from_to(current, target, visited, new_prerequisite, new_chapter)
     if target == current
       return [current.name]
     end
@@ -73,10 +76,12 @@ class Prerequisite < ActiveRecord::Base
     end
     visited.add(current.id)
     current.prerequisites.each do |next_chapter|
-      stack = can_go_from_to(next_chapter, target, visited)
-      unless stack.nil?
-        stack.push(current.name)
-        return stack
+      if current != new_chapter || next_chapter != new_prerequisite
+        stack = can_go_from_to(next_chapter, target, visited, new_prerequisite, new_chapter)
+        unless stack.nil?
+          stack.push(current.name)
+          return stack
+        end
       end
     end
     return nil
@@ -102,23 +107,25 @@ class Prerequisite < ActiveRecord::Base
     end
   end
 
-  def backward_check(current, targets, visited, stack)
+  def backward_check(current, targets, visited, stack, new_prerequisite, new_chapter)
     if visited.include?(current.id)
       return nil
     end
     visited.add(current.id)
 
     current.prerequisites.each do |pre|
-      if targets.include?(pre)
+      if targets.include?(pre) && (current != new_chapter || pre != new_prerequisite)
         stack.push(current.name)
         return pre
       end
     end
     current.backwards.each do |next_chapter|
-      pre = backward_check(next_chapter, targets, visited, stack)
-      unless pre.nil?
-        stack.push(current.name)
-        return pre
+      if current != new_prerequisite || next_chapter != new_chapter
+        pre = backward_check(next_chapter, targets, visited, stack, new_prerequisite, new_chapter)
+        unless pre.nil?
+          stack.push(current.name)
+          return pre
+        end
       end
     end
     return nil

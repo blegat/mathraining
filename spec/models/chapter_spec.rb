@@ -93,10 +93,10 @@ describe Chapter do
 
   # Prerequisite
   describe "when there is a prerequisite" do
-    let(:chap1) { FactoryGirl.create(:chapter) }
-    let(:chap2) { FactoryGirl.create(:chapter) }
-    let(:chap3) { FactoryGirl.create(:chapter) }
-    let(:chap4) { FactoryGirl.create(:chapter) }
+    let!(:chap1) { FactoryGirl.create(:chapter) }
+    let!(:chap2) { FactoryGirl.create(:chapter) }
+    let!(:chap3) { FactoryGirl.create(:chapter) }
+    let!(:chap4) { FactoryGirl.create(:chapter) }
     before do
       chap1.prerequisites << chap3
       @chap.save
