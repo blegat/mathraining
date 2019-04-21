@@ -7,8 +7,8 @@ var chargeMore = function(more_scores_url, number, lev) {
   $.getScript(more_scores_url).done(function( script, textStatus ) {
     if(lev >= 0)
     {
-      var yyy = document.getElementById("div" + lev).offsetTop - 60;
-      $('html,body').animate({ scrollTop: yyy }, 1000);
+      var yyy = document.getElementById("div" + lev).offsetTop - 65;
+      $('html,body').animate({ scrollTop: yyy }, 500+yyy/8);
     }
   })
 }
@@ -37,8 +37,8 @@ var goToLevel = function(lev, until) {
   }
   if(scroll_only)
   {
-    var yyy = document.getElementById("div" + lev).offsetTop - 60;
-    $('html,body').animate({ scrollTop: yyy }, 1000);
+    var yyy = document.getElementById("div" + lev).offsetTop - 65;
+    $('html,body').animate({ scrollTop: yyy }, 500+yyy/8);
   }
 }
 </script>
