@@ -13,6 +13,7 @@ class UsersController < ApplicationController
 
   # Index de tous les users avec scores
   def index
+    @number_by_load = 100
     @pays = 0
     if(params.has_key?:country)
       @pays = params[:country].to_i
@@ -21,6 +22,12 @@ class UsersController < ApplicationController
     @rank = 1
     if(params.has_key?:rank)
       @rank = params[:rank].to_i
+    end
+    
+    # Number of people to load on each "page"
+    nb_load = @number_by_load
+    if(params.has_key?:number)
+      nb_load = params[:number].to_i
     end
     
     @allsec = Section.order(:id).where(:fondation => false).to_a
@@ -42,9 +49,6 @@ class UsersController < ApplicationController
       @maxscore[s.id] = s.max_score
     end
     
-    # Number of people to load on each "page"
-    nb_load = 100
-
     @ordered_users = Array.new
     # If first page: first download the best students in random order
     if !params.has_key?(:from)

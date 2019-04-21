@@ -1,15 +1,46 @@
 <script type="text/javascript">
+
+var chargeMore = function(more_scores_url, number, lev) {
+  more_scores_url = more_scores_url + "&number=" + number
+  $('#charge_more').attr("href", "")
+  $('.toreplace').html('Chargement des scores suivants...')
+  $.getScript(more_scores_url).done(function( script, textStatus ) {
+    if(lev >= 0)
+    {
+      var yyy = document.getElementById("div" + lev).offsetTop - 60;
+      $('html,body').animate({ scrollTop: yyy }, 1000);
+    }
+  })
+}
+
 var scrollHandler = function () {
   var more_scores_url = $('#charge_more').attr('href')
   if(more_scores_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 100)
   {
-    $('#charge_more').attr("href", "")
-    $('.toreplace').html('Chargement des scores suivants...')
-    $.getScript(more_scores_url)
+    chargeMore(more_scores_url, <% @number_by_load %>, -1)
   }
 }
 
 $(window).scroll(scrollHandler);
+
+var goToLevel = function(lev, until) {
+  var more_scores_url = $('#charge_more').attr('href')
+  scroll_only = true
+  if(more_scores_url.length > 0)
+  {
+    var next_rank = parseInt($('#charge_more').attr('name'))
+    if(next_rank <= until)
+    {
+      scroll_only = false
+      chargeMore(more_scores_url, Math.max(<% @number_by_load %>,until-next_rank+1), lev)
+    }
+  }
+  if(scroll_only)
+  {
+    var yyy = document.getElementById("div" + lev).offsetTop - 60;
+    $('html,body').animate({ scrollTop: yyy }, 1000);
+  }
+}
 </script>
 
 <% abreviation = ["C", "G", "TN", "A", "EF", "I"] %>
@@ -75,15 +106,16 @@ $(window).scroll(scrollHandler);
   <% tot_nb = tot_nb + nb[i] %>
 <% end %>
 
+<% until_rank = tot_nb %>
 <% if tot_nb > 0 %>
   <h1>Répartition</h1>
   
   <div style="position:relative;">
   <div class="progress" style="margin-bottom:0px; height:20px; position:relative; margin-top:20px; margin-bottom:32px;">	
-  <% sum_nb = 0 %>	
   <% (0..($allcolors.size-1)).each do |i| %>
     <% if nb[i] > 0 %>
-      <div class="progress-bar" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= 100*nb[i]/tot_nb.to_f %>%; background-color:<%= $allcolors[i].color %>;" onmouseenter="Level.show(<%= i %>)" onmouseleave="Level.hide(<%= i %>)"></div>
+      <div class="progress-bar" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="cursor:pointer; width:<%= 100*nb[i]/tot_nb.to_f %>%; background-color:<%= $allcolors[i].color %>;" onmouseenter="Level.show(<%= i %>)" onmouseleave="Level.hide(<%= i %>)" onclick="goToLevel(<%= $allcolors[i].id %>, <%= until_rank %>)"></div>
+      <% until_rank = until_rank - nb[i] %>
     <% end %>
   <% end %>
   
@@ -169,7 +201,7 @@ $(window).scroll(scrollHandler);
 <% end %>
 
 <% if remaining > 0 %>
-  <a id="charge_more" style="display:none;" href="<%= users_url(:from => @previouspoint - 1, :rank => @rank, :country => @pays) %>">Charger plus</a>
+  <a id="charge_more" name="<%= @rank %>" style="display:none;" href="<%= users_url(:from => @previouspoint - 1, :rank => @rank, :country => @pays) %>">Charger plus</a>
   <% disp_end = "none" %>
 <% else %>
   <a id="charge_more" style="display:none;" href=""></a>
