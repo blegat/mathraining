@@ -63,18 +63,20 @@
       <%= f.label "Réponse" %>
       <%= f.text_field :answer, :class => "form-control", :style => "width:100px;" %>
     </div>
-    <label class="checkbox-inline">
+    <div class="checkbox">
+    <label>
       <%= f.check_box(:decimal) %>
       Cochez si la réponse est décimale
     </label>
-    <br/><br/>
+    </div>
   <% else %>
     <!-- QCM -->
-    <label class="checkbox-inline">
+    <div class="checkbox">
+    <label>
       <%= f.check_box(:many_answers) %>
       Cochez si plusieurs réponses sont possibles
     </label>
-    <br/><br/>
+    </div>
   <% end %>
     
   <!-- Niveau -->

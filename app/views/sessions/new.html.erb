@@ -14,10 +14,13 @@
     <%= f.password_field :password, :class => "form-control", :style => "width:200px;" %>
   </div>
   
-  <div class="form-group">
+  <div class="checkbox">
+  <label>
     <%= f.check_box :remember_me %>
     Garder ma session active
+  </label>
   </div>
+  
   <%= f.submit "Connexion", class: "btn btn-lg btn-primary" %>
 <% end %>
 

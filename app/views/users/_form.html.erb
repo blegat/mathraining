@@ -13,25 +13,27 @@
 </div>
 
 <!-- Voir nom entier? -->
-<div class="form-group">
-  <label style="font-weight:normal;">
+<div class="radio">
+<label>
   <%= f.radio_button :seename, 1 %>
   Apparaître avec mon nom entier sur le site.
-  </label><br/>
-  <label style="font-weight:normal;">
+</label>
+</div>
+<div class="radio">
+<label>
   <%= f.radio_button :seename, 0 %>
   N'afficher que l'initiale de mon nom de famille.
-  </label>
+</label>
 </div>
 
 <!-- Sexe -->
 <div class="form-group">
   <%= f.label :sex %><br/>
-  <label style="font-weight:normal;">
+  <label class="radio-inline">
   <%= f.radio_button :sex, 0 %>
   <span style="margin-right:10px;">Masculin</span>
   </label>
-  <label style="font-weight:normal;">
+  <label class="radio-inline">
   <%= f.radio_button :sex, 1 %>
   Féminin
   </label>
@@ -92,24 +94,28 @@
   <br/>
 <% end %>
 
-<div class="form-group">
-  <!-- Accepter Google Analytics -->
-  <%= f.label :accept_analytics, :style => "font-weight:normal;" do %>
-    <%= f.check_box :accept_analytics %>
-    J'accepte de contribuer aux statistiques de visites anonymes de Mathraining en autorisant les cookies de Google Analytics.
-    Ces statistiques permettent uniquement aux administrateurs d'en savoir plus sur la manière dont les utilisateurs naviguent sur le site, mais elles ne permettent aucunement d'identifier les visiteurs.
-    Le nombre total de pages visitées par mois est par exemple un indicateur de la popularité du site, qui peut être mis en valeur à différentes occasions.
-  <% end %>
-
-  <% if !modif %>
-    <!-- Lire et accepter la politique de confidentialité -->
-    <label style="font-weight:normal;">
-    	<input type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
-      J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> de Mathraining.
-    </label><br/>
-    <label style="font-weight:normal;">
-    	<input type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
-      J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> avec mon tuteur légal.
-    </label>
-  <% end %>
+<!-- Accepter Google Analytics -->
+<div class="checkbox">
+<%= f.label :accept_analytics, :style => "margin-bottom:5px;" do %>
+  <%= f.check_box :accept_analytics %>
+  J'accepte de contribuer aux statistiques de visites anonymes de Mathraining en autorisant les cookies de Google Analytics.
+  Ces statistiques permettent uniquement aux administrateurs d'en savoir plus sur la manière dont les utilisateurs naviguent sur le site, mais elles ne permettent aucunement d'identifier les visiteurs.
+  Le nombre total de pages visitées par mois est par exemple un indicateur de la popularité du site, qui peut être mis en valeur à différentes occasions.
+<% end %>
 </div>
+
+<% if !modif %>
+  <!-- Lire et accepter la politique de confidentialité -->
+  <div class="checkbox">
+  <label>
+    <input type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
+    J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> de Mathraining.
+  </label>
+  </div>
+  <div class="checkbox">
+  <label>
+    <input type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
+    J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> avec mon tuteur légal.
+  </label>
+  </div>
+<% end %>

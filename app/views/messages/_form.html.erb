@@ -35,21 +35,23 @@
   <div class="well hidden-preview" id="MathBuffer<%= @champ %>"></div>
   <%= render 'subjects/smiley', hiddentext: true %>
   <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput#{@champ}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+</div>
 
 <!-- Case e-mails aux groupes A et/ou B -->
 <% if current_user.sk.admin && @new && !@subject.admin %>
-	<br/>
-  <label style="font-weight:normal;">
+	<div class="checkbox">
+  <label>
     <input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
     Prévenir tout le groupe A de ce nouveau message par e-mail.
   </label>
-  <br/>
-  <label style="font-weight:normal;">
+  </div>
+  <div class="checkbox">
+  <label>
     <input type="checkbox" id="groupeB" name="groupeB" value="B" <%= 'disabled="true"' if current_user.other %> >
     Prévenir tout le groupe B de ce nouveau message par e-mail.
   </label>
+  </div>
 <% end %>
-</div>
 
 <% if !session["error#{@champ}"].nil? %>
   <script>

@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
   # Vérifie qu'on est pas connecté
   def signed_out_user
     if @signed_in
-      render 'errors/access_refused' and return
+      redirect_to root_path
     end
   end
 
