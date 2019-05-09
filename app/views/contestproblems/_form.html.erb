@@ -1,5 +1,3 @@
-<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
-
 <%= render 'shared/error_messages', object: f.object %>
 
 <% def convert_date(date) %>
@@ -23,20 +21,20 @@
   <%= f.label "Énoncé" %>
   <div class="well" id="MathPreview"></div>
   <div class="well hidden-preview" id="MathBuffer"></div>
-  <%= render 'subjects/smiley', hiddentext: false %>
-  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :placeholder => "Merci d'éviter les smileys dans les énoncés" %>
+  <%= render 'theories/font' %>
+  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()", :placeholder => "Merci d'éviter les smileys dans les énoncés" %>
 </div>
   
 <!-- Origine -->
 <div class="form-group">
-  <%= f.label "Origine" %> (Compétition (format long) - Année - Numéro du problème : laisser blanc si d'origine inconnue)
-  <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
+  <%= f.label "Origine" %> (laisser blanc si d'origine inconnue)
+  <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "max-width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
 </div>
 
 <!-- Date de début -->
 <div class="form-group">
   <%= f.label "Parution du problème" %>
-  <div class="input-group date" id="start_time" style='width:500px;'>
+  <div class="input-group date" id="start_time" style='max-width:500px;'>
     <%= f.text_field :start_time, :class => "form-control", :value => convert_date(start_time), :disabled => (status >= 2) %>
     <span class="input-group-addon">
       <span class="glyphicon glyphicon-calendar"></span>
@@ -47,7 +45,7 @@
 <!-- Date de fin -->
 <div class="form-group">
   <%= f.label "Date limite pour l'envoi des solutions" %>
-  <div class="input-group date" id="end_time" style="width:500px;">
+  <div class="input-group date" id="end_time" style="max-width:500px;">
     <%= f.text_field :end_time, :class => "form-control", :value => convert_date(end_time), :disabled => (status >= 3)  %>
     <span class="input-group-addon">
       <span class="glyphicon glyphicon-calendar"></span>

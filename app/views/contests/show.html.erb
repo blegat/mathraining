@@ -181,7 +181,7 @@ Concours #<%= @contest.number %>
     
     <div class="module left-part" style="<%= "padding-bottom:0px !important;" if liste %>">
     <center><h4>Énoncé</h4></center>
-    <%= raw(bbcode(p.statement)) %>
+    <%= raw(htmlise(p.statement)) %>
     </div>
     
     <div class="module right-part">

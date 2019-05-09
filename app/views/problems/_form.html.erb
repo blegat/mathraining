@@ -11,13 +11,13 @@
   
 <!-- Origine -->
 <div class="form-group">
-  <%= f.label "Origine" %> (Compétition (format long) - Année - Numéro du problème : laisser blanc si d'origine inconnue)
-  <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
+  <%= f.label "Origine" %> (laisser blanc si d'origine inconnue)
+  <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "max-width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
 </div>
 
 <!-- Niveau -->
 <% if !problem.nil? && problem.online %>
-  Niveau (entre 1 et 5) : <b><%= problem.level %></b><br/><br/>
+  <b>Niveau (entre 1 et 5)</b> : <b><%= problem.level %></b><br/><br/>
 <% else %>
   <div class="form-group">
   <%= f.label "Niveau (entre 1 et 5)" %>
