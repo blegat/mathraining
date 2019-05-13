@@ -42,11 +42,28 @@ class UserMailer < AsyncMailer
     mail(to: @user.email, subject: "Mathraining - Message à l'attention des élèves de Wépion", from: "mathraining@mathraining.be")
   end
   
-  def new_followed_contestproblem(userid, contestproblemid)
+  def new_followed_contestproblem(userid, contestproblemsids)
     @user = User.find(userid)
-    @contestproblem = Contestproblem.find(contestproblemid)
+    if contestproblemsids.size == 1
+      @plural = false
+      @debut = "Problème ##{contestproblemsids[0]}"
+    else
+      @plural = true
+      @debut = "Problèmes"
+      i = 0
+      contestproblemsids.each do |num|
+        if (i == contestproblemsids.size-1)
+          @debut = @debut + " et"
+        elsif (i > 0)
+          @debut = @debut + ","
+        end
+        @debut = @debut + " ##{num}"
+        i = i+1
+      end
+    end
+    @contestproblem = Contestproblem.find(contestproblemsids[0])
     @contest = @contestproblem.contest
-    mail(to: @user.email, subject: "Mathraining - Concours #" + @contest.number.to_s + " - Problème #" + @contestproblem.number.to_s, from: "mathraining@mathraining.be")
+    mail(to: @user.email, subject: "Mathraining - Concours #" + @contest.number.to_s + " - " + @debut, from: "mathraining@mathraining.be")
   end
 
 end

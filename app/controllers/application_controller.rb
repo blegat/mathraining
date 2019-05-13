@@ -221,19 +221,31 @@ class ApplicationController < ActionController::Base
       p = c.contestproblem
       if p.status == 0
         if p.start_time <= date_in_one_day
-          p.status = 1
-          p.save
-          automatic_start_in_one_day_problem_post(p)
+          c = p.contest
+          allp = c.contestproblems.where("start_time = ?", p.start_time).order(:number).all.to_a
+          allid = Array.new
+          allp.each do |pp|
+            pp.status = 1
+            pp.save
+            allid.push(pp.id)
+          end
+          automatic_start_in_one_day_problem_post(allp)
           p.contest.followers.each do |u|
-            UserMailer.new_followed_contestproblem(u.id, p.id).deliver if Rails.env.production?
+            UserMailer.new_followed_contestproblem(u.id, allid).deliver if Rails.env.production?
           end
         end
       end        
       if p.status == 1
         if p.start_time <= date_now
-          p.status = 2
-          p.save
-          automatic_start_problem_post(p)
+          c = p.contest
+          allp = c.contestproblems.where("start_time = ? AND end_time = ?", p.start_time, p.end_time).order(:number).all.to_a
+          allid = Array.new
+          allp.each do |pp|
+            pp.status = 2
+            pp.save
+            allid.push(pp.id)
+          end
+          automatic_start_problem_post(allp)
         end
       end
       if p.status == 2
@@ -250,28 +262,62 @@ class ApplicationController < ActionController::Base
   end
   
   # Publish a post on forum to say that problem will be published in one day
-  def automatic_start_in_one_day_problem_post(contestproblem)
-    contest = contestproblem.contest
+  def automatic_start_in_one_day_problem_post(contestproblems)
+    contest = contestproblems[0].contest
     sub = contest.subject
     mes = Message.new
     mes.subject = sub
     mes.user_id = 0
-    mes.content = "Le Problème ##{contestproblem.number} du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] sera publié dans un jour, c'est-à-dire le " + write_date_with_link_forum(contestproblem.start_time, contest, contestproblem) + " (heure belge)."
-    mes.created_at = contestproblem.start_time - 1.day
+    if contestproblems.size == 1
+      plural = false
+      mes.content = "Le Problème ##{contestproblems[0].number}"
+    else
+      plural = true
+      mes.content = "Les Problèmes"
+      i = 0
+      contestproblems.each do |cp|
+        if (i == contestproblems.size-1)
+          mes.content = mes.content + " et"
+        elsif (i > 0)
+          mes.content = mes.content + ","
+        end
+        mes.content = mes.content + " ##{cp.number}"
+        i = i+1
+      end
+    end
+    mes.content = mes.content + " du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] #{plural ? "seront" : "sera"} publié#{plural ? "s" : ""} dans un jour, c'est-à-dire le " + write_date_with_link_forum(contestproblems[0].start_time, contest, contestproblems[0]) + " (heure belge)."
+    mes.created_at = contestproblems[0].start_time - 1.day
     mes.save
     sub.lastcomment = mes.created_at
     sub.save
   end
   
   # Publish a post on forum to say that solutions to problem can be sent
-  def automatic_start_problem_post(contestproblem)
-    contest = contestproblem.contest
+  def automatic_start_problem_post(contestproblems)
+    contest = contestproblems[0].contest
     sub = contest.subject
     mes = Message.new
     mes.subject = sub
     mes.user_id = 0
-    mes.content = "Le [url=" + contestproblem_url(contestproblem) + "]Problème ##{contestproblem.number}[/url] du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] est maintenant accessible, et les solutions sont acceptées jusqu'au " + write_date_with_link_forum(contestproblem.end_time, contest, contestproblem) + " (heure belge)."
-    mes.created_at = contestproblem.start_time
+    if contestproblems.size == 1
+      plural = false
+      mes.content = "Le [url=" + contestproblem_url(contestproblems[0]) + "]Problème ##{contestproblems[0].number}[/url]"
+    else
+      plural = true
+      mes.content = "Les Problèmes"
+      i = 0
+      contestproblems.each do |cp|
+        if (i == contestproblems.size-1)
+          mes.content = mes.content + " et"
+        elsif (i > 0)
+          mes.content = mes.content + ","
+        end
+        mes.content = mes.content + " [url=" + contestproblem_url(cp) + "]##{cp.number}[/url]"
+        i = i+1
+      end
+    end
+    mes.content = mes.content + " du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] #{plural ? "sont" : "est"} maintenant accessible#{plural ? "s" : ""}, et les solutions sont acceptées jusqu'au " + write_date_with_link_forum(contestproblems[0].end_time, contest, contestproblems[0]) + " (heure belge)."
+    mes.created_at = contestproblems[0].start_time
     mes.save
     sub.lastcomment = mes.created_at
     sub.save

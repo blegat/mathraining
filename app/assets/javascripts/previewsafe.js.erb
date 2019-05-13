@@ -64,12 +64,38 @@ var PreviewSafe = {
     }
 
     var text = this.input.value.replace(/</g,'&lt').replace(/>/g,'&gt')
+    
+    // Replace the [b], [u], [i]
+    text = text.replace(/\[b\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/b\]/gmi, '<b>$1</b>')
+               .replace(/\[u\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/u\]/gmi, '<u>$1</u>')
+               .replace(/\[i\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/i\]/gmi, '<i>$1</i>');
+    
+    // Replace the [url=www.example.com]Lien[/url]
+    text = text.replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>');
+    
+    // Replace the [hide=Texte Caché]Texte Caché[/hide]
     if(allowhide) {
       var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
-      while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, "<div class='clue'><div><a href='#' onclick='return false;' class='btn btn-default btn-grey'>$1</a></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$2</div></div></div>");
+      while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, "<div class='clue'><div><button onclick='return false;' class='btn btn-default btn-grey'>$1</button></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$2</div></div></div>");
     }
-    text = text.replace(/\[b\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/b\]/gmi, '<b>$1</b>').replace(/\[u\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/u\]/gmi, '<u>$1</u>').replace(/\[i\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/i\]/gmi, '<i>$1</i>').replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/\n/g, '<br/>').replace(/\:\-\)/g,'<%= image_tag "Smiley1.gif", :width => "20px", :height => "20px" %>').replace(/\:\-\(/g,'<%= image_tag "Smiley2.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[D]/g,'<%= image_tag "Smiley3.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[O]/g,'<%= image_tag "Smiley4.gif", :width => "20px", :height => "20px" %>').replace(/\:\-[P]/g,'<%= image_tag "Smiley5.gif", :width => "20px", :height => "20px" %>').replace(/\:\'\(/g,'<%= image_tag "Smiley6.gif", :width => "20px", :height => "20px" %>').replace(/\;\-\)/g,'<%= image_tag "Smiley7.gif", :width => "20px", :height => "20px" %>').replace(/\:\-\|/g,'<%= image_tag "Smiley8.gif", :width => "20px", :height => "20px" %>').replace(/[3]\:\[/g,'<%= image_tag "Smiley9.gif", :width => "20px", :height => "20px" %>');
-
+    
+    // Delete the \n and \r after the \] and $$
+    text = text.replace(/\][ \r]*\n/g,'\] ')
+               .replace(/\$\$[ \r]*\n/g,'$$$ ')
+    
+    // Replace the \n by <br/>
+    text = text.replace(/\n/g, '<br/>')
+    
+    // Replace the smileys by the images
+    text = text.replace(/\:\-\)/g,'<%= image_tag "Smiley1.gif", :width => "20px", :height => "20px" %>')
+               .replace(/\:\-\(/g,'<%= image_tag "Smiley2.gif", :width => "20px", :height => "20px" %>')
+               .replace(/\:\-[D]/g,'<%= image_tag "Smiley3.gif", :width => "20px", :height => "20px" %>')
+               .replace(/\:\-[O]/g,'<%= image_tag "Smiley4.gif", :width => "20px", :height => "20px" %>')
+               .replace(/\:\-[P]/g,'<%= image_tag "Smiley5.gif", :width => "20px", :height => "20px" %>')
+               .replace(/\:\'\(/g,'<%= image_tag "Smiley6.gif", :width => "20px", :height => "20px" %>')
+               .replace(/\;\-\)/g,'<%= image_tag "Smiley7.gif", :width => "20px", :height => "20px" %>')
+               .replace(/\:\-\|/g,'<%= image_tag "Smiley8.gif", :width => "20px", :height => "20px" %>')
+               .replace(/[3]\:\[/g,'<%= image_tag "Smiley9.gif", :width => "20px", :height => "20px" %>');
 
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;

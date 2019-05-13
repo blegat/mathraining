@@ -105,12 +105,12 @@ module ApplicationHelper
   def bbcode(m)
     (h m.gsub(/\\\][ \r]*\n/,'\] ').
     gsub(/\$\$[ \r]*\n/,'$$ ')).
-    gsub(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*(.*?)[ \r\n]*\[\/hide\]/mi, '[hide=\1]\2[/hide]').
-    gsub(/\n/, '<br>').
     gsub(/\[b\](.*?)\[\/b\]/mi, '<b>\1</b>').
     gsub(/\[u\](.*?)\[\/u\]/mi, '<u>\1</u>').
     gsub(/\[i\](.*?)\[\/i\]/mi, '<i>\1</i>').
     gsub(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/mi, '<a target=\'blank\' href=\'\1\'>\2</a>').
+    gsub(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*(.*?)[ \r\n]*\[\/hide\]/mi, '[hide=\1]\2[/hide]').
+    gsub(/\n/, '<br>').
     gsub(/\:\-\)/, image_tag("Smiley1.gif", alt: ":-)")).
     gsub(/\:\-\(/, image_tag("Smiley2.gif", alt: ":-(")).
     gsub(/\:\-[D]/, image_tag("Smiley3.gif", alt: ":-D")).
