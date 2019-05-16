@@ -51,13 +51,13 @@ class UserMailer < AsyncMailer
       @plural = true
       @debut = "Problèmes"
       i = 0
-      contestproblemsids.each do |num|
+      contestproblemsids.each do |id|
         if (i == contestproblemsids.size-1)
           @debut = @debut + " et"
         elsif (i > 0)
           @debut = @debut + ","
         end
-        @debut = @debut + " ##{num}"
+        @debut = @debut + " ##{Contestproblem.find(id).number}"
         i = i+1
       end
     end
