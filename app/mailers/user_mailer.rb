@@ -46,7 +46,7 @@ class UserMailer < AsyncMailer
     @user = User.find(userid)
     if contestproblemsids.size == 1
       @plural = false
-      @debut = "Problème ##{contestproblemsids[0]}"
+      @debut = "Problème ##{Contestproblem.find(contestproblemsids[0]).number}"
     else
       @plural = true
       @debut = "Problèmes"

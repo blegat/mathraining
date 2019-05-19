@@ -23,7 +23,7 @@ Vous pouvez trouver ci-dessous un résumé des modifications apportées au texte
 <table class="table table-bordered">
 <tr><th style="width:120px; text-align:center;">Date</th><th>Modifications</th></tr>
 <% if current_user.consent_date.nil? %>
-  <% thedate = Privacypolicy.where("online = ?", true).order(:publication).first.publicaiton %>
+  <% thedate = Time.zone.parse('2000-01-01 00:00') %>
 <% else %>
   <% thedate = current_user.consent_date %>
 <% end %>
