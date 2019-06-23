@@ -163,9 +163,10 @@ class UsersController < ApplicationController
     elsif (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       UserMailer.registration_confirmation(@user.id).deliver if Rails.env.production?
       
-      @user.consent_date = DateTime.now
-      @user.last_policy_read = true
-      @user.save
+      user_reload = User.find(@user.id) # Reload because email and email_confirmation can be different after downcaise otherwise!
+      user_reload.consent_date = DateTime.now
+      user_reload.last_policy_read = true
+      user_reload.save
       
       flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
       redirect_to root_path

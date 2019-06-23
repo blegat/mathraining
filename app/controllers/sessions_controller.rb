@@ -9,7 +9,8 @@ class SessionsController < ApplicationController
 
   # Se connecter 2
   def create
-    user = User.where(:email => params[:session][:email]).first
+    email = params[:session][:email].downcase
+    user = User.where(:email => email).first
     
     if user && user.authenticate(params[:session][:password])
       if !user.active
