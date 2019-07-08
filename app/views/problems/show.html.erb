@@ -130,21 +130,6 @@
 <% end %>
 </div>
 
-<!-- Si administrateur ou correcteur ayant résolu -->
-
-<% if (current_user.sk.admin? || current_user.sk.corrector? && @resolu) %>
-
-  <!-- Explication -->
-  <% if @problem.explanation.size == 0 %>
-    <span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span><br/>
-  <% else %>
-    <div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(0)' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a></div><div id='indice0' class='clue-hide'><div class='clue-content'>
-    <%= raw(htmlise(@problem.explanation)) %>
-    </div></div></div>
-  <% end %>
-  <br/>
-<% end %>
-
 <!-- Si administrateur -->
 
 <% if current_user.sk.admin? %>
@@ -209,6 +194,22 @@
     <% end %>
   <% end %>
 <% end %>
+
+
+<!-- Si administrateur ou correcteur ayant résolu -->
+
+<% if (current_user.sk.admin? || current_user.sk.corrector? && @resolu) %>
+  <br/>
+  <!-- Explication -->
+  <% if @problem.explanation.size == 0 %>
+    <span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span><br/>
+  <% else %>
+    <div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(0)' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a></div><div id='indice0' class='clue-hide'><div class='clue-content'>
+    <%= raw(htmlise(@problem.explanation)) %>
+    </div></div></div>
+  <% end %>
+<% end %>
+
 
 <!-- Si on veut écrire une nouvelle soumission -->
 <% if soumission == 0 %>
