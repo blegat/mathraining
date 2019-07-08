@@ -178,21 +178,23 @@
 <!-- Si étudiant -->
 <% else %>
 
-  <!-- Affiche les soumissions qu'on peut voir -->
-  <%= render 'submissions/index', problem: @problem %>
+  <div class="noprint">
+    <!-- Affiche les soumissions qu'on peut voir -->
+    <%= render 'submissions/index', problem: @problem %>
 
-  <!-- Si pas encore résolu le problème -->
-  <% @brouillon = false %>
-  <% unless (@resolu || !@newsub) %>
-    <% @brouillon = true if @problem.submissions.where('user_id = ? AND status < 0', current_user.sk).count > 0 %>
-    <% if soumission != 0 %>
-      <% if !@brouillon %>
-        <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
-      <% else %>
-        <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Reprendre le brouillon</button>
+    <!-- Si pas encore résolu le problème -->
+    <% @brouillon = false %>
+    <% unless (@resolu || !@newsub) %>
+      <% @brouillon = true if @problem.submissions.where('user_id = ? AND status < 0', current_user.sk).count > 0 %>
+      <% if soumission != 0 %>
+        <% if !@brouillon %>
+          <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
+        <% else %>
+          <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Reprendre le brouillon</button>
+        <% end %>
       <% end %>
     <% end %>
-  <% end %>
+  </div>
 <% end %>
 
 
@@ -202,9 +204,9 @@
   <br/>
   <!-- Explication -->
   <% if @problem.explanation.size == 0 %>
-    <span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span><br/>
+    <center><span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span></center>
   <% else %>
-    <div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(0)' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a></div><div id='indice0' class='clue-hide'><div class='clue-content'>
+    <div class='clue-bis'><div><center><a href='#' onclick='return Clue.toggle(0)' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
     <%= raw(htmlise(@problem.explanation)) %>
     </div></div></div>
   <% end %>
