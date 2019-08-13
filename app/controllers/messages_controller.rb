@@ -51,11 +51,11 @@ class MessagesController < ApplicationController
 
       # Envoi d'un e-mail aux utilisateurs suivant le sujet
       @subject.following_users.each do |u|
-        if u != current_user
-          if (@subject.admin && !u.admin) || (@subject.wepion && !u.wepion && !u.admin)
+        if u != current_user.sk
+          if (@subject.admin && !u.corrector && !u.admin) || (@subject.wepion && !u.wepion && !u.admin)
             # Ce n'est pas vraiment normal qu'il suive ce sujet
           else
-            UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.name, @message.content, @message.id).deliver if Rails.env.production?
+            UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.id, @message.id).deliver if Rails.env.production?
           end
         end
       end
@@ -67,7 +67,7 @@ class MessagesController < ApplicationController
         for g in ["A", "B"] do
           if params.has_key?("groupe" + g)
             User.where(:group => g).each do |u|
-              UserMailer.new_message_group(u.id, @subject.id, current_user.sk.name, @message.id).deliver if Rails.env.production?
+              UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id, @message.id).deliver if Rails.env.production?
             end
           end
         end

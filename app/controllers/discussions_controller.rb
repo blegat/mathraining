@@ -187,7 +187,7 @@ class DiscussionsController < ApplicationController
 
     if !@erreur
       if @destinataire.follow_message
-        UserMailer.new_followed_tchatmessage(@destinataire.id, current_user.sk.name, @tchatmessage.content, @discussion.id).deliver if Rails.env.production?
+        UserMailer.new_followed_tchatmessage(@destinataire.id, current_user.sk.id, @discussion.id).deliver if Rails.env.production?
       end
     end
   end

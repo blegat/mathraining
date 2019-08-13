@@ -260,6 +260,10 @@ class ContestproblemsController < ApplicationController
     mes.save
     sub.lastcomment = mes.created_at
     sub.save
+    
+    sub.following_users.each do |u|
+      UserMailer.new_followed_message(u.id, sub.id, -1, mes.id).deliver if Rails.env.production?
+    end
   end
 
 end

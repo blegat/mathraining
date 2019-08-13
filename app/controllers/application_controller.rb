@@ -234,7 +234,7 @@ class ApplicationController < ActionController::Base
             UserMailer.new_followed_contestproblem(u.id, allid).deliver if Rails.env.production?
           end
         end
-      end        
+      end
       if p.status == 1
         if p.start_time <= date_now
           c = p.contest
@@ -290,6 +290,12 @@ class ApplicationController < ActionController::Base
     mes.save
     sub.lastcomment = mes.created_at
     sub.save
+    
+    sub.following_users.each do |u|
+      if !contest.followers.include?(u) # Avoid to send again an email to people already following the contest
+        UserMailer.new_followed_message(u.id, sub.id, -1, mes.id).deliver if Rails.env.production?
+      end
+    end
   end
   
   # Publish a post on forum to say that solutions to problem can be sent
@@ -321,6 +327,10 @@ class ApplicationController < ActionController::Base
     mes.save
     sub.lastcomment = mes.created_at
     sub.save
+    
+    sub.following_users.each do |u|
+      UserMailer.new_followed_message(u.id, sub.id, -1, mes.id).deliver if Rails.env.production?
+    end
   end
   
   def compute_new_contest_rankings(contest)
