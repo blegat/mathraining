@@ -262,7 +262,7 @@ class ContestproblemsController < ApplicationController
     sub.save
     
     sub.following_users.each do |u|
-      UserMailer.new_followed_message(u.id, sub.id, -1, mes.id).deliver if Rails.env.production?
+      UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
     end
   end
 

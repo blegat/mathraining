@@ -293,7 +293,7 @@ class ApplicationController < ActionController::Base
     
     sub.following_users.each do |u|
       if !contest.followers.include?(u) # Avoid to send again an email to people already following the contest
-        UserMailer.new_followed_message(u.id, sub.id, -1, mes.id).deliver if Rails.env.production?
+        UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
       end
     end
   end
@@ -329,7 +329,7 @@ class ApplicationController < ActionController::Base
     sub.save
     
     sub.following_users.each do |u|
-      UserMailer.new_followed_message(u.id, sub.id, -1, mes.id).deliver if Rails.env.production?
+      UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
     end
   end
   

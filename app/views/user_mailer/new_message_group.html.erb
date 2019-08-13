@@ -1,5 +1,5 @@
 Bonjour <%= @user.first_name %>,<br/><br/>
 
-<%= @qui %> a posté un nouveau message sur Mathraining à destination des participants aux week-ends d'entraînements aux Olympiades Mathématiques Internationales. Il est important que vous en preniez connaissance. Merci d'aller lire ce message dans son contexte <%= link_to "ici", subject_url(@subject, :host => "www.mathraining.be", :page => @page, :anchor => @id) %>.<br/><br/>
+<%= @qui %> a posté un nouveau message sur Mathraining à destination des participants aux week-ends d'entraînements aux Olympiades Mathématiques Internationales. Il est important que vous en preniez connaissance. Merci d'aller lire ce message dans son contexte <%= link_to "ici", subject_url(@subject, :host => "www.mathraining.be", :page => @page, :anchor => "bottom") %>.<br/><br/>
 
 L'équipe Mathraining.
