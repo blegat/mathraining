@@ -34,8 +34,8 @@ class Problem < ActiveRecord::Base
   # VALIDATIONS
 
   validates :number, presence: true
-  validates :statement, presence: true, length: { maximum: 8000 }
-  validates :explanation, length: { maximum: 8000 }
+  validates :statement, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
+  validates :explanation, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :origin, length: { maximum: 255 }
   validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 5 }
 

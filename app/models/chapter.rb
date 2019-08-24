@@ -39,7 +39,7 @@ class Chapter < ActiveRecord::Base
   # VALIDATIONS
 
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
-  validates :description, length: { maximum: 8000 }
+  validates :description, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :level, presence: true, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 3 }
 
   # Nombre de prérequis (avec récursion)

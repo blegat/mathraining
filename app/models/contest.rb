@@ -29,7 +29,7 @@ class Contest < ActiveRecord::Base
   # VALIDATIONS
 
   validates :status, presence: true
-  validates :description, presence: true, length: { maximum: 8000 }
+  validates :description, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :number, presence: true, numericality: { greater_than: 0 }
   
   def is_organized_by(user)

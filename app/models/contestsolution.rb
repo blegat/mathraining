@@ -25,7 +25,7 @@ class Contestsolution < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :content, presence: true, length: { maximum: 8000 }
+  validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :score, presence: true, inclusion: { in: [-1, 0, 1, 2, 3, 4, 5, 6, 7] }
   
   # Rend l'icone correspondante

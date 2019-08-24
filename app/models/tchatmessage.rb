@@ -20,5 +20,5 @@ class Tchatmessage < ActiveRecord::Base
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 
-  validates :content, presence: true, length: { maximum: 8000 }
+  validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
 end

@@ -31,7 +31,7 @@ class Contestproblem < ActiveRecord::Base
   # VALIDATIONS
 
   validates :status, presence: true
-  validates :statement, presence: true, length: { maximum: 8000 }
+  validates :statement, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :origin, length: { maximum: 255 }
   validates :start_time, presence: true
   validates :end_time, presence: true
