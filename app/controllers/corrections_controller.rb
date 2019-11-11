@@ -60,7 +60,7 @@ class CorrectionsController < ApplicationController
       end
 
       # On supprime les réservations s'il faut
-      if @submission.status == 0 && current_user.sk.admin?
+      if @submission.status == 0 && current_user.sk != @submission.user
         @submission.followings.each do |f|
           Following.delete(f.id)
         end
@@ -75,7 +75,7 @@ class CorrectionsController < ApplicationController
         @submission.save
         m = ''
 
-        # Si admin et nouvelle soumission : cela dépend du bouton
+      # Si correcteur et nouvelle soumission : cela dépend du bouton
       elsif (current_user.sk != @submission.user) and (@submission.status == 0 or @submission.status == 3) and
         (params[:commit] == "Poster et refuser la soumission" or
         params[:commit] == "Poster et laisser la soumission comme erronée")
@@ -83,7 +83,7 @@ class CorrectionsController < ApplicationController
         @submission.save
         m = ' et soumission marquée comme incorrecte'
 
-        # Si soumission erronée et on accepte : devient correcte
+      # Si soumission erronée et on accepte : devient correcte
       elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
         @submission.status = 2
         @submission.save
@@ -157,7 +157,7 @@ class CorrectionsController < ApplicationController
       flash[:success] = "Réponse postée#{m}."
       redirect_to problem_path(@submission.problem, :sub => @submission)
 
-      # Si il y a eu une erreur au moment de sauver
+    # Si il y a eu une erreur au moment de sauver
     else
       destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:correction][:content]
