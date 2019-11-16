@@ -5,7 +5,7 @@
     <% if f.answer - f.answer.to_i <= 0.00001 && f.answer.to_i - f.answer <= 0.00001 %>
       <% vraidecimal = false %>
     <% end %>
-    <span style="font-size:16px;"><%= f.answer if vraidecimal %><%= f.answer.to_i if !vraidecimal %></span> (On demande une réponse <b>décimale</b> au millième près)
+    <span style="font-size:16px;"><%= f.answer if vraidecimal %><%= f.answer.to_i if !vraidecimal %></span> (On demande une réponse <b>décimale</b>, arrondie au millième près)
   <% else %>
     <span style="font-size:16px;"><%= f.answer.to_i %></span> (On demande une réponse <b>entière</b>)
   <% end %>
