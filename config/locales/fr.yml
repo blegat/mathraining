@@ -30,6 +30,7 @@ fr:
         name: "Titre"
         level: "Niveau"
         description: "Description"
+        author: "Auteur(s)"
       contest:
         number: "Numéro"
         description: "Description"

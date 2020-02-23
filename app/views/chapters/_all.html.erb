@@ -13,7 +13,19 @@
 <!-- Résumé -->
 <h3>Résumé</h3>
 <p><%= raw(htmlise(@chapter.description)) %></p>
-<br/>
+
+<!-- Auteur(s) et date de publication -->
+<% authorOk = (!@chapter.author.nil? && @chapter.author.size != 0) %>
+<% publicationOk = !@chapter.publication_time.nil? %>
+<% if authorOk || publicationOk %>
+  <br/>Ce chapitre a été
+  <% if authorOk %>
+    écrit par <b><%= @chapter.author %></b><%= "." if !publicationOk %><%= " et " if publicationOk %>
+  <% end %>
+  <% if publicationOk %>
+    mis en ligne le <b><%= write_date_only(@chapter.publication_time) %></b>.
+  <% end %>
+<% end %>
 
 <!-- Toutes les théories -->
 <% listex = @chapter.theories.order(:position) %>

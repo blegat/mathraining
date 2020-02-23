@@ -32,7 +32,7 @@ class ChaptersController < ApplicationController
     else
       position = last_chapter.position + 1
     end
-    @chapter = Chapter.new(params.require(:chapter).permit(:name, :description, :level))
+    @chapter = Chapter.new(params.require(:chapter).permit(:name, :description, :level, :author))
     @chapter.section_id = params[:section_id]
     @chapter.position = position
     if @chapter.save
@@ -52,7 +52,7 @@ class ChaptersController < ApplicationController
     else
       position = last_chapter.position + 1
     end
-    if @chapter.update_attributes(params.require(:chapter).permit(:name, :description, :level))
+    if @chapter.update_attributes(params.require(:chapter).permit(:name, :description, :level, :author))
       if old_level != @chapter.level
         @chapter.position = position
         @chapter.save
@@ -99,6 +99,7 @@ class ChaptersController < ApplicationController
   # Mettre en ligne : il faut vérifier qu'on est admin
   def put_online
     @chapter.online = true
+    @chapter.publication_time = Date.today
     @chapter.save
     @section = @chapter.section
     @chapter.questions.each do |q|

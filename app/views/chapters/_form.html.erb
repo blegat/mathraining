@@ -20,3 +20,9 @@
   <%= f.label :level %>
   <%= f.number_field :level, :class => "form-control", :style => "width:50px;", :min => 1, :max => (@section.fondation ? 1 : 3) %>
 </div>
+
+<!-- Auteur(s) -->
+<div class="form-group">
+  <%= f.label :author %>
+  <%= f.text_field :author, :class => "form-control", :style => "width:100%; max-width:400px;" %>
+</div>

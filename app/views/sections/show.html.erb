@@ -129,6 +129,9 @@
     <!-- Statistiques -->
     <center>
     Complété par <b><%= c.nb_solved %></b> personne<%= "s" if c.nb_solved > 1 %><br/>
+    <% if c.publication_time %>
+      depuis le <b><%= write_date_only(c.publication_time) %></b><br/>
+    <% end %>
     <% if c.nb_tries > 0 %>
       Taux de réussite : <b><%= (c.nb_solved*100)/c.nb_tries %></b>%
     <% end %>
