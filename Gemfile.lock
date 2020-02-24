@@ -145,7 +145,7 @@ GEM
     mime-types-data (3.2019.0331)
     mimemagic (0.3.3)
     mini_mime (1.0.1)
-    mini_portile2 (2.3.0)
+    mini_portile2 (2.4.0)
     minitest (5.11.3)
     momentjs-rails (2.20.1)
       railties (>= 3.1)
@@ -153,8 +153,8 @@ GEM
     multi_json (1.13.1)
     mustermann (1.0.3)
     nio4r (2.3.1)
-    nokogiri (1.8.5)
-      mini_portile2 (~> 2.3.0)
+    nokogiri (1.10.8)
+      mini_portile2 (~> 2.4.0)
     paperclip (5.1.0)
       activemodel (>= 4.2.0)
       activesupport (>= 4.2.0)
@@ -348,7 +348,7 @@ DEPENDENCIES
   less-rails
   lograge
   momentjs-rails (>= 2.9.0)
-  nokogiri (~> 1.8.1)
+  nokogiri (~> 1.10.8)
   paperclip (~> 5.1.0)
   pg (~> 0.20.0)
   rack-canonical-host
