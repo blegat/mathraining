@@ -378,18 +378,24 @@ class User < ActiveRecord::Base
     Section.all.each do |s|
       if(max_score[s.id] != s.max_score)
         warning = warning + "Le score maximal de la section #{s.id} va changer : #{max_score[s.id]} au lieu de #{s.max_score}. "
+      else
+        max_score[s.id] = nil
       end
     end
 
     Pointspersection.all.each do |p|
       if newpartial[p.section_id][p.user_id] != p.points
         warning = warning + "Le rating de ... (#{p.user_id}) pour la section #{p.section_id} va changer : #{newpartial[p.section_id][p.user_id]} au lieu de #{p.points}. "
+      else
+        newpartial[p.section_id][p.user_id] = nil
       end
     end
 
     User.all.each do |u|
       if newrating[u.id] != u.rating
         warning = warning + "Le rating de #{u.name} (#{u.id}) va changer : #{newrating[u.id]} au lieu de #{u.rating}. "
+      else
+        newrating[u.id] = nil
       end
     end
     
@@ -403,21 +409,21 @@ class User < ActiveRecord::Base
     newpartial = quadruple[3]
     
     Section.all.each do |s|
-      if(max_score[s.id] != s.max_score)
+      if ( !max_score[s.id].nil? and max_score[s.id] != s.max_score )
         s.max_score = max_score[s.id]
         s.save
       end
     end
     
     Pointspersection.all.each do |p|
-      if newpartial[p.section_id][p.user_id] != p.points
+      if ( !newpartial[p.section_id][p.user_id].nil? and newpartial[p.section_id][p.user_id] != p.points )
         p.points = newpartial[p.section_id][p.user_id]
         p.save
       end
     end
 
     User.all.each do |u|
-      if newrating[u.id] != u.rating
+      if ( !newrating[u.id].nil? and newrating[u.id] != u.rating )
         u.rating = newrating[u.id]
         u.save
       end
