@@ -12,7 +12,7 @@
 
 <!-- Si pas connecté, on ne peut rien voir -->
 <div style="margin-top:15px; font-weight:bold;">
-Les problèmes ne sont accessibles qu'aux utilisateurs connectés et ayant un score d'au moins 200.
+Les problèmes ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.
 </div>
 
 <% elsif !current_user.sk.admin? && current_user.sk.rating < 200 %>

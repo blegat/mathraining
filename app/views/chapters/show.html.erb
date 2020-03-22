@@ -178,9 +178,9 @@
 </div>
 
 <!-- Ajouter quelque chose -->
-<div class="noprint">
-  <center>
-    <% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+<% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+  <div class="noprint">
+    <center>
       <br/>
       Ajouter un :
       <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
@@ -191,6 +191,6 @@
         <br/><br/>
         <%= button_to "Mettre ce chapitre en ligne", chapter_warning_path(@chapter), method: :get, class: 'btn btn-lg btn-default btn-grey	' %>
       <% end %>
-    <% end %>
-  </center>
-</div>
+    </center>
+  </div>
+<% end %>

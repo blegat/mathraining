@@ -47,20 +47,18 @@
     <% end %>
     </center>
   
-  <!-- Si étudiant -->
-  <% else %>
+  <!-- Si étudiant (connecté) -->
+  <% elsif @signed_in %>
     <center>
-      <% if @signed_in && current_user.sk.theories.exists?(id) %>
+      <% if current_user.sk.theories.exists?(id) %>
         <%= button_to "Marquer comme non lu", theory_unread_path(f), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
       <% else %>
-        <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn-default btn-grey', :disabled => (!@signed_in || current_user.other) %>
+        <%= button_to "Marquer comme lu", theory_read_path(f), method: :get, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
       <% end %>
     </center>
 
-    <% if @signed_in %>
-      <hr style="border-top:1px dashed lightgray;" />
-      Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> !
-    <% end %>
+    <hr style="border-top:1px dashed lightgray;" />
+    Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> !
   <% end %>
 
   </div>
