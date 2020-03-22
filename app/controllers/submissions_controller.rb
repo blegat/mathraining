@@ -13,6 +13,20 @@ class SubmissionsController < ApplicationController
   before_action :enough_points, only: [:create]
   before_action :in_test, only: [:create_intest, :update_intest]
   before_action :brouillon, only: [:update_brouillon]
+  before_action :can_see_submissions, only: [:index]
+
+  # Voir toutes les soumissions à un problème (via javascript uniquement)
+  def index
+    if @what == 0
+      @submissions = @problem.submissions.where('user_id != ? AND status = 2 AND star = ? AND visible = ?', current_user.sk, false, true).order('created_at DESC')
+    elsif @what == 1
+      @submissions = @problem.submissions.where('user_id != ? AND status != 2 AND visible = ?', current_user.sk, true).order('created_at DESC')
+    end
+
+    respond_to do |format|
+      format.js
+    end
+  end
 
   # Créer une nouvelle soumission
   def create
@@ -451,6 +465,24 @@ class SubmissionsController < ApplicationController
       else
         flash[:danger] = "Un problème est apparu."
         redirect_to problem_path(@problem, :sub => @submission)
+      end
+    else
+      redirect_to root_path
+    end
+  end
+
+  def can_see_submissions
+    if !(params.has_key?:what)
+      redirect_to root_path
+    end
+    @what = params[:what].to_i
+    if @what == 0    # See correct submissions (need to have solved problem or to be admin)
+      if !current_user.sk.admin? and !current_user.sk.pb_solved?(@problem)
+        redirect_to root_path
+      end
+    elsif @what == 1 # See incorrect submissions (need to be admin or corrector)
+      if !current_user.sk.admin? and !current_user.sk.corrector?
+        redirect_to root_path
       end
     else
       redirect_to root_path
