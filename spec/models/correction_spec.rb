@@ -29,7 +29,7 @@ describe Correction do
     it { should_not be_valid }
   end
   describe "when content is too long" do
-    before { @c.content = "a" * 8001 }
+    before { @c.content = "a" * 16001 }
     it { should_not be_valid }
   end
 

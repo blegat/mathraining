@@ -16,7 +16,7 @@
         <td><%= f.submit "Modifier", :id => "button_edit#{i}", class: "btn btn-primary", style: "margin-left:10px;", onclick: "return confirm('Êtes-vous sûr de vouloir modifier ce niveau ?')" %></td>
         <% i = i+1 %>
       <% end %>
-      <td style="padding-left:10px;"><%= link_to "Supprimer", c, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce niveau ?" } %> </td>
+      <td style="padding-left:10px;"><%= link_to "Supprimer", c, method: :delete, id: "link_delete#{i}", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce niveau ?" } %> </td>
     </tr>
   <% end %>
 

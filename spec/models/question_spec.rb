@@ -41,7 +41,7 @@ describe Question do
     it { should_not be_valid }
   end
   describe "when statement is too long" do
-    before { @ex.statement = "a" * 8001 }
+    before { @ex.statement = "a" * 16001 }
     it { should_not be_valid }
   end
 

@@ -28,7 +28,7 @@ FactoryGirl.define do
   
   # Color
   factory :color do
-    pt 0
+    pt 10000
     name "Nom"
     femininename "Nom feminin"
     color "#AAAAAA"
@@ -43,8 +43,8 @@ FactoryGirl.define do
   end
   
   factory :country do
-    name "France"
-    code "fr"
+    name "Lune"
+    code "lu"
   end
   
   # Question

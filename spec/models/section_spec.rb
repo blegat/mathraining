@@ -39,7 +39,7 @@ describe Section do
     it { should be_valid }
   end
   describe "when description is too long" do
-    before { @sec.description = "a" * 8001 }
+    before { @sec.description = "a" * 16001 }
     it { should_not be_valid }
   end
 

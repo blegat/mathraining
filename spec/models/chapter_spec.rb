@@ -61,7 +61,7 @@ describe Chapter do
     it { should be_valid }
   end
   describe "when description is too long" do
-    before { @chap.description = "a" * 8001 }
+    before { @chap.description = "a" * 16001 }
     it { should_not be_valid }
   end
 
