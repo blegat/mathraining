@@ -12,173 +12,224 @@
 # Sections
 section = Array.new
 
-section[1] = Section.create(name: "Combinatoire", description: "", fondation: false)
-section[2] = Section.create(name: "Géométrie", description: "", fondation: false)
-section[3] = Section.create(name: "Théorie des nombres", description: "", fondation: false)
-section[4] = Section.create(name: "Algèbre", description: "", fondation: false)
-section[5] = Section.create(name: "Équations fonctionnelles", description: "", fondation: false)
-section[6] = Section.create(name: "Inégalités", description: "", fondation: false)
-section[7] = Section.create(name: "Fondements", description: "", fondation: true)
+section[1] = Section.create!(name: "Combinatoire",             description: "", fondation: false)
+section[2] = Section.create!(name: "Géométrie",                description: "", fondation: false)
+section[3] = Section.create!(name: "Théorie des nombres",      description: "", fondation: false)
+section[4] = Section.create!(name: "Algèbre",                  description: "", fondation: false)
+section[5] = Section.create!(name: "Équations fonctionnelles", description: "", fondation: false)
+section[6] = Section.create!(name: "Inégalités",               description: "", fondation: false)
+section[7] = Section.create!(name: "Fondements",               description: "", fondation: true)
 
-if !Rails.env.test?
-  Country.create(name: "Belgique", code: "be")
+# Countries
+cy = [
+["Afghanistan", "af"],
+["Afrique du Sud", "za"],
+["Albanie", "al"],
+["Algérie", "dz"],
+["Allemagne", "de"],
+["Andorre", "ad"],
+["Angola", "ao"],
+["Antigua-et-Barbuda", "ag"],
+["Arabie saoudite", "sa"],
+["Argentine", "ar"],
+["Arménie", "am"],
+["Australie", "au"],
+["Autriche", "at"],
+["Azerbaïdjan", "az"],
+["Bahamas", "bs"],
+["Bahreïn", "bh"],
+["Bangladesh", "bd"],
+["Barbade", "bb"],
+["Belgique", "be"],
+["Belize", "bz"],
+["Bénin", "bj"],
+["Bhoutan", "bt"],
+["Biélorussie", "by"],
+["Birmanie", "mm"],
+["Bolivie", "bo"],
+["Bosnie-Herzégovine", "ba"],
+["Botswana", "bw"],
+["Brésil", "br"],
+["Brunei", "bn"],
+["Bulgarie", "bg"],
+["Burkina Faso", "bf"],
+["Burundi", "bi"],
+["Cambodge", "kh"],
+["Cameroun", "cm"],
+["Canada", "ca"],
+["Cap-Vert", "cv"],
+["Centrafrique", "cf"],
+["Chili", "cl"],
+["Chine", "cn"],
+["Chypre", "cy"],
+["Colombie", "co"],
+["Comores", "km"],
+["Congo-Brazzaville", "cg"],
+["Congo-Kinshasa", "cd"],
+["Corée du Nord", "kp"],
+["Corée du Sud", "kr"],
+["Costa Rica", "cr"],
+["Côte d'Ivoire", "ci"],
+["Croatie", "hr"],
+["Cuba", "cu"],
+["Danemark", "dk"],
+["Djibouti", "dj"],
+["Dominique", "dm"],
+["Égypte", "eg"],
+["Émirats arabes unis", "ae"],
+["Équateur", "ec"],
+["Érythrée", "er"],
+["Espagne", "es"],
+["Estonie", "ee"],
+["États-Unis", "us"],
+["Éthiopie", "et"],
+["Fidji", "fj"],
+["Finlande", "fi"],
+["France", "fr"],
+["Gabon", "ga"],
+["Gambie", "gm"],
+["Géorgie", "ge"],
+["Ghana", "gh"],
+["Grèce", "gr"],
+["Grenade", "gd"],
+["Guatemala", "gt"],
+["Guinée", "gn"],
+["Guinée-Bissau", "gw"],
+["Guinée équatoriale", "gq"],
+["Guyana", "gy"],
+["Haïti", "ht"],
+["Honduras", "hn"],
+["Hongrie", "hu"],
+["Iles Marshall", "mh"],
+["Iles Salomon", "sb"],
+["Inde", "in"],
+["Indonésie", "id"],
+["Irak", "iq"],
+["Iran", "ir"],
+["Irlande", "ie"],
+["Islande", "is"],
+["Israël", "il"],
+["Italie", "it"],
+["Jamaïque", "jm"],
+["Japon", "jp"],
+["Jordanie", "jo"],
+["Kazakhstan", "kz"],
+["Kenya", "ke"],
+["Kirghizistan", "kg"], 
+["Kiribati", "ki"],
+["Koweït", "kw"],
+["Laos", "la"],
+["Lesotho", "ls"],
+["Lettonie", "lv"],
+["Liban", "lb"],
+["Liberia", "lr"],
+["Libye", "ly"],
+["Liechtenstein", "li"],
+["Lituanie", "lt"],
+["Luxembourg", "lu"],
+["Macédoine", "mk"],
+["Madagascar", "mg"],
+["Malaisie", "my"],
+["Malawi", "mw"],
+["Maldives", "mv"],
+["Mali", "ml"],
+["Malte", "mt"],
+["Maroc", "ma"],
+["Maurice", "mu"],
+["Mauritanie", "mr"],
+["Mexique", "mx"],
+["Micronésie", "fm"],
+["Moldavie", "md"],
+["Monaco", "mc"],
+["Mongolie", "mn"],
+["Monténégro", "me"],
+["Mozambique", "mz"],
+["Namibie", "na"],
+["Nauru", "nr"],
+["Népal", "np"],
+["Nicaragua", "ni"],
+["Niger", "ne"],
+["Nigéria", "ng"],
+["Norvège", "no"],
+["Nouvelle-Zélande", "nz"],
+["Oman", "om"],
+["Ouganda", "ug"],
+["Ouzbékistan", "uz"],
+["Pakistan", "pk"],
+["Palaos", "pw"],
+["Palestine", "ps"],
+["Panama", "pa"],
+["Papouasie-Nouvelle-Guinée", "pg"],
+["Paraguay", "py"],
+["Pays-Bas", "nl"],
+["Pérou", "pe"],
+["Philippines", "ph"],
+["Pologne", "pl"],
+["Portugal", "pt"],
+["Qatar", "qa"],
+["République dominicaine", "do"],
+["République tchèque", "cz"],
+["Roumanie", "ro"],
+["Royaume-Uni", "uk"],
+["Russie", "ru"],
+["Rwanda", "rw"],
+["Saint-Christophe-et-Niévès", "kn"],
+["Sainte-Lucie", "lc"],
+["Saint-Marin", "sm"],
+["Saint-Vincent-et-les-Grenadines", "vc"],
+["Salvador", "sv"],
+["Samoa", "ws"],
+["Sao Tomé-et-Principe", "st"],
+["Sénégal", "sn"],
+["Serbie", "rs"],
+["Seychelles", "sc"],
+["Sierra Leone", "sl"],
+["Singapour", "sg"],
+["Slovaquie", "sk"],
+["Slovénie", "si"],
+["Somalie", "so"],
+["Soudan", "sd"],
+["Soudan du Sud", "ss"],
+["Sri Lanka", "lk"],
+["Suède", "se"],
+["Suisse", "ch"],
+["Suriname", "sr"],
+["Swaziland", "sz"],
+["Syrie", "sy"],
+["Tadjikistan", "tj"],
+["Tanzanie", "tz"],
+["Tchad", "td"],
+["Thaïlande", "th"],
+["Timor oriental", "tp"],
+["Togo", "tg"],
+["Tonga", "to"],
+["Trinité-et-Tobago", "tt"],
+["Tunisie", "tn"],
+["Turkménistan", "tm"],
+["Turquie", "tr"],
+["Tuvalu", "tv"],
+["Ukraine", "ua"],
+["Uruguay", "uy"],
+["Vanuatu", "vu"],
+["Vatican", "va"],
+["Venezuela", "ve"],
+["Viet Nam", "vn"],
+["Yémen", "ye"],
+["Zambie", "zm"],
+["Zimbabwe", "zw"]]
+
+cy.each do |c|
+    Country.create(name: c[0], code: c[1])
 end
 
-if !Rails.env.production?
-
-	# Actualités
-	Actuality.create(title: "Bienvenue sur Mathraining!", content: "Vous êtes les bienvenus !")
-
-	# Chapitres
-	chapitre = Array.new
-	exercice = Array.new
-	qcm = Array.new
-	choice = Array.new
-	for i in 1..7
-		chapitre[i] = Array.new
-		exercice[i] = Array.new
-		qcm[i] = Array.new
-		choice[i] = Array.new
-		for j in 1..3
-			chapitre[i][j] = Chapter.new(name: "Chapitre de la section " + i.to_s + ", numéro " + j.to_s, description: "C'est intéressant", level: j, order: 1, online: true)
-			chapitre[i][j].section = section[i]
-			chapitre[i][j].save
-			
-			# Exercices
-			exercice[i][j] = Array.new
-			qcm[i][j] = Array.new
-			choice[i][j] = Array.new
-			for k in 1..4
-				exercice[i][j][k] = Question.new(statement: "Quelle est la valeur de " + k.to_s + "?", decimal: (k % 2 == 1), answer: k, position: k, online: true, explanation: "C'est du bon sens!", level: k, many_answers: false)
-				exercice[i][j][k].chapter = chapitre[i][j]
-				exercice[i][j][k].save
-			end
-			
-			# Qcms
-			for k in 1..3
-				qcm[i][j][k] = Question.new(statement: "Quelle est la valeur de " + k.to_s + "?", many_answers: (k % 2 == 1), position: 4+k, online: true, explanation: "C'est du bon sens!", level: k, decimal: false, answer: 0)
-				qcm[i][j][k].chapter = chapitre[i][j]
-				qcm[i][j][k].save
-				choice[i][j][k] = Array.new
-				
-				for l in 1..3
-					choice[i][j][k][l] = Item.new(ans: l.to_s, ok: (k == l))
-					choice[i][j][k][l].question = qcm[i][j][k]
-					choice[i][j][k][l].save
-				end
-			end
-		end
-	end
-	
-	# Problèmes
-	problem = Array.new
-	for i in 1..6
-		problem[i] = Array.new
-		for j in 1..5
-			problem[i][j] = Array.new
-			for k in 1..4
-				problem[i][j][k] = Problem.new(statement: "Trouver la valeur de " + i.to_s + " + " + j.to_s + " + " + k.to_s + ".", online: true, level: j, explanation: "Il s'avère que la réponse est " + (i+j+k).to_s + ".", number: i*1000 + j*100 + k*20, origin: "La nuit des temps.")
-				problem[i][j][k].section = section[i]
-				problem[i][j][k].save
-			end
-		end
-	end
-	
-	# Root
-	root = User.create(first_name: "Root", last_name: "Root", email: "root@root.com", password: "foobar", password_confirmation: "foobar", root: true, admin: true, year: 1990, country: "Belgique")
-	
-	# Admin
-	admin = User.create(first_name: "Admin", last_name: "Admin", email: "admin@admin.com", password: "foobar", password_confirmation: "foobar", root: false, admin: true, year: 1990, country: "Belgique")
-	
-	# User
-	user = Array.new
-	for i in 1..10
-		user[i] = User.new(first_name: "User", last_name: "User " + i.to_s, email: "user@user" + i.to_s + ".com", password: "foobar", password_confirmation: "foobar", root: false, admin: false, year: 2000, country: "Belgique")
-		if i % 2 == 1
-			user[i].wepion = true
-			user[i].save
-		end
-		
-		for j in 1..7
-			for k in 1..4
-				for l in 1..4
-					r = Random.rand(2)
-					if r == 0
-						solved = Solvedquestion.new(guess: 18, correct: false, nb_guess: Random.rand(3)+1)
-						solved.question = exercice[j][k][l]
-						solved.user = user[i]
-						solved.save
-					else
-						solved = Solvedquestion.new(guess: l, correct: true, nb_guess: Random.rand(3)+1, resolutiontime: DateTime.now)
-						solved.question = exercice[j][k][l]
-						solved.user = user[i]
-						solved.save
-						user[i].rating = user[i].rating + 3*l
-						user[i].save
-					end
-				end
-			end
-		end
-		
-		for j in 1..6
-			for k in 1..5
-				for l in 1..4
-					r = Random.rand(10)
-					if r == 0
-						# Soumission correcte
-						rr = Random.rand(30)
-						sub = Submission.new(content: "C'est facile, il suffit d'effectuer " + j.to_s + " + " + k.to_s + " qui donne " + (j+k).to_s + ", puis on ajoute " + l.to_s + " et cela donne " + (j+k+l).to_s + ".", status: (rr == 0 ? 0 : 2), intest: false, visible: true, score: -1, lastcomment: (rr != 0 ? DateTime.now : DateTime.now + 1/1440.0), star: (rr != 0 and Random.rand(5) == 0))
-						sub.problem = problem[j][k][l]
-						sub.user = user[i]
-						sub.save
-						if rr != 0
-							# Dans ce cas c'est corrigé (sinon en attente)
-							solved = Solvedproblem.new(resolutiontime: DateTime.now, truetime: DateTime.now)
-							solved.user = user[i]
-							solved.problem = problem[j][k][l]
-							solved.submission = sub
-							solved.save
-							
-							corrector = (Random.rand(2) == 0 ? admin : root)
-							
-							correction = Correction.new(content: "Parfait!")
-							correction.user = corrector
-							correction.submission = sub
-							correction.save
-							
-							following = Following.new(read: true)
-							following.user = corrector
-							following.submission = sub
-							following.save
-							
-							user[i].rating = user[i].rating + 15*k
-							user[i].save
-						end
-					elsif r == 1
-						# Soumission fausse
-						rr = Random.rand(30)
-						sub = Submission.new(content: "C'est facile, il suffit d'effectuer " + j.to_s + " + " + k.to_s + " qui donne " + (j+k+1).to_s + ", puis on ajoute " + l.to_s + " et cela donne " + (j+k+l+1).to_s + ".", status: (rr == 0 ? 0 : 1), intest: false, visible: true, score: -1, lastcomment: (rr != 0 ? DateTime.now : DateTime.now + 1/1440.0), star: false)
-						sub.problem = problem[j][k][l]
-						sub.user = user[i]
-						sub.save
-						if rr != 0
-							# Dans ce cas c'est corrigé (sinon en attente)
-							
-							corrector = (Random.rand(2) == 0 ? admin : root)
-							
-							correction = Correction.new(content: "Il y a une petite erreur quelquepart...")
-							correction.user = corrector
-							correction.submission = sub
-							correction.save
-							
-							following = Following.new(read: true)
-							following.user = corrector
-							following.submission = sub
-							following.save
-						end
-					end
-				end
-			end
-		end
-	end
-end
+# Colors
+Color.create(pt: 0,    name: "Novice",       color: "#888888", font_color: "#888888", femininename: "Novice")
+Color.create(pt: 70,   name: "Débutant",     color: "#08D508", font_color: "#08D508", femininename: "Débutante")
+Color.create(pt: 200,  name: "Initié",       color: "#008800", font_color: "#008800", femininename: "Initiée")
+Color.create(pt: 400,  name: "Compétent",    color: "#00BBEE", font_color: "#00BBEE", femininename: "Compétente")
+Color.create(pt: 750,  name: "Qualifié",     color: "#0033FF", font_color: "#0033FF", femininename: "Qualifiée")
+Color.create(pt: 1250, name: "Expérimenté",  color: "#DD77FF", font_color: "#DD77FF", femininename: "Expérimentée")
+Color.create(pt: 2000, name: "Chevronné",    color: "#A000A0", font_color: "#A000A0", femininename: "Chevronnée")
+Color.create(pt: 3200, name: "Expert",       color: "#FFA000", font_color: "#FFA000", femininename: "Experte")
+Color.create(pt: 5000, name: "Maître",       color: "#FF4400", font_color: "#FF4400", femininename: "Maître")
+Color.create(pt: 7500, name: "Grand Maître", color: "#CC0000", font_color: "#CC0000", femininename: "Grand Maître")

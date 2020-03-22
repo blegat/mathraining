@@ -96,7 +96,7 @@ class User < ActiveRecord::Base
   validates :password, length: { minimum: 6 }, on: :create
   validates :password, length: { minimum: 6 }, on: :update, allow_blank: true
   validates :password_confirmation, presence: true, on: :create
-  validates_confirmation_of :email
+  validates_confirmation_of :email, case_sensitive: false
   validates :year, presence: true
   validates :country, presence: true
 
