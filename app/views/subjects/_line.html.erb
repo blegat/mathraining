@@ -1,9 +1,9 @@
 <!-- S'agit-il d'un nouveau message? On le met dans style -->
-<% m = s.messages.order(:id).last %>
-<% if m.nil? %>
-  <% m = s %>
+<% last_message = s.messages.order(:created_at).last %>
+<% if last_message.nil? %>
+  <% last_message = s %>
 <% end %>
-<% if current_user.sk.forumseen < s.lastcomment && m.user_id != current_user.sk.id %>
+<% if current_user.sk.forumseen < s.lastcomment && last_message.user_id != current_user.sk.id %>
   <% style = "background-color:#fffad2;" %>
 <% end %>
 <tr style="<%= style %>">
@@ -53,15 +53,10 @@
     <%= x = s.messages.count %>
   </td>
 
-  <% if x > 0 %>
-    <% last = s.messages.order(:id).last %>
-    <% qui = last.user %>
-    <% date = last.created_at %>
-  <% else %>
-    <% qui = s.user %>
-    <% date = s.created_at %>
-  <% end %>
+  <% qui = last_message.user %>
+  <% date = last_message.created_at %>
   <% datenow = DateTime.now %>
+  <% num_messages = s.messages.count %>
 
   <!-- Cas normal -->
 
@@ -76,8 +71,7 @@
 
   <!-- Date du dernier message -->
   <td class="hidden-small" style="width:200px; text-align:center; vertical-align:middle;">
-    <% tot = s.messages.count %>
-    <% page = [0,((tot-1)/10).floor].max + 1 %>
+    <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
     <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
       <% affiche_date(date, datenow) %>
@@ -103,12 +97,11 @@
     <!-- Date du dernier message -->
     <tr>
     <td style="width:200px; text-align:center; vertical-align:middle; padding-top:5px;">
-      <% tot = s.messages.count %>
-      <% page = [0,((tot-1)/10).floor].max + 1 %>
+      <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
-        <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
-          <% affiche_date(date, datenow) %>
-        <% end %>
+      <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
+        <% affiche_date(date, datenow) %>
+      <% end %>
     </td>
     </tr>
   </table>

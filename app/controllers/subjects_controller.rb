@@ -72,7 +72,7 @@ class SubjectsController < ApplicationController
 
   # Montre un sujet
   def show
-    @messages = @subject.messages.order(:id).paginate(:page => params[:page], :per_page => 10)
+    @messages = @subject.messages.order(:created_at).paginate(:page => params[:page], :per_page => 10)
   end
 
   # Créer un sujet
@@ -303,18 +303,20 @@ class SubjectsController < ApplicationController
       flash[:danger] = "Ce sujet n'existe pas."
       redirect_to @subject and return
     end
+
+    if @migreur.created_at > @subject.created_at
+      flash[:danger] = "Le sujet le plus récent doit être migré vers le sujet le moins récent."
+      redirect_to @subject and return
+    end
     
     premier_message = Message.new(content: @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]", created_at: @subject.created_at)
     premier_message.user = @subject.user
     premier_message.subject = @migreur
     premier_message.save
 
-    @subject.messages.order(:id).each do |m|
-      newm = Message.new(content: m.content, created_at: m.created_at)
-      newm.user = m.user
-      newm.subject = @migreur
-      newm.save
-      m.delete
+    @subject.messages.each do |m|
+      m.subject = @migreur
+      m.save
     end
 
     @migreur.lastcomment = [@migreur.lastcomment, @subject.lastcomment].max
