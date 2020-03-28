@@ -27,10 +27,10 @@
       <td><%= u.email %></td>
       <% lastco = u.last_connexion %>
       <td>
-      <% if lastco.in_time_zone.year < 2010 %>
+      <% if lastco.year < 2010 %>
         Jamais
       <% else %>
-        <%= write_date_only(lastco.in_time_zone) %>
+        <%= write_date_only(lastco) %>
       <% end %>
       </td>
       </tr>

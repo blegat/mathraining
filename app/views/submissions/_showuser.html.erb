@@ -14,7 +14,7 @@
 
 <!-- Date de la soumission -->
 <td style="width:250px;">
-<%= write_date(s.created_at.in_time_zone) %>
+<%= write_date(s.created_at) %>
 <% if s.intest && current_user.sk.admin? %>
 - <b> TEST</b>
 <% end %>
@@ -22,7 +22,7 @@
 
 <!-- Dernière activité -->
 <td class="hidden-xs" style="width:250px;">
-<%= write_date(s.lastcomment.in_time_zone) %>
+<%= write_date(s.lastcomment) %>
 </td>
 
 <!-- Voir -->

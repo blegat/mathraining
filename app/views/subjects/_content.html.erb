@@ -27,7 +27,7 @@
   </td>
 
   <!-- Date -->
-  <td class="date"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at.in_time_zone) %><% end %></td>
+  <td class="date"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at) %><% end %></td>
   </tr>
 
   <!-- Cas gsm -->
@@ -54,7 +54,7 @@
   </td></tr>
 
   <!-- Date -->
-  <tr class="visible-xs <%= coul %>"><td class="date"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at.in_time_zone) %><% end %></td></tr>
+  <tr class="visible-xs <%= coul %>"><td class="date"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at) %><% end %></td></tr>
 
   <!-- Contenu du message -->
   <tr><td colspan="2" class="content">

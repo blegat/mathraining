@@ -21,9 +21,8 @@ En <span style="color:green;">vert</span>, les soumissions correctes, en <span s
 <% amonthago = today - 32 %>
 
 <% Submission.where("created_at > ? AND visible = ?", amonthago, true).each do |s| %>
-  <% date = s.created_at.in_time_zone %>
-  <% realdate = Date.new(date.year, date.month, date.day) %>
-  <% diff = (today - realdate).to_i %>
+  <% date = s.created_at.in_time_zone.to_date %>
+  <% diff = (today - date).to_i %>
   <% if diff < 31 %>
     <% if s.status == 0 %>
       <% numberdontknow[diff] = numberdontknow[diff] + 1 %>

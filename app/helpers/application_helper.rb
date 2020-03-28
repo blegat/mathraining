@@ -164,36 +164,52 @@ module ApplicationHelper
     
     return m2
   end
+
+  def write_hour(date_utc)
+    date = date_utc.in_time_zone
+    return "#{date.hour}h#{"0" if date.min < 10}#{date.min}"
+  end
+
+  def write_hour_only(date_utc)
+    date = date_utc.in_time_zone
+    return "#{date.hour}h"
+  end
   
-  def write_date(date)
+  def write_date(date_utc)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     return "#{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}"
   end
   
-  def write_date_only(date)
+  def write_date_only(date_utc)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     return "#{ date.day } #{ mois[date.month-1]} #{date.year}"
   end
   
-  def write_date_with_day(date)
+  def write_date_with_day(date_utc)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     return "#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}"
   end
   
-  def write_date_only_with_day(date)
+  def write_date_only_with_day(date_utc)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     return "#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year}"
   end
   
-  def write_date_with_link(date, contest, contestproblem)
+  def write_date_with_link(date_utc, contest, contestproblem)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     return link_to "#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}", "https://www.timeanddate.com/worldclock/fixedtime.html?msg=Mathraining+-+Concours+%23#{contest.number}+-+Probl%C3%A8me+%23#{contestproblem.number}&iso=#{date.year}#{'0' if date.month < 10}#{date.month}#{'0' if date.day < 10}#{date.day}T#{'0' if date.hour < 10}#{date.hour}#{'0' if date.min < 10}#{date.min}&p1=48", :target => "blank_"
   end
   
-  def write_date_with_link_forum(date, contest, contestproblem)
+  def write_date_with_link_forum(date_utc, contest, contestproblem)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     return "[url=https://www.timeanddate.com/worldclock/fixedtime.html?msg=Mathraining+-+Concours+%23#{contest.number}+-+Probl%C3%A8me+%23#{contestproblem.number}&iso=#{date.year}#{'0' if date.month < 10}#{date.month}#{'0' if date.day < 10}#{date.day}T#{'0' if date.hour < 10}#{date.hour}#{'0' if date.min < 10}#{date.min}&p1=48]#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}[/url]"

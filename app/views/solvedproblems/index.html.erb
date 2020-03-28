@@ -69,11 +69,10 @@ html>body tbody.scroll {
   <% table[level].each do |t| %>
     <tr style="background-color: <%= Section.color(t[:section]) %>;">
     <!-- Date -->
-    <% date = t[:time].in_time_zone %>
-    <td style="width:150px;" class="hidden-xs"><%= write_date_only(date) %></td>
+    <td style="width:150px;" class="hidden-xs"><%= write_date_only(t[:time]) %></td>
 
     <!-- Heure -->
-    <td style="width:50px;" class="hidden-xs"><center><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
+    <td style="width:50px;" class="hidden-xs"><center><%= write_hour(t[:time]) %></center></td>
 
     <!-- Qui -->
     <% user = User.find(t[:user_id]) %>

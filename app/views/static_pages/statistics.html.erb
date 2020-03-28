@@ -47,7 +47,7 @@
  <% date = a[:time].in_time_zone %>
   <tr style="background-color:<%= Section.color(a[:section]) %>;">
   <td style="width:150px;"><%= write_date_only(date) %> </td>
-  <td style="width:50px;"><center> <%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
+  <td style="width:50px;"><center><%= write_hour(date) %></center></td>
   <td><%= raw(a[:qui].linked_name) %></td>
   <td style="width:340px;"><%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %> <%= "(#{a[:chapter]})" %></td>
   <td style="width:50px;">

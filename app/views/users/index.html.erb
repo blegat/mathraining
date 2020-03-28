@@ -231,7 +231,7 @@ var goToLevel = function(lev, until) {
     <% end %>
     <% mylist.each do |u| %>
       <% inscription = u.created_at %>
-      <%= write_date_only(inscription.in_time_zone) %> :
+      <%= write_date_only(inscription) %> :
       <% if u.email_confirm %>
         <%= raw(u.linked_name) %> (<%= @allcountries[u.country_id][0] %>, <%= u.year if u.year > 0 %><%= ", W" if u.wepion %><%= u.group %>) <br/>
         <% else %>
@@ -250,7 +250,7 @@ var goToLevel = function(lev, until) {
   <% end %>
   <% mylist.each do |u| %>
     <% inscription = u.created_at %>
-    <%= write_date_only(inscription.in_time_zone) %> :
+    <%= write_date_only(inscription) %> :
     <% if u.email_confirm %>
       <%= raw(u.linked_name) %> (<%= @allcountries[u.country_id][0] %>, <%= u.year if u.year > 0 %><%= ", W" if u.wepion %><%= u.group %>) <br/>
     <% else %>

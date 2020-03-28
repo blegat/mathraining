@@ -1,4 +1,4 @@
-<% waiting = (exo.updated_at.to_f + total_waiting - DateTime.now.in_time_zone.to_i).floor %>
+<% waiting = (exo.updated_at.to_f + total_waiting - DateTime.now.to_i).floor %>
 <% waiting_m = waiting/60 %>
 <% waiting_s = waiting%60 %>
 <p id="waitbox" style="color:red;">Vous devez encore patienter <span id="clockbox" style="font-weight:bold;">0<%= waiting_m %>:<%= "0" if waiting_s < 10 %><%= waiting_s %></span>.</p>

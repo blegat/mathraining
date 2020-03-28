@@ -1,5 +1,5 @@
 <% total_waiting = 180 %>
-<% if !exo.nb_guess.nil? && exo.nb_guess >= 3 && DateTime.now.in_time_zone < exo.updated_at + total_waiting %>
+<% if !exo.nb_guess.nil? && exo.nb_guess >= 3 && DateTime.now < exo.updated_at + total_waiting %>
   <% needtowait = true %>
 <% else %>
   <% needtowait = false %>

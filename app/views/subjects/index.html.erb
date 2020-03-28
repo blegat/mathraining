@@ -2,18 +2,19 @@
 
 <!-- Fonction qui affiche la date du message -->
 <% def affiche_date(date, datenow) %>
-  <% if (datenow - date).floor >= 24*60*60 %>
+  <% between_dates = (datenow.to_i - date.to_i) %>
+  <% if between_dates >= 24*60*60 %>
     <%= write_date(date) %>
-  <% elsif (datenow - date).floor >= 60*60 %>
-    <% minute = ((datenow - date)/60).floor %>
+  <% elsif between_dates >= 60*60 %>
+    <% minute = (between_dates/60).floor %>
     <% heure = (minute / 60).floor %>
     <% minute = minute - 60*heure %>
     il y a <%= heure %> heure<%="s" if heure > 1 %>, <%= minute %> minute<%= "s" if minute > 1 %>
-  <% elsif (datenow - date).floor >= 60 %>
-    <% minute = ((datenow - date)/60).floor %>
+  <% elsif between_dates >= 60 %>
+    <% minute = (between_dates/60).floor %>
     il y a <%= minute %> minute<%= "s" if minute > 1 %>
   <% else %>
-    <% seconde = (datenow - date).floor %>
+    <% seconde = between_dates.floor %>
     il y a <%= seconde %> seconde<%= "s" if seconde > 1 %>
   <% end %>
 <% end %>

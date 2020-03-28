@@ -218,7 +218,8 @@ html>body tbody.scroll {
 
     <!-- On détermine si on rassemble les actes par minute, heure ou jour -->
     <% if !premier.nil? %>
-      <% if dernier.day != DateTime.now.in_time_zone.day || dernier.month != DateTime.now.in_time_zone.month || dernier.year != DateTime.now.in_time_zone.year %>
+      <% date_now = DateTime.now.in_time_zone %>
+      <% if dernier.day != date_now.day || dernier.month != date_now.month || dernier.year != date_now.year %>
         <% parquoi = "jour" %>
       <% elsif dernier.hour < premier.hour - 1 %>
         <% parquoi = "heure" %>
@@ -265,7 +266,7 @@ html>body tbody.scroll {
     <td style="width:150px;"><%= write_date_only(date) %></td>
 
     <!-- Heure -->
-    <td class="hidden-xs" style="width:50px; text-align:center;"><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></td>
+    <td class="hidden-xs" style="width:50px; text-align:center;"><%= write_hour(date) %></td>
 
     <!-- Quoi -->
     <td class="user-show-quoi">
@@ -372,7 +373,7 @@ html>body tbody.scroll {
   
   <!-- Date d'inscription -->
   <br/>
-  <center><b>Inscription</b> : <%= write_date_only(inscription.in_time_zone) %>
+  <center><b>Inscription</b> : <%= write_date_only(inscription) %>
   <span style="margin-left:10px; margin-right:10px;">-</span> 
   <b>Pays</b> :
   <% drapeau = "countries/" + @user.country.code + ".png" %>
@@ -392,7 +393,7 @@ html>body tbody.scroll {
       <%= moyenne_erreurs %> erreurs/exercice<br/>
     <% end %>
     <% lastco = @user.last_connexion %>
-    Dernière connexion : <%= write_date_only(lastco.in_time_zone) %><br/>
+    Dernière connexion : <%= write_date_only(lastco) %><br/>
     <%= "Groupe Wépion" if @user.wepion %> <%= " - Groupe " << @user.group if @user.group != "" %>
     </div>
     </div>
@@ -538,9 +539,9 @@ html>body tbody.scroll {
           <% if parquoi == "jour" %>
             ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
           <% elsif parquoi == "heure" %>
-            ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h",pct*<%= 50+w %>,pct*471);
+            ctx.fillText("<%= write_hour_only(a[:time]) %>",pct*<%= 50+w %>,pct*471);
           <% else %>
-            ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
+            ctx.fillText("<%= write_hour(a[:time]) %>",pct*<%= 50+w %>,pct*471);
           <% end %>
           }
           ctx.moveTo(pct*<%= 50+w %>, pct*5);

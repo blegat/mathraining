@@ -323,7 +323,7 @@ class UsersController < ApplicationController
     if @user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?
       flash[:danger] = "Ce lien n'est pas valide (ou a déjà été utilisé)."
       redirect_to root_path
-    elsif DateTime.now.in_time_zone > @user.recup_password_date_limit + 3600
+    elsif DateTime.now > @user.recup_password_date_limit + 3600
       flash[:danger] = "Ce lien n'est plus valide (il expirait après une heure). Veuillez en redemander un autre."
       redirect_to root_path
     else
@@ -347,7 +347,7 @@ class UsersController < ApplicationController
     if (@user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?)
       flash[:danger] = "Une erreur est survenue. Il semble que votre lien pour changer de mot de passe ne soit plus valide."
       redirect_to root_path
-    elsif DateTime.now.in_time_zone > @user.recup_password_date_limit + 3600
+    elsif DateTime.now > @user.recup_password_date_limit + 3600
       flash[:danger] = "Vous avez mis trop de temps à modifier votre mot de passe. Veuillez réitérer votre demande de changement de mot de passe."
       redirect_to root_path
     else

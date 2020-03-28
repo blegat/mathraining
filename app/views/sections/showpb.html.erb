@@ -174,8 +174,8 @@ Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieu
       Résolu par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
       <% first_sol = p.solvedproblems.order(:resolutiontime).first.resolutiontime.to_date %>
       <% last_sol = p.solvedproblems.order(:resolutiontime).last.resolutiontime.to_date %>
-      entre le <b><%= write_date_only(first_sol.in_time_zone) %></b><br/>
-      et le <b><%= write_date_only(last_sol.in_time_zone) %></b>
+      entre le <b><%= write_date_only(first_sol) %></b><br/>
+      et le <b><%= write_date_only(last_sol) %></b>
     <% else %>
       <i>Jamais résolu</i>
     <% end %>
