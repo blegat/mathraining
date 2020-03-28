@@ -4,28 +4,3 @@ Pour tout problème éventuel, contactez-nous à l'adresse suivante :<br/><br/>
 <center><%= image_tag "contact.jpg", :style => "width:80%; max-width:288px;" %></center><br/>
 
 Il vous est aussi possible de nous contacter via notre <i><%= link_to "Github repository", "https://github.com/blegat/mathraining" %></i> pour tout ce qui touche au site et à sa programmation.
-
-<script type="text/javascript">
-function TEST(){
-
-if (!Date.now) {
-    Date.now = function() { return new Date().getTime(); }
-    document.getElementById('ok_id').innerHTML = "Not ok"
-}
-else
-{
-document.getElementById('ok_id').innerHTML = "Ok"
-}
-
-var d = Date.now()
-document.getElementById('test_id').innerHTML = d.toString()
-
-}
-
-window.addEventListener("load",function(){
-TEST()
-},false);
-</script>
-
-<br/><br/>Test : <span id="ok_id"></span>
-<br/>Valeur : <span id="test_id"></span>
