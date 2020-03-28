@@ -37,14 +37,14 @@ def make_all
 			qcm[i][j] = Array.new
 			choice[i][j] = Array.new
 			for k in 1..4
-				exercice[i][j][k] = Question.new(statement: "Quelle est la valeur de " + k.to_s + "?", decimal: (k % 2 == 1), answer: k, position: k, online: true, explanation: "C'est du bon sens!", level: k, many_answers: false)
+				exercice[i][j][k] = Question.new(is_qcm: false, statement: "Quelle est la valeur de " + k.to_s + "?", decimal: (k % 2 == 1), answer: k, position: k, online: true, explanation: "C'est du bon sens!", level: k, many_answers: false)
 				exercice[i][j][k].chapter = chapitre[i][j]
 				exercice[i][j][k].save!
 			end
 			
 			# Qcms
 			for k in 1..3
-				qcm[i][j][k] = Question.new(statement: "Quelle est la valeur de " + k.to_s + "?", many_answers: (k % 2 == 1), position: 4+k, online: true, explanation: "C'est du bon sens!", level: k, decimal: false, answer: 0)
+				qcm[i][j][k] = Question.new(is_qcm: true, statement: "Quelle est la valeur de " + k.to_s + "?", many_answers: (k % 2 == 1), position: 4+k, online: true, explanation: "C'est du bon sens!", level: k, decimal: false, answer: 0)
 				qcm[i][j][k].chapter = chapitre[i][j]
 				qcm[i][j][k].save!
 				choice[i][j][k] = Array.new
