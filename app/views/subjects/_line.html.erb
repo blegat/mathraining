@@ -23,16 +23,7 @@
       <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
     <% end %>
 
-    <%= link_to s.title, subject_path(s, :q => q) %>
-    	<% if !s.category.nil? %>
-    	  - <%= s.category.name %>
-      <% elsif s.section.nil? %>
-
-      <% elsif s.chapter.nil? %>
-        - <%= s.section.name %>
-      <% else %>
-        - <%= s.chapter.name %>
-      <% end %>
+    <%= link_to s.title, subject_path(s, :q => q) %> - <%= get_category_name(s) %>
 
     <% if s.admin? || s.wepion? %>
       </td></tr></table>
@@ -74,7 +65,7 @@
     <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
     <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
-      <% affiche_date(date, datenow) %>
+      <%= write_date_from_now(date, datenow) %>
     <% end %>
   </td>
 
@@ -100,7 +91,7 @@
       <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
       <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
-        <% affiche_date(date, datenow) %>
+        <%= write_date_from_now(date, datenow) %>
       <% end %>
     </td>
     </tr>

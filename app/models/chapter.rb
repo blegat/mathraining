@@ -62,15 +62,6 @@ class Chapter < ActiveRecord::Base
     visited.to_a
   end
 
-  # Met le chapitre en LaTeX (beta)
-  def to_tex
-    content = "\\section{#{name}}\n"
-    content << theories.order(:position).inject("") do |sum, theory|
-      "#{sum}\n#{theory.to_tex}"
-    end
-    content
-  end
-
   private
 
   # Auxiliaire à recursive_prerequisites

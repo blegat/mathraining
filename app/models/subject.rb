@@ -31,6 +31,7 @@ class Subject < ActiveRecord::Base
   belongs_to :category
   belongs_to :question
   belongs_to :contest
+  belongs_to :problem
   has_many :followingsubjects, dependent: :destroy
   has_many :following_users, through: :followingsubjects, source: :user
   has_many :myfiles, as: :myfiletable, dependent: :destroy

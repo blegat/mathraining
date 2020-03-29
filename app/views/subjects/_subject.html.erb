@@ -3,9 +3,10 @@
 <div id="the<%= @champ %>" class="myoverflow">
 
 <% if !@subject.question.nil? %>
-	<%= render 'subjects/show_exo', f: @subject.question %>
-<% end %>
-<% if !@subject.contest.nil? %>
+  <%= render 'subjects/show_exo', q: @subject.question %>
+<% elsif !@subject.problem.nil? %>
+  <%= render 'subjects/show_prob', p: @subject.problem %>
+<% elsif !@subject.contest.nil? %>
   <%= render 'subjects/show_contest', contest: @subject.contest %>
 <% end %>
 

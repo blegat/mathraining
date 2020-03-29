@@ -74,26 +74,9 @@ html>body tbody.scroll {
       <% cansee[c.id] = true %>
     <% end %>
   <% else %>
-    <% debloque = Array.new %>
-    <% Chapter.all.to_a.each do |c| %>
-      <% debloque[c.id] = false %>
-    <% end %>
-
-    <% if @signed_in %>
-      <% current_user.sk.chapters.each do |c| %>
-        <% debloque[c.id] = true %>
-      <% end %>
-    <% end %>
-
-    <% Chapter.all.to_a.each do |c| %>
-      <% cansee[c.id] = true %>
-      <% if !section_fondation[c.section_id] %>
-        <% c.prerequisites.each do |p| %>
-          <% if !section_fondation[p.section_id] && !debloque[p.id] %>
-            <% cansee[c.id] = false %>
-          <% end %>
-        <% end %>
-      <% end %>
+    <% chapters_completion = get_chapters_completion(section_fondation) %>
+    <% Chapter.all.each do |c| %>
+      <% cansee[c.id] = are_exercises_accessible(c, section_fondation, chapters_completion) %>
     <% end %>
   <% end %>
 
@@ -186,14 +169,13 @@ html>body tbody.scroll {
       <% pt = pb.value %>
       <% nb_p = nb_p+1 %>
       <% peutvoir = enough_points %>
-      <% t = pb.virtualtest_id %>
-      <% if t == 0 && (!@signed_in || !current_user.sk.admin?) %>
-        <% pb.chapters.each do |c| %>
-          <% peutvoir = false if !debloque[c.id] %>
+      <% if (!@signed_in || !current_user.sk.admin?) && peutvoir %>
+        <% t = pb.virtualtest_id %>
+        <% if t == 0 %>
+          <% peutvoir = is_problem_accessible(pb, chapters_completion) %>
+        <% else %>
+          <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
         <% end %>
-      <% end %>
-      <% if t != 0 && (!@signed_in || !current_user.sk.admin?) %>
-        <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
       <% end %>
       <% p_encours = p_encours + 1 %>
       <% dernier = p.truetime.in_time_zone %>

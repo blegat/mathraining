@@ -1,0 +1,44 @@
+<!-- On vérifie que ce problème peut bien être vu -->
+<% if p.online %>
+  
+  <% probvisible = current_user.sk.admin? || has_enough_points() %>
+  
+  <% if !current_user.sk.admin? && probvisible %>
+    <% t = p.virtualtest_id %>
+    <% if t == 0 %>
+      <% p.chapters.each do |c| %>
+        <% probvisible = false if !c.section.fondation && !current_user.sk.chapters.exists?(c.id) %>
+      <% end %>
+    <% else %>
+      <% probvisible = false if current_user.sk.status(t) <= 0 %>
+    <% end %>
+  <% end %>
+
+  <% if !probvisible %>
+    <table class="table table-bordered reference greyy">
+    <tr><td class="title">Ce sujet fait référence à un problème auquel vous n'avez pas accès.</td></tr>
+    </table>
+	
+  <% else %>
+    <% if !current_user.sk.admin? %>
+      <% solution = current_user.sk.solution(p) %>
+    <% end %>
+	  
+    <% if current_user.sk.admin? %>
+      <table class="table table-bordered reference yellowy">
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p), :target => "_blank" %> :</td></tr>
+    <% elsif !solution.nil? %>
+      <table class="table table-bordered reference greeny">
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p, :sub => solution), :target => "_blank" %>, que vous avez résolu :</td></tr>
+    <% else %>
+      <table class="table table-bordered reference yellowy">
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
+    <% end %>
+
+    <!-- Enoncé -->
+    <tr><td style="padding:10px">
+    <%= raw(htmlise(p.statement)) %>
+    </td></tr>
+  <% end %>
+  </table>
+<% end %>

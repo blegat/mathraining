@@ -13,6 +13,7 @@ class SubjectsController < ApplicationController
   def index
     cherche_category = -1
     cherche_section = -1
+    cherche_section_problems = -1
     cherche_chapitre = -1
     cherche_personne = false
     q = -1
@@ -22,15 +23,20 @@ class SubjectsController < ApplicationController
     @section = nil
     if(params.has_key?:q)
       q = params[:q].to_i
-      if q > 999999
+      if q >= 1000000
         cherche_category = q/1000000
         @category = Category.find_by_id(cherche_category)
         if @category.nil?
           render 'errors/access_refused' and return
         end
-      elsif q > 999
-        cherche_section = q/1000
-        @section = Section.find_by_id(cherche_section)
+      elsif q >= 1000
+        if q % 1000 == 0
+          cherche_section = q/1000
+          @section = Section.find_by_id(cherche_section)
+        elsif q % 1000 == 1
+          cherche_section_problems = (q-1)/1000
+          @section = Section.find_by_id(cherche_section_problems)
+        end
         if @section.nil?
           render 'errors/access_refused' and return
         end
@@ -52,7 +58,7 @@ class SubjectsController < ApplicationController
     @importants = Array.new
     Subject.includes(:user, :category, :section, :chapter).where(important: true).order("lastcomment DESC").to_a.each do |s|
       if ((@signed_in && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (@signed_in && (current_user.sk.admin? || current_user.sk.wepion)))
-        if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
+        if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_section_problems >= 0 && !s.section.nil? && s.section.id == cherche_section_problems && !s.problem.nil?) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @importants.push(s)
         end
       end
@@ -61,7 +67,7 @@ class SubjectsController < ApplicationController
     @subjects = Array.new
     Subject.includes(:user, :category, :section, :chapter).where(important: false).order("lastcomment DESC").to_a.each do |s|
       if ((@signed_in && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (@signed_in && (current_user.sk.admin? || current_user.sk.wepion)))
-        if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
+        if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_section_problems >= 0 && !s.section.nil? && s.section.id == cherche_section_problems && !s.problem.nil?) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
           @subjects.push(s)
         end
       end
@@ -109,6 +115,7 @@ class SubjectsController < ApplicationController
       @subject.section = nil
       @subject.chapter = nil
       @subject.question = nil
+      @subject.problem = nil
     else
       section_id = category_id/1000
       @subject.category = nil
@@ -120,11 +127,24 @@ class SubjectsController < ApplicationController
       if chapter_id == 0
         @subject.chapter = nil
         @subject.question = nil
+        @subject.problem = nil
+      elsif chapter_id == -1
+        @subject.chapter = nil
+        @subject.question = nil
+        problem_id = params[:subject][:problem_id].to_i
+        if problem_id == 0
+          error_create(["Un problème doit être sélectionné."]) and return
+        end
+        @subject.problem = Problem.find_by_id(problem_id)
+        if @subject.problem.nil? # Here we can check that the user has indeed access to the problem but it is annoying to do
+          render 'errors/access_refused' and return
+        end
       else
         @subject.chapter = Chapter.find_by_id(chapter_id)
         if @subject.chapter.nil? || !@subject.chapter.online
           render 'errors/access_refused' and return
         end
+        @subject.problem = nil
         question_id = params[:subject][:question_id].to_i
         if question_id == 0
           @subject.question = nil
@@ -210,6 +230,7 @@ class SubjectsController < ApplicationController
         @subject.section = nil
         @subject.chapter = nil
         @subject.question = nil
+        @subject.problem = nil
       else
         section_id = category_id/1000
         @subject.category = nil
@@ -221,11 +242,24 @@ class SubjectsController < ApplicationController
         if chapter_id == 0
           @subject.chapter = nil
           @subject.question = nil
+          @subject.problem = nil
+        elsif chapter_id == -1
+          @subject.chapter = nil
+          @subject.question = nil
+          problem_id = params[:subject][:problem_id].to_i
+          if problem_id == 0
+            error_update(["Un problème doit être sélectionné."]) and return
+          end
+          @subject.problem = Problem.find_by_id(problem_id)
+          if @subject.problem.nil? # Here we can check that the user has indeed access to the problem but it is annoying to do
+            render 'errors/access_refused' and return
+          end
         else
           @subject.chapter = Chapter.find_by_id(chapter_id)
           if @subject.chapter.nil?
             render 'errors/access_refused' and return
           end
+          @subject.problem = nil
           question_id = params[:subject][:question_id].to_i
           if question_id == 0
             @subject.question = nil

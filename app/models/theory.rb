@@ -27,9 +27,4 @@ class Theory < ActiveRecord::Base
   validates :title, presence: true, length: { maximum: 255 }
   validates :content, presence: true, length: { maximum: 16000 }
   validates :position, presence: true, numericality: { greater_than_or_equal_to: 0 }
-
-  # Rend la théorie en LaTeX (beta)
-  def to_tex
-    "\\subsection{#{title}}\n#{html_to_tex(content)}"
-  end
 end

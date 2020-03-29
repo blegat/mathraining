@@ -29,16 +29,7 @@ Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieu
   <% section_fondation[s.id] = s.fondation %>
 <% end %>
 
-<% debloque = Array.new %>
-<% Chapter.all.to_a.each do |c| %>
-  <% debloque[c.id] = section_fondation[c.section_id] %>
-<% end %>
-
-<% if !current_user.sk.admin? %>
-  <% current_user.sk.chapters.each do |c| %>
-    <% debloque[c.id] = true %>
-  <% end %>
-<% end %>
+<% chapters_completion = get_chapters_completion(section_fondation) %>
 
 <!-- On parcourt tous les niveaux -->
 <% (1..5).each do |level| %>
@@ -53,15 +44,7 @@ Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieu
 <% if p.online? || current_user.sk.admin? %>
 
   <!-- On regarde si on peut le voir ou non -->
-  <% visible = true %>
-
-  <% if !current_user.sk.admin? %>
-    <% p.chapters.each do |c| %>
-      <% if !debloque[c.id] %>
-        <% visible = false %>
-      <% end %>
-    <% end %>
-  <% end %>
+  <% visible = current_user.sk.admin? || is_problem_accessible(p, chapters_completion) %>
 
   <% t = p.virtualtest %>
 
