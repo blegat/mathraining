@@ -2,10 +2,10 @@
 class SubmissionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect]
   before_action :root_user, only: [:update_score, :uncorrect]
-  before_action :admin_user_or_in_test, only: [:destroy]
   before_action :get_problem
   before_action :get_submission, only: [:destroy]
   before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_brouillon, :update_intest, :update_score, :uncorrect]
+  before_action :admin_user_or_in_test, only: [:destroy]
   before_action :corrector_user_having_access, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
