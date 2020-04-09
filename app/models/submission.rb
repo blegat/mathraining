@@ -34,12 +34,13 @@ class Submission < ActiveRecord::Base
   validates :user_id, presence: true
   validates :problem_id, presence: true
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
-  validates :status, presence: true, inclusion: { in: [-1, 0, 1, 2, 3] }
+  validates :status, presence: true, inclusion: { in: [-1, 0, 1, 2, 3, 4] }
   # -1 : brouillon
   # 0: pas corrigé
-  # 1: [corrigé et répondu et]* corrigé ou lu
+  # 1: erroné (lu)
   # 2: résolu
   # 3: erroné + commentaire d'un étudiant jamais lu
+  # 4: plagié (plus possible de soumettre sur ce problème ni de commenter)
 
   # Rend true si la soumission est correcte
   def correct?
@@ -56,7 +57,7 @@ class Submission < ActiveRecord::Base
         'tiret.gif'
       when 0
         'tiret.gif'
-      when 1, 3
+      when 1, 3, 4
         'X.gif'
       when 2
         'V.gif'

@@ -77,7 +77,8 @@ var showFalse = function () {
     <tbody class="scroll">
     <% submissions.each do |s| %>
       <%= render 'submissions/showuser', s: s %>
-      <% if s.status == 0 %>
+      <% if s.status == 0 or s.status == 4 %>
+        <!-- Solution en attente ou plagiée -->
         <% @newsub = false %>
       <% end %>
     <% end %>
@@ -124,7 +125,7 @@ var showFalse = function () {
 
 <% end %>
 
-<!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées -->
+<!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées, en attente ou plagiée -->
 <% if current_user.sk.admin || (current_user.sk.corrector && current_user.sk.pb_solved?(problem)) %>
 
   <h3>Soumissions erronées ou en attente</h3>

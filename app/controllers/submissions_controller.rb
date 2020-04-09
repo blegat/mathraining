@@ -1,11 +1,11 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
-  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect]
-  before_action :root_user, only: [:update_score, :uncorrect]
+  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :mark_as_plagiarism]
+  before_action :root_user, only: [:update_score, :uncorrect, :mark_as_plagiarism]
   before_action :get_problem
   before_action :get_submission, only: [:destroy]
-  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_brouillon, :update_intest, :update_score, :uncorrect]
-  before_action :admin_user_or_in_test, only: [:destroy]
+  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_brouillon, :update_intest, :update_score, :uncorrect, :mark_as_plagiarism]
+  before_action :root_user_or_in_test, only: [:destroy]
   before_action :corrector_user_having_access, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
@@ -237,7 +237,7 @@ class SubmissionsController < ApplicationController
     redirect_to problem_path(@problem, :sub => @submission)
   end
   
-  # Marquer une soumission correct comme erronée
+  # Marquer une soumission correcte comme erronée
   def uncorrect
     u = @submission.user
     if @submission.status == 2
@@ -283,6 +283,12 @@ class SubmissionsController < ApplicationController
     redirect_to problem_path(@problem, :sub => @submission)
   end
 
+  def mark_as_plagiarism
+    @submission.status = 4
+    @submission.save
+    redirect_to problem_path(@problem, :sub => @submission)
+  end
+
   ########## PARTIE PRIVEE ##########
   private
 
@@ -293,8 +299,11 @@ class SubmissionsController < ApplicationController
 
   # Peut envoyer une soumission
   def can_submit
-    lastsub = Submission.where(:user_id => current_user.sk, :problem_id => @problem).order('created_at')
-    redirect_to problem_path(@problem) if (!lastsub.empty? && lastsub.last.status == 0)
+    Submission.where(:user_id => current_user.sk, :problem_id => @problem).each do |s|
+      if s.status == 0 or s.status == 4 # Soumission en attente de correction, ou plagiée
+        redirect_to problem_path(@problem) and return
+      end
+    end
   end
   
   def get_submission
@@ -354,9 +363,9 @@ class SubmissionsController < ApplicationController
     end
   end
   
-  def admin_user_or_in_test
+  def root_user_or_in_test
     @problem = @submission.problem
-    if !current_user.sk.admin?
+    if !current_user.sk.root?
       in_test
     end
   end

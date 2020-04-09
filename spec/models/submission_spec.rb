@@ -26,7 +26,7 @@ describe Submission do
     it { should_not be_valid }
   end
   describe "when the status is not in the allowed range" do
-    before { @p.status = 4 }
+    before { @p.status = 5 }
     it { should_not be_valid }
   end
 
