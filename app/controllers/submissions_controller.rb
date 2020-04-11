@@ -302,7 +302,7 @@ class SubmissionsController < ApplicationController
 
       @all_found = Array.new
 
-      @problem.submissions.where(:visible => true).each do |s|
+      @problem.submissions.where(:visible => true).order("created_at DESC").each do |s|
         pos = s.content.index(@string_to_search)
         if !pos.nil?
           @all_found.push([s, strip_content(s.content, @string_to_search, pos)])
