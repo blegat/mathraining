@@ -295,19 +295,23 @@ class SubmissionsController < ApplicationController
   def search_script
     @problem = @submission.problem
     @string_to_search = params[:string_to_search]
-    search_in_comments = !params[:search_in_comments].nil?
+    @enough_caracters = (@string_to_search.size >= 3)
 
-    @all_found = Array.new
+    if @enough_caracters
+      search_in_comments = !params[:search_in_comments].nil?
 
-    @problem.submissions.where(:visible => true).each do |s|
-      pos = s.content.index(@string_to_search)
-      if !pos.nil?
-        @all_found.push([s, strip_content(s.content, @string_to_search, pos)])
-      elsif search_in_comments
-        s.corrections.where(:user => s.user).each do |c|
-          pos = c.content.index(@string_to_search)
-          if !pos.nil?
-            @all_found.push([s, strip_content(c.content, @string_to_search, pos)])
+      @all_found = Array.new
+
+      @problem.submissions.where(:visible => true).each do |s|
+        pos = s.content.index(@string_to_search)
+        if !pos.nil?
+          @all_found.push([s, strip_content(s.content, @string_to_search, pos)])
+        elsif search_in_comments
+          s.corrections.where(:user => s.user).each do |c|
+            pos = c.content.index(@string_to_search)
+            if !pos.nil?
+              @all_found.push([s, strip_content(c.content, @string_to_search, pos)])
+            end
           end
         end
       end

@@ -1,18 +1,24 @@
 var loading = document.getElementById("loading_results");
 var none = document.getElementById("none_results");
+var err = document.getElementById("error_results");
 var tab = document.getElementById("tab_results");
 var tbody = tab.getElementsByTagName("tbody")[0];
 
-tbody.innerHTML = ""
-<% @all_found.each do |r| %>
-  tbody.insertAdjacentHTML('beforeend', '<%= escape_javascript(render 'submissions/one_search_result', r: r) %>');
-<% end %>
-
-loading.style.display = 'none';
-
-<% if @all_found.empty? %>
-  none.style.display = 'inline';
+<% if !@enough_caracters %>
+  loading.style.display = 'none'
+  err.style.display = 'inline'
 <% else %>
-  tab.style.display = 'table';
-  tab.style.width = 'auto';
+  tbody.innerHTML = ""
+  <% @all_found.each do |r| %>
+    tbody.insertAdjacentHTML('beforeend', '<%= escape_javascript(render 'submissions/one_search_result', r: r) %>');
+  <% end %>
+
+  loading.style.display = 'none';
+
+  <% if @all_found.empty? %>
+    none.style.display = 'inline';
+  <% else %>
+    tab.style.display = 'table';
+    tab.style.width = 'auto';
+  <% end %>
 <% end %>

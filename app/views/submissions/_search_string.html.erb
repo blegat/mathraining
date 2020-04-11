@@ -7,6 +7,7 @@
   var showSearch = function() {
     document.getElementById("loading_results").style.display = 'inline';
     document.getElementById("none_results").style.display = 'none';
+    document.getElementById("error_results").style.display = 'none';
     document.getElementById("tab_results").style.display = 'none';
   }
 </script>
@@ -27,6 +28,7 @@
 
 <p id="loading_results" style="display:none;"><br/>Recherche...</p>
 <p id="none_results" style="display:none;"><br/>Aucun résultat.</p>
+<p id="error_results" style="display:none;"><br/>La chaîne doit contenir au moins 3 caractères.</p>
 
 <table class="table table-bordered tex2jax_ignore" style="width:auto; display:none; margin-top:20px;" id="tab_results">
   <thead class="fixed">
