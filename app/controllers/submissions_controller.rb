@@ -1,12 +1,12 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
-  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :mark_as_plagiarism]
+  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :mark_as_plagiarism, :search_script]
   before_action :root_user, only: [:update_score, :uncorrect, :mark_as_plagiarism]
   before_action :get_problem
   before_action :get_submission, only: [:destroy]
-  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_brouillon, :update_intest, :update_score, :uncorrect, :mark_as_plagiarism]
+  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_brouillon, :update_intest, :update_score, :uncorrect, :mark_as_plagiarism, :search_script]
   before_action :root_user_or_in_test, only: [:destroy]
-  before_action :corrector_user_having_access, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
+  before_action :corrector_user_having_access, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :search_script]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
   before_action :has_access, only: [:create]
@@ -216,6 +216,7 @@ class SubmissionsController < ApplicationController
     end
   end
 
+  # Supprimer une soumission
   def destroy
     @submission.destroy
     if current_user.sk.admin?
@@ -283,10 +284,38 @@ class SubmissionsController < ApplicationController
     redirect_to problem_path(@problem, :sub => @submission)
   end
 
+  # Marquer la solution comme étant du plagiat
   def mark_as_plagiarism
     @submission.status = 4
     @submission.save
     redirect_to problem_path(@problem, :sub => @submission)
+  end
+
+  # Chercher une chaine de caractères dans toutes les soumissions
+  def search_script
+    @problem = @submission.problem
+    @string_to_search = params[:string_to_search]
+    search_in_comments = !params[:search_in_comments].nil?
+
+    @all_found = Array.new
+
+    @problem.submissions.where(:visible => true).each do |s|
+      pos = s.content.index(@string_to_search)
+      if !pos.nil?
+        @all_found.push([s, strip_content(s.content, @string_to_search, pos)])
+      elsif search_in_comments
+        s.corrections.where(:user => s.user).each do |c|
+          pos = c.content.index(@string_to_search)
+          if !pos.nil?
+            @all_found.push([s, strip_content(c.content, @string_to_search, pos)])
+          end
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.js
+    end
   end
 
   ########## PARTIE PRIVEE ##########
@@ -496,5 +525,20 @@ class SubmissionsController < ApplicationController
     else
       redirect_to root_path
     end
+  end
+
+  # Private method used to create a preview of a substring of a string
+  def strip_content(content, string_found, pos)
+    start1 = [pos - 30, 0].max
+    if start1 < 4
+      start1 = 0
+    end
+    stop1 = pos
+    start2 = pos + string_found.size
+    stop2 = [start2 + 30, content.size].min
+    if stop2 > content.size - 4
+      stop2 = content.size
+    end
+    return [(start1 > 0 ? "..." : "") + content[start1, stop1-start1], content[start2, stop2-start2] + (stop2 < content.size ? "..." : "")]
   end
 end

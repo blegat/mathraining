@@ -3,14 +3,10 @@
 <% else %>
   <% str = "false" %>
 <% end %>
-var button = document.getElementById("btn_<%= str %>");
 var loading = document.getElementById("loading_<%= str %>");
 var none = document.getElementById("none_<%= str %>");
 var tab = document.getElementById("all_<%= str %>");
 var tbody = tab.getElementsByTagName("tbody")[0];
-
-button.style.display = 'none';
-loading.style.display = 'inline';
 
 <% @submissions.each do |s| %>
   tbody.insertAdjacentHTML('beforeend', '<%= escape_javascript(render 'submissions/showadmin', s: s, situation: 3) %>');

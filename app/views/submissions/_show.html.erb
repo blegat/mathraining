@@ -164,3 +164,8 @@
     <% end %>
   </center>
 <% end %>
+
+<!-- Chercher un possible plagiat -->
+<% if current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk) %>
+  <%= render 'submissions/search_string' %>
+<% end %>

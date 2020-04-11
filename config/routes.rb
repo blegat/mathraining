@@ -45,7 +45,9 @@ Mathraining::Application.routes.draw do
     match '/latex', to: 'theories#latex', :via => [:get], as: :latex
   end
 
-  resources :submissions, only: [:index, :destroy];
+  resources :submissions, only: [:index, :destroy] do
+    match '/search_script', to: 'submissions#search_script', :via => [:post], as: :search_script
+  end
   match '/reserve', to: 'submissions#reserve', :via => [:get], as: :reserve
   match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
 
