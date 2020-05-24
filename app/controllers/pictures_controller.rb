@@ -2,7 +2,7 @@
 class PicturesController < ApplicationController
   before_action :signed_in_user, only: [:show, :new]
   before_action :signed_in_user_danger, only: [:create, :destroy]
-  before_action :admin_user
+  before_action :admin_user_or_chapter_creator
   before_action :get_picture, only: [:show, :destroy]
   before_action :good_person, only: [:show, :destroy]
 
@@ -39,6 +39,12 @@ class PicturesController < ApplicationController
   def get_picture
     @pic = Picture.find_by_id(params[:id])
     if @pic.nil?
+      render 'errors/access_refused' and return
+    end
+  end
+
+  def admin_user_or_chapter_creator
+    if !@signed_in || (!current_user.sk.admin && current_user.sk.chaptercreations.count == 0)
       render 'errors/access_refused' and return
     end
   end
