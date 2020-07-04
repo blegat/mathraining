@@ -467,7 +467,7 @@ class UsersController < ApplicationController
       redirect_to @user and return
     end
     current_user.sk.followed_users.append(@user)
-    flash[:success] = "Vous suivez maintenant " + @user.fullname + "."
+    flash[:success] = "Vous suivez maintenant #{ @user.name }."
     redirect_to @user
   end
 
@@ -476,7 +476,7 @@ class UsersController < ApplicationController
       redirect_to @user and return
     end
     current_user.sk.followed_users.delete(@user)
-    flash[:success] = "Vous ne suivez plus " + @user.fullname + "."
+    flash[:success] = "Vous ne suivez plus #{ @user.name }."
     redirect_to @user
   end
 
