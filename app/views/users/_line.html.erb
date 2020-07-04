@@ -1,24 +1,20 @@
-<% rating = user.rating %>
-
-<% if @recent[user.id] > 600 %>
+<% if recent > 600 %>
   <tr style="background-color:rgb(50, 250, 50);">
 <% else %>
-  <tr style="background-color:rgb(<%= 250-@recent[user.id]/3 %>,250,<%= 250-@recent[user.id]/3 %>)">
+  <tr style="background-color:rgb(<%= 250-recent/3 %>,250,<%= 250-recent/3 %>)">
 <% end %>
 
 <!-- Rang -->
-<td><center><%= "#{ @rank }." if rating != @previouspoint %></center></td>
+<td><center><%= "#{ global_rank }." if global_rank != previous_rank %></center></td>
 
 <!-- Nom -->
-<td><%= raw(user.linked_name) %></td>
+<td><%= raw(linked_name) %></td>
 
 <!-- Drapeau -->
 <td style="text-align:center;">
-<% drapeau = "countries/" + @allcountries[user.country_id][1] + ".png" %>
-<%= image_tag drapeau, :title => @allcountries[user.country_id][0], :height => "15px;" %>
+<% drapeau = "countries/" + @allcountries[country][1] + ".png" %>
+<%= image_tag drapeau, :title => @allcountries[country][0], :height => "15px;" %>
 </td>
-
-<% @previouspoint = rating %>
 
 <!-- Score -->
 <td><center><%= rating %></center></td>
@@ -29,7 +25,7 @@
   <% if m == 0 %>
     <% toprint = "-" %>
   <% else %>
-    <% rate = @persection[user.id][s.id] %>
+    <% rate = persection[s.id] %>
     <% if rate == 0 %>
       <% toprint = "-" %>
     <% else %>
@@ -42,21 +38,9 @@
 <!-- Activité récente -->
 <td class="hidden-small">
 <center>
-  <% if @recent[user.id] > 0 %>
-    + <%= @recent[user.id] %>
+  <% if recent > 0 %>
+    + <%= recent %>
   <% end %>
 </center>
 </td>
-
-<!-- Admin -->
-<% if @signed_in && current_user.sk.admin %>
-  <td class="hidden-small"><center><%= user.year if user.year > 0 %><%= "?" if user.year == 0 %></center></td>
-  <td class="hidden-small"><center>
-    <% if user.wepion %>
-      W<%= user.group %>
-    <% end %>
-  </center></td>
-<% end %>
 </tr>
-
-<% @rank = @rank + 1 %>

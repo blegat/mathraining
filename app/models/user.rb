@@ -69,6 +69,9 @@ class User < ActiveRecord::Base
   has_many :links
   has_many :discussions, through: :links # dependent: :destroy does NOT destroy the associated discussions, but only the link!
   belongs_to :country
+
+  has_many :followingusers, dependent: :destroy
+  has_many :followed_users, :class_name => "User", through: :followingusers, :foreign_key => "followed_user_id"
   
   has_many :chaptercreations, dependent: :destroy
   has_many :creating_chapters, through: :chaptercreations, source: :chapter

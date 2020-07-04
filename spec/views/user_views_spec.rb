@@ -13,13 +13,14 @@ describe "User views" do
   describe "visitor" do
     describe "visit user/index" do
       before { visit users_path }
-      it { should have_selector("h1", text: "Utilisateurs classés") }
+      it { should have_selector("h1", text: "Scores") }
     end
 
     describe "visit user/show" do
       before { visit user_path(user) }
       it { should have_selector("h1", text: user.name) }
-      it { should_not have_button("Envoyer un message") }
+      it { should_not have_link("Envoyer un message") }
+      it { should_not have_link("Suivre") }
     end
   end
   
@@ -28,9 +29,7 @@ describe "User views" do
     
     describe "visit user/index" do
       before { visit users_path }
-      it { should_not have_selector("h2", text: "Inscriptions récentes") }
-      it { should_not have_selector("h2", text: "Utilisateurs non classés") }
-      it { should_not have_selector("h2", text: "Administrateurs") }
+      it { should have_selector("h1", text: "Scores") }
     end
 
     describe "visit user/show" do
@@ -38,12 +37,14 @@ describe "User views" do
       it { should have_selector("h1", text: user.name) }
       it { should_not have_selector("h2", text: "Informations") }
       it { should_not have_link("Envoyer un message") }
+      it { should_not have_link("Suivre") }
       it { should_not have_content(user.email) }
     end
     
     describe "visit user/show of somebody else" do
       before { visit user_path(other_user) }
       it { should have_link("Envoyer un message") }
+      it { should have_link("Suivre") }
     end
   end
   
@@ -52,9 +53,7 @@ describe "User views" do
     
     describe "visit user/index" do
       before { visit users_path }
-      it { should_not have_selector("h2", text: "Inscriptions récentes") }
-      it { should have_selector("h2", text: "Utilisateurs non classés") }
-      it { should have_selector("h2", text: "Administrateurs") }
+      it { should have_selector("h1", text: "Scores") }
       it { should_not have_button("Modifier les niveaux et couleurs") }
     end
 
@@ -70,7 +69,6 @@ describe "User views" do
     
     describe "visit user/index" do
       before { visit users_path }
-      it { should have_selector("h2", text: "Inscriptions récentes") }
       it { should have_button("Modifier les niveaux et couleurs") }
     end
   end

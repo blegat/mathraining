@@ -1,9 +1,9 @@
 #encoding: utf-8
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups, :read_legal]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group]
+  before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups, :read_legal, :followed_users]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user]
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
-  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password]
+  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:take_skin, :unactivate, :reactivate, :switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub]
@@ -13,123 +13,104 @@ class UsersController < ApplicationController
 
   # Index de tous les users avec scores
   def index
-    @number_by_load = 100
-    @pays = 0
+    @number_by_page = 50
+
+    @country = 0
     if(params.has_key?:country)
-      @pays = params[:country].to_i
+      @country = params[:country].to_i
     end
     
-    @rank = 1
-    if(params.has_key?:rank)
-      @rank = params[:rank].to_i
+    @real_users = true
+    @title = 0
+    @min_rating = 1
+    @max_rating = 1000000
+    if(params.has_key?:title)
+      @title = params[:title].to_i
+      if @title >= 100
+        @real_users = false
+      elsif @title > 0
+        cur_color = Color.find(@title)
+        if cur_color.nil?
+          @title = 0
+        else
+          @min_rating = [1, cur_color.pt].max
+          next_color = Color.where("pt > ?", cur_color.pt).order("pt").first
+          if !next_color.nil?
+            @max_rating = next_color.pt - 1
+          end
+        end
+      end
     end
-    
-    # Number of people to load on each "page"
-    nb_load = @number_by_load
-    if(params.has_key?:number)
-      nb_load = params[:number].to_i
+
+    if !@real_users
+      if @title == 100
+        if @country == 0
+          @all_users = User.where("rating == ? AND admin = ? AND active = ?", 0, false, true).order("id ASC")
+        else
+          @all_users = User.where("rating == ? AND admin = ? AND active = ? AND country_id = ?", 0, false, true, @country).order("id ASC")
+        end
+      elsif @title == 101
+        if @country == 0
+          @all_users = User.where("admin = ?", true).order("id ASC")
+        else
+          @all_users = User.where("admin = ? AND country_id = ?", true, @country).order("id ASC")
+        end
+      end
+      return
+    end
+
+    @page = 1
+    if(params.has_key?:page)
+      @page = params[:page].to_i
     end
     
     @allsec = Section.order(:id).where(:fondation => false).to_a
-
-    @previouspoint = -1
-
-    if User.last.nil?
-      @recent = Array.new(1)
-      @persection = Array.new(1)
-    else
-      @recent = Array.new(User.last.id+1)
-      @persection = Array.new(User.last.id+1)
-    end
-    twoweeksago = Date.today - 14
 
     @maxscore = Array.new
 
     Section.all.each do |s|
       @maxscore[s.id] = s.max_score
     end
-    
-    @ordered_users = Array.new
-    # If first page: first download the best students in random order
-    if !params.has_key?(:from)
-      r = Random.new(Date.today.in_time_zone.to_time.to_i)
-      max_rating = -1
-      if @pays == 0
-        max_user = User.where("admin = ? AND active = ?", false, true).order("rating DESC").first
-      else
-        max_user = User.where("admin = ? AND active = ? AND country_id = ?", false, true, @pays).order("rating DESC").first
-      end
 
-      if !max_user.nil?
-        max_rating = max_user.rating
-      end
-
-      if @pays == 0
-        mylist = User.where("rating = ? AND admin = ? AND active = ?", max_rating, false, true).order(:id)
-      else
-        mylist = User.where("rating = ? AND admin = ? AND active = ? AND country_id = ?", max_rating, false, true, @pays).order(:id)
-      end
-      
-      encours = Array.new
-      mylist.each do |user|
-        alea = r.rand()
-        alea = 0 if @signed_in && current_user.sk == user
-        encours.push([alea, user])
-      end
-
-      encours.sort!
-      encours.each do |u|
-        @ordered_users.push(u[1])
-      end
-      nb_load = [nb_load - encours.size, 0].max
-      from = max_rating - 1
+    if @country == 0
+      @all_users = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ?", @max_rating, @min_rating, false, true).order("rating DESC, id ASC").paginate(:page => @page, :per_page => @number_by_page)
     else
-      from = params[:from].to_i
-    end
-    
-    # Get following users    
-    if @pays == 0
-      prov = User.where("rating != 0 AND rating <= ? AND admin = ? AND active = ?", from, false, true).order("rating DESC, last_name ASC, first_name ASC").limit(nb_load).last
-    else
-      prov = User.where("rating != 0 AND rating <= ? AND admin = ? AND active = ? AND country_id = ?", from, false, true, @pays).order("rating DESC, last_name ASC, first_name ASC").limit(nb_load).last
-    end
-    
-    if !prov.nil?
-      to = prov.rating
-    else
-      to = 1
-    end
-    
-    if @pays == 0
-      arr = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ?", from, to, false, true).order("rating DESC, last_name ASC, first_name ASC").to_a
-    else
-      arr = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ? AND country_id = ?", from, to, false, true, @pays).order("rating DESC, last_name ASC, first_name ASC").to_a
-    end
-    
-    @ordered_users.push(*arr)
-    
-    ids = Array.new
-    
-    @ordered_users.each do |u|
-      ids.push(u.id)
-      @recent[u.id] = 0
-      @persection[u.id] = Array.new
+      @all_users = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ? AND country_id = ?", @max_rating, @min_rating, false, true, @country).order("rating DESC, id ASC").paginate(:page => @page, :per_page => @number_by_page)
     end
 
-    Solvedproblem.where(:user_id => ids).includes(:problem).where("truetime > ?", twoweeksago).find_each do |s|
-      @recent[s.user_id] += s.problem.value
+    num = @all_users.size
+    @x_recent = Array.new(num)
+    @x_persection = Array.new(num)
+    @x_globalrank = Array.new(num)
+    @x_country = Array.new(num)
+    @x_rating = Array.new(num)
+    @x_linked_name = Array.new(num)
+    fill_user_info(@all_users, @x_recent, @x_persection, @x_globalrank, @x_rating, @x_country, @x_linked_name)
+  end
+
+  # Index des utilisateurs suivis
+  def followed_users
+    @allsec = Section.order(:id).where(:fondation => false).to_a
+
+    @maxscore = Array.new
+
+    Section.all.each do |s|
+      @maxscore[s.id] = s.max_score
     end
 
-    Solvedquestion.where(:user_id => ids).includes(:question).where("resolutiontime > ?", twoweeksago).find_each do |s|
-      if s.correct
-        exo = s.question
-        @recent[s.user_id] += exo.value
-      end
+    @all_users = current_user.sk.followed_users.where(:admin => false).to_a
+    if !current_user.sk.admin?
+      @all_users.append(current_user.sk)
     end
-
-    Pointspersection.where(:user_id => ids).all.each do |p|
-	    @persection[p.user_id][p.section_id] = p.points
-    end
+    @all_users.sort_by! { |u| -u.rating }
+    num = @all_users.size
+    @x_recent = Array.new(num)
+    @x_persection = Array.new(num)
+    @x_globalrank = Array.new(num)
+    @x_country = Array.new(num)
+    @x_rating = Array.new(num)
+    @x_linked_name = Array.new(num)
+    fill_user_info(@all_users, @x_recent, @x_persection, @x_globalrank, @x_rating, @x_country, @x_linked_name)
   end
 
   # S'inscrire au site : il faut être en ligne
@@ -434,6 +415,7 @@ class UsersController < ApplicationController
       @user.wepion = false
       @user.valid_name = true
       @user.follow_message = false
+      @user.rating = 0
       @user.save
       @user.followingsubjects.each do |f|
         f.destroy
@@ -476,6 +458,28 @@ class UsersController < ApplicationController
     end
   end
 
+  def add_followed_user
+    if current_user.sk == @user or current_user.sk.followed_users.exists?(@user.id) or @user.admin?
+      redirect_to @user and return
+    end
+    if current_user.sk.followed_users.size >= 30
+      flash[:danger] = "Vous ne pouvez pas suivre plus de 30 utilisateurs."
+      redirect_to @user and return
+    end
+    current_user.sk.followed_users.append(@user)
+    flash[:success] = "Vous suivez maintenant " + @user.fullname + "."
+    redirect_to @user
+  end
+
+  def remove_followed_user
+    if !current_user.sk.followed_users.exists?(@user.id)
+      redirect_to @user and return
+    end
+    current_user.sk.followed_users.delete(@user)
+    flash[:success] = "Vous ne suivez plus " + @user.fullname + "."
+    redirect_to @user
+  end
+
   ########## PARTIE PRIVEE ##########
   private
 
@@ -503,6 +507,78 @@ class UsersController < ApplicationController
   def group_user
     if !current_user.sk.admin && current_user.sk.group == ""
       render 'errors/access_refused' and return
+    end
+  end
+
+  def fill_user_info(users, recent, persection, globalrank, rating, country, linked_name)
+    if User.last.nil?
+      global_user_id_to_local_id = Array.new(1)
+    else
+      global_user_id_to_local_id = Array.new(User.last.id + 1)
+    end
+
+    ids = Array.new(users.size)
+    local_id = 0
+
+    users.each do |u|
+      ids[local_id] = u.id
+      global_user_id_to_local_id[u.id] = local_id
+      persection[local_id] = Array.new
+      recent[local_id] = 0
+      rating[local_id] = u.rating
+      globalrank[local_id] = 1 + User.where("rating > ? AND admin = ? AND active = ?", rating[local_id], false, true).count
+      country[local_id] = u.country_id
+      linked_name[local_id] = u.linked_name
+      local_id = local_id + 1
+    end
+
+    # Sort users with rank 1 in random order (only if at least 2 people with rank 1)
+    if local_id >= 2 and globalrank[1] == 1
+      s = 2
+      while s < local_id and globalrank[s] == 1
+        s = s + 1
+      end
+      r = Random.new(Date.today.in_time_zone.to_time.to_i)
+      alea = Array.new(s)
+      (0..(s-1)).each do |i|
+        if @signed_in and ids[i] == current_user.sk.id
+          alea[i] = [0, i]
+        else
+          alea[i] = [r.rand(), i]
+        end
+      end
+      alea.sort!
+      save_ids = Array.new(s)
+      save_country = Array.new(s)
+      save_linked_name = Array.new(s)
+      (0..(s-1)).each do |i|
+        save_ids[i] = ids[i]
+        save_country[i] = country[i]
+        save_linked_name[i] = linked_name[i]
+      end
+      (0..(s-1)).each do |i|
+        ids[i] = save_ids[alea[i][1]]
+        country[i] = save_country[alea[i][1]]
+        linked_name[i] = save_linked_name[alea[i][1]]
+        global_user_id_to_local_id[ids[i]] = i
+      end
+    end
+
+    twoweeksago = Date.today - 14
+
+    Solvedproblem.where(:user_id => ids).includes(:problem).where("truetime > ?", twoweeksago).find_each do |s|
+      recent[global_user_id_to_local_id[s.user_id]] += s.problem.value
+    end
+
+    Solvedquestion.where(:user_id => ids).includes(:question).where("resolutiontime > ?", twoweeksago).find_each do |s|
+      if s.correct
+        exo = s.question
+        recent[global_user_id_to_local_id[s.user_id]] += exo.value
+      end
+    end
+
+    Pointspersection.where(:user_id => ids).all.each do |p|
+	  persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
     end
   end
   

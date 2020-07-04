@@ -125,10 +125,13 @@ Mathraining::Application.routes.draw do
     match '/change_group', to: 'users#change_group', :via => [:get], as: :change_group
     match '/recup_password', to: 'users#recup_password', :via => [:get], as: :recup_password
     match '/change_password', to: 'users#change_password', :via => [:post]
+    match '/add_followed_user', to: 'users#add_followed_user', :via => [:get], as: :add_followed_user
+    match '/remove_followed_user', to: 'users#remove_followed_user', :via => [:get], as: :remove_followed_user
   end
   
   match '/groups', to: 'users#groups', :via => [:get], as: :groups
   match '/correctors', to: 'users#correctors', :via => [:get], as: :correctors
+  match '/followed_users', to: 'users#followed_users', :via => [:get], as: :followed_users
 
   resources :virtualtests do
     match '/put_online', to: 'virtualtests#put_online', :via => [:get], as: :put_online
