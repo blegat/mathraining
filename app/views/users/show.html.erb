@@ -622,7 +622,7 @@ html>body tbody.scroll {
       <% i = i+1 %>
       <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :style => "color:red;" %>
     <% end %>
-    <% if @user.email_confirm && !@user.admin %>
+    <% if current_user.sk.root? && @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to 'Voir le site comme lui', user_take_skin_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." } %>

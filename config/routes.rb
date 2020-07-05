@@ -193,8 +193,6 @@ Mathraining::Application.routes.draw do
   match '/about', to: 'static_pages#about', :via => [:get]
   match '/contact', to: 'static_pages#contact', :via => [:get]
 
-  match '/stats', to: 'static_pages#statistics', :via => [:get]
-
   match '/frequentation', to: 'static_pages#frequentation', :via => [:get]
   match '/exostats', to: 'static_pages#exostats', :via => [:get]
 
