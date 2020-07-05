@@ -45,9 +45,9 @@ class UsersController < ApplicationController
     if !@real_users
       if @title == 100
         if @country == 0
-          @all_users = User.where("rating == ? AND admin = ? AND active = ?", 0, false, true).order("id ASC")
+          @all_users = User.where("rating = ? AND admin = ? AND active = ?", 0, false, true).order("id ASC")
         else
-          @all_users = User.where("rating == ? AND admin = ? AND active = ? AND country_id = ?", 0, false, true, @country).order("id ASC")
+          @all_users = User.where("rating = ? AND admin = ? AND active = ? AND country_id = ?", 0, false, true, @country).order("id ASC")
         end
       elsif @title == 101
         if @country == 0
