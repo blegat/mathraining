@@ -1,7 +1,7 @@
 <!-- Prérequis -->
 <h3>Prérequis</h3>
 <% if @chapter.prerequisites.count == 0 %>
-  <p>Aucun prérequis</p><br/>
+  <p>Aucun prérequis.</p>
 <% else %>
   <ul>
     <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
@@ -31,7 +31,7 @@
 <% listex = @chapter.theories.order(:position) %>
 <% i = 1 %>
 <% listex.each do |f| %>
-  <% if f.online %>
+  <% if f.online || !@chapter.online %>
     <h3><%= i %>. <%= f.title %></h3>
     <div>
       <% if i <= 2 %>
@@ -39,7 +39,7 @@
       <% else %>
       <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<center><i>Voir plus haut.</i></center>')) %>
       <% end %>
-    </div><br/>
+    </div>
     <% i = i+1 %>
   <% end %>
 <% end %>
