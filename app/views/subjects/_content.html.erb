@@ -89,6 +89,8 @@
   <% if kind == "subject" || kind == "message" %>
     <% if ms.user_id > 0 %>
       <% @canmodif = (ms.user == current_user.sk || (current_user.sk.admin && !ms.user.admin) || current_user.sk.root) %>
+    <% else %>
+      <% @canmodif = current_user.sk.root %>
     <% end %>
   <% elsif kind == "contestsolution" %>
     <% @canmodif = (@contestsolution.user == current_user.sk && @contestproblem.status == 2) %>

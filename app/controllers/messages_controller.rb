@@ -217,8 +217,14 @@ class MessagesController < ApplicationController
 
   # Il faut être l'auteur ou admin pour modifier un message
   def author
-    unless (current_user.sk == @message.user || (current_user.sk.admin && !@message.user.admin) || current_user.sk.root)
-      render 'errors/access_refused' and return
+    if @message.user_id > 0
+      unless (current_user.sk == @message.user || (current_user.sk.admin && !@message.user.admin) || current_user.sk.root)
+        render 'errors/access_refused' and return
+      end
+    else # Message automatique
+      unless current_user.sk.root
+        render 'errors/access_refused' and return
+      end
     end
   end
 end
