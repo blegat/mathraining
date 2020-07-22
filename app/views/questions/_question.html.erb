@@ -9,9 +9,10 @@
   <!-- pas QCM -->
   <% val = nil %>
   <% if f.decimal %>
-    On vous demande une réponse <b>décimale</b>, arrondie au millième près.<br/><br/>
+    On demande une réponse <b>décimale</b>, arrondie au millième près.<br/><br/>
     <% val = exo.guess %>
   <% else %>
+    On demande une réponse <b>entière</b>.<br/><br/>
     <% val = exo.guess.to_i if !exo.guess.nil? %>
   <% end %>
 
