@@ -5,10 +5,10 @@
 	<div class="row">
   <div class="col-lg-7 col-sm-7 col-xs-12">
   <center>
-  <% if DateTime.now.in_time_zone.month == 1 or params[:bonneannee].to_i == 2018 %>
-    <%= image_tag "mathraining-newyear.gif", :style => "width:100%; max-width:400px;" %>
+  <% if DateTime.now.in_time_zone.month == 1 %>
+    <%= image_tag "mathraining-new-year.png", :style => "width:100%; max-width:400px;" %>
   <% else %>
-    <%= image_tag "mathraining.gif", :style => "width:100%; max-width:342px;" %>
+    <%= image_tag "mathraining.png", :style => "width:100%; max-width:334px;" %>
   <% end %>
   </center>
   </div>
