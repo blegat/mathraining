@@ -80,6 +80,7 @@ class User < ActiveRecord::Base
   has_many :organized_contests, through: :contestorganizations, source: :contest
   has_many :followingcontests, dependent: :destroy
   has_many :followed_contests, through: :followingcontests, source: :contest
+  has_many :contestscores, dependent: :destroy
   
   # BEFORE, AFTER
 

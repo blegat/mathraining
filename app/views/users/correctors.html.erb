@@ -146,13 +146,13 @@ Votre navigateur ne supporte pas les canvas.
 
 <h2>Correcteurs</h2>
 
-<% User.where("admin = ? OR corrector = ?", true, true).each do |c| %>
-  <% nb_corrections = c.followings.count %>
-  <% nb_recent = c.followings.where("created_at > ?", twoweeksago).count %>
+<% User.where("admin = ? OR corrector = ?", true, true).each do |u| %>
+  <% nb_corrections = u.followings.count %>
+  <% nb_recent = u.followings.where("created_at > ?", twoweeksago).count %>
   <% if nb_corrections > 0 %>
-    <% first_connection = c.followings.order(:created_at).first.created_at.in_time_zone %>
-    <% last_connection = c.followings.order(:created_at).last.created_at.in_time_zone %>
-    <% correctors.push({:number => nb_corrections, :number_recent => nb_recent, :first => first_connection, :last => last_connection, :user => c}) %>
+    <% first_correction = u.followings.order(:created_at).first.created_at.in_time_zone %>
+    <% last_correction = u.followings.order(:created_at).last.created_at.in_time_zone %>
+    <% correctors.push({:number => nb_corrections, :number_recent => nb_recent, :first => first_correction, :last => last_correction, :user => u}) %>
   <% end %>
 <% end %>
 

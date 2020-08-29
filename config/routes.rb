@@ -127,6 +127,7 @@ Mathraining::Application.routes.draw do
     match '/change_password', to: 'users#change_password', :via => [:post]
     match '/add_followed_user', to: 'users#add_followed_user', :via => [:get], as: :add_followed_user
     match '/remove_followed_user', to: 'users#remove_followed_user', :via => [:get], as: :remove_followed_user
+    match '/show_new', to: 'users#show_new', :via => [:get], as: :show_new
   end
   
   match '/groups', to: 'users#groups', :via => [:get], as: :groups

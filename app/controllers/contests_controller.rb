@@ -60,7 +60,12 @@ class ContestsController < ApplicationController
   def put_online
     @contest.status = 1
     @contest.save
+    date_in_one_day = 1.day.from_now
     @contest.contestproblems.order(:number, :id).each do |p|
+      if p.start_time <= date_in_one_day # Problem start in less than one day: there will be no post on the forum one day before
+        p.status = 1
+        p.save
+      end
       c = Contestproblemcheck.new
       c.contestproblem = p
       c.save
@@ -123,16 +128,16 @@ class ContestsController < ApplicationController
 
   # Vérifie que le concours peut être en ligne
   def can_be_online
-    date_in_one_day = 1.day.from_now    
+    date_in_one_hour = 1.hour.from_now
     if @contest.contestproblems.count == 0
       flash[:danger] = "Un concours doit contenir au moins un problème !"
       redirect_to @contest
-    elsif @contest.contestproblems.first.start_time < date_in_one_day
+    elsif @contest.contestproblems.first.start_time < date_in_one_hour
       if Rails.env.production?
-        flash[:danger] = "Un concours ne peut être mis en ligne moins d'un jour avant le premier problème."
+        flash[:danger] = "Un concours ne peut être mis en ligne moins d'une heure avant le premier problème."
         redirect_to @contest
       else
-        flash[:info] = "Un concours ne peut être mis en ligne moins d'un jour avant le premier problème (en production)."
+        flash[:info] = "Un concours ne peut être mis en ligne moins d'une heure avant le premier problème (en production)."
       end
     end
   end

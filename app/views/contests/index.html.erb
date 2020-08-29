@@ -20,12 +20,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
     
     <% if nb_prob > 0 %>
       <% first_date = c.contestproblems.order(:number).first.start_time %>
-      <% last_date = DateTime.new(2000,1,1) %>
-      <% c.contestproblems.each do |p| %>
-        <% if last_date < p.end_time %>
-          <% last_date = p.end_time %>
-        <% end %>
-      <% end %>
+      <% last_date = c.contestproblems.order(:end_time).last.end_time %>
       <% if c.status == 1 %>
         <% if DateTime.now < first_date %>
           <% real_status = 0 %>

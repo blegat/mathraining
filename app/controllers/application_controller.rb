@@ -219,7 +219,7 @@ class ApplicationController < ActionController::Base
     date_in_one_day = 1.day.from_now
     Contestproblemcheck.all.order(:id).each do |c|
       p = c.contestproblem
-      if p.status == 0
+      if p.status == 0 # Post on forum one day before has not been published yet
         if p.start_time <= date_in_one_day
           c = p.contest
           allp = c.contestproblems.where("start_time = ?", p.start_time).order(:number).all.to_a
@@ -235,7 +235,7 @@ class ApplicationController < ActionController::Base
           end
         end
       end
-      if p.status == 1
+      if p.status == 1 # Post on forum one day before has been published but problem has not started yet
         if p.start_time <= date_now
           c = p.contest
           allp = c.contestproblems.where("start_time = ? AND end_time = ?", p.start_time, p.end_time).order(:number).all.to_a
@@ -248,15 +248,15 @@ class ApplicationController < ActionController::Base
           automatic_start_problem_post(allp)
         end
       end
-      if p.status == 2
+      if p.status == 2 # Problem has started but not ended
         if p.end_time <= date_now
           c.destroy
           p.status = 3
           p.save
         end
       end
-      if p.status >= 3
-        c.destroy # Should not happen in theory
+      if p.status >= 3 # Problem has ended
+        c.destroy # Should not happen in theory because the ContestProblemCheck has been destroyed earlier
       end
     end
   end

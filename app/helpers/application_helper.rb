@@ -116,6 +116,12 @@ module ApplicationHelper
     return "#{ date.day } #{ mois[date.month-1]} #{date.year}"
   end
   
+  # Write 12 juin 2009
+  def write_date_only_small(date_utc)
+    date = date_utc.in_time_zone
+    return "#{ date.day }/#{'0' if date.month < 10}#{ date.month }/#{date.year-2000}"
+  end
+  
   # Write vendredi 12 juin 2009 à 21h50
   def write_date_with_day(date_utc)
     date = date_utc.in_time_zone

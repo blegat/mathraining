@@ -13,8 +13,8 @@
 #  status             :integer
 #
 
-# status = 0 --> in construction (contest is not online)
-# status = 1 --> contest is online but problem is not published yet
+# status = 0 --> in construction (contest is not online) or more than one day before publication
+# status = 1 --> contest is online, problem will be published in less than one day
 # status = 2 --> problem is published and students can send solutions
 # status = 3 --> problem is finished and solutions are being corrected
 # status = 4 --> problem is finished ans solutions have been corrected
