@@ -176,8 +176,8 @@ html>body tbody.scroll {
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :style => "margin-left:5px; margin-top:-2px;" %></td></tr>
   <!-- <tr><td style="padding-top:15px;">Inscrit le <%= write_date_only(@user.created_at) %></td></tr> -->
   </table>
-  <% if @signed_in && current_user.sk != @user %>
-    <%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey", :style => "width:170px; margin-top:10px;" %>
+  <% if !@signed_in || current_user.sk != @user %>
+    <%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey", :style => "width:170px; margin-top:10px;", :disabled => !@signed_in %>
   <% end %> 
   </div>
 </div>
@@ -202,8 +202,8 @@ html>body tbody.scroll {
       </tr>
     </table>
     
-    <% if !current_user.sk.followed_users.exists?(@user.id) %>
-      <%= link_to "Suivre", user_add_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+    <% if !@signed_in || !current_user.sk.followed_users.exists?(@user.id) %>
+      <%= link_to "Suivre", user_add_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;", :disabled => !@signed_in %>
     <% else %>
       <%= link_to "Ne plus suivre", user_remove_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
     <% end %>
