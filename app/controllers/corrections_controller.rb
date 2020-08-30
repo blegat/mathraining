@@ -98,13 +98,12 @@ class CorrectionsController < ApplicationController
           link.resolutiontime = DateTime.now
           link.submission_id = @submission.id
 
-          link.truetime = @submission.created_at
-          @submission.corrections.order(:created_at).each do |c|
-            if c.user_id == @submission.user_id
-              link.truetime = c.created_at
-            end
+          last_user_corr = @submission.corrections.where("user_id = ?", @submission.user_id).order(:created_at).last
+          if last_user_corr.nil?
+            link.truetime = @submission.created_at
+          else
+            link.truetime = last_user_corr.created_at
           end
-
           link.save
         end
         m = ' et soumission marquée comme correcte'

@@ -1,7 +1,19 @@
 /* PROFIL */
 
-.top_container {
-  min-height:160px !important;
+@media (max-width: 767.99px) {
+  .top_container {
+    padding-bottom:15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .top_container {
+    min-height:165px !important;
+  }
+}
+
+.top_container_admin {
+  padding-bottom:15px;
 }
 
 .mytitle {
@@ -29,6 +41,7 @@
 
 .progress_title {
   padding-top:10px;
+  text-align:center;
   font-weight:bold;
   font-size:14px;
 }
@@ -36,6 +49,7 @@
 .progress_circle {
   padding-top:5px;
   padding-bottom:10px;
+  text-align:center;
 }
   
 .wrapper {
@@ -94,7 +108,7 @@
   padding:10px;
   padding-top:0px;
   padding-bottom:0px;
-  overflow:scroll;
+  overflow-y:scroll;
 }
 
 @media (max-width: 1199.99px) {
@@ -111,18 +125,6 @@
 
 .middle_aligned td {
   vertical-align:middle !important;
-}
-
-@media (max-width: 767px) {
-  .date_concours {
-    width: 80px !important;
-  }
-}
-
-@media (min-width: 767.01px) {
-  .date_concours {
-    width: 150px !important;
-  }
 }
 
 .basic_container {

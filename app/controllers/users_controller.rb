@@ -3,11 +3,11 @@ class UsersController < ApplicationController
   before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups, :read_legal, :followed_users]
   before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user]
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
-  before_action :get_user2, only: [:show_new, :destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user]
+  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:unactivate, :reactivate, :switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub]
-  before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_name, :show_new]
+  before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_name]
   before_action :signed_out_user, only: [:new, :create, :password_forgotten]
   before_action :group_user, only: [:groups]
 
@@ -158,9 +158,6 @@ class UsersController < ApplicationController
 
   # Voir un utilisateur
   def show
-  end
-  
-  def show_new
   end
 
   def compare
