@@ -910,7 +910,7 @@ html>body tbody.scroll {
 
 
 <!-- Si administrateur, différentes options -->
-<% if @signed_in && current_user.sk.admin? && !@user.root? %>
+<% if @signed_in && current_user.sk.admin? && !@user.root? && (current_user.sk.root? || !@user.admin) %>
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding:5px; text-align:center;">
   <div class="basic_container" style="padding:5px;">
   <% i = 0 %>
