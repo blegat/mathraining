@@ -167,8 +167,12 @@ html>body tbody.scroll {
 <div class="row" style="margin-left:0px; margin-right:0px; padding-top:5px;">
 
 <% largeur = (@user.admin ? 12 : 5) %>
+<% class_name = "top_container" %>
+<% if !@signed_in || @user == current_user.sk %>
+  <% class_name = "top_container_small" %>
+<% end %>
 <div class="col-lg-<%= largeur %> col-md-<%= largeur %> col-sm-<%= largeur %> col-xs-12" style="text-align:center; padding:5px;">
-  <div class="basic_container <%= (@user.admin ? 'top_container_admin' : 'top_container') %>">
+  <div class="basic_container <%= class_name %>">
   <table style="margin:0px; margin-top:15px; width:100%; height:90px; padding:0px;">
   <tr><td style="font-size:20px; padding-left:10px; padding-right:10px;"><%= raw(@user.colored_name) %></td></tr>
   <tr><td style="font-size:16px; font-weight:bold; padding-top:5px;"><%= status %></td></tr>
@@ -176,7 +180,7 @@ html>body tbody.scroll {
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :style => "margin-left:5px; margin-top:-2px;" %></td></tr>
   <!-- <tr><td style="padding-top:15px;">Inscrit le <%= write_date_only(@user.created_at) %></td></tr> -->
   </table>
-  <% if !@signed_in || current_user.sk != @user %>
+  <% if @signed_in && current_user.sk != @user %>
     <%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey", :style => "width:170px; margin-top:10px;", :disabled => !@signed_in %>
   <% end %> 
   </div>
@@ -184,7 +188,7 @@ html>body tbody.scroll {
   
 <% if !@user.admin %>
   <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" style="text-align:center; padding:5px;">
-    <div class="basic_container top_container">
+    <div class="basic_container <%= class_name %>">
     <table style="margin:0px; margin-top:15px; width:100%; height:90px; padding:0px;">
       <tr>
       <td class="mytitle">Score</td>
@@ -202,10 +206,12 @@ html>body tbody.scroll {
       </tr>
     </table>
     
-    <% if !@signed_in || (@user != current_user.sk && !current_user.sk.followed_users.exists?(@user.id)) %>
-      <%= link_to "Suivre", user_add_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;", :disabled => !@signed_in %>
-    <% else %>
-      <%= link_to "Ne plus suivre", user_remove_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;", :disabled => @user == current_user.sk %>
+    <% if @signed_in && @user != current_user.sk %>
+      <% if !current_user.sk.followed_users.exists?(@user.id) %>
+        <%= link_to "Suivre", user_add_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+      <% else %>
+        <%= link_to "Ne plus suivre", user_remove_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+      <% end %>
     <% end %>
     
     </div>
@@ -214,8 +220,8 @@ html>body tbody.scroll {
   
 <% if !@user.admin %>
   <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 hidden-xs" style="text-align:center; padding:5px;">
-    <div class="basic_container top_container">
-      <table style="height:150px; width:100%;">
+    <div class="basic_container <%= class_name %>">
+      <table style="width:100%; height:<%= class_name == 'top_container' ? 160 : 120 %>px;">
         <tr><td style="font-size:16px;">À venir...</td></tr>
       </table>
     </div>
