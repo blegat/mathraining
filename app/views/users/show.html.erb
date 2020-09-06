@@ -222,7 +222,7 @@ html>body tbody.scroll {
   </div>
 <% end %> 
   
-<% if @signed_in && current_user.sk.root %>
+<% if @signed_in && current_user.sk.root? %>
   <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
     <div class="basic_container" style="padding:5px;">
       Connecté le <span style="color:<%= couleur %>"><%= write_date_only_small(@user.last_connexion) %></span>
@@ -231,7 +231,7 @@ html>body tbody.scroll {
   
   <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
     <div class="basic_container" style="padding:5px;">
-      <span style="color:<%= couleur %>"><%= @user.email %></span>
+      <span style="color:<%= couleur %>"><%= "(" if !@user.email_confirm %><%= @user.email %><%= ")" if !@user.email_confirm %></span>
     </div>
   </div>
   
