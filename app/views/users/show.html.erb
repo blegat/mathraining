@@ -491,8 +491,16 @@ html>body tbody.scroll {
           <% end_time = contest.contestproblems.order(:end_time).last.end_time %>
           <% num_participants = contest.contestscores.count %>
           <% ranking = contest.contestscores.where("score > ?", cs.score).count + 1 %>
-          <% num_sol = 0 %>
           <% actcontest.push({:number => contest.number, :id => contest.id, :start_time => start_time, :end_time => end_time, :num_participants => num_participants, :ranking => ranking, :score => cs.score, :max_score => contest.contestproblems.count * 7}) %>
+        <% end %>
+      <% end %>
+      
+      <% @user.organized_contests.where("status = 1").each do |contest| %>
+        <% if contest.contestproblems.where("status < 4").count == 0 %>
+          <% start_time = contest.contestproblems.order(:start_time).first.start_time %>
+          <% end_time = contest.contestproblems.order(:end_time).last.end_time %>
+          <% num_participants = contest.contestscores.count %>
+          <% actcontest.push({:number => contest.number, :id => contest.id, :start_time => start_time, :end_time => end_time, :num_participants => num_participants, :ranking => -1, :score => -1, :max_score => -1}) %>
         <% end %>
       <% end %>
       
@@ -512,11 +520,20 @@ html>body tbody.scroll {
             <% firstact = false %>
           <% end %>
           
-          <!-- Rang -->
-          <td style="width:90px; text-align:center; <%= remove_border %>"><span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %></td>
+          <% if ac[:max_score] < 0 %>
           
-          <!-- Nombre de solutions correctes -->
-          <td style="width:100px; text-align:center; <%= remove_border %>"><span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<% "s" if ac[:score] > 1 %>s</span> / <%= ac[:max_score] %></td>
+            <!-- Concours organisé -->
+            <td style="width:190px; text-align:center; <%= remove_border %>" colspan="2"><span style="font-weight:bold; color:<%= couleur %>">Organisateur</span></td>
+            
+          <% else %>
+          
+            <!-- Rang -->
+            <td style="width:90px; text-align:center; <%= remove_border %>"><span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %></td>
+            
+            <!-- Nombre de solutions correctes -->
+            <td style="width:100px; text-align:center; <%= remove_border %>"><span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<% "s" if ac[:score] > 1 %>s</span> / <%= ac[:max_score] %></td>
+            
+          <% end %>
           
           <!-- Date -->
           <td class="hidden-xs" style="width:150px; text-align:center; <%= remove_border %>"><%= write_date_only_small(ac[:start_time]) %> - <%= write_date_only_small(ac[:end_time]) %></td>
