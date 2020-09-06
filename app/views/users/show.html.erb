@@ -202,10 +202,10 @@ html>body tbody.scroll {
       </tr>
     </table>
     
-    <% if !@signed_in || !current_user.sk.followed_users.exists?(@user.id) %>
+    <% if !@signed_in || (@user != current_user.sk && !current_user.sk.followed_users.exists?(@user.id)) %>
       <%= link_to "Suivre", user_add_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;", :disabled => !@signed_in %>
     <% else %>
-      <%= link_to "Ne plus suivre", user_remove_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+      <%= link_to "Ne plus suivre", user_remove_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;", :disabled => @user == current_user.sk %>
     <% end %>
     
     </div>
