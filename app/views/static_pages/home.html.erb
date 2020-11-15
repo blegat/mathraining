@@ -1,3 +1,22 @@
+<% def readable_number(n) %>
+  <% if n == 0 %>
+    <% return "0" %>
+  <% end %>
+  <% m = n %>
+  <% num_digits = 0 %>
+  <% ans = "" %>
+  <% while(m > 0) %>
+    <% if num_digits % 3 == 0 and num_digits > 0 %>
+      <% ans = "," + ans %>
+    <% end %>
+    <% d = m % 10 %>
+    <% ans = d.to_s + ans %>
+    <% m = m/10 %>
+    <% num_digits = num_digits + 1 %>
+  <% end %>
+  <% return ans %>
+<% end %>
+
 <!-- Gros titre Mathraining -->
 
 <div class="home">
@@ -21,10 +40,10 @@
   <% end %>
   <center>
   <table class="home-stats">
-  <tr><td class="left"><%= number %></td><td class="right">utilisateurs classés</td></tr>
-  <tr><td class="left"><%= Solvedproblem.count %></td><td class="right">problèmes résolus</td></tr>
-  <tr><td class="left"><%= Solvedquestion.where("correct = ?", true).count %></td><td class="right">exercices résolus</td></tr>
-  <tr><td class="left"><%= tot %></td><td class="right">points distribués</td></tr>
+  <tr><td class="left"><%= readable_number(number) %></td><td class="right">utilisateurs classés</td></tr>
+  <tr><td class="left"><%= readable_number(Solvedproblem.count) %></td><td class="right">problèmes résolus</td></tr>
+  <tr><td class="left"><%= readable_number(Solvedquestion.where("correct = ?", true).count) %></td><td class="right">exercices résolus</td></tr>
+  <tr><td class="left"><%= readable_number(tot) %></td><td class="right">points distribués</td></tr>
   </table>
   </center>
   </div>
