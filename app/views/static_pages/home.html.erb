@@ -7,7 +7,7 @@
   <% ans = "" %>
   <% while(m > 0) %>
     <% if num_digits % 3 == 0 and num_digits > 0 %>
-      <% ans = "," + ans %>
+      <% ans = "&thinsp;" + ans %>
     <% end %>
     <% d = m % 10 %>
     <% ans = d.to_s + ans %>
@@ -40,10 +40,10 @@
   <% end %>
   <center>
   <table class="home-stats">
-  <tr><td class="left"><%= readable_number(number) %></td><td class="right">utilisateurs classés</td></tr>
-  <tr><td class="left"><%= readable_number(Solvedproblem.count) %></td><td class="right">problèmes résolus</td></tr>
-  <tr><td class="left"><%= readable_number(Solvedquestion.where("correct = ?", true).count) %></td><td class="right">exercices résolus</td></tr>
-  <tr><td class="left"><%= readable_number(tot) %></td><td class="right">points distribués</td></tr>
+  <tr><td class="left"><%= raw(readable_number(number)) %></td><td class="right">utilisateurs classés</td></tr>
+  <tr><td class="left"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
+  <tr><td class="left"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
+  <tr><td class="left"><%= raw(readable_number(tot)) %></td><td class="right">points distribués</td></tr>
   </table>
   </center>
   </div>
