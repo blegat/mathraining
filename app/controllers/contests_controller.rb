@@ -29,7 +29,7 @@ class ContestsController < ApplicationController
 
   # Créer un concours 2
   def create
-    @contest = Contest.new(params.require(:contest).permit(:number, :description))
+    @contest = Contest.new(params.require(:contest).permit(:number, :description, :medal))
 
     if @contest.save
       flash[:success] = "Concours ajouté."
@@ -41,7 +41,7 @@ class ContestsController < ApplicationController
 
   # Editer un concours 2
   def update
-    if @contest.update_attributes(params.require(:contest).permit(:number, :description))
+    if @contest.update_attributes(params.require(:contest).permit(:number, :description, :medal))
       flash[:success] = "Concours modifié."
       redirect_to contest_path
     else
@@ -175,6 +175,11 @@ class ContestsController < ApplicationController
     
     text = text + "Ces dates sont normalement définitives. Si toutefois elles venaient à changer alors une annonce sera faite pour prévenir tout le monde.\n\r\n\r"
     text = text + "Pour chaque problème du concours, un message automatique sera publié sur ce forum un jour avant sa publication, au moment de sa publication, et après sa correction. Si vous désirez également recevoir un rappel par e-mail un jour avant la publication de chaque problème, vous pouvez cliquer sur 'Suivre ce concours' en haut à droite de [url=" + contest_url(contest) + "]cette page[/url].\n\r\n\r"
+    if contest.medal?
+      text = text + "Des médailles et mentions honorables seront attribuées à la fin de ce concours.\n\r\n\r"
+    else
+      text = text + "Il n'y aura pas de médailles et mentions honorables pour ce concours.\n\r\n\r"
+    end
     text = text + "Ce sujet peut être utilisé pour échanger vos commentaires sur le concours, mais il vous est demandé de ne pas vous entraider ;-)\n\r\n\r"
     text = text + "Bonne chance à tous, et surtout bon amusement ! :-)"
     s.content = text

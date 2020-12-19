@@ -7,6 +7,7 @@
 #  number         :integer
 #  description    :text
 #  status         :integer
+#  medal          :boolean
 #
 # status = 0 --> in construction
 # status = 1 --> online and not finished
