@@ -192,6 +192,14 @@ class ContestproblemsController < ApplicationController
       flash.now[:danger] = "La deuxième date doit être strictement après la première date."
       @date_problem = true
     end
+    if start_date.min != 0
+      if Rails.env.production?
+        flash.now[:danger] = "La première date doit être à une heure pile."
+        @date_problem = true
+      else
+        flash[:info] = "La première date devrait être à une heure pile (en production)."
+      end
+    end
   end
   
   def can_publish_results

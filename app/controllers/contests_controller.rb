@@ -62,10 +62,11 @@ class ContestsController < ApplicationController
     @contest.save
     date_in_one_day = 1.day.from_now
     @contest.contestproblems.order(:number, :id).each do |p|
+      p.status = 1
       if p.start_time <= date_in_one_day # Problem start in less than one day: there will be no post on the forum one day before
-        p.status = 1
-        p.save
+        p.reminder_status = 1
       end
+      p.save
       c = Contestproblemcheck.new
       c.contestproblem = p
       c.save

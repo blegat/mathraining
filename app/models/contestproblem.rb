@@ -11,13 +11,18 @@
 #  start_time         :datetime
 #  end_time           :datetime
 #  status             :integer
+#  reminder_status    :integer
 #
 
-# status = 0 --> in construction (contest is not online) or more than one day before publication
-# status = 1 --> contest is online, problem will be published in less than one day
+# status = 0 --> in construction (contest is not online)
+# status = 1 --> contest is online but problem is not published yet
 # status = 2 --> problem is published and students can send solutions
 # status = 3 --> problem is finished and solutions are being corrected
 # status = 4 --> problem is finished ans solutions have been corrected
+
+# reminder_status = 0 --> no reminder sent for this problem yet
+# reminder_status = 1 --> reminder sent one day before publication
+# reminder_status = 2 --> reminder send at publication
 
 include ApplicationHelper
 
@@ -31,6 +36,7 @@ class Contestproblem < ActiveRecord::Base
   # VALIDATIONS
 
   validates :status, presence: true
+  validates :reminder_status, presence: true
   validates :statement, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :origin, length: { maximum: 255 }
   validates :start_time, presence: true

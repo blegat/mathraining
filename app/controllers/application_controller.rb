@@ -216,120 +216,24 @@ class ApplicationController < ActionController::Base
   
   def check_contests
     date_now = DateTime.now
-    date_in_one_day = 1.day.from_now
+    # Note: Problems in Contestproblemcheck are also used in contest.rb to check problems for which an email or forum subject must be created
     Contestproblemcheck.all.order(:id).each do |c|
       p = c.contestproblem
-      if p.status == 0 # Post on forum one day before has not been published yet
-        if p.start_time <= date_in_one_day
-          c = p.contest
-          allp = c.contestproblems.where("start_time = ?", p.start_time).order(:number).all.to_a
-          allid = Array.new
-          allp.each do |pp|
-            pp.status = 1
-            pp.save
-            allid.push(pp.id)
-          end
-          automatic_start_in_one_day_problem_post(allp)
-          p.contest.followers.each do |u|
-            UserMailer.new_followed_contestproblem(u.id, allid).deliver if Rails.env.production?
-          end
-        end
-      end
-      if p.status == 1 # Post on forum one day before has been published but problem has not started yet
+      if p.status == 1 # Contest is online but problem is not published yet
         if p.start_time <= date_now
-          c = p.contest
-          allp = c.contestproblems.where("start_time = ? AND end_time = ?", p.start_time, p.end_time).order(:number).all.to_a
-          allid = Array.new
-          allp.each do |pp|
-            pp.status = 2
-            pp.save
-            allid.push(pp.id)
-          end
-          automatic_start_problem_post(allp)
+          p.status = 2
+          p.save
         end
       end
       if p.status == 2 # Problem has started but not ended
         if p.end_time <= date_now
-          c.destroy
           p.status = 3
           p.save
         end
       end
-      if p.status >= 3 # Problem has ended
-        c.destroy # Should not happen in theory because the ContestProblemCheck has been destroyed earlier
+      if p.status == 3 and p.reminder_status == 2 # Avoid to delete if reminders were not sent yet
+        c.destroy
       end
-    end
-  end
-  
-  # Publish a post on forum to say that problem will be published in one day
-  def automatic_start_in_one_day_problem_post(contestproblems)
-    contest = contestproblems[0].contest
-    sub = contest.subject
-    mes = Message.new
-    mes.subject = sub
-    mes.user_id = 0
-    if contestproblems.size == 1
-      plural = false
-      mes.content = "Le Problème ##{contestproblems[0].number}"
-    else
-      plural = true
-      mes.content = "Les Problèmes"
-      i = 0
-      contestproblems.each do |cp|
-        if (i == contestproblems.size-1)
-          mes.content = mes.content + " et"
-        elsif (i > 0)
-          mes.content = mes.content + ","
-        end
-        mes.content = mes.content + " ##{cp.number}"
-        i = i+1
-      end
-    end
-    mes.content = mes.content + " du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] #{plural ? "seront" : "sera"} publié#{plural ? "s" : ""} dans un jour, c'est-à-dire le " + write_date_with_link_forum(contestproblems[0].start_time, contest, contestproblems[0]) + " (heure belge)."
-    mes.created_at = contestproblems[0].start_time - 1.day
-    mes.save
-    sub.lastcomment = mes.created_at
-    sub.save
-    
-    sub.following_users.each do |u|
-      if !contest.followers.include?(u) # Avoid to send again an email to people already following the contest
-        UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
-      end
-    end
-  end
-  
-  # Publish a post on forum to say that solutions to problem can be sent
-  def automatic_start_problem_post(contestproblems)
-    contest = contestproblems[0].contest
-    sub = contest.subject
-    mes = Message.new
-    mes.subject = sub
-    mes.user_id = 0
-    if contestproblems.size == 1
-      plural = false
-      mes.content = "Le [url=" + contestproblem_url(contestproblems[0]) + "]Problème ##{contestproblems[0].number}[/url]"
-    else
-      plural = true
-      mes.content = "Les Problèmes"
-      i = 0
-      contestproblems.each do |cp|
-        if (i == contestproblems.size-1)
-          mes.content = mes.content + " et"
-        elsif (i > 0)
-          mes.content = mes.content + ","
-        end
-        mes.content = mes.content + " [url=" + contestproblem_url(cp) + "]##{cp.number}[/url]"
-        i = i+1
-      end
-    end
-    mes.content = mes.content + " du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] #{plural ? "sont" : "est"} maintenant accessible#{plural ? "s" : ""}, et les solutions sont acceptées jusqu'au " + write_date_with_link_forum(contestproblems[0].end_time, contest, contestproblems[0]) + " (heure belge)."
-    mes.created_at = contestproblems[0].start_time
-    mes.save
-    sub.lastcomment = mes.created_at
-    sub.save
-    
-    sub.following_users.each do |u|
-      UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
     end
   end
   

@@ -423,6 +423,7 @@ class User < ActiveRecord::Base
     end
   end
   
+  # Méthode appelée tous les jours à 4 heures du matin (voir schedule.rb)
   def self.delete_unconfirmed
     # Utilisateurs n'ayant pas confirmé leur e-mail après une semaine
     oneweekago = Date.today - 7
