@@ -38,20 +38,6 @@
         <% else %>
           <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
         <% end %>
-
-        <!-- Pièces jointes -->
-        <% if current_user.sk.root? %>
-          <% total = 0 %>
-          <% Myfile.all.to_a.each do |f| %>
-            <% total = total + f.file_file_size %>
-          <% end %>
-
-          <% if total < 1000000 %>
-            <%= link_to (total/1000.0).round(1).to_s + " ko", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:15px;" %>
-          <% else %>
-            <%= link_to (total/1000000.0).round(2).to_s + " Mo", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:15px;" %>
-          <% end %>
-        <% end %>
         
         <!-- Corrections (pour les correcteurs) -->
         <% if !current_user.sk.admin? %>
@@ -91,15 +77,6 @@
           <%= link_to "#{notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
         <% else %>
           <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
-        <% end %>
-        
-        <!-- Pièces jointes -->
-        <% if current_user.sk.root? %>
-          <% if total < 1000000 %>
-            <%= link_to (total/1000.0).round(1).to_s + " ko", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:10px;" %>
-          <% else %>
-            <%= link_to (total/1000000.0).round(2).to_s + " Mo", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:10px;" %>
-          <% end %>
         <% end %>
         
         <!-- Corrections (pour les correcteurs) -->
@@ -225,6 +202,7 @@
             <li><%= link_to "Groupes Wépion", groups_path %></li>
           <% end %>
           <% if current_user.sk.root? %>
+            <li><%= link_to "Pièces jointes", myfiles_path %></li>
             <li><%= link_to "Valider noms", validate_name_path %></li>
           <% end %>
           <li class="divider"></li>
