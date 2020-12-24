@@ -57,7 +57,7 @@ Mathraining::Application.configure do
   
   # Personalized logs 
   config.log_tags = [ lambda { |req| Time.now}, :remote_ip ] # Include IP address in the logs
-  config.log_level = :info # Set to :debug for more information (not sure it works with lograge)
+  config.log_level = :debug # Set to :debug for more information (not sure it works with lograge)
   
   # lograge is a gem for 'better' logs
   config.lograge.enabled = true

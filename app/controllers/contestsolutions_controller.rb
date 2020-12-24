@@ -1,6 +1,7 @@
 #encoding: utf-8
 class ContestsolutionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :reserve_sol, :unreserve_sol]
+  before_action :check_contests, only: [:create, :update, :destroy, :reserve_sol, :unreserve_sol] # Defined in application_controller.rb
   before_action :get_contestproblem, only: [:create]
   before_action :get_contestsolution, only: [:update, :destroy, :reserve_sol, :unreserve_sol]
   before_action :can_send_solution, only: [:create, :update]

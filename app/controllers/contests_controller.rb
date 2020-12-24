@@ -3,6 +3,7 @@ class ContestsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :add_organizer, :remove_organizer]
   before_action :admin_user, only: [:new, :create, :destroy, :put_online, :add_organizer, :remove_organizer]
+  before_action :check_contests, only: [:index, :show] # Defined in application_controller.rb
   before_action :get_contest, only: [:show, :edit, :update, :destroy]
   before_action :get_contest2, only: [:put_online, :add_organizer, :remove_organizer]
   before_action :is_organizer_or_admin, only: [:edit, :update]

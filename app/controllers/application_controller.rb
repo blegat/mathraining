@@ -6,7 +6,6 @@ class ApplicationController < ActionController::Base
 
   before_action :has_consent
   before_action :check_takentests
-  before_action :check_contests
   #before_action :warning
 
   ########## PARTIE PRIVEE ##########
@@ -214,6 +213,7 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Check if a contest problem just started or ended (done only when charging a contest related page)
   def check_contests
     date_now = DateTime.now
     # Note: Problems in Contestproblemcheck are also used in contest.rb to check problems for which an email or forum subject must be created

@@ -3,6 +3,7 @@ class ContestproblemsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :show]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :publish_results, :authorize_corrections, :unauthorize_corrections]
   before_action :root_user, only: [:authorize_corrections, :unauthorize_corrections]
+  before_action :check_contests, only: [:show] # Defined in application_controller.rb
   before_action :get_contest, only: [:new, :create]
   before_action :get_contestproblem, only: [:show, :edit, :update, :destroy]
   before_action :get_contestproblem2, only: [:publish_results, :authorize_corrections, :unauthorize_corrections]
