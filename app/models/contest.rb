@@ -47,7 +47,6 @@ class Contest < ActiveRecord::Base
   
   # Méthode appelée toutes les heures piles (voir schedule.rb)
   def self.check_contests_starts
-    sleep
     date_now_plus_1_min = DateTime.now + 1.minute # security of 1 min in case cron job is earlier (should not happen...)
     date_in_one_day_plus_1_min = 1.day.from_now + 1.minute # idem
     Contestproblemcheck.all.order(:id).each do |c|
