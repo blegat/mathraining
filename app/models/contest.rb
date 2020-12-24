@@ -115,6 +115,7 @@ class Contest < ActiveRecord::Base
     mes.save
     if mes.created_at > sub.lastcomment # Security: should always be true
       sub.lastcomment = mes.created_at
+      sub.lastcomment_user_id = 0 # Message automatique
       sub.save
     end
     
@@ -159,6 +160,7 @@ class Contest < ActiveRecord::Base
     mes.save
     if mes.created_at > sub.lastcomment # Security: should always be true
       sub.lastcomment = mes.created_at
+      sub.lastcomment_user_id = 0 # Message automatique
       sub.save
     end
     

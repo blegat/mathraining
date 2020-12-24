@@ -100,6 +100,8 @@
           </form>
         <% end %>
       <% end %>
+      
+      <% sections = Section.all.order(:id).to_a %>
 
       <!-- Cours -->
       <li id="fat-menu" class="dropdown">
@@ -107,13 +109,13 @@
           Théorie <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-          <% Section.all.to_a.each do |f| %>
+          <% sections.each do |f| %>
             <% if f.fondation %>
               <li><%= link_to f.name, f %></li>
             <% end %>
           <% end %>
           <li class="divider"></li>
-          <% Section.order(:id).to_a.each do |f| %>
+          <% sections.each do |f| %>
             <% if !f.fondation %>
               <li><%= link_to f.name, f %></li>
             <% end %>
@@ -131,7 +133,7 @@
           Problèmes <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-          <% Section.order(:id).to_a.each do |f| %>
+          <% sections.each do |f| %>
             <% if !f.fondation %>
               <li><%= link_to f.name, pb_sections_path(f) %></li>
             <% end %>
@@ -144,7 +146,7 @@
 
       <!-- Forum -->
       <% if @signed_in %>
-        <% combien_nouveau = current_user.sk.combien_forum[0] %>
+        <% combien_nouveau = current_user.sk.combien_forum(false) %>
       <% end %>
 
       <% if @signed_in && combien_nouveau == 0 %>

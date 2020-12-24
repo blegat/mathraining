@@ -184,26 +184,28 @@ class User < ActiveRecord::Base
   end
 
   # Rend le nombre de nouveaux messages sur le forum
-  def combien_forum
-    compteur = 0
-    update_date = false
-    if self.admin? or (self.corrector? and self.wepion?)
-      lastsubjects = Subject.where("lastcomment > ?", self.forumseen)
-    elsif self.corrector?
-      lastsubjects = Subject.where("wepion = ? AND lastcomment > ?", false, self.forumseen)
-    elsif self.wepion?
-      lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen)
-    else
-      lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen)
-    end
-    lastsubjects.each do |s|
-      m = s.messages.order(:created_at).last || s
-      if m.user_id != self.id
-        compteur = compteur+1
+  def combien_forum(include_myself)
+    if include_myself
+      if self.admin? or (self.corrector? and self.wepion?)
+        return Subject.where("lastcomment > ?", self.forumseen).count
+      elsif self.corrector?
+        return Subject.where("wepion = ? AND lastcomment > ?", false, self.forumseen).count
+      elsif self.wepion?
+        lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen).count
+      else
+        lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen).count
       end
-      update_date = true
+    else
+      if self.admin? or (self.corrector? and self.wepion?)
+        return Subject.where("lastcomment > ?", self.forumseen).where.not(lastcomment_user: self.sk).count
+      elsif self.corrector?
+        return Subject.where("wepion = ? AND lastcomment > ?", false, self.forumseen).where.not(lastcomment_user: self.sk).count
+      elsif self.wepion?
+        lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen).where.not(lastcomment_user: self.sk).count
+      else
+        lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen).where.not(lastcomment_user: self.sk).count
+      end
     end
-    return [compteur, update_date]
   end
 
   # Rend la peau de l'utilisateur : current_user.sk à mettre quasi partout

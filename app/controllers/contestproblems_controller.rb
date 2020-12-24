@@ -268,6 +268,7 @@ class ContestproblemsController < ApplicationController
     mes.content = text
     mes.save
     sub.lastcomment = mes.created_at
+    sub.lastcomment_user_id = 0 # Message automatique
     sub.save
     
     sub.following_users.each do |u|

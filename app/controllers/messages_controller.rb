@@ -61,6 +61,7 @@ class MessagesController < ApplicationController
       end
 
       @subject.lastcomment = DateTime.current
+      @subject.lastcomment_user = current_user.sk
       @subject.save
 
       if current_user.sk.admin?
@@ -132,9 +133,11 @@ class MessagesController < ApplicationController
     if @subject.messages.size > 0
       last = @subject.messages.order("id").last
       @subject.lastcomment = last.created_at
+      @subject.lastcomment_user_id = last.user_id
       @subject.save
     else
       @subject.lastcomment = @subject.created_at
+      @subject.lastcomment_user_id = @subject.user_id
       @subject.save
     end
     redirect_to subject_path(@subject, :q => @q)

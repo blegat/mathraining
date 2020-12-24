@@ -32,6 +32,7 @@ class Subject < ActiveRecord::Base
   belongs_to :question
   belongs_to :contest
   belongs_to :problem
+  belongs_to :lastcomment_user, class_name: "User"
   has_many :followingsubjects, dependent: :destroy
   has_many :following_users, through: :followingsubjects, source: :user
   has_many :myfiles, as: :myfiletable, dependent: :destroy
@@ -43,4 +44,5 @@ class Subject < ActiveRecord::Base
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :user_id, presence: true
   validates :lastcomment, presence: true
+  validates :lastcomment_user_id, presence: true
 end
