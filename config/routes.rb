@@ -7,6 +7,7 @@ Mathraining::Application.routes.draw do
   match '/allnewsub', to: 'users#allnewsub', :via => [:get], as: :allnewsub
   match '/allmynewsub', to: 'users#allmynewsub', :via => [:get], as: :allmynewsub
   
+  match '/validate_names', to: 'users#validate_names', :via => [:get], as: :validate_names
   match '/validate_name', to: 'users#validate_name', :via => [:get], as: :validate_name
   match '/accept_legal', to: 'users#accept_legal', :via => [:patch], as: :accept_legal
 
@@ -127,6 +128,7 @@ Mathraining::Application.routes.draw do
     match '/change_password', to: 'users#change_password', :via => [:post]
     match '/add_followed_user', to: 'users#add_followed_user', :via => [:get], as: :add_followed_user
     match '/remove_followed_user', to: 'users#remove_followed_user', :via => [:get], as: :remove_followed_user
+    match '/change_name', to: 'users#change_name', :via => [:get], as: :change_name
   end
   
   match '/groups', to: 'users#groups', :via => [:get], as: :groups

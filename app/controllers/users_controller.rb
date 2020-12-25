@@ -3,11 +3,11 @@ class UsersController < ApplicationController
   before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups, :read_legal, :followed_users]
   before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user]
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
-  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user]
+  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:unactivate, :reactivate, :switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub]
-  before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_name]
+  before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_names, :validate_name, :change_name]
   before_action :signed_out_user, only: [:new, :create, :password_forgotten]
   before_action :group_user, only: [:groups]
 
@@ -183,7 +183,7 @@ class UsersController < ApplicationController
       if(current_user.root? and current_user.other)
         @user.update_attribute(:valid_name, true)
         current_user.update_attribute(:skin, 0)
-        redirect_to validate_name_path
+        redirect_to validate_names_path
       elsif((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.sk.admin)
         @user.update_attribute(:valid_name, false)
         redirect_to root_path
@@ -430,16 +430,24 @@ class UsersController < ApplicationController
   def correctors
   end
   
+  # Page with all names to validate
+  def validate_names
+    @users_to_validate = User.where(:admin => false, :valid_name => false, :email_confirm => true).all
+  end
+  
+  # To validate one name (called by javascript)
   def validate_name
-    u = User.where(:admin => false, :valid_name => false, :email_confirm => true).first
-    if(!u.nil?)
-      current_user.update_attribute(:skin, u.id)
-      redirect_to edit_user_path(u)
-    else
-      current_user.update_attribute(:skin, 0)
-      flash[:success] = "Aucun nom à valider !"
-      redirect_to root_path
+    u = User.find(params[:userid].to_i)
+    if !u.nil?
+      u.valid_name = true
+      u.save
     end
+  end
+  
+  # To change one name
+  def change_name
+    current_user.update_attribute(:skin, @user.id)
+    redirect_to edit_user_path(@user)
   end
   
   def read_legal
