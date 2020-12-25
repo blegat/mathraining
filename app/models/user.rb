@@ -270,7 +270,9 @@ class User < ActiveRecord::Base
     if !self.active?
       return "<span style='color:#BBBB00; font-weight:bold;'>Compte supprimé</span>"
     elsif !self.corrector?
-      return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name) unless fullname}#{html_escape(self.fullname) if fullname}</span>"
+      goodname = self.name unless fullname
+      goodname = self.fullname if fullname
+      return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span>"
     else
       debut = self.name[0]
       fin = self.name[1..-1] unless fullname
@@ -283,7 +285,9 @@ class User < ActiveRecord::Base
     if !self.active?
       return "<span style='color:#BBBB00; font-weight:bold;'>Compte supprimé</span>"
     elsif !self.corrector?
-      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name)}</span></a>"
+      goodname = self.name unless fullname
+      goodname = self.fullname if fullname
+      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span></a>"
     else
       debut = self.name[0]
       fin = self.name[1..-1] unless fullname
