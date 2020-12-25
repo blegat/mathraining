@@ -438,12 +438,12 @@ class UsersController < ApplicationController
   # To validate one name (called by javascript)
   def validate_name
     u = User.find(params[:userid].to_i)
-    capital = params[:capitalize].to_i
+    suggestion = params[:suggestion].to_i
     if !u.nil?
       u.valid_name = true
-      if capital == 1
-        u.first_name = u.first_name.capitalize
-        u.last_name = u.last_name.capitalize
+      if suggestion == 1
+        u.first_name = u.first_name.my_titleize
+        u.last_name = u.last_name.my_titleize
       end
       u.save
     end

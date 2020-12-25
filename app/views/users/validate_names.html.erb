@@ -1,7 +1,7 @@
 <script>
-function nameIsOk(user_id, capital) {
+function nameIsOk(user_id, suggestion) {
   validate_name_url = "<%= validate_name_url %>";
-  $.getScript(validate_name_url + "?userid=" + user_id + "&capitalize=" + capital);
+  $.getScript(validate_name_url + "?userid=" + user_id + "&suggestion=" + suggestion);
   document.getElementById('user'+user_id).style.display = 'none';
 }
 </script>
@@ -17,7 +17,7 @@ function nameIsOk(user_id, capital) {
     <tr id="user<%= u.id %>">
     <td style="width:200px;"><%= raw(u.linked_name(true)) %></td>
     <td style="width:50px; text-align:center;"><a href="#" onclick="nameIsOk(<%= u.id %>, 0)">OK</a></td>
-    <td style="width:250px;"><a href="#" onclick="nameIsOk(<%= u.id %>, 1)">Capitalize</a> (<%= u.first_name.capitalize %> <%= u.last_name.capitalize %>)</td>
+    <td style="width:250px;"><a href="#" onclick="nameIsOk(<%= u.id %>, 1)">Capitalize</a> (<%= u.first_name.my_titleize %> <%= u.last_name.my_titleize %>)</td>
     <td style="width:100px; text-align:center;"><%= link_to "Changer", user_change_name_path(u) %></td>
     </tr>
   <% end %>
