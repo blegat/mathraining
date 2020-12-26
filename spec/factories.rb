@@ -117,6 +117,7 @@ FactoryGirl.define do
     content "Contenu"
     association :user
     lastcomment DateTime.current
+    association :lastcomment_user, :factory => :user
     association :category
     chapter_id 0
     section_id 0

@@ -353,12 +353,15 @@ html>body tbody.scroll {
   <!-- Progression par section -->
   <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12" style="padding:5px;">
     <div class="progress_container" style="padding-left:20px; padding-right:20px;">
-    <% ppersection = Pointspersection.where(:user_id => @user) %>
+    <% ppersection_dic = {} %>
+    <% ppersection = Pointspersection.where(:user_id => @user).all.each do |pp| %>
+      <% ppersection_dic[pp.section_id] = pp.points %>
+    <% end %>
     <table class="progress-table">
     <% Section.order(:id).where(:fondation => false).each do |s| %>
       <tr>
       <td style="width:170px;"><%= s.name %></td>
-        <% rate = ppersection.where(:section_id => s.id).first.points %>
+        <% rate = ppersection_dic[s.id] %>
       <td style="padding-left:5px; padding-right:5px;">
         <% pct = maxscore[s.id] == 0 ? 0 : 100*rate/maxscore[s.id].to_f %>
         <div class="progress" style="margin-bottom:0px; height:10px;">

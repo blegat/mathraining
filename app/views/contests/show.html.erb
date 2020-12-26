@@ -74,6 +74,14 @@ Concours #<%= @contest.number %>
       
       <% allprobs = @contest.contestproblems.order(:number) %>
       
+      <% allsols = [] %>
+      <% allprobs.each do |p| %>
+        <% allsols[p.number] = {} %>
+        <% p.contestsolutions.each do |s| %>
+          <% allsols[p.number][s.user_id] = [s.score, s.id] %>
+        <% end %>
+      <% end %>
+      
       <div style="width:100%; overflow-x:auto;">
       
       <table class="table table-bordered" style="width:<%= 40+230+40*nb_prob+60 %>px; margin-bottom:0px; margin-top:10px;">
@@ -86,7 +94,7 @@ Concours #<%= @contest.number %>
       </tr>
       
       <% prevrank = 0 %>
-      <% @contest.contestscores.order(:rank, :user_id).each do |line| %>
+      <% @contest.contestscores.order(:rank, :user_id).includes(:user).each do |line| %>
       <tr>
       <td style="text-align:center;">
       <% if prevrank != line.rank %>
@@ -96,15 +104,26 @@ Concours #<%= @contest.number %>
       </td>
       <td><%= raw(line.user.linked_name) %></td>
       <% allprobs.each do |p| %>
-        <% sol = p.contestsolutions.where("user_id = ? AND score > 0", line.user.id).first %>
-        <% if p.status >= 4 && !sol.nil? %>
-          <% if sol.score == 7 %>
+        <% if p.status >= 4 %>
+          <% x = allsols[p.number][line.user.id] %>
+        <% else %>
+          <% x = nil %>
+        <% end %>
+        <% if !x.nil? %>
+          <% score = x[0] %>
+          <% id = x[1] %>
+        <% else %>
+          <% score = 0 %>
+          <% id = nil %>
+        <% end %>
+        <% if p.status >= 4 && score > 0 %>
+          <% if score == 7 %>
             <td style="background-color:#ddffdd; text-align:center;">
-            <%= link_to "7", contestproblem_path(p, :sol => sol) %>
+            <%= link_to "7", contestproblem_path(p, :sol => id) %>
             </td>
           <% else %>
             <td style="background-color:#ffeecc; text-align:center;">
-            <%= sol.score %>
+            <%= score %>
             </td>
           <% end %>
         <% elsif p.status >= 4 %>

@@ -65,11 +65,15 @@ Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieu
     <% resolu = false %>
     <% brouillon = false %>
 
-    <% solution = current_user.sk.solution(p) %>
+    <% if current_user.sk.admin? %>
+      <% solution = nil %>
+    <% else %>
+      <% solution = current_user.sk.solution(p) %>
+    <% end %>
     
     <% classe = "" %>
     <!-- Si déjà résolu : vert -->
-    <% if solution != nil && !current_user.sk.admin? %>
+    <% if !solution.nil? %>
       <% classe = "greeny" %>
       <% resolu = true %>
 
@@ -79,14 +83,20 @@ Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieu
 
     <!-- Si connecté -->
     <% else %>
-      <% sub = current_user.sk.submissions.where("problem_id = ? AND status >= 0", p.id).order('created_at') %>
-      <% br = current_user.sk.submissions.where("problem_id = ? AND status = -1", p.id).count %>
+      <% if !current_user.sk.admin? %>
+        <% sub = current_user.sk.submissions.where("problem_id = ? AND status >= 0", p.id).order('created_at') %>
+        <% br = current_user.sk.submissions.where("problem_id = ? AND status = -1", p.id).count %>
+      <% else %>
+        <% sub = nil %>
+        <% br = 0 %>
+      <% end %>
+      
       <% if br > 0 %>
         <% brouillon = true %>
       <% end %>
 
       <!-- Si aucune soumission (ou admin) : jaune -->
-      <% if sub.size == 0 || current_user.sk.admin? %>
+      <% if current_user.sk.admin? || sub.size == 0 %>
         <% classe = "yellowy" %>
       <% else %>
         <% sub = sub.last %>

@@ -47,7 +47,7 @@ html>body tbody.scroll {
 <% end %>
 
 <table class="table">
-<% Solvedproblem.includes(problem: :chapters).where("resolutiontime > ?", oneweekago).order("resolutiontime DESC").each do |s| %>
+<% Solvedproblem.includes(problem: :chapters).includes(:user).where("resolutiontime > ?", oneweekago).order("resolutiontime DESC").each do |s| %>
   <% p = s.problem %>
   <tr>
   <!-- Date -->

@@ -12,16 +12,15 @@
 <% tot_num = User.where("rating >= ? AND rating <= ? AND active = ? AND admin = ?", @min_rating, @max_rating, true, false).count %>
 <% country_list.push(["Tous les pays (" + tot_num.to_s + ")", 0]) %>
 
-<% @allcountries = Array.new %>
-<% id_country = Array.new %>
 <% by_countries = Array.new %>
-<% i = 0 %>
+<% num_by_country = User.where("rating >= ? AND rating <= ? AND active = ? AND admin = ?", @min_rating, @max_rating, true, false).group(:country_id).count %>
+<% @allcountries = Array.new %>
 <% Country.all.each do |c| %>
-  <% num = User.where("country_id = ? AND rating >= ? AND rating <= ? AND active = ? AND admin = ?", c.id, @min_rating, @max_rating, true, false).count %>
-  <% by_countries[i] = [-num, c.name, c.id] %>
-  <% id_country[c.id] = i %>
-  <% i = i + 1 %>
-  <% @allcountries[c.id] = [c.name, c.code] %>
+  <% num = num_by_country[c.id] %>
+  <% if !num.nil? %>
+    <% by_countries.push([-num, c.name, c.id]) %>
+    <% @allcountries[c.id] = [c.name, c.code] %>
+  <% end %>
 <% end %>
 
 <% by_countries.sort! %>

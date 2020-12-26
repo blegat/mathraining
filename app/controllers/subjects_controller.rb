@@ -68,20 +68,20 @@ class SubjectsController < ApplicationController
     end
     
     if cherche_personne
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").to_a
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).to_a
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
     elsif cherche_category >= 0
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, category: cherche_category).order("lastcomment DESC").to_a
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, category: cherche_category).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).to_a
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, category: cherche_category).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, category: cherche_category).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
     elsif cherche_section >= 0
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section).order("lastcomment DESC").to_a
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).to_a
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
     elsif cherche_section_problems >= 0
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section_problems).where.not(problem_id: nil).order("lastcomment DESC").to_a
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section_problems).where.not(problem_id: nil).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).to_a
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section_problems).where.not(problem_id: nil).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section_problems).where.not(problem_id: nil).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
     elsif cherche_chapitre
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: cherche_chapitre).order("lastcomment DESC").to_a
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: cherche_chapitre).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).to_a
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: cherche_chapitre).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: cherche_chapitre).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
     end
   end
 

@@ -55,7 +55,7 @@ var showFalse = function () {
     Solutions étoilées
   <% end %>
   </h3>
-  <% starred = @contestproblem.contestsolutions.where("star = ? AND (official = ? OR user_id != ?)", true, true, current_user.sk.id).order(:user_id).all %>
+  <% starred = @contestproblem.contestsolutions.where("star = ? AND (official = ? OR user_id != ?)", true, true, current_user.sk.id).order(:user_id).includes(:user) %>
   <% if starred.count > 0 %>
     <table class="table table-bordered" style="width:auto;">
     <tbody class="scroll">
@@ -73,7 +73,7 @@ var showFalse = function () {
   <% end %>
   
   <h3>Autres solutions correctes</h3>
-  <% good = @contestproblem.contestsolutions.where("star = ? AND score = ? AND corrected = ? AND (official = ? OR user_id != ?)", false, 7, true, true, current_user.sk.id).order(:user_id).all %>
+  <% good = @contestproblem.contestsolutions.where("star = ? AND score = ? AND corrected = ? AND (official = ? OR user_id != ?)", false, 7, true, true, current_user.sk.id).order(:user_id).includes(:user) %>
   <% if good.count > 0 %>
     <%= link_to "Afficher les autres solutions correctes", "javascript:showCorrect()", id: "btn_correct" %>
     <table class="table table-bordered" style="width:auto; display:none;" id="all_correct">
@@ -91,7 +91,7 @@ var showFalse = function () {
 <!-- Solutions erronées -->
 <% if @contestproblem.status >= 3 && @contest.is_organized_by_or_root(current_user) %>
   <h3>Solutions erronées / non-publiques</h3>
-  <% bad = @contestproblem.contestsolutions.where("score < 7 AND corrected = ?", true).order(:user_id).all %>
+  <% bad = @contestproblem.contestsolutions.where("score < 7 AND corrected = ?", true).order(:user_id).includes(:user) %>
   <% if bad.count > 0 %>
     <%= link_to "Afficher les solutions erronées et non-publiques", "javascript:showFalse()", id: "btn_false" %>
     <table class="table table-bordered" style="width:auto; display:none;" id="all_false">

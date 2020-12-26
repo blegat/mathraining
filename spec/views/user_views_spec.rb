@@ -18,7 +18,7 @@ describe "User views" do
 
     describe "visit user/show" do
       before { visit user_path(user) }
-      it { should have_selector("h1", text: user.name) }
+      it { should have_selector("span", text: user.name) }
       it { should_not have_link("Envoyer un message") }
       it { should_not have_link("Suivre") }
     end
@@ -34,8 +34,8 @@ describe "User views" do
 
     describe "visit user/show" do
       before { visit user_path(user) }
-      it { should have_selector("h1", text: user.name) }
-      it { should_not have_selector("h2", text: "Informations") }
+      it { should have_selector("span", text: user.name) }
+      it { should_not have_content("Connecté le") }
       it { should_not have_link("Envoyer un message") }
       it { should_not have_link("Suivre") }
       it { should_not have_content(user.email) }
@@ -55,13 +55,7 @@ describe "User views" do
       before { visit users_path }
       it { should have_selector("h1", text: "Scores") }
       it { should_not have_button("Modifier les niveaux et couleurs") }
-    end
-
-    describe "visit user/show" do
-      before { visit user_path(user) }
-      it { should have_selector("h2", text: "Informations") }
-      it { should have_content(user.email) }
-    end    
+    end   
   end
   
   describe "root" do
@@ -71,5 +65,11 @@ describe "User views" do
       before { visit users_path }
       it { should have_button("Modifier les niveaux et couleurs") }
     end
+    
+    describe "visit user/show" do
+      before { visit user_path(user) }
+      it { should have_content("Connecté le") }
+      it { should have_content(user.email) }
+    end 
   end
 end
