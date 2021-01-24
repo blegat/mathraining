@@ -227,10 +227,10 @@ html>body tbody.scroll {
     <div style="width:100%; height:<%= espace %>" class="hidden-xs"></div>
     <table style="margin-top:15px; width:90%;">
     <tr>
-    <td style="width:25%; text-align:center;"><%= image_tag("Gold", height: 40, alt: "Médailles d'or", title: "Médailles d'or") %></td>
-    <td style="width:25%; text-align:center;"><%= image_tag("Silver", height: 40, alt: "Médailles d'argent", title: "Médailles d'argent") %></td>
-    <td style="width:25%; text-align:center;"><%= image_tag("Bronze", height: 40, alt: "Médailles de bronze", title: "Médailles de bronze") %></td>
-    <td style="width:25%; text-align:center;"><%= image_tag("MH", height: 34, alt: "Mentions honorables", title: "Mentions honorables", style: "margin-top:5px;") %></td>
+    <td style="width:25%; text-align:center;"><%= image_tag("Gold.svg", height: 40, alt: "Médailles d'or", title: "Médailles d'or") %></td>
+    <td style="width:25%; text-align:center;"><%= image_tag("Silver.svg", height: 40, alt: "Médailles d'argent", title: "Médailles d'argent") %></td>
+    <td style="width:25%; text-align:center;"><%= image_tag("Bronze.svg", height: 40, alt: "Médailles de bronze", title: "Médailles de bronze") %></td>
+    <td style="width:25%; text-align:center;"><%= image_tag("MH.svg", height: 34, alt: "Mentions honorables", title: "Mentions honorables", style: "margin-top:5px;") %></td>
     </tr>
     <tr>
     <% num_medals = @user.contestscores.group(:medal).count %>
@@ -550,10 +550,10 @@ html>body tbody.scroll {
           <% else %>
             <!-- Médaille -->
             <td style="width:35px; padding:0px; text-align:center; <%= remove_border %>">
-            <%= image_tag("Gold", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == 4 %>
-            <%= image_tag("Silver", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") if ac[:medal] == 3 %>
-            <%= image_tag("Bronze", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") if ac[:medal] == 2 %>
-            <%= image_tag("MH", height: 20, alt: "Mention honorable", title: "Mention honorable") if ac[:medal] == 1 %>
+            <%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == 4 %>
+            <%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") if ac[:medal] == 3 %>
+            <%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") if ac[:medal] == 2 %>
+            <%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") if ac[:medal] == 1 %>
             <%= "-" if ac[:medal] <= 0 %>
             </td>
           

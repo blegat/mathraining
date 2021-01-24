@@ -118,10 +118,10 @@ Concours #<%= @contest.number %>
       </td>
       <% if show_medals %>
         <td style="text-align:center;">
-        <% if line.medal == 4 %><%= image_tag("Gold", height: 20, alt: "Médaille d'or", title: "Médaille d'or") %>
-        <% elsif line.medal == 3 %><%= image_tag("Silver", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") %>
-        <% elsif line.medal == 2 %><%= image_tag("Bronze", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") %>
-        <% elsif line.medal == 1 %><%= image_tag("MH", height: 20, alt: "Mention honorable", title: "Mention honorable") %>
+        <% if line.medal == 4 %><%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") %>
+        <% elsif line.medal == 3 %><%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") %>
+        <% elsif line.medal == 2 %><%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") %>
+        <% elsif line.medal == 1 %><%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") %>
         <% end %>
         </td>
       <% end %>
