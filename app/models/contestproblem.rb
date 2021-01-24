@@ -19,6 +19,7 @@
 # status = 2 --> problem is published and students can send solutions
 # status = 3 --> problem is finished and solutions are being corrected
 # status = 4 --> problem is finished ans solutions have been corrected
+# status = 5 --> same as status = 4 but organizers are temporarily allowed to modify corrections
 
 # reminder_status = 0 --> no reminder sent for this problem yet
 # reminder_status = 1 --> reminder sent one day before publication

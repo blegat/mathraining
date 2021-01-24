@@ -229,6 +229,11 @@ class ApplicationController < ActionController::Base
         if p.end_time <= date_now
           p.status = 3
           p.save
+          contest = p.contest
+          if contest.contestproblems.where("status <= 2").count == 0 # All problems of the contest are finished: mark the contest as finished
+            contest.status = 2
+            contest.save
+          end
         end
       end
       if p.status == 3 and p.reminder_status == 2 # Avoid to delete if reminders were not sent yet
@@ -238,6 +243,7 @@ class ApplicationController < ActionController::Base
   end
   
   def compute_new_contest_rankings(contest)
+    # Find all users with a score > 0 in the contest
     userset = Set.new
     probs = contest.contestproblems.where("status >= 4")
     probs.each do |p|
@@ -245,24 +251,67 @@ class ApplicationController < ActionController::Base
         userset.add(s.user_id)
       end
     end
+    
+    # Delete from Contestscore the users who don't have a score (can happen if we modify a score to 0)
+    @contest.contestscores.each do |s|
+      if !userset.include?(s.user_id)
+        s.destroy
+      end
+    end
+    
+    # Compute the scores of all users
     scores = Array.new
     userset.each do |u|
       score = 0
+      hm = false
       probs.each do |p|
-        sol =  p.contestsolutions.where(:user_id => u).first
+        sol = p.contestsolutions.where(:user_id => u).first
         if !sol.nil?
           score = score + sol.score
+          if sol.score == 7
+            hm = true
+          end
         end
       end
-      scores.push([-score, u])
+      scores.push([-score, u, hm])
     end
+    
+    # Sort the scores
     scores.sort!
+    
+    # Compute the number of each medal
+    contest_fully_corrected = (contest.contestproblems.where("status < 4").count == 0)
+    give_medals = (contest_fully_corrected and contest.medal)
+    if give_medals
+      num_participants = scores.size
+      # Number of gold medals
+      if num_participants % 12 == 0
+        num_gold = num_participants / 12 # We avoid the .ceil in case of perfect division
+      else
+        num_gold = (num_participants / 12.0).ceil
+      end
+      # Number of gold or silver medals
+      if num_participants % 4 == 0
+        num_gold_silver = num_participants / 4 # We avoid the .ceil in case of perfect division
+      else
+        num_gold_silver = (num_participants / 4.0).ceil
+      end
+      # Number of gold, silver or bronze medals
+      if num_participants % 2 == 0
+        num_gold_silver_bronze = num_participants / 2 # We avoid the .ceil in case of perfect division
+      else
+        num_gold_silver_bronze = (num_participants / 2.0).ceil
+      end
+    end
+    
+    # Compute the ranking (and maybe medal) of each user
     prevscore = -1
     i = 1
     rank = 0
     scores.each do |a|
       score = -a[0]
       u = a[1]
+      hm = a[2]
       if score != prevscore
         rank = i
         prevscore = score
@@ -275,9 +324,31 @@ class ApplicationController < ActionController::Base
       end
       cs.rank = rank
       cs.score = score
+      if give_medals
+        if rank <= num_gold
+          cs.medal = 4 # Gold
+        elsif rank <= num_gold_silver
+          cs.medal = 3 # Silver
+        elsif rank <= num_gold_silver_bronze
+          cs.medal = 2 # Bronze
+        elsif hm
+          cs.medal = 1 # Honourable mention
+        else
+          cs.medal = 0 # No medal
+        end
+      else
+        cs.medal = -1 # Not applicable
+      end
       cs.save
       i = i+1
     end
+    
+    # Change some details of the contest
+    contest.num_participants = scores.size
+    if contest_fully_corrected
+      contest.status = 3
+    end
+    contest.save
   end
   
 end

@@ -9,9 +9,10 @@
 #  status         :integer
 #  medal          :boolean
 #
-# status = 0 --> in construction
+# status = 0 --> in construction (only visible by organizers)
 # status = 1 --> online and not finished
-# status = 2 --> online and finished
+# status = 2 --> online and finished (but not corrected)
+# status = 3 --> online, finished, and corrected
 
 include ApplicationHelper
 

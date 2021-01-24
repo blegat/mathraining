@@ -52,6 +52,7 @@ class ContestproblemsController < ApplicationController
       correction.content = "-"
       correction.save
       
+      update_contest_details
       change_numbers
       redirect_to @contestproblem
     end
@@ -72,6 +73,7 @@ class ContestproblemsController < ApplicationController
     end
     if @contestproblem.save
       flash[:success] = "Problème modifié."
+      update_contest_details
       change_numbers
       redirect_to @contestproblem
     else
@@ -83,6 +85,8 @@ class ContestproblemsController < ApplicationController
   def destroy
     @contestproblem.destroy
     flash[:success] = "Problème supprimé."
+    update_contest_details
+    change_numbers
     redirect_to @contest
   end
   
@@ -225,6 +229,18 @@ class ContestproblemsController < ApplicationController
       p.save
       x = x+1
     end
+  end
+  
+  def update_contest_details
+    @contest.num_problems = @contest.contestproblems.count
+    if @contest.num_problems > 0
+      @contest.start_time = @contest.contestproblems.order(:start_time).first.start_time
+      @contest.end_time = @contest.contestproblems.order(:end_time).last.end_time
+    else
+      @contest.start_time = nil
+      @contest.end_time = nil
+    end
+    @contest.save
   end
   
   def automatic_results_published_post(contestproblem)
