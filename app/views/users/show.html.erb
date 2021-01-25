@@ -548,6 +548,7 @@ html>body tbody.scroll {
             <td style="width:190px; text-align:center; <%= remove_border %>" colspan="3"><span style="font-weight:bold; color:<%= couleur %>">Organisateur</span></td>
             
           <% else %>
+          
             <!-- Médaille -->
             <td style="width:35px; padding:0px; text-align:center; <%= remove_border %>">
             <%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == 4 %>
@@ -557,14 +558,24 @@ html>body tbody.scroll {
             <%= "-" if ac[:medal] <= 0 %>
             </td>
           
-            <!-- Rang -->
-            <td style="width:90px; text-align:center; <%= remove_border %>"><span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %></td>
+            <!-- Rang (si pas xs) -->
+            <td class="hidden-xs" style="width:90px; text-align:center; <%= remove_border %>">
+            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
+            </td>
             
-            <!-- Nombre de solutions correctes (avec "pts") -->
-            <td class="hidden-xs" style="width:100px; text-align:center; <%= remove_border %>"><span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %></td>
+            <!-- Points (si pas xs) -->
+            <td class="hidden-xs" style="width:100px; text-align:center; <%= remove_border %>">
+            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+            </td>
             
-            <!-- Nombre de solutions correctes (sans "pts") -->
-            <td class="visible-xs" style="width:70px; text-align:center; <%= remove_border %>"><span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> </span> / <%= ac[:max_score] %></td>
+            <!-- Rang et points (si xs) -->
+            <td class="visible-xs" style="width:100px; text-align:center; <%= remove_border %>">
+            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
+            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+            </td>
+            
+            <!-- Case vide (si xs), pour que le colspan="3" reste correct -->
+            <td class="visible-xs" style="width:0px;"></td>
             
           <% end %>
           
