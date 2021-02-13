@@ -429,7 +429,7 @@ Concours #<%= @contest.number %>
   <% width_point = 45 %>
   <% width_average = 90 %>
   <% width_table = width_name + 8 * width_point + width_average %>
-  <table class="table table-bordered" style="min-width:<%= width_table %>px; width:<%= width_table %>px;">
+  <table class="table table-bordered" style="min-width:<%= width_table %>px; width:<%= width_table %>px; margin-bottom:0px;">
   <tr>
   <th style="width:<%= width_name %>px;"></th>
   <th style="width:<%= width_point %>px; text-align:center;">0 *</th>
@@ -458,11 +458,10 @@ Concours #<%= @contest.number %>
     </tr>
   <% end %>
   </table>
-  
-  <div style="margin-bottom:5px;"><i>* En considérant que tous les participants classés ont essayé tous les problèmes.</i></div>
-  
   </center>
   </div>
+  
+  <center><div style="margin-top:10px; margin-bottom:5px;"><i>* En considérant que tous les participants classés ont essayé tous les problèmes.</i></div></center>
 
 <% end %>
 
