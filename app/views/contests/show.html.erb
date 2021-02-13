@@ -202,16 +202,16 @@ Concours #<%= @contest.number %>
         <% end %>
       <% end %>
       
+      <div style="width:100%; overflow-x:auto; margin-top:20px;">
+      
+      <center>
       <% width_rank = 40 %>
       <% width_medal = 35 %>
       <% width_name = 230 %>
       <% width_prob = 40 %>
       <% width_total = 60 %>
       <% width_table = width_rank + (show_medals ? width_medal : 0) + width_name + nb_prob*width_prob + width_total %>
-      <div style="width:100%; overflow-x:auto; min-width: <%= width_table %>px; margin-top:20px;">
-      
-      <center>
-      <table class="table table-bordered" style="width:<%= width_table %>px; margin-bottom:0px; margin-top:0px;">
+      <table class="table table-bordered" style="min-width:<%= width_table %>px; width:<%= width_table %>px; margin-bottom:0px; margin-top:0px;">
       <tr>
       <th style="width:<%= width_rank %>px;"></th>
       <% if show_medals %>
@@ -423,13 +423,13 @@ Concours #<%= @contest.number %>
     <% end %>
   <% end %>
   
+  <div style="width:100%; overflow-x:auto; margin-top:20px;">
+  <center>
   <% width_name = 120 %>
   <% width_point = 45 %>
   <% width_average = 90 %>
   <% width_table = width_name + 8 * width_point + width_average %>
-  <div style="width:100%; overflow-x:auto; min-width: <%= width_table %>px; margin-top:20px;">
-  <center>
-  <table class="table table-bordered" style="width:<%= width_table %>px;">
+  <table class="table table-bordered" style="min-width:<%= width_table %>px; width:<%= width_table %>px;">
   <tr>
   <th style="width:<%= width_name %>px;"></th>
   <th style="width:<%= width_point %>px; text-align:center;">0 *</th>
