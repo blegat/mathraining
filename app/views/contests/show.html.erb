@@ -292,7 +292,7 @@ Concours #<%= @contest.number %>
 
 <% elsif tab == 2 %>
 
-  <h3>Distribution des points</h3>
+  <h3>Distribution des scores</h3>
 
   <% num_ranked = 0 %>
   <% num_points = 7*nb_prob %>
@@ -312,7 +312,7 @@ Concours #<%= @contest.number %>
     <% num_all[line.score] = num_all[line.score] + 1 %>
   <% end %>
   
-  <% maxi = num_all.max %>
+  <% maxi = num_all.max + 1 %>
   
   <center>
 
@@ -365,7 +365,7 @@ Concours #<%= @contest.number %>
       <% (0..3).each do |j| %>
         <% k = 4-j %>
         <% if num_by_medal[k][i] > 0 %>
-          <% size = (200*num_by_medal[k][i])/maxi.to_f %>
+          <% size = (240*num_by_medal[k][i])/maxi.to_f %>
           ctx.beginPath();
           ctx.rect(pct*<%= 50+((806*(i-1))/num_points.to_f) %>, pct*<%= 255 - before %>, pct*<%= (806/num_points.to_f) %>, -pct*<%= size %>);
           ctx.fillStyle = '<%= medal_color[k] %>';
@@ -390,9 +390,9 @@ Concours #<%= @contest.number %>
     }
     
     ctx.textAlign = 'right';
-    <% i = maxi %>
+    <% i = maxi - 1 %>
     <% while(i > 0) %>
-      ctx.fillText("<%= i %>", pct*44 -4,pct*(<%= 255-200*i/maxi %>+4));
+      ctx.fillText("<%= i %>", pct*44 -4,pct*(<%= 255-240*i/maxi %>+4));
       <% i = i - 2 %>
     <% end %>
     
@@ -404,7 +404,7 @@ Concours #<%= @contest.number %>
     });
   </script>
   
-  <h3>Points par problème</h3>
+  <h3>Scores par problème</h3>
 
   <% allprobs = @contest.contestproblems.order(:number) %>
       
