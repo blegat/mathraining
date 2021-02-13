@@ -583,7 +583,7 @@ html>body tbody.scroll {
           <td class="hidden-xs" style="width:150px; text-align:center; <%= remove_border %>"><%= write_date_only_small(ac[:start_time]) %> - <%= write_date_only_small(ac[:end_time]) %></td>
           
           <!-- Lien du Concours -->
-          <td style="text-align:left; <%= remove_border %>;"><%= link_to "Concours ##{ac[:number]}", contest_path(ac[:id]) %></td>
+          <td style="text-align:left; <%= remove_border %>;"><%= link_to "Concours ##{ac[:number]}", contest_path(ac[:id], :tab => 1) %></td>
           
           </tr>
         <% end %>

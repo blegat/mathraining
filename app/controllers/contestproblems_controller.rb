@@ -276,9 +276,9 @@ class ContestproblemsController < ApplicationController
     
     text = text + "\n\r\n\r"
     if contest.contestproblems.where("status < 4").count > 0
-      text = text + "Le nouveau classement général suite à cette correction peut être consulté sur la page du concours."    
+      text = text + "Le nouveau classement général suite à cette correction peut être consulté à [url=" + contest_url(contest, :tab => 1) + "]cet endroit[/url]."    
     else
-      text = text + "Il s'agissait du dernier problème. Le classement final peut être consulté sur la page du concours."    
+      text = text + "Il s'agissait du dernier problème. Le classement final peut être consulté à [url=" + contest_url(contest, :tab => 1) + "]cet endroit[/url], et quelques statistiques se trouvent [url=" + contest_url(contest, :tab => 2) + "]ici[/url]."    
     end
     
     mes.content = text
