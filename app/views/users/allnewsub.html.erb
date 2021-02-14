@@ -74,29 +74,23 @@
 
     var pct = c.width()/900.0;
     
+    // Rectangle et fond blanc
     ctx.beginPath();
     ctx.rect(pct*50, pct*5, pct*806, pct*250);
     ctx.fillStyle = 'white';
-    ctx.fill();
+    ctx.fill(); 
+    
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'black';
-    ctx.stroke();
+    ctx.stroke();  
     
-    // Entre 50 et 850 --> largeur totale 800, à diviser en num_intervals
-    
-    ctx.beginPath();
-    ctx.moveTo(pct*850, pct*<%= 255 - 240*graph[num_intervals]/graph_maxi.to_f %>);
-    ctx.strokeStyle = 'orange';
-    ctx.lineWidth = 2;
-    <% width_one_interval = 800.0 / num_intervals %>
-    <% (r.first).downto(r.last).each do |i| %>
-      ctx.lineTo(pct*<%= 50+(i+1)*width_one_interval %>, pct*<%= 255 - 240*graph[i]/graph_maxi.to_f %>);
-    <% end %>
-    ctx.stroke()    
-    
+    // Labels axe des X
     ctx.font="12px Arial";
     ctx.fillStyle = 'black';
     ctx.textAlign = 'center';
+    
+    ctx.setLineDash([10, 10]);
+    ctx.beginPath();
     
     if(pct > 0.6)
     {
@@ -110,13 +104,38 @@
       <% end %>
     }
     
+    // Barres horizontales (et labels axe des Y)
+    if (pct < 0.7)
+    {
+      ctx.font="9px Arial";
+    }
+    
     ctx.textAlign = 'right';
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = 'grey';
     <% i = graph_maxi - 1 %>
     <% i_step = [(i/5.0).ceil, 1].max %>
     <% while(i > 0) %>
-      ctx.fillText("<%= i %>", pct*44-4, pct*(<%= 255-240*i/graph_maxi.to_f %>+4));
+      haut = <%= 255-240*i/graph_maxi.to_f %>
+      ctx.moveTo(pct*50, pct*(haut));
+      ctx.lineTo(pct*856, pct*(haut));
+      ctx.fillText("<%= i %>", pct*44-2, pct*(haut+4));
       <% i = i - i_step %>
     <% end %>
+    ctx.stroke();
+    
+    // Graphique: entre 50 et 850 --> largeur totale 800, à diviser en num_intervals
+    
+    ctx.beginPath();
+    ctx.moveTo(pct*850, pct*<%= 255 - 240*graph[num_intervals]/graph_maxi.to_f %>);
+    ctx.strokeStyle = 'orange';
+    ctx.setLineDash([]);
+    ctx.lineWidth = 2;
+    <% width_one_interval = 800.0 / num_intervals %>
+    <% (r.first).downto(r.last).each do |i| %>
+      ctx.lineTo(pct*<%= 50+(i+1)*width_one_interval %>, pct*<%= 255 - 240*graph[i]/graph_maxi.to_f %>);
+    <% end %>
+    ctx.stroke() 
     
     }
 
