@@ -7,9 +7,14 @@
 #  submission_id :integer
 #  user_id       :integer
 #  read          :boolean
+#  kind          :integer
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #
+#
+#  kind = 0 if reservation
+#         1 if first corrector
+#         2 if other corrector
 
 class Following < ActiveRecord::Base
   # attr_accessible :read

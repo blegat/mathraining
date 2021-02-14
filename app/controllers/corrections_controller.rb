@@ -129,6 +129,11 @@ class CorrectionsController < ApplicationController
           following = Following.new
           following.user = current_user.sk
           following.submission = @submission
+          if @submission.followings.where("user_id != ?", current_user.sk.id).count > 0
+            following.kind = 2 # New corrector for this submission (there was already another one)
+          else
+            following.kind = 1 # First corrector of the submission
+          end
         end
         following.read = true
         following.save

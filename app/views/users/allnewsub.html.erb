@@ -12,6 +12,125 @@
 <!-- Si on affiche toutes les soumissions -->
 <% if @new %>
 
+  <!-- Graphique du nombre de soumissions en attente -->
+  <% date_end = Time.now %>
+  <% date_begin = date_end - 4.days %>
+  <% time_interval = 20.minutes %>
+  <% num_intervals = ((date_end - date_begin) / time_interval).round %>
+  <% new_sub = Array.new(num_intervals, 0) %>
+  <% new_cor = Array.new(num_intervals, 0) %>
+  
+  <% Submission.where("visible = ? AND created_at > ?", true, date_begin).each do |s| %>
+    <% interval_id = [((s.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
+    <% new_sub[interval_id] = new_sub[interval_id] + 1 %>
+  <% end %>
+  
+  <% Following.where("kind = 1 AND created_at > ?", date_begin).each do |f| %>
+    <% interval_id = [((f.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
+    <% new_cor[interval_id] = new_cor[interval_id] + 1 %>
+  <% end %>
+  
+  <% num_waiting_now = Submission.where(status: 0, visible: true).count %>
+  <% graph = Array.new(num_intervals+1, 0) %>
+  <% graph[num_intervals] = num_waiting_now %>
+  <% r = (num_intervals-1)..0 %>
+  <% (r.first).downto(r.last).each do |i| %>
+    <% graph[i] = graph[i+1] + new_cor[i] - new_sub[i] %>
+  <% end %>
+  <% graph_maxi = graph.max+1 %>
+  
+  <center>
+
+  <!-- Endroit pour dessiner le graphique des soumissions en attente -->
+  <div id="contenant" style="width:100%; max-width:900px; height:280px; position:relative; display:block; margin-top:20px; margin-bottom:10px;">
+  <canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top: 0px;">
+  Votre navigateur ne supporte pas les canvas.
+  </canvas>
+  </div>
+
+  </center>
+
+
+  <script type="text/javascript">
+    $(document).ready( function(){
+
+    //Get the canvas & context
+    var c = $('#myCanvas');
+    var ctx = c.get(0).getContext('2d');
+    var container = $(c).parent();
+
+    //Run function when browser  resize
+    $(window).resize( respondCanvas );
+
+    function respondCanvas(){
+    c.attr('width', $(container).width() ); //max width
+    c.attr('height', 280*$(container).width()/900.0); //max height
+
+    document.getElementById('contenant').style.height = 280*$(container).width()/900.0 + "px"
+
+    //Redraw & reposition content
+    var x = c.width();
+    var y = c.height();
+
+    var pct = c.width()/900.0;
+    
+    ctx.beginPath();
+    ctx.rect(pct*50, pct*5, pct*806, pct*250);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+    
+    // Entre 50 et 850 --> largeur totale 800, à diviser en num_intervals
+    
+    ctx.beginPath();
+    ctx.moveTo(pct*850, pct*<%= 255 - 240*graph[num_intervals]/graph_maxi.to_f %>);
+    ctx.strokeStyle = 'orange';
+    ctx.lineWidth = 2;
+    <% width_one_interval = 800.0 / num_intervals %>
+    <% (r.first).downto(r.last).each do |i| %>
+      ctx.lineTo(pct*<%= 50+(i+1)*width_one_interval %>, pct*<%= 255 - 240*graph[i]/graph_maxi.to_f %>);
+    <% end %>
+    ctx.stroke()    
+    
+    ctx.font="12px Arial";
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center';
+    
+    if(pct > 0.6)
+    {
+      <% d = date_end %>
+      <% num_hours = 0 %>
+      <% while(d > date_begin - 1.minute) %>
+        <% ratio = (d - date_begin)/(date_end - date_begin) %>
+        ctx.fillText("H-<%= num_hours %>",pct*<%= 50+(800*ratio) %>,pct*265+7);
+        <% num_hours = num_hours + 6 %>
+        <% d = date_end - (num_hours).hours %>
+      <% end %>
+    }
+    
+    ctx.textAlign = 'right';
+    <% i = graph_maxi - 1 %>
+    <% i_step = [(i/5.0).ceil, 1].max %>
+    <% while(i > 0) %>
+      ctx.fillText("<%= i %>", pct*44-4, pct*(<%= 255-240*i/graph_maxi.to_f %>+4));
+      <% i = i - i_step %>
+    <% end %>
+    
+    }
+
+    //Initial call
+    respondCanvas();
+
+    });
+  </script>
+  
+
+
+
+
+
   <% if @notifications.size == 0 %>
     Il n'y a plus rien à corriger, beau boulot !
   <% else %>

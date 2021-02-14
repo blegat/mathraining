@@ -200,6 +200,7 @@ class SubmissionsController < ApplicationController
       f.user = current_user.sk
       f.submission = @submission
       f.read = true
+      f.kind = 0
       f.save
       @what = 3
     end
@@ -208,7 +209,7 @@ class SubmissionsController < ApplicationController
   # Dé-réserver la soumission
   def unreserve
     f = @submission.followings.first
-    if @submission.status != 0 || f.nil? || f.user != current_user.sk
+    if @submission.status != 0 || f.nil? || f.user != current_user.sk || f.kind != 0
       @what = 0
     else
       Following.delete(f.id)
@@ -488,18 +489,6 @@ class SubmissionsController < ApplicationController
   def un_read(read, msg)
     following = Following.where(:user_id => current_user.sk, :submission_id => @submission).first
     if !following.nil?
-      following.read = read
-      if following.save
-        flash[:success] = "Soumission marquée comme #{msg}."
-        redirect_to problem_path(@problem, :sub => @submission)
-      else
-        flash[:danger] = "Un problème est apparu."
-        redirect_to problem_path(@problem, :sub => @submission)
-      end
-    elsif !read
-      following = Following.new
-      following.user = current_user.sk
-      following.submission = @submission
       following.read = read
       if following.save
         flash[:success] = "Soumission marquée comme #{msg}."

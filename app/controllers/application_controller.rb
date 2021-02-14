@@ -196,7 +196,8 @@ class ApplicationController < ActionController::Base
         c.destroy # Should not happen in theory
       else
         debut = t.takentime.to_i
-        if debut + t.virtualtest.duration*60 < time_now
+        fin = debut + t.virtualtest.duration*60
+        if fin < time_now
           c.destroy
           t.status = 1
           t.save
