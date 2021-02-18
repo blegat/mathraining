@@ -100,13 +100,7 @@ Tests virtuels</h1>
       </div>
       
       <!-- Statistiques -->
-      <% nb_u = 0 %>
-      <% t.takentests.order(:id).each do |tt| %>
-        <% u = tt.user %>
-        <% if tt.status == 1 %>
-          <% nb_u = nb_u + 1 %>
-        <% end %>
-      <% end %>
+      <% nb_u = t.takentests.where(:status => 1).count %>
       
       <% moy = 0 %>
       <% arr = Array.new %>

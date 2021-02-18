@@ -14,13 +14,24 @@
 
   <!-- Graphique du nombre de soumissions en attente -->
   <% date_end = Time.now %>
-  <% date_begin = date_end - 4.days %>
+  <% date_begin_bad = date_end - 4.days %>
   <% time_interval = 20.minutes %>
-  <% num_intervals = ((date_end - date_begin) / time_interval).round %>
+  <% date_begin = date_begin_bad.beginning_of_hour %>
+  <% while date_begin + 20.minutes <= date_begin_bad %>
+    <% date_begin = date_begin + 20.minutes %>
+  <% end %>
+  <% num_intervals = ((date_end - date_begin) / time_interval).ceil %>
   <% new_sub = Array.new(num_intervals, 0) %>
   <% new_cor = Array.new(num_intervals, 0) %>
   
   <% Submission.where("visible = ? AND created_at > ?", true, date_begin).each do |s| %>
+    <% date_sub = s.created_at %>
+    <% if s.intest? %>
+      <% p = s.problem %>
+      <% t = p.virtualtest %>
+      <% date_start = t.takentests.where(:user_id => s.user_id).first.takentime %>
+      <% date_sub = date_start + (t.duration).minutes %>
+    <% end %>
     <% interval_id = [((s.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
     <% new_sub[interval_id] = new_sub[interval_id] + 1 %>
   <% end %>

@@ -30,7 +30,7 @@
 <% elsif s.status == 1 or s.status == 4 %>
   <tr class="danger"> <!-- Si status = 1 (refusé) ou status = 4 (plagiat) : toujours rouge -->
 <% elsif s.status == 0 %>
-  <% if situation != 1 || s.followings.count == 0 %>
+  <% if situation != 1 || s.followings.first.nil? %>
     <tr class="warning"> <!-- Si status = 0 (pas encore corrigé) : toujours jaune, sauf si... -->
   <% elsif s.followings.first.user == current_user.sk %>
     <tr style="background-color:#f3ffd9;"> <!-- si réservé par moi : un peu plus vert -->
