@@ -16,7 +16,7 @@
 <%= link_to "Effectuer une recherche dans toutes les soumissions", "javascript:showForm()", id: "btn_search_string" %>
 <form id="search_string_form" style="display:none;" method="post" data-remote="true" action="/submissions/<%= @submission.id %>/search_script">
 <div class="form-group">
-  <input class="form-control" style="widht:200px;", type="text", name="string_to_search" id="string_to_search" />
+  <input class="form-control" style="width:300px;", type="text", name="string_to_search" id="string_to_search" />
 </div>
 <div class="checkbox">
 <label style="margin-bottom:5px;" for="search_in_comments">

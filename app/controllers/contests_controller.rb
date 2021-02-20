@@ -5,11 +5,12 @@ class ContestsController < ApplicationController
   before_action :admin_user, only: [:new, :create, :destroy, :put_online, :add_organizer, :remove_organizer]
   before_action :check_contests, only: [:index, :show] # Defined in application_controller.rb
   before_action :get_contest, only: [:show, :edit, :update, :destroy]
-  before_action :get_contest2, only: [:put_online, :add_organizer, :remove_organizer]
-  before_action :is_organizer_or_admin, only: [:edit, :update]
+  before_action :get_contest2, only: [:put_online, :add_organizer, :remove_organizer, :cutoffs, :define_cutoffs]
+  before_action :is_organizer_or_admin, only: [:edit, :update, :cutoffs, :define_cutoffs]
   before_action :can_see, only: [:show]
   before_action :can_be_online, only: [:put_online]
   before_action :delete_online, only: [:destroy]
+  before_action :can_define_cutoffs, only: [:cutoffs, :define_cutoffs]
 
   # Voir tous les concours
   def index
@@ -17,6 +18,24 @@ class ContestsController < ApplicationController
 
   # Montrer un concours
   def show
+  end
+ 
+  # Choisir les médailles 
+  def cutoffs
+  end
+  
+  # Choisir les médailles 2
+  def define_cutoffs
+    @contest.bronze_cutoff = params[:bronze_cutoff].to_i
+    @contest.silver_cutoff = params[:silver_cutoff].to_i
+    @contest.gold_cutoff = params[:gold_cutoff].to_i
+    if @contest.save
+      compute_new_contest_rankings(@contest)
+      flash[:success] = "Les médailles ont été distribuées !"
+    else
+      flash[:danger] = "Une erreur est survenue."
+    end
+    redirect_to @contest
   end
 
   # Créer un concours
@@ -147,6 +166,13 @@ class ContestsController < ApplicationController
   # Vérifie qu'on ne supprime pas un concours en ligne
   def delete_online
     if @contest.status > 0
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Vérifie qu'on peut définir les cutoffs pour les médailles
+  def can_define_cutoffs
+    if @contest.status != 3 || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.sk.root)
       render 'errors/access_refused' and return
     end
   end

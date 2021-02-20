@@ -1,0 +1,226 @@
+<% provide(:title, "Concours ##{ @contest.number }") %>
+
+<!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
+<h1 style="margin-bottom:0px;">
+<span class="title-first"><%= link_to "Concours", contests_path %> ></span>
+<span class="title-second"><%= link_to "Concours ##{@contest.number}", @contest %> ></span>
+Seuils des médailles
+</h1>
+
+
+<% nb_prob = @contest.contestproblems.count %>
+<% num_ranked = @contest.contestscores.count %>
+<% num_points = 7*nb_prob %>
+<% num_all = Array.new(num_points+1, 0) %>
+<% ideal_num_gold = num_ranked / 12.0 %>
+<% ideal_num_gold_silver = num_ranked / 4.0 %>
+<% ideal_num_gold_silver_bronze = num_ranked / 2.0 %>
+<% up_num_gold = (num_ranked % 12 == 0 ? num_ranked / 12 : ideal_num_gold.ceil) %>
+<% up_num_gold_silver = (num_ranked % 4 == 0 ? num_ranked / 4 : ideal_num_gold_silver.ceil) %>
+<% up_num_gold_silver_bronze = (num_ranked % 2 == 0 ? num_ranked / 2 : ideal_num_gold_silver_bronze.ceil) %>
+
+<% min_gold = num_points %>
+<% min_silver = num_points %>
+<% min_bronze = num_points %>
+
+<% @contest.contestscores.order(:rank).each do |line| %>
+  <% num_all[line.score] = num_all[line.score] + 1 %>
+  <% if line.rank <= up_num_gold %>
+    <% min_gold = line.score %>
+  <% end %>
+  <% if line.rank <= up_num_gold_silver %>
+    <% min_silver = line.score %>
+  <% end %>
+  <% if line.rank <= up_num_gold_silver_bronze %>
+    <% min_bronze = line.score %>
+  <% end %>
+<% end %>
+
+<% maxi = num_all.max + 1 %>
+
+<center>
+
+<!-- Endroit pour dessiner le graphique des scores -->
+<div id="contenant" style="width:100%; max-width:900px; height:280px; position:relative; display:block; margin-top:20px;">
+<canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+
+</center>
+
+
+
+<script type="text/javascript">
+  function respondCanvas(){
+  
+  //Get the canvas & context
+  var c = $('#myCanvas');
+  var ctx = c.get(0).getContext('2d');
+  var container = $(c).parent();
+  
+  c.attr('width', $(container).width() ); //max width
+  c.attr('height', 280*$(container).width()/900.0); //max height
+
+  document.getElementById('contenant').style.height = 280*$(container).width()/900.0 + "px"
+
+  //Redraw & reposition content
+  var x = c.width();
+  var y = c.height();
+
+  var pct = c.width()/900.0;
+  
+  ctx.beginPath();
+  ctx.rect(pct*50, pct*5, pct*806, pct*250);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'black';
+  ctx.stroke();
+  
+  var gold_cutoff = document.getElementById('gold_cutoff').value;
+  var silver_cutoff = document.getElementById('silver_cutoff').value;
+  var bronze_cutoff = document.getElementById('bronze_cutoff').value;
+  
+  var real_num_gold = 0;
+  var real_num_gold_silver = 0;
+  var real_num_gold_silver_bronze = 0;
+  
+  // Entre 50 et 856 --> largeur totale 806, à diviser en num_points
+  
+  <% medal_color = ["", "#9999FF", "#DF7F32", "#C4C4C4", "#FFD700"] %>
+  <% (1..num_points).each do |i| %>
+    <% if num_all[i] > 0 %>
+      <% size = (240*num_all[i])/maxi.to_f %>
+      ctx.beginPath();
+      ctx.rect(pct*<%= 50+((806*(i-1))/num_points.to_f) %>, pct*255, pct*<%= (806/num_points.to_f) %>, -pct*<%= size %>);
+      if     (<%= i %> >= gold_cutoff)   { ctx.fillStyle = '#FFD700'; }
+      else if(<%= i %> >= silver_cutoff) { ctx.fillStyle = '#C4C4C4'; }
+      else if(<%= i %> >= bronze_cutoff) { ctx.fillStyle = '#DF7F32'; }
+      else                               { ctx.fillStyle = '#9999FF'; }
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+      if (<%= i %> >= gold_cutoff)   { real_num_gold += <%= num_all[i] %>; }
+      if (<%= i %> >= silver_cutoff) { real_num_gold_silver += <%= num_all[i] %>; }
+      if (<%= i %> >= bronze_cutoff) { real_num_gold_silver_bronze += <%= num_all[i] %>; }
+    <% end %>
+  <% end %>
+  
+  document.getElementById('real_num_gold').innerHTML = real_num_gold;
+  document.getElementById('real_num_gold_silver').innerHTML = real_num_gold_silver;
+  document.getElementById('real_num_gold_silver_bronze').innerHTML = real_num_gold_silver_bronze;
+  
+  var percent_gold = Math.round((real_num_gold - <%= ideal_num_gold %>)*100.0 / <%= ideal_num_gold %>)
+  if (percent_gold != 0) {
+    document.getElementById('diff_gold').innerHTML = (percent_gold > 0 ? "+" : "") + percent_gold + "%"
+  }
+  else {
+    document.getElementById('diff_gold').innerHTML = "="
+  }
+  document.getElementById('diff_gold').style.color = (percent_gold >= 0 ? "green" : "red");
+  
+  var percent_gold_silver = Math.round((real_num_gold_silver - <%= ideal_num_gold_silver %>)*100.0 / <%= ideal_num_gold_silver %>)
+  if (percent_gold_silver != 0) {
+    document.getElementById('diff_gold_silver').innerHTML = (percent_gold_silver > 0 ? "+" : "") + percent_gold_silver + "%"
+  }
+  else {
+    document.getElementById('diff_gold_silver').innerHTML = "="
+  }
+  document.getElementById('diff_gold_silver').style.color = (percent_gold_silver >= 0 ? "green" : "red");
+  
+  var percent_gold_silver_bronze = Math.round((real_num_gold_silver_bronze - <%= ideal_num_gold_silver_bronze %>)*100.0 / <%= ideal_num_gold_silver_bronze %>)
+  if (percent_gold_silver_bronze != 0) {
+    document.getElementById('diff_gold_silver_bronze').innerHTML = (percent_gold_silver_bronze > 0 ? "+" : "") + percent_gold_silver_bronze + "%"
+  }
+  else {
+    document.getElementById('diff_gold_silver_bronze').innerHTML = "="
+  }
+  document.getElementById('diff_gold_silver_bronze').style.color = (percent_gold_silver_bronze >= 0 ? "green" : "red");
+  
+  ctx.font="12px Arial";
+  ctx.fillStyle = 'black';
+  ctx.textAlign = 'center';
+  
+  if(pct > 0.6)
+  {
+    <% (1..nb_prob).each do |i| %>
+    ctx.fillText("<%= 7*i %>",pct*<%= 50+((806*(i*7-0.5))/num_points.to_f) %>,pct*265+7);
+    <% end %>
+  }
+  
+  ctx.textAlign = 'right';
+  <% i = maxi - 1 %>
+  <% while(i > 0) %>
+    ctx.fillText("<%= i %>", pct*44 -4,pct*(<%= 255-240*i/maxi %>+4));
+    <% i = i - 2 %>
+  <% end %>
+  }
+
+
+  $(document).ready( function(){
+
+  //Run function when browser  resize
+  $(window).resize( respondCanvas );
+
+  //Initial call
+  respondCanvas();
+
+  });
+</script>
+
+<center>
+<form id="cutoff_form" method="get" action="/contests/<%= @contest.id %>/define_cutoffs" style="margin-top:20px;">
+<table>
+<tr>
+<td style="width:200px;"></td>
+<td style="text-align:center;"><label for="bronze_cutoff">Bronze</label></td>
+<td style="text-align:center;"><label for="silver_cutoff">Argent</label></td>
+<td style="text-align:center;"><label for="gold_cutoff">Or</label></td>
+</tr>
+
+<tr>
+<td style="padding:10px;"><b>Seuil choisi</b></td>
+<td style="padding-left:5px; padding-right:5px; text-align:center;">
+<div class="form-group">
+  <input class="form-control" style="width:100px;" type="number" name="bronze_cutoff" id="bronze_cutoff" value="<%= min_bronze %>" onchange="respondCanvas()" />
+</div>
+</td>
+<td style="padding-left:5px; padding-right:5px; text-align:center;">
+<div class="form-group">
+  <input class="form-control" style="width:100px;" type="number" name="silver_cutoff" id="silver_cutoff" value="<%= min_silver %>" onchange="respondCanvas()" />
+</div>
+</td>
+<td style="padding-left:5px; padding-right:5px; text-align:center;">
+<div class="form-group">
+  <input class="form-control" style="width:100px;" type="number" name="gold_cutoff" id="gold_cutoff" value="<%= min_gold %>" onchange="respondCanvas()" />
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="padding:10px;"><b>Nombre idéal avec au moins cette médaille</b></td>
+<td style="text-align:center; font-size:18px;"><%= ("%.2f" % ideal_num_gold_silver_bronze) %></td>
+<td style="text-align:center; font-size:18px;""><%= ("%.2f" % ideal_num_gold_silver) %></td>
+<td style="text-align:center; font-size:18px;""><%= ("%.2f" % ideal_num_gold) %></td>
+</tr>
+
+<tr>
+<td style="padding:10px;"><b>Nombre choisi avec au moins cette médaille</b></td>
+<td style="text-align:center; font-size:18px;""><span id="real_num_gold_silver_bronze">?</span></td>
+<td style="text-align:center; font-size:18px;""><span id="real_num_gold_silver">?</span></td>
+<td style="text-align:center; font-size:18px;""><span id="real_num_gold">?</span></td>
+</tr>
+
+<tr>
+<td style="padding:10px;"><b>Différence</b></td>
+<td style="text-align:center; font-size:18px;""><span id="diff_gold_silver_bronze">?</span></td>
+<td style="text-align:center; font-size:18px;""><span id="diff_gold_silver">?</span></td>
+<td style="text-align:center; font-size:18px;""><span id="diff_gold">?</span></td>
+</tr>
+</table>
+
+<input type="submit" name="commit" value="Distribuer les médailles" class="btn btn-primary" style="margin-top:10px;" />
+</form>
+</center>

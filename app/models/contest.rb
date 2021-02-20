@@ -8,6 +8,9 @@
 #  description    :text
 #  status         :integer
 #  medal          :boolean
+#  bronze_cutoff  :integer
+#  silver_cutoff  :integer
+#  gold_cutoff    :integer
 #
 # status = 0 --> in construction (only visible by organizers)
 # status = 1 --> online and not finished

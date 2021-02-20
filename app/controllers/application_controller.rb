@@ -278,34 +278,10 @@ class ApplicationController < ActionController::Base
     end
     
     # Sort the scores
-    scores.sort!
-    
-    # Compute the number of each medal
-    contest_fully_corrected = (contest.contestproblems.where("status < 4").count == 0)
-    give_medals = (contest_fully_corrected and contest.medal)
-    if give_medals
-      num_participants = scores.size
-      # Number of gold medals
-      if num_participants % 12 == 0
-        num_gold = num_participants / 12 # We avoid the .ceil in case of perfect division
-      else
-        num_gold = (num_participants / 12.0).ceil
-      end
-      # Number of gold or silver medals
-      if num_participants % 4 == 0
-        num_gold_silver = num_participants / 4 # We avoid the .ceil in case of perfect division
-      else
-        num_gold_silver = (num_participants / 4.0).ceil
-      end
-      # Number of gold, silver or bronze medals
-      if num_participants % 2 == 0
-        num_gold_silver_bronze = num_participants / 2 # We avoid the .ceil in case of perfect division
-      else
-        num_gold_silver_bronze = (num_participants / 2.0).ceil
-      end
-    end
+    scores.sort!    
     
     # Compute the ranking (and maybe medal) of each user
+    give_medals = (contest.medal && contest.gold_cutoff > 0)
     prevscore = -1
     i = 1
     rank = 0
@@ -326,11 +302,11 @@ class ApplicationController < ActionController::Base
       cs.rank = rank
       cs.score = score
       if give_medals
-        if rank <= num_gold
+        if score >= contest.gold_cutoff
           cs.medal = 4 # Gold
-        elsif rank <= num_gold_silver
+        elsif score >= contest.silver_cutoff
           cs.medal = 3 # Silver
-        elsif rank <= num_gold_silver_bronze
+        elsif score >= contest.bronze_cutoff
           cs.medal = 2 # Bronze
         elsif hm
           cs.medal = 1 # Honourable mention
@@ -346,6 +322,7 @@ class ApplicationController < ActionController::Base
     
     # Change some details of the contest
     contest.num_participants = scores.size
+    contest_fully_corrected = (contest.contestproblems.where("status < 4").count == 0)
     if contest_fully_corrected
       contest.status = 3
     end

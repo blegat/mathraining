@@ -52,6 +52,14 @@ Concours #<%= @contest.number %>
 </form>
 <% end %>
 
+<% organizer = @contest.is_organized_by_or_admin(current_user) %>
+
+<% if organizer && @contest.status == 3 && @contest.medal && @contest.gold_cutoff == 0 %>
+  <center>
+  <%= button_to "Définir les médailles", contest_cutoffs_path(@contest), method: :get, class: 'btn btn-lg btn-default btn-grey', style: 'margin-top:10px;' %>
+  </center>
+<% end %>
+
 <% tab = 0 %>
 <% nb_prob = @contest.contestproblems.count %>
 <% nb_prob_corrected = @contest.contestproblems.where("status >= 4").count %>
@@ -75,8 +83,6 @@ Concours #<%= @contest.number %>
 <% else %>
   <h3>Problèmes</h3>
 <% end %>
-
-<% organizer = @contest.is_organized_by_or_admin(current_user) %>
 
 <% if tab == 0 %>
   <% @contest.contestproblems.order(:number).each do |p| %>
