@@ -601,7 +601,7 @@ html>body tbody.scroll {
   <div class="basic_container">
   <div class="container_title">Évolution</div>
     
-  <div style="padding-left:20px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> s'est inscrit sur Mathraining le <span style="color:<%= couleur %>"><%= write_date_only(@user.created_at) %></span>.</div>
+  <div style="padding-left:20px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span style="color:<%= couleur %>"><%= write_date_only(@user.created_at) %></span>.</div>
     
   <% if actualrating > 0 %>
     <div style="width:100%;">
