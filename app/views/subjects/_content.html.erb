@@ -66,7 +66,7 @@
     <% end %>
   <% end %>
   
-  <% theid = -ms.id if kind == "subject" || kind == "submission" || kind == "contestsolution" %>
+  <% theid = -ms.id if kind == "subject" || kind == "submission" || kind == "contestsolution" || kind == "submission_in_test" %>
   <% theid = ms.id if kind == "message" || kind == "correction" || kind == "contestcorrection" %>
   
   <!-- Version compilée -->
