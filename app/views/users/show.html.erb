@@ -818,43 +818,24 @@ html>body tbody.scroll {
   </div>
 <% end %>
 
-<% nb_corrections = @user.followings.count %>
+<% nb_corrections = @user.followings.where("kind > 0").count %>
 <% if nb_corrections > 0 %>
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
     <div class="basic_container">
     <div class="container_title">Corrections</div>
     <div style="padding-left:20px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> a participé à la correction de <span style="font-weight:bold; color:<%= couleur %>;"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !</div>    
-    <div style="width:100%;">    
-    <% first_correction = @user.followings.order(:created_at).first.created_at.in_time_zone %>
-    <% first_month = 12*first_correction.year + (first_correction.mon-1) %>
-    <% last_correction = @user.followings.order(:created_at).last.created_at.in_time_zone %>
-    <% last_month = 12*last_correction.year + (last_correction.mon-1) %>
-    <% num_months = last_month - first_month + 1 %>
-    <% if num_months >= 2 %>
-    
+    <div style="width:100%;">
+    <% count_by_month_str = @user.followings.where("kind > 0").group_by_month %>
+    <% if count_by_month_str.count >= 2 %>
+      <% count_by_month_int = {} %>
+      <% count_by_month_str.each { |k, v| d = k.to_datetime; count_by_month_int[12*d.year + d.mon-1] = v } %>
+      <% first_month = count_by_month_int.first[0] %>
+      <% last_month = count_by_month_int.first[0] %>
       <% max_num_corr = 0 %>
-      <% num_corr_by_month = Array.new %>
-      <% month_string = Array.new %>
-      <% prev_num_corr = 0 %>
-      <% for i in (first_month..last_month) do %>
-        <% month = (i % 12 + 1) %>
-        <% year = (i - month + 1)/12 %>
-        <% next_month = month + 1 %>
-        <% next_year = year %>
-        <% if next_month == 13 %>
-          <% next_month = 1 %>
-          <% next_year = next_year + 1 %>
-        <% end %>
-        <% date_limit = Time.zone.local(next_year, next_month, 1, 0, 0, 0) %>
-        <% next_num_corr = @user.followings.where("created_at < ?", date_limit).count %>
-        <% num_corr_this_month = next_num_corr - prev_num_corr %>
-        <% num_corr_by_month[i-first_month] = num_corr_this_month %>
-        <% month_string[i-first_month] = "#{0 if month < 10}#{month}/#{year-2000}" %>
-        <% prev_num_corr = next_num_corr %>
-        <% if num_corr_this_month > max_num_corr %>
-          <% max_num_corr = num_corr_this_month %>
-        <% end %>
-      <% end %>
+      <% count_by_month_int.each { |k, v| first_month = [first_month, k].min; last_month = [last_month, k].max; max_num_corr = [max_num_corr, v].max} %>
+      <% num_corr_by_month = Array.new(last_month-first_month+1, 0) %>
+      <% count_by_month_int.each { |k, v| num_corr_by_month[k-first_month] = v } %>
+      <% num_months = last_month - first_month + 1 %>
       
       <% maxi = (max_num_corr*1.1).ceil %>
       
@@ -922,7 +903,9 @@ html>body tbody.scroll {
             <% n = i - first_month %>
             <% date_x = 50+(n+0.5)*rect_width %>
             <% if date_x > last_date_x + 50 %>
-              ctx.fillText("<%= month_string[n] %>", pct*<%= date_x %>, pct*471);
+              <% month = (i % 12 + 1) %>
+              <% year = (i - month + 1)/12 %>
+              ctx.fillText("<%= "#{0 if month < 10}#{month}/#{year-2000}" %>", pct*<%= date_x %>, pct*471);
               <% last_date_x = date_x %>
             <% end %>
           <% end %>
