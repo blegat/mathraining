@@ -169,7 +169,7 @@ class User < ActiveRecord::Base
   # Rend le niveau de l'utilisateur
   def level
     if admin
-      return {color:"yellow"}
+      return {color:"#000000"}
     end
     i = 0
     actuallevel = nil
@@ -277,7 +277,7 @@ class User < ActiveRecord::Base
       debut = self.name[0]
       fin = self.name[1..-1] unless fullname
       fin = self.fullname[1..-1] if fullname
-      return "<span style='color:yellow; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
+      return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
     end
   end
 
@@ -292,7 +292,7 @@ class User < ActiveRecord::Base
       debut = self.name[0]
       fin = self.name[1..-1] unless fullname
       fin = self.fullname[1..-1] if fullname
-      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:yellow; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>"
+      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>"
     end
   end
   
