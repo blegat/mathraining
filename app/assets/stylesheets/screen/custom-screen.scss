@@ -2,10 +2,28 @@
 
 html {
   overflow-y: scroll;
+  background-color:black!important;
+  color:yellow!important;
 }
 
 body {
   padding-top: 50px;
+  background-color:black!important;
+  color:yellow!important;
+}
+
+div, table, tr, td, th, .list-group-item, .dropdown-menu {
+  background-color:black!important;
+  color:yellow!important;
+}
+
+.btn, textarea, input, select {
+  background-color:yellow!important;
+  color:red!important;
+}
+
+a {
+  color:red!important;
 }
 
 /* miscellaneous */
