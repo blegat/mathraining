@@ -171,13 +171,13 @@ class User < ActiveRecord::Base
     if admin
       return {color:"#000000"}
     end
-    i = 0
     actuallevel = nil
     $allcolors.each do |c|
       if c.pt <= rating
         actuallevel = c
+      else
+        return actuallevel
       end
-      i = i+1
     end
 
     return actuallevel
