@@ -1,0 +1,61 @@
+<% provide(:title, "Commentaires") %>
+
+<h1>
+  Commentaires <span style="font-size:20px;"> - <%= link_to "Tout voir", allmysub_path %></span>
+</h1>
+
+<% @AFFICHE_WARNING = 1 %>
+
+<h3>Qui vous concernent</h3>
+
+<% tome = Array.new %>
+<% @follow = Array.new %>
+<% current_user.sk.followings.where(:read => false).each do |f| %>
+  <% @follow.push(f.submission_id) %>
+<% end %>
+
+<% first_mine = true %>
+
+<% @notifications.each do |n| %>
+  <% if @follow.include?(n.id) %>
+    <% tome.push(n.id) %>
+    <% if first_mine %>
+      <table class="table table-bordered">
+      <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th style="text-align:center;">Type</th><th></th></tr>
+    <% end %>
+    <%= render 'submissions/showadmin', s: n, situation: 2 %>
+    <% first_mine = false %>
+  <% end %>
+<% end %>
+
+<% if !first_mine %>
+  </table>
+<% else %>
+  Vous n'avez aucun nouveau commentaire à lire.  
+<% end %>
+
+<h3>Autres commentaires non lus</h3>
+
+<% first_other = true %>
+
+<% @notifications_other.each do |n| %>
+  <% if(!tome.include?(n.id)) %>
+    <% if first_other %>
+      <table class="table table-bordered">
+      <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur(s)</th><th style="text-align:center;">Type</th><th></th></tr>
+    <% end %>
+    <% if current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem) %>
+      <% can_see = false %>
+    <% else %>
+      <% can_see = true %>
+    <% end %>
+    <%= render 'submissions/showadmin', s: n, situation: 22, can_see: can_see %>
+    <% first_other = false %>
+  <% end %>
+<% end %>
+
+<% if !first_other %>
+  </table>
+<% else %>
+  Aucun autre commentaire non lu.
+<% end %>

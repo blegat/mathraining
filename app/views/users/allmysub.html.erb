@@ -1,6 +1,6 @@
-<% provide(:title, "Soumissions") %>
+<% provide(:title, "Commentaires") %>
 <h1>
-  Soumissions (tout)
+  Commentaires (tout)
 </h1>
 
 <center>
@@ -9,15 +9,15 @@
 </center>
 
 
+<% @follow = Array.new %>
+<% current_user.sk.followings.where(:read => false).each do |f| %>
+  <% @follow.push(f.submission_id) %>
+<% end %>
+
 <table class="table table-bordered">
-<tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur(s)</th><th style="text-align:center;">Type</th><th></th></tr>
+<tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th style="text-align:center;">Type</th><th></th></tr>
 <% @notifications.each do |n| %>
-  <% if current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem) %>
-    <% can_see = false %>
-  <% else %>
-    <% can_see = true %>
-  <% end %>
-  <%= render 'submissions/showadmin', s: n, situation: 1, can_see: can_see %>
+  <%= render 'submissions/showadmin', s: n, situation: 2 %>
 <% end %>
 </table>
 

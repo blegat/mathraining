@@ -351,30 +351,22 @@ class UsersController < ApplicationController
   # Voir toutes les soumissions (admin)
   def allsub
     @notifications = Submission.includes(:user, :problem, followings: :user).where(visible: true).order("lastcomment DESC").paginate(page: params[:page]).to_a
-    @new = true
-    render :allsub
   end
 
   # Voir les soumissions auxquelles on participe (admin)
   def allmysub
     @notifications = current_user.sk.followed_submissions.includes(:user, :problem).where("status > 0").order("lastcomment DESC").paginate(page: params[:page]).to_a
-    @new = false
-    render :allsub
   end
   
   # Voir toutes les nouvelles soumissions (admin)
   def allnewsub
     @notifications = Submission.includes(:user, :problem, followings: :user).where(status: 0, visible: true).order("created_at").to_a
-    @new = true
-    render :allnewsub
   end
 
   # Voir les nouveaux commentaires des soumissions auxquelles on participe (admin)
   def allmynewsub
     @notifications = current_user.sk.followed_submissions.includes(:user, :problem).order("lastcomment").to_a
     @notifications_other = Submission.includes(:user, :problem, followings: :user).where("status = 3").order("lastcomment").to_a
-    @new = false
-    render :allnewsub
   end
 
   # Voir les notifications (étudiant)
