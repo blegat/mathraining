@@ -22,7 +22,7 @@
     <tr style="background-color:#EEEEEE"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
     <% User.where(:group => g).order("rating DESC").each do |u| %>
       <tr>
-      <td><%= raw(u.linked_name(true)) %></td>
+      <td><%= raw(u.linked_name(1)) %></td>
       <td><%= u.rating %></td>
       <td><%= u.email %></td>
       <% lastco = u.last_connexion %>

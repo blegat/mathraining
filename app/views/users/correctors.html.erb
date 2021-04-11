@@ -1,7 +1,7 @@
 <% provide(:title, 'Corrections') %>
 <h1>Corrections</h1>
 
-En <span style="color:green;">vert</span>, les soumissions correctes, en <span style="color:red;">rouge</span> les soumissions incorrectes, et en <span style="color:grey;">gris</span> les soumissions en attente de correction.<br/><br/>
+Le graphique suivant montre, en <span style="color:green;">vert</span>, les soumissions correctes, en <span style="color:red;">rouge</span> les soumissions incorrectes, et en <span style="color:grey;">gris</span> les soumissions en attente de correction.<br/><br/>
 
 <!-- On parcourt tous les correcteurs -->
 
@@ -147,18 +147,60 @@ Votre navigateur ne supporte pas les canvas.
   });
 </script>
 
+<h2>Dernières corrections</h2>
+
+Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier correcteur ayant résolu une soumission à un problème de ce type.
+
+<% abreviation = ["Combinatoire", "Géométrie", "Th. Nombres", "Algèbre", "Éq. Fonct.", "Inégalités"] %>
+<div style="width:100%; overflow-x:auto; margin-top:20px;">
+<center>
+<table class="table table-bordered" style="min-width:790px; width:790px; margin:0px;">
+<tr>
+<th style="width:70px;"></th>
+<% Section.all.order(:id).each do |sec| %>
+  <% if !sec.fondation? %>
+    <th style="width:120px; text-align:center;"><%= abreviation[sec.id-1] %></th>
+  <% end %>
+<% end %>
+</tr>
+
+<% (1..5).each do |lev| %>
+  <tr>
+  <th style="text-align:center;">Niv. <%= lev %></th>
+  <% Section.all.order(:id).each do |sec| %>
+    <% if !sec.fondation? %>
+      <td style="text-align:center; background-color:rgb(250, 250, 250);">
+        <% f = Following.joins(submission: :problem).where(problems: {level: lev, section_id: sec.id}, kind: 1).order("created_at").last %>
+        <% if f.nil? %>
+          -
+        <% else %>
+          <%= raw(f.user.linked_name(2)) %>
+        <% end %>
+      </td>
+    <% end %>
+  <% end %>
+  </tr>
+<% end %>
+
+</table>
+</center>
+</div>
+
 <h2>Correcteurs</h2>
+
+Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un grand merci à eux tous !
 
 <% User.where("admin = ? OR corrector = ?", true, true).each do |u| %>
   <% nb_corrections = u.followings.where("kind > 0").count %>
-  <% nb_recent = u.followings.where("kind > 0 AND created_at > ?", twoweeksago).count %>
   <% if nb_corrections > 0 %>
+    <% nb_recent = u.followings.where("kind > 0 AND created_at > ?", twoweeksago).count %>
     <% first_correction = u.followings.where("kind > 0").order(:created_at).first.created_at.in_time_zone %>
     <% last_correction = u.followings.where("kind > 0").order(:created_at).last.created_at.in_time_zone %>
     <% correctors.push({:number => nb_corrections, :number_recent => nb_recent, :first => first_correction, :last => last_correction, :user => u}) %>
   <% end %>
 <% end %>
 
+<center>
 <table class="table table-bordered" style="margin-top:20px; width:auto;">
 <tr><th>Nom</th><th style="text-align:center;">Corrections</th><th style="text-align:center;">&le; 2 sem.</th><th class="hidden-xs">Première</th><th class="hidden-xs">Dernière</th></tr>
 
@@ -176,3 +218,4 @@ Votre navigateur ne supporte pas les canvas.
   </tr>
 <% end %>
 </table>
+</center>

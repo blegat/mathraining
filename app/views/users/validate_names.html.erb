@@ -15,7 +15,7 @@ function nameIsOk(user_id, suggestion) {
   <table class="table table-bordered" style="width:600px;">
   <% @users_to_validate.each do |u| %>
     <tr id="user<%= u.id %>">
-    <td style="width:200px;"><%= raw(u.linked_name(true)) %></td>
+    <td style="width:200px;"><%= raw(u.linked_name(1)) %></td>
     <td style="width:50px; text-align:center;"><a href="#" onclick="nameIsOk(<%= u.id %>, 0)">OK</a></td>
     <td style="width:250px;"><a href="#" onclick="nameIsOk(<%= u.id %>, 1)">Capitalize</a> (<%= u.first_name.my_titleize %> <%= u.last_name.my_titleize %>)</td>
     <td style="width:100px; text-align:center;"><%= link_to "Changer", user_change_name_path(u) %></td>

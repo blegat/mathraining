@@ -187,9 +187,9 @@
         <!-- Nom -->
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           <% if current_user.other %>
-            [<%= raw(current_user.sk.colored_name(true)) %>]
+            [<%= raw(current_user.sk.colored_name(1)) %>]
           <% else %>
-            <%= raw(current_user.sk.colored_name(true)) %>
+            <%= raw(current_user.sk.colored_name(1)) %>
           <% end %>
           <b class="caret"></b>
         </a>
