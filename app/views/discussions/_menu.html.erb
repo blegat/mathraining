@@ -24,7 +24,7 @@ var showAllDiscussions = function () {
 
   <% if all_discussions.size > 0 %>
     <% num = 0 %>
-    <% num_max = 5 %>
+    <% num_max = 1 %>
     <% all_discussions.each do |d| %>
       <% other = current_user.sk %>
       <% d.users.each do |u| %>
@@ -43,7 +43,7 @@ var showAllDiscussions = function () {
       <% end %>
       <% num = num + 1 %>
     <% end %>
-    <% if num >= num_max %>
+    <% if num > num_max %>
       </div>
     <% end %>
   <% else %>
