@@ -127,7 +127,7 @@ var showFalse = function () {
     <% if @contestproblem.contestsolutions.where(:star => true).count == 0 %>
       <i>Il faut au minimum une solution étoilée pour publier les résultats</i>
     <% else %>
-      <%= button_to "Publier les résultats", contestproblem_publish_results_path(@contestproblem), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir publier les corrections ? Attention ! Il ne sera plus possible de modifier les corrections après cela." }  %>
+      <%= button_to "Publier les résultats", contestproblem_publish_results_path(@contestproblem), :method => :put, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir publier les corrections ? Attention ! Il ne sera plus possible de modifier les corrections après cela." }  %>
     <% end %>
     </center>
   <% end %>

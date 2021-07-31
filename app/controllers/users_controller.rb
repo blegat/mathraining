@@ -160,6 +160,7 @@ class UsersController < ApplicationController
   def show
   end
 
+  # Comparer deux utilisateurs: à supprimer un jour!
   def compare
     @user = []
     @user[1] = User.find_by_id(params[:id1])

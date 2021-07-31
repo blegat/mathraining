@@ -52,7 +52,7 @@
   <% end %>
   
   <% if haut || bas %>
-    | Déplacer vers le <%= link_to "haut", chapter_order_minus_path(@chapter) if haut %> <%= '-' if haut && bas %> <%= link_to "bas", chapter_order_plus_path(@chapter) if bas %>
+    | Déplacer vers le <%= link_to "haut", chapter_order_minus_path(@chapter), :method => :put if haut %> <%= '-' if haut && bas %> <%= link_to "bas", chapter_order_plus_path(@chapter), :method => :put if bas %>
   <% end %>
   
   <% if !@chapter.online && current_user.sk.admin? %>

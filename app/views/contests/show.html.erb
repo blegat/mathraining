@@ -11,7 +11,7 @@ Concours #<%= @contest.number %>
 <% if @signed_in %>
   <td class="hidden-xs" style="padding-left:15px; text-align:right;">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
     <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
   <% end %>
@@ -25,7 +25,7 @@ Concours #<%= @contest.number %>
 <% if @signed_in %>
   <div class="visible-xs" style="text-align:center; padding-top:10px;">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
     <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
   <% end %>
@@ -41,11 +41,11 @@ Concours #<%= @contest.number %>
 <br/><br/><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
   <% c = c+1 %>
-  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.status == 0 %> (<%= link_to "supprimer", contest_remove_organizer_path(@contest, :user_id => o.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
+  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.status == 0 %> (<%= link_to "supprimer", contest_remove_organizer_path(@contest, :user_id => o.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"}, :method => :put %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
 <% end %>
 
 <% if @signed_in && current_user.sk.admin? && @contest.status == 0 %>
-<form action="<%= contest_add_organizer_path(@contest) %>" method="get" class="form-inline" style="margin-top:10px;">
+<form action="<%= contest_add_organizer_path(@contest) %>" method="put" class="form-inline" style="margin-top:10px;">
   <% mtn = DateTime.now.to_date - 14 %>
   <%= select_tag :user_id, options_for_select(User.where("last_connexion >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Nouvel organisateur..."), -1), :class => "form-control select2", :style => "width:300px;" %>
   <%= button_tag "Ajouter", class: "btn btn btn-primary", name: "" %>
@@ -496,7 +496,7 @@ Concours #<%= @contest.number %>
   <% else %>
     |
   <% end %>
-  <%= link_to "Mettre ce concours en ligne", contest_put_online_path(@contest), data: { confirm: "Êtes-vous sûr de vouloir mettre ce concours en ligne ?" } %>
+  <%= link_to "Mettre ce concours en ligne", contest_put_online_path(@contest), :method => :put, data: { confirm: "Êtes-vous sûr de vouloir mettre ce concours en ligne ?" } %>
   | <%= link_to "Supprimer ce concours", @contest, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce concours ?" } %>
   <% num = num+1 %>
 <% end %>

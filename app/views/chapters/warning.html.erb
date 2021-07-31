@@ -12,5 +12,5 @@ Vous vous apprêtez à mettre un chapitre en ligne.<br/><br/>
 <b>Merci de contacter un responsable du site avant de faire cette opération lourde de conséquence !</b><br/><br/>
 
 <center>
-  <%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), method: :get, class: 'btn-danger btn-lg', data: {confirm: "Êtes-vous sûr de vouloir mettre ce chapitre en ligne ?"} %>
+  <%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), :method => :put, class: 'btn-danger btn-lg', data: {confirm: "Êtes-vous sûr de vouloir mettre ce chapitre en ligne ?"} %>
 </center>

@@ -83,7 +83,7 @@
   <div style="text-align:center; margin-top:10px; margin-bottom:-10px;">
   <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Modifier ce score</a>
   <span id='formulaire' style="display:none;">
-  <%= form_tag problem_submission_update_score_path(@problem, @submission), method: :get, :class => "form-inline", :style => "margin-top:5px;" do %>
+  <%= form_tag problem_submission_update_score_path(@problem, @submission), :method => :put, :class => "form-inline", :style => "margin-top:5px;" do %>
     Nouveau score :
     <%= number_field_tag "new_score", @submission.score, min: 0, max: 7 %>
     <%= submit_tag "Do it !", data: { confirm: "Êtes-vous sûr de vouloir modifier le score obtenu ?"} %>
@@ -105,9 +105,9 @@
   <% following = @submission.followings.where(:user_id => current_user.sk).first %>
   <% if !following.nil? %>
     <% if following.read %>
-      <br/><center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission), :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
+      <br/><center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
     <% else %>
-      <br/><center><%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission), :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
+      <br/><center><%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
     <% end %>
   <% end %>
 <% end %>
@@ -144,7 +144,7 @@
 
   <!-- Marquer la soumission comme plagiée -->
   <% if current_user.sk.root? && @submission.status != 4 && @submission.status >= 0 && !@submission.user.pb_solved?(@submission.problem) %>
-  - <%= link_to 'Marquer comme plagiat', problem_submission_mark_as_plagiarism_path(@problem, @submission), data: { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme plagiée ? L'étudiant ne pourra plus rien faire sur ce problème." }, :style => "color:red;" %>
+  - <%= link_to 'Marquer comme plagiat', problem_submission_mark_as_plagiarism_path(@problem, @submission), data: { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme plagiée ? L'étudiant ne pourra plus rien faire sur ce problème." }, :method => :put, :style => "color:red;" %>
   <% end %>
   </center>
 <% end %>
@@ -152,7 +152,7 @@
 <!-- Repasser la soumission comme erronée -->
 <% if current_user.sk.root? && @submission.status == 2 %>
   <br/><center>
-  <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ? L'utilisateur a peut-être déjà lu les solutions des autres." }, :style => "color:red;" %>
+  <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ? L'utilisateur a peut-être déjà lu les solutions des autres." }, :method => :put, :style => "color:red;" %>
   </center>
 <% end %>
 
@@ -160,9 +160,9 @@
 <% if (current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk)) && @submission.status == 2 %>
   <br/><center>
     <% if @submission.star %>
-      <center><%= link_to 'Ne plus étoiler cette solution', problem_submission_unstar_path(@problem, @submission), :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
+      <center><%= link_to 'Ne plus étoiler cette solution', problem_submission_unstar_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
     <% else %>
-      <center><%= link_to 'Étoiler cette solution', problem_submission_star_path(@problem, @submission), :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
+      <center><%= link_to 'Étoiler cette solution', problem_submission_star_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
     <% end %>
   </center>
 <% end %>

@@ -208,9 +208,9 @@ html>body tbody.scroll {
     
     <% if @signed_in && @user != current_user.sk %>
       <% if !current_user.sk.followed_users.exists?(@user.id) %>
-        <%= link_to "Suivre", user_add_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+        <%= link_to "Suivre", user_add_followed_user_path(@user), :method => :put, :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
       <% else %>
-        <%= link_to "Ne plus suivre", user_remove_followed_user_path(@user), :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+        <%= link_to "Ne plus suivre", user_remove_followed_user_path(@user), :method => :put, :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
       <% end %>
     <% end %>
     
@@ -966,7 +966,7 @@ html>body tbody.scroll {
     <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :style => "color:red;" %>
+      <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :method => :put, :style => "color:red;" %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :style => "color:red;" %>
@@ -974,35 +974,35 @@ html>body tbody.scroll {
     <% if current_user.sk.root? && @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Voir le site comme lui', user_take_skin_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." } %>
+      <%= link_to 'Voir le site comme lui', user_take_skin_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." }, :method => :put %>
     <% end %>
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :style => "color:red;" %>
+      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :method => :put, :style => "color:red;" %>
     <% end %>
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if !@user.corrector %>
-        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :style => "color:red;" %>
+        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :method => :put, :style => "color:red;" %>
       <% else %>
-        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :style => "color:red;" %>
+        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :style => "color:red;" %>
       <% end %>
     <% end %>
     <% if current_user.sk.admin && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if @user.wepion %>
-        <%= link_to 'Retirer du groupe Wépion', user_switch_wepion_path(@user) %>
+        <%= link_to 'Retirer du groupe Wépion', user_switch_wepion_path(@user), :method => :put %>
       <% else %>
-        <%= link_to 'Ajouter au groupe Wépion', user_switch_wepion_path(@user) %>
+        <%= link_to 'Ajouter au groupe Wépion', user_switch_wepion_path(@user), :method => :put %>
       <% end %>
     <% end %>
     <% if current_user.sk.admin && @user.wepion %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      Groupe <%= link_to 'A', user_change_group_path(@user, :group => "A") %>, <%= link_to 'B', user_change_group_path(@user, :group => "B") %>, <%= link_to 'aucun', user_change_group_path(@user, :group => "") %>
+      Groupe <%= link_to 'A', user_change_group_path(@user, :group => "A"), :method => :put %>, <%= link_to 'B', user_change_group_path(@user, :group => "B"), :method => :put %>, <%= link_to 'aucun', user_change_group_path(@user, :group => ""), :method => :put %>
     <% end %>
   </div>
   </div>

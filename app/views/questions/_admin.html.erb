@@ -43,19 +43,20 @@
 <% if (up || down) %>
   Déplacer cet exercice vers le
   <% if up %>
-    <%= link_to "haut", question_order_minus_path(f) %>
-    <% if down %>
-      | <%= link_to "bas", question_order_plus_path(f) %>
-    <% end %>
-  <% else %>
-    <%= link_to "bas", question_order_plus_path(f) %>
+    <%= link_to "haut", question_order_minus_path(f), :method => :put %>
+  <% end %>
+  <% if up && down %>
+    |
+  <% end %>
+  <% if down %>
+    <%= link_to "bas", question_order_plus_path(f), :method => :put %>
   <% end %>
 <br/><br/>
 <% end %>
 
 <!-- Mettre en ligne -->
 <% if !f.online && @chapter.online %>
-  <%= button_to "Mettre en ligne", question_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
+  <%= button_to "Mettre en ligne", question_put_online_path(f), method: :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
   <br/>
 <% end %>
 </center>

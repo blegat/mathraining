@@ -25,7 +25,7 @@
 <br/><br/>
 <center><%= link_to "Modifier", privacypolicy_edit_description_path(p) %>
 <% if !p.online %>
-  - <%= link_to "Publier", privacypolicy_put_online_path(p), data: { confirm: "ATTENTION : Après la publication tous les utilisateurs devront signer la nouvelle politique de confidentialité. Êtes-vous sûr de vouloir publier cette nouvelle version ?" }, :style => "color:red;" %>
+  - <%= link_to "Publier", privacypolicy_put_online_path(p), :method => :put, data: { confirm: "ATTENTION : Après la publication tous les utilisateurs devront signer la nouvelle politique de confidentialité. Êtes-vous sûr de vouloir publier cette nouvelle version ?" }, :style => "color:red;" %>
 <% end %>
 </center>
 </td>

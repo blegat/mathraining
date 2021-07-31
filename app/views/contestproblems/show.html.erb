@@ -62,9 +62,9 @@ Problème #<%= @contestproblem.number %>
   <% end %>
   <% if current_user.sk.root? %>
     <% if @contestproblem.status == 4 %>
-      | <%= link_to "Autoriser nouvelles corrections", contestproblem_authorize_corrections_path(@contestproblem) %>
+      | <%= link_to "Autoriser nouvelles corrections", contestproblem_authorize_corrections_path(@contestproblem), :method => :put %>
     <% elsif @contestproblem.status == 5 %>
-      | <%= link_to "Stopper nouvelles corrections", contestproblem_unauthorize_corrections_path(@contestproblem) %>
+      | <%= link_to "Stopper nouvelles corrections", contestproblem_unauthorize_corrections_path(@contestproblem), :method => :put %>
     <% end %>
   <% end %>
   </center>

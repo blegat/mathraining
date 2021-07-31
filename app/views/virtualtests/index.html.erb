@@ -181,9 +181,9 @@ Tests virtuels</h1>
           <!-- Déplacer -->
           <% if current_user.sk.admin? && !t.online? && nb_prob > 1 %>
             <center>Déplacer ce problème vers le
-            <%= link_to "haut", problem_order_minus_path(p) if h > 1 %>
+            <%= link_to "haut", problem_order_minus_path(p), :method => :put if h > 1 %>
             <%= "|" if h > 1 && h < nb_prob %>
-            <%= link_to "bas", problem_order_plus_path(p) if h < nb_prob %>
+            <%= link_to "bas", problem_order_plus_path(p), :method => :put if h < nb_prob %>
             </center><br/>
           <% end %>
           <%= raw(htmlise(p.statement)) %>         
@@ -207,7 +207,7 @@ Tests virtuels</h1>
       
       <!-- Si étudiant en cours de test -->
       <% if !current_user.sk.admin? && status == -1 %>
-        <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), method: :get, class: 'btn btn-lg btn-default btn-grey', disabled: current_user.other, style: "margin-top:15px; margin-bottom:5px;", data: { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" } %></center>
+        <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: current_user.other, style: "margin-top:15px; margin-bottom:5px;", data: { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" } %></center>
       <% end %>
       
       <!-- Si étudiant en test --->
@@ -247,9 +247,9 @@ Tests virtuels</h1>
         <br/>
         <%= link_to "Modifier ce test", edit_virtualtest_path(t) %> - <%= link_to "Supprimer ce test", t, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce test virtuel ? Cela ne supprimera pas les problèmes associés." } %>
         <% if nb_prob > 0 && can_online %>
-          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), method: :get, class: 'btn btn-lg btn-default btn-grey', style: "margin-bottom:5px; margin-top:10px;", data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
+          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', style: "margin-bottom:5px; margin-top:10px;", data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
         <% else %>
-          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px; margin-top:10px;" %>
+          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px; margin-top:10px;" %>
           <%= "(Au moins un problème nécessaire)" if nb_prob == 0 %>
           <%= "(Problèmes doivent être en ligne)" if nb_prob > 0 %>
           <br/><br/>
