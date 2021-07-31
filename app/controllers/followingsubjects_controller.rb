@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 class FollowingsubjectsController < ApplicationController
-  before_action :signed_in_user, only: [:remove_followingsubject, :remove_followingmessage]
-  before_action :signed_in_user_danger, only: [:add_followingsubject, :add_followingmessage]
+  before_action :signed_in_user, only: [:remove_followingsubject]
+  before_action :signed_in_user_danger, only: [:add_followingsubject]
   before_action :get_subject, only: [:remove_followingsubject, :add_followingsubject]
 
   def add_followingsubject
@@ -23,22 +23,6 @@ class FollowingsubjectsController < ApplicationController
     
     flash[:success] = "Vous ne recevrez maintenant plus d'e-mail concernant ce sujet."
     redirect_back(fallback_location: subject_path(@subject))
-  end
-
-  def add_followingmessage
-    current_user.sk.follow_message = true
-    current_user.sk.save
-    
-    flash[:success] = "Vous recevrez dorénavant un e-mail à chaque nouveau message privé."
-    redirect_back(fallback_location: new_discussion_path)
-  end
-
-  def remove_followingmessage
-    current_user.sk.follow_message = false
-    current_user.sk.save
-    
-    flash[:success] = "Vous ne recevrez maintenant plus d'e-mail lors d'un nouveau message privé."
-    redirect_back(fallback_location: new_discussion_path)
   end
   
   ########## PARTIE PRIVEE ##########

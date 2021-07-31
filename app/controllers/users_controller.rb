@@ -1,7 +1,7 @@
 #encoding: utf-8
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups, :read_legal, :followed_users]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user]
+  before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :notifs_show, :groups, :read_legal, :followed_users, :remove_followingmessage]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user, :add_followingmessage]
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
   before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name]
   before_action :correct_user, only: [:edit, :update]
@@ -484,6 +484,22 @@ class UsersController < ApplicationController
     current_user.sk.followed_users.delete(@user)
     flash[:success] = "Vous ne suivez plus #{ @user.name }."
     redirect_to @user
+  end
+
+  def add_followingmessage
+    current_user.sk.follow_message = true
+    current_user.sk.save
+    
+    flash[:success] = "Vous recevrez dorénavant un e-mail à chaque nouveau message privé."
+    redirect_back(fallback_location: new_discussion_path)
+  end
+
+  def remove_followingmessage
+    current_user.sk.follow_message = false
+    current_user.sk.save
+    
+    flash[:success] = "Vous ne recevrez maintenant plus d'e-mail lors d'un nouveau message privé."
+    redirect_back(fallback_location: new_discussion_path)
   end
 
   ########## PARTIE PRIVEE ##########
