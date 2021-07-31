@@ -9,19 +9,7 @@
 
 <% @resolu = current_user.sk.pb_solved?(@problem) %>
 
-<h1>
-<span class="title-first">Problèmes ></span>
-<span class="title-second"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
-<%= "Problème ##{ @problem.number }" %>
-
-<% if !@problem.virtualtest.nil? %>
-- Test #<%= @problem.virtualtest.number %>
-<% end %>
-  <%= "(en construction)" if !@problem.online %>
-  <% if !current_user.sk.admin %>
-  <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
-  <% end %>
-</h1>
+<h1><%= title_3("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), "Problème ##{ @problem.number }#{ (' - Test #' +  @problem.virtualtest.number.to_s ) if !@problem.virtualtest.nil? } #{ '(en construction)' if !@problem.online } <span style='margin-left:20px; color:grey;'>(#{ pt } points)</span>") %></h1>
 
 <!-- Si administrateur -->
 <% if current_user.sk.admin? %>

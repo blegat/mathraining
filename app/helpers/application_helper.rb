@@ -177,4 +177,20 @@ module ApplicationHelper
       return (current_user.sk.rating >= 200)
     end
   end
+  
+  def title_1(x)
+    return "<span class='title-true'>#{ x }</span>".html_safe
+  end
+  
+  def title_2(x, y, print=true)
+    return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-true'>#{ y }</span>".html_safe
+  end
+  
+  def title_3(x, y, z, print=true)
+    return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-second #{'noprint' if not print}'>#{ y } ></span> <span class='title-true'>#{ z }</span>".html_safe
+  end
+  
+  def title_4(x, y, z, t, print=true)
+    return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-second #{'noprint' if not print}'>#{ y } ></span> <span class='title-third #{'noprint' if not print}'>#{ z } ></span> <span class='title-true'>#{ t }</span>".html_safe
+  end
 end

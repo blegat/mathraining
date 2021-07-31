@@ -11,13 +11,7 @@
   <% id = 0 %>
 <% end %>
 
-<h1>
-  <span class="noprint">
-    <span class="title-first">Théorie ></span>
-    <span class="title-second"><%= link_to @section.name, @section %> ></span>
-  </span>
-  <%= @chapter.name %> <%= "(en construction)" unless @chapter.online %>
-</h1>
+<h1><%= title_3("Théorie", (link_to @section.name, @section), "#{@chapter.name}#{' (en construction)' unless @chapter.online}", false) %></h1>
 
 <div class="row" style="margin:0px;">
 

@@ -1,8 +1,15 @@
 <% provide(:title, 'À propos') %>
-<h1>À propos</h1>
+
+<h1><%= title_1("À propos") %></h1>
+
 Alors que des week-ends d'entraînements aux <%= link_to "Olympiades Internationales de Mathématiques", "http://imo-official.org", :target => "blank" %> (<i>International Mathematical Olympiad</i> ou <i>IMO</i> en anglais) sont déjà organisés sur le site de la Marlagne à Wépion (Belgique) depuis de nombreuses années, une idée de site interactif pour compléter cette préparation est née en février 2013.<br/><br/>
+
 Après de longues heures de réflexion et de longues journées de programmation, la structure du site <br/><br/>
+
 <center><%= image_tag("mathraining.png", width:"250", style:"margin-left:5px; margin-right:5px;") %></center><br/>
+
 a finalement vu le jour en septembre 2013. Celui-ci a été développé par Benoît Legat et Nicolas Radu, anciens participants belges aux olympiades. Il utilise la plateforme Ruby on Rails et est hébergé sur CentOS avec Apache.<br/><br/>
+
 Ce n'est toutefois qu'en décembre 2014 que le site fut rendu public avec son premier contenu : 43 chapitres, 232 exercices et 125 problèmes.<br/><br/>
+
 À ce jour, le site est composé de <%= Chapter.where(:online => true).count %> chapitres, <%= Question.where(:online => true).count %> exercices, et <%= Problem.where(:online => true).count %> problèmes. Il accueille également de nombreux visiteurs n'ayant pas pour but de participer aux olympiades internationales, mais plutôt poussés par la passion des mathématiques et le désir d'apprendre à se confronter à des problèmes de haut niveau.

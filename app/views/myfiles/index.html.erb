@@ -1,8 +1,6 @@
 <% provide(:title, 'Pièces jointes') %>
 
-<h1>
-Pièces jointes
-</h1>
+<h1><%= title_1("Pièces jointes") %></h1>
 
 <% total = 0 %>
 <% Myfile.all.to_a.each do |f| %>

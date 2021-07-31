@@ -1,11 +1,6 @@
 <% provide(:title, "Mise en ligne d'un chapitre".html_safe) %>
 
-<h1>
-  <span class="title-first">Théorie ></span>
-  <span class="title-second"><%= link_to @chapter.section.name, @chapter.section %> ></span>
-  <span class="title-third"><%= link_to @chapter.name, @chapter %> ></span>
-  Mise en ligne
-</h1>
+<h1><%= title_4("Théorie", (link_to @chapter.section.name, @chapter.section), (link_to @chapter.name, @chapter), "Mise en ligne") %></h1>
 
 Vous vous apprêtez à mettre un chapitre en ligne.<br/><br/>
 

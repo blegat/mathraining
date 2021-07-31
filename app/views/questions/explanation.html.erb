@@ -1,11 +1,6 @@
 <% provide(:title, "Modifier l'explication d'un exercice".html_safe) %>
 
-<h1>
-<span class="title-first">Théorie ></span>
-<span class="title-second"><%= link_to @question.chapter.section.name, @question.chapter.section %> ></span>
-<span class="title-third"><%= link_to @question.chapter.name, chapter_path(@question.chapter, :type => 5, :which => @question.id) %> ></span>
-Explication
-</h1>
+<h1><%= title_4("Théorie", (link_to @question.chapter.section.name, @question.chapter.section), (link_to @question.chapter.name, chapter_path(@question.chapter, :type => 5, :which => @question.id)), "Explication") %></h1>
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>

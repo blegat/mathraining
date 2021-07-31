@@ -41,16 +41,17 @@
   <% end %>
 <% end %>
 
-<h1>Forum
 <% if !@category.nil? %>
-   - <%= @category.name %>
+  <% title_complement = @category.name %>
 <% elsif @section.nil? %>
-
+  <% title_complement = "" %>
 <% elsif @chapitre.nil? %>
-   - <%= @section.name %>
+  <% title_complement = @section.name %>
 <% else %>
-   - <%= @chapitre.name %>
+  <% title_complement = @chapitre.name %>
 <% end %>
+
+<h1><%= title_1("Forum#{(' - ' + title_complement) if !title_complement.empty?}") %>
 
 <!-- Trier selon section, chapitre, catégorie... -->
 <span style="float:right; margin-left:20px; margin-top:5px; margin-bottom:20px;">

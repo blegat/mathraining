@@ -5,27 +5,25 @@
 <% @q = 0 %>
 <% @q = params[:q].to_i if params.has_key?:q %>
 
+<% if !@subject.category.nil? %>
+  <% @category = @subject.category %>
+  <% title_complement = @category.name %>
+<% elsif @subject.section.nil? %>
+  <% title_complement = "" %>
+<% elsif @subject.chapter.nil? %>
+  <% @chapitre = nil %>
+  <% @section = @subject.section %>
+  <% title_complement = (link_to @section.name, @section, target: '_blank') %>
+<% else %>
+  <% @chapitre = @subject.chapter %>
+  <% title_complement = (link_to @chapitre.name, @chapitre, target: '_blank') %>
+<% end %>
+
 <!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
 <h1 style="margin-bottom:0px;">
 <table style="width:100%;">
 <tr><td>
-<span class="title-first"><%= link_to "Forum", subjects_path(:q => @q) %> ></span>
-<%= @subject.title %>
-<span style="font-size:20px;">
-<% if !@subject.category.nil? %>
-  <% @category = @subject.category %>
-  - <%= @category.name %>
-<% elsif @subject.section.nil? %>
-
-<% elsif @subject.chapter.nil? %>
-  <% @chapitre = nil %>
-  <% @section = @subject.section %>
-   - <%= @section.name %>
-<% else %>
-  <% @chapitre = @subject.chapter %>
-  - <%= link_to @chapitre.name, @chapitre, target: '_blank' %>
-<% end %>
-</span>
+<%= title_2((link_to "Forum", subjects_path(:q => @q)), "#{@subject.title}#{('<span style="font-size:20px;"> - ' + title_complement + '</span>') if !title_complement.empty?}") %>
 </td>
 
 <td class="hidden-xs" style="padding-left:15px; text-align:right;">

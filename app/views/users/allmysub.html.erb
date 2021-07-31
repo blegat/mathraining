@@ -1,7 +1,5 @@
 <% provide(:title, "Commentaires") %>
-<h1>
-  Commentaires (tout)
-</h1>
+<h1><%= title_1("Commentaires (tout)")</h1>
 
 <center>
   <%= will_paginate @notifications, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>

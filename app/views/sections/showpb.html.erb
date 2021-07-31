@@ -1,9 +1,7 @@
 <% provide(:title, @section.name) %>
 
-<h1>
+<h1><%= title_2("Problèmes", @section.name) %>
 <button class="information-tag" onclick="return Info.toggle();">?</button>
-<span class="title-first">Problèmes ></span>
-<%= @section.name %>
 </h1>
 
 <%= render 'infopb' %>

@@ -1,10 +1,6 @@
 <% provide(:title, 'Modifier une section') %>
 
-<h1>
-<span class="title-first">Cours ></span>
-<span class="title-second"><%= link_to @section.name, @section %> ></span>
-Modifier
-</h1>
+<h1><%= title_3("Théorie", (link_to @section.name, @section), "Modifier") %></h1>
 
 <%= form_for(@section) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>

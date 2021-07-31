@@ -1,11 +1,6 @@
 <% provide(:title, "Modifier la solution d'un problème") %>
 
-<h1>
-<span class="title-first">Problèmes ></span>
-<span class="title-second"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
-<span class="title-third"><%= link_to "Problème ##{ @problem.number }", @problem %> ></span>
-Modifier la solution
-</h1>
+<h1><%= title_4("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), (link_to "Problème ##{ @problem.number }", @problem), "Modifier la solution") %></h1>
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>

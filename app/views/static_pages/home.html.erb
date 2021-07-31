@@ -51,7 +51,7 @@
 </div>
 
 <!-- Afficher les actualités -->
-<h1>Actualités</h1>
+<h1><%= title_1("Actualités") %></h1>
 <% actualities = Actuality.order("created_at DESC").paginate(:page => params[:page], :per_page => 5) %>
 
 <% actualities.each do |a| %>

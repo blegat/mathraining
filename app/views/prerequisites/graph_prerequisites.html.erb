@@ -1,9 +1,6 @@
 <% provide(:title, 'Graphe') %>
 
-<h1>
-<span class="title-first">Théorie ></span>
-Modifier la structure des sections
-</h1>
+<h1><%= title_2("Théorie", "Modifier la structure des sections") %></h1>
 
 <% allsections = Array.new %>
 <% Section.all.each do |s| %>
