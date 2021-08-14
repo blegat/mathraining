@@ -2,14 +2,14 @@
 #
 # Table name: items
 #
-#  id         :integer          not null, primary key
-#  ans        :string(255)
-#  ok         :boolean          default(FALSE)
-#  qcm_id     :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id          :integer          not null, primary key
+#  ans         :string
+#  ok          :boolean          default(FALSE)
+#  question_id :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  position    :integer
 #
-
 require "spec_helper"
 
 describe Item do

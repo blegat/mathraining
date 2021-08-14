@@ -1,30 +1,40 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: users
 #
-#  id              :integer          not null, primary key
-#  first_name      :string(255)
-#  last_name       :string(255)
-#  email           :string(255)
-#  password_digest :string(255)
-#  remember_token  :string(255)
-#  admin           :boolean          default(FALSE)
-#  root            :boolean          default(FALSE)
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  key             :string(255)
-#  email_confirm   :boolean
-#  skin            :integer
-#  active          :boolean
-#  seename         :integer
-#  sex             :integer
-#  wepion          :boolean
-#  last_connexion  :date
-#  follow_message  :boolean
-#  valid_name      :boolean
+#  id                        :integer          not null, primary key
+#  first_name                :string
+#  last_name                 :string
+#  email                     :string
+#  password_digest           :string
+#  remember_token            :string
+#  admin                     :boolean          default(FALSE)
+#  root                      :boolean          default(FALSE)
+#  created_at                :datetime
+#  updated_at                :datetime
+#  key                       :string
+#  email_confirm             :boolean          default(TRUE)
+#  skin                      :integer          default(0)
+#  active                    :boolean          default(TRUE)
+#  seename                   :integer          default(1)
+#  sex                       :integer          default(0)
+#  wepion                    :boolean          default(FALSE)
+#  year                      :integer          default(0)
+#  rating                    :integer          default(0)
+#  forumseen                 :datetime         default(Thu, 01 Jan 2009 01:00:00 CET +01:00)
+#  last_connexion            :date             default(Thu, 01 Jan 2009)
+#  follow_message            :boolean          default(FALSE)
+#  corrector                 :boolean          default(FALSE)
+#  group                     :string           default("")
+#  valid_name                :boolean          default(FALSE)
+#  consent_date              :datetime
+#  country_id                :integer
+#  recup_password_date_limit :datetime
+#  last_policy_read          :boolean          default(FALSE)
+#  accept_analytics          :boolean          default(TRUE)
 #
-
 include ERB::Util
 
 class NoNumberValidator < ActiveModel::Validator

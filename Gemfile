@@ -39,7 +39,7 @@ group :development, :test do
   gem 'bullet'
 end
 
-gem "annotate", "~> 2.5.0", group: :development
+gem "annotate", "~> 3.1.1", group: :development
 gem 'web-console', '~> 2.0', group: :development
 
 # Gems used only for assets and not required

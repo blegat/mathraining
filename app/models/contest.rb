@@ -1,22 +1,22 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: contests
 #
-#  id             :integer          not null, primary key
-#  number         :integer
-#  description    :text
-#  status         :integer
-#  medal          :boolean
-#  bronze_cutoff  :integer
-#  silver_cutoff  :integer
-#  gold_cutoff    :integer
+#  id               :integer          not null, primary key
+#  number           :integer
+#  description      :text
+#  status           :integer          default(0)
+#  medal            :boolean          default(FALSE)
+#  start_time       :datetime
+#  end_time         :datetime
+#  num_problems     :integer          default(0)
+#  num_participants :integer          default(0)
+#  bronze_cutoff    :integer          default(0)
+#  silver_cutoff    :integer          default(0)
+#  gold_cutoff      :integer          default(0)
 #
-# status = 0 --> in construction (only visible by organizers)
-# status = 1 --> online and not finished
-# status = 2 --> online and finished (but not corrected)
-# status = 3 --> online, finished, and corrected
-
 include ApplicationHelper
 
 class Contest < ActiveRecord::Base

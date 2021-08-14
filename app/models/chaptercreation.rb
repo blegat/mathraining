@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: chaptercreations
@@ -7,7 +8,6 @@
 #  user_id    :integer
 #  chapter_id :integer
 #
-
 class Chaptercreation < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY

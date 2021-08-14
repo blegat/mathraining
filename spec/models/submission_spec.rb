@@ -1,3 +1,20 @@
+# == Schema Information
+#
+# Table name: submissions
+#
+#  id          :integer          not null, primary key
+#  problem_id  :integer
+#  user_id     :integer
+#  content     :text
+#  created_at  :datetime
+#  updated_at  :datetime
+#  status      :integer          default(0)
+#  intest      :boolean          default(FALSE)
+#  visible     :boolean          default(TRUE)
+#  score       :integer          default(-1)
+#  lastcomment :datetime
+#  star        :boolean          default(FALSE)
+#
 require "spec_helper"
 
 describe Submission do

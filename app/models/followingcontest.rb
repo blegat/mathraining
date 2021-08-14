@@ -1,12 +1,13 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: followingcontests
 #
+#  id         :integer          not null, primary key
 #  contest_id :integer
 #  user_id    :integer
 #
-
 class Followingcontest < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 

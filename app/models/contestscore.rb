@@ -1,22 +1,16 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: contestscores
 #
-#  id          :integer          not null, primary key
-#  contest_id  :reference
-#  user_id     :reference
-#  score       :integer
-#  medal       :integer
+#  id         :integer          not null, primary key
+#  contest_id :integer
+#  user_id    :integer
+#  rank       :integer
+#  score      :integer
+#  medal      :integer
 #
-#  medal = -1 ==> not applicable (contest not yet finished or without medals)
-#  medal =  0 ==> no medal
-#  medal =  1 ==> honourable mention
-#  medal =  2 ==> bronze medal
-#  medal =  3 ==> silver medal
-#  medal =  4 ==> gold medal
-#
-
 include ApplicationHelper
 
 class Contestscore < ActiveRecord::Base

@@ -2,11 +2,10 @@
 #
 # Table name: countries
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  code       :string(255)
+#  id   :integer          not null, primary key
+#  name :string
+#  code :string
 #
-
 class Country < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 

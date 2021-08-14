@@ -1,15 +1,15 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: actualities
 #
-#  id          :integer          not null, primary key
-#  title       :string(255)
-#  content     :text
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id         :integer          not null, primary key
+#  title      :string
+#  content    :text
+#  created_at :datetime
+#  updated_at :datetime
 #
-
 class Actuality < ActiveRecord::Base
   # attr_accessible :content, :title
 

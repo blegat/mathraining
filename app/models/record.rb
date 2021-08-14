@@ -1,9 +1,16 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: records
 #
-
+#  id                :integer          not null, primary key
+#  date              :date
+#  number_submission :integer
+#  number_solved     :integer
+#  correction_time   :float
+#  complete          :boolean
+#
 class Record < ActiveRecord::Base
   def self.update
     ajd = DateTime.now.to_date

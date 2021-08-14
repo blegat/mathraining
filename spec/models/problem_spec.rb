@@ -2,16 +2,20 @@
 #
 # Table name: problems
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  statement  :text
-#  chapter_id :integer
-#  position   :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  online     :boolean          default(FALSE)
+#  id             :integer          not null, primary key
+#  statement      :text
+#  created_at     :datetime
+#  updated_at     :datetime
+#  online         :boolean          default(FALSE)
+#  level          :integer
+#  explanation    :text             default("")
+#  section_id     :integer          default(1)
+#  number         :integer          default(1)
+#  virtualtest_id :integer          default(0)
+#  position       :integer          default(0)
+#  origin         :string
+#  markscheme     :text             default("")
 #
-
 require "spec_helper"
 
 describe Problem do

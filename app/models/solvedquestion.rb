@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: solvedquestions
@@ -9,11 +10,10 @@
 #  guess          :float
 #  correct        :boolean
 #  nb_guess       :integer
+#  resolutiontime :datetime
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  resolutiontime :datetime
 #
-
 class Solvedquestion < ActiveRecord::Base
   # attr_accessible :correct, :guess, :nb_guess, :resolutiontime
 

@@ -4,12 +4,10 @@
 #
 #  id           :integer          not null, primary key
 #  pt           :integer
-#  name         :string(255)
-#  color        :string(255)
-#  font_color   :string(255)
-#  femininename :string(255)
+#  name         :string
+#  color        :string
+#  femininename :string
 #
-
 require "spec_helper"
 
 describe Color do

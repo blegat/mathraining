@@ -1,17 +1,17 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: sections
 #
 #  id          :integer          not null, primary key
-#  name        :string(255)
+#  name        :string
 #  description :text
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  image       :string(255)
-#  fondation   :boolean
+#  created_at  :datetime
+#  updated_at  :datetime
+#  fondation   :boolean          default(FALSE)
+#  max_score   :integer          default(0)
 #
-
 class Section < ActiveRecord::Base
   # attr_accessible :description, :name, :image, :fondation
 

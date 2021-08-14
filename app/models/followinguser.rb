@@ -1,13 +1,13 @@
 #encoding: utf-8
+
 # == Schema Information
 #
-# Table name: followings
+# Table name: followingusers
 #
-#  id         :integer          not null, primary key
-#  user_id    :integer
+#  id               :integer          not null, primary key
+#  user_id          :integer
 #  followed_user_id :integer
 #
-
 class Followinguser < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY

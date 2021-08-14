@@ -2,13 +2,12 @@
 #
 # Table name: actualities
 #
-#  id          :integer          not null, primary key
-#  title       :string(255)
-#  content     :text
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id         :integer          not null, primary key
+#  title      :string
+#  content    :text
+#  created_at :datetime
+#  updated_at :datetime
 #
-
 require "spec_helper"
 
 describe Actuality do

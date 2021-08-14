@@ -1,14 +1,14 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: virtualtests
 #
 #  id       :integer          not null, primary key
 #  duration :integer
-#  number   :integer
+#  number   :integer          default(1)
 #  online   :boolean
 #
-
 class Virtualtest < ActiveRecord::Base
   # attr_accessible :duration, :number, :online
 

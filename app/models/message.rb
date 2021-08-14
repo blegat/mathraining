@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: messages
@@ -7,10 +8,9 @@
 #  content    :text
 #  subject_id :integer
 #  user_id    :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  created_at :datetime
+#  updated_at :datetime
 #
-
 class Message < ActiveRecord::Base
   # attr_accessible :content, :created_at # To migrate subjects
 

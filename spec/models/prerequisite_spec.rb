@@ -6,7 +6,6 @@
 #  prerequisite_id :integer
 #  chapter_id      :integer
 #
-
 require "spec_helper"
 
 describe Prerequisite do

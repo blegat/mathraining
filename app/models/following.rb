@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: followings
@@ -7,15 +8,10 @@
 #  submission_id :integer
 #  user_id       :integer
 #  read          :boolean
-#  kind          :integer
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  created_at    :datetime
+#  updated_at    :datetime
+#  kind          :integer          default(-1)
 #
-#
-#  kind = 0 if reservation
-#         1 if first corrector
-#         2 if other corrector
-
 class Following < ActiveRecord::Base
   # attr_accessible :read
 

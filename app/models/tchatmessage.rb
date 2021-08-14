@@ -1,15 +1,15 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: tchatmessages
 #
 #  id            :integer          not null, primary key
-#  discussion_id :integer
-#  user_id       :integer
 #  content       :text
+#  user_id       :integer
+#  discussion_id :integer
 #  created_at    :datetime
 #
-
 class Tchatmessage < ActiveRecord::Base
   # attr_accessible :content
 

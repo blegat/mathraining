@@ -1,19 +1,19 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: contestproblems
 #
-#  id                 :integer          not null, primary key
-#  contest_id         :reference
-#  number             :integer
-#  statement          :text
-#  origin             :string
-#  start_time         :datetime
-#  end_time           :datetime
-#  status             :integer
-#  reminder_status    :integer
+#  id              :integer          not null, primary key
+#  contest_id      :integer
+#  number          :integer
+#  statement       :text
+#  origin          :string
+#  start_time      :datetime
+#  end_time        :datetime
+#  status          :integer          default(0)
+#  reminder_status :integer          default(0)
 #
-
 # status = 0 --> in construction (contest is not online)
 # status = 1 --> contest is online but problem is not published yet
 # status = 2 --> problem is published and students can send solutions

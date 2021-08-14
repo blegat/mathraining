@@ -1,14 +1,14 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: discussions
 #
 #  id           :integer          not null, primary key
 #  last_message :datetime
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  created_at   :datetime
+#  updated_at   :datetime
 #
-
 class Discussion < ActiveRecord::Base
   # attr_accessible :last_message
 

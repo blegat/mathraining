@@ -2,16 +2,20 @@
 #
 # Table name: chapters
 #
-#  id          :integer          not null, primary key
-#  name        :string(255)
-#  description :text
-#  level       :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  online      :boolean          default(FALSE)
-#  section_id  :integer
+#  id               :integer          not null, primary key
+#  name             :string
+#  description      :text
+#  level            :integer
+#  created_at       :datetime
+#  updated_at       :datetime
+#  online           :boolean          default(FALSE)
+#  section_id       :integer          default(7)
+#  nb_tries         :integer          default(0)
+#  nb_solved        :integer          default(0)
+#  position         :integer          default(0)
+#  author           :string
+#  publication_time :date
 #
-
 require "spec_helper"
 
 describe Chapter do

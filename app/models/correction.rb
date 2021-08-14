@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: corrections
@@ -7,10 +8,9 @@
 #  user_id       :integer
 #  submission_id :integer
 #  content       :text
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  created_at    :datetime
+#  updated_at    :datetime
 #
-
 class Correction < ActiveRecord::Base
   # attr_accessible :content
 

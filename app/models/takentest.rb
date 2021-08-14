@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: takentests
@@ -9,7 +10,6 @@
 #  takentime      :datetime
 #  status         :integer
 #
-
 class Takentest < ActiveRecord::Base
   # attr_accessible :takentime, :status
 

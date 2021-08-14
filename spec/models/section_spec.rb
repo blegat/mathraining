@@ -3,13 +3,13 @@
 # Table name: sections
 #
 #  id          :integer          not null, primary key
-#  name        :string(255)
+#  name        :string
 #  description :text
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  image       :string(255)
+#  created_at  :datetime
+#  updated_at  :datetime
+#  fondation   :boolean          default(FALSE)
+#  max_score   :integer          default(0)
 #
-
 require "spec_helper"
 
 describe Section do
