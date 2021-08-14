@@ -14,7 +14,6 @@
         <td><%= f.text_field :name, :id => "name_edit#{i}", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
         <td><%= f.text_field :femininename, :id => "femininename_edit#{i}", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
         <td><%= f.text_field :color, :id => "color_edit#{i}", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px; color:#{c.color}; font-weight:bold;" %></td>
-        <td><%= f.text_field :font_color, :id => "font_color_edit#{i}", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px; background-color:#{c.font_color};" %></td>
         <td><%= f.submit "Modifier", :id => "button_edit#{i}", class: "btn btn-primary", style: "margin-left:10px;", onclick: "return confirm('Êtes-vous sûr de vouloir modifier ce niveau ?')" %></td>
         <% i = i+1 %>
       <% end %>
@@ -29,7 +28,6 @@
       <td style="padding-top:10px;"><%= f.text_field :name, :id => "name_add", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
       <td style="padding-top:10px;"><%= f.text_field :femininename, :id => "femininename_add", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
       <td style="padding-top:10px;"><%= f.text_field :color, :id => "color_add", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px;" %></td>
-      <td style="padding-top:10px;"><%= f.text_field :font_color, :id => "font_color_add", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px;" %></td>
       <td style="padding-top:10px;"><%= f.submit "Ajouter", :id => "button_add", style: "margin-left:10px;", class: "btn btn-primary",  onclick: "return confirm('Êtes-vous sûr de vouloir ajouter ce niveau ?')" %></td>
     <% end %>
   </tr>
@@ -92,7 +90,7 @@ var ctx=c.getContext("2d");
   <% if bas > haut %>
     ctx.beginPath();
     ctx.rect(0, <%= haut %>, 806, <%= bas - haut %>);
-    ctx.fillStyle = '<%= n.font_color %>';
+    ctx.fillStyle = '<%= n.color %>';
     ctx.fill();
   <% end %>
   <% i = i+1 %>

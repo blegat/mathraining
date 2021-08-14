@@ -422,7 +422,7 @@ html>body tbody.scroll {
       <% if bas > haut %>
         ctx.beginPath();
         ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
-        ctx.fillStyle = '<%= n.font_color %>';
+        ctx.fillStyle = '<%= n.color %>';
         ctx.fill();
       <% end %>
       <% i = i+1 %>
