@@ -19,6 +19,7 @@
 #  updated_at    :datetime         not null
 #
 class Question < ActiveRecord::Base
+
   # BELONGS_TO, HAS_MANY
 
   belongs_to :chapter

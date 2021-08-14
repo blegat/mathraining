@@ -8,5 +8,9 @@
 #  contestproblem_id :integer
 #
 class Contestproblemcheck < ActiveRecord::Base
+
+  # BELONGS_TO, HAS_MANY
+  
   belongs_to :contestproblem
+
 end

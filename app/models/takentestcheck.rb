@@ -8,5 +8,9 @@
 #  takentest_id :integer
 #
 class Takentestcheck < ActiveRecord::Base
+
+  # BELONGS_TO, HAS_MANY
+
   belongs_to :takentest
+
 end

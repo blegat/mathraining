@@ -13,7 +13,6 @@
 #  max_score   :integer          default(0)
 #
 class Section < ActiveRecord::Base
-  # attr_accessible :description, :name, :image, :fondation
 
   # BELONGS_TO, HAS_MANY
 

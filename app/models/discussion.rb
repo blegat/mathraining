@@ -10,13 +10,11 @@
 #  updated_at   :datetime
 #
 class Discussion < ActiveRecord::Base
-  # attr_accessible :last_message
 
   # BELONGS_TO, HAS_MANY
 
-  # has_many :discussions_users
   has_many :users, through: :links
   has_many :links, dependent: :destroy
-
   has_many :tchatmessages, dependent: :destroy
+
 end

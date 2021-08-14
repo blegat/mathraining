@@ -11,7 +11,6 @@
 #  femininename :string
 #
 class Color < ActiveRecord::Base
-  # attr_accessible :pt, :name, :color, :femininename
 
   # VALIDATIONS
 
@@ -19,4 +18,5 @@ class Color < ActiveRecord::Base
   validates :name, presence: true, length: { maximum: 255 }
   validates :femininename, presence: true, length: { maximum: 255 }
   validates :color, presence: true, length: { is: 7 }
+
 end

@@ -23,7 +23,6 @@
 #  lastcomment_user_id :integer
 #
 class Subject < ActiveRecord::Base
-  # attr_accessible :content, :title, :lastcomment, :admin, :important, :wepion
 
   # BELONGS_TO, HAS_MANY
 
@@ -48,4 +47,5 @@ class Subject < ActiveRecord::Base
   validates :user_id, presence: true
   validates :lastcomment, presence: true
   validates :lastcomment_user_id, presence: true
+
 end

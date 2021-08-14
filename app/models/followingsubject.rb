@@ -11,10 +11,13 @@
 class Followingsubject < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY
+
   belongs_to :subject
   belongs_to :user
 
   # VALIDATIONS
+
   validates :subject_id, presence: true
   validates :user_id, presence: true, uniqueness: { scope: :subject_id }
+
 end

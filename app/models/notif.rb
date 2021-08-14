@@ -11,7 +11,6 @@
 #  updated_at    :datetime
 #
 class Notif < ActiveRecord::Base
-  # attr_accessible :submission_id
 
   # BELONGS_TO, HAS_MANY
 
@@ -22,4 +21,5 @@ class Notif < ActiveRecord::Base
 
   validates :submission_id, presence: true
   validates :user_id, presence: true, uniqueness: { scope: :submission_id }
+
 end

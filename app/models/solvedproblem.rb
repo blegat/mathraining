@@ -14,7 +14,6 @@
 #  truetime       :datetime
 #
 class Solvedproblem < ActiveRecord::Base
-  # attr_accessible :resolutiontime, :truetime
 
   # BELONGS_TO, HAS_MANY
 
@@ -26,4 +25,5 @@ class Solvedproblem < ActiveRecord::Base
 
   validates :user_id, presence: true
   validates :problem_id, presence: true, uniqueness: { scope: :user_id }
+
 end

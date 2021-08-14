@@ -57,7 +57,6 @@ class NoNumberValidator < ActiveModel::Validator
 end
 
 class User < ActiveRecord::Base
-  # attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion, :country, :year, :rating, :forumseen, :last_connexion, :follow_message
 
   # BELONGS_TO, HAS_MANY
 

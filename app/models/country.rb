@@ -7,6 +7,7 @@
 #  code :string
 #
 class Country < ActiveRecord::Base
+
   # BELONGS_TO, HAS_MANY
 
   has_many :users

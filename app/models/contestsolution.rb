@@ -17,6 +17,7 @@
 include ApplicationHelper
 
 class Contestsolution < ActiveRecord::Base
+
   # BELONGS_TO, HAS_MANY
 
   belongs_to :contestproblem

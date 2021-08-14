@@ -13,7 +13,10 @@
 #  kind          :integer          default(-1)
 #
 class Following < ActiveRecord::Base
-  # attr_accessible :read
+
+  # kind = 0 if reservation
+  #        1 if first corrector
+  #        2 if other corrector
 
   # BELONGS_TO, HAS_MANY
 
@@ -24,4 +27,5 @@ class Following < ActiveRecord::Base
 
   validates :submission_id, presence: true, uniqueness: { scope: :user_id }
   validates :user_id, presence: true, uniqueness: { scope: :submission_id }
+
 end

@@ -11,7 +11,6 @@
 #  position    :integer
 #
 class Item < ActiveRecord::Base
-  # attr_accessible :ans, :ok, :qcm_id
 
   # BELONGS_TO, HAS_MANY
 

@@ -19,7 +19,6 @@
 #  publication_time :date
 #
 class Chapter < ActiveRecord::Base
-  # attr_accessible :description, :level, :name, :online
 
   # BELONGS_TO, HAS_MANY
 

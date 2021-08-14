@@ -14,20 +14,21 @@
 #  status          :integer          default(0)
 #  reminder_status :integer          default(0)
 #
-# status = 0 --> in construction (contest is not online)
-# status = 1 --> contest is online but problem is not published yet
-# status = 2 --> problem is published and students can send solutions
-# status = 3 --> problem is finished and solutions are being corrected
-# status = 4 --> problem is finished ans solutions have been corrected
-# status = 5 --> same as status = 4 but organizers are temporarily allowed to modify corrections
-
-# reminder_status = 0 --> no reminder sent for this problem yet
-# reminder_status = 1 --> reminder sent one day before publication
-# reminder_status = 2 --> reminder send at publication
-
 include ApplicationHelper
 
 class Contestproblem < ActiveRecord::Base
+
+  # status = 0 --> in construction (contest is not online)
+  # status = 1 --> contest is online but problem is not published yet
+  # status = 2 --> problem is published and students can send solutions
+  # status = 3 --> problem is finished and solutions are being corrected
+  # status = 4 --> problem is finished ans solutions have been corrected
+  # status = 5 --> same as status = 4 but organizers are temporarily allowed to modify corrections
+
+  # reminder_status = 0 --> no reminder sent for this problem yet
+  # reminder_status = 1 --> reminder sent one day before publication
+  # reminder_status = 2 --> reminder send at publication
+
   # BELONGS_TO, HAS_MANY
 
   belongs_to :contest

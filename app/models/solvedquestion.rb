@@ -15,7 +15,6 @@
 #  updated_at     :datetime         not null
 #
 class Solvedquestion < ActiveRecord::Base
-  # attr_accessible :correct, :guess, :nb_guess, :resolutiontime
 
   # BELONGS_TO, HAS_MANY
 
@@ -29,4 +28,5 @@ class Solvedquestion < ActiveRecord::Base
   validates :user_id, presence: true
   validates :guess, presence: true
   validates :nb_guess, presence: true, numericality: { greater_than_or_equal_to: 1 }
+
 end
