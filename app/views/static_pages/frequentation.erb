@@ -124,15 +124,15 @@ Votre navigateur ne supporte pas les canvas.
     
   // Affichage des barres horizontales
     
-  var maxivisitor = 0;
+  var maxvalue = 0;
   for(i = 0; i < val.length; i++) {
-    if(maxivisitor < val[i]) {
-      maxivisitor = val[i];
+    if(maxvalue < val[i]) {
+      maxvalue = val[i];
     }
   }
-  var maxi = 1.1*maxivisitor;
+  var maxi = 1.1*maxvalue;
   
-  var tranche = Math.floor(maxivisitor/4);
+  var tranche = Math.floor(maxvalue/4);
   if(tranche == 0){
     tranche = 1;
   }
@@ -150,7 +150,7 @@ Votre navigateur ne supporte pas les canvas.
     ctx.font="9px Arial";
   }
   
-  var encours = Math.floor(maxivisitor);
+  var encours = Math.floor(maxvalue);
   
   while(encours > 0) {
     var haut = 450 - 450*(encours/maxi);
@@ -250,13 +250,13 @@ Votre navigateur ne supporte pas les canvas.
     
     var pct = c.width()/900.0;
     
-    var maxivisitor = 0;
+    var maxvalue = 0;
     for(i = 0; i < val.length; i++) {
-      if(maxivisitor < val[i]) {
-        maxivisitor = val[i];
+      if(maxvalue < val[i]) {
+        maxvalue = val[i];
       }
     }
-    var maxi = 1.1*maxivisitor;
+    var maxi = 1.1*maxvalue;
     
     var realx = Math.round((x-53)*(val.length-1)/800.0);
     if(realx < 0) {
@@ -264,6 +264,28 @@ Votre navigateur ne supporte pas les canvas.
     }
     else if(realx > val.length-1) {
       realx = val.length-1;
+    }
+    
+    if(val[realx] < 0)
+    {
+      realxleft = realx;
+      realxright = realx;
+      realx = -1;
+      while(realxleft >= 0 || realxright < val.length) {
+        if(realxleft >= 0 && val[realxleft] >= 0) {
+          realx = realxleft;
+          break;
+        }
+        if(realxright < val.length && val[realxright] >= 0) {
+          realx = realxright;
+          break;
+        }
+        realxleft = realxleft-1;
+        realxright = realxright+1;
+      }
+      if(realx < 0) {
+        return;
+      }
     }
     
     var pointx = (53+800*realx/(val.length-1))*pct;
@@ -343,13 +365,12 @@ Votre navigateur ne supporte pas les canvas.
   <% yy = Array.new %>
   <% @visiteurs = Visitor.order("date").to_a %>
   <% premierjour = @visiteurs[0].date %>
-  <% dernierjour = DateTime.now.in_time_zone.to_date - 1 %>
+  <% dernierjour = DateTime.now.in_time_zone.to_date - 1.day %>
   <% prev = premierjour %>
   <% if premierjour < dernierjour %>
-    <% @visiteurs = @visiteurs.take @visiteurs.size()-1 %>
     <% @visiteurs.each do |v| %>
       <% ((prev+1)..(v.date-1)).each do |missing| %>
-        <% yy.push(0) %>
+        <% yy.push(-1) %>
         <% xx.push(convert_date(missing)) %>
       <% end %>
       <% yy.push(v.number_user + v.number_admin) %>
@@ -357,7 +378,7 @@ Votre navigateur ne supporte pas les canvas.
       <% prev = v.date %>
     <% end %>
     <% ((prev+1)..dernierjour).each do |missing| %>
-      <% yy.push(0) %>
+      <% yy.push(-1) %>
         <% xx.push(convert_date(missing)) %>
     <% end %>
     xxx = <%= ruby_to_javascript_string(xx) %>;

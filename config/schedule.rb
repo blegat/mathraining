@@ -28,3 +28,7 @@ every :day, :at => '2am' do
   runner "Myfile.fake_dels"        # Delete old files
   runner "User.delete_unconfirmed" # Delete users with unconfirmed email
 end
+
+every :day, :at => '12am' do
+  runner "Visitor.compute"  # Compute the number of visitors of the day before
+end

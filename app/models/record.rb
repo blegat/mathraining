@@ -13,7 +13,7 @@
 #
 class Record < ActiveRecord::Base
   def self.update
-    ajd = DateTime.now.to_date
+    ajd = DateTime.in_time_zone.now.to_date
     lastdimanche = ajd-1
     lastdimanche = lastdimanche - lastdimanche.wday
     lundidernier = lastdimanche-6

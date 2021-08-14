@@ -29,26 +29,6 @@ module SessionsHelper
         if mtn != @current_user.last_connexion
           @current_user.last_connexion = mtn
           @current_user.save
-          total = Visitor.where(:date => mtn).first
-          if total.nil?
-            total = Visitor.new
-            total.date = mtn
-            total.number_user = 0
-            total.number_admin = 0
-            if @current_user.admin?
-              total.number_admin = total.number_admin+1
-            else
-              total.number_user = total.number_user+1
-            end
-            total.save
-          else
-            if @current_user.admin?
-              total.number_admin = total.number_admin+1
-            else
-              total.number_user = total.number_user+1
-            end
-            total.save
-          end
         end
       end
     end
