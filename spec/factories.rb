@@ -32,7 +32,6 @@ FactoryGirl.define do
     name "Nom"
     femininename "Nom feminin"
     color "#AAAAAA"
-    font_color "#BBBBBB"
   end
   
   # Correction
