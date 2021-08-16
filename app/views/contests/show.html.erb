@@ -40,15 +40,19 @@
 <br/><br/><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
   <% c = c+1 %>
-  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.status == 0 %> (<%= link_to "supprimer", contest_remove_organizer_path(@contest, :user_id => o.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"}, :method => :put %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
+  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.status == 0 %> (<%= link_to "supprimer", contestorganization_path(Contestorganization.where(:contest_id => @contest, :user_id => o.id).first), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
 <% end %>
 
 <% if @signed_in && current_user.sk.admin? && @contest.status == 0 %>
-<form action="<%= contest_add_organizer_path(@contest) %>" method="put" class="form-inline" style="margin-top:10px;">
-  <% mtn = DateTime.now.to_date - 14 %>
-  <%= select_tag :user_id, options_for_select(User.where("last_connexion >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Nouvel organisateur..."), -1), :class => "form-control select2", :style => "width:300px;" %>
-  <%= button_tag "Ajouter", class: "btn btn btn-primary", name: "" %>
-</form>
+
+  <% contestorganization = Contestorganization.new %>
+  <%= form_for contestorganization, :html => {:class => "form-inline", :style => "margin-top:10px;"} do |f| %>
+    <% mtn = DateTime.now.to_date - 14 %>
+    <%= f.hidden_field :contest_id, :value => @contest.id %>
+    <%= f.select :user_id, options_for_select(User.where("last_connexion >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Nouvel organisateur..."), -1), {}, {:class => "form-control select2", :style => "width:300px;"} %>
+    <%= f.submit "Ajouter", class: "btn btn btn-primary" %>
+  <% end %>
+
 <% end %>
 
 <% organizer = @contest.is_organized_by_or_admin(current_user) %>

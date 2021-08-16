@@ -248,40 +248,8 @@ class ContestproblemsController < ApplicationController
     sub = contest.subject
     mes = Message.new
     mes.subject = sub
-    mes.user_id = 0
-    text = "Le [url=" + contestproblem_path(contestproblem) + "]Problème ##{contestproblem.number}[/url] du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] a été corrigé.\n\r\n\r"
-    
-    nb_sol = contestproblem.contestsolutions.where("score = 7 AND official = ?", false).count
-    
-    if nb_sol == 0
-      text = text + "Malheureusement [b]personne[/b] n'a obtenu la note maximale !"
-    elsif nb_sol == 1
-      text = text + "Seule [b]une seule[/b] personne a obtenu la note maximale : "
-    else
-      text = text + "Les [b]" + nb_sol.to_s + "[/b] personnes suivantes ont obtenu la note maximale : "
-    end
-    
-    i = 0
-    contestproblem.contestsolutions.where("score = 7 AND official = ?", false).order(:user_id).each do |s|
-      text = text + s.user.name
-      i = i+1
-      if (i == nb_sol)
-        text = text + "."
-      elsif (i == nb_sol - 1)
-        text = text + " et "
-      else
-        text = text + ", "
-      end
-    end
-    
-    text = text + "\n\r\n\r"
-    if contest.contestproblems.where("status < 4").count > 0
-      text = text + "Le nouveau classement général suite à cette correction peut être consulté à [url=" + contest_url(contest, :tab => 1) + "]cet endroit[/url]."    
-    else
-      text = text + "Il s'agissait du dernier problème. Le classement final peut être consulté à [url=" + contest_url(contest, :tab => 1) + "]cet endroit[/url], et quelques statistiques se trouvent [url=" + contest_url(contest, :tab => 2) + "]ici[/url]."    
-    end
-    
-    mes.content = text
+    mes.user_id = 0    
+    mes.content = helpers.get_new_correction_forum_message(contest, contestproblem)
     mes.save
     sub.lastcomment = mes.created_at
     sub.lastcomment_user_id = 0 # Message automatique

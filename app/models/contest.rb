@@ -18,6 +18,7 @@
 #  gold_cutoff      :integer          default(0)
 #
 include ApplicationHelper
+include ContestsHelper
 
 class Contest < ActiveRecord::Base
 
@@ -93,34 +94,12 @@ class Contest < ActiveRecord::Base
   
   # Publish a post on forum to say that problem will be published in one day
   def self.automatic_start_in_one_day_problem_post(contestproblems)
-    if Rails.env.production?
-      host = "www.mathraining.be"
-    else
-      host = "localhost:3000"
-    end
     contest = contestproblems[0].contest
     sub = contest.subject
     mes = Message.new
     mes.subject = sub
     mes.user_id = 0
-    if contestproblems.size == 1
-      plural = false
-      mes.content = "Le Problème ##{contestproblems[0].number}"
-    else
-      plural = true
-      mes.content = "Les Problèmes"
-      i = 0
-      contestproblems.each do |cp|
-        if (i == contestproblems.size-1)
-          mes.content = mes.content + " et"
-        elsif (i > 0)
-          mes.content = mes.content + ","
-        end
-        mes.content = mes.content + " ##{cp.number}"
-        i = i+1
-      end
-    end
-    mes.content = mes.content + " du [url=" + Rails.application.routes.url_helpers.contest_url(contest, :host => host) + "]Concours ##{contest.number}[/url] #{plural ? "seront" : "sera"} publié#{plural ? "s" : ""} dans un jour, c'est-à-dire le " + write_date_with_link_forum(contestproblems[0].start_time, contest, contestproblems[0]) + " (heure belge)."
+    mes.content = get_problems_in_one_day_forum_message(contest, contestproblems)
     mes.created_at = contestproblems[0].start_time - 1.day + (contestproblems[0].number).seconds
     mes.save
     if mes.created_at > sub.lastcomment # Security: should always be true
@@ -138,34 +117,12 @@ class Contest < ActiveRecord::Base
   
   # Publish a post on forum to say that solutions to problem can be sent
   def self.automatic_start_problem_post(contestproblems)
-    if Rails.env.production?
-      host = "www.mathraining.be"
-    else
-      host = "localhost:3000"
-    end
     contest = contestproblems[0].contest
     sub = contest.subject
     mes = Message.new
     mes.subject = sub
     mes.user_id = 0
-    if contestproblems.size == 1
-      plural = false
-      mes.content = "Le [url=" + Rails.application.routes.url_helpers.contestproblem_url(contestproblems[0], :host => host) + "]Problème ##{contestproblems[0].number}[/url]"
-    else
-      plural = true
-      mes.content = "Les Problèmes"
-      i = 0
-      contestproblems.each do |cp|
-        if (i == contestproblems.size-1)
-          mes.content = mes.content + " et"
-        elsif (i > 0)
-          mes.content = mes.content + ","
-        end
-        mes.content = mes.content + " [url=" + Rails.application.routes.url_helpers.contestproblem_url(cp, :host => host) + "]##{cp.number}[/url]"
-        i = i+1
-      end
-    end
-    mes.content = mes.content + " du [url=" + Rails.application.routes.url_helpers.contest_url(contest, :host => host) + "]Concours ##{contest.number}[/url] #{plural ? "sont" : "est"} maintenant accessible#{plural ? "s" : ""}, et les solutions sont acceptées jusqu'au " + write_date_with_link_forum(contestproblems[0].end_time, contest, contestproblems[0]) + " (heure belge)."
+    mes.content = get_problems_now_forum_message(contest, contestproblems)
     mes.created_at = contestproblems[0].start_time + (contestproblems[0].number).seconds
     mes.save
     if mes.created_at > sub.lastcomment # Security: should always be true

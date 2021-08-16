@@ -110,14 +110,12 @@ Mathraining::Application.routes.draw do
   # Contests
   resources :contests do
     match '/put_online', to: 'contests#put_online', :via => [:put], as: :put_online
-    match '/add_organizer', to: 'contests#add_organizer', :via => [:put], as: :add_organizer
-    match '/remove_organizer', to: 'contests#remove_organizer', :via => [:put], as: :remove_organizer
     match '/cutoffs', to: "contests#cutoffs", :via => [:get]
     match '/define_cutoffs', to: 'contests#define_cutoffs', :via => [:put], as: :define_cutoffs
     
     resources :contestproblems, only: [:new, :create]
   end
-  resources :contestorganizations, only: []
+  resources :contestorganizations, only: [:create, :destroy]
   
   # Contest problems
   resources :contestproblems, only: [:show, :edit, :update, :destroy] do
