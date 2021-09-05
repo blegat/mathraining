@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '5.0.2'
 #gem 'activeresource', '~> 4.1.0'
 # gem 'protected_attributes'
-gem "bootstrap-sass", "~> 3.2.0"
+gem "bootstrap-sass", "~> 3.4.1"
 gem 'bcrypt-ruby', '3.1.2'
 gem 'faker', '1.0.1'
 gem 'will_paginate', '3.1.6'
