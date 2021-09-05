@@ -1,11 +1,24 @@
 <script type="text/javascript">
+
+var delta_between_server_and_local
+
+function ComputeDelta(){
+  if (!Date.now) {
+    Date.now = function() { return new Date().getTime(); }
+  }
+  delta_between_server_and_local = <%= DateTime.now.to_i %> - Math.floor(Date.now() / 1000)
+  if ( Math.abs(delta_between_server_and_local) < 10 ){
+    delta_between_server_and_local = 0
+  }
+}
+
 function RemainingTime<%= p_id %>(){
 
 if (!Date.now) {
     Date.now = function() { return new Date().getTime(); }
 }
 
-var d = Math.floor(Date.now() / 1000)
+var d = Math.floor(Date.now() / 1000) + delta_between_server_and_local
 
 var reste = <%= date_limit %> - d
 
@@ -46,6 +59,7 @@ else {
 }
 
 window.addEventListener("load",function(){
+  ComputeDelta();
   if(RemainingTime<%= p_id %>())
   {
     setInterval(RemainingTime<%= p_id %>,1000);

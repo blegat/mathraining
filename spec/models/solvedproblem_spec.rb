@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: solvedproblems
+#
+#  id             :integer          not null, primary key
+#  problem_id     :integer
+#  user_id        :integer
+#  created_at     :datetime
+#  updated_at     :datetime
+#  resolutiontime :datetime
+#  submission_id  :integer
+#  truetime       :datetime
+#
 require "spec_helper"
 
 describe Solvedproblem do

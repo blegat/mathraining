@@ -1,7 +1,7 @@
 <!-- Prérequis -->
 <h3>Prérequis</h3>
 <% if @chapter.prerequisites.count == 0 %>
-  <p>Aucun prérequis.</p><br/>
+  <p>Aucun prérequis.</p>
 <% else %>
   <ul>
     <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
@@ -52,7 +52,7 @@
   <% end %>
   
   <% if haut || bas %>
-    | Déplacer vers le <%= link_to "haut", chapter_order_minus_path(@chapter) if haut %> <%= '-' if haut && bas %> <%= link_to "bas", chapter_order_plus_path(@chapter) if bas %>
+    | Déplacer vers le <%= link_to "haut", chapter_order_minus_path(@chapter), :method => :put if haut %> <%= '-' if haut && bas %> <%= link_to "bas", chapter_order_plus_path(@chapter), :method => :put if bas %>
   <% end %>
   
   <% if !@chapter.online && current_user.sk.admin? %>

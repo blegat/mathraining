@@ -15,6 +15,13 @@
   <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
 </div>
 
+<div class="checkbox">
+<label>
+<%= f.check_box :medal, :disabled => (@contest.status > 0 || current_user.other) %>
+Attribuer des médailles au terme de ce concours
+</label>
+</div>
+
 <script>
 PreviewSafe.Init();
 PreviewSafe.Update();

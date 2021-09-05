@@ -7,19 +7,19 @@
 #  is_qcm        :boolean
 #  decimal       :boolean          default(FALSE)
 #  answer        :float
-#  many_answers  :boolean
+#  many_answers  :boolean          default(FALSE)
 #  chapter_id    :integer
 #  position      :integer
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
 #  online        :boolean          default(FALSE)
 #  explanation   :text
-#  level         :integer
-#  nb_tries      :integer
-#  nb_firstguess :integer
+#  level         :integer          default(1)
+#  nb_tries      :integer          default(0)
+#  nb_firstguess :integer          default(0)
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #
-
 class Question < ActiveRecord::Base
+
   # BELONGS_TO, HAS_MANY
 
   belongs_to :chapter

@@ -5,33 +5,30 @@
 <% @q = 0 %>
 <% @q = params[:q].to_i if params.has_key?:q %>
 
+<% if !@subject.category.nil? %>
+  <% @category = @subject.category %>
+  <% title_complement = @category.name %>
+<% elsif @subject.section.nil? %>
+  <% title_complement = "" %>
+<% elsif @subject.chapter.nil? %>
+  <% @chapitre = nil %>
+  <% @section = @subject.section %>
+  <% title_complement = (link_to @section.name, @section, target: '_blank') %>
+<% else %>
+  <% @chapitre = @subject.chapter %>
+  <% title_complement = (link_to @chapitre.name, @chapitre, target: '_blank') %>
+<% end %>
+
 <!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
 <h1 style="margin-bottom:0px;">
 <table style="width:100%;">
 <tr><td>
-<span class="title-first"><%= link_to "Forum", subjects_path(:q => @q) %> ></span>
-<%= @subject.title %>
-<span style="font-size:20px;">
-<% if !@subject.category.nil? %>
-	<% @category = @subject.category %>
-   - <%= @category.name %>
-<% elsif @subject.section.nil? %>
-
-<% elsif @subject.chapter.nil? %>
-  <% @chapitre = nil %>
-  <% @section = @subject.section %>
-   - <%= @section.name %>
-<% else %>
-  <% @chapitre = @subject.chapter %>
-  <% @section = @subject.chapter.section %>
-  - <%= link_to @chapitre.name, @chapitre, target: '_blank' %>
-<% end %>
-</span>
+<%= title_2((link_to "Forum", subjects_path(:q => @q)), "#{@subject.title}#{('<span style="font-size:20px;"> - ' + title_complement + '</span>') if !title_complement.empty?}") %>
 </td>
 
 <td class="hidden-xs" style="padding-left:15px; text-align:right;">
 <% if !current_user.followed_subjects.exists?(@subject.id) %>
-  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
+  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
   <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
 <% end %>
@@ -43,7 +40,7 @@
 
 <div class="visible-xs" style="text-align:center; padding-top:10px;">
 <% if !current_user.followed_subjects.exists?(@subject.id) %>
-  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
+  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
   <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
 <% end %>
@@ -61,9 +58,10 @@
   <%= render 'subjects/subject', s: @subject %>
 <% else %>
   <% if !@subject.question.nil? %>
-	  <%= render 'subjects/show_exo', f: @subject.question %>
-  <% end %>
-  <% if !@subject.contest.nil? %>
+    <%= render 'subjects/show_exo', q: @subject.question %>
+  <% elsif !@subject.problem.nil? %>
+    <%= render 'subjects/show_prob', p: @subject.problem %>
+  <% elsif !@subject.contest.nil? %>
     <%= render 'subjects/show_contest', contest: @subject.contest %>
   <% end %>
 <% end %>

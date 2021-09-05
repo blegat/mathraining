@@ -1,5 +1,5 @@
 <% total_waiting = 180 %>
-<% if !exo.nb_guess.nil? && exo.nb_guess >= 3 && DateTime.now.in_time_zone < exo.updated_at + total_waiting %>
+<% if !exo.nb_guess.nil? && exo.nb_guess >= 3 && DateTime.now < exo.updated_at + total_waiting %>
   <% needtowait = true %>
 <% else %>
   <% needtowait = false %>
@@ -9,9 +9,10 @@
   <!-- pas QCM -->
   <% val = nil %>
   <% if f.decimal %>
-    On vous demande une réponse <b>décimale</b>, arrondie au millième près.<br/><br/>
+    On demande une réponse <b>décimale</b>, arrondie au millième près.<br/><br/>
     <% val = exo.guess %>
   <% else %>
+    On demande une réponse <b>entière</b>.<br/><br/>
     <% val = exo.guess.to_i if !exo.guess.nil? %>
   <% end %>
 

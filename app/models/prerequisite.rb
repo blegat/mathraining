@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: prerequisites
@@ -7,7 +8,6 @@
 #  prerequisite_id :integer
 #  chapter_id      :integer
 #
-
 require 'set'
 class Prerequisite < ActiveRecord::Base
 

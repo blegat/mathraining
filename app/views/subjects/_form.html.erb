@@ -7,8 +7,16 @@ function checkCategory() {
 function checkChapter() {
     var e = document.getElementById("subject_chapter_id");
     var chapter = e.options[e.selectedIndex].value
+    if(chapter == -1) {
+      var e2 = document.getElementById("subject_category_id");
+      var category = e2.options[e2.selectedIndex].value
+      chapter = -category/1000;
+    }
+
     <% if @edit && !@subject.question_id.nil? %>
     	$.getScript("<%= new_subject_url %>?chap=" + chapter + "&exo_id=<%= @subject.question_id %>")
+    <% elsif @edit && !@subject.problem_id.nil? %>
+    	$.getScript("<%= new_subject_url %>?chap=" + chapter + "&prob_id=<%= @subject.problem_id %>")
     <% else %>
     	$.getScript("<%= new_subject_url %>?chap=" + chapter)
     <% end %>
@@ -17,7 +25,13 @@ function checkQuestion() {
     var e = document.getElementById("subject_question_id");
     var question = e.options[e.selectedIndex].value
     var txt = e.options[e.selectedIndex].text
-    $.getScript("<%= new_subject_url %>?exo=" + question + "&txt=" + txt)
+    $.getScript("<%= new_subject_url %>?exo=" + question + "&txt=" + encodeURI(txt))
+}
+function checkProblem() {
+    var e = document.getElementById("subject_problem_id");
+    var problem = e.options[e.selectedIndex].value
+    var txt = e.options[e.selectedIndex].text.replace("#", "HASHTAG");
+    $.getScript("<%= new_subject_url %>?prob=" + problem + "&txt=" + encodeURI(txt))
 }
 </script>
 
@@ -58,125 +72,186 @@ function checkQuestion() {
   <% liste2.push([s.name, 1000*s.id]) %>
 <% end %>
 
-<% presel = 0 %>
+<% selected_category = 0 %>
 
 <% if erreur %>
-  <% presel = session[:oldAll][:category_id].to_i %>
+  <% selected_category = session[:oldAll][:category_id].to_i %>
 <% elsif @edit %>
   <% if !@subject.section_id.nil? %>
-    <% presel = 1000*@subject.section_id %>
+    <% selected_category = 1000*@subject.section_id %>
   <% elsif !@subject.category_id.nil? %>
-    <% presel = @subject.category_id %>
+    <% selected_category = @subject.category_id %>
   <% end %>
 <% end %>
 
 <!-- Catégorie -->
 <div class="form-group">
   <%= f.label :category_id, :disabled => current_user.other %>
-  <%= f.select(:category_id, grouped_options_for_select([['En dehors des cours', liste], ['En lien avec les cours', liste2]], presel), {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkCategory();") }) %>
+  <%= f.select(:category_id, grouped_options_for_select([['En dehors des cours', liste], ['En lien avec les cours', liste2]], selected_category), {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkCategory();") }) %>
 </div>
 
-<% presel2 = 0 %>
+<% selected_chapter = 0 %>
 <% seechap = false %>
 
-<!-- Chapitre -->
-<% if erreur && presel > 999 %>
-  <% sect = Section.find(presel/1000) %>
+<!-- Chapitre (visible lorsque catégorie choisie est une section) -->
+<% if erreur && selected_category > 999 %>
+  <% sect = Section.find(selected_category/1000) %>
   <% seechap = true %>
   <% if !session[:oldAll][:chapter_id].nil? %>
-    <% presel2 = session[:oldAll][:chapter_id].to_i %>
+    <% selected_chapter = session[:oldAll][:chapter_id].to_i %>
   <% end %>
-<% elsif @edit && presel > 999 %>
+<% elsif @edit && selected_category > 999 %>
   <% sect = @subject.section %>
   <% seechap = true %>
   <% if !@subject.chapter_id.nil? %>
-    <% presel2 = @subject.chapter_id %>
+    <% selected_chapter = @subject.chapter_id %>
+  <% elsif !@subject.problem_id.nil? %>
+    <% selected_chapter = -1 %>
   <% end %>
 <% end %>
 
+<% listechap = Array.new %>
 <% if seechap %>
-  <% listechap = Array.new %>
   <% listechap.push(["Aucun chapitre en particulier", 0]) %>
   <% sect.chapters.where(:online => true).order("level, position").each do |c| %>
     <% listechap.push([c.name, c.id]) %>
-  <% end %>  
-  <div class="form-group">
-    <%= f.label :chapter_id, :disabled => current_user.other, :id => "label_chap" %>
-    <%= f.select(:chapter_id, options_for_select(listechap, presel2).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
-  </div>
-<% else %>
-  <div class="form-group">
-    <%= f.label :chapter_id, :disabled => current_user.other, :style => "display:none;", :id => "label_chap" %>
-    <%= f.select(:chapter_id, options_for_select([]), {}, { :class => "form-control", :style => "width:100%; max-width:400px; display:none;", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
-  </div>
-<% end %>
-
-<% presel3 = 0 %>
-<% txt = "" %>
-<% seeexo = false %>
-
-<!-- Exercice -->
-<% if erreur && presel2 > 0 %>
-  <% seeexo = true %>
-  <% chap = Chapter.find(presel2) %>
-  <% presel3 = session[:oldAll][:question_id].to_i %>
-<% elsif @edit && presel2 > 0 %>
-  <% seeexo = true %>
-  <% chap = @subject.chapter %>
-  <% if !@subject.question_id.nil? %>
-    <% presel3 = @subject.question_id %>
+  <% end %>
+  <% if !sect.fondation %>
+    <% listechap.push([get_problem_category_name(sect.name), -1]) %>
   <% end %>
 <% end %>
 
-<% if seeexo %>
+<div class="form-group">
+  <%= f.label :chapter_id, :disabled => current_user.other, :style => "#{'display:none;' if !seechap}", :id => "label_chap" %>
+  <%= f.select(:chapter_id, options_for_select(listechap, selected_chapter).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px; #{'display:none;' if !seechap}", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
+</div>
 
-  <% exovisibles = true %>
+<% selected_exercise = 0 %>
+<% seeexo = false %>
+
+<!-- Exercice (visible lorsque chapitre choisi) -->
+<% if erreur && selected_chapter > 0 %>
+  <% seeexo = true %>
+  <% chap = Chapter.find(selected_chapter) %>
+  <% selected_exercise = session[:oldAll][:question_id].to_i %>
+<% elsif @edit && selected_chapter > 0 %>
+  <% seeexo = true %>
+  <% chap = @subject.chapter %>
+  <% if !@subject.question_id.nil? %>
+    <% selected_exercise = @subject.question_id %>
+  <% end %>
+<% end %>
+
+
+<% exovisibles = true %>
+<% some_exo_hidden = false %>
+<% listeexo = Array.new %>
+<% forced_title = "" %>
+
+<% if seeexo %>
   <% if !current_user.sk.admin? %>
     <% chap.prerequisites.each do |p| %>
       <% exovisibles = false if !p.section.fondation && !current_user.sk.chapters.exists?(p.id) %>
     <% end %>
   <% end %>
   
-  <% cache = false %>
-  <% listeexo = Array.new %>
   <% listeexo.push(["Aucun exercice en particulier", 0]) %>
   
   <% if exovisibles %>
     <% i = 1 %>
     <% chap.questions.where(:online => true).order(:position).each do |e| %>
-      <% if (e.subject.nil? || e.id == presel3) %>
+      <% if (e.subject.nil? || e.id == selected_exercise) %>
         <% listeexo.push(["Exercice #{i}", e.id]) %>
-        <% if presel3 == e.id %>
-          <% txt = "Exercice #{i}" %>
+        <% if selected_exercise == e.id %>
+          <% forced_title = "Exercice #{i}" %>
         <% end %>
       <% else %>
-        <% cache = true %>
+        <% some_exo_hidden = true %>
       <% end %>
       <% i = i+1 %>
     <% end %>
   <% end %>
-
-  <div class="form-group">
-    <%= f.label :question_id, :disabled => current_user.other, :id => "label_exo" %>
-    <div id="alert" style="color:red; display:<%= "" if !exovisibles %><%= "none" if exovisibles %>; margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
-    <div id="alert2" style="color:orange; display:<%= "" if cache %><%= "none" if !cache %>; margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
-    <%= f.select(:question_id, options_for_select(listeexo, presel3).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkQuestion();")}) %>
-  </div>
-<% else %>
-  <div class="form-group">
-    <%= f.label :question_id, :disabled => current_user.other, :style => "display:none;", :id => "label_exo" %>
-    <div id="alert" style="color:red; display:none; margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
-    <div id="alert2" style="color:orange; display:none; margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
-    <%= f.select(:question_id, options_for_select([]), {}, { :class => "form-control", :style => "width:100%; max-width:400px; display:none;", :disabled => current_user.other, :onchange => ("javascript: checkQuestion();")}) %>
-  </div>
 <% end %>
 
+<div class="form-group">
+  <%= f.label :question_id, :disabled => current_user.other, :style => "#{ 'display:none;' if !seeexo }", :id => "label_exo" %>
+  <div id="alert-no-exercise-access" style="color:red; <%= 'display:none;' if exovisibles %> margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
+  <div id="alert-some-exercise-hidden" style="color:orange; <%= 'display:none;' if !some_exo_hidden %> margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
+  <%= f.select(:question_id, options_for_select(listeexo, selected_exercise).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :disabled => current_user.other, :onchange => ("javascript: checkQuestion();")}) %>
+</div>
+
+
+<% selected_problem = 0 %>
+<% seeprob = false %>
+
+<!-- Problème (visible lorsque chapitre choisi est 'Problèmes de ...') -->
+<% if erreur && selected_chapter == -1 %>
+  <% seeprob = true %>
+  <% selected_problem = session[:oldAll][:problem_id].to_i %>
+<% elsif @edit && selected_chapter == -1 %>
+  <% seeprob = true %>
+  <% if !@subject.problem_id.nil? %>
+    <% selected_problem = @subject.problem_id %>
+  <% end %>
+<% end %>
+
+<% probvisibles = true %>
+<% some_prob_hidden = false %>
+<% listeprob = Array.new %>
+
+<% if seeprob %>
+  <% probvisibles = has_enough_points() %>
+
+  <% if !current_user.sk.admin? %>
+    <% section_fondation = Array.new %>
+    <% Section.all.to_a.each do |s| %>
+      <% section_fondation[s.id] = s.fondation %>
+    <% end %>
+    <% chapters_completion = get_chapters_completion(section_fondation) %>
+  <% end %>
+
+  <% listeprob.push(["Choisissez un problème...", 0]) %>
+
+  <% if probvisibles %>
+    <% sect.problems.where(:online => true).order(:number).each do |p| %>
+      <% peutvoir = true %>
+      <% if !current_user.sk.admin? %>
+        <% t = p.virtualtest_id %>
+        <% if t == 0 %>
+          <% peutvoir = is_problem_accessible(p, chapters_completion) %>
+        <% else %>
+          <% peutvoir = false if current_user.sk.status(t) <= 0 %>
+        <% end %>
+      <% end %>
+      <% if peutvoir %>
+        <% if (p.subject.nil? || p.id == selected_problem) %>
+          <% listeprob.push(["Problème ##{p.number}", p.id]) %>
+          <% if selected_problem == p.id %>
+            <% forced_title = "Problème ##{p.number}" %>
+          <% end %>
+        <% else %>
+          <% some_prob_hidden = true %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+
+<div class="form-group">
+  <%= f.label :problem_id, :disabled => current_user.other, :style => "#{ 'display:none;' if !seeprob }", :id => "label_prob" %>
+  <div id="alert-no-problem-access" style="color:red; <%= 'display:none;' if probvisibles %> margin-bottom:7px;">Vous n'avez pas accès aux problèmes.</div>
+  <div id="alert-some-problem-hidden" style="color:orange; <%= 'display:none;' if !some_prob_hidden %> margin-bottom:7px;">Certains problèmes n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
+  <%= f.select(:problem_id, options_for_select(listeprob, selected_problem).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeprob }", :disabled => current_user.other, :onchange => ("javascript: checkProblem();")}) %>
+</div>
+
+
 <!-- Titre -->
-<% if presel3 > 0 %>
+<% if selected_exercise > 0 || selected_problem > 0 %>
   <div class="form-group">
     <%= f.label :title, :disabled => current_user.other %>
-    <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled", :value => txt %>
-    <input type="hidden" id="hidden_title" name="subject[title]" value="<%= txt %>" />
+    <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled", :value => forced_title %>
+    <input type="hidden" id="hidden_title" name="subject[title]" value="<%= forced_title %>" />
   </div>
 <% else %>
   <% tit = "" %>

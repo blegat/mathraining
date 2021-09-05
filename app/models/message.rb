@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: messages
@@ -7,12 +8,10 @@
 #  content    :text
 #  subject_id :integer
 #  user_id    :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  created_at :datetime
+#  updated_at :datetime
 #
-
 class Message < ActiveRecord::Base
-  # attr_accessible :content, :created_at # To migrate subjects
 
   # BELONGS_TO, HAS_MANY
 
@@ -26,4 +25,5 @@ class Message < ActiveRecord::Base
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :user_id, presence: true
   validates :subject_id, presence: true
+
 end

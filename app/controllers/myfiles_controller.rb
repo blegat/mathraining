@@ -68,7 +68,7 @@ class MyfilesController < ApplicationController
       @q = params[:q].to_i if params.has_key?:q
       redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => @q)
     elsif @fakething.fakefiletable_type == "Tchatmessage"
-      redirect_to pieces_jointes_path
+      redirect_to myfiles_path
     elsif @fakething.fakefiletable_type == "Submission"
       @submission = @fakething.fakefiletable
       redirect_to problem_path(@submission.problem, :sub => @submission)

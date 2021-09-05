@@ -5,11 +5,7 @@
   <% solution = params[:sol].to_i %>
 <% end %>
 
-<h1>
-<span class="title-first"><%= link_to "Concours", contests_path %> ></span>
-<span class="title-second"><%= link_to "Concours ##{@contest.number}", @contest %> ></span>
-Problème #<%= @contestproblem.number %>
-</h1>
+<h1><%= title_3((link_to "Concours", contests_path), (link_to "Concours ##{@contest.number}", @contest), "Problème ##{@contestproblem.number}") %></h1>
 
 <center><i>Solutions acceptées du <%= write_date_with_link(@contestproblem.start_time, @contest, @contestproblem) %> au <%= write_date_with_link(@contestproblem.end_time, @contest, @contestproblem) %> (heures belges)</i></center>
 
@@ -62,9 +58,9 @@ Problème #<%= @contestproblem.number %>
   <% end %>
   <% if current_user.sk.root? %>
     <% if @contestproblem.status == 4 %>
-      | <%= link_to "Autoriser nouvelles corrections", contestproblem_authorize_corrections_path(@contestproblem) %>
+      | <%= link_to "Autoriser nouvelles corrections", contestproblem_authorize_corrections_path(@contestproblem), :method => :put %>
     <% elsif @contestproblem.status == 5 %>
-      | <%= link_to "Stopper nouvelles corrections", contestproblem_unauthorize_corrections_path(@contestproblem) %>
+      | <%= link_to "Stopper nouvelles corrections", contestproblem_unauthorize_corrections_path(@contestproblem), :method => :put %>
     <% end %>
   <% end %>
   </center>

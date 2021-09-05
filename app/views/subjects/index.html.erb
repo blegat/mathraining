@@ -1,23 +1,5 @@
 <% provide(:title, 'Forum') %>
 
-<!-- Fonction qui affiche la date du message -->
-<% def affiche_date(date, datenow) %>
-  <% if (datenow - date).floor >= 24*60*60 %>
-    <%= write_date(date) %>
-  <% elsif (datenow - date).floor >= 60*60 %>
-    <% minute = ((datenow - date)/60).floor %>
-    <% heure = (minute / 60).floor %>
-    <% minute = minute - 60*heure %>
-    il y a <%= heure %> heure<%="s" if heure > 1 %>, <%= minute %> minute<%= "s" if minute > 1 %>
-  <% elsif (datenow - date).floor >= 60 %>
-    <% minute = ((datenow - date)/60).floor %>
-    il y a <%= minute %> minute<%= "s" if minute > 1 %>
-  <% else %>
-    <% seconde = (datenow - date).floor %>
-    il y a <%= seconde %> seconde<%= "s" if seconde > 1 %>
-  <% end %>
-<% end %>
-
 <% q = -1 %>
 <% if(params.has_key?:q) %>
   <% q = params[:q].to_i %>
@@ -33,35 +15,43 @@
 <% liste = Array.new %>
 
 <% Category.order(:id).each do |c| %>
-	<% liste.push([c.name, 1000000*c.id]) %>
+    <% liste.push([c.name, 1000000*c.id]) %>
 <% end %>
 
 <% liste2 = Array.new %>
 
-<% Section.where(:fondation => true).to_a.each do |s| %>
+<% sections = Section.all.order(:id).to_a %>
+
+<% sections.each do |s| %>
+  <% if s.fondation %>
     <% liste2.push([s.name, 1000*s.id]) %>
     <% s.chapters.where(:online => true).order(:name).to_a.each do |c| %>
       <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
     <% end %>
+  <% end %>
 <% end %>
 
-<% Section.where(:fondation => false).order(:id).to_a.each do |s| %>
+<% sections.each do |s| %>
+  <% if !s.fondation %>
     <% liste2.push([s.name, 1000*s.id]) %>
     <% s.chapters.where(:online => true).order("level, position").to_a.each do |c| %>
       <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
     <% end %>
+    <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + get_problem_category_name(s.name), 1000*s.id+1]) %>
+  <% end %>
 <% end %>
 
-<h1>Forum
 <% if !@category.nil? %>
-   - <%= @category.name %>
+  <% title_complement = @category.name %>
 <% elsif @section.nil? %>
-
+  <% title_complement = "" %>
 <% elsif @chapitre.nil? %>
-   - <%= @section.name %>
+  <% title_complement = @section.name %>
 <% else %>
-   - <%= @chapitre.name %>
+  <% title_complement = @chapitre.name %>
 <% end %>
+
+<h1><%= title_1("Forum#{(' - ' + title_complement) if !title_complement.empty?}") %>
 
 <!-- Trier selon section, chapitre, catégorie... -->
 <span style="float:right; margin-left:20px; margin-top:5px; margin-bottom:20px;">
@@ -89,7 +79,7 @@
 <% end %>
 
 <!-- Affichage des sujets non importants -->
-<% if @subjectsfalse.size > 0 %>
+<% if @subjects.size > 0 %>
   <table class="table table-bordered" style="margin-top:20px;">
     <tr class="info" style="font-weight:bold;">
       <td style="text-align:center;">Sujet</td>
@@ -98,15 +88,15 @@
       <td class="hidden-small" style="text-align:center;" colspan="2">Dernière contribution</td>
       <td class="hidden-large" style="text-align:center;">Dernière contribution</td>
     </tr>
-    <% @subjectsfalse.each do |s| %>
+    <% @subjects.each do |s| %>
       <%= render 'line', s: s, q: q %>
     <% end %>
   </table>
 <% end %>
 
 <center>
-<%= will_paginate @subjectsfalse, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @subjectsfalse, :style => "margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+<%= will_paginate @subjects, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
+<%= will_paginate @subjects, :style => "margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <% if @subjects.size + @importants.size == 0 %>
@@ -126,7 +116,7 @@
 <% end %>
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->
-<% if !current_user.other && current_user.sk.combien_forum[1] %>
+<% if !current_user.other && current_user.sk.combien_forum(true) > 0 %>
   <% current_user.sk.forumseen = DateTime.current %>
   <% current_user.sk.save %>
 <% end %>

@@ -38,20 +38,6 @@
         <% else %>
           <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
         <% end %>
-
-        <!-- Pièces jointes -->
-        <% if current_user.sk.root? %>
-          <% total = 0 %>
-          <% Myfile.all.to_a.each do |f| %>
-            <% total = total + f.file_file_size %>
-          <% end %>
-
-          <% if total < 1000000 %>
-            <%= link_to (total/1000.0).round(1).to_s + " ko", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:15px;" %>
-          <% else %>
-            <%= link_to (total/1000000.0).round(2).to_s + " Mo", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:15px;" %>
-          <% end %>
-        <% end %>
         
         <!-- Corrections (pour les correcteurs) -->
         <% if !current_user.sk.admin? %>
@@ -93,15 +79,6 @@
           <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
         <% end %>
         
-        <!-- Pièces jointes -->
-        <% if current_user.sk.root? %>
-          <% if total < 1000000 %>
-            <%= link_to (total/1000.0).round(1).to_s + " ko", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:10px;" %>
-          <% else %>
-            <%= link_to (total/1000000.0).round(2).to_s + " Mo", myfiles_path, class: "btn btn-default btn-grey", style: "margin-left:10px;" %>
-          <% end %>
-        <% end %>
-        
         <!-- Corrections (pour les correcteurs) -->
         <% if !current_user.sk.admin? %>
           <% noti = current_user.sk.notifs.count %>
@@ -123,6 +100,8 @@
           </form>
         <% end %>
       <% end %>
+      
+      <% sections = Section.all.order(:id).to_a %>
 
       <!-- Cours -->
       <li id="fat-menu" class="dropdown">
@@ -130,13 +109,13 @@
           Théorie <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-          <% Section.all.to_a.each do |f| %>
+          <% sections.each do |f| %>
             <% if f.fondation %>
               <li><%= link_to f.name, f %></li>
             <% end %>
           <% end %>
           <li class="divider"></li>
-          <% Section.order(:id).to_a.each do |f| %>
+          <% sections.each do |f| %>
             <% if !f.fondation %>
               <li><%= link_to f.name, f %></li>
             <% end %>
@@ -154,7 +133,7 @@
           Problèmes <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-          <% Section.order(:id).to_a.each do |f| %>
+          <% sections.each do |f| %>
             <% if !f.fondation %>
               <li><%= link_to f.name, pb_sections_path(f) %></li>
             <% end %>
@@ -167,7 +146,7 @@
 
       <!-- Forum -->
       <% if @signed_in %>
-        <% combien_nouveau = current_user.sk.combien_forum[0] %>
+        <% combien_nouveau = current_user.sk.combien_forum(false) %>
       <% end %>
 
       <% if @signed_in && combien_nouveau == 0 %>
@@ -208,26 +187,25 @@
         <!-- Nom -->
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           <% if current_user.other %>
-            [<%= raw(current_user.sk.colored_name(true)) %>]
+            [<%= raw(current_user.sk.colored_name(1)) %>]
           <% else %>
-            <%= raw(current_user.sk.colored_name(true)) %>
+            <%= raw(current_user.sk.colored_name(1)) %>
           <% end %>
           <b class="caret"></b>
         </a>
 
         <ul class="dropdown-menu">
           <% if current_user.other %>
-            <li><%= link_to "Sortir de ce corps", user_leave_skin_path(current_user) %></li>
+            <li><%= link_to "Sortir de ce corps", user_leave_skin_path(current_user), :method => :put %></li>
           <% end %>
-          <% if !current_user.sk.admin? %>
-            <li><%= link_to "Profil", current_user.sk %></li>
-          <% end %>
+          <li><%= link_to "Profil", current_user.sk %></li>
           <li><%= link_to "Compte", edit_user_path(current_user.sk) %></li>
           <% if @signed_in && (current_user.sk.admin || current_user.sk.group != "") %>
             <li><%= link_to "Groupes Wépion", groups_path %></li>
           <% end %>
           <% if current_user.sk.root? %>
-            <li><%= link_to "Valider noms", validate_name_path %></li>
+            <li><%= link_to "Pièces jointes", myfiles_path %></li>
+            <li><%= link_to "Valider noms", validate_names_path %></li>
           <% end %>
           <li class="divider"></li>
           <li>

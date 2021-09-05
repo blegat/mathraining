@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: solvedquestions
@@ -9,13 +10,11 @@
 #  guess          :float
 #  correct        :boolean
 #  nb_guess       :integer
+#  resolutiontime :datetime
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  resolutiontime :datetime
 #
-
 class Solvedquestion < ActiveRecord::Base
-  # attr_accessible :correct, :guess, :nb_guess, :resolutiontime
 
   # BELONGS_TO, HAS_MANY
 
@@ -29,4 +28,5 @@ class Solvedquestion < ActiveRecord::Base
   validates :user_id, presence: true
   validates :guess, presence: true
   validates :nb_guess, presence: true, numericality: { greater_than_or_equal_to: 1 }
+
 end

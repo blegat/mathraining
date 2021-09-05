@@ -1,7 +1,7 @@
 <% provide(:title, "Connexion") %>
 
 <!-- On est redirigé ici si on essaye d'accéder à une page qui nécessite d'être connecté -->
-<h1>Connexion</h1>
+<h1><%= title_1("Connexion") %></h1>
 
 <%= form_for(:session, url: sessions_path(redirection: request.original_fullpath)) do |f| %>
   <div class="form-group">

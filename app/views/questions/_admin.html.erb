@@ -1,45 +1,3 @@
-<!-- Essais des élèves -->
-<% if f.online %>
-<div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(1)' class='btn btn-default btn-grey'>Essais des étudiants</a></div><div id='indice1' class='clue-hide'><div class='clue-content'>
-Corrects :
-<% compte = 0 %>
-<% tries = f.solvedquestions.includes(:user).order(:updated_at).all %>
-<% tries.each do |se| %>
-  <% if se.correct %>
-    <% if compte > 0 %>
-      <%= " - " %>
-    <% end %>
-    <% compte = compte+1 %>
-    <%= raw(se.user.linked_name) %>
-    <%= "(#{se.nb_guess-1})" if se.nb_guess-1 > 0 %>
-  <% end %>
-<% end %>
-<% if compte == 0 %>
-  <%= "Aucune résolution." %>
-<% end %>
-<br/><br/>
-Incorrects :
-<% compte = 0 %>
-<% tries = f.solvedquestions.order(:updated_at).all %>
-<% tries.each do |se| %>
-  <% if !se.correct %>
-    <% if compte > 0 %>
-      <%= " - " %>
-    <% end %>
-    <% compte = compte+1 %>
-    <%= raw(se.user.linked_name) %>
-    (<%= se.nb_guess %>)
-  <% end %>
-<% end %>
-<% if compte == 0 %>
-  <%= "Aucun utilisateur bloqué." %>
-<% end %>
-</span>
-</div></div></div>
-<br/>
-
-<% end %>
-  
 <!-- Explication -->
 <h4>Explication</h4>
 <% if f.explanation.size == 0 %>
@@ -85,19 +43,20 @@ Incorrects :
 <% if (up || down) %>
   Déplacer cet exercice vers le
   <% if up %>
-    <%= link_to "haut", question_order_minus_path(f) %>
-    <% if down %>
-      | <%= link_to "bas", question_order_plus_path(f) %>
-    <% end %>
-  <% else %>
-    <%= link_to "bas", question_order_plus_path(f) %>
+    <%= link_to "haut", question_order_minus_path(f), :method => :put %>
+  <% end %>
+  <% if up && down %>
+    |
+  <% end %>
+  <% if down %>
+    <%= link_to "bas", question_order_plus_path(f), :method => :put %>
   <% end %>
 <br/><br/>
 <% end %>
 
 <!-- Mettre en ligne -->
 <% if !f.online && @chapter.online %>
-  <%= button_to "Mettre en ligne", question_put_online_path(f), method: :get, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
+  <%= button_to "Mettre en ligne", question_put_online_path(f), method: :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
   <br/>
 <% end %>
 </center>

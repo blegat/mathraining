@@ -1,9 +1,11 @@
 <% provide(:title, 'Niveaux et couleurs') %>
-<h1>Niveaux et couleurs</h1>
+
+<h1><%= title_1("Niveaux et couleurs") %></h1>
+
 <% i = 1 %>
 
 <table>
-  <tr><th></th><th style="padding:5px;">Seuil</th><th style="padding:5px;">Nom</th><th style="padding:5px;">Nom féminin</th><th style="padding:5px;">Couleur</th><th style="padding:5px;">Fond</th><th></th><th></th></tr>
+  <tr><th></th><th style="padding:5px;">Seuil</th><th style="padding:5px;">Nom</th><th style="padding:5px;">Nom féminin</th><th style="padding:5px;">Couleur</th><th></th><th></th></tr>
   <% Color.order(:pt).each do |c| %>
     <tr>
       <td style="padding-right:10px;"><%= i %>.</td>
@@ -12,11 +14,10 @@
         <td><%= f.text_field :name, :id => "name_edit#{i}", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
         <td><%= f.text_field :femininename, :id => "femininename_edit#{i}", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
         <td><%= f.text_field :color, :id => "color_edit#{i}", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px; color:#{c.color}; font-weight:bold;" %></td>
-        <td><%= f.text_field :font_color, :id => "font_color_edit#{i}", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px; background-color:#{c.font_color};" %></td>
         <td><%= f.submit "Modifier", :id => "button_edit#{i}", class: "btn btn-primary", style: "margin-left:10px;", onclick: "return confirm('Êtes-vous sûr de vouloir modifier ce niveau ?')" %></td>
         <% i = i+1 %>
       <% end %>
-      <td style="padding-left:10px;"><%= link_to "Supprimer", c, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce niveau ?" } %> </td>
+      <td style="padding-left:10px;"><%= link_to "Supprimer", c, method: :delete, id: "link_delete#{i}", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce niveau ?" } %> </td>
     </tr>
   <% end %>
 
@@ -27,7 +28,6 @@
       <td style="padding-top:10px;"><%= f.text_field :name, :id => "name_add", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
       <td style="padding-top:10px;"><%= f.text_field :femininename, :id => "femininename_add", :class => "form-control", :maxlength => "255", :style => "width:150px; margin:0px;"%></td>
       <td style="padding-top:10px;"><%= f.text_field :color, :id => "color_add", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px;" %></td>
-      <td style="padding-top:10px;"><%= f.text_field :font_color, :id => "font_color_add", :class => "form-control", :maxlength => "7", :style => "width:95px; margin:0px;" %></td>
       <td style="padding-top:10px;"><%= f.submit "Ajouter", :id => "button_add", style: "margin-left:10px;", class: "btn btn-primary",  onclick: "return confirm('Êtes-vous sûr de vouloir ajouter ce niveau ?')" %></td>
     <% end %>
   </tr>
@@ -90,7 +90,7 @@ var ctx=c.getContext("2d");
   <% if bas > haut %>
     ctx.beginPath();
     ctx.rect(0, <%= haut %>, 806, <%= bas - haut %>);
-    ctx.fillStyle = '<%= n.font_color %>';
+    ctx.fillStyle = '<%= n.color %>';
     ctx.fill();
   <% end %>
   <% i = i+1 %>

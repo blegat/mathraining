@@ -3,14 +3,14 @@ source 'https://rubygems.org'
 gem 'rails', '5.0.2'
 #gem 'activeresource', '~> 4.1.0'
 # gem 'protected_attributes'
-gem "bootstrap-sass", "~> 3.2.0"
+gem "bootstrap-sass", "~> 3.4.1"
 gem 'bcrypt-ruby', '3.1.2'
 gem 'faker', '1.0.1'
 gem 'will_paginate', '3.1.6'
 gem 'bootstrap-will_paginate', '0.0.10'
 gem 'rails-i18n'
 #gem 'mathjax-rails', "~> 0.0.4"
-gem "paperclip", "~> 5.1.0"
+gem "paperclip", "~> 5.2.0"
 gem "recaptcha", "~> 4.1.0", :require => "recaptcha/rails"
 gem 'thin'
 gem "nokogiri", "~> 1.10.8"
@@ -39,16 +39,16 @@ group :development, :test do
   gem 'bullet'
 end
 
-gem "annotate", "~> 2.5.0", group: :development
+gem "annotate", "~> 3.1.1", group: :development
 gem 'web-console', '~> 2.0', group: :development
 
 # Gems used only for assets and not required
 # in production environments by default.
-group :assets do
+#group :assets do ## Removed in Rails 4 and was making rake assets:precompile fail!
   gem 'sass-rails',   '~> 5.0.1'
   gem 'coffee-rails', '~> 4.2.1'
   gem 'uglifier', '>= 1.2.3'
-end
+#end
 
 gem 'jquery-rails'
 
@@ -81,4 +81,5 @@ gem 'glyphicons-rails'
 gem 'momentjs-rails', '>= 2.9.0'
 gem 'bootstrap3-datetimepicker-rails', '~> 4.14.30'
 gem 'rack-canonical-host'
-gem "lograge"
+gem 'lograge'
+gem 'dateslices'

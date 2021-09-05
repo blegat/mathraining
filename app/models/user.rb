@@ -1,30 +1,40 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: users
 #
-#  id              :integer          not null, primary key
-#  first_name      :string(255)
-#  last_name       :string(255)
-#  email           :string(255)
-#  password_digest :string(255)
-#  remember_token  :string(255)
-#  admin           :boolean          default(FALSE)
-#  root            :boolean          default(FALSE)
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  key             :string(255)
-#  email_confirm   :boolean
-#  skin            :integer
-#  active          :boolean
-#  seename         :integer
-#  sex             :integer
-#  wepion          :boolean
-#  last_connexion  :date
-#  follow_message  :boolean
-#  valid_name      :boolean
+#  id                        :integer          not null, primary key
+#  first_name                :string
+#  last_name                 :string
+#  email                     :string
+#  password_digest           :string
+#  remember_token            :string
+#  admin                     :boolean          default(FALSE)
+#  root                      :boolean          default(FALSE)
+#  created_at                :datetime
+#  updated_at                :datetime
+#  key                       :string
+#  email_confirm             :boolean          default(TRUE)
+#  skin                      :integer          default(0)
+#  active                    :boolean          default(TRUE)
+#  seename                   :integer          default(1)
+#  sex                       :integer          default(0)
+#  wepion                    :boolean          default(FALSE)
+#  year                      :integer          default(0)
+#  rating                    :integer          default(0)
+#  forumseen                 :datetime         default(Thu, 01 Jan 2009 01:00:00 CET +01:00)
+#  last_connexion            :date             default(Thu, 01 Jan 2009)
+#  follow_message            :boolean          default(FALSE)
+#  corrector                 :boolean          default(FALSE)
+#  group                     :string           default("")
+#  valid_name                :boolean          default(FALSE)
+#  consent_date              :datetime
+#  country_id                :integer
+#  recup_password_date_limit :datetime
+#  last_policy_read          :boolean          default(FALSE)
+#  accept_analytics          :boolean          default(TRUE)
 #
-
 include ERB::Util
 
 class NoNumberValidator < ActiveModel::Validator
@@ -47,7 +57,6 @@ class NoNumberValidator < ActiveModel::Validator
 end
 
 class User < ActiveRecord::Base
-  # attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :admin, :root, :email_confirm, :key, :skin, :seename, :sex, :wepion, :country, :year, :rating, :forumseen, :last_connexion, :follow_message
 
   # BELONGS_TO, HAS_MANY
 
@@ -69,6 +78,9 @@ class User < ActiveRecord::Base
   has_many :links
   has_many :discussions, through: :links # dependent: :destroy does NOT destroy the associated discussions, but only the link!
   belongs_to :country
+
+  has_many :followingusers, dependent: :destroy
+  has_many :followed_users, :class_name => "User", through: :followingusers, :foreign_key => "followed_user_id"
   
   has_many :chaptercreations, dependent: :destroy
   has_many :creating_chapters, through: :chaptercreations, source: :chapter
@@ -77,6 +89,9 @@ class User < ActiveRecord::Base
   has_many :organized_contests, through: :contestorganizations, source: :contest
   has_many :followingcontests, dependent: :destroy
   has_many :followed_contests, through: :followingcontests, source: :contest
+  
+  has_many :contestsolutions, dependent: :destroy
+  has_many :contestscores, dependent: :destroy
   
   # BEFORE, AFTER
 
@@ -96,22 +111,27 @@ class User < ActiveRecord::Base
   validates :password, length: { minimum: 6 }, on: :create
   validates :password, length: { minimum: 6 }, on: :update, allow_blank: true
   validates :password_confirmation, presence: true, on: :create
-  validates_confirmation_of :email
+  validates_confirmation_of :email, case_sensitive: false
   validates :year, presence: true
   validates :country, presence: true
 
   # Nom complet, avec seulement l'initiale s'il faut
   def name
     if self.seename == 0
-      "#{self.first_name} #{self.last_name[0]}."
+      self.shortname
     else
-      "#{self.first_name} #{self.last_name}"
+      self.fullname
     end
   end
 
   # Nom complet
   def fullname
     "#{self.first_name} #{self.last_name}"
+  end
+  
+  # Nom complet avec seulement l'initiale
+  def shortname
+    "#{self.first_name} #{self.last_name[0]}."
   end
 
   # Devrait ne plus être utilisé : on privilégie les deux suivants meilleurs en complexité
@@ -167,50 +187,41 @@ class User < ActiveRecord::Base
     if admin
       return {color:"#000000"}
     end
-    i = 0
     actuallevel = nil
     $allcolors.each do |c|
       if c.pt <= rating
         actuallevel = c
+      else
+        return actuallevel
       end
-      i = i+1
-    end
-
-    if actuallevel.nil? # Juste pour les tests car je ne sais pas comment initialiser :-(
-      color = Color.new
-      color.pt = 0
-      color.color = "#AAAAAA"
-      color.font_color = "#AAAAAA"
-      color.name = "test"
-      color.femininename = "test"
-      color.save
-      actuallevel = Color.order(:pt).first
     end
 
     return actuallevel
   end
 
   # Rend le nombre de nouveaux messages sur le forum
-  def combien_forum
-    compteur = 0
-    update_date = false
-    if self.admin? or (self.corrector? and self.wepion?)
-      lastsubjects = Subject.where("lastcomment > ?", self.forumseen)
-    elsif self.corrector?
-      lastsubjects = Subject.where("wepion = ? AND lastcomment > ?", false, self.forumseen)
-    elsif self.wepion?
-      lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen)
-    else
-      lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen)
-    end
-    lastsubjects.each do |s|
-      m = s.messages.order(:created_at).last || s
-      if m.user_id != self.id
-        compteur = compteur+1
+  def combien_forum(include_myself)
+    if include_myself
+      if self.admin? or (self.corrector? and self.wepion?)
+        return Subject.where("lastcomment > ?", self.forumseen).count
+      elsif self.corrector?
+        return Subject.where("wepion = ? AND lastcomment > ?", false, self.forumseen).count
+      elsif self.wepion?
+        lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen).count
+      else
+        lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen).count
       end
-      update_date = true
+    else
+      if self.admin? or (self.corrector? and self.wepion?)
+        return Subject.where("lastcomment > ?", self.forumseen).where.not(lastcomment_user: self.sk).count
+      elsif self.corrector?
+        return Subject.where("wepion = ? AND lastcomment > ?", false, self.forumseen).where.not(lastcomment_user: self.sk).count
+      elsif self.wepion?
+        lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen).where.not(lastcomment_user: self.sk).count
+      else
+        lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen).where.not(lastcomment_user: self.sk).count
+      end
     end
-    return [compteur, update_date]
   end
 
   # Rend la peau de l'utilisateur : current_user.sk à mettre quasi partout
@@ -271,29 +282,40 @@ class User < ActiveRecord::Base
     end
   end
 
-  def colored_name(fullname = false)
+  # name_type = 0 : to respect the user choice (full name or not)
+  # name_type = 1 : to show the full name
+  # name_type = 2 : to show the name with initial only for last name
+  def colored_name(name_type = 0)
     if !self.active?
       return "<span style='color:#BBBB00; font-weight:bold;'>Compte supprimé</span>"
-    elsif !self.corrector?
-      return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name) unless fullname}#{html_escape(self.fullname) if fullname}</span>"
     else
-      debut = self.name[0]
-      fin = self.name[1..-1] unless fullname
-      fin = self.fullname[1..-1] if fullname
-      return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
+      goodname = self.name      if name_type == 0
+      goodname = self.fullname  if name_type == 1
+      goodname = self.shortname if name_type == 2
+      if !self.corrector?
+        return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span>"
+      else
+        debut = goodname[0]
+        fin = goodname[1..-1]
+        return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
+      end
     end
   end
 
-  def linked_name(fullname = false)
+  def linked_name(name_type = 0)
     if !self.active?
       return "<span style='color:#BBBB00; font-weight:bold;'>Compte supprimé</span>"
-    elsif !self.corrector?
-      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(self.name)}</span></a>"
     else
-      debut = self.name[0]
-      fin = self.name[1..-1] unless fullname
-      fin = self.fullname[1..-1] if fullname
-      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>"
+      goodname = self.name      if name_type == 0
+      goodname = self.fullname  if name_type == 1
+      goodname = self.shortname if name_type == 2
+      if !self.corrector?
+        return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span></a>"
+      else
+        debut = goodname[0]
+        fin = goodname[1..-1]
+        return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>"
+      end
     end
   end
   
@@ -378,18 +400,24 @@ class User < ActiveRecord::Base
     Section.all.each do |s|
       if(max_score[s.id] != s.max_score)
         warning = warning + "Le score maximal de la section #{s.id} va changer : #{max_score[s.id]} au lieu de #{s.max_score}. "
+      else
+        max_score[s.id] = nil
       end
     end
 
     Pointspersection.all.each do |p|
       if newpartial[p.section_id][p.user_id] != p.points
         warning = warning + "Le rating de ... (#{p.user_id}) pour la section #{p.section_id} va changer : #{newpartial[p.section_id][p.user_id]} au lieu de #{p.points}. "
+      else
+        newpartial[p.section_id][p.user_id] = nil
       end
     end
 
     User.all.each do |u|
       if newrating[u.id] != u.rating
         warning = warning + "Le rating de #{u.name} (#{u.id}) va changer : #{newrating[u.id]} au lieu de #{u.rating}. "
+      else
+        newrating[u.id] = nil
       end
     end
     
@@ -403,27 +431,28 @@ class User < ActiveRecord::Base
     newpartial = quadruple[3]
     
     Section.all.each do |s|
-      if(max_score[s.id] != s.max_score)
+      if ( !max_score[s.id].nil? and max_score[s.id] != s.max_score )
         s.max_score = max_score[s.id]
         s.save
       end
     end
     
     Pointspersection.all.each do |p|
-      if newpartial[p.section_id][p.user_id] != p.points
+      if ( !newpartial[p.section_id][p.user_id].nil? and newpartial[p.section_id][p.user_id] != p.points )
         p.points = newpartial[p.section_id][p.user_id]
         p.save
       end
     end
 
     User.all.each do |u|
-      if newrating[u.id] != u.rating
+      if ( !newrating[u.id].nil? and newrating[u.id] != u.rating )
         u.rating = newrating[u.id]
         u.save
       end
     end
   end
   
+  # Méthode appelée tous les jours à 4 heures du matin (voir schedule.rb)
   def self.delete_unconfirmed
     # Utilisateurs n'ayant pas confirmé leur e-mail après une semaine
     oneweekago = Date.today - 7

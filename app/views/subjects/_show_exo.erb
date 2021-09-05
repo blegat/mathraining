@@ -1,7 +1,7 @@
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if f.online || (@signed_in && current_user.sk.admin?) %>
+<% if q.online || (@signed_in && current_user.sk.admin?) %>
   
-  <% c = f.chapter %>
+  <% c = q.chapter %>
   <% exovisible = true %>
   
   <% if !current_user.sk.admin? %>
@@ -16,39 +16,39 @@
     </table>
 	
   <% else %>
-    <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id) %>
+    <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => q.id) %>
 	  
     <% if current_user.sk.admin? %>
       <table class="table table-bordered reference yellowy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => f.id), :target => "_blank" %> :</td></tr>
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => q.id), :target => "_blank" %> :</td></tr>
     <% elsif exo.size > 0 && exo.first.correct? %>
       <table class="table table-bordered reference greeny">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => f.id), :target => "_blank" %>, que vous avez résolu :</td></tr>
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => q.id), :target => "_blank" %>, que vous avez résolu :</td></tr>
     <% elsif exo.size > 0 %>
       <table class="table table-bordered reference redy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => q.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
     <% else %>
       <table class="table table-bordered reference yellowy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => f.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
+      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => q.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
     <% end %>
     <!-- Enoncé -->
     <tr><td style="padding:10px;">
-    <div style="margin-bottom:15px;"><%= raw(replace_indice(htmlise(f.statement))) %></div>
+    <div style="margin-bottom:15px;"><%= raw(replace_indice(htmlise(q.statement))) %></div>
 
-    <% if !f.is_qcm %>
-      <% if f.decimal %>
+    <% if !q.is_qcm %>
+      <% if q.decimal %>
         (On demande une réponse <b>décimale</b>, arrondie au millième près)
       <% else %>
         (On demande une réponse <b>entière</b>)
       <% end %>
     <% else %>
       <ul>
-      <% f.items.order(:position).each do |c| %>
+      <% q.items.order(:position).each do |c| %>
         <li style="padding:5px;">
         <%= raw(c.ans) %>
       <% end %>
       </ul>
-      <% if f.many_answers %>
+      <% if q.many_answers %>
         (Éventuellement <b>plusieurs</b> propositions correctes)
       <% else %>
         (<b>Une seule</b> proposition correcte)

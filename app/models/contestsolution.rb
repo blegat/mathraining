@@ -1,19 +1,23 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: contestsolutions
 #
-#  id                 :integer          not null, primary key
-#  user_id            :reference
-#  contestproblem_id  :reference
-#  content            :text
-#  official           :boolean
-#  correct            :boolean
+#  id                :integer          not null, primary key
+#  contestproblem_id :integer
+#  user_id           :integer
+#  content           :text
+#  official          :boolean          default(FALSE)
+#  star              :boolean          default(FALSE)
+#  reservation       :integer          default(0)
+#  corrected         :boolean          default(FALSE)
+#  score             :integer          default(-1)
 #
-
 include ApplicationHelper
 
 class Contestsolution < ActiveRecord::Base
+
   # BELONGS_TO, HAS_MANY
 
   belongs_to :contestproblem

@@ -19,8 +19,16 @@
 
 # Learn more: http://github.com/javan/whenever
 
+every :hour, at: 0  do
+  runner "Contest.check_contests_starts" # Send mail and post messages on forum for contests
+end
+
 every :day, :at => '2am' do
-  runner "Record.update"
-  runner "Myfile.fake_dels"
-  runner "User.delete_unconfirmed"
+  runner "Record.update"           # Update statistics
+  runner "Myfile.fake_dels"        # Delete old files
+  runner "User.delete_unconfirmed" # Delete users with unconfirmed email
+end
+
+every :day, :at => '12am' do
+  runner "Visitor.compute"  # Compute the number of visitors of the day before
 end

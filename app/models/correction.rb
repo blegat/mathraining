@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: corrections
@@ -7,12 +8,10 @@
 #  user_id       :integer
 #  submission_id :integer
 #  content       :text
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  created_at    :datetime
+#  updated_at    :datetime
 #
-
 class Correction < ActiveRecord::Base
-  # attr_accessible :content
 
   # BELONGS_TO, HAS_MANY
 
@@ -26,4 +25,5 @@ class Correction < ActiveRecord::Base
   validates :user_id, presence: true
   validates :submission_id, presence: true
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
+
 end

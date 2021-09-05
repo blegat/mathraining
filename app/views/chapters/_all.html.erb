@@ -1,7 +1,7 @@
 <!-- Prérequis -->
 <h3>Prérequis</h3>
 <% if @chapter.prerequisites.count == 0 %>
-  <p>Aucun prérequis</p><br/>
+  <p>Aucun prérequis.</p>
 <% else %>
   <ul>
     <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
@@ -31,7 +31,7 @@
 <% listex = @chapter.theories.order(:position) %>
 <% i = 1 %>
 <% listex.each do |f| %>
-  <% if f.online %>
+  <% if f.online || !@chapter.online %>
     <h3><%= i %>. <%= f.title %></h3>
     <div>
       <% if i <= 2 %>
@@ -39,14 +39,14 @@
       <% else %>
       <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<center><i>Voir plus haut.</i></center>')) %>
       <% end %>
-    </div><br/>
+    </div>
     <% i = i+1 %>
   <% end %>
 <% end %>
 
-<% if @chapter.online && (!@signed_in || !current_user.sk.admin?) %>
+<% if @chapter.online && @signed_in && !current_user.sk.admin? %>
   <!-- Marquer comme lu -->
-  <center><%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), method: :get, class: 'btn btn-default btn-grey', :disabled => (!@signed_in || current_user.other) %></center>
+  <center><%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), :method => :put, class: 'btn btn-default btn-grey', :disabled => (!@signed_in || current_user.other) %></center>
   
   <hr style="border-top:1px dashed lightgray;" />
   Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id) %> !

@@ -1,0 +1,15 @@
+<% if r[0] == @submission %>
+  <% color_class = "info" %>
+<% elsif r[0].status == 2 %>
+  <% color_class = "success" %>
+<% elsif r[0].status == 0 %>
+  <% color_class = "warning" %>
+<% else %>
+  <% color_class = "danger" %>
+<% end %>
+<tr class="<%= color_class %>">
+<td style="width:250px;"><%= write_date(r[0].created_at) %></td>
+<td style="width:200px;"><%= raw(r[0].user.linked_name) %></td>
+<td style="width:300px;"><%= r[1][0] %><b><u><%= @string_to_search %></u></b><%= r[1][1] %></td>
+<td style="width:54px; text-align:center;"><%= link_to "Voir", problem_path(r[0].problem, :sub => r[0].id) %></td>
+</tr>

@@ -1,8 +1,7 @@
 <% provide(:title, 'Concours') %>
 
-<h1>
-<button class="information-tag" onclick="return Info.toggle();">?</button>
-Concours</h1>
+<h1><%= title_1("Concours") %>
+<button class='information-tag' onclick='return Info.toggle();'>?</button></h1>
 
 <%= render 'infocontest' %>
 
@@ -16,30 +15,17 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
   <% if c.status > 0 || c.is_organized_by_or_admin(current_user) %>
   
     <% real_status = c.status %>
-    <% nb_prob = c.contestproblems.count %>
+    <% nb_prob = c.num_problems %>
     
-    <% if nb_prob > 0 %>
-      <% first_date = c.contestproblems.order(:number).first.start_time %>
-      <% last_date = DateTime.new(2000,1,1) %>
-      <% c.contestproblems.each do |p| %>
-        <% if last_date < p.end_time %>
-          <% last_date = p.end_time %>
-        <% end %>
-      <% end %>
-      <% if c.status == 1 %>
-        <% if DateTime.now < first_date %>
-          <% real_status = 0 %>
-        <% elsif DateTime.now > last_date %>
-          <% real_status = 2 %>
-        <% end %>
-      <% end %>
+    <% if real_status == 1 and c.contestproblems.where("status >= 2").count == 0 %>
+      <% real_status = 0 %>
     <% end %>
     
     <% if real_status == 0 %>
       <% classe = "greyy" %>
     <% elsif real_status == 1 %>
       <% classe = "orangey" %>
-    <% elsif real_status == 2 %>
+    <% elsif real_status >= 2 %>
       <% classe = "yellowy" %>
     <% end %>
     
@@ -59,15 +45,15 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
     <h4>Informations</h4>
     
     <% if nb_prob > 0 %>
-      Début : <b><%= write_date_only_with_day(first_date) %></b><br/>
-      Fin : <b><%= write_date_only_with_day(last_date) %></b><br/>
+      Début : <b><%= write_date_only_with_day(c.start_time) %></b><br/>
+      Fin : <b><%= write_date_only_with_day(c.end_time) %></b><br/>
     <% end %>
     <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %>
     <% if real_status == 0 %>
       (à venir)
     <% elsif real_status == 1 %>
       (en cours)
-    <% elsif real_status == 2 %>
+    <% elsif real_status >= 2 %>
       (terminé)
     <% end %>
     
@@ -75,24 +61,23 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
     
     <div class="module right-info">
     <h4>Statistiques</h4>
-      <% nb_prob2 = c.contestproblems.where("status >= 4").count %>
-      <% if nb_prob2 == 0 %>
+      <% nb_prob_corrected = c.contestproblems.where("status >= 4").count %>
+      <% if nb_prob_corrected == 0 %>
         <i>Aucun problème corrigé</i>
       <% else %>
-        <% if nb_prob2 < nb_prob %>
-          Après <%= nb_prob2 %> problème<%= 's' if nb_prob2 >= 2 %> :<br/>
+        <% if nb_prob_corrected < nb_prob %>
+          Après <%= nb_prob_corrected %> problème<%= 's' if nb_prob_corrected >= 2 %> :<br/>
         <% else %>
           À la fin du concours :<br/>
         <% end %>
-        <% best = c.contestscores.where(:rank => 1).first %>
-        <% if best.nil? %>
+        <% num_participants = c.num_participants %>
+        <% if num_participants == 0 %>
           <i>Personne n'a résolu de problème</i>
         <% else %>
-          <% numtotal = c.contestscores.count %>
-          <b><%= numtotal %></b> participants classés<br/>
-          <% bestscore = best.score %>
+          <b><%= num_participants %></b> participants classés<br/>
+          <% bestscore = c.contestscores.where(:rank => 1).first.score %>
           <% numbest = c.contestscores.where(:rank => 1).count %>
-          Meilleur score : <b><%= bestscore %>/<%= 7*nb_prob2 %></b> (<%= numbest %> fois)
+          Meilleur score : <b><%= bestscore %>/<%= 7*nb_prob_corrected %></b> (<%= numbest %> fois)
         <% end %>
       <% end %>
     </div>

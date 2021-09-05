@@ -1,8 +1,19 @@
 <% provide(:title, 'Pièces jointes') %>
 
-<h1>
-Pièces jointes
-</h1>
+<h1><%= title_1("Pièces jointes") %></h1>
+
+<% total = 0 %>
+<% Myfile.all.to_a.each do |f| %>
+  <% total = total + f.file_file_size %>
+<% end %>
+
+<center>
+<% if total < 1000000 %>
+  Total : <b><%= (total/1000.0).round(1).to_s + " ko"%></b>
+<% else %>
+  Total : <b><%= (total/1000000.0).round(2).to_s + " Mo"%></b>
+<% end %>
+</center><br/>
 
 <center>
 <%= will_paginate @list, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
@@ -31,7 +42,7 @@ Pièces jointes
 
   <!-- Date -->
   <td class="hidden-xs">
-  <%= write_date(date.in_time_zone) %>
+  <%= write_date(date) %>
   </td>
 
   <!-- Qui -->

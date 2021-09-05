@@ -1,13 +1,13 @@
 <% def clear_chapter_field() %>
-	var oldSel = document.getElementById("subject_chapter_id");
-	while (oldSel.options.length > 0) {
+  var oldSel = document.getElementById("subject_chapter_id");
+  while (oldSel.options.length > 0) {
     oldSel.remove(oldSel.options.length - 1);
   }
 <% end %>
 
 <% def remove_chapter_field() %>
-	document.getElementById("subject_chapter_id").style.display = "none";
-	document.getElementById("label_chap").style.display = "none"
+  document.getElementById("subject_chapter_id").style.display = "none";
+  document.getElementById("label_chap").style.display = "none"
 <% end %>
 
 <% def clear_question_field() %>
@@ -15,13 +15,118 @@
   while (oldSel.options.length > 0) {
     oldSel.remove(oldSel.options.length - 1);
   }
-  document.getElementById("alert").style.display = "none"
-  document.getElementById("alert2").style.display = "none"
+  document.getElementById("alert-no-exercise-access").style.display = "none"
+  document.getElementById("alert-some-exercise-hidden").style.display = "none"
 <% end %>
 
 <% def remove_question_field() %>
   document.getElementById("subject_question_id").style.display = "none";
   document.getElementById("label_exo").style.display = "none"
+<% end %>
+
+<% def create_question_field(chapter, edit_exo_id) %>
+  var oldSel2 = document.getElementById("subject_question_id");
+  var opt = document.createElement('option');
+  opt.text = "Aucun exercice en particulier"
+  opt.value = 0
+  oldSel2.add(opt, null);
+    
+  <% exovisibles = true %>
+
+  <% if !current_user.sk.admin? %>
+    <% chapter.prerequisites.each do |p| %>
+      <% exovisibles = false if !p.section.fondation && !current_user.sk.chapters.exists?(p.id) %>
+    <% end %>
+  <% end %>
+    
+  <% if exovisibles %>
+    <% some_exo_hidden = false %>
+    <% i = 1 %>
+    <% chapter.questions.where(:online => true).order(:position).each do |e| %>
+      <% if (e.subject.nil? || e.id == edit_exo_id) %>
+        var opt = document.createElement('option');
+        opt.text = "Exercice <%= i %>"
+        opt.value = <%= e.id %>
+        oldSel2.add(opt, null);
+      <% else %>
+        <% some_exo_hidden = true %>
+      <% end %>
+      <% i = i+1 %>
+    <% end %>
+
+    <% if some_exo_hidden %>
+      document.getElementById("alert-some-exercise-hidden").style.display = "block"
+    <% end %>
+  <% else %>
+    document.getElementById("alert-no-exercise-access").style.display = "block"
+  <% end %>
+  oldSel2.style.display = "inline";
+  document.getElementById("label_exo").style.display = "block"
+<% end %>
+
+<% def clear_problem_field() %>
+  var oldSel = document.getElementById("subject_problem_id");
+  while (oldSel.options.length > 0) {
+    oldSel.remove(oldSel.options.length - 1);
+  }
+  document.getElementById("alert-no-problem-access").style.display = "none"
+  document.getElementById("alert-some-problem-hidden").style.display = "none"
+<% end %>
+
+<% def remove_problem_field() %>
+  document.getElementById("subject_problem_id").style.display = "none";
+  document.getElementById("label_prob").style.display = "none"
+<% end %>
+
+<% def create_problem_field(section, edit_prob_id) %>
+  var oldSel2 = document.getElementById("subject_problem_id");
+  var opt = document.createElement('option');
+  opt.text = "Choisissez un problème..."
+  opt.value = 0
+  oldSel2.add(opt, null);
+    
+  <% probvisibles = has_enough_points() %>
+
+  <% if !current_user.sk.admin? %>
+    <% section_fondation = Array.new %>
+    <% Section.all.to_a.each do |s| %>
+      <% section_fondation[s.id] = s.fondation %>
+    <% end %>
+    <% chapters_completion = get_chapters_completion(section_fondation) %>
+  <% end %>
+    
+  <% if probvisibles %>
+    <% some_prob_hidden = false %>
+    <% section.problems.where(:online => true).order(:number).each do |p| %>
+      <% peutvoir = true %>
+      <% if !current_user.sk.admin? %>
+        <% t = p.virtualtest_id %>
+        <% if t == 0 %>
+          <% peutvoir = is_problem_accessible(p, chapters_completion) %>
+        <% else %>
+          <% peutvoir = false if current_user.sk.status(t) <= 0 %>
+        <% end %>
+      <% end %>
+      <% if peutvoir %>
+        <% if (p.subject.nil? || p.id == edit_prob_id) %>
+          var opt = document.createElement('option');
+          opt.text = "Problème #<%= p.number %>"
+          opt.value = <%= p.id %>
+          oldSel2.add(opt, null);
+        <% else %>
+          <% some_prob_hidden = true %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% if some_prob_hidden %>
+      document.getElementById("alert-some-problem-hidden").style.display = "block"
+    <% end %>
+  <% else %>
+    document.getElementById("alert-no-problem-access").style.display = "block"
+  <% end %>
+  oldSel2.style.display = "inline";
+  document.getElementById("label_prob").style.display = "block"
 <% end %>
 
 <% def normal_title() %>
@@ -32,20 +137,22 @@
 
 <% def forced_title() %>
   document.getElementById("subject_title").name = "osef"
-  document.getElementById("subject_title").value = "<%= params[:txt] %>"
+  document.getElementById("subject_title").value = "<%= params[:txt] %>".replace("HASHTAG", "#")
   document.getElementById("subject_title").disabled = "disabled"
   document.getElementById("hidden_title").name = "subject[title]"
-  document.getElementById("hidden_title").value = "<%= params[:txt] %>"
+  document.getElementById("hidden_title").value = "<%= params[:txt] %>".replace("HASHTAG", "#")
 <% end %>
 
 <% if params.has_key?:cat %>
   <% cat = params[:cat].to_i %>
   <% clear_chapter_field() %>
   <% clear_question_field() %>
+  <% clear_problem_field() %>
   <% remove_question_field() %>
+  <% remove_problem_field() %>
+  <% normal_title() %>
   <% if cat < 1000 %>
     <% remove_chapter_field() %>
-    <% normal_title() %>
   <% else %>
     var oldSel = document.getElementById("subject_chapter_id");
     <% section = cat/1000 %>
@@ -60,59 +167,52 @@
       opt.value = <%= c.id %>
       oldSel.add(opt, null);
     <% end %>
+    <% if !s.fondation %>
+      var opt = document.createElement('option');
+      opt.text = "<%= get_problem_category_name(s.name).html_safe %>"
+      opt.value = -1
+      oldSel.add(opt, null);
+    <% end %>
     oldSel.style.display = "inline";
     document.getElementById("label_chap").style.display = "block"
-    <% normal_title() %>
   <% end %>
 <% elsif params.has_key?:chap %>
   <% chap = params[:chap].to_i %>
   <% clear_question_field() %>
+  <% clear_problem_field() %>
+  <% normal_title() %>
   <% if chap == 0 %>
-    <% normal_title() %>
+    <% remove_question_field() %>
+    <% remove_problem_field() %>
+  <% elsif chap < 0 %>
+    <% s = Section.find(-chap) %>
+    <% if params.has_key?:prob_id %>
+      <% p = params[:prob_id].to_i %>
+    <% else %>
+      <% p = -1 %>
+    <% end %>
+    <% create_problem_field(s, p) %>
     <% remove_question_field() %>
   <% else %>
     <% c = Chapter.find(chap) %>
-    var oldSel2 = document.getElementById("subject_question_id");
-    var opt = document.createElement('option');
-    opt.text = "Aucun exercice en particulier"
-    opt.value = 0
-    oldSel2.add(opt, null);
-    
-    <% exovisibles = true %>
-
-    <% if !current_user.sk.admin? %>
-      <% c.prerequisites.each do |p| %>
-        <% exovisibles = false if !p.section.fondation && !current_user.sk.chapters.exists?(p.id) %>
-      <% end %>
-    <% end %>
-    
-    <% if exovisibles %>
-      <% cache = false %>
-      <% i = 1 %>
-      <% c.questions.where(:online => true).order(:position).each do |e| %>
-        <% if (e.subject.nil? || ((params.has_key?:exo_id) && e.id == params[:exo_id].to_i)) %>
-          var opt = document.createElement('option');
-          opt.text = "Exercice <%= i %>"
-          opt.value = <%= e.id %>
-          oldSel2.add(opt, null);
-        <% else %>
-          <% cache = true %>
-        <% end %>
-        <% i = i+1 %>
-      <% end %>
-      <% if cache %>
-        document.getElementById("alert2").style.display = "block"
-      <% end %>
+    <% if params.has_key?:exo_id %>
+      <% e = params[:exo_id].to_i %>
     <% else %>
-      document.getElementById("alert").style.display = "block"
+      <% e = -1 %>
     <% end %>
-    oldSel2.style.display = "inline";
-    document.getElementById("label_exo").style.display = "block"
-    <% normal_title() %>
+    <% create_question_field(c, e) %>
+    <% remove_problem_field() %>
   <% end %>
 <% elsif params.has_key?:exo %>
   <% exo = params[:exo].to_i %>
   <% if exo > 0 %>
+    <% forced_title() %>
+  <% else %>
+    <% normal_title() %>
+  <% end %>
+<% elsif params.has_key?:prob %>
+  <% prob = params[:prob].to_i %>
+  <% if prob > 0 %>
     <% forced_title() %>
   <% else %>
     <% normal_title() %>

@@ -1,3 +1,20 @@
+# == Schema Information
+#
+# Table name: submissions
+#
+#  id          :integer          not null, primary key
+#  problem_id  :integer
+#  user_id     :integer
+#  content     :text
+#  created_at  :datetime
+#  updated_at  :datetime
+#  status      :integer          default(0)
+#  intest      :boolean          default(FALSE)
+#  visible     :boolean          default(TRUE)
+#  score       :integer          default(-1)
+#  lastcomment :datetime
+#  star        :boolean          default(FALSE)
+#
 require "spec_helper"
 
 describe Submission do
@@ -16,7 +33,7 @@ describe Submission do
     it { should_not be_valid }
   end
   describe "when content is too long" do
-    before { @p.content = "a" * 8001 }
+    before { @p.content = "a" * 16001 }
     it { should_not be_valid }
   end
 
@@ -26,7 +43,7 @@ describe Submission do
     it { should_not be_valid }
   end
   describe "when the status is not in the allowed range" do
-    before { @p.status = 4 }
+    before { @p.status = 5 }
     it { should_not be_valid }
   end
 

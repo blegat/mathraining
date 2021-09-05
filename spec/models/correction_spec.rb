@@ -6,10 +6,9 @@
 #  user_id       :integer
 #  submission_id :integer
 #  content       :text
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  created_at    :datetime
+#  updated_at    :datetime
 #
-
 require "spec_helper"
 
 describe Correction do
@@ -29,7 +28,7 @@ describe Correction do
     it { should_not be_valid }
   end
   describe "when content is too long" do
-    before { @c.content = "a" * 8001 }
+    before { @c.content = "a" * 16001 }
     it { should_not be_valid }
   end
 

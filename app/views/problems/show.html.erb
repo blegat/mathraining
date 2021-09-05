@@ -9,19 +9,7 @@
 
 <% @resolu = current_user.sk.pb_solved?(@problem) %>
 
-<h1>
-<span class="title-first">Problèmes ></span>
-<span class="title-second"><%= link_to @problem.section.name, pb_sections_path(@problem.section) %> ></span>
-<%= "Problème ##{ @problem.number }" %>
-
-<% if !@problem.virtualtest.nil? %>
-- Test #<%= @problem.virtualtest.number %>
-<% end %>
-  <%= "(en construction)" if !@problem.online %>
-  <% if !current_user.sk.admin %>
-  <span style="margin-left:20px; color:grey;">(<%= pt %> points)</span>
-  <% end %>
-</h1>
+<h1><%= title_3("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), "Problème ##{ @problem.number }#{ (' - Test #' +  @problem.virtualtest.number.to_s ) if !@problem.virtualtest.nil? } #{ '(en construction)' if !@problem.online } <span style='margin-left:20px; color:grey;'>(#{ pt }&nbsp;points)</span>") %></h1>
 
 <!-- Si administrateur -->
 <% if current_user.sk.admin? %>
@@ -61,7 +49,7 @@
   <ul>
   <% @problem.chapters.each do |c| %>
   <% has_pre = true %>
-  <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span style='color:orange;'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"} if !@problem.online %></li>
+  <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span style='color:orange;'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"}, :method => :put if !@problem.online %></li>
   <% enligne_ok = false if !c.online %>
   <% end %>
   </ul>
@@ -158,13 +146,13 @@
     	<br/>
       <center>
         <% if !has_pre %>
-          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
+          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
           (Au moins un chapitre prérequis nécessaire)
         <% elsif !enligne_ok %>
-          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
+          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
           (Chapitres prérequis doivent être en ligne)
         <% else %>
-          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), method: :get, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
+          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
         <% end %>
       </center> <br/>
     <% end %>

@@ -1,11 +1,12 @@
 #encoding: utf-8
 class CorrectionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create]
-  before_action :get_submission
-  before_action :correct_user
+  before_action :get_submission, only: [:create]
+  before_action :correct_user, only: [:create]
+  before_action :not_plagiarized, only: [:create]
   before_action :notskin_user, only: [:create]
 
-  # Créer une correction : il faut être soit admin, soit correcteur, soit l'étudiant de la soumission
+  # Créer une correction : il faut être soit admin, soit correcteur, soit l'étudiant de la soumission, et le problème doit être non plagié
   def create
     params[:correction][:content].strip! if !params[:correction][:content].nil?
     attach = Array.new
@@ -97,13 +98,12 @@ class CorrectionsController < ApplicationController
           link.resolutiontime = DateTime.now
           link.submission_id = @submission.id
 
-          link.truetime = @submission.created_at
-          @submission.corrections.order(:created_at).each do |c|
-            if c.user_id == @submission.user_id
-              link.truetime = c.created_at
-            end
+          last_user_corr = @submission.corrections.where("user_id = ?", @submission.user_id).order(:created_at).last
+          if last_user_corr.nil?
+            link.truetime = @submission.created_at
+          else
+            link.truetime = last_user_corr.created_at
           end
-
           link.save
         end
         m = ' et soumission marquée comme correcte'
@@ -129,6 +129,11 @@ class CorrectionsController < ApplicationController
           following = Following.new
           following.user = current_user.sk
           following.submission = @submission
+          if @submission.followings.where("user_id != ?", current_user.sk.id).count > 0
+            following.kind = 2 # New corrector for this submission (there was already another one)
+          else
+            following.kind = 1 # First corrector of the submission
+          end
         end
         following.read = true
         following.save
@@ -183,6 +188,13 @@ class CorrectionsController < ApplicationController
   # Vérifie qu'il s'agit du bon utilisateur ou d'un admin ou d'un correcteur
   def correct_user
     if @submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@submission.problem))
+      render 'errors/access_refused' and return
+    end
+  end
+
+  # Vérifie que l'étudiant n'a pas de solution plagiée à ce problème
+  def not_plagiarized
+    if Submission.where(:user_id => @submission.user, :problem_id => @submission.problem, :status => 4).count > 0
       render 'errors/access_refused' and return
     end
   end

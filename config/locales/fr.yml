@@ -61,7 +61,8 @@ fr:
         content: "Message"
         category_id: "Catégorie"
         chapter_id: "Chapitre"
-        exercise_id: "Exercice"
+        question_id: "Exercice"
+        problem_id: "Problème"
       section:
         description: "Introduction"
         name: "Nom"

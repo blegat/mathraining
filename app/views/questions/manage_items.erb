@@ -1,11 +1,6 @@
 <% provide(:title, "Modifier les choix de l'exercice") %>
 
-<h1>
-<span class="title-first">Théorie ></span>
-<span class="title-second"><%= link_to @question.chapter.section.name, @question.chapter.section %> ></span>
-<span class="title-third"><%= link_to @question.chapter.name, chapter_path(@question.chapter, :type => 5, :which => @question.id) %> ></span>
-Choix
-</h1>
+<h1><%= title_4("Théorie", (link_to @question.chapter.section.name, @question.chapter.section), (link_to @question.chapter.name, chapter_path(@question.chapter, :type => 5, :which => @question.id)), "Choix") %></h1>
 
 Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne saurait être enregistrée.<br/>
 
@@ -43,22 +38,22 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
       </td>
       <td style="padding:10px;">
         <%= "Déplacer vers le : " if nb_item > 1 %>
-        <%= link_to "haut", question_up_item_path(@question, f) if i > 0 %>
+        <%= link_to "haut", question_up_item_path(@question, f), :method => :put if i > 0 %>
         <%= " - " if i > 0 && i < nb_item-1 %>
-        <%= link_to "bas", question_down_item_path(@question, f) if i < nb_item-1 %>
+        <%= link_to "bas", question_down_item_path(@question, f), :method => :put if i < nb_item-1 %>
       </td>
       <% unless @question.online %>
         <td style="padding:10px;">
           <% if f.ok %>
             <% if @question.many_answers %>
-              <%= link_to "Rendre ce choix erroné", question_switch_item_path(@question, f) %>
+              <%= link_to "Rendre ce choix erroné", question_switch_item_path(@question, f), :method => :put %>
             <% end %>
           <% else %>
-            <%= link_to "Rendre ce choix correct", question_switch_item_path(@question, f) %>
+            <%= link_to "Rendre ce choix correct", question_switch_item_path(@question, f), :method => :put %>
           <% end %>
         </td>
         <td style="padding:10px;">
-          <%= link_to "Supprimer ce choix", question_remove_item_path(@question, f) %>
+          <%= link_to "Supprimer ce choix", question_remove_item_path(@question, f), :method => :put %>
         </td>
       <% end %>
     </tr>

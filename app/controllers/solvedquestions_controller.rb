@@ -80,7 +80,7 @@ class SolvedquestionsController < ApplicationController
   end
   
   def waiting_time
-    if @link.nb_guess >= 3 && DateTime.now.in_time_zone < @link.updated_at + 175
+    if @link.nb_guess >= 3 && DateTime.now < @link.updated_at + 175
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     end
   end

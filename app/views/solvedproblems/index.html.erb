@@ -1,7 +1,8 @@
 <% provide(:title, 'Problèmes récemment résolus') %>
-<h1>Problèmes récemment résolus</h1>
 
-Les tableaux suivants prennent en compte les problèmes résolus lors des deux dernières semaines.
+<h1><%= title_1("Résolutions récentes") %></h1>
+
+Le tableau suivant reprend toutes les solutions ayant été <b>corrigées</b> les sept derniers jours. Elles sont classées selon leur date de correction, indiquée au début de chaque ligne.<br/><br/>
 
 <!-- Style pour la barre de défilement dans le tableau -->
 <style type="text/css">
@@ -18,7 +19,7 @@ html>body tbody.scroll {
 }
 </style>
 
-<% twoweeksago = Date.today - 14 %>
+<% oneweekago = Date.today - 7 %>
 
 <% allsec = Section.order(:id).where(:fondation => false).to_a %>
 <% table = Array.new %>
@@ -41,63 +42,50 @@ html>body tbody.scroll {
   <% end %>
 <% end %>
 
-<% Solvedproblem.includes(problem: :chapters).where("truetime > ?", twoweeksago).order("truetime DESC").each do |s| %>
-  <% problem = s.problem %>
-  <% user_id = s.user_id %>
-  <% level = problem.level %>
+<% allsec_name = Array.new %>
+<% Section.all.each do |s| %>
+  <% allsec_name[s.id] = s.name %>
+<% end %>
+
+<table class="table">
+<% Solvedproblem.includes(problem: :chapters).includes(:user).where("resolutiontime > ?", oneweekago).order("resolutiontime DESC").each do |s| %>
+  <% p = s.problem %>
+  <tr>
+  <!-- Date -->
+  <td><%= write_date_only_small(s.resolutiontime) %></td>
+  
+  <!-- Heure -->
+  <td class="hidden-xs"><%= write_hour(s.resolutiontime) %></td>
+  
+  <!-- Qui -->
+  <td><%= raw(s.user.linked_name) %></td>
+  
+  <!-- Section -->
+  <td class="hidden-xs"><%= allsec_name[p.section_id] %></td>
+  
+  <!-- Niveau -->
+  <td class="hidden-xs">Niveau <%= p.level %></td>
+  
+  <!-- Problème -->
   <% peutvoir = enough_points %>
-  <% t = problem.virtualtest_id %>
+  <% t = p.virtualtest_id %>
   <% if t == 0 && (!@signed_in || !current_user.sk.admin?) %>
-    <% problem.chapters.each do |c| %>
+    <% p.chapters.each do |c| %>
       <% peutvoir = false if !debloque[c.id] %>
     <% end %>
   <% end %>
   <% if t != 0 && (!@signed_in || !current_user.sk.admin?) %>
     <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
   <% end %>
-  <% table[level].push({:time => s.truetime, :user_id => user_id, :s_id => s.submission_id, :p_id => problem.id, :section => problem.section_id, :number => problem.number, :peutvoir => peutvoir}) %>
-<% end %>
-
-<div class="row">
-<% (1..5).each do |level| %>
-  <div class="col-lg-6">
-  <h3>Problèmes de niveau <%= level %></h3>
-  <table class="table table-bordered" style="width:auto;">
-  <thead class="fixed">
-  <tr><th style="width:150px;" class="hidden-xs">Date</th><th style="width:50px;" class="hidden-xs"><center>Heure</center></th><th style="width:200px;">Qui</th><th style="width:96px;"><center>Problème</center></th></tr>
-  <tbody class="scroll">
-  <% table[level].each do |t| %>
-    <tr style="background-color: <%= Section.color(t[:section]) %>;">
-    <!-- Date -->
-    <% date = t[:time].in_time_zone %>
-    <td style="width:150px;" class="hidden-xs"><%= write_date_only(date) %></td>
-
-    <!-- Heure -->
-    <td style="width:50px;" class="hidden-xs"><center><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></center></td>
-
-    <!-- Qui -->
-    <% user = User.find(t[:user_id]) %>
-    <td style="width:200px;"><%= raw(user.linked_name) %></td>
-
-    <!-- Problème -->
-    <td style="width:80px;">
-    <center>
-    <% if t[:peutvoir] %>
-      <%= link_to "##{t[:number]}", problem_path(t[:p_id], :sub => t[:s_id]) %>
-    <% else %>
-      #<%= t[:number] %>
-    <% end %>
-    </center>
-    </td>
-    </tr>
+  <td>
+  <% if peutvoir %>
+    <span class="hidden-xs"><%= link_to "Problème ##{p.number}", problem_path(p, :sub => s.submission_id) %></span>
+    <span class="visible-xs"><%= link_to "##{p.number}", problem_path(p, :sub => s.submission_id) %></span>
+  <% else %>
+    <span class="hidden-xs">Problème </span>#<%= p.number %>
   <% end %>
-  </tbody>
-  </table>
-  </div>
-  <% if level % 2 == 0 %>
-    </div>
-    <div class="row">
-  <% end %>
+  </td>
+  
+  </tr>
 <% end %>
-
-</div>
+</table>

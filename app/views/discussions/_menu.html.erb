@@ -1,3 +1,12 @@
+<script type="text/javascript">
+var showAllDiscussions = function () {
+  var link = document.getElementById("show_all_discussions");
+  var remaining = document.getElementById("remaining_discussions");
+  link.style.display = "none";
+  remaining.style.display = "block";
+}
+</script>
+
 <div class="list-group chap-menu" style="margin-bottom:0px;">
   <br/>
   <h4 class="list-group-item-heading">Nouveau message</h4>
@@ -11,28 +20,33 @@
     <% number[l.discussion_id] = l.nonread %>
   <% end %>
 
-  <% combien = 0 %>
+  <% all_discussions = current_user.sk.discussions.order("last_message DESC") %>
 
-  <% current_user.sk.discussions.order("last_message DESC").each do |d| %>
-    <% other = current_user.sk %>
-    <% d.users.each do |u| %>
-      <% if u != current_user.sk %>
-        <% other = u %>
+  <% if all_discussions.size > 0 %>
+    <% num = 0 %>
+    <% num_max = 5 %>
+    <% all_discussions.each do |d| %>
+      <% other = current_user.sk %>
+      <% d.users.each do |u| %>
+        <% if u != current_user.sk %>
+          <% other = u %>
+        <% end %>
       <% end %>
-    <% end %>
 
-    <% date = d.tchatmessages.order("created_at DESC").first.created_at %>
-    
-    <%= link_to d, :class => "list-group-item #{"active" if d == @discussion} #{"jaune" if number[d.id] > 0 && d != @discussion}" do %>
-      <b><%= other.name %><%= " (#{number[d.id]})" if number[d.id] > 0 && d != @discussion %></b><br/>
-      
-      <div style="margin-top:5px;"><%= write_date(date.in_time_zone) %></div>
-      
+      <% if num == num_max %>
+        <a id="show_all_discussions" class="list-group-item" onclick="showAllDiscussions();" style="cursor:pointer; text-align:center;">Tout charger</a>
+        <div id="remaining_discussions" style="display:none;">
+      <% end %>
+      <%= link_to d, :class => "list-group-item #{"active" if d == @discussion} #{"jaune" if number[d.id] > 0 && d != @discussion}" do %>
+        <b><%= other.name %><%= " (#{number[d.id]})" if number[d.id] > 0 && d != @discussion %></b><br/>
+        <div style="margin-top:5px;"><%= write_date(d.last_message) %></div>
+      <% end %>
+      <% num = num + 1 %>
     <% end %>
-    <% combien = combien + 1 %>
-  <% end %>
-
-  <% if combien == 0 %>
+    <% if num > num_max %>
+      </div>
+    <% end %>
+  <% else %>
     <i>Aucune discussion</i>
   <% end %>
 </div>

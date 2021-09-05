@@ -1,309 +1,195 @@
 #encoding: utf-8
 namespace :db do
-  desc "Fill database with sample data"
-  task populate: :environment do
-    make_users
-    make_base_chapter
-    make_algebra_chapter
-    make_geometry_chapter
-    make_users_solve_exercises
-  end
+	desc "Fill database with sample data"
+	task populate: :environment do
+		make_all
+	end
 end
 
-def make_users
-  # Admin
-  User.create!(first_name: 'Admin',
-               last_name: 'Admin',
-               email: 'admin@admin.com',
-               password: 'foobar',
-               password_confirmation: 'foobar',
-               admin: true)
-  # Root
-  User.create!(first_name: 'Root',
-               last_name: 'Root',
-               email: 'root@root.com',
-               password: 'foobar',
-               password_confirmation: 'foobar',
-               admin: true,
-               root: true)
-  # Student
-  User.create!(first_name: 'Jean',
-               last_name: 'Dupont',
-               email: 'jean@dupont.com',
-               password: 'foobar',
-               password_confirmation: 'foobar')
-  (1..20).each do |i|
-    User.create!(first_name: "Etu",
-                 last_name: "Diant#{i}",
-                 email: "etu@diant#{i}.com",
-                 password: "foobar",
-                 password_confirmation: "foobar")
-  end
-end
+def make_all
 
-def make_base_chapter
-  base = Chapter.create!(name: 'Base de la base',
-                         description: 'C\'est vraiment la base !',
-                         level: 0,
-                         online: true)
-  base.theories << Theory.create!(title: 'Addition',
-                                  content: 'L\'addition (e.g. $1 + 2$) est <i>associative</i> et <i>commutative</i>.',
-                                  position: 1,
-                                  online: true)
-  base.theories << Theory.create!(title: 'Multiplication',
-                                  content: 'La multiplication (e.g. $6 \times 7$) est <i>associative</i> et <i>commutative</i>.',
-                                  position: 2,
-                                  online: true)
-  base.theories << Theory.create!(title: 'Division',
-                                  content: 'La division (e.g. $12 / 3$) est considérée comme l\'opération opposée à la multiplication.',
-                                  position: 3,
-                                  online: true)
-  base.exercises << Exercise.create!(statement: 'Que vaut $3 + 5$?',
-                                     answer: 8,
-                                     decimal: false,
-                                     position: 1,
-                                     explanation: "Il suffit d'utiliser les règles expliquées dans la théorie.",
-                                     online: true)
-  base.exercises << Exercise.create!(statement: 'Que vaut $3.24 \times 10$?',
-                                     answer: 32.4,
-                                     decimal: true,
-                                     position: 2,
-                                     explanation: "Il suffit encore une fois d'utiliser les règles expliquées dans la théorie.",
-                                     online: true)
-  base.exercises << Exercise.create!(statement: 'Que vaut $6 / 3$?',
-                                     answer: 2,
-                                     decimal: false,
-                                     position: 3,
-                                     explanation: "",
-                                     online: false)
-  base.qcms << Qcm.create!(statement: 'Lesquelles de ces opérations donnent $3$?',
-                           many_answers: true,
-                           position: 4,
-                           online: true,
-                           explanation: "C'est évident.")
+	# Actualités
+	Actuality.create!(title: "Bienvenue sur Mathraining!", content: "Vous êtes les bienvenus !")
 
-  Choice.create!(ans: "$5-2$", ok: true, qcm_id: base.qcms.first.id)
-  Choice.create!(ans: "$6/2$", ok: true, qcm_id: base.qcms.first.id)
-  Choice.create!(ans: "$12/3$", ok: false, qcm_id: base.qcms.first.id)
-  Choice.create!(ans: "$2+2$", ok: false, qcm_id: base.qcms.first.id)
+	# Sections
+	section = Array.new
+	for i in 1..7
+		section[i] = Section.order(:id).offset(i-1).limit(1).first
+	end
 
-  base.exercises << Exercise.create!(statement: 'Que vaut $5 - 2$?',
-                                     answer: 3,
-                                     decimal: false,
-                                     position: 5,
-                                     explanation: "",
-                                     online: true)
-  base.problems << Problem.create!(name: 'Neutre',
-                                  statement: 'Prouver que $0$ est neutre pour l\'addition',
-                                  position: 1,
-                                  online: true,
-                                  level: 1)
-end
+	# Chapitres
+	chapitre = Array.new
+	exercice = Array.new
+	qcm = Array.new
+	choice = Array.new
+	for i in 1..7
+		chapitre[i] = Array.new
+		exercice[i] = Array.new
+		qcm[i] = Array.new
+		choice[i] = Array.new
+		for j in 1..3
+			chapitre[i][j] = Chapter.new(name: "Chapitre de la section " + i.to_s + ", numéro " + j.to_s, description: "C'est intéressant", level: j, position: 1, online: true)
+			chapitre[i][j].section = section[i]
+			chapitre[i][j].save!
+			
+			# Exercices
+			exercice[i][j] = Array.new
+			qcm[i][j] = Array.new
+			choice[i][j] = Array.new
+			for k in 1..4
+				exercice[i][j][k] = Question.new(is_qcm: false, statement: "Quelle est la valeur de " + k.to_s + "?", decimal: (k % 2 == 1), answer: k, position: k, online: true, explanation: "C'est du bon sens!", level: k, many_answers: false)
+				exercice[i][j][k].chapter = chapitre[i][j]
+				exercice[i][j][k].save!
+			end
+			
+			# Qcms
+			for k in 1..3
+				qcm[i][j][k] = Question.new(is_qcm: true, statement: "Quelle est la valeur de " + k.to_s + "?", many_answers: (k % 2 == 1), position: 4+k, online: true, explanation: "C'est du bon sens!", level: k, decimal: false, answer: 0)
+				qcm[i][j][k].chapter = chapitre[i][j]
+				qcm[i][j][k].save!
+				choice[i][j][k] = Array.new
+				
+				for l in 1..3
+					choice[i][j][k][l] = Item.new(ans: l.to_s, position: l, ok: (k == l))
+					choice[i][j][k][l].question = qcm[i][j][k]
+					choice[i][j][k][l].save!
+				end
+			end
+		end
+	end
+	
+	# Problèmes
+	problem = Array.new
+	for i in 1..6
+		problem[i] = Array.new
+		for j in 1..5
+			problem[i][j] = Array.new
+			for k in 1..4
+				problem[i][j][k] = Problem.new(statement: "Trouver la valeur de " + i.to_s + " + " + j.to_s + " + " + k.to_s + ".", online: true, level: j, explanation: "Il s'avère que la réponse est " + (i+j+k).to_s + ".", number: i*1000 + j*100 + k*20, origin: "La nuit des temps.")
+				problem[i][j][k].section = section[i]
+				problem[i][j][k].save!
+			end
+		end
+	end
 
-def make_algebra_chapter
-  algebre = Chapter.create!(name: 'Base de l\'algèbre',
-                         description: 'C\'est la base de l\'algèbre!',
-                         level: 1,
-                         online: true)
-  sect = Section.where(:name => "Algèbre").first
-  algebre.sections << sect
-  algebre.theories << Theory.create!(title: 'Racine carrée',
-                                  content: 'La racine carrée d\' un nombre réel positif est le nombre réel positif dont le carré vaut ce nombre. On la note $\sqrt{x}$',
-                                  position: 1,
-                                  online: true)
-  algebre.theories << Theory.create!(title: 'Puissance',
-                                  content: 'Lorsque l\'on écrit $a^b$, on veut dire que $a \times a \times \dots \times a$, où $a$ apparaît $b$ fois.',
-                                  position: 2,
-                                  online: true)
-  algebre.exercises << Exercise.create!(statement: 'Que vaut $\sqrt{9}$?',
-                                     answer: 3,
-                                     decimal: false,
-                                     position: 1,
-                                     explanation: "Il suffit d'utiliser les règles expliquées dans la théorie.",
-                                     online: true)
-  algebre.exercises << Exercise.create!(statement: 'Que vaut $4^3$?',
-                                     answer: 64,
-                                     decimal: false,
-                                     position: 2,
-                                     explanation: "Il suffit encore une fois d'utiliser les règles expliquées dans la théorie.",
-                                     online: true)
-  algebre.qcms << (newqcm = Qcm.create!(statement: 'Que vaut $\sqrt{x^4}$ si $x \geq 0$?',
-                           many_answers: false,
-                           position: 3,
-                           online: true,
-                           explanation: "C'est évident."))
+	# Belgique
+	belgium = Country.where(:name => "Belgique").first
+	if belgium.nil?
+		belgium = Country.create(name: "Belgique", code: "be")
+	end
+	
+	# Root
+	root = User.new(first_name: "Root", last_name: "Root", email: "root@root.com", email_confirmation: "root@root.com", password: "foobar", password_confirmation: "foobar", root: true, admin: true, year: 1990)
+	root.country = belgium
+	root.save!
+	
+	# Admin
+	admin = User.new(first_name: "Admin", last_name: "Admin", email: "admin@admin.com", email_confirmation: "admin@admin.com", password: "foobar", password_confirmation: "foobar", root: false, admin: true, year: 1990)
+	admin.country = belgium
+	admin.save!
+	
+	# User
+	user = Array.new
+	for i in 1..10
+		letter = "ABCDEFGHIJ"[i-1]
+		mail = "user@user" + letter + ".com"
+		user[i] = User.new(first_name: "User", last_name: "User-" + letter, email: mail, email_confirmation: mail, password: "foobar", password_confirmation: "foobar", root: false, admin: false, year: 2000)
+		user[i].country = belgium
+		if i % 2 == 1
+			user[i].wepion = true
+		end
+		user[i].save!
+		
+		for j in 1..7
+			for k in 1..3
+				for l in 1..4
+					r = Random.rand(2)
+					if r == 0
+						solved = Solvedquestion.new(guess: 18, correct: false, nb_guess: Random.rand(3)+1)
+						solved.question = exercice[j][k][l]
+						solved.user = user[i]
+						solved.save!
+					else
+						solved = Solvedquestion.new(guess: l, correct: true, nb_guess: Random.rand(3)+1, resolutiontime: DateTime.now)
+						solved.question = exercice[j][k][l]
+						solved.user = user[i]
+						solved.save!
+						user[i].rating = user[i].rating + 3*l
+						user[i].save!
+					end
+				end
+			end
+		end
+		
+		for j in 1..6
+			for k in 1..5
+				for l in 1..4
+					r = Random.rand(10)
+					if r == 0
+						# Soumission correcte
+						rr = Random.rand(30)
+						sub = Submission.new(content: "C'est facile, il suffit d'effectuer " + j.to_s + " + " + k.to_s + " qui donne " + (j+k).to_s + ", puis on ajoute " + l.to_s + " et cela donne " + (j+k+l).to_s + ".", status: (rr == 0 ? 0 : 2), intest: false, visible: true, score: -1, lastcomment: (rr != 0 ? DateTime.now : DateTime.now + 1/1440.0), star: (rr != 0 and Random.rand(5) == 0))
+						sub.problem = problem[j][k][l]
+						sub.user = user[i]
+						sub.save!
+						if rr != 0
+							# Dans ce cas c'est corrigé (sinon en attente)
+							solved = Solvedproblem.new(resolutiontime: DateTime.now, truetime: DateTime.now)
+							solved.user = user[i]
+							solved.problem = problem[j][k][l]
+							solved.submission = sub
+							solved.save!
+							
+							corrector = (Random.rand(2) == 0 ? admin : root)
+							
+							correction = Correction.new(content: "Parfait!")
+							correction.user = corrector
+							correction.submission = sub
+							correction.save!
+							
+							following = Following.new(read: true)
+							following.user = corrector
+							following.submission = sub
+							following.save!
+							
+							user[i].rating = user[i].rating + 15*k
+							user[i].save!
+						end
+					elsif r == 1
+						# Soumission fausse
+						rr = Random.rand(30)
+						sub = Submission.new(content: "C'est facile, il suffit d'effectuer " + j.to_s + " + " + k.to_s + " qui donne " + (j+k+1).to_s + ", puis on ajoute " + l.to_s + " et cela donne " + (j+k+l+1).to_s + ".", status: (rr == 0 ? 0 : 1), intest: false, visible: true, score: -1, lastcomment: (rr != 0 ? DateTime.now : DateTime.now + 1/1440.0), star: false)
+						sub.problem = problem[j][k][l]
+						sub.user = user[i]
+						sub.save!
+						if rr != 0
+							# Dans ce cas c'est corrigé (sinon en attente)
+							
+							corrector = (Random.rand(2) == 0 ? admin : root)
+							
+							correction = Correction.new(content: "Il y a une petite erreur quelque part...")
+							correction.user = corrector
+							correction.submission = sub
+							correction.save!
+							
+							following = Following.new(read: true)
+							following.user = corrector
+							following.submission = sub
+							following.save!
+						end
+					end
+				end
+			end
+		end
+	end
 
-  Choice.create!(ans: "$x$", ok: false, qcm_id: algebre.qcms.first.id)
-  Choice.create!(ans: "$x^2$", ok: true, qcm_id: algebre.qcms.first.id)
-  Choice.create!(ans: "$x^4$", ok: false, qcm_id: algebre.qcms.first.id)
-  Choice.create!(ans: "$x^8$", ok: false, qcm_id: algebre.qcms.first.id)
+	# Statistiques
+	a = Chapter.compute_stats
+	Chapter.save_stats(a)
 
-  algebre.problems << Problem.create!(name: 'Racine cubique',
-                                  statement: 'Définir la racine cubique d\'un élément.',
-                                  position: 1,
-                                  online: true,
-                                  level: 2)
-end
+	b = Question.compute_stats
+	Question.save_stats(b)
 
-
-def make_geometry_chapter
-  geometrie = Chapter.create!(name: 'Angles',
-                         description: 'C\'est la base de la géométrie!',
-                         level: 1,
-                         online: true)
-  sect = Section.where(:name => "Géométrie").first
-  geometrie.sections << sect
-  geometrie.theories << Theory.create!(title: 'Angles inscrits',
-                                  content: 'Deux angles inscrits interceptant le même arc ont la même amplitude.',
-                                  position: 1,
-                                  online: true)
-  geometrie.theories << Theory.create!(title: 'Angle inscrit et angle au centre',
-                                  content: 'L\'amplitude d\'un angle au centre est égale au double de l\'amplitude d\'un angle inscrit interceptant le même arc.',
-                                  position: 2,
-                                  online: true)
-  geometrie.exercises << Exercise.create!(statement: 'Si un angle inscrit a une amplitude de $30^\circ$, quelle est l\'amplitude en degré de l\'angle au centre interceptant le même arc?',
-                                     answer: 60,
-                                     decimal: false,
-                                     position: 1,
-                                     explanation: "Il suffit d'utiliser les règles expliquées dans la théorie.",
-                                     online: true)
-  geometrie.exercises << Exercise.create!(statement: 'Si un angle au centre a une amplitude de $29^\circ$, quelle est l\'amplitude en degré de l\'angle inscrit interceptant le même arc??',
-                                     answer: 14.5,
-                                     decimal: true,
-                                     position: 2,
-                                     explanation: "Il suffit encore une fois d'utiliser les règles expliquées dans la théorie.",
-                                     online: true)
-  geometrie.qcms << (newqcm = Qcm.create!(statement: 'Que peut-on dire de deux angles inscrits interceptant le même arc?',
-                           many_answers: false,
-                           position: 3,
-                           online: true,
-                           explanation: "C'est évident."))
-
-  Choice.create!(ans: 'La somme de leur amplitude vaut $180^\circ$', ok: false, qcm_id: geometrie.qcms.first.id)
-  Choice.create!(ans: "Ils ont la même amplitude", ok: true, qcm_id: geometrie.qcms.first.id)
-
-  geometrie.problems << Problem.create!(name: 'Angle au centre',
-                                  statement: 'Prouver que l\'amplitude d\'un angle au centre est égale au double de l\'amplitude d\'un angle inscrit interceptant le même arc.',
-                                  position: 1,
-                                  online: true,
-                                  level: 1)
-
-
-end
-
-def make_users_solve_exercises
-  (1..20).each do |i|
-    user = User.where(:last_name => "Diant#{i}").first
-    Exercise.all.each do |e|
-      r = rand(1..25)
-      if r > i # Solve the exercise
-        link = Solvedexercise.new
-        link.user = user
-        link.exercise = e
-        link.nb_guess = rand(1..5)
-        link.guess = e.answer
-        link.correct = true
-        link.created_at = Date.new(2013,3,rand(1..31)).to_time
-        link.updated_at = link.created_at
-        point_attribution_ex(user, e)
-        link.save
-      end
-    end
-    Qcm.all.each do |q|
-      r = rand(1..25)
-      if r > i # Solve the qcm
-        link = Solvedqcm.new
-        link.user = user
-        link.qcm = q
-        link.nb_guess = rand(1..5)
-        link.correct = true
-        link.created_at = Date.new(2013,3,rand(1..31)).to_time
-        link.updated_at = link.created_at
-        point_attribution_qcm(user, q)
-        link.save
-      end
-    end
-  end
-
-end
-
-
-def point_attribution_ex(user, exo)
-  if exo.decimal
-    pt = 10
-  else
-    pt = 6
-  end
-    
-  partials = user.pointspersections
-    
-  if !exo.chapter.sections.empty? # Pas un fondement
-    user.point.rating = user.point.rating + pt
-    user.point.save
-  else # Fondement
-    if partials.where(:section_id => 0).size == 0
-      newpoint = Pointspersection.new
-      newpoint.section_id = 0
-      newpoint.points = pt
-      user.pointspersections << newpoint
-    else
-      partial = partials.where(:section_id => 0).first
-      partial.points = partial.points + pt
-      partial.save
-    end
-  end
-    
-  exo.chapter.sections.each do |s| # Section s
-    if partials.where(:section_id => s.id).size == 0
-      newpoint = Pointspersection.new
-      newpoint.section_id = s.id
-      newpoint.points = pt
-      user.pointspersections << newpoint
-    else
-      partial = partials.where(:section_id => s.id).first
-      partial.points = partial.points + pt
-      partial.save
-    end
-  end
-end
-
-
-def point_attribution_qcm(user, qcm)
-  poss = qcm.choices.count
-  if qcm.many_answers
-    pt = 2*(poss-1)
-  else
-    pt = poss
-  end
-    
-  partials = user.pointspersections
-  
-  if !qcm.chapter.sections.empty? # Pas un fondement
-    user.point.rating = user.point.rating + pt
-    user.point.save
-  else # Fondement
-    if partials.where(:section_id => 0).size == 0
-      newpoint = Pointspersection.new
-      newpoint.section_id = 0
-      newpoint.points = pt
-      user.pointspersections << newpoint
-    else
-      partial = partials.where(:section_id => 0).first
-      partial.points = partial.points + pt
-      partial.save
-    end
-  end
-    
-  qcm.chapter.sections.each do |s| # Section s
-    if partials.where(:section_id => s.id).size == 0
-      newpoint = Pointspersection.new
-      newpoint.section_id = s.id
-      newpoint.points = pt
-      user.pointspersections << newpoint
-    else
-      partial = partials.where(:section_id => s.id).first
-      partial.points = partial.points + pt
-      partial.save
-    end
-  end
+	c = User.compute_scores
+	User.apply_scores(c)
 end

@@ -2,20 +2,24 @@
 #
 # Table name: subjects
 #
-#  id          :integer          not null, primary key
-#  title       :string(255)
-#  content     :text
-#  user_id     :integer
-#  chapter_id  :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  lastcomment :datetime
-#  admin       :boolean
-#  important   :boolean
-#  section_id  :integer
-#  wepion      :boolean
+#  id                  :integer          not null, primary key
+#  title               :string
+#  content             :text
+#  user_id             :integer
+#  chapter_id          :integer
+#  created_at          :datetime
+#  updated_at          :datetime
+#  lastcomment         :datetime
+#  admin               :boolean          default(FALSE)
+#  important           :boolean          default(FALSE)
+#  section_id          :integer
+#  wepion              :boolean          default(FALSE)
+#  category_id         :integer
+#  question_id         :integer
+#  contest_id          :integer
+#  problem_id          :integer
+#  lastcomment_user_id :integer
 #
-
 require "spec_helper"
 
 describe Subject do

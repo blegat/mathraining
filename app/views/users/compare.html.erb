@@ -56,30 +56,13 @@ html>body tbody.scroll {
   <% end %>
 
   <% if @signed_in && current_user.sk.admin %>
-    <% Chapter.all.to_a.each do |c| %>
+    <% Chapter.all.each do |c| %>
       <% cansee[c.id] = true %>
     <% end %>
   <% else %>
-    <% debloque = Array.new %>
-    <% Chapter.all.to_a.each do |c| %>
-      <% debloque[c.id] = false %>
-    <% end %>
-
-    <% if @signed_in %>
-      <% current_user.sk.chapters.each do |c| %>
-        <% debloque[c.id] = true %>
-      <% end %>
-    <% end %>
-
-    <% Chapter.all.to_a.each do |c| %>
-      <% cansee[c.id] = true %>
-      <% if !section_fondation[c.section_id] %>
-        <% c.prerequisites.each do |p| %>
-          <% if !section_fondation[p.section_id] && !debloque[p.id] %>
-            <% cansee[c.id] = false %>
-          <% end %>
-        <% end %>
-      <% end %>
+    <% chapters_completion = get_chapters_completion(section_fondation) %>
+    <% Chapter.all.each do |c| %>
+      <% cansee[c.id] = are_exercises_accessible(c, section_fondation, chapters_completion) %>
     <% end %>
   <% end %>
 
@@ -160,14 +143,13 @@ html>body tbody.scroll {
         <% pb = allpb[p.problem_id] %>
         <% pt = pb.value %>
         <% peutvoir = enough_points %>
-        <% t = pb.virtualtest_id %>
-        <% if t == 0 && (!@signed_in || !current_user.sk.admin?) %>
-          <% pb.chapters.each do |c| %>
-            <% peutvoir = false if !debloque[c.id] %>
+        <% if (!@signed_in || !current_user.sk.admin?) && peutvoir %>
+          <% t = pb.virtualtest_id %>
+          <% if t == 0 %>
+            <% peutvoir = is_problem_accessible(pb, chapters_completion) %>
+          <% else %>
+            <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
           <% end %>
-        <% end %>
-        <% if t != 0 && (!@signed_in || !current_user.sk.admin?) %>
-          <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
         <% end %>
         <% p_encours = p_encours + 1 %>
         <% dernier = p.truetime.in_time_zone %>
@@ -188,7 +170,8 @@ html>body tbody.scroll {
 
     <!-- On détermine si on rassemble les actes par minute, heure ou jour -->
     <% if !premier.nil? %>
-      <% if dernier.day != DateTime.now.in_time_zone.day || dernier.month != DateTime.now.in_time_zone.month || dernier.year != DateTime.now.in_time_zone.year %>
+      <% date_now = DateTime.now.in_time_zone %>
+      <% if dernier.day != date_now.day || dernier.month != date_now.month || dernier.year != date_now.year %>
         <% parquoi = "jour" %>
       <% elsif dernier.hour < premier.hour - 1 %>
         <% parquoi = "heure" %>
@@ -439,7 +422,7 @@ html>body tbody.scroll {
       <% if bas > haut %>
         ctx.beginPath();
         ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
-        ctx.fillStyle = '<%= n.font_color %>';
+        ctx.fillStyle = '<%= n.color %>';
         ctx.fill();
       <% end %>
       <% i = i+1 %>
@@ -494,9 +477,9 @@ html>body tbody.scroll {
         <% if parquoi == "jour" %>
           ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
         <% elsif parquoi == "heure" %>
-          ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h",pct*<%= 50+w %>,pct*471);
+          ctx.fillText("<%= write_hour_only(a[:time]) %>",pct*<%= 50+w %>,pct*471);
         <% else %>
-          ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
+          ctx.fillText("<%= write_hour(a[:time]) %>",pct*<%= 50+w %>,pct*471);
         <% end %>
         }
           ctx.moveTo(pct*<%= 50+w %>, pct*5);

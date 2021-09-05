@@ -1,3 +1,22 @@
+<% def readable_number(n) %>
+  <% if n == 0 %>
+    <% return "0" %>
+  <% end %>
+  <% m = n %>
+  <% num_digits = 0 %>
+  <% ans = "" %>
+  <% while(m > 0) %>
+    <% if num_digits % 3 == 0 and num_digits > 0 %>
+      <% ans = "&thinsp;" + ans %>
+    <% end %>
+    <% d = m % 10 %>
+    <% ans = d.to_s + ans %>
+    <% m = m/10 %>
+    <% num_digits = num_digits + 1 %>
+  <% end %>
+  <% return ans %>
+<% end %>
+
 <!-- Gros titre Mathraining -->
 
 <div class="home">
@@ -5,26 +24,22 @@
 	<div class="row">
   <div class="col-lg-7 col-sm-7 col-xs-12">
   <center>
-  <% if DateTime.now.in_time_zone.month == 1 or params[:bonneannee].to_i == 2018 %>
-    <%= image_tag "mathraining-newyear.gif", :style => "width:100%; max-width:400px;" %>
+  <% if DateTime.now.in_time_zone.month == 1 %>
+    <%= image_tag "mathraining-new-year.png", :style => "width:100%; max-width:400px;" %>
   <% else %>
-    <%= image_tag "mathraining.gif", :style => "width:100%; max-width:342px;" %>
+    <%= image_tag "mathraining.png", :style => "width:100%; max-width:334px;" %>
   <% end %>
   </center>
   </div>
   <div class="col-lg-5 col-sm-5 col-xs-12">
-  <% tot = 0 %>
-  <% number = 0 %>
-  <% User.where("admin = ? AND rating > 0", false).each do |u| %>
-    <% tot = tot + u.rating %>
-    <% number = number + 1 if u.active %>
-  <% end %>
+  <% tot = User.where("admin = ?", false).sum(:rating) %>
+  <% number = User.where("admin = ? AND rating > 0 AND active = ?", false, true).count %>
   <center>
   <table class="home-stats">
-  <tr><td class="left"><%= number %></td><td class="right">utilisateurs classés</td></tr>
-  <tr><td class="left"><%= Solvedproblem.count %></td><td class="right">problèmes résolus</td></tr>
-  <tr><td class="left"><%= Solvedquestion.where("correct = ?", true).count %></td><td class="right">exercices résolus</td></tr>
-  <tr><td class="left"><%= tot %></td><td class="right">points distribués</td></tr>
+  <tr><td class="left"><%= raw(readable_number(number)) %></td><td class="right">utilisateurs classés</td></tr>
+  <tr><td class="left"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
+  <tr><td class="left"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
+  <tr><td class="left"><%= raw(readable_number(tot)) %></td><td class="right">points distribués</td></tr>
   </table>
   </center>
   </div>
@@ -36,7 +51,7 @@
 </div>
 
 <!-- Afficher les actualités -->
-<h1>Actualités</h1>
+<h1><%= title_1("Actualités") %></h1>
 <% actualities = Actuality.order("created_at DESC").paginate(:page => params[:page], :per_page => 5) %>
 
 <% actualities.each do |a| %>

@@ -30,7 +30,6 @@ describe "Color pages" do
           find_by_id('name_add').set("new_name")
           find_by_id('femininename_add').set("new_feminine_name")
           find_by_id('color_add').set("#AABBCC")
-          find_by_id('font_color_add').set("#BBCCDD")
           find_by_id('button_add').click
         end
         specify { expect(Color.order(:id).last.name).to eq("new_name") }
@@ -42,7 +41,6 @@ describe "Color pages" do
           find_by_id('name_add').set("new_name")
           find_by_id('femininename_add').set("new_feminine_name")
           find_by_id('color_add').set("#AABBC") # Too short
-          find_by_id('font_color_add').set("#BBCCDD")
           find_by_id('button_add').click
         end
         it { should have_content("erreur") }
@@ -54,12 +52,11 @@ describe "Color pages" do
     describe "edits a color" do
       describe "with good information" do
         before do
-          find_by_id('pt_edit1').set(20)
-          find_by_id('name_edit1').set("new_name")
-          find_by_id('femininename_edit1').set("new_feminine_name")
-          find_by_id('color_edit1').set("#AABBCC")
-          find_by_id('font_color_edit1').set("#BBCCDD")
-          find_by_id('button_edit1').click
+          find_by_id('pt_edit11').set(20)
+          find_by_id('name_edit11').set("new_name")
+          find_by_id('femininename_edit11').set("new_feminine_name")
+          find_by_id('color_edit11').set("#AABBCC")
+          find_by_id('button_edit11').click
           color.reload
         end
         specify { expect(color.name).to eq("new_name") }
@@ -67,12 +64,11 @@ describe "Color pages" do
       end
       describe "with wrong information" do
         before do
-          find_by_id('pt_edit1').set(20)
-          find_by_id('name_edit1').set("new_name")
-          find_by_id('femininename_edit1').set("new_feminine_name")
-          find_by_id('color_edit1').set("#AABBCC")
-          find_by_id('font_color_edit1').set("#BBCCD") # Too short
-          find_by_id('button_edit1').click
+          find_by_id('pt_edit11').set(20)
+          find_by_id('name_edit11').set("new_name")
+          find_by_id('femininename_edit11').set("new_feminine_name")
+          find_by_id('color_edit11').set("#AABBC") # Too short
+          find_by_id('button_edit11').click
           color.reload
         end
         it { should have_content("erreur") }
@@ -82,7 +78,7 @@ describe "Color pages" do
     end
     
     describe "deletes a color" do
-      specify { expect { click_link("Supprimer") }.to change(Color, :count).by(-1) }
+      specify { expect { find_by_id('link_delete11').click }.to change(Color, :count).by(-1) }
     end
   end
 end

@@ -1,5 +1,3 @@
-require 'nokogiri'
-
 module ApplicationHelper
   # Returns the full title on a per-page basis.
   def full_title(page_title)
@@ -7,101 +5,27 @@ module ApplicationHelper
     if page_title.empty?
       base_title
     else
-      "#{base_title} | #{page_title}"
+      "#{page_title} | #{base_title}"
     end
   end
 
+  # Flash all errors
   def flash_errors(object)
     unless object.errors.empty?
       flash.now[:danger] = object.errors.full_messages.to_sentence
     end
   end
 
+  # Get all errors
   def get_errors(object)
     unless object.errors.empty?
       object.errors.full_messages.to_sentence
     end
   end
 
-  def html_to_tex(html_text)
-    # Deal with '<' signs
-    html_text = fix_irregular_html(html_text)
-    tex_text = nokogiri_to_tex(Nokogiri::HTML(html_text).children[1])
-    tex_text.gsub(/&lt;/, "<").
-    gsub(/&gt;/, ">").
-    gsub(/&amp;/, "&").
-    gsub(/\$\$\s*\\begin{align\*}/,"\\begin{align*}").
-    gsub(/\\end{align\*}\s*\$\$/,"\\end{align*}").
-    gsub(/\$\$\s*\\begin{align}/,"\\begin{align}").
-    gsub(/\\end{align}\s*\$\$/,"\\end{align}")
-  end
-
   private
 
-  # source: https://gist.github.com/rngtng/796571
-  def fix_irregular_html(html)
-    regexp = /<([^<>]*)(<|$)/
-    #we need to do this multiple time as regex are overlapping
-    while (fixed_html = html.gsub(regexp, "&lt;\\1\\2")) && fixed_html != html
-      html = fixed_html
-    end
-    fixed_html
-  end
-
-  def nokogiri_to_tex(node)
-    if node.class == Nokogiri::XML::Element
-      before = ""
-      after = ""
-      case node.name
-      when "h4" then
-        before = "\\subsubsection{"
-        after = "}"
-      when "h5" then
-        before = "\\paragraph{"
-        after = "}"
-      when "p" then
-        before = "\n"
-        after = "\n"
-      when "i" then
-        before = "\\textit{"
-        after = "}"
-      when "b" then
-        before = "\\textbf{"
-        after = "}"
-      when "ul"
-        before = "\\begin{itemize}\n"
-        after = "\\end{itemize}"
-      when "ol"
-        before = "\\begin{enumerate}\n"
-        after = "\\end{enumerate}"
-      when "li"
-        before = "\\item "
-      end
-      content = node.children.inject("") do |sum, child|
-        "#{sum}#{nokogiri_to_tex(child)}"
-      end
-      "#{before}#{content}#{after}"
-    elsif node.class == Nokogiri::XML::Text
-      node
-    else
-      raise node.class.to_s
-      ""
-    end
-  end
-
-  # Pour mettre des espaces dans un select (sur le forum)
-  def options_for_select_with_style( container, selected=nil )
-    container = container.to_a if Hash === container
-    options_for_select = container.inject([]) do |options, element|
-      text, value = option_text_and_value(element)
-      selected_attribute = ' selected="selected"' if option_value_selected?(value, selected)
-      style = " style=\"#{element[1]}\"" if element[1] && element[1]!=value
-      options << %(<option value="#{html_escape(value.to_s)}"#{selected_attribute}#{style}>#{html_escape(text.to_s)}</option>)
-    end
-    options_for_select.join("\n")
-  end
-
-  # Pour les messages avec bbcode
+  # To read bbcode on user side
   def bbcode(m)
     (h m.gsub(/\\\][ \r]*\n/,'\] ').
     gsub(/\$\$[ \r]*\n/,'$$ ')).
@@ -122,7 +46,7 @@ module ApplicationHelper
     .gsub(/[3]\:\[/, image_tag("Smiley9.gif", alt: "3:["))
   end
 
-  # Pour les trucs coté admins
+  # To read code on admin side
   def htmlise(m)
     m2 = m.gsub(/<hr>[ \r]*\n/,'<hr>').
     gsub(/\\\][ \r]*\n/,'\] ').
@@ -155,7 +79,8 @@ module ApplicationHelper
     
     return m2.gsub(/\n/, '<br/>')
   end
-  
+
+  # Method to deal with clues
   def replace_indice(m)
     m2 = m.gsub(/<\/indice>[ \r]*<br\/>/, "</indice>")
     
@@ -164,41 +89,72 @@ module ApplicationHelper
     
     return m2
   end
+
+  # Write 21h50
+  def write_hour(date_utc)
+    date = date_utc.in_time_zone
+    return "#{date.hour}h#{"0" if date.min < 10}#{date.min}"
+  end
+
+  # Write 21h
+  def write_hour_only(date_utc)
+    date = date_utc.in_time_zone
+    return "#{date.hour}h"
+  end
   
-  def write_date(date)
+  # Write 12 juin 2009 à 21h50
+  def write_date(date_utc)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     return "#{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}"
   end
   
-  def write_date_only(date)
+  # Write 12 juin 2009
+  def write_date_only(date_utc)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     return "#{ date.day } #{ mois[date.month-1]} #{date.year}"
   end
   
-  def write_date_with_day(date)
+  # Write 12 juin 2009
+  def write_date_only_small(date_utc)
+    date = date_utc.in_time_zone
+    return "#{ date.day }/#{'0' if date.month < 10}#{ date.month }/#{date.year-2000}"
+  end
+  
+  # Write vendredi 12 juin 2009 à 21h50
+  def write_date_with_day(date_utc)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     return "#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}"
   end
   
-  def write_date_only_with_day(date)
+  # Write vendredi 12 juin 2009
+  def write_date_only_with_day(date_utc)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     return "#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year}"
   end
   
-  def write_date_with_link(date, contest, contestproblem)
+  # Write vendredi 12 juin 2009 with HTML link to timeanddate.com
+  def write_date_with_link(date_utc, contest, contestproblem)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     return link_to "#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}", "https://www.timeanddate.com/worldclock/fixedtime.html?msg=Mathraining+-+Concours+%23#{contest.number}+-+Probl%C3%A8me+%23#{contestproblem.number}&iso=#{date.year}#{'0' if date.month < 10}#{date.month}#{'0' if date.day < 10}#{date.day}T#{'0' if date.hour < 10}#{date.hour}#{'0' if date.min < 10}#{date.min}&p1=48", :target => "blank_"
   end
   
-  def write_date_with_link_forum(date, contest, contestproblem)
+  # Write vendredi 12 juin 2009 with bbcode link to timeanddate.com
+  def write_date_with_link_forum(date_utc, contest, contestproblem)
+    date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     return "[url=https://www.timeanddate.com/worldclock/fixedtime.html?msg=Mathraining+-+Concours+%23#{contest.number}+-+Probl%C3%A8me+%23#{contestproblem.number}&iso=#{date.year}#{'0' if date.month < 10}#{date.month}#{'0' if date.day < 10}#{date.day}T#{'0' if date.hour < 10}#{date.hour}#{'0' if date.min < 10}#{date.min}&p1=48]#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}[/url]"
   end
   
+  # Get plural of 'Grand maître', 'Expert', ...
   def pluriel(level)
     newlevel = ""
     (0..level.size-1).each do |i|
@@ -211,6 +167,7 @@ module ApplicationHelper
     return newlevel
   end
   
+  # Tells if current user has enough points for problems
   def has_enough_points
     if !@signed_in
       return false
@@ -219,5 +176,21 @@ module ApplicationHelper
     else
       return (current_user.sk.rating >= 200)
     end
+  end
+  
+  def title_1(x)
+    return "<span class='title-true'>#{ x }</span>".html_safe
+  end
+  
+  def title_2(x, y, print=true)
+    return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-true'>#{ y }</span>".html_safe
+  end
+  
+  def title_3(x, y, z, print=true)
+    return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-second #{'noprint' if not print}'>#{ y } ></span> <span class='title-true'>#{ z }</span>".html_safe
+  end
+  
+  def title_4(x, y, z, t, print=true)
+    return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-second #{'noprint' if not print}'>#{ y } ></span> <span class='title-third #{'noprint' if not print}'>#{ z } ></span> <span class='title-true'>#{ t }</span>".html_safe
   end
 end

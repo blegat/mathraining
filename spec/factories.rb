@@ -28,11 +28,10 @@ FactoryGirl.define do
   
   # Color
   factory :color do
-    pt 0
+    pt 10000
     name "Nom"
     femininename "Nom feminin"
     color "#AAAAAA"
-    font_color "#BBBBBB"
   end
   
   # Correction
@@ -43,8 +42,8 @@ FactoryGirl.define do
   end
   
   factory :country do
-    name "France"
-    code "fr"
+    name "Lune"
+    code "lu"
   end
   
   # Question
@@ -117,6 +116,7 @@ FactoryGirl.define do
     content "Contenu"
     association :user
     lastcomment DateTime.current
+    association :lastcomment_user, :factory => :user
     association :category
     chapter_id 0
     section_id 0

@@ -1,18 +1,32 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
-  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect]
-  before_action :root_user, only: [:update_score, :uncorrect]
-  before_action :admin_user_or_in_test, only: [:destroy]
+  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_brouillon, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :mark_as_plagiarism, :search_script]
+  before_action :root_user, only: [:update_score, :uncorrect, :mark_as_plagiarism]
   before_action :get_problem
   before_action :get_submission, only: [:destroy]
-  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_brouillon, :update_intest, :update_score, :uncorrect]
-  before_action :corrector_user_having_access, only: [:read, :unread, :reserve, :unreserve, :star, :unstar]
+  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_brouillon, :update_intest, :update_score, :uncorrect, :mark_as_plagiarism, :search_script]
+  before_action :root_user_or_in_test, only: [:destroy]
+  before_action :corrector_user_having_access, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :search_script]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
   before_action :has_access, only: [:create]
   before_action :enough_points, only: [:create]
   before_action :in_test, only: [:create_intest, :update_intest]
   before_action :brouillon, only: [:update_brouillon]
+  before_action :can_see_submissions, only: [:index]
+
+  # Voir toutes les soumissions à un problème (via javascript uniquement)
+  def index
+    if @what == 0
+      @submissions = @problem.submissions.where('user_id != ? AND status = 2 AND star = ? AND visible = ?', current_user.sk, false, true).order('created_at DESC')
+    elsif @what == 1
+      @submissions = @problem.submissions.where('user_id != ? AND status != 2 AND visible = ?', current_user.sk, true).order('created_at DESC')
+    end
+
+    respond_to do |format|
+      format.js
+    end
+  end
 
   # Créer une nouvelle soumission
   def create
@@ -186,6 +200,7 @@ class SubmissionsController < ApplicationController
       f.user = current_user.sk
       f.submission = @submission
       f.read = true
+      f.kind = 0
       f.save
       @what = 3
     end
@@ -194,7 +209,7 @@ class SubmissionsController < ApplicationController
   # Dé-réserver la soumission
   def unreserve
     f = @submission.followings.first
-    if @submission.status != 0 || f.nil? || f.user != current_user.sk
+    if @submission.status != 0 || f.nil? || f.user != current_user.sk || f.kind != 0
       @what = 0
     else
       Following.delete(f.id)
@@ -202,6 +217,7 @@ class SubmissionsController < ApplicationController
     end
   end
 
+  # Supprimer une soumission
   def destroy
     @submission.destroy
     if current_user.sk.admin?
@@ -223,7 +239,7 @@ class SubmissionsController < ApplicationController
     redirect_to problem_path(@problem, :sub => @submission)
   end
   
-  # Marquer une soumission correct comme erronée
+  # Marquer une soumission correcte comme erronée
   def uncorrect
     u = @submission.user
     if @submission.status == 2
@@ -269,6 +285,44 @@ class SubmissionsController < ApplicationController
     redirect_to problem_path(@problem, :sub => @submission)
   end
 
+  # Marquer la solution comme étant du plagiat
+  def mark_as_plagiarism
+    @submission.status = 4
+    @submission.save
+    redirect_to problem_path(@problem, :sub => @submission)
+  end
+
+  # Chercher une chaine de caractères dans toutes les soumissions
+  def search_script
+    @problem = @submission.problem
+    @string_to_search = params[:string_to_search]
+    @enough_caracters = (@string_to_search.size >= 3)
+
+    if @enough_caracters
+      search_in_comments = !params[:search_in_comments].nil?
+
+      @all_found = Array.new
+
+      @problem.submissions.where(:visible => true).order("created_at DESC").each do |s|
+        pos = s.content.index(@string_to_search)
+        if !pos.nil?
+          @all_found.push([s, strip_content(s.content, @string_to_search, pos)])
+        elsif search_in_comments
+          s.corrections.where(:user => s.user).each do |c|
+            pos = c.content.index(@string_to_search)
+            if !pos.nil?
+              @all_found.push([s, strip_content(c.content, @string_to_search, pos)])
+            end
+          end
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.js
+    end
+  end
+
   ########## PARTIE PRIVEE ##########
   private
 
@@ -279,8 +333,11 @@ class SubmissionsController < ApplicationController
 
   # Peut envoyer une soumission
   def can_submit
-    lastsub = Submission.where(:user_id => current_user.sk, :problem_id => @problem).order('created_at')
-    redirect_to problem_path(@problem) if (!lastsub.empty? && lastsub.last.status == 0)
+    Submission.where(:user_id => current_user.sk, :problem_id => @problem).each do |s|
+      if s.status == 0 or s.status == 4 # Soumission en attente de correction, ou plagiée
+        redirect_to problem_path(@problem) and return
+      end
+    end
   end
   
   def get_submission
@@ -340,9 +397,9 @@ class SubmissionsController < ApplicationController
     end
   end
   
-  def admin_user_or_in_test
+  def root_user_or_in_test
     @problem = @submission.problem
-    if !current_user.sk.admin?
+    if !current_user.sk.root?
       in_test
     end
   end
@@ -440,20 +497,41 @@ class SubmissionsController < ApplicationController
         flash[:danger] = "Un problème est apparu."
         redirect_to problem_path(@problem, :sub => @submission)
       end
-    elsif !read
-      following = Following.new
-      following.user = current_user.sk
-      following.submission = @submission
-      following.read = read
-      if following.save
-        flash[:success] = "Soumission marquée comme #{msg}."
-        redirect_to problem_path(@problem, :sub => @submission)
-      else
-        flash[:danger] = "Un problème est apparu."
-        redirect_to problem_path(@problem, :sub => @submission)
+    else
+      redirect_to root_path
+    end
+  end
+
+  def can_see_submissions
+    if !(params.has_key?:what)
+      redirect_to root_path
+    end
+    @what = params[:what].to_i
+    if @what == 0    # See correct submissions (need to have solved problem or to be admin)
+      if !current_user.sk.admin? and !current_user.sk.pb_solved?(@problem)
+        redirect_to root_path
+      end
+    elsif @what == 1 # See incorrect submissions (need to be admin or corrector)
+      if !current_user.sk.admin? and !current_user.sk.corrector?
+        redirect_to root_path
       end
     else
       redirect_to root_path
     end
+  end
+
+  # Private method used to create a preview of a substring of a string
+  def strip_content(content, string_found, pos)
+    start1 = [pos - 30, 0].max
+    if start1 < 4
+      start1 = 0
+    end
+    stop1 = pos
+    start2 = pos + string_found.size
+    stop2 = [start2 + 30, content.size].min
+    if stop2 > content.size - 4
+      stop2 = content.size
+    end
+    return [(start1 > 0 ? "..." : "") + content[start1, stop1-start1], content[start2, stop2-start2] + (stop2 < content.size ? "..." : "")]
   end
 end

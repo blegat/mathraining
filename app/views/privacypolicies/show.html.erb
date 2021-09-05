@@ -1,6 +1,7 @@
 <% provide(:title, 'Politique de confidentialité') %>
 
-<h1>Politique de confidentialité</h1>
+<h1><%= title_1("Politique de confidentialité") %></h1>
+
 <% prev = Privacypolicy.where("online = ? AND publication < ?", true, @privacypolicy.publication).order("publication").last %>
 <% nex = Privacypolicy.where("online = ? AND publication > ?", true, @privacypolicy.publication).order("publication").first %>
 <center>

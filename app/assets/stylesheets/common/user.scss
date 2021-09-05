@@ -1,0 +1,142 @@
+/* PROFIL */
+
+@media (max-width: 767.99px) {
+  .top_container {
+    padding-bottom:15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .top_container {
+    min-height:165px !important;
+  }
+}
+
+@media (max-width: 767.99px) {
+  .top_container_small {
+    padding-bottom:15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .top_container_small {
+    min-height:125px !important;
+  }
+}
+
+.mytitle {
+  text-align:right;
+  vertical-align:middle;
+  padding-right:10px;
+  width:50%;
+  font-size:18px;
+}
+
+.myvalue {
+  text-align:left;
+  vertical-align:middle;
+  padding-left:10px;
+  font-weight:bold;
+  font-size:20px;
+}
+
+.progress_container {
+  width:100%;
+  height:165px;
+  padding:10px;
+  border:1px solid #EEEEEE;
+}
+
+.progress_title {
+  padding-top:10px;
+  text-align:center;
+  font-weight:bold;
+  font-size:14px;
+}
+
+.progress_circle {
+  padding-top:5px;
+  padding-bottom:10px;
+  text-align:center;
+}
+  
+.wrapper {
+  position: relative;
+  margin: auto;
+  width: 102px;
+  height:102px;
+}
+
+.progress_nb {
+  position: absolute;
+  top:24px;
+  text-align:center;
+  width:100%;
+  font-size:28px;
+  font-weight:bold;
+}
+
+.progress_pct {
+  position: absolute;
+  top:59px;
+  text-align:center;
+  width:100%;
+  font-size:14px;
+}
+
+.arc {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  border: 7px solid;
+}
+
+.progress-table{
+  width:100%;
+}
+  
+.progress-table td{
+  padding-top:2px;
+  padding-bottom:2px;
+}
+  
+.container_title {
+  width:100%;
+  padding-left:15px;
+  padding-right:10px;
+  padding-top:15px;
+  padding-bottom:10px;
+  font-size:20px;
+}
+  
+.resolution_container_table {
+  width:100%;
+  padding:10px;
+  padding-top:0px;
+  padding-bottom:0px;
+  overflow-y:scroll;
+}
+
+@media (max-width: 1199.99px) {
+  .resolution_container_table {
+    max-height:320px !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .resolution_container_table {
+    height:320px !important;
+  }
+}
+
+.middle_aligned td {
+  vertical-align:middle !important;
+}
+
+.basic_container {
+  width:100%;
+  border:1px solid #EEEEEE;
+}

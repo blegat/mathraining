@@ -1,88 +1,172 @@
-<% provide(:title, "À lire") %>
-<h1>
-  <% if @new %>
-    Soumissions <span style="font-size:20px;"> - <%= link_to "Tout voir", allsub_path %></span>
-  <% else %>
-    Commentaires <span style="font-size:20px;"> - <%= link_to "Tout voir", allmysub_path %></span>
-  <% end %>
-</h1>
+<% provide(:title, "Soumissions") %>
+
+<h1><%= title_1("Soumissions") %> <span style="font-size:20px;"> - <%= link_to "Tout voir", allsub_path %></span></h1>
 
 <% @AFFICHE_WARNING = 1 %>
 
-<!-- Si on affiche toutes les soumissions -->
-<% if @new %>
+<!-- Graphique du nombre de soumissions en attente -->
+<% date_end = Time.now %>
+<% date_begin_bad = date_end - 4.days %>
+<% time_interval = 20.minutes %>
+<% date_begin = date_begin_bad.beginning_of_hour %>
+<% while date_begin + 20.minutes <= date_begin_bad %>
+  <% date_begin = date_begin + 20.minutes %>
+<% end %>
+<% num_intervals = ((date_end - date_begin) / time_interval).ceil %>
+<% new_sub = Array.new(num_intervals, 0) %>
+<% new_cor = Array.new(num_intervals, 0) %>
 
-  <% if @notifications.size == 0 %>
-    Il n'y a plus rien à corriger, beau boulot !
-  <% else %>
-
-  <table class="table table-bordered">
-  <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur</th><th style="text-align:center;">Type</th><th></th></tr>
-  <% @notifications.each do |n| %>
-    <% if current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem) %>
-      <% can_see = false %>
-    <% else %>
-      <% can_see = true %>
-    <% end %>
-    <%= render 'submissions/showadmin', s: n, situation: 1, can_see: can_see %>
+<% Submission.where("visible = ? AND created_at > ?", true, date_begin).each do |s| %>
+  <% date_sub = s.created_at %>
+  <% if s.intest? %>
+    <% p = s.problem %>
+    <% t = p.virtualtest %>
+    <% date_start = t.takentests.where(:user_id => s.user_id).first.takentime %>
+    <% date_sub = date_start + (t.duration).minutes %>
   <% end %>
-  </table>
+  <% interval_id = [((s.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
+  <% new_sub[interval_id] = new_sub[interval_id] + 1 %>
+<% end %>
+
+<% Following.where("kind = 1 AND created_at > ?", date_begin).each do |f| %>
+  <% interval_id = [((f.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
+  <% new_cor[interval_id] = new_cor[interval_id] + 1 %>
+<% end %>
+
+<% num_waiting_now = Submission.where(status: 0, visible: true).count %>
+<% graph = Array.new(num_intervals+1, 0) %>
+<% graph[num_intervals] = num_waiting_now %>
+<% r = (num_intervals-1)..0 %>
+<% (r.first).downto(r.last).each do |i| %>
+  <% graph[i] = graph[i+1] + new_cor[i] - new_sub[i] %>
+<% end %>
+<% graph_maxi = graph.max+1 %>
+
+<center>
+
+<!-- Endroit pour dessiner le graphique des soumissions en attente -->
+<div id="contenant" style="width:100%; max-width:900px; height:280px; position:relative; display:block; margin-top:20px; margin-bottom:10px;">
+<canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top: 0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+
+</center>
+
+
+<script type="text/javascript">
+  $(document).ready( function(){
+
+  //Get the canvas & context
+  var c = $('#myCanvas');
+  var ctx = c.get(0).getContext('2d');
+  var container = $(c).parent();
+
+  //Run function when browser  resize
+  $(window).resize( respondCanvas );
+
+  function respondCanvas(){
+  c.attr('width', $(container).width() ); //max width
+  c.attr('height', 280*$(container).width()/900.0); //max height
+
+  document.getElementById('contenant').style.height = 280*$(container).width()/900.0 + "px"
+
+  //Redraw & reposition content
+  var x = c.width();
+  var y = c.height();
+
+  var pct = c.width()/900.0;
   
+  // Rectangle et fond blanc
+  ctx.beginPath();
+  ctx.rect(pct*50, pct*5, pct*806, pct*250);
+  ctx.fillStyle = 'white';
+  ctx.fill(); 
+  
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'black';
+  ctx.stroke();  
+  
+  // Labels axe des X
+  ctx.font="12px Arial";
+  ctx.fillStyle = 'black';
+  ctx.textAlign = 'center';
+  
+  ctx.setLineDash([10, 10]);
+  ctx.beginPath();
+  
+  if(pct > 0.6)
+  {
+    <% d = date_end %>
+    <% num_hours = 0 %>
+    <% while(d > date_begin - 1.minute) %>
+      <% ratio = (d - date_begin)/(date_end - date_begin) %>
+      ctx.fillText("H-<%= num_hours %>",pct*<%= 50+(800*ratio) %>,pct*265+7);
+      <% num_hours = num_hours + 6 %>
+      <% d = date_end - (num_hours).hours %>
+    <% end %>
+  }
+  
+  // Barres horizontales (et labels axe des Y)
+  if (pct < 0.7)
+  {
+    ctx.font="9px Arial";
+  }
+  
+  ctx.textAlign = 'right';
+  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = 'grey';
+  <% i = graph_maxi - 1 %>
+  <% i_step = [(i/5.0).ceil, 1].max %>
+  <% while(i > 0) %>
+    haut = <%= 255-240*i/graph_maxi.to_f %>
+    ctx.moveTo(pct*50, pct*(haut));
+    ctx.lineTo(pct*856, pct*(haut));
+    ctx.fillText("<%= i %>", pct*44-2, pct*(haut+4));
+    <% i = i - i_step %>
   <% end %>
+  ctx.stroke();
+  
+  // Graphique: entre 50 et 850 --> largeur totale 800, à diviser en num_intervals
+  
+  ctx.beginPath();
+  ctx.moveTo(pct*850, pct*<%= 255 - 240*graph[num_intervals]/graph_maxi.to_f %>);
+  ctx.strokeStyle = 'orange';
+  ctx.setLineDash([]);
+  ctx.lineWidth = 2;
+  <% width_one_interval = 800.0 / num_intervals %>
+  <% (r.first).downto(r.last).each do |i| %>
+    ctx.lineTo(pct*<%= 50+(i+1)*width_one_interval %>, pct*<%= 255 - 240*graph[i]/graph_maxi.to_f %>);
+  <% end %>
+  ctx.stroke() 
+  
+  }
 
-<!-- Si on affiche les soumissions auxquelles on participe -->
+  //Initial call
+  respondCanvas();
+
+  });
+</script>
+
+
+
+
+
+
+<% if @notifications.size == 0 %>
+  Il n'y a plus rien à corriger, beau boulot !
 <% else %>
-  <h3>Qui vous concernent</h3>
-  
-  <% tome = Array.new %>
-  <% @follow = Array.new %>
-  <% current_user.sk.followings.where(:read => false).each do |f| %>
-    <% @follow.push(f.submission_id) %>
-  <% end %>
-  
-  <% first_mine = true %>
-  
-  <% @notifications.each do |n| %>
-    <% if @follow.include?(n.id) %>
-      <% tome.push(n.id) %>
-      <% if first_mine %>
-        <table class="table table-bordered">
-        <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th style="text-align:center;">Type</th><th></th></tr>
-      <% end %>
-      <%= render 'submissions/showadmin', s: n, situation: 2 %>
-      <% first_mine = false %>
-    <% end %>
-  <% end %>
-  
-  <% if !first_mine %>
-    </table>
+
+<table class="table table-bordered">
+<tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur</th><th style="text-align:center;">Type</th><th></th></tr>
+<% @notifications.each do |n| %>
+  <% if current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem) %>
+    <% can_see = false %>
   <% else %>
-    Vous n'avez aucun nouveau commentaire à lire.  
+    <% can_see = true %>
   <% end %>
-  
-  <h3>Autres commentaires non lus</h3>
-  
-  <% first_other = true %>
-  
-  <% @notifications_other.each do |n| %>
-    <% if(!tome.include?(n.id)) %>
-      <% if first_other %>
-        <table class="table table-bordered">
-        <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur(s)</th><th style="text-align:center;">Type</th><th></th></tr>
-      <% end %>
-      <% if current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem) %>
-        <% can_see = false %>
-      <% else %>
-        <% can_see = true %>
-      <% end %>
-      <%= render 'submissions/showadmin', s: n, situation: 22, can_see: can_see %>
-      <% first_other = false %>
-    <% end %>
-  <% end %>
-  
-  <% if !first_other %>
-    </table>
-  <% else %>
-    Aucun autre commentaire non lu.
-  <% end %>
+  <%= render 'submissions/showadmin', s: n, situation: 1, can_see: can_see %>
+<% end %>
+</table>
+
 <% end %>

@@ -1,0 +1,26 @@
+<script>
+function nameIsOk(user_id, suggestion) {
+  validate_name_url = "<%= validate_name_url %>";
+  $.getScript(validate_name_url + "?userid=" + user_id + "&suggestion=" + suggestion);
+  document.getElementById('user'+user_id).style.display = 'none';
+}
+</script>
+
+<% provide(:title, 'Valider les noms') %>
+
+<h1><%= title_1("Valider les noms") %></h1>
+
+<% if @users_to_validate.size == 0 %>
+  Aucun nom à valider !
+<% else %>
+  <table class="table table-bordered" style="width:600px;">
+  <% @users_to_validate.each do |u| %>
+    <tr id="user<%= u.id %>">
+    <td style="width:200px;"><%= raw(u.linked_name(1)) %></td>
+    <td style="width:50px; text-align:center;"><a href="#" onclick="nameIsOk(<%= u.id %>, 0)">OK</a></td>
+    <td style="width:250px;"><a href="#" onclick="nameIsOk(<%= u.id %>, 1)">Capitalize</a> (<%= u.first_name.my_titleize %> <%= u.last_name.my_titleize %>)</td>
+    <td style="width:100px; text-align:center;"><%= link_to "Changer", user_change_name_path(u), :method => :put %></td>
+    </tr>
+  <% end %>
+  </table>
+<% end %>

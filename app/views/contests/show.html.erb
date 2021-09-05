@@ -4,14 +4,13 @@
 <h1 style="margin-bottom:0px;">
 <table style="width:100%;">
 <tr><td>
-<span class="title-first"><%= link_to "Concours", contests_path %> ></span>
-Concours #<%= @contest.number %>
+<%= title_2((link_to "Concours", contests_path), "Concours ##{@contest.number}") %>
 </td>
 
 <% if @signed_in %>
   <td class="hidden-xs" style="padding-left:15px; text-align:right;">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
     <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
   <% end %>
@@ -25,7 +24,7 @@ Concours #<%= @contest.number %>
 <% if @signed_in %>
   <div class="visible-xs" style="text-align:center; padding-top:10px;">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
     <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
   <% end %>
@@ -41,52 +40,201 @@ Concours #<%= @contest.number %>
 <br/><br/><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
   <% c = c+1 %>
-  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.status == 0 %> (<%= link_to "supprimer", contest_remove_organizer_path(@contest, :user_id => o.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
+  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.status == 0 %> (<%= link_to "supprimer", contestorganization_path(Contestorganization.where(:contest_id => @contest, :user_id => o.id).first), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
 <% end %>
 
 <% if @signed_in && current_user.sk.admin? && @contest.status == 0 %>
-<form action="<%= contest_add_organizer_path(@contest) %>" method="get" class="form-inline" style="margin-top:10px;">
-  <% mtn = DateTime.now.to_date - 14 %>
-  <%= select_tag :user_id, options_for_select(User.where("last_connexion >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Nouvel organisateur..."), -1), :class => "form-control select2", :style => "width:300px;" %>
-  <%= button_tag "Ajouter", class: "btn btn btn-primary", name: "" %>
-</form>
+
+  <% contestorganization = Contestorganization.new %>
+  <%= form_for contestorganization, :html => {:class => "form-inline", :style => "margin-top:10px;"} do |f| %>
+    <% mtn = DateTime.now.to_date - 14 %>
+    <%= f.hidden_field :contest_id, :value => @contest.id %>
+    <%= f.select :user_id, options_for_select(User.where("last_connexion >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Nouvel organisateur..."), -1), {}, {:class => "form-control select2", :style => "width:300px;"} %>
+    <%= f.submit "Ajouter", class: "btn btn btn-primary" %>
+  <% end %>
+
 <% end %>
 
+<% organizer = @contest.is_organized_by_or_admin(current_user) %>
+
+<% if organizer && @contest.status == 3 && @contest.medal && @contest.gold_cutoff == 0 %>
+  <center>
+  <%= button_to "Définir les médailles", contest_cutoffs_path(@contest), method: :get, class: 'btn btn-lg btn-default btn-grey', style: 'margin-top:10px;' %>
+  </center>
+<% end %>
+
+<% tab = 0 %>
 <% nb_prob = @contest.contestproblems.count %>
-<% nb_prob2 = @contest.contestproblems.where("status >= 4").count %>
+<% nb_prob_corrected = @contest.contestproblems.where("status >= 4").count %>
 
-<% if nb_prob2 > 0 %>
-
-  <h3>Classement
-  <% if nb_prob2 == nb_prob %>
-    final
-  <% else %>
-    après <%= nb_prob2 %> problème<%= 's' if nb_prob2 >= 2 %>
+<% if nb_prob_corrected > 0 %>
+  <% if params.has_key?:tab %>
+    <% tab = params[:tab].to_i %>
   <% end %>
-  </h3>
+  <% if (tab != 0 && tab != 1 && tab != 2) || (nb_prob_corrected != nb_prob && tab == 2) %>
+    <% tab = 0 %>
+  <% end %>
+  <!-- Tabs -->
+  <ul class="nav nav-tabs nav-justified" style="margin-top:20px;">
+    <li role="presentation" class="<%= "active" if tab == 0 %>" ><%= link_to "Problèmes", contest_path(@contest) %></li>
+    <% ranking_title = (nb_prob_corrected == nb_prob ? "Classement final" : "Classement après #{nb_prob_corrected} problème#{"s" if nb_prob_corrected >= 2}") %>
+    <li role="presentation" class="<%= "active" if tab == 1 %>" ><%= link_to ranking_title, contest_path(@contest, :tab => 1) %></li>
+    <% if nb_prob_corrected == nb_prob %>
+      <li role="presentation" class="<%= "active" if tab == 2 %>" ><%= link_to "Statistiques", contest_path(@contest, :tab => 2) %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <h3>Problèmes</h3>
+<% end %>
+
+<% if tab == 0 %>
+  <% @contest.contestproblems.order(:number).each do |p| %>
+    <% can_see = 0 %>
+    <% if p.status <= 1 %>
+      <% classe = "greyy" %>
+    <% elsif p.status == 2 %>
+      <% classe = "orangey" %>
+      <% can_see = 1 %>
+    <% elsif p.status == 3 %>
+      <% classe = "yellowy" %>
+      <% can_see = 1 %>
+    <% else %>
+      <% classe = "yellowy" %>
+      <% can_see = 2 %>
+    <% end %>
+    
+    <% if organizer %>
+      <% can_see = 2 %>
+    <% end %>
+    
+    <table class="table table-bordered problem <%= classe %>">
+    <tr><td class="title">
+    <center><h3>
+    <% if can_see >= 1 && @signed_in %>
+      <%= link_to "Problème ##{p.number}", p %>
+      <% if current_user.sk.root? && p.status == 5 %>
+        (corrections modifiables)
+      <% end %>
+    <% else %>
+       Problème #<%= p.number %>
+    <% end %>
+    </h3></center>
+    </td></tr>
+    
+    <tr><td class="real-content">
+    
+    <div class="intro">
+    <i>Solutions acceptées du <%= write_date_with_link(p.start_time, @contest, p) %> au <%= write_date_with_link(p.end_time, @contest, p) %> (heures belges).</i>
+    </div>
+      
+    <% if can_see >= 1 %>
+      <div class="row content">
+      
+      <% taille = p.statement.size() %>
+      <% liste = false %>
+      <% if taille >= 5 %>
+        <% fin = p.statement[taille-5, taille-1] %>
+        <% if fin[3,4] == "$$" %>
+          <% liste = true %>
+        <% end %>
+      <% end %>
+      
+      <div class="module left-part" style="<%= "padding-bottom:0px !important;" if liste %>">
+      <center><h4>Énoncé</h4></center>
+      <%= raw(htmlise(p.statement)) %>
+      </div>
+      
+      <div class="module right-part">
+      <center><h4>Statistiques</h4></center>
+      <center>
+      <% if p.status >= 2 %>
+        <% nb_sol = p.contestsolutions.count - 1 %>
+        Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
+        <% if p.status >= 4 %>
+          <% nb_perfect = p.contestsolutions.where(:score => 7, :official => false).count %>
+          Scores parfaits : <b><%= nb_perfect %></b>
+        <% elsif p.status == 3 %>
+          En cours de correction
+        <% end %>
+      <% end %>
+      </center>
+      </div>    
+      </div>
+    <% end %>
+    
+    <% if p.status <= 2 && @contest.status > 0 %>
+        <% if p.status <= 1 %>
+          <% date_limit = p.start_time.to_i %>
+          <% message_before = "Publication dans : " %>
+          <% message_zero = "En ligne" %>
+        <% else %>
+          <% date_limit = p.end_time.to_i %>
+          <% message_before = "Temps restant : " %>
+          <% message_zero = "Temps écoulé" %>
+        <% end %>
+        <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
+        <div class="row content">
+        <div class="module bottom-part">
+        <center><span style="font-size:20px;"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
+        </div>
+        </div>
+    <% end %>
+    
+    <% if can_see == 2 && !p.origin.nil? && p.origin != "" %>
+      <div class="row content">
+      <div class="module bottom-part">
+      Origine du problème : <b><%= p.origin %></b>
+      </div>
+      </div>
+    <% end %>
+    
+    </td></tr>
+    </table>
+  <% end %>
   
+<% elsif tab == 1 %>
   <% if !@signed_in %>
-    Le classement n'est visible que par les utilisateurs connectés.
+    <center><div style="margin-top:20px;">Le classement n'est visible que par les utilisateurs connectés.</div></center>
   <% else %>
     <% if @contest.contestscores.count == 0 %>
-      Personne n'a résolu de problème.
+      <center><div style="margin-top:20px;">Personne n'a résolu de problème.</div></center>
     <% else %>
       
+      <% show_medals = (@contest.medal and nb_prob_corrected == nb_prob) %>
       <% allprobs = @contest.contestproblems.order(:number) %>
       
-      <div style="width:100%; overflow-x:auto;">
-      
-      <table class="table table-bordered" style="width:<%= 40+230+40*nb_prob+60 %>px; margin-bottom:0px; margin-top:10px;">
-      <tr><th style="width:40px;"></th>
-      <th style="width:230px;">Nom</th>
-      <% (1..nb_prob).each do |i| %>
-        <th style="text-align:center; width:40px;">P<%= i %></th>
+      <% allsols = [] %>
+      <% allprobs.each do |p| %>
+        <% allsols[p.number] = {} %>
+        <% p.contestsolutions.each do |s| %>
+          <% allsols[p.number][s.user_id] = [s.score, s.id] %>
+        <% end %>
       <% end %>
-      <th style="text-align:center; width:60px;">Total</th>
+      
+      <div style="width:100%; overflow-x:auto; margin-top:20px;">
+      
+      <center>
+      <% width_rank = 40 %>
+      <% width_medal = 35 %>
+      <% width_name = 230 %>
+      <% width_prob = 40 %>
+      <% width_total = 60 %>
+      <% width_table = width_rank + (show_medals ? width_medal : 0) + width_name + nb_prob*width_prob + width_total %>
+      <table class="table table-bordered" style="min-width:<%= width_table %>px; width:<%= width_table %>px; margin-bottom:0px; margin-top:0px;">
+      <tr>
+      <th style="width:<%= width_rank %>px;"></th>
+      <% if show_medals %>
+        <th style="width:<% width_medal %>px;"></th>
+      <% end %>
+      <th style="width:<%= width_name %>px;">Nom</th>
+      <% (1..nb_prob).each do |i| %>
+        <th style="text-align:center; width:<%= width_prob %>px;">P<%= i %></th>
+      <% end %>
+      <th style="text-align:center; width:<%= width_total %>px;">Total</th>
       </tr>
       
       <% prevrank = 0 %>
-      <% @contest.contestscores.order(:rank, :user_id).each do |line| %>
+      <% @contest.contestscores.order(:rank, :user_id).includes(:user).each do |line| %>
       <tr>
       <td style="text-align:center;">
       <% if prevrank != line.rank %>
@@ -94,21 +242,49 @@ Concours #<%= @contest.number %>
         <% prevrank = line.rank %>
       <% end %>
       </td>
+      <% if show_medals %>
+        <td style="text-align:center;">
+        <% if line.medal == 4 %><%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") %>
+        <% elsif line.medal == 3 %><%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") %>
+        <% elsif line.medal == 2 %><%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") %>
+        <% elsif line.medal == 1 %><%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") %>
+        <% end %>
+        </td>
+      <% end %>
       <td><%= raw(line.user.linked_name) %></td>
       <% allprobs.each do |p| %>
-        <% sol = p.contestsolutions.where("user_id = ? AND score > 0", line.user.id).first %>
-        <% if p.status >= 4 && !sol.nil? %>
-          <% if sol.score == 7 %>
+        <% if p.status >= 4 %>
+          <% x = allsols[p.number][line.user.id] %>
+        <% else %>
+          <% x = nil %>
+        <% end %>
+        <% if !x.nil? %>
+          <% score = x[0] %>
+          <% id = x[1] %>
+        <% else %>
+          <% score = 0 %>
+          <% id = nil %>
+        <% end %>
+        <% if p.status >= 4 && score > 0 %>
+          <% if score == 7 %>
             <td style="background-color:#ddffdd; text-align:center;">
-            <%= link_to "7", contestproblem_path(p, :sol => sol) %>
+            <%= link_to "7", contestproblem_path(p, :sol => id) %>
             </td>
           <% else %>
             <td style="background-color:#ffeecc; text-align:center;">
-            <%= sol.score %>
+            <% if organizer %>
+              <%= link_to score, contestproblem_path(p, :sol => id) %>
+            <% else %>
+              <%= score %>
+            <% end %>
             </td>
           <% end %>
         <% elsif p.status >= 4 %>
-          <td style="background-color:#ffdddd; text-align:center;"></td>
+          <td style="background-color:#ffdddd; text-align:center;">
+            <% if !id.nil? and organizer %>
+              <%= link_to "0", contestproblem_path(p, :sol => id) %>
+            <% end %>
+          </td>
         <% else %>
           <td></td>
         <% end %>
@@ -117,119 +293,185 @@ Concours #<%= @contest.number %>
       </tr>
       <% end %>
       </table>
+      </center>
       
       </div>
     <% end %>
   <% end %>
 
-<% end %>
+<% elsif tab == 2 %>
 
-<h3>Problèmes</h3>
+  <h3>Distribution des scores</h3>
 
-<% organizer = @contest.is_organized_by_or_admin(current_user) %>
-
-<% @contest.contestproblems.order(:number).each do |p| %>
-  <% can_see = 0 %>
-  <% if p.status <= 1 %>
-    <% classe = "greyy" %>
-  <% elsif p.status == 2 %>
-    <% classe = "orangey" %>
-    <% can_see = 1 %>
-  <% elsif p.status == 3 %>
-    <% classe = "yellowy" %>
-    <% can_see = 1 %>
-  <% else %>
-    <% classe = "yellowy" %>
-    <% can_see = 2 %>
+  <% num_ranked = 0 %>
+  <% num_points = 7*nb_prob %>
+  <% num_by_medal = [] %>
+  <% (0..4).each do |i| %>
+    <% num_by_medal[i] = Array.new(num_points+1, 0) %>
   <% end %>
-  
-  <% if organizer %>
-    <% can_see = 2 %>
-  <% end %>
-  
-  <table class="table table-bordered problem <%= classe %>">
-  <tr><td class="title">
-  <center><h3>
-  <% if can_see >= 1 && @signed_in %>
-    <%= link_to "Problème ##{p.number}", p %>
-    <% if current_user.sk.root? && p.status == 5 %>
-      (corrections modifiables)
+  <% num_all = Array.new(num_points+1, 0) %>
+
+  <% @contest.contestscores.order(:rank).each do |line| %>
+    <% num_ranked = num_ranked + 1 %>
+    <% medal = line.medal %>
+    <% if medal < 1 %>
+      <% medal = 1 %>
     <% end %>
-  <% else %>
-     Problème #<%= p.number %>
+    <% num_by_medal[medal][line.score] = num_by_medal[medal][line.score] + 1 %>
+    <% num_all[line.score] = num_all[line.score] + 1 %>
   <% end %>
-  </h3></center>
-  </td></tr>
   
-  <tr><td class="real-content">
+  <% maxi = num_all.max + 1 %>
   
-  <div class="intro">
-  <i>Solutions acceptées du <%= write_date_with_link(p.start_time, @contest, p) %> au <%= write_date_with_link(p.end_time, @contest, p) %> (heures belges).</i>
+  <center>
+
+  <!-- Endroit pour dessiner le graphique des scores -->
+  <div id="contenant" style="width:100%; max-width:900px; height:280px; position:relative; display:block; margin-top:20px;">
+  <canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top: 0px;">
+  Votre navigateur ne supporte pas les canvas.
+  </canvas>
   </div>
+
+  </center>
+
+
+  <script type="text/javascript">
+    $(document).ready( function(){
+
+    //Get the canvas & context
+    var c = $('#myCanvas');
+    var ctx = c.get(0).getContext('2d');
+    var container = $(c).parent();
+
+    //Run function when browser  resize
+    $(window).resize( respondCanvas );
+
+    function respondCanvas(){
+    c.attr('width', $(container).width() ); //max width
+    c.attr('height', 280*$(container).width()/900.0); //max height
+
+    document.getElementById('contenant').style.height = 280*$(container).width()/900.0 + "px"
+
+    //Redraw & reposition content
+    var x = c.width();
+    var y = c.height();
+
+    var pct = c.width()/900.0;
     
-  <% if can_see >= 1 %>
-    <div class="row content">
+    ctx.beginPath();
+    ctx.rect(pct*50, pct*5, pct*806, pct*250);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
     
-    <% taille = p.statement.size() %>
-    <% liste = false %>
-    <% if taille >= 5 %>
-      <% fin = p.statement[taille-5, taille-1] %>
-      <% if fin[3,4] == "$$" %>
-        <% liste = true %>
+    // Entre 50 et 856 --> largeur totale 806, à diviser en num_points
+    
+    <% medal_color = ["", "#9999FF", "#DF7F32", "#C4C4C4", "#FFD700"] %>
+    <% (1..num_points).each do |i| %>
+      <% before = 0 %>
+      <% (0..3).each do |j| %>
+        <% k = 4-j %>
+        <% if num_by_medal[k][i] > 0 %>
+          <% size = (240*num_by_medal[k][i])/maxi.to_f %>
+          ctx.beginPath();
+          ctx.rect(pct*<%= 50+((806*(i-1))/num_points.to_f) %>, pct*<%= 255 - before %>, pct*<%= (806/num_points.to_f) %>, -pct*<%= size %>);
+          ctx.fillStyle = '<%= medal_color[k] %>';
+          ctx.fill();
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'black';
+          ctx.stroke();
+          <% before = before + size %>
+        <% end %>
       <% end %>
     <% end %>
     
-    <div class="module left-part" style="<%= "padding-bottom:0px !important;" if liste %>">
-    <center><h4>Énoncé</h4></center>
-    <%= raw(htmlise(p.statement)) %>
-    </div>
+    ctx.font="12px Arial";
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center';
     
-    <div class="module right-part">
-    <center><h4>Statistiques</h4></center>
-    <center>
-    <% if p.status >= 2 %>
-      <% nb_sol = p.contestsolutions.count - 1 %>
-      Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
-      <% if p.status >= 4 %>
-        <% nb_perfect = p.contestsolutions.where(:score => 7, :official => false).count %>
-        Scores parfaits : <b><%= nb_perfect %></b>
-      <% elsif p.status == 3 %>
-        En cours de correction
+    if(pct > 0.6)
+    {
+      <% (1..nb_prob).each do |i| %>
+      ctx.fillText("<%= 7*i %>",pct*<%= 50+((806*(i*7-0.5))/num_points.to_f) %>,pct*265+7);
+      <% end %>
+    }
+    
+    ctx.textAlign = 'right';
+    <% i = maxi - 1 %>
+    <% while(i > 0) %>
+      ctx.fillText("<%= i %>", pct*44 -4,pct*(<%= 255-240*i/maxi %>+4));
+      <% i = i - 2 %>
+    <% end %>
+    
+    }
+
+    //Initial call
+    respondCanvas();
+
+    });
+  </script>
+  
+  <h3>Scores par problème</h3>
+
+  <% allprobs = @contest.contestproblems.order(:number) %>
+      
+  <% problem_point = [] %>
+  <% allprobs.each do |p| %>
+    <% problem_point[p.number] = [] %>
+    <% (1..7).each do |i| %>
+      <% problem_point[p.number][i] = 0 %>
+    <% end %>
+    <% problem_point[p.number][0] = num_ranked %>
+    <% p.contestsolutions.each do |s| %>
+      <% if s.score > 0 && !s.official %>
+        <% problem_point[p.number][s.score] = problem_point[p.number][s.score] + 1 %>
+        <% problem_point[p.number][0] = problem_point[p.number][0] - 1 %>
       <% end %>
     <% end %>
-    </center>
-    </div>    
-    </div>
   <% end %>
   
-  <% if p.status <= 2 && @contest.status > 0 %>
-      <% if p.status <= 1 %>
-        <% date_limit = p.start_time.to_i %>
-        <% message_before = "Publication dans : " %>
-        <% message_zero = "En ligne" %>
+  <div style="width:100%; overflow-x:auto; margin-top:20px;">
+  <center>
+  <% width_name = 120 %>
+  <% width_point = 45 %>
+  <% width_average = 90 %>
+  <% width_table = width_name + 8 * width_point + width_average %>
+  <table class="table table-bordered" style="min-width:<%= width_table %>px; width:<%= width_table %>px; margin-bottom:0px;">
+  <tr>
+  <th style="width:<%= width_name %>px;"></th>
+  <th style="width:<%= width_point %>px; text-align:center;">0 *</th>
+  <% (1..7).each do |i| %>
+    <th style="width:<%= width_point %>px; text-align:center;"><%= i %></th>
+  <% end %>
+  <th style="width:<%= width_average %>px; text-align:center;">Moyenne</th>
+  </tr>
+  
+  <% allprobs.each do |p| %>
+    <tr>
+    <td>
+      <% if signed_in? %>
+        <%= link_to "Problème ##{ p.number }", contestproblem_path(p) %>
       <% else %>
-        <% date_limit = p.end_time.to_i %>
-        <% message_before = "Temps restant : " %>
-        <% message_zero = "Temps écoulé" %>
+        <%= "Problème ##{ p.number }" %>
       <% end %>
-      <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
-      <div class="row content">
-      <div class="module bottom-part">
-      <center><span style="font-size:20px;"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
-      </div>
-      </div>
+    </td>
+    <% average = 0.0 %>
+    <% (0..7).each do |i| %>
+      <td style="text-align:center;"><%= problem_point[p.number][i] > 0 ? problem_point[p.number][i] : "-" %></td>
+      <% average += i * problem_point[p.number][i] %>
+    <% end %>
+    <% average /= num_ranked %>
+    <td style="text-align:center;"><%= ("%.2f" % average) %></td>
+    </tr>
   <% end %>
-  
-  <% if can_see == 2 && !p.origin.nil? && p.origin != "" %>
-    <div class="row content">
-    <div class="module bottom-part">
-    Origine du problème : <b><%= p.origin %></b>
-    </div>
-    </div>
-  <% end %>
-  
-  </td></tr>
   </table>
+  </center>
+  </div>
+  
+  <center><div style="margin-top:10px; margin-bottom:5px;"><i>* En considérant que tous les participants classés ont essayé tous les problèmes.</i></div></center>
+
 <% end %>
 
 <% num = 0 %>
@@ -257,7 +499,7 @@ Concours #<%= @contest.number %>
   <% else %>
     |
   <% end %>
-  <%= link_to "Mettre ce concours en ligne", contest_put_online_path(@contest), data: { confirm: "Êtes-vous sûr de vouloir mettre ce concours en ligne ?" } %>
+  <%= link_to "Mettre ce concours en ligne", contest_put_online_path(@contest), :method => :put, data: { confirm: "Êtes-vous sûr de vouloir mettre ce concours en ligne ?" } %>
   | <%= link_to "Supprimer ce concours", @contest, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce concours ?" } %>
   <% num = num+1 %>
 <% end %>

@@ -1,17 +1,17 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: myfiles
 #
 #  id                :integer          not null, primary key
-#  filetable_id      :integer
-#  filetable_type    :string(255)
-#  file_file_name    :string(255)
-#  file_content_type :string(255)
+#  myfiletable_type  :string
+#  myfiletable_id    :integer
+#  file_file_name    :string
+#  file_content_type :string
 #  file_file_size    :integer
-#  file_updated_at   :datetime         not null
+#  file_updated_at   :datetime
 #
-
 class Myfile < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY

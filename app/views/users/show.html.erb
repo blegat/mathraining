@@ -1,14 +1,6 @@
-<% abreviation = ["Combinatoire", "Géométrie", "Théorie des nombres", "Algèbre", "Équations Fonct.", "Inégalités"] %>
+<% abreviation = ["Combinatoire", "Géométrie", "Théorie des nombres", "Algèbre", "Équations Fonctionnelles", "Inégalités"] %>
 
 <% provide(:title, @user.name) %>
-
-<% t1 = Time.now %>
-
-<!-- Test pour la performance -->
-<% montretemps = 0 %>
-<% if(params.has_key?:montretemps) %>
-  <% montretemps = params[:montretemps].to_i %>
-<% end %>
 
 <!-- Style pour la barre de défilement dans le tableau -->
 <style type="text/css">
@@ -19,45 +11,28 @@ html>body thead.fixed tr {
 
 html>body tbody.scroll {
   display: block;
-  max-height: 440px;
+  max-height: 340px;
   overflow-y: scroll;
   width: 100%;
 }
 </style>
 
-<% nb_corrections = @user.followings.count %>
-  
 <% if !@user.admin %>
   <% actualrating = @user.rating %>
+  <% if actualrating > 0 %>
+    <% rank = User.where("rating > ? AND admin = ? AND active = ?", actualrating, false, true).count + 1 %>
+    <% num_users = User.where("rating > 0 AND admin = ? AND active = ?", false, true).count %>
+    <% rank_top = (100.0 * rank / num_users).ceil %>
+  <% end %>
   <% niveau = @user.level %>
   <% couleur = niveau[:color] %>
-  <% status = niveau[:name] if @user.sex == 0 %>
-  <% status = niveau[:femininename] if @user.sex == 1 %>
+  <% status = (@user.sex == 0 ? niveau[:name] : niveau[:femininename]) %>
 <% else %>
   <% couleur = "black" %>
-  <% status = "Administrateur" if @user.sex == 0 %>
-  <% status = "Administratrice" if @user.sex == 1 %>
+  <% status = (@user.sex == 0 ? "Administrateur" : "Administratrice") %>
 <% end %>
 
-<!-- Titre avec le nom et le niveau -->
 
-<h1><%= raw(@user.colored_name) %>
-
-<span style="margin-left:30px; color:<%= couleur %>;">-</span>
-
-<span style="margin-left:30px; color:<%= couleur %>;"><%= status %></span>
-<% if @signed_in && current_user.sk.admin && (!@user.admin || current_user.sk.root) %>
-  <span style="color:<%= couleur %>; margin-left:50px; font-size:18px;">(<%= @user.email %><%= " - e-mail non confirmé" if !@user.email_confirm %>)</span>
-<% end %>
-
-<% if @signed_in && current_user.sk != @user %>
-  <span style="float:right; margin-left:20px;"><%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey" %></span>
-<% end %>
-</h1>
-  
-<% if nb_corrections > 0 %>
-  <%= @user.name %> a participé à la correction de <b><%= nb_corrections %></b> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !<br/>
-<% end %>
 
 <% if !@user.admin %>
 
@@ -74,37 +49,14 @@ html>body tbody.scroll {
       <% cansee[c.id] = true %>
     <% end %>
   <% else %>
-    <% debloque = Array.new %>
-    <% Chapter.all.to_a.each do |c| %>
-      <% debloque[c.id] = false %>
-    <% end %>
-
-    <% if @signed_in %>
-      <% current_user.sk.chapters.each do |c| %>
-        <% debloque[c.id] = true %>
-      <% end %>
-    <% end %>
-
-    <% Chapter.all.to_a.each do |c| %>
-      <% cansee[c.id] = true %>
-      <% if !section_fondation[c.section_id] %>
-        <% c.prerequisites.each do |p| %>
-          <% if !section_fondation[p.section_id] && !debloque[p.id] %>
-            <% cansee[c.id] = false %>
-          <% end %>
-        <% end %>
-      <% end %>
+    <% chapters_completion = get_chapters_completion(section_fondation) %>
+    <% Chapter.all.each do |c| %>
+      <% cansee[c.id] = are_exercises_accessible(c, section_fondation, chapters_completion) %>
     <% end %>
   <% end %>
 
   <% enough_points = has_enough_points %>
-
-  <!-- Affichage des résolutions -->
-  <div class="row">
-
-  <div class="col-lg-7 col-sm-12 col-xs-12">
-  <h2>Résolutions</h2>
-
+  
   <!-- On va parcourir tous les exercices et problèmes -->
 
   <% questions = @user.solvedquestions.where(:correct => true).order("resolutiontime DESC") %>
@@ -119,6 +71,7 @@ html>body tbody.scroll {
   <% nb_q = 0 %>
   <% nb_p = 0 %>
   <% nb_erreur = 0 %>
+  <% allsec = Array.new %>
   <% allchap = Array.new %>
   <% allques = Array.new %>
   <% allpb = Array.new %>
@@ -128,6 +81,7 @@ html>body tbody.scroll {
   <% numberpb = 0 %>
 
   <% Section.all.each do |s| %>
+    <% allsec[s.id] = s %>
     <% maxscore[s.id] = s.max_score %>
   <% end %>
 
@@ -186,14 +140,13 @@ html>body tbody.scroll {
       <% pt = pb.value %>
       <% nb_p = nb_p+1 %>
       <% peutvoir = enough_points %>
-      <% t = pb.virtualtest_id %>
-      <% if t == 0 && (!@signed_in || !current_user.sk.admin?) %>
-        <% pb.chapters.each do |c| %>
-          <% peutvoir = false if !debloque[c.id] %>
+      <% if (!@signed_in || !current_user.sk.admin?) && peutvoir %>
+        <% t = pb.virtualtest_id %>
+        <% if t == 0 %>
+          <% peutvoir = is_problem_accessible(pb, chapters_completion) %>
+        <% else %>
+          <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
         <% end %>
-      <% end %>
-      <% if t != 0 && (!@signed_in || !current_user.sk.admin?) %>
-        <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
       <% end %>
       <% p_encours = p_encours + 1 %>
       <% dernier = p.truetime.in_time_zone %>
@@ -203,218 +156,462 @@ html>body tbody.scroll {
       <% act.push({:time => p.truetime, :type => 4, :id => p.problem_id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
     <% end %>
   <% end %>
+  
+  <% pct_exo = numberexo == 0 ? 0 : 100*nb_q/numberexo.to_f %>
+  <% pct_pb = numberpb == 0 ? 0 : 100*nb_p/numberpb.to_f %>
+  <% moyenne_erreurs = nb_q == 0 ? 0 : (nb_erreur/nb_q.to_f).round(2) %>
+  
+<% end %>
 
-  <% actperday = Array.new %>
+<!-- OPEN OF THE MAIN DIV -->
+<div class="row" style="margin-left:0px; margin-right:0px; padding-top:5px;">
 
-  <% previousdate = Date.new(1980,1,1) %>
-  <% encours = -1 %>
-
-  <% parquoi = "" %>
-
-  <% inscription = @user.created_at %>
-
-  <!-- Si l'étudiant a déjà fait au moins un truc -->
-  <% if act.size > 0 %>
-
-    <!-- On détermine si on rassemble les actes par minute, heure ou jour -->
-    <% if !premier.nil? %>
-      <% if dernier.day != DateTime.now.in_time_zone.day || dernier.month != DateTime.now.in_time_zone.month || dernier.year != DateTime.now.in_time_zone.year %>
-        <% parquoi = "jour" %>
-      <% elsif dernier.hour < premier.hour - 1 %>
-        <% parquoi = "heure" %>
-      <% else %>
-        <% parquoi = "minute" %>
-      <% end %>
-    <% end %>
-    
-    <% moyenne_erreurs = (nb_erreur/nb_q.to_f).round(2) %>
-
-    <!-- Début du tableau des résolutions -->
-    <table class="table table-bordered" style="width:auto;">
-    <thead class="fixed">
-    <tr><th style="width:150px;">Date</th><th class="hidden-xs" style="width:50px;"><center>Heure</center></th><th class="user-show-quoi">Quoi</th><th style="width:66px;"><center>Points</center></th></tr>
-    </thead>
-    <tbody class="scroll">
-  <% end %>
-
-  <!-- On parcourt les actes un par un (cas normal) -->
-  <% act.each do |a| %>
-    <!-- Rassemblement par date des actes -->
-    <% date = a[:time].in_time_zone %>
-    <% if parquoi == "jour" %>
-      <% dateday = Time.zone.local(date.year, date.month, date.day, 0, 0, 0) %>
-    <% elsif parquoi == "heure" %>
-      <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, 0, 0) %>
-    <% else %>
-      <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, date.min, 0) %>
-    <% end %>
-    <% if a[:pt] > 0 %>
-      <% if dateday != previousdate %>
-        <% encours = encours+1 %>
-        <% actperday.push({:time => dateday, :pt => a[:pt], :chapter => a[:chapter]}) %>
-      <% else %>
-        <% actperday[encours][:pt] = actperday[encours][:pt] + a[:pt] %>
-      <% end %>
-      <% previousdate = dateday %>
-    <% end %>
-
-    <!-- Affichage de la ligne -->
-    <tr style="background-color:<%= Section.color(a[:section]) %>;">
-
-    <!-- Date -->
-    <td style="width:150px;"><%= write_date_only(date) %></td>
-
-    <!-- Heure -->
-    <td class="hidden-xs" style="width:50px; text-align:center;"><%= date.hour %>h<%= "0" if date.min < 10 %><%= date.min %></td>
-
-    <!-- Quoi -->
-    <td class="user-show-quoi">
-    <% if a[:type] == 5 %>
-      <% if cansee[a[:c_id]] %>
-        <%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %>
-      <% else %>
-        Exercice
-      <% end %>
-      <span class="hidden-xs"><%= "(#{a[:chapter]})" %></span>
-    <% else %>
-      <% if a[:peutvoir] %>
-        <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
-      <% else %>
-        Problème #<%= a[:number] %>
-      <% end %>
-      <span class="hidden-xs"><%= "(Niveau #{a[:level]})" %></span>
-    <% end %>
-    </td>
-
-    <!-- Points -->
-    <td style="width:50px; text-align:center;"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
-    </tr>
-
-  <% end %>
-
-  <% if act.size > 0 %>
-    </tbody>
-    </table>
-  <% else %>
-    <div><b>Aucune activité.</b></div>
-  <% end %>
-
+<% largeur = (@user.admin ? 12 : 5) %>
+<% class_name = "top_container" %>
+<% if !@signed_in || @user == current_user.sk %>
+  <% class_name = "top_container_small" %>
+<% end %>
+<div class="col-lg-<%= largeur %> col-md-<%= largeur %> col-sm-<%= largeur %> col-xs-12" style="text-align:center; padding:5px;">
+  <div class="basic_container <%= class_name %>">
+  <table style="margin:0px; margin-top:15px; width:100%; height:90px; padding:0px;">
+  <tr><td style="font-size:20px; padding-left:10px; padding-right:10px;"><%= raw(@user.colored_name) %></td></tr>
+  <tr><td style="font-size:16px; font-weight:bold; padding-top:5px;"><%= status %></td></tr>
+  <tr><td style="padding-top:10px;"><%= @user.country.name %>
+  <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :style => "margin-left:5px; margin-top:-2px;" %></td></tr>
+  <!-- <tr><td style="padding-top:15px;">Inscrit le <%= write_date_only(@user.created_at) %></td></tr> -->
+  </table>
+  <% if @signed_in && current_user.sk != @user %>
+    <%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey", :style => "width:170px; margin-top:10px;", :disabled => !@signed_in %>
+  <% end %> 
   </div>
-
-  <!-- Affichage du score et des statistiques -->
-  <div class="col-lg-5 col-sm-12 col-xs-12">
-	
-  <!-- Si le score vaut 0, on n'affiche pas tout -->
-  <% if actualrating == 0 %>
-    <center><p style="font-size:24px; margin-top:60px;">Score : 0</p></center>
-  <% else %>
-    <center><p style="font-size:24px; margin-top:20px;">Score : <%= actualrating %></p></center>
-    <br/>
+</div>
+  
+<% if !@user.admin %>
+  <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" style="text-align:center; padding:5px;">
+    <div class="basic_container <%= class_name %>">
+    <table style="margin:0px; margin-top:15px; width:100%; height:90px; padding:0px;">
+      <tr>
+      <td class="mytitle">Score</td>
+      <td class="myvalue" style="color:<%= couleur %>;"><%= actualrating %></td>
+      </tr>
+      
+      <tr>
+      <td class="mytitle">Rang</td>
+      <td class="myvalue" style="color:<%= couleur %>;"><%= rank if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
+      </tr>
+        
+      <tr>
+      <td class="mytitle">Top</td>
+      <td class="myvalue" style="color:<%= couleur %>;"><%= "#{rank_top}%" if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
+      </tr>
+    </table>
     
-    <% p = Pointspersection.where(:user_id => @user) %>
+    <% if @signed_in && @user != current_user.sk %>
+      <% if !current_user.sk.followed_users.exists?(@user.id) %>
+        <%= link_to "Suivre", user_add_followed_user_path(@user), :method => :put, :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+      <% else %>
+        <%= link_to "Ne plus suivre", user_remove_followed_user_path(@user), :method => :put, :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+      <% end %>
+    <% end %>
     
-    <table class="table table-bordered">
-    <tr><th colspan="2" style="text-align:center;">Progression par type</th></tr>
+    </div>
+  </div>
+<% end %>
+  
+<% if !@user.admin %>
+  <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12" style="text-align:center; padding:5px;">
+    <div class="basic_container <%= class_name %>">
+    
+    <center>
+    <% espace = (class_name == "top_container" ? "25px" : "10px") %>
+    <div style="width:100%; height:<%= espace %>" class="hidden-xs"></div>
+    <table style="margin-top:15px; width:90%;">
     <tr>
-    <td style="width:160px;">Exercices</td>
-    <td>
-    <% pct = numberexo == 0 ? 0 : 100*nb_q/numberexo.to_f %>
-    <div class="progress" style="margin-bottom:0px;">  		
-    <div class="progress-bar" role="progressbar"
-    aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
-      <% if nb_q == 0 %>
+    <td style="width:25%; text-align:center;"><%= image_tag("Gold.svg", height: 40, alt: "Médailles d'or", title: "Médailles d'or") %></td>
+    <td style="width:25%; text-align:center;"><%= image_tag("Silver.svg", height: 40, alt: "Médailles d'argent", title: "Médailles d'argent") %></td>
+    <td style="width:25%; text-align:center;"><%= image_tag("Bronze.svg", height: 40, alt: "Médailles de bronze", title: "Médailles de bronze") %></td>
+    <td style="width:25%; text-align:center;"><%= image_tag("MH.svg", height: 34, alt: "Mentions honorables", title: "Mentions honorables", style: "margin-top:5px;") %></td>
+    </tr>
+    <tr>
+    <% num_medals = @user.contestscores.group(:medal).count %>
+    <% [4, 3, 2, 1].each do |m| %>
+      <td style="text-align:center; font-size:22px; font-weight:bold; color: <%= couleur %>; padding-top:5px;">
+      <%= num_medals.key?(m) ? num_medals[m] : "-" %>
+      </td>
+    <% end %>
+    </tr>
+    </table>
+    </center>
+      
+    </div>
+  </div>
+<% end %> 
+  
+<% if @signed_in && current_user.sk.root? %>
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
+    <div class="basic_container" style="padding:5px;">
+      Connecté le <span style="color:<%= couleur %>"><%= write_date_only_small(@user.last_connexion) %></span>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
+    <div class="basic_container" style="padding:5px;">
+      <span style="color:<%= couleur %>"><%= "(" if !@user.email_confirm %><%= @user.email %><%= ")" if !@user.email_confirm %></span>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
+    <div class="basic_container" style="padding:5px;">
+      Né en <span style="color:<%= couleur %>"><%= @user.year %></span>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
+    <div class="basic_container" style="padding:5px;">
+      <% if @user.wepion %>
+        <%= "Groupe Wépion" %> <%= " (" << @user.group << ")" if @user.group != "" %>
       <% else %>
-        <span style="margin-left:5px"><%= nb_q %>/<%= numberexo %></span>
+        Non Wépion
       <% end %>
     </div>
+  </div>
+<% end %>
+
+<% if !@user.admin? %>
+  
+  <!-- Style pour les progress bar circulaires -->
+  <style type="text/css">
+
+  /* First arc will be behind and has one half grey, one half coloured */
+  <% arcgrey = "#DDDDDD" %>
+
+  .arc_first {
+    border-color: <%= couleur %> <%= couleur %> <%= arcgrey %> <%= arcgrey %>;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+
+  <% ["exo", "pb"].each do |i| %>
+  
+  <% if i == "exo" %>
+    <% pct = pct_exo %>
+  <% else %>
+    <% pct = pct_pb %>
+  <% end %>
+
+  /* Second arc will be on top and has one half transparent, one half grey (if <= 50%) or coloured (if > 50%) */
+  <% if pct <= 50 %>
+    <% arccol = arcgrey %>
+    <% rotation = 45 + 180.0 * pct / 50.0 %> /* 0% should be 45 deg, while 50% should be 45+180 deg **/
+  <% else %>
+    <% arccol = couleur %> 
+    <% rotation = 45 + 180.0 * (pct - 50) / 50.0 %> /* 50% should be 45 deg, while 100% should be 45+100 deg **/
+  <% end %>
+
+  .arc_hide_<%= i %> {
+    top: 0;
+    left: 0;
+    width: 102px;
+    height: 102px;
+    border: 9px solid;
+    border-color: white white transparent transparent;
+    -webkit-transform: rotate(<%= rotation %>deg);
+    -moz-transform: rotate(<%= rotation %>deg);
+    -ms-transform: rotate(<%= rotation %>deg);
+    -o-transform: rotate(<%= rotation %>deg);
+    transform: rotate(<%= rotation %>deg);
+  }
+
+  .arc_second_<%= i %> {
+    border-color: <%= arccol %> <%= arccol %> transparent transparent;
+    -webkit-transform: rotate(<%= rotation %>deg);
+    -moz-transform: rotate(<%= rotation %>deg);
+    -ms-transform: rotate(<%= rotation %>deg);
+    -o-transform: rotate(<%= rotation %>deg);
+    transform: rotate(<%= rotation %>deg);
+  }
+
+  <% end %>
+  </style>
+  
+  <!-- Exercices -->
+  <div class="col-lg-3 col-md-2 col-sm-6 col-xs-6" style="padding:5px;">
+    <table class="progress_container">
+    <tr><td class="progress_title">Exercices</td></tr>
+    <tr><td class="progress_circle">
+    <div class="wrapper">
+      <div class="arc arc_first"></div>
+      <div class="arc arc_hide_exo"></div>
+      <div class="arc arc_second_exo"></div>
+      <div class="progress_nb"><%= nb_q %></div>
+      <div class="progress_pct">/ <%= numberexo %></div>
     </div>
-    </td>
-    </tr>
-		
-    <td style="width:160px;">Problèmes</td>
-    <td>
-    <% pct = numberpb == 0 ? 0 : 100*nb_p/numberpb.to_f %>
-    <div class="progress" style="margin-bottom:0px;">  		
-    <div class="progress-bar" role="progressbar"
-    aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:#BBDDFF; color:black;">
-      <% if nb_p == 0 %>
-      <% else %>
-        <span style="margin-left:5px"><%= nb_p %>/<%= numberpb %></span>
-      <% end %>
+    </td></tr>
+    </table>
+  </div>
+  
+  <!-- Problèmes -->
+  <div class="col-lg-3 col-md-2 col-sm-6 col-xs-6" style="padding:5px;">
+    <table class="progress_container">
+    <tr><td class="progress_title">Problèmes</td></tr>
+    <tr><td class="progress_circle">
+    <div class="wrapper">
+      <div class="arc arc_first"></div>
+      <div class="arc arc_hide_pb"></div>
+      <div class="arc arc_second_pb"></div>
+      <div class="progress_nb"><%= nb_p %></div>
+      <div class="progress_pct">/ <%= numberpb %></div>
     </div>
-    </div>
-    </td>
-    </tr>
-    
-    <table class="table table-bordered">
-    <tr><th colspan="2" style="text-align:center;">Progression par section</th></tr>
+    </td></tr>
+    </table>
+  </div>
+  
+  <!-- Progression par section -->
+  <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12" style="padding:5px;">
+    <div class="progress_container" style="padding-left:20px; padding-right:20px;">
+    <% ppersection_dic = {} %>
+    <% ppersection = Pointspersection.where(:user_id => @user).all.each do |pp| %>
+      <% ppersection_dic[pp.section_id] = pp.points %>
+    <% end %>
+    <table class="progress-table">
     <% Section.order(:id).where(:fondation => false).each do |s| %>
       <tr>
-      <td style="width:160px;"><%= abreviation[s.id-1] %></td>
-      <% rate = p.where(:section_id => s.id).first.points %>
-      <td>
-      <% pct = maxscore[s.id] == 0 ? 0 : 100*rate/maxscore[s.id].to_f %>
-      <div class="progress" style="margin-bottom:0px;">
-      <div class="progress-bar" role="progressbar"
-      aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= Section.color(s.id) %>; color:black;">
-        <% if pct.floor == 0 	%>
-        <% else %>
-          <span style="margin-left:5px"><%= pct.floor %>%</span>
-        <% end %>
-      </div>
-      </div>
+      <td style="width:170px;"><%= s.name %></td>
+        <% rate = ppersection_dic[s.id] %>
+      <td style="padding-left:5px; padding-right:5px;">
+        <% pct = maxscore[s.id] == 0 ? 0 : 100*rate/maxscore[s.id].to_f %>
+        <div class="progress" style="margin-bottom:0px; height:10px;">
+        <div class="progress-bar" role="progressbar"
+        aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= couleur %>;">
+        </div>
+        </div>
+      </td>
+      <td style="width:40px; font-weight:bold; padding-left:5px;">
+        <%= pct.floor %>%
       </td>
       </tr>
     <% end %>
     </table>
+    </div>
+  </div>
+  
+  <!-- Résolutions -->
+  <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
+    <div class="basic_container">
+      <div class="container_title">Résolutions</div>
+      <div class="resolution_container_table">
+      
+      <% actperday = Array.new %>
+       <% previousdate = Date.new(1980,1,1) %>
+      <% encours = -1 %>
+
+      <% parquoi = "" %>
+
+      <!-- Si l'étudiant a déjà fait au moins un truc -->
+      <% if act.size > 0 %>
+
+        <!-- On détermine si on rassemble les actes par minute, heure ou jour -->
+        <% if !premier.nil? %>
+          <% date_now = DateTime.now.in_time_zone %>
+          <% if dernier.day != date_now.day || dernier.month != date_now.month || dernier.year != date_now.year %>
+            <% parquoi = "jour" %>
+          <% elsif dernier.hour < premier.hour - 1 %>
+            <% parquoi = "heure" %>
+          <% else %>
+            <% parquoi = "minute" %>
+          <% end %>
+        <% end %>
+
+        <!-- Début du tableau des résolutions -->
+        <table class="table middle_aligned" style="width:100%; margin-top:0px; margin-bottom:0px;">
+
+        <!-- On parcourt les actes un par un (cas normal) -->
+        <% firstact = true %>
+        <% act.each do |a| %>
+          <!-- Rassemblement par date des actes -->
+          <% date = a[:time].in_time_zone %>
+          <% if parquoi == "jour" %>
+            <% dateday = Time.zone.local(date.year, date.month, date.day, 0, 0, 0) %>
+          <% elsif parquoi == "heure" %>
+            <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, 0, 0) %>
+          <% else %>
+            <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, date.min, 0) %>
+          <% end %>
+          <% if a[:pt] > 0 %>
+            <% if dateday != previousdate %>
+              <% encours = encours+1 %>
+              <% actperday.push({:time => dateday, :pt => a[:pt], :chapter => a[:chapter]}) %>
+            <% else %>
+              <% actperday[encours][:pt] = actperday[encours][:pt] + a[:pt] %>
+            <% end %>
+            <% previousdate = dateday %>
+          <% end %>
+
+          <!-- Affichage de la ligne -->
+          <tr>
+            
+          <% remove_border = "" %>
+          <% if firstact %>
+            <% remove_border = "border-top:0px;" %>
+            <% firstact = false %>
+          <% end %>
+          
+          <!-- Points -->
+          <td style="width:50px; text-align:center; font-weight:bold; color:<%= couleur %>; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
+          
+          <!-- Date (& Heure si xs) -->
+          <td style="width:75px; text-align:center; <%= remove_border %>"><%= write_date_only_small(date) %><span class="visible-xs"><%= write_hour(date) %></span></td>
+          
+          <!-- Heure (sauf si xs) -->
+          <td class="hidden-xs" style="width:60px; text-align:center; <%= remove_border %>"><%= write_hour(date) %></td>
+
+          <!-- Quoi -->
+          <td style="<%= remove_border %>">
+          <% if a[:type] == 5 %>
+            <% if cansee[a[:c_id]] %>
+              <%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %>
+            <% else %>
+              Exercice
+            <% end %>
+            - <%= a[:chapter] %>
+          <% else %>
+            <% if a[:peutvoir] %>
+              <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
+            <% else %>
+              Problème #<%= a[:number] %>
+            <% end %>
+             - <%= allsec[a[:section]].name %>
+          <% end %>
+          </td>
+
+          </tr>
+        <% end %>
+        
+        </table>
+      <% else %>
+        <div style="padding-left:10px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> n'a résolu aucun exercice ou problème.</div>
+      <% end %>
+      
+      </div>
+    </div>
+  </div>
     
-  <% end %>
-  
-  <!-- Date d'inscription -->
-  <br/>
-  <center><b>Inscription</b> : <%= write_date_only(inscription.in_time_zone) %>
-  <span style="margin-left:10px; margin-right:10px;">-</span> 
-  <b>Pays</b> :
-  <% drapeau = "countries/" + @user.country.code + ".png" %>
-  <%= image_tag drapeau, :title => @user.country.name, :height => "15px;", :style => "margin-left:3px;" %>
-  <br/></center>
+  <!-- Concours -->
+  <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
+    <div class="basic_container">
+      <div class="container_title">Concours</div>
+      <div class="resolution_container_table">
+      
+      <% actcontest = Array.new %>
+      <% @user.contestscores.includes(:contest).each do |cs| %>
+        <% contest = cs.contest %>
+        <% if contest.status == 3 %>
+          <% start_time = contest.start_time %>
+          <% end_time = contest.end_time %>
+          <% num_participants = contest.num_participants %>
+          <% num_problems = contest.num_problems %>
+          <% ranking = cs.rank %>
+          <% medal = cs.medal %>
+          <% actcontest.push({:number => contest.number, :id => contest.id, :start_time => start_time, :end_time => end_time, :num_participants => num_participants, :ranking => ranking, :medal => medal, :score => cs.score, :max_score => num_problems * 7}) %>
+        <% end %>
+      <% end %>
+      
+      <% @user.organized_contests.where("status = 3").each do |contest| %>
+        <% start_time = contest.start_time %>
+        <% end_time = contest.end_time %>
+        <% num_participants = contest.num_participants %>
+        <% actcontest.push({:number => contest.number, :id => contest.id, :start_time => start_time, :end_time => end_time, :num_participants => num_participants, :ranking => -1, :medal => -1, :score => -1, :max_score => -1}) %>
+      <% end %>
+      
+      <% actcontest.sort_by! { |ac| -ac[:number] } %>
+      
+      <% if actcontest.size > 0 %>
+      
+        <!-- Début du tableau des concours -->
+        <table class="table middle_aligned" style="width:100%; margin-bottom:0px;">
+        <% firstact = true %>
+        <% actcontest.each do |ac| %>
+          <tr>
+          
+          <% remove_border = "" %>
+          <% if firstact %>
+            <% remove_border = "border-top:0px;" %>
+            <% firstact = false %>
+          <% end %>
+          
+          <% if ac[:max_score] < 0 %>
+          
+            <!-- Concours organisé -->
+            <td style="width:190px; text-align:center; <%= remove_border %>" colspan="3"><span style="font-weight:bold; color:<%= couleur %>">Organisateur</span></td>
+            
+          <% else %>
+          
+            <!-- Médaille -->
+            <td style="width:35px; padding:0px; text-align:center; <%= remove_border %>">
+            <%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == 4 %>
+            <%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") if ac[:medal] == 3 %>
+            <%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") if ac[:medal] == 2 %>
+            <%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") if ac[:medal] == 1 %>
+            <%= "-" if ac[:medal] <= 0 %>
+            </td>
+          
+            <!-- Rang (si pas xs) -->
+            <td class="hidden-xs" style="width:90px; text-align:center; <%= remove_border %>">
+            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
+            </td>
+            
+            <!-- Points (si pas xs) -->
+            <td class="hidden-xs" style="width:100px; text-align:center; <%= remove_border %>">
+            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+            </td>
+            
+            <!-- Rang et points (si xs) -->
+            <td class="visible-xs" style="width:100px; text-align:center; <%= remove_border %>">
+            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
+            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+            </td>
+            
+            <!-- Case vide (si xs), pour que le colspan="3" reste correct -->
+            <td class="visible-xs" style="width:0px;"></td>
+            
+          <% end %>
+          
+          <!-- Date -->
+          <td class="hidden-xs" style="width:150px; text-align:center; <%= remove_border %>"><%= write_date_only_small(ac[:start_time]) %> - <%= write_date_only_small(ac[:end_time]) %></td>
+          
+          <!-- Lien du Concours -->
+          <td style="text-align:left; <%= remove_border %>;"><%= link_to "Concours ##{ac[:number]}", contest_path(ac[:id], :tab => 1) %></td>
+          
+          </tr>
+        <% end %>
+        </table>
+      <% else %>
+        <div style="padding-left:10px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> n'a participé à aucun concours.</div>
+      <% end %>
+      </div>
+    </div>
   </div>
 
-  </div>
-  
-  
-  <% if @signed_in && current_user.sk.admin %>
-    <div class="row">
-    <div class="col-sm-12 col-xs-12">
-      <h2>Informations</h2>
-      <%= @user.country.name %> - <%= @user.year %><br/>
-    <% if act.size > 0 %>
-      <%= moyenne_erreurs %> erreurs/exercice<br/>
-    <% end %>
-    <% lastco = @user.last_connexion %>
-    Dernière connexion : <%= write_date_only(lastco.in_time_zone) %><br/>
-    <%= "Groupe Wépion" if @user.wepion %> <%= " - Groupe " << @user.group if @user.group != "" %>
-    </div>
-    </div>
-  <% end %>
 
-  <!-- Si l'étudiant a un score non égal à 0, on montre son évolution -->
+  <!-- Évolution de l'étudiant -->
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
+  <div class="basic_container">
+  <div class="container_title">Évolution</div>
+    
+  <div style="padding-left:20px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span style="color:<%= couleur %>"><%= write_date_only(@user.created_at) %></span>.</div>
+    
   <% if actualrating > 0 %>
-
-    <div class="row">
-
-    <div class="col-sm-12 col-xs-12">
-
-    <h2>Évolution</h2>
-    <br/>
-    <center>
+    <div style="width:100%;">
 
     <!-- Endroit pour dessiner l'évolution -->
+    <center>
     <div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
     <canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
     Votre navigateur ne supporte pas les canvas.
     </canvas>
-
     </div>
     </center>
 
@@ -445,12 +642,12 @@ html>body tbody.scroll {
     <script type="text/javascript">
       $(document).ready( function(){
 
-      //Get the canvas & context
+      // Get the canvas & context
       var c = $('#myCanvas');
       var ctx = c.get(0).getContext('2d');
       var container = $(c).parent();
 
-      //Run function when browser  resize
+      // Run function when browser resize
       $(window).resize( respondCanvas );
 
       function respondCanvas(){
@@ -459,7 +656,7 @@ html>body tbody.scroll {
 
       document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
 
-      //Redraw & reposition content
+      // Redraw & reposition content
       var x = c.width();
       var y = c.height();
 
@@ -471,6 +668,8 @@ html>body tbody.scroll {
 
       // Affichage des niveaux avec couleurs
       <% @niveaux.each do |n| %>
+      
+        // Points à gauche du graphique
         <% if i > 1 %>
           <% haut = [450 - 450*(n.pt/maxi), 0].max %>
           <% if haut > 0 %>
@@ -479,12 +678,17 @@ html>body tbody.scroll {
             ctx.textAlign = 'right';
 
             if (pct > 0.7){
-
               if (pct * <%= haut %> < prec - 13){
                 ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
                 prec = pct * <%= haut %>;
               }
             }
+            
+            //ctx.beginPath();
+            //ctx.moveTo(pct*50, pct*<%= haut+5 %>);
+            //ctx.lineTo(pct*856, pct*<%= haut+5 %>);
+            //ctx.strokeStyle = '<%= n.color %>';
+            //ctx.stroke();
           <% end %>
         <% end %>
 
@@ -496,10 +700,12 @@ html>body tbody.scroll {
           <% bas = [450 - 450*(n.pt/maxi), 0].max %>
           <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
         <% end %>
+        
+        // Affichage du rectangle
         <% if bas > haut %>
           ctx.beginPath();
           ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
-          ctx.fillStyle = '<%= n.font_color %>';
+          ctx.fillStyle = '<%= n.color %>';
           ctx.fill();
         <% end %>
         <% i = i+1 %>
@@ -512,7 +718,7 @@ html>body tbody.scroll {
 
       // Commencement du graphique
       <% if parquoi == "jour" %>
-        <% first = actperday.last[:time].to_time.to_i - 86400%>
+        <% first = actperday.last[:time].to_time.to_i - 86400 %>
       <% elsif parquoi == "heure" %>
         <% first = actperday.last[:time].to_time.to_i - 3600 %>
       <% else %>
@@ -538,9 +744,9 @@ html>body tbody.scroll {
           <% if parquoi == "jour" %>
             ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
           <% elsif parquoi == "heure" %>
-            ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h",pct*<%= 50+w %>,pct*471);
+            ctx.fillText("<%= write_hour_only(a[:time]) %>",pct*<%= 50+w %>,pct*471);
           <% else %>
-            ctx.fillText("<%= "0" if a[:time].hour < 10 %><%= a[:time].hour %>h<%= "0" if a[:time].min < 10 %><%= a[:time].min %>",pct*<%= 50+w %>,pct*471);
+            ctx.fillText("<%= write_hour(a[:time]) %>",pct*<%= 50+w %>,pct*471);
           <% end %>
           }
           ctx.moveTo(pct*<%= 50+w %>, pct*5);
@@ -559,8 +765,8 @@ html>body tbody.scroll {
       
       ctx.beginPath();
       ctx.lineWidth = 2.5;
-      ctx.fillStyle = 'white';
-      ctx.strokeStyle = 'white';
+      ctx.fillStyle = 'white' // '<%= couleur %>';
+      ctx.strokeStyle = 'white' // '<%= couleur %>';
       ctx.moveTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
 
       // De gauche vers la droite : on trace le graphe
@@ -607,67 +813,201 @@ html>body tbody.scroll {
     </script>
 
     </div>
-    </div>
-
-    <h2>Comparaison</h2>
-    
-    <%= render 'compare_form', id1: @user.id, id2: -1 %>
-
   <% end %>
-
+  </div>
+  </div>
 <% end %>
 
+<% nb_corrections = @user.followings.where("kind > 0").count %>
+<% if nb_corrections > 0 %>
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
+    <div class="basic_container">
+    <div class="container_title">Corrections</div>
+    <div style="padding-left:20px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> a participé à la correction de <span style="font-weight:bold; color:<%= couleur %>;"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !</div>    
+    <div style="width:100%;">
+    <% count_by_month_str = @user.followings.where("kind > 0").group_by_month %>
+    <% if count_by_month_str.count >= 2 %>
+      <% count_by_month_int = {} %>
+      <% count_by_month_str.each { |k, v| d = k.to_datetime; count_by_month_int[12*d.year + d.mon-1] = v } %>
+      <% first_month = count_by_month_int.first[0] %>
+      <% last_month = count_by_month_int.first[0] %>
+      <% max_num_corr = 0 %>
+      <% count_by_month_int.each { |k, v| first_month = [first_month, k].min; last_month = [last_month, k].max; max_num_corr = [max_num_corr, v].max} %>
+      <% num_corr_by_month = Array.new(last_month-first_month+1, 0) %>
+      <% count_by_month_int.each { |k, v| num_corr_by_month[k-first_month] = v } %>
+      <% num_months = last_month - first_month + 1 %>
+      
+      <% maxi = (max_num_corr*1.1).ceil %>
+      
+      <center>
+      <!-- Endroit pour dessiner le graphique des corrections -->
+      <div id="contenantCorr" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+      <canvas id="myCanvasCorr" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+      Votre navigateur ne supporte pas les canvas.
+      </canvas>
+      </div>
+      </center>
+
+      <script type="text/javascript">
+        $(document).ready( function(){
+
+        //Get the canvas & context
+        var c = $('#myCanvasCorr');
+        var ctx = c.get(0).getContext('2d');
+        var container = $(c).parent();
+
+        //Run function when browser  resize
+        $(window).resize( respondCanvas );
+
+        function respondCanvas(){
+        c.attr('width', $(container).width() ); //max width
+        c.attr('height', 480*$(container).width()/900.0); //max height
+
+        document.getElementById('contenantCorr').style.height = 480*$(container).width()/900.0 + "px"
+
+        //Redraw & reposition content
+        var x = c.width();
+        var y = c.height();
+
+        var pct = c.width()/900.0;
+        
+        ctx.beginPath();
+        ctx.rect(pct*50, pct*5, pct*806, pct*450);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        
+        // Entre 50 et 856 --> largeur totale 806, à diviser en num_months
+        <% rect_width = 806.0/num_months %>
+        
+        <% for i in (first_month..last_month) do %>
+          <% n = i - first_month %>
+          ctx.beginPath();
+          ctx.rect(pct*<%= 50+n*rect_width %>, pct*455, pct*<%= rect_width %>, -pct*<%= (450.0*num_corr_by_month[n])/maxi %>);
+          ctx.fillStyle = '<%= couleur %>';
+          ctx.fill();
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'black';
+          ctx.stroke();
+        <% end %>
+        
+        ctx.font="12px Arial";
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center';
+        
+        <% last_date_x = -100 %>
+        if (pct > 0.7){
+          <% for i in (first_month..last_month) do %>
+            <% n = i - first_month %>
+            <% date_x = 50+(n+0.5)*rect_width %>
+            <% if date_x > last_date_x + 50 %>
+              <% month = (i % 12 + 1) %>
+              <% year = (i - month + 1)/12 %>
+              ctx.fillText("<%= "#{0 if month < 10}#{month}/#{year-2000}" %>", pct*<%= date_x %>, pct*471);
+              <% last_date_x = date_x %>
+            <% end %>
+          <% end %>
+        }
+        
+        if (pct > 0.7){
+          ctx.textAlign = 'right';
+          <% i = max_num_corr %>
+          <% step = max_num_corr / 10 %>
+          <% fac = 1 %>
+          <% while step >= 10 %>
+            <% fac = fac * 10 %>
+            <% step = step / 10 %>
+          <% end %>
+          <% if step < 1 %>
+            <% step = 1 %>
+          <% elsif step < 2 %>
+            <% step = 2 %>
+          <% elsif step < 5 %>
+            <% step = 5 %>
+          <% else %>
+            <% step = 10 %>
+          <% end %>
+          <% step = step * fac %>
+          <% while(i > 0) %>
+            ctx.fillText("<%= i %>", pct*43,pct*(<%= 455-450*i/maxi %>+4));
+            <% i = i - step %>
+            <% mod = i % step %>
+            <% if mod != 0 %>
+              <% i = i + step - mod %>
+              <% if mod < step * 0.2 %> 
+                <% i = i - step %>
+              <% end %>
+            <% end %>
+          <% end %>
+        }
+        
+        }
+
+        //Initial call
+        respondCanvas();
+
+        });
+      </script>
+    <% end %>
+    
+    </div>
+    </div>
+  </div>
+<% end %>
+
+
 <!-- Si administrateur, différentes options -->
-<% if @signed_in && current_user.sk.admin? %>
-  <br/>
-  <center>
+<% if @signed_in && current_user.sk.admin? && !@user.root? && (current_user.sk.root? || !@user.admin) %>
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding:5px; text-align:center;">
+  <div class="basic_container" style="padding:5px;">
   <% i = 0 %>
     <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :style => "color:red;" %>
+      <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :method => :put, :style => "color:red;" %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :style => "color:red;" %>
     <% end %>
-    <% if @user.email_confirm && !@user.admin %>
+    <% if current_user.sk.root? && @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Voir le site comme lui', user_take_skin_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." } %>
+      <%= link_to 'Voir le site comme lui', user_take_skin_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." }, :method => :put %>
     <% end %>
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :style => "color:red;" %>
+      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :method => :put, :style => "color:red;" %>
     <% end %>
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if !@user.corrector %>
-        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :style => "color:red;" %>
+        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :method => :put, :style => "color:red;" %>
       <% else %>
-        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :style => "color:red;" %>
+        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :style => "color:red;" %>
       <% end %>
     <% end %>
     <% if current_user.sk.admin && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if @user.wepion %>
-        <%= link_to 'Retirer du groupe Wépion', user_switch_wepion_path(@user) %>
+        <%= link_to 'Retirer du groupe Wépion', user_switch_wepion_path(@user), :method => :put %>
       <% else %>
-        <%= link_to 'Ajouter au groupe Wépion', user_switch_wepion_path(@user) %>
+        <%= link_to 'Ajouter au groupe Wépion', user_switch_wepion_path(@user), :method => :put %>
       <% end %>
     <% end %>
     <% if current_user.sk.admin && @user.wepion %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      Groupe <%= link_to 'A', user_change_group_path(@user, :group => "A") %>, <%= link_to 'B', user_change_group_path(@user, :group => "B") %>, <%= link_to 'aucun', user_change_group_path(@user, :group => "") %>
+      Groupe <%= link_to 'A', user_change_group_path(@user, :group => "A"), :method => :put %>, <%= link_to 'B', user_change_group_path(@user, :group => "B"), :method => :put %>, <%= link_to 'aucun', user_change_group_path(@user, :group => ""), :method => :put %>
     <% end %>
-  </center>
+  </div>
+  </div>
 <% end %>
 
-<% t2 = Time.now %>
 
-<% if montretemps == 1 %>
-  <br/>Temps de chargement : <%= t2-t1 %> secondes.
-<% end %>
+</div>
+<!-- END OF THE MAIN DIV -->

@@ -16,13 +16,13 @@ html>body tbody.scroll {
 <script type="text/javascript">
 var showCorrect = function () {
   document.getElementById("btn_correct").style.display = 'none';
-  document.getElementById("all_correct").style.display = 'table';
-  document.getElementById("all_correct").style.width = 'auto';
+  document.getElementById("loading_correct").style.display = 'inline';
+  $.getScript("<%= submissions_url(:problem_id => problem, :what => 0) %>");
 }
 var showFalse = function () {
   document.getElementById("btn_false").style.display = 'none';
-  document.getElementById("all_false").style.display = 'table';
-  document.getElementById("all_false").style.width = 'auto';
+  document.getElementById("loading_false").style.display = 'inline';
+  $.getScript("<%= submissions_url(:problem_id => problem, :what => 1) %>");
 }
 </script>
 
@@ -30,8 +30,8 @@ var showFalse = function () {
 
 <!-- Si administrateur : peut voir toutes les soumissions correctes -->
 <% if current_user.sk.admin %>
-	<h3>Soumissions étoilées</h3>
-	<% submissions = problem.submissions.where(visible: true, status: 2, star: true).order('created_at') %>
+  <h3>Soumissions étoilées</h3>
+  <% submissions = problem.submissions.where(visible: true, status: 2, star: true).order('created_at') %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>
@@ -48,22 +48,17 @@ var showFalse = function () {
   <% end %>
   
   <h3>Autres soumissions correctes</h3>
-  <% submissions = problem.submissions.includes(:user, :problem).where(visible: true, status: 2, star: false).order('created_at DESC') %>
-  <% if submissions.empty? %>
-    <p>Aucune soumission.</p>
-  <% else %>
-    <%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()", id: "btn_correct" %>
-    <table class="table table-bordered" style="width:840px; display:none;" id="all_correct">
-    <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
-    </thead>
-    <tbody class="scroll">
-    <% submissions.each do |s| %>
-        <%= render 'submissions/showadmin', s: s, situation: 3 %>
-      <% end %>
-    </tbody>
-    </table>
-  <% end %>
+  <%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()", id: "btn_correct" %>
+  <p id="loading_correct" style="display:none;">Chargement...</p>
+  <p id="none_correct" style="display:none;">Aucune soumission</p>
+  <table class="table table-bordered" style="width:840px; display:none;" id="all_correct">
+  <thead class="fixed">
+  <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+  </thead>
+  <tbody class="scroll">
+    <!-- This body is filled via javascript, see showCorrect() -->
+  </tbody>
+  </table>
 
 <!-- Si étudiant -->
 <% else %>
@@ -82,7 +77,8 @@ var showFalse = function () {
     <tbody class="scroll">
     <% submissions.each do |s| %>
       <%= render 'submissions/showuser', s: s %>
-      <% if s.status == 0 %>
+      <% if s.status == 0 or s.status == 4 %>
+        <!-- Solution en attente ou plagiée -->
         <% @newsub = false %>
       <% end %>
     <% end %>
@@ -94,7 +90,7 @@ var showFalse = function () {
   <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
   <% if current_user.sk.pb_solved?(problem) %>
   
-  	<h3>Autres soumissions, étoilées</h3>
+    <h3>Autres soumissions, étoilées</h3>
     <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, true).order('created_at DESC') %>
 
     <% if !submissions.empty? %>
@@ -109,51 +105,40 @@ var showFalse = function () {
       </tbody>
       </table>
     <% else %>
-    	Aucune soumission.
+    	<p>Aucune soumission.</p>
     <% end %>
 
     <h3>Autres soumissions, correctes</h3>
-    <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, false).order('created_at DESC') %>
-
-    <% if !submissions.empty? %>
-      <%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()", id: "btn_correct" %>
-      <table class="table table-bordered" style="width:auto; display:none;" id="all_correct">
-      <thead class="fixed">
-      <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
-      </thead>
-      <tbody class="scroll">
-      <% submissions.each do |s| %>
-        <%= render 'submissions/showadmin', s: s, situation: 3 %>
-      <% end %>
-      </tbody>
-      </table>
-    <% else %>
-    	Aucune soumission.
-    <% end %>
+    <%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()", id: "btn_correct" %>
+    <p id="loading_correct" style="display:none;">Chargement...</p>
+    <p id="none_correct" style="display:none;">Aucune soumission.</p>
+    <table class="table table-bordered" style="width:auto; display:none;" id="all_correct">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
+    </thead>
+    <tbody class="scroll">
+      <!-- This body is filled via javascript, see showCorrect() -->
+    </tbody>
+    </table>
 
   <% end %>
 
 <% end %>
 
-<!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées -->
+<!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées, en attente ou plagiée -->
 <% if current_user.sk.admin || (current_user.sk.corrector && current_user.sk.pb_solved?(problem)) %>
 
-	<h3>Soumissions erronées ou en attente</h3>
-	<% submissions = problem.submissions.where('status != 2 AND visible = ?', true).order('created_at DESC') %>
-  <% if submissions.empty? %>
-    <p>Aucune soumission.</p>
-  <% else %>
-    <%= link_to "Afficher les soumissions erronées ou en attente", "javascript:showFalse()", id: "btn_false" %>
-    <table class="table table-bordered" style="width:auto; display:none;" id="all_false">
-    <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
-    </thead>
-    <tbody class="scroll">
-    <% submissions.each do |s| %>
-        <%= render 'submissions/showadmin', s: s, situation: 3 %>
-      <% end %>
-    </tbody>
-    </table>
-  <% end %>
+  <h3>Soumissions erronées ou en attente</h3>
+  <%= link_to "Afficher les soumissions erronées ou en attente", "javascript:showFalse()", id: "btn_false" %>
+  <p id="loading_false" style="display:none;">Chargement...</p>
+  <p id="none_false" style="display:none;">Aucune soumission.</p>
+  <table class="table table-bordered" style="width:auto; display:none;" id="all_false">
+  <thead class="fixed">
+  <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+  </thead>
+  <tbody class="scroll">
+    <!-- This body is filled via javascript, see showFalse() -->
+  </tbody>
+  </table>
 
 <% end %>

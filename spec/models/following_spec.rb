@@ -6,10 +6,10 @@
 #  submission_id :integer
 #  user_id       :integer
 #  read          :boolean
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  created_at    :datetime
+#  updated_at    :datetime
+#  kind          :integer          default(-1)
 #
-
 require "spec_helper"
 
 describe Following do

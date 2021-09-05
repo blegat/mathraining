@@ -1,17 +1,17 @@
 #encoding: utf-8
+
 # == Schema Information
 #
 # Table name: contestcorrections
 #
 #  id                 :integer          not null, primary key
-#  contestsolution_id :reference
+#  contestsolution_id :integer
 #  content            :text
-#  status             :integer
 #
-
 include ApplicationHelper
 
 class Contestcorrection < ActiveRecord::Base
+
   # BELONGS_TO, HAS_MANY
 
   belongs_to :contestsolution

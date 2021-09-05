@@ -3,6 +3,7 @@ class ContestproblemsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :show]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :publish_results, :authorize_corrections, :unauthorize_corrections]
   before_action :root_user, only: [:authorize_corrections, :unauthorize_corrections]
+  before_action :check_contests, only: [:show] # Defined in application_controller.rb
   before_action :get_contest, only: [:new, :create]
   before_action :get_contestproblem, only: [:show, :edit, :update, :destroy]
   before_action :get_contestproblem2, only: [:publish_results, :authorize_corrections, :unauthorize_corrections]
@@ -51,6 +52,7 @@ class ContestproblemsController < ApplicationController
       correction.content = "-"
       correction.save
       
+      update_contest_details
       change_numbers
       redirect_to @contestproblem
     end
@@ -71,6 +73,7 @@ class ContestproblemsController < ApplicationController
     end
     if @contestproblem.save
       flash[:success] = "Problème modifié."
+      update_contest_details
       change_numbers
       redirect_to @contestproblem
     else
@@ -82,6 +85,8 @@ class ContestproblemsController < ApplicationController
   def destroy
     @contestproblem.destroy
     flash[:success] = "Problème supprimé."
+    update_contest_details
+    change_numbers
     redirect_to @contest
   end
   
@@ -192,6 +197,14 @@ class ContestproblemsController < ApplicationController
       flash.now[:danger] = "La deuxième date doit être strictement après la première date."
       @date_problem = true
     end
+    if start_date.min != 0
+      if Rails.env.production?
+        flash.now[:danger] = "La première date doit être à une heure pile."
+        @date_problem = true
+      else
+        flash[:info] = "La première date devrait être à une heure pile (en production)."
+      end
+    end
   end
   
   def can_publish_results
@@ -218,47 +231,28 @@ class ContestproblemsController < ApplicationController
     end
   end
   
+  def update_contest_details
+    @contest.num_problems = @contest.contestproblems.count
+    if @contest.num_problems > 0
+      @contest.start_time = @contest.contestproblems.order(:start_time).first.start_time
+      @contest.end_time = @contest.contestproblems.order(:end_time).last.end_time
+    else
+      @contest.start_time = nil
+      @contest.end_time = nil
+    end
+    @contest.save
+  end
+  
   def automatic_results_published_post(contestproblem)
     contest = contestproblem.contest
     sub = contest.subject
     mes = Message.new
     mes.subject = sub
-    mes.user_id = 0
-    text = "Le [url=" + contestproblem_path(contestproblem) + "]Problème ##{contestproblem.number}[/url] du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] a été corrigé.\n\r\n\r"
-    
-    nb_sol = contestproblem.contestsolutions.where("score = 7 AND official = ?", false).count
-    
-    if nb_sol == 0
-      text = text + "Malheureusement [b]personne[/b] n'a obtenu la note maximale !"
-    elsif nb_sol == 1
-      text = text + "Seule [b]une seule[/b] personne a obtenu la note maximale : "
-    else
-      text = text + "Les [b]" + nb_sol.to_s + "[/b] personnes suivantes ont obtenu la note maximale : "
-    end
-    
-    i = 0
-    contestproblem.contestsolutions.where("score = 7 AND official = ?", false).order(:user_id).each do |s|
-      text = text + s.user.name
-      i = i+1
-      if (i == nb_sol)
-        text = text + "."
-      elsif (i == nb_sol - 1)
-        text = text + " et "
-      else
-        text = text + ", "
-      end
-    end
-    
-    text = text + "\n\r\n\r"
-    if contest.contestproblems.where("status < 4").count > 0
-      text = text + "Le nouveau classement général suite à cette correction peut être consulté sur la page du concours."    
-    else
-      text = text + "Il s'agissait du dernier problème. Le classement final peut être consulté sur la page du concours."    
-    end
-    
-    mes.content = text
+    mes.user_id = 0    
+    mes.content = helpers.get_new_correction_forum_message(contest, contestproblem)
     mes.save
     sub.lastcomment = mes.created_at
+    sub.lastcomment_user_id = 0 # Message automatique
     sub.save
     
     sub.following_users.each do |u|

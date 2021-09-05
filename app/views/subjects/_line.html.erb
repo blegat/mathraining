@@ -1,9 +1,5 @@
 <!-- S'agit-il d'un nouveau message? On le met dans style -->
-<% m = s.messages.order(:id).last %>
-<% if m.nil? %>
-  <% m = s %>
-<% end %>
-<% if current_user.sk.forumseen < s.lastcomment && m.user_id != current_user.sk.id %>
+<% if current_user.sk.forumseen < s.lastcomment && s.lastcomment_user != current_user.sk %>
   <% style = "background-color:#fffad2;" %>
 <% end %>
 <tr style="<%= style %>">
@@ -23,16 +19,7 @@
       <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
     <% end %>
 
-    <%= link_to s.title, subject_path(s, :q => q) %>
-    	<% if !s.category.nil? %>
-    	  - <%= s.category.name %>
-      <% elsif s.section.nil? %>
-
-      <% elsif s.chapter.nil? %>
-        - <%= s.section.name %>
-      <% else %>
-        - <%= s.chapter.name %>
-      <% end %>
+    <%= link_to s.title, subject_path(s, :q => q) %> - <%= get_category_name(s) %>
 
     <% if s.admin? || s.wepion? %>
       </td></tr></table>
@@ -53,15 +40,10 @@
     <%= x = s.messages.count %>
   </td>
 
-  <% if x > 0 %>
-    <% last = s.messages.order(:id).last %>
-    <% qui = last.user %>
-    <% date = last.created_at.in_time_zone %>
-  <% else %>
-    <% qui = s.user %>
-    <% date = s.created_at.in_time_zone %>
-  <% end %>
-  <% datenow = Time.zone.now %>
+  <% qui = s.lastcomment_user %>
+  <% date = s.lastcomment %>
+  <% datenow = DateTime.now %>
+  <% num_messages = s.messages.count %>
 
   <!-- Cas normal -->
 
@@ -76,11 +58,10 @@
 
   <!-- Date du dernier message -->
   <td class="hidden-small" style="width:200px; text-align:center; vertical-align:middle;">
-    <% tot = s.messages.count %>
-    <% page = [0,((tot-1)/10).floor].max + 1 %>
+    <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
     <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
-      <% affiche_date(date, datenow) %>
+      <%= write_date_from_now(date, datenow) %>
     <% end %>
   </td>
 
@@ -100,15 +81,14 @@
     </td>
     </tr>
 
-    <!-- Date du derinier message -->
+    <!-- Date du dernier message -->
     <tr>
     <td style="width:200px; text-align:center; vertical-align:middle; padding-top:5px;">
-      <% tot = s.messages.count %>
-      <% page = [0,((tot-1)/10).floor].max + 1 %>
+      <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
-        <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
-          <% affiche_date(date, datenow) %>
-        <% end %>
+      <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
+        <%= write_date_from_now(date, datenow) %>
+      <% end %>
     </td>
     </tr>
   </table>

@@ -6,7 +6,6 @@ class ApplicationController < ActionController::Base
 
   before_action :has_consent
   before_action :check_takentests
-  before_action :check_contests
   #before_action :warning
 
   ########## PARTIE PRIVEE ##########
@@ -197,7 +196,8 @@ class ApplicationController < ActionController::Base
         c.destroy # Should not happen in theory
       else
         debut = t.takentime.to_i
-        if debut + t.virtualtest.duration*60 < time_now
+        fin = debut + t.virtualtest.duration*60
+        if fin < time_now
           c.destroy
           t.status = 1
           t.save
@@ -214,126 +214,37 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Check if a contest problem just started or ended (done only when charging a contest related page)
   def check_contests
     date_now = DateTime.now
-    date_in_one_day = 1.day.from_now
+    # Note: Problems in Contestproblemcheck are also used in contest.rb to check problems for which an email or forum subject must be created
     Contestproblemcheck.all.order(:id).each do |c|
       p = c.contestproblem
-      if p.status == 0
-        if p.start_time <= date_in_one_day
-          c = p.contest
-          allp = c.contestproblems.where("start_time = ?", p.start_time).order(:number).all.to_a
-          allid = Array.new
-          allp.each do |pp|
-            pp.status = 1
-            pp.save
-            allid.push(pp.id)
-          end
-          automatic_start_in_one_day_problem_post(allp)
-          p.contest.followers.each do |u|
-            UserMailer.new_followed_contestproblem(u.id, allid).deliver if Rails.env.production?
-          end
-        end
-      end
-      if p.status == 1
+      if p.status == 1 # Contest is online but problem is not published yet
         if p.start_time <= date_now
-          c = p.contest
-          allp = c.contestproblems.where("start_time = ? AND end_time = ?", p.start_time, p.end_time).order(:number).all.to_a
-          allid = Array.new
-          allp.each do |pp|
-            pp.status = 2
-            pp.save
-            allid.push(pp.id)
-          end
-          automatic_start_problem_post(allp)
-        end
-      end
-      if p.status == 2
-        if p.end_time <= date_now
-          c.destroy
-          p.status = 3
+          p.status = 2
           p.save
         end
       end
-      if p.status >= 3
-        c.destroy # Should not happen in theory
-      end
-    end
-  end
-  
-  # Publish a post on forum to say that problem will be published in one day
-  def automatic_start_in_one_day_problem_post(contestproblems)
-    contest = contestproblems[0].contest
-    sub = contest.subject
-    mes = Message.new
-    mes.subject = sub
-    mes.user_id = 0
-    if contestproblems.size == 1
-      plural = false
-      mes.content = "Le Problème ##{contestproblems[0].number}"
-    else
-      plural = true
-      mes.content = "Les Problèmes"
-      i = 0
-      contestproblems.each do |cp|
-        if (i == contestproblems.size-1)
-          mes.content = mes.content + " et"
-        elsif (i > 0)
-          mes.content = mes.content + ","
+      if p.status == 2 # Problem has started but not ended
+        if p.end_time <= date_now
+          p.status = 3
+          p.save
+          contest = p.contest
+          if contest.contestproblems.where("status <= 2").count == 0 # All problems of the contest are finished: mark the contest as finished
+            contest.status = 2
+            contest.save
+          end
         end
-        mes.content = mes.content + " ##{cp.number}"
-        i = i+1
       end
-    end
-    mes.content = mes.content + " du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] #{plural ? "seront" : "sera"} publié#{plural ? "s" : ""} dans un jour, c'est-à-dire le " + write_date_with_link_forum(contestproblems[0].start_time, contest, contestproblems[0]) + " (heure belge)."
-    mes.created_at = contestproblems[0].start_time - 1.day
-    mes.save
-    sub.lastcomment = mes.created_at
-    sub.save
-    
-    sub.following_users.each do |u|
-      if !contest.followers.include?(u) # Avoid to send again an email to people already following the contest
-        UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
+      if p.status == 3 and p.reminder_status == 2 # Avoid to delete if reminders were not sent yet
+        c.destroy
       end
-    end
-  end
-  
-  # Publish a post on forum to say that solutions to problem can be sent
-  def automatic_start_problem_post(contestproblems)
-    contest = contestproblems[0].contest
-    sub = contest.subject
-    mes = Message.new
-    mes.subject = sub
-    mes.user_id = 0
-    if contestproblems.size == 1
-      plural = false
-      mes.content = "Le [url=" + contestproblem_url(contestproblems[0]) + "]Problème ##{contestproblems[0].number}[/url]"
-    else
-      plural = true
-      mes.content = "Les Problèmes"
-      i = 0
-      contestproblems.each do |cp|
-        if (i == contestproblems.size-1)
-          mes.content = mes.content + " et"
-        elsif (i > 0)
-          mes.content = mes.content + ","
-        end
-        mes.content = mes.content + " [url=" + contestproblem_url(cp) + "]##{cp.number}[/url]"
-        i = i+1
-      end
-    end
-    mes.content = mes.content + " du [url=" + contest_url(contest) + "]Concours ##{contest.number}[/url] #{plural ? "sont" : "est"} maintenant accessible#{plural ? "s" : ""}, et les solutions sont acceptées jusqu'au " + write_date_with_link_forum(contestproblems[0].end_time, contest, contestproblems[0]) + " (heure belge)."
-    mes.created_at = contestproblems[0].start_time
-    mes.save
-    sub.lastcomment = mes.created_at
-    sub.save
-    
-    sub.following_users.each do |u|
-      UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
     end
   end
   
   def compute_new_contest_rankings(contest)
+    # Find all users with a score > 0 in the contest
     userset = Set.new
     probs = contest.contestproblems.where("status >= 4")
     probs.each do |p|
@@ -341,24 +252,43 @@ class ApplicationController < ActionController::Base
         userset.add(s.user_id)
       end
     end
+    
+    # Delete from Contestscore the users who don't have a score (can happen if we modify a score to 0)
+    @contest.contestscores.each do |s|
+      if !userset.include?(s.user_id)
+        s.destroy
+      end
+    end
+    
+    # Compute the scores of all users
     scores = Array.new
     userset.each do |u|
       score = 0
+      hm = false
       probs.each do |p|
-        sol =  p.contestsolutions.where(:user_id => u).first
+        sol = p.contestsolutions.where(:user_id => u).first
         if !sol.nil?
           score = score + sol.score
+          if sol.score == 7
+            hm = true
+          end
         end
       end
-      scores.push([-score, u])
+      scores.push([-score, u, hm])
     end
-    scores.sort!
+    
+    # Sort the scores
+    scores.sort!    
+    
+    # Compute the ranking (and maybe medal) of each user
+    give_medals = (contest.medal && contest.gold_cutoff > 0)
     prevscore = -1
     i = 1
     rank = 0
     scores.each do |a|
       score = -a[0]
       u = a[1]
+      hm = a[2]
       if score != prevscore
         rank = i
         prevscore = score
@@ -371,9 +301,32 @@ class ApplicationController < ActionController::Base
       end
       cs.rank = rank
       cs.score = score
+      if give_medals
+        if score >= contest.gold_cutoff
+          cs.medal = 4 # Gold
+        elsif score >= contest.silver_cutoff
+          cs.medal = 3 # Silver
+        elsif score >= contest.bronze_cutoff
+          cs.medal = 2 # Bronze
+        elsif hm
+          cs.medal = 1 # Honourable mention
+        else
+          cs.medal = 0 # No medal
+        end
+      else
+        cs.medal = -1 # Not applicable
+      end
       cs.save
       i = i+1
     end
+    
+    # Change some details of the contest
+    contest.num_participants = scores.size
+    contest_fully_corrected = (contest.contestproblems.where("status < 4").count == 0)
+    if contest_fully_corrected
+      contest.status = 3
+    end
+    contest.save
   end
   
 end

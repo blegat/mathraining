@@ -13,6 +13,7 @@ class SubjectsController < ApplicationController
   def index
     cherche_category = -1
     cherche_section = -1
+    cherche_section_problems = -1
     cherche_chapitre = -1
     cherche_personne = false
     q = -1
@@ -22,15 +23,20 @@ class SubjectsController < ApplicationController
     @section = nil
     if(params.has_key?:q)
       q = params[:q].to_i
-      if q > 999999
+      if q >= 1000000
         cherche_category = q/1000000
         @category = Category.find_by_id(cherche_category)
         if @category.nil?
           render 'errors/access_refused' and return
         end
-      elsif q > 999
-        cherche_section = q/1000
-        @section = Section.find_by_id(cherche_section)
+      elsif q >= 1000
+        if q % 1000 == 0
+          cherche_section = q/1000
+          @section = Section.find_by_id(cherche_section)
+        elsif q % 1000 == 1
+          cherche_section_problems = (q-1)/1000
+          @section = Section.find_by_id(cherche_section_problems)
+        end
         if @section.nil?
           render 'errors/access_refused' and return
         end
@@ -48,31 +54,40 @@ class SubjectsController < ApplicationController
       cherche_personne = true
       q = 0
     end
-
-    @importants = Array.new
-    Subject.includes(:user, :category, :section, :chapter).where(important: true).order("lastcomment DESC").to_a.each do |s|
-      if ((@signed_in && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (@signed_in && (current_user.sk.admin? || current_user.sk.wepion)))
-        if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
-          @importants.push(s)
-        end
-      end
+    
+    if (current_user.sk.admin? || current_user.sk.corrector?)
+      admin_allowed_values = [false, true]
+    else
+      admin_allowed_values = false
     end
-
-    @subjects = Array.new
-    Subject.includes(:user, :category, :section, :chapter).where(important: false).order("lastcomment DESC").to_a.each do |s|
-      if ((@signed_in && (current_user.sk.admin? || current_user.sk.corrector?)) || !s.admin) && (!s.wepion || (@signed_in && (current_user.sk.admin? || current_user.sk.wepion)))
-        if cherche_personne || (cherche_category >= 0 && !s.category.nil? && s.category.id == cherche_category) || (cherche_section >= 0 && !s.section.nil? && s.section.id == cherche_section) || (cherche_chapitre >= 0 && !s.chapter.nil? && s.chapter.id == cherche_chapitre)
-          @subjects.push(s)
-        end
-      end
+    
+    if (current_user.sk.admin? || current_user.sk.wepion?)
+      wepion_allowed_values = [false, true]
+    else
+      wepion_allowed_values = false
     end
-
-    @subjectsfalse = @subjects.paginate(:page => params[:page], :per_page => 15)
+    
+    if cherche_personne
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+    elsif cherche_category >= 0
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, category: cherche_category).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, category: cherche_category).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+    elsif cherche_section >= 0
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+    elsif cherche_section_problems >= 0
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section_problems).where.not(problem_id: nil).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section_problems).where.not(problem_id: nil).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+    elsif cherche_chapitre
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: cherche_chapitre).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: cherche_chapitre).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+    end
   end
 
   # Montre un sujet
   def show
-    @messages = @subject.messages.order(:id).paginate(:page => params[:page], :per_page => 10)
+    @messages = @subject.messages.order(:created_at).paginate(:page => params[:page], :per_page => 10)
   end
 
   # Créer un sujet
@@ -91,6 +106,7 @@ class SubjectsController < ApplicationController
     @subject = Subject.new(params.require(:subject).permit(:title, :content, :admin, :important, :wepion))
     @subject.user = current_user.sk
     @subject.lastcomment = DateTime.current
+    @subject.lastcomment_user = current_user.sk
 
     if @subject.admin
       @subject.wepion = false # On n'autorise pas wépion si admin
@@ -109,6 +125,7 @@ class SubjectsController < ApplicationController
       @subject.section = nil
       @subject.chapter = nil
       @subject.question = nil
+      @subject.problem = nil
     else
       section_id = category_id/1000
       @subject.category = nil
@@ -120,11 +137,24 @@ class SubjectsController < ApplicationController
       if chapter_id == 0
         @subject.chapter = nil
         @subject.question = nil
+        @subject.problem = nil
+      elsif chapter_id == -1
+        @subject.chapter = nil
+        @subject.question = nil
+        problem_id = params[:subject][:problem_id].to_i
+        if problem_id == 0
+          error_create(["Un problème doit être sélectionné."]) and return
+        end
+        @subject.problem = Problem.find_by_id(problem_id)
+        if @subject.problem.nil? # Here we can check that the user has indeed access to the problem but it is annoying to do
+          render 'errors/access_refused' and return
+        end
       else
         @subject.chapter = Chapter.find_by_id(chapter_id)
         if @subject.chapter.nil? || !@subject.chapter.online
           render 'errors/access_refused' and return
         end
+        @subject.problem = nil
         question_id = params[:subject][:question_id].to_i
         if question_id == 0
           @subject.question = nil
@@ -210,6 +240,7 @@ class SubjectsController < ApplicationController
         @subject.section = nil
         @subject.chapter = nil
         @subject.question = nil
+        @subject.problem = nil
       else
         section_id = category_id/1000
         @subject.category = nil
@@ -221,11 +252,24 @@ class SubjectsController < ApplicationController
         if chapter_id == 0
           @subject.chapter = nil
           @subject.question = nil
+          @subject.problem = nil
+        elsif chapter_id == -1
+          @subject.chapter = nil
+          @subject.question = nil
+          problem_id = params[:subject][:problem_id].to_i
+          if problem_id == 0
+            error_update(["Un problème doit être sélectionné."]) and return
+          end
+          @subject.problem = Problem.find_by_id(problem_id)
+          if @subject.problem.nil? # Here we can check that the user has indeed access to the problem but it is annoying to do
+            render 'errors/access_refused' and return
+          end
         else
           @subject.chapter = Chapter.find_by_id(chapter_id)
           if @subject.chapter.nil?
             render 'errors/access_refused' and return
           end
+          @subject.problem = nil
           question_id = params[:subject][:question_id].to_i
           if question_id == 0
             @subject.question = nil
@@ -303,22 +347,27 @@ class SubjectsController < ApplicationController
       flash[:danger] = "Ce sujet n'existe pas."
       redirect_to @subject and return
     end
+
+    if @migreur.created_at > @subject.created_at
+      flash[:danger] = "Le sujet le plus récent doit être migré vers le sujet le moins récent."
+      redirect_to @subject and return
+    end
     
     premier_message = Message.new(content: @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]", created_at: @subject.created_at)
     premier_message.user = @subject.user
     premier_message.subject = @migreur
     premier_message.save
 
-    @subject.messages.order(:id).each do |m|
-      newm = Message.new(content: m.content, created_at: m.created_at)
-      newm.user = m.user
-      newm.subject = @migreur
-      newm.save
-      m.delete
+    @subject.messages.each do |m|
+      m.subject = @migreur
+      m.save
     end
 
-    @migreur.lastcomment = [@migreur.lastcomment, @subject.lastcomment].max
-    @migreur.save
+    if @subject.lastcomment > @migreur.lastcomment
+      @migreur.lastcomment = @subject.lastcomment
+      @migreur.lastcomment_user_id = @subject.lastcomment_user_id
+      @migreur.save
+    end
 
     @subject.delete
 
