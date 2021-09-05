@@ -151,7 +151,7 @@ GEM
       nokogiri (~> 1)
       rake
     mini_mime (1.1.1)
-    mini_portile2 (2.4.0)
+    mini_portile2 (2.5.3)
     minitest (5.14.4)
     momentjs-rails (2.20.1)
       railties (>= 3.1)
@@ -160,8 +160,9 @@ GEM
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.5.8)
-    nokogiri (1.10.10)
-      mini_portile2 (~> 2.4.0)
+    nokogiri (1.11.4)
+      mini_portile2 (~> 2.5.0)
+      racc (~> 1.4)
     paperclip (5.2.1)
       activemodel (>= 4.2.0)
       activesupport (>= 4.2.0)
@@ -170,6 +171,7 @@ GEM
       mimemagic (~> 0.3.0)
     pg (0.20.0)
     public_suffix (4.0.6)
+    racc (1.5.2)
     rack (2.2.3)
     rack-canonical-host (1.0.0)
       addressable (> 0, < 3)
@@ -355,7 +357,7 @@ DEPENDENCIES
   less-rails
   lograge
   momentjs-rails (>= 2.9.0)
-  nokogiri (~> 1.10.8)
+  nokogiri (~> 1.11.4)
   paperclip (~> 5.2.0)
   pg (~> 0.20.0)
   rack-canonical-host
