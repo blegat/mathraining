@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '5.0.2'
+gem 'rails', '= 5.1.0'
 #gem 'activeresource', '~> 4.1.0'
 # gem 'protected_attributes'
 gem "bootstrap-sass", "~> 3.4.1"
@@ -49,6 +49,8 @@ gem 'web-console', '~> 2.0', group: :development
   gem 'coffee-rails', '~> 4.2.1'
   gem 'uglifier', '>= 1.2.3'
 #end
+
+gem 'sassc', '= 2.1.0' # Otherwise it tries to install 2.4.0 and it fails for some reason
 
 gem 'jquery-rails'
 
