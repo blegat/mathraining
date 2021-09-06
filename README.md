@@ -1,7 +1,7 @@
 Mathraining
 ============
-[![Build Status](https://secure.travis-ci.org/blegat/mathraining.png)](http://travis-ci.org/blegat/mathraining)
-[![codecov](https://codecov.io/gh/blegat/mathraining/branch/master/graph/badge.svg)](https://codecov.io/gh/blegat/mathraining)
+[![Build Status](build-img)](build-url)
+[![codecov](codecov-img)](codecov-url)
 
 Description
 -----------
@@ -27,3 +27,9 @@ $ rake db:migrate
 $ rake db:test:prepare
 $ rspec .
 ```
+
+
+[build-img]: https://github.com/blegat/mathraining/workflows/CI/badge.svg?branch=master
+[build-url]: https://github.com/blegat/mathraining/actions?query=workflow%3ACI
+[codecov-img]: http://codecov.io/github/blegat/mathraining/coverage.svg?branch=master
+[codecov-url]: http://codecov.io/github/blegat/mathraining?branch=master
