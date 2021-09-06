@@ -15,7 +15,5 @@ class CreateForum < ActiveRecord::Migration[5.0]
       t.references :user
       t.timestamps
     end
-    
-    add_index :messages, :subject_id
   end
 end

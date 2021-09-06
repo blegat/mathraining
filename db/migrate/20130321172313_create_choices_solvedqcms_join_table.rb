@@ -5,5 +5,4 @@ class CreateChoicesSolvedqcmsJoinTable < ActiveRecord::Migration[5.0]
       t.references :solvedqcm
     end
   end
-  
 end

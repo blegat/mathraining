@@ -7,7 +7,6 @@ class CreateFakeFilesBis < ActiveRecord::Migration[5.0]
       t.integer :file_file_size
       t.datetime :file_updated_at
     end
-    add_index :fakesubmissionfiles, :submission_id
     
     create_table :fakecorrectionfiles do |t|
       t.references :correction
@@ -16,7 +15,6 @@ class CreateFakeFilesBis < ActiveRecord::Migration[5.0]
       t.integer :file_file_size
       t.datetime :file_updated_at
     end
-    add_index :fakecorrectionfiles, :correction_id
     
     create_table :fakesubjectfiles do |t|
       t.references :subject
@@ -25,7 +23,6 @@ class CreateFakeFilesBis < ActiveRecord::Migration[5.0]
       t.integer :file_file_size
       t.datetime :file_updated_at
     end
-    add_index :fakesubjectfiles, :subject_id
     
     create_table :fakemessagefiles do |t|
       t.references :message
@@ -34,6 +31,5 @@ class CreateFakeFilesBis < ActiveRecord::Migration[5.0]
       t.integer :file_file_size
       t.datetime :file_updated_at
     end
-    add_index :fakemessagefiles, :message_id
   end
 end
