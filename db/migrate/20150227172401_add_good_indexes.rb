@@ -1,4 +1,4 @@
-class AddGoodIndexes < ActiveRecord::Migration
+class AddGoodIndexes < ActiveRecord::Migration[5.0]
   def change
     remove_index :solvedqcms, :user_id
     add_index :solvedqcms, [:user_id, :resolutiontime], order: "DESC"

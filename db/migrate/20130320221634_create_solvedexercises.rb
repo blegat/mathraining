@@ -1,4 +1,4 @@
-class CreateSolvedexercises < ActiveRecord::Migration
+class CreateSolvedexercises < ActiveRecord::Migration[5.0]
   def change
     create_table :solvedexercises do |t|
       t.integer :user_id

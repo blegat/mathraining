@@ -1,4 +1,4 @@
-class CreateQcms < ActiveRecord::Migration
+class CreateQcms < ActiveRecord::Migration[5.0]
   def change
     create_table :qcms do |t|
       t.text :statement

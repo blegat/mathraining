@@ -1,4 +1,4 @@
-class AddIndexesForSubject < ActiveRecord::Migration
+class AddIndexesForSubject < ActiveRecord::Migration[5.0]
   def change
     # For admins (only time)
     add_index :subjects, :lastcomment, order: :asc

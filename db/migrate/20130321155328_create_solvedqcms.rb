@@ -1,4 +1,4 @@
-class CreateSolvedqcms < ActiveRecord::Migration
+class CreateSolvedqcms < ActiveRecord::Migration[5.0]
   def change
     create_table :solvedqcms do |t|
       t.integer :user_id

@@ -1,4 +1,4 @@
-class AddCategoriesToForum < ActiveRecord::Migration
+class AddCategoriesToForum < ActiveRecord::Migration[5.0]
   def change
     create_table :categories do |c|
       c.string :name

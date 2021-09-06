@@ -1,4 +1,4 @@
-class AddAttached < ActiveRecord::Migration
+class AddAttached < ActiveRecord::Migration[5.0]
   def change
     create_table :submissionfiles do |t|
       t.references :submission

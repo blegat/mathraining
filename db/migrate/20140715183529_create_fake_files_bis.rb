@@ -1,4 +1,4 @@
-class CreateFakeFilesBis < ActiveRecord::Migration
+class CreateFakeFilesBis < ActiveRecord::Migration[5.0]
   def change
     create_table :fakesubmissionfiles do |t|
       t.references :submission
