@@ -1,0 +1,23 @@
+name: CI Unit Tests
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby 2.5.1
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.5.1
+    - name: Build and test with Rake
+      env:
+        RAILS_ENV: test
+      run: |
+        export SECRET_KEY_BASE=$(bundle exec rake secret)
+        RAILS_ENV=test bundle exec rake db:migrate --trace
+        bundle exec rake db:test:prepare
+        bundle exec rake
