@@ -1,6 +1,6 @@
 class ChangeStructure < ActiveRecord::Migration[5.0]
   def change
-    add_column :problems, :section, :references
+    add_reference :problems, :section
     
     add_column :problems, :number, :integer, :default => 1
     
