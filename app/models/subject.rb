@@ -28,12 +28,12 @@ class Subject < ActiveRecord::Base
 
   has_many :messages, dependent: :destroy
   belongs_to :user
-  belongs_to :chapter
-  belongs_to :section
-  belongs_to :category
-  belongs_to :question
-  belongs_to :contest
-  belongs_to :problem
+  belongs_to :chapter, optional: true
+  belongs_to :section, optional: true
+  belongs_to :category, optional: true
+  belongs_to :question, optional: true
+  belongs_to :contest, optional: true
+  belongs_to :problem, optional: true
   belongs_to :lastcomment_user, class_name: "User"
   has_many :followingsubjects, dependent: :destroy
   has_many :following_users, through: :followingsubjects, source: :user

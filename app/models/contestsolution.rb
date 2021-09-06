@@ -21,7 +21,7 @@ class Contestsolution < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   belongs_to :contestproblem
-  belongs_to :user
+  belongs_to :user, optional: true
   has_one :contestcorrection, dependent: :destroy
   
   has_many :myfiles, as: :myfiletable, dependent: :destroy

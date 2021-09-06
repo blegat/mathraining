@@ -20,7 +20,7 @@ class Myfile < ActiveRecord::Base
   :path => ':rails_root/public/system/:attachment/:class/:id/:basename_:hash.:extension',
   :url => '/system/:attachment/:class/:id/:basename_:hash.:extension',
   :hash_secret => "longSecretString"
-  belongs_to :myfiletable, polymorphic: true
+  belongs_to :myfiletable, polymorphic: true, optional: true # Optional: true is needed because when we create the file we don't have yet the object
 
   # VALIDATIONS
 

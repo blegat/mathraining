@@ -26,7 +26,7 @@ class Problem < ActiveRecord::Base
 
   has_and_belongs_to_many :chapters, -> {distinct}
   belongs_to :section
-  belongs_to :virtualtest
+  belongs_to :virtualtest, optional: true
 
   has_many :submissions, dependent: :destroy
   has_many :solvedproblems, dependent: :destroy

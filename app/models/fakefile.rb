@@ -16,6 +16,6 @@ class Fakefile < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY
 
-  belongs_to :fakefiletable, polymorphic: true
+  belongs_to :fakefiletable, polymorphic: true, optional: true
 
 end

@@ -1,6 +1,6 @@
 require "resque_web"
 
-Mathraining::Application.routes.draw do
+Rails.application.routes.draw do
 
   # Sections
   resources :sections, only: [:show, :edit, :update] do

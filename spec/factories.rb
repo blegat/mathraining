@@ -107,6 +107,7 @@ FactoryGirl.define do
   # Solved problem
   factory :solvedproblem do
     association :problem
+    association :submission
     association :user
   end
   
