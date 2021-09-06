@@ -57,8 +57,8 @@ end
 
 Rails.application.load_seed
 
-Capybara::Webkit.configure do |config|
-  config.block_unknown_urls
-  config.debug = false
-end
+#Capybara::Webkit.configure do |config|
+#  config.block_unknown_urls
+#  config.debug = false
+#end
 
