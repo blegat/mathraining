@@ -23,7 +23,7 @@ jobs:
         #bundle update rake
         #gem update --system 2.5.1
         #gem install bundler --version 2.2.27
-        #export SECRET_KEY_BASE=$(bundle exec rake secret)
-        #RAILS_ENV=test bundle exec rake db:migrate --trace
-        #bundle exec rake db:test:prepare
+        export SECRET_KEY_BASE=$(bundle exec rake secret)
+        RAILS_ENV=test bundle exec rake db:migrate --trace
+        bundle exec rake db:test:prepare
         bundle exec rake
