@@ -31,10 +31,6 @@ class CreateDiscussions < ActiveRecord::Migration[5.0]
       t.datetime :file_updated_at
     end
 
-    add_index :faketchatmessagefiles, :tchatmessage_id
-    add_index :tchatmessagefiles, :tchatmessage_id
-    add_index :links, :discussion_id
-    add_index :links, :user_id
     add_index :tchatmessages, [:discussion_id, :created_at], order: "DESC", unique: true
   end
 end
