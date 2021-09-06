@@ -6,7 +6,7 @@ gem 'rails', '= 5.2.0'
 #gem 'activeresource', '~> 4.1.0'
 # gem 'protected_attributes'
 gem "bootstrap-sass", "~> 3.4.1"
-gem 'bcrypt-ruby', '3.1.2'
+gem 'bcrypt', '3.1.16'
 gem 'faker', '1.0.1'
 gem 'will_paginate', '3.1.6'
 gem 'bootstrap-will_paginate', '0.0.10'

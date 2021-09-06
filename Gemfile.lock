@@ -56,7 +56,7 @@ GEM
     arel (9.0.0)
     autoprefixer-rails (10.3.3.0)
       execjs (~> 2)
-    bcrypt-ruby (3.1.2)
+    bcrypt (3.1.16)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     bootstrap-sass (3.4.1)
@@ -342,7 +342,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord-session_store
   annotate (~> 3.1.1)
-  bcrypt-ruby (= 3.1.2)
+  bcrypt (= 3.1.16)
   bootstrap-sass (~> 3.4.1)
   bootstrap-will_paginate (= 0.0.10)
   bootstrap3-datetimepicker-rails (~> 4.14.30)
