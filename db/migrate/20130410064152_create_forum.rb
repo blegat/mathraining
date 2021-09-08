@@ -1,4 +1,4 @@
-class CreateForum < ActiveRecord::Migration
+class CreateForum < ActiveRecord::Migration[5.0]
   def change
     create_table :subjects do |t|
       t.string :title
@@ -15,7 +15,5 @@ class CreateForum < ActiveRecord::Migration
       t.references :user
       t.timestamps
     end
-    
-    add_index :messages, :subject_id
   end
 end

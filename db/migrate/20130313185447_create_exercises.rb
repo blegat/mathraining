@@ -1,10 +1,10 @@
-class CreateExercises < ActiveRecord::Migration
+class CreateExercises < ActiveRecord::Migration[5.0]
   def change
     create_table :exercises do |t|
       t.text :statement
       t.boolean :decimal, default: false
       t.float :answer
-      t.integer :chapter_id
+      t.references :chapter
       t.integer :position
 
       t.timestamps

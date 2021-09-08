@@ -6,7 +6,7 @@ class CreateQuestions < ActiveRecord::Migration[5.0]
       t.boolean :decimal, default: false
       t.float :answer 
       t.boolean :many_answers, default: false
-      t.integer :chapter_id
+      t.references :chapter
       t.integer :position
       t.boolean :online, default: false
       t.text :explanation
@@ -20,14 +20,14 @@ class CreateQuestions < ActiveRecord::Migration[5.0]
     create_table :items do |t|
       t.string :ans
       t.boolean :ok, default: false
-      t.integer :question_id
+      t.references :question
 
       t.timestamps
     end
     
     create_table :solvedquestions do |t|
-      t.integer :user_id
-      t.integer :question_id
+      t.references :user
+      t.references :question
       t.float :guess
       t.boolean :correct
       t.integer :nb_guess
@@ -43,8 +43,6 @@ class CreateQuestions < ActiveRecord::Migration[5.0]
     
     add_column :subjects, :question_id, :integer
     
-    add_index :items, :question_id
-    add_index :questions, :chapter_id
     add_index :solvedquestions, [:user_id, :resolutiontime], order: "DESC"
     add_index :solvedquestions, [:user_id, :question_id], unique: true
     add_index :solvedquestions, :resolutiontime, order: "DESC"

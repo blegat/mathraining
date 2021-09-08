@@ -1,4 +1,4 @@
-class AddGoodIndexes < ActiveRecord::Migration
+class AddGoodIndexes < ActiveRecord::Migration[5.0]
   def change
     remove_index :solvedqcms, :user_id
     add_index :solvedqcms, [:user_id, :resolutiontime], order: "DESC"
@@ -12,20 +12,8 @@ class AddGoodIndexes < ActiveRecord::Migration
 
     remove_column :sections, :image
 
-    remove_index :subjects, :chapter_id
-    add_index :chapters, :section_id
-    add_index :chapters_problems, :problem_id
-    add_index :chapters_users, :user_id
-
-    add_index :exercises, :chapter_id
-    add_index :qcms, :chapter_id
-    add_index :theories, :chapter_id
-
     remove_index :followings, [:submission_id, :user_id]
-    add_index :followings, :submission_id
-    add_index :followings, :user_id
 
-    add_index :prerequisites, :chapter_id
     add_index :takentests, [:user_id, :virtualtest_id], unique: true
 
     remove_index :points, :user_id

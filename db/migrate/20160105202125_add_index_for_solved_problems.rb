@@ -1,4 +1,4 @@
-class AddIndexForSolvedProblems < ActiveRecord::Migration
+class AddIndexForSolvedProblems < ActiveRecord::Migration[5.0]
   def change
     add_index :solvedproblems, :truetime, order: "DESC"
     remove_index :solvedproblems, [:user_id, :resolutiontime]

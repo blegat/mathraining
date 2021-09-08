@@ -1,4 +1,4 @@
-class CreateTests < ActiveRecord::Migration
+class CreateTests < ActiveRecord::Migration[5.0]
   def change
     create_table :virtualtests do |t|
       t.integer :duration
@@ -7,8 +7,8 @@ class CreateTests < ActiveRecord::Migration
     end
     
     create_table :takentests do |t|
-      t.integer :user_id
-      t.integer :virtualtest_id
+      t.references :user
+      t.references :virtualtest
       t.datetime :takentime
       t.integer :status
     end

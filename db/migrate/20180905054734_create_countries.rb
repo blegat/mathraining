@@ -6,7 +6,7 @@ class CreateCountries < ActiveRecord::Migration[5.0]
     end
     
     rename_column :users, :country, :old_country
-    add_column :users, :country_id, :integer
+    add_reference :users, :country
     
     cy = [
     ["Afghanistan", "af"],

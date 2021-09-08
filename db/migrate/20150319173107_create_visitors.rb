@@ -1,4 +1,4 @@
-class CreateVisitors < ActiveRecord::Migration
+class CreateVisitors < ActiveRecord::Migration[5.0]
   def change
     create_table :visitors do |t|
       t.date :date
