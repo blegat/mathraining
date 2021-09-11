@@ -22,7 +22,9 @@ FactoryGirl.define do
   factory :item do
     association :question
     ans "42"
-    ok false
+    factory :item_correct do
+      ok true
+    end
     sequence(:position) { |n| n }
   end
   
@@ -41,21 +43,10 @@ FactoryGirl.define do
     content "Foobar"
   end
   
+  # Country
   factory :country do
     name "Lune"
     code "lu"
-  end
-  
-  # Question
-  factory :question do
-    association :chapter
-    statement "Foobar"
-    decimal false
-    many_answers false
-    answer 42
-    sequence(:position) { |n| n }
-    level 1
-    explanation "explication"
   end
   
   # Following
@@ -86,6 +77,32 @@ FactoryGirl.define do
     online false
   end
   
+  # Question
+  factory :question do
+    association :chapter
+    statement "Foobar"
+    answer 0 # Mandatory (maybe it should not be)
+    factory :exercise do
+      decimal false
+      answer 42
+    end
+    factory :exercise_decimal do
+      decimal true
+      answer 42.42
+    end
+    factory :qcm do
+      is_qcm true
+      many_answers false
+    end
+    factory :qcm_multiple do
+      is_qcm true
+      many_answers true
+    end
+    sequence(:position) { |n| n }
+    level 1
+    explanation "explication"
+  end
+  
   # Section
   factory :section do
     sequence(:name) { |n| "Section#{n}" }
@@ -97,7 +114,7 @@ FactoryGirl.define do
   
   # Solved question
   factory :solvedquestion do
-    association :question
+    association :question, :factory => :exercise
     association :user
     correct false
     guess 42

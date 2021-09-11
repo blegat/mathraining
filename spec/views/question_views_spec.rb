@@ -12,8 +12,8 @@ describe "Exercise views" do
   let(:user) { FactoryGirl.create(:user) }
   let(:section) { FactoryGirl.create(:section) }
   let(:online_chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:online_exercise) { FactoryGirl.create(:question, chapter: online_chapter, online: true, position: 1) }
-  let!(:offline_exercise) { FactoryGirl.create(:question, chapter: online_chapter, online: false, position: 2) }
+  let!(:online_exercise) { FactoryGirl.create(:exercise, chapter: online_chapter, online: true, position: 1) }
+  let!(:offline_exercise) { FactoryGirl.create(:exercise_decimal, chapter: online_chapter, online: false, position: 2) }
 
   describe "visitor" do
     describe "visits online exercise" do

@@ -45,17 +45,21 @@ describe "Theory pages" do
         before do
           click_button "Marquer comme lu"
           online_theory_2.reload
+          user.reload
         end
         it { should_not have_button "Marquer comme lu" }
         it { should have_button "Marquer comme non lu" }
+        specify { expect(user.theories.exists?(online_theory_2.id)).to eq(true) }
         
         describe "and mark it back as unread" do
           before do
             click_button "Marquer comme non lu"
             online_theory_2.reload
+            user.reload
           end
           it { should have_button "Marquer comme lu" }
           it { should_not have_button "Marquer comme non lu" }
+          specify { expect(user.theories.exists?(online_theory_2.id)).to eq(false) }
         end
       end
     end
@@ -103,7 +107,7 @@ describe "Theory pages" do
       end
     end
     
-    describe "check theory order" do
+    describe "checks theory order" do
       before { visit chapter_path(chapter, :type => 1, :which => online_theory.id) }
       it { should have_link "bas" }
       it { should_not have_link "haut" } # Because position 1 out of >= 3
@@ -125,8 +129,10 @@ describe "Theory pages" do
             online_theory.reload
             online_theory_2.reload
           end
-          specify { expect(online_theory.position).to eq(1) }
-          specify { expect(online_theory_2.position).to eq(2) }
+          specify do
+            expect(online_theory.position).to eq(1)
+            expect(online_theory_2.position).to eq(2)
+          end
         end
       end
     end
@@ -141,10 +147,12 @@ describe "Theory pages" do
           fill_in "MathInput", with: newcontent
           click_button "Créer"
         end
-        specify { expect(Theory.order(:id).last.title).to eq(newtitle) }
-        specify { expect(Theory.order(:id).last.content).to eq(newcontent) }
-        specify { expect(Theory.order(:id).last.position).to eq(1) }
-        specify { expect(Theory.order(:id).last.online).to eq(false) }
+        specify do
+          expect(Theory.order(:id).last.title).to eq(newtitle)
+          expect(Theory.order(:id).last.content).to eq(newcontent)
+          expect(Theory.order(:id).last.position).to eq(1)
+          expect(Theory.order(:id).last.online).to eq(false)
+        end
         it { should have_selector("h3", text: newtitle) }
         it { should have_button("Mettre en ligne") }
         
@@ -155,10 +163,12 @@ describe "Theory pages" do
             fill_in "MathInput", with: newcontent2
             click_button "Créer"
           end
-          specify { expect(Theory.order(:id).last.title).to eq(newtitle2) }
-          specify { expect(Theory.order(:id).last.content).to eq(newcontent2) }
-          specify { expect(Theory.order(:id).last.position).to eq(2) }
-          specify { expect(Theory.order(:id).last.online).to eq(false) }
+          specify do
+            expect(Theory.order(:id).last.title).to eq(newtitle2)
+            expect(Theory.order(:id).last.content).to eq(newcontent2)
+            expect(Theory.order(:id).last.position).to eq(2)
+            expect(Theory.order(:id).last.online).to eq(false)
+          end
           it { should have_selector("h3", text: newtitle2) }
         end
       end
@@ -186,8 +196,10 @@ describe "Theory pages" do
           click_button "Modifier"
           online_theory.reload
         end
-        specify { expect(online_theory.title).to eq(newtitle2) }
-        specify { expect(online_theory.content).to eq(newcontent2) }
+        specify do
+          expect(online_theory.title).to eq(newtitle2)
+          expect(online_theory.content).to eq(newcontent2)
+        end
       end
       
       describe "and sends with wrong information" do

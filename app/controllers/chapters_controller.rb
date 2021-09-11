@@ -46,14 +46,14 @@ class ChaptersController < ApplicationController
   # Editer un chapitre 2 : il faut vérifier que l'on est admin
   def update
     old_level = @chapter.level
-    last_chapter = @section.chapters.where(:level => params[:chapter][:level]).order(:position).last
-    if last_chapter.nil?
-      position = 1
-    else
-      position = last_chapter.position + 1
-    end
     if @chapter.update_attributes(params.require(:chapter).permit(:name, :description, :level, :author))
       if old_level != @chapter.level
+        last_chapter = @section.chapters.where(:level => params[:chapter][:level]).order(:position).last
+        if last_chapter.nil?
+          position = 1
+        else
+          position = last_chapter.position + 1
+        end
         @chapter.position = position
         @chapter.save
       end
@@ -67,17 +67,6 @@ class ChaptersController < ApplicationController
   # Supprimer un chapitre : il faut vérifier que l'on est admin (et que le chapitre n'est pas en ligne)
   def destroy
     @chapter.destroy
-
-    Theory.where(:chapter_id => params[:id]).each do |t|
-      t.destroy
-    end
-    
-    Question.where(:chapter_id => params[:id]).each do |q|
-      Item.where(:question_id => q.id).each do |c|
-        c.destroy
-      end
-      q.destroy
-    end
     flash[:success] = "Chapitre supprimé."
     redirect_to section_path(@section)
   end
