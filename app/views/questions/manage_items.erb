@@ -22,7 +22,7 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
         -
       </td>
       <td style="padding:5px;">
-        <%= g.text_field :ans, :class => "form-control", :style => "width:200px;" %>
+        <%= g.text_field :ans, :class => "form-control", :style => "width:200px;", :id => "update_item_field_" + f.id.to_s %>
       </td>
       <td>
         <center>
@@ -34,26 +34,26 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
         </center>
       </td>
       <td>
-        <%= g.submit "Modifier ce choix", class: "btn btn-primary" %>
+        <%= g.submit "Modifier ce choix", :class => "btn btn-primary", :id => "update_item_button_" + f.id.to_s %>
       </td>
       <td style="padding:10px;">
         <%= "Déplacer vers le : " if nb_item > 1 %>
-        <%= link_to "haut", question_up_item_path(@question, f), :method => :put if i > 0 %>
+        <%= link_to "haut", question_up_item_path(@question, f), :method => :put, :id => ("update_item_up_" + f.id.to_s) if i > 0 %>
         <%= " - " if i > 0 && i < nb_item-1 %>
-        <%= link_to "bas", question_down_item_path(@question, f), :method => :put if i < nb_item-1 %>
+        <%= link_to "bas", question_down_item_path(@question, f), :method => :put, :id => ("update_item_down_" + f.id.to_s) if i < nb_item-1 %>
       </td>
       <% unless @question.online %>
         <td style="padding:10px;">
           <% if f.ok %>
             <% if @question.many_answers %>
-              <%= link_to "Rendre ce choix erroné", question_switch_item_path(@question, f), :method => :put %>
+              <%= link_to "Rendre ce choix erroné", question_switch_item_path(@question, f), :method => :put, :id => ("update_item_incorrect_" + f.id.to_s) %>
             <% end %>
           <% else %>
-            <%= link_to "Rendre ce choix correct", question_switch_item_path(@question, f), :method => :put %>
+            <%= link_to "Rendre ce choix correct", question_switch_item_path(@question, f), :method => :put, :id => ("update_item_correct_" + f.id.to_s) %>
           <% end %>
         </td>
         <td style="padding:10px;">
-          <%= link_to "Supprimer ce choix", question_remove_item_path(@question, f), :method => :put %>
+          <%= link_to "Supprimer ce choix", question_remove_item_path(@question, f), :method => :put, :id => ("update_item_delete_" + f.id.to_s) %>
         </td>
       <% end %>
     </tr>
@@ -69,15 +69,15 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
     <td>
     </td>
     <td style="padding:5px;">
-      <%= f.text_field :ans, :class => "form-control", :style => "width:200px;"  %>
+      <%= f.text_field :ans, :class => "form-control", :style => "width:200px;", :id => "create_item_field" %>
     </td>
     <td>
       <center>
-      <%= f.check_box :ok %>
+      <%= f.check_box :ok, :id => "create_item_value" %>
       </center>
     </td>
     <td>
-      <%= f.submit "Ajouter ce choix", class: "btn btn-primary" %>
+      <%= f.submit "Ajouter ce choix", :class => "btn btn-primary", :id => "create_item_button" %>
     </td>
     <td>
     </td>

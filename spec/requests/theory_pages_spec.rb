@@ -7,9 +7,8 @@ describe "Theory pages" do
 
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
-  let!(:section) { FactoryGirl.create(:section) }
-  let!(:chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:empty_chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
+  let!(:chapter) { FactoryGirl.create(:chapter, online: true) }
+  let!(:empty_chapter) { FactoryGirl.create(:chapter, online: true) }
   let!(:online_theory) { FactoryGirl.create(:theory, chapter: chapter, online: true, position: 1) }
   let!(:online_theory_2) { FactoryGirl.create(:theory, chapter: chapter, online: true, title: "Autre titre", content: "Autre contenu", position: 2) }
   let!(:offline_theory) { FactoryGirl.create(:theory, chapter: chapter, online: false, position: 3) }

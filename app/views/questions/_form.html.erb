@@ -60,7 +60,7 @@
   <% if qcm == 0 %>
     <!-- pas QCM -->
     <div class="form-group">
-      <%= f.label "Réponse" %>
+      <%= f.label :answer %>
       <%= f.text_field :answer, :class => "form-control", :style => "width:100px;" %>
     </div>
     <div class="checkbox">
@@ -81,7 +81,7 @@
     
   <!-- Niveau -->
   <div class="form-group">
-    <%= f.label "Niveau (entre 1 et 4)" %>
+    <%= f.label :level %>
     <%= f.number_field :level, :class => "form-control", :style => "width:50px;", :min => 1, :max => 4 %>
   </div>
 <% end %>

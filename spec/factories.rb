@@ -83,10 +83,12 @@ FactoryGirl.define do
     statement "Foobar"
     answer 0 # Mandatory (maybe it should not be)
     factory :exercise do
+      is_qcm false
       decimal false
       answer 42
     end
     factory :exercise_decimal do
+      is_qcm false
       decimal true
       answer 42.42
     end
