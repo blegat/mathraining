@@ -29,7 +29,7 @@ $ rspec .
 ```
 
 
-[build-img]: https://github.com/blegat/mathraining/workflows/CI/badge.svg?branch=master
-[build-url]: https://github.com/blegat/mathraining/actions?query=workflow%3ACI
-[codecov-img]: http://codecov.io/github/blegat/mathraining/coverage.svg?branch=master
-[codecov-url]: http://codecov.io/github/blegat/mathraining?branch=master
+[build-img]: https://github.com/blegat/mathraining/actions/workflows/ci.yml/badge.svg
+[build-url]: https://github.com/blegat/mathraining/actions/workflows/ci.yml
+[codecov-img]: https://codecov.io/master/blegat/mathraining/branch/master/graph/badge.svg?token=npRf7TYZ7e
+[codecov-url]: https://codecov.io/master/blegat/mathraining
