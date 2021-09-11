@@ -19,12 +19,12 @@ describe "Actuality pages" do
     
     describe "tries to create an actuality" do
       before { visit new_actuality_path }
-      it { should_not have_selector("h1", text: "Ajouter") }
+      it { should_not have_selector("h1", text: "Ajouter une actualité") }
     end
     
     describe "tries to edit an actuality" do
       before { visit edit_actuality_path(actuality) }
-      it { should_not have_selector("h1", text: "Modifier") }
+      it { should_not have_selector("h1", text: "Modifier une actualité") }
     end
   end
 
@@ -37,7 +37,7 @@ describe "Actuality pages" do
     
     describe "creates an actuality" do
       before { visit new_actuality_path }
-      it { should have_selector("h1", text: "Ajouter") }
+      it { should have_selector("h1", text: "Ajouter une actualité") }
       describe "and sends with good information" do
         before do
           fill_in "Titre", with: newtitle
@@ -54,14 +54,14 @@ describe "Actuality pages" do
           click_button "Créer"
         end
         it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Ajouter") }
+        it { should have_selector("h1", text: "Ajouter une actualité") }
         specify { expect(Actuality.order(:id).last.content).to_not eq(newcontent) }
       end
     end
     
     describe "edits an actuality" do
       before { visit edit_actuality_path(actuality) }
-      it { should have_selector("h1", text: "Modifier") }
+      it { should have_selector("h1", text: "Modifier une actualité") }
       describe "and sends with good information" do
         before do
           fill_in "Titre", with: newtitle
@@ -80,7 +80,7 @@ describe "Actuality pages" do
           actuality.reload
         end
         it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Modifier") }
+        it { should have_selector("h1", text: "Modifier une actualité") }
         specify { expect(actuality.title).to_not eq(newtitle) }
       end
     end
