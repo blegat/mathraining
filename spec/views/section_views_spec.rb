@@ -44,7 +44,7 @@ describe "Section views" do
     describe "visit section/showpb" do
       before { visit pb_sections_path(section) }
       it { should have_selector("h1", text: section.name) }
-      it { should have_selector("div", text: "Les problèmes ne sont pas accessibles aux utilisateurs ayant un score inférieur à 200.") } 
+      it { should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.") } 
     end
   end
   
@@ -54,7 +54,7 @@ describe "Section views" do
     describe "visit section/showpb" do
       before { visit pb_sections_path(section) }
       it { should have_selector("h1", text: section.name) }
-      it { should_not have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.") } 
+      it { should have_selector("h2", text: "Niveau 1") } 
     end
   end
 

@@ -11,7 +11,7 @@
   
 <!-- Origine -->
 <div class="form-group">
-  <%= f.label "Origine" %> (laisser blanc si d'origine inconnue)
+  <%= f.label :origin %> (laisser blanc si d'origine inconnue)
   <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "max-width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
 </div>
 
@@ -20,7 +20,7 @@
   <b>Niveau (entre 1 et 5)</b> : <b><%= problem.level %></b><br/><br/>
 <% else %>
   <div class="form-group">
-  <%= f.label "Niveau (entre 1 et 5)" %>
+  <%= f.label :level %>
   <%= f.number_field :level, :class => "form-control", :style => "width:50px;", :min => 1, :max => 5 %>
   </div>
 <% end %>

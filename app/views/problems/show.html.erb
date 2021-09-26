@@ -35,7 +35,7 @@
 
         Faire appartenir ce problème à :
         <%= f.select(:virtualtest_id, options_for_select(liste, selectionne), {}, {:prompt => true, :class => "form-control"}) %>
-        <%= f.submit "OK", class: "btn btn-primary" %>
+        <%= f.submit "OK", class: "btn btn-primary", id: "add_to_virtualtest_button" %>
       </div>
     <% end %>
   <% end %>
@@ -75,7 +75,7 @@
     <div class="form-inline">
         Ajouter le prérequis :
         <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, {:prompt => true, :class => "form-control"}) %>
-        <%= f.submit "OK", class: "btn btn-primary" %>
+        <%= f.submit "OK", class: "btn btn-primary", id: "new_prerequisite_button" %>
       </div>
     <% end %>
 
