@@ -34,7 +34,7 @@ class Subject < ActiveRecord::Base
   belongs_to :question, optional: true
   belongs_to :contest, optional: true
   belongs_to :problem, optional: true
-  belongs_to :lastcomment_user, class_name: "User"
+  belongs_to :lastcomment_user, class_name: "User", optional: true # For automatic messages
   has_many :followingsubjects, dependent: :destroy
   has_many :following_users, through: :followingsubjects, source: :user
   has_many :myfiles, as: :myfiletable, dependent: :destroy
