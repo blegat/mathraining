@@ -27,7 +27,7 @@ class Subject < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   has_many :messages, dependent: :destroy
-  belongs_to :user
+  belongs_to :user, optional: true # For automatic messages
   belongs_to :chapter, optional: true
   belongs_to :section, optional: true
   belongs_to :category, optional: true

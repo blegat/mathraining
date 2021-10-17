@@ -16,7 +16,7 @@ class Message < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   belongs_to :subject
-  belongs_to :user
+  belongs_to :user, optional: true # For automatic messages
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 
