@@ -191,19 +191,24 @@ class SolvedquestionsController < ApplicationController
       end
     else
       # EXO
-      if first_sub || @link.guess != params[:solvedquestion][:guess].gsub(",",".").to_f
+      if @question.decimal
+        guess = params[:solvedquestion][:guess].gsub(",",".").gsub(" ","").to_f # Replace "," by "." and remove possible white space after comma
+      else
+        guess = params[:solvedquestion][:guess].to_i
+      end
+      if first_sub || @link.guess != guess
         @link.nb_guess = (first_sub ? 1 : @link.nb_guess + 1)
-        @link.guess = params[:solvedquestion][:guess].gsub(",",".").to_f
+        @link.guess = guess
         @link.resolutiontime = DateTime.now
 
         if @question.decimal
-          if absolu(@question.answer, @link.guess) < 0.001
+          if absolu(@question.answer, guess) < 0.001
             @link.correct = true
           else
             @link.correct = false
           end
         else
-          if @question.answer.to_i == @link.guess.to_i
+          if @question.answer.to_i == guess
             @link.correct = true
           else
             @link.correct = false
