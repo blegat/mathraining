@@ -128,6 +128,8 @@ FactoryGirl.define do
     association :problem
     association :submission
     association :user
+    resolutiontime DateTime.current
+    truetime DateTime.current
   end
   
   # Subject
@@ -153,7 +155,8 @@ FactoryGirl.define do
   factory :submission do
     association :problem
     association :user
-    content "Foobar"
+    content "Interesting submission"
+    lastcomment DateTime.current
   end
   
   # Theory
@@ -179,11 +182,14 @@ FactoryGirl.define do
     last_policy_read true
     factory :admin do
       admin true
-      root false
     end
     factory :root do
       admin true
       root true
+    end
+    factory :corrector do
+      corrector true
+      rating 200
     end
     factory :advanced_user do
       rating 200

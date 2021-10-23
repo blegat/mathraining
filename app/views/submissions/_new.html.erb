@@ -32,7 +32,7 @@
     Je garantis également que cette solution n'a pas déjà été soumise via un autre compte Mathraining.<sup>1</sup>
   </label><br/><br/>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", id: "send-button", style: "margin-bottom:5px;", :disabled => true, data: { confirm: "Êtes-vous sûr de vouloir soumettre cette solution ?" } %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", id: "send-button", style: "margin-bottom:5px;", :disabled => !Rails.env.test?, data: { confirm: "Êtes-vous sûr de vouloir soumettre cette solution ?" } %>
   <%= f.submit "Enregistrer comme brouillon", class: "btn btn-default btn-grey", style: "margin-bottom:5px;", :disabled => current_user.other %>
 <% end %>
 

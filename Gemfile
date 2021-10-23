@@ -65,7 +65,8 @@ group :test do
   gem 'factory_girl_rails', '4.1.0'
   gem 'database_cleaner', '1.5.3'
   #gem 'capybara-webkit'
-  gem 'selenium-webdriver', '2.53.4'
+  #gem 'selenium-webdriver', '2.53.4'
+  #gem 'poltergeist'
   # Code coverage
   gem 'simplecov', :require => false
   gem 'codecov', :require => false

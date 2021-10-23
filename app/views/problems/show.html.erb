@@ -176,9 +176,9 @@
       <% @brouillon = true if @problem.submissions.where('user_id = ? AND status < 0', current_user.sk).count > 0 %>
       <% if soumission != 0 %>
         <% if !@brouillon %>
-          <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Nouvelle soumission</button>
+          <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-default btn-grey" %>
         <% else %>
-          <button class="btn btn-default btn-grey" onclick="location.href='<%= problem_path(@problem, :sub => 0)  %>'">Reprendre le brouillon</button>
+          <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-default btn-grey" %>
         <% end %>
       <% end %>
     <% end %>

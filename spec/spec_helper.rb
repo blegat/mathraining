@@ -16,6 +16,8 @@ require "rspec/rails"
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
+#require 'capybara/poltergeist'
+
 RSpec.configure do |config|
   # ## Mock Framework
   #
@@ -48,9 +50,10 @@ RSpec.configure do |config|
   
   config.include Rails.application.routes.url_helpers
   
-  Capybara.javascript_driver = :webkit
+  #Capybara.javascript_driver = :webkit
+  #Capybara.javascript_driver = :poltergeist
   
-  config.use_transactional_fixtures = true # If we put false then the javascript stuff (sometimes) work but many other tests fail. If we put true the javascript does not work because the database is empty
+  #config.use_transactional_fixtures = true # If we put false then the javascript stuff (sometimes) work but many other tests fail. If we put true the javascript does not work because the database is empty
   
   #DatabaseCleaner.strategy = :truncation
 end
