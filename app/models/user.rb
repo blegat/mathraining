@@ -80,7 +80,8 @@ class User < ActiveRecord::Base
   belongs_to :country
 
   has_many :followingusers, dependent: :destroy
-  has_many :followed_users, :class_name => "User", through: :followingusers, :foreign_key => "followed_user_id"
+  has_many :followed_users, :class_name => "User", through: :followingusers, foreign_key: "followed_user_id"
+  has_many :backwardfollowingusers, class_name: "Followinguser", dependent: :destroy, foreign_key: "followed_user_id"
   
   has_many :chaptercreations, dependent: :destroy
   has_many :creating_chapters, through: :chaptercreations, source: :chapter

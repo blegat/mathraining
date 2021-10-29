@@ -45,8 +45,8 @@ FactoryGirl.define do
   
   # Country
   factory :country do
-    name "Lune"
-    code "lu"
+    sequence(:name) { |n| "Pays#{n}" }
+    code "be" # Should be a value for which a flag exists!
   end
   
   # Following

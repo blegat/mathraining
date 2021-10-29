@@ -166,7 +166,6 @@ Rails.application.routes.draw do
   match '/activate', to: 'users#activate', :via => [:get]
   match '/forgot_password', to: 'users#forgot_password', :via => [:get]
   match '/password_forgotten', to: 'users#password_forgotten', :via => [:post]
-  match '/compare', to: 'users#compare', :via => [:get] # To delete one day
   
   # Email subscriptions (subjects, discussions and contests)
   resources :followingsubjects, only: []

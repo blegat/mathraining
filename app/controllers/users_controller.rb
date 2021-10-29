@@ -6,9 +6,10 @@ class UsersController < ApplicationController
   before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:unactivate, :reactivate, :switch_wepion, :change_group]
+  before_action :target_not_root, only: [:destroy, :destroydata]
   before_action :corrector_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
   before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_names, :validate_name, :change_name]
-  before_action :signed_out_user, only: [:new, :create, :password_forgotten]
+  before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :group_user, only: [:groups]
 
   # Index de tous les users avec scores
@@ -160,16 +161,6 @@ class UsersController < ApplicationController
   def show
   end
 
-  # Comparer deux utilisateurs: à supprimer un jour!
-  def compare
-    @user = []
-    @user[1] = User.find_by_id(params[:id1])
-    @user[2] = User.find_by_id(params[:id2])
-    if @user[1].nil? || !@user[1].active || @user[2].nil? || !@user[2].active
-      render 'errors/access_refused' and return
-    end
-  end
-
   # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
   def update
     old_last_name = @user.last_name
@@ -198,31 +189,24 @@ class UsersController < ApplicationController
 
   # Supprimer un utilisateur : il faut être root
   def destroy
-    if !@user.root?
-      skinner = User.where(skin: @user.id)
-      skinner.each do |s|
-        s.update_attribute(:skin, 0)
-      end
-      @user.destroy
-      flash[:success] = "Utilisateur supprimé."
-    else
-      flash[:danger] = "Il n'est pas possible de supprimer un root."
+    skinner = User.where(skin: @user.id)
+    skinner.each do |s|
+      s.update_attribute(:skin, 0)
     end
+    @user.destroy
+    flash[:success] = "Utilisateur supprimé."
     redirect_to @user
   end
 
   # Rendre administrateur : il faut être root
   def create_administrator
-    if @user.admin?
-      flash[:danger] = "I see what you did here! Mais non ;-)"
-    else
-      @user.toggle!(:admin)
-      skinner = User.where(skin: @user.id)
-      skinner.each do |s|
-        s.update_attribute(:skin, 0)
-      end
-      flash[:success] = "Utilisateur promu au rang d'administrateur !"
+    @user.admin = true
+    @user.save
+    skinner = User.where(skin: @user.id)
+    skinner.each do |s|
+      s.update_attribute(:skin, 0)
     end
+    flash[:success] = "Utilisateur promu au rang d'administrateur !"
     redirect_to @user
   end
 
@@ -267,7 +251,7 @@ class UsersController < ApplicationController
   def activate
     if !@user.email_confirm && @user.key.to_s == params[:key].to_s
       @user.toggle!(:email_confirm)
-      flash[:success] = "Votre compte a bien été activé! Veuillez maintenant vous connecter."
+      flash[:success] = "Votre compte a bien été activé ! Veuillez maintenant vous connecter."
     elsif @user.key.to_s != params[:key].to_s
       flash[:danger] = "Le lien d'activation est erroné."
     else
@@ -275,20 +259,24 @@ class UsersController < ApplicationController
     end
     redirect_to root_path
   end
+  
+  # Mot de passe oublié : première page
+  def forgot_password
+  end
 
-  # Mot de passe oublié
+  # Mot de passe oublié : vérification du captcha et envoi de l'email
   def password_forgotten
-      @user = User.new
-      if (Rails.env.production? and !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
-        render 'forgot_password'
-      else
+    @user = User.new
+    if (Rails.env.production? and !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
+      render 'forgot_password'
+    else
       @user = User.where(:email => params[:user][:email]).first
       if @user
         if @user.email_confirm
           @user.update_attribute(:key, SecureRandom.urlsafe_base64)
           @user.update_attribute(:recup_password_date_limit, DateTime.now)
           UserMailer.forgot_password(@user.id).deliver if Rails.env.production?
-          flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if Rails.env.development?
+          flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if !Rails.env.production?
           flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
         else
           flash[:danger] = "Veuillez d'abord confirmer votre adresse e-mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
@@ -300,7 +288,7 @@ class UsersController < ApplicationController
     end
   end
 
-  # Mot de passe oublié 2
+  # Mot de passe oublié : page pour changer son mot de passe (a laquelle on arrive depuis l'email)
   def recup_password  
     if @user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?
       flash[:danger] = "Ce lien n'est pas valide (ou a déjà été utilisé)."
@@ -324,7 +312,7 @@ class UsersController < ApplicationController
     end
   end
   
-  # Mot de passe oublié 3
+  # Mot de passe oublié : verification du nouveau mot de passe
   def change_password
     if (@user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?)
       flash[:danger] = "Une erreur est survenue. Il semble que votre lien pour changer de mot de passe ne soit plus valide."
@@ -411,6 +399,15 @@ class UsersController < ApplicationController
       @user.rating = 0
       @user.save
       @user.followingsubjects.each do |f|
+        f.destroy
+      end
+      @user.followingcontests.each do |f|
+        f.destroy
+      end
+      @user.followingusers.each do |f|
+        f.destroy
+      end
+      @user.backwardfollowingusers.each do |f|
         f.destroy
       end
     end
@@ -531,6 +528,12 @@ class UsersController < ApplicationController
       render 'errors/access_refused' and return
     end
   end
+  
+  def target_not_root
+    if @user.root?
+      render 'errors/access_refused' and return
+    end
+  end
 
   def fill_user_info(users, recent, persection, globalrank, rating, country, linked_name)
     if User.last.nil?
@@ -600,7 +603,7 @@ class UsersController < ApplicationController
     end
 
     Pointspersection.where(:user_id => ids).all.each do |p|
-	  persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
+	    persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
     end
   end
   
