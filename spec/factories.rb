@@ -18,16 +18,6 @@ FactoryGirl.define do
     level 1
   end
   
-  # Item
-  factory :item do
-    association :question
-    ans "42"
-    factory :item_correct do
-      ok true
-    end
-    sequence(:position) { |n| n }
-  end
-  
   # Color
   factory :color do
     pt 10000
@@ -54,6 +44,16 @@ FactoryGirl.define do
     association :submission
     association :user
     read false
+  end
+  
+  # Item
+  factory :item do
+    association :question
+    sequence(:ans) { |n| "42 + #{n}" }
+    factory :item_correct do
+      ok true
+    end
+    sequence(:position) { |n| n }
   end
   
   # Message
@@ -102,7 +102,7 @@ FactoryGirl.define do
     end
     sequence(:position) { |n| n }
     level 1
-    explanation "explication"
+    sequence(:explanation) { |n| "voici une explication #{ n }" }
   end
   
   # Section

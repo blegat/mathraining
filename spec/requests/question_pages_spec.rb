@@ -58,8 +58,6 @@ describe "Question pages" do
     describe "visits online exercise" do
       before { visit chapter_path(chapter, :type => 5, :which => online_exercise.id) }
       it { should have_selector("div", text: online_exercise.statement) }
-      
-      # Do some stuff with exercise
     end
     
     describe "visits offline exercise" do

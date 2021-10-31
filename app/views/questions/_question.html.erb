@@ -33,7 +33,7 @@
       <% f.items.order(:position).each do |c| %>
         <input type="hidden" name="question_id" value="<%= f.id %>" />
         <label class="checkbox-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-          <input type="checkbox" class="todisable" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
+          <input type="checkbox" class="todisable" id="ans[<%= c.id %>]" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
           <%= raw(c.ans) %>
         </label><br/>
       <% end %>
@@ -45,7 +45,7 @@
       <input type="hidden" name="question_id" value="<%= f.id %>" />
       <% f.items.order(:position).each do |c| %>
         <label class="radio-inline" style="padding-top:5px; padding-bottom:5px; margin-left:5px;">
-          <input type="radio" class="todisable" name="ans" value="<%= c.id %>" <%= "checked" if !item.nil? && c.id == item.id %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
+          <input type="radio" class="todisable" id="ans[<%= c.id %>]" name="ans" value="<%= c.id %>" <%= "checked" if !item.nil? && c.id == item.id %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
           <%= raw(c.ans) %>
         </label><br/>
       <% end %>
