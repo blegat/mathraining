@@ -19,7 +19,7 @@
 
   <!-- Si moins de 200 points, on ne peut rien voir -->
   <div style="font-weight:bold;">
-  Les tests virtuels ne sont pas accessibles aux utilisateurs ayant un score inférieur à 200.
+  Les tests virtuels ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.
   </div>
 
 <% else %>
@@ -125,7 +125,7 @@
       <div class="module right-info" style="padding-bottom:10px;">
       <h4>Statistiques</h4>
       Terminé par <b><%= nb_u %></b> personne<%= "s" if nb_u > 1 %><br/>
-      <% if nb_u >= 3 || current_user.sk.admin %>
+      <% if current_user.sk.admin || (nb_u >= 3 && status > 0) %>
         Score moyen : <b><%= moy.round(1) if moy >= 0 %><%= "-" if moy < 0 %> / <%= 7*h %></b>
       <% end %>
       </div>
@@ -205,7 +205,7 @@
         <% end %>
       <% end %>
       
-      <!-- Si étudiant en cours de test -->
+      <!-- Si l'étudiant n'a pas encore commencé le test -->
       <% if !current_user.sk.admin? && status == -1 %>
         <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: current_user.other, style: "margin-top:15px; margin-bottom:5px;", data: { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" } %></center>
       <% end %>
@@ -252,7 +252,7 @@
           <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px; margin-top:10px;" %>
           <%= "(Au moins un problème nécessaire)" if nb_prob == 0 %>
           <%= "(Problèmes doivent être en ligne)" if nb_prob > 0 %>
-          <br/><br/>
+          <br/>
         <% end %>
         </center>
       <% end %>
@@ -265,7 +265,7 @@
   <!-- Ajouter un test -->
   <% if current_user.sk.admin? %>
     <center>
-    <%= button_to "Ajouter un test virtuel", new_virtualtest_path, method: :get, class: 'btn btn-lg btn-default btn-grey' %>
+    <%= link_to "Ajouter un test virtuel", new_virtualtest_path, class: 'btn btn-lg btn-default btn-grey' %>
     </center>
   <% end %>
 

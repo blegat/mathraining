@@ -55,7 +55,6 @@ describe "Problem pages" do
       it { should_not have_selector("h1", text: "Problème ##{online_problem.number}") }
       it { should have_selector("span", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
     end
-    
   end
   
   describe "user with rating 200" do
@@ -99,7 +98,6 @@ describe "Problem pages" do
       it { should_not have_selector("h1", text: "Problème ##{online_problem_with_prerequisite.number}") }
       it { should have_selector("span", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
     end
-    
   end
   
   describe "user with rating 200 and completed chapter" do
@@ -132,7 +130,6 @@ describe "Problem pages" do
       before { visit edit_problem_path(online_problem) }
       it { should_not have_selector("h1", text: "Modifier") }
     end
-    
   end
   
   describe "admin" do
