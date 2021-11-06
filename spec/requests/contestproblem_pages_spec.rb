@@ -60,12 +60,12 @@ describe "Contestproblem pages" do
     before { sign_in user_with_rating_199 }
 
     describe "visits one contestproblem page" do
-      before { visit contestproblem_path(contestproblem.id) }
+      before { visit contestproblem_path(contestproblem) }
       it { should have_selector("h1", text: "Problème ##{contestproblem.number}") }
     end
     
     describe "tries to visit an offline contestproblem page" do
-      before { visit contestproblem_path(offline_contestproblem.id) }
+      before { visit contestproblem_path(offline_contestproblem) }
       it { should have_content("Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
     end
   end
@@ -74,15 +74,15 @@ describe "Contestproblem pages" do
     before { sign_in user_organizer }
     
     describe "visits offline contestproblem page" do
-      before { visit contestproblem_path(offline_contestproblem.id) }
+      before { visit contestproblem_path(offline_contestproblem) }
       it { should have_selector("h1", text: "Problème ##{offline_contestproblem.number}") }
-      it { should have_link("Modifier ce problème", href: edit_contestproblem_path(offline_contest.id)) }
+      it { should have_link("Modifier ce problème", href: edit_contestproblem_path(offline_contest)) }
       it { should have_link("Supprimer ce problème") }
       specify { expect { click_link "Supprimer ce problème" }.to change(Contestproblem, :count).by(-1) }
     end
     
     describe "visits contestproblem creation page" do
-      before { visit new_contest_contestproblem_path(offline_contest.id) }
+      before { visit new_contest_contestproblem_path(offline_contest) }
       it { should have_selector("h1", text: "Ajouter un problème") }
       
       describe "and creates a problem" do
@@ -169,7 +169,7 @@ describe "Contestproblem pages" do
     end
     
     describe "visits contestproblem edit page" do
-      before { visit edit_contestproblem_path(offline_contestproblem.id) }
+      before { visit edit_contestproblem_path(offline_contestproblem) }
       it { should have_selector("h1", text: "Modifier") }
       
       describe "and modifies it" do
@@ -196,7 +196,7 @@ describe "Contestproblem pages" do
         offline_contest.save
         offline_contestproblem.status = 2
         offline_contestproblem.save
-        visit edit_contestproblem_path(offline_contestproblem.id)
+        visit edit_contestproblem_path(offline_contestproblem)
       end
       it { should have_selector("h1", text: "Modifier") }
       it { should have_field("Parution du problème", disabled: true) }
@@ -222,7 +222,7 @@ describe "Contestproblem pages" do
         offline_contest.save
         offline_contestproblem.status = 3
         offline_contestproblem.save
-        visit edit_contestproblem_path(offline_contestproblem.id)
+        visit edit_contestproblem_path(offline_contestproblem)
       end
       it { should have_selector("h1", text: "Modifier") }
       it { should have_field("Parution du problème", disabled: true) }
@@ -247,7 +247,7 @@ describe "Contestproblem pages" do
     before { sign_in root }
     
     describe "visits online contestproblem page" do
-      before { visit contestproblem_path(contestproblem.id) }
+      before { visit contestproblem_path(contestproblem) }
       it { should have_selector("h1", text: "Problème ##{contestproblem.number}") }
       it { should have_link("Autoriser nouvelles corrections") }
       

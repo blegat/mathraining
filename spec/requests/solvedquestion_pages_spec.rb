@@ -19,11 +19,11 @@ describe "Solvedquestion pages" do
   
   describe "user" do
     let!(:rating_before) { user.rating }
-    let!(:section_rating_before) { user.pointspersections.where(:section_id => section.id).first.points }
+    let!(:section_rating_before) { user.pointspersections.where(:section_id => section).first.points }
     before { sign_in user }
     
     describe "visits an integer exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => exercise.id) }
+      before { visit chapter_path(chapter, :type => 5, :which => exercise) }
     
       describe "and correctly solves it" do
         before do
@@ -34,7 +34,7 @@ describe "Solvedquestion pages" do
         it { should have_content("Vous avez résolu cet exercice du premier coup !") }
         it { should have_content(exercise.explanation) }
         specify { expect(user.rating).to eq(rating_before + exercise.value) }
-        specify { expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before + exercise.value) }
+        specify { expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value) }
       end
       
       describe "and makes a mistake" do
@@ -46,7 +46,7 @@ describe "Solvedquestion pages" do
         it { should have_content("Votre réponse (#{(exercise.answer+1).to_i}) est erronée. Vous avez déjà commis 1 erreur.") }
         it { should_not have_content(exercise.explanation) }
         specify { expect(user.rating).to eq(rating_before) }
-        specify { expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before) }
+        specify { expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before) }
         
         describe "and then solves it" do
           before do
@@ -57,7 +57,7 @@ describe "Solvedquestion pages" do
           it { should have_content("Vous avez résolu cet exercice après 1 erreur.") }
           it { should have_content(exercise.explanation) }
           specify { expect(user.rating).to eq(rating_before + exercise.value) }
-          specify { expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before + exercise.value) }
+          specify { expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value) }
         end
         
         describe "and makes two other mistakes" do
@@ -75,7 +75,7 @@ describe "Solvedquestion pages" do
             before do
               solvedquestion.updated_at = DateTime.now - 190
               solvedquestion.save
-              visit chapter_path(chapter, :type => 5, :which => exercise.id)
+              visit chapter_path(chapter, :type => 5, :which => exercise)
             end
             it { should have_button("Soumettre") }
             it { should_not have_content("Vous devez encore patienter") }
@@ -89,7 +89,7 @@ describe "Solvedquestion pages" do
               it { should have_content("Vous avez résolu cet exercice après 3 erreurs.") }
               it { should have_content(exercise.explanation) }
               specify { expect(user.rating).to eq(rating_before + exercise.value) }
-              specify { expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before + exercise.value) }
+              specify { expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value) }
             end
           end
         end
@@ -97,7 +97,7 @@ describe "Solvedquestion pages" do
     end
     
     describe "visits a decimal exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => exercise_decimal.id) }
+      before { visit chapter_path(chapter, :type => 5, :which => exercise_decimal) }
     
       describe "and correctly solves it" do
         before do
@@ -108,7 +108,7 @@ describe "Solvedquestion pages" do
         it { should have_content("Vous avez résolu cet exercice du premier coup !") }
         it { should have_content(exercise_decimal.explanation) }
         specify { expect(user.rating).to eq(rating_before + exercise_decimal.value) }
-        specify { expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before + exercise_decimal.value) }
+        specify { expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise_decimal.value) }
       end
       
       describe "and makes a mistake" do
@@ -120,12 +120,12 @@ describe "Solvedquestion pages" do
         it { should have_content("Votre réponse (#{(exercise_decimal.answer+0.002).to_s}) est erronée. Vous avez déjà commis 1 erreur.") }
         it { should_not have_content(exercise_decimal.explanation) }
         specify { expect(user.rating).to eq(rating_before) }
-        specify { expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before) }
+        specify { expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before) }
       end
     end
     
     describe "visits a single answer qcm" do
-      before { visit chapter_path(chapter, :type => 5, :which => qcm.id) }
+      before { visit chapter_path(chapter, :type => 5, :which => qcm) }
     
       describe "and correctly solves it" do
         before do
@@ -136,7 +136,7 @@ describe "Solvedquestion pages" do
         it { should have_content("Vous avez résolu cet exercice du premier coup !") }
         it { should have_content(qcm.explanation) }
         specify { expect(user.rating).to eq(rating_before + qcm.value) }
-        specify { expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before + qcm.value) }
+        specify { expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm.value) }
       end
       
       describe "and makes a mistake" do
@@ -170,7 +170,7 @@ describe "Solvedquestion pages" do
     end
     
     describe "visits a multiple answer qcm" do
-      before { visit chapter_path(chapter, :type => 5, :which => qcm_multiple.id) }
+      before { visit chapter_path(chapter, :type => 5, :which => qcm_multiple) }
     
       describe "and correctly solves it" do
         before do
@@ -182,7 +182,7 @@ describe "Solvedquestion pages" do
         it { should have_content("Vous avez résolu cet exercice du premier coup !") }
         it { should have_content(qcm_multiple.explanation) }
         specify { expect(user.rating).to eq(rating_before + qcm_multiple.value) }
-        specify { expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before + qcm_multiple.value) }
+        specify { expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm_multiple.value) }
       end
       
       describe "and makes a mistake" do
@@ -195,7 +195,7 @@ describe "Solvedquestion pages" do
         it { should have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.") }
         it { should_not have_content(qcm_multiple.explanation) }
         specify { expect(user.rating).to eq(rating_before) }
-        specify { expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before) }
+        specify { expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before) }
         
         describe "and makes the same mistake" do
           before do

@@ -10,7 +10,7 @@ describe "Theory pages" do
   let!(:chapter) { FactoryGirl.create(:chapter, online: true) }
   let!(:empty_chapter) { FactoryGirl.create(:chapter, online: true) }
   let!(:online_theory) { FactoryGirl.create(:theory, chapter: chapter, online: true, position: 1) }
-  let!(:online_theory_2) { FactoryGirl.create(:theory, chapter: chapter, online: true, title: "Autre titre", content: "Autre contenu", position: 2) }
+  let!(:online_theory2) { FactoryGirl.create(:theory, chapter: chapter, online: true, title: "Autre titre", content: "Autre contenu", position: 2) }
   let!(:offline_theory) { FactoryGirl.create(:theory, chapter: chapter, online: false, position: 3) }
   let(:newtitle) { "Mon nouveau titre de point théorique" }
   let(:newcontent) { "Mon nouveau point théorique" }
@@ -19,12 +19,12 @@ describe "Theory pages" do
   
   describe "visitor" do
     describe "visits online theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => online_theory.id) }
+      before { visit chapter_path(chapter, :type => 1, :which => online_theory) }
       it { should have_selector("h3", text: online_theory.title) }
     end
     
     describe "visits offline theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => offline_theory.id) }
+      before { visit chapter_path(chapter, :type => 1, :which => offline_theory) }
       it { should_not have_selector("h3", text: offline_theory.title) }
     end
   end
@@ -33,8 +33,8 @@ describe "Theory pages" do
     before { sign_in user }
     
     describe "visits online theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => online_theory_2.id) }
-      it { should have_selector("h3", text: online_theory_2.title) }
+      before { visit chapter_path(chapter, :type => 1, :which => online_theory2) }
+      it { should have_selector("h3", text: online_theory2.title) }
       it { should_not have_link "bas" }
       it { should_not have_link "haut" }
       it { should have_button "Marquer comme lu" }
@@ -43,28 +43,28 @@ describe "Theory pages" do
       describe "and mark it as read" do
         before do
           click_button "Marquer comme lu"
-          online_theory_2.reload
+          online_theory2.reload
           user.reload
         end
         it { should_not have_button "Marquer comme lu" }
         it { should have_button "Marquer comme non lu" }
-        specify { expect(user.theories.exists?(online_theory_2.id)).to eq(true) }
+        specify { expect(user.theories.exists?(online_theory2.id)).to eq(true) }
         
         describe "and mark it back as unread" do
           before do
             click_button "Marquer comme non lu"
-            online_theory_2.reload
+            online_theory2.reload
             user.reload
           end
           it { should have_button "Marquer comme lu" }
           it { should_not have_button "Marquer comme non lu" }
-          specify { expect(user.theories.exists?(online_theory_2.id)).to eq(false) }
+          specify { expect(user.theories.exists?(online_theory2.id)).to eq(false) }
         end
       end
     end
     
     describe "visits offline theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => offline_theory.id) }
+      before { visit chapter_path(chapter, :type => 1, :which => offline_theory) }
       it { should_not have_selector("h3", text: offline_theory.title) }
     end
     
@@ -83,7 +83,7 @@ describe "Theory pages" do
     before { sign_in admin }
     
     describe "visits online theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => online_theory.id) }
+      before { visit chapter_path(chapter, :type => 1, :which => online_theory) }
       it { should have_selector("h3", text: online_theory.title) }
       it { should have_selector("a", text: "Modifier ce point théorique") }
       it { should have_selector("a", text: "Supprimer ce point théorique") }
@@ -93,7 +93,7 @@ describe "Theory pages" do
     end
     
     describe "visits offline theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => offline_theory.id) }
+      before { visit chapter_path(chapter, :type => 1, :which => offline_theory) }
       it { should have_selector("h3", text: offline_theory.title) }
       it { should have_button("Mettre en ligne") }
       
@@ -107,7 +107,7 @@ describe "Theory pages" do
     end
     
     describe "checks theory order" do
-      before { visit chapter_path(chapter, :type => 1, :which => online_theory.id) }
+      before { visit chapter_path(chapter, :type => 1, :which => online_theory) }
       it { should have_link "bas" }
       it { should_not have_link "haut" } # Because position 1 out of >= 3
       
@@ -115,10 +115,10 @@ describe "Theory pages" do
         before do
           click_link "bas"
           online_theory.reload
-          online_theory_2.reload
+          online_theory2.reload
         end
         specify { expect(online_theory.position).to eq(2) }
-        specify { expect(online_theory_2.position).to eq(1) }
+        specify { expect(online_theory2.position).to eq(1) }
         it { should have_link "bas" } # Because position 2 out of >= 3
         it { should have_link "haut" }
         
@@ -126,11 +126,11 @@ describe "Theory pages" do
           before do
             click_link "haut"
             online_theory.reload
-            online_theory_2.reload
+            online_theory2.reload
           end
           specify do
             expect(online_theory.position).to eq(1)
-            expect(online_theory_2.position).to eq(2)
+            expect(online_theory2.position).to eq(2)
           end
         end
       end

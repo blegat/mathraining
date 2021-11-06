@@ -32,7 +32,7 @@ describe "Virtualtest pages" do
     end
     
     describe "tries visiting online virtualtest" do
-      before { visit virtualtest_path(virtualtest.id) }
+      before { visit virtualtest_path(virtualtest) }
       it { should have_selector("div", text: "Vous devez être connecté pour accéder à cette page.") }
     end
   end
@@ -47,7 +47,7 @@ describe "Virtualtest pages" do
     end
     
     describe "tries visiting online virtualtest" do
-      before { visit virtualtest_path(virtualtest.id) }
+      before { visit virtualtest_path(virtualtest) }
       it { should have_selector("div", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
     end
   end
@@ -62,7 +62,7 @@ describe "Virtualtest pages" do
     end
     
     describe "tries visiting online virtualtest" do
-      before { visit virtualtest_path(virtualtest.id) }
+      before { visit virtualtest_path(virtualtest) }
       it { should have_selector("div", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
     end
   end
@@ -85,23 +85,23 @@ describe "Virtualtest pages" do
         before { click_button("Commencer ce test") }
         it { should have_selector("h1", text: "Test \##{virtualtest.number}") }
         it { should have_content("Temps restant") }
-        it { should have_link("Problème 1", href: virtualtest_path(virtualtest.id, :p => problem.id)) }
-        it { should have_link("Problème 2", href: virtualtest_path(virtualtest.id, :p => problem_with_prerequisite.id)) }
+        it { should have_link("Problème 1", href: virtualtest_path(virtualtest, :p => problem)) }
+        it { should have_link("Problème 2", href: virtualtest_path(virtualtest, :p => problem_with_prerequisite)) }
         
         describe "and visits the virtualtests" do
           before { visit virtualtests_path }
           it { should have_selector("h3", text: "Test \##{virtualtest.number}") }
           it { should_not have_content("Score moyen") }
           it { should_not have_button("Commencer ce test") }
-          it { should have_link("Problème 1", href: virtualtest_path(virtualtest.id, :p => problem.id)) }
+          it { should have_link("Problème 1", href: virtualtest_path(virtualtest, :p => problem)) }
           it { should have_content(problem.statement) }
-          it { should have_link("Problème 2", href: virtualtest_path(virtualtest.id, :p => problem_with_prerequisite.id)) }
+          it { should have_link("Problème 2", href: virtualtest_path(virtualtest, :p => problem_with_prerequisite)) }
           it { should have_content(problem_with_prerequisite.statement) }
           it { should have_content("Temps restant") }
         end
         
         describe "and visits the problem in virtualtest" do
-          before { visit virtualtest_path(virtualtest.id, :p => problem.id) }
+          before { visit virtualtest_path(virtualtest, :p => problem) }
           it { should have_selector("h3", text: "Énoncé") }
           it { should have_content(problem.statement) }
           it { should have_selector("h3", text: "Votre solution") }
@@ -136,11 +136,11 @@ describe "Virtualtest pages" do
               before do
                 takentest.takentime = DateTime.now - virtualtest.duration - 1
                 takentest.save
-                visit virtualtest_path(virtualtest.id, :p => problem.id) # Should redirect to virtualtests page
+                visit virtualtest_path(virtualtest, :p => problem) # Should redirect to virtualtests page
               end
               it { should have_selector("h1", text: "Tests virtuels") }
-              it { should have_link("Problème 1", href: problem_path(problem.id, :sub => problem.submissions.where(:user => user_with_rating_200).first.id)) }
-              it { should have_link("Problème 2", href: problem_path(problem_with_prerequisite.id)) }
+              it { should have_link("Problème 1", href: problem_path(problem, :sub => problem.submissions.where(:user => user_with_rating_200).first)) }
+              it { should have_link("Problème 2", href: problem_path(problem_with_prerequisite)) }
               it { should have_content("? / 7") } # Problème 1
               it { should have_content("0 / 7") } # Problème 2 (no submission)
               it { should_not have_content("Temps restant") }
@@ -149,12 +149,12 @@ describe "Virtualtest pages" do
         end
         
         describe "and tries to visit the problem section page" do
-          before { visit pb_sections_path(section.id) }
-          it { should_not have_link("Problème \##{problem.id}", href: problem_path(problem.id)) }
+          before { visit pb_sections_path(section) }
+          it { should_not have_link("Problème \##{problem.id}", href: problem_path(problem)) }
         end
         
         describe "and tries to visit the problem page" do
-          before { visit problem_path(problem.id) }
+          before { visit problem_path(problem) }
           it { should_not have_selector("h1", text: "Problème \##{problem.id}") }
           it { should have_content("Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
         end
@@ -162,7 +162,7 @@ describe "Virtualtest pages" do
     end
     
     describe "tries visiting online virtualtest without starting it" do
-      before { visit virtualtest_path(virtualtest.id) } # Should redirect to virtualtests_path
+      before { visit virtualtest_path(virtualtest) } # Should redirect to virtualtests_path
       it { should have_selector("h1", text: "Tests virtuels") }
     end
   end

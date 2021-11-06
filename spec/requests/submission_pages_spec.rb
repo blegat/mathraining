@@ -112,11 +112,11 @@ describe "Submission pages" do
     describe "visits submissions page" do
       before { visit allnewsub_path }
       it { should have_selector("h1", text: "Soumissions") }
-      it { should have_link(user.name, href: user_path(user.id)) }
+      it { should have_link(user.name, href: user_path(user)) }
     end
     
     describe "visits waiting submission" do
-      before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission.id) }
+      before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) }
       it { should have_selector("h3", text: "Soumission (en attente de correction)") }
       it { should have_selector("div", text: waiting_submission.content) }
       it { should_not have_button("Poster et refuser la soumission") } # Because not reserved
@@ -130,7 +130,7 @@ describe "Submission pages" do
           f.read = true
           f.kind = 0
           f.save
-          visit problem_path(problem_with_waiting_submission, :sub => waiting_submission.id) # Reload
+          visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) # Reload
         end
         it { should have_button("Poster et refuser la soumission") }
         it { should have_button("Poster et accepter la soumission") }
@@ -170,11 +170,11 @@ describe "Submission pages" do
             describe "visits answers page" do
               before { visit notifs_show_path }
               it { should have_selector("h1", text: "Nouvelles réponses") }
-              it { should have_link("Voir", href: problem_path(problem_with_waiting_submission, :sub => waiting_submission.id)) }
+              it { should have_link("Voir", href: problem_path(problem_with_waiting_submission, :sub => waiting_submission)) }
             end
             
             describe "reads correction" do
-              before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission.id) }
+              before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) }
               it { should have_selector("h3", text: "Soumission (erronée)") }
               it { should have_selector("div", text: newcorrection) }
               it { should have_selector("div", text: "Votre solution est erronée.") }
@@ -184,7 +184,7 @@ describe "Submission pages" do
               describe "visits answers page" do
                 before { visit notifs_show_path }
                 it { should have_selector("h1", text: "Nouvelles réponses") }
-                it { should_not have_link("Voir", href: problem_path(problem_with_waiting_submission, :sub => waiting_submission.id)) }
+                it { should_not have_link("Voir", href: problem_path(problem_with_waiting_submission, :sub => waiting_submission)) }
               end
               
               describe "and answers" do
@@ -209,11 +209,11 @@ describe "Submission pages" do
                   describe "visits comments page" do
                     before { visit allmynewsub_path }
                     it { should have_selector("h1", text: "Commentaires") }
-                    it { should have_link(user.name, href: user_path(user.id)) }
+                    it { should have_link(user.name, href: user_path(user)) }
                   end
                   
                   describe "reads answer" do
-                    before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission.id) }
+                    before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) }
                     it { should have_selector("h3", text: "Soumission (erronée)") }
                     it { should have_selector("div", text: newanswer) }
                     it { should have_button("Poster et laisser la soumission comme erronée") }

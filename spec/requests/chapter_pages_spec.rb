@@ -53,7 +53,7 @@ describe "Chapter pages" do
       describe "and mark it as read" do
         before do
           click_button "Marquer toute la théorie comme lue"
-          visit chapter_path(online_chapter, :type => 1, :which => online_theory.id)
+          visit chapter_path(online_chapter, :type => 1, :which => online_theory)
           user.reload
         end
         it { should have_button("Marquer comme non lu") }

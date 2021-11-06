@@ -67,7 +67,7 @@ describe "User pages" do
       
       describe "with correct key" do
         before do
-          visit activate_path(:id => zero_user.id, :key => zero_user.key)
+          visit activate_path(:id => zero_user, :key => zero_user.key)
           zero_user.reload
         end
         it { should have_content("Votre compte a bien été activé !") }
@@ -76,7 +76,7 @@ describe "User pages" do
       
       describe "with incorrect key" do
         before do
-          visit activate_path(:id => zero_user.id, :key => "hackingMathraining")
+          visit activate_path(:id => zero_user, :key => "hackingMathraining")
           zero_user.reload
         end
         it { should have_content("Le lien d'activation est erroné.") }
@@ -85,7 +85,7 @@ describe "User pages" do
       
       describe "if already active" do
         before do
-          visit activate_path(:id => other_zero_user.id, :key => other_zero_user.key)
+          visit activate_path(:id => other_zero_user, :key => other_zero_user.key)
           zero_user.reload
         end
         it { should have_content("Ce compte est déjà actif !") }
@@ -124,7 +124,7 @@ describe "User pages" do
         
         describe "and visits the reset page with wrong key" do
           before do
-            visit user_recup_password_path(zero_user.id, :key => "HackingMathrainingAgain")
+            visit user_recup_password_path(zero_user, :key => "HackingMathrainingAgain")
           end
           it { should have_content("Ce lien n'est pas valide") }
         end
@@ -134,7 +134,7 @@ describe "User pages" do
             zero_user.reload
             zero_user.recup_password_date_limit = DateTime.now - 5000
             zero_user.save
-            visit user_recup_password_path(zero_user.id, :key => zero_user.key)
+            visit user_recup_password_path(zero_user, :key => zero_user.key)
           end
           it { should have_content("Ce lien n'est plus valide (il expirait après une heure)") }
         end
@@ -143,7 +143,7 @@ describe "User pages" do
           before do
             zero_user.reload
             sign_in zero_user
-            visit user_recup_password_path(zero_user.id, :key => zero_user.key)
+            visit user_recup_password_path(zero_user, :key => zero_user.key)
           end
           it { should have_selector("h1", text: "Modifier votre mot de passe") }
         end
@@ -151,7 +151,7 @@ describe "User pages" do
         describe "and visits the reset page" do
           before do
             zero_user.reload
-            visit user_recup_password_path(zero_user.id, :key => zero_user.key)
+            visit user_recup_password_path(zero_user, :key => zero_user.key)
           end
           it { should have_selector("h1", text: "Modifier votre mot de passe") }
           
@@ -205,31 +205,31 @@ describe "User pages" do
     describe "visits scores page" do
       before { visit users_path }
       it { should have_selector("h1", text: "Scores") }
-      it { should have_link(ranked_user.name, href: user_path(ranked_user.id)) }
-      it { should_not have_link(zero_user.name, href: user_path(zero_user.id)) }
-      it { should_not have_link(admin.name, href: user_path(admin.id)) }
-      it { should_not have_link(root.name, href: user_path(root.id)) }
+      it { should have_link(ranked_user.name, href: user_path(ranked_user)) }
+      it { should_not have_link(zero_user.name, href: user_path(zero_user)) }
+      it { should_not have_link(admin.name, href: user_path(admin)) }
+      it { should_not have_link(root.name, href: user_path(root)) }
     end
     
     describe "visits country scores page" do
-      before { visit users_path(:country => country.id) }
-      it { should have_link(ranked_user.name, href: user_path(ranked_user.id)) } # In country
-      it { should_not have_link(other_ranked_user.name, href: user_path(other_ranked_user.id)) } # In other_country
-      it { should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2.id)) } # In country
+      before { visit users_path(:country => country) }
+      it { should have_link(ranked_user.name, href: user_path(ranked_user)) } # In country
+      it { should_not have_link(other_ranked_user.name, href: user_path(other_ranked_user)) } # In other_country
+      it { should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) } # In country
     end
     
     describe "visits title scores page" do
-      before { visit users_path(:title => Color.where("pt == 200").first.id) }
-      it { should_not have_link(ranked_user.name, href: user_path(ranked_user.id)) } # Has 157 points
-      it { should have_link(other_ranked_user.name, href: user_path(other_ranked_user.id)) } # Has 210 points
-      it { should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2.id)) } # Has 225 points
+      before { visit users_path(:title => Color.where("pt == 200").first) }
+      it { should_not have_link(ranked_user.name, href: user_path(ranked_user)) } # Has 157 points
+      it { should have_link(other_ranked_user.name, href: user_path(other_ranked_user)) } # Has 210 points
+      it { should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) } # Has 225 points
     end
     
     describe "visits country and title scores page" do
-      before { visit users_path(:title => Color.where("pt == 200").first.id, :country => country.id) }
-      it { should_not have_link(ranked_user.name, href: user_path(ranked_user.id)) } # Has 157 points and in country
-      it { should_not have_link(other_ranked_user.name, href: user_path(other_ranked_user.id)) } # Has 210 points but not in country
-      it { should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2.id)) } # Has 225 points and in country
+      before { visit users_path(:title => Color.where("pt == 200").first, :country => country) }
+      it { should_not have_link(ranked_user.name, href: user_path(ranked_user)) } # Has 157 points and in country
+      it { should_not have_link(other_ranked_user.name, href: user_path(other_ranked_user)) } # Has 210 points but not in country
+      it { should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) } # Has 225 points and in country
     end
     
     describe "tries to visit followed users" do
@@ -262,24 +262,24 @@ describe "User pages" do
     
     describe "tries to visit unranked scores page" do
       before { visit users_path(:title => 100) }
-      it { should_not have_link(zero_user.name, href: user_path(zero_user.id)) }
+      it { should_not have_link(zero_user.name, href: user_path(zero_user)) }
     end
     
     describe "tries to visit admin scores page" do
       before { visit users_path(:title => 101) }
-      it { should_not have_link(admin.name, href: user_path(admin.id)) }
+      it { should_not have_link(admin.name, href: user_path(admin)) }
     end
     
     describe "visits followed users" do
       before { zero_user.followed_users.append(ranked_user) }
       before { visit followed_users_path }
-      it { should have_link(zero_user.name, href: user_path(zero_user.id)) }
-      it { should have_link(ranked_user.name, href: user_path(ranked_user.id)) }
-      it { should_not have_link(other_ranked_user.name, href: user_path(other_ranked_user.id)) }
+      it { should have_link(zero_user.name, href: user_path(zero_user)) }
+      it { should have_link(ranked_user.name, href: user_path(ranked_user)) }
+      it { should_not have_link(other_ranked_user.name, href: user_path(other_ranked_user)) }
     end
     
     describe "visits another user profile" do
-      before { visit user_path(other_zero_user.id) }
+      before { visit user_path(other_zero_user) }
       it { should have_link "Envoyer un message" }
       it { should have_link "Suivre" }
       
@@ -288,15 +288,15 @@ describe "User pages" do
           click_link("Suivre")
           visit followed_users_path
         end
-        it { should have_link(other_zero_user.name, href: user_path(other_zero_user.id)) }
+        it { should have_link(other_zero_user.name, href: user_path(other_zero_user)) }
         
         describe "and stops to follow him" do
           before do
-            visit user_path(other_zero_user.id)
+            visit user_path(other_zero_user)
             click_link "Ne plus suivre"
             visit followed_users_path
           end
-          it { should_not have_link(other_zero_user.name, href: user_path(other_zero_user.id)) }
+          it { should_not have_link(other_zero_user.name, href: user_path(other_zero_user)) }
         end
       end
     end
@@ -420,27 +420,27 @@ describe "User pages" do
     
     describe "visits unranked scores page" do
       before { visit users_path(:title => 100) }
-      it { should have_link(zero_user.name, href: user_path(zero_user.id)) }
-      it { should_not have_link(ranked_user.name, href: user_path(ranked_user.id)) }
+      it { should have_link(zero_user.name, href: user_path(zero_user)) }
+      it { should_not have_link(ranked_user.name, href: user_path(ranked_user)) }
     end
     
     describe "visits admin scores page" do
       before { visit users_path(:title => 101) }
-      it { should have_link(admin.name, href: user_path(admin.id)) }
-      it { should have_link(root.name, href: user_path(root.id)) }
-      it { should_not have_link(ranked_user.name, href: user_path(ranked_user.id)) }
+      it { should have_link(admin.name, href: user_path(admin)) }
+      it { should have_link(root.name, href: user_path(root)) }
+      it { should_not have_link(ranked_user.name, href: user_path(ranked_user)) }
     end
     
     describe "visits unranked scores page from a country" do
-      before { visit users_path(:title => 100, :country => country.id) }
-      it { should have_link(zero_user.name, href: user_path(zero_user.id)) }
-      it { should_not have_link(other_zero_user.name, href: user_path(other_zero_user.id)) }
+      before { visit users_path(:title => 100, :country => country) }
+      it { should have_link(zero_user.name, href: user_path(zero_user)) }
+      it { should_not have_link(other_zero_user.name, href: user_path(other_zero_user)) }
     end
     
     describe "visits admin scores page" do
-      before { visit users_path(:title => 101, :country => country.id) }
-      it { should have_link(root.name, href: user_path(root.id)) }
-      it { should_not have_link(other_root.name, href: user_path(other_root.id)) }
+      before { visit users_path(:title => 101, :country => country) }
+      it { should have_link(root.name, href: user_path(root)) }
+      it { should_not have_link(other_root.name, href: user_path(other_root)) }
     end
   end
 end

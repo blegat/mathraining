@@ -63,11 +63,7 @@ class ContestsolutionsController < ApplicationController
   end
 
   # Modifier une solution
-  def update  
-    if @send_solution == 1 # Not normal
-      redirect_to @contestproblem
-    end
-    
+  def update
     params[:contestsolution][:content].strip! if !params[:contestsolution][:content].nil?
     @contestsolution.content = params[:contestsolution][:content]
     if @contestsolution.valid?
@@ -114,12 +110,8 @@ class ContestsolutionsController < ApplicationController
   end
 
   def destroy
-    if current_user.other
-      flash[:danger] = "Vous êtes dans la peau de quelqu'un d'autre !"
-    else
-      flash[:success] = "Solution supprimée."
-      @contestsolution.destroy
-    end
+    flash[:success] = "Solution supprimée."
+    @contestsolution.destroy
     redirect_to contestproblem_path(@contestproblem)
   end
   
@@ -165,25 +157,31 @@ class ContestsolutionsController < ApplicationController
   end
   
   def can_send_solution
-    @send_solution = 0
+    @send_solution = 0 # Cannot send a solution
     mycontestsolution = nil
     if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.status == 2
       mycontestsolution = @contestproblem.contestsolutions.where(:user => current_user.sk).first
       if !mycontestsolution.nil?
-        @send_solution = 2
+        @send_solution = 2 # A solution already exists
       elsif current_user.sk.rating >= 200
-        @send_solution = 1
+        @send_solution = 1 # No solution exists and user has >= 200 points
       end
     end
     
-    if @send_solution == 0 || (@send_solution == 2 && mycontestsolution != @contestsolution)
-      flash[:danger] = "Vous ne pouvez pas modifier cette solution."
+    if @send_solution == 0
+      flash[:danger] = "Vous ne pouvez pas enregistrer cette solution."
       redirect_to @contestproblem
+    elsif @send_solution == 2
+      if @contestsolution.nil? # Can happen in "create" case when a solution was sent in the meantime
+        @contestsolution = mycontestsolution
+      elsif mycontestsolution != @contestsolution
+        render 'errors/access_refused' and return
+      end
     end
   end
   
   def can_delete_solution
-    unless @contestproblem.status == 2 && !@contestsolution.official && @contestsolution.user == current_user.sk
+    unless @contestproblem.status == 2 && !@contestsolution.official && @contestsolution.user == current_user.sk && !current_user.other
       flash[:danger] = "Vous ne pouvez pas supprimer cette solution."
       redirect_to @contestproblem
     end

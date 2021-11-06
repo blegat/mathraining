@@ -166,7 +166,7 @@ describe "Problem pages" do
     end
     
     describe "visits offline problem" do
-      before { visit problem_path(offline_problem.id) }
+      before { visit problem_path(offline_problem) }
       it { should have_selector("h1", text: "Problème ##{offline_problem.number}") }
       it { should have_selector("div", text: offline_problem.statement) }
       it { should have_link("Supprimer ce problème") }
@@ -181,7 +181,7 @@ describe "Problem pages" do
         end
         it { should have_selector("h1", text: "Problème ##{offline_problem.number}") }
         it { should have_link(chapter.name, href: chapter_path(chapter)) }
-        it { should have_link("Supprimer ce prérequis", href: problem_delete_prerequisite_path(offline_problem, :chapter_id => chapter.id )) }
+        it { should have_link("Supprimer ce prérequis", href: problem_delete_prerequisite_path(offline_problem, :chapter_id => chapter )) }
         it { should have_button("Mettre en ligne") } 
         
         describe "and deletes a prerequisite" do

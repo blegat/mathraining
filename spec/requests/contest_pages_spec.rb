@@ -43,13 +43,13 @@ describe "Contest pages" do
     end
     
     describe "visits one contest page" do
-      before { visit contest_path(contest.id) }
+      before { visit contest_path(contest) }
       it { should have_content("Concours ##{contest.number}") } # Not h1: not correctly detected because of "Suivre ce concours"
       it { should have_selector("h3", text: "Problème ##{contestproblem.number}") }
       it { should have_content(contestproblem.statement) }
       it { should have_content(contestproblem.origin) }
-      it { should have_link("Classement final", href: contest_path(contest.id, :tab => 1)) }
-      it { should have_link("Statistiques", href: contest_path(contest.id, :tab => 2)) }
+      it { should have_link("Classement final", href: contest_path(contest, :tab => 1)) }
+      it { should have_link("Statistiques", href: contest_path(contest, :tab => 2)) }
       
       describe "and visits the rankings" do
         before { click_link "Classement final" }
@@ -57,7 +57,7 @@ describe "Contest pages" do
       end
       
       describe "and visits the statistics" do
-        before { click_link("Statistiques", href: contest_path(contest.id, :tab => 2)) }
+        before { click_link("Statistiques", href: contest_path(contest, :tab => 2)) }
         it { should have_selector("h3", text: "Distribution des scores") }
       end
     end
@@ -67,7 +67,7 @@ describe "Contest pages" do
     before { sign_in user_with_rating_199 }
     
     describe "visits one contest page" do    
-      before { visit contest_path(contest.id) }
+      before { visit contest_path(contest) }
       it { should have_content("Concours ##{contest.number}") } # Not h1: not correctly detected because of "Suivre ce concours"
         
       describe "and visits the rankings" do
@@ -76,13 +76,13 @@ describe "Contest pages" do
       end
       
       describe "and visits the statistics" do
-        before { click_link("Statistiques", href: contest_path(contest.id, :tab => 2)) }
+        before { click_link("Statistiques", href: contest_path(contest, :tab => 2)) }
         it { should have_selector("h3", text: "Distribution des scores") }
       end
     end
     
     describe "tries to visit an offline contest page" do
-      before { visit contest_path(offline_contest.id) }
+      before { visit contest_path(offline_contest) }
       it { should have_content("Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
     end
   end
@@ -91,12 +91,12 @@ describe "Contest pages" do
     before { sign_in user_organizer }
     
     describe "visits contest page" do
-      before { visit contest_path(contest.id) }
-      it { should have_link("Définir les médailles", href: contest_cutoffs_path(contest.id)) }
+      before { visit contest_path(contest) }
+      it { should have_link("Définir les médailles", href: contest_cutoffs_path(contest)) }
     end
     
     describe "visits offline contest page" do
-      before { visit contest_path(offline_contest.id) }
+      before { visit contest_path(offline_contest) }
       it { should have_link("Modifier ce concours") }
       it { should_not have_link("Mettre ce concours en ligne") }
       it { should_not have_link("Supprimer ce concours") }
@@ -122,7 +122,7 @@ describe "Contest pages" do
     end
     
     describe "visit cutoffs page" do
-      before { visit contest_cutoffs_path(contest.id) }
+      before { visit contest_cutoffs_path(contest) }
       it { should have_selector("h1", text: "Seuils des médailles") }
       
       describe "and define cutoffs" do
@@ -200,9 +200,9 @@ describe "Contest pages" do
         it { should have_content("Concours mis en ligne") }
         specify { expect(offline_contest.status).to eq(1) }
         specify { expect(offline_contestproblem.status).to eq(1) }
-        specify { expect(Subject.order(:id).last.category_id).to eq(category.id) }
+        specify { expect(Subject.order(:id).last.category).to eq(category) }
         specify { expect(Subject.order(:id).last.title).to eq("Concours ##{offline_contest.number}") }
-        specify { expect(Subject.order(:id).last.contest_id).to eq(offline_contest.id) }
+        specify { expect(Subject.order(:id).last.contest).to eq(offline_contest) }
       end
       
       describe "and tries to put it online too late" do
