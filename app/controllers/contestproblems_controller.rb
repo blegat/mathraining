@@ -188,17 +188,14 @@ class ContestproblemsController < ApplicationController
     if (@contestproblem.nil? || @contestproblem.status <= 2) && !end_date.nil? && date_now >= end_date
       flash.now[:danger] = "La deuxième date ne peut pas être dans le passé."
       @date_problem = true
-    end
-    if (@contestproblem.nil? || @contestproblem.status <= 1) && !start_date.nil? && date_now >= start_date
+    elsif (@contestproblem.nil? || @contestproblem.status <= 1) && !start_date.nil? && date_now >= start_date
       flash.now[:danger] = "La première date ne peut pas être dans le passé."
       @date_problem = true
-    end
-    if !start_date.nil? && !end_date.nil? && start_date >= end_date
+    elsif !start_date.nil? && !end_date.nil? && start_date >= end_date
       flash.now[:danger] = "La deuxième date doit être strictement après la première date."
       @date_problem = true
-    end
-    if start_date.min != 0
-      if Rails.env.production?
+    elsif start_date.min != 0
+      if !Rails.env.development?
         flash.now[:danger] = "La première date doit être à une heure pile."
         @date_problem = true
       else

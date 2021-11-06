@@ -18,7 +18,7 @@
 
 <!-- Enoncé -->
 <div class="form-group">
-  <%= f.label "Énoncé" %>
+  <%= f.label :statement %>
   <div class="well" id="MathPreview"></div>
   <div class="well hidden-preview" id="MathBuffer"></div>
   <%= render 'theories/font' %>
@@ -27,13 +27,13 @@
   
 <!-- Origine -->
 <div class="form-group">
-  <%= f.label "Origine" %> (laisser blanc si d'origine inconnue)
+  <%= f.label :origin %> (laisser blanc si d'origine inconnue)
   <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "max-width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
 </div>
 
 <!-- Date de début -->
 <div class="form-group">
-  <%= f.label "Parution du problème" %>
+  <%= f.label :start_time %>
   <div class="input-group date" id="start_time" style='max-width:500px;'>
     <%= f.text_field :start_time, :class => "form-control", :value => convert_date(start_time), :disabled => (status >= 2) %>
     <span class="input-group-addon">
@@ -44,7 +44,7 @@
 
 <!-- Date de fin -->
 <div class="form-group">
-  <%= f.label "Date limite pour l'envoi des solutions" %>
+  <%= f.label :end_time %>
   <div class="input-group date" id="end_time" style="max-width:500px;">
     <%= f.text_field :end_time, :class => "form-control", :value => convert_date(end_time), :disabled => (status >= 3)  %>
     <span class="input-group-addon">

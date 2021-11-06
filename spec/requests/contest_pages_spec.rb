@@ -27,6 +27,7 @@ describe "Contest pages" do
   
   before do
     Contestorganization.create(:contest => contest, :user => user_organizer)
+    Contestorganization.create(:contest => offline_contest, :user => user_organizer)
   end
   
   describe "visitor" do
@@ -57,11 +58,6 @@ describe "Contest pages" do
         it { should have_selector("h3", text: "Distribution des scores") }
       end
     end
-    
-    describe "tries to visit one contestproblem page" do
-      before { visit contestproblem_path(contestproblem.id) }
-      it { should have_content("Vous devez être connecté pour accéder à cette page.") }
-    end
   end
   
   describe "user with rating 199" do
@@ -86,16 +82,6 @@ describe "Contest pages" do
       before { visit contest_path(offline_contest.id) }
       it { should have_content("Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
     end
-
-    describe "visits one contestproblem page" do
-      before { visit contestproblem_path(contestproblem.id) }
-      it { should have_selector("h1", text: "Problème ##{contestproblem.number}") }
-    end
-    
-    describe "tries to visit an offline contestproblem page" do
-      before { visit contest_path(offline_contestproblem.id) }
-      it { should have_content("Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
-    end
   end
   
   describe "organizer" do
@@ -104,6 +90,32 @@ describe "Contest pages" do
     describe "visits contest page" do
       before { visit contest_path(contest.id) }
       it { should have_link("Définir les médailles", href: contest_cutoffs_path(contest.id)) }
+    end
+    
+    describe "visits offline contest page" do
+      before { visit contest_path(offline_contest.id) }
+      it { should have_link("Modifier ce concours") }
+      it { should_not have_link("Mettre ce concours en ligne") }
+      it { should_not have_link("Supprimer ce concours") }
+    end
+    
+    describe "visits contest edit page" do
+      before { visit edit_contest_path(offline_contest) }
+      it { should have_selector("h1", text: "Modifier") }
+           
+      describe "and modifies it" do
+        before do
+          fill_in "Numéro", with: newnumber
+          fill_in "MathInput", with: newdescription
+          check "Attribuer des médailles au terme de ce concours"
+          click_button "Modifier"
+          offline_contest.reload
+        end
+        specify { expect(offline_contest.number).to eq(newnumber) }
+        specify { expect(offline_contest.description).to eq(newdescription) }
+        specify { expect(offline_contest.medal).to eq(true) }
+        it { should have_content("Concours modifié.") }
+      end
     end
     
     describe "visit cutoffs page" do
@@ -130,6 +142,7 @@ describe "Contest pages" do
   
   describe "admin" do
     before { sign_in admin }
+
     describe "visits contests page" do
       before { visit contests_path }
       it { should have_link("Ajouter un concours", href: new_contest_path) }
@@ -159,24 +172,12 @@ describe "Contest pages" do
         end
       end
     end  
-   
-    describe "visits contest edit page" do
-      before { visit edit_contest_path(offline_contest) }
-      it { should have_selector("h1", text: "Modifier") }
-           
-      describe "and modifies it" do
-        before do
-          fill_in "Numéro", with: newnumber
-          fill_in "MathInput", with: newdescription
-          check "Attribuer des médailles au terme de ce concours"
-          click_button "Modifier"
-          offline_contest.reload
-        end
-        specify { expect(offline_contest.number).to eq(newnumber) }
-        specify { expect(offline_contest.description).to eq(newdescription) }
-        specify { expect(offline_contest.medal).to eq(true) }
-        it { should have_content("Concours modifié.") }
-      end
+    
+    describe "visits online contest page" do
+      before { visit contest_path(contest) }
+      it { should have_link("Modifier ce concours") }
+      it { should_not have_link("Mettre ce concours en ligne") }
+      it { should_not have_link("Supprimer ce concours") }
     end
     
     describe "visits offline contest page" do
@@ -196,6 +197,9 @@ describe "Contest pages" do
         it { should have_content("Concours mis en ligne") }
         specify { expect(offline_contest.status).to eq(1) }
         specify { expect(offline_contestproblem.status).to eq(1) }
+        specify { expect(Subject.order(:id).last.category_id).to eq(category.id) }
+        specify { expect(Subject.order(:id).last.title).to eq("Concours ##{offline_contest.number}") }
+        specify { expect(Subject.order(:id).last.contest_id).to eq(offline_contest.id) }
       end
       
       describe "and tries to put it online too late" do

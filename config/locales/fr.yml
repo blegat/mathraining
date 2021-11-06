@@ -37,6 +37,8 @@ fr:
       contestproblem:
         statement: "Énoncé"
         origin: "Origine"
+        start_time: "Parution du problème"
+        end_time: "Date limite pour l'envoi des solutions"
       contestsolution:
         content: "Contenu"
       correction:
