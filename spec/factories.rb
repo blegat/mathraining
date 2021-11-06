@@ -48,6 +48,11 @@ FactoryGirl.define do
     reminder_status 2 # No reminder needed
   end
   
+  # Contestproblemcheck
+  factory :contestproblemcheck do
+    association :contestproblem
+  end
+  
   # Contestsolution
   factory :contestsolution do
     association :contestproblem

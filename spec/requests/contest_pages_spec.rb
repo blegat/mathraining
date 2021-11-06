@@ -10,12 +10,15 @@ describe "Contest pages" do
   let(:user_with_rating_200) { FactoryGirl.create(:user, rating: 200) }
   let(:user_participating) { FactoryGirl.create(:user, rating: 250) }
   let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
+  
   let!(:category) { FactoryGirl.create(:category, name: "Mathraining") } # For the Forum subject
+  
   let!(:contest) { FactoryGirl.create(:contest) }
   let!(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest) }
   let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user_participating, score: 7) }
   let!(:contestcorrection) { FactoryGirl.create(:contestcorrection, contestsolution: contestsolution) }
   let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating, rank: 1, score: 7, medal: -1) }
+  
   let!(:offline_contest) { FactoryGirl.create(:contest, status: 0) }
   let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, status: 0, start_time: DateTime.now + 1.day, end_time: DateTime.now + 2.days) }
   

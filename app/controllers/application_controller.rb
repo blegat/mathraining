@@ -237,7 +237,7 @@ class ApplicationController < ActionController::Base
           end
         end
       end
-      if p.status == 3 and p.reminder_status == 2 # Avoid to delete if reminders were not sent yet
+      if p.status >= 3 and p.reminder_status >= 2 # Avoid to delete if reminders were not sent yet
         c.destroy
       end
     end
