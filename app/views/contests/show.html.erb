@@ -59,7 +59,7 @@
 
 <% if organizer && @contest.status == 3 && @contest.medal && @contest.gold_cutoff == 0 %>
   <center>
-  <%= button_to "Définir les médailles", contest_cutoffs_path(@contest), method: :get, class: 'btn btn-lg btn-default btn-grey', style: 'margin-top:10px;' %>
+  <%= link_to "Définir les médailles", contest_cutoffs_path(@contest), class: 'btn btn-lg btn-default btn-grey', style: 'margin-top:10px;' %>
   </center>
 <% end %>
 

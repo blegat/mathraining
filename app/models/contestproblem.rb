@@ -27,7 +27,7 @@ class Contestproblem < ActiveRecord::Base
 
   # reminder_status = 0 --> no reminder sent for this problem yet
   # reminder_status = 1 --> reminder sent one day before publication
-  # reminder_status = 2 --> reminder send at publication
+  # reminder_status = 2 --> reminder sent at publication
 
   # BELONGS_TO, HAS_MANY
 
@@ -43,6 +43,6 @@ class Contestproblem < ActiveRecord::Base
   validates :origin, length: { maximum: 255 }
   validates :start_time, presence: true
   validates :end_time, presence: true
-  validates :number, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 99 }
+  validates :number, presence: true, numericality: { greater_than: 0 }
 
 end

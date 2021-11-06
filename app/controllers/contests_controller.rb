@@ -124,9 +124,9 @@ class ContestsController < ApplicationController
     end
   end
   
-  # Si le concours n'est pas en ligne et on n'est ni organisateur ni adminitrateur, on ne peut pas voir le concours
+  # Si le concours n'est pas en ligne et on n'est ni organisateur ni administrateur, on ne peut pas voir le concours
   def can_see
-    if (@contest.status == 0 && @signed_in && !@contest.is_organized_by_or_admin(current_user))
+    if (@contest.status == 0 && (!@signed_in || !@contest.is_organized_by_or_admin(current_user)))
       render 'errors/access_refused' and return
     end
   end
@@ -138,7 +138,7 @@ class ContestsController < ApplicationController
       flash[:danger] = "Un concours doit contenir au moins un problème !"
       redirect_to @contest
     elsif @contest.contestproblems.first.start_time < date_in_one_hour
-      if Rails.env.production?
+      if !Rails.env.development?
         flash[:danger] = "Un concours ne peut être mis en ligne moins d'une heure avant le premier problème."
         redirect_to @contest
       else

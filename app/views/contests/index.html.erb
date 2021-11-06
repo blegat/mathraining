@@ -102,6 +102,6 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
 <!-- Ajouter un concours -->
 <% if @signed_in && current_user.sk.admin? %>
   <center>
-  <%= button_to "Ajouter un concours", new_contest_path, method: :get, class: 'btn btn-lg btn-default btn-grey' %>
+  <%= link_to "Ajouter un concours", new_contest_path, class: 'btn btn-lg btn-default btn-grey' %>
   </center>
 <% end %>

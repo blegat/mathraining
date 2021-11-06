@@ -26,6 +26,51 @@ FactoryGirl.define do
     color "#AAAAAA"
   end
   
+  # Contest
+  factory :contest do
+    sequence(:number) { |n| n }
+    sequence(:description) { |n| "Description du concours #{n}" }
+    start_time DateTime.new(2020, 2, 3)
+    end_time DateTime.new(2020, 3, 5)
+    medal true
+    status 3 # Finished
+  end
+  
+  # Contestproblem
+  factory :contestproblem do
+    association :contest
+    sequence(:number) { |n| n }
+    sequence(:statement) { |n| "Énoncé du problème #{n}" }
+    sequence(:origin) { |n| "Origine du problème #{n}" }
+    start_time DateTime.new(2020, 2, 3)
+    end_time DateTime.new(2020, 3, 5)
+    status 4 # Corrected
+    reminder_status 2 # No reminder needed
+  end
+  
+  # Contestsolution
+  factory :contestsolution do
+    association :contestproblem
+    association :user
+    content "Voici ma solution."
+    corrected true
+    score 7
+    # Note: we need to create the associated contestcorrection
+  end
+  
+  # Contestcorrection
+  factory :contestcorrection do
+    association :contestsolution
+    content "Voici la correction"
+  end
+  
+  # Contestscore
+  factory :contestscore do
+    association :contest
+    association :user
+    # rank, score, medal should be done manually
+  end
+  
   # Correction
   factory :correction do
     association :submission
