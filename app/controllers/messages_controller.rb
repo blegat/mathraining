@@ -106,7 +106,7 @@ class MessagesController < ApplicationController
       @message.save
       @message.reload
       flash[:success] = "Votre message a bien été modifié."
-      session["successEditMessage#{@message.id}"] = "ok"
+      session["successMessage#{@message.id}"] = "ok"
       page = getPage(@message)
       redirect_to subject_path(@message.subject, :page => page, :q => @q)
 
@@ -120,18 +120,10 @@ class MessagesController < ApplicationController
   def destroy
     @subject = @message.subject
 
-    @message.myfiles.each do |f|
-      f.file.destroy
-      f.destroy
-    end
-
-    @message.fakefiles.each do |f|
-      f.destroy
-    end
-
     @message.destroy
+
     if @subject.messages.size > 0
-      last = @subject.messages.order("id").last
+      last = @subject.messages.order("created_at").last
       @subject.lastcomment = last.created_at
       @subject.lastcomment_user_id = last.user_id
       @subject.save
@@ -140,6 +132,7 @@ class MessagesController < ApplicationController
       @subject.lastcomment_user_id = @subject.user_id
       @subject.save
     end
+
     redirect_to subject_path(@subject, :q => @q)
   end
 
@@ -154,7 +147,7 @@ class MessagesController < ApplicationController
   end
   
   def error_update(err)
-    session["errorEditMessage#{@message.id}"] = err
+    session["errorMessage#{@message.id}"] = err
     @message.reload
     session[:oldContent] = params[:message][:content]
     page = getPage(@message)

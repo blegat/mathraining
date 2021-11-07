@@ -184,8 +184,8 @@ FactoryGirl.define do
   
   # Subject
   factory :subject do
-    title "Titre"
-    content "Contenu"
+    sequence(:title) { |n| "Titre #{n}" }
+    sequence(:content) { |n| "Contenu #{n}" }
     association :user
     lastcomment DateTime.current
     association :lastcomment_user, :factory => :user
@@ -197,7 +197,7 @@ FactoryGirl.define do
       admin true
     end
     factory :important_subject do
-      important false
+      important true
     end
   end
   

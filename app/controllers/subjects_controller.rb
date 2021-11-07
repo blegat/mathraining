@@ -308,29 +308,8 @@ class SubjectsController < ApplicationController
 
   # Supprimer un sujet : il faut être admin
   def destroy
-    @subject.myfiles.each do |f|
-      f.file.destroy
-      f.destroy
-    end
-    @subject.fakefiles.each do |f|
-      f.destroy
-    end
-    @subject.messages.each do |m|
-      m.myfiles.each do |f|
-        f.file.destroy
-        f.destroy
-      end
-      m.fakefiles.each do |f|
-        f.destroy
-      end
-      m.destroy
-    end
-    @subject.followingsubjects.each do |f|
-      f.destroy
-    end
     @subject.destroy
     flash[:success] = "Sujet supprimé."
-
     redirect_to subjects_path(:q => @q)
   end
 
@@ -358,6 +337,14 @@ class SubjectsController < ApplicationController
     premier_message.subject = @migreur
     premier_message.save
 
+    @subject.myfiles.each do |f|
+      f.update_attribute(:myfiletable, premier_message)
+    end
+
+    @subject.fakefiles.each do |f|
+      f.update_attribute(:fakefiletable, premier_message)
+    end
+
     @subject.messages.each do |m|
       m.subject = @migreur
       m.save
@@ -369,7 +356,8 @@ class SubjectsController < ApplicationController
       @migreur.save
     end
 
-    @subject.delete
+    @subject.reload # Important because otherwise the "destroy" below also destroys the old messages and files of the subject
+    @subject.destroy
 
     redirect_to subject_path(@migreur, :q => @q)
   end

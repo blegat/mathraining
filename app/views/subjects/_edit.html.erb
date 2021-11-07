@@ -10,7 +10,7 @@
   <span id="fooBar"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add(document.getElementById('fooBar<%= @champ %>'))"/>
   <br/><br/>
-  <%= f.submit "Modifier", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+  <%= f.submit "Modifier", id: "SubmitEditSubject", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
   <button class="btn btn-lg btn-default btn-grey" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>
 

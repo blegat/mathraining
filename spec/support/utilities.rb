@@ -13,43 +13,6 @@ def sign_out
   click_link "Déconnexion"
 end
 
-def update_subject(sub, newtitle, newcontent)
-  visit edit_subject_path(sub)
-  fill_in "Titre", with: newtitle
-  fill_in "MathInput", with: newcontent
-  click_button "Editer"
-end
-
-def create_subject(cat, title, content)
-  visit new_subject_path
-  select cat.name, from: "Catégorie"
-  fill_in "Titre", with: title
-  fill_in "MathInput", with: content
-  click_button "Créer"
-end
-
-def create_subject_associated(exo, title, content)
-  visit new_subject_path
-  select exo.chapter.section.name, from: "Catégorie"
-  select exo.chapter.name, from: "Chapitre"
-  select "Exercice 1", from: "Exercice"
-  fill_in "Titre", with: title
-  fill_in "MathInput", with: content
-  click_button "Créer"
-end
-
-def update_message(sub, mes, newcontent)
-  visit edit_subject_message_path(sub, mes)
-  fill_in "MathInput", with: newcontent
-  click_button "Editer"
-end
-
-def create_message(sub, content)
-  visit new_subject_message_path(sub)
-  fill_in "MathInput", with: content
-  click_button "Poster"
-end
-
 def create_discussion(user, content)
   user.last_connexion = DateTime.now
   user.save
@@ -90,10 +53,6 @@ end
 def answer_discussion(content) # Should be on the page of the discussion!
   fill_in "MathInput", with: content
   click_button "Envoyer"
-end
-
-def visit_question(exo)
-  visit chapter_path(exo.chapter, :type => 5, :which => exo.id)
 end
 
 RSpec::Matchers.define :have_error_message do |message|
