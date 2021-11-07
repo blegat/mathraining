@@ -1,11 +1,12 @@
 <% waiting = (exo.updated_at.to_f + total_waiting - DateTime.now.to_i).floor %>
-<% waiting_m = waiting/60 %>
-<% waiting_s = waiting%60 %>
+<% waiting_m = waiting / 60 %>
+<% waiting_s = waiting % 60 %>
 <p id="waitbox" style="color:red;">Vous devez encore patienter <span id="clockbox" style="font-weight:bold;">0<%= waiting_m %>:<%= "0" if waiting_s < 10 %><%= waiting_s %></span>.</p>
   
 <script type="text/javascript">
 var stop = false;
-var reste = <%= waiting %>
+var reste_debut = <%= waiting %>;
+var heure_debut_js = Math.floor(Date.now() / 1000);
 function Activate() {
   stop = true;
   var todisable = document.getElementsByClassName("todisable");
@@ -16,31 +17,34 @@ function Activate() {
   document.getElementById('waitbox').style.display = "none";
 }
 
-function RemainingTime(){
-if(!stop) {
-  reste = reste-1;
-  if (reste <= 0) {
-    Activate();
+function RemainingTime() {
+  if(!stop) {
+    var heure_mtn_js = Math.floor(Date.now() / 1000);
+    reste = reste_debut - (heure_mtn_js - heure_debut_js);
+    if (reste <= 0) {
+      Activate();
+    }
+    else {
+      var r = reste
+      var resteh = Math.floor(r / 3600)
+      r = r - 3600 * resteh
+      var restem = Math.floor(r / 60)
+      r = r - 60 * restem
+      var restes = r
+    
+      if(restem < 10){ affichem = "0" + restem }
+      else { affichem = restem }
+    
+      if(restes < 10){ affiches = "0" + restes }
+      else { affiches = restes }
+    
+      document.getElementById('clockbox').innerHTML = affichem + ":" + affiches
+    }
   }
-  else {
-    var resteh = Math.floor(reste / 3600)
-    reste = reste - 3600 * resteh
-    var restem = Math.floor(reste / 60)
-    var restes = reste - 60 * restem
-    
-    if(restem < 10){ affichem = "0" + restem }
-    else { affichem = restem }
-    
-    if(restes < 10){ affiches = "0" + restes }
-    else { affiches = restes }
-    
-    document.getElementById('clockbox').innerHTML = affichem + ":" + affiches
-  }
-}
 }
 
-window.onload=function(){
-RemainingTime();
-setInterval(RemainingTime,1000);
+window.onload=function() {
+  RemainingTime();
+  setInterval(RemainingTime,1000);
 }
 </script>
