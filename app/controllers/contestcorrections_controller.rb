@@ -129,14 +129,14 @@ class ContestcorrectionsController < ApplicationController
   def can_update_correction
     if @contestproblem.status != 3 && @contestproblem.status != 5 && !@contestsolution.official
       flash[:danger] = "Vous ne pouvez pas modifier cette correction."
-      redirect_to @contestproblem
+      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     end
   end
   
   def has_reserved
     if @contestsolution.reservation != current_user.sk.id
       flash[:danger] = "Vous n'avez pas réservé."
-      contestproblem_path(@contestproblem, :sol => @contestsolution)
+      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     end
   end
 end

@@ -46,6 +46,7 @@ FactoryGirl.define do
     end_time DateTime.new(2020, 3, 5)
     status 4 # Corrected
     reminder_status 2 # No reminder needed
+    # NB: The associated official contestsolution is created automatically
   end
   
   # Contestproblemcheck
@@ -58,15 +59,7 @@ FactoryGirl.define do
     association :contestproblem
     association :user
     content "Voici ma solution."
-    corrected true
-    score 7
-    # Note: we need to create the associated contestcorrection
-  end
-  
-  # Contestcorrection
-  factory :contestcorrection do
-    association :contestsolution
-    content "Voici la correction"
+    # NB: The associated contestcorrection is created automatically
   end
   
   # Contestscore

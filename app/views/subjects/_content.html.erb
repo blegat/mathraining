@@ -125,11 +125,13 @@
         <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>
         | <%= link_to "Supprimer la solution", contestsolution_path(@contestsolution), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette solution ?" }  %>
       <% elsif kind == "contestcorrection" %>
+        <a href='#' onclick='return Rolling.develop("")'>
         <% if !@contestsolution.official? %>
-          <a href='#' onclick='return Rolling.develop("")'>Modifier la correction</a>
+          Modifier la correction
         <% else %>
-          <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>
+          Modifier la solution
         <% end %>
+        </a>
       <% elsif kind == "submission_in_test" %>
         <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>
         | <%= link_to "Supprimer la solution", submission_path(@submission), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette solution ?" } %>

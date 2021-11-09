@@ -32,6 +32,10 @@ class Contestsolution < ActiveRecord::Base
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :score, presence: true, inclusion: { in: [-1, 0, 1, 2, 3, 4, 5, 6, 7] }
   
+  # BEFORE, AFTER
+  
+  after_create :create_correction
+  
   # Rend l'icone correspondante
   def icon
     if !corrected
@@ -45,6 +49,16 @@ class Contestsolution < ActiveRecord::Base
         'X.gif'
       end
     end
+  end
+  
+  private
+  
+  # Créer la correction associée à la solution
+  def create_correction
+    correction = Contestcorrection.new
+    correction.contestsolution = self
+    correction.content = "-"
+    correction.save
   end
 
 end

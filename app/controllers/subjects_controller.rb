@@ -396,8 +396,14 @@ class SubjectsController < ApplicationController
   end
 
   def author
-    unless (current_user.sk == @subject.user || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root)
-      render 'errors/access_refused' and return
+    if @subject.user_id > 0
+      unless (current_user.sk == @subject.user || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root)
+        render 'errors/access_refused' and return
+      end
+    else # Message automatique
+      unless current_user.sk.root
+        render 'errors/access_refused' and return
+      end
     end
   end
 end

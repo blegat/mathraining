@@ -42,11 +42,6 @@ class ContestsolutionsController < ApplicationController
 
       flash[:success] = "Solution enregistrée."
       
-      correction = Contestcorrection.new
-      correction.content = "-"
-      correction.contestsolution = solution
-      correction.save
-      
       redirect_to contestproblem_path(@contestproblem, :sol => solution)
       
       # Si il y a eu une erreur

@@ -20,9 +20,9 @@ describe "Contestsolution pages" do
   let!(:contestproblem_running) { FactoryGirl.create(:contestproblem, contest: contest, number: 2, start_time: datetime_before2, end_time: datetime_after, status: 2) }
   let!(:contestproblem_not_started) { FactoryGirl.create(:contestproblem, contest: contest, number: 3, start_time: datetime_after, end_time: datetime_after2, status: 1) }
   
-  let!(:officialsol_finished) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_finished, official: true) }
-  let!(:officialsol_running) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_running, official: true) }
-  let!(:officialsol_not_started) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_not_started, official: true) }
+  let(:officialsol_finished) { contestproblem_finished.contestsolutions.where(:official => true).first }
+  let(:officialsol_running) { contestproblem_running.contestsolutions.where(:official => true).first }
+  let(:officialsol_not_started) { contestproblem_not_started.contestsolutions.where(:official => true).first }
   
   let(:newsolution) { "Voici ma solution à ce beau problème" }
   let(:newsolution2) { "Voici ma nouvelle solution à ce beau problème" }
@@ -172,6 +172,20 @@ describe "Contestsolution pages" do
       it { should have_content("Ce problème est en train d'être résolu par les participants.") }
       it { should have_link("cliquer ici", :href => contestproblem_path(contestproblem_running, :sol => officialsol_running)) }
       it { should_not have_button("Enregistrer") }
+    end
+
+    describe "visits a finished contestproblem page" do
+      before do
+        # Make sure that the official solution is starred so we can see it without javascript
+        officialsol_finished.score = 7
+        officialsol_finished.corrected = true
+        officialsol_finished.star = true
+        officialsol_finished.save
+        visit contestproblem_path(contestproblem_finished)
+      end
+      it { should have_selector("h1", text: "Problème ##{contestproblem_finished.number}") }
+      it { should have_selector("h3", text: "Solutions étoilées") }
+      it { should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished)) }
     end
   end
 end

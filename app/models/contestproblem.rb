@@ -44,5 +44,21 @@ class Contestproblem < ActiveRecord::Base
   validates :start_time, presence: true
   validates :end_time, presence: true
   validates :number, presence: true, numericality: { greater_than: 0 }
-
+  
+  # BEFORE, AFTER
+  
+  after_create :create_official_solution
+  
+  private
+  
+  # Créer la solution officielle
+  def create_official_solution
+    official_solution = Contestsolution.new
+    official_solution.contestproblem = self
+    official_solution.user_id = 0
+    official_solution.content = "-"
+    official_solution.official = true
+    official_solution.corrected = true
+    official_solution.save
+  end
 end

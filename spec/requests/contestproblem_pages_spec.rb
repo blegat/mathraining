@@ -35,7 +35,6 @@ describe "Contestproblem pages" do
   let!(:contest) { FactoryGirl.create(:contest) }
   let!(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest, number: 1) }
   let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user_participating, score: 7) }
-  let!(:contestcorrection) { FactoryGirl.create(:contestcorrection, contestsolution: contestsolution) }
   let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating, rank: 1, score: 7, medal: -1) }
   
   let!(:offline_contest) { FactoryGirl.create(:contest, status: 0) }
