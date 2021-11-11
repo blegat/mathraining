@@ -28,8 +28,8 @@ describe "User pages" do
       specify { expect { click_button "Créer mon compte" }.not_to change(User, :count) }
       describe "after submission" do
         before do
-          find(:css, "#consent1[value='1']").set(true)
-          find(:css, "#consent2[value='2']").set(true)
+          check "consent1"
+          check "consent2"
           click_button "Créer mon compte"
         end
         it do
@@ -50,8 +50,8 @@ describe "User pages" do
         fill_in "Confirmation de l'adresse e-mail", with: "user@example.com"
         page.all(:fillable_field, "Mot de passe").last.set("foobar")
         fill_in "Confirmation du mot de passe", with: "foobar"
-        find(:css, "#consent1[value='1']").set(true)
-        find(:css, "#consent2[value='2']").set(true)
+        check "consent1"
+        check "consent2"
       end
 
       specify { expect { click_button "Créer mon compte" }.to change(User, :count).by(1) }
@@ -244,7 +244,7 @@ describe "User pages" do
     
     describe "tries to visit followed users" do
       before { visit followed_users_path }
-      it { should have_selector("div", text: "Vous devez être connecté pour accéder à cette page.") }
+      it { should have_content(error_must_be_connected) }
     end
   end
 

@@ -12,13 +12,14 @@ describe "Actuality pages" do
   let(:newcontent) { "Nouveau contenu" }
 
   describe "user" do
-    before do
-      sign_in user
-      visit root_path
-    end
-    it do
-      should have_no_link("Modifier l'actualité")
-      should have_no_link("Supprimer l'actualité")
+    before { sign_in user }
+    
+    describe "visits root path" do
+      before { visit root_path }
+      it do
+        should have_no_link("Modifier l'actualité")
+        should have_no_link("Supprimer l'actualité")
+      end
     end
     
     describe "tries to create an actuality" do
@@ -33,14 +34,15 @@ describe "Actuality pages" do
   end
 
   describe "admin" do
-    before do
-      sign_in admin
-      visit root_path
-    end
+    before { sign_in admin }
     
-    it do
-      should have_link("Modifier l'actualité")
-      should have_link("Supprimer l'actualité")
+    describe "visits root path" do
+      before { visit root_path }
+      it do
+        should have_link("Modifier l'actualité", href: edit_actuality_path(actuality))
+        should have_link("Supprimer l'actualité")
+        should have_link("Ajouter une actualité", href: new_actuality_path)
+      end
     end
     
     describe "creates an actuality" do
@@ -101,11 +103,11 @@ describe "Actuality pages" do
       end
     end
     
-    describe "delete an actuality" do
+    describe "deletes an actuality" do
       specify { expect { click_link("Supprimer l'actualité") }.to change(Actuality, :count).by(-1) }
     end
     
-    describe "visit an actuality that does not exist" do
+    describe "visits an actuality that does not exist" do
       before { visit edit_actuality_path(3000) }
       it { should have_selector("div.error", text: "Cette page n'existe pas ou vous n'y avez pas accès.") }
     end

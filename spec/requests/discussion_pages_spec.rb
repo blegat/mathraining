@@ -15,7 +15,7 @@ describe "Discussion pages" do
   describe "visitor" do
     describe "tries to create a discussion" do
       before { visit new_discussion_path }
-      it { should have_content("Vous devez être connecté pour accéder à cette page.") }
+      it { should have_content(error_must_be_connected) }
     end
   end
   

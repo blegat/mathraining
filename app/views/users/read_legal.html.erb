@@ -64,6 +64,6 @@ pour demander à ce que votre compte soit supprimé.
   </label>
   </div>
   
-  <%= f.submit "Continuer sur Mathraining", class: "btn btn-lg btn-primary", id: "send-button", disabled: true %>
+  <%= f.submit "Continuer sur Mathraining", class: "btn btn-lg btn-primary", id: "send-button", disabled: !Rails.env.test? %>
   <script>checkChecked()</script>
 <% end %>

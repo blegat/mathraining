@@ -42,17 +42,17 @@ describe "Subject pages" do
   describe "visitor" do
     describe "tries to visit subjects page" do
       before { visit subjects_path }
-      it { should have_content("Vous devez être connecté pour accéder à cette page.") }
+      it { should have_content(error_must_be_connected) }
     end
     
     describe "tries to create a subject" do
       before { visit new_subject_path }
-      it { should have_content("Vous devez être connecté pour accéder à cette page.") }
+      it { should have_content(error_must_be_connected) }
     end
     
     describe "tries to visit a subject" do
       before { visit subject_path(sub_user) }
-      it { should have_content("Vous devez être connecté pour accéder à cette page.") }
+      it { should have_content(error_must_be_connected) }
     end
   end
   

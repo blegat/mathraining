@@ -1,9 +1,9 @@
 #encoding: utf-8
 class PrivacypoliciesController < ApplicationController
-  before_action :signed_in_user, only: [:index, :new, :edit, :edit_description]
-  before_action :signed_in_user_danger, only: [:create, :update, :update_description, :destroy, :put_online]
-  before_action :root_user, only: [:index, :new, :create, :edit, :update, :destroy, :put_online]
-  before_action :get_policy, only: [:show, :edit, :update]
+  before_action :signed_in_user, only: [:index, :edit, :edit_description]
+  before_action :signed_in_user_danger, only: [:new, :update, :update_description, :destroy, :put_online]
+  before_action :root_user, only: [:index, :new, :edit, :update, :destroy, :put_online]
+  before_action :get_policy, only: [:show, :edit, :update, :destroy]
   before_action :get_policy2, only: [:edit_description, :put_online]
   before_action :is_offline, only: [:edit, :destroy, :put_online]
   before_action :is_online, only: [:show]
@@ -26,12 +26,12 @@ class PrivacypoliciesController < ApplicationController
   def show
   end
 
-  # Créer une politique de confidentialité : il n'en faut pas déjà une en ligne
+  # Créer une politique de confidentialité
   def new
     @privacypolicy = Privacypolicy.new
     @privacypolicy.publication = DateTime.now
     @privacypolicy.online = false
-    @privacypolicy.description = "- À écrire - "
+    @privacypolicy.description = " - À écrire - "
     @last_policy = Privacypolicy.where(:online => true).order(:publication).last
     if !@last_policy.nil?
       @privacypolicy.content = @last_policy.content
@@ -56,7 +56,7 @@ class PrivacypoliciesController < ApplicationController
       flash[:success] = "Modification enregistrée."
       redirect_to privacypolicies_path
     else
-      if params[:description].nil?
+      if params[:privacypolicy][:description].nil?
         render 'edit'
       else
         render 'edit_description'
@@ -67,8 +67,8 @@ class PrivacypoliciesController < ApplicationController
   # Supprimer une politique de confidentialité : doit être hors-ligne
   def destroy
     @privacypolicy.destroy
-    flash[:success] = "Chapitre supprimé."
-    redirect_to section_path(@section)
+    flash[:success] = "Politique de confidentialité supprimée."
+    redirect_to privacypolicies_path
   end
 
   # Mettre en ligne : doit être hors-ligne

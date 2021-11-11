@@ -17,6 +17,10 @@ def error_access_refused
   return "Désolé... Cette page n'existe pas ou vous n'y avez pas accès."
 end
 
+def error_must_be_connected
+  return "Vous devez être connecté pour accéder à cette page."
+end
+
 def create_discussion_between(user1, user2, content1, content2)
   d = Discussion.new
   d.last_message = DateTime.now

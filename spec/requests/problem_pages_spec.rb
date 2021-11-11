@@ -38,10 +38,7 @@ describe "Problem pages" do
     
     describe "visits online problem" do
       before { visit problem_path(online_problem.id) }
-      it do
-        should have_no_selector("h1", text: "Problème ##{online_problem.number}")
-        should have_selector("div", text: "Vous devez être connecté pour accéder à cette page.")
-      end
+      it { should have_content(error_must_be_connected) }
     end
   end
   

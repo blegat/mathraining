@@ -51,7 +51,7 @@ describe "Contestproblem pages" do
   describe "visitor" do    
     describe "tries to visit one contestproblem page" do
       before { visit contestproblem_path(contestproblem.id) }
-      it { should have_content("Vous devez être connecté pour accéder à cette page.") }
+      it { should have_content(error_must_be_connected) }
     end
   end
   

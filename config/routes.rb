@@ -178,7 +178,7 @@ Rails.application.routes.draw do
   match '/remove_followingcontest', to: "followingcontests#remove_followingcontest", :via => [:get] # Get because it should be doable via email link
   
   # Privacy policies
-  resources :privacypolicies do
+  resources :privacypolicies, only: [:index, :show, :new, :edit, :update, :destroy] do
     match '/put_online', to: 'privacypolicies#put_online', :via => [:put], as: :put_online
     match '/edit_description', to: 'privacypolicies#edit_description', :via => [:get]
     match '/update_description', to: 'privacypolicies#update_description', :via => [:patch], as: :update_description

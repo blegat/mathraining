@@ -112,6 +112,14 @@ FactoryGirl.define do
     association :prerequisite, factory: :chapter
   end
   
+  # Privacypolicy
+  factory :privacypolicy do
+    sequence(:content) { |n| "Voici toute la politique de confidentialité #{n}" }
+    sequence(:description) { |n| "Voici les modifications #{n}" }
+    publication DateTime.current
+    online false
+  end
+  
   # Problem
   factory :problem do
     association :section
