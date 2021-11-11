@@ -106,28 +106,29 @@ class MyfilesController < ApplicationController
     end
   end
 
-  # Vérifie qu'on a accès à la pièce jointe (CHANGE !)
+  # Vérifie qu'on a accès à la pièce jointe
   def have_access
-    if @myfile.myfiletable_type == "Subject"
-      redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && @myfile.myfiletable.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && @myfile.myfiletable.wepion)
-    elsif @myfile.myfiletable_type == "Message"
-      redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && @myfile.myfiletable.subject.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && @myfile.myfiletable.subject.wepion)
-    elsif @myfile.myfiletable_type == "Tchatmessage"
-      redirect_to root_path if (!current_user.sk.root? && !current_user.sk.discussions.include?(@myfile.myfiletable.discussion))
-    elsif @myfile.myfiletable_type == "Submission"
-      redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @myfile.myfiletable.user || current_user.sk.pb_solved?(@myfile.myfiletable.problem))
-    elsif @myfile.myfiletable_type == "Correction"
-      redirect_to root_path unless (current_user.sk.admin? || current_user.sk == @myfile.myfiletable.submission.user || current_user.sk.pb_solved?(@myfile.myfiletable.submission.problem))
-    elsif @myfile.myfiletable_type == "Contestsolution"
-      contestsolution = @myfile.myfiletable
+    type = @myfile.myfiletable_type
+    if type == "Subject" || type == "Message"
+      # Only admins and correctors can see corrector subjects - Only admins and wepion students can see wepion subjects
+      subject = (type == "Subject" ? @myfile.myfiletable : @myfile.myfiletable.subject)
+      redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && subject.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && subject.wepion)
+    elsif type == "Tchatmessage"
+      # Only roots and participants to the discussion
+      tchatmessage = @myfile.myfiletable
+      redirect_to root_path if (!current_user.sk.root? && !current_user.sk.discussions.include?(tchatmessage.discussion))
+    elsif type == "Submission" || type == "Correction"
+      # Only admins, submission user, correctors having solved the problem, and users having solved the problem (if submission is correct)
+      submission = (type == "Submission" ? @myfile.myfiletable : @myfile.myfiletable.submission)
+      redirect_to root_path unless (current_user.sk.admin? || current_user.sk == submission.user || current_user.sk.pb_solved?(submission.problem) && (current_user.sk.corrector? || submission.status == 2))
+    elsif type == "Contestsolution" || type == "Contestcorrection"
+      # Only organizers and solution user, or anybody if corrections are finished (status >= 4) and solution has 7
+      # Only exception is that the solution user cannot see the correction if it is not published yet (status < 4)
+      contestsolution = (type == "Contestsolution" ? @myfile.myfiletable : @myfile.myfiletable.contestsolution)
       contestproblem = contestsolution.contestproblem
       contest = contestproblem.contest
-      redirect_to root_path unless (contest.is_organized_by_or_root(current_user) || contestsolution.user == current_user.sk || (contestproblem.status == 4 && contestsolution.score == 7))
-    elsif @myfile.myfiletable_type == "Contestcorrection"
-      contestsolution = @myfile.myfiletable.contestsolution
-      contestproblem = contestsolution.contestproblem
-      contest = contestproblem.contest
-      redirect_to root_path unless (contest.is_organized_by_or_root(current_user) || (contestproblem.status == 4 && (contestsolution.score == 7 || contestsolution.user == current_user.sk)))
+      redirect_to root_path unless (contest.is_organized_by_or_root(current_user) || contestsolution.user == current_user.sk || (contestproblem.status >= 4 && contestsolution.score == 7))
+      redirect_to root_path if (type == "Contestcorrection" && contestsolution.user == current_user.sk && contestproblem.status < 4)
     end
   end
 
