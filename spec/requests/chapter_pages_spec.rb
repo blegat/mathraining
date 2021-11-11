@@ -33,7 +33,7 @@ describe "Chapter pages" do
     
     describe "visits an offline chapter" do
       before { visit chapter_path(offline_chapter) }
-      it { should have_selector("span", text: "Désolé...") }
+      it { should have_content(error_access_refused) }
     end
   end
 
@@ -42,13 +42,26 @@ describe "Chapter pages" do
     
     describe "visits an offline chapter" do
       before { visit chapter_path(offline_chapter) }
-      it { should have_selector("span", text: "Désolé...") }
+      it { should have_content(error_access_refused) }
     end
+    
+    describe "visits an online chapter" do
+      before { visit chapter_path(online_chapter) }
+      it do
+        should have_selector("h1", text: online_chapter.name)
+        should have_no_link("Modifier les prérequis")
+        should have_no_link("Modifier ce chapitre")
+        should have_no_link("point théorique")
+        should have_no_link("QCM")
+      end
+    end 
     
     describe "visits a full online chapter" do
       before { visit chapter_path(online_chapter, :type => 10) }
-      it { should have_selector("h3", text: online_theory.title) }
-      it { should have_button("Marquer toute la théorie comme lue") }
+      it do
+        should have_selector("h3", text: online_theory.title)
+        should have_button("Marquer toute la théorie comme lue")
+      end
       
       describe "and mark it as read" do
         before do
@@ -63,12 +76,12 @@ describe "Chapter pages" do
     
     describe "tries to create a chapter" do
       before { visit new_section_chapter_path(section) }
-      it { should have_selector("span", text: "Désolé...") }
+      it { should have_content(error_access_refused) }
     end
     
     describe "tries to edit a chapter" do
       before { visit edit_chapter_path(offline_chapter) }
-      it { should have_selector("span", text: "Désolé...") }
+      it { should have_content(error_access_refused) }
     end
   end
 
@@ -77,10 +90,15 @@ describe "Chapter pages" do
     
     describe "visits an offline chapter" do
       before { visit chapter_path(offline_chapter) }
-      it { should have_selector("h1", text: offline_chapter.name + " (en construction)") }
-      it { should have_link("Modifier ce chapitre") }
-      it { should have_link("Supprimer ce chapitre") }
-      it { should have_button("Mettre ce chapitre en ligne") }
+      it do
+        should have_selector("h1", text: offline_chapter.name + " (en construction)")
+        should have_link("Modifier ce chapitre")
+        should have_link("Supprimer ce chapitre")
+        should have_link("Modifier les prérequis")
+        should have_link("point théorique")
+        should have_link("QCM")
+        should have_button("Mettre ce chapitre en ligne")
+      end
       specify { expect { click_link("Supprimer ce chapitre") }.to change(Chapter, :count).by(-1) .and change(Question, :count).by(-2) .and change(Theory, :count).by(-1) .and change(Item, :count).by(-1) }
     end
     
@@ -108,21 +126,27 @@ describe "Chapter pages" do
     
     describe "tries to put online an online chapter" do
       before { visit chapter_warning_path(online_chapter) }
-      it { should_not have_selector("h1", text: "Mise en ligne") }
-      it { should_not have_button("Mettre ce chapitre en ligne") }
+      it do
+        should have_no_selector("h1", text: "Mise en ligne")
+        should have_no_button("Mettre ce chapitre en ligne")
+      end
     end
     
     describe "tries to put online a chapter with offline prerequisites" do
       before { visit chapter_warning_path(offline_chapter_2) }
-      it { should_not have_selector("h1", text: "Mise en ligne") }
-      it { should have_selector("div.alert", text: "Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne.") }
-      it { should have_button("Mettre ce chapitre en ligne") } # Redirects to the chapter page with this button (even if we cannot use it)
+      it do
+        should have_no_selector("h1", text: "Mise en ligne")
+        should have_selector("div.alert", text: "Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne.")
+        should have_button("Mettre ce chapitre en ligne") # Redirects to the chapter page with this button (even if we cannot use it)
+      end
     end
     
     describe "checks chapter order" do
       before { visit chapter_path(offline_chapter) }
-      it { should have_link "haut" } # Position of chapter is 2/2
-      it { should_not have_link "bas" }
+      it do
+        should have_link "haut" # Position of chapter is 2/2
+        should have_no_link "bas"
+      end
       
       describe "and modifies it" do
         before do
@@ -130,8 +154,10 @@ describe "Chapter pages" do
           offline_chapter.reload
         end
         specify { expect(offline_chapter.position).to eq(1) }
-        it { should_not have_link "haut" }
-        it { should have_link "bas" }
+        it do
+          should have_no_link "haut"
+          should have_link "bas"
+        end
         
         describe "and modifies it back" do
           before do

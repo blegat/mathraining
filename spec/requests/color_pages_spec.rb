@@ -12,14 +12,18 @@ describe "Color pages" do
   let(:newcontent) { "Nouveau contenu" }
 
   describe "admin" do
-    before { sign_in admin }
-    before { visit colors_path }
-    it { should_not have_selector("h1", text: "Niveaux et couleurs") }
+    before do
+      sign_in admin
+      visit colors_path
+    end
+    it { should have_no_selector("h1", text: "Niveaux et couleurs") }
   end
 
   describe "root" do
-    before { sign_in root }
-    before { visit colors_path }
+    before do
+      sign_in root
+      visit colors_path
+    end
     
     it { should have_selector("h1", text: "Niveaux et couleurs") }
     
@@ -32,9 +36,12 @@ describe "Color pages" do
           find_by_id('color_add').set("#AABBCC")
           find_by_id('button_add').click
         end
-        specify { expect(Color.order(:id).last.name).to eq("new_name") }
-        specify { expect(Color.order(:id).last.color).to eq("#AABBCC") }
+        specify do
+          expect(Color.order(:id).last.name).to eq("new_name")
+          expect(Color.order(:id).last.color).to eq("#AABBCC")
+        end
       end
+      
       describe "with wrong information" do
         before do
           find_by_id('pt_add').set(20)
@@ -43,8 +50,10 @@ describe "Color pages" do
           find_by_id('color_add').set("#AABBC") # Too short
           find_by_id('button_add').click
         end
-        it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Niveaux et couleurs") }
+        it do
+          should have_content("erreur")
+          should have_selector("h1", text: "Niveaux et couleurs")
+        end
         specify { expect(Color.order(:id).last.name).to_not eq("new_name") }
       end
     end
@@ -59,9 +68,12 @@ describe "Color pages" do
           find_by_id('button_edit11').click
           color.reload
         end
-        specify { expect(color.name).to eq("new_name") }
-        specify { expect(color.color).to eq("#AABBCC") }
+        specify do
+          expect(color.name).to eq("new_name")
+          expect(color.color).to eq("#AABBCC")
+        end
       end
+      
       describe "with wrong information" do
         before do
           find_by_id('pt_edit11').set(20)
@@ -71,8 +83,10 @@ describe "Color pages" do
           find_by_id('button_edit11').click
           color.reload
         end
-        it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Niveaux et couleurs") }
+        it do
+          should have_content("erreur")
+          should have_selector("h1", text: "Niveaux et couleurs")
+        end
         specify { expect(color.name).to_not eq("new_name") }
       end
     end

@@ -31,7 +31,7 @@ describe "Contestproblemcheck pages" do
         running_contestproblem.reload
       end
       specify { expect(running_contestproblem.status).to eq(1) }
-      it { should_not have_content(running_contestproblem.statement) }
+      it { should have_no_content(running_contestproblem.statement) }
     end
   
     describe "visits a contest just after problem publication" do
@@ -71,10 +71,12 @@ describe "Contestproblemcheck pages" do
         running_contestproblem.reload
         running_contestsubject.reload
       end
-      specify { expect(running_contestproblem.reminder_status).to eq(1) }
-      specify { expect(running_contestsubject.messages.count).to eq(num_messages_before + 1) }
-      specify { expect(running_contestsubject.messages.order(:id).last.created_at).to eq(running_contestproblem.start_time - 1.day + running_contestproblem.number.seconds) }
-      specify { expect(running_contestsubject.lastcomment).to eq(running_contestproblem.start_time - 1.day + running_contestproblem.number.seconds) }
+      specify do
+        expect(running_contestproblem.reminder_status).to eq(1)
+        expect(running_contestsubject.messages.count).to eq(num_messages_before + 1)
+        expect(running_contestsubject.messages.order(:id).last.created_at).to eq(running_contestproblem.start_time - 1.day + running_contestproblem.number.seconds)
+        expect(running_contestsubject.lastcomment).to eq(running_contestproblem.start_time - 1.day + running_contestproblem.number.seconds)
+      end
     end
     
     describe "checks contestproblem just after publication" do
@@ -88,10 +90,12 @@ describe "Contestproblemcheck pages" do
         running_contestproblem.reload
         running_contestsubject.reload
       end
-      specify { expect(running_contestproblem.reminder_status).to eq(2) }
-      specify { expect(running_contestsubject.messages.count).to eq(num_messages_before + 1) }
-      specify { expect(running_contestsubject.messages.order(:id).last.created_at).to eq(running_contestproblem.start_time + running_contestproblem.number.seconds) }
-      specify { expect(running_contestsubject.lastcomment).to eq(running_contestproblem.start_time + running_contestproblem.number.seconds) }
+      specify do
+        expect(running_contestproblem.reminder_status).to eq(2)
+        expect(running_contestsubject.messages.count).to eq(num_messages_before + 1)
+        expect(running_contestsubject.messages.order(:id).last.created_at).to eq(running_contestproblem.start_time + running_contestproblem.number.seconds)
+        expect(running_contestsubject.lastcomment).to eq(running_contestproblem.start_time + running_contestproblem.number.seconds)
+      end
     end
   end
 end

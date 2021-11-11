@@ -65,7 +65,7 @@ describe "Contestproblem pages" do
     
     describe "tries to visit an offline contestproblem page" do
       before { visit contestproblem_path(offline_contestproblem) }
-      it { should have_content("Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+      it { should have_content(error_access_refused) }
     end
   end
   
@@ -74,9 +74,11 @@ describe "Contestproblem pages" do
     
     describe "visits offline contestproblem page" do
       before { visit contestproblem_path(offline_contestproblem) }
-      it { should have_selector("h1", text: "Problème ##{offline_contestproblem.number}") }
-      it { should have_link("Modifier ce problème", href: edit_contestproblem_path(offline_contest)) }
-      it { should have_link("Supprimer ce problème") }
+      it do
+        should have_selector("h1", text: "Problème ##{offline_contestproblem.number}")
+        should have_link("Modifier ce problème", href: edit_contestproblem_path(offline_contest))
+        should have_link("Supprimer ce problème")
+      end
       specify { expect { click_link "Supprimer ce problème" }.to change(Contestproblem, :count).by(-1) }
     end
     
@@ -93,13 +95,15 @@ describe "Contestproblem pages" do
           click_button "Ajouter"
         end
         it { should have_content("Problème ajouté") }
-        specify { expect(offline_contest.contestproblems.count).to eq(2) }
         let!(:newcontestproblem) {offline_contest.contestproblems.order(:id).last}
-        specify { expect(newcontestproblem.number).to eq(2) }
-        specify { expect(newcontestproblem.statement).to eq(newstatement) }
-        specify { expect(newcontestproblem.origin).to eq(neworigin) }
-        specify { expect(newcontestproblem.start_time).to eq(datetime3) }
-        specify { expect(newcontestproblem.end_time).to eq(datetime5) }
+        specify do
+          expect(offline_contest.contestproblems.count).to eq(2)
+          expect(newcontestproblem.number).to eq(2)
+          expect(newcontestproblem.statement).to eq(newstatement)
+          expect(newcontestproblem.origin).to eq(neworigin)
+          expect(newcontestproblem.start_time).to eq(datetime3)
+          expect(newcontestproblem.end_time).to eq(datetime5)
+        end
       end
       
       describe "and creates a problem before the first one" do
@@ -112,10 +116,12 @@ describe "Contestproblem pages" do
           offline_contestproblem.reload
         end
         it { should have_content("Problème ajouté") }
-        specify { expect(offline_contest.contestproblems.count).to eq(2) }
         let!(:newcontestproblem) {offline_contest.contestproblems.order(:id).last}
-        specify { expect(newcontestproblem.number).to eq(1) }
-        specify { expect(offline_contestproblem.number).to eq(2) }
+        specify do
+          expect(offline_contest.contestproblems.count).to eq(2)
+          expect(newcontestproblem.number).to eq(1)
+          expect(offline_contestproblem.number).to eq(2)
+        end
       end
       
       describe "and creates a problem with same dates" do
@@ -181,11 +187,13 @@ describe "Contestproblem pages" do
           offline_contestproblem.reload
         end
         it { should have_content("Problème modifié") }
-        specify { expect(offline_contestproblem.number).to eq(1) }
-        specify { expect(offline_contestproblem.statement).to eq(newstatement) }
-        specify { expect(offline_contestproblem.origin).to eq(neworigin) }
-        specify { expect(offline_contestproblem.start_time).to eq(datetime3) }
-        specify { expect(offline_contestproblem.end_time).to eq(datetime5) }
+        specify do
+          expect(offline_contestproblem.number).to eq(1)
+          expect(offline_contestproblem.statement).to eq(newstatement)
+          expect(offline_contestproblem.origin).to eq(neworigin)
+          expect(offline_contestproblem.start_time).to eq(datetime3)
+          expect(offline_contestproblem.end_time).to eq(datetime5)
+        end
       end
     end
     
@@ -197,8 +205,10 @@ describe "Contestproblem pages" do
         offline_contestproblem.save
         visit edit_contestproblem_path(offline_contestproblem)
       end
-      it { should have_selector("h1", text: "Modifier") }
-      it { should have_field("Parution du problème", disabled: true) }
+      it do
+        should have_selector("h1", text: "Modifier")
+        should have_field("Parution du problème", disabled: true)
+      end
       
       describe "and modifies it" do
         before do
@@ -209,9 +219,11 @@ describe "Contestproblem pages" do
           offline_contestproblem.reload
         end
         it { should have_content("Problème modifié") }
-        specify { expect(offline_contestproblem.statement).to eq(newstatement) }
-        specify { expect(offline_contestproblem.start_time).to eq(datetime2) }
-        specify { expect(offline_contestproblem.end_time).to eq(datetime5) }
+        specify do
+          expect(offline_contestproblem.statement).to eq(newstatement)
+          expect(offline_contestproblem.start_time).to eq(datetime2)
+          expect(offline_contestproblem.end_time).to eq(datetime5)
+        end
       end
     end
     
@@ -223,9 +235,11 @@ describe "Contestproblem pages" do
         offline_contestproblem.save
         visit edit_contestproblem_path(offline_contestproblem)
       end
-      it { should have_selector("h1", text: "Modifier") }
-      it { should have_field("Parution du problème", disabled: true) }
-      it { should have_field("Date limite pour l'envoi des solutions", disabled: true) }
+      it do
+        should have_selector("h1", text: "Modifier")
+        should have_field("Parution du problème", disabled: true)
+        should have_field("Date limite pour l'envoi des solutions", disabled: true)
+      end
       
       describe "and modifies it" do
         before do
@@ -235,9 +249,11 @@ describe "Contestproblem pages" do
           offline_contestproblem.reload
         end
         it { should have_content("Problème modifié") }
-        specify { expect(offline_contestproblem.statement).to eq(newstatement) }
-        specify { expect(offline_contestproblem.start_time).to eq(datetime2) }
-        specify { expect(offline_contestproblem.end_time).to eq(datetime4) }
+        specify do
+          expect(offline_contestproblem.statement).to eq(newstatement)
+          expect(offline_contestproblem.start_time).to eq(datetime2)
+          expect(offline_contestproblem.end_time).to eq(datetime4)
+        end
       end
     end
   end
@@ -247,24 +263,28 @@ describe "Contestproblem pages" do
     
     describe "visits online contestproblem page" do
       before { visit contestproblem_path(contestproblem) }
-      it { should have_selector("h1", text: "Problème ##{contestproblem.number}") }
-      it { should have_link("Autoriser nouvelles corrections") }
+      it do
+        should have_selector("h1", text: "Problème ##{contestproblem.number}")
+        should have_link("Autoriser nouvelles corrections")
+      end
       
       describe "and authorizes new corrections" do
         before do
           click_link "Autoriser nouvelles corrections"
           contestproblem.reload
         end
-        it { should have_content "Les organisateurs peuvent à présent modifier leurs corrections." }
+        it do
+          should have_content("Les organisateurs peuvent à présent modifier leurs corrections.")
+          should have_link("Stopper nouvelles corrections")
+        end
         specify { expect(contestproblem.status).to eq(5) }
-        it { should have_link("Stopper nouvelles corrections") }
         
         describe "and unauthorizes them" do
           before do
             click_link "Stopper nouvelles corrections"
             contestproblem.reload
           end
-          it { should have_content "Les organisateurs ne peuvent plus modifier leurs corrections." }
+          it { should have_content("Les organisateurs ne peuvent plus modifier leurs corrections.") }
           specify { expect(contestproblem.status).to eq(4) }
         end
       end

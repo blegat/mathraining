@@ -32,8 +32,10 @@ describe "User pages" do
           find(:css, "#consent2[value='2']").set(true)
           click_button "Créer mon compte"
         end
-        it { should have_selector("h1", text: "Inscription") }
-        it { should have_content("erreur") }
+        it do
+          should have_selector("h1", text: "Inscription")
+          should have_content("erreur")
+        end
       end
     end
 
@@ -204,32 +206,40 @@ describe "User pages" do
     
     describe "visits scores page" do
       before { visit users_path }
-      it { should have_selector("h1", text: "Scores") }
-      it { should have_link(ranked_user.name, href: user_path(ranked_user)) }
-      it { should_not have_link(zero_user.name, href: user_path(zero_user)) }
-      it { should_not have_link(admin.name, href: user_path(admin)) }
-      it { should_not have_link(root.name, href: user_path(root)) }
+      it do
+        should have_selector("h1", text: "Scores")
+        should have_link(ranked_user.name, href: user_path(ranked_user))
+        should have_no_link(zero_user.name, href: user_path(zero_user))
+        should have_no_link(admin.name, href: user_path(admin))
+        should have_no_link(root.name, href: user_path(root))
+      end
     end
     
     describe "visits country scores page" do
       before { visit users_path(:country => country) }
-      it { should have_link(ranked_user.name, href: user_path(ranked_user)) } # In country
-      it { should_not have_link(other_ranked_user.name, href: user_path(other_ranked_user)) } # In other_country
-      it { should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) } # In country
+      it do
+        should have_link(ranked_user.name, href: user_path(ranked_user)) # In country
+        should have_no_link(other_ranked_user.name, href: user_path(other_ranked_user)) # In other_country
+        should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) # In country
+      end
     end
     
     describe "visits title scores page" do
       before { visit users_path(:title => Color.where("pt == 200").first) }
-      it { should_not have_link(ranked_user.name, href: user_path(ranked_user)) } # Has 157 points
-      it { should have_link(other_ranked_user.name, href: user_path(other_ranked_user)) } # Has 210 points
-      it { should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) } # Has 225 points
+      it do
+        should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points
+        should have_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points
+        should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) # Has 225 points
+      end
     end
     
     describe "visits country and title scores page" do
       before { visit users_path(:title => Color.where("pt == 200").first, :country => country) }
-      it { should_not have_link(ranked_user.name, href: user_path(ranked_user)) } # Has 157 points and in country
-      it { should_not have_link(other_ranked_user.name, href: user_path(other_ranked_user)) } # Has 210 points but not in country
-      it { should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) } # Has 225 points and in country
+      it do
+        should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points and in country
+        should have_no_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points but not in country
+        should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) # Has 225 points and in country
+      end
     end
     
     describe "tries to visit followed users" do
@@ -252,36 +262,47 @@ describe "User pages" do
         zero_user.reload
       end
       
-      it { should have_selector("h1", text: "Actualités") }
-      it { should have_selector("div.alert.alert-success") }
-      it { should have_link("Déconnexion", href: signout_path) }
-      specify { expect(zero_user.first_name).to eq(new_first_name) }
-      specify { expect(zero_user.last_name).to eq(new_last_name) }
-      specify { expect(zero_user.name).to eq(new_name) }
+      it do
+        should have_selector("h1", text: "Actualités")
+        should have_selector("div.alert.alert-success")
+        should have_link("Déconnexion", href: signout_path)
+      end
+      specify do
+        expect(zero_user.first_name).to eq(new_first_name)
+        expect(zero_user.last_name).to eq(new_last_name)
+        expect(zero_user.name).to eq(new_name)
+      end
     end
     
     describe "tries to visit unranked scores page" do
       before { visit users_path(:title => 100) }
-      it { should_not have_link(zero_user.name, href: user_path(zero_user)) }
+      it { should have_no_link(zero_user.name, href: user_path(zero_user)) }
     end
     
     describe "tries to visit admin scores page" do
       before { visit users_path(:title => 101) }
-      it { should_not have_link(admin.name, href: user_path(admin)) }
+      it { should have_no_link(admin.name, href: user_path(admin)) }
     end
     
     describe "visits followed users" do
-      before { zero_user.followed_users.append(ranked_user) }
-      before { visit followed_users_path }
-      it { should have_link(zero_user.name, href: user_path(zero_user)) }
-      it { should have_link(ranked_user.name, href: user_path(ranked_user)) }
-      it { should_not have_link(other_ranked_user.name, href: user_path(other_ranked_user)) }
+      before do
+        zero_user.followed_users.append(ranked_user)
+        visit followed_users_path
+      end
+      it do
+        should have_selector("h1", text: "Scores")
+        should have_link(zero_user.name, href: user_path(zero_user))
+        should have_link(ranked_user.name, href: user_path(ranked_user))
+        should have_no_link(other_ranked_user.name, href: user_path(other_ranked_user))
+      end
     end
     
     describe "visits another user profile" do
       before { visit user_path(other_zero_user) }
-      it { should have_link "Envoyer un message" }
-      it { should have_link "Suivre" }
+      it do
+        should have_link("Envoyer un message")
+        should have_link("Suivre")
+      end
       
       describe "and follows him" do
         before do
@@ -296,7 +317,7 @@ describe "User pages" do
             click_link "Ne plus suivre"
             visit followed_users_path
           end
-          it { should_not have_link(other_zero_user.name, href: user_path(other_zero_user)) }
+          it { should have_no_link(other_zero_user.name, href: user_path(other_zero_user)) }
         end
       end
     end
@@ -307,31 +328,41 @@ describe "User pages" do
 
     describe "tries to delete a student" do
       before { visit user_path(zero_user) }
-      it { should_not have_link("Supprimer") }
+      it { should have_no_link("Supprimer") }
     end
     
     describe "tries to delete himself" do
       before { visit user_path(admin) }
-      it { should_not have_link("Supprimer") }
+      it { should have_no_link("Supprimer") }
     end
   end
 
   describe "root" do
     before { sign_in root }
 
-    describe "deletes a student" do
+    describe "visits a student page" do
       before { visit user_path(zero_user) }
+      it do
+        should have_content("Connecté le")
+        should have_content(zero_user.email)
+        should have_content("Né en")
+      end
       specify {	expect { click_link "Supprimer" }.to change(User, :count).by(-1) }
     end
 
-    describe "deletes an admin" do
+    describe "visits an admin page" do
       before { visit user_path(admin) }
+      it do
+        should have_content("Connecté le")
+        should have_content(admin.email)
+        should have_content("Né en")
+      end
       specify { expect { click_link "Supprimer" }.to change(User, :count).by(-1) }
     end
 
     describe "tries to delete another root" do
       before { visit user_path(other_root) }
-      it { should_not have_link("Supprimer") }
+      it { should have_no_link("Supprimer") }
     end
     
     describe "deletes data of a student" do
@@ -346,8 +377,7 @@ describe "User pages" do
       let!(:sub) { FactoryGirl.create(:subject, user: zero_user) }
       let!(:mes) { FactoryGirl.create(:message, subject: sub, user: other_zero_user) }
       before { visit user_path(zero_user) }
-      specify { expect { click_link "Supprimer" }.to change(Subject, :count).by(-1) }
-      specify {	expect { click_link "Supprimer" }.to change(Message, :count).by(-1) }
+      specify { expect { click_link "Supprimer" }.to change(Subject, :count).by(-1) .and change(Message, :count).by(-1) }
     end
 
     describe "deletes a student with a message (DEPENDENCY)" do
@@ -361,9 +391,7 @@ describe "User pages" do
         create_discussion_between(zero_user, other_zero_user, "Coucou mon ami", "Salut mon poto")
         visit user_path(zero_user)
       end
-      specify { expect { click_link "Supprimer" }.to change(Link, :count).by(-2) }
-      specify { expect { click_link "Supprimer" }.to change(Discussion, :count).by(-1) }
-      specify { expect { click_link "Supprimer" }.to change(Tchatmessage, :count).by(-2) }
+      specify { expect { click_link "Supprimer" }.to change(Link, :count).by(-2) .and change(Discussion, :count).by(-1) .and change(Tchatmessage, :count).by(-2) }
     end
     
     describe "transforms user in admin" do
@@ -372,8 +400,10 @@ describe "User pages" do
         click_link("Rendre administrateur")
         zero_user.reload
       end
-      specify { expect(zero_user.admin).to eq(true) }
-      specify { expect(zero_user.root).to eq(false) }
+      specify do
+        expect(zero_user.admin).to eq(true)
+        expect(zero_user.root).to eq(false)
+      end
     end
     
     describe "makes a user corrector" do
@@ -382,8 +412,10 @@ describe "User pages" do
         click_link("Rendre correcteur")
         zero_user.reload
       end
-      specify { expect(zero_user.corrector).to eq(true) }
-      specify { expect { click_link "Retirer des correcteurs" and zero_user.reload }.to change{zero_user.corrector}.to(false) }
+      specify do
+        expect(zero_user.corrector).to eq(true)
+        expect { click_link "Retirer des correcteurs" and zero_user.reload }.to change{zero_user.corrector}.to(false)
+      end
     end
     
     describe "moves user to Wepion group" do
@@ -392,10 +424,12 @@ describe "User pages" do
         click_link("Ajouter au groupe Wépion")
         zero_user.reload
       end
-      specify { expect(zero_user.wepion).to eq(true) }
-      specify { expect { click_link "A" and zero_user.reload}.to change{zero_user.group}.to("A") }
-      specify { expect { click_link "B" and zero_user.reload}.to change{zero_user.group}.to("B") }
-      specify { expect { click_link "Retirer du groupe Wépion" and zero_user.reload }.to change{zero_user.wepion}.to(false) }
+      specify do
+        expect(zero_user.wepion).to eq(true)
+        expect { click_link "A" and zero_user.reload }.to change{zero_user.group}.to("A")
+        expect { click_link "B" and zero_user.reload }.to change{zero_user.group}.to("B")
+        expect { click_link "Retirer du groupe Wépion" and zero_user.reload }.to change{zero_user.wepion}.to(false)
+      end
       
       describe "and remove from group A" do
         before do
@@ -414,33 +448,44 @@ describe "User pages" do
         root.reload
       end
       it { should have_content("Vous êtes maintenant dans la peau de") }
-      specify { expect(root.skin).to eq(zero_user.id) }
-      specify { expect { click_link "Sortir de ce corps" and root.reload }.to change{root.skin}.to(0) }
+      specify do
+        expect(root.skin).to eq(zero_user.id)
+        expect { click_link "Sortir de ce corps" and root.reload }.to change{root.skin}.to(0)
+      end
     end
     
     describe "visits unranked scores page" do
       before { visit users_path(:title => 100) }
-      it { should have_link(zero_user.name, href: user_path(zero_user)) }
-      it { should_not have_link(ranked_user.name, href: user_path(ranked_user)) }
+      it do
+        should have_link(zero_user.name, href: user_path(zero_user))
+        should have_no_link(ranked_user.name, href: user_path(ranked_user))
+        should have_button("Modifier les niveaux et couleurs")
+      end
     end
     
     describe "visits admin scores page" do
       before { visit users_path(:title => 101) }
-      it { should have_link(admin.name, href: user_path(admin)) }
-      it { should have_link(root.name, href: user_path(root)) }
-      it { should_not have_link(ranked_user.name, href: user_path(ranked_user)) }
+      it do
+        should have_link(admin.name, href: user_path(admin))
+        should have_link(root.name, href: user_path(root))
+        should have_no_link(ranked_user.name, href: user_path(ranked_user))
+      end
     end
     
     describe "visits unranked scores page from a country" do
       before { visit users_path(:title => 100, :country => country) }
-      it { should have_link(zero_user.name, href: user_path(zero_user)) }
-      it { should_not have_link(other_zero_user.name, href: user_path(other_zero_user)) }
+      it do
+        should have_link(zero_user.name, href: user_path(zero_user))
+        should have_no_link(other_zero_user.name, href: user_path(other_zero_user))
+      end
     end
     
     describe "visits admin scores page" do
       before { visit users_path(:title => 101, :country => country) }
-      it { should have_link(root.name, href: user_path(root)) }
-      it { should_not have_link(other_root.name, href: user_path(other_root)) }
+      it do
+        should have_link(root.name, href: user_path(root))
+        should have_no_link(other_root.name, href: user_path(other_root))
+      end
     end
   end
 end

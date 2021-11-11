@@ -36,15 +36,19 @@ describe "Contestsolution pages" do
     
     describe "visits one contest page" do
       before { visit contest_path(contest) }
-      it { should have_link("Problème ##{contestproblem_finished.number}") }
-      it { should have_link("Problème ##{contestproblem_running.number}") }
-      it { should_not have_link("Problème ##{contestproblem_not_started.number}") }
+      it do
+        should have_link("Problème ##{contestproblem_finished.number}")
+        should have_link("Problème ##{contestproblem_running.number}")
+        should have_no_link("Problème ##{contestproblem_not_started.number}")
+      end
     end
 
     describe "visits a running contestproblem page" do
       before { visit contestproblem_path(contestproblem_running) }
-      it { should have_selector("h1", text: "Problème ##{contestproblem_running.number}") }
-      it { should have_content("Pour pouvoir participer aux concours, il faut avoir au moins 200 points.") }
+      it do
+        should have_selector("h1", text: "Problème ##{contestproblem_running.number}")
+        should have_content("Pour pouvoir participer aux concours, il faut avoir au moins 200 points.")
+      end
     end
   end
   
@@ -53,19 +57,23 @@ describe "Contestsolution pages" do
     
     describe "visits a finished contestproblem page" do
       before { visit contestproblem_path(contestproblem_finished) }
-      it { should have_selector("h1", text: "Problème ##{contestproblem_finished.number}") }
-      it { should_not have_button("Enregistrer") }
+      it do
+        should have_selector("h1", text: "Problème ##{contestproblem_finished.number}")
+        should have_no_button("Enregistrer")
+      end
     end
     
     describe "tries to visit a non-started contestproblem page" do
       before { visit contestproblem_path(contestproblem_not_started) }
-      it { should have_content("Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+      it { should have_content(error_access_refused) }
     end
 
     describe "visits a running contestproblem page" do
       before { visit contestproblem_path(contestproblem_running) }
-      it { should have_selector("h1", text: "Problème ##{contestproblem_running.number}") }
-      it { should have_button("Enregistrer") }
+      it do
+        should have_selector("h1", text: "Problème ##{contestproblem_running.number}")
+        should have_button("Enregistrer")
+      end
       
       describe "and writes an empty solution" do
         before do
@@ -94,8 +102,10 @@ describe "Contestsolution pages" do
           click_button "Enregistrer"
         end
         it { should have_content("Solution enregistrée.") }
-        specify { expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(1) }
-        specify { expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).first.content).to eq(newsolution) }
+        specify do
+          expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(1)
+          expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).first.content).to eq(newsolution)
+        end
       end
       
       describe "and writes a solution" do
@@ -103,12 +113,16 @@ describe "Contestsolution pages" do
           fill_in "MathInput", with: newsolution
           click_button "Enregistrer"
         end
-        it { should have_content("Solution enregistrée.") }
         let(:newcontestsolution) { contestproblem_running.contestsolutions.where(:user => user_with_rating_200).first }
-        specify { expect(newcontestsolution).not_to eq(nil) }
-        specify { expect(newcontestsolution.content).to eq(newsolution) }
-        it { should have_link("Supprimer la solution") }
-        it { should have_button("Enregistrer") } # There is a form to edit the solution
+        specify do
+          expect(newcontestsolution).not_to eq(nil)
+          expect(newcontestsolution.content).to eq(newsolution)
+        end
+        it do
+          should have_content("Solution enregistrée.")
+          should have_link("Supprimer la solution")
+          should have_button("Enregistrer") # There is a form to edit the solution
+        end
         
         specify { expect { click_link "Supprimer la solution" }.to change{contestproblem_running.contestsolutions.count}.by(-1) }
         
@@ -161,17 +175,21 @@ describe "Contestsolution pages" do
     
     describe "tries to visit a non-started contestproblem page" do
       before { visit contestproblem_path(contestproblem_not_started) }
-      it { should have_content("Ce problème n'est pas encore en ligne.") }
-      it { should have_link("cliquer ici", :href => contestproblem_path(contestproblem_not_started, :sol => officialsol_not_started)) }
-      it { should_not have_button("Enregistrer") }
+      it do
+        should have_content("Ce problème n'est pas encore en ligne.")
+        should have_link("cliquer ici", :href => contestproblem_path(contestproblem_not_started, :sol => officialsol_not_started))
+        should have_no_button("Enregistrer")
+      end
     end
 
     describe "visits a running contestproblem page" do
       before { visit contestproblem_path(contestproblem_running) }
-      it { should have_selector("h1", text: "Problème ##{contestproblem_running.number}") }
-      it { should have_content("Ce problème est en train d'être résolu par les participants.") }
-      it { should have_link("cliquer ici", :href => contestproblem_path(contestproblem_running, :sol => officialsol_running)) }
-      it { should_not have_button("Enregistrer") }
+      it do
+        should have_selector("h1", text: "Problème ##{contestproblem_running.number}")
+        should have_content("Ce problème est en train d'être résolu par les participants.")
+        should have_link("cliquer ici", :href => contestproblem_path(contestproblem_running, :sol => officialsol_running))
+        should have_no_button("Enregistrer")
+      end
     end
 
     describe "visits a finished contestproblem page" do
@@ -183,9 +201,11 @@ describe "Contestsolution pages" do
         officialsol_finished.save
         visit contestproblem_path(contestproblem_finished)
       end
-      it { should have_selector("h1", text: "Problème ##{contestproblem_finished.number}") }
-      it { should have_selector("h3", text: "Solutions étoilées") }
-      it { should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished)) }
+      it do
+        should have_selector("h1", text: "Problème ##{contestproblem_finished.number}")
+        should have_selector("h3", text: "Solutions étoilées")
+        should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished))
+      end
     end
   end
 end

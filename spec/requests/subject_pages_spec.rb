@@ -61,59 +61,69 @@ describe "Subject pages" do
     
     describe "visits subjects page" do
       before { visit subjects_path }
-      it { should have_selector("h1", text: "Forum") }
-      it { should have_link("Créer un sujet") }
+      it do
+        should have_selector("h1", text: "Forum")
+        should have_link("Créer un sujet")
       
-      it { should have_link(sub_nothing.title) }
-      it { should have_link(sub_category.title) }
-      it { should have_link(sub_section.title) }
-      it { should have_link(sub_chapter.title) }
-      it { should have_link(sub_question.title) }
-      it { should have_link(sub_problem.title) }
+        should have_link(sub_nothing.title)
+        should have_link(sub_category.title)
+        should have_link(sub_section.title)
+        should have_link(sub_chapter.title)
+        should have_link(sub_question.title)
+        should have_link(sub_problem.title)
+      end
     end
     
     describe "visit subjects page for a category" do
       before { visit subjects_path(:q => category.id * 1000000) }
       
-      it { should_not have_link(sub_nothing.title) }
-      it { should have_link(sub_category.title) }
-      it { should_not have_link(sub_section.title) }
-      it { should_not have_link(sub_chapter.title) }
-      it { should_not have_link(sub_question.title) }
-      it { should_not have_link(sub_problem.title) }
+      it do
+        should have_no_link(sub_nothing.title)
+        should have_link(sub_category.title)
+        should have_no_link(sub_section.title)
+        should have_no_link(sub_chapter.title)
+        should have_no_link(sub_question.title)
+        should have_no_link(sub_problem.title)
+      end
     end
     
     describe "visit subjects page for a section" do
       before { visit subjects_path(:q => section.id * 1000) }
       
-      it { should_not have_link(sub_nothing.title) }
-      it { should_not have_link(sub_category.title) }
-      it { should have_link(sub_section.title) }
-      it { should have_link(sub_chapter.title) }
-      it { should have_link(sub_question.title) }
-      it { should have_link(sub_problem.title) }
+      it do
+        should have_no_link(sub_nothing.title)
+        should have_no_link(sub_category.title)
+        should have_link(sub_section.title)
+        should have_link(sub_chapter.title)
+        should have_link(sub_question.title)
+        should have_link(sub_problem.title)
+      end
     end
     
     describe "visit subjects page for a chapter" do
       before { visit subjects_path(:q => chapter.id) }
       
-      it { should_not have_link(sub_nothing.title) }
-      it { should_not have_link(sub_category.title) }
-      it { should_not have_link(sub_section.title) }
-      it { should have_link(sub_chapter.title) }
-      it { should have_link(sub_question.title) }
-      it { should_not have_link(sub_problem.title) }
+      it do
+        should have_no_link(sub_nothing.title)
+        should have_no_link(sub_category.title)
+        should have_no_link(sub_section.title)
+        should have_link(sub_chapter.title)
+        should have_link(sub_question.title)
+        should have_no_link(sub_problem.title)
+      end
     end
     
     describe "visit subjects page for problems of a section" do
       before { visit subjects_path(:q => section.id * 1000 + 1) }
       
-      it { should_not have_link(sub_nothing.title) }
-      it { should_not have_link(sub_category.title) }
-      it { should_not have_link(sub_section.title) }
-      it { should_not have_link(sub_chapter.title) }
-      it { should_not have_link(sub_question.title) }
-      it { should have_link(sub_problem.title) }
+      it do
+        should have_no_link(sub_nothing.title)
+        should have_no_link(sub_category.title)
+        should have_no_link(sub_section.title)
+        should have_no_link(sub_chapter.title)
+        should have_no_link(sub_question.title)
+        should have_link(sub_problem.title)
+      end
     end
     
     describe "visits subject creation page" do
@@ -127,9 +137,11 @@ describe "Subject pages" do
           fill_in "MathInput", with: content
           click_button "Créer"
         end
-        it { should have_content("Votre sujet a bien été posté.") }
-        it { should have_content("#{title} - #{category.name}") }
-        it { should have_selector("div", text: content) }
+        it do
+          should have_content("Votre sujet a bien été posté.")
+          should have_content("#{title} - #{category.name}")
+          should have_selector("div", text: content)
+        end
         
         describe "and visit all subjects page" do
           before { visit subjects_path }
@@ -140,9 +152,11 @@ describe "Subject pages" do
     
     describe "visits his subject page" do
       before { visit subject_path(sub_user) }
-      it { should have_content(sub_user.title) }
-      it { should have_link("Modifier ce sujet") }
-      it { should have_button("Répondre") }
+      it do
+        should have_content(sub_user.title)
+        should have_link("Modifier ce sujet")
+        should have_button("Répondre")
+      end
       
       describe "and edits it" do
         before do
@@ -151,18 +165,22 @@ describe "Subject pages" do
           fill_in "MathInputEditSubject", with: newcontent
           click_button "Modifier"
         end
-        it { should have_content("Votre sujet a bien été modifié.") }
-        it { should have_content("#{newtitle} - #{category2.name}") }
-        it { should have_selector("div", text: newcontent) }
+        it do
+          should have_content("Votre sujet a bien été modifié.")
+          should have_content("#{newtitle} - #{category2.name}")
+          should have_selector("div", text: newcontent)
+        end
       end
     end
     
     describe "visits the subject of another user" do
       before { visit subject_path(sub_other_user) }
-      it { should have_content(sub_other_user.title) }
-      it { should_not have_link("Modifier ce sujet") }
-      it { should_not have_button("Modifier") }
-      it { should have_button("Répondre") }
+      it do
+        should have_content(sub_other_user.title)
+        should have_no_link("Modifier ce sujet")
+        should have_no_button("Modifier")
+        should have_button("Répondre")
+      end
     end
   end
 
@@ -171,8 +189,10 @@ describe "Subject pages" do
 
     describe "visits the subject of a student" do
       before { visit subject_path(sub) }
-      it { should have_link("Modifier ce sujet") }
-      it { should have_link("Supprimer ce sujet") }
+      it do
+        should have_link("Modifier ce sujet")
+        should have_link("Supprimer ce sujet")
+      end
       
       specify { expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
       
@@ -183,9 +203,11 @@ describe "Subject pages" do
           fill_in "MathInputEditSubject", with: newcontent
           click_button "Modifier"
         end
-        it { should have_content("Votre sujet a bien été modifié.") }
-        it { should have_content("#{newtitle} - #{category2.name}") }
-        it { should have_selector("div", text: newcontent) }
+        it do
+          should have_content("Votre sujet a bien été modifié.")
+          should have_content("#{newtitle} - #{category2.name}")
+          should have_selector("div", text: newcontent)
+        end
       end
     end
 
@@ -198,8 +220,10 @@ describe "Subject pages" do
     
     describe "tries to edit the subject of another admin" do
       before { visit subject_path(sub_other_admin) }
-      it { should_not have_link("Modifier ce sujet") }
-      it { should_not have_button("Modifier") }
+      it do
+        should have_no_link("Modifier ce sujet")
+        should have_no_button("Modifier")
+      end
     end
 
     describe "deletes a subject with a message (DEPENDENCY)" do
@@ -214,8 +238,10 @@ describe "Subject pages" do
 
     describe "visits the subject of another root" do
       before { visit subject_path(sub_other_root) }
-      it { should have_link("Modifier ce sujet") }
-      it { should have_link("Supprimer ce sujet") }
+      it do
+        should have_link("Modifier ce sujet")
+        should have_link("Supprimer ce sujet")
+      end
       
       specify { expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
       
@@ -226,9 +252,11 @@ describe "Subject pages" do
           fill_in "MathInputEditSubject", with: newcontent
           click_button "Modifier"
         end
-        it { should have_content("Votre sujet a bien été modifié.") }
-        it { should have_content("#{newtitle} - #{category2.name}") }
-        it { should have_selector("div", text: newcontent) }
+        it do
+          should have_content("Votre sujet a bien été modifié.")
+          should have_content("#{newtitle} - #{category2.name}")
+          should have_selector("div", text: newcontent)
+        end
       end
     end
     
@@ -257,16 +285,20 @@ describe "Subject pages" do
           sub_user.reload
           mes.reload
         end
-        it { should have_content(sub_user.title) }
-        it { should have_content(old_content) }
-        it { should have_content(mes.content) }
-        specify { expect(Subject.count).to eq(old_num_subjects - 1) }
-        specify { expect(Message.count).to eq(old_num_messages + 1) }
-        specify { expect(Message.order(:id).last.content).to include(old_content) }
-        specify { expect(Message.order(:id).last.content).to include(old_title) } # In the remark saying that the message was migrated
-        specify { expect(Message.order(:id).last.subject).to eq(sub_user) }
-        specify { expect(mes.subject).to eq(sub_user) }
-        specify { expect(sub_user.lastcomment_user_id).to eq(mes.user_id) }
+        it do
+          should have_content(sub_user.title)
+          should have_content(old_content)
+          should have_content(mes.content)
+        end
+        specify do
+          expect(Subject.count).to eq(old_num_subjects - 1)
+          expect(Message.count).to eq(old_num_messages + 1)
+          expect(Message.order(:id).last.content).to include(old_content)
+          expect(Message.order(:id).last.content).to include(old_title) # In the remark saying that the message was migrated
+          expect(Message.order(:id).last.subject).to eq(sub_user)
+          expect(mes.subject).to eq(sub_user)
+          expect(sub_user.lastcomment_user_id).to eq(mes.user_id)
+        end
       end
       
       describe "and migrates it to a wrong subject" do

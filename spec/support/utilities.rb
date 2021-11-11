@@ -13,14 +13,8 @@ def sign_out
   click_link "Déconnexion"
 end
 
-def create_discussion(user, content)
-  user.last_connexion = DateTime.now
-  user.save
-  visit new_discussion_path
-  click_link "Afficher les utilisateurs inactifs"
-  select user.name, from: "destinataire"
-  fill_in "MathInput", with: content
-  click_button "Envoyer"
+def error_access_refused
+  return "Désolé... Cette page n'existe pas ou vous n'y avez pas accès."
 end
 
 def create_discussion_between(user1, user2, content1, content2)
@@ -48,11 +42,6 @@ def create_discussion_between(user1, user2, content1, content2)
   m2.discussion_id = d.id
   m2.save
   return d
-end
-
-def answer_discussion(content) # Should be on the page of the discussion!
-  fill_in "MathInput", with: content
-  click_button "Envoyer"
 end
 
 RSpec::Matchers.define :have_error_message do |message|

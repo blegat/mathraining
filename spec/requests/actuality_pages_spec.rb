@@ -12,28 +12,36 @@ describe "Actuality pages" do
   let(:newcontent) { "Nouveau contenu" }
 
   describe "user" do
-    before { sign_in user }
-    before { visit root_path }
-    it { should_not have_link("Modifier l'actualité") }
-    it { should_not have_link("Supprimer l'actualité") }
+    before do
+      sign_in user
+      visit root_path
+    end
+    it do
+      should have_no_link("Modifier l'actualité")
+      should have_no_link("Supprimer l'actualité")
+    end
     
     describe "tries to create an actuality" do
       before { visit new_actuality_path }
-      it { should_not have_selector("h1", text: "Ajouter une actualité") }
+      it { should have_no_selector("h1", text: "Ajouter une actualité") }
     end
     
     describe "tries to edit an actuality" do
       before { visit edit_actuality_path(actuality) }
-      it { should_not have_selector("h1", text: "Modifier une actualité") }
+      it { should have_no_selector("h1", text: "Modifier une actualité") }
     end
   end
 
   describe "admin" do
-    before { sign_in admin }
-    before { visit root_path }
+    before do
+      sign_in admin
+      visit root_path
+    end
     
-    it { should have_link("Modifier l'actualité") }
-    it { should have_link("Supprimer l'actualité") }
+    it do
+      should have_link("Modifier l'actualité")
+      should have_link("Supprimer l'actualité")
+    end
     
     describe "creates an actuality" do
       before { visit new_actuality_path }
@@ -44,8 +52,10 @@ describe "Actuality pages" do
           fill_in "MathInput", with: newcontent
           click_button "Créer"
         end
-        specify { expect(Actuality.order(:id).last.title).to eq(newtitle) }
-        specify { expect(Actuality.order(:id).last.content).to eq(newcontent) }
+        specify do
+          expect(Actuality.order(:id).last.title).to eq(newtitle)
+          expect(Actuality.order(:id).last.content).to eq(newcontent)
+        end
       end
       describe "and sends with wrong information" do
         before do
@@ -53,8 +63,10 @@ describe "Actuality pages" do
           fill_in "MathInput", with: newcontent
           click_button "Créer"
         end
-        it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Ajouter une actualité") }
+        it do
+          should have_content("erreur")
+          should have_selector("h1", text: "Ajouter une actualité")
+        end
         specify { expect(Actuality.order(:id).last.content).to_not eq(newcontent) }
       end
     end
@@ -69,8 +81,10 @@ describe "Actuality pages" do
           click_button "Modifier"
           actuality.reload
         end
-        specify { expect(actuality.title).to eq(newtitle) }
-        specify { expect(actuality.content).to eq(newcontent) }
+        specify do
+          expect(actuality.title).to eq(newtitle)
+          expect(actuality.content).to eq(newcontent)
+        end
       end
       describe "and sends with wrong information" do
         before do
@@ -79,8 +93,10 @@ describe "Actuality pages" do
           click_button "Modifier"
           actuality.reload
         end
-        it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Modifier une actualité") }
+        it do
+          should have_content("erreur")
+          should have_selector("h1", text: "Modifier une actualité")
+        end
         specify { expect(actuality.title).to_not eq(newtitle) }
       end
     end

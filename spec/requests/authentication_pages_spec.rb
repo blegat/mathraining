@@ -15,9 +15,7 @@ describe "Authentication" do
     before { visit root_path }
 
     describe "with invalid information" do
-      before do
-       click_button "Connexion"
-      end
+      before { click_button "Connexion" }
        
       it { should have_selector("div", text: "invalide") }
     end
@@ -26,10 +24,13 @@ describe "Authentication" do
       let(:user) { FactoryGirl.create(:user) }
       before { sign_in(user) }
 
-      it { should have_link("Scores", href: users_path) }
-      it { should have_link("Compte", href: edit_user_path(user)) }
-      it { should have_link("Déconnexion", href: signout_path) }
-      it { should_not have_link("Connexion") }
+      it do
+        should have_link("Scores", href: users_path)
+        should have_link("Compte", href: edit_user_path(user))
+        should have_link("Déconnexion", href: signout_path)
+        should have_no_link("Connexion")
+      end
+      
       describe "followed by signout" do
         before { sign_out }
         it { should have_link("Connexion") }

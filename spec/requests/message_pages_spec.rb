@@ -35,13 +35,15 @@ describe "Message pages" do
     
     describe "visits a subject" do
       before { visit subject_path(sub) }
-      it { should have_link("LinkEditMessage#{mes_user.id}") }
-      it { should_not have_link("LinkDeleteMessage#{mes_user.id}") }
-      it { should have_button("SubmitMessage#{mes_user.id}") }
-      it { should_not have_link("LinkEditMessage#{mes.id}") }
-      it { should_not have_button("SubmitMessage#{mes.id}") }
-      it { should have_button("Répondre") }
-      it { should have_button("Poster") }
+      it do
+        should have_link("LinkEditMessage#{mes_user.id}")
+        should have_no_link("LinkDeleteMessage#{mes_user.id}")
+        should have_button("SubmitMessage#{mes_user.id}")
+        should have_no_link("LinkEditMessage#{mes.id}")
+        should have_no_button("SubmitMessage#{mes.id}")
+        should have_button("Répondre")
+        should have_button("Poster")
+      end
       
       describe "and edits his message" do
         before do
@@ -88,15 +90,17 @@ describe "Message pages" do
 
     describe "visits the subject" do
       before { visit subject_path(sub) }
-      it { should have_link("LinkEditMessage#{mes.id}") }
-      it { should have_link("LinkDeleteMessage#{mes.id}") }
-      it { should have_button("SubmitMessage#{mes.id}") }
-      it { should have_link("LinkEditMessage#{mes_admin.id}") }
-      it { should have_link("LinkDeleteMessage#{mes_admin.id}") }
-      it { should have_button("SubmitMessage#{mes_admin.id}") }
-      it { should_not have_link("LinkEditMessage#{mes_other_admin.id}") }
-      it { should_not have_link("LinkDeleteMessage#{mes_other_admin.id}") }
-      it { should_not have_button("SubmitMessage#{mes_other_admin.id}") }
+      it do
+        should have_link("LinkEditMessage#{mes.id}")
+        should have_link("LinkDeleteMessage#{mes.id}")
+        should have_button("SubmitMessage#{mes.id}")
+        should have_link("LinkEditMessage#{mes_admin.id}")
+        should have_link("LinkDeleteMessage#{mes_admin.id}")
+        should have_button("SubmitMessage#{mes_admin.id}")
+        should have_no_link("LinkEditMessage#{mes_other_admin.id}")
+        should have_no_link("LinkDeleteMessage#{mes_other_admin.id}")
+        should have_no_button("SubmitMessage#{mes_other_admin.id}")
+      end
       
       specify { expect { click_link("LinkDeleteMessage#{mes.id}") }.to change(Message, :count).by(-1) }
       specify {	expect { click_link("LinkDeleteMessage#{mes_admin.id}") }.to change(Message, :count).by(-1) }
@@ -128,9 +132,11 @@ describe "Message pages" do
     
     describe "visits the subject" do
       before { visit subject_path(sub2) }
-      it { should have_link("LinkEditMessage#{mes_other_root.id}") }
-      it { should have_link("LinkDeleteMessage#{mes_other_root.id}") }
-      it { should have_button("SubmitMessage#{mes_other_root.id}") }
+      it do
+        should have_link("LinkEditMessage#{mes_other_root.id}")
+        should have_link("LinkDeleteMessage#{mes_other_root.id}")
+        should have_button("SubmitMessage#{mes_other_root.id}")
+      end
       
       specify { expect { click_link("LinkDeleteMessage#{mes_other_root.id}") }.to change(Message, :count).by(-1) }
       

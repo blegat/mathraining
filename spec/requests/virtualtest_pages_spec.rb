@@ -27,8 +27,10 @@ describe "Virtualtest pages" do
   describe "visitor" do
     describe "visits virtualtests page" do
       before { visit virtualtests_path }
-      it { should have_selector("h1", text: "Tests virtuels") }
-      it { should have_selector("div", text: "Les tests virtuels ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.") }
+      it do
+        should have_selector("h1", text: "Tests virtuels")
+        should have_selector("div", text: "Les tests virtuels ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.")
+      end
     end
     
     describe "tries visiting online virtualtest" do
@@ -42,13 +44,15 @@ describe "Virtualtest pages" do
 
     describe "visits virtualtests page" do
       before { visit virtualtests_path }
-      it { should have_selector("h1", text: "Tests virtuels") }
-      it { should have_selector("div", text: "Les tests virtuels ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.") }
+      it do
+        should have_selector("h1", text: "Tests virtuels")
+        should have_selector("div", text: "Les tests virtuels ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
+      end
     end
     
     describe "tries visiting online virtualtest" do
       before { visit virtualtest_path(virtualtest) }
-      it { should have_selector("div", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+      it { should have_content(error_access_refused) }
     end
   end
   
@@ -57,13 +61,15 @@ describe "Virtualtest pages" do
 
     describe "visits virtualtests page" do
       before { visit virtualtests_path }
-      it { should have_selector("h1", text: "Tests virtuels") }
-      it { should_not have_selector("h3", text: "Test \##{virtualtest.number}") }
+      it do
+        should have_selector("h1", text: "Tests virtuels")
+        should have_no_selector("h3", text: "Test \##{virtualtest.number}")
+      end
     end
     
     describe "tries visiting online virtualtest" do
       before { visit virtualtest_path(virtualtest) }
-      it { should have_selector("div", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+      it { should have_content(error_access_refused) }
     end
   end
   
@@ -75,50 +81,60 @@ describe "Virtualtest pages" do
 
     describe "visits virtualtests page" do
       before { visit virtualtests_path }
-      it { should have_selector("h1", text: "Tests virtuels") }
-      it { should have_selector("h3", text: "Test \##{virtualtest.number}") }
-      it { should have_content("2 problèmes") }
-      it { should_not have_content("Score moyen") }
-      it { should have_button("Commencer ce test") }
+      it do
+        should have_selector("h1", text: "Tests virtuels")
+        should have_selector("h3", text: "Test \##{virtualtest.number}")
+        should have_content("2 problèmes")
+        should have_no_content("Score moyen")
+        should have_button("Commencer ce test")
+      end
       
       describe "and starts the test" do
         before { click_button("Commencer ce test") }
-        it { should have_selector("h1", text: "Test \##{virtualtest.number}") }
-        it { should have_content("Temps restant") }
-        it { should have_link("Problème 1", href: virtualtest_path(virtualtest, :p => problem)) }
-        it { should have_link("Problème 2", href: virtualtest_path(virtualtest, :p => problem_with_prerequisite)) }
+        it do
+          should have_selector("h1", text: "Test \##{virtualtest.number}")
+          should have_content("Temps restant")
+          should have_link("Problème 1", href: virtualtest_path(virtualtest, :p => problem))
+          should have_link("Problème 2", href: virtualtest_path(virtualtest, :p => problem_with_prerequisite))
+        end
         
         describe "and visits the virtualtests" do
           before { visit virtualtests_path }
-          it { should have_selector("h3", text: "Test \##{virtualtest.number}") }
-          it { should_not have_content("Score moyen") }
-          it { should_not have_button("Commencer ce test") }
-          it { should have_link("Problème 1", href: virtualtest_path(virtualtest, :p => problem)) }
-          it { should have_content(problem.statement) }
-          it { should have_link("Problème 2", href: virtualtest_path(virtualtest, :p => problem_with_prerequisite)) }
-          it { should have_content(problem_with_prerequisite.statement) }
-          it { should have_content("Temps restant") }
+          it do
+            should have_selector("h3", text: "Test \##{virtualtest.number}")
+            should have_no_content("Score moyen")
+            should have_no_button("Commencer ce test")
+            should have_link("Problème 1", href: virtualtest_path(virtualtest, :p => problem))
+            should have_content(problem.statement)
+            should have_link("Problème 2", href: virtualtest_path(virtualtest, :p => problem_with_prerequisite))
+            should have_content(problem_with_prerequisite.statement)
+            should have_content("Temps restant")
+          end
         end
         
         describe "and visits the problem in virtualtest" do
           before { visit virtualtest_path(virtualtest, :p => problem) }
-          it { should have_selector("h3", text: "Énoncé") }
-          it { should have_content(problem.statement) }
-          it { should have_selector("h3", text: "Votre solution") }
-          it { should have_selector("span", text: "Vous n'avez pas encore envoyé de solution à ce problème.") }
-          it { should have_button("Écrire une solution") }
-          it { should have_button("Enregistrer cette solution") } # NB: Users actually need to click on "Écrire une solution" to see the form
+          it do
+            should have_selector("h3", text: "Énoncé")
+            should have_content(problem.statement)
+            should have_selector("h3", text: "Votre solution")
+            should have_selector("span", text: "Vous n'avez pas encore envoyé de solution à ce problème.")
+            should have_button("Écrire une solution")
+            should have_button("Enregistrer cette solution") # NB: Users actually need to click on "Écrire une solution" to see the form
+          end
           
           describe "and writes a solution" do
             before do
               fill_in "MathInput", with: newsolution
               click_button("Enregistrer cette solution")
             end
-            it { should have_content("Votre solution a bien été enregistrée.") }
             specify { expect(problem.submissions.order(:id).last.content).to eq(newsolution) }
-            it { should have_content(newsolution) }
-            it { should have_link("Modifier la solution") }
-            it { should have_link("Supprimer la solution") }
+            it do
+              should have_content("Votre solution a bien été enregistrée.")
+              should have_content(newsolution)
+              should have_link("Modifier la solution")
+              should have_link("Supprimer la solution")
+            end
             specify { expect { click_link("Supprimer la solution") }.to change{problem.submissions.count}.by(-1) }
             
             describe "and modifies the solution" do
@@ -126,9 +142,11 @@ describe "Virtualtest pages" do
                 fill_in "MathInput", with: newsolution2
                 click_button("Enregistrer cette solution")
               end
-              it { should have_content("Votre solution a bien été modifiée.") }
               specify { expect(problem.submissions.order(:id).last.content).to eq(newsolution2) }
-              it { should have_content(newsolution2) }
+              it do
+                should have_content("Votre solution a bien été modifiée.")
+                should have_content(newsolution2)
+              end
             end
             
             describe "and the time stops" do
@@ -138,25 +156,26 @@ describe "Virtualtest pages" do
                 takentest.save
                 visit virtualtest_path(virtualtest, :p => problem) # Should redirect to virtualtests page
               end
-              it { should have_selector("h1", text: "Tests virtuels") }
-              it { should have_link("Problème 1", href: problem_path(problem, :sub => problem.submissions.where(:user => user_with_rating_200).first)) }
-              it { should have_link("Problème 2", href: problem_path(problem_with_prerequisite)) }
-              it { should have_content("? / 7") } # Problème 1
-              it { should have_content("0 / 7") } # Problème 2 (no submission)
-              it { should_not have_content("Temps restant") }
+              it do
+                should have_selector("h1", text: "Tests virtuels")
+                should have_link("Problème 1", href: problem_path(problem, :sub => problem.submissions.where(:user => user_with_rating_200).first))
+                should have_link("Problème 2", href: problem_path(problem_with_prerequisite))
+                should have_content("? / 7") # Problème 1
+                should have_content("0 / 7") # Problème 2 (no submission)
+                should have_no_content("Temps restant")
+              end
             end
           end
         end
         
         describe "and tries to visit the problem section page" do
           before { visit pb_sections_path(section) }
-          it { should_not have_link("Problème \##{problem.id}", href: problem_path(problem)) }
+          it { should have_no_link("Problème \##{problem.id}", href: problem_path(problem)) }
         end
         
         describe "and tries to visit the problem page" do
           before { visit problem_path(problem) }
-          it { should_not have_selector("h1", text: "Problème \##{problem.id}") }
-          it { should have_content("Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+          it { should have_content(error_access_refused) }
         end
       end
     end
@@ -172,16 +191,18 @@ describe "Virtualtest pages" do
     
     describe "visits virtualtests page" do
       before { visit virtualtests_path }
-      it { should have_selector("h1", text: "Tests virtuels") }
-      it { should have_selector("h3", text: "Test \##{virtualtest.number}") }
-      it { should have_content("2 problèmes") }
-      it { should have_content(problem.statement) }
-      it { should have_content("Score moyen") }
-      it { should_not have_button("Commencer ce test") }
-      it { should_not have_link("Modifier ce test") }
-      it { should_not have_link("Supprimer ce test") }
-      it { should_not have_button("Mettre en ligne") }
-      it { should have_link("Ajouter un test virtuel") }
+      it do
+        should have_selector("h1", text: "Tests virtuels")
+        should have_selector("h3", text: "Test \##{virtualtest.number}")
+        should have_content("2 problèmes")
+        should have_content(problem.statement)
+        should have_content("Score moyen")
+        should have_no_button("Commencer ce test")
+        should have_no_link("Modifier ce test")
+        should have_no_link("Supprimer ce test")
+        should have_no_button("Mettre en ligne")
+        should have_link("Ajouter un test virtuel")
+      end
     end
     
     describe "visits creation page" do
@@ -194,13 +215,15 @@ describe "Virtualtest pages" do
           click_button("Créer")
         end
         specify { expect(Virtualtest.order(:id).last.duration).to eq(duration) }
-        it { should have_content("Test virtuel ajouté.") }
-        it { should have_selector("h1", text: "Tests virtuels") }
-        it { should have_content("(en construction)") }
-        it { should have_link("Modifier ce test") }
-        it { should have_link("Supprimer ce test") }
-        it { should_not have_button("Mettre en ligne") }
-        it { should have_content("(Au moins un problème nécessaire)") }
+        it do
+          should have_content("Test virtuel ajouté.")
+          should have_selector("h1", text: "Tests virtuels")
+          should have_content("(en construction)")
+          should have_link("Modifier ce test")
+          should have_link("Supprimer ce test")
+          should have_no_button("Mettre en ligne")
+          should have_content("(Au moins un problème nécessaire)")
+        end
         specify { expect { click_link("Supprimer ce test") }.to change(Virtualtest, :count).by(-1) }
         
         describe "and visits modification page" do
@@ -225,8 +248,10 @@ describe "Virtualtest pages" do
         virtualtest.save
         visit virtualtests_path
       end
-      it { should have_button("Mettre en ligne") }
-      it { should have_link("Supprimer ce test") }
+      it do
+        should have_button("Mettre en ligne")
+        should have_link("Supprimer ce test")
+      end
       specify { expect { click_link("Supprimer ce test") }.to change(Virtualtest, :count).by(-1) }
       
       describe "and puts it online" do
@@ -245,7 +270,7 @@ describe "Virtualtest pages" do
           click_button("Mettre en ligne")
           virtualtest.reload
         end
-        it { should_not have_content("Test virtuel mis en ligne.") }
+        it { should have_no_content("Test virtuel mis en ligne.") }
         specify { expect(virtualtest.online).to eq(false) }
       end
     end
@@ -258,8 +283,10 @@ describe "Virtualtest pages" do
         problem.save
         visit virtualtests_path
       end
-      it { should_not have_button("Mettre en ligne") }
-      it { should have_content("(Problèmes doivent être en ligne)") }
+      it do
+        should have_no_button("Mettre en ligne")
+        should have_content("(Problèmes doivent être en ligne)")
+      end
     end
   end
 end

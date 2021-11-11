@@ -7,6 +7,6 @@ describe "Error pages" do
 
   describe "visitor" do
     before { visit (users_path + "wrongpath") }
-    it { should have_content("Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+    it { should have_content(error_access_refused) }
   end
 end

@@ -34,16 +34,22 @@ describe "Contestcorrection pages" do
 
     describe "visits a finished contestproblem page" do
       before { visit contestproblem_path(contestproblem_finished) }
-      it { should have_selector("h1", text: "Problème ##{contestproblem_finished.number}") }
-      it { should_not have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished)) } # We should not see it because it is non-public by default
-      it { should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => usersol_finished)) }
+      it do
+        should have_selector("h1", text: "Problème ##{contestproblem_finished.number}")
+        should have_no_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished)) # We should not see it because it is non-public by default
+        should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => usersol_finished))
+      end
     end
     
     describe "visits an official solution without having reserved" do
       before { visit contestproblem_path(contestproblem_finished, :sol => officialsol_finished) }
-      it { should have_selector("h3", text: "Solution officielle (non-publique)") }
-      it { should have_link("Modifier la solution") }
-      it { should have_button("Enregistrer (publique)", disabled: true) } # Not reserved so disabled
+      it do
+        should have_selector("h3", text: "Solution officielle (non-publique)")
+        should have_link("Modifier la solution")
+        should have_button("Enregistrer (non-publique)", disabled: true) # Not reserved so disabled
+        should have_button("Enregistrer (publique)", disabled: true) # Not reserved so disabled
+        should have_button("Enregistrer (publique étoilée)", disabled: true) # Not reserved so disabled
+      end
     end
     
     describe "visits an official solution after having reserved" do
@@ -52,11 +58,13 @@ describe "Contestcorrection pages" do
         officialsol_finished.save
         visit contestproblem_path(contestproblem_finished, :sol => officialsol_finished)
       end
-      it { should have_content("Aucune solution étoilée") }
-      it { should have_link("Modifier la solution") }
-      it { should have_button("Enregistrer (non-publique)") }
-      it { should have_button("Enregistrer (publique)") }
-      it { should have_button("Enregistrer (publique étoilée)") }
+      it do
+        should have_content("Aucune solution étoilée")
+        should have_link("Modifier la solution")
+        should have_button("Enregistrer (non-publique)")
+        should have_button("Enregistrer (publique)")
+        should have_button("Enregistrer (publique étoilée)")
+      end
       
       describe "and modifies it as a starred solution" do
         before do
@@ -65,11 +73,15 @@ describe "Contestcorrection pages" do
           officialsol_finished.reload
           officialsol_finished.contestcorrection.reload
         end
-        specify { expect(officialsol_finished.score).to eq(7) }
-        specify { expect(officialsol_finished.star).to eq(true) }
-        specify { expect(officialsol_finished.contestcorrection.content).to eq(newcorrection) }
-        it { should_not have_content("Aucune solution étoilée") }
-        it { should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished)) }
+        specify do
+          expect(officialsol_finished.score).to eq(7)
+          expect(officialsol_finished.star).to eq(true)
+          expect(officialsol_finished.contestcorrection.content).to eq(newcorrection)
+        end
+        it do
+          should have_no_content("Aucune solution étoilée")
+          should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished))
+        end
       end
       
       describe "and modifies it as a bad solution" do
@@ -79,9 +91,11 @@ describe "Contestcorrection pages" do
           officialsol_finished.reload
           officialsol_finished.contestcorrection.reload
         end
-        specify { expect(officialsol_finished.score).to eq(0) }
-        specify { expect(officialsol_finished.star).to eq(false) }
-        specify { expect(officialsol_finished.contestcorrection.content).to eq(newcorrection) }
+        specify do
+          expect(officialsol_finished.score).to eq(0)
+          expect(officialsol_finished.star).to eq(false)
+          expect(officialsol_finished.contestcorrection.content).to eq(newcorrection)
+        end
       end
       
       describe "and modifies it as a good non-starred solution" do
@@ -91,9 +105,11 @@ describe "Contestcorrection pages" do
           officialsol_finished.reload
           officialsol_finished.contestcorrection.reload
         end
-        specify { expect(officialsol_finished.score).to eq(7) }
-        specify { expect(officialsol_finished.star).to eq(false) }
-        specify { expect(officialsol_finished.contestcorrection.content).to eq(newcorrection) }
+        specify do
+          expect(officialsol_finished.score).to eq(7)
+          expect(officialsol_finished.star).to eq(false)
+          expect(officialsol_finished.contestcorrection.content).to eq(newcorrection)
+        end
       end
     end
     
@@ -103,12 +119,14 @@ describe "Contestcorrection pages" do
         usersol_finished.save
         visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
       end
-      it { should have_selector("h3", text: "Solution de #{user_participating.name}") }
-      it { should have_content("- / 7") }
-      it { should have_link("Modifier la correction") }
-      it { should have_button("Enregistrer provisoirement") }
-      it { should have_button("Enregistrer") }
-      it { should have_button("Enregistrer et étoiler (si 7/7)") }
+      it do
+        should have_selector("h3", text: "Solution de #{user_participating.name}")
+        should have_content("- / 7")
+        should have_link("Modifier la correction")
+        should have_button("Enregistrer provisoirement")
+        should have_button("Enregistrer")
+        should have_button("Enregistrer et étoiler (si 7/7)")
+      end
       
       describe "and marks it as wrong" do
         before do
@@ -118,12 +136,16 @@ describe "Contestcorrection pages" do
           usersol_finished.reload
           usersol_finished.contestcorrection.reload
         end
-        specify { expect(usersol_finished.score).to eq(2) }
-        specify { expect(usersol_finished.star).to eq(false) }
-        specify { expect(usersol_finished.corrected).to eq(true) }
-        specify { expect(usersol_finished.contestcorrection.content).to eq(newcorrection) }
-        it { should_not have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => usersol_finished)) } # We should not see it anymore without javascript
-        it { should have_content("2 / 7") }
+        specify do
+          expect(usersol_finished.score).to eq(2)
+          expect(usersol_finished.star).to eq(false)
+          expect(usersol_finished.corrected).to eq(true)
+          expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
+        end
+        it do
+          should have_no_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => usersol_finished)) # We should not see it anymore without javascript
+          should have_content("2 / 7")
+        end
       end
       
       describe "and marks it as correct without star" do
@@ -134,11 +156,15 @@ describe "Contestcorrection pages" do
           usersol_finished.reload
           usersol_finished.contestcorrection.reload
         end
-        specify { expect(usersol_finished.score).to eq(7) }
-        specify { expect(usersol_finished.star).to eq(false) }
-        specify { expect(usersol_finished.contestcorrection.content).to eq(newcorrection) }
-        it { should have_content("7 / 7") }
-        it { should have_content("Il faut au minimum une solution étoilée pour publier les résultats") }
+        specify do
+          expect(usersol_finished.score).to eq(7)
+          expect(usersol_finished.star).to eq(false)
+          expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
+        end
+        it do
+          should have_content("7 / 7")
+          should have_content("Il faut au minimum une solution étoilée pour publier les résultats")
+        end
       end
       
       describe "and marks it as correct with star" do
@@ -149,26 +175,32 @@ describe "Contestcorrection pages" do
           usersol_finished.reload
           usersol_finished.contestcorrection.reload
         end
-        it { should have_content("Le score a été mis automatiquement à 7/7 (car solution étoilée).") }
-        specify { expect(usersol_finished.score).to eq(7) }
-        specify { expect(usersol_finished.star).to eq(true) }
-        specify { expect(usersol_finished.contestcorrection.content).to eq(newcorrection) }
-        it { should have_content("7 / 7") }
-        it { should have_button("Publier les résultats") }
+        specify do
+          expect(usersol_finished.score).to eq(7)
+          expect(usersol_finished.star).to eq(true)
+          expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
+        end
+        it do
+          should have_content("Le score a été mis automatiquement à 7/7 (car solution étoilée).")
+          should have_content("7 / 7")
+          should have_button("Publier les résultats")
+        end
         
         describe "and publish the results" do
           before do
             click_button("Publier les résultats")
             contestproblem_finished.reload
           end
-          specify { expect(contestproblem_finished.status).to eq(4) }
-          specify { expect(contest.contestscores.count).to eq(1) }
-          specify { expect(contest.contestscores.first.user).to eq(user_participating) }
-          specify { expect(contest.contestscores.first.score).to eq(7) }
-          specify { expect(contest.contestscores.first.rank).to eq(1) }
-          specify { expect(contest.contestscores.first.medal).to eq(-1) }
-          specify { expect(contestsubject.messages.count).to eq(1) }
-          specify { expect(contestsubject.messages.first.user_id).to eq(0) }
+          specify do
+            expect(contestproblem_finished.status).to eq(4)
+            expect(contest.contestscores.count).to eq(1)
+            expect(contest.contestscores.first.user).to eq(user_participating)
+            expect(contest.contestscores.first.score).to eq(7)
+            expect(contest.contestscores.first.rank).to eq(1)
+            expect(contest.contestscores.first.medal).to eq(-1)
+            expect(contestsubject.messages.count).to eq(1)
+            expect(contestsubject.messages.first.user_id).to eq(0)
+          end
         end
         
         describe "and tries to modify it after results were published" do
@@ -187,9 +219,11 @@ describe "Contestcorrection pages" do
             usersol_finished.contestcorrection.reload
           end
           it { should have_content("Vous ne pouvez pas modifier cette correction.") }
-          specify { expect(usersol_finished.score).to eq(7) }
-          specify { expect(usersol_finished.star).to eq(true) }
-          specify { expect(usersol_finished.contestcorrection.content).to eq(newcorrection) }
+          specify do
+            expect(usersol_finished.score).to eq(7)
+            expect(usersol_finished.star).to eq(true)
+            expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
+          end
         end
       end
       
@@ -201,9 +235,11 @@ describe "Contestcorrection pages" do
           usersol_finished.reload
           usersol_finished.contestcorrection.reload
         end
-        specify { expect(usersol_finished.score).to eq(3) }
-        specify { expect(usersol_finished.corrected).to eq(false) }
-        specify { expect(usersol_finished.contestcorrection.content).to eq(newcorrection) }
+        specify do
+          expect(usersol_finished.score).to eq(3)
+          expect(usersol_finished.corrected).to eq(false)
+          expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
+        end
         it { should have_content("3 / 7") }
       end
       
@@ -216,8 +252,10 @@ describe "Contestcorrection pages" do
           usersol_finished.contestcorrection.reload
         end
         it { should have_content("Votre correction est vide.") }
-        specify { expect(usersol_finished.score).to eq(-1) }
-        specify { expect(usersol_finished.contestcorrection.content).to eq("-") }
+        specify do
+          expect(usersol_finished.score).to eq(-1)
+          expect(usersol_finished.contestcorrection.content).to eq("-")
+        end
       end
 
       describe "and hacked the system (he did not reserve)" do
@@ -231,8 +269,10 @@ describe "Contestcorrection pages" do
           usersol_finished.contestcorrection.reload
         end
         it { should have_content("Vous n'avez pas réservé.") }
-        specify { expect(usersol_finished.score).to eq(-1) }
-        specify { expect(usersol_finished.contestcorrection.content).to eq("-") }
+        specify do
+          expect(usersol_finished.score).to eq(-1)
+          expect(usersol_finished.contestcorrection.content).to eq("-")
+        end
       end
     end
   end

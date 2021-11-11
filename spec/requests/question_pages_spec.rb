@@ -48,7 +48,7 @@ describe "Question pages" do
     
     describe "visits offline exercise" do
       before { visit chapter_path(chapter, :type => 5, :which => offline_exercise.id) }
-      it { should_not have_selector("div", text: offline_exercise.statement) }
+      it { should have_no_selector("div", text: offline_exercise.statement) }
     end
   end
   
@@ -62,17 +62,17 @@ describe "Question pages" do
     
     describe "visits offline exercise" do
       before { visit chapter_path(chapter, :type => 5, :which => offline_exercise.id) }
-      it { should_not have_selector("div", text: offline_exercise.statement) }
+      it { should have_no_selector("div", text: offline_exercise.statement) }
     end
     
     describe "tries to visit exercise creation page" do
       before { visit new_chapter_question_path(chapter) }
-      it { should_not have_selector("h1", text: "Créer un exercice") }
+      it { should have_no_selector("h1", text: "Créer un exercice") }
     end
     
     describe "tries to visit exercise modification page" do
       before { visit edit_question_path(online_exercise) }
-      it { should_not have_selector("h1", text: "Modifier un exercice") }
+      it { should have_no_selector("h1", text: "Modifier un exercice") }
     end
   end
   
@@ -81,18 +81,22 @@ describe "Question pages" do
     
     describe "visits online exercise" do
       before { visit chapter_path(chapter, :type => 5, :which => online_exercise.id) }
-      it { should have_selector("div", text: online_exercise.statement) }
-      it { should_not have_selector("a", text: "Supprimer cet exercice") }
-      it { should have_selector("a", text: "Modifier l'explication") }
+      it do
+        should have_selector("div", text: online_exercise.statement)
+        should have_no_selector("a", text: "Supprimer cet exercice")
+        should have_selector("a", text: "Modifier l'explication")
+      end
     end
     
     describe "visits offline exercise" do
       before { visit chapter_path(chapter, :type => 5, :which => offline_exercise.id) }
-      it { should have_selector("div", text: offline_exercise.statement) }
-      it { should have_selector("a", text: "Modifier cet exercice") }
-      it { should have_selector("a", text: "Supprimer cet exercice") }
-      it { should have_selector("a", text: "QCM") } # Link to add a new QCM
-      it { should have_button("Mettre en ligne") }
+      it do
+        should have_selector("div", text: offline_exercise.statement)
+        should have_selector("a", text: "Modifier cet exercice")
+        should have_selector("a", text: "Supprimer cet exercice")
+        should have_selector("a", text: "QCM") # Link to add a new QCM
+        should have_button("Mettre en ligne")
+      end
       
       specify { expect { click_link "Supprimer cet exercice" }.to change(Question, :count).by(-1) }
       
@@ -121,8 +125,10 @@ describe "Question pages" do
     
     describe "checks question order" do
       before { visit chapter_path(chapter, :type => 5, :which => online_exercise.id) }
-      it { should have_link "bas" }
-      it { should_not have_link "haut" } # Because position 1 out of >= 4
+      it do
+        should have_link "bas"
+        should have_no_link "haut" # Because position 1 out of >= 4
+      end
       
       describe "and modifies it" do
         before do
@@ -130,10 +136,14 @@ describe "Question pages" do
           online_exercise.reload
           online_qcm.reload
         end
-        specify { expect(online_exercise.position).to eq(2) }
-        specify { expect(online_qcm.position).to eq(1) }
-        it { should have_link "bas" } # Because position 2 out of >= 4
-        it { should have_link "haut" }
+        specify do
+          expect(online_exercise.position).to eq(2)
+          expect(online_qcm.position).to eq(1)
+        end
+        it do
+          should have_link "bas" # Because position 2 out of >= 4
+          should have_link "haut"
+        end
         
         describe "and modifies it back" do
           before do
@@ -172,8 +182,10 @@ describe "Question pages" do
           expect(Question.order(:id).last.position).to eq(1)
           expect(Question.order(:id).last.online).to eq(false)
         end
-        it { should have_selector("div", text: newstatement) }
-        it { should have_button("Mettre en ligne") }
+        it do
+          should have_selector("div", text: newstatement)
+          should have_button("Mettre en ligne")
+        end
         
         describe "and adds a second exercise" do
           before do
@@ -206,8 +218,10 @@ describe "Question pages" do
           fill_in "Niveau", with: newlevel
           click_button "Créer"
         end
-        it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Créer un exercice") }
+        it do
+          should have_content("erreur")
+          should have_selector("h1", text: "Créer un exercice")
+        end
         specify { expect(Question.order(:id).last.answer).to_not eq(newanswer) }
       end
     end
@@ -244,8 +258,10 @@ describe "Question pages" do
           click_button "Modifier"
           offline_exercise.reload
         end
-        it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Modifier un exercice") }
+        it do
+          should have_content("erreur")
+          should have_selector("h1", text: "Modifier un exercice")
+        end
         specify { expect(offline_exercise.answer).to_not eq(newanswer) }
       end
     end
@@ -297,22 +313,24 @@ describe "Question pages" do
     
     describe "visits choices modification page" do
       before { visit question_manage_items_path(offline_qcm) }
-      it { should have_selector("h1", text: "Choix") }
+      it do
+        should have_selector("h1", text: "Choix")
       
-      it { should have_link("update_item_incorrect_" + offline_item_correct.id.to_s) }
-      it { should_not have_link("update_item_correct_" + offline_item_correct.id.to_s) }
-      it { should_not have_link("update_item_up_" + offline_item_correct.id.to_s) }
-      it { should have_link("update_item_down_" + offline_item_correct.id.to_s) }
+        should have_link("update_item_incorrect_" + offline_item_correct.id.to_s)
+        should have_no_link("update_item_correct_" + offline_item_correct.id.to_s)
+        should have_no_link("update_item_up_" + offline_item_correct.id.to_s)
+        should have_link("update_item_down_" + offline_item_correct.id.to_s)
       
-      it { should_not have_link("update_item_incorrect_" + offline_item_incorrect.id.to_s) }
-      it { should have_link("update_item_correct_" + offline_item_incorrect.id.to_s) }
-      it { should have_link("update_item_up_" + offline_item_incorrect.id.to_s) }
-      it { should have_link("update_item_down_" + offline_item_incorrect.id.to_s) }
+        should have_no_link("update_item_incorrect_" + offline_item_incorrect.id.to_s)
+        should have_link("update_item_correct_" + offline_item_incorrect.id.to_s)
+        should have_link("update_item_up_" + offline_item_incorrect.id.to_s)
+        should have_link("update_item_down_" + offline_item_incorrect.id.to_s)
      
-      it { should have_link("update_item_incorrect_" + offline_item_correct2.id.to_s) }
-      it { should_not have_link("update_item_correct_" + offline_item_correct2.id.to_s) }
-      it { should have_link("update_item_up_" + offline_item_correct2.id.to_s) }
-      it { should_not have_link("update_item_down_" + offline_item_correct2.id.to_s) }
+        should have_link("update_item_incorrect_" + offline_item_correct2.id.to_s)
+        should have_no_link("update_item_correct_" + offline_item_correct2.id.to_s)
+        should have_link("update_item_up_" + offline_item_correct2.id.to_s)
+        should have_no_link("update_item_down_" + offline_item_correct2.id.to_s)
+      end
       
       describe "and adds a new choice" do
         before do

@@ -30,14 +30,18 @@ describe "Problem pages" do
   describe "visitor" do
     describe "visits problems of a section" do
       before { visit pb_sections_path(section.id) }
-      it { should have_selector("h1", text: section.name) }
-      it { should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.") }
+      it do
+        should have_selector("h1", text: section.name)
+        should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.")
+      end
     end
     
     describe "visits online problem" do
       before { visit problem_path(online_problem.id) }
-      it { should_not have_selector("h1", text: "Problème ##{online_problem.number}") }
-      it { should have_selector("div", text: "Vous devez être connecté pour accéder à cette page.") }
+      it do
+        should have_no_selector("h1", text: "Problème ##{online_problem.number}")
+        should have_selector("div", text: "Vous devez être connecté pour accéder à cette page.")
+      end
     end
   end
   
@@ -46,14 +50,15 @@ describe "Problem pages" do
 
     describe "visits problems of a section" do
       before { visit pb_sections_path(section.id) }
-      it { should have_selector("h1", text: section.name) }
-      it { should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.") }
+      it do
+        should have_selector("h1", text: section.name)
+        should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
+      end
     end
     
     describe "visits online problem" do
       before { visit problem_path(online_problem.id) }
-      it { should_not have_selector("h1", text: "Problème ##{online_problem.number}") }
-      it { should have_selector("span", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+      it { should have_content(error_access_refused) }
     end
   end
   
@@ -62,41 +67,42 @@ describe "Problem pages" do
 
     describe "visits problems of a section" do
       before { visit pb_sections_path(section.id) }
-      it { should have_selector("h1", text: section.name) }
-      it { should_not have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.") }
-      it { should have_selector("h2", text: "Niveau 1") }
-      it { should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem.id)) }
-      it { should have_selector("div", text: online_problem.statement) }
-      it { should_not have_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem.id)) }
-      it { should_not have_selector("div", text: offline_problem.statement) }
-      it { should_not have_link("Problème ##{problem_in_virtualtest.number}", href: problem_path(problem_in_virtualtest.id)) }
-      it { should_not have_selector("div", text: problem_in_virtualtest.statement) }
-      it { should_not have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite.id)) }
-      it { should_not have_selector("div", text: online_problem_with_prerequisite.statement) }
+      it do
+        should have_selector("h1", text: section.name)
+        should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
+        should have_selector("h2", text: "Niveau 1")
+        should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem.id))
+        should have_selector("div", text: online_problem.statement)
+        should have_no_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem.id))
+        should have_no_selector("div", text: offline_problem.statement) 
+        should have_no_link("Problème ##{problem_in_virtualtest.number}", href: problem_path(problem_in_virtualtest.id)) 
+        should have_no_selector("div", text: problem_in_virtualtest.statement) 
+        should have_no_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite.id)) 
+        should have_no_selector("div", text: online_problem_with_prerequisite.statement)
+      end
     end
     
     describe "visits online problem" do
       before { visit problem_path(online_problem.id) }
-      it { should have_selector("h1", text: "Problème ##{online_problem.number}") }
-      it { should have_selector("div", text: online_problem.statement) }
+      it do
+        should have_selector("h1", text: "Problème ##{online_problem.number}")
+        should have_selector("div", text: online_problem.statement)
+      end
     end
     
     describe "visits offline problem" do
       before { visit problem_path(offline_problem.id) }
-      it { should_not have_selector("h1", text: "Problème ##{offline_problem.number}") }
-      it { should have_selector("span", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+      it { should have_content(error_access_refused) }
     end
     
     describe "visits online problem in virtual test" do
       before { visit problem_path(problem_in_virtualtest.id) }
-      it { should_not have_selector("h1", text: "Problème ##{problem_in_virtualtest.number}") }
-      it { should have_selector("span", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+      it { should have_content(error_access_refused) }
     end
     
     describe "visits online problem with prerequisite" do
       before { visit problem_path(online_problem_with_prerequisite.id) }
-      it { should_not have_selector("h1", text: "Problème ##{online_problem_with_prerequisite.number}") }
-      it { should have_selector("span", text: "Désolé... Cette page n'existe pas ou vous n'y avez pas accès.") }
+      it { should have_content(error_access_refused) }
     end
   end
   
@@ -108,27 +114,31 @@ describe "Problem pages" do
 
     describe "visits problems of a section" do
       before { visit pb_sections_path(section.id) }
-      it { should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite.id)) }
-      it { should have_selector("div", text: online_problem_with_prerequisite.statement) }
-      it { should_not have_button("Ajouter un problème") }
+      it do
+        should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite.id))
+        should have_selector("div", text: online_problem_with_prerequisite.statement)
+        should have_no_button("Ajouter un problème")
+      end
     end
     
     describe "visits online problem with prerequisite" do
       before { visit problem_path(online_problem_with_prerequisite.id) }
-      it { should have_selector("h1", text: "Problème ##{online_problem_with_prerequisite.number}") }
-      it { should have_selector("div", text: online_problem_with_prerequisite.statement) }
-      it { should_not have_link("Modifier ce problème") }
-      it { should_not have_link("Modifier la solution") }
+      it do
+        should have_selector("h1", text: "Problème ##{online_problem_with_prerequisite.number}")
+        should have_selector("div", text: online_problem_with_prerequisite.statement)
+        should have_no_link("Modifier ce problème")
+        should have_no_link("Modifier la solution")
+      end
     end
     
     describe "tries to visit problem creation page" do
       before { visit new_section_problem_path(section) }
-      it { should_not have_selector("h1", text: "Créer un problème") }
+      it { should have_no_selector("h1", text: "Créer un problème") }
     end
     
     describe "tries to visit problem modification page" do
       before { visit edit_problem_path(online_problem) }
-      it { should_not have_selector("h1", text: "Modifier") }
+      it { should have_no_selector("h1", text: "Modifier") }
     end
   end
   
@@ -137,40 +147,48 @@ describe "Problem pages" do
     
     describe "visits problems of a section" do
       before { visit pb_sections_path(section.id) }
-      it { should have_selector("h1", text: section.name) }
-      it { should_not have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.") }
-      it { should have_selector("h2", text: "Niveau 1") }
-      it { should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem.id)) }
-      it { should have_selector("div", text: online_problem.statement) }
-      it { should have_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem.id)) }
-      it { should have_selector("div", text: offline_problem.statement) }
-      it { should have_link("Problème ##{problem_in_virtualtest.number}", href: problem_path(problem_in_virtualtest.id)) }
-      it { should have_selector("div", text: problem_in_virtualtest.statement) }
-      it { should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite.id)) }
-      it { should have_selector("div", text: online_problem_with_prerequisite.statement) }
+      it do
+        should have_selector("h1", text: section.name)
+        should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
+        should have_selector("h2", text: "Niveau 1")
+        should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem.id))
+        should have_selector("div", text: online_problem.statement)
+        should have_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem.id))
+        should have_selector("div", text: offline_problem.statement)
+        should have_link("Problème ##{problem_in_virtualtest.number}", href: problem_path(problem_in_virtualtest.id))
+        should have_selector("div", text: problem_in_virtualtest.statement)
+        should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite.id))
+        should have_selector("div", text: online_problem_with_prerequisite.statement)
+      end
     end
     
     describe "visits online problem" do
       before { visit problem_path(online_problem.id) }
-      it { should have_selector("h1", text: "Problème ##{online_problem.number}") }
-      it { should have_selector("div", text: online_problem.statement) }
-      it { should have_link("Modifier ce problème", href: edit_problem_path(online_problem)) }
-      it { should have_link("Modifier la solution", href: problem_explanation_path(online_problem)) }
-      it { should_not have_link("Supprimer ce problème") }
+      it do
+        should have_selector("h1", text: "Problème ##{online_problem.number}")
+        should have_selector("div", text: online_problem.statement)
+        should have_link("Modifier ce problème", href: edit_problem_path(online_problem))
+        should have_link("Modifier la solution", href: problem_explanation_path(online_problem))
+        should have_no_link("Supprimer ce problème")
+      end
     end
     
     describe "visits virtualtest problem" do
       before { visit problem_path(problem_in_virtualtest.id) }
-      it { should have_selector("h1", text: "Problème ##{problem_in_virtualtest.number} - Test ##{online_virtualtest.number}") }
-      it { should have_link("Modifier le marking scheme", href: problem_markscheme_path(problem_in_virtualtest)) }
+      it do
+        should have_selector("h1", text: "Problème ##{problem_in_virtualtest.number} - Test ##{online_virtualtest.number}")
+        should have_link("Modifier le marking scheme", href: problem_markscheme_path(problem_in_virtualtest))
+      end
     end
     
     describe "visits offline problem" do
       before { visit problem_path(offline_problem) }
-      it { should have_selector("h1", text: "Problème ##{offline_problem.number}") }
-      it { should have_selector("div", text: offline_problem.statement) }
-      it { should have_link("Supprimer ce problème") }
-      it { should_not have_button("Mettre en ligne") } # Because no prerequisite
+      it do
+        should have_selector("h1", text: "Problème ##{offline_problem.number}")
+        should have_selector("div", text: offline_problem.statement)
+        should have_link("Supprimer ce problème")
+        should have_no_button("Mettre en ligne") # Because no prerequisite
+      end
       
       specify { expect { click_link "Supprimer ce problème" }.to change(Problem, :count).by(-1) }
       
@@ -179,15 +197,19 @@ describe "Problem pages" do
           select chapter.name, :from => "chapter_problem_chapter_id"
           click_button "new_prerequisite_button"
         end
-        it { should have_selector("h1", text: "Problème ##{offline_problem.number}") }
-        it { should have_link(chapter.name, href: chapter_path(chapter)) }
-        it { should have_link("Supprimer ce prérequis", href: problem_delete_prerequisite_path(offline_problem, :chapter_id => chapter )) }
-        it { should have_button("Mettre en ligne") } 
+        it do
+          should have_selector("h1", text: "Problème ##{offline_problem.number}")
+          should have_link(chapter.name, href: chapter_path(chapter))
+          should have_link("Supprimer ce prérequis", href: problem_delete_prerequisite_path(offline_problem, :chapter_id => chapter))
+          should have_button("Mettre en ligne")
+        end
         
         describe "and deletes a prerequisite" do
           before { click_link("Supprimer ce prérequis") }
-          it { should have_selector("h1", text: "Problème ##{offline_problem.number}") }
-          it { should_not have_link(chapter.name, href: chapter_path(chapter)) }
+          it do
+            should have_selector("h1", text: "Problème ##{offline_problem.number}")
+            should have_no_link(chapter.name, href: chapter_path(chapter))
+          end
         end
         
         describe "and adds to a virtualtest" do
@@ -202,8 +224,10 @@ describe "Problem pages" do
               select "Aucun test virtuel", :from => "problem_virtualtest_id"
               click_button "add_to_virtualtest_button"
             end
-            it { should have_selector("h1", text: "Problème ##{offline_problem.number}") }
-            it { should_not have_selector("h1", text: "Problème ##{offline_problem.number} - Test virtuel ##{offline_virtualtest.number}") }
+            it do
+              should have_selector("h1", text: "Problème ##{offline_problem.number}")
+              should have_no_selector("h1", text: "Problème ##{offline_problem.number} - Test virtuel ##{offline_virtualtest.number}")
+            end
           end
         end
         
@@ -264,8 +288,10 @@ describe "Problem pages" do
           expect(Problem.order(:id).last.number).to be < 1000*section.id + 100*(newlevel+1)
           expect(Problem.order(:id).last.online).to eq(false)
         end
-        it { should have_selector("div", text: newstatement) }
-        it { should_not have_button("Mettre en ligne") } # Because no prerequisite
+        it do
+          should have_selector("div", text: newstatement)
+          should have_no_button("Mettre en ligne") # Because no prerequisite
+        end
       end
       
       describe "and sends with wrong information" do
@@ -275,8 +301,10 @@ describe "Problem pages" do
           fill_in "Niveau", with: newlevel
           click_button "Créer"
         end
-        it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Créer un problème") }
+        it do
+          should have_content("erreur")
+          should have_selector("h1", text: "Créer un problème")
+        end
         specify { expect(Problem.order(:id).last.origin).to_not eq(neworigin) }
       end
     end
@@ -311,8 +339,10 @@ describe "Problem pages" do
           click_button "Modifier"
           offline_problem.reload
         end
-        it { should have_content("erreur") }
-        it { should have_selector("h1", text: "Modifier") }
+        it do
+          should have_content("erreur")
+          should have_selector("h1", text: "Modifier")
+        end
         specify { expect(offline_problem.origin).to_not eq(neworigin) }
       end
     end
