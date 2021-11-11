@@ -12,6 +12,8 @@
 #  complete          :boolean
 #
 class Record < ActiveRecord::Base
+
+  # Mets à jour les statistiques, si possible (fait tous les jours à 2 heures du matin (voir schedule.rb))
   def self.update
     mondaybeforelastmonday = get_monday_before_last_monday(DateTime.now.in_time_zone.to_date)
     lastrecord = Record.order(:date).last

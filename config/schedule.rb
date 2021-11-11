@@ -24,9 +24,13 @@ every :hour, at: 0  do
 end
 
 every :day, :at => '2am' do
-  runner "Record.update"           # Update statistics
+  runner "Record.update"           # Update statistics for problems and questions
   runner "Myfile.fake_dels"        # Delete old files
   runner "User.delete_unconfirmed" # Delete users with unconfirmed email
+end
+
+every :monday, :at => '3am' do
+  runner "Chapter.update_stats" # Update statistics for chapters (not so important, so done once a week)
 end
 
 every :day, :at => '12am' do

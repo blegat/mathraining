@@ -320,7 +320,7 @@ class User < ActiveRecord::Base
     end
   end
   
-  # A utiliser en ligne de commande
+  # A utiliser en ligne de commande (TODO: Changer cette stratégie car inutilisable avec 5000 utilisateurs!)
   def self.compute_scores
     newrating = Array.new
     newpartial = Array.new
@@ -453,7 +453,7 @@ class User < ActiveRecord::Base
     end
   end
   
-  # Méthode appelée tous les jours à 4 heures du matin (voir schedule.rb)
+  # Supprime les utilisateurs n'étant jamais venus (fait tous les jours à 2 heures du matin (voir schedule.rb))
   def self.delete_unconfirmed
     # Utilisateurs n'ayant pas confirmé leur e-mail après une semaine
     oneweekago = Date.today - 7
