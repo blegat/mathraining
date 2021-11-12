@@ -59,16 +59,6 @@ var Preview = {
       return;
     }
     var text = this.input.value.replace(/<hr>[ \r]*\n/g,'<hr>').replace(/\][ \r]*\n/g,'\] ').replace(/\$\$[ \r]*\n/g,'$$$ ').replace(/<\/h2>[ \r]*\n/g,'</h2>').replace(/<\/h3>[ \r]*\n/g,'</h3>').replace(/<\/h4>[ \r]*\n/g,'</h4>').replace(/<\/ol>[ \r]*\n/g, '</ol>').replace(/\n[ \r]*<\/ol>/g, '</ol>').replace(/<\/ul>[ \r]*\n/g, '</ul>').replace(/\n[ \r]*<\/ul>/g, '</ul>').replace(/\n(\040)*<li>/g, '<li>').replace(/<evidence>[ \r]*\n/g, '<evidence>').replace(/<\/evidence>[ \r]*\n/g, '</evidence>').replace(/<evidence>/g, '<div class="evidence">').replace(/<\/evidence>/g, '</div>').replace(/<result>[ \r]*\n/g, '<result>').replace(/<\/result>[ \r]*\n/g, '</result>').replace(/<proof>[ \r]*\n/g, '<proof>').replace(/<\/proof>[ \r]*\n/g, '</proof>').replace(/<remark>[ \r]*\n/g, '<remark>').replace(/<\/remark>[ \r]*\n/g, '</remark>').replace(/<statement>[ \r]*\n/g, '<statement>').replace(/<\/indice>[ \r]*\n/g, '</indice>').replace(/\n/g, '<br/>').replace(/<result>(.*?)<statement>(.*?)<\/result>/g, "<div class='result-title'>$1</div><div class='result-content'>$2</div>").replace(/<proof>(.*?)<statement>(.*?)<\/proof>/g, "<div class='proof-title'>$1</div><div class='proof-content'>$2</div>").replace(/<remark>(.*?)<statement>(.*?)<\/remark>/g, "<div class='remark-title'>$1</div><div class='remark-content'>$2</div>").replace(/<indice>(.*?)<\/indice>/g, "<div class='clue-bis'><div><a href='#' onclick='return false;' class='btn btn-default btn-grey'>Indice</a></div><div id='indice0' class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$1</div></div></div>")
-
-    while(true)
-    {
-      pos = text.indexOf("MT-PICTURE-");
-      if (pos == -1) { break; }
-      start_id = pos+11;
-      end_id = start_id;
-      while(end_id < text.length && text[end_id] >= 0 && text[end_id] <= 9) { end_id = end_id+1 }
-      text = text.substr(0, pos) + "/system/DefaultPicture.png" + text.substr(end_id, text.length - end_id)
-    }
     
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
