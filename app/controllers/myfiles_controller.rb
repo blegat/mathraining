@@ -80,7 +80,7 @@ class MyfilesController < ApplicationController
 
   # Voir toutes les pièces jointes
   def index
-    @list = Myfile.order("id DESC").paginate(:page => params[:page], :per_page => 30)
+    @list = Myfile.order("id DESC").paginate(:page => params[:page], :per_page => 30).includes(file_attachment: :blob).includes(:myfiletable)
   end
 
   ########## PARTIE PRIVEE ##########

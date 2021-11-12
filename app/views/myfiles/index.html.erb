@@ -2,10 +2,7 @@
 
 <h1><%= title_1("Pièces jointes") %></h1>
 
-<% total = 0 %>
-<% Myfile.all.to_a.each do |f| %>
-  <% total = total + f.file.blob.byte_size %>
-<% end %>
+<% total = ActiveStorage::Blob.sum(:byte_size) %>
 
 <center>
 <% if total < 1000000 %>
