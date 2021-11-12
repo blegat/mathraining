@@ -83,7 +83,9 @@ Rails.application.configure do
   end
   
   config.lograge.custom_payload do |controller|
-    { current_user: controller.current_user.try(:id) } # Include the current_user.id
+    if controller.action_methods.include? "current_user"
+      { current_user: controller.current_user.try(:id) } # Include the current_user.id
+    end
   end
   
   Paperclip.options[:command_path] = "/usr/local/bin/"
