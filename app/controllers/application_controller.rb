@@ -104,6 +104,10 @@ class ApplicationController < ActionController::Base
     k = 1
     while !params["hidden#{k}".to_sym].nil? do
       if !params["file#{k}".to_sym].nil?
+        @error = true
+        @error_message = "Le système de pièces jointes est aujourd'hui (12/11/2021) en maintenance. Merci de réessayer plus tard."
+        return [];
+        
         attach.push()
         attach[i-1] = Myfile.new(:file => params["file#{k}".to_sym])
         if !attach[i-1].save
@@ -134,6 +138,10 @@ class ApplicationController < ActionController::Base
     totalsize = 0
     about.myfiles.each do |f|
       if params["prevfile#{f.id}".to_sym].nil?
+        @error = true
+        @error_message = "Le système de pièces jointes est aujourd'hui (12/11/2021) en maintenance. Merci de réessayer plus tard."
+        return [];
+        
         f.file.destroy
         f.destroy
       else
@@ -153,6 +161,10 @@ class ApplicationController < ActionController::Base
     k = 1
     while !params["hidden#{k}".to_sym].nil? do
       if !params["file#{k}".to_sym].nil?
+        @error = true
+        @error_message = "Le système de pièces jointes est aujourd'hui (12/11/2021) en maintenance. Merci de réessayer plus tard."
+        return [];
+        
         attach.push()
         attach[i-1] = Myfile.new(:file => params["file#{k}".to_sym])
         attach[i-1].myfiletable = about
