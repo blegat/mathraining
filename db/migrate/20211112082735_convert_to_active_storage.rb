@@ -33,7 +33,6 @@ class ConvertToActiveStorage < ActiveRecord::Migration[5.2]
     end
 
     Rails.application.eager_load!
-    models = ActiveRecord::Base.descendants.reject(&:abstract_class?)
 
     transaction do
       Myfile.find_each.each do |instance|

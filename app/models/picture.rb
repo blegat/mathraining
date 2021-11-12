@@ -16,7 +16,7 @@ class Picture < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   has_attached_file :image,
-  :path => "public/system/:class/:id/:basename_:hash.:extension",
+  :path => ":rails_root/public/system/:class/:id/:basename_:hash.:extension",
   :url => "/system/:class/:id/:basename_:hash.:extension",
   :hash_secret => "longSecretString"
   belongs_to :user
