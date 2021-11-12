@@ -8,8 +8,8 @@
 #  submission_id :integer
 #  user_id       :integer
 #  read          :boolean
-#  created_at    :datetime
-#  updated_at    :datetime
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #  kind          :integer          default(-1)
 #
 class Following < ActiveRecord::Base

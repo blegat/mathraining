@@ -4,13 +4,9 @@
 #
 # Table name: myfiles
 #
-#  id                :integer          not null, primary key
-#  myfiletable_type  :string
-#  myfiletable_id    :integer
-#  file_file_name    :string
-#  file_content_type :string
-#  file_file_size    :integer
-#  file_updated_at   :datetime
+#  id               :integer          not null, primary key
+#  myfiletable_type :string
+#  myfiletable_id   :integer
 #
 class Myfile < ActiveRecord::Base
 
@@ -34,10 +30,10 @@ class Myfile < ActiveRecord::Base
     ff = Fakefile.new
     ff.fakefiletable_type = self.myfiletable_type
     ff.fakefiletable_id = self.myfiletable_id
-    ff.file_file_name = self.file.filename.base
-    ff.file_content_type = self.file.blob.content_type
-    ff.file_file_size = self.file.blob.byte_size
-    ff.file_updated_at = self.file.blob.created_at
+    ff.filename = self.file.filename.base
+    ff.content_type = self.file.blob.content_type
+    ff.byte_size = self.file.blob.byte_size
+    ff.created_at = self.file.blob.created_at
     ff.save
     self.file.blob.purge
     self.file.destroy

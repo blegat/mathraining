@@ -6,12 +6,12 @@
 #
 #  id             :integer          not null, primary key
 #  statement      :text
-#  created_at     :datetime
-#  updated_at     :datetime
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
 #  online         :boolean          default(FALSE)
 #  level          :integer
 #  explanation    :text             default("")
-#  section_id     :integer          default(1)
+#  section_id     :integer
 #  number         :integer          default(1)
 #  virtualtest_id :integer          default(0)
 #  position       :integer          default(0)

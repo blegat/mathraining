@@ -6,8 +6,8 @@
 #
 #  id           :integer          not null, primary key
 #  last_message :datetime
-#  created_at   :datetime
-#  updated_at   :datetime
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
 #
 class Discussion < ActiveRecord::Base
 

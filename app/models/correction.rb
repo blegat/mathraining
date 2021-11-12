@@ -8,8 +8,8 @@
 #  user_id       :integer
 #  submission_id :integer
 #  content       :text
-#  created_at    :datetime
-#  updated_at    :datetime
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #
 class Correction < ActiveRecord::Base
 

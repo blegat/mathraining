@@ -12,8 +12,8 @@
 #  remember_token            :string
 #  admin                     :boolean          default(FALSE)
 #  root                      :boolean          default(FALSE)
-#  created_at                :datetime
-#  updated_at                :datetime
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
 #  key                       :string
 #  email_confirm             :boolean          default(TRUE)
 #  skin                      :integer          default(0)

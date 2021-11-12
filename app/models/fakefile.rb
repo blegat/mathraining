@@ -7,10 +7,10 @@
 #  id                 :integer          not null, primary key
 #  fakefiletable_type :string
 #  fakefiletable_id   :integer
-#  file_file_name     :string
-#  file_content_type  :string
-#  file_file_size     :integer
-#  file_updated_at    :datetime
+#  filename           :string
+#  content_type       :string
+#  byte_size          :integer
+#  created_at         :datetime
 #
 class Fakefile < ActiveRecord::Base
 

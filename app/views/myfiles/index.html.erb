@@ -25,8 +25,8 @@
 <% @list.each do |f| %>
 
   <% about = f.myfiletable %>
-  <% date = f.file.blob.created_at %>
   <% type = f.myfiletable_type %>
+  <% date = f.file.blob.created_at %>
   <% name = f.file.filename.base %>
   <% size = f.file.blob.byte_size %>
 

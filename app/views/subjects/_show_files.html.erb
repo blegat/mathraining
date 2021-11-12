@@ -27,8 +27,8 @@
       <% end %>
       <br/>
     <% end %>
-    <% s.fakefiles.order(:file_file_name).each do |f| %>
-      <span style="color:#0000BB;"><%= f.file_file_name %> (<%= (f.file_file_size / 1.kilobyte).round(1) %> ko, désactivée)</span><br/>
+    <% s.fakefiles.order(:filename).each do |f| %>
+      <span style="color:#0000BB;"><%= f.filename %> (<%= (f.byte_size / 1.kilobyte).round(1) %> ko, désactivée)</span><br/>
     <% end %>
 		
     <!-- Afficher les pièces jointes images -->

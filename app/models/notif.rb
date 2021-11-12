@@ -7,8 +7,8 @@
 #  id            :integer          not null, primary key
 #  submission_id :integer
 #  user_id       :integer
-#  created_at    :datetime
-#  updated_at    :datetime
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #
 class Notif < ActiveRecord::Base
 
