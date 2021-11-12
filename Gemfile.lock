@@ -151,6 +151,7 @@ GEM
     mimemagic (0.3.10)
       nokogiri (~> 1)
       rake
+    mini_magick (4.11.0)
     mini_mime (1.1.1)
     mini_portile2 (2.5.3)
     minitest (5.14.4)
@@ -351,6 +352,7 @@ DEPENDENCIES
   jquery-rails
   less-rails
   lograge
+  mini_magick
   momentjs-rails (>= 2.9.0)
   nokogiri (~> 1.11.4)
   paperclip (~> 5.2.0)

@@ -29,6 +29,7 @@ doc/
 # Files
 /non-public/
 /public/system/
+storage/
 
 # Schema
 /db/schema.rb

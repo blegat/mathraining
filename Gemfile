@@ -88,3 +88,5 @@ gem 'bootstrap3-datetimepicker-rails', '~> 4.14.30'
 gem 'rack-canonical-host'
 gem 'lograge'
 gem 'dateslices'
+
+gem 'mini_magick'
