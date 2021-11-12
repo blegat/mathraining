@@ -7,7 +7,7 @@ class ConvertToActiveStorage < ActiveRecord::Migration[5.2]
       
       active_storage_blob_statement = ActiveRecord::Base.connection.raw_connection.prepare('active_storage_blob_statement', <<-SQL)
         INSERT INTO active_storage_blobs (
-          `key`, filename, content_type, metadata, byte_size, checksum, created_at
+          key, filename, content_type, metadata, byte_size, checksum, created_at
         ) VALUES ($1, $2, $3, '{}', $4, $5, $6)
       SQL
 
@@ -42,7 +42,7 @@ class ConvertToActiveStorage < ActiveRecord::Migration[5.2]
         end
 
         if Rails.env.production? # postgres
-          ActiveRecord::Base.connection.execute_prepared(
+          ActiveRecord::Base.connection.raw_connection.exec_prepared(
             'active_storage_blob_statement', [
               key(instance, "file"),
               instance.send("file_file_name"),
@@ -52,7 +52,7 @@ class ConvertToActiveStorage < ActiveRecord::Migration[5.2]
               instance.file_updated_at.iso8601
             ])
 
-          ActiveRecord::Base.connection.execute_prepared(
+          ActiveRecord::Base.connection.raw_connection.exec_prepared(
             'active_storage_attachment_statement', [
               "file",
               Myfile.name,
