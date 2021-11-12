@@ -89,4 +89,6 @@ gem 'rack-canonical-host'
 gem 'lograge'
 gem 'dateslices'
 
+gem 'active_storage_validations'
 gem 'mini_magick'
+gem 'image_processing', '>= 1.2'

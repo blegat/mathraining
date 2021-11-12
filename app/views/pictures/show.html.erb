@@ -1,12 +1,8 @@
 <% provide(:title, 'Récupérer un url') %>
 
-<h1><%= title_1("Récupérer l'url d'une image") %></h1>
+<h1><%= title_2((link_to "Vos images", pictures_path), "MT-PICTURE-#{@pic.id}") %></h1>
 
 <br/>
 <center>
-<%= image_tag @pic.image.url, :style => "width:600px;" %>
-<br/><br/>
-<%= @pic.image.url %>
+<%= image_tag @pic.image, :style => "width:800px;" %>
 </center>
-<br/>
-<center><%= link_to "Retour à mes images", pictures_path %></center>

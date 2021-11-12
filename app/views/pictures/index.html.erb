@@ -2,7 +2,7 @@
 
 <h1><%= title_1("Vos images") %></h1>
 
-Pour récupérer l'url d'une de vos images, cliquez dessus.<br/><br/>
+Pour voir une image en plus grand, cliquez dessus.<br/><br/>
 <div class="column">
 
 <% i = 0 %>
@@ -12,8 +12,10 @@ Pour récupérer l'url d'une de vos images, cliquez dessus.<br/><br/>
   <% end %>
 
   <div class="col-md-3 col-sm-4 col-xs-6">
-  <%= link_to image_tag(p.image.url, :style => "margin-bottom:15px; width:100%;"), p %>
-  <center><%= link_to "Supprimer cette image", p, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous) ! Êtes-vous sûr de vouloir supprimer cette image ?" } %></center><br/><br/>
+  <%= link_to image_tag(p.image, :style => "margin-bottom:15px; width:100%;"), p, target: "_blank" %>
+  <center>MT-PICTURE-<%= p.id %><br/>
+  <%= link_to "Supprimer cette image", p, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous) ! Êtes-vous sûr de vouloir supprimer cette image ?" } %>
+  </center><br/><br/>
   </div>
 
   <% if i % 4 == 3 %>
@@ -24,5 +26,4 @@ Pour récupérer l'url d'une de vos images, cliquez dessus.<br/><br/>
 <% end %>
 </div>
 
-<br/><br/>
-<center><%= button_to "Uploader une nouvelle image", new_picture_path, method: :get, class: 'btn btn-lg btn-grey btn-default' %></center>
+<center><%= link_to "Uploader une nouvelle image", new_picture_path, class: 'btn btn-lg btn-grey btn-default' %></center>

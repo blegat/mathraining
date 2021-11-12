@@ -77,6 +77,31 @@ module ApplicationHelper
     while m2.sub!(/<remark>(.*?)<statement>(.*?)<\/remark>/mi) {"<div class='remark-title'>#{$1}</div><div class='remark-content'>#{$2}</div>"}
     end
     
+    while true
+      pos = m2.index("MT-PICTURE-")
+      if pos.nil?
+        break
+      end
+      start_id = pos+11
+      end_id = start_id
+      while end_id < m2.size and m2[end_id].match?(/[[:digit:]]/)
+        end_id = end_id+1
+      end
+      ok = false
+      if start_id < end_id && end_id < start_id + 9
+        id = m2[start_id..(end_id-1)].to_i
+        p = Picture.find_by_id(id)
+        if !p.nil?
+          url = rails_blob_url(p.image)
+          ok = true
+        end
+      end
+      if !ok
+        url = "/system/DefaultPicture.png"
+      end
+      m2 = m2[0..(pos-1)] + url + m2[end_id..-1]
+    end
+    
     return m2.gsub(/\n/, '<br/>')
   end
 
