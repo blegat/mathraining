@@ -194,9 +194,9 @@ Rails.application.routes.draw do
   # Attached files
   resources :myfiles, only: [:edit, :update, :show, :index] do
   	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:put], as: :fake_delete
-  	member do
-  		get :download
-  	end
+  	#member do
+  	#	get :download
+  	#end
   end
   
   # Discussions

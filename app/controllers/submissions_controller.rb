@@ -429,26 +429,11 @@ class SubmissionsController < ApplicationController
     params[:submission][:content].strip! if !params[:submission][:content].nil?
     @submission.content = params[:submission][:content]
     if @submission.valid?
-      totalsize = 0
-
-      @submission.myfiles.each do |f|
-        if params["prevfile#{f.id}".to_sym].nil?
-          f.file.destroy
-          f.destroy
-        else
-          totalsize = totalsize + f.file_file_size
-        end
-      end
-
-      @submission.fakefiles.each do |f|
-        if params["prevfakefile#{f.id}".to_sym].nil?
-          f.destroy
-        end
-      end
-
+      
+      # Pièces jointes
       @error = false
       @error_message = ""
-
+      
       update_files(@submission) # Fonction commune pour toutes les pièces jointes
 
       if @error

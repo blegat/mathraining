@@ -7,11 +7,18 @@
     <% else %>
       <br/><b><%= n_real + n_fake %> pièces jointes :</b><br/>
     <% end %>
-    <% s.myfiles.order(:file_file_name).each do |f| %>
-      <%= link_to f.file_file_name, download_myfile_path(f) %>
-      (<%= (f.file_file_size / 1.kilobyte).round(1) %>
+    
+    <% files = Set.new %>
+    <% s.myfiles.each do |f| %>
+      <% files.add([f.file.filename.base, f]) %>
+    <% end %>
+    
+    <% files.each do |ff| %>
+      <% f = ff[1] %>
+      <%= link_to f.file.filename, rails_blob_path(f.file, disposition: 'attachment') %>
+      (<%= (f.file.blob.byte_size / 1.kilobyte).round(1) %>
       <% if f.myfiletable_type == "Tchatmessage" %>
-        ko, <i>expire le <%= write_date_only(f.file_updated_at.to_date + 28) %></i>)
+        ko, <i>expire le <%= write_date_only(f.file.blob.created_at.to_date + 28) %></i>)
       <% else %>
         ko)
       <% end %>
@@ -25,14 +32,15 @@
     <% end %>
 		
     <!-- Afficher les pièces jointes images -->
-    <% s.myfiles.order(:file_file_name).each do |f| %>
+    <% files.each do |ff| %>
+      <% f = ff[1] %>
       <% if f.is_image %>
         <hr/>
-        <center><%= f.file_file_name %><br/><br/>
+        <center><%= f.file.filename.base %><br/><br/>
         <% if f.myfiletable_type == "Tchatmessage" %>
-          <%= image_tag f.file.url, :class => "image-pj" %>
+          <%= image_tag f.file, :class => "image-pj" %>
         <% else %>
-          <%= image_tag f.file.url, :class => "image-pj2" %>
+          <%= image_tag f.file, :class => "image-pj2" %>
         <% end %>
         </center>
       <% end %>

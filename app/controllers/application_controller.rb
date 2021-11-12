@@ -104,9 +104,6 @@ class ApplicationController < ActionController::Base
     k = 1
     while !params["hidden#{k}".to_sym].nil? do
       if !params["file#{k}".to_sym].nil?
-        @error = true
-        @error_message = "Le système de pièces jointes est aujourd'hui (12/11/2021) en maintenance. Merci de réessayer plus tard."
-        return [];
         
         attach.push()
         attach[i-1] = Myfile.new(:file => params["file#{k}".to_sym])
@@ -117,7 +114,7 @@ class ApplicationController < ActionController::Base
           @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           return [];
         end
-        totalsize = totalsize + attach[i-1].file_file_size
+        totalsize = totalsize + attach[i-1].file.blob.byte_size
 
         i = i+1
       end
@@ -138,14 +135,11 @@ class ApplicationController < ActionController::Base
     totalsize = 0
     about.myfiles.each do |f|
       if params["prevfile#{f.id}".to_sym].nil?
-        @error = true
-        @error_message = "Le système de pièces jointes est aujourd'hui (12/11/2021) en maintenance. Merci de réessayer plus tard."
-        return [];
-        
+        f.file.blob.purge
         f.file.destroy
         f.destroy
       else
-        totalsize = totalsize + f.file_file_size
+        totalsize = totalsize + f.file.blob.byte_size
       end
     end
 
@@ -161,9 +155,6 @@ class ApplicationController < ActionController::Base
     k = 1
     while !params["hidden#{k}".to_sym].nil? do
       if !params["file#{k}".to_sym].nil?
-        @error = true
-        @error_message = "Le système de pièces jointes est aujourd'hui (12/11/2021) en maintenance. Merci de réessayer plus tard."
-        return [];
         
         attach.push()
         attach[i-1] = Myfile.new(:file => params["file#{k}".to_sym])
@@ -175,7 +166,7 @@ class ApplicationController < ActionController::Base
           @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           return []
         end
-        totalsize = totalsize + attach[i-1].file_file_size
+        totalsize = totalsize + attach[i-1].file.blob.byte_size
 
         i = i+1
       end
@@ -193,6 +184,7 @@ class ApplicationController < ActionController::Base
   def destroy_files(attach, i)
     j = 1
     while j < i do
+      attach[j-1].file.blob.purge
       attach[j-1].file.destroy
       attach[j-1].destroy
       j = j+1

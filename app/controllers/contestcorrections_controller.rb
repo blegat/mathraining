@@ -15,26 +15,11 @@ class ContestcorrectionsController < ApplicationController
     params[:contestcorrection][:content].strip! if !params[:contestcorrection][:content].nil?
     @contestcorrection.content = params[:contestcorrection][:content]
     if @contestcorrection.valid?
-      totalsize = 0
-
-      @contestcorrection.myfiles.each do |f|
-        if params["prevfile#{f.id}".to_sym].nil?
-          f.file.destroy
-          f.destroy
-        else
-          totalsize = totalsize + f.file_file_size
-        end
-      end
-
-      @contestcorrection.fakefiles.each do |f|
-        if params["prevfakefile#{f.id}".to_sym].nil?
-          f.destroy
-        end
-      end
-
+    
+      # Pièces jointes
       @error = false
       @error_message = ""
-
+      
       update_files(@contestcorrection) # Fonction commune pour toutes les pièces jointes
 
       if @error

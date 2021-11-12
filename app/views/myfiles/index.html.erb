@@ -4,7 +4,7 @@
 
 <% total = 0 %>
 <% Myfile.all.to_a.each do |f| %>
-  <% total = total + f.file_file_size %>
+  <% total = total + f.file.blob.byte_size %>
 <% end %>
 
 <center>
@@ -28,10 +28,10 @@
 <% @list.each do |f| %>
 
   <% about = f.myfiletable %>
-  <% date = f.file_updated_at %>
+  <% date = f.file.blob.created_at %>
   <% type = f.myfiletable_type %>
-  <% name = f.file_file_name %>
-  <% size = f.file_file_size %>
+  <% name = f.file.filename.base %>
+  <% size = f.file.blob.byte_size %>
 
   <!-- Si pas tchat : vert -->
   <% if type != "Tchatmessage" %>
@@ -73,7 +73,7 @@
   <!-- Télécharger -->
   <td class="hidden-xs">
   <% truncated = name.size > 30 ? [name[0,20],name[-7,7]].join("...") : name %>
-  <%= link_to truncated, download_myfile_path(f) %>
+  <%= link_to truncated, rails_blob_path(f.file, disposition: 'attachment') %>
   </td>
 
   <!-- Taille -->
