@@ -1,6 +1,8 @@
 #!bin/rails runner
 
-$result = []
+$changes = []
+$summaries = []
+$errors = []
 
 def separate_text(text)
   a = text.index("/system/pictures/")
@@ -9,7 +11,7 @@ def separate_text(text)
   end
   delimitor = text[a-1]
   if delimitor != '\'' and delimitor != '"'
-    $result.append("Error 0 with " + text)
+    $errors.append("Error 0 with " + text)
     return []
   end
   b = a
@@ -17,7 +19,7 @@ def separate_text(text)
     b = b + 1
   end
   if b == text.size
-    $result.append("Error 1 with " + text)
+    $errors.append("Error 1 with " + text)
     return []
   end
   return [text[0..(a-1)], text[a..(b-1)], text[b..-1]]
@@ -25,7 +27,7 @@ end
 
 def detect_picture_id(old_url)
   if old_url.index("/system/pictures/") != 0
-    $result.append("Error 2 with " + old_url)
+    $errors.append("Error 2 with " + old_url)
     return -1
   end
   a = "/system/pictures/".size
@@ -34,7 +36,7 @@ def detect_picture_id(old_url)
     b = b + 1
   end
   if b == a
-    $result.append("Error 3 with " + old_url) 
+    $errors.append("Error 3 with " + old_url) 
     return -1
   end
   return old_url[a..(b-1)].to_i
@@ -43,7 +45,7 @@ end
 def get_new_url(picture_id)
   p = Picture.find_by_id(picture_id)
   if p.nil?
-    $result.append("Error 4 with " + picture_id.to_s)
+    $errors.append("Error 4 with " + picture_id.to_s)
     return ""
   end
   
@@ -64,7 +66,7 @@ def replace_one_url(text)
   if new_url.size == 0
     return nil
   end
-  $result.append("Replacing " + old_url + " by " + new_url)
+  $changes.append("Replacing " + old_url + " by " + new_url)
   return x[0] + new_url + x[2]
 end
 
@@ -92,7 +94,7 @@ def replace_all_urls_in_object(object, att)
   if res[0] == 0
     return 0
   else
-    object.update_attribute(att, res[1])
+    #object.update_attribute(att, res[1])
     return res[0]
   end
 end
@@ -102,7 +104,7 @@ def replace_all_urls_in_model(model, att)
   model.find_each do |object|
     res = res + replace_all_urls_in_object(object, att)
   end
-  $result.append("Found " + res.to_s + " urls in attribute " + att + " of " + model.to_s)
+  $summaries.append("Found " + res.to_s + " urls in attribute " + att + " of " + model.to_s)
   return res
 end
 
@@ -119,5 +121,5 @@ def replace_all_urls_on_mathraining
   res = res + replace_all_urls_in_model(Chapter, "description")
   res = res + replace_all_urls_in_model(Contest, "description")
   res = res + replace_all_urls_in_model(Privacypolicy, "content")
-  $result.append("Found " + res.to_s + " urls in total")
+  $summaries.append("Found " + res.to_s + " urls in total")
 end
