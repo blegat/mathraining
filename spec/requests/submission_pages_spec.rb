@@ -144,11 +144,11 @@ describe "Submission pages" do
       it do
         should have_selector("h3", text: "Soumission (en attente de correction)")
         should have_selector("div", text: waiting_submission.content)
-        should have_no_button("Poster et refuser la soumission") # Because not reserved
-        should have_no_button("Poster et accepter la soumission") # Because not reserved
+        should have_button("Poster et refuser la soumission", disabled: true) # Because not reserved
+        should have_button("Poster et accepter la soumission", disabled: true) # Because not reserved
       end
       
-      describe "and reserves it" do
+      describe "and reserves it (fictively)" do
         before do
           f = Following.new
           f.user = good_corrector
@@ -309,6 +309,99 @@ describe "Submission pages" do
               end
             end
           end
+        end
+      end
+    end
+    
+    # TESTS THAT REQUIRE JAVASCRIPT
+    describe "wants to correct a submission", :js => true do
+      before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) }
+      it do
+        should have_selector("h3", text: "Soumission (en attente de correction)")
+        should have_selector("div", text: waiting_submission.content)
+        should have_content("Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !")
+        should have_button("Réserver cette soumission")
+        should have_no_button("Annuler ma réservation")
+      end
+      
+      describe "and hacks the system to unreserve a submission we did not reserve" do
+        before do
+          f = Following.new
+          f.user = good_corrector
+          f.submission = waiting_submission
+          f.read = true
+          f.kind = 0
+          f.save
+          visit problem_path(problem_with_waiting_submission, :sub => waiting_submission)
+          f.user = admin
+          f.save
+          click_button("Annuler ma réservation")
+          wait_for_ajax
+          waiting_submission.reload
+        end
+        it { should have_content("Une erreur est survenue.") }
+        specify do
+          expect(waiting_submission.followings.count).to eq(1)
+          expect(waiting_submission.followings.first.user).to eq(admin)
+        end
+      end
+      
+      describe "and reserves it while somebody else reserved it" do
+        before do
+          f = Following.new
+          f.user = admin
+          f.submission = waiting_submission
+          f.read = true
+          f.kind = 0
+          f.save
+          click_button("Réserver cette soumission")
+          wait_for_ajax
+          waiting_submission.reload
+        end
+        it do
+          should have_content("Cette soumission est en train d'être corrigée par #{admin.name}.")
+          should have_no_button("Réserver cette soumission")
+          should have_no_button("Annuler ma réservation")
+          should have_button("Poster et refuser la soumission", disabled: true)
+          should have_button("Poster et accepter la soumission", disabled: true)
+        end
+        specify do
+          expect(waiting_submission.followings.count).to eq(1)
+          expect(waiting_submission.followings.first.user).to eq(admin)
+        end
+      end
+      
+      describe "and reserves it" do
+        before do
+          click_button("Réserver cette soumission")
+          wait_for_ajax
+          waiting_submission.reload
+        end
+        it do
+          should have_content("Vous avez réservé cette soumission pour la corriger.")
+          should have_button("Annuler ma réservation")
+          should have_button("Poster et refuser la soumission")
+          should have_button("Poster et accepter la soumission")
+        end
+        specify do
+          expect(waiting_submission.followings.count).to eq(1)
+          expect(waiting_submission.followings.first.user).to eq(good_corrector)
+        end
+          
+        describe "and unreserves it" do
+          before do
+            click_button("Annuler ma réservation")
+            wait_for_ajax
+            waiting_submission.reload
+          end
+          it do
+            should have_content("Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !")
+            should have_button("Réserver cette soumission")
+            should have_no_button("Annuler ma réservation")
+            should have_button("Poster et refuser la soumission", disabled: true)
+            should have_button("Poster et accepter la soumission", disabled: true)
+          end
+          specify { expect(waiting_submission.followings.count).to eq(0) }
         end
       end
     end

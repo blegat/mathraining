@@ -188,20 +188,18 @@ class SubmissionsController < ApplicationController
 
   # Réserver la soumission
   def reserve
-    if @submission.followings.count > 0
-      if(@submission.followings.first.user == current_user.sk)
-        @what = 3
-      else
-        @correct_name = @submission.followings.first.user.name
-        @what = 2
-      end
+    if @submission.followings.count > 0 && @submission.followings.first.user != current_user.sk # Already reserved by somebody else
+      @correct_name = @submission.followings.first.user.name
+      @what = 2
     else
-      f = Following.new
-      f.user = current_user.sk
-      f.submission = @submission
-      f.read = true
-      f.kind = 0
-      f.save
+      if @submission.followings.count == 0 # Avoid adding two times the same Following
+        f = Following.new
+        f.user = current_user.sk
+        f.submission = @submission
+        f.read = true
+        f.kind = 0
+        f.save
+      end
       @what = 3
     end
   end
@@ -209,7 +207,7 @@ class SubmissionsController < ApplicationController
   # Dé-réserver la soumission
   def unreserve
     f = @submission.followings.first
-    if @submission.status != 0 || f.nil? || f.user != current_user.sk || f.kind != 0
+    if @submission.status != 0 || f.nil? || f.user != current_user.sk || f.kind != 0 # Not supposed to happen
       @what = 0
     else
       Following.delete(f.id)

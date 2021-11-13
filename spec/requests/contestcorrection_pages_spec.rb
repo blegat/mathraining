@@ -283,7 +283,13 @@ describe "Contestcorrection pages" do
         click_link("Modifier la correction")
         wait_for_ajax
       end
-      it { should have_button("button-reserve") }
+      it do
+        should have_content("Cliquez ici pour réserver.")
+        should have_button("button-reserve")
+        should have_button("Enregistrer provisoirement", disabled: true)
+        should have_button("Enregistrer", disabled: true)
+        should have_button("Enregistrer et étoiler (si 7/7)", disabled: true)
+      end
       
       describe "and does not want anymore" do
         before do
@@ -293,13 +299,31 @@ describe "Contestcorrection pages" do
         specify { expect { click_button("Annuler") }.to raise_error(Capybara::Poltergeist::MouseEventFailed) } # Button should have disappeared
       end
       
+      describe "and reserves it while somebody else reserved it" do
+        before do
+          usersol_finished.reservation = root.id
+          usersol_finished.save
+          click_button("button-reserve")
+          wait_for_ajax
+          usersol_finished.reload
+        end
+        it { should have_content("Réservé par #{root.name}.") }
+        specify { expect(usersol_finished.reservation).to eq(root.id) }
+      end
+      
       describe "and reserves it" do
         before do
           click_button("button-reserve")
           wait_for_ajax
           usersol_finished.reload
         end
-        it { should have_button("button-unreserve") }
+        it do
+          should have_content("Cliquez ici pour annuler votre réservation.")
+          should have_button("button-unreserve")
+          should have_button("Enregistrer provisoirement")
+          should have_button("Enregistrer")
+          should have_button("Enregistrer et étoiler (si 7/7)")
+        end
         specify { expect(usersol_finished.reservation).to eq(user_organizer.id) }
       
         describe "and unreserves it" do
@@ -308,7 +332,13 @@ describe "Contestcorrection pages" do
             wait_for_ajax
             usersol_finished.reload
           end
-          it { should have_button("button-reserve") }
+          it do
+            should have_content("Cliquez ici pour réserver.")
+            should have_button("button-reserve")
+            should have_button("Enregistrer provisoirement", disabled: true)
+            should have_button("Enregistrer", disabled: true)
+            should have_button("Enregistrer et étoiler (si 7/7)", disabled: true)
+          end
           specify { expect(usersol_finished.reservation).to eq(0) }
         end
       end

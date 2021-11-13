@@ -37,7 +37,7 @@ var unreserve = function () {
 </div>
 
 <div id="correct3" style="background-color:#d7efd9; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 3 %>">
-  Cliquez ici pour annuler.
+  Cliquez ici pour annuler votre réservation.
   <button id="button-unreserve" class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
 </div>
 <br/>

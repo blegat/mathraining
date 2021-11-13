@@ -97,9 +97,7 @@ class ContestsolutionsController < ApplicationController
   
   # Réserver la solution
   def reserve_sol
-    if @contestsolution.reservation == current_user.sk.id
-      @ok = 1
-    elsif @contestsolution.reservation > 0
+    if @contestsolution.reservation > 0 and @contestsolution.reservation != current_user.sk.id
       @correct_name = User.find(@contestsolution.reservation).name
       @ok = 0
     else

@@ -9,7 +9,7 @@ var BT1 = document.getElementById("BT1");
 var BT2 = document.getElementById("BT2");
 var BT3 = document.getElementById("BT3");
 
-<% if !@ok %>
+<% if @ok == 0 %>
   correct1.style.display = "none"
   correct2.innerHTML = "Réservé par <b><%= @correct_name %></b>."
   correct2.style.display = "block"
