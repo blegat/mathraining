@@ -18,8 +18,6 @@ require "capybara/poltergeist"
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
-#require 'capybara/poltergeist'
-
 RSpec.configure do |config|
   # ## Mock Framework
   #
@@ -55,7 +53,6 @@ RSpec.configure do |config|
   Capybara.server = :puma, { Silent: true }
   Capybara.javascript_driver = :poltergeist
   Capybara.disable_animation = true # Otherwise we need to wait for rolling animations
-  #Capybara.javascript_driver = :poltergeist
   
   #config.use_transactional_fixtures = true # If we put false then the javascript stuff (sometimes) work but many other tests fail. If we put true the javascript does not work because the database is empty
   
