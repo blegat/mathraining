@@ -48,6 +48,20 @@ def create_discussion_between(user1, user2, content1, content2)
   return d
 end
 
+def wait_for_ajax
+  Timeout.timeout(Capybara.default_max_wait_time) do
+    loop until finished_all_ajax_requests?
+  end
+end
+
+def finished_all_ajax_requests?
+  page.evaluate_script('jQuery.active').zero?
+end
+
+def take_screenshot
+  Capybara::Screenshot.screenshot_and_open_image
+end
+
 RSpec::Matchers.define :have_error_message do |message|
   match do |page|
     page.should have_selector("div.alert.alert-error", text: message)

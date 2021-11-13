@@ -1,13 +1,14 @@
 // Fonction pour subjects/show
 var Rolling = {
   actual: null,
+  rollingTime: 1000,
   
   hideActual: function() {
     if(this.actual != null) {
-      $("#form" + this.actual).animate({height:'0px'}, 1000);
+      $("#form" + this.actual).animate({height:'0px'}, this.rollingTime);
       var el = $("#the" + this.actual);
       var autoHeight = el.css('height', 'auto').height();
-      el.height(0).animate({height:autoHeight}, 1000, function(){el.height('auto');});
+      el.height(0).animate({height:autoHeight}, this.rollingTime, function(){el.height('auto');});
       this.actual = null;
     }
     return false;
@@ -16,14 +17,14 @@ var Rolling = {
   develop: function(m) {
     this.hideActual();
     this.actual = m;
-    $("#the" + m).animate({height:'0px'}, 1000);
+    $("#the" + m).animate({height:'0px'}, this.rollingTime);
     var el = $("#form" + m);
     var autoHeight = el.css('height', 'auto').height();
-    el.height(0).animate({height:autoHeight}, 1000, function(){
+    el.height(0).animate({height:autoHeight}, this.rollingTime, function(){
       el.height('auto');
       var body = $('body,html');
       var yyy = document.getElementById("form" + m).offsetTop - 50;
-      body.animate({scrollTop:yyy}, 500);
+      body.animate({scrollTop:yyy}, this.rollingTime/2);
       PreviewSafe.Init(m);
       PreviewSafe.Update();
     });

@@ -29,7 +29,7 @@ var unreserve = function () {
 
 <div id="correct1" style="background-color:#fffad2; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 1 %>">
   Cliquez ici pour réserver.
-  <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver</button>
+  <button id="button-reserve" class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver</button>
 </div>
 
 <div id="correct2" style="background-color:#ffd9de; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 2 %>">
@@ -38,7 +38,7 @@ var unreserve = function () {
 
 <div id="correct3" style="background-color:#d7efd9; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 3 %>">
   Cliquez ici pour annuler.
-  <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
+  <button id="button-unreserve" class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
 </div>
 <br/>
   

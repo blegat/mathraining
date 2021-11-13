@@ -275,5 +275,43 @@ describe "Contestcorrection pages" do
         end
       end
     end
+    
+    # TESTS THAT REQUIRE JAVASCRIPT
+    describe "wants to modify the solution", :js => true do
+      before do
+        visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
+        click_link("Modifier la correction")
+        wait_for_ajax
+      end
+      it { should have_button("button-reserve") }
+      
+      describe "and does not want anymore" do
+        before do
+          click_button("Annuler")
+          wait_for_ajax
+        end
+        specify { expect { click_button("Annuler") }.to raise_error(Capybara::Poltergeist::MouseEventFailed) } # Button should have disappeared
+      end
+      
+      describe "and reserves it" do
+        before do
+          click_button("button-reserve")
+          wait_for_ajax
+          usersol_finished.reload
+        end
+        it { should have_button("button-unreserve") }
+        specify { expect(usersol_finished.reservation).to eq(user_organizer.id) }
+      
+        describe "and unreserves it" do
+          before do
+            click_button("button-unreserve")
+            wait_for_ajax
+            usersol_finished.reload
+          end
+          it { should have_button("button-reserve") }
+          specify { expect(usersol_finished.reservation).to eq(0) }
+        end
+      end
+    end
   end
 end
