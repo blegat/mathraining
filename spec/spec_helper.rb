@@ -10,6 +10,8 @@ end
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
 require "rspec/rails"
+require "capybara-screenshot/rspec"
+require "capybara/poltergeist"
 # require "rspec/autorun"
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -50,7 +52,9 @@ RSpec.configure do |config|
   
   config.include Rails.application.routes.url_helpers
   
-  #Capybara.javascript_driver = :webkit
+  Capybara.server = :puma, { Silent: true }
+  Capybara.javascript_driver = :poltergeist
+  Capybara.disable_animation = true # Otherwise we need to wait for rolling animations
   #Capybara.javascript_driver = :poltergeist
   
   #config.use_transactional_fixtures = true # If we put false then the javascript stuff (sometimes) work but many other tests fail. If we put true the javascript does not work because the database is empty

@@ -82,11 +82,9 @@ GEM
     capybara-screenshot (1.0.25)
       capybara (>= 1.0, < 4)
       launchy
-    capybara-webkit (1.15.1)
-      capybara (>= 2.3, < 4.0)
-      json
     chronic (0.10.2)
     climate_control (0.2.0)
+    cliver (0.3.2)
     cocaine (0.5.8)
       climate_control (>= 0.0.3, < 1.0)
     codecov (0.6.0)
@@ -185,6 +183,10 @@ GEM
       mime-types
       mimemagic (~> 0.3.0)
     pg (0.20.0)
+    poltergeist (1.18.1)
+      capybara (>= 2.1, < 4)
+      cliver (~> 0.3.1)
+      websocket-driver (>= 0.2.0)
     public_suffix (4.0.6)
     puma (5.5.2)
       nio4r (~> 2.0)
@@ -360,7 +362,6 @@ DEPENDENCIES
   bullet
   capybara (= 3.2.0)
   capybara-screenshot
-  capybara-webkit
   codecov
   coffee-rails (~> 4.2.1)
   database_cleaner (= 1.5.3)
@@ -378,6 +379,7 @@ DEPENDENCIES
   nokogiri (~> 1.11.4)
   paperclip (~> 5.2.0)
   pg (~> 0.20.0)
+  poltergeist
   puma
   rack-canonical-host
   rails (= 5.2.0)
