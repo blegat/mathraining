@@ -16,7 +16,7 @@ jobs:
         ruby-version: 2.5.1 # Not needed with a .ruby-version file
 #       bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Install Qt
-      uses: jurpel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v2
     - name: Build and test with Rake
       env:
         RAILS_ENV: test
