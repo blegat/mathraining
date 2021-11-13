@@ -181,6 +181,29 @@ describe "Subject pages" do
         should have_no_button("Modifier")
         should have_button("Répondre")
       end
+      
+      describe "and follows the subject" do
+        before { click_link("link_follow") }
+        it do
+          should have_content("Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet.")
+          should have_link("link_unfollow")
+        end
+        specify { expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(true) }
+        
+        describe "and unfollows the subject" do
+          before { click_link("link_unfollow") }
+          it do
+            should have_content("Vous ne recevrez maintenant plus d'e-mail concernant ce sujet.")
+            should have_link("link_follow")
+          end
+          specify { expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(false) }
+        end
+      end
+      
+      describe "try to unfollow a non-existing subject" do
+        before { visit remove_followingsubject_path(:subject_id => 6543) }
+        it { should have_content(error_access_refused) }
+      end
     end
   end
 

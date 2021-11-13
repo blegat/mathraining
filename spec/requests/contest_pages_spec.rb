@@ -71,7 +71,10 @@ describe "Contest pages" do
     
     describe "visits one contest page" do    
       before { visit contest_path(contest) }
-      it { should have_content("Concours ##{contest.number}") } # Not h1: not correctly detected because of "Suivre ce concours"
+      it do
+        should have_content("Concours ##{contest.number}") # Not h1: not correctly detected because of "Suivre ce concours"
+        should have_link("link_follow")
+      end
         
       describe "and visits the rankings" do
         before { click_link "Classement final" }
@@ -81,6 +84,29 @@ describe "Contest pages" do
       describe "and visits the statistics" do
         before { click_link("Statistiques", href: contest_path(contest, :tab => 2)) }
         it { should have_selector("h3", text: "Distribution des scores") }
+      end
+      
+      describe "and follows the contest" do
+        before { click_link("link_follow") }
+        it do
+          should have_content("Vous recevrez dorénavant un e-mail de rappel un jour avant la publication de chaque problème de ce concours.")
+          should have_link("link_unfollow")
+        end
+        specify { expect(user_with_rating_199.followed_contests.exists?(contest.id)).to eq(true) }
+        
+        describe "and unfollows the contest" do
+          before { click_link("link_unfollow") }
+          it do
+            should have_content("Vous ne recevrez maintenant plus d'e-mail concernant ce concours.")
+            should have_link("link_follow")
+          end
+          specify { expect(user_with_rating_199.followed_contests.exists?(contest.id)).to eq(false) }
+        end
+      end
+      
+      describe "try to unfollow a non-existing contest" do
+        before { visit remove_followingcontest_path(:contest_id => 6543) }
+        it { should have_content(error_access_refused) }
       end
     end
     
