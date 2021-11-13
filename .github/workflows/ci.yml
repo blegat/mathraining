@@ -18,7 +18,7 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '5.5'
+        version: '5.5.1'
     - name: Build and test with Rake
       env:
         RAILS_ENV: test
