@@ -6,11 +6,7 @@ class ContestorganizationsController < ApplicationController
 
   # Ajouter un organisateur
   def create
-    contestorganization = Contestorganization.new(params.require(:contestorganization).permit(:contest_id, :user_id))
-    if !contestorganization.save
-      flash[:success] = "Une erreur est survenue."
-    end
-    
+    contestorganization = Contestorganization.create(params.require(:contestorganization).permit(:contest_id, :user_id))
     contest = Contest.find(params[:contestorganization][:contest_id])
     redirect_to contest
   end

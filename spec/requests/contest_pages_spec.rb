@@ -230,6 +230,7 @@ describe "Contest pages" do
         should have_link("Modifier ce concours")
         should have_link("Mettre ce concours en ligne")
         should have_link("Supprimer ce concours")
+        should have_button("Ajouter") # To add an organizer
       end
          
       specify { expect { click_link "Supprimer ce concours" }.to change(Contest, :count).by(-1) }
@@ -263,6 +264,38 @@ describe "Contest pages" do
           expect(offline_contest.status).to eq(0)
           expect(offline_contestproblem.status).to eq(0)
         end
+      end
+      
+      describe "and adds an organizer" do
+        before do
+          # Ensure that user_with_rating_200 appears in the list of possible organizers:
+          user_with_rating_200.last_connexion = DateTime.now.to_date
+          user_with_rating_200.save
+          visit contest_path(offline_contest)
+          select "#{user_with_rating_200.name} (200)", from: "contestorganization_user_id"
+          click_button "Ajouter"
+        end
+        specify do
+          expect(offline_contest.organizers.count).to eq(2)
+          expect(Contestorganization.order(:id).last.contest).to eq(offline_contest)
+          expect(Contestorganization.order(:id).last.user).to eq(user_with_rating_200)
+        end
+        it do
+          should have_link(user_with_rating_200.name, href: user_path(user_with_rating_200))
+          should have_link("supprimer", href: contestorganization_path(Contestorganization.last))
+        end
+      end
+      
+      let!(:organization_to_delete) { Contestorganization.where(:contest => offline_contest, :user => user_organizer).first }
+      specify { expect { click_link("supprimer", href: contestorganization_path(organization_to_delete)) }.to change(Contestorganization, :count).by(-1) }
+      
+      describe "deletes an organizer that was deleted by someone else" do
+        before do
+          id = organization_to_delete.id
+          organization_to_delete.destroy
+          click_link("supprimer", href: contestorganization_path(id))
+        end
+        it { should have_content(error_access_refused) }
       end
     end
   end
