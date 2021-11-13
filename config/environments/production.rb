@@ -87,8 +87,6 @@ Rails.application.configure do
       { current_user: controller.current_user.try(:id) } # Include the current_user.id
     end
   end
-  
-  Paperclip.options[:command_path] = "/usr/local/bin/"
 
   # -- Stuff added when upgrading to rails 5.2.0 --
   # Code is not reloaded between requests.

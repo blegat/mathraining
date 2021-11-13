@@ -12,10 +12,10 @@ gem 'will_paginate', '3.1.6'
 gem 'bootstrap-will_paginate', '0.0.10'
 gem 'rails-i18n'
 #gem 'mathjax-rails', "~> 0.0.4"
-gem "paperclip", "~> 5.2.0"
+#gem "paperclip", "~> 5.2.0"
 gem "recaptcha", "~> 4.1.0", :require => "recaptcha/rails"
 gem 'thin'
-gem "nokogiri", "~> 1.11.4"
+#gem "nokogiri", "~> 1.11.4"
 
 # Doing tasks every monday...
 gem 'whenever', :require => false
