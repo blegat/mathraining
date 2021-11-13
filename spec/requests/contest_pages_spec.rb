@@ -39,7 +39,7 @@ describe "Contest pages" do
         should have_selector("h1", text: "Concours")
         should have_selector("h3", text: "Concours ##{contest.number}")
         should have_no_selector("h3", text: "Concours ##{offline_contest.number}")
-        should have_selector("div", text: "Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer. ")
+        should have_selector("div", text: "Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.")
       end
     end
     
