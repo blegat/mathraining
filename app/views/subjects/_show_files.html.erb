@@ -10,7 +10,7 @@
     
     <% files = Set.new %>
     <% s.myfiles.each do |f| %>
-      <% files.add([f.file.filename.base, f]) %>
+      <% files.add([f.file.filename.to_s, f]) %>
     <% end %>
     
     <% files.each do |ff| %>
@@ -36,7 +36,7 @@
       <% f = ff[1] %>
       <% if f.is_image %>
         <hr/>
-        <center><%= f.file.filename.base %><br/><br/>
+        <center><%= f.file.filename.to_s %><br/><br/>
         <% if f.myfiletable_type == "Tchatmessage" %>
           <%= image_tag f.file, :class => "image-pj" %>
         <% else %>

@@ -23,7 +23,7 @@ class MyfilesController < ApplicationController
       redirect_to contestproblem_path(about.contestproblem, :sol => about)
     elsif type == "Contestcorrection"
       redirect_to contestproblem_path(about.contestsolution.contestproblem, :sol => about.contestsolution)
-    else
+    elsif type == "Tchatmessage"
       redirect_to myfiles_path
     end
   end
@@ -36,7 +36,7 @@ class MyfilesController < ApplicationController
       if(@myfile.update_attributes(file: params["file".to_sym]))
         flash[:success] = "C'est remplacé !"
       else
-      flash[:danger] = "Une condition n'est pas respectée..."
+        flash[:danger] = "Une condition n'est pas respectée..."
       end
     else
       flash[:danger] = "Pièce jointe vide."
@@ -60,7 +60,7 @@ class MyfilesController < ApplicationController
       page = [0,((tot-1)/10).floor].max + 1
       @q = 0
       @q = params[:q].to_i if params.has_key?:q
-      redirect_to subject_path(@message.subject, :anchor => @message.id, :page => page, :q => @q)
+      redirect_to subject_path(@message.subject, :page => page, :message => @message.id, :q => @q)
     elsif @fakething.fakefiletable_type == "Tchatmessage"
       redirect_to myfiles_path
     elsif @fakething.fakefiletable_type == "Submission"

@@ -27,7 +27,7 @@
   <% about = f.myfiletable %>
   <% type = f.myfiletable_type %>
   <% date = f.file.blob.created_at %>
-  <% name = f.file.filename.base %>
+  <% name = f.file.filename.to_s %>
   <% size = f.file.blob.byte_size %>
 
   <!-- Si pas tchat : vert -->

@@ -313,7 +313,8 @@ describe "Submission pages" do
       end
     end
     
-    # TESTS THAT REQUIRE JAVASCRIPT
+    # -- TESTS THAT REQUIRE JAVASCRIPT --
+    
     describe "wants to correct a submission", :js => true do
       before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) }
       it do

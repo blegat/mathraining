@@ -135,9 +135,7 @@ class ApplicationController < ActionController::Base
     totalsize = 0
     about.myfiles.each do |f|
       if params["prevfile#{f.id}".to_sym].nil?
-        f.file.blob.purge
-        f.file.destroy
-        f.destroy
+        f.destroy # Should automatically purge the file
       else
         totalsize = totalsize + f.file.blob.byte_size
       end
@@ -184,9 +182,7 @@ class ApplicationController < ActionController::Base
   def destroy_files(attach, i)
     j = 1
     while j < i do
-      attach[j-1].file.blob.purge
-      attach[j-1].file.destroy
-      attach[j-1].destroy
+      attach[j-1].destroy # Should automatically purge the file
       j = j+1
     end
   end

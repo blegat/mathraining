@@ -30,14 +30,12 @@ class Myfile < ActiveRecord::Base
     ff = Fakefile.new
     ff.fakefiletable_type = self.myfiletable_type
     ff.fakefiletable_id = self.myfiletable_id
-    ff.filename = self.file.filename.base
+    ff.filename = self.file.filename.to_s
     ff.content_type = self.file.blob.content_type
     ff.byte_size = self.file.blob.byte_size
     ff.created_at = self.file.blob.created_at
     ff.save
-    self.file.blob.purge
-    self.file.destroy
-    self.destroy
+    self.destroy # Should automatically purge the file
     return ff
   end
   

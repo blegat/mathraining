@@ -106,6 +106,34 @@ FactoryGirl.define do
     association :subject
   end
   
+  # Myfile
+  factory :myfile do
+    factory :subjectmyfile do
+      association :myfiletable, factory: :subject
+    end
+    factory :messagemyfile do
+      association :myfiletable, factory: :message
+    end
+    factory :submissionmyfile do
+      association :myfiletable, factory: :submission
+    end
+    factory :correctionmyfile do
+      association :myfiletable, factory: :correction
+    end
+    factory :contestsolutionmyfile do
+      association :myfiletable, factory: :contestsolution
+    end
+    factory :contestcorrectionmyfile do
+      association :myfiletable, factory: :contestcorrection # This factory doesn't exist so we should give the contestcorrection explicitly
+    end
+    factory :tchatmessagemyfile do
+      association :myfiletable, factory: :tchatmessage # This factory doesn't exist so we should give the contestcorrection explicitly
+    end
+    before(:create) do |myfile|
+      myfile.file.attach(io: File.open(Rails.root.join('spec', 'images', 'mathraining.png')), filename: 'mathraining.png', content_type: 'image/png')
+    end
+  end
+  
   # Prerequisite
   factory :prerequisite do
     association :chapter

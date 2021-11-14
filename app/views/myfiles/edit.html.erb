@@ -2,7 +2,7 @@
 
 <h1><%= title_2((link_to "Pièces jointes", myfiles_path), "Remplacer un fichier") %></h1>
 
-<% name = @myfile.file.filename.base %>
+<% name = @myfile.file.filename.to_s %>
 <% truncated = (name.size > 30 ? [name[0,20],name[-7,7]].join("...") : name) %>
 
 <p>Vous vous apprêtez à remplacer le fichier suivant : <%= link_to truncated, rails_blob_path(@myfile.file, disposition: 'attachment') %>.</p>
