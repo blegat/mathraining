@@ -61,14 +61,14 @@ gem 'select2-rails'
 gem 'activerecord-session_store'
 
 group :test do
-  gem 'capybara', '3.2.0'
+  gem 'capybara', '3.18.0'
   gem 'puma'
   gem 'factory_girl_rails', '4.1.0'
   gem 'database_cleaner', '1.5.3'
   #gem 'capybara-webkit'
   gem 'capybara-screenshot'
-  #gem 'selenium-webdriver', '2.53.4'
-  gem 'poltergeist'
+  gem 'selenium-webdriver', '3.142'
+  #gem 'poltergeist'
   # Code coverage
   gem 'simplecov', :require => false
   gem 'codecov', :require => false

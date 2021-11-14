@@ -11,12 +11,20 @@ ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
 require "rspec/rails"
 require "capybara-screenshot/rspec"
-require "capybara/poltergeist"
+#require "capybara/poltergeist"
 # require "rspec/autorun"
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
+
+Capybara.server = :puma, { Silent: true }
+  
+Capybara.register_driver :selenium_firefox do |app|
+  Capybara::Selenium::Driver.new(app, browser: :firefox)
+end
+Capybara.javascript_driver = :selenium_firefox
+Capybara.disable_animation = true # Otherwise we need to wait for rolling animations
 
 RSpec.configure do |config|
   # ## Mock Framework
@@ -49,10 +57,6 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   
   config.include Rails.application.routes.url_helpers
-  
-  Capybara.server = :puma, { Silent: true }
-  Capybara.javascript_driver = :poltergeist
-  Capybara.disable_animation = true # Otherwise we need to wait for rolling animations
   
   #config.use_transactional_fixtures = true # If we put false then the javascript stuff (sometimes) work but many other tests fail. If we put true the javascript does not work because the database is empty
   

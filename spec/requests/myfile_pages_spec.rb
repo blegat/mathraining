@@ -53,7 +53,7 @@ describe "Myfile pages" do
       before { visit myfile_path(subjectmyfile) }
       it do
         should have_current_path(subject_path(sub))
-        should have_link(subjectmyfile.file.filename, href: rails_blob_url(subjectmyfile.file, :only_path => true, :disposition => 'attachment'))
+        should have_link(subjectmyfile.file.filename.to_s, href: rails_blob_url(subjectmyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: myfile_fake_delete_path(subjectmyfile))
       end
       
@@ -80,7 +80,7 @@ describe "Myfile pages" do
       before { visit myfile_path(messagemyfile) }
       it do
         should have_current_path(subject_path(sub, :page => 1, :message => message))
-        should have_link(messagemyfile.file.filename, href: rails_blob_url(messagemyfile.file, :only_path => true, :disposition => 'attachment'))
+        should have_link(messagemyfile.file.filename.to_s, href: rails_blob_url(messagemyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: myfile_fake_delete_path(messagemyfile))
       end
       
@@ -98,7 +98,7 @@ describe "Myfile pages" do
       before { visit myfile_path(submissionmyfile) }
       it do
         should have_current_path(problem_path(problem, :sub => submission))
-        should have_link(submissionmyfile.file.filename, href: rails_blob_url(submissionmyfile.file, :only_path => true, :disposition => 'attachment'))
+        should have_link(submissionmyfile.file.filename.to_s, href: rails_blob_url(submissionmyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: myfile_fake_delete_path(submissionmyfile))
       end
       
@@ -116,7 +116,7 @@ describe "Myfile pages" do
       before { visit myfile_path(correctionmyfile) }
       it do
         should have_current_path(problem_path(problem, :sub => submission))
-        should have_link(correctionmyfile.file.filename, href: rails_blob_url(correctionmyfile.file, :only_path => true, :disposition => 'attachment'))
+        should have_link(correctionmyfile.file.filename.to_s, href: rails_blob_url(correctionmyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: myfile_fake_delete_path(correctionmyfile))
       end
       
@@ -134,7 +134,7 @@ describe "Myfile pages" do
       before { visit myfile_path(contestsolutionmyfile) }
       it do
         should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
-        should have_link(contestsolutionmyfile.file.filename, href: rails_blob_url(contestsolutionmyfile.file, :only_path => true, :disposition => 'attachment'))
+        should have_link(contestsolutionmyfile.file.filename.to_s, href: rails_blob_url(contestsolutionmyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: myfile_fake_delete_path(contestsolutionmyfile))
       end
       
@@ -152,7 +152,7 @@ describe "Myfile pages" do
       before { visit myfile_path(contestcorrectionmyfile) }
       it do
         should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
-        should have_link(contestcorrectionmyfile.file.filename, href: rails_blob_url(contestcorrectionmyfile.file, :only_path => true, :disposition => 'attachment'))
+        should have_link(contestcorrectionmyfile.file.filename.to_s, href: rails_blob_url(contestcorrectionmyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: myfile_fake_delete_path(contestcorrectionmyfile))
       end
       
@@ -175,7 +175,7 @@ describe "Myfile pages" do
       let!(:tchatmessagemyfile) { FactoryGirl.create(:tchatmessagemyfile, myfiletable: tchatmessage) } # Force its creation
       before { visit discussion_path(discussion) }
       it do
-        should have_link(tchatmessagemyfile.file.filename, href: rails_blob_url(tchatmessagemyfile.file, :only_path => true, :disposition => 'attachment'))
+        should have_link(tchatmessagemyfile.file.filename.to_s, href: rails_blob_url(tchatmessagemyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: myfile_fake_delete_path(tchatmessagemyfile))
       end
       
@@ -204,7 +204,7 @@ describe "Myfile pages" do
           subjectmyfile.reload
         end
         it { should have_content("C'est remplacé !") }
-        specify { expect(subjectmyfile.file.filename).to eq(new_image) }
+        specify { expect(subjectmyfile.file.filename.to_s).to eq(new_image) }
       end
       
       describe "and replaces it with an empty file" do
@@ -213,7 +213,34 @@ describe "Myfile pages" do
           subjectmyfile.reload
         end
         it { should have_content("Pièce jointe vide.") }
-        specify { expect(subjectmyfile.file.filename).to eq(old_image) }
+        specify { expect(subjectmyfile.file.filename.to_s).to eq(old_image) }
+      end
+    end
+  end
+  
+  # -- TESTS THAT REQUIRE JAVASCRIPT --
+  
+  describe "user", :js => true do
+    before { sign_in user }
+    
+    describe "creates a subject with a file" do
+      let(:title) { "Mon titre" }
+      let(:content) { "Mon contenu" }
+      before do
+        visit new_subject_path
+        fill_in "Titre", with: title
+        fill_in "MathInput", with: content
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file1", File.absolute_path(image_folder + new_image))
+        click_button "Créer"
+      end
+      let(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(newsubject.title).to eq(title)
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.myfiles.count).to eq(1)
+        expect(newsubject.myfiles.first.file.filename.to_s).to eq(new_image)
       end
     end
   end

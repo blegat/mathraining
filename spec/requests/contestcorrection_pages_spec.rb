@@ -297,7 +297,7 @@ describe "Contestcorrection pages" do
           click_button("Annuler")
           wait_for_ajax
         end
-        specify { expect { click_button("Annuler") }.to raise_error(Capybara::Poltergeist::MouseEventFailed) } # Button should have disappeared
+        specify { expect { click_button("Annuler") }.to raise_error(Capybara::ElementNotFound) } # Button should have disappeared
       end
       
       describe "and reserves it while somebody else reserved it" do
