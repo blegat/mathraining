@@ -20,10 +20,17 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
 Capybara.server = :puma, { Silent: true }
   
+Capybara.register_driver :selenium_firefox_headless do |app|
+  options = Selenium::WebDriver::Firefox::Options.new
+  options.args << '--headless'
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
+end
+
 Capybara.register_driver :selenium_firefox do |app|
   Capybara::Selenium::Driver.new(app, browser: :firefox)
 end
-Capybara.javascript_driver = :selenium_firefox
+
+Capybara.javascript_driver = :selenium_firefox_headless
 Capybara.disable_animation = true # Otherwise we need to wait for rolling animations
 
 RSpec.configure do |config|
