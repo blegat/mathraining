@@ -83,9 +83,13 @@ class Chapter < ActiveRecord::Base
   # NB: Ils sont plus ou moins maintenus à jour en live, mais pas lorsqu'un utilisateur est supprimé, par exemple
   def self.update_stats
     Chapter.where(:online => true).each do |c|
-      c.nb_tries = Solvedquestion.where(:question => c.questions).distinct.count(:user_id)
-      c.nb_solved = c.users.count
-      c.save
+      nb_tries = Solvedquestion.where(:question => c.questions).distinct.count(:user_id)
+      nb_solved = c.users.count
+      if c.nb_tries != nb_tries || c.nb_solved != nb_solved
+        c.nb_tries = nb_tries
+        c.nb_solved = nb_solved
+        c.save
+      end
     end
   end
 end

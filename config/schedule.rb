@@ -33,6 +33,10 @@ every :monday, :at => '3am' do
   runner "Chapter.update_stats" # Update statistics for chapters (not so important, so done once a week)
 end
 
+every :tuesday, :at => '3am' do
+  runner "Question.update_stats" # Update statistics for questions (not so important, so done once a week)
+end
+
 every :day, :at => '12am' do
   runner "Visitor.compute"  # Compute the number of visitors of the day before
 end

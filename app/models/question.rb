@@ -41,32 +41,20 @@ class Question < ActiveRecord::Base
     return 3*level
   end
   
-  # A utiliser en ligne de commande pour recalculer les nb_tries et nb_firstguess
-  def self.compute_stats
-    a = Array.new
-    Question.where(:online => true).each do |e|
-      nb_tries = 0
-      nb_firstguess = 0
-      e.solvedquestions.each do |s|
-        nb_tries = nb_tries+1
-        if(s.correct && s.nb_guess == 1)
-          nb_firstguess = nb_firstguess+1
-        end
-      end
-      if(e.nb_tries != nb_tries || e.nb_firstguess != nb_firstguess)
-        a[e.id] = [e.id, e.nb_tries, nb_tries, e.nb_firstguess, nb_firstguess]
-      end
-    end
-    return a
-  end
-  
-  # A utiliser en ligne de commande après la fonction précédente pour appliquer les changements
-  def self.save_stats(a)
-    Question.where(:online => true).each do |e|
-      if(!a[e.id].nil?)
-        e.nb_tries = a[e.id][2]
-        e.nb_firstguess = a[e.id][4]
-        e.save
+  # Mets à jour les nb_tries et nb_solved de chaque question (fait tous les mardis à 3 heures du matin (voir schedule.rb))
+  # NB: Ils sont plus ou moins maintenus à jour en live, mais pas lorsqu'un utilisateur est supprimé, par exemple
+  def self.update_stats
+    nb_tries_by_question = Solvedquestion.group(:question_id).count
+    nb_firstguess_by_question = Solvedquestion.where(:correct => true, :nb_guess => 1).group(:question_id).count
+    Question.where(:online => true).each do |q|
+      nb_tries = nb_tries_by_question[q.id]
+      nb_firstguess = nb_firstguess_by_question[q.id]
+      nb_tries = 0 if nb_tries.nil?
+      nb_firstguess = 0 if nb_firstguess.nil?
+      if q.nb_tries != nb_tries || q.nb_firstguess != nb_firstguess
+        q.nb_tries = nb_tries
+        q.nb_firstguess = nb_firstguess
+        q.save
       end
     end
   end

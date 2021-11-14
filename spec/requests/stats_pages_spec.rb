@@ -29,10 +29,29 @@ describe "Stats pages" do
         fill_in "solvedquestion[guess]", with: exercise11.answer + 12
         click_button "Soumettre"
         chapter1.reload
+        exercise11.reload
       end
       specify do
         expect(chapter1.nb_tries).to eq(1)
         expect(chapter1.nb_solved).to eq(0)
+        expect(exercise11.nb_tries).to eq(1)
+        expect(exercise11.nb_firstguess).to eq(0)
+      end
+      
+      describe "and then solves it correctly" do
+        before do
+          visit chapter_path(chapter1, :type => 5, :which => exercise11)
+          fill_in "solvedquestion[guess]", with: exercise11.answer
+          click_button "Soumettre"
+          chapter1.reload
+          exercise11.reload
+        end
+        specify do
+          expect(chapter1.nb_tries).to eq(1)
+          expect(chapter1.nb_solved).to eq(0)
+          expect(exercise11.nb_tries).to eq(1)
+          expect(exercise11.nb_firstguess).to eq(0)
+        end
       end
     end
     
@@ -42,10 +61,13 @@ describe "Stats pages" do
         fill_in "solvedquestion[guess]", with: exercise11.answer
         click_button "Soumettre"
         chapter1.reload
+        exercise11.reload
       end
       specify do
         expect(chapter1.nb_tries).to eq(1)
         expect(chapter1.nb_solved).to eq(0)
+        expect(exercise11.nb_tries).to eq(1)
+        expect(exercise11.nb_firstguess).to eq(1)
       end
       
       describe "and solves the second exercise of the chapter" do
@@ -54,10 +76,13 @@ describe "Stats pages" do
           fill_in "solvedquestion[guess]", with: exercise12.answer
           click_button "Soumettre"
           chapter1.reload
+          exercise12.reload
         end
         specify do
           expect(chapter1.nb_tries).to eq(1)
           expect(chapter1.nb_solved).to eq(1)
+          expect(exercise12.nb_tries).to eq(1)
+          expect(exercise12.nb_firstguess).to eq(1)
         end
         
         describe "and recomputes the chapter stats" do
@@ -78,6 +103,33 @@ describe "Stats pages" do
             expect(chapter1.nb_solved).to eq(1)
             expect(chapter2.nb_tries).to eq(0)
             expect(chapter2.nb_solved).to eq(0)
+          end
+        end
+        
+        describe "and recomputes the question stats" do
+          before do
+            # Change nb_tries and nb_firstguess in a wrong way
+            exercise11.nb_tries = 42
+            exercise11.nb_firstguess = 42
+            exercise11.save
+            exercise12.nb_tries = 42
+            exercise12.nb_firstguess = 42
+            exercise12.save
+            exercise21.nb_tries = 42
+            exercise21.nb_firstguess = 42
+            exercise21.save
+            Question.update_stats
+            exercise11.reload
+            exercise12.reload
+            exercise21.reload
+          end
+          specify do
+            expect(exercise11.nb_tries).to eq(1)
+            expect(exercise11.nb_firstguess).to eq(1)
+            expect(exercise12.nb_tries).to eq(1)
+            expect(exercise12.nb_firstguess).to eq(1)
+            expect(exercise21.nb_tries).to eq(0)
+            expect(exercise21.nb_firstguess).to eq(0)
           end
         end
       end
