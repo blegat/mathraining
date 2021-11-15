@@ -58,6 +58,20 @@ def finished_all_ajax_requests?
   page.evaluate_script('jQuery.active').zero?
 end
 
+def accept_browser_dialog
+  wait = Selenium::WebDriver::Wait.new(:timeout => 10)
+  wait.until {
+    begin
+      page.driver.browser.switch_to.alert
+      true
+    rescue Selenium::WebDriver::Error::NoAlertPresentError
+      false
+    end
+  }
+  page.driver.browser.switch_to.alert.accept
+  sleep(1) # TODO: IMPROVE because it is quite random!
+end
+
 def take_screenshot
   Capybara::Screenshot.screenshot_and_open_image
 end

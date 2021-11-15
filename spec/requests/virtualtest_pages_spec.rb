@@ -20,6 +20,11 @@ describe "Virtualtest pages" do
   let!(:duration) { 60 }
   let!(:duration2) { 70 }
   
+  let(:attachments_folder) { "./spec/attachments/" }
+  let(:image1) { "mathraining.png" } # default image used in factory
+  let(:image2) { "Smiley1.gif" }
+  let(:exe_attachment) { "hack.exe" }
+  
   before do
     problem_with_prerequisite.chapters << chapter
   end
@@ -90,7 +95,7 @@ describe "Virtualtest pages" do
       end
       
       describe "and starts the test" do
-        before { click_button("Commencer ce test") }
+        before { click_button "Commencer ce test"  }
         it do
           should have_selector("h1", text: "Test \##{virtualtest.number}")
           should have_content("Temps restant")
@@ -126,7 +131,7 @@ describe "Virtualtest pages" do
           describe "and writes a solution" do
             before do
               fill_in "MathInput", with: newsolution
-              click_button("Enregistrer cette solution")
+              click_button "Enregistrer cette solution"
             end
             specify { expect(problem.submissions.order(:id).last.content).to eq(newsolution) }
             it do
@@ -135,12 +140,12 @@ describe "Virtualtest pages" do
               should have_link("Modifier la solution")
               should have_link("Supprimer la solution")
             end
-            specify { expect { click_link("Supprimer la solution") }.to change{problem.submissions.count}.by(-1) }
+            specify { expect { click_link "Supprimer la solution" }.to change{problem.submissions.count}.by(-1) }
             
             describe "and modifies the solution" do
               before do
                 fill_in "MathInput", with: newsolution2
-                click_button("Enregistrer cette solution")
+                click_button "Enregistrer cette solution"
               end
               specify { expect(problem.submissions.order(:id).last.content).to eq(newsolution2) }
               it do
@@ -212,7 +217,7 @@ describe "Virtualtest pages" do
       describe "and creates a new test" do
         before do
           fill_in "virtualtest[duration]", with: duration
-          click_button("Créer")
+          click_button "Créer"
         end
         specify { expect(Virtualtest.order(:id).last.duration).to eq(duration) }
         it do
@@ -224,16 +229,16 @@ describe "Virtualtest pages" do
           should have_no_button("Mettre en ligne")
           should have_content("(Au moins un problème nécessaire)")
         end
-        specify { expect { click_link("Supprimer ce test") }.to change(Virtualtest, :count).by(-1) }
+        specify { expect { click_link "Supprimer ce test" }.to change(Virtualtest, :count).by(-1) }
         
         describe "and visits modification page" do
-          before { click_link("Modifier ce test") }
+          before { click_link "Modifier ce test" }
           it { should have_selector("h1", text: "Modifier un test virtuel") }
           
           describe "and modifies the test" do
             before do
               fill_in "virtualtest[duration]", with: duration2
-              click_button("Modifier")
+              click_button "Modifier"
             end
             specify { expect(Virtualtest.order(:id).last.duration).to eq(duration2) }
             it { should have_content("Test virtuel modifié.") }
@@ -252,11 +257,11 @@ describe "Virtualtest pages" do
         should have_button("Mettre en ligne")
         should have_link("Supprimer ce test")
       end
-      specify { expect { click_link("Supprimer ce test") }.to change(Virtualtest, :count).by(-1) }
+      specify { expect { click_link "Supprimer ce test" }.to change(Virtualtest, :count).by(-1) }
       
       describe "and puts it online" do
         before do
-          click_button("Mettre en ligne")
+          click_button "Mettre en ligne"
           virtualtest.reload
         end
         it { should have_content("Test virtuel mis en ligne.") }
@@ -267,7 +272,7 @@ describe "Virtualtest pages" do
         before do
           offline_problem.virtualtest = virtualtest
           offline_problem.save
-          click_button("Mettre en ligne")
+          click_button "Mettre en ligne"
           virtualtest.reload
         end
         it { should have_no_content("Test virtuel mis en ligne.") }
@@ -286,6 +291,58 @@ describe "Virtualtest pages" do
       it do
         should have_no_button("Mettre en ligne")
         should have_content("(Problèmes doivent être en ligne)")
+      end
+    end
+  end
+  
+  # -- TESTS THAT REQUIRE JAVASCRIPT --
+  
+  describe "user with rating 200 and completed chapter", :js => true do
+    before do
+      sign_in user_with_rating_200
+      user_with_rating_200.chapters << chapter
+    end
+  
+    describe "writes a solution with a file" do
+      before do
+        visit virtualtests_path
+        click_button "Commencer ce test"
+        accept_browser_dialog
+        visit virtualtest_path(virtualtest, :p => problem)
+        click_button "Écrire une solution"
+        wait_for_ajax
+        fill_in "MathInput", with: newsolution
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + image1))
+        click_button "Ajouter une pièce jointe" # We don't fill file2
+        wait_for_ajax
+        click_button "Enregistrer cette solution"
+      end
+      let(:newsub) { problem.submissions.order(:id).last }
+      specify do
+        expect(newsub.content).to eq(newsolution)
+        expect(newsub.myfiles.count).to eq(1)
+        expect(newsub.myfiles.first.file.filename.to_s).to eq(image1)
+      end
+      
+      describe "and replace the file by another one" do
+        before do
+          click_link "Modifier la solution"
+          wait_for_ajax
+          fill_in "MathInput", with: newsolution2
+          uncheck "prevFile_1"
+          click_button "Ajouter une pièce jointe"
+          wait_for_ajax
+          attach_file("file_1", File.absolute_path(attachments_folder + image2))
+          click_button "Enregistrer cette solution"
+          newsub.reload
+        end
+        specify do
+          expect(newsub.content).to eq(newsolution2)
+          expect(newsub.myfiles.count).to eq(1)
+          expect(newsub.myfiles.first.file.filename.to_s).to eq(image2)
+        end
       end
     end
   end

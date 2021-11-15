@@ -230,7 +230,7 @@ describe "Problem pages" do
         
         describe "and puts online" do
           before do
-            click_button("Mettre en ligne")
+            click_button "Mettre en ligne"
             offline_problem.reload
           end
           specify { expect(offline_problem.online).to eq(true) }

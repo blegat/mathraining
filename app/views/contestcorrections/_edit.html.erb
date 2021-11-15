@@ -47,7 +47,7 @@ var unreserve = function () {
 <%= render 'contestcorrections/form', f: f %>
 
 <%= render 'subjects/files', s: @contestcorrection %>
-<span id="fooBar"></span>
+<span id="spanFiles"></span>
 <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" id="PJ" <%= 'disabled="disabled"' if @was_reserved %> />
 <br/><br/>
 

@@ -12,6 +12,11 @@ describe "Discussion pages" do
   let(:content2) { "Salut mon pote!" }
   let(:content3) { "Comment vas-tu?" }
   
+  let(:attachments_folder) { "./spec/attachments/" }
+  let(:image1) { "mathraining.png" } # default image used in factory
+  let(:image2) { "Smiley1.gif" }
+  let(:exe_attachment) { "hack.exe" }
+  
   describe "visitor" do
     describe "tries to create a discussion" do
       before { visit new_discussion_path }
@@ -68,6 +73,30 @@ describe "Discussion pages" do
         visit discussion_path(d)
       end
       it { should have_content(error_access_refused) }
+    end
+  end
+  
+  # -- TESTS THAT REQUIRE JAVASCRIPT --
+  
+  describe "user", :js => true do
+    before { sign_in user }
+    
+    describe "sends a tchatmessage with a file" do
+      let(:discussion) { create_discussion_between(user, other_user, content, content2) }
+      before do
+        visit discussion_path(discussion)
+        fill_in "MathInput", with: content3
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + image2))
+        click_button "Envoyer"
+      end
+      let(:newtchatmessage) { discussion.tchatmessages.order(:id).last }
+      specify do
+        expect(newtchatmessage.content).to eq(content3)
+        expect(newtchatmessage.myfiles.count).to eq(1)
+        expect(newtchatmessage.myfiles.first.file.filename.to_s).to eq(image2)
+      end
     end
   end
 end

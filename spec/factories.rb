@@ -130,7 +130,7 @@ FactoryGirl.define do
       association :myfiletable, factory: :tchatmessage # This factory doesn't exist so we should give the contestcorrection explicitly
     end
     before(:create) do |myfile|
-      myfile.file.attach(io: File.open(Rails.root.join('spec', 'images', 'mathraining.png')), filename: 'mathraining.png', content_type: 'image/png')
+      myfile.file.attach(io: File.open(Rails.root.join('spec', 'attachments', 'mathraining.png')), filename: 'mathraining.png', content_type: 'image/png')
     end
   end
   

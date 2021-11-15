@@ -1,17 +1,21 @@
-<% @champ = "NewMessage" %>
+<% @postfix = "NewMessage" %>
 
-<div id="the<%= @champ %>" class="myoverflow" style="text-align:center;">
-<button onclick='return Rolling.develop("<%= @champ %>")' class='btn btn-lg btn-default btn-grey' style='margin-top:15px; margin-bottom:1px;'>Répondre</button>
+<div id="the<%= @postfix %>" class="myoverflow" style="text-align:center;">
+<button onclick='return Rolling.develop("<%= @postfix %>")' class='btn btn-lg btn-default btn-grey' style='margin-top:15px; margin-bottom:1px;'>Répondre</button>
 </div>
 
-<div id="form<%= @champ %>" class="myoverflow" style="height:0px;">
+<div id="form<%= @postfix %>" class="myoverflow" style="height:0px;">
 
 <% @message = Message.new %>
 <%= form_for [@subject, @message], :url => subject_messages_path(@subject, @message, :action => :create, :q => @q), :html => { :multipart => true, :style => "margin-top:20px;" } do |f| %>
   <% @new = true %>
   <%= render 'messages/form', f: f, m: @message %>
-  <span id="fooBar<%= @champ %>"></span>
-  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add(document.getElementById('fooBar<%= @champ %>'))" <%= 'disabled="disabled"' if current_user.other %> />
+  
+  <!-- Ajouter une pièce jointe -->
+  <span id="spanFiles<%= @postfix %>"></span>
+  <input type="hidden" name="postfix" value="<%= @postfix %>">
+  <input type="button" id="addFile<%= @postfix %>" value="Ajouter une pièce jointe" onclick="Joint.add('<%= @postfix %>')" <%= 'disabled="disabled"' if current_user.other %>/>
+  
   <% lastid = -1 %>
   <% lastmessage = @subject.messages.order("id DESC").first %>
   <% if !lastmessage.nil? %>

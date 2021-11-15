@@ -3,7 +3,7 @@
   <% s.myfiles.order(:id).each do |f| %>
     <div class="checkbox">
     <label>
-      <input type="checkbox" name="prevfile<%= f.id %>" value="1" checked="checked" />
+      <input type="checkbox" name="prevFile<%= @postfix %>_<%= f.id %>" value="1" checked="checked" />
       <%= link_to f.file.filename, rails_blob_path(f.file, disposition: 'attachment') %>
     </label>
     </div>
@@ -11,7 +11,7 @@
   <% s.fakefiles.order(:id).each do |f| %>
     <div class="checkbox">
     <label>
-      <input type="checkbox" name="prevfakefile<%= f.id %>" value="1" checked="checked" />
+      <input type="checkbox" name="prevFakeFile<%= @postfix %>_<%= f.id %>" value="1" checked="checked" />
       <span style="color:#0000BB;"><%= f.filename %> (désactivée)</span>
     </label>
     </div>

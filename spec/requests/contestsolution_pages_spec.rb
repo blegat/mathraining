@@ -27,6 +27,11 @@ describe "Contestsolution pages" do
   let(:newsolution) { "Voici ma solution à ce beau problème" }
   let(:newsolution2) { "Voici ma nouvelle solution à ce beau problème" }
   
+  let(:attachments_folder) { "./spec/attachments/" }
+  let(:image1) { "mathraining.png" } # default image used in factory
+  let(:image2) { "Smiley1.gif" }
+  let(:exe_attachment) { "hack.exe" }
+  
   before do
     Contestorganization.create(:contest => contest, :user => user_organizer)
   end
@@ -205,6 +210,55 @@ describe "Contestsolution pages" do
         should have_selector("h1", text: "Problème ##{contestproblem_finished.number}")
         should have_selector("h3", text: "Solutions étoilées")
         should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished))
+      end
+    end
+  end
+  
+  # -- TESTS THAT REQUIRE JAVASCRIPT --
+  
+  describe "user with rating 200", :js => true do
+    before { sign_in user_with_rating_200 }
+  
+    describe "creates a solution with a file" do
+      before do
+        visit contestproblem_path(contestproblem_running)
+        fill_in "MathInput", with: newsolution
+        click_button "Ajouter une pièce jointe" # We don't fill file1
+        wait_for_ajax
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_2", File.absolute_path(attachments_folder + image2))
+        click_button "Ajouter une pièce jointe" # We don't fill file3
+        wait_for_ajax
+        click_button "Enregistrer"
+      end
+      let(:newsol) { contestproblem_running.contestsolutions.order(:id).last }
+      specify do
+        expect(newsol.content).to eq(newsolution)
+        expect(newsol.myfiles.count).to eq(1)
+        expect(newsol.myfiles.first.file.filename.to_s).to eq(image2)
+      end
+    end
+    
+    describe "edits a solution with a file" do
+      let!(:usercontestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_running, user: user_with_rating_200) }
+      let!(:contestsolutionmyfile) { FactoryGirl.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
+      before do
+        visit contestproblem_path(contestproblem_running, :sol => usercontestsolution)
+        click_link("Modifier la solution")
+        wait_for_ajax
+        uncheck "prevFile_1"
+        fill_in "MathInput", with: newsolution2
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + image2))
+        click_button "Enregistrer"
+        usercontestsolution.reload
+      end
+      specify do
+        expect(usercontestsolution.content).to eq(newsolution2)
+        expect(usercontestsolution.myfiles.count).to eq(1)
+        expect(usercontestsolution.myfiles.first.file.filename.to_s).to eq(image2)
       end
     end
   end

@@ -6,7 +6,7 @@
   
   <!-- Pièces jointes -->
   <%= render 'subjects/files', s: @submission %>
-  <span id="fooBar"></span>
+  <span id="spanFiles"></span>
   <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" <%= 'disabled="true"' if current_user.other %> />
   <br/><br/>
 

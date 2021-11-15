@@ -3,15 +3,15 @@
   <% iciadmin = true %>
 <% end %>
 
-<% if @champ.nil? %>
-  <% @champ = "" %>
+<% if @postfix.nil? %>
+  <% @postfix = "" %>
 <% end %>
 
 <% erreur = false %>
 
-<% if !session["error#{@champ}"].nil? %>
+<% if !session["error#{@postfix}"].nil? %>
   <% erreur = true %>
-  <% erreurs = session["error#{@champ}"] %>
+  <% erreurs = session["error#{@postfix}"] %>
   <div id="error_explanation">
     <div class="alert alert-danger">
       Le formulaire contient <%= pluralize(erreurs.count, "erreur") %>.
@@ -31,10 +31,10 @@
     <% cont = session[:oldContent] %>
   <% end %>
   <%= f.label :content, :disabled => current_user.other %>
-  <div class="well" id="MathPreview<%= @champ %>"></div>
-  <div class="well hidden-preview" id="MathBuffer<%= @champ %>"></div>
+  <div class="well" id="MathPreview<%= @postfix %>"></div>
+  <div class="well hidden-preview" id="MathBuffer<%= @postfix %>"></div>
   <%= render 'subjects/smiley', hiddentext: true %>
-  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput#{@champ}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput#{@postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
 </div>
 
 <!-- Case e-mails aux groupes A et/ou B -->
@@ -53,17 +53,17 @@
   </div>
 <% end %>
 
-<% if !session["error#{@champ}"].nil? %>
+<% if !session["error#{@postfix}"].nil? %>
   <script>
-    Rolling.develop_quick("<%= @champ %>");
+    Rolling.develop_quick("<%= @postfix %>");
   </script>
-  <% session.delete("error#{@champ}") %>
+  <% session.delete("error#{@postfix}") %>
   <% session.delete("oldContent") %>
 <% end %>
 
-<% if !session["success#{@champ}"].nil? %>
+<% if !session["success#{@postfix}"].nil? %>
   <script>
-    Rolling.showus("<%= @champ %>");
+    Rolling.showus("<%= @postfix %>");
   </script>
-  <% session.delete("success#{@champ}") %>
+  <% session.delete("success#{@postfix}") %>
 <% end %>

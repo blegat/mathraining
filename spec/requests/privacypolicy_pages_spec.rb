@@ -75,7 +75,7 @@ describe "Privacy policy pages" do
         
         describe "and clicks without accepting" do # should not be possible in production mode
           before do
-            click_button("Continuer sur Mathraining")
+            click_button "Continuer sur Mathraining"
             user.reload
           end
           it { should have_content("Vous devez accepter notre politique de confidentialité pour pouvoir continuer sur le site.") }
@@ -86,7 +86,7 @@ describe "Privacy policy pages" do
           before do
             check "consent1"
             check "consent2"
-            click_button("Continuer sur Mathraining")
+            click_button "Continuer sur Mathraining"
             user.reload
           end
           specify do
@@ -189,7 +189,7 @@ describe "Privacy policy pages" do
         describe "and edits it" do
           before do
             fill_in "MathInput", with: newpolicy
-            click_button("Modifier")
+            click_button "Modifier"
             policy3_offline.reload
           end
           it { should have_content("Modification enregistrée.") }
@@ -199,7 +199,7 @@ describe "Privacy policy pages" do
         describe "and edits it with empty string" do
           before do
             fill_in "MathInput", with: ""
-            click_button("Modifier")
+            click_button "Modifier"
             policy3_offline.reload
           end
           it do
@@ -217,7 +217,7 @@ describe "Privacy policy pages" do
         describe "and edits it" do
           before do
             fill_in "MathInput", with: newdescription
-            click_button("Modifier")
+            click_button "Modifier"
             policy3_offline.reload
           end
           it { should have_content("Modification enregistrée.") }
@@ -227,7 +227,7 @@ describe "Privacy policy pages" do
         describe "and edits it with empty string" do
           before do
             fill_in "MathInput", with: ""
-            click_button("Modifier")
+            click_button "Modifier"
             policy3_offline.reload
           end
           it do

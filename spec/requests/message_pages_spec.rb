@@ -23,6 +23,11 @@ describe "Message pages" do
   let(:content) { "Ma belle réponse" }
   let(:content2) { "Ma nouvelle réponse" }
   
+  let(:attachments_folder) { "./spec/attachments/" }
+  let(:image1) { "mathraining.png" } # default image used in factory
+  let(:image2) { "Smiley1.gif" }
+  let(:exe_attachment) { "hack.exe" }
+  
   describe "visitor" do 
     describe "tries to create a message" do
       before { visit subject_path(sub) }
@@ -148,6 +153,56 @@ describe "Message pages" do
         end
         it { should have_content("Votre message a bien été modifié.") }
         specify { expect(mes_other_root.content).to eq(content) }
+      end
+    end
+  end
+  
+  # -- TESTS THAT REQUIRE JAVASCRIPT --
+  
+  describe "user", :js => true do
+    before { sign_in user }
+    
+    describe "creates a message with two files" do
+      before do
+        visit subject_path(sub)
+        click_button "Répondre"
+        wait_for_ajax
+        fill_in "MathInputNewMessage", with: content
+        click_button "addFileNewMessage" # Ajouter une pièce jointe
+        wait_for_ajax
+        attach_file("fileNewMessage_1", File.absolute_path(attachments_folder + image1))
+        click_button "addFileNewMessage" # Ajouter une pièce jointe
+        wait_for_ajax
+        attach_file("fileNewMessage_2", File.absolute_path(attachments_folder + image2))
+        click_button "Poster"
+      end
+      let(:newmessage) { sub.messages.order(:created_at).last }
+      specify do
+        expect(newmessage.content).to eq(content)
+        expect(newmessage.myfiles.count).to eq(2)
+        expect(newmessage.myfiles.first.file.filename.to_s).to eq(image1)
+        expect(newmessage.myfiles.second.file.filename.to_s).to eq(image2)
+      end
+    end
+    
+    describe "adds a file to a message with a file" do
+      let!(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: mes_user) }
+      before do
+        visit subject_path(sub)
+        click_link("LinkEditMessage#{mes_user.id}")
+        wait_for_ajax
+        fill_in "MathInputMessage#{mes_user.id}", with: content2
+        click_button "addFileMessage#{mes_user.id}" # Ajouter une pièce jointe
+        wait_for_ajax
+        attach_file("fileMessage#{mes_user.id}_1", File.absolute_path(attachments_folder + image2))
+        click_button "Modifier"
+        mes_user.reload
+      end
+      specify do
+        expect(mes_user.content).to eq(content2)
+        expect(mes_user.myfiles.count).to eq(2)
+        expect(mes_user.myfiles.first.file.filename.to_s).to eq(image1)
+        expect(mes_user.myfiles.second.file.filename.to_s).to eq(image2)
       end
     end
   end

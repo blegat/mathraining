@@ -39,6 +39,11 @@ describe "Subject pages" do
   let(:newtitle) { "Mon nouveau titre" }
   let(:newcontent) { "Mon nouveau message" }
   
+  let(:attachments_folder) { "./spec/attachments/" }
+  let(:image1) { "mathraining.png" } # default image used in factory
+  let(:image2) { "Smiley1.gif" }
+  let(:exe_attachment) { "hack.exe" }
+  
   describe "visitor" do
     describe "tries to visit subjects page" do
       before { visit subjects_path }
@@ -340,6 +345,70 @@ describe "Subject pages" do
           click_button "Do it !"
         end
         it { should have_content("Le sujet le plus récent doit être migré vers le sujet le moins récent.") }
+      end
+    end
+  end
+  
+  # -- TESTS THAT REQUIRE JAVASCRIPT --
+  
+  describe "user", :js => true do
+    before { sign_in user }
+    
+    describe "creates a subject with a file" do
+      before do
+        visit new_subject_path
+        fill_in "Titre", with: title
+        fill_in "MathInput", with: content
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + image1))
+        click_button "Créer"
+      end
+      let(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(newsubject.title).to eq(title)
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.myfiles.count).to eq(1)
+        expect(newsubject.myfiles.first.file.filename.to_s).to eq(image1)
+      end
+    end
+    
+    describe "tries to create a subject with a exe file" do
+      before do
+        visit new_subject_path
+        fill_in "Titre", with: title
+        fill_in "MathInput", with: content
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
+        click_button "Créer"
+      end
+      it do
+        should have_content("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
+        should have_selector("h1", text: "Créer un sujet")
+      end
+    end
+    
+    describe "modifies a subject with a fake file" do
+      let!(:subjectmyfile) { FactoryGirl.create(:subjectmyfile, myfiletable: sub_user) }
+      before do
+        subjectmyfile.fake_del
+        visit subject_path(sub_user)
+        click_link("Modifier ce sujet")
+        wait_for_ajax
+        fill_in "MathInputEditSubject", with: newcontent
+        uncheck "prevFakeFileEditSubject_1"
+        click_button "addFileEditSubject" # Ajouter une pièce jointe
+        wait_for_ajax
+        attach_file("fileEditSubject_1", File.absolute_path(attachments_folder + image2))
+        click_button "Modifier"
+        sub_user.reload
+      end
+      specify do
+        expect(sub_user.content).to eq(newcontent)
+        expect(sub_user.fakefiles.count).to eq(0)
+        expect(sub_user.myfiles.count).to eq(1)
+        expect(sub_user.myfiles.first.file.filename.to_s).to eq(image2)
       end
     end
   end

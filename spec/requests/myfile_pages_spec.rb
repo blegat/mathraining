@@ -6,7 +6,7 @@ describe "Myfile pages" do
   subject { page }
 
   let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryGirl.create(:user, rating: 200) }
   
   let(:sub) { FactoryGirl.create(:subject) } # Don't use name "subject" because it is used for the page
   let(:message) { FactoryGirl.create(:message, subject: sub) }
@@ -31,9 +31,10 @@ describe "Myfile pages" do
   let(:contestcorrectionmyfile) { FactoryGirl.create(:contestcorrectionmyfile, myfiletable: contestcorrection) }
   let(:tchatmessagemyfile) { FactoryGirl.create(:tchatmessagemyfile, myfiletable: tchatmessage) }
   
-  let(:image_folder) { "./spec/images/" }
+  let(:attachments_folder) { "./spec/attachments/" }
   let(:old_image) { "mathraining.png" } # This one is used for all default files
   let(:new_image) { "Smiley1.gif" }
+  let(:exe_attachment) { "hack.exe" }
 
   describe "root" do
     before { sign_in root }
@@ -199,7 +200,7 @@ describe "Myfile pages" do
       
       describe "and replaces it" do
         before do
-          attach_file("file", File.absolute_path(image_folder + new_image))
+          attach_file("file", File.absolute_path(attachments_folder + new_image))
           click_button "Remplacer"
           subjectmyfile.reload
         end
@@ -214,33 +215,6 @@ describe "Myfile pages" do
         end
         it { should have_content("Pièce jointe vide.") }
         specify { expect(subjectmyfile.file.filename.to_s).to eq(old_image) }
-      end
-    end
-  end
-  
-  # -- TESTS THAT REQUIRE JAVASCRIPT --
-  
-  describe "user", :js => true do
-    before { sign_in user }
-    
-    describe "creates a subject with a file" do
-      let(:title) { "Mon titre" }
-      let(:content) { "Mon contenu" }
-      before do
-        visit new_subject_path
-        fill_in "Titre", with: title
-        fill_in "MathInput", with: content
-        click_button "Ajouter une pièce jointe"
-        wait_for_ajax
-        attach_file("file1", File.absolute_path(image_folder + new_image))
-        click_button "Créer"
-      end
-      let(:newsubject) { Subject.order(:id).last }
-      specify do
-        expect(newsubject.title).to eq(title)
-        expect(newsubject.content).to eq(content)
-        expect(newsubject.myfiles.count).to eq(1)
-        expect(newsubject.myfiles.first.file.filename.to_s).to eq(new_image)
       end
     end
   end

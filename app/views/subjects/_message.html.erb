@@ -1,17 +1,17 @@
-<% @champ = "Message#{m.id}" %>
+<% @postfix = "Message#{m.id}" %>
 
-<div id="the<%= @champ %>" class="myoverflow">
+<div id="the<%= @postfix %>" class="myoverflow">
 <%= render 'subjects/content', ms: m, kind: "message" %>
 </div>
 
 <% if @canmodif %>
-  <div id="form<%= @champ %>" class="myoverflow" style="height:0px;">
+  <div id="form<%= @postfix %>" class="myoverflow" style="height:0px;">
   <%= render 'messages/edit', m: m %>
   </div>
 <% end %>
 
 <% if !params[:message].nil? && (params[:message].to_i == m.id) %>
   <script>
-    Rolling.showus("<%= @champ %>");
+    Rolling.showus("<%= @postfix %>");
   </script>
 <% end %>

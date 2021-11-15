@@ -22,6 +22,11 @@ describe "Submission pages" do
   let(:newsubmission2) { "Voici ma nouvelle soumission." }
   let(:newcorrection2) { "Voici ma nouvelle correction." }
   
+  let(:attachments_folder) { "./spec/attachments/" }
+  let(:image1) { "mathraining.png" } # default image used in factory
+  let(:image2) { "Smiley1.gif" }
+  let(:exe_attachment) { "hack.exe" }
+  
   describe "user" do
     before { sign_in user }
 
@@ -336,7 +341,7 @@ describe "Submission pages" do
           visit problem_path(problem_with_waiting_submission, :sub => waiting_submission)
           f.user = admin
           f.save
-          click_button("Annuler ma réservation")
+          click_button "Annuler ma réservation"
           wait_for_ajax
           waiting_submission.reload
         end
@@ -355,7 +360,7 @@ describe "Submission pages" do
           f.read = true
           f.kind = 0
           f.save
-          click_button("Réserver cette soumission")
+          click_button "Réserver cette soumission"
           wait_for_ajax
           waiting_submission.reload
         end
@@ -374,7 +379,7 @@ describe "Submission pages" do
       
       describe "and reserves it" do
         before do
-          click_button("Réserver cette soumission")
+          click_button "Réserver cette soumission"
           wait_for_ajax
           waiting_submission.reload
         end
@@ -391,7 +396,7 @@ describe "Submission pages" do
           
         describe "and unreserves it" do
           before do
-            click_button("Annuler ma réservation")
+            click_button "Annuler ma réservation"
             wait_for_ajax
             waiting_submission.reload
           end
@@ -404,6 +409,60 @@ describe "Submission pages" do
           end
           specify { expect(waiting_submission.followings.count).to eq(0) }
         end
+      end
+    end
+  end
+  
+  # -- TESTS THAT REQUIRE JAVASCRIPT --
+  
+  describe "user", :js => true do
+    before { sign_in user }
+  
+    describe "creates a submission with a file" do
+      before do
+        visit problem_path(problem, :sub => 0)
+        fill_in "MathInput", with: newsubmission
+        click_button "Ajouter une pièce jointe" # We don't fill file1
+        wait_for_ajax
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_2", File.absolute_path(attachments_folder + image1))
+        check "consent"
+        click_button "Soumettre cette solution"
+        accept_browser_dialog
+      end
+      let(:newsub) { problem.submissions.order(:id).last }
+      specify do
+        expect(newsub.content).to eq(newsubmission)
+        expect(newsub.myfiles.count).to eq(1)
+        expect(newsub.myfiles.first.file.filename.to_s).to eq(image1)
+      end
+    end
+  end
+  
+  describe "admin", :js => true do
+    before { sign_in admin }
+    
+    describe "creates a correction with a file" do
+      let!(:numfiles_before) { Myfile.count }
+      before do
+        visit problem_path(problem_with_waiting_submission, :sub => waiting_submission)
+        click_button "Réserver cette soumission"
+        wait_for_ajax
+        fill_in "MathInput", with: newcorrection
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + image1))
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_2", File.absolute_path(attachments_folder + exe_attachment))
+        click_button "Poster et refuser la soumission"
+        waiting_submission.reload
+      end
+      specify do
+        expect(waiting_submission.status).to eq(0)
+        expect(waiting_submission.corrections.count).to eq(0)
+        expect(Myfile.count).to eq(numfiles_before)
       end
     end
   end

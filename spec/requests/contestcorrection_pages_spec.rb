@@ -25,6 +25,11 @@ describe "Contestcorrection pages" do
   let!(:newcorrection) { "Voici une correction spontanée." }
   let!(:newcorrection2) { "Voici une nouvelle correction." }
   
+  let(:attachments_folder) { "./spec/attachments/" }
+  let(:image1) { "mathraining.png" } # default image used in factory
+  let(:image2) { "Smiley1.gif" }
+  let(:exe_attachment) { "hack.exe" }
+  
   before do
     Contestorganization.create(:contest => contest, :user => user_organizer)
   end
@@ -188,7 +193,7 @@ describe "Contestcorrection pages" do
         
         describe "and publish the results" do
           before do
-            click_button("Publier les résultats")
+            click_button "Publier les résultats"
             contestproblem_finished.reload
           end
           specify do
@@ -294,17 +299,17 @@ describe "Contestcorrection pages" do
       
       describe "and does not want anymore" do
         before do
-          click_button("Annuler")
+          click_button "Annuler"
           wait_for_ajax
         end
-        specify { expect { click_button("Annuler") }.to raise_error(Capybara::ElementNotFound) } # Button should have disappeared
+        specify { expect { click_button "Annuler" }.to raise_error(Capybara::ElementNotFound) } # Button should have disappeared
       end
       
       describe "and reserves it while somebody else reserved it" do
         before do
           usersol_finished.reservation = root.id
           usersol_finished.save
-          click_button("button-reserve")
+          click_button "button-reserve"
           wait_for_ajax
           usersol_finished.reload
         end
@@ -314,7 +319,7 @@ describe "Contestcorrection pages" do
       
       describe "and reserves it" do
         before do
-          click_button("button-reserve")
+          click_button "button-reserve"
           wait_for_ajax
           usersol_finished.reload
         end
@@ -329,7 +334,7 @@ describe "Contestcorrection pages" do
       
         describe "and unreserves it" do
           before do
-            click_button("button-unreserve")
+            click_button "button-unreserve"
             wait_for_ajax
             usersol_finished.reload
           end
@@ -342,6 +347,30 @@ describe "Contestcorrection pages" do
           end
           specify { expect(usersol_finished.reservation).to eq(0) }
         end
+      end
+    end
+    
+    describe "modifies a solution by adding a file", :js => true do
+      before do
+        visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
+        click_link("Modifier la correction")
+        wait_for_ajax
+        click_button "button-reserve"
+        wait_for_ajax
+        fill_in "MathInput", with: newcorrection2
+        fill_in "score", with: 6
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + image1))
+        click_button "Enregistrer"
+        usersol_finished.reload
+      end
+      specify do
+        expect(usersol_finished.contestcorrection.content).to eq(newcorrection2)
+        expect(usersol_finished.score).to eq(6)
+        expect(usersol_finished.corrected).to eq(true)
+        expect(usersol_finished.contestcorrection.myfiles.count).to eq(1)
+        expect(usersol_finished.contestcorrection.myfiles.first.file.filename.to_s).to eq(image1)
       end
     end
   end

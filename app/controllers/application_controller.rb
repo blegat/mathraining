@@ -102,14 +102,15 @@ class ApplicationController < ActionController::Base
 
     i = 1
     k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
+    postfix = (params["postfix"].nil? ? "" : params["postfix"]);
+    while !params["hidden#{postfix}_#{k}".to_sym].nil? do
+      if !params["file#{postfix}_#{k}".to_sym].nil?
         
         attach.push()
-        attach[i-1] = Myfile.new(:file => params["file#{k}".to_sym])
+        attach[i-1] = Myfile.new(:file => params["file#{postfix}_#{k}".to_sym])
         if !attach[i-1].save
           destroy_files(attach, i)
-          nom = params["file#{k}".to_sym].original_filename
+          nom = params["file#{postfix}_#{k}".to_sym].original_filename
           @error = true
           @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           return [];
@@ -133,8 +134,9 @@ class ApplicationController < ActionController::Base
 
   def update_files(about)
     totalsize = 0
+    postfix = (params["postfix"].nil? ? "" : params["postfix"]);
     about.myfiles.each do |f|
-      if params["prevfile#{f.id}".to_sym].nil?
+      if params["prevFile#{postfix}_#{f.id}".to_sym].nil?
         f.destroy # Should automatically purge the file
       else
         totalsize = totalsize + f.file.blob.byte_size
@@ -142,7 +144,7 @@ class ApplicationController < ActionController::Base
     end
 
     about.fakefiles.each do |f|
-      if params["prevfakefile#{f.id}".to_sym].nil?
+      if params["prevFakeFile#{postfix}_#{f.id}".to_sym].nil?
         f.destroy
       end
     end
@@ -151,15 +153,15 @@ class ApplicationController < ActionController::Base
 
     i = 1
     k = 1
-    while !params["hidden#{k}".to_sym].nil? do
-      if !params["file#{k}".to_sym].nil?
+    while !params["hidden#{postfix}_#{k}".to_sym].nil? do
+      if !params["file#{postfix}_#{k}".to_sym].nil?
         
         attach.push()
-        attach[i-1] = Myfile.new(:file => params["file#{k}".to_sym])
+        attach[i-1] = Myfile.new(:file => params["file#{postfix}_#{k}".to_sym])
         attach[i-1].myfiletable = about
         if !attach[i-1].save
           destroy_files(attach, i)
-          nom = params["file#{k}".to_sym].original_filename
+          nom = params["file#{postfix}_#{k}".to_sym].original_filename
           @error = true
           @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           return []

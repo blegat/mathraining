@@ -9,7 +9,7 @@ describe "Actuality pages" do
   let(:admin) { FactoryGirl.create(:admin) }
   let(:admin2) { FactoryGirl.create(:admin) }
   
-  let(:image_folder) { "./spec/images/" }
+  let(:image_folder) { "./spec/attachments/" }
   let(:good_image) { "mathraining.png" }
   
   describe "user" do
