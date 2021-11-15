@@ -49,7 +49,7 @@ describe "Actuality pages" do
       describe "and try to upload an empty picture" do
         before { click_button "Uploader" }
         specify { expect(Picture.count).to eq(0) }
-        it { should have_content("Image doit être rempli(e)") }
+        it { should have_error_message("Image doit être rempli(e)") }
       end
       
       describe "and upload a new picture" do
@@ -62,7 +62,7 @@ describe "Actuality pages" do
           expect(Picture.last.image.blob.filename).to eq(good_image)
         end
         it do
-          should have_content("Image ajoutée.")
+          should have_success_message("Image ajoutée.")
           should have_selector("h1", text: "Récupérer un url")
           should have_xpath("//img[contains(@src, '#{good_image}')]")
           should have_content(rails_blob_url(Picture.last.image, :only_path => true))

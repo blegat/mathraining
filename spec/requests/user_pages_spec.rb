@@ -34,7 +34,7 @@ describe "User pages" do
         end
         it do
           should have_selector("h1", text: "Inscription")
-          should have_content("erreur")
+          should have_error_message("erreur")
         end
       end
     end
@@ -57,7 +57,7 @@ describe "User pages" do
       specify { expect { click_button "Créer mon compte" }.to change(User, :count).by(1) }
       describe "after saving the user" do
         before { click_button "Créer mon compte" }
-        it { should have_content("confirmer votre inscription") }
+        it { should have_success_message("confirmer votre inscription") }
       end
     end
     
@@ -72,7 +72,7 @@ describe "User pages" do
           visit activate_path(:id => zero_user, :key => zero_user.key)
           zero_user.reload
         end
-        it { should have_content("Votre compte a bien été activé !") }
+        it { should have_success_message("Votre compte a bien été activé !") }
         specify { expect(zero_user.email_confirm).to eq(true) }
       end
       
@@ -81,7 +81,7 @@ describe "User pages" do
           visit activate_path(:id => zero_user, :key => "hackingMathraining")
           zero_user.reload
         end
-        it { should have_content("Le lien d'activation est erroné.") }
+        it { should have_error_message("Le lien d'activation est erroné.") }
         specify { expect(zero_user.email_confirm).to eq(false) }
       end
       
@@ -90,7 +90,7 @@ describe "User pages" do
           visit activate_path(:id => other_zero_user, :key => other_zero_user.key)
           zero_user.reload
         end
-        it { should have_content("Ce compte est déjà actif !") }
+        it { should have_info_message("Ce compte est déjà actif !") }
         specify { expect(other_zero_user.email_confirm).to eq(true) }
       end
     end
@@ -106,7 +106,7 @@ describe "User pages" do
           fill_in "Email", with: other_zero_user.email
           click_button "Envoyer l'e-mail"
         end
-        it { should have_content("Veuillez d'abord confirmer votre adresse e-mail") }
+        it { should have_error_message("Veuillez d'abord confirmer votre adresse e-mail") }
       end
       
       describe "and enters incorrect email" do
@@ -114,7 +114,7 @@ describe "User pages" do
           fill_in "Email", with: "nonexistingemail@hello.com"
           click_button "Envoyer l'e-mail"
         end
-        it { should have_content("Aucun utilisateur ne possède cette adresse.") }
+        it { should have_error_message("Aucun utilisateur ne possède cette adresse.") }
       end
       
       describe "and enters his email" do
@@ -122,13 +122,13 @@ describe "User pages" do
           fill_in "Email", with: zero_user.email
           click_button "Envoyer l'e-mail"
         end
-        it { should have_content("Vous allez recevoir un e-mail") }
+        it { should have_success_message("Vous allez recevoir un e-mail") }
         
         describe "and visits the reset page with wrong key" do
           before do
             visit user_recup_password_path(zero_user, :key => "HackingMathrainingAgain")
           end
-          it { should have_content("Ce lien n'est pas valide") }
+          it { should have_error_message("Ce lien n'est pas valide") }
         end
         
         describe "and visits the reset page too late" do
@@ -138,7 +138,7 @@ describe "User pages" do
             zero_user.save
             visit user_recup_password_path(zero_user, :key => zero_user.key)
           end
-          it { should have_content("Ce lien n'est plus valide (il expirait après une heure)") }
+          it { should have_error_message("Ce lien n'est plus valide (il expirait après une heure)") }
         end
         
         describe "and visits the reset page if already connected" do
@@ -159,7 +159,7 @@ describe "User pages" do
           
           describe "and sets an empty password" do
             before { click_button "Modifier le mot de passe" }
-            it { should have_content("Mot de passe est vide") }
+            it { should have_error_message("Mot de passe est vide") }
           end
           
           describe "and sets an incorrect password" do
@@ -168,7 +168,7 @@ describe "User pages" do
               fill_in "Confirmation du mot de passe", with: "incorrect"
               click_button "Modifier le mot de passe"
             end
-            it { should have_content("erreur") }
+            it { should have_error_message("erreur") }
           end
           
           describe "and sets an incorrect password" do
@@ -179,7 +179,7 @@ describe "User pages" do
               fill_in "Confirmation du mot de passe", with: new_password
               click_button "Modifier le mot de passe"
             end
-            it { should have_content("Vous avez mis trop de temps à modifier votre mot de passe. ") }
+            it { should have_error_message("Vous avez mis trop de temps à modifier votre mot de passe.") }
           end
           
           describe "and sets a correct password" do
@@ -188,7 +188,7 @@ describe "User pages" do
               fill_in "Confirmation du mot de passe", with: new_password
               click_button "Modifier le mot de passe"
             end
-            it { should have_content("Votre mot de passe vient d'être modifié") }
+            it { should have_success_message("Votre mot de passe vient d'être modifié") }
             
             describe "and tries to sign in with new password" do
               before do
@@ -447,7 +447,7 @@ describe "User pages" do
         click_link("Voir le site comme lui")
         root.reload
       end
-      it { should have_content("Vous êtes maintenant dans la peau de") }
+      it { should have_success_message("Vous êtes maintenant dans la peau de") }
       specify do
         expect(root.skin).to eq(zero_user.id)
         expect { click_link "Sortir de ce corps" and root.reload }.to change{root.skin}.to(0)

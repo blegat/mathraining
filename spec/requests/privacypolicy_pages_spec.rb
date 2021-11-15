@@ -23,7 +23,7 @@ describe "Privacy policy pages" do
       
       describe "tries to visit last policy" do
         before { visit last_policy_path }
-        it { should have_content("Le site n'a actuellement aucune politique de confidentalité.") }
+        it { should have_error_message("Le site n'a actuellement aucune politique de confidentalité.") }
       end
       
       describe "tries to configurate policies" do
@@ -78,7 +78,7 @@ describe "Privacy policy pages" do
             click_button "Continuer sur Mathraining"
             user.reload
           end
-          it { should have_content("Vous devez accepter notre politique de confidentialité pour pouvoir continuer sur le site.") }
+          it { should have_error_message("Vous devez accepter notre politique de confidentialité pour pouvoir continuer sur le site.") }
           specify { expect(user.last_policy_read).to eq(false) }
         end
         
@@ -192,7 +192,7 @@ describe "Privacy policy pages" do
             click_button "Modifier"
             policy3_offline.reload
           end
-          it { should have_content("Modification enregistrée.") }
+          it { should have_success_message("Modification enregistrée.") }
           specify { expect(policy3_offline.content).to eq(newpolicy) }
         end
         
@@ -204,7 +204,7 @@ describe "Privacy policy pages" do
           end
           it do
             should have_selector("h1", text: "Politique de confidentialité > Modifier")
-            should have_content("Contenu doit être rempli")
+            should have_error_message("Contenu doit être rempli")
           end
           specify { expect(policy3_offline.content).not_to eq("") }
         end
@@ -220,7 +220,7 @@ describe "Privacy policy pages" do
             click_button "Modifier"
             policy3_offline.reload
           end
-          it { should have_content("Modification enregistrée.") }
+          it { should have_success_message("Modification enregistrée.") }
           specify { expect(policy3_offline.description).to eq(newdescription) }
         end
         
@@ -232,7 +232,7 @@ describe "Privacy policy pages" do
           end
           it do
             should have_selector("h1", text: "Politique de confidentialité > Modifier")
-            should have_content("Modifications doit être rempli")
+            should have_error_message("Modifications doit être rempli")
           end
           specify { expect(policy3_offline.description).not_to eq("") }
         end

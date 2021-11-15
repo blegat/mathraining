@@ -11,8 +11,8 @@
 <% end %>
 
 <!-- Modifier les prérequis -->
-<% if @signed_in && current_user.sk.admin? %>
-  <center><%= link_to "Modifier les prérequis", graph_prerequisites_path(:fondement => 1) %><%= " (fondamentaux)" if @chapter.online %></center>
+<% if @signed_in && current_user.sk.admin? && !@chapter.online %>
+  <center><%= link_to "Modifier les prérequis", graph_prerequisites_path %></center>
 <% end %>
 
 <!-- Résumé -->

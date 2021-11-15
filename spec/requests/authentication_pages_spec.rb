@@ -17,7 +17,7 @@ describe "Authentication" do
     describe "with invalid information" do
       before { click_button "Connexion" }
        
-      it { should have_selector("div", text: "invalide") }
+      it { should have_error_message("invalide") }
     end
 
     describe "with valid information" do

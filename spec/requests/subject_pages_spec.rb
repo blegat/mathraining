@@ -143,7 +143,7 @@ describe "Subject pages" do
           click_button "Créer"
         end
         it do
-          should have_content("Votre sujet a bien été posté.")
+          should have_success_message("Votre sujet a bien été posté.")
           should have_content("#{title} - #{category.name}")
           should have_selector("div", text: content)
         end
@@ -171,7 +171,7 @@ describe "Subject pages" do
           click_button "Modifier"
         end
         it do
-          should have_content("Votre sujet a bien été modifié.")
+          should have_success_message("Votre sujet a bien été modifié.")
           should have_content("#{newtitle} - #{category2.name}")
           should have_selector("div", text: newcontent)
         end
@@ -190,7 +190,7 @@ describe "Subject pages" do
       describe "and follows the subject" do
         before { click_link("link_follow") }
         it do
-          should have_content("Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet.")
+          should have_success_message("Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet.")
           should have_link("link_unfollow")
         end
         specify { expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(true) }
@@ -198,7 +198,7 @@ describe "Subject pages" do
         describe "and unfollows the subject" do
           before { click_link("link_unfollow") }
           it do
-            should have_content("Vous ne recevrez maintenant plus d'e-mail concernant ce sujet.")
+            should have_success_message("Vous ne recevrez maintenant plus d'e-mail concernant ce sujet.")
             should have_link("link_follow")
           end
           specify { expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(false) }
@@ -232,7 +232,7 @@ describe "Subject pages" do
           click_button "Modifier"
         end
         it do
-          should have_content("Votre sujet a bien été modifié.")
+          should have_success_message("Votre sujet a bien été modifié.")
           should have_content("#{newtitle} - #{category2.name}")
           should have_selector("div", text: newcontent)
         end
@@ -281,7 +281,7 @@ describe "Subject pages" do
           click_button "Modifier"
         end
         it do
-          should have_content("Votre sujet a bien été modifié.")
+          should have_success_message("Votre sujet a bien été modifié.")
           should have_content("#{newtitle} - #{category2.name}")
           should have_selector("div", text: newcontent)
         end
@@ -334,7 +334,7 @@ describe "Subject pages" do
           fill_in "migreur", with: Subject.order(:id).last.id + 1
           click_button "Do it !"
         end
-        it { should have_content("Ce sujet n'existe pas.") }
+        it { should have_error_message("Ce sujet n'existe pas.") }
       end
       
       describe "and migrates it to an older subject" do
@@ -344,7 +344,7 @@ describe "Subject pages" do
           fill_in "migreur", with: sub_user.id
           click_button "Do it !"
         end
-        it { should have_content("Le sujet le plus récent doit être migré vers le sujet le moins récent.") }
+        it { should have_error_message("Le sujet le plus récent doit être migré vers le sujet le moins récent.") }
       end
     end
   end
@@ -384,7 +384,7 @@ describe "Subject pages" do
         click_button "Créer"
       end
       it do
-        should have_content("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
+        should have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
         should have_selector("h1", text: "Créer un sujet")
       end
     end

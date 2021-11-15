@@ -56,7 +56,7 @@ describe "Message pages" do
           click_button "SubmitMessage#{mes_user.id}"
           mes_user.reload
         end
-        it { should have_content("Votre message a bien été modifié.") }
+        it { should have_success_message("Votre message a bien été modifié.") }
         specify { expect(mes_user.content).to eq(content) }
       end
       
@@ -66,7 +66,7 @@ describe "Message pages" do
           click_button "SubmitMessage#{mes_user.id}"
           mes_user.reload
         end
-        it { should have_content("Message doit être rempli") }
+        it { should have_error_message("Message doit être rempli") }
         specify { expect(mes_user.content).not_to eq("") }
       end
       
@@ -75,7 +75,7 @@ describe "Message pages" do
           fill_in "MathInputNewMessage", with: content2
           click_button "Poster"
         end
-        it { should have_content("Votre message a bien été posté.") }
+        it { should have_success_message("Votre message a bien été posté.") }
         specify { expect(sub.messages.order(:id).last.content).to eq(content2) }
       end
       
@@ -84,7 +84,7 @@ describe "Message pages" do
           fill_in "MathInputNewMessage", with: ""
           click_button "Poster"
         end
-        it { should have_content("Message doit être rempli") }
+        it { should have_error_message("Message doit être rempli") }
         specify { expect(sub.messages.order(:id).last.content).not_to eq("") }
       end
     end
@@ -116,7 +116,7 @@ describe "Message pages" do
           click_button "SubmitMessage#{mes.id}"
           mes.reload
         end
-        it { should have_content("Votre message a bien été modifié.") }
+        it { should have_success_message("Votre message a bien été modifié.") }
         specify { expect(mes.content).to eq(content) }
       end
       
@@ -126,7 +126,7 @@ describe "Message pages" do
           click_button "SubmitMessage#{mes_admin.id}"
           mes_admin.reload
         end
-        it { should have_content("Votre message a bien été modifié.") }
+        it { should have_success_message("Votre message a bien été modifié.") }
         specify { expect(mes_admin.content).to eq(content) }
       end
     end
@@ -151,7 +151,7 @@ describe "Message pages" do
           click_button "SubmitMessage#{mes_other_root.id}"
           mes_other_root.reload
         end
-        it { should have_content("Votre message a bien été modifié.") }
+        it { should have_success_message("Votre message a bien été modifié.") }
         specify { expect(mes_other_root.content).to eq(content) }
       end
     end

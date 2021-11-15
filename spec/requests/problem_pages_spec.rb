@@ -299,7 +299,7 @@ describe "Problem pages" do
           click_button "Créer"
         end
         it do
-          should have_content("erreur")
+          should have_error_message("erreur")
           should have_selector("h1", text: "Créer un problème")
         end
         specify { expect(Problem.order(:id).last.origin).to_not eq(neworigin) }
@@ -337,7 +337,7 @@ describe "Problem pages" do
           offline_problem.reload
         end
         it do
-          should have_content("erreur")
+          should have_error_message("erreur")
           should have_selector("h1", text: "Modifier")
         end
         specify { expect(offline_problem.origin).to_not eq(neworigin) }

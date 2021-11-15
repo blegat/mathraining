@@ -136,7 +136,7 @@ describe "Chapter pages" do
       before { visit chapter_warning_path(offline_chapter_2) }
       it do
         should have_no_selector("h1", text: "Mise en ligne")
-        should have_selector("div.alert", text: "Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne.")
+        should have_error_message("Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne.")
         should have_button("Mettre ce chapitre en ligne") # Redirects to the chapter page with this button (even if we cannot use it)
       end
     end

@@ -135,7 +135,7 @@ describe "Virtualtest pages" do
             end
             specify { expect(problem.submissions.order(:id).last.content).to eq(newsolution) }
             it do
-              should have_content("Votre solution a bien été enregistrée.")
+              should have_success_message("Votre solution a bien été enregistrée.")
               should have_content(newsolution)
               should have_link("Modifier la solution")
               should have_link("Supprimer la solution")
@@ -149,7 +149,7 @@ describe "Virtualtest pages" do
               end
               specify { expect(problem.submissions.order(:id).last.content).to eq(newsolution2) }
               it do
-                should have_content("Votre solution a bien été modifiée.")
+                should have_success_message("Votre solution a bien été modifiée.")
                 should have_content(newsolution2)
               end
             end
@@ -221,7 +221,7 @@ describe "Virtualtest pages" do
         end
         specify { expect(Virtualtest.order(:id).last.duration).to eq(duration) }
         it do
-          should have_content("Test virtuel ajouté.")
+          should have_success_message("Test virtuel ajouté.")
           should have_selector("h1", text: "Tests virtuels")
           should have_content("(en construction)")
           should have_link("Modifier ce test")
@@ -241,7 +241,7 @@ describe "Virtualtest pages" do
               click_button "Modifier"
             end
             specify { expect(Virtualtest.order(:id).last.duration).to eq(duration2) }
-            it { should have_content("Test virtuel modifié.") }
+            it { should have_success_message("Test virtuel modifié.") }
           end
         end
       end
@@ -264,7 +264,7 @@ describe "Virtualtest pages" do
           click_button "Mettre en ligne"
           virtualtest.reload
         end
-        it { should have_content("Test virtuel mis en ligne.") }
+        it { should have_success_message("Test virtuel mis en ligne.") }
         specify { expect(virtualtest.online).to eq(true) }
       end
       

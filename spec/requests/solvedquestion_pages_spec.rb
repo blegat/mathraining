@@ -201,7 +201,7 @@ describe "Solvedquestion pages" do
           user.reload
         end
         it do
-          should have_content("Veuillez cocher une réponse")
+          should have_error_message("Veuillez cocher une réponse")
           should have_no_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
         end
       end

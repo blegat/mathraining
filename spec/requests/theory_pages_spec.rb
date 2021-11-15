@@ -197,7 +197,7 @@ describe "Theory pages" do
           click_button "Créer"
         end
         it do
-          should have_content("erreur")
+          should have_error_message("erreur")
           should have_selector("h1", text: "Créer un point théorique")
         end
         specify { expect(Theory.order(:id).last.content).to_not eq(newcontent) }

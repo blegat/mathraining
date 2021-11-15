@@ -66,7 +66,7 @@ describe "Actuality pages" do
           click_button "Créer"
         end
         it do
-          should have_content("erreur")
+          should have_error_message("erreur")
           should have_selector("h1", text: "Ajouter une actualité")
         end
         specify { expect(Actuality.order(:id).last.content).to_not eq(newcontent) }
@@ -96,7 +96,7 @@ describe "Actuality pages" do
           actuality.reload
         end
         it do
-          should have_content("erreur")
+          should have_error_message("erreur")
           should have_selector("h1", text: "Modifier une actualité")
         end
         specify { expect(actuality.title).to_not eq(newtitle) }

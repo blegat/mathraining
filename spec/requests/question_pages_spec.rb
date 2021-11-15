@@ -219,7 +219,7 @@ describe "Question pages" do
           click_button "Créer"
         end
         it do
-          should have_content("erreur")
+          should have_error_message("erreur")
           should have_selector("h1", text: "Créer un exercice")
         end
         specify { expect(Question.order(:id).last.answer).to_not eq(newanswer) }
@@ -259,7 +259,7 @@ describe "Question pages" do
           offline_exercise.reload
         end
         it do
-          should have_content("erreur")
+          should have_error_message("erreur")
           should have_selector("h1", text: "Modifier un exercice")
         end
         specify { expect(offline_exercise.answer).to_not eq(newanswer) }

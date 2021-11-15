@@ -48,7 +48,7 @@ describe "Category pages" do
           page.all(:fillable_field, "category[name]").first.set("")
           page.all(:button, "Modifier cette catégorie").first.click
         end
-        it { should have_selector("div", text: "Une erreur est survenue.") }
+        it { should have_error_message("Une erreur est survenue.") }
         specify { expect(Category.order(:id).first.name).to_not eq("") }
       end
       
@@ -65,7 +65,7 @@ describe "Category pages" do
           page.all(:fillable_field, "category[name]").last.set("")
           click_button "Ajouter cette catégorie"
         end
-        it { should have_selector("div", text: "Une erreur est survenue.") }
+        it { should have_error_message("Une erreur est survenue.") }
         specify { expect(Category.order(:id).last.name).to_not eq("") }
       end
       

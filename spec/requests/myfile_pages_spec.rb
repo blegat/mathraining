@@ -62,7 +62,7 @@ describe "Myfile pages" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(subjectmyfile)) }
         it do
           should have_current_path(subject_path(sub, :q => 0))
-          should have_content("Contenu de la pièce jointe supprimé.")
+          should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
       end
@@ -89,7 +89,7 @@ describe "Myfile pages" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(messagemyfile)) }
         it do
           should have_current_path(subject_path(sub, :page => 1, :message => message, :q => 0))
-          should have_content("Contenu de la pièce jointe supprimé.")
+          should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
       end
@@ -107,7 +107,7 @@ describe "Myfile pages" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(submissionmyfile)) }
         it do
           should have_current_path(problem_path(problem, :sub => submission))
-          should have_content("Contenu de la pièce jointe supprimé.")
+          should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
       end
@@ -125,7 +125,7 @@ describe "Myfile pages" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(correctionmyfile)) }
         it do
           should have_current_path(problem_path(problem, :sub => submission))
-          should have_content("Contenu de la pièce jointe supprimé.")
+          should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
       end
@@ -143,7 +143,7 @@ describe "Myfile pages" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(contestsolutionmyfile)) }
         it do
           should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
-          should have_content("Contenu de la pièce jointe supprimé.")
+          should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
       end
@@ -161,7 +161,7 @@ describe "Myfile pages" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(contestcorrectionmyfile)) }
         it do
           should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
-          should have_content("Contenu de la pièce jointe supprimé.")
+          should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
       end
@@ -184,7 +184,7 @@ describe "Myfile pages" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(tchatmessagemyfile)) }
         it do
           should have_current_path(myfiles_path)
-          should have_content("Contenu de la pièce jointe supprimé.")
+          should have_success_message("Contenu de la pièce jointe supprimé.")
         end
       end
     end
@@ -204,7 +204,7 @@ describe "Myfile pages" do
           click_button "Remplacer"
           subjectmyfile.reload
         end
-        it { should have_content("C'est remplacé !") }
+        it { should have_success_message("C'est remplacé !") }
         specify { expect(subjectmyfile.file.filename.to_s).to eq(new_image) }
       end
       
@@ -213,7 +213,7 @@ describe "Myfile pages" do
           click_button "Remplacer"
           subjectmyfile.reload
         end
-        it { should have_content("Pièce jointe vide.") }
+        it { should have_error_message("Pièce jointe vide.") }
         specify { expect(subjectmyfile.file.filename.to_s).to eq(old_image) }
       end
     end

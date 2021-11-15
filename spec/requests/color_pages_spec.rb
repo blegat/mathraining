@@ -51,7 +51,7 @@ describe "Color pages" do
           find_by_id('button_add').click
         end
         it do
-          should have_content("erreur")
+          should have_error_message("erreur")
           should have_selector("h1", text: "Niveaux et couleurs")
         end
         specify { expect(Color.order(:id).last.name).to_not eq("new_name") }
@@ -84,7 +84,7 @@ describe "Color pages" do
           color.reload
         end
         it do
-          should have_content("erreur")
+          should have_error_message("erreur")
           should have_selector("h1", text: "Niveaux et couleurs")
         end
         specify { expect(color.name).to_not eq("new_name") }

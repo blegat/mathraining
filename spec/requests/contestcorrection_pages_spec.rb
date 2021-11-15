@@ -186,7 +186,7 @@ describe "Contestcorrection pages" do
           expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
         end
         it do
-          should have_content("Le score a été mis automatiquement à 7/7 (car solution étoilée).")
+          should have_info_message("Le score a été mis automatiquement à 7/7 (car solution étoilée).")
           should have_content("7 / 7")
           should have_button("Publier les résultats")
         end
@@ -223,7 +223,7 @@ describe "Contestcorrection pages" do
             usersol_finished.reload
             usersol_finished.contestcorrection.reload
           end
-          it { should have_content("Vous ne pouvez pas modifier cette correction.") }
+          it { should have_error_message("Vous ne pouvez pas modifier cette correction.") }
           specify do
             expect(usersol_finished.score).to eq(7)
             expect(usersol_finished.star).to eq(true)
@@ -256,7 +256,7 @@ describe "Contestcorrection pages" do
           usersol_finished.reload
           usersol_finished.contestcorrection.reload
         end
-        it { should have_content("Votre correction est vide.") }
+        it { should have_error_message("Votre correction est vide.") }
         specify do
           expect(usersol_finished.score).to eq(-1)
           expect(usersol_finished.contestcorrection.content).to eq("-")
@@ -273,7 +273,7 @@ describe "Contestcorrection pages" do
           usersol_finished.reload
           usersol_finished.contestcorrection.reload
         end
-        it { should have_content("Vous n'avez pas réservé.") }
+        it { should have_error_message("Vous n'avez pas réservé.") }
         specify do
           expect(usersol_finished.score).to eq(-1)
           expect(usersol_finished.contestcorrection.content).to eq("-")

@@ -125,8 +125,8 @@
 <% liste = Array.new %>
 
 <!-- Création de la liste -->
-<% Section.where(:fondation => true).each do |s| %>
-  <% if !s.fondation %>
+<% [true, false].each do |f| %>
+  <% Section.where(:fondation => f).each do |s| %>
     <% liste2 = Array.new %>
     <% liste2.push(s.name) %>
     <% liste3 = Array.new %>
@@ -134,24 +134,9 @@
       <% liste3.push([c.name, c.id]) %>
     <% end %>
     <% liste2.push(liste3) %>
-  
-    <% liste.push(liste2) %>
-    <% end %>
-<% end %>
 
-
-<% Section.where(:fondation => false).order(:name).each do |s| %>
-  <% if !s.fondation %>
-    <% liste2 = Array.new %>
-    <% liste2.push(s.name) %>
-    <% liste3 = Array.new %>
-    <% s.chapters.order(:name).each do |c| %>
-      <% liste3.push([c.name, c.id]) %>
-    <% end %>
-    <% liste2.push(liste3) %>
-  
     <% liste.push(liste2) %>
-    <% end %>
+  <% end %>
 <% end %>
 
 <div class="row">
@@ -163,11 +148,11 @@
         <h3> Ajouter un lien </h3>
         <div class="form-group">
         <%= f.label "Prérequis" %>
-        <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true }) %>
+        <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true, :id => "add_form_prerequisite" }) %>
         </div>
         <div class="form-group">
         <%= f.label "Chapitre" %>
-        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true }) %>
+        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true, :id => "add_form_chapter" }) %>
         </div>
         <%= f.submit "Ajouter ce lien", class: "btn btn-primary" %>
       <% end %>
@@ -181,11 +166,11 @@
         <h3> Supprimer un lien </h3>
         <div class="form-group">
         <%= f.label "Prérequis" %>
-        <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true }) %>
+        <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true, :id => "delete_form_prerequisite" }) %>
         </div>
         <div class="form-group">
         <%= f.label "Chapitre" %>
-        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true }) %>
+        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true, :id => "delete_form_chapter" }) %>
         </div>
         <%= f.submit "Supprimer ce lien", class: "btn btn-primary" %>
       <% end %>

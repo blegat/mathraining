@@ -89,7 +89,7 @@ describe "Contest pages" do
       describe "and follows the contest" do
         before { click_link("link_follow") }
         it do
-          should have_content("Vous recevrez dorénavant un e-mail de rappel un jour avant la publication de chaque problème de ce concours.")
+          should have_success_message("Vous recevrez dorénavant un e-mail de rappel un jour avant la publication de chaque problème de ce concours.")
           should have_link("link_unfollow")
         end
         specify { expect(user_with_rating_199.followed_contests.exists?(contest.id)).to eq(true) }
@@ -97,7 +97,7 @@ describe "Contest pages" do
         describe "and unfollows the contest" do
           before { click_link("link_unfollow") }
           it do
-            should have_content("Vous ne recevrez maintenant plus d'e-mail concernant ce concours.")
+            should have_success_message("Vous ne recevrez maintenant plus d'e-mail concernant ce concours.")
             should have_link("link_follow")
           end
           specify { expect(user_with_rating_199.followed_contests.exists?(contest.id)).to eq(false) }
@@ -173,7 +173,7 @@ describe "Contest pages" do
           expect(contest.gold_cutoff).to eq(gold_cutoff)
           expect(contestscore.medal).to eq(2) # Bronze medal for score = 7
         end
-        it { should have_content("Les médailles ont été distribuées !") }
+        it { should have_success_message("Les médailles ont été distribuées !") }
       end
     end
   end
@@ -203,14 +203,14 @@ describe "Contest pages" do
           expect(Contest.order(:id).last.medal).to eq(true)
         end
         it do
-          should have_content("Concours ajouté.")
+          should have_success_message("Concours ajouté.")
           should have_content("Concours ##{newnumber}")
           should have_content(newdescription)
         end
         
         describe "and tries to put it online without a problem" do
           before { click_link "Mettre ce concours en ligne" }
-          it { should have_content("Un concours doit contenir au moins un problème !") }
+          it { should have_error_message("Un concours doit contenir au moins un problème !") }
         end
       end
     end  
@@ -241,7 +241,7 @@ describe "Contest pages" do
           offline_contest.reload
           offline_contestproblem.reload
         end
-        it { should have_content("Concours mis en ligne") }
+        it { should have_success_message("Concours mis en ligne") }
         specify do
           expect(offline_contest.status).to eq(1)
           expect(offline_contestproblem.status).to eq(1)
@@ -259,7 +259,7 @@ describe "Contest pages" do
           offline_contest.reload
           offline_contestproblem.reload
         end
-        it { should have_content("Un concours ne peut être mis en ligne moins d'une heure avant le premier problème.") }
+        it { should have_error_message("Un concours ne peut être mis en ligne moins d'une heure avant le premier problème.") }
         specify do
           expect(offline_contest.status).to eq(0)
           expect(offline_contestproblem.status).to eq(0)

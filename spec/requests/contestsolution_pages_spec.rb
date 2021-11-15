@@ -85,7 +85,7 @@ describe "Contestsolution pages" do
           fill_in "MathInput", with: ""
           click_button "Enregistrer"
         end
-        it { should have_content("Votre solution est vide.") }
+        it { should have_error_message("Votre solution est vide.") }
         specify { expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(0) }
       end
       
@@ -96,7 +96,7 @@ describe "Contestsolution pages" do
           fill_in "MathInput", with: newsolution
           click_button "Enregistrer"
         end
-        it { should have_content("Vous ne pouvez pas enregistrer cette solution.") }
+        it { should have_error_message("Vous ne pouvez pas enregistrer cette solution.") }
         specify { expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(0) }
       end
       
@@ -124,7 +124,7 @@ describe "Contestsolution pages" do
           expect(newcontestsolution.content).to eq(newsolution)
         end
         it do
-          should have_content("Solution enregistrée.")
+          should have_success_message("Solution enregistrée.")
           should have_link("Supprimer la solution")
           should have_button("Enregistrer") # There is a form to edit the solution
         end
@@ -137,7 +137,7 @@ describe "Contestsolution pages" do
             click_button "Enregistrer"
             newcontestsolution.reload
           end
-          it { should have_content("Solution enregistrée.") }
+          it { should have_success_message("Solution enregistrée.") }
           specify { expect(newcontestsolution.content).to eq(newsolution2) }
         end
         
@@ -147,7 +147,7 @@ describe "Contestsolution pages" do
             click_button "Enregistrer"
             newcontestsolution.reload
           end
-          it { should have_content("Votre solution est vide.") }
+          it { should have_error_message("Votre solution est vide.") }
           specify { expect(newcontestsolution.content).to eq(newsolution) }
         end
         
@@ -158,7 +158,7 @@ describe "Contestsolution pages" do
             fill_in "MathInput", with: newsolution2
             click_button "Enregistrer"
           end
-          it { should have_content("Vous ne pouvez pas enregistrer cette solution.") }
+          it { should have_error_message("Vous ne pouvez pas enregistrer cette solution.") }
           specify { expect(newcontestsolution.content).to eq(newsolution) }
         end
         
@@ -168,7 +168,7 @@ describe "Contestsolution pages" do
             contestproblem_running.save
             click_link("Supprimer la solution")
           end
-          it { should have_content("Vous ne pouvez pas supprimer cette solution.") }
+          it { should have_error_message("Vous ne pouvez pas supprimer cette solution.") }
           specify { expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(1) }
         end
       end
