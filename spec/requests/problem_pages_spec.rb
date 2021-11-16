@@ -284,10 +284,8 @@ describe "Problem pages" do
           expect(Problem.order(:id).last.number).to be >= 1000*section.id + 100*newlevel
           expect(Problem.order(:id).last.number).to be < 1000*section.id + 100*(newlevel+1)
           expect(Problem.order(:id).last.online).to eq(false)
-        end
-        it do
-          should have_selector("div", text: newstatement)
-          should have_no_button("Mettre en ligne") # Because no prerequisite
+          expect(page).to have_selector("div", text: newstatement)
+          expect(page).to have_no_button("Mettre en ligne") # Because no prerequisite
         end
       end
       
@@ -298,11 +296,11 @@ describe "Problem pages" do
           fill_in "Niveau", with: newlevel
           click_button "Créer"
         end
-        it do
-          should have_error_message("erreur")
-          should have_selector("h1", text: "Créer un problème")
+        specify do
+          expect(page).to have_error_message("erreur")
+          expect(page).to have_selector("h1", text: "Créer un problème")
+          expect(Problem.order(:id).last.origin).to_not eq(neworigin)
         end
-        specify { expect(Problem.order(:id).last.origin).to_not eq(neworigin) }
       end
     end
     
@@ -324,8 +322,8 @@ describe "Problem pages" do
           expect(offline_problem.level).to eq(newlevel)
           expect(offline_problem.number).to be >= 1000*section.id + 100*newlevel
           expect(offline_problem.number).to be < 1000*section.id + 100*(newlevel+1)
+          expect(page).to have_selector("div", text: newstatement)
         end
-        it { should have_selector("div", text: newstatement) }
       end
       
       describe "and sends with wrong information" do
@@ -336,11 +334,11 @@ describe "Problem pages" do
           click_button "Modifier"
           offline_problem.reload
         end
-        it do
-          should have_error_message("erreur")
-          should have_selector("h1", text: "Modifier")
+        specify do
+          expect(page).to have_error_message("erreur")
+          expect(page).to have_selector("h1", text: "Modifier")
+          expect(offline_problem.origin).to_not eq(neworigin)
         end
-        specify { expect(offline_problem.origin).to_not eq(neworigin) }
       end
     end
   end

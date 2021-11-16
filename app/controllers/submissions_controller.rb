@@ -168,14 +168,14 @@ class SubmissionsController < ApplicationController
 
   # Marquer comme élégant
   def star
-    @submission.star = true
+    @submission.star = true if @submission.user != current_user.sk # Cannot star own solution
     @submission.save
     redirect_to problem_path(@problem, :sub => @submission)
   end
 
   # Marquer comme non élégant
   def unstar
-    @submission.star = false
+    @submission.star = false if @submission.user != current_user.sk # Cannot unstar own solution
     @submission.save
     redirect_to problem_path(@problem, :sub => @submission)
   end
@@ -236,6 +236,7 @@ class SubmissionsController < ApplicationController
     u = @submission.user
     if @submission.status == 2
       @submission.status = 1
+      @submission.star = false
       @submission.save
       nb_corr = Submission.where(:problem => @problem, :user => u, :status => 2).count
       if nb_corr == 0
@@ -260,11 +261,7 @@ class SubmissionsController < ApplicationController
               which = s.id
               resolutiontime = lastcomm.created_at
               usercomm = s.corrections.where("user_id = ? AND created_at < ?", u.id, resolutiontime).last
-              if usercomm.nil?
-                truetime = s.created_at
-              else
-                truetime = usercomm.created_at
-              end
+              truetime = (usercomm.nil? ? s.created_at : usercomm.created_at)
             end
           end
           sp.submission_id = which

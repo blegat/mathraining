@@ -207,7 +207,7 @@
       
       <!-- Si l'étudiant n'a pas encore commencé le test -->
       <% if !current_user.sk.admin? && status == -1 %>
-        <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: current_user.other, style: "margin-top:15px; margin-bottom:5px;", data: { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" } %></center>
+        <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: current_user.other, style: "margin-top:15px; margin-bottom:5px;", data: (Rails.env.test? ? nil : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
       <% end %>
       
       <!-- Si étudiant en test --->

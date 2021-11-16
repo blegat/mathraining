@@ -65,11 +65,11 @@ describe "Actuality pages" do
           fill_in "MathInput", with: newcontent
           click_button "Créer"
         end
-        it do
-          should have_error_message("erreur")
-          should have_selector("h1", text: "Ajouter une actualité")
+        specify do
+          expect(page).to have_error_message("erreur")
+          expect(page).to have_selector("h1", text: "Ajouter une actualité")
+          expect(Actuality.order(:id).last.content).to_not eq(newcontent)
         end
-        specify { expect(Actuality.order(:id).last.content).to_not eq(newcontent) }
       end
     end
     
@@ -95,11 +95,11 @@ describe "Actuality pages" do
           click_button "Modifier"
           actuality.reload
         end
-        it do
-          should have_error_message("erreur")
-          should have_selector("h1", text: "Modifier une actualité")
+        specify do
+          expect(page).to have_error_message("erreur")
+          expect(page).to have_selector("h1", text: "Modifier une actualité")
+          expect(actuality.title).to_not eq(newtitle)
         end
-        specify { expect(actuality.title).to_not eq(newtitle) }
       end
     end
     

@@ -88,19 +88,19 @@ describe "Contest pages" do
       
       describe "and follows the contest" do
         before { click_link("link_follow") }
-        it do
-          should have_success_message("Vous recevrez dorénavant un e-mail de rappel un jour avant la publication de chaque problème de ce concours.")
-          should have_link("link_unfollow")
+        specify do
+          expect(page).to have_success_message("Vous recevrez dorénavant un e-mail de rappel un jour avant la publication de chaque problème de ce concours.")
+          expect(page).to have_link("link_unfollow")
+          expect(user_with_rating_199.followed_contests.exists?(contest.id)).to eq(true)
         end
-        specify { expect(user_with_rating_199.followed_contests.exists?(contest.id)).to eq(true) }
         
         describe "and unfollows the contest" do
           before { click_link("link_unfollow") }
-          it do
-            should have_success_message("Vous ne recevrez maintenant plus d'e-mail concernant ce concours.")
-            should have_link("link_follow")
+          specify do
+            expect(page).to have_success_message("Vous ne recevrez maintenant plus d'e-mail concernant ce concours.")
+            expect(page).to have_link("link_follow")
+            expect(user_with_rating_199.followed_contests.exists?(contest.id)).to eq(false)
           end
-          specify { expect(user_with_rating_199.followed_contests.exists?(contest.id)).to eq(false) }
         end
       end
       
@@ -149,8 +149,8 @@ describe "Contest pages" do
           expect(offline_contest.number).to eq(newnumber)
           expect(offline_contest.description).to eq(newdescription)
           expect(offline_contest.medal).to eq(true)
+          expect(page).to have_content("Concours modifié.")
         end
-        it { should have_content("Concours modifié.") }
       end
     end
     
@@ -172,8 +172,8 @@ describe "Contest pages" do
           expect(contest.silver_cutoff).to eq(silver_cutoff)
           expect(contest.gold_cutoff).to eq(gold_cutoff)
           expect(contestscore.medal).to eq(2) # Bronze medal for score = 7
+          expect(page).to have_success_message("Les médailles ont été distribuées !")
         end
-        it { should have_success_message("Les médailles ont été distribuées !") }
       end
     end
   end
@@ -201,11 +201,9 @@ describe "Contest pages" do
           expect(Contest.order(:id).last.number).to eq(newnumber)
           expect(Contest.order(:id).last.description).to eq(newdescription)
           expect(Contest.order(:id).last.medal).to eq(true)
-        end
-        it do
-          should have_success_message("Concours ajouté.")
-          should have_content("Concours ##{newnumber}")
-          should have_content(newdescription)
+          expect(page).to have_success_message("Concours ajouté.")
+          expect(page).to have_content("Concours ##{newnumber}")
+          expect(page).to have_content(newdescription)
         end
         
         describe "and tries to put it online without a problem" do
@@ -226,14 +224,13 @@ describe "Contest pages" do
     
     describe "visits offline contest page" do
       before { visit contest_path(offline_contest) }
-      it do
-        should have_link("Modifier ce concours")
-        should have_link("Mettre ce concours en ligne")
-        should have_link("Supprimer ce concours")
-        should have_button("Ajouter") # To add an organizer
+      specify do
+        expect(page).to have_link("Modifier ce concours")
+        expect(page).to have_link("Mettre ce concours en ligne")
+        expect(page).to have_link("Supprimer ce concours")
+        expect(page).to have_button("Ajouter") # To add an organizer
+        expect { click_link "Supprimer ce concours" }.to change(Contest, :count).by(-1)
       end
-         
-      specify { expect { click_link "Supprimer ce concours" }.to change(Contest, :count).by(-1) }
 
       describe "and puts it online" do
         before do
@@ -241,8 +238,8 @@ describe "Contest pages" do
           offline_contest.reload
           offline_contestproblem.reload
         end
-        it { should have_success_message("Concours mis en ligne") }
         specify do
+          expect(page).to have_success_message("Concours mis en ligne")
           expect(offline_contest.status).to eq(1)
           expect(offline_contestproblem.status).to eq(1)
           expect(Subject.order(:id).last.category).to eq(category)
@@ -259,8 +256,8 @@ describe "Contest pages" do
           offline_contest.reload
           offline_contestproblem.reload
         end
-        it { should have_error_message("Un concours ne peut être mis en ligne moins d'une heure avant le premier problème.") }
         specify do
+          expect(page).to have_error_message("Un concours ne peut être mis en ligne moins d'une heure avant le premier problème.")
           expect(offline_contest.status).to eq(0)
           expect(offline_contestproblem.status).to eq(0)
         end
@@ -279,10 +276,8 @@ describe "Contest pages" do
           expect(offline_contest.organizers.count).to eq(2)
           expect(Contestorganization.order(:id).last.contest).to eq(offline_contest)
           expect(Contestorganization.order(:id).last.user).to eq(user_with_rating_200)
-        end
-        it do
-          should have_link(user_with_rating_200.name, href: user_path(user_with_rating_200))
-          should have_link("supprimer", href: contestorganization_path(Contestorganization.last))
+          expect(page).to have_link(user_with_rating_200.name, href: user_path(user_with_rating_200))
+          expect(page).to have_link("supprimer", href: contestorganization_path(Contestorganization.last))
         end
       end
       

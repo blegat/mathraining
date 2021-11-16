@@ -86,7 +86,7 @@
   <%= form_tag problem_submission_update_score_path(@problem, @submission), :method => :put, :class => "form-inline", :style => "margin-top:5px;" do %>
     Nouveau score :
     <%= number_field_tag "new_score", @submission.score, min: 0, max: 7 %>
-    <%= submit_tag "Do it !", data: { confirm: "Êtes-vous sûr de vouloir modifier le score obtenu ?"} %>
+    <%= submit_tag "Modifier", data: (Rails.env.test? ? nil : { confirm: "Êtes-vous sûr de vouloir modifier le score obtenu ?"}) %>
   <% end %>
   </span>
   </div>
@@ -152,7 +152,7 @@
 <!-- Repasser la soumission comme erronée -->
 <% if current_user.sk.root? && @submission.status == 2 %>
   <br/><center>
-  <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ? L'utilisateur a peut-être déjà lu les solutions des autres." }, :method => :put, :style => "color:red;" %>
+  <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? nil : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ? L'utilisateur a peut-être déjà lu les solutions des autres." }), :method => :put, :style => "color:red;" %>
   </center>
 <% end %>
 

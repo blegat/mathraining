@@ -31,11 +31,9 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it do
-          should have_content("Vous avez résolu cet exercice du premier coup !")
-          should have_content(exercise.explanation)
-        end
         specify do
+          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+          expect(page).to have_content(exercise.explanation)
           expect(user.rating).to eq(rating_before + exercise.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
         end
@@ -47,11 +45,9 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it do
-          should have_content("Votre réponse (#{(exercise.answer+1).to_i}) est erronée. Vous avez déjà commis 1 erreur.")
-          should have_no_content(exercise.explanation)
-        end
         specify do
+          expect(page).to have_content("Votre réponse (#{(exercise.answer+1).to_i}) est erronée. Vous avez déjà commis 1 erreur.")
+          expect(page).to have_no_content(exercise.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
         end
@@ -62,11 +58,9 @@ describe "Solvedquestion pages" do
             click_button "Soumettre"
             user.reload
           end
-          it do
-            should have_content("Vous avez résolu cet exercice après 1 erreur.")
-            should have_content(exercise.explanation)
-          end
           specify do
+            expect(page).to have_content("Vous avez résolu cet exercice après 1 erreur.")
+            expect(page).to have_content(exercise.explanation)
             expect(user.rating).to eq(rating_before + exercise.value)
             expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
           end
@@ -102,11 +96,9 @@ describe "Solvedquestion pages" do
                 click_button "Soumettre"
                 user.reload
               end
-              it do 
-                should have_content("Vous avez résolu cet exercice après 3 erreurs.")
-                should have_content(exercise.explanation)
-              end
-              specify do
+              specify do 
+                expect(page).to have_content("Vous avez résolu cet exercice après 3 erreurs.")
+                expect(page).to have_content(exercise.explanation)
                 expect(user.rating).to eq(rating_before + exercise.value)
                 expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
               end
@@ -125,11 +117,9 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it do
-          should have_content("Vous avez résolu cet exercice du premier coup !")
-          should have_content(exercise_decimal.explanation)
-        end
         specify do
+          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+          expect(page).to have_content(exercise_decimal.explanation)
           expect(user.rating).to eq(rating_before + exercise_decimal.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise_decimal.value)
         end
@@ -141,11 +131,9 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it do
-          should have_content("Votre réponse (#{(exercise_decimal.answer+0.002).to_s}) est erronée. Vous avez déjà commis 1 erreur.")
-          should have_no_content(exercise_decimal.explanation)
-        end
         specify do
+          expect(page).to have_content("Votre réponse (#{(exercise_decimal.answer+0.002).to_s}) est erronée. Vous avez déjà commis 1 erreur.")
+          expect(page).to have_no_content(exercise_decimal.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
         end
@@ -161,11 +149,9 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it do
-          should have_content("Vous avez résolu cet exercice du premier coup !")
-          should have_content(qcm.explanation)
-        end
         specify do
+          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+          expect(page).to have_content(qcm.explanation)
           expect(user.rating).to eq(rating_before + qcm.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm.value)
         end
@@ -177,11 +163,9 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it do
-          should have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
-          should have_no_content(qcm.explanation)
-        end
         specify do
+          expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
+          expect(page).to have_no_content(qcm.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before)
         end
@@ -217,11 +201,9 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it do
-          should have_content("Vous avez résolu cet exercice du premier coup !")
-          should have_content(qcm_multiple.explanation)
-        end
         specify do
+          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+          expect(page).to have_content(qcm_multiple.explanation)
           expect(user.rating).to eq(rating_before + qcm_multiple.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm_multiple.value)
         end
@@ -234,11 +216,9 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it do
-          should have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
-          should have_no_content(qcm_multiple.explanation)
-        end
         specify do
+          expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
+          expect(page).to have_no_content(qcm_multiple.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
         end

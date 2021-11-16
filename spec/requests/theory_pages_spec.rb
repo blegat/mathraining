@@ -48,11 +48,11 @@ describe "Theory pages" do
           online_theory2.reload
           user.reload
         end
-        it do
-          should have_no_button("Marquer comme lu")
-          should have_button("Marquer comme non lu")
+        specify do
+          expect(page).to have_no_button("Marquer comme lu")
+          expect(page).to have_button("Marquer comme non lu")
+          expect(user.theories.exists?(online_theory2.id)).to eq(true)
         end
-        specify { expect(user.theories.exists?(online_theory2.id)).to eq(true) }
         
         describe "and mark it back as unread" do
           before do
@@ -60,11 +60,11 @@ describe "Theory pages" do
             online_theory2.reload
             user.reload
           end
-          it do
-            should have_button "Marquer comme lu"
-            should have_no_button "Marquer comme non lu"
+          specify do
+            expect(page).to have_button "Marquer comme lu"
+            expect(page).to have_no_button "Marquer comme non lu"
+            expect(user.theories.exists?(online_theory2.id)).to eq(false)
           end
-          specify { expect(user.theories.exists?(online_theory2.id)).to eq(false) }
         end
       end
     end
@@ -90,14 +90,13 @@ describe "Theory pages" do
     
     describe "visits online theory" do
       before { visit chapter_path(chapter, :type => 1, :which => online_theory) }
-      it do
-        should have_selector("h3", text: online_theory.title)
-        should have_selector("a", text: "Modifier ce point théorique")
-        should have_selector("a", text: "Supprimer ce point théorique")
-        should have_selector("a", text: "point théorique") # Link to add a new one
+      specify do
+        expect(page).to have_selector("h3", text: online_theory.title)
+        expect(page).to have_selector("a", text: "Modifier ce point théorique")
+        expect(page).to have_selector("a", text: "Supprimer ce point théorique")
+        expect(page).to have_selector("a", text: "point théorique") # Link to add a new one
+        expect { click_link "Supprimer ce point théorique" }.to change(Theory, :count).by(-1)
       end
-      
-      specify { expect { click_link "Supprimer ce point théorique" }.to change(Theory, :count).by(-1) }
     end
     
     describe "visits offline theory" do
@@ -132,10 +131,8 @@ describe "Theory pages" do
         specify do
           expect(online_theory.position).to eq(2)
           expect(online_theory2.position).to eq(1)
-        end
-        it do
-          should have_link("bas") # Because position 2 out of >= 3
-          should have_link("haut")
+          expect(page).to have_link("bas") # Because position 2 out of >= 3
+          expect(page).to have_link("haut")
         end
         
         describe "and modifies it back" do
@@ -167,10 +164,8 @@ describe "Theory pages" do
           expect(Theory.order(:id).last.content).to eq(newcontent)
           expect(Theory.order(:id).last.position).to eq(1)
           expect(Theory.order(:id).last.online).to eq(false)
-        end
-        it do
-          should have_selector("h3", text: newtitle)
-          should have_button("Mettre en ligne")
+          expect(page).to have_selector("h3", text: newtitle)
+          expect(page).to have_button("Mettre en ligne")
         end
         
         describe "and adds a second theory" do
@@ -185,8 +180,8 @@ describe "Theory pages" do
             expect(Theory.order(:id).last.content).to eq(newcontent2)
             expect(Theory.order(:id).last.position).to eq(2)
             expect(Theory.order(:id).last.online).to eq(false)
+            expect(page).to have_selector("h3", text: newtitle2)
           end
-          it { should have_selector("h3", text: newtitle2) }
         end
       end
       
@@ -196,11 +191,11 @@ describe "Theory pages" do
           fill_in "MathInput", with: newcontent
           click_button "Créer"
         end
-        it do
-          should have_error_message("erreur")
-          should have_selector("h1", text: "Créer un point théorique")
+        specify do
+          expect(page).to have_error_message("erreur")
+          expect(page).to have_selector("h1", text: "Créer un point théorique")
+          expect(Theory.order(:id).last.content).to_not eq(newcontent)
         end
-        specify { expect(Theory.order(:id).last.content).to_not eq(newcontent) }
       end
     end
     
@@ -228,11 +223,11 @@ describe "Theory pages" do
           click_button "Modifier"
           online_theory.reload
         end
-        it do
-          should have_content("erreur")
-          should have_selector("h1", text: "Modifier un point théorique")
+        specify do
+          expect(page).to have_content("erreur")
+          expect(page).to have_selector("h1", text: "Modifier un point théorique")
+          expect(online_theory.title).to_not eq(newtitle2)
         end
-        specify { expect(online_theory.title).to_not eq(newtitle2) }
       end
     end
   end

@@ -133,24 +133,24 @@ describe "Virtualtest pages" do
               fill_in "MathInput", with: newsolution
               click_button "Enregistrer cette solution"
             end
-            specify { expect(problem.submissions.order(:id).last.content).to eq(newsolution) }
-            it do
-              should have_success_message("Votre solution a bien été enregistrée.")
-              should have_content(newsolution)
-              should have_link("Modifier la solution")
-              should have_link("Supprimer la solution")
+            specify do
+              expect(problem.submissions.order(:id).last.content).to eq(newsolution)
+              expect(page).to have_success_message("Votre solution a bien été enregistrée.")
+              expect(page).to have_content(newsolution)
+              expect(page).to have_link("Modifier la solution")
+              expect(page).to have_link("Supprimer la solution")
+              expect { click_link "Supprimer la solution" }.to change{problem.submissions.count}.by(-1)
             end
-            specify { expect { click_link "Supprimer la solution" }.to change{problem.submissions.count}.by(-1) }
             
             describe "and modifies the solution" do
               before do
                 fill_in "MathInput", with: newsolution2
                 click_button "Enregistrer cette solution"
               end
-              specify { expect(problem.submissions.order(:id).last.content).to eq(newsolution2) }
-              it do
-                should have_success_message("Votre solution a bien été modifiée.")
-                should have_content(newsolution2)
+              specify do
+                expect(problem.submissions.order(:id).last.content).to eq(newsolution2)
+                expect(page).to have_success_message("Votre solution a bien été modifiée.")
+                expect(page).to have_content(newsolution2)
               end
             end
             
@@ -219,17 +219,17 @@ describe "Virtualtest pages" do
           fill_in "virtualtest[duration]", with: duration
           click_button "Créer"
         end
-        specify { expect(Virtualtest.order(:id).last.duration).to eq(duration) }
-        it do
-          should have_success_message("Test virtuel ajouté.")
-          should have_selector("h1", text: "Tests virtuels")
-          should have_content("(en construction)")
-          should have_link("Modifier ce test")
-          should have_link("Supprimer ce test")
-          should have_no_button("Mettre en ligne")
-          should have_content("(Au moins un problème nécessaire)")
+        specify do
+          expect(Virtualtest.order(:id).last.duration).to eq(duration)
+          expect(page).to have_success_message("Test virtuel ajouté.")
+          expect(page).to have_selector("h1", text: "Tests virtuels")
+          expect(page).to have_content("(en construction)")
+          expect(page).to have_link("Modifier ce test")
+          expect(page).to have_link("Supprimer ce test")
+          expect(page).to have_no_button("Mettre en ligne")
+          expect(page).to have_content("(Au moins un problème nécessaire)")
+          expect { click_link "Supprimer ce test" }.to change(Virtualtest, :count).by(-1)
         end
-        specify { expect { click_link "Supprimer ce test" }.to change(Virtualtest, :count).by(-1) }
         
         describe "and visits modification page" do
           before { click_link "Modifier ce test" }
@@ -240,8 +240,10 @@ describe "Virtualtest pages" do
               fill_in "virtualtest[duration]", with: duration2
               click_button "Modifier"
             end
-            specify { expect(Virtualtest.order(:id).last.duration).to eq(duration2) }
-            it { should have_success_message("Test virtuel modifié.") }
+            specify do
+              expect(Virtualtest.order(:id).last.duration).to eq(duration2)
+              expect(page).to have_success_message("Test virtuel modifié.")
+            end
           end
         end
       end
@@ -253,19 +255,21 @@ describe "Virtualtest pages" do
         virtualtest.save
         visit virtualtests_path
       end
-      it do
-        should have_button("Mettre en ligne")
-        should have_link("Supprimer ce test")
+      specify do
+        expect(page).to have_button("Mettre en ligne")
+        expect(page).to have_link("Supprimer ce test")
+        expect { click_link "Supprimer ce test" }.to change(Virtualtest, :count).by(-1)
       end
-      specify { expect { click_link "Supprimer ce test" }.to change(Virtualtest, :count).by(-1) }
       
       describe "and puts it online" do
         before do
           click_button "Mettre en ligne"
           virtualtest.reload
         end
-        it { should have_success_message("Test virtuel mis en ligne.") }
-        specify { expect(virtualtest.online).to eq(true) }
+        specify do
+          expect(page).to have_success_message("Test virtuel mis en ligne.")
+          expect(virtualtest.online).to eq(true)
+        end
       end
       
       describe "and puts it online while an offline problem was added" do
@@ -275,8 +279,10 @@ describe "Virtualtest pages" do
           click_button "Mettre en ligne"
           virtualtest.reload
         end
-        it { should have_no_content("Test virtuel mis en ligne.") }
-        specify { expect(virtualtest.online).to eq(false) }
+        specify do
+          expect(page).to have_no_content("Test virtuel mis en ligne.")
+          expect(virtualtest.online).to eq(false)
+        end
       end
     end
     
@@ -307,7 +313,7 @@ describe "Virtualtest pages" do
       before do
         visit virtualtests_path
         click_button "Commencer ce test"
-        accept_browser_dialog
+        # No dialog box to accept in test environment: it was deactivated because we had issues with testing
         visit virtualtest_path(virtualtest, :p => problem)
         click_button "Écrire une solution"
         wait_for_ajax

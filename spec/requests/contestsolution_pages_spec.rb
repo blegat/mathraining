@@ -85,8 +85,10 @@ describe "Contestsolution pages" do
           fill_in "MathInput", with: ""
           click_button "Enregistrer"
         end
-        it { should have_error_message("Votre solution est vide.") }
-        specify { expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(0) }
+        specify do
+          expect(page).to have_error_message("Votre solution est vide.")
+          expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(0)
+        end
       end
       
       describe "and writes a solution too late" do
@@ -96,8 +98,10 @@ describe "Contestsolution pages" do
           fill_in "MathInput", with: newsolution
           click_button "Enregistrer"
         end
-        it { should have_error_message("Vous ne pouvez pas enregistrer cette solution.") }
-        specify { expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(0) }
+        specify do
+          expect(page).to have_error_message("Vous ne pouvez pas enregistrer cette solution.")
+          expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(0)
+        end
       end
       
       describe "and writes two solutions at the same time" do # Can happen when someone has opened the problem in two windows
@@ -106,8 +110,8 @@ describe "Contestsolution pages" do
           fill_in "MathInput", with: newsolution
           click_button "Enregistrer"
         end
-        it { should have_content("Solution enregistrée.") }
         specify do
+          expect(page).to have_content("Solution enregistrée.")
           expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(1)
           expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).first.content).to eq(newsolution)
         end
@@ -122,11 +126,9 @@ describe "Contestsolution pages" do
         specify do
           expect(newcontestsolution).not_to eq(nil)
           expect(newcontestsolution.content).to eq(newsolution)
-        end
-        it do
-          should have_success_message("Solution enregistrée.")
-          should have_link("Supprimer la solution")
-          should have_button("Enregistrer") # There is a form to edit the solution
+          expect(page).to have_success_message("Solution enregistrée.")
+          expect(page).to have_link("Supprimer la solution")
+          expect(page).to have_button("Enregistrer") # There is a form to edit the solution
         end
         
         specify { expect { click_link "Supprimer la solution" }.to change{contestproblem_running.contestsolutions.count}.by(-1) }
@@ -137,8 +139,10 @@ describe "Contestsolution pages" do
             click_button "Enregistrer"
             newcontestsolution.reload
           end
-          it { should have_success_message("Solution enregistrée.") }
-          specify { expect(newcontestsolution.content).to eq(newsolution2) }
+          specify do
+            expect(page).to have_success_message("Solution enregistrée.")
+            expect(newcontestsolution.content).to eq(newsolution2)
+          end
         end
         
         describe "and edits with an empty solution" do
@@ -147,8 +151,10 @@ describe "Contestsolution pages" do
             click_button "Enregistrer"
             newcontestsolution.reload
           end
-          it { should have_error_message("Votre solution est vide.") }
-          specify { expect(newcontestsolution.content).to eq(newsolution) }
+          specify do
+            expect(page).to have_error_message("Votre solution est vide.")
+            expect(newcontestsolution.content).to eq(newsolution)
+          end
         end
         
         describe "and edits the solution too late" do
@@ -158,8 +164,10 @@ describe "Contestsolution pages" do
             fill_in "MathInput", with: newsolution2
             click_button "Enregistrer"
           end
-          it { should have_error_message("Vous ne pouvez pas enregistrer cette solution.") }
-          specify { expect(newcontestsolution.content).to eq(newsolution) }
+          specify do
+            expect(page).to have_error_message("Vous ne pouvez pas enregistrer cette solution.")
+            expect(newcontestsolution.content).to eq(newsolution)
+          end
         end
         
         describe "and deletes the solution too late" do
@@ -168,8 +176,10 @@ describe "Contestsolution pages" do
             contestproblem_running.save
             click_link("Supprimer la solution")
           end
-          it { should have_error_message("Vous ne pouvez pas supprimer cette solution.") }
-          specify { expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(1) }
+          specify do
+            expect(page).to have_error_message("Vous ne pouvez pas supprimer cette solution.")
+            expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(1)
+          end
         end
       end
     end

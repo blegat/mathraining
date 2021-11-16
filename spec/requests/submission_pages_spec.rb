@@ -5,16 +5,21 @@ describe "Submission pages" do
 
   subject { page }
 
+  let(:root) { FactoryGirl.create(:root) }
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user, rating: 200) }
+  let(:other_user) { FactoryGirl.create(:user, rating: 200) }
   let(:good_corrector) { FactoryGirl.create(:corrector) }
   let(:bad_corrector) { FactoryGirl.create(:corrector) }
-  let!(:problem) { FactoryGirl.create(:problem, online: true) }
-  let!(:problem_with_waiting_submission) { FactoryGirl.create(:problem, online: true) }
-  let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem_with_waiting_submission, user: user, status: 0) } 
   
-  let!(:good_corrector_submission) { FactoryGirl.create(:submission, problem: problem_with_waiting_submission, user: good_corrector, status: 2) }
-  let!(:good_corrector_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_waiting_submission, submission: good_corrector_submission, user: good_corrector) }
+  let!(:problem) { FactoryGirl.create(:problem, online: true) }
+  let!(:problem_with_submissions) { FactoryGirl.create(:problem, online: true) }
+  
+  let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: user, status: 0) } 
+  let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user, status: 1) }
+  
+  let!(:good_corrector_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: 2) }
+  let!(:good_corrector_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_corrector_submission, user: good_corrector) }
   
   let(:newsubmission) { "Voici ma belle soumission." }
   let(:newcorrection) { "Voici ma belle correction." }
@@ -31,7 +36,7 @@ describe "Submission pages" do
     before { sign_in user }
 
     describe "visits problem" do
-      before { visit problem_path(problem.id) }
+      before { visit problem_path(problem) }
       it do
         should have_selector("h1", text: "Problème ##{problem.number}")
         should have_selector("div", text: problem.statement)
@@ -47,6 +52,14 @@ describe "Submission pages" do
           should have_button("Enregistrer comme brouillon")
         end
         
+        describe "and sends new empty submission" do
+          before do
+            fill_in "MathInput", with: ""
+            click_button "Soumettre cette solution"
+          end
+          it { should have_error_message("Votre soumission est vide.") }
+        end
+        
         describe "and sends new submission" do
           before do
             fill_in "MathInput", with: newsubmission
@@ -55,10 +68,8 @@ describe "Submission pages" do
           specify do
             expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
             expect(problem.submissions.order(:id).last.status).to eq(0)
-          end
-          it do
-            should have_selector("h3", text: "Soumission (en attente de correction)")
-            should have_selector("div", text: newsubmission)
+            expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
+            expect(page).to have_selector("div", text: newsubmission)
           end
         end
         
@@ -70,12 +81,10 @@ describe "Submission pages" do
           specify do
             expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
             expect(problem.submissions.order(:id).last.status).to eq(-1)
-          end
-          it do
-            should have_selector("h3", text: "Nouvelle soumission")
-            should have_button("Soumettre cette solution")
-            should have_button("Enregistrer le brouillon")
-            should have_button("Supprimer ce brouillon")
+            expect(page).to have_selector("h3", text: "Nouvelle soumission")
+            expect(page).to have_button("Soumettre cette solution")
+            expect(page).to have_button("Enregistrer le brouillon")
+            expect(page).to have_button("Supprimer ce brouillon")
           end
           
           specify { expect { click_button "Supprimer ce brouillon" }.to change(Submission, :count).by(-1) }
@@ -88,8 +97,8 @@ describe "Submission pages" do
             specify do
               expect(problem.submissions.order(:id).last.content).to eq(newsubmission2)
               expect(problem.submissions.order(:id).last.status).to eq(-1)
+              expect(page).to have_selector("h3", text: "Nouvelle soumission")
             end
-            it { should have_selector("h3", text: "Nouvelle soumission") }
           end
           
           describe "and sends the draft as submission" do
@@ -100,10 +109,8 @@ describe "Submission pages" do
             specify do
               expect(problem.submissions.order(:id).last.content).to eq(newsubmission2)
               expect(problem.submissions.order(:id).last.status).to eq(0)
-            end
-            it do
-              should have_selector("h3", text: "Soumission (en attente de correction)")
-              should have_selector("div", text: newsubmission2)
+              expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
+              expect(page).to have_selector("div", text: newsubmission2)
             end
           end
         end
@@ -119,12 +126,12 @@ describe "Submission pages" do
       before { visit allnewsub_path }
       it do
         should have_selector("h1", text: "Soumissions")
-        should have_no_link(user.name, href: user_path(user.id))
+        should have_no_link(user.name, href: user_path(user))
       end
     end
      
     describe "visits waiting submission" do
-      before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission.id) }
+      before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
       it do
         should have_no_selector("h3", text: "Soumission (en attente de correction)")
         should have_no_selector("div", text: waiting_submission.content)
@@ -145,169 +152,173 @@ describe "Submission pages" do
     end
     
     describe "visits waiting submission" do
-      before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) }
+      before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
       it do
         should have_selector("h3", text: "Soumission (en attente de correction)")
         should have_selector("div", text: waiting_submission.content)
         should have_button("Poster et refuser la soumission", disabled: true) # Because not reserved
         should have_button("Poster et accepter la soumission", disabled: true) # Because not reserved
       end
+    end
       
-      describe "and reserves it (fictively)" do
+    describe "visits reserved waiting submission" do
+      before do
+        Following.create(user: good_corrector, submission: waiting_submission, read: true, kind: 0)
+        visit problem_path(problem_with_submissions, :sub => waiting_submission) # Reload
+      end
+      it do
+        should have_button("Poster et refuser la soumission")
+        should have_button("Poster et accepter la soumission")
+      end
+      
+      describe "and accepts it" do
         before do
-          f = Following.new
-          f.user = good_corrector
-          f.submission = waiting_submission
-          f.read = true
-          f.kind = 0
-          f.save
-          visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) # Reload
+          fill_in "MathInput", with: newcorrection
+          click_button "Poster et accepter la soumission"
+          waiting_submission.reload
         end
-        it do
-          should have_button("Poster et refuser la soumission")
-          should have_button("Poster et accepter la soumission")
-        end
-        
-        describe "and accepts it" do
-          before do
-            fill_in "MathInput", with: newcorrection
-            click_button "Poster et accepter la soumission"
-            waiting_submission.reload
-          end
-          specify do
-            expect(waiting_submission.status).to eq(2)
-            expect(waiting_submission.corrections.last.content).to eq(newcorrection)
-          end
-          it do
-            should have_selector("h3", text: "Soumission (correcte)")
-            should have_selector("div", text: newcorrection)
-            should have_link("0", href: allnewsub_path) # no more waiting submission
-          end
+        specify do
+          expect(waiting_submission.status).to eq(2)
+          expect(waiting_submission.corrections.last.content).to eq(newcorrection)
+          expect(page).to have_selector("h3", text: "Soumission (correcte)")
+          expect(page).to have_selector("div", text: newcorrection)
+          expect(page).to have_link("0", href: allnewsub_path) # no more waiting submission
+          expect(page).to have_link("Étoiler cette solution")
         end
         
-        describe "and rejects it" do
+        describe "and gives a star" do
           before do
-            fill_in "MathInput", with: newcorrection
-            click_button "Poster et refuser la soumission"
+            click_link "Étoiler cette solution"
             waiting_submission.reload
           end
-          specify do
-            expect(waiting_submission.status).to eq(1)
-            expect(waiting_submission.corrections.last.content).to eq(newcorrection)
+          specify { expect(waiting_submission.star).to eq(true) }
+          
+          describe "and removes the star" do
+            before do
+              click_link "Ne plus étoiler cette solution"
+              waiting_submission.reload
+            end
+            specify { expect(waiting_submission.star).to eq(false) }
           end
-          it do
-            should have_selector("h3", text: "Soumission (erronée)")
-            should have_selector("div", text: newcorrection)
-            should have_link("0", href: allnewsub_path) # no more waiting submission
+        end
+      end
+      
+      describe "and rejects it" do
+        before do
+          fill_in "MathInput", with: newcorrection
+          click_button "Poster et refuser la soumission"
+          waiting_submission.reload
+        end
+        specify do
+          expect(waiting_submission.status).to eq(1)
+          expect(waiting_submission.corrections.last.content).to eq(newcorrection)
+          expect(page).to have_selector("h3", text: "Soumission (erronée)")
+          expect(page).to have_selector("div", text: newcorrection)
+          expect(page).to have_link("0", href: allnewsub_path) # no more waiting submission
+        end
+        
+        describe "and user" do
+          before do
+            sign_out
+            sign_in user
+          end
+          it { should have_link("1", href: notifs_show_path) }
+          
+          describe "visits answers page" do
+            before { visit notifs_show_path }
+            it do
+              should have_selector("h1", text: "Nouvelles réponses")
+              should have_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
+            end
           end
           
-          describe "and user" do
-            before do
-              sign_out
-              sign_in user
+          describe "reads correction" do
+            before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
+            it do
+              should have_selector("h3", text: "Soumission (erronée)")
+              should have_selector("div", text: newcorrection)
+              should have_selector("div", text: "Votre solution est erronée.")
+              should have_selector("h4", text: "Poster un commentaire")
+              should have_no_link(href: notifs_show_path) # no more notification
             end
-            it { should have_link("1", href: notifs_show_path) }
             
             describe "visits answers page" do
               before { visit notifs_show_path }
               it do
                 should have_selector("h1", text: "Nouvelles réponses")
-                should have_link("Voir", href: problem_path(problem_with_waiting_submission, :sub => waiting_submission))
+                should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
               end
             end
             
-            describe "reads correction" do
-              before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) }
-              it do
-                should have_selector("h3", text: "Soumission (erronée)")
-                should have_selector("div", text: newcorrection)
-                should have_selector("div", text: "Votre solution est erronée.")
-                should have_selector("h4", text: "Poster un commentaire")
-                should have_no_link(href: notifs_show_path) # no more notification
+            describe "and answers" do
+              before do
+                fill_in "MathInput", with: newanswer
+                click_button "Poster"
+                waiting_submission.reload
+              end
+              specify do
+                expect(waiting_submission.status).to eq(3)
+                expect(waiting_submission.corrections.last.content).to eq(newanswer)
+                expect(page).to have_selector("h3", text: "Soumission (erronée)")
+                expect(page).to have_selector("div", text: newanswer)
               end
               
-              describe "visits answers page" do
-                before { visit notifs_show_path }
-                it do
-                  should have_selector("h1", text: "Nouvelles réponses")
-                  should have_no_link("Voir", href: problem_path(problem_with_waiting_submission, :sub => waiting_submission))
-                end
-              end
-              
-              describe "and answers" do
+              describe "and corrector" do
                 before do
-                  fill_in "MathInput", with: newanswer
-                  click_button "Poster"
-                  waiting_submission.reload
-                end
-                specify do
-                  expect(waiting_submission.status).to eq(3)
-                  expect(waiting_submission.corrections.last.content).to eq(newanswer)
+                  sign_out
+                  sign_in good_corrector
                 end
                 it do
-                  should have_selector("h3", text: "Soumission (erronée)")
-                  should have_selector("div", text: newanswer)
+                  should have_link("0", href: allnewsub_path)
+                  should have_link("1", href: allmynewsub_path)
                 end
                 
-                describe "and corrector" do
-                  before do
-                    sign_out
-                    sign_in good_corrector
-                  end
+                describe "visits comments page" do
+                  before { visit allmynewsub_path }
                   it do
-                    should have_link("0", href: allnewsub_path)
-                    should have_link("1", href: allmynewsub_path)
+                    should have_selector("h1", text: "Commentaires")
+                    should have_link(user.name, href: user_path(user))
+                  end
+                end
+                
+                describe "reads answer" do
+                  before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
+                  it do
+                    should have_selector("h3", text: "Soumission (erronée)")
+                    should have_selector("div", text: newanswer)
+                    should have_button("Poster et laisser la soumission comme erronée")
+                    should have_button("Poster et accepter la soumission")
+                    should have_link("Marquer comme lu")
+                    should have_no_link("Marquer comme non lu")
                   end
                   
-                  describe "visits comments page" do
-                    before { visit allmynewsub_path }
+                  describe "and marks as read" do
+                    before { click_link "Marquer comme lu" }
                     it do
-                      should have_selector("h1", text: "Commentaires")
-                      should have_link(user.name, href: user_path(user))
+                      should have_link("Marquer comme non lu")
+                      should have_no_link("Marquer comme lu")
+                    end
+                    
+                    describe "and marks as unread" do
+                      before { click_link "Marquer comme non lu" }
+                      it do
+                        should have_link("Marquer comme lu")
+                        should have_no_link("Marquer comme non lu")
+                      end
                     end
                   end
                   
-                  describe "reads answer" do
-                    before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) }
-                    it do
-                      should have_selector("h3", text: "Soumission (erronée)")
-                      should have_selector("div", text: newanswer)
-                      should have_button("Poster et laisser la soumission comme erronée")
-                      should have_button("Poster et accepter la soumission")
-                      should have_link("Marquer comme lu")
-                      should have_no_link("Marquer comme non lu")
+                  describe "and accepts it" do
+                    before do
+                      fill_in "MathInput", with: newcorrection2
+                      click_button "Poster et accepter la soumission"
+                      waiting_submission.reload
                     end
-                    
-                    describe "and marks as read" do
-                      before { click_link "Marquer comme lu" }
-                      it do
-                        should have_link("Marquer comme non lu")
-                        should have_no_link("Marquer comme lu")
-                      end
-                      
-                      describe "and marks as unread" do
-                        before { click_link "Marquer comme non lu" }
-                        it do
-                          should have_link("Marquer comme lu")
-                          should have_no_link("Marquer comme non lu")
-                        end
-                      end
-                    end
-                    
-                    describe "and accepts it" do
-                      before do
-                        fill_in "MathInput", with: newcorrection2
-                        click_button "Poster et accepter la soumission"
-                        waiting_submission.reload
-                      end
-                      specify do
-                        expect(waiting_submission.status).to eq(2)
-                        expect(waiting_submission.corrections.last.content).to eq(newcorrection2)
-                      end
-                      it do
-                        should have_selector("h3", text: "Soumission (correcte)")
-                        should have_selector("div", text: newcorrection2)
-                      end
+                    specify do
+                      expect(waiting_submission.status).to eq(2)
+                      expect(waiting_submission.corrections.last.content).to eq(newcorrection2)
+                      expect(page).to have_selector("h3", text: "Soumission (correcte)")
+                      expect(page).to have_selector("div", text: newcorrection2)
                     end
                   end
                 end
@@ -321,7 +332,7 @@ describe "Submission pages" do
     # -- TESTS THAT REQUIRE JAVASCRIPT --
     
     describe "wants to correct a submission", :js => true do
-      before { visit problem_path(problem_with_waiting_submission, :sub => waiting_submission) }
+      before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
       it do
         should have_selector("h3", text: "Soumission (en attente de correction)")
         should have_selector("div", text: waiting_submission.content)
@@ -338,17 +349,17 @@ describe "Submission pages" do
           f.read = true
           f.kind = 0
           f.save
-          visit problem_path(problem_with_waiting_submission, :sub => waiting_submission)
+          visit problem_path(problem_with_submissions, :sub => waiting_submission)
           f.user = admin
           f.save
           click_button "Annuler ma réservation"
           wait_for_ajax
           waiting_submission.reload
         end
-        it { should have_content("Une erreur est survenue.") }
         specify do
           expect(waiting_submission.followings.count).to eq(1)
           expect(waiting_submission.followings.first.user).to eq(admin)
+          expect(page).to have_content("Une erreur est survenue.")
         end
       end
       
@@ -364,14 +375,12 @@ describe "Submission pages" do
           wait_for_ajax
           waiting_submission.reload
         end
-        it do
-          should have_content("Cette soumission est en train d'être corrigée par #{admin.name}.")
-          should have_no_button("Réserver cette soumission")
-          should have_no_button("Annuler ma réservation")
-          should have_button("Poster et refuser la soumission", disabled: true)
-          should have_button("Poster et accepter la soumission", disabled: true)
-        end
         specify do
+          expect(page).to have_content("Cette soumission est en train d'être corrigée par #{admin.name}.")
+          expect(page).to have_no_button("Réserver cette soumission")
+          expect(page).to have_no_button("Annuler ma réservation")
+          expect(page).to have_button("Poster et refuser la soumission", disabled: true)
+          expect(page).to have_button("Poster et accepter la soumission", disabled: true)
           expect(waiting_submission.followings.count).to eq(1)
           expect(waiting_submission.followings.first.user).to eq(admin)
         end
@@ -383,13 +392,11 @@ describe "Submission pages" do
           wait_for_ajax
           waiting_submission.reload
         end
-        it do
-          should have_content("Vous avez réservé cette soumission pour la corriger.")
-          should have_button("Annuler ma réservation")
-          should have_button("Poster et refuser la soumission")
-          should have_button("Poster et accepter la soumission")
-        end
         specify do
+          expect(page).to have_content("Vous avez réservé cette soumission pour la corriger.")
+          expect(page).to have_button("Annuler ma réservation")
+          expect(page).to have_button("Poster et refuser la soumission")
+          expect(page).to have_button("Poster et accepter la soumission")
           expect(waiting_submission.followings.count).to eq(1)
           expect(waiting_submission.followings.first.user).to eq(good_corrector)
         end
@@ -400,14 +407,109 @@ describe "Submission pages" do
             wait_for_ajax
             waiting_submission.reload
           end
-          it do
-            should have_content("Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !")
-            should have_button("Réserver cette soumission")
-            should have_no_button("Annuler ma réservation")
-            should have_button("Poster et refuser la soumission", disabled: true)
-            should have_button("Poster et accepter la soumission", disabled: true)
+          specify do
+            expect(page).to have_content("Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !")
+            expect(page).to have_button("Réserver cette soumission")
+            expect(page).to have_no_button("Annuler ma réservation")
+            expect(page).to have_button("Poster et refuser la soumission", disabled: true)
+            expect(page).to have_button("Poster et accepter la soumission", disabled: true)
+            expect(waiting_submission.followings.count).to eq(0)
           end
-          specify { expect(waiting_submission.followings.count).to eq(0) }
+        end
+      end
+    end
+  end
+  
+  describe "root" do
+    before { sign_in root }
+     
+    describe "visits wrong submission" do
+      before { visit problem_path(problem_with_submissions, :sub => wrong_submission) }
+      specify do
+        expect(page).to have_link("Supprimer cette soumission")
+        expect(page).to have_link("Marquer comme plagiat")
+        expect { click_link("Marquer comme plagiat") and wrong_submission.reload }.to change{wrong_submission.status}.from(1).to(4)
+        expect { click_link("Supprimer cette soumission") }.to change{problem_with_submissions.submissions.count}.by(-1)
+      end
+    end
+    
+    describe "marks a solution as wrong" do
+      let!(:rating_before) { good_corrector.rating }
+    
+      describe "when it was the only correct solution" do
+        before do
+          visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
+          click_link "Marquer comme erronée"
+          good_corrector_submission.reload
+          good_corrector.reload
+        end
+        specify do
+          expect(good_corrector_submission.status).to eq(1)
+          expect(good_corrector.rating).to eq(rating_before - problem_with_submissions.value)
+          expect(Solvedproblem.where(:user => good_corrector, :problem => problem_with_submissions).count).to eq(0)
+        end
+      end
+    
+      describe "when there is another correct submission" do
+        let!(:other_correct_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: 2, created_at: DateTime.now - 2.weeks) }
+        let!(:other_correction) { FactoryGirl.create(:correction, submission: other_correct_submission, user: root, created_at: DateTime.now - 1.week) }
+        before do
+          visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
+          click_link "Marquer comme erronée"
+          good_corrector_submission.reload
+          good_corrector.reload
+          good_corrector_solvedproblem.reload
+        end
+        specify do
+          expect(good_corrector_submission.status).to eq(1)
+          expect(good_corrector.rating).to eq(rating_before)
+          expect(good_corrector_solvedproblem.submission).to eq(other_correct_submission)
+          # NB: We need be_within(1.second) below, see https://stackoverflow.com/questions/20403063/trouble-comparing-time-with-rspec
+          expect(good_corrector_solvedproblem.resolutiontime).to be_within(1.second).of other_correction.created_at
+          expect(good_corrector_solvedproblem.truetime).to be_within(1.second).of other_correct_submission.created_at
+        end
+      end
+    end
+    
+    describe "visits reserved virtualtest submission" do
+      let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true, number: 12) }
+      let!(:problem_in_test) { FactoryGirl.create(:problem, virtualtest: virtualtest) }
+      let!(:waiting_submission_in_test) { FactoryGirl.create(:submission, problem: problem_in_test, user: user, status: 0, intest: true) }
+      before do
+        Takentest.create(user: user, virtualtest: virtualtest, takentime: DateTime.now - 2.weeks)
+        Following.create(user: root, submission: waiting_submission_in_test, read: true, kind: 0)
+        visit problem_path(problem_in_test, :sub => waiting_submission_in_test)
+      end
+      it do
+        should have_button("Poster et refuser la soumission")
+        should have_button("Poster et accepter la soumission")
+      end
+      
+      describe "and corrects it" do
+        before do
+          fill_in "MathInput", with: newcorrection
+          fill_in "score", with: 4
+          click_button "Poster et refuser la soumission"
+          waiting_submission_in_test.reload
+        end
+        specify do
+          expect(waiting_submission_in_test.status).to eq(1)
+          expect(waiting_submission_in_test.score).to eq(4)
+          expect(page).to have_content("4 / 7")
+        end
+        
+        describe "and modifies the score", :js => true do
+          before do
+            click_link "Modifier ce score"
+            fill_in "new_score", with: 3
+            click_button "Modifier"
+            # No dialog box to accept in test environment: it was deactivated because we had issues with testing
+            waiting_submission_in_test.reload
+          end
+          specify do
+            expect(waiting_submission_in_test.score).to eq(3)
+            expect(page).to have_content("3 / 7")
+          end
         end
       end
     end
@@ -429,9 +531,9 @@ describe "Submission pages" do
         attach_file("file_2", File.absolute_path(attachments_folder + image1))
         check "consent"
         click_button "Soumettre cette solution"
-        accept_browser_dialog
+        # No dialog box to accept in test environment: it was deactivated because we had issues with testing
       end
-      let(:newsub) { problem.submissions.order(:id).last }
+      let!(:newsub) { problem.submissions.order(:id).last }
       specify do
         expect(newsub.content).to eq(newsubmission)
         expect(newsub.myfiles.count).to eq(1)
@@ -446,7 +548,7 @@ describe "Submission pages" do
     describe "creates a correction with a file" do
       let!(:numfiles_before) { Myfile.count }
       before do
-        visit problem_path(problem_with_waiting_submission, :sub => waiting_submission)
+        visit problem_path(problem_with_submissions, :sub => waiting_submission)
         click_button "Réserver cette soumission"
         wait_for_ajax
         fill_in "MathInput", with: newcorrection
@@ -463,6 +565,62 @@ describe "Submission pages" do
         expect(waiting_submission.status).to eq(0)
         expect(waiting_submission.corrections.count).to eq(0)
         expect(Myfile.count).to eq(numfiles_before)
+      end
+    end
+    
+    describe "shows correct submissions to a problem" do
+      before do
+        visit problem_path(problem_with_submissions)
+        click_link "Afficher les autres soumissions correctes"
+        wait_for_ajax
+      end
+      it do
+        should have_link(good_corrector.name, href: user_path(good_corrector))
+        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))
+        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
+        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
+      end
+    end
+    
+    describe "shows incorrect and waiting submissions to a problem" do
+      before do
+        visit problem_path(problem_with_submissions)
+        click_link "Afficher les soumissions erronées ou en attente"
+        wait_for_ajax
+      end
+      it do
+        should have_link(user.name, href: user_path(user))
+        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
+        should have_link(other_user.name, href: user_path(other_user))
+        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
+        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))
+      end
+    end
+    
+    describe "search for a string in submissions" do
+      before do
+        waiting_submission.update_attribute(:content, "Bonjour, voici une solution")
+        wrong_submission.update_attribute(:content, "Voici une autre solution")
+        Correction.create(user: other_user, submission: wrong_submission, content: "Bonjour, ceci est ma correction")
+        good_corrector_submission.update_attribute(:content, "Salut, ceci est ma solution")
+        visit problem_path(problem_with_submissions, :sub => waiting_submission)
+        click_link "Effectuer une recherche dans toutes les soumissions"
+        wait_for_ajax
+        fill_in "string_to_search", with: "Bonjour, "
+        check "search_in_comments"
+        click_button "Chercher"
+        wait_for_ajax
+      end
+      it do
+        should have_link(user.name, href: user_path(user))
+        should have_content("Bonjour, voici une solution")
+        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
+        should have_link(other_user.name, href: user_path(other_user))
+        should have_content("Bonjour, ceci est ma correction")
+        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
+        should have_no_link(good_corrector.name, href: user_path(good_corrector))
+        should have_no_content("Salut, ceci est ma solution")
+        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))
       end
     end
   end

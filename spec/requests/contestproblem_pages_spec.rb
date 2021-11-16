@@ -74,12 +74,12 @@ describe "Contestproblem pages" do
     
     describe "visits offline contestproblem page" do
       before { visit contestproblem_path(offline_contestproblem) }
-      it do
-        should have_selector("h1", text: "Problème ##{offline_contestproblem.number}")
-        should have_link("Modifier ce problème", href: edit_contestproblem_path(offline_contest))
-        should have_link("Supprimer ce problème")
+      specify do
+        expect(page).to have_selector("h1", text: "Problème ##{offline_contestproblem.number}")
+        expect(page).to have_link("Modifier ce problème", href: edit_contestproblem_path(offline_contest))
+        expect(page).to have_link("Supprimer ce problème")
+        expect { click_link "Supprimer ce problème" }.to change(Contestproblem, :count).by(-1)
       end
-      specify { expect { click_link "Supprimer ce problème" }.to change(Contestproblem, :count).by(-1) }
     end
     
     describe "visits contestproblem creation page" do
@@ -94,9 +94,9 @@ describe "Contestproblem pages" do
           fill_in "Date limite pour l'envoi des solutions", with: stringtime5
           click_button "Ajouter"
         end
-        it { should have_success_message("Problème ajouté") }
         let!(:newcontestproblem) {offline_contest.contestproblems.order(:id).last}
         specify do
+          expect(page).to have_success_message("Problème ajouté")
           expect(offline_contest.contestproblems.count).to eq(2)
           expect(newcontestproblem.number).to eq(2)
           expect(newcontestproblem.statement).to eq(newstatement)
@@ -115,9 +115,9 @@ describe "Contestproblem pages" do
           click_button "Ajouter"
           offline_contestproblem.reload
         end
-        it { should have_success_message("Problème ajouté") }
         let!(:newcontestproblem) {offline_contest.contestproblems.order(:id).last}
         specify do
+          expect(page).to have_success_message("Problème ajouté")
           expect(offline_contest.contestproblems.count).to eq(2)
           expect(newcontestproblem.number).to eq(1)
           expect(offline_contestproblem.number).to eq(2)
@@ -132,8 +132,10 @@ describe "Contestproblem pages" do
           fill_in "Date limite pour l'envoi des solutions", with: stringtime3
           click_button "Ajouter"
         end
-        it { should have_error_message("La deuxième date doit être strictement après la première date.") }
-        specify { expect(offline_contest.contestproblems.count).to eq(1) }
+        specify do
+          expect(page).to have_error_message("La deuxième date doit être strictement après la première date.")
+          expect(offline_contest.contestproblems.count).to eq(1)
+        end
       end
       
       describe "and creates a problem with first date in the past" do
@@ -144,8 +146,10 @@ describe "Contestproblem pages" do
           fill_in "Date limite pour l'envoi des solutions", with: stringtime3
           click_button "Ajouter"
         end
-        it { should have_error_message("La première date ne peut pas être dans le passé.") }
-        specify { expect(offline_contest.contestproblems.count).to eq(1) }
+        specify do
+          expect(page).to have_error_message("La première date ne peut pas être dans le passé.")
+          expect(offline_contest.contestproblems.count).to eq(1)
+        end
       end
       
       describe "and creates a problem with second date in the past" do
@@ -156,8 +160,10 @@ describe "Contestproblem pages" do
           fill_in "Date limite pour l'envoi des solutions", with: stringtimepast
           click_button "Ajouter"
         end
-        it { should have_error_message("La deuxième date ne peut pas être dans le passé.") }
-        specify { expect(offline_contest.contestproblems.count).to eq(1) }
+        specify do
+          expect(page).to have_error_message("La deuxième date ne peut pas être dans le passé.")
+          expect(offline_contest.contestproblems.count).to eq(1)
+        end
       end
       
       describe "and creates a problem with first date not exact" do
@@ -168,8 +174,10 @@ describe "Contestproblem pages" do
           fill_in "Date limite pour l'envoi des solutions", with: stringtime3
           click_button "Ajouter"
         end
-        it { should have_error_message("La première date doit être à une heure pile.") }
-        specify { expect(offline_contest.contestproblems.count).to eq(1) }
+        specify do
+          expect(page).to have_error_message("La première date doit être à une heure pile.")
+          expect(offline_contest.contestproblems.count).to eq(1)
+        end
       end
     end
     
@@ -186,8 +194,8 @@ describe "Contestproblem pages" do
           click_button "Modifier"
           offline_contestproblem.reload
         end
-        it { should have_success_message("Problème modifié") }
         specify do
+          expect(page).to have_success_message("Problème modifié")
           expect(offline_contestproblem.number).to eq(1)
           expect(offline_contestproblem.statement).to eq(newstatement)
           expect(offline_contestproblem.origin).to eq(neworigin)
@@ -218,8 +226,8 @@ describe "Contestproblem pages" do
           click_button "Modifier"
           offline_contestproblem.reload
         end
-        it { should have_success_message("Problème modifié") }
         specify do
+          expect(page).to have_success_message("Problème modifié")
           expect(offline_contestproblem.statement).to eq(newstatement)
           expect(offline_contestproblem.start_time).to eq(datetime2)
           expect(offline_contestproblem.end_time).to eq(datetime5)
@@ -248,8 +256,8 @@ describe "Contestproblem pages" do
           click_button "Modifier"
           offline_contestproblem.reload
         end
-        it { should have_success_message("Problème modifié") }
         specify do
+          expect(page).to have_success_message("Problème modifié")
           expect(offline_contestproblem.statement).to eq(newstatement)
           expect(offline_contestproblem.start_time).to eq(datetime2)
           expect(offline_contestproblem.end_time).to eq(datetime4)
@@ -273,19 +281,21 @@ describe "Contestproblem pages" do
           click_link "Autoriser nouvelles corrections"
           contestproblem.reload
         end
-        it do
-          should have_success_message("Les organisateurs peuvent à présent modifier leurs corrections.")
-          should have_link("Stopper nouvelles corrections")
+        specify do
+          expect(page).to have_success_message("Les organisateurs peuvent à présent modifier leurs corrections.")
+          expect(page).to have_link("Stopper nouvelles corrections")
+          expect(contestproblem.status).to eq(5)
         end
-        specify { expect(contestproblem.status).to eq(5) }
         
         describe "and unauthorizes them" do
           before do
             click_link "Stopper nouvelles corrections"
             contestproblem.reload
           end
-          it { should have_success_message("Les organisateurs ne peuvent plus modifier leurs corrections.") }
-          specify { expect(contestproblem.status).to eq(4) }
+          specify do
+            expect(page).to have_success_message("Les organisateurs ne peuvent plus modifier leurs corrections.")
+            expect(contestproblem.status).to eq(4)
+          end
         end
       end
     end

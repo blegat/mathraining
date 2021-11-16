@@ -30,8 +30,10 @@ describe "Contestproblemcheck pages" do
         visit contest_path(running_contest)
         running_contestproblem.reload
       end
-      specify { expect(running_contestproblem.status).to eq(1) }
-      it { should have_no_content(running_contestproblem.statement) }
+      specify do
+        expect(running_contestproblem.status).to eq(1)
+        expect(page).to have_no_content(running_contestproblem.statement)
+      end
     end
   
     describe "visits a contest just after problem publication" do
@@ -41,8 +43,10 @@ describe "Contestproblemcheck pages" do
         visit contest_path(running_contest)
         running_contestproblem.reload
       end
-      specify { expect(running_contestproblem.status).to eq(2) }
-      it { should have_content(running_contestproblem.statement) }
+      specify do
+        expect(running_contestproblem.status).to eq(2)
+        expect(page).to have_content(running_contestproblem.statement)
+      end
     end
     
     describe "visits a contest just after problem ends" do
@@ -54,8 +58,10 @@ describe "Contestproblemcheck pages" do
         visit contest_path(running_contest)
         running_contestproblem.reload
       end
-      specify { expect(running_contestproblem.status).to eq(3) }
-      it { should have_content("En cours de correction") }
+      specify do
+        expect(running_contestproblem.status).to eq(3)
+        expect(page).to have_content("En cours de correction")
+      end
     end
   end
   

@@ -26,6 +26,7 @@ describe "User pages" do
 
     describe "signup with invalid information" do
       specify { expect { click_button "Créer mon compte" }.not_to change(User, :count) }
+      
       describe "after submission" do
         before do
           check "consent1"
@@ -55,6 +56,7 @@ describe "User pages" do
       end
 
       specify { expect { click_button "Créer mon compte" }.to change(User, :count).by(1) }
+      
       describe "after saving the user" do
         before { click_button "Créer mon compte" }
         it { should have_success_message("confirmer votre inscription") }
@@ -72,8 +74,10 @@ describe "User pages" do
           visit activate_path(:id => zero_user, :key => zero_user.key)
           zero_user.reload
         end
-        it { should have_success_message("Votre compte a bien été activé !") }
-        specify { expect(zero_user.email_confirm).to eq(true) }
+        specify do
+          expect(page).to have_success_message("Votre compte a bien été activé !")
+          expect(zero_user.email_confirm).to eq(true)
+        end
       end
       
       describe "with incorrect key" do
@@ -81,8 +85,10 @@ describe "User pages" do
           visit activate_path(:id => zero_user, :key => "hackingMathraining")
           zero_user.reload
         end
-        it { should have_error_message("Le lien d'activation est erroné.") }
-        specify { expect(zero_user.email_confirm).to eq(false) }
+        specify do
+          expect(page).to have_error_message("Le lien d'activation est erroné.")
+          expect(zero_user.email_confirm).to eq(false)
+        end
       end
       
       describe "if already active" do
@@ -90,8 +96,10 @@ describe "User pages" do
           visit activate_path(:id => other_zero_user, :key => other_zero_user.key)
           zero_user.reload
         end
-        it { should have_info_message("Ce compte est déjà actif !") }
-        specify { expect(other_zero_user.email_confirm).to eq(true) }
+        specify do
+          expect(page).to have_info_message("Ce compte est déjà actif !")
+          expect(other_zero_user.email_confirm).to eq(true)
+        end
       end
     end
     
@@ -262,12 +270,10 @@ describe "User pages" do
         zero_user.reload
       end
       
-      it do
-        should have_selector("h1", text: "Actualités")
-        should have_selector("div.alert.alert-success")
-        should have_link("Déconnexion", href: signout_path)
-      end
       specify do
+        expect(page).to have_selector("h1", text: "Actualités")
+        expect(page).to have_selector("div.alert.alert-success")
+        expect(page).to have_link("Déconnexion", href: signout_path)
         expect(zero_user.first_name).to eq(new_first_name)
         expect(zero_user.last_name).to eq(new_last_name)
         expect(zero_user.name).to eq(new_name)
@@ -342,22 +348,24 @@ describe "User pages" do
 
     describe "visits a student page" do
       before { visit user_path(zero_user) }
-      it do
-        should have_content("Connecté le")
-        should have_content(zero_user.email)
-        should have_content("Né en")
+      
+      specify do
+        expect(page).to have_content("Connecté le")
+        expect(page).to have_content(zero_user.email)
+        expect(page).to have_content("Né en")
+        expect { click_link "Supprimer" }.to change(User, :count).by(-1)
       end
-      specify {	expect { click_link "Supprimer" }.to change(User, :count).by(-1) }
     end
 
     describe "visits an admin page" do
       before { visit user_path(admin) }
-      it do
-        should have_content("Connecté le")
-        should have_content(admin.email)
-        should have_content("Né en")
+      
+      specify do
+        expect(page).to have_content("Connecté le")
+        expect(page).to have_content(admin.email)
+        expect(page).to have_content("Né en")
+        expect { click_link "Supprimer" }.to change(User, :count).by(-1)
       end
-      specify { expect { click_link "Supprimer" }.to change(User, :count).by(-1) }
     end
 
     describe "tries to delete another root" do
@@ -447,8 +455,8 @@ describe "User pages" do
         click_link("Voir le site comme lui")
         root.reload
       end
-      it { should have_success_message("Vous êtes maintenant dans la peau de") }
       specify do
+        expect(page).to have_success_message("Vous êtes maintenant dans la peau de")
         expect(root.skin).to eq(zero_user.id)
         expect { click_link "Sortir de ce corps" and root.reload }.to change{root.skin}.to(0)
       end

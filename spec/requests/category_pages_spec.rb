@@ -48,8 +48,10 @@ describe "Category pages" do
           page.all(:fillable_field, "category[name]").first.set("")
           page.all(:button, "Modifier cette catégorie").first.click
         end
-        it { should have_error_message("Une erreur est survenue.") }
-        specify { expect(Category.order(:id).first.name).to_not eq("") }
+        specify do
+          expect(page).to have_error_message("Une erreur est survenue.")
+          expect(Category.order(:id).first.name).to_not eq("")
+        end
       end
       
       describe "and adds one with good name" do
@@ -65,8 +67,10 @@ describe "Category pages" do
           page.all(:fillable_field, "category[name]").last.set("")
           click_button "Ajouter cette catégorie"
         end
-        it { should have_error_message("Une erreur est survenue.") }
-        specify { expect(Category.order(:id).last.name).to_not eq("") }
+        specify do
+          expect(page).to have_error_message("Une erreur est survenue.")
+          expect(Category.order(:id).last.name).to_not eq("")
+        end
       end
       
       describe "and deletes one" do

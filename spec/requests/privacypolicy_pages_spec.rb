@@ -78,8 +78,10 @@ describe "Privacy policy pages" do
             click_button "Continuer sur Mathraining"
             user.reload
           end
-          it { should have_error_message("Vous devez accepter notre politique de confidentialité pour pouvoir continuer sur le site.") }
-          specify { expect(user.last_policy_read).to eq(false) }
+          specify do
+            expect(page).to have_error_message("Vous devez accepter notre politique de confidentialité pour pouvoir continuer sur le site.")
+            expect(user.last_policy_read).to eq(false)
+          end
         end
         
         describe "and accepts new policy" do
@@ -192,8 +194,10 @@ describe "Privacy policy pages" do
             click_button "Modifier"
             policy3_offline.reload
           end
-          it { should have_success_message("Modification enregistrée.") }
-          specify { expect(policy3_offline.content).to eq(newpolicy) }
+          specify do
+            expect(page).to have_success_message("Modification enregistrée.")
+            expect(policy3_offline.content).to eq(newpolicy)
+          end
         end
         
         describe "and edits it with empty string" do
@@ -202,11 +206,11 @@ describe "Privacy policy pages" do
             click_button "Modifier"
             policy3_offline.reload
           end
-          it do
-            should have_selector("h1", text: "Politique de confidentialité > Modifier")
-            should have_error_message("Contenu doit être rempli")
+          specify do
+            expect(page).to have_selector("h1", text: "Politique de confidentialité > Modifier")
+            expect(page).to have_error_message("Contenu doit être rempli")
+            expect(policy3_offline.content).not_to eq("")
           end
-          specify { expect(policy3_offline.content).not_to eq("") }
         end
       end
       
@@ -220,8 +224,10 @@ describe "Privacy policy pages" do
             click_button "Modifier"
             policy3_offline.reload
           end
-          it { should have_success_message("Modification enregistrée.") }
-          specify { expect(policy3_offline.description).to eq(newdescription) }
+          specify do
+            expect(page).to have_success_message("Modification enregistrée.")
+            expect(policy3_offline.description).to eq(newdescription)
+          end
         end
         
         describe "and edits it with empty string" do
@@ -230,11 +236,11 @@ describe "Privacy policy pages" do
             click_button "Modifier"
             policy3_offline.reload
           end
-          it do
-            should have_selector("h1", text: "Politique de confidentialité > Modifier")
-            should have_error_message("Modifications doit être rempli")
+          specify do
+            expect(page).to have_selector("h1", text: "Politique de confidentialité > Modifier")
+            expect(page).to have_error_message("Modifications doit être rempli")
+            expect(policy3_offline.description).not_to eq("")
           end
-          specify { expect(policy3_offline.description).not_to eq("") }
         end
       end
       

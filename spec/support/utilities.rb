@@ -58,6 +58,7 @@ def finished_all_ajax_requests?
   page.evaluate_script('jQuery.active').zero?
 end
 
+# The following method has some issues: instead of using it we prefer to remove confirmations when Rails.env.test? = true
 def accept_browser_dialog
   wait = Selenium::WebDriver::Wait.new(:timeout => 10)
   wait.until {
@@ -69,7 +70,7 @@ def accept_browser_dialog
     end
   }
   page.driver.browser.switch_to.alert.accept
-  sleep(1) # TODO: IMPROVE because it is quite random!
+  sleep(1) # This is the issue: it looks like we need to wait some time (how much?) manually
 end
 
 def take_screenshot

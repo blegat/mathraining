@@ -48,8 +48,10 @@ describe "Actuality pages" do
       
       describe "and try to upload an empty picture" do
         before { click_button "Uploader" }
-        specify { expect(Picture.count).to eq(0) }
-        it { should have_error_message("Image doit être rempli(e)") }
+        specify do
+          expect(Picture.count).to eq(0)
+          expect(page).to have_error_message("Image doit être rempli(e)")
+        end
       end
       
       describe "and upload a new picture" do
@@ -60,24 +62,22 @@ describe "Actuality pages" do
         specify do
           expect(Picture.count).to eq(1)
           expect(Picture.last.image.blob.filename).to eq(good_image)
-        end
-        it do
-          should have_success_message("Image ajoutée.")
-          should have_selector("h1", text: "Récupérer un url")
-          should have_xpath("//img[contains(@src, '#{good_image}')]")
-          should have_content(rails_blob_url(Picture.last.image, :only_path => true))
+          expect(page).to have_success_message("Image ajoutée.")
+          expect(page).to have_selector("h1", text: "Récupérer un url")
+          expect(page).to have_xpath("//img[contains(@src, '#{good_image}')]")
+          expect(page).to have_content(rails_blob_url(Picture.last.image, :only_path => true))
         end
         
         let!(:picture) { Picture.last }
         
         describe "and visits pictures page" do
           before { visit pictures_path }
-          it do
-            should have_selector("h1", text: "Vos images")
-            should have_xpath("//img[contains(@src, '#{good_image}')]")
-            should have_link("Supprimer cette image", href: picture_path(picture))
+          specify do
+            expect(page).to have_selector("h1", text: "Vos images")
+            expect(page).to have_xpath("//img[contains(@src, '#{good_image}')]")
+            expect(page).to have_link("Supprimer cette image", href: picture_path(picture))
+            expect { click_link("Supprimer cette image", href: picture_path(picture)) }.to change(Picture, :count).by(-1)
           end
-          specify { expect { click_link("Supprimer cette image", href: picture_path(picture)) }.to change(Picture, :count).by(-1) }
         end
         
         describe "and another admin tries to see it" do

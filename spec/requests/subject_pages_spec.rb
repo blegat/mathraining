@@ -189,19 +189,19 @@ describe "Subject pages" do
       
       describe "and follows the subject" do
         before { click_link("link_follow") }
-        it do
-          should have_success_message("Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet.")
-          should have_link("link_unfollow")
+        specify do
+          expect(page).to have_success_message("Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet.")
+          expect(page).to have_link("link_unfollow")
+          expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(true)
         end
-        specify { expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(true) }
         
         describe "and unfollows the subject" do
           before { click_link("link_unfollow") }
-          it do
-            should have_success_message("Vous ne recevrez maintenant plus d'e-mail concernant ce sujet.")
-            should have_link("link_follow")
+          specify do
+            expect(page).to have_success_message("Vous ne recevrez maintenant plus d'e-mail concernant ce sujet.")
+            expect(page).to have_link("link_follow")
+            expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(false)
           end
-          specify { expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(false) }
         end
       end
       
@@ -217,12 +217,11 @@ describe "Subject pages" do
 
     describe "visits the subject of a student" do
       before { visit subject_path(sub) }
-      it do
-        should have_link("Modifier ce sujet")
-        should have_link("Supprimer ce sujet")
+      specify do
+        expect(page).to have_link("Modifier ce sujet")
+        expect(page).to have_link("Supprimer ce sujet")
+        expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1)
       end
-      
-      specify { expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
       
       describe "and edits it" do
         before do
@@ -241,9 +240,10 @@ describe "Subject pages" do
 
     describe "visits his subject" do
       before { visit subject_path(sub_admin) }
-      it { should have_link("Supprimer ce sujet") }
-      
-      specify {	expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
+      specify do
+        expect(page).to have_link("Supprimer ce sujet")
+        expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1)
+      end
     end
     
     describe "tries to edit the subject of another admin" do
@@ -266,12 +266,11 @@ describe "Subject pages" do
 
     describe "visits the subject of another root" do
       before { visit subject_path(sub_other_root) }
-      it do
-        should have_link("Modifier ce sujet")
-        should have_link("Supprimer ce sujet")
+      specify do
+        expect(page).to have_link("Modifier ce sujet")
+        expect(page).to have_link("Supprimer ce sujet")
+        expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1)
       end
-      
-      specify { expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1) }
       
       describe "and edits it" do
         before do
@@ -313,12 +312,10 @@ describe "Subject pages" do
           sub_user.reload
           mes.reload
         end
-        it do
-          should have_content(sub_user.title)
-          should have_content(old_content)
-          should have_content(mes.content)
-        end
         specify do
+          expect(page).to have_content(sub_user.title)
+          expect(page).to have_content(old_content)
+          expect(page).to have_content(mes.content)
           expect(Subject.count).to eq(old_num_subjects - 1)
           expect(Message.count).to eq(old_num_messages + 1)
           expect(Message.order(:id).last.content).to include(old_content)

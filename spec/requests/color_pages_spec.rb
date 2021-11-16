@@ -50,11 +50,11 @@ describe "Color pages" do
           find_by_id('color_add').set("#AABBC") # Too short
           find_by_id('button_add').click
         end
-        it do
-          should have_error_message("erreur")
-          should have_selector("h1", text: "Niveaux et couleurs")
+        specify do
+          expect(page).to have_error_message("erreur")
+          expect(page).to have_selector("h1", text: "Niveaux et couleurs")
+          expect(Color.order(:id).last.name).to_not eq("new_name")
         end
-        specify { expect(Color.order(:id).last.name).to_not eq("new_name") }
       end
     end
     
@@ -83,11 +83,11 @@ describe "Color pages" do
           find_by_id('button_edit11').click
           color.reload
         end
-        it do
-          should have_error_message("erreur")
-          should have_selector("h1", text: "Niveaux et couleurs")
+        specify do
+          expect(page).to have_error_message("erreur")
+          expect(page).to have_selector("h1", text: "Niveaux et couleurs")
+          expect(color.name).to_not eq("new_name")
         end
-        specify { expect(color.name).to_not eq("new_name") }
       end
     end
     

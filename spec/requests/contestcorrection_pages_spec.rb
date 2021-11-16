@@ -82,10 +82,8 @@ describe "Contestcorrection pages" do
           expect(officialsol_finished.score).to eq(7)
           expect(officialsol_finished.star).to eq(true)
           expect(officialsol_finished.contestcorrection.content).to eq(newcorrection)
-        end
-        it do
-          should have_no_content("Aucune solution étoilée")
-          should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished))
+          expect(page).to have_no_content("Aucune solution étoilée")
+          expect(page).to have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished))
         end
       end
       
@@ -146,10 +144,8 @@ describe "Contestcorrection pages" do
           expect(usersol_finished.star).to eq(false)
           expect(usersol_finished.corrected).to eq(true)
           expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
-        end
-        it do
-          should have_no_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => usersol_finished)) # We should not see it anymore without javascript
-          should have_content("2 / 7")
+          expect(page).to have_no_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => usersol_finished)) # We should not see it anymore without javascript
+          expect(page).to have_content("2 / 7")
         end
       end
       
@@ -165,10 +161,8 @@ describe "Contestcorrection pages" do
           expect(usersol_finished.score).to eq(7)
           expect(usersol_finished.star).to eq(false)
           expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
-        end
-        it do
-          should have_content("7 / 7")
-          should have_content("Il faut au minimum une solution étoilée pour publier les résultats")
+          expect(page).to have_content("7 / 7")
+          expect(page).to have_content("Il faut au minimum une solution étoilée pour publier les résultats")
         end
       end
       
@@ -184,11 +178,9 @@ describe "Contestcorrection pages" do
           expect(usersol_finished.score).to eq(7)
           expect(usersol_finished.star).to eq(true)
           expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
-        end
-        it do
-          should have_info_message("Le score a été mis automatiquement à 7/7 (car solution étoilée).")
-          should have_content("7 / 7")
-          should have_button("Publier les résultats")
+          expect(page).to have_info_message("Le score a été mis automatiquement à 7/7 (car solution étoilée).")
+          expect(page).to have_content("7 / 7")
+          expect(page).to have_button("Publier les résultats")
         end
         
         describe "and publish the results" do
@@ -223,8 +215,8 @@ describe "Contestcorrection pages" do
             usersol_finished.reload
             usersol_finished.contestcorrection.reload
           end
-          it { should have_error_message("Vous ne pouvez pas modifier cette correction.") }
           specify do
+            expect(page).to have_error_message("Vous ne pouvez pas modifier cette correction.")
             expect(usersol_finished.score).to eq(7)
             expect(usersol_finished.star).to eq(true)
             expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
@@ -256,8 +248,8 @@ describe "Contestcorrection pages" do
           usersol_finished.reload
           usersol_finished.contestcorrection.reload
         end
-        it { should have_error_message("Votre correction est vide.") }
         specify do
+          expect(page).to have_error_message("Votre correction est vide.")
           expect(usersol_finished.score).to eq(-1)
           expect(usersol_finished.contestcorrection.content).to eq("-")
         end
@@ -273,8 +265,8 @@ describe "Contestcorrection pages" do
           usersol_finished.reload
           usersol_finished.contestcorrection.reload
         end
-        it { should have_error_message("Vous n'avez pas réservé.") }
         specify do
+          expect(page).to have_error_message("Vous n'avez pas réservé.")
           expect(usersol_finished.score).to eq(-1)
           expect(usersol_finished.contestcorrection.content).to eq("-")
         end
@@ -313,8 +305,10 @@ describe "Contestcorrection pages" do
           wait_for_ajax
           usersol_finished.reload
         end
-        it { should have_content("Réservé par #{root.name}.") }
-        specify { expect(usersol_finished.reservation).to eq(root.id) }
+        specify do
+          expect(page).to have_content("Réservé par #{root.name}.")
+          expect(usersol_finished.reservation).to eq(root.id)
+        end
       end
       
       describe "and reserves it" do
@@ -323,14 +317,14 @@ describe "Contestcorrection pages" do
           wait_for_ajax
           usersol_finished.reload
         end
-        it do
-          should have_content("Cliquez ici pour annuler votre réservation.")
-          should have_button("button-unreserve")
-          should have_button("Enregistrer provisoirement")
-          should have_button("Enregistrer")
-          should have_button("Enregistrer et étoiler (si 7/7)")
+        specify do
+          expect(page).to have_content("Cliquez ici pour annuler votre réservation.")
+          expect(page).to have_button("button-unreserve")
+          expect(page).to have_button("Enregistrer provisoirement")
+          expect(page).to have_button("Enregistrer")
+          expect(page).to have_button("Enregistrer et étoiler (si 7/7)")
+          expect(usersol_finished.reservation).to eq(user_organizer.id)
         end
-        specify { expect(usersol_finished.reservation).to eq(user_organizer.id) }
       
         describe "and unreserves it" do
           before do
@@ -338,14 +332,14 @@ describe "Contestcorrection pages" do
             wait_for_ajax
             usersol_finished.reload
           end
-          it do
-            should have_content("Cliquez ici pour réserver.")
-            should have_button("button-reserve")
-            should have_button("Enregistrer provisoirement", disabled: true)
-            should have_button("Enregistrer", disabled: true)
-            should have_button("Enregistrer et étoiler (si 7/7)", disabled: true)
+          specify do
+            expect(page).to have_content("Cliquez ici pour réserver.")
+            expect(page).to have_button("button-reserve")
+            expect(page).to have_button("Enregistrer provisoirement", disabled: true)
+            expect(page).to have_button("Enregistrer", disabled: true)
+            expect(page).to have_button("Enregistrer et étoiler (si 7/7)", disabled: true)
+            expect(usersol_finished.reservation).to eq(0)
           end
-          specify { expect(usersol_finished.reservation).to eq(0) }
         end
       end
     end

@@ -204,8 +204,10 @@ describe "Myfile pages" do
           click_button "Remplacer"
           subjectmyfile.reload
         end
-        it { should have_success_message("C'est remplacé !") }
-        specify { expect(subjectmyfile.file.filename.to_s).to eq(new_image) }
+        specify do
+          expect(page).to have_success_message("C'est remplacé !")
+          expect(subjectmyfile.file.filename.to_s).to eq(new_image)
+        end
       end
       
       describe "and replaces it with an empty file" do
@@ -213,8 +215,10 @@ describe "Myfile pages" do
           click_button "Remplacer"
           subjectmyfile.reload
         end
-        it { should have_error_message("Pièce jointe vide.") }
-        specify { expect(subjectmyfile.file.filename.to_s).to eq(old_image) }
+        specify do
+          expect(page).to have_error_message("Pièce jointe vide.")
+          expect(subjectmyfile.file.filename.to_s).to eq(old_image)
+        end
       end
     end
   end

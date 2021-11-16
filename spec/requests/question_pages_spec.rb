@@ -139,10 +139,8 @@ describe "Question pages" do
         specify do
           expect(online_exercise.position).to eq(2)
           expect(online_qcm.position).to eq(1)
-        end
-        it do
-          should have_link "bas" # Because position 2 out of >= 4
-          should have_link "haut"
+          expect(page).to have_link "bas" # Because position 2 out of >= 4
+          expect(page).to have_link "haut"
         end
         
         describe "and modifies it back" do
@@ -181,10 +179,8 @@ describe "Question pages" do
           expect(Question.order(:id).last.is_qcm).to eq(false)
           expect(Question.order(:id).last.position).to eq(1)
           expect(Question.order(:id).last.online).to eq(false)
-        end
-        it do
-          should have_selector("div", text: newstatement)
-          should have_button("Mettre en ligne")
+          expect(page).to have_selector("div", text: newstatement)
+          expect(page).to have_button("Mettre en ligne")
         end
         
         describe "and adds a second exercise" do
@@ -206,8 +202,8 @@ describe "Question pages" do
             expect(Question.order(:id).last.is_qcm).to eq(false)
             expect(Question.order(:id).last.position).to eq(2)
             expect(Question.order(:id).last.online).to eq(false)
+            expect(page).to have_selector("div", text: newstatement2)
           end
-          it { should have_selector("div", text: newstatement2) }
         end
       end
       
@@ -218,11 +214,11 @@ describe "Question pages" do
           fill_in "Niveau", with: newlevel
           click_button "Créer"
         end
-        it do
-          should have_error_message("erreur")
-          should have_selector("h1", text: "Créer un exercice")
+        specify do
+          expect(page).to have_error_message("erreur")
+          expect(page).to have_selector("h1", text: "Créer un exercice")
+          expect(Question.order(:id).last.answer).to_not eq(newanswer)
         end
-        specify { expect(Question.order(:id).last.answer).to_not eq(newanswer) }
       end
     end
     
@@ -258,11 +254,11 @@ describe "Question pages" do
           click_button "Modifier"
           offline_exercise.reload
         end
-        it do
-          should have_error_message("erreur")
-          should have_selector("h1", text: "Modifier un exercice")
+        specify do
+          expect(page).to have_error_message("erreur")
+          expect(page).to have_selector("h1", text: "Modifier un exercice")
+          expect(offline_exercise.answer).to_not eq(newanswer)
         end
-        specify { expect(offline_exercise.answer).to_not eq(newanswer) }
       end
     end
     
@@ -283,8 +279,8 @@ describe "Question pages" do
           expect(Question.order(:id).last.level).to eq(newlevel3)
           expect(Question.order(:id).last.is_qcm).to eq(true)
           expect(Question.order(:id).last.online).to eq(false)
+          expect(page).to have_selector("h1", text: "Choix")
         end
-        it { should have_selector("h1", text: "Choix") }
       end
     end
     

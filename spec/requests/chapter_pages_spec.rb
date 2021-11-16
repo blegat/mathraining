@@ -69,8 +69,10 @@ describe "Chapter pages" do
           visit chapter_path(online_chapter, :type => 1, :which => online_theory)
           user.reload
         end
-        it { should have_button("Marquer comme non lu") }
-        specify { expect(user.theories.exists?(online_theory.id)).to eq(true) }
+        specify do
+          expect(page).to have_button("Marquer comme non lu")
+          expect(user.theories.exists?(online_theory.id)).to eq(true)
+        end
       end
     end
     
@@ -90,22 +92,24 @@ describe "Chapter pages" do
     
     describe "visits an offline chapter" do
       before { visit chapter_path(offline_chapter) }
-      it do
-        should have_selector("h1", text: offline_chapter.name + " (en construction)")
-        should have_link("Modifier ce chapitre")
-        should have_link("Supprimer ce chapitre")
-        should have_link("Modifier les prérequis")
-        should have_link("point théorique")
-        should have_link("QCM")
-        should have_button("Mettre ce chapitre en ligne")
+      specify do
+        expect(page).to have_selector("h1", text: offline_chapter.name + " (en construction)")
+        expect(page).to have_link("Modifier ce chapitre")
+        expect(page).to have_link("Supprimer ce chapitre")
+        expect(page).to have_link("Modifier les prérequis")
+        expect(page).to have_link("point théorique")
+        expect(page).to have_link("QCM")
+        expect(page).to have_button("Mettre ce chapitre en ligne")
+        expect { click_link("Supprimer ce chapitre") }.to change(Chapter, :count).by(-1) .and change(Question, :count).by(-2) .and change(Theory, :count).by(-1) .and change(Item, :count).by(-1)
       end
-      specify { expect { click_link("Supprimer ce chapitre") }.to change(Chapter, :count).by(-1) .and change(Question, :count).by(-2) .and change(Theory, :count).by(-1) .and change(Item, :count).by(-1) }
     end
     
     describe "visits warning page to put online" do
       before { visit chapter_warning_path(offline_chapter) }
-      it { should have_selector("h1", text: "Mise en ligne") }
-      it { should have_button("Mettre ce chapitre en ligne") }
+      it do
+        should have_selector("h1", text: "Mise en ligne")
+        should have_button("Mettre ce chapitre en ligne")
+      end
       
       describe "and puts it online" do
         before do
@@ -153,10 +157,10 @@ describe "Chapter pages" do
           click_link "haut"
           offline_chapter.reload
         end
-        specify { expect(offline_chapter.position).to eq(1) }
-        it do
-          should have_no_link "haut"
-          should have_link "bas"
+        specify do
+          expect(offline_chapter.position).to eq(1)
+          expect(page).to have_no_link "haut"
+          expect(page).to have_link "bas"
         end
         
         describe "and modifies it back" do
