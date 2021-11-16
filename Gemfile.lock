@@ -98,7 +98,10 @@ GEM
     concurrent-ruby (1.1.9)
     crass (1.0.6)
     daemons (1.4.1)
-    database_cleaner (1.5.3)
+    database_cleaner-active_record (2.0.1)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     dateslices (0.0.4)
       rails (> 4)
     debug_inspector (1.1.0)
@@ -354,7 +357,7 @@ DEPENDENCIES
   capybara-screenshot
   codecov
   coffee-rails (~> 4.2.1)
-  database_cleaner (= 1.5.3)
+  database_cleaner-active_record
   dateslices
   eventmachine (= 1.2.3)
   factory_girl_rails (= 4.1.0)

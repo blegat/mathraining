@@ -11,6 +11,7 @@ ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
 require "rspec/rails"
 require "capybara-screenshot/rspec"
+require "database_cleaner/active_record"
 #require "capybara/poltergeist"
 # require "rspec/autorun"
 
@@ -32,6 +33,8 @@ end
 
 Capybara.javascript_driver = :selenium_firefox_headless
 Capybara.disable_animation = true # Otherwise we need to wait for rolling animations
+
+#DatabaseCleaner.strategy = :truncation # Not sure if it should be used?
 
 RSpec.configure do |config|
   # ## Mock Framework
@@ -64,10 +67,6 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   
   config.include Rails.application.routes.url_helpers
-  
-  #config.use_transactional_fixtures = true # If we put false then the javascript stuff (sometimes) work but many other tests fail. If we put true the javascript does not work because the database is empty
-  
-  #DatabaseCleaner.strategy = :truncation
 end
 
 Rails.application.load_seed

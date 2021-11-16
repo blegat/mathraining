@@ -24,8 +24,4 @@ class Section < ActiveRecord::Base
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
   validates :description, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   
-  def self.color(x)
-    colors = ["#FFFFBB", "#FFBBBB", "#FFDD77", "#A0FFA0", "#AAF5FF", "#D8D8FF", "#F5F5F5"]
-    return colors[x-1];
-  end
 end

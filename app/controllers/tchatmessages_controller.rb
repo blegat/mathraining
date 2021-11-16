@@ -53,11 +53,4 @@ class TchatmessagesController < DiscussionsController
       render 'errors/access_refused' and return
     end
   end
-
-  def is_not_other
-    if current_user.other
-      flash[:danger] = "Vous êtes dans la peau de quelqu'un d'autre !"
-      redirect_to @discussion
-    end
-  end
 end

@@ -137,13 +137,7 @@ class SubmissionsController < ApplicationController
       @context = 2
       update_submission
     elsif params[:commit] == "Supprimer ce brouillon"
-      @submission.myfiles.each do |f|
-        f.destroy
-      end
-      @submission.fakefiles.each do |f|
-        f.destroy
-      end
-      @submission.delete
+      @submission.destroy
       flash[:success] = "Brouillon supprimé."
       redirect_to @problem
     else
