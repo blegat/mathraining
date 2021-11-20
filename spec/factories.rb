@@ -151,15 +151,16 @@ FactoryGirl.define do
   # Problem
   factory :problem do
     association :section
-    statement "Foobar"
+    sequence(:statement) { |n| "Énoncé de problème #{n}" }
     level 1
+    sequence(:number) { |n| n }
     online false
   end
   
   # Question
   factory :question do
     association :chapter
-    statement "Foobar"
+    sequence(:statement) { |n| "Énoncé d'exercice #{n}" }
     answer 0 # Mandatory (maybe it should not be)
     factory :exercise do
       is_qcm false

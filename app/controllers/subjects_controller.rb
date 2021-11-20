@@ -134,11 +134,11 @@ class SubjectsController < ApplicationController
         render 'errors/access_refused' and return
       end
       chapter_id = params[:subject][:chapter_id].to_i
-      if chapter_id == 0
+      if chapter_id == 0 # No particular chapter
         @subject.chapter = nil
         @subject.question = nil
         @subject.problem = nil
-      elsif chapter_id == -1
+      elsif chapter_id == -1 # Problems of this section
         @subject.chapter = nil
         @subject.question = nil
         problem_id = params[:subject][:problem_id].to_i
@@ -189,7 +189,7 @@ class SubjectsController < ApplicationController
         @subject.save
       end
 
-      if current_user.sk.admin?
+      if current_user.sk.root?
         for g in ["A", "B"] do
           if params.has_key?("groupe" + g)
             User.where(:group => g).each do |u|
@@ -249,11 +249,11 @@ class SubjectsController < ApplicationController
           render 'errors/access_refused' and return
         end
         chapter_id = params[:subject][:chapter_id].to_i
-        if chapter_id == 0
+        if chapter_id == 0 # No particular chapter
           @subject.chapter = nil
           @subject.question = nil
           @subject.problem = nil
-        elsif chapter_id == -1
+        elsif chapter_id == -1 # Problems of this section
           @subject.chapter = nil
           @subject.question = nil
           problem_id = params[:subject][:problem_id].to_i

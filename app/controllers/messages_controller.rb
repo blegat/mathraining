@@ -64,7 +64,7 @@ class MessagesController < ApplicationController
       @subject.lastcomment_user = current_user.sk
       @subject.save
 
-      if current_user.sk.admin?
+      if current_user.sk.root?
         for g in ["A", "B"] do
           if params.has_key?("groupe" + g)
             User.where(:group => g).each do |u|

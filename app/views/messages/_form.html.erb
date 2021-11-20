@@ -38,7 +38,7 @@
 </div>
 
 <!-- Case e-mails aux groupes A et/ou B -->
-<% if current_user.sk.admin && @new && !@subject.admin %>
+<% if current_user.sk.root && @new && !@subject.admin %>
 	<div class="checkbox">
   <label>
     <input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >

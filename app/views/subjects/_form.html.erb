@@ -331,7 +331,7 @@ function checkProblem() {
 <% end %>
 
 <!-- Case e-mails aux groupes A et/ou B -->
-<% if current_user.sk.admin && !@edit %>
+<% if current_user.sk.root && !@edit %>
   <div class="checkbox">
   <label>
     <input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >

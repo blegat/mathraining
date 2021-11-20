@@ -9,7 +9,7 @@ describe "Subject pages" do
   let(:other_root) { FactoryGirl.create(:root) }
   let(:admin) { FactoryGirl.create(:admin) }
   let(:other_admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryGirl.create(:user, rating: 200) } # Rating 200 is needed to have access to problems
   let(:other_user) { FactoryGirl.create(:user) }
   
   let!(:category) { FactoryGirl.create(:category) }
@@ -17,23 +17,22 @@ describe "Subject pages" do
   
   let!(:section) { FactoryGirl.create(:section) }
   let!(:chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:question) { FactoryGirl.create(:exercise, chapter: chapter, online: true) }
+  let!(:question) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 1) }
   let!(:problem) { FactoryGirl.create(:problem, section: section, online: true) }
   
-  let!(:sub) { FactoryGirl.create(:subject) }
-  let!(:sub_user) { FactoryGirl.create(:subject, user: user) }
-  let!(:sub_other_user) { FactoryGirl.create(:subject, user: other_user) }
-  let!(:sub_admin) { FactoryGirl.create(:subject, user: admin) }
-  let!(:sub_other_admin) { FactoryGirl.create(:subject, user: other_admin) }
-  let!(:sub_other_root) { FactoryGirl.create(:subject, user: other_root) }
+  let(:sub_user) { FactoryGirl.create(:subject, user: user) }
+  let(:sub_other_user) { FactoryGirl.create(:subject, user: other_user) }
+  let(:sub_admin) { FactoryGirl.create(:subject, user: admin) }
+  let(:sub_other_admin) { FactoryGirl.create(:subject, user: other_admin) }
+  let(:sub_other_root) { FactoryGirl.create(:subject, user: other_root) }
   
-  let!(:sub_nothing) { FactoryGirl.create(:subject, user: user) }
-  let!(:sub_category) { FactoryGirl.create(:subject, user: other_user, category: category) }
-  let!(:sub_section) { FactoryGirl.create(:subject, user: admin, section: section) }
-  let!(:sub_chapter) { FactoryGirl.create(:subject, user: other_admin, section: section, chapter: chapter) }
-  let!(:sub_question) { FactoryGirl.create(:subject, user: root, section: section, chapter: chapter, question: question) }
-  let!(:sub_problem) { FactoryGirl.create(:subject, user: other_root, section: section, problem: problem) }
-
+  let(:sub_nothing) { FactoryGirl.create(:subject, user: user) }
+  let(:sub_category) { FactoryGirl.create(:subject, user: other_user, category: category) }
+  let(:sub_section) { FactoryGirl.create(:subject, user: admin, section: section) }
+  let(:sub_chapter) { FactoryGirl.create(:subject, user: other_admin, section: section, chapter: chapter) }
+  let(:sub_question) { FactoryGirl.create(:subject, user: root, section: section, chapter: chapter, question: question) }
+  let(:sub_problem) { FactoryGirl.create(:subject, user: other_root, section: section, problem: problem) }
+  
   let(:title) { "Mon titre" }
   let(:content) { "Mon message" }
   let(:newtitle) { "Mon nouveau titre" }
@@ -63,6 +62,14 @@ describe "Subject pages" do
   
   describe "user" do
     before { sign_in user }
+    
+    # Force the creation of the following subjects:
+    let!(:sub_nothing) { FactoryGirl.create(:subject, user: user) }
+    let!(:sub_category) { FactoryGirl.create(:subject, user: other_user, category: category) }
+    let!(:sub_section) { FactoryGirl.create(:subject, user: admin, section: section) }
+    let!(:sub_chapter) { FactoryGirl.create(:subject, user: other_admin, section: section, chapter: chapter) }
+    let!(:sub_question) { FactoryGirl.create(:subject, user: root, section: section, chapter: chapter, question: question) }
+    let!(:sub_problem) { FactoryGirl.create(:subject, user: other_root, section: section, problem: problem) }
     
     describe "visits subjects page" do
       before { visit subjects_path }
@@ -216,7 +223,7 @@ describe "Subject pages" do
     before { sign_in admin }
 
     describe "visits the subject of a student" do
-      before { visit subject_path(sub) }
+      before { visit subject_path(sub_user) }
       specify do
         expect(page).to have_link("Modifier ce sujet")
         expect(page).to have_link("Supprimer ce sujet")
@@ -229,11 +236,15 @@ describe "Subject pages" do
           fill_in "Titre", with: newtitle
           fill_in "MathInputEditSubject", with: newcontent
           click_button "Modifier"
+          sub_user.reload
         end
-        it do
-          should have_success_message("Votre sujet a bien été modifié.")
-          should have_content("#{newtitle} - #{category2.name}")
-          should have_selector("div", text: newcontent)
+        specify do
+          expect(sub_user.title).to eq(newtitle)
+          expect(sub_user.content).to eq(newcontent)
+          expect(sub_user.category).to eq(category2)
+          expect(page).to have_success_message("Votre sujet a bien été modifié.")
+          expect(page).to have_content("#{newtitle} - #{category2.name}")
+          expect(page).to have_selector("div", text: newcontent)
         end
       end
     end
@@ -255,14 +266,33 @@ describe "Subject pages" do
     end
 
     describe "deletes a subject with a message (DEPENDENCY)" do
-      let!(:mes) { FactoryGirl.create(:message, subject: sub) }
-      before { visit subject_path(sub) }
+      let!(:mes) { FactoryGirl.create(:message, subject: sub_user) }
+      before { visit subject_path(sub_user) }
       specify {	expect { click_link("Supprimer ce sujet") }.to change(Message, :count).by(-1) }
     end
   end
 
   describe "root" do
     before { sign_in root }
+    
+    describe "creates a subject and warn group A" do
+      before do
+        visit new_subject_path
+        select category.name, from: "Catégorie"
+        fill_in "Titre", with: title
+        fill_in "MathInput", with: content
+        check "subject[wepion]"
+        check "groupeA"
+        click_button "Créer"
+      end
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été posté.")
+        expect(page).to have_content("#{title} - #{category.name}")
+        expect(page).to have_selector("div", text: content)
+        expect(Subject.order(:id).last.wepion).to eq(true)
+        # TODO: Check in some way that the email was sent!
+      end
+    end
 
     describe "visits the subject of another root" do
       before { visit subject_path(sub_other_root) }
@@ -302,6 +332,7 @@ describe "Subject pages" do
       it { should have_link("Migrer ce sujet") }
       
       describe "and migrates it" do
+        let!(:sub_user) { FactoryGirl.create(:subject, user: user, created_at: sub_other_user.created_at - 1.day) } # Force the creation
         let!(:old_title) { sub_other_user.title }
         let!(:old_content) { sub_other_user.content }
         let!(:old_num_subjects) { Subject.count }
@@ -407,6 +438,230 @@ describe "Subject pages" do
         expect(sub_user.myfiles.count).to eq(1)
         expect(sub_user.myfiles.first.file.filename.to_s).to eq(image2)
       end
+    end
+    
+    describe "creates a subject in relation with a section" do
+      before do
+        visit new_subject_path
+        select section.name, from: "Catégorie"
+        fill_in "Titre", with: title
+        fill_in "MathInput", with: content
+        click_button "Créer"
+      end
+      let!(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été posté.")
+        expect(newsubject.title).to eq(title)
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.section).to eq(section)
+        expect(newsubject.chapter).to eq(nil)
+        expect(newsubject.question).to eq(nil)
+        expect(newsubject.problem).to eq(nil)
+      end
+    end
+    
+    describe "creates a subject in relation with a chapter" do
+      before do
+        visit new_subject_path
+        select section.name, from: "Catégorie"
+        wait_for_ajax
+        select chapter.name, from: "Chapitre"
+        fill_in "Titre", with: title
+        fill_in "MathInput", with: content
+        click_button "Créer"
+      end
+      let!(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été posté.")
+        expect(newsubject.title).to eq(title)
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.section).to eq(section)
+        expect(newsubject.chapter).to eq(chapter)
+        expect(newsubject.question).to eq(nil)
+        expect(newsubject.problem).to eq(nil)
+      end
+    end
+    
+    describe "creates a subject in relation with an exercise" do
+      let!(:question2) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 2) }
+      before do
+        visit new_subject_path
+        select section.name, from: "Catégorie"
+        wait_for_ajax
+        select chapter.name, from: "Chapitre"
+        wait_for_ajax
+        select "Exercice 2", from: "Exercice" # NB: Exercise 1 should not appear because there is already a subject!
+        wait_for_ajax # Titre should be automatically filled with "Exercice 2"
+        fill_in "MathInput", with: content
+        click_button "Créer"
+      end
+      let!(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été posté.")
+        expect(newsubject.title).to eq("Exercice 2")
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.section).to eq(section)
+        expect(newsubject.chapter).to eq(chapter)
+        expect(newsubject.question).to eq(question2)
+        expect(newsubject.problem).to eq(nil)
+      end
+    end
+    
+    describe "creates a subject in relation with a problem" do
+      let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true) }
+      before do
+        visit new_subject_path
+        select section.name, from: "Catégorie"
+        wait_for_ajax
+        select "Problèmes de #{section.name.downcase}", from: "Chapitre"
+        wait_for_ajax
+        select "Problème \##{problem2.number}", from: "Problème" # NB: problem should not appear because there is already a subject!
+        wait_for_ajax # Titre should be automaticaly filled with "Problème #..."
+        fill_in "MathInput", with: content
+        click_button "Créer"
+      end
+      let!(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été posté.")
+        expect(newsubject.title).to eq("Problème \##{problem2.number}")
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.section).to eq(section)
+        expect(newsubject.chapter).to eq(nil)
+        expect(newsubject.question).to eq(nil)
+        expect(newsubject.problem).to eq(problem2)
+      end
+    end
+    
+    describe "creates a subject in relation with no problem" do
+      before do
+        visit new_subject_path
+        select section.name, from: "Catégorie"
+        wait_for_ajax
+        select "Problèmes de #{section.name.downcase}", from: "Chapitre"
+        wait_for_ajax
+        fill_in "Titre", with: title
+        fill_in "MathInput", with: content
+        click_button "Créer"
+      end
+      it { should have_error_message("Un problème doit être sélectionné.") }
+    end
+  end
+  
+  describe "root", :js => true do
+    before { sign_in root }
+    
+    let!(:other_section) { FactoryGirl.create(:section) }
+    let!(:other_chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
+    let!(:other_question) { FactoryGirl.create(:question, chapter: other_chapter, online: true) }
+    let!(:other_problem) { FactoryGirl.create(:problem, section: section, online: true) }
+    
+    describe "updates a subject, from a question to a section" do
+      before do
+        visit subject_path(sub_question)
+        click_link "Modifier ce sujet"
+        wait_for_ajax
+        select other_section.name, from: "Catégorie"
+        wait_for_ajax
+        fill_in "Titre", with: newtitle
+        fill_in "MathInputEditSubject", with: newcontent
+        click_button "Modifier"
+        sub_question.reload
+      end
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été modifié.")
+        expect(sub_question.title).to eq(newtitle)
+        expect(sub_question.content).to eq(newcontent)
+        expect(sub_question.section).to eq(other_section)
+        expect(sub_question.chapter).to eq(nil)
+        expect(sub_question.question).to eq(nil)
+        expect(sub_question.problem).to eq(nil)
+      end
+    end
+    
+    describe "updates a suject, from a category to a chapter" do
+      before do
+        visit subject_path(sub_category)
+        click_link "Modifier ce sujet"
+        wait_for_ajax
+        select section.name, from: "Catégorie"
+        wait_for_ajax
+        select other_chapter.name, from: "Chapitre"
+        fill_in "Titre", with: newtitle
+        fill_in "MathInputEditSubject", with: newcontent
+        click_button "Modifier"
+        sub_category.reload
+      end
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été modifié.")
+        expect(sub_category.title).to eq(newtitle)
+        expect(sub_category.content).to eq(newcontent)
+        expect(sub_category.section).to eq(section)
+        expect(sub_category.chapter).to eq(other_chapter)
+        expect(sub_category.question).to eq(nil)
+        expect(sub_category.problem).to eq(nil)
+      end
+    end
+    
+    describe "updates a suject, from a chapter to a question" do
+      before do
+        visit subject_path(sub_chapter)
+        click_link "Modifier ce sujet"
+        wait_for_ajax
+        select other_chapter.name, from: "Chapitre"
+        wait_for_ajax
+        select "Exercice 1", from: "Exercice"
+        wait_for_ajax # Titre should be automatically filled with "Exercice 1"
+        fill_in "MathInputEditSubject", with: newcontent
+        click_button "Modifier"
+        sub_chapter.reload
+      end
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été modifié.")
+        expect(sub_chapter.title).to eq("Exercice 1")
+        expect(sub_chapter.content).to eq(newcontent)
+        expect(sub_chapter.section).to eq(section)
+        expect(sub_chapter.chapter).to eq(other_chapter)
+        expect(sub_chapter.question).to eq(other_question)
+        expect(sub_chapter.problem).to eq(nil)
+      end
+    end
+    
+    describe "updates a suject, from a chapter to a problem" do
+      before do
+        visit subject_path(sub_chapter)
+        click_link "Modifier ce sujet"
+        wait_for_ajax
+        select "Problèmes de #{section.name.downcase}", from: "Chapitre"
+        wait_for_ajax
+        select "Problème \##{other_problem.number}", from: "Problème"
+        wait_for_ajax # Titre should be automatically filled with "Problème #..."
+        fill_in "MathInputEditSubject", with: newcontent
+        click_button "Modifier"
+        sub_chapter.reload
+      end
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été modifié.")
+        expect(sub_chapter.title).to eq("Problème \##{other_problem.number}")
+        expect(sub_chapter.content).to eq(newcontent)
+        expect(sub_chapter.section).to eq(section)
+        expect(sub_chapter.chapter).to eq(nil)
+        expect(sub_chapter.question).to eq(nil)
+        expect(sub_chapter.problem).to eq(other_problem)
+      end
+    end
+    
+    describe "updates a suject, from a question to no problem" do
+      before do
+        visit subject_path(sub_question)
+        click_link "Modifier ce sujet"
+        wait_for_ajax
+        select "Problèmes de #{section.name.downcase}", from: "Chapitre"
+        fill_in "Titre", with: newtitle
+        fill_in "MathInputEditSubject", with: newcontent
+        click_button "Modifier"
+        sub_question.reload
+      end
+      it { should have_error_message("Un problème doit être sélectionné.") }
     end
   end
 end
