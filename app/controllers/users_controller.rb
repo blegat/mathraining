@@ -536,11 +536,7 @@ class UsersController < ApplicationController
   end
 
   def fill_user_info(users, recent, persection, globalrank, rating, country, linked_name)
-    if User.last.nil?
-      global_user_id_to_local_id = Array.new(1)
-    else
-      global_user_id_to_local_id = Array.new(User.last.id + 1)
-    end
+    global_user_id_to_local_id = Array.new((User.last.nil? ? 0 : User.last.id) + 1)
 
     ids = Array.new(users.size)
     local_id = 0

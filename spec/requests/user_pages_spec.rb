@@ -496,4 +496,96 @@ describe "User pages" do
       end
     end
   end
+  
+  # -- TESTS THAT REQUIRE JAVASCRIPT --
+  
+  describe "root", :js => true do
+    before { sign_in root }
+    
+    describe "wants to validate the names" do
+      let!(:user0) { FactoryGirl.create(:user, first_name: "Nicolas", last_name: "Benoit",      valid_name: true) }
+      let!(:user1) { FactoryGirl.create(:user, first_name: "Hector",  last_name: "Dupont",      valid_name: false) }
+      let!(:user2) { FactoryGirl.create(:user, first_name: "jeaN",    last_name: "boulanger",   valid_name: false) }
+      let!(:user3) { FactoryGirl.create(:user, first_name: "vIcToR",  last_name: "de la Terre", valid_name: false) }
+      
+      before { visit validate_names_path }
+      it do
+        should have_selector("h1", text: "Valider les noms")
+        should have_no_link(user0.name, href: user_path(user0))
+        should have_link(user1.name, href: user_path(user1))
+        should have_link(user2.name, href: user_path(user2))
+        should have_link(user3.name, href: user_path(user3))
+        should have_no_link("ok-#{user0.id}")
+        should have_link("ok-#{user1.id}")
+        should have_link("ok-#{user2.id}")
+        should have_link("ok-#{user3.id}")
+        should have_no_link("capitalize-#{user0.id}")
+        should have_link("capitalize-#{user1.id}")
+        should have_link("capitalize-#{user2.id}")
+        should have_link("capitalize-#{user3.id}")
+        should have_no_link("change-#{user0.id}")
+        should have_link("change-#{user1.id}")
+        should have_link("change-#{user2.id}")
+        should have_link("change-#{user3.id}")
+      end
+      
+      describe "and validates one name" do
+        before do
+          click_link "ok-#{user1.id}"
+          wait_for_ajax
+          user1.reload
+        end
+        specify do
+          expect(user1.first_name).to eq("Hector")
+          expect(user1.last_name).to eq("Dupont")
+          expect(user1.valid_name).to eq(true)
+          expect(page).to have_no_link(user1.name, href: user_path(user1)) # Should disappear
+        end
+      end
+      
+      describe "and capitalizes one name" do
+        before do
+          click_link "capitalize-#{user2.id}"
+          wait_for_ajax
+          user2.reload
+        end
+        specify do
+          expect(user2.first_name).to eq("Jean")
+          expect(user2.last_name).to eq("Boulanger")
+          expect(user2.valid_name).to eq(true)
+          expect(page).to have_no_link(user2.name, href: user_path(user2)) # Should disappear
+        end
+      end
+      
+      describe "and clicks to change one name" do
+        before do
+          click_link "change-#{user3.id}"
+          root.reload
+        end
+        specify do
+          expect(root.skin).to eq(user3.id)
+          expect(page).to have_selector("h1", text: "Votre compte")
+          expect(page).to have_button("Mettre à jour")
+        end
+        
+        describe "and fixes the name" do
+          before do
+            fill_in "Prénom", with: "Victor"
+            fill_in "Nom", with: "de la Terre"
+            click_button "Mettre à jour"
+            user3.reload
+            root.reload
+          end
+          specify do
+            expect(user3.first_name).to eq("Victor")
+            expect(user3.last_name).to eq("de la Terre")
+            expect(user3.valid_name).to eq(true)
+            expect(root.skin).to eq(0)
+            expect(page).to have_selector("h1", text: "Valider les noms")
+            expect(page).to have_no_link(user3.name, href: user_path(user3))
+          end
+        end
+      end
+    end
+  end
 end

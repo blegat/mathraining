@@ -74,6 +74,31 @@ describe "Discussion pages" do
       end
       it { should have_content(error_access_refused) }
     end
+    
+    describe "asks to receive emails for new messages" do
+      before do
+        visit new_discussion_path
+        click_link "M'avertir des nouveaux messages par e-mail"
+        user.reload
+      end
+      specify do
+        expect(page).to have_success_message("Vous recevrez dorénavant un e-mail à chaque nouveau message privé.")
+        expect(page).to have_link("Ne plus m'avertir par e-mail")
+        expect(user.follow_message).to eq(true)
+      end
+      
+      describe "and asks to not receive them anymore" do
+        before do
+          click_link "Ne plus m'avertir par e-mail"
+          user.reload
+        end
+        specify do
+          expect(page).to have_success_message("Vous ne recevrez maintenant plus d'e-mail lors d'un nouveau message privé.")
+          expect(page).to have_link("M'avertir des nouveaux messages par e-mail")
+          expect(user.follow_message).to eq(false)
+        end
+      end
+    end
   end
   
   # -- TESTS THAT REQUIRE JAVASCRIPT --

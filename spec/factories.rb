@@ -260,6 +260,7 @@ FactoryGirl.define do
     password_confirmation "foobar"
     consent_date DateTime.now
     last_policy_read true
+    valid_name true
     factory :admin do
       admin true
     end
