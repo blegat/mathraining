@@ -6,10 +6,7 @@ class FollowingsubjectsController < ApplicationController
   before_action :get_subject, only: [:remove_followingsubject, :add_followingsubject]
 
   def add_followingsubject
-    fol = Followingsubject.new
-    fol.subject = @subject
-    fol.user = current_user.sk
-    fol.save
+    Followingsubject.create(:subject => @subject, :user => current_user.sk)
     
     flash[:success] = "Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."
     redirect_back(fallback_location: subject_path(@subject))

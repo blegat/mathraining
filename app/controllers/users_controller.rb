@@ -143,7 +143,7 @@ class UsersController < ApplicationController
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir créer un compte."
       render 'new'
     elsif (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
-      UserMailer.registration_confirmation(@user.id).deliver if Rails.env.production?
+      UserMailer.registration_confirmation(@user.id).deliver
       
       user_reload = User.find(@user.id) # Reload because email and email_confirmation can be different after downcaise otherwise!
       user_reload.consent_date = DateTime.now
@@ -275,7 +275,7 @@ class UsersController < ApplicationController
         if @user.email_confirm
           @user.update_attribute(:key, SecureRandom.urlsafe_base64)
           @user.update_attribute(:recup_password_date_limit, DateTime.now)
-          UserMailer.forgot_password(@user.id).deliver if Rails.env.production?
+          UserMailer.forgot_password(@user.id).deliver
           flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if !Rails.env.production?
           flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
         else

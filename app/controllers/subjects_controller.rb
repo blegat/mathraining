@@ -184,7 +184,7 @@ class SubjectsController < ApplicationController
         for g in ["A", "B"] do
           if params.has_key?("groupe" + g)
             User.where(:group => g).each do |u|
-              UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver if Rails.env.production?
+              UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver
             end
           end
         end

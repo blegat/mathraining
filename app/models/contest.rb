@@ -74,7 +74,7 @@ class Contest < ActiveRecord::Base
           end
           self.automatic_start_in_one_day_problem_post(allp)
           p.contest.followers.each do |u|
-            UserMailer.new_followed_contestproblem(u.id, allid).deliver if Rails.env.production?
+            UserMailer.new_followed_contestproblem(u.id, allid).deliver
           end
         end
       end
@@ -110,7 +110,7 @@ class Contest < ActiveRecord::Base
     
     sub.following_users.each do |u|
       if !contest.followers.include?(u) # Avoid to send again an email to people already following the contest
-        UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
+        UserMailer.new_followed_message(u.id, sub.id, -1).deliver
       end
     end
   end
@@ -132,7 +132,7 @@ class Contest < ActiveRecord::Base
     end
     
     sub.following_users.each do |u|
-      UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
+      UserMailer.new_followed_message(u.id, sub.id, -1).deliver
     end
   end
 end

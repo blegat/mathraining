@@ -274,25 +274,6 @@ describe "Subject pages" do
 
   describe "root" do
     before { sign_in root }
-    
-    describe "creates a subject and warn group A" do
-      before do
-        visit new_subject_path
-        select category.name, from: "Catégorie"
-        fill_in "Titre", with: title
-        fill_in "MathInput", with: content
-        check "subject[wepion]"
-        check "groupeA"
-        click_button "Créer"
-      end
-      specify do
-        expect(page).to have_success_message("Votre sujet a bien été posté.")
-        expect(page).to have_content("#{title} - #{category.name}")
-        expect(page).to have_selector("div", text: content)
-        expect(Subject.order(:id).last.wepion).to eq(true)
-        # TODO: Check in some way that the email was sent!
-      end
-    end
 
     describe "visits the subject of another root" do
       before { visit subject_path(sub_other_root) }

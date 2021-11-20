@@ -62,6 +62,7 @@ gem 'activerecord-session_store'
 
 group :test do
   gem 'capybara', '3.18.0'
+  gem 'capybara-email'
   gem 'puma'
   gem 'factory_girl_rails', '4.1.0'
   gem 'database_cleaner-active_record'

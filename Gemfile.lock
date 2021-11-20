@@ -80,6 +80,9 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (~> 1.2)
       xpath (~> 3.2)
+    capybara-email (3.0.2)
+      capybara (>= 2.4, < 4.0)
+      mail
     capybara-screenshot (1.0.25)
       capybara (>= 1.0, < 4)
       launchy
@@ -354,6 +357,7 @@ DEPENDENCIES
   bootstrap3-datetimepicker-rails (~> 4.14.30)
   bullet
   capybara (= 3.18.0)
+  capybara-email
   capybara-screenshot
   codecov
   coffee-rails (~> 4.2.1)
