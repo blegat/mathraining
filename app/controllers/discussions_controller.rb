@@ -122,16 +122,12 @@ class DiscussionsController < ApplicationController
   
   def get_discussion
     @discussion = Discussion.find_by_id(params[:id])
-    if @discussion.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@discussion)
   end
   
   def get_discussion2
     @discussion = Discussion.find_by_id(params[:discussion_id])
-    if @discussion.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@discussion)
   end
 
   def is_involved

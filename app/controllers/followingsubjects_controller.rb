@@ -30,9 +30,7 @@ class FollowingsubjectsController < ApplicationController
   
   def get_subject
     @subject = Subject.find_by_id(params[:subject_id])
-    if @subject.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@subject)
   end
 
 end

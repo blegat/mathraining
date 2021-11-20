@@ -29,9 +29,7 @@ class FollowingcontestsController < ApplicationController
   
   def get_contest
     @contest = Contest.find_by_id(params[:contest_id])
-    if @contest.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@contest)
   end
 
 end

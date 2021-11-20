@@ -259,37 +259,29 @@ class QuestionsController < ApplicationController
   
   def get_chapter
     @chapter = Chapter.find_by_id(params[:chapter_id])
-    if @chapter.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@chapter)
   end
   
   def get_question
     @question = Question.find_by_id(params[:id])
-    if @question.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@question)
     @chapter = @question.chapter
   end
   
   def get_question2
     @question = Question.find_by_id(params[:question_id])
-    if @question.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@question)
     @chapter = @question.chapter
   end
   
   def get_item
     @item = Item.find_by_id(params[:id])
-    if @item.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@item)
   end
 
   # Vérifie que l'exercice n'est pas en ligne
   def offline_question
-    redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id) if @question.online
+    return if check_online_object(@question)
   end
   
   # Modification de l'ordre des exercices

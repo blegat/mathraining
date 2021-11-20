@@ -47,8 +47,6 @@ class ActualitiesController < ApplicationController
   
   def get_actuality
     @actuality = Actuality.find_by_id(params[:id])
-    if @actuality.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@actuality)
   end
 end

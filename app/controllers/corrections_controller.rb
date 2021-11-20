@@ -174,9 +174,7 @@ class CorrectionsController < ApplicationController
   
   def get_submission
     @submission = Submission.find_by_id(params[:submission_id])
-    if @submission.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@submission)
   end
 
   # Vérifie qu'il s'agit du bon utilisateur ou d'un admin ou d'un correcteur

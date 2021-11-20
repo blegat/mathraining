@@ -88,16 +88,12 @@ class MyfilesController < ApplicationController
   
   def get_myfile
     @myfile = Myfile.find_by_id(params[:id])
-    if @myfile.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@myfile)
   end
   
   def get_myfile2
     @myfile = Myfile.find_by_id(params[:myfile_id])
-    if @myfile.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@myfile)
   end
 
   # Vérifie qu'on a accès à la pièce jointe

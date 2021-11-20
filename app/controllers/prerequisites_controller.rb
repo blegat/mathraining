@@ -12,7 +12,8 @@ class PrerequisitesController < ApplicationController
   def add_prerequisite
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
-    (redirect_to graph_prerequisites_path and return) if (prerequisite.nil? || chapter.nil?) # Should not happen
+    return if check_nil_object(chapter)
+    return if check_nil_object(prerequisite)
     
     if chapter.online
       flash[:danger] = "Les prérequis d'un chapitre en ligne ne peuvent pas être modifiés."
@@ -47,7 +48,8 @@ class PrerequisitesController < ApplicationController
   def remove_prerequisite
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
-    (redirect_to graph_prerequisites_path and return) if (prerequisite.nil? || chapter.nil?)
+    return if check_nil_object(chapter)
+    return if check_nil_object(prerequisite)
     
     if not chapter.prerequisites.exists?(prerequisite.id)
       flash[:danger] = "Ce lien n'existe pas."

@@ -88,29 +88,21 @@ class PrivacypoliciesController < ApplicationController
   
   def get_policy
     @privacypolicy = Privacypolicy.find_by_id(params[:id])
-    if @privacypolicy.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@privacypolicy)
   end
   
   def get_policy2
     @privacypolicy = Privacypolicy.find_by_id(params[:privacypolicy_id])
-    if @privacypolicy.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@privacypolicy)
   end
   
   # Vérifie que la politique de confidentialité est hors-ligne
   def is_offline
-    if @privacypolicy.online
-      render 'errors/access_refused' and return
-    end
+    return if check_online_object(@privacypolicy)
   end
   
   # Vérifie que la politique de confidentialité est en ligne
   def is_online
-    if !@privacypolicy.online
-      render 'errors/access_refused' and return
-    end
+    return if check_offline_object(@privacypolicy)
   end
 end

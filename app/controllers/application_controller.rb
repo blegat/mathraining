@@ -87,6 +87,31 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Vérifie qu'un objet existe: doit être utilisé comme "return if check_nil_object(...)"
+  def check_nil_object(object)
+    if object.nil?
+      render 'errors/access_refused' and return true
+    end
+    return false
+  end
+  
+  # Vérifie qu'un objet est en ligne: doit être utilisé comme "return if check_offline_object(...)"
+  def check_offline_object(object)
+    if !object.online
+      render 'errors/access_refused' and return true
+    end
+    return false
+  end
+  
+  # Vérifie qu'un objet est hors-ligne: doit être utilisé comme "return if check_online_object(...)"
+  def check_online_object(object)
+    if object.online
+      render 'errors/access_refused' and return true
+    end
+    return false
+  end
+  
+  # Intervertit deux positions
   def swap_position(a, b)
     x = a.position
     a.position = b.position

@@ -97,9 +97,7 @@ class ContestcorrectionsController < ApplicationController
 
   def get_contestcorrection
     @contestcorrection = Contestcorrection.find_by_id(params[:id])
-    if @contestcorrection.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@contestcorrection)
     @contestsolution = @contestcorrection.contestsolution
     @contestproblem = @contestsolution.contestproblem
     @contest = @contestproblem.contest

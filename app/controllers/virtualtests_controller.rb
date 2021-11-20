@@ -104,16 +104,12 @@ class VirtualtestsController < ApplicationController
   # On récupère
   def get_virtualtest
     @virtualtest = Virtualtest.find_by_id(params[:id])
-    if @virtualtest.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@virtualtest)
   end
 
   def get_virtualtest2
     @virtualtest = Virtualtest.find_by_id(params[:virtualtest_id])
-    if @virtualtest.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@virtualtest)
   end
   
   # Vérifie que le test est en cours

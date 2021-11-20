@@ -24,8 +24,6 @@ class ContestorganizationsController < ApplicationController
   # On récupère
   def get_contestorganization
     @contestorganization = Contestorganization.find_by_id(params[:id])
-    if @contestorganization.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@contestorganization)
   end
 end

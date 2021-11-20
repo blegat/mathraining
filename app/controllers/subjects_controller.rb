@@ -3,6 +3,7 @@ class SubjectsController < ApplicationController
   before_action :signed_in_user, only: [:index, :show, :new]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate]
   before_action :get_subject, only: [:show, :update, :destroy]
+  before_action :get_subject2, only: [:migrate]
   before_action :admin_subject_user, only: [:show]
   before_action :author, only: [:update, :destroy]
   before_action :admin_user, only: [:destroy, :migrate]
@@ -11,47 +12,42 @@ class SubjectsController < ApplicationController
   
   # Voir tous les sujets
   def index
-    cherche_category = -1
-    cherche_section = -1
-    cherche_section_problems = -1
-    cherche_chapitre = -1
-    cherche_personne = false
+    search_category = -1
+    search_section = -1
+    search_section_problems = -1
+    search_chapter = -1
+    search_personne = false
     q = -1
 
     @category = nil
-    @chapitre = nil
+    @chapter = nil
     @section = nil
     if(params.has_key?:q)
       q = params[:q].to_i
       if q >= 1000000
-        cherche_category = q/1000000
-        @category = Category.find_by_id(cherche_category)
-        if @category.nil?
-          render 'errors/access_refused' and return
-        end
+        search_category = q/1000000
+        @category = Category.find_by_id(search_category)
+        return if check_nil_object(@category)
       elsif q >= 1000
         if q % 1000 == 0
-          cherche_section = q/1000
-          @section = Section.find_by_id(cherche_section)
+          search_section = q/1000
+          @section = Section.find_by_id(search_section)
         elsif q % 1000 == 1
-          cherche_section_problems = (q-1)/1000
-          @section = Section.find_by_id(cherche_section_problems)
+          search_section_problems = (q-1)/1000
+          @section = Section.find_by_id(search_section_problems)
         end
-        if @section.nil?
-          render 'errors/access_refused' and return
-        end
+        return if check_nil_object(@section)
       elsif q > 0
-        cherche_chapitre = q
-        @chapitre = Chapter.find_by_id(cherche_chapitre)
-        if @chapitre.nil? || !@chapitre.online?
-          render 'errors/access_refused' and return
-        end
-        @section = @chapitre.section
+        search_chapter = q
+        @chapter = Chapter.find_by_id(search_chapter)
+        return if check_nil_object(@chapter)
+        return if check_offline_object(@chapter)
+        @section = @chapter.section
       else
-        cherche_personne = true
+        search_personne = true
       end
     else
-      cherche_personne = true
+      search_personne = true
       q = 0
     end
     
@@ -67,21 +63,21 @@ class SubjectsController < ApplicationController
       wepion_allowed_values = false
     end
     
-    if cherche_personne
+    if search_personne
       @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
       @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
-    elsif cherche_category >= 0
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, category: cherche_category).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, category: cherche_category).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
-    elsif cherche_section >= 0
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
-    elsif cherche_section_problems >= 0
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section_problems).where.not(problem_id: nil).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: cherche_section_problems).where.not(problem_id: nil).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
-    elsif cherche_chapitre
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: cherche_chapitre).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: cherche_chapitre).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+    elsif search_category >= 0
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, category: search_category).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, category: search_category).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+    elsif search_section >= 0
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: search_section).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: search_section).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+    elsif search_section_problems >= 0
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+    elsif search_chapter
+      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: search_chapter).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: search_chapter).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
     end
   end
 
@@ -119,9 +115,7 @@ class SubjectsController < ApplicationController
     category_id = params[:subject][:category_id].to_i
     if category_id < 1000
       @subject.category = Category.find_by_id(category_id)
-      if @subject.category.nil?
-        render 'errors/access_refused' and return
-      end
+      return if check_nil_object(@subject.category)
       @subject.section = nil
       @subject.chapter = nil
       @subject.question = nil
@@ -130,9 +124,7 @@ class SubjectsController < ApplicationController
       section_id = category_id/1000
       @subject.category = nil
       @subject.section = Section.find_by_id(section_id)
-      if @subject.section.nil?
-        render 'errors/access_refused' and return
-      end
+      return if check_nil_object(@subject.section)
       chapter_id = params[:subject][:chapter_id].to_i
       if chapter_id == 0 # No particular chapter
         @subject.chapter = nil
@@ -146,23 +138,22 @@ class SubjectsController < ApplicationController
           error_create(["Un problème doit être sélectionné."]) and return
         end
         @subject.problem = Problem.find_by_id(problem_id)
-        if @subject.problem.nil? # Here we can check that the user has indeed access to the problem but it is annoying to do
-          render 'errors/access_refused' and return
-        end
+        return if check_nil_object(@subject.problem)
+        return if check_offline_object(@subject.problem)
+        # Here we can check that the user has indeed access to the problem but it is annoying to do
       else
         @subject.chapter = Chapter.find_by_id(chapter_id)
-        if @subject.chapter.nil? || !@subject.chapter.online
-          render 'errors/access_refused' and return
-        end
+        return if check_nil_object(@subject.chapter)
+        return if check_offline_object(@subject.chapter)
         @subject.problem = nil
         question_id = params[:subject][:question_id].to_i
         if question_id == 0
           @subject.question = nil
         else
           @subject.question = Question.find_by_id(question_id)
-          if @subject.question.nil? # Here we can check that the user has indeed access to the question but it is annoying to do
-            render 'errors/access_refused' and return
-          end
+          return if check_nil_object(@subject.question)
+          return if check_offline_object(@subject.question)
+          # Here we can check that the user has indeed access to the question but it is annoying to do
         end
       end
     end
@@ -234,9 +225,7 @@ class SubjectsController < ApplicationController
       category_id = params[:subject][:category_id].to_i
       if category_id < 1000
         @subject.category = Category.find_by_id(category_id)
-        if @subject.category.nil?
-          render 'errors/access_refused' and return
-        end
+        return if check_nil_object(@subject.category)
         @subject.section = nil
         @subject.chapter = nil
         @subject.question = nil
@@ -245,9 +234,7 @@ class SubjectsController < ApplicationController
         section_id = category_id/1000
         @subject.category = nil
         @subject.section = Section.find_by_id(section_id)
-        if @subject.section.nil?
-          render 'errors/access_refused' and return
-        end
+        return if check_nil_object(@subject.section)
         chapter_id = params[:subject][:chapter_id].to_i
         if chapter_id == 0 # No particular chapter
           @subject.chapter = nil
@@ -261,23 +248,22 @@ class SubjectsController < ApplicationController
             error_update(["Un problème doit être sélectionné."]) and return
           end
           @subject.problem = Problem.find_by_id(problem_id)
-          if @subject.problem.nil? # Here we can check that the user has indeed access to the problem but it is annoying to do
-            render 'errors/access_refused' and return
-          end
+          return if check_nil_object(@subject.problem)
+          return if check_offline_object(@subject.problem)
+          # Here we can check that the user has indeed access to the problem but it is annoying to do
         else
           @subject.chapter = Chapter.find_by_id(chapter_id)
-          if @subject.chapter.nil?
-            render 'errors/access_refused' and return
-          end
+          return if check_nil_object(@subject.chapter)
+          return if check_offline_object(@subject.chapter)
           @subject.problem = nil
           question_id = params[:subject][:question_id].to_i
           if question_id == 0
             @subject.question = nil
           else
             @subject.question = Question.find_by_id(question_id)
-            if @subject.question.nil? # Here we can check that the user has indeed access to the question but it is annoying to do
-              render 'errors/access_refused' and return
-            end
+            return if check_nil_object(@subject.question)
+            return if check_offline_object(@subject.question)
+            # Here we can check that the user has indeed access to the question but it is annoying to do
           end
         end
       end
@@ -314,11 +300,7 @@ class SubjectsController < ApplicationController
   end
 
   # Migrer un sujet vers un autre : il faut être root
-  def migrate
-    @subject = Subject.find_by_id(params[:subject_id])
-    if @subject.nil?
-      render 'errors/access_refused' and return
-    end
+  def migrate    
     autre_id = params[:migreur].to_i
     @migreur = Subject.find_by_id(autre_id)
     
@@ -379,9 +361,12 @@ class SubjectsController < ApplicationController
   
   def get_subject
     @subject = Subject.find_by_id(params[:id])
-    if @subject.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@subject)
+  end
+  
+  def get_subject2
+    @subject = Subject.find_by_id(params[:subject_id])
+    return if check_nil_object(@subject)
   end
   
   def get_q

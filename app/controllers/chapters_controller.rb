@@ -125,25 +125,19 @@ class ChaptersController < ApplicationController
   
   def get_chapter
     @chapter = Chapter.find_by_id(params[:id])
-    if @chapter.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@chapter)
     @section = @chapter.section
   end
   
   def get_chapter2
     @chapter = Chapter.find_by_id(params[:chapter_id])
-    if @chapter.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@chapter)
     @section = @chapter.section
   end
   
   def get_section
     @section = Section.find_by_id(params[:section_id])
-    if @section.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@section)
   end
 
   # Vérifie que le chapitre est en ligne (ou qu'on est admin)
@@ -155,9 +149,7 @@ class ChaptersController < ApplicationController
 
   # Vérifie que le chapitre n'est pas en ligne pour pouvoir le supprimer
   def delete_online
-    if @chapter.online
-      render 'errors/access_refused' and return
-    end
+    return if check_online_object(@chapter)
   end
 
   # Vérifie avant de mettre en ligne que les prérequis sont en ligne

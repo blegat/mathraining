@@ -187,30 +187,22 @@ class ProblemsController < ApplicationController
   
   def get_problem
     @problem = Problem.find_by_id(params[:id])
-    if @problem.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@problem)
   end
   
   def get_problem2
     @problem = Problem.find_by_id(params[:problem_id])
-    if @problem.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@problem)
   end
   
   def get_section
     @section = Section.find_by_id(params[:section_id])
-    if @section.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@section)
   end
 
   # Vérifie que le problème est hors-ligne pour le supprimer
   def offline_problem
-    if @problem.online
-      render 'errors/access_refused' and return
-    end
+    return if check_online_object(@problem)
   end
 
   # Vérifie qu'on peut voir ce problème

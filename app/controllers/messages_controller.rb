@@ -5,8 +5,6 @@ class MessagesController < ApplicationController
   before_action :get_message, only: [:update, :destroy]
   before_action :author, only: [:update]
   before_action :admin_user, only: [:destroy]
-  before_action :valid_chapter
-  before_action :online_chapter
   before_action :notskin_user, only: [:create, :update]
   before_action :get_q, only: [:create, :update, :destroy]
 
@@ -156,17 +154,13 @@ class MessagesController < ApplicationController
   
   def get_message
     @message = Message.find_by_id(params[:id])
-    if @message.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@message)
   end
   
   # Il faut être admin si le sujet est pour admin
   def get_subject
     @subject = Subject.find_by_id(params[:subject_id])
-    if @subject.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@subject)
     
     unless (current_user.sk.admin? || current_user.sk.corrector? || !@subject.admin)
       render 'errors/access_refused' and return
@@ -186,29 +180,6 @@ class MessagesController < ApplicationController
   def getPage(m)
     tot = m.subject.messages.where("id <= ?", m.id).count
     return [0,((tot-1)/10).floor].max + 1
-  end
-
-  # Il faut que le chapitre existe
-  def valid_chapter
-    chapter_id = params[:chapter_id]
-    if chapter_id.nil?
-      @chapter = nil
-    else
-      @chapter = Chapter.find_by_id(chapter_id)
-      if @chapter.nil?
-        render 'errors/access_refused' and return
-      end
-    end
-  end
-
-  # Il faut que le chapitre soit en ligne ou qu'on soit admin
-  def online_chapter
-    if @chapter.nil?
-      return
-    end
-    unless (current_user.sk.admin? || @chapter.online)
-      render 'errors/access_refused' and return
-    end
   end
 
   # Il faut être l'auteur ou admin pour modifier un message

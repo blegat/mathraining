@@ -33,13 +33,7 @@ class SectionsController < ApplicationController
   # Récupérer la section
   def get_section
     @section = Section.find_by_id(params[:id])
-    if @section.nil?
-      render 'errors/access_refused' and return
-    end
-    if @section.fondation
-      @fondation = true
-    else
-      @fondation = false
-    end
+    return if check_nil_object(@section)
+    @fondation = @section.fondation
   end
 end

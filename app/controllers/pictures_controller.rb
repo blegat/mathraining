@@ -12,15 +12,15 @@ class PicturesController < ApplicationController
 
   # Créer
   def new
-    @pic = Picture.new
+    @picture = Picture.new
   end
 
   # Créer 2
   def create
-    @pic = Picture.new((params.require(:picture).permit(:user_id, :image)))
-    if @pic.save
+    @picture = Picture.new((params.require(:picture).permit(:user_id, :image)))
+    if @picture.save
       flash[:success] = "Image ajoutée."
-      redirect_to @pic
+      redirect_to @picture
     else
       render 'new'
     end
@@ -28,8 +28,7 @@ class PicturesController < ApplicationController
 
   # Supprimer, il faut être la bonne personne
   def destroy
-    @pic.image.destroy
-    @pic.destroy
+    @picture.destroy
     redirect_to pictures_path
   end
 
@@ -37,10 +36,8 @@ class PicturesController < ApplicationController
   private
 
   def get_picture
-    @pic = Picture.find_by_id(params[:id])
-    if @pic.nil?
-      render 'errors/access_refused' and return
-    end
+    @picture = Picture.find_by_id(params[:id])
+    return if check_nil_object(@picture)
   end
 
   def admin_user_or_chapter_creator
@@ -51,7 +48,7 @@ class PicturesController < ApplicationController
   
   # Vérifie qu'il s'agit de la bonne personne
   def good_person
-    if @pic.user.id != current_user.sk.id
+    if @picture.user.id != current_user.sk.id
       render 'errors/access_refused' and return
     end
   end

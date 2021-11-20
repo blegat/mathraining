@@ -119,17 +119,13 @@ class ContestsolutionsController < ApplicationController
   # Récupère le problème
   def get_contestproblem
     @contestproblem = Contestproblem.find_by_id(params[:contestproblem_id])
-    if @contestproblem.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@contestproblem)
     @contest = @contestproblem.contest
   end
   
   def get_contestsolution
     @contestsolution = Contestsolution.find_by_id(params[:id])
-    if @contestsolution.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@contestsolution)
     @contestproblem = @contestsolution.contestproblem
     @contest = @contestproblem.contest
   end

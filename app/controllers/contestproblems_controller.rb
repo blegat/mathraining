@@ -111,25 +111,19 @@ class ContestproblemsController < ApplicationController
   
   def get_contestproblem
     @contestproblem = Contestproblem.find_by_id(params[:id])
-    if @contestproblem.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@contestproblem)
     @contest = @contestproblem.contest
   end
   
   def get_contestproblem2
     @contestproblem = Contestproblem.find_by_id(params[:contestproblem_id])
-    if @contestproblem.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@contestproblem)
     @contest = @contestproblem.contest
   end
   
   def get_contest
     @contest = Contest.find_by_id(params[:contest_id])
-    if @contest.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@contest)
   end
   
   def is_organizer

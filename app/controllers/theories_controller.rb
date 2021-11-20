@@ -102,24 +102,18 @@ class TheoriesController < ApplicationController
   
   def get_chapter
     @chapter = Chapter.find_by_id(params[:chapter_id])
-    if @chapter.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@chapter)
   end
   
   def get_theory
     @theory = Theory.find_by_id(params[:id])
-    if @theory.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@theory)
     @chapter = @theory.chapter
   end
   
   def get_theory2
     @theory = Theory.find_by_id(params[:theory_id])
-    if @theory.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@theory)
     @chapter = @theory.chapter
   end
   

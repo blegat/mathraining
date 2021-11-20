@@ -42,9 +42,7 @@ class CategoriesController < ApplicationController
   
   def get_category
     @category = Category.find_by_id(params[:id])
-    if @category.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@category)
   end
 
 end

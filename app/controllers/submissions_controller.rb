@@ -379,11 +379,8 @@ class SubmissionsController < ApplicationController
   # Est-ce qu'on est en test?
   def in_test
     @t = @problem.virtualtest
-    if @t.nil?
-      render 'errors/access_refused' and return
-    else
-      redirect_to virtualtests_path if current_user.sk.status(@t) != 0
-    end
+    return if check_nil_object(@t)
+    redirect_to virtualtests_path if current_user.sk.status(@t) != 0
   end
   
   def root_user_or_in_test

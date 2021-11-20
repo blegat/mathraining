@@ -43,9 +43,7 @@ class ColorsController < ApplicationController
   
   def get_color
     @color = Color.find_by_id(params[:id])
-    if @color.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@color)
   end
 
 end
