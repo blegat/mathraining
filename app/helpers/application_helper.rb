@@ -8,19 +8,25 @@ module ApplicationHelper
       "#{page_title} | #{base_title}"
     end
   end
-
-  # Flash all errors
-  def flash_errors(object)
-    unless object.errors.empty?
-      flash.now[:danger] = object.errors.full_messages.to_sentence
+  
+  # Transform list of errors in readable html list
+  def errors_to_list(errors)
+    if errors.count == 0
+      return "Une erreur est survenue."
+    else
+      s = "Le formulaire contient #{ errors.count } erreur#{ 's' if errors.count > 1 }.\n"
+      s += "<ul>\n"
+      errors.each do |msg|
+        s += "<li>#{ msg }</li>\n"
+      end
+      s += "</ul>"
+      return s.html_safe
     end
   end
-
-  # Get all errors
-  def get_errors(object)
-    unless object.errors.empty?
-      object.errors.full_messages.to_sentence
-    end
+  
+  # Get html list of errors for an invalid object
+  def error_list_for(object)
+    return errors_to_list(object.errors.full_messages)
   end
 
   private

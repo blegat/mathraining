@@ -43,13 +43,13 @@ describe "Category pages" do
         specify { expect(Category.order(:id).first.name).to eq(newname) }
       end
       
-      describe "and modifies one with bad name" do
+      describe "and modifies one with empty name" do
         before do
           page.all(:fillable_field, "category[name]").first.set("")
           page.all(:button, "Modifier cette catégorie").first.click
         end
         specify do
-          expect(page).to have_error_message("Une erreur est survenue.")
+          expect(page).to have_error_message("Nom doit être rempli")
           expect(Category.order(:id).first.name).to_not eq("")
         end
       end
@@ -62,13 +62,13 @@ describe "Category pages" do
         specify { expect(Category.order(:id).last.name).to eq(newname) }
       end
       
-      describe "and adds one with bad name" do
+      describe "and adds one with empty name" do
         before do
           page.all(:fillable_field, "category[name]").last.set("")
           click_button "Ajouter cette catégorie"
         end
         specify do
-          expect(page).to have_error_message("Une erreur est survenue.")
+          expect(page).to have_error_message("Nom doit être rempli")
           expect(Category.order(:id).last.name).to_not eq("")
         end
       end

@@ -5,20 +5,14 @@ class FollowingcontestsController < ApplicationController
   before_action :get_contest, only: [:remove_followingcontest, :add_followingcontest]
   
   def add_followingcontest
-    fol = Followingcontest.new
-    fol.contest = @contest
-    fol.user = current_user.sk
-    fol.save
-    
+    current_user.sk.followed_contests << @contest unless current_user.sk.followed_contests.exists?(@contest.id)
+
     flash[:success] = "Vous recevrez dorénavant un e-mail de rappel un jour avant la publication de chaque problème de ce concours."
     redirect_to @contest
   end
 
   def remove_followingcontest
-    x = current_user.sk.followingcontests.where(:contest => @contest).first
-    if !x.nil?
-      x.destroy
-    end
+    current_user.sk.followed_contests.destroy(@contest)
     
     flash[:success] = "Vous ne recevrez maintenant plus d'e-mail concernant ce concours."
     redirect_to @contest

@@ -57,7 +57,7 @@ describe "Submission pages" do
             fill_in "MathInput", with: ""
             click_button "Soumettre cette solution"
           end
-          it { should have_error_message("Votre soumission est vide.") }
+          it { should have_error_message("Soumission doit être rempli") }
         end
         
         describe "and sends new submission" do

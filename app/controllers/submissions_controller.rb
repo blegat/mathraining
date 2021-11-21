@@ -68,16 +68,10 @@ class SubmissionsController < ApplicationController
         flash[:success] = "Votre solution a bien été soumise."
         redirect_to problem_path(@problem, :sub => submission.id)
       end
-
-      # Si il y a eu une erreur
     else
       destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:submission][:content]
-      if params[:submission][:content].size == 0
-        flash[:danger] = "Votre soumission est vide."
-      else
-        flash[:danger] = "Une erreur est survenue."
-      end
+      flash[:danger] = error_list_for(submission)
       redirect_to problem_path(@problem, :sub => 0)
     end
   end
@@ -122,11 +116,7 @@ class SubmissionsController < ApplicationController
     else
       destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:submission][:content]
-      if params[:submission][:content].size == 0
-        flash[:danger] = "Votre soumission est vide."
-      else
-        flash[:danger] = "Une erreur est survenue."
-      end
+      flash[:danger] = error_list_for(submission)
       redirect_to virtualtest_path(@t, :p => @problem.id)
     end
   end
@@ -331,25 +321,19 @@ class SubmissionsController < ApplicationController
   
   def get_submission
     @submission = Submission.find_by_id(params[:id])
-    if @submission.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@submission)
   end
   
   def get_submission2
     @submission = Submission.find_by_id(params[:submission_id])
-    if @submission.nil?
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@submission)
   end
 
   # Récupère le problème
   def get_problem
     if !params[:problem_id].nil?
       @problem = Problem.find_by_id(params[:problem_id])
-      if @problem.nil?
-        render 'errors/access_refused' and return
-      end
+      return if check_nil_object(@problem)
     end
   end
 
@@ -447,11 +431,7 @@ class SubmissionsController < ApplicationController
       end
     else
       session[:ancientexte] = params[:submission][:content]
-      if params[:submission][:content].size == 0
-        flash[:danger] = "Votre soumission est vide."
-      else
-        flash[:danger] = "Une erreur est survenue."
-      end
+      flash[:danger] = error_list_for(@submission)
       redirect_to lepath
     end
   end
@@ -463,31 +443,21 @@ class SubmissionsController < ApplicationController
       following.read = read
       if following.save
         flash[:success] = "Soumission marquée comme #{msg}."
-        redirect_to problem_path(@problem, :sub => @submission)
       else
         flash[:danger] = "Un problème est apparu."
-        redirect_to problem_path(@problem, :sub => @submission)
       end
-    else
-      redirect_to root_path
     end
+    redirect_to problem_path(@problem, :sub => @submission)
   end
 
   def can_see_submissions
-    if !(params.has_key?:what)
-      redirect_to root_path
-    end
+    redirect_to root_path if !(params.has_key?:what)
     @what = params[:what].to_i
+    redirect_to root_path if (@what != 0 and @what != 1)
     if @what == 0    # See correct submissions (need to have solved problem or to be admin)
-      if !current_user.sk.admin? and !current_user.sk.pb_solved?(@problem)
-        redirect_to root_path
-      end
-    elsif @what == 1 # See incorrect submissions (need to be admin or corrector)
-      if !current_user.sk.admin? and !current_user.sk.corrector?
-        redirect_to root_path
-      end
-    else
-      redirect_to root_path
+      redirect_to root_path if !current_user.sk.admin? and !current_user.sk.pb_solved?(@problem)
+    else # (@what == 1) # See incorrect submissions (need to be admin or corrector)
+      redirect_to root_path if !current_user.sk.admin? and !current_user.sk.corrector?
     end
   end
 

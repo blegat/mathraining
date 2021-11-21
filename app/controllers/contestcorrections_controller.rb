@@ -83,11 +83,7 @@ class ContestcorrectionsController < ApplicationController
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     else
       session[:ancientexte] = params[:contestcorrection][:content]
-      if params[:contestcorrection][:content].size == 0
-        flash[:danger] = "Votre correction est vide."
-      else
-        flash[:danger] = "Une erreur est survenue."
-      end
+      flash[:danger] = error_list_for(@contestcorrection)
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     end
   end

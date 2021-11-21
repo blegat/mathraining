@@ -1,7 +1,7 @@
 <% provide(:title, 'Messages') %>
 <h1><%= title_1("Messages") %>
   <% if !current_user.sk.follow_message %>
-    <span style="float:right;"><%= link_to "M'avertir des nouveaux messages par e-mail", add_followingmessage_path, :method => :put, class: 'btn btn-default btn-grey', disabled: current_user.other %></span>
+    <span style="float:right;"><%= link_to "M'avertir des nouveaux messages par e-mail", add_followingmessage_path, :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, disabled: current_user.other %></span>
   <% else %>
     <span style="float:right;"><%= link_to "Ne plus m'avertir par e-mail", remove_followingmessage_path, class: 'btn btn-default btn-grey', disabled: current_user.other %></span>
   <% end %>

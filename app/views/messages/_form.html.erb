@@ -14,12 +14,7 @@
   <% erreurs = session["error#{@postfix}"] %>
   <div id="error_explanation">
     <div class="alert alert-danger">
-      Le formulaire contient <%= pluralize(erreurs.count, "erreur") %>.
-    <ul>
-    <% erreurs.each do |msg| %>
-      <li><%= msg %></li>
-    <% end %>
-    </ul>
+      <%= errors_to_list(erreurs) %>
     </div>
   </div>
 <% end %>

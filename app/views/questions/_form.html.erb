@@ -1,19 +1,5 @@
 <%= render 'shared/error_messages', object: f.object %>
 
-<% if(params.has_key?:qcm) %>
-  <% qcm = params[:qcm].to_i %>
-<% else %>
-  <% qcm = 0 %>
-<% end %>
-
-<% if !question.nil? %>
-  <% if question.is_qcm %>
-    <% qcm = 1 %>
-  <% else %>
-    <% qcm = 0 %>
-  <% end %>
-<% end %>
-
 <!-- Enoncé -->
 <div class="form-group">
   <%= f.label "Énoncé" %>
@@ -27,7 +13,7 @@
 <% if !question.nil? && question.online %>
 
   <!-- Réponse -->
-  <% if qcm == 0 %>
+  <% if !@question.is_qcm %>
     <!-- pas QCM -->
     Réponse : 
     <% if question.decimal %>
@@ -55,9 +41,9 @@
   
 <!-- Si pas encore en ligne -->
 <% else %>
-  <%= f.hidden_field :is_qcm, :value => qcm %>
+  <%= f.hidden_field :is_qcm, :value => (@question.is_qcm ? 1 : 0) %>
   <!-- Réponse -->
-  <% if qcm == 0 %>
+  <% if not @question.is_qcm %>
     <!-- pas QCM -->
     <div class="form-group">
       <%= f.label :answer %>

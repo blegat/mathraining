@@ -12,6 +12,9 @@ class QuestionsController < ApplicationController
   # Créer une question
   def new
     @question = Question.new
+    if params[:qcm] == '1'
+      @question.is_qcm = true
+    end
   end
 
   # Editer une question
@@ -176,7 +179,8 @@ class QuestionsController < ApplicationController
       @item.ok = true
     end
     unless @item.save
-      flash[:info] = "Un choix ne peut être vide."
+      flash.clear # Remove other flash info
+      flash[:danger] = error_list_for(@item)
     end
     redirect_to question_manage_items_path(@question)
   end
@@ -214,7 +218,7 @@ class QuestionsController < ApplicationController
     if @item.save
       flash[:success] = "Réponse modifiée."
     else
-      flash[:danger] = "Un choix ne peut être vide."
+      flash[:danger] = error_list_for(@item)
     end
     redirect_to question_manage_items_path(@question)
   end

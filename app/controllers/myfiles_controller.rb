@@ -33,7 +33,7 @@ class MyfilesController < ApplicationController
   
   def update
     if !params["file"].nil?
-      if(@myfile.update_attributes(file: params["file".to_sym]))
+      if @myfile.update_attributes(file: params["file".to_sym])
         flash[:success] = "C'est remplacé !"
       else
         flash[:danger] = "Une condition n'est pas respectée..."

@@ -160,11 +160,7 @@ class CorrectionsController < ApplicationController
     else
       destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:correction][:content]
-      if params[:correction][:content].size == 0
-        flash[:danger] = "Votre réponse est vide."
-      else
-        flash[:danger] = "Une erreur est survenue."
-      end
+      flash[:danger] = error_list_for(correction)
       redirect_to problem_path(@submission.problem, :sub => @submission)
     end
   end

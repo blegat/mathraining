@@ -15,7 +15,7 @@ class CategoriesController < ApplicationController
     if @category.save
       flash[:success] = "Catégorie ajoutée."
     else
-      flash[:danger] = "Une erreur est survenue."
+      flash[:danger] = error_list_for(@category)
     end
     redirect_to categories_path
   end
@@ -25,7 +25,7 @@ class CategoriesController < ApplicationController
     if @category.update_attributes(params.require(:category).permit(:name))
       flash[:success] = "Catégorie modifiée."
     else
-      flash[:danger] = "Une erreur est survenue."
+      flash[:danger] = error_list_for(@category)
     end
     redirect_to categories_path
   end

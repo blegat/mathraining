@@ -48,11 +48,7 @@ class ContestsolutionsController < ApplicationController
     else
       destroy_files(attach, attach.size()+1)
       session[:ancientexte] = params[:contestsolution][:content]
-      if params[:contestsolution][:content].size == 0
-        flash[:danger] = "Votre solution est vide."
-      else
-        flash[:danger] = "Une erreur est survenue."
-      end
+      flash[:danger] = error_list_for(solution)
       redirect_to contestproblem_path(@contestproblem)
     end
   end
@@ -80,11 +76,7 @@ class ContestsolutionsController < ApplicationController
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     else
       session[:ancientexte] = params[:contestsolution][:content]
-      if params[:contestsolution][:content].size == 0
-        flash[:danger] = "Votre solution est vide."
-      else
-        flash[:danger] = "Une erreur est survenue."
-      end
+      flash[:danger] = error_list_for(@contestsolution)
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     end
   end

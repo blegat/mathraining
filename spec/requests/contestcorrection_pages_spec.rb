@@ -249,7 +249,7 @@ describe "Contestcorrection pages" do
           usersol_finished.contestcorrection.reload
         end
         specify do
-          expect(page).to have_error_message("Votre correction est vide.")
+          expect(page).to have_error_message("Correction doit être rempli")
           expect(usersol_finished.score).to eq(-1)
           expect(usersol_finished.contestcorrection.content).to eq("-")
         end

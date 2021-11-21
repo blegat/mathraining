@@ -67,6 +67,26 @@ describe "Discussion pages" do
       it { should have_selector("div", text: content3) }
     end
     
+    describe "wants to a send a message to a new guy" do
+      before do
+        visit user_path(other_user)
+        click_link "Envoyer un message"
+      end
+      it do
+        should have_current_path(new_discussion_path(:qui => other_user))
+        should have_select("destinataire", selected: other_user.name)
+      end
+    end
+    
+    describe "wants to a send a message to a guy with a discussion" do
+      let!(:discussion) { create_discussion_between(user, other_user, content, content2) }
+      before do
+        visit user_path(other_user)
+        click_link "Envoyer un message"
+      end
+      it { should have_current_path(discussion_path(discussion)) }
+    end
+    
     describe "tries to see another discussion" do
       before do
         d = create_discussion_between(other_user, other_user2, content, content2)

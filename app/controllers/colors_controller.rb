@@ -13,22 +13,20 @@ class ColorsController < ApplicationController
     @color = Color.new(params.require(:color).permit(:pt, :name, :femininename, :color))
     if @color.save
       flash[:success] = "Niveau et couleur ajoutés."
-      redirect_to colors_path
     else
-      flash[:danger] = "Une erreur est survenue."
-      redirect_to colors_path
+      flash[:danger] = error_list_for(@color)
     end
+    redirect_to colors_path
   end
 
   # Modifier un niveau
   def update
     if @color.update_attributes(params.require(:color).permit(:pt, :name, :femininename, :color))
       flash[:success] = "Niveau et couleur modifiés."
-      redirect_to colors_path
     else
-      flash[:danger] = "Une erreur est survenue."
-      redirect_to colors_path
+      flash[:danger] = error_list_for(@color)
     end
+    redirect_to colors_path
   end
 
   # Supprimer un niveau

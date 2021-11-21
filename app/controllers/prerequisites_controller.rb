@@ -39,7 +39,7 @@ class PrerequisitesController < ApplicationController
       # Sinon @chapter.available_prerequsites
       # ne prend pas en compte les nouveaux changements
     else
-      flash[:danger] = get_errors(pre)
+      flash[:danger] = error_list_for(pre)
       redirect_to graph_prerequisites_path
     end
   end

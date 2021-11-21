@@ -469,16 +469,13 @@ class UsersController < ApplicationController
       flash[:danger] = "Vous ne pouvez pas suivre plus de 30 utilisateurs."
       redirect_to @user and return
     end
-    current_user.sk.followed_users.append(@user)
+    current_user.sk.followed_users << @user
     flash[:success] = "Vous suivez maintenant #{ @user.name }."
     redirect_to @user
   end
 
   def remove_followed_user
-    if !current_user.sk.followed_users.exists?(@user.id)
-      redirect_to @user and return
-    end
-    current_user.sk.followed_users.delete(@user)
+    current_user.sk.followed_users.destroy(@user)
     flash[:success] = "Vous ne suivez plus #{ @user.name }."
     redirect_to @user
   end

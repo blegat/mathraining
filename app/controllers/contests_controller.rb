@@ -33,7 +33,7 @@ class ContestsController < ApplicationController
       compute_new_contest_rankings(@contest)
       flash[:success] = "Les médailles ont été distribuées !"
     else
-      flash[:danger] = "Une erreur est survenue."
+      flash[:danger] = error_list_for(@contest)
     end
     redirect_to @contest
   end

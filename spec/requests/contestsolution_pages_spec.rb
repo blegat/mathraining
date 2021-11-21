@@ -86,7 +86,7 @@ describe "Contestsolution pages" do
           click_button "Enregistrer"
         end
         specify do
-          expect(page).to have_error_message("Votre solution est vide.")
+          expect(page).to have_error_message("Solution doit être rempli")
           expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(0)
         end
       end
@@ -152,7 +152,7 @@ describe "Contestsolution pages" do
             newcontestsolution.reload
           end
           specify do
-            expect(page).to have_error_message("Votre solution est vide.")
+            expect(page).to have_error_message("Solution doit être rempli")
             expect(newcontestsolution.content).to eq(newsolution)
           end
         end

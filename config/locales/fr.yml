@@ -11,6 +11,7 @@ fr:
       contestsolution: "Solution"
       correction: "Commentaire"
       discussion: "Discussion"
+      item: "Choix"
       message: "Message"
       prerequisite: "Prérequis"
       privacypolicy: "Politique de confidentialité"
@@ -18,7 +19,8 @@ fr:
       question: "Exercice"
       section: "Section"
       subject: "Sujet"
-      tchatmessage: "Message personnel"
+      submission: "Soumission"
+      tchatmessage: "Message privé"
       theory: "Point théorique"
       user: "Utilisateur"
       virtualtest: "Test virtuel"
@@ -26,27 +28,45 @@ fr:
       actuality:
         content: "Contenu"
         title: "Titre"
+      category:
+        name: "Nom"
       chapter:
         name: "Titre"
-        level: "Niveau"
         description: "Description"
+        level: "Niveau"
+        position: "Position"
         author: "Auteur(s)"
+        publication_time: "Date de publication"
+      color:
+        pt: "Points"
+        name: "Nom"
+        femininename: "Nom féminin"
+        color: "Couleur"
       contest:
         number: "Numéro"
         description: "Description"
+        start_time: "Date de début"
+        end_time: "Date de fin"
+        num_problems: "Nombre de problèmes"
+        num_participants: "Nombre de participants"
+        bronze_cutoff: "Seuil pour le bronze"
+        silver_cutoff: "Seuil pour l'argent"
+        gold_cutoff: "Seuil pour l'or"
+      contestcorrection:
+        content: "Correction"
       contestproblem:
+        number: "Numéro"
         statement: "Énoncé"
         origin: "Origine"
         start_time: "Parution du problème"
         end_time: "Date limite pour l'envoi des solutions"
       contestsolution:
-        content: "Contenu"
+        content: "Solution"
+        score: "Score"
       correction:
         content: "Commentaire"
-      question:
-        statement: "Énoncé"
-        level: "Niveau"
-        answer: "Réponse"
+      item:
+        ans: "Réponse"
       message:
         content: "Message"
       prerequisite:
@@ -58,6 +78,15 @@ fr:
         statement: "Énoncé"
         origin: "Origine"
         level: "Niveau"
+        explanation: "Éléments de solution"
+        markscheme: "Marking scheme"
+      question:
+        statement: "Énoncé"
+        level: "Niveau"
+        answer: "Réponse"
+      section:
+        description: "Introduction"
+        name: "Nom"
       subject:
         title: "Titre"
         content: "Message"
@@ -65,9 +94,10 @@ fr:
         chapter_id: "Chapitre"
         question_id: "Exercice"
         problem_id: "Problème"
-      section:
-        description: "Introduction"
-        name: "Nom"
+      submission:
+        content: "Soumission"
+      tchatmessage:
+        content: "Message"
       theory:
         title: "Titre"
         content: "Contenu"

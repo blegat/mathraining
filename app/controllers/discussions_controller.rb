@@ -24,13 +24,10 @@ class DiscussionsController < ApplicationController
   def new
     if (params.has_key?:qui)
       other = User.find_by_id(params[:qui].to_i)
-      if other.nil?
-        render 'errors/access_refused' and return
-      end
-      current_user.sk.discussions.each do |d|
-        if d.users.include?(other)
-          redirect_to d and return
-        end
+      return if check_nil_object(other)
+      d = get_discussion_between(current_user.sk, other)
+      if not d.nil?
+        redirect_to d and return
       end
     end
     @discussion = Discussion.new
@@ -45,23 +42,17 @@ class DiscussionsController < ApplicationController
     else
 
       @destinataire = User.find_by_id(params[:destinataire])
-      if @destinataire.nil?
-        render 'errors/access_refused' and return
-      end
-      deja = false
+      return if check_nil_object(@destinataire)
+      
+      @discussion = get_discussion_between(current_user.sk, @destinataire)
 
-      current_user.sk.discussions.each do |d|
-        if d.users.include?(@destinataire)
-          deja = true
-          @discussion = d
-        end
-      end
-
-      if !deja
+      if @discussion.nil?
+        deja = false
         @discussion = Discussion.new
         @discussion.last_message = DateTime.now
         @discussion.save
       else
+        deja = true
         link = current_user.sk.links.where(:discussion_id => @discussion.id).first
         if link.nonread > 0
           session[:ancientexte] = params[:content]
@@ -81,20 +72,11 @@ class DiscussionsController < ApplicationController
         redirect_to new_discussion_path
       else
         if !deja
-          link = Link.new
-          link.user_id = current_user.sk.id
-          link.discussion_id = @discussion.id
-          link.nonread = 0
-          link.save
-
-          link2 = Link.new
-          link2.user_id = @destinataire.id
-          link2.discussion_id = @discussion.id
-          link2.nonread = 1
-          link2.save
+          Link.create(:user => current_user.sk, :discussion => @discussion, :nonread => 0)
+          Link.create(:user => @destinataire, :discussion => @discussion, :nonread => 1)
         else
           @discussion.links.each do |l|
-            if l.user_id != current_user.sk.id
+            if l.user != current_user.sk
               l.nonread = l.nonread + 1
             else
               l.nonread = 0
@@ -138,6 +120,10 @@ class DiscussionsController < ApplicationController
       redirect_to new_discussion_path
     end
   end
+  
+  def get_discussion_between(x, y)
+    return Discussion.joins("INNER JOIN links a ON discussions.id = a.discussion_id").joins("INNER JOIN links b ON discussions.id = b.discussion_id").where("a.user_id" => x, "b.user_id" => y).first
+  end
 
   def send_message
     @tchatmessage = Tchatmessage.new()
@@ -173,11 +159,7 @@ class DiscussionsController < ApplicationController
       @erreur = true
       destroy_files(attach, attach.size()+1)
       session[:ancientexte] = @content
-      if @content.size == 0
-        flash[:danger] = "Votre message est vide."
-      else
-        flash[:danger] = "Une erreur est survenue."
-      end
+      flash[:danger] = error_list_for(@tchatmessage)
       return
     end
 
