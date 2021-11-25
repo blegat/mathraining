@@ -51,7 +51,7 @@ module ChaptersHelper
   
   def chapters_completed_request
     if !@signed_in
-      return "()"
+      return "('')"
     else
       return "(" + current_user.sk.chapters.select(:id).to_sql + ")"
     end
