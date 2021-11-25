@@ -99,12 +99,16 @@
   <body>
     <%= render 'layouts/header' %>
     <div class="container">
-        <% flash.each do |key, value| %>
-          <%= content_tag(:div, value, class: "alert alert-#{key}", style: "padding:10px; margin-top:20px;") %>
-        <% end %>
-        <%= yield %>
-        <%= render 'layouts/footer' %>
-        <%= debug(params) if Rails.env.development? %>
+      <% flash.each do |key, value| %>
+        <%= content_tag(:div, value, class: "alert alert-#{key}", style: "padding:10px; margin-top:20px;") %>
+      <% end %>
+      <%= yield %>
+      <%= render 'layouts/footer' %>
+      <% debug(params) if Rails.env.development? %>
     </div>
+    
+    <% if defined? @benchmark_start_time %>
+      <center>Temps total de chargement: <b><%= ((Time.now.to_f - @benchmark_start_time.to_f) * 1000).round(1) %> ms</b></center><br/>
+    <% end %>
   </body>
 </html>

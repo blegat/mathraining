@@ -21,35 +21,20 @@ html>body tbody.scroll {
 
 <% oneweekago = Date.today - 7 %>
 
-<% allsec = Section.order(:id).where(:fondation => false).to_a %>
-<% table = Array.new %>
-<% (1..5).each do |level| %>
-  <% table[level] = Array.new %>
-<% end %>
-
-<% enough_points = has_enough_points %>
-
-<% if !@signed_in || !current_user.sk.admin %>
-  <% debloque = Array.new %>
-  <% Chapter.all.to_a.each do |c| %>
-    <% debloque[c.id] = false %>
-  <% end %>
-
-  <% if @signed_in %>
-    <% current_user.sk.chapters.each do |c| %>
-      <% debloque[c.id] = true %>
-    <% end %>
-  <% end %>
-<% end %>
-
 <% allsec_name = Array.new %>
 <% Section.all.each do |s| %>
   <% allsec_name[s.id] = s.name %>
 <% end %>
 
+<% if !@signed_in || !current_user.sk.admin? %>
+  <% problem_status = Array.new %>
+  <% accessible_problems(["id"]).each do |a| %>
+    <% problem_status[a.id] = 1 %>
+  <% end %>
+<% end %>
+
 <table class="table">
-<% Solvedproblem.includes(problem: :chapters).includes(:user).where("resolutiontime > ?", oneweekago).order("resolutiontime DESC").each do |s| %>
-  <% p = s.problem %>
+<% Solvedproblem.joins(:problem).select("solvedproblems.user_id, solvedproblems.problem_id, solvedproblems.submission_id, problems.number AS problem_number, problems.section_id, problems.level, solvedproblems.resolutiontime").includes(:user).where("resolutiontime > ?", oneweekago).order("resolutiontime DESC").each do |s| %>
   <tr>
   <!-- Date -->
   <td><%= write_date_only_small(s.resolutiontime) %></td>
@@ -61,28 +46,18 @@ html>body tbody.scroll {
   <td><%= raw(s.user.linked_name) %></td>
   
   <!-- Section -->
-  <td class="hidden-xs"><%= allsec_name[p.section_id] %></td>
+  <td class="hidden-xs"><%= allsec_name[s.section_id] %></td>
   
   <!-- Niveau -->
-  <td class="hidden-xs">Niveau <%= p.level %></td>
+  <td class="hidden-xs">Niveau <%= s.level %></td>
   
   <!-- Problème -->
-  <% peutvoir = enough_points %>
-  <% t = p.virtualtest_id %>
-  <% if t == 0 && (!@signed_in || !current_user.sk.admin?) %>
-    <% p.chapters.each do |c| %>
-      <% peutvoir = false if !debloque[c.id] %>
-    <% end %>
-  <% end %>
-  <% if t != 0 && (!@signed_in || !current_user.sk.admin?) %>
-    <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
-  <% end %>
   <td>
-  <% if peutvoir %>
-    <span class="hidden-xs"><%= link_to "Problème ##{p.number}", problem_path(p, :sub => s.submission_id) %></span>
-    <span class="visible-xs"><%= link_to "##{p.number}", problem_path(p, :sub => s.submission_id) %></span>
+  <% if (@signed_in && current_user.sk.admin?) || problem_status[s.problem_id] == 1 %>
+    <span class="hidden-xs"><%= link_to "Problème ##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
+    <span class="visible-xs"><%= link_to "##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
   <% else %>
-    <span class="hidden-xs">Problème </span>#<%= p.number %>
+    <span class="hidden-xs">Problème </span>#<%= s.problem_number %>
   <% end %>
   </td>
   

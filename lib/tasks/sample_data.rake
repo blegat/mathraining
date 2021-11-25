@@ -147,7 +147,7 @@ def make_all
 							correction.submission = sub
 							correction.save!
 							
-							following = Following.new(read: true)
+							following = Following.new(read: true, kind: 1)
 							following.user = corrector
 							following.submission = sub
 							following.save!
@@ -172,7 +172,7 @@ def make_all
 							correction.submission = sub
 							correction.save!
 							
-							following = Following.new(read: true)
+							following = Following.new(read: true, kind: 1)
 							following.user = corrector
 							following.submission = sub
 							following.save!

@@ -4,17 +4,14 @@ module SessionsHelper
     if !@remember_me.nil? && @remember_me != 0
       cookies.permanent[:remember_token] = user.remember_token
     else
-      cookies[:remember_token] =  user.remember_token
+      cookies[:remember_token] = user.remember_token
     end
-    self.current_user = user
+    @current_user = user
+    @signed_in = true
   end
 
   def signed_in?
     !current_user.nil?
-  end
-
-  def current_user=(user)
-    @current_user = user
   end
 
   def current_user
@@ -32,7 +29,8 @@ module SessionsHelper
   end
 
   def sign_out
-    self.current_user = nil
+    @current_user = nil
+    @signed_in = false
     cookies.delete(:remember_token)
   end
 

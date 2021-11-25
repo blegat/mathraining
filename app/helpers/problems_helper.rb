@@ -6,6 +6,8 @@ module ProblemsHelper
   def accessible_problems(columns)
     return [] if (!@signed_in || (!current_user.sk.admin? && current_user.sk.rating < 200))
     
+    return Problems.select(get_problem_columns_string(column)) if current_user.sk.admin?
+    
     return Problem.find_by_sql("SELECT #{get_problem_columns_string(columns)}
                                 FROM problems
                                 WHERE problems.online = #{true_value_sql}

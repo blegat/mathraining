@@ -351,13 +351,6 @@ Votre navigateur ne supporte pas les canvas.
     });
   }
   
-  function listen_all() {
-    listen(0, false);
-    listen(1, true);
-    listen(2, true);
-    listen(3, false);
-  }
-  
   <!-- Calcul des graphiques -->
   var xxx = [];
   var yyy = [];
@@ -418,6 +411,15 @@ Votre navigateur ne supporte pas les canvas.
       drawGraph(1, true);
       drawGraph(2, true);
       drawGraph(3, false);
+    <% end %>
+  }
+  
+  function listen_all() {
+    <% if premierjour < dernierjour %>  
+      listen(0, false);
+      listen(1, true);
+      listen(2, true);
+      listen(3, false);
     <% end %>
   }
   

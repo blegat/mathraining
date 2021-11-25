@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   include SessionsHelper
   include ApplicationHelper
 
+  before_action :load_global_variables
   before_action :has_consent
   before_action :check_takentests
   #before_action :warning
@@ -18,9 +19,22 @@ class ApplicationController < ActionController::Base
   #  end
   #end
   
-  def has_consent
+  def load_global_variables
     $allcolors = Color.order(:pt).to_a
     @signed_in = signed_in?
+    if params.has_key?(:start_benchmark)
+      cookies[:benchmark] = 1
+    end
+    if cookies.has_key?(:benchmark)
+      if params.has_key?(:stop_benchmark)
+        cookies.delete(:benchmark)
+      else
+        @benchmark_start_time = Time.now
+      end
+    end
+  end
+  
+  def has_consent
     pp = request.fullpath.to_s
     if @signed_in && !current_user.last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
       if Privacypolicy.where(:online => true).count > 0 # Si aucune privacy policy alors on ne redirige pas...
