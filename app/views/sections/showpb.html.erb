@@ -131,7 +131,7 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
       </div>
 
       <!-- Origine si administrateur ou si résolu -->
-      <% if (current_user.sk.admin? || num_correct_sub) && !p.origin.nil? && p.origin.size > 0 %>
+      <% if (current_user.sk.admin? || num_correct_sub > 0) && !p.origin.nil? && p.origin.size > 0 %>
         <div class="row content">
         <div class="module bottom-part">
         Origine du problème : <b><%= p.origin %></b>
