@@ -19,6 +19,6 @@ class Takentest < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :status, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 2 }
+  validates :status, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
 
 end

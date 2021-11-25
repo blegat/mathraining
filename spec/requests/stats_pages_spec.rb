@@ -7,6 +7,7 @@ describe "Stats pages" do
 
   let(:user1) { FactoryGirl.create(:user) }
   let(:user2) { FactoryGirl.create(:user) }
+  let(:user3) { FactoryGirl.create(:user) }
   let(:admin) { FactoryGirl.create(:admin) }
   
   let!(:section) { FactoryGirl.create(:section) }
@@ -130,6 +131,86 @@ describe "Stats pages" do
             expect(exercise12.nb_firstguess).to eq(1)
             expect(exercise21.nb_tries).to eq(0)
             expect(exercise21.nb_firstguess).to eq(0)
+          end
+        end
+      end
+    end
+  end
+  
+  describe "admin" do
+    before { sign_in admin }
+    let!(:now) { DateTime.now }
+    let!(:problem) { FactoryGirl.create(:problem, section: section, online: true) }
+    let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true) }
+    let!(:submission1) { FactoryGirl.create(:submission, problem: problem, user: user1, created_at: now - 7.days) }
+    let!(:submission2) { FactoryGirl.create(:submission, problem: problem, user: user2, created_at: now - 4.days) }
+    let!(:submission3) { FactoryGirl.create(:submission, problem: problem, user: user3, created_at: now - 2.days) }
+    
+    describe "marks a solution as correct" do
+      before do
+        Following.create(:user => admin, :submission => submission1, :read => true, :kind => 0)
+        visit problem_path(problem, :sub => submission1)
+        fill_in "MathInput", with: "C'est correct"
+        click_button "Poster et accepter la soumission"
+        problem.reload
+      end
+      specify do
+        expect(problem.nb_solved).to eq(1)
+        expect(problem.first_solved).to be_within(1.second).of(now - 7.days)
+        expect(problem.last_solved).to be_within(1.second).of(now - 7.days)
+      end
+      
+      describe "and marks a second solution as wrong" do
+        before do
+          Following.create(:user => admin, :submission => submission2, :read => true, :kind => 0)
+          visit problem_path(problem, :sub => submission2)
+          fill_in "MathInput", with: "C'est incorrect"
+          click_button "Poster et refuser la soumission"
+          problem.reload
+        end
+        specify do
+          expect(problem.nb_solved).to eq(1)
+          expect(problem.first_solved).to be_within(1.second).of(now - 7.days)
+          expect(problem.last_solved).to be_within(1.second).of(now - 7.days)
+        end
+        
+        describe "and marks a third solution as correct" do
+          before do
+            Following.create(:user => admin, :submission => submission3, :read => true, :kind => 0)
+            visit problem_path(problem, :sub => submission3)
+            fill_in "MathInput", with: "C'est correct"
+            click_button "Poster et accepter la soumission"
+            problem.reload
+          end
+          specify do
+            expect(problem.nb_solved).to eq(2)
+            expect(problem.first_solved).to be_within(1.second).of(now - 7.days)
+            expect(problem.last_solved).to be_within(1.second).of(now - 2.days)
+          end
+          
+          describe "and recomputes the problem stats" do
+            before do
+              # Change nb_solved, first_solved and last_solved in a wrong way
+              problem.nb_solved = 42
+              problem.first_solved = now
+              problem.last_solved = now
+              problem.save
+              problem2.nb_solved = 42
+              problem2.first_solved = now
+              problem2.last_solved = now
+              problem2.save
+              Problem.update_stats
+              problem.reload
+              problem2.reload
+            end
+            specify do
+              expect(problem.nb_solved).to eq(2)
+              expect(problem.first_solved).to be_within(1.second).of(now - 7.days)
+              expect(problem.last_solved).to be_within(1.second).of(now - 2.days)
+              expect(problem2.nb_solved).to eq(0)
+              expect(problem2.first_solved).to eq(nil)
+              expect(problem2.last_solved).to eq(nil)
+            end
           end
         end
       end

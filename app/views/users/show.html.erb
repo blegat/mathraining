@@ -1,5 +1,3 @@
-<% abreviation = ["Combinatoire", "Géométrie", "Théorie des nombres", "Algèbre", "Équations Fonctionnelles", "Inégalités"] %>
-
 <% provide(:title, @user.name) %>
 
 <!-- Style pour la barre de défilement dans le tableau -->
@@ -33,36 +31,27 @@ html>body tbody.scroll {
 <% end %>
 
 
-
 <% if !@user.admin %>
 
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
-  <% cansee = Array.new %>
-
-  <% section_fondation = Array.new %>
-  <% Section.all.to_a.each do |s| %>
-    <% section_fondation[s.id] = s.fondation %>
-  <% end %>
-
-  <% if @signed_in && current_user.sk.admin %>
-    <% Chapter.all.to_a.each do |c| %>
-      <% cansee[c.id] = true %>
+  <% if !@signed_in || !current_user.sk.admin %>
+    <% cansee_chap = Array.new %>
+    <% access_chap = accessible_chapters(["id"]) %>
+    <% access_chap.each do |a| %>
+      <% cansee_chap[a.id] = true %>
     <% end %>
-  <% else %>
-    <% chapters_completion = get_chapters_completion(section_fondation) %>
-    <% Chapter.all.each do |c| %>
-      <% cansee[c.id] = are_exercises_accessible(c, section_fondation, chapters_completion) %>
+    <% cansee_prob = Array.new %>
+    <% access_prob = accessible_problems(["id"]) %>
+    <% access_prob.each do |a| %>
+      <% cansee_prob[a.id] = true %>
     <% end %>
   <% end %>
-
-  <% enough_points = has_enough_points %>
   
   <!-- On va parcourir tous les exercices et problèmes -->
+  
+  <% questions = @user.solvedquestions.joins(question: :chapter).select("solvedquestions.question_id AS id, solvedquestions.resolutiontime AS time, questions.level AS level, questions.chapter_id AS chapter_id, chapters.name AS chapter_name").where(:correct => true).order("resolutiontime DESC").to_a %>
 
-  <% questions = @user.solvedquestions.where(:correct => true).order("resolutiontime DESC") %>
-  <% questions_size = questions.size %>
-  <% problems = @user.solvedproblems.order("truetime DESC") %>
-  <% problems_size = problems.size %>
+  <% problems = @user.solvedproblems.joins(:problem).select("solvedproblems.problem_id AS id, solvedproblems.truetime AS time, solvedproblems.submission_id AS submission_id, problems.level AS level, problems.number AS number, problems.virtualtest_id AS virtualtest_id, problems.section_id AS section_id").order("truetime DESC").to_a %>
 
   <% act = Array.new %>
   <% q_encours = 0 %>
@@ -70,96 +59,63 @@ html>body tbody.scroll {
 
   <% nb_q = 0 %>
   <% nb_p = 0 %>
-  <% nb_erreur = 0 %>
-  <% allsec = Array.new %>
-  <% allchap = Array.new %>
-  <% allques = Array.new %>
-  <% allpb = Array.new %>
-	
-  <% maxscore = Array.new %>
-  <% numberexo = 0 %>
-  <% numberpb = 0 %>
-
-  <% Section.all.each do |s| %>
-    <% allsec[s.id] = s %>
-    <% maxscore[s.id] = s.max_score %>
-  <% end %>
-
-  <% Chapter.all.each do |c| %>
-    <% allchap[c.id] = c %>
-  <% end %>
-
-  <% Question.all.each do |q| %>
-    <% allques[q.id] = q %>
-    <% if q.level > 0 && q.online %>
-      <% numberexo = numberexo+1 %>
-    <% end %>
-  <% end %>
-
-  <% Problem.all.each do |p| %>
-    <% allpb[p.id] = p %>
-    <% if p.online %>
-      <% numberpb = numberpb+1 %>
-    <% end %>
-  <% end %>
+  
+  <% numberexo = Question.where("level > 0 AND online = ?", true).count %>
+  <% numberpb = Problem.where("online = ?", true).count %>
 
   <% premier = nil %>
   <% dernier = nil %>
 
-  <% (1..(questions_size+problems_size)).each do |i| %>
+  <% (1..(questions.size+problems.size)).each do |i| %>
     <% trouve = false %>
     <% besttime = 0 %>
-    <% bestqui = -1 %>
-    <% if q_encours < questions_size && (!trouve || questions[q_encours].resolutiontime.to_i > besttime) %>
-      <% besttime = questions[q_encours].resolutiontime.to_i %>
+    <% bestqui = "" %>
+    <% if q_encours < questions.size && (!trouve || questions[q_encours].time.to_time.to_i > besttime) %>
+      <% besttime = questions[q_encours].time.to_time.to_i %>
       <% trouve = true %>
-      <% bestqui = 5 %>
+      <% bestqui = "Q" %>
     <% end %>
-    <% if p_encours < problems_size && (!trouve || problems[p_encours].truetime.to_i > besttime) %>
-      <% besttime = problems[p_encours].truetime.to_i %>
+    <% if p_encours < problems.size && (!trouve || problems[p_encours].time.to_time.to_i > besttime) %>
+      <% besttime = problems[p_encours].time.to_time.to_i %>
       <% trouve = true %>
-      <% bestqui = 4 %>
+      <% bestqui = "P" %>
     <% end %>
-    <% if bestqui == 5 %>
+    <% if bestqui == "Q" %>
       <% q = questions[q_encours] %>
-      <% exo = allques[q.question_id] %>
-      <% pt = exo.value %>
-      <% if pt > 0 %>
-        <% nb_erreur = nb_erreur + [q.nb_guess-1, 20].min %>
+      <% if q.level > 0 %>
         <% nb_q = nb_q+1 %>
-        <% dernier = q.resolutiontime.in_time_zone %>
+        <% dernier = q.time.in_time_zone %>
         <% if premier.nil? %>
-          <% premier = q.resolutiontime.in_time_zone %>
+          <% premier = q.time.in_time_zone %>
         <% end %>
       <% end %>
+      <% peutvoir = (@signed_in && current_user.sk.admin?) || cansee_chap[q.chapter_id] == true %>
       <% q_encours = q_encours + 1 %>
-      <% act.push({:time => q.resolutiontime, :type => 5, :id => q.question_id, :pt => pt, :chapter => allchap[exo.chapter_id].name, :c_id => exo.chapter_id, :section => allchap[exo.chapter_id].section_id, :fondation => (pt == 0)}) %>
-    <% elsif bestqui == 4 %>
+      <% act.push({:time => q.time, :type => "Q", :id => q.id, :peutvoir => peutvoir, :pt => 3 * q.level, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
+    <% elsif bestqui == "P" %>
       <% p = problems[p_encours] %>
-      <% pb = allpb[p.problem_id] %>
-      <% pt = pb.value %>
       <% nb_p = nb_p+1 %>
-      <% peutvoir = enough_points %>
-      <% if (!@signed_in || !current_user.sk.admin?) && peutvoir %>
-        <% t = pb.virtualtest_id %>
+      <% dernier = p.time.in_time_zone %>
+      <% if premier.nil? %>
+        <% premier = p.time.in_time_zone %>
+      <% end %>
+      <% if @signed_in && current_user.sk.admin? %>
+        <% peutvoir = true %>
+      <% else %>
+        <% t = p.virtualtest_id %>
         <% if t == 0 %>
-          <% peutvoir = is_problem_accessible(pb, chapters_completion) %>
+          <% peutvoir = (cansee_prob[p.id] == true) %>
         <% else %>
-          <% peutvoir = false if (!@signed_in || current_user.sk.status(t) <= 0) %>
+          <% peutvoir = (@signed_in && current_user.sk.status(t) > 0) %>
         <% end %>
       <% end %>
       <% p_encours = p_encours + 1 %>
-      <% dernier = p.truetime.in_time_zone %>
-      <% if premier.nil? %>
-        <% premier = p.truetime.in_time_zone %>
-      <% end %>
-      <% act.push({:time => p.truetime, :type => 4, :id => p.problem_id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => pt, :number => pb.number, :level => pb.level, :section => pb.section_id, :fondation => false}) %>
+      <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => 15 * p.level, :number => p.number, :section_id => p.section_id}) %>
     <% end %>
   <% end %>
   
   <% pct_exo = numberexo == 0 ? 0 : 100*nb_q/numberexo.to_f %>
   <% pct_pb = numberpb == 0 ? 0 : 100*nb_p/numberpb.to_f %>
-  <% moyenne_erreurs = nb_q == 0 ? 0 : (nb_erreur/nb_q.to_f).round(2) %>
   
 <% end %>
 
@@ -377,12 +333,15 @@ html>body tbody.scroll {
       <% ppersection_dic[pp.section_id] = pp.points %>
     <% end %>
     <table class="progress-table">
+    
+    <% allsec_name = Array.new %>
     <% Section.order(:id).where(:fondation => false).each do |s| %>
+      <% allsec_name[s.id] = s.name %>
       <tr>
       <td style="width:170px;"><%= s.name %></td>
         <% rate = ppersection_dic[s.id] %>
       <td style="padding-left:5px; padding-right:5px;">
-        <% pct = maxscore[s.id] == 0 ? 0 : 100*rate/maxscore[s.id].to_f %>
+        <% pct = s.max_score == 0 ? 0 : 100*rate/s.max_score.to_f %>
         <div class="progress" style="margin-bottom:0px; height:10px;">
         <div class="progress-bar" role="progressbar"
         aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= couleur %>;">
@@ -443,7 +402,7 @@ html>body tbody.scroll {
           <% if a[:pt] > 0 %>
             <% if dateday != previousdate %>
               <% encours = encours+1 %>
-              <% actperday.push({:time => dateday, :pt => a[:pt], :chapter => a[:chapter]}) %>
+              <% actperday.push({:time => dateday, :pt => a[:pt]}) %>
             <% else %>
               <% actperday[encours][:pt] = actperday[encours][:pt] + a[:pt] %>
             <% end %>
@@ -470,20 +429,20 @@ html>body tbody.scroll {
 
           <!-- Quoi -->
           <td style="<%= remove_border %>">
-          <% if a[:type] == 5 %>
-            <% if cansee[a[:c_id]] %>
-              <%= link_to "Exercice", chapter_path(a[:c_id], :type => 5, :which => a[:id]) %>
+          <% if a[:type] == "Q" %>
+            <% if a[:peutvoir] %>
+              <%= link_to "Exercice", chapter_path(a[:chapter_id], :type => 5, :which => a[:id]) %>
             <% else %>
               Exercice
             <% end %>
-            - <%= a[:chapter] %>
-          <% else %>
+            - <%= a[:chapter_name] %>
+          <% elsif a[:type] == "P" %>
             <% if a[:peutvoir] %>
               <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
             <% else %>
               Problème #<%= a[:number] %>
             <% end %>
-             - <%= allsec[a[:section]].name %>
+             - <%= allsec_name[a[:section_id]] %>
           <% end %>
           </td>
 
@@ -638,7 +597,7 @@ html>body tbody.scroll {
     <% else %>
       <% maxi = 1.1*@niveaux[numerolevel][:pt] %>
     <% end %>
-
+    
     <script type="text/javascript">
       $(document).ready( function(){
 

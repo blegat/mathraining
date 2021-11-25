@@ -339,22 +339,22 @@ class UsersController < ApplicationController
 
   # Voir toutes les soumissions (admin)
   def allsub
-    @notifications = Submission.includes(:user, :problem, followings: :user).where(visible: true).order("lastcomment DESC").paginate(page: params[:page]).to_a
+    @notifications = Submission.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem, followings: :user).where(visible: true).order("lastcomment DESC").paginate(page: params[:page]).to_a
   end
 
   # Voir les soumissions auxquelles on participe (admin)
   def allmysub
-    @notifications = current_user.sk.followed_submissions.includes(:user, :problem).where("status > 0").order("lastcomment DESC").paginate(page: params[:page]).to_a
+    @notifications = current_user.sk.followed_submissions.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem).where("status > 0").order("lastcomment DESC").paginate(page: params[:page]).to_a
   end
   
   # Voir toutes les nouvelles soumissions (admin)
   def allnewsub
-    @notifications = Submission.includes(:user, :problem, followings: :user).where(status: 0, visible: true).order("created_at").to_a
+    @notifications = Submission.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem, followings: :user).where(status: 0, visible: true).order("created_at").to_a
   end
 
   # Voir les nouveaux commentaires des soumissions auxquelles on participe (admin)
   def allmynewsub
-    @notifications = current_user.sk.followed_submissions.includes(:user, :problem).order("lastcomment").to_a
+    @notifications = current_user.sk.followed_submissions.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem).order("lastcomment").to_a
     @notifications_other = Submission.includes(:user, :problem, followings: :user).where("status = 3").order("lastcomment").to_a
   end
 
@@ -537,6 +537,8 @@ class UsersController < ApplicationController
 
     ids = Array.new(users.size)
     local_id = 0
+    
+    globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.admin = #{false_value_sql} AND u.active = #{true_value_sql}) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
 
     users.each do |u|
       ids[local_id] = u.id
@@ -544,7 +546,7 @@ class UsersController < ApplicationController
       persection[local_id] = Array.new
       recent[local_id] = 0
       rating[local_id] = u.rating
-      globalrank[local_id] = 1 + User.where("rating > ? AND admin = ? AND active = ?", rating[local_id], false, true).count
+      globalrank[local_id] = globalrank_here[local_id]
       country[local_id] = u.country_id
       linked_name[local_id] = u.linked_name
       local_id = local_id + 1

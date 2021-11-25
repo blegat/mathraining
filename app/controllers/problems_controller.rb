@@ -14,6 +14,14 @@ class ProblemsController < ApplicationController
 
   # Voir le problème : il faut avoir accès
   def show
+    if params.has_key?("auto")
+      s = current_user.sk.solvedproblems.where(:problem_id => @problem).first
+      if s.nil?
+        redirect_to problem_path(@problem)
+      else
+        redirect_to problem_path(@problem, :sub => s.submission_id)
+      end
+    end
   end
 
   # Créer un problème : il faut être admin
@@ -208,21 +216,14 @@ class ProblemsController < ApplicationController
   # Vérifie qu'on peut voir ce problème
   def has_access
     visible = true
-    if !@signed_in || !current_user.sk.admin?
+    if !current_user.sk.admin?
       @problem.chapters.each do |c|
-        visible = false if !@signed_in || !current_user.sk.chap_solved?(c)
+        visible = false if !current_user.sk.chap_solved?(c)
       end
     end
 
-    t = @problem.virtualtest
-    if !t.nil?
-      if !@signed_in
-        visible = false
-      elsif !current_user.sk.admin?
-        if current_user.sk.status(t) <= 0
-          visible = false
-        end
-      end
+    if @problem.virtualtest_id > 0 and !current_user.sk.admin? and current_user.sk.status(@problem.virtualtest_id) <= 0
+      visible = false
     end
 
     if !visible

@@ -42,14 +42,14 @@
 <% title_list.push(["Tous les titres (" + tot_num.to_s + ")", 0]) %>
 
 <% prev_num = 0 %>
-<% Color.order("pt DESC").each do |c| %>
-  <% if @country == 0 %>
-    <% num = User.where("rating >= ? AND admin = ? AND active = ?", [c.pt, 1].max, false, true).count %>
-  <% else %>
-    <% num = User.where("rating >= ? AND admin = ? AND active = ? AND country_id = ?", [c.pt, 1].max, false, true, @country).count %>
-  <% end %>
-  <% title_list.push([pluriel(c.name) + " (" + (num-prev_num).to_s + ")", c.id]) %>
-  <% prev_num = num %>
+<% if @country == 0 %>
+  <% colors_with_num = Color.select("colors.id, colors.name, colors.pt, (SELECT COUNT(users.id) FROM users WHERE users.rating >= colors.pt AND users.rating > 0 AND users.admin = #{false_value_sql} AND users.active = #{true_value_sql}) AS num").order("pt DESC") %>
+<% else %>
+  <% colors_with_num = Color.select("colors.id, colors.name, colors.pt, (SELECT COUNT(users.id) FROM users WHERE users.rating >= colors.pt AND users.rating > 0 AND users.admin = #{false_value_sql} AND users.active = #{true_value_sql} AND users.country_id = #{@country}) AS num").order("pt DESC") %>
+<% end %>
+<% colors_with_num.each do |c| %>
+  <% title_list.push([pluriel(c.name) + " (" + (c.num-prev_num).to_s + ")", c.id]) %>
+  <% prev_num = c.num %>
 <% end %>
 
 <% if @signed_in && current_user.sk.root %>

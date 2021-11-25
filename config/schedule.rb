@@ -37,6 +37,10 @@ every :tuesday, :at => '3am' do
   runner "Question.update_stats" # Update statistics for questions (not so important, so done once a week)
 end
 
+every :wednesday, :at => '3am' do
+  runner "Problem.update_stats" # Update statistics for problems (not so important, so done once a week)
+end
+
 every :day, :at => '12am' do
   runner "Visitor.compute"  # Compute the number of visitors of the day before
 end

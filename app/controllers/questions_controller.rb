@@ -292,11 +292,9 @@ class QuestionsController < ApplicationController
   def order_op(haut, question)
     if haut
       sign = '<'
-      fun = lambda { |x, y| x > y }
       name = 'haut'
     else
       sign = '>'
-      fun = lambda { |x, y| x < y }
       name = 'bas'
     end
     if question.chapter.questions.exists?(["position #{sign} ?", question.position])
@@ -317,11 +315,9 @@ class QuestionsController < ApplicationController
   def order_op2(haut, item)
     if haut
       sign = '<'
-      fun = lambda { |x, y| x > y }
       name = 'haut'
     else
       sign = '>'
-      fun = lambda { |x, y| x < y }
       name = 'bas'
     end
     if item.question.items.exists?(["position #{sign} ?", item.position])

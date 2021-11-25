@@ -22,180 +22,129 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
 
 <% else %>
 
-<% section_fondation = Array.new %>
-<% Section.all.to_a.each do |s| %>
-  <% section_fondation[s.id] = s.fondation %>
+<% problems = accessible_problems_from_section(@section, ["id", "number", "level", "online", "statement", "origin", "virtualtest_id", "nb_solved", "first_solved", "last_solved"]) %>
+<% problems_by_level = problems.group_by{|p| p.level} %>
+
+<% if !current_user.sk.admin? %>
+  <% num_sub_by_problem_and_status = current_user.sk.submissions.where("problem_id IN (?)", problems.map(&:id)).group(:problem_id, :status).count %>
 <% end %>
 
-<% chapters_completion = get_chapters_completion(section_fondation) %>
-
-<!-- On parcourt tous les niveaux -->
 <% (1..5).each do |level| %>
-
-<h2>Niveau <%= level %></h2>
-<% compteur = 0 %>
-
-<!-- On parcourt tous les problèmes de ce niveau -->
-<% @section.problems.includes(:chapters, :virtualtest).where(:level => level).order(:number).each do |p| %>
-
-<!-- Si le problème est en ligne (ou on est admin) -->
-<% if p.online? || current_user.sk.admin? %>
-
-  <!-- On regarde si on peut le voir ou non -->
-  <% visible = current_user.sk.admin? || is_problem_accessible(p, chapters_completion) %>
-
-  <% t = p.virtualtest %>
-
-  <% if !t.nil? && !current_user.sk.admin? %>
-    <% if current_user.sk.status(t) <= 0 %>
-      <% visible = false %>
-    <% end %>
-  <% end %>
-
-  <!-- Si on peut le voir -->
-  <% if visible %>
-    <% compteur = compteur+1 %>
+  <%= "<br/>".html_safe if level > 1 %>
+  <h2>Niveau <%= level %></h2>
+  <% if problems_by_level[level].nil? %>
+    Aucun problème de niveau <%= level %> n'est disponible.<br/><br/>
+  <% else %>
+    Chaque problème de niveau <%= level %> vaut <b><%= 15*level %></b> points.<br/>
     
-    <% if compteur == 1 %>
-      Chaque problème de niveau <%= level %> vaut <b><%= p.value %></b> points.
-    <% end %>
+    <% problems_by_level[level].each do |p| %>
+      <% num_correct_sub = num_sub_by_problem_and_status[[p.id, 2]] unless current_user.sk.admin? %>
+      <% num_correct_sub = 0 if num_correct_sub.nil? %>
 
-    <% resolu = false %>
-    <% brouillon = false %>
+      <% num_brouillons = 0 %>
 
-    <% if current_user.sk.admin? %>
-      <% solution = nil %>
-    <% else %>
-      <% solution = current_user.sk.solution(p) %>
-    <% end %>
-    
-    <% classe = "" %>
-    <!-- Si déjà résolu : vert -->
-    <% if !solution.nil? %>
-      <% classe = "greeny" %>
-      <% resolu = true %>
+      <% classe = "" %>
+      <!-- Si déjà résolu : vert -->
+      <% if num_correct_sub > 0 %>
+        <% classe = "greeny" %>
 
-    <!-- Si pas en ligne : orange -->
-    <% elsif !p.online %>
-      <% classe = "orangey" %>
+      <!-- Si pas en ligne : orange -->
+      <% elsif !p.online %>
+        <% classe = "orangey" %>
 
-    <!-- Si connecté -->
-    <% else %>
-      <% if !current_user.sk.admin? %>
-        <% sub = current_user.sk.submissions.where("problem_id = ? AND status >= 0", p.id).order('created_at') %>
-        <% br = current_user.sk.submissions.where("problem_id = ? AND status = -1", p.id).count %>
-      <% else %>
-        <% sub = nil %>
-        <% br = 0 %>
-      <% end %>
-      
-      <% if br > 0 %>
-        <% brouillon = true %>
-      <% end %>
+      <!-- Si connecté -->
+      <% else %>    
+        <% num_incorrect_sub = num_sub_by_problem_and_status[[p.id, 1]] unless current_user.sk.admin? %>
+        <% num_incorrect_sub = 0 if num_incorrect_sub.nil? %>
+        <% num_incorrect_sub2 = num_sub_by_problem_and_status[[p.id, 3]] unless current_user.sk.admin? %>
+        <% num_incorrect_sub2 = 0 if num_incorrect_sub2.nil? %>
+        <% num_incorrect_sub3 = num_sub_by_problem_and_status[[p.id, 4]] unless current_user.sk.admin? %>
+        <% num_incorrect_sub3 = 0 if num_incorrect_sub3.nil? %>
+        <% num_incorrect_sub = num_incorrect_sub + num_incorrect_sub2 + num_incorrect_sub3 %>
+        
+        <% num_waiting_sub = num_sub_by_problem_and_status[[p.id, 0]] unless current_user.sk.admin? %>
+        <% num_waiting_sub = 0 if num_waiting_sub.nil? %>
+        <% num_brouillons = num_sub_by_problem_and_status[[p.id, -1]] unless current_user.sk.admin? %>
+        <% num_brouillons = 0 if num_brouillons.nil? %>
 
-      <!-- Si aucune soumission (ou admin) : jaune -->
-      <% if current_user.sk.admin? || sub.size == 0 %>
-        <% classe = "yellowy" %>
-      <% else %>
-        <% sub = sub.last %>
-
-        <!-- Si une soumission pas encore corrigée : orange -->
-        <% if sub.status == 0 %>
-          <% classe = "orangey" %>
-
-        <!-- Si une soumission erronée : rouge -->
+        <!-- Si aucune soumission (ou admin) : jaune -->
+        <% if current_user.sk.admin? || num_waiting_sub + num_incorrect_sub == 0 %>
+          <% classe = "yellowy" %>
         <% else %>
-          <% classe = "redy" %>
+          <!-- Si une soumission pas encore corrigée : orange -->
+          <% if num_waiting_sub > 0 %>
+            <% classe = "orangey" %>
+
+          <!-- Si une soumission erronée : rouge -->
+          <% else %>
+            <% classe = "redy" %>
+          <% end %>
         <% end %>
       <% end %>
-    <% end %>
-    
-    <table class="table table-bordered problem <%= classe %>">
-    <tr><td class="title">
-    <center><h3>
-    <%= link_to "Problème ##{ p.number }", problem_path(p, :sub => solution.submission_id) unless solution == nil %>
-    <%= link_to "Problème ##{ p.number }", problem_path(p) if solution == nil %>
-    <% if !p.virtualtest.nil? %>
-      - Test #<%= p.virtualtest.number %>
-    <% end %>
-    <%= "(en construction)" if !p.online %></h3></center>
-    </td></tr>
-    
-    <tr><td class="real-content">
-    
-    <!-- Prérequis (si admin) -->
-    <% if current_user.sk.admin? %>
-      <div class="intro">
-      <b>Prérequis : </b>
-      <% prems = true %>
-      <% p.chapters.each do |c| %>
-        <%= "-" if !prems %>
-        <%= link_to c.name, c %>
-        <%= "(en construction)" if !c.online %>
-        <%= "(#{c.section.name})" if c.section != p.section %>
-        <% prems = false %>
+      
+      <table class="table table-bordered problem <%= classe %>" id="problem<%= p.id %>">
+      <tr><td class="title">
+      <center><h3>
+      <%= link_to "Problème ##{ p.number }", problem_path(p, :auto => 1) %>
+      <% if p.virtualtest_id > 0 %>
+        - Test #<%= p.virtualtest.number %>
       <% end %>
-      </div>
-    <% elsif brouillon %>
-      <div class="intro">
-      <i>(Vous avez un brouillon enregistré pour ce problème.)</i>
-      </div>
-    <% end %>
-
-    <!-- Enoncé -->
-    <div class="row content">
-    <% taille = p.statement.size() %>
-    <% liste = false %>
-    <% if taille >= 5 %>
-      <% fin = p.statement[taille-5, taille-1] %>
-      <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
-        <% liste = true %>
+      <%= "(en construction)" if !p.online %></h3></center>
+      </td></tr>
+      
+      <tr><td class="real-content">
+      
+      <% if num_brouillons > 0 %>
+        <div class="intro">
+        <i>(Vous avez un brouillon enregistré pour ce problème.)</i>
+        </div>
       <% end %>
-    <% end %>
-    <div class="module left-part" style="<%= "padding-bottom:0px !important;" if liste %>">
-    <center><h4>Énoncé</h4></center>
-    <%= raw(htmlise(p.statement)) %>
-    </div>
-    
-    <div class="module right-part">
-    <center><h4>Statistiques</h4></center>
-    <center>
-    <% nb_sol = p.solvedproblems.count %>
-    <% if nb_sol >= 1 %>
-      Résolu par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
-      <% first_sol = p.solvedproblems.order(:resolutiontime).first.resolutiontime.to_date %>
-      <% last_sol = p.solvedproblems.order(:resolutiontime).last.resolutiontime.to_date %>
-      entre le <b><%= write_date_only(first_sol) %></b><br/>
-      et le <b><%= write_date_only(last_sol) %></b>
-    <% else %>
-      <i>Jamais résolu</i>
-    <% end %>
-    </center>
-    </div>
-    </div>
 
-    <!-- Origine si administrateur ou si résolu -->
-    <% if (current_user.sk.admin? || resolu) && !p.origin.nil? && p.origin.size > 0 %>
+      <!-- Enoncé -->
       <div class="row content">
-      <div class="module bottom-part">
-      Origine du problème : <b><%= p.origin %></b>
+      <% taille = p.statement.size() %>
+      <% liste = false %>
+      <% if taille >= 5 %>
+        <% fin = p.statement[taille-5, taille-1] %>
+        <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
+          <% liste = true %>
+        <% end %>
+      <% end %>
+      <div class="module left-part" style="<%= "padding-bottom:0px !important;" if liste %>">
+      <center><h4>Énoncé</h4></center>
+      <%= raw(htmlise(p.statement)) %>
+      </div>
+      
+      <div class="module right-part">
+      <center><h4>Statistiques</h4></center>
+      <center>
+      <% nb_sol = p.nb_solved %>
+      <% if nb_sol >= 1 %>
+        Résolu par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
+        entre le <b><%= write_date_only(p.first_solved) %></b><br/>
+        et le <b><%= write_date_only(p.last_solved) %></b>
+      <% else %>
+        <i>Jamais résolu</i>
+      <% end %>
+      </center>
       </div>
       </div>
-    <% end %>
 
-    </td></tr>
-    </table>
+      <!-- Origine si administrateur ou si résolu -->
+      <% if (current_user.sk.admin? || num_correct_sub) && !p.origin.nil? && p.origin.size > 0 %>
+        <div class="row content">
+        <div class="module bottom-part">
+        Origine du problème : <b><%= p.origin %></b>
+        </div>
+        </div>
+      <% end %>
+
+      </td></tr>
+      </table> 
     <% end %>
   <% end %>
 <% end %>
 
-<% if compteur == 0 %>
-  Aucun problème de niveau <%= level %> n'est disponible.<br/><br/>
-<% end %>
-<% if level < 5 %>
-  <br/>
-<% end %>
-<% end %>
 
 <!-- Ajouter un problème -->
 <% if @signed_in && current_user.sk.admin? %>

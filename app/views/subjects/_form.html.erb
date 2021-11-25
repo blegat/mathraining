@@ -55,15 +55,11 @@ function checkProblem() {
 <% liste = Array.new %>
 <% liste2 = Array.new %>
 
-<% Category.order(:id).each do |c| %>
+<% Category.select(:id, :name).order(:id).each do |c| %>
   <% liste.push([c.name, c.id]) %>
 <% end %>
 
-<% Section.where(:fondation => true).to_a.each do |s| %>
-  <% liste2.push([s.name, 1000*s.id]) %>
-<% end %>
-
-<% Section.where(:fondation => false).order(:id).to_a.each do |s| %>
+<% Section.select(:id, :name).order("fondation DESC, id").each do |s| %>
   <% liste2.push([s.name, 1000*s.id]) %>
 <% end %>
 
@@ -108,7 +104,7 @@ function checkProblem() {
 <% listechap = Array.new %>
 <% if seechap %>
   <% listechap.push(["Aucun chapitre en particulier", 0]) %>
-  <% sect.chapters.where(:online => true).order("level, position").each do |c| %>
+  <% sect.chapters.select(:id, :name).where(:online => true).order("level, position").each do |c| %>
     <% listechap.push([c.name, c.id]) %>
   <% end %>
   <% if !sect.fondation %>
@@ -144,9 +140,12 @@ function checkProblem() {
 <% forced_title = "" %>
 
 <% if seeexo %>
-  <% if !current_user.sk.admin? %>
-    <% chap.prerequisites.each do |p| %>
-      <% exovisibles = false if !p.section.fondation && !current_user.sk.chapters.exists?(p.id) %>
+  <% if !current_user.sk.admin? && !sect.fondation %>
+    <% chap.prerequisites.select(:id).each do |p| %>
+      <% if !current_user.sk.chapters.exists?(p.id) %>
+        <% exovisibles = false %>
+        <% break %>
+      <% end %>
     <% end %>
   <% end %>
   
@@ -154,8 +153,11 @@ function checkProblem() {
   
   <% if exovisibles %>
     <% i = 1 %>
-    <% chap.questions.where(:online => true).order(:position).each do |e| %>
-      <% if (e.subject.nil? || e.id == selected_exercise) %>
+    <% visible_questions = chap.questions.select(:id).where(:online => true).order(:position).to_a %>
+    <% questions_with_subject = Subject.select(:question_id).where(:question_id => visible_questions.map(&:id)).to_a.map!(&:question_id) %>
+    
+    <% visible_questions.each do |e| %>
+      <% if (e.id == selected_exercise || !questions_with_subject.include?(e.id)) %>
         <% listeexo.push(["Exercice #{i}", e.id]) %>
         <% if selected_exercise == e.id %>
           <% forced_title = "Exercice #{i}" %>
@@ -197,36 +199,20 @@ function checkProblem() {
 <% if seeprob %>
   <% probvisibles = has_enough_points() %>
 
-  <% if !current_user.sk.admin? %>
-    <% section_fondation = Array.new %>
-    <% Section.all.to_a.each do |s| %>
-      <% section_fondation[s.id] = s.fondation %>
-    <% end %>
-    <% chapters_completion = get_chapters_completion(section_fondation) %>
-  <% end %>
-
   <% listeprob.push(["Choisissez un problème...", 0]) %>
 
   <% if probvisibles %>
-    <% sect.problems.where(:online => true).order(:number).each do |p| %>
-      <% peutvoir = true %>
-      <% if !current_user.sk.admin? %>
-        <% t = p.virtualtest_id %>
-        <% if t == 0 %>
-          <% peutvoir = is_problem_accessible(p, chapters_completion) %>
-        <% else %>
-          <% peutvoir = false if current_user.sk.status(t) <= 0 %>
+    <% access_prob = accessible_problems_from_section(sect, ["id", "number"]).to_a %>
+    <% prob_with_subject = Subject.select(:problem_id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
+  
+    <% access_prob.each do |p| %>
+      <% if (p.id == selected_problem || !prob_with_subject.include?(p.id)) %>
+        <% listeprob.push(["Problème ##{p.number}", p.id]) %>
+        <% if selected_problem == p.id %>
+          <% forced_title = "Problème ##{p.number}" %>
         <% end %>
-      <% end %>
-      <% if peutvoir %>
-        <% if (p.subject.nil? || p.id == selected_problem) %>
-          <% listeprob.push(["Problème ##{p.number}", p.id]) %>
-          <% if selected_problem == p.id %>
-            <% forced_title = "Problème ##{p.number}" %>
-          <% end %>
-        <% else %>
-          <% some_prob_hidden = true %>
-        <% end %>
+      <% else %>
+        <% some_prob_hidden = true %>
       <% end %>
     <% end %>
   <% end %>

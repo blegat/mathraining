@@ -15,6 +15,9 @@
 #  position       :integer          default(0)
 #  origin         :string
 #  markscheme     :text             default("")
+#  nb_solved      :integer          default(0)
+#  first_solved   :datetime
+#  last_solved    :datetime
 #
 require "spec_helper"
 

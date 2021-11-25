@@ -13,7 +13,7 @@ FactoryGirl.define do
   # Chapter
   factory :chapter do
     association :section
-    description "Une description"
+    sequence(:description) { |n| "Une description #{n}" }
     sequence(:name) { |n| "Chapitre #{n}" }
     level 1
   end
@@ -242,8 +242,8 @@ FactoryGirl.define do
   # Theory
   factory :theory do
     association :chapter
-    title "titre"
-    content "contenu"
+    sequence(:title) { |n| "Mon titre #{n}" }
+    sequence(:content) { |n| "Contenu #{n}" }
     sequence(:position) { |n| n }
   end
   

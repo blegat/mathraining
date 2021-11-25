@@ -199,4 +199,12 @@ module ApplicationHelper
   def title_4(x, y, z, t, print=true)
     return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-second #{'noprint' if not print}'>#{ y } ></span> <span class='title-third #{'noprint' if not print}'>#{ z } ></span> <span class='title-true'>#{ t }</span>".html_safe
   end
+  
+  def true_value_sql
+    return (Rails.env.production? ? "true" : "1")
+  end
+  
+  def false_value_sql
+    return (Rails.env.production? ? "false" : "0")
+  end
 end

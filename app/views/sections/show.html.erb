@@ -7,43 +7,41 @@
 
   <% compteur = 0 %>
 
-  <% chapter.questions.order(:position).each do |f| %>
-    <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(chapter.id))) %>
-      <% compteur = compteur + 1 %>
-      <% if k % 8 == 1 && k > 1 %>
-        </div>
-        <br/>
-        <div class="btn-group" style="margin-top:5px;">
-      <% elsif k == 1 %>
-        <center>
-        <div class="btn-group"  style="margin-top:3px;">
-      <% end %>
-      <% if acces %>
-        <% classe = "" %>  
-        <% if !@signed_in %>
-          <% classe = "btn btn-default btn-grey" %>  
-        <% else %>
-          <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id) %>
-          <% if exo.size > 0 && ! current_user.sk.admin? %>
-            <% exo = exo.first %>
-            <% if exo.correct %>
-              <% classe = "btn-success btn" %>
-            <% else %>
-              <% classe = "btn-danger btn" %>
-            <% end %>
-          <% elsif !f.online %>
-            <% classe = "btn-warning btn" %>
+  <% if !@questions_by_chapter[chapter.id].nil? %>
+    <% @questions_by_chapter[chapter.id].each do |q| %>
+      <% if (q.online || (@signed_in && (current_user.sk.admin? || @chapter_status[chapter.id] == "creator"))) %>
+        <% compteur = compteur + 1 %>
+        <% if k % 8 == 1 && k > 1 %>
+          </div>
+          <br/>
+          <div class="btn-group" style="margin-top:5px;">
+        <% elsif k == 1 %>
+          <center>
+          <div class="btn-group"  style="margin-top:3px;">
+        <% end %>
+        <% if acces %>
+          <% classe = "" %>  
+          <% if !@signed_in %>
+            <% classe = "btn btn-default btn-grey" %>  
+          <% elsif !q.online? %>
+            <% classe = "btn btn-warning" %>
+          <% elsif current_user.sk.admin? %>
+            <% classe = "btn btn-default btn-grey" %>
+          <% elsif @question_status[q.id] == "correct" %>
+            <% classe = "btn btn-success" %>
+          <% elsif @question_status[q.id] == "incorrect" %>
+            <% classe = "btn btn-danger" %>
           <% else %>
             <% classe = "btn btn-default btn-grey" %>
           <% end %>
+          
+          <%= link_to "#{j if q.online}#{'!' if !q.online}", chapter_path(chapter, :type => 5, :which => q.id), :class => classe %>
+        <% else %>
+          <button class="btn disabled" id="disabled-question-<%= q.id %>"><%= j %></button>
         <% end %>
-        
-        <button class="<%= classe %>" onclick="location.href='<%= chapter_path(chapter, :type => 5, :which => f.id) %>'"><%= j if f.online %><%= "!" if !f.online %></button>
-      <% else %>
-        <button class="btn disabled"><%= j %></button>
+        <% j = j+1 if q.online %>
+        <% k = k+1 %>
       <% end %>
-      <% j = j+1 if f.online %>
-      <% k = k+1 %>
     <% end %>
   <% end %>
 
@@ -55,21 +53,21 @@
   <% end %>
 <% end %>
 
-<% def affiche_chapitre(c, lecas, classe, section_fondation, fond) %>
-  <table class="table table-bordered chapter <%= classe %>">
+<% def affiche_chapitre(c, classe, fond) %>
+  <table class="table table-bordered chapter <%= classe %>" id="chapter<%= c.id %>">
   <tr><td class="title">
-  <center><h3><%= link_to c.name, c %><%= " (en construction)" if lecas == 2 %></h3></center>
+  <center><h3><%= link_to c.name, c %><%= " (en construction)" if classe == "orangey" %></h3></center>
   </td></tr>
   
   <tr><td class="real-content">
   <div class="intro">
   <%= raw(htmlise(c.description)) %>
-  <% if lecas == 4 %>
+  <% if classe == "greyy" %>
     <br/><br/>
     <b>Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
     <% prems = true %>
-    <% c.prerequisites.each do |p| %>
-      <% if (!section_fondation[p.section_id] && (!@signed_in || !current_user.sk.chapters.exists?(p.id))) %>
+    <% c.prerequisites.order(:level, :position).each do |p| %>
+      <% if (!@signed_in || !current_user.sk.chapters.exists?(p.id)) %>
         <%= " - " if !prems %>
         <i><%= p.name %></i>
         <% prems = false %>
@@ -89,14 +87,16 @@
   <center><h4>Théorie</h4></center>
   <!-- Théorie -->
   <% compteur = 0 %>
-  <% liste = c.theories.order(:position) %>
-  <% liste.each do |t| %>
-    <% if t.online || !c.online %>
-      <% if compteur == 0 %>
-        <ul>
+  <% if !@theories_by_chapter[c.id].nil? %>
+    <% @theories_by_chapter[c.id].each do |t| %>
+      <% if t.online || !c.online %>
+        <% if compteur == 0 %>
+          <ul>
+        <% end %>
+        <% compteur = compteur + 1 %>
+        <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %>
+        <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;", :id => "V-#{t.id}" if @signed_in && !current_user.sk.admin && @theory_status[t.id] == "read" %></li>
       <% end %>
-      <% compteur = compteur + 1 %>
-      <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %> <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;" if @signed_in && current_user.sk.theories.exists?(t.id) %></li>
     <% end %>
   <% end %>
 
@@ -114,11 +114,7 @@
   <div class="module <%= "middle-part" if !fond %><%= "right-part" if fond %>">
   <center><h4>Exercices</h4></center>
   <!-- Exercices -->
-  <% if lecas < 4 %>
-    <% affiche_exercices(c,true) %>
-  <% else %>
-    <% affiche_exercices(c,false) %>
-  <% end %>
+  <% affiche_exercices(c, classe != "greyy") %>
   </div>
   
   <% if fond %>
@@ -168,67 +164,77 @@
   Les chapitres de cette section sont ordonnés selon leur importance (des plus primordiaux aux plus avancés).
 <% end %>
 
-<% section_fondation = Array.new %>
-<% Section.all.to_a.each do |s| %>
-  <% section_fondation[s.id] = s.fondation %>
+<% unless @signed_in and current_user.sk.admin? %>
+  <% @chapter_status = [] %>
+  <% @question_status = [] %>
+  <% @theory_status = [] %>
+  <% access_chap = accessible_chapters_from_section(@section, ["id"]).to_a %>
+  <% access_chap.each do |c| %>
+    <% @chapter_status[c.id] = "access" %>
+  <% end %>
+  <% if @signed_in %>
+    <% current_user.sk.chapters.each do |c| %>
+      <% @chapter_status[c.id] = "solved" %>
+    <% end %>
+    <% current_user.sk.creating_chapters.each do |c| %>
+      <% @chapter_status[c.id] = "creator" %>
+    <% end %>
+    <% current_user.sk.solvedquestions.joins(:question).where("questions.chapter_id IN (?)", access_chap).select("questions.id, correct").each do |sq| %>
+      <% if sq.correct %>
+        <% @question_status[sq.id] = "correct" %>
+      <% else %>
+        <% @question_status[sq.id] = "incorrect" %>
+      <% end %>
+    <% end %>
+    <% current_user.sk.theories.where(:chapter_id => access_chap).each do |t| %>
+      <% @theory_status[t.id] = "read" %>
+    <% end %>
+  <% end %>
 <% end %>
+
+<% chapters = @section.chapters.select(:id, :name, :description, :online, :level, :nb_tries, :nb_solved, :publication_time).order(:level, :position) %>
+<% chapters_by_level = chapters.group_by{|c| c.level} %>
+<% chapters_id = chapters.map(&:id) %>
+<% @questions_by_chapter = Question.select(:id, :online, :chapter_id).where(:chapter_id => chapters_id).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
+<% @theories_by_chapter = Theory.select(:id, :online, :title, :chapter_id).where(:chapter_id => chapters_id).order(:chapter_id, :position).group_by{|t| t.chapter_id} %>
 
 <% num_level = (@section.fondation ? 1 : 3) %>
 <% (1..num_level).each do |level| %>
   <% premier = true %>
-  <% @section.chapters.where(:level => level).order(:position).each do |c| %>
-    <% if (c.online || (@signed_in && (current_user.sk.admin || current_user.sk.creating_chapters.exists?(c.id)))) %>
-      <% if premier %>
-        <% if @section.fondation %>
-        
-        <% elsif level == 1 %>
-          <h3>Les essentiels</h3>
-          Les chapitres suivants reprennent la théorie essentielle relative à cette section.<br/><br/>
-        <% elsif level == 2 %>
-          <h3>Les classiques</h3>
-          Les chapitres suivants, un peu plus avancés, reprennent les résultats classiques de cette section.<br/><br/>
-        <% elsif level == 3 %>
-          <h3>Les pointus</h3>
-          Les chapitres suivants reprennent des notions plus rarement utiles en compétition mais qui peuvent devenir assez puissantes si bien maitrisées.<br/><br/>
-        <% end %>
-        <% premier = false %>
-      <% end %>
-      
-      <% lecas = 0 %>
-      <% classe = "" %>
-      <% solved = false %>
-      
-      <% if @signed_in && !current_user.sk.admin? && current_user.sk.chapters.exists?(c.id) %>
-        <% solved = true %>
-      <% end %>
-      
-      <% peut_voir = true %>
-      <% if !@signed_in || (!current_user.sk.admin? && !solved) %>
-        <% c.prerequisites.each do |p| %>
-          <% if !section_fondation[p.section_id] %>
-            <% if !@signed_in || !current_user.sk.chapters.exists?(p.id) %>
-              <% peut_voir = false %>
-            <% end %>
+  <% if !chapters_by_level[level].nil? %>
+    <% chapters_by_level[level].each do |c| %>
+      <% if (c.online || (@signed_in && (current_user.sk.admin || @chapter_status[c.id] == "creator"))) %>
+        <% if premier %>
+          <% if @section.fondation %>
+          
+          <% elsif level == 1 %>
+            <h3>Les essentiels</h3>
+            Les chapitres suivants reprennent la théorie essentielle relative à cette section.<br/><br/>
+          <% elsif level == 2 %>
+            <h3>Les classiques</h3>
+            Les chapitres suivants, un peu plus avancés, reprennent les résultats classiques de cette section.<br/><br/>
+          <% elsif level == 3 %>
+            <h3>Les pointus</h3>
+            Les chapitres suivants reprennent des notions plus rarement utiles en compétition mais qui peuvent devenir assez puissantes si bien maitrisées.<br/><br/>
           <% end %>
+          <% premier = false %>
         <% end %>
+        
+        <% if !c.online? %>
+          <% classe = "orangey" %>
+        <% elsif @signed_in && current_user.sk.admin %>
+          <% classe = "yellowy" %>
+        <% elsif @chapter_status[c.id] == "solved" %>
+          <% classe = "greeny" %>
+        <% elsif @chapter_status[c.id] == "access" %>
+          <% classe = "yellowy" %>
+        <% else %>
+          <% classe = "greyy" %>
+        <% end %>
+        
+        <% affiche_chapitre(c, classe, @section.fondation) %> 
+        
       <% end %>
-      
-      <% if solved %>
-        <% lecas = 1 %>
-        <% classe = "greeny" %>
-      <% elsif !c.online %>
-        <% lecas = 2 %>
-        <% classe = "orangey" %>
-      <% elsif peut_voir %>
-        <% lecas = 3 %>
-        <% classe = "yellowy" %>
-      <% else %>
-        <% lecas = 4 %>
-        <% classe = "greyy" %>
-      <% end %>
-      
-      <% affiche_chapitre(c, lecas, classe, section_fondation, @section.fondation) %> 
-      
     <% end %>
   <% end %>
 <% end %>
@@ -239,7 +245,7 @@
 
 <!-- Ajouter un chapitre -->
 <center>
-<%= button_to "Ajouter un chapitre", new_section_chapter_path(@section), method: :get, class: 'btn btn-lg btn-default btn-grey' %>
+<%= link_to "Ajouter un chapitre", new_section_chapter_path(@section), class: 'btn btn-lg btn-default btn-grey' %>
 </center>
 
 <% end %>

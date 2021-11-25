@@ -24,7 +24,7 @@ html>body tbody.scroll {
 <tbody class="scroll">
 <% @new = true %>
 <% @notifs.each do |n| %>
-  <%= render 'submissions/showuser', s: n.submission %>
+  <%= render 'submissions/showline', s: n.submission, hide_user: true %>
 <% end %>
 </tbody>
 </table>

@@ -31,7 +31,7 @@ var showFalse = function () {
 <!-- Si administrateur : peut voir toutes les soumissions correctes -->
 <% if current_user.sk.admin %>
   <h3>Soumissions étoilées</h3>
-  <% submissions = problem.submissions.where(visible: true, status: 2, star: true).order('created_at') %>
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :lastcomment).includes(:user).where(visible: true, status: 2, star: true).order('created_at') %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>
@@ -41,7 +41,7 @@ var showFalse = function () {
     </thead>
     <tbody class="scroll">
     <% submissions.each do |s| %>
-        <%= render 'submissions/showadmin', s: s, situation: 3 %>
+        <%= render 'submissions/showline', s: s %>
       <% end %>
     </tbody>
     </table>
@@ -64,8 +64,8 @@ var showFalse = function () {
 <% else %>
 
   <!-- Dernières soumissions de l'étudiant en question -->
-  <% @newsub = true %>
-  <% submissions = problem.submissions.where('user_id = ? AND status >= 0', current_user.sk).order('created_at DESC') %>
+  <% @cansendnewsub = true %>
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :lastcomment).where('user_id = ? AND status >= 0', current_user.sk).order('created_at DESC') %>
 
   <% if !submissions.empty? %>
     <h3>Vos soumissions</h3>
@@ -76,10 +76,10 @@ var showFalse = function () {
     </thead>
     <tbody class="scroll">
     <% submissions.each do |s| %>
-      <%= render 'submissions/showuser', s: s %>
+      <%= render 'submissions/showline', s: s, hide_user: true %>
       <% if s.status == 0 or s.status == 4 %>
         <!-- Solution en attente ou plagiée -->
-        <% @newsub = false %>
+        <% @cansendnewsub = false %>
       <% end %>
     <% end %>
     </tbody>
@@ -91,7 +91,7 @@ var showFalse = function () {
   <% if current_user.sk.pb_solved?(problem) %>
   
     <h3>Autres soumissions, étoilées</h3>
-    <% submissions = problem.submissions.where('user_id != ? AND status = 2 AND star = ?', current_user.sk, true).order('created_at DESC') %>
+    <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :lastcomment).includes(:user).where('user_id != ? AND status = 2 AND star = ?', current_user.sk, true).order('created_at DESC') %>
 
     <% if !submissions.empty? %>
       <table class="table table-bordered" style="width:auto;">
@@ -100,7 +100,7 @@ var showFalse = function () {
       </thead>
       <tbody class="scroll">
       <% submissions.each do |s| %>
-        <%= render 'submissions/showadmin', s: s, situation: 3 %>
+        <%= render 'submissions/showline', s: s %>
       <% end %>
       </tbody>
       </table>

@@ -45,7 +45,7 @@ describe "Section pages" do
       it do
         should have_selector("h1", text: section.name)
         should have_link("Modifier l'introduction")
-        should have_button("Ajouter un chapitre")
+        should have_link("Ajouter un chapitre")
       end
     end
     

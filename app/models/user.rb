@@ -73,11 +73,14 @@ class User < ActiveRecord::Base
   has_many :notifs, dependent: :destroy
   has_many :subjects, dependent: :destroy
   has_many :messages, dependent: :destroy
-  has_many :followingsubjects, dependent: :destroy
-  has_many :followed_subjects, through: :followingsubjects, source: :subject
+  has_many :takentests, dependent: :destroy
+  
   has_many :links
   has_many :discussions, through: :links # dependent: :destroy does NOT destroy the associated discussions, but only the link!
   belongs_to :country
+
+  has_many :followingsubjects, dependent: :destroy
+  has_many :followed_subjects, through: :followingsubjects, source: :subject
 
   has_many :followingusers, dependent: :destroy
   has_many :followed_users, :class_name => "User", through: :followingusers, foreign_key: "followed_user_id"
@@ -148,14 +151,9 @@ class User < ActiveRecord::Base
     return self.chapters.include?(chapter)
   end
 
-  def solution(problem)
-    s = self.solvedproblems.where(:problem_id => problem).first
-    return s;
-  end
-
   # Rend le statut pour un certain test virtuel
   def status(virtualtest)
-    x = Takentest.where(:user_id => self.id, :virtualtest_id => virtualtest).first
+    x = self.takentests.where(:virtualtest_id => virtualtest).first
     if x.nil?
       return -1
     else

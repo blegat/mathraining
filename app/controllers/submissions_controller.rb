@@ -18,9 +18,9 @@ class SubmissionsController < ApplicationController
   # Voir toutes les soumissions à un problème (via javascript uniquement)
   def index
     if @what == 0
-      @submissions = @problem.submissions.where('user_id != ? AND status = 2 AND star = ? AND visible = ?', current_user.sk, false, true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :lastcomment).includes(:user).where('user_id != ? AND status = 2 AND star = ? AND visible = ?', current_user.sk, false, true).order('created_at DESC')
     elsif @what == 1
-      @submissions = @problem.submissions.where('user_id != ? AND status != 2 AND visible = ?', current_user.sk, true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :lastcomment).includes(:user).where('user_id != ? AND status != 2 AND visible = ?', current_user.sk, true).order('created_at DESC')
     end
 
     respond_to do |format|
@@ -312,10 +312,8 @@ class SubmissionsController < ApplicationController
 
   # Peut envoyer une soumission
   def can_submit
-    Submission.where(:user_id => current_user.sk, :problem_id => @problem).each do |s|
-      if s.status == 0 or s.status == 4 # Soumission en attente de correction, ou plagiée
-        redirect_to problem_path(@problem) and return
-      end
+    if current_user.sk.submissions.where(:problem => @problem, :status => [0, 4]).count > 0 # Soumission en attente de correction, ou plagiée
+      redirect_to problem_path(@problem) and return
     end
   end
   

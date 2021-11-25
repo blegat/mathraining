@@ -15,7 +15,7 @@
 <table class="table table-bordered">
 <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th style="text-align:center;">Type</th><th></th></tr>
 <% @notifications.each do |n| %>
-  <%= render 'submissions/showadmin', s: n, situation: 2 %>
+  <%= render 'submissions/showline', s: n, show_section_and_level: true, highlight_new_comments: true %>
 <% end %>
 </table>
 

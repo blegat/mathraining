@@ -33,17 +33,23 @@
     
   <% exovisibles = true %>
 
-  <% if !current_user.sk.admin? %>
+  <% if !current_user.sk.admin? && !chapter.section.fondation %>
     <% chapter.prerequisites.each do |p| %>
-      <% exovisibles = false if !p.section.fondation && !current_user.sk.chapters.exists?(p.id) %>
+      <% if !current_user.sk.chapters.exists?(p.id) %>
+        <% exovisibles = false %>
+        <% break %>
+      <% end %>
     <% end %>
   <% end %>
     
   <% if exovisibles %>
     <% some_exo_hidden = false %>
     <% i = 1 %>
-    <% chapter.questions.where(:online => true).order(:position).each do |e| %>
-      <% if (e.subject.nil? || e.id == edit_exo_id) %>
+    <% visible_questions = chapter.questions.select(:id).where(:online => true).order(:position).to_a %>
+    <% questions_with_subject = Subject.select(:question_id).where(:question_id => visible_questions.map(&:id)).to_a.map!(&:question_id) %>
+    
+    <% visible_questions.each do |e| %>
+      <% if (e.id == edit_exo_id || !questions_with_subject.include?(e.id)) %>
         var opt = document.createElement('option');
         opt.text = "Exercice <%= i %>"
         opt.value = <%= e.id %>
@@ -86,36 +92,20 @@
   oldSel2.add(opt, null);
     
   <% probvisibles = has_enough_points() %>
-
-  <% if !current_user.sk.admin? %>
-    <% section_fondation = Array.new %>
-    <% Section.all.to_a.each do |s| %>
-      <% section_fondation[s.id] = s.fondation %>
-    <% end %>
-    <% chapters_completion = get_chapters_completion(section_fondation) %>
-  <% end %>
     
   <% if probvisibles %>
     <% some_prob_hidden = false %>
-    <% section.problems.where(:online => true).order(:number).each do |p| %>
-      <% peutvoir = true %>
-      <% if !current_user.sk.admin? %>
-        <% t = p.virtualtest_id %>
-        <% if t == 0 %>
-          <% peutvoir = is_problem_accessible(p, chapters_completion) %>
-        <% else %>
-          <% peutvoir = false if current_user.sk.status(t) <= 0 %>
-        <% end %>
-      <% end %>
-      <% if peutvoir %>
-        <% if (p.subject.nil? || p.id == edit_prob_id) %>
-          var opt = document.createElement('option');
-          opt.text = "Problème #<%= p.number %>"
-          opt.value = <%= p.id %>
-          oldSel2.add(opt, null);
-        <% else %>
-          <% some_prob_hidden = true %>
-        <% end %>
+    <% access_prob = accessible_problems_from_section(section, ["id", "number"]).to_a %>
+    <% prob_with_subject = Subject.select(:problem_id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
+    
+    <% access_prob.each do |p| %>
+      <% if (p.id == edit_prob_id || !prob_with_subject.include?(p.id)) %>
+        var opt = document.createElement('option');
+        opt.text = "Problème #<%= p.number %>"
+        opt.value = <%= p.id %>
+        oldSel2.add(opt, null);
+      <% else %>
+        <% some_prob_hidden = true %>
       <% end %>
     <% end %>
 

@@ -29,7 +29,7 @@ describe "Problem pages" do
   
   describe "visitor" do
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section.id) }
+      before { visit pb_sections_path(section) }
       it do
         should have_selector("h1", text: section.name)
         should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.")
@@ -37,7 +37,7 @@ describe "Problem pages" do
     end
     
     describe "visits online problem" do
-      before { visit problem_path(online_problem.id) }
+      before { visit problem_path(online_problem) }
       it { should have_content(error_must_be_connected) }
     end
   end
@@ -46,7 +46,7 @@ describe "Problem pages" do
     before { sign_in user_with_rating_199 }
 
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section.id) }
+      before { visit pb_sections_path(section) }
       it do
         should have_selector("h1", text: section.name)
         should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
@@ -63,42 +63,52 @@ describe "Problem pages" do
     before { sign_in user_with_rating_200 }
 
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section.id) }
+      before { visit pb_sections_path(section) }
       it do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         should have_selector("h2", text: "Niveau 1")
-        should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem.id))
+        should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem, :auto => 1))
         should have_selector("div", text: online_problem.statement)
-        should have_no_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem.id))
+        should have_no_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem, :auto => 1))
         should have_no_selector("div", text: offline_problem.statement) 
-        should have_no_link("Problème ##{problem_in_virtualtest.number}", href: problem_path(problem_in_virtualtest.id)) 
+        should have_no_link("Problème ##{problem_in_virtualtest.number}", href: problem_path(problem_in_virtualtest, :auto => 1)) 
         should have_no_selector("div", text: problem_in_virtualtest.statement) 
-        should have_no_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite.id)) 
+        should have_no_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite, :auto => 1)) 
         should have_no_selector("div", text: online_problem_with_prerequisite.statement)
       end
     end
     
     describe "visits online problem" do
-      before { visit problem_path(online_problem.id) }
+      before { visit problem_path(online_problem) }
       it do
         should have_selector("h1", text: "Problème ##{online_problem.number}")
         should have_selector("div", text: online_problem.statement)
       end
     end
     
+    describe "visits online problem with auto param" do
+      let!(:correct_submission) { FactoryGirl.create(:submission, :user => user_with_rating_200, :problem => online_problem, :status => 2) }
+      let!(:solvedproblem) { FactoryGirl.create(:solvedproblem, :user => user_with_rating_200, :problem => online_problem, :submission => correct_submission) }
+      before { visit problem_path(online_problem, :auto => 1) }
+      it do
+        should have_current_path(problem_path(online_problem, :sub => correct_submission))
+        should have_content(correct_submission.content)
+      end
+    end
+    
     describe "visits offline problem" do
-      before { visit problem_path(offline_problem.id) }
+      before { visit problem_path(offline_problem) }
       it { should have_content(error_access_refused) }
     end
     
     describe "visits online problem in virtual test" do
-      before { visit problem_path(problem_in_virtualtest.id) }
+      before { visit problem_path(problem_in_virtualtest) }
       it { should have_content(error_access_refused) }
     end
     
     describe "visits online problem with prerequisite" do
-      before { visit problem_path(online_problem_with_prerequisite.id) }
+      before { visit problem_path(online_problem_with_prerequisite) }
       it { should have_content(error_access_refused) }
     end
   end
@@ -110,16 +120,16 @@ describe "Problem pages" do
     end
 
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section.id) }
+      before { visit pb_sections_path(section) }
       it do
-        should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite.id))
+        should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite, :auto => 1))
         should have_selector("div", text: online_problem_with_prerequisite.statement)
         should have_no_button("Ajouter un problème")
       end
     end
     
     describe "visits online problem with prerequisite" do
-      before { visit problem_path(online_problem_with_prerequisite.id) }
+      before { visit problem_path(online_problem_with_prerequisite) }
       it do
         should have_selector("h1", text: "Problème ##{online_problem_with_prerequisite.number}")
         should have_selector("div", text: online_problem_with_prerequisite.statement)
@@ -143,24 +153,24 @@ describe "Problem pages" do
     before { sign_in admin }
     
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section.id) }
+      before { visit pb_sections_path(section) }
       it do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         should have_selector("h2", text: "Niveau 1")
-        should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem.id))
+        should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem, :auto => 1))
         should have_selector("div", text: online_problem.statement)
-        should have_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem.id))
+        should have_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem, :auto => 1))
         should have_selector("div", text: offline_problem.statement)
-        should have_link("Problème ##{problem_in_virtualtest.number}", href: problem_path(problem_in_virtualtest.id))
+        should have_link("Problème ##{problem_in_virtualtest.number}", href: problem_path(problem_in_virtualtest, :auto => 1))
         should have_selector("div", text: problem_in_virtualtest.statement)
-        should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite.id))
+        should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite, :auto => 1))
         should have_selector("div", text: online_problem_with_prerequisite.statement)
       end
     end
     
     describe "visits online problem" do
-      before { visit problem_path(online_problem.id) }
+      before { visit problem_path(online_problem) }
       it do
         should have_selector("h1", text: "Problème ##{online_problem.number}")
         should have_selector("div", text: online_problem.statement)
@@ -171,7 +181,7 @@ describe "Problem pages" do
     end
     
     describe "visits virtualtest problem" do
-      before { visit problem_path(problem_in_virtualtest.id) }
+      before { visit problem_path(problem_in_virtualtest) }
       it do
         should have_selector("h1", text: "Problème ##{problem_in_virtualtest.number} - Test ##{online_virtualtest.number}")
         should have_link("Modifier le marking scheme", href: problem_markscheme_path(problem_in_virtualtest))

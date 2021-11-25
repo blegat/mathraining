@@ -343,12 +343,7 @@ describe "Submission pages" do
       
       describe "and hacks the system to unreserve a submission we did not reserve" do
         before do
-          f = Following.new
-          f.user = good_corrector
-          f.submission = waiting_submission
-          f.read = true
-          f.kind = 0
-          f.save
+          f = Following.create(:user => good_corrector, :submission => waiting_submission, :read => true, :kind => 0)
           visit problem_path(problem_with_submissions, :sub => waiting_submission)
           f.user = admin
           f.save
@@ -365,12 +360,7 @@ describe "Submission pages" do
       
       describe "and reserves it while somebody else reserved it" do
         before do
-          f = Following.new
-          f.user = admin
-          f.submission = waiting_submission
-          f.read = true
-          f.kind = 0
-          f.save
+          Following.create(:user => admin, :submission => waiting_submission, :read => true, :kind => 0)
           click_button "Réserver cette soumission"
           wait_for_ajax
           waiting_submission.reload

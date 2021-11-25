@@ -16,7 +16,7 @@ class CorrectionsController < ApplicationController
     if @submission.status == 0 && @submission.intest && @submission.score == -1 && (params["score".to_sym].nil? || params["score".to_sym].blank?)
       flash[:danger] = "Veuillez donner un score à cette solution."
       session[:ancientexte] = params[:correction][:content]
-      redirect_to problem_path(@submission.problem, :sub => @submission) and return
+      redirect_to problem_path(@problem, :sub => @submission) and return
     end
 
     # On vérifie qu'il n'y a pas eu de nouveau message entre
@@ -28,7 +28,7 @@ class CorrectionsController < ApplicationController
     if lastid != params[:lastcomment].to_i
       session[:ancientexte] = params[:correction][:content]
       flash[:danger] = "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire."
-      redirect_to problem_path(@submission.problem, :sub => @submission) and return
+      redirect_to problem_path(@problem, :sub => @submission) and return
     end
 
     # Pièces jointes
@@ -40,7 +40,7 @@ class CorrectionsController < ApplicationController
     if @error
       flash[:danger] = @error_message
       session[:ancientexte] = params[:correction][:content]
-      redirect_to problem_path(@submission.problem, :sub => @submission) and return
+      redirect_to problem_path(@problem, :sub => @submission) and return
     end
 
     correction = @submission.corrections.build(params.require(:correction).permit(:content))
@@ -90,21 +90,28 @@ class CorrectionsController < ApplicationController
         @submission.save
 
         # On donne les points et on enregistre qu'il est résolu
-        unless @submission.user.pb_solved?(@submission.problem)
-          point_attribution(@submission.user, @submission.problem)
+        unless @submission.user.pb_solved?(@problem)
+          point_attribution(@submission.user, @problem)
           link = Solvedproblem.new
           link.user_id = @submission.user.id
-          link.problem_id = @submission.problem.id
+          link.problem_id = @problem.id
           link.resolutiontime = DateTime.now
           link.submission_id = @submission.id
 
           last_user_corr = @submission.corrections.where("user_id = ?", @submission.user_id).order(:created_at).last
-          if last_user_corr.nil?
-            link.truetime = @submission.created_at
-          else
-            link.truetime = last_user_corr.created_at
-          end
+          truetime = (last_user_corr.nil? ? @submission.created_at : last_user_corr.created_at)
+          link.truetime = truetime
           link.save
+          
+          # On update les statistiques du problème
+          @problem.nb_solved = @problem.nb_solved + 1
+          if @problem.first_solved.nil? or @problem.first_solved > truetime
+            @problem.first_solved = truetime
+          end
+          if @problem.last_solved.nil? or @problem.last_solved < truetime
+            @problem.last_solved = truetime
+          end
+          @problem.save
         end
         m = ' et soumission marquée comme correcte'
 
@@ -171,6 +178,7 @@ class CorrectionsController < ApplicationController
   def get_submission
     @submission = Submission.find_by_id(params[:submission_id])
     return if check_nil_object(@submission)
+    @problem = @submission.problem
   end
 
   # Vérifie qu'il s'agit du bon utilisateur ou d'un admin ou d'un correcteur

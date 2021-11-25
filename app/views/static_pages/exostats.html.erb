@@ -8,79 +8,24 @@ Les tableaux suivants donnent :
 <li>pour chaque exercice, le pourcentage d'étudiants l'ayant résolu au premier essai (parmi ceux ayant tenté l'exercice).</li>
 </ul>
 
-<% debloque = Array.new %>
-<% if @signed_in and !current_user.sk.admin? %>
-  <% current_user.sk.chapters.each do |c| %>
-    <% debloque[c.id] = 1 %>
-  <% end %>
-<% end %>
-
-<% is_fond = Array.new %>
-<% Section.all.each do |section| %>
-  <% is_fond[section.id] = section.fondation? %>
-<% end %>
+<% access_chapters = accessible_chapters(["id"]).map(&:id) %>
+<% chapters = Chapter.select(:id, :section_id, :name, :nb_tries, :nb_firstguess, :nb_solved).where(:online => true).order(:level, :position) %>
+<% chapters_by_section = chapters.group_by{|c| c.section_id} %>
+<% questions_by_chapter = Question.select(:id, :chapter_id, :nb_tries, :nb_firstguess, :nb_solved).where(:online => true).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
 
 <% Section.where(:fondation => false).order(:id).each do |section| %>
+  <% if chapters_by_section[section.id].nil? %>
+    <% next %>
+  <% end %>
+  
   <h3><%= section.name %></h3>
-  <% chap = Array.new %>
-  <% ordered_chap = Array.new %>
-  <% reverse = Array.new %>
-  <% pre = Array.new %>
-  <% taken = Array.new %>
-  <% cansee = Array.new %>
-  <% ordered_cansee = Array.new %>
-  <% n = 0 %>
-  <% section.chapters.where(:online => true).order("level, position").each do |chapter| %>
-    <% chap.push(chapter) %>
-    <% reverse[chapter.id] = n %>
-    <% pre[n] = Array.new %>
-    <% taken[n] = false %>
-    <% cansee[n] = true %>
-    <% chapter.prerequisites.each do |p| %>
-      <% if !@signed_in or (!is_fond[p.section_id] and !current_user.sk.admin? and debloque[p.id].nil?) %>
-        <% cansee[n] = false %>
-      <% end %>
-      <% if p.section == section %>
-        <% pre[n].push(p.id) %>
-      <% end %>
-    <% end %>
-    <% n = n+1 %>
-  <% end %>
   
-  <% (0..(n-1)).each do |i| %>
-    <% (0..(n-1)).each do |j| %>
-      <% if !taken[j] %>
-        <% ok = true %>
-        <% pre[j].each do |p| %>
-          <% if !taken[reverse[p]] %>
-            <% ok = false %>
-          <% end %>
-        <% end %>
-        <% if ok %>
-          <% taken[j] = true %>
-          <% ordered_chap.push(chap[j]) %>
-          <% ordered_cansee.push(cansee[j]) %>
-          <% break %>
-        <% end %>
-      <% end %>
-    <% end %>
-  <% end %>
-  
-  <% allexo = Array.new %>
   <% maxexo = 0 %>
-  
-  <% i = 0 %>
-  <% ordered_chap.each do |chapter| %>
-    <% allexo[i] = Array.new %>
-    
-    <% chapter.questions.order(:position).where(:online => true).each do |f| %>
-      <% allexo[i].push(f) %>
+  <% chapters_by_section[section.id].each do |chapter| %>
+    <% if !questions_by_chapter[chapter.id].nil? %>
+      <% numexo = questions_by_chapter[chapter.id].size %>
+      <% maxexo = numexo if numexo > maxexo %>
     <% end %>
-    
-    <% if(allexo[i].size > maxexo) %>
-      <% maxexo = allexo[i].size %>
-    <% end %>
-    <% i = i+1 %>
   <% end %>
   
   <table class="table table-bordered" style="width:auto;">
@@ -91,7 +36,7 @@ Les tableaux suivants donnent :
   </tr>
   
   <% i = 0 %>
-  <% ordered_chap.each do |chapter| %>
+  <% chapters_by_section[section.id].each do |chapter| %>
     <tr style="background-color:rgb(255,255,255);" class="hidden-large">
     <td colspan="<%= maxexo-1 %>"><%= link_to chapter.name, chapter %></td>
     <% pct = 0 %>
@@ -101,19 +46,24 @@ Les tableaux suivants donnent :
     <tr style="background-color:rgb(250,250,250);">
     <td class="hidden-small"><%= link_to chapter.name, chapter %></td>
     <td class="hidden-small" style="text-align:center;"><%= pct %>%</td>
-    <% allexo[i].each do |e| %>
-      <% pct = 0 %>
-      <% pct = e.nb_firstguess.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
-      <% pct2 = [1.4*pct,1].min %>
-      <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);">
-      <% if ordered_cansee[i] %>
-        <%= link_to "#{(100*pct).round(0)}%", chapter_path(chapter, :type => 5, :which => e.id), :style => "color:rgb(0,0,200);" %>
-      <% else %>
-        <%= (100*pct).round(0) %>%
+    <% numexo = 0 %>
+    <% can_see_exercises = access_chapters.include?(chapter.id) %>
+    <% if !questions_by_chapter[chapter.id].nil? %>
+      <% numexo = questions_by_chapter[chapter.id].size %>
+      <% questions_by_chapter[chapter.id].each do |e| %>
+        <% pct = 0 %>
+        <% pct = e.nb_firstguess.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
+        <% pct2 = [1.4*pct,1].min %>
+        <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);">
+        <% if can_see_exercises %>
+          <%= link_to "#{(100*pct).round(0)}%", chapter_path(chapter, :type => 5, :which => e.id), :style => "color:rgb(0,0,200);" %>
+        <% else %>
+          <%= (100*pct).round(0) %>%
+        <% end %>
+        </td>
       <% end %>
-      </td>
     <% end %>
-    <% (allexo[i].size..maxexo-1).each do |j| %>
+    <% (numexo..maxexo-1).each do |j| %>
     <td style="text-align:center;">-</td>
     <% end %>
     </tr>
