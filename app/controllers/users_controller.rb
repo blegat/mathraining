@@ -354,8 +354,8 @@ class UsersController < ApplicationController
 
   # Voir les nouveaux commentaires des soumissions auxquelles on participe (admin)
   def allmynewsub
-    @notifications = current_user.sk.followed_submissions.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem).order("lastcomment").to_a
-    @notifications_other = Submission.includes(:user, :problem, followings: :user).where("status = 3").order("lastcomment").to_a
+    @notifications = current_user.sk.followed_submissions.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem).where(followings: {read: false}).order("lastcomment").to_a
+    @notifications_other = Submission.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem, followings: :user).where("status = 3").order("lastcomment").to_a
   end
 
   # Voir les notifications (étudiant)

@@ -8,11 +8,17 @@
   <%= will_paginate @notifications, :style => "margin-top:15px; margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
+<% if !current_user.sk.admin? %>
+  <% problem_solved = Array.new %>
+  <% current_user.sk.solvedproblems.select(:problem_id).each do |sp| %>
+    <% problem_solved[sp.problem_id] = true %>
+  <% end %>
+<% end %>
 
 <table class="table table-bordered">
 <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur(s)</th><th style="text-align:center;">Type</th><th></th></tr>
 <% @notifications.each do |n| %>
-  <% hidden_sub = (current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem)) %>
+  <% hidden_sub = (!current_user.sk.admin && problem_solved[n.problem_id] != true) %>
   <%= render 'submissions/showline', s: n, show_section_and_level: true, hidden_sub: hidden_sub, show_correctors: true %>
 <% end %>
 </table>

@@ -154,6 +154,7 @@ FactoryGirl.define do
     sequence(:statement) { |n| "Énoncé de problème #{n}" }
     level 1
     sequence(:number) { |n| n }
+    sequence(:origin) { |n| "Origine #{n}" }
     online false
   end
   

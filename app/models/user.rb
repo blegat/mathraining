@@ -161,24 +161,18 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Rend les notifications
-  def notifications_new
+  # Rend le nombre de soumissions qu'on peut corriger
+  def num_notifications_new
     if sk.admin
-      Submission.where(status: 0, visible: true)
+      return Submission.where(status: 0, visible: true).count
     elsif sk.corrector
-      newsub = Array.new
-      Submission.where(status: 0, visible: true).each do |s|
-        if sk.pb_solved?(s.problem)
-          newsub.push(s)
-        end
-      end
-      newsub
+      return Submission.where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id}) AND status = 0 AND visible = #{true_value_sql}").count
     end
   end
 
-  # Rend les notifications pour nouveau commentaire
-  def notifications_update
-    followed_submissions.where(followings: { read: false })
+  # Rend le nombre de soumissions avec un nouveau commentaire pour nous
+  def num_notifications_update
+    return followed_submissions.where(followings: { read: false }).count
   end
 
   # Rend le niveau de l'utilisateur

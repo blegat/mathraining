@@ -155,12 +155,19 @@ Votre navigateur ne supporte pas les canvas.
   Il n'y a plus rien à corriger, beau boulot !
 <% else %>
 
-<table class="table table-bordered">
-<tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur</th><th style="text-align:center;">Type</th><th></th></tr>
-<% @notifications.each do |n| %>
-  <% hidden_sub = (current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem)) %>
-  <%= render 'submissions/showline', s: n, show_section_and_level: true, hidden_sub: hidden_sub, show_num_waiting_days_from: "created_at", show_correctors: true %>
-<% end %>
-</table>
+  <% if !current_user.sk.admin? %>
+    <% problem_solved = Array.new %>
+    <% current_user.sk.solvedproblems.select(:problem_id).each do |sp| %>
+      <% problem_solved[sp.problem_id] = true %>
+    <% end %>
+  <% end %>
+
+  <table class="table table-bordered">
+  <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur</th><th style="text-align:center;">Type</th><th></th></tr>
+  <% @notifications.each do |n| %>
+    <% hidden_sub = (!current_user.sk.admin? && problem_solved[n.problem_id] != true) %>
+    <%= render 'submissions/showline', s: n, show_section_and_level: true, hidden_sub: hidden_sub, show_num_waiting_days_from: "created_at", show_correctors: true %>
+  <% end %>
+  </table>
 
 <% end %>

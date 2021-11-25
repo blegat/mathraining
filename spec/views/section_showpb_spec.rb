@@ -303,12 +303,17 @@ describe "Page section/showpb" do
         should have_selector("h2", text: "Niveau 5")
         
         should have_selector("table", class: "greeny", text: online_problem.statement) # Level 1
+        should have_content(online_problem.origin)
         should have_selector("table", class: "redy", text: online_problem_with_one_prerequisite.statement) # Level 2
+        should have_no_content(online_problem_with_one_prerequisite.origin)
         should have_selector("table", class: "orangey", text: online_problem_with_two_prerequisites.statement) # Level 5
+        should have_no_content(online_problem_with_two_prerequisites.origin)
         should have_no_selector("table", text: offline_problem.statement)
         should have_selector("table", class: "yellowy", text: problem_in_online_virtualtest.statement)  # Level 2
+        should have_no_content(problem_in_online_virtualtest.origin)
         should have_selector("table", class: "yellowy", text: "(Vous avez un brouillon enregistré pour ce problème.)")
         should have_selector("table", class: "greeny", text: problem_with_prerequisite_in_online_virtualtest.statement)  # Level 4
+        should have_content(problem_with_prerequisite_in_online_virtualtest.origin)
         should have_no_selector("table", text: problem_in_offline_virtualtest.statement)
         
         should have_content("Chaque problème de niveau 1 vaut 15 points.")
@@ -354,12 +359,17 @@ describe "Page section/showpb" do
         should have_selector("h2", text: "Niveau 5")
         
         should have_selector("table", class: "greeny", text: online_problem.statement) # Level 1
+        should have_content(online_problem.origin)
         should have_selector("table", class: "redy", text: online_problem_with_one_prerequisite.statement) # Level 2
+        should have_no_content(online_problem_with_one_prerequisite.origin)
         should have_selector("table", class: "redy", text: online_problem_with_two_prerequisites.statement) # Level 5
+        should have_no_content(online_problem_with_two_prerequisites.origin)
         should have_selector("table", class: "redy", text: "(Vous avez un brouillon enregistré pour ce problème.)")
         should have_no_selector("table", text: offline_problem.statement)
         should have_selector("table", class: "orangey", text: problem_in_online_virtualtest.statement)  # Level 2
+        should have_no_content(problem_in_online_virtualtest.origin)
         should have_selector("table", class: "redy", text: problem_with_prerequisite_in_online_virtualtest.statement)  # Level 4
+        should have_no_content(problem_with_prerequisite_in_online_virtualtest.origin)
         should have_no_selector("table", text: problem_in_offline_virtualtest.statement)
         
         should have_content("Chaque problème de niveau 1 vaut 15 points.")
@@ -394,12 +404,19 @@ describe "Page section/showpb" do
       should have_selector("h2", text: "Niveau 5")
       
       should have_selector("table", class: "yellowy", text: online_problem.statement)
+      should have_content(online_problem.origin)
       should have_selector("table", class: "yellowy", text: online_problem_with_one_prerequisite.statement)
+      should have_content(online_problem_with_one_prerequisite.origin)
       should have_selector("table", class: "yellowy", text: online_problem_with_two_prerequisites.statement)
-      should have_selector("table", class: "orangey", text: offline_problem.statement) 
-      should have_selector("table", class: "yellowy", text: problem_in_online_virtualtest.statement) 
-      should have_selector("table", class: "yellowy", text: problem_with_prerequisite_in_online_virtualtest.statement) 
+      should have_content(online_problem_with_two_prerequisites.origin)
+      should have_selector("table", class: "orangey", text: offline_problem.statement)
+      should have_content(offline_problem.origin)
+      should have_selector("table", class: "yellowy", text: problem_in_online_virtualtest.statement)
+      should have_content(problem_in_online_virtualtest.origin)
+      should have_selector("table", class: "yellowy", text: problem_with_prerequisite_in_online_virtualtest.statement)
+      should have_content(problem_with_prerequisite_in_online_virtualtest.origin)
       should have_selector("table", class: "yellowy", text: problem_in_offline_virtualtest.statement)
+      should have_content(problem_in_offline_virtualtest.origin)
       
       should have_content("Chaque problème de niveau 1 vaut 15 points.")
       should have_content("Chaque problème de niveau 2 vaut 30 points.")

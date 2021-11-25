@@ -26,15 +26,15 @@
 
         <!-- Nouvelles soumissions -->
 
-        <% notifications_new = current_user.sk.notifications_new.count %>
-        <% notifications_update = current_user.sk.notifications_update.count %>
-        <% if notifications_new > 0 %>
-          <%= link_to "#{notifications_new}", allnewsub_path, class: "btn btn-danger" %>
+        <% num_notifications_new = current_user.sk.num_notifications_new %>
+        <% num_notifications_update = current_user.sk.num_notifications_update %>
+        <% if num_notifications_new > 0 %>
+          <%= link_to "#{num_notifications_new}", allnewsub_path, class: "btn btn-danger" %>
         <% else %>
           <%= link_to "0", allnewsub_path, class: "btn btn-default btn-grey" %>
         <% end %>
-        <% if notifications_update != 0 %>
-          <%= link_to "#{notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
+        <% if num_notifications_update > 0 %>
+          <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
         <% else %>
           <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
         <% end %>
@@ -68,13 +68,13 @@
         <form role="search" style="margin-left:15px; margin-bottom:5px;">
         
         <!-- Nouvelles soumissions -->
-        <% if notifications_new != 0 %>
-          <%= link_to "#{notifications_new}", allnewsub_path, class: "btn btn-danger" %>
+        <% if num_notifications_new > 0 %>
+          <%= link_to "#{num_notifications_new}", allnewsub_path, class: "btn btn-danger" %>
         <% else %>
           <%= link_to "0", allnewsub_path, class: "btn btn-default btn-grey" %>
         <% end %>
-        <% if notifications_update != 0 %>
-          <%= link_to "#{notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
+        <% if num_notifications_update > 0 %>
+          <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
         <% else %>
           <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
         <% end %>

@@ -4,27 +4,17 @@
 
 <h3>Qui vous concernent</h3>
 
-<% tome = Array.new %>
-<% @follow = Array.new %>
-<% current_user.sk.followings.where(:read => false).each do |f| %>
-  <% @follow.push(f.submission_id) %>
-<% end %>
+<% to_me = Array.new %>
 
-<% first_mine = true %>
-
-<% @notifications.each do |n| %>
-  <% if @follow.include?(n.id) %>
-    <% tome.push(n.id) %>
-    <% if first_mine %>
-      <table class="table table-bordered">
-      <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th style="text-align:center;">Type</th><th></th></tr>
-    <% end %>
-    <%= render 'submissions/showline', s: n, show_section_and_level: true, show_num_waiting_days_from: "lastcomment", highlight_new_comments: true %>
-    <% first_mine = false %>
+<% if @notifications.size > 0 %>
+  <table class="table table-bordered">
+  <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th style="text-align:center;">Type</th><th></th></tr>
+  
+  <% @notifications.each do |n| %>
+    <% to_me.push(n.id) %>
+    <%= render 'submissions/showline', s: n, show_section_and_level: true, show_num_waiting_days_from: "lastcomment", highlight_this_sub: true %>
   <% end %>
-<% end %>
 
-<% if !first_mine %>
   </table>
 <% else %>
   Vous n'avez aucun nouveau commentaire à lire.  
@@ -35,13 +25,21 @@
 <% first_other = true %>
 
 <% @notifications_other.each do |n| %>
-  <% if(!tome.include?(n.id)) %>
+
+  <% if !current_user.sk.admin? %>
+    <% problem_solved = Array.new %>
+    <% current_user.sk.solvedproblems.select(:problem_id).each do |sp| %>
+      <% problem_solved[sp.problem_id] = true %>
+    <% end %>
+  <% end %>
+
+  <% if(!to_me.include?(n.id)) %>
     <% if first_other %>
       <table class="table table-bordered">
       <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur(s)</th><th style="text-align:center;">Type</th><th></th></tr>
     <% end %>
-    <% hidden_sub = (current_user.sk.corrector && !current_user.sk.pb_solved?(n.problem)) %>
-    <%= render 'submissions/showline', s: n, show_section_and_level: true, hidden_sub: hidden_sub, show_num_waiting_days_from: "lastcomment", show_correctors: true, highlight_new_comments: true %>
+    <% hidden_sub = (!current_user.sk.admin? && problem_solved[n.problem_id] != true) %>
+    <%= render 'submissions/showline', s: n, show_section_and_level: true, hidden_sub: hidden_sub, show_num_waiting_days_from: "lastcomment", show_correctors: true %>
     <% first_other = false %>
   <% end %>
 <% end %>

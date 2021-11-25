@@ -22,16 +22,16 @@
   <% show_section_and_level = false %>
 <% end %>
 
-<% if !(defined? highlight_new_comments) %>
-  <% highlight_new_comments = false %>
+<% if !(defined? highlight_this_sub) %>
+  <% highlight_this_sub = false %>
 <% end %>
 
 <!-- Couleur -->
 
 <% if hidden_sub %>
   <tr style="background-color:#E0E0E0;"> <!-- Si non-visible : gris -->
-<% elsif highlight_new_comments && @follow.include?(s.id) %>
-  <tr class="warning"> <!-- Si nouveau commentaire non lu et highlight_new_comments = true : toujours jaune -->
+<% elsif highlight_this_sub %>
+  <tr class="warning"> <!-- Si cette soumission doit être highlightée : toujours jaune -->
 <% elsif s.status == 2 %>
   <tr class="success"> <!-- Si status = 2 (accepté) : toujours vert -->
 <% elsif s.status == 1 or s.status == 4 %>
