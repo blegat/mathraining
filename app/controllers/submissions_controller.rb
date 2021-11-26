@@ -338,20 +338,17 @@ class SubmissionsController < ApplicationController
   # Vérifie qu'on peut voir le problème associé
   def has_access
     visible = true
-    if !@signed_in || !current_user.sk.admin?
-      @problem.chapters.each do |c|
-        visible = false if !@signed_in || !current_user.sk.chap_solved?(c)
-      end
-    end
 
     t = @problem.virtualtest
-    if !t.nil?
-      if !@signed_in
-        visible = false
-      elsif !current_user.sk.admin?
-        if current_user.sk.status(t) <= 0
-          visible = false
+    if t.nil? # Not in a virtualtest
+      if !current_user.sk.admin?
+        @problem.chapters.each do |c|
+          visible = false if !current_user.sk.chap_solved?(c)
         end
+      end
+    else # In a virtualtest
+      if !current_user.sk.admin?
+        visible = false if current_user.sk.status(t) <= 0
       end
     end
 

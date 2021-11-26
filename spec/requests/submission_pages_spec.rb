@@ -78,9 +78,10 @@ describe "Submission pages" do
             fill_in "MathInput", with: newsubmission
             click_button "Enregistrer comme brouillon"
           end
+          let!(:submission) { problem.submissions.order(:id).last }
           specify do
-            expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
-            expect(problem.submissions.order(:id).last.status).to eq(-1)
+            expect(submission.content).to eq(newsubmission)
+            expect(submission.status).to eq(-1)
             expect(page).to have_selector("h3", text: "Nouvelle soumission")
             expect(page).to have_button("Soumettre cette solution")
             expect(page).to have_button("Enregistrer le brouillon")
@@ -93,11 +94,25 @@ describe "Submission pages" do
             before do
               fill_in "MathInput", with: newsubmission2
               click_button "Enregistrer le brouillon"
+              submission.reload
             end
             specify do
-              expect(problem.submissions.order(:id).last.content).to eq(newsubmission2)
-              expect(problem.submissions.order(:id).last.status).to eq(-1)
+              expect(submission.content).to eq(newsubmission2)
+              expect(submission.status).to eq(-1)
               expect(page).to have_selector("h3", text: "Nouvelle soumission")
+            end
+          end
+          
+          describe "and updates the draft for an empty draft" do
+            before do
+              fill_in "MathInput", with: ""
+              click_button "Enregistrer le brouillon"
+              submission.reload
+            end
+            specify do
+              expect(page).to have_error_message("Soumission doit être rempli")
+              expect(submission.content).to eq(newsubmission)
+              expect(submission.status).to eq(-1)
             end
           end
           
@@ -105,15 +120,34 @@ describe "Submission pages" do
             before do
               fill_in "MathInput", with: newsubmission2
               click_button "Soumettre cette solution"
+              submission.reload
             end
             specify do
-              expect(problem.submissions.order(:id).last.content).to eq(newsubmission2)
-              expect(problem.submissions.order(:id).last.status).to eq(0)
+              expect(submission.content).to eq(newsubmission2)
+              expect(submission.status).to eq(0)
               expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
               expect(page).to have_selector("div", text: newsubmission2)
             end
           end
         end
+      end
+    end
+    
+    describe "sends a submission to a virtualtest problem (later)" do
+      let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true) }
+      let!(:takentest) { Takentest.create(:virtualtest => virtualtest, :user => user, :status => 1) }
+      before do
+        problem.update_attribute(:virtualtest, virtualtest)
+        visit problem_path(problem)
+        click_link("Nouvelle soumission")
+        fill_in "MathInput", with: newsubmission
+        click_button "Soumettre cette solution"
+      end
+      specify do
+        expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
+        expect(problem.submissions.order(:id).last.status).to eq(0)
+        expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
+        expect(page).to have_selector("div", text: newsubmission)
       end
     end
   end
@@ -510,7 +544,7 @@ describe "Submission pages" do
   describe "user", :js => true do
     before { sign_in user }
   
-    describe "creates a submission with a file" do
+    describe "creates a draft with a file" do
       before do
         visit problem_path(problem, :sub => 0)
         fill_in "MathInput", with: newsubmission
@@ -519,15 +553,49 @@ describe "Submission pages" do
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_2", File.absolute_path(attachments_folder + image1))
-        check "consent"
-        click_button "Soumettre cette solution"
-        # No dialog box to accept in test environment: it was deactivated because we had issues with testing
+        click_button "Enregistrer comme brouillon"
       end
       let!(:newsub) { problem.submissions.order(:id).last }
       specify do
         expect(newsub.content).to eq(newsubmission)
         expect(newsub.myfiles.count).to eq(1)
         expect(newsub.myfiles.first.file.filename.to_s).to eq(image1)
+      end
+      
+      describe "and updates it with a wrong file" do
+        before do
+          fill_in "MathInput", with: newsubmission2
+          click_button "Ajouter une pièce jointe"
+          attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
+          click_button "Enregistrer le brouillon"
+          newsub.reload
+        end
+        specify do
+          expect(page).to have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
+          expect(newsub.content).to eq(newsubmission)
+          expect(newsub.myfiles.count).to eq(1)
+          expect(newsub.myfiles.first.file.filename.to_s).to eq(image1)
+        end
+      end
+    end
+    
+    describe "creates a submission with a wrong file" do
+      before do
+        visit problem_path(problem, :sub => 0)
+        fill_in "MathInput", with: newsubmission
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + image2))
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_2", File.absolute_path(attachments_folder + exe_attachment))
+        check "consent"
+        click_button "Soumettre cette solution"
+        # No dialog box to accept in test environment: it was deactivated because we had issues with testing
+      end
+      it do
+        should have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
+        should have_selector("textarea", text: newsubmission)
       end
     end
   end

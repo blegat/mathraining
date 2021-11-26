@@ -84,6 +84,7 @@ describe "Discussion pages" do
         end
         specify do
           should have_error_message("Veuillez choisir un destinataire.")
+          should have_selector("textarea", text: content)
           expect(user.discussions.count).to eq(0)
         end
       end
@@ -241,7 +242,10 @@ describe "Discussion pages" do
         attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
         click_button "Envoyer"
       end
-      it { should have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions") }
+      it do
+        should have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
+        should have_selector("textarea", text: content3)
+      end
     end
     
     describe "creates a discussion with a wrong file" do
@@ -255,8 +259,38 @@ describe "Discussion pages" do
         attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
         click_button "Envoyer"
       end
-      #it { should have_select2_option other_user.name }
-      it { should have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions") }
+      it do
+        should have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
+        should have_selector("textarea", text: content)
+      end
+    end
+    
+    describe "visits a long discussion" do
+      let!(:discussion) { create_discussion_between(user, other_user, content, content2) }
+      let(:long_content) { "Ce texte est un peu long.\n\nMais j'ai beaucoup de choses à dire\n\nComment vas-tu?\n\nTest " }
+      before do
+        (1..25).each do |i|
+          Tchatmessage.create(:discussion => discussion, :user => (i % 2 == 1 ? user : other_user), :content => long_content + i.to_s)
+        end
+        visit discussion_path(discussion)
+      end
+      it do
+        should have_content(long_content + "25")
+        should have_no_content(long_content + "15")
+        should have_no_content(long_content + "5")
+      end
+      
+      describe "and scrolls to the bottom" do
+        before do
+          visit discussion_path(discussion, :anchor => "footer")
+          wait_for_ajax
+        end
+        it do
+          should have_content(long_content + "25")
+          should have_content(long_content + "15")
+          should have_no_content(long_content + "5")
+        end
+      end
     end
   end
 end

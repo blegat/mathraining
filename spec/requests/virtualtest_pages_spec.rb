@@ -171,6 +171,27 @@ describe "Virtualtest pages" do
               end
             end
           end
+          
+          describe "and writes an empty solution" do
+            before do
+              fill_in "MathInput", with: ""
+              click_button "Enregistrer cette solution"
+            end
+            it { should have_error_message("Soumission doit être rempli") }
+          end
+          
+          describe "and writes a new solution after having written another one in another tab" do
+            let!(:submission) { FactoryGirl.create(:submission, problem: problem, user: user_with_rating_200, status: 0, intest: true, visible: false, content: newsolution) }
+            before do
+              fill_in "MathInput", with: newsolution2
+              click_button "Enregistrer cette solution"
+              submission.reload
+            end
+            specify do
+              expect(submission.content).to eq(newsolution2)
+              expect(page).to have_content("Votre solution a bien été modifiée.")
+            end
+          end
         end
         
         describe "and tries to visit the problem section page" do
@@ -355,6 +376,26 @@ describe "Virtualtest pages" do
           expect(newsub.myfiles.count).to eq(1)
           expect(newsub.myfiles.first.file.filename.to_s).to eq(image2)
         end
+      end
+    end
+    
+    describe "writes a solution with a wrong file" do
+      before do
+        visit virtualtests_path
+        click_button "Commencer ce test"
+        # No dialog box to accept in test environment: it was deactivated because we had issues with testing
+        visit virtualtest_path(virtualtest, :p => problem)
+        click_button "Écrire une solution"
+        wait_for_ajax
+        fill_in "MathInput", with: newsolution
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
+        click_button "Enregistrer cette solution"
+      end
+      it do
+        should have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
+        should have_selector("textarea", text: newsolution)
       end
     end
   end
