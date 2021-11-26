@@ -86,6 +86,7 @@ GEM
     capybara-screenshot (1.0.25)
       capybara (>= 1.0, < 4)
       launchy
+    capybara-select-2 (0.5.1)
     childprocess (1.0.0)
     chronic (0.10.2)
     codecov (0.6.0)
@@ -359,6 +360,7 @@ DEPENDENCIES
   capybara (= 3.18.0)
   capybara-email
   capybara-screenshot
+  capybara-select-2
   codecov
   coffee-rails (~> 4.2.1)
   database_cleaner-active_record

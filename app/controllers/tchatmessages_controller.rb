@@ -46,11 +46,7 @@ class TchatmessagesController < DiscussionsController
 
   def is_involved_2
     @discussion = Discussion.find_by_id(params[:tchatmessage][:discussion_id])
-    if @discussion.nil?
-      render 'errors/access_refused' and return
-    end
-    if !current_user.sk.discussions.include?(@discussion)
-      render 'errors/access_refused' and return
-    end
+    return if check_nil_object(@discussion)
+    render 'errors/access_refused' and return unless @discussion.users.include?(current_user.sk)
   end
 end

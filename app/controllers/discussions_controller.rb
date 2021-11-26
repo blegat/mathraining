@@ -66,9 +66,7 @@ class DiscussionsController < ApplicationController
       send_message
 
       if @erreur
-        if !deja
-          @discussion.destroy
-        end
+        @discussion.destroy unless deja
         redirect_to new_discussion_path
       else
         if !deja
