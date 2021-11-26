@@ -92,21 +92,15 @@ class SubjectsController < ApplicationController
   end
 
   # Créer un sujet 2
-  def create
-    if !current_user.sk.admin? && !params[:subject][:important].nil? # Hack
-      redirect_to root_path and return
-    end
-    
+  def create    
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
     @subject = Subject.new(params.require(:subject).permit(:title, :content, :admin, :important, :wepion))
     @subject.user = current_user.sk
     @subject.lastcomment = DateTime.current
     @subject.lastcomment_user = current_user.sk
-
-    if @subject.admin
-      @subject.wepion = false # On n'autorise pas wépion si admin
-    end
+    
+    @subject.wepion = false if @subject.admin # On n'autorise pas wépion si admin
 
     if @subject.title.size > 0
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
@@ -175,10 +169,6 @@ class SubjectsController < ApplicationController
         attach[j-1].update_attribute(:myfiletable, @subject)
         j = j+1
       end
-      if !current_user.sk.admin? && !current_user.sk.corrector? && @subject.admin? # Hack
-        @subject.admin = false
-        @subject.save
-      end
 
       if current_user.sk.root?
         for g in ["A", "B"] do
@@ -202,11 +192,7 @@ class SubjectsController < ApplicationController
   end
 
   # Editer un sujet 2
-  def update
-    if !current_user.sk.admin? && !current_user.sk.corrector? && !params[:subject][:important].nil? # Hack
-      redirect_to root_path
-    end
-    
+  def update    
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
     @subject.title = params[:subject][:title]
@@ -214,11 +200,10 @@ class SubjectsController < ApplicationController
     @subject.admin = params[:subject][:admin] if !params[:subject][:admin].nil?
     @subject.important = params[:subject][:important] if !params[:subject][:important].nil?
     @subject.wepion = params[:subject][:wepion] if !params[:subject][:wepion].nil?
+    
+    @subject.wepion = false if @subject.admin # On n'autorise pas wépion si admin
+    
     if @subject.valid?
-
-      if @subject.admin
-        @subject.wepion = false # On n'autorise pas wépion si admin
-      end
 
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
 
@@ -269,11 +254,6 @@ class SubjectsController < ApplicationController
       end
 
       @subject.save
-
-      if !current_user.sk.admin? && !current_user.sk.corrector? && @subject.admin? # Hack
-        @subject.admin = false
-        @subject.save
-      end
 
       # Pièces jointes
       @error = false
