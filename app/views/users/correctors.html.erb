@@ -229,8 +229,8 @@ Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier cor
 Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un grand merci à eux tous !
 
 <% correctors = [] %>
-<% User.select("users.*, (SELECT COUNT(followings.id) FROM followings WHERE followings.user_id = users.id AND followings.kind > 0) AS nb_corrections, (SELECT COUNT(followings.id) FROM followings WHERE followings.user_id = users.id AND followings.kind > 0 AND created_at > '#{twoweeksago}') AS nb_recent, (SELECT MIN(followings.created_at) FROM followings WHERE followings.user_id = users.id AND followings.kind > 0) AS first_correction, (SELECT MAX(followings.created_at) FROM followings WHERE followings.user_id = users.id AND followings.kind > 0) AS last_correction").where("admin = ? OR corrector = ?", true, true).each do |u| %>
-  <% if u.nb_corrections > 0 %>
+<% User.find_by_sql("SELECT users.*, SQ.nb_corrections, SQ.first_correction, SQ.last_correction, SQ2.nb_recent FROM users LEFT OUTER JOIN ( SELECT followings.user_id, COUNT(followings.id) AS nb_corrections, MIN(followings.created_at) AS first_correction, MAX(followings.created_at) AS last_correction FROM followings WHERE followings.kind > 0 GROUP BY followings.user_id ) AS SQ ON SQ.user_id = users.id LEFT OUTER JOIN ( SELECT followings.user_id, COUNT(followings.id) AS nb_recent FROM followings WHERE followings.kind > 0 AND created_at > '#{twoweeksago}' GROUP BY followings.user_id ) AS SQ2 ON SQ2.user_id = users.id").each do |u| %>
+  <% if !u.nb_corrections.nil? and u.nb_corrections > 0 %>
     <% correctors.push({:number => u.nb_corrections, :user => u}) %>
   <% end %>
 <% end %>
