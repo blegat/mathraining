@@ -6,7 +6,10 @@ Le graphique suivant montre, en <span style="color:green;">vert</span>, les soum
 
 <!-- On parcourt tous les correcteurs -->
 
-<% correctors = [] %>
+<% if current_user.sk.root? %>
+  <% t1 = Time.now %>
+<% end %>
+
 <% numbercorrect = Array.new %>
 <% numberincorrect = Array.new %>
 <% numberdontknow = Array.new %>
@@ -152,6 +155,11 @@ Votre navigateur ne supporte pas les canvas.
   });
 </script>
 
+<% if current_user.sk.root? %>
+  <% t2 = Time.now %>
+  <br/>Time = <%= (t2.to_f - t1.to_f)*1000 %><br/>
+<% end %>
+
 <h2>Dernières corrections</h2>
 
 Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier correcteur ayant corrigé une soumission à un problème de ce type.
@@ -211,10 +219,16 @@ Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier cor
 </center>
 </div>
 
+<% if current_user.sk.root? %>
+  <% t3 = Time.now %>
+  <br/>Time = <%= (t3.to_f - t2.to_f)*1000 %><br/>
+<% end %>
+
 <h2>Correcteurs</h2>
 
 Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un grand merci à eux tous !
 
+<% correctors = [] %>
 <% User.select("users.*, (SELECT COUNT(followings.id) FROM followings WHERE followings.user_id = users.id AND followings.kind > 0) AS nb_corrections, (SELECT COUNT(followings.id) FROM followings WHERE followings.user_id = users.id AND followings.kind > 0 AND created_at > '#{twoweeksago}') AS nb_recent, (SELECT MIN(followings.created_at) FROM followings WHERE followings.user_id = users.id AND followings.kind > 0) AS first_correction, (SELECT MAX(followings.created_at) FROM followings WHERE followings.user_id = users.id AND followings.kind > 0) AS last_correction").where("admin = ? OR corrector = ?", true, true).each do |u| %>
   <% if u.nb_corrections > 0 %>
     <% correctors.push({:number => u.nb_corrections, :user => u}) %>
@@ -241,3 +255,8 @@ Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un g
 <% end %>
 </table>
 </center>
+
+<% if current_user.sk.root? %>
+  <% t4 = Time.now %>
+  <br/>Time = <%= (t4.to_f - t3.to_f)*1000 %><br/>
+<% end %>

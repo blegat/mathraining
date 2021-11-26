@@ -98,8 +98,8 @@
   <!-- Section et niveau (si on l'affiche) -->
   <% if show_section_and_level %>
     <td style="text-align:center; width:100px;">
-      <%= abreviation[s.problem.section_id-1] %>
-      <%= s.problem.level %>
+      <%= abreviation[s.section_id-1] %>
+      <%= s.level %>
     </td>
   <% end %>
 
@@ -111,7 +111,7 @@
 
 <!-- Voir -->
 <td style="text-align:center; width:54px;">
-<%= link_to "Voir", problem_path(s.problem, :sub => s.id) if !hidden_sub %>
+<%= link_to "Voir", problem_path(s.problem_id, :sub => s.id) if !hidden_sub %>
 </td>
 
 </tr>

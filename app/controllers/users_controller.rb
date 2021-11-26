@@ -339,23 +339,23 @@ class UsersController < ApplicationController
 
   # Voir toutes les soumissions (admin)
   def allsub
-    @notifications = Submission.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem, followings: :user).where(visible: true).order("lastcomment DESC").paginate(page: params[:page]).to_a
+    @notifications = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where(visible: true).order("submissions.lastcomment DESC").paginate(page: params[:page]).to_a
   end
 
   # Voir les soumissions auxquelles on participe (admin)
   def allmysub
-    @notifications = current_user.sk.followed_submissions.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem).where("status > 0").order("lastcomment DESC").paginate(page: params[:page]).to_a
+    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns).includes(:user).where("status > 0").order("submissions.lastcomment DESC").paginate(page: params[:page]).to_a
   end
   
   # Voir toutes les nouvelles soumissions (admin)
   def allnewsub
-    @notifications = Submission.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem, followings: :user).where(status: 0, visible: true).order("created_at").to_a
+    @notifications = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where(status: 0, visible: true).order("submissions.created_at").to_a
   end
 
   # Voir les nouveaux commentaires des soumissions auxquelles on participe (admin)
   def allmynewsub
-    @notifications = current_user.sk.followed_submissions.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem).where(followings: {read: false}).order("lastcomment").to_a
-    @notifications_other = Submission.select(:id, :user_id, :problem_id, :status, :star, :created_at, :lastcomment, :intest).includes(:user, :problem, followings: :user).where("status = 3").order("lastcomment").to_a
+    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns).includes(:user).where(followings: {read: false}).order("submissions.lastcomment").to_a
+    @notifications_other = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where("status = 3").order("submissions.lastcomment").to_a
   end
 
   # Voir les notifications (étudiant)
@@ -600,6 +600,10 @@ class UsersController < ApplicationController
     Pointspersection.where(:user_id => ids).all.each do |p|
 	    persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
     end
+  end
+  
+  def needed_columns
+    return "submissions.id, submissions.user_id, submissions.problem_id, submissions.status, submissions.star, submissions.created_at, submissions.lastcomment, submissions.intest, problems.level, problems.section_id"
   end
   
 end
