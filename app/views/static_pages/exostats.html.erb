@@ -9,7 +9,7 @@ Les tableaux suivants donnent :
 </ul>
 
 <% access_chapters = accessible_chapters(["id"]).map(&:id) %>
-<% chapters = Chapter.select(:id, :section_id, :name, :nb_tries, :nb_firstguess, :nb_solved).where(:online => true).order(:level, :position) %>
+<% chapters = Chapter.select(:id, :section_id, :name, :nb_tries, :nb_solved).where(:online => true).order(:level, :position) %>
 <% chapters_by_section = chapters.group_by{|c| c.section_id} %>
 <% questions_by_chapter = Question.select(:id, :chapter_id, :nb_tries, :nb_firstguess, :nb_solved).where(:online => true).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
 
