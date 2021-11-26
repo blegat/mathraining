@@ -73,6 +73,26 @@ module Mathraining
     
     config.time_zone = 'Brussels'
     
+    # lograge is a gem for 'better' logs
+    config.lograge.enabled = true
+    config.lograge.custom_options = lambda do |event|
+      { params: event.payload[:params].except('controller', 'action', 'format', 'utf8') } # Include the form parameters
+    end
+    
+    config.lograge.custom_payload do |controller|
+      if controller.action_methods.include? "current_user"
+        { current_user: controller.current_user.try(:id) } # Include the current_user.id
+      end
+    end
+    
+    # Remove some of the many ActiveStorage logs
+    config.lograge.ignore_actions = [
+      "ActiveStorage::DiskController#show",
+      "ActiveStorage::BlobsController#show",
+      "ActiveStorage::RepresentationsController#show",
+      "ActiveStorage::Representations::RedirectController#show"
+    ]
+    
     I18n.config.enforce_available_locales = true
     
     config.exceptions_app = self.routes

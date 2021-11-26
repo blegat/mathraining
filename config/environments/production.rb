@@ -75,18 +75,6 @@ Rails.application.configure do
   # Personalized logs 
   config.log_tags = [ lambda { |req| Time.now}, :remote_ip ] # Include IP address in the logs
   config.log_level = :info # Set to :debug for more information (not sure it works with lograge)
-  
-  # lograge is a gem for 'better' logs
-  config.lograge.enabled = true
-  config.lograge.custom_options = lambda do |event|
-    { params: event.payload[:params].except('controller', 'action', 'format', 'utf8') } # Include the form parameters
-  end
-  
-  config.lograge.custom_payload do |controller|
-    if controller.action_methods.include? "current_user"
-      { current_user: controller.current_user.try(:id) } # Include the current_user.id
-    end
-  end
 
   # -- Stuff added when upgrading to rails 5.2.0 --
   # Code is not reloaded between requests.
