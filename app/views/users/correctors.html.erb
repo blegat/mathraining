@@ -20,7 +20,7 @@ Le graphique suivant montre, en <span style="color:green;">vert</span>, les soum
   <% numberdontknow[i] = 0 %>
 <% end %>
 
-<% today = Time.current.to_date %>
+<% today = DateTime.now.in_time_zone.to_date %>
 <% twoweeksago = today - 14 %>
 <% amonthago = today - 32 %>
 
@@ -228,30 +228,29 @@ Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier cor
 
 Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un grand merci à eux tous !
 
+<% nb_recent_by_user = Following.where("created_at >= '#{twoweeksago}'").group(:user_id).count %>
+
 <% correctors = [] %>
-<% User.find_by_sql("SELECT users.*, SQ.nb_corrections, SQ.first_correction, SQ.last_correction, SQ2.nb_recent FROM users LEFT OUTER JOIN ( SELECT followings.user_id, COUNT(followings.id) AS nb_corrections, MIN(followings.created_at) AS first_correction, MAX(followings.created_at) AS last_correction FROM followings WHERE followings.kind > 0 GROUP BY followings.user_id ) AS SQ ON SQ.user_id = users.id LEFT OUTER JOIN ( SELECT followings.user_id, COUNT(followings.id) AS nb_recent FROM followings WHERE followings.kind > 0 AND created_at > '#{twoweeksago}' GROUP BY followings.user_id ) AS SQ2 ON SQ2.user_id = users.id").each do |u| %>
-  <% if !u.nb_corrections.nil? and u.nb_corrections > 0 %>
-    <% correctors.push({:number => u.nb_corrections, :user => u}) %>
-  <% end %>
+<% Following.select("followings.user_id, COUNT(followings.id) AS nb_corrections, MIN(followings.created_at) AS first_correction, MAX(followings.created_at) AS last_correction").where(:kind => 1).group(:user_id).includes(:user).each do |f| %>
+  <% correctors.push({:nb_corrections => f.nb_corrections, :nb_recent => (nb_recent_by_user[f.user_id].nil? ? 0 : nb_recent_by_user[f.user_id]), :first_correction => f.first_correction, :last_correction => f.last_correction, :user => f.user}) %>
 <% end %>
 
 <center>
 <table class="table table-bordered" style="margin-top:20px; width:auto;">
 <tr><th>Nom</th><th style="text-align:center;">Corrections</th><th style="text-align:center;">&le; 2 sem.</th><th class="hidden-xs">Première</th><th class="hidden-xs">Dernière</th></tr>
 
-<% correctors.sort_by{|e| -e[:number]}.each do |c| %>
+<% correctors.sort_by{|e| -e[:nb_corrections]}.each do |c| %>
   <% u = c[:user] %>
-  <% nb_recent = (u.nb_recent.nil? ? 0 : u.nb_recent) %>
-  <% if nb_recent > 140 %>
+  <% if c[:nb_recent] > 140 %>
     <tr style="background-color:rgb(40,250,40)">
   <% else %>
-    <tr style="background-color:rgb(<%= (250-nb_recent*1.5).round %>,250,<%= (250-nb_recent*1.5).round %>)">
+    <tr style="background-color:rgb(<%= (250-c[:nb_recent]*1.5).round %>,250,<%= (250-c[:nb_recent]*1.5).round %>)">
   <% end %>
   <td><%= raw(u.linked_name) %></td>
-  <td style="text-align:center;"><%= u.nb_corrections %></td>
-  <td style="text-align:center;"><%= nb_recent %></td>
-  <td class="hidden-xs"><%= write_date_only(u.first_correction.in_time_zone) %></td>
-  <td class="hidden-xs"><%= write_date_only(u.last_correction.in_time_zone) %></td>
+  <td style="text-align:center;"><%= c[:nb_corrections] %></td>
+  <td style="text-align:center;"><%= c[:nb_recent] %></td>
+  <td class="hidden-xs"><%= write_date_only(c[:first_correction].in_time_zone) %></td>
+  <td class="hidden-xs"><%= write_date_only(c[:last_correction].in_time_zone) %></td>
   </tr>
 <% end %>
 </table>
