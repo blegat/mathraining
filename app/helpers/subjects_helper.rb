@@ -1,6 +1,6 @@
 module SubjectsHelper
 
-  private
+  public
 
   def write_date_from_now(date, datenow)
     between_dates = (datenow.to_i - date.to_i)

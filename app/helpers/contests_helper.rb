@@ -42,7 +42,7 @@ module ContestsHelper
     nb_sol = contestproblem.contestsolutions.where("score = 7 AND official = ?", false).count
     
     if nb_sol == 0
-      text = text + "Malheureusement [b]personne[/b] n'a obtenu la note maximale !"
+      text = text + "Malheureusement, [b]personne[/b] n'a obtenu la note maximale !"
     elsif nb_sol == 1
       text = text + "Seule [b]une seule[/b] personne a obtenu la note maximale : "
     else
