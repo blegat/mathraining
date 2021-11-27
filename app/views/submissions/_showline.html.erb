@@ -1,33 +1,26 @@
 <% abreviation = ["Comb.", "Géom.", "Th. Nb.", "Alg.", "Éq. Fct.", "Inég."] %>
-
 <% today = DateTime.now.in_time_zone.to_date %>
 
 <% if !(defined? hide_user) %>
   <% hide_user = false %>
 <% end %>
-
 <% if !(defined? show_correctors) %>
   <% show_correctors = false %>
 <% end %>
-
 <% if !(defined? hidden_sub) %>
   <% hidden_sub = false %>
 <% end %>
-
 <% if !(defined? show_num_waiting_days_from) %>
   <% show_num_waiting_days_from = "" %>
 <% end %>
-
 <% if !(defined? show_section_and_level) %>
   <% show_section_and_level = false %>
 <% end %>
-
 <% if !(defined? highlight_this_sub) %>
   <% highlight_this_sub = false %>
 <% end %>
 
 <!-- Couleur -->
-
 <% if hidden_sub %>
   <tr style="background-color:#E0E0E0;"> <!-- Si non-visible : gris -->
 <% elsif highlight_this_sub %>
@@ -62,7 +55,7 @@
 </td>
 
 <!-- Date de soumission -->
-<td class="hidden-small" style="width:250px;">
+<td class="<%= 'hidden-small' unless hide_user %>" style="width:250px;">
 <%= write_date(s.created_at) %>
 <% if s.intest && (current_user.sk.admin? || current_user.sk.corrector) %>
 <b>(TEST)</b>
@@ -70,43 +63,39 @@
 </td>
 
 <!-- Dernière activité -->
-<td class="hidden-small" style="width:250px;">
+<td class="<%= 'hidden-small' unless hide_user %><%= 'hidden-xs' if hide_user %>" style="width:250px;">
 <%= write_date(s.lastcomment) %>
 </td>
 
-<!-- Si on peut voir cette ligne -->
-<% if !hidden_sub %>
+<% if !hide_user %>
   <!-- Nom (si on l'affiche) -->
-  <% if !hide_user %>
-    <td style="width:200px">
-      <%= raw(s.user.linked_name) %>
-    </td>
-  <% end %>
+  <td style="width:200px">
+    <%= raw(s.user.linked_name) unless hidden_sub %>
+  </td>
+<% end %>
 
+<% if show_correctors %>
   <!-- Correcteur (si on l'affiche) -->
-  <% if show_correctors %>
-    <td class="hidden-small">
+  <td class="hidden-small" style="width:200px;">
+  <% if !hidden_sub %>
     <% premier = true %>
     <% s.followings.each do |f| %>
       <%= " - " if !premier %>
       <%= raw(f.user.linked_name) %>
       <% premier = false %>
     <% end %>
-    </td>
   <% end %>
+  </td>
+<% end %>
 
+<% if show_section_and_level %>
   <!-- Section et niveau (si on l'affiche) -->
-  <% if show_section_and_level %>
-    <td style="text-align:center; width:100px;">
+  <td style="text-align:center; width:100px;">
+    <% if !hidden_sub %>
       <%= abreviation[s.section_id-1] %>
       <%= s.level %>
-    </td>
-  <% end %>
-
-<% else %>
-  <td> </td>
-  <td> </td>
-  <td class="hidden-small"> </td>
+    <% end %>
+  </td>
 <% end %>
 
 <!-- Voir -->
