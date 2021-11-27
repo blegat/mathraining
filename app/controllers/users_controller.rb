@@ -391,7 +391,7 @@ class UsersController < ApplicationController
       @user.active = false
       @user.email = @user.id.to_s
       @user.first_name = "Compte"
-      @user.last_name = "Supprimé"
+      @user.last_name = "supprimé"
       @user.seename = 1
       @user.wepion = false
       @user.valid_name = true

@@ -497,6 +497,36 @@ describe "User pages" do
     end
   end
   
+  describe "cron job" do
+    describe "deletes user with unconfirmed email for a long time" do
+      before do
+        zero_user.email_confirm = false
+        zero_user.created_at = DateTime.now - 8.days
+        zero_user.save
+        other_zero_user.email_confirm = false
+        other_zero_user.created_at = DateTime.now - 6.days
+        other_zero_user.save
+      end
+      specify { expect { User.delete_unconfirmed }.to change(User, :count).by(-1) } # Only zero_user should be deleted
+    end
+    
+    describe "deletes user that never came for one month" do
+      let!(:other_zero_user2) { FactoryGirl.create(:user, country: other_country, rating: 0) }
+      before do
+        zero_user.created_at = DateTime.now - 40.days
+        zero_user.last_connexion = "2009-01-01"
+        zero_user.save
+        other_zero_user.created_at = DateTime.now - 20.days
+        other_zero_user.last_connexion = "2009-01-01"
+        other_zero_user.save
+        other_zero_user2.created_at = DateTime.now - 40.days
+        other_zero_user2.last_connexion = "2020-01-01"
+        other_zero_user2.save
+      end
+      specify { expect { User.delete_unconfirmed }.to change(User, :count).by(-1) } # Only zero_user should be deleted
+    end
+  end
+  
   # -- TESTS THAT REQUIRE JAVASCRIPT --
   
   describe "root", :js => true do

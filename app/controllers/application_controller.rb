@@ -20,7 +20,6 @@ class ApplicationController < ActionController::Base
   #end
   
   def load_global_variables
-    $allcolors = Color.order(:pt).to_a
     @signed_in = signed_in?
     if params.has_key?(:start_benchmark)
       cookies[:benchmark] = 1

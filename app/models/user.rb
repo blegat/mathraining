@@ -122,25 +122,20 @@ class User < ActiveRecord::Base
   # Nom complet, avec seulement l'initiale s'il faut
   def name
     if self.seename == 0
-      self.shortname
+      return self.shortname
     else
-      self.fullname
+      return self.fullname
     end
   end
 
   # Nom complet
   def fullname
-    "#{self.first_name} #{self.last_name}"
+    return "#{self.first_name} #{self.last_name}"
   end
   
   # Nom complet avec seulement l'initiale
   def shortname
-    "#{self.first_name} #{self.last_name[0]}."
-  end
-
-  # Devrait ne plus être utilisé : on privilégie les deux suivants meilleurs en complexité
-  def solved?(x)
-    return x.users.include?(self)
+    return "#{self.first_name} #{self.last_name[0]}."
   end
 
   def pb_solved?(problem)
@@ -179,17 +174,22 @@ class User < ActiveRecord::Base
   def level
     if admin
       return {color:"#000000"}
-    end
-    actuallevel = nil
-    $allcolors.each do |c|
-      if c.pt <= rating
-        actuallevel = c
-      else
-        return actuallevel
+    elsif !active
+      return {color:"#BBBB00"}
+    else
+      actuallevel = nil
+      if $allcolors.nil?
+        $allcolors = Color.order(:pt).to_a
       end
+      $allcolors.each do |c|
+        if c.pt <= rating
+          actuallevel = c
+        else
+          return actuallevel
+        end
+      end
+      return actuallevel
     end
-
-    return actuallevel
   end
 
   # Rend le nombre de nouveaux messages sur le forum
@@ -279,36 +279,23 @@ class User < ActiveRecord::Base
   # name_type = 1 : to show the full name
   # name_type = 2 : to show the name with initial only for last name
   def colored_name(name_type = 0)
-    if !self.active?
-      return "<span style='color:#BBBB00; font-weight:bold;'>Compte supprimé</span>"
+    goodname = self.name      if name_type == 0
+    goodname = self.fullname  if name_type == 1
+    goodname = self.shortname if name_type == 2
+    if !self.corrector?
+      return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span>"
     else
-      goodname = self.name      if name_type == 0
-      goodname = self.fullname  if name_type == 1
-      goodname = self.shortname if name_type == 2
-      if !self.corrector?
-        return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span>"
-      else
-        debut = goodname[0]
-        fin = goodname[1..-1]
-        return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
-      end
+      debut = goodname[0]
+      fin = goodname[1..-1]
+      return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
     end
   end
 
   def linked_name(name_type = 0)
     if !self.active?
-      return "<span style='color:#BBBB00; font-weight:bold;'>Compte supprimé</span>"
+      return self.colored_name(name_type)
     else
-      goodname = self.name      if name_type == 0
-      goodname = self.fullname  if name_type == 1
-      goodname = self.shortname if name_type == 2
-      if !self.corrector?
-        return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span></a>"
-      else
-        debut = goodname[0]
-        fin = goodname[1..-1]
-        return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'><span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span></a>"
-      end
+      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}'>" + self.colored_name(name_type) + "</a>"
     end
   end
   
