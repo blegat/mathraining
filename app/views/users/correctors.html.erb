@@ -216,10 +216,10 @@ Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier cor
 
 Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un grand merci à eux tous !
 
-<% nb_recent_by_user = Following.where("created_at >= '#{twoweeksago}'").group(:user_id).count %>
+<% nb_recent_by_user = Following.where("created_at >= '#{twoweeksago}' AND kind > 0").group(:user_id).count %>
 
 <% correctors = [] %>
-<% Following.select("followings.user_id, COUNT(followings.id) AS nb_corrections, MIN(followings.created_at) AS first_correction, MAX(followings.created_at) AS last_correction").where(:kind => 1).group(:user_id).includes(:user).each do |f| %>
+<% Following.select("followings.user_id, COUNT(followings.id) AS nb_corrections, MIN(followings.created_at) AS first_correction, MAX(followings.created_at) AS last_correction").where("kind > 0").group(:user_id).includes(:user).each do |f| %>
   <% correctors.push({:nb_corrections => f.nb_corrections, :nb_recent => (nb_recent_by_user[f.user_id].nil? ? 0 : nb_recent_by_user[f.user_id]), :first_correction => f.first_correction, :last_correction => f.last_correction, :user => f.user}) %>
 <% end %>
 
