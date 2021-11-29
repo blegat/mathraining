@@ -42,7 +42,7 @@
     <% previous_rank = 0 %>
     <!-- Warning: @all_users cannot be directly used because users with global rank 1 are reordered in the controller! -->
     <% @all_users.each do |u| %>
-      <%= render "line", global_rank: @x_globalrank[local_id], previous_rank: previous_rank, recent: @x_recent[local_id], persection: @x_persection[local_id], rating: @x_rating[local_id], country: @x_country[local_id], linked_name: @x_linked_name[local_id] %>
+      <%= render "line", global_rank: @x_globalrank[local_id], previous_rank: previous_rank, recent: @x_recent[local_id], persection: @x_persection[local_id], rating: @x_rating[local_id], country: @x_country[local_id], linked_name: @x_linked_name[local_id], line_id: local_id+1 %>
       <% previous_rank = @x_globalrank[local_id] %>
       <% local_id = local_id + 1 %>
     <% end %>

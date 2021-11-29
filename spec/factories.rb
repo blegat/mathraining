@@ -250,7 +250,7 @@ FactoryGirl.define do
   
   # User
   factory :user do
-    sequence(:first_name) { |n| "Jean#{(("a".."z").to_a)[(n/26).to_i]}#{(("a".."z").to_a)[n%26]}" }
+    sequence(:first_name) { |n| "Jean#{(("a".."z").to_a)[(n/(26*26)).floor]}#{(("a".."z").to_a)[(n/26).floor%26]}#{(("a".."z").to_a)[n%26]}" }
     sequence(:last_name) { |n| "Dupont" }
     sequence(:email) { |n| "person_#{n}@example.com" }
     sequence(:email_confirmation) { |n| "person_#{n}@example.com" }

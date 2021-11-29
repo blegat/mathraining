@@ -5,9 +5,9 @@ describe ContestsHelper do
   include ContestsHelper
 
   describe "forum messages" do
-    let!(:user1) { FactoryGirl.create(:user) }
-    let!(:user2) { FactoryGirl.create(:user) }
-    let!(:user3) { FactoryGirl.create(:user) }
+    let!(:user1) { FactoryGirl.create(:user, last_name: "Albert") } # NB: We order organizers by last names in messages
+    let!(:user2) { FactoryGirl.create(:user, last_name: "Boulanger") }
+    let!(:user3) { FactoryGirl.create(:user, last_name: "Collard") }
     let!(:contest) { FactoryGirl.create(:contest) }
     let!(:contestproblem1) { FactoryGirl.create(:contestproblem, number: 1) }
     let!(:contestproblem2) { FactoryGirl.create(:contestproblem, number: 2) }

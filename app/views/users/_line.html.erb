@@ -5,19 +5,19 @@
 <% end %>
 
 <!-- Rang -->
-<td><center><%= "#{ global_rank }." if global_rank != previous_rank %></center></td>
+<td id="rank_<%= line_id %>" style="text-align:center;"><%= "#{ global_rank }." if global_rank != previous_rank %></td>
 
 <!-- Nom -->
-<td><%= raw(linked_name) %></td>
+<td id="name_<%= line_id %>"><%= raw(linked_name) %></td>
 
 <!-- Drapeau -->
 <td style="text-align:center;">
 <% drapeau = "countries/" + @allcountries[country][1] + ".png" %>
-<%= image_tag drapeau, :title => @allcountries[country][0], :height => "15px;" %>
+<%= image_tag drapeau, :title => @allcountries[country][0], :height => "15px;", :id => "flag_#{line_id}_#{country}" %>
 </td>
 
 <!-- Score -->
-<td><center><%= rating %></center></td>
+<td id="score_<%= line_id %>"><center><%= rating %></center></td>
 
 <% total = 0 %>
 <% @allsec.each do |s| %>
@@ -32,11 +32,11 @@
       <% toprint = (100*rate/m).to_s + "%" %>
     <% end %>
   <% end %>
-  <td class="hidden-xs" style="text-align:center;"><%= toprint %></td>
+  <td id="pct_section_<%= line_id %>_<%= s.id %>" class="hidden-xs" style="text-align:center;"><%= toprint %></td>
 <% end %>
 
 <!-- Activité récente -->
-<td class="hidden-small">
+<td id="recent_<%= line_id %>" class="hidden-small">
 <center>
   <% if recent > 0 %>
     + <%= recent %>

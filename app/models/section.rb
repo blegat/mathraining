@@ -18,6 +18,7 @@ class Section < ActiveRecord::Base
 
   has_many :chapters
   has_many :problems
+  has_many :pointspersections
 
   # VALIDATIONS
 

@@ -48,6 +48,67 @@ def create_discussion_between(user1, user2, content1, content2)
   return d
 end
 
+def options_for_user_titles(country_id, for_root)
+  num_before = 0
+  if country_id == 0
+    num_tot = User.where("admin = ? AND active = ? AND rating > 0", false, true).count
+  else
+    num_tot = User.where("admin = ? AND active = ? AND rating > 0 AND country_id = ?", false, true, country_id).count
+  end
+  options = ["Tous les titres (#{num_tot})"]
+  Color.order("pt DESC").each do |c|
+    if country_id == 0
+      num = User.where("admin = ? AND active = ? AND rating > 0 AND rating >= ?", false, true, c.pt).count
+    else
+      num = User.where("admin = ? AND active = ? AND rating > 0 AND rating >= ? AND country_id = ?", false, true, c.pt, country_id).count
+    end
+    options.push("#{pluriel(c.name)} (#{num-num_before})")
+    num_before = num
+  end
+  
+  if for_root
+    if country_id == 0
+      num_zero = User.where(:admin => false, :active => true, :rating => 0).count
+      num_admin = User.where(:admin => true, :active => true).count
+    else
+      num_zero = User.where(:admin => false, :active => true, :country_id => country_id, :rating => 0).count
+      num_admin = User.where(:admin => true, :active => true, :country_id => country_id).count
+    end
+    options.push("Non classés (#{num_zero})")
+    options.push("Administrateurs (#{num_admin})")
+  end
+  
+  return options
+end
+
+RSpec::Matchers.define :have_user_line do |line_id, rank_str, user|
+  match do |page|
+    expect(page).to have_selector("#rank_#{line_id}", text: rank_str, exact_text: true)
+    expect(page).to have_selector("#name_#{line_id}", text: user.name)
+    expect(page).to have_css("img[id=flag_#{line_id}_#{user.country.id}]")
+    expect(page).to have_selector("#score_#{line_id}", text: user.rating.to_s, exact_text: true)
+    
+    Section.where(:fondation => false).each do |s|
+      if s.max_score > 0
+        pps = Pointspersection.where(:section => s, :user => user).first
+        if !pps.nil?
+          expect(page).to have_selector("#pct_section_#{line_id}_#{s.id}", text: (pps.points == 0 ? "-" : (100*pps.points/s.max_score).to_s + "%"), exact_text: true)
+        end
+      end
+    end
+    
+    recent_points = 0
+    twoweeksago = Date.today - 14.days
+    user.solvedproblems.includes(:problem).where("truetime > ?", twoweeksago).each do |s|
+      recent_points += s.problem.value
+    end
+    user.solvedquestions.includes(:question).where("resolutiontime > ?", twoweeksago).each do |s|
+      recent_points += s.question.value
+    end
+    expect(page).to have_selector("#recent_#{line_id}", text: (recent_points == 0 ? "" : "+ " + recent_points.to_s), exact_text: true)
+  end
+end
+
 def wait_for_ajax
   Timeout.timeout(Capybara.default_max_wait_time) do
     loop until finished_all_ajax_requests?

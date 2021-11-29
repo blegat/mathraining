@@ -14,7 +14,7 @@ class UsersController < ApplicationController
 
   # Index de tous les users avec scores
   def index
-    @number_by_page = 50
+    @number_by_page = (Rails.env.test? ? 10 : 50) # For tests we put only 10 by page
 
     @country = 0
     if(params.has_key?:country)
@@ -23,6 +23,7 @@ class UsersController < ApplicationController
     
     @real_users = true
     @title = 0
+    @admin_users = false
     @min_rating = 1
     @max_rating = 1000000
     if(params.has_key?:title)
@@ -30,7 +31,7 @@ class UsersController < ApplicationController
       if @title >= 100
         @real_users = false
       elsif @title > 0
-        cur_color = Color.find(@title)
+        cur_color = Color.find_by_id(@title)
         if cur_color.nil?
           @title = 0
         else
@@ -45,16 +46,20 @@ class UsersController < ApplicationController
 
     if !@real_users
       if @title == 100
+        @min_rating = 0
+        @max_rating = 0
         if @country == 0
           @all_users = User.where("rating = ? AND admin = ? AND active = ?", 0, false, true).order("id ASC")
         else
           @all_users = User.where("rating = ? AND admin = ? AND active = ? AND country_id = ?", 0, false, true, @country).order("id ASC")
         end
       elsif @title == 101
+        @admin_users = true
+        @min_rating = 0
         if @country == 0
-          @all_users = User.where("admin = ?", true).order("id ASC")
+          @all_users = User.where("admin = ? AND active = ?", true, true).order("id ASC")
         else
-          @all_users = User.where("admin = ? AND country_id = ?", true, @country).order("id ASC")
+          @all_users = User.where("admin = ? AND active = ? AND country_id = ?", true, true, @country).order("id ASC")
         end
       end
       return
@@ -103,7 +108,7 @@ class UsersController < ApplicationController
     if !current_user.sk.admin?
       @all_users.append(current_user.sk)
     end
-    @all_users.sort_by! { |u| -u.rating }
+    @all_users.sort_by! { |u| [-u.rating, u.id] }
     num = @all_users.size
     @x_recent = Array.new(num)
     @x_persection = Array.new(num)
@@ -176,10 +181,10 @@ class UsersController < ApplicationController
         @user.update_attribute(:valid_name, true)
         current_user.update_attribute(:skin, 0)
         redirect_to validate_names_path
-      elsif((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.sk.admin)
-        @user.update_attribute(:valid_name, false)
-        redirect_to root_path
       else
+        if((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.sk.admin)
+          @user.update_attribute(:valid_name, false)
+        end
         redirect_to root_path
       end
     else
@@ -189,10 +194,7 @@ class UsersController < ApplicationController
 
   # Supprimer un utilisateur : il faut être root
   def destroy
-    skinner = User.where(skin: @user.id)
-    skinner.each do |s|
-      s.update_attribute(:skin, 0)
-    end
+    remove_skins(@user)
     @user.destroy
     flash[:success] = "Utilisateur supprimé."
     redirect_to @user
@@ -202,10 +204,7 @@ class UsersController < ApplicationController
   def create_administrator
     @user.admin = true
     @user.save
-    skinner = User.where(skin: @user.id)
-    skinner.each do |s|
-      s.update_attribute(:skin, 0)
-    end
+    remove_skins(@user)
     flash[:success] = "Utilisateur promu au rang d'administrateur !"
     redirect_to @user
   end
@@ -267,25 +266,23 @@ class UsersController < ApplicationController
   # Mot de passe oublié : vérification du captcha et envoi de l'email
   def password_forgotten
     @user = User.new
-    if (Rails.env.production? and !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
-      render 'forgot_password'
-    else
-      @user = User.where(:email => params[:user][:email]).first
-      if @user
-        if @user.email_confirm
-          @user.update_attribute(:key, SecureRandom.urlsafe_base64)
-          @user.update_attribute(:recup_password_date_limit, DateTime.now)
-          UserMailer.forgot_password(@user.id).deliver
-          flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if !Rails.env.production?
-          flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
-        else
-          flash[:danger] = "Veuillez d'abord confirmer votre adresse e-mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
-        end
+    render 'forgot_password' and return if (Rails.env.production? and !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
+
+    @user = User.where(:email => params[:user][:email]).first
+    if @user
+      if @user.email_confirm
+        @user.update_attribute(:key, SecureRandom.urlsafe_base64)
+        @user.update_attribute(:recup_password_date_limit, DateTime.now)
+        UserMailer.forgot_password(@user.id).deliver
+        flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if !Rails.env.production?
+        flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
       else
-        flash[:danger] = "Aucun utilisateur ne possède cette adresse."
+        flash[:danger] = "Veuillez d'abord confirmer votre adresse e-mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
       end
-      redirect_to root_path
+    else
+      flash[:danger] = "Aucun utilisateur ne possède cette adresse."
     end
+    redirect_to root_path
   end
 
   # Mot de passe oublié : page pour changer son mot de passe (a laquelle on arrive depuis l'email)
@@ -366,9 +363,7 @@ class UsersController < ApplicationController
 
   # Prendre la peau d'un utilisateur
   def take_skin
-    if @user.admin || !@user.active
-      flash[:danger] = "Pas autorisé..."
-    else
+    unless @user.admin || !@user.active # Cannot take the skin of an admin or inactive user
       current_user.update_attribute(:skin, @user.id)
       flash[:success] = "Vous êtes maintenant dans la peau de #{@user.name}."
     end
@@ -410,6 +405,7 @@ class UsersController < ApplicationController
       @user.backwardfollowingusers.each do |f|
         f.destroy
       end
+      remove_skins(@user)
     end
     redirect_to root_path
   end
@@ -462,15 +458,14 @@ class UsersController < ApplicationController
   end
 
   def add_followed_user
-    if current_user.sk == @user or current_user.sk.followed_users.exists?(@user.id) or @user.admin?
-      redirect_to @user and return
+    unless current_user.sk == @user or current_user.sk.followed_users.exists?(@user.id) or @user.admin?
+      if current_user.sk.followed_users.size >= 30
+        flash[:danger] = "Vous ne pouvez pas suivre plus de 30 utilisateurs."
+      else
+        current_user.sk.followed_users << @user
+        flash[:success] = "Vous suivez maintenant #{ @user.name }."
+      end
     end
-    if current_user.sk.followed_users.size >= 30
-      flash[:danger] = "Vous ne pouvez pas suivre plus de 30 utilisateurs."
-      redirect_to @user and return
-    end
-    current_user.sk.followed_users << @user
-    flash[:success] = "Vous suivez maintenant #{ @user.name }."
     redirect_to @user
   end
 
@@ -531,6 +526,13 @@ class UsersController < ApplicationController
       render 'errors/access_refused' and return
     end
   end
+  
+  # Make everybody with some skin leaves this skin
+  def remove_skins(user)
+    User.where(skin: @user.id).each do |u|
+      u.update_attribute(:skin, 0)
+    end
+  end
 
   def fill_user_info(users, recent, persection, globalrank, rating, country, linked_name)
     global_user_id_to_local_id = Array.new((User.last.nil? ? 0 : User.last.id) + 1)
@@ -561,10 +563,11 @@ class UsersController < ApplicationController
       r = Random.new(Date.today.in_time_zone.to_time.to_i)
       alea = Array.new(s)
       (0..(s-1)).each do |i|
+        x = r.rand()
         if @signed_in and ids[i] == current_user.sk.id
           alea[i] = [0, i]
         else
-          alea[i] = [r.rand(), i]
+          alea[i] = [x, i]
         end
       end
       alea.sort!
@@ -590,11 +593,8 @@ class UsersController < ApplicationController
       recent[global_user_id_to_local_id[s.user_id]] += s.problem.value
     end
 
-    Solvedquestion.where(:user_id => ids).includes(:question).where("resolutiontime > ?", twoweeksago).find_each do |s|
-      if s.correct
-        exo = s.question
-        recent[global_user_id_to_local_id[s.user_id]] += exo.value
-      end
+    Solvedquestion.where(:user_id => ids).includes(:question).where("resolutiontime > ? AND correct = ?", twoweeksago, true).find_each do |s|
+      recent[global_user_id_to_local_id[s.user_id]] += s.question.value
     end
 
     Pointspersection.where(:user_id => ids).all.each do |p|

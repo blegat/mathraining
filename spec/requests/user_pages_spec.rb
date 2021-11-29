@@ -179,15 +179,24 @@ describe "User pages" do
             it { should have_error_message("erreur") }
           end
           
-          describe "and sets an incorrect password" do
+          describe "and takes too much time to set the new password" do
             before do
-              zero_user.recup_password_date_limit = DateTime.now - 5000
-              zero_user.save
+              zero_user.update_attribute(:recup_password_date_limit, DateTime.now - 5000)
               page.all(:fillable_field, "Mot de passe").last.set(new_password)
               fill_in "Confirmation du mot de passe", with: new_password
               click_button "Modifier le mot de passe"
             end
             it { should have_error_message("Vous avez mis trop de temps à modifier votre mot de passe.") }
+          end
+          
+          describe "and sets a new password while the key has been changed" do
+            before do
+              zero_user.update_attribute(:key, SecureRandom.urlsafe_base64)
+              page.all(:fillable_field, "Mot de passe").last.set(new_password)
+              fill_in "Confirmation du mot de passe", with: new_password
+              click_button "Modifier le mot de passe"
+            end
+            it { should have_error_message("Une erreur est survenue. Il semble que votre lien pour changer de mot de passe ne soit plus valide.") }
           end
           
           describe "and sets a correct password" do
@@ -280,6 +289,22 @@ describe "User pages" do
       end
     end
     
+    describe "edits his information with wrong name" do
+      before do
+        visit edit_user_path(zero_user)
+        fill_in "Prénom", with: ""
+        fill_in "Nom", with: new_last_name
+        click_button "Mettre à jour"
+        zero_user.reload
+      end
+      
+      specify do
+        expect(page).to have_error_message("Prénom doit être rempli")
+        expect(zero_user.first_name).not_to eq("")
+        expect(zero_user.last_name).not_to eq(new_last_name)
+      end
+    end
+    
     describe "tries to visit unranked scores page" do
       before { visit users_path(:title => 100) }
       it { should have_no_link(zero_user.name, href: user_path(zero_user)) }
@@ -325,6 +350,17 @@ describe "User pages" do
           end
           it { should have_no_link(other_zero_user.name, href: user_path(other_zero_user)) }
         end
+      end
+      
+      describe "and follows him but it is too much" do
+        before do
+          (1..30).each do |i|
+            u = FactoryGirl.create(:user)
+            zero_user.followed_users << u
+          end
+          click_link("Suivre")
+        end
+        it { should have_error_message("Vous ne pouvez pas suivre plus de 30 utilisateurs.") }
       end
     end
   end
@@ -374,32 +410,45 @@ describe "User pages" do
     end
     
     describe "deletes data of a student" do
+      let!(:sub) { FactoryGirl.create(:subject) }
+      let!(:contest) { FactoryGirl.create(:contest) }
       before do
+        other_root.update_attribute(:skin, zero_user.id) # We have a root with his skin
+        zero_user.followed_users << other_zero_user # He follows other_zero_user
+        other_zero_user.followed_users << zero_user # He is followed by other_zero_user
+        zero_user.followed_subjects << sub # He follows a subject
+        zero_user.followed_contests << contest # He follows a contest
+        
         visit user_path(zero_user)
+        click_link "Supprimer les données personnelles"
         zero_user.reload
+        other_root.reload
       end
-      specify { expect { click_link "Supprimer les données personnelles" and zero_user.reload }.to change{zero_user.active}.to(false) }
+      specify do
+        expect(zero_user.active).to eq(false)
+        expect(other_root.skin).to eq(0)
+        expect(zero_user.followed_users.count).to eq(0)
+        expect(zero_user.backwardfollowingusers.count).to eq(0)
+        expect(zero_user.followed_subjects.count).to eq(0)
+        expect(zero_user.followed_contests.count).to eq(0)
+      end
     end
     
-    describe "deletes a student with a subject with a message (DEPENDENCY)" do
+    describe "deletes a student with some created stuffs" do
       let!(:sub) { FactoryGirl.create(:subject, user: zero_user) }
       let!(:mes) { FactoryGirl.create(:message, subject: sub, user: other_zero_user) }
+      let!(:mes2) { FactoryGirl.create(:message, user: zero_user) }
+      let!(:disc) { create_discussion_between(zero_user, other_zero_user, "Coucou mon ami", "Salut mon poto") }
       before { visit user_path(zero_user) }
-      specify { expect { click_link "Supprimer" }.to change(Subject, :count).by(-1) .and change(Message, :count).by(-1) }
+      specify { expect { click_link "Supprimer" }.to change(User, :count).by(-1) .and change(Subject, :count).by(-1) .and change(Message, :count).by(-2) .and change(Discussion, :count).by(-1) .and change(Link, :count).by(-2) .and change(Tchatmessage, :count).by(-2) }
     end
 
-    describe "deletes a student with a message (DEPENDENCY)" do
-      let!(:mes) { FactoryGirl.create(:message, user: zero_user) }
-      before { visit user_path(zero_user) }
-      specify { expect { click_link "Supprimer" }.to change(Message, :count).by(-1) }
-    end
-
-    describe "deletes a student with a discussion with tchatmessages (DEPENDENCY)" do
+    describe "deletes a student while a root has his skin" do
       before do
-        create_discussion_between(zero_user, other_zero_user, "Coucou mon ami", "Salut mon poto")
+        other_root.update_attribute(:skin, zero_user.id)
         visit user_path(zero_user)
       end
-      specify { expect { click_link "Supprimer" }.to change(Link, :count).by(-2) .and change(Discussion, :count).by(-1) .and change(Tchatmessage, :count).by(-2) }
+      specify { expect { click_link "Supprimer" and other_root.reload }.to change(User, :count).by(-1) .and change{other_root.skin}.to(0) }
     end
     
     describe "transforms user in admin" do

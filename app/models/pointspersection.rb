@@ -14,6 +14,7 @@ class Pointspersection < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   belongs_to :user
+  belongs_to :section
 
   # VALIDATIONS
   

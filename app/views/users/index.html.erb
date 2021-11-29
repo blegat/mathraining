@@ -9,26 +9,26 @@
 <!-- Liste des pays -->
 
 <% country_list = Array.new %>
-<% tot_num = User.where("rating >= ? AND rating <= ? AND active = ? AND admin = ?", @min_rating, @max_rating, true, false).count %>
+<% tot_num = User.where("rating >= ? AND rating <= ? AND active = ? AND admin = ?", @min_rating, @max_rating, true, @admin_users).count %>
 <% country_list.push(["Tous les pays (" + tot_num.to_s + ")", 0]) %>
 
 <% by_countries = Array.new %>
-<% num_by_country = User.where("rating >= ? AND rating <= ? AND active = ? AND admin = ?", @min_rating, @max_rating, true, false).group(:country_id).count %>
+<% num_by_country = User.where("rating >= ? AND rating <= ? AND active = ? AND admin = ?", @min_rating, @max_rating, true, @admin_users).group(:country_id).count %>
 <% @allcountries = Array.new %>
-<% Country.all.each do |c| %>
+<% Country.all.order(:id).each do |c| %>
   <% num = num_by_country[c.id] %>
-  <% if !num.nil? %>
+  <% if !num.nil? and num > 0 %>
     <% by_countries.push([-num, c.name, c.id]) %>
     <% @allcountries[c.id] = [c.name, c.code] %>
+  <% elsif c.id == @country %>
+    <% by_countries.push([0, c.name, c.id]) %>
   <% end %>
 <% end %>
 
 <% by_countries.sort! %>
 
 <% by_countries.each do |b| %>
-  <% if b[0] < 0 %>
-    <% country_list.push([b[1] + " (" + (-b[0]).to_s + ")", b[2]]) %>
-  <% end %>
+  <% country_list.push([b[1] + " (#{-b[0]})", b[2]]) %>
 <% end %>
 
 <!-- Liste des titres -->
@@ -48,19 +48,20 @@
   <% colors_with_num = Color.select("colors.id, colors.name, colors.pt, (SELECT COUNT(users.id) FROM users WHERE users.rating >= colors.pt AND users.rating > 0 AND users.admin = #{false_value_sql} AND users.active = #{true_value_sql} AND users.country_id = #{@country}) AS num").order("pt DESC") %>
 <% end %>
 <% colors_with_num.each do |c| %>
-  <% title_list.push([pluriel(c.name) + " (" + (c.num-prev_num).to_s + ")", c.id]) %>
+  <% title_list.push(["#{pluriel(c.name)} (#{c.num-prev_num})", c.id]) %>
   <% prev_num = c.num %>
 <% end %>
 
 <% if @signed_in && current_user.sk.root %>
   <% if @country == 0 %>
-    <% num = User.where("admin = ? AND active = ?", false, true).count %>
+    <% num = User.where(:admin => false, :active => true).count %>
+    <% num_admin = User.where(:admin => true, :active => true).count %>
   <% else %>
-    <% num = User.where("admin = ? AND active = ? AND country_id = ?", false, true, @country).count %>
+    <% num = User.where(:admin => false, :active => true, :country => @country).count %>
+    <% num_admin = User.where(:admin => true, :active => true, :country => @country).count %>
   <% end %>
-  <% title_list.push(["Non classés (" + (num-prev_num).to_s + ")", 100]) %>
-  <% num_admin = User.where("admin = ?", true).count %>
-  <% title_list.push(["Administrateurs (" + num_admin.to_s + ")", 101]) %>
+  <% title_list.push(["Non classés (#{num-prev_num})", 100]) %>
+  <% title_list.push(["Administrateurs (#{num_admin})", 101]) %>
 <% end %>
 
 <h1><%= title_1("Scores") %></h1>
@@ -105,7 +106,7 @@
         <% previous_rank = 0 %>
         <!-- Warning: @all_users cannot be directly used because users with global rank 1 are reordered in the controller! -->
         <% @all_users.each do |u| %>
-          <%= render "line", global_rank: @x_globalrank[local_id], previous_rank: previous_rank, recent: @x_recent[local_id], persection: @x_persection[local_id], rating: @x_rating[local_id], country: @x_country[local_id], linked_name: @x_linked_name[local_id] %>
+          <%= render "line", global_rank: @x_globalrank[local_id], previous_rank: previous_rank, recent: @x_recent[local_id], persection: @x_persection[local_id], rating: @x_rating[local_id], country: @x_country[local_id], linked_name: @x_linked_name[local_id], line_id: local_id+1 %>
           <% previous_rank = @x_globalrank[local_id] %>
           <% local_id = local_id + 1 %>
         <% end %>
@@ -119,7 +120,7 @@
     </center>
   <% end %>
 
-<% elsif @signed_in && current_user.sk.admin %>
+<% elsif @signed_in && current_user.sk.root %>
   <br/>
   <% @all_users.each do |u| %>
     <%= raw(u.linked_name) %> (<%= write_date_only(u.created_at) %>)<br/>
