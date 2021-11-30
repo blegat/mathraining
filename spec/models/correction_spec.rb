@@ -7,7 +7,6 @@
 #  submission_id :integer
 #  content       :text
 #  created_at    :datetime         not null
-#  updated_at    :datetime         not null
 #
 require "spec_helper"
 

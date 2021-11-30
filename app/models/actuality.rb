@@ -8,7 +8,6 @@
 #  title      :string
 #  content    :text
 #  created_at :datetime         not null
-#  updated_at :datetime         not null
 #
 class Actuality < ActiveRecord::Base
 

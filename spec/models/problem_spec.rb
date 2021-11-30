@@ -4,8 +4,6 @@
 #
 #  id             :integer          not null, primary key
 #  statement      :text
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
 #  online         :boolean          default(FALSE)
 #  level          :integer
 #  explanation    :text             default("")

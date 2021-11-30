@@ -7,8 +7,6 @@
 #  id             :integer          not null, primary key
 #  problem_id     :integer
 #  user_id        :integer
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
 #  resolutiontime :datetime
 #  submission_id  :integer
 #  truetime       :datetime

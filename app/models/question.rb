@@ -15,8 +15,6 @@
 #  level         :integer          default(1)
 #  nb_tries      :integer          default(0)
 #  nb_firstguess :integer          default(0)
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
 #
 class Question < ActiveRecord::Base
 

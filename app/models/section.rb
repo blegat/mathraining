@@ -7,8 +7,6 @@
 #  id          :integer          not null, primary key
 #  name        :string
 #  description :text
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
 #  fondation   :boolean          default(FALSE)
 #  max_score   :integer          default(0)
 #

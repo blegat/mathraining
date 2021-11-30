@@ -7,7 +7,6 @@
 #  user_id       :integer
 #  read          :boolean
 #  created_at    :datetime         not null
-#  updated_at    :datetime         not null
 #  kind          :integer          default(-1)
 #
 require "spec_helper"

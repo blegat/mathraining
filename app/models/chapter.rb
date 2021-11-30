@@ -8,8 +8,6 @@
 #  name             :string
 #  description      :text
 #  level            :integer
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
 #  online           :boolean          default(FALSE)
 #  section_id       :integer
 #  nb_tries         :integer          default(0)

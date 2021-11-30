@@ -11,7 +11,6 @@
 #  correct        :boolean
 #  nb_guess       :integer
 #  resolutiontime :datetime
-#  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #
 class Solvedquestion < ActiveRecord::Base
