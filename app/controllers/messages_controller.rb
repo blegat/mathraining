@@ -3,6 +3,7 @@ class MessagesController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy]
   before_action :get_subject, only: [:create]
   before_action :get_message, only: [:update, :destroy]
+  before_action :can_see_subject, only: [:create]
   before_action :author, only: [:update]
   before_action :admin_user, only: [:destroy]
   before_action :notskin_user, only: [:create, :update]
@@ -50,7 +51,7 @@ class MessagesController < ApplicationController
       # Envoi d'un e-mail aux utilisateurs suivant le sujet
       @subject.following_users.each do |u|
         if u != current_user.sk
-          if (@subject.admin && !u.corrector && !u.admin) || (@subject.wepion && !u.wepion && !u.admin)
+          if (@subject.for_correctors && !u.corrector && !u.admin) || (@subject.for_wepion && !u.wepion && !u.admin)
             # Ce n'est pas vraiment normal qu'il suive ce sujet
           else
             UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.id).deliver
@@ -58,8 +59,8 @@ class MessagesController < ApplicationController
         end
       end
 
-      @subject.lastcomment = DateTime.current
-      @subject.lastcomment_user = current_user.sk
+      @subject.last_comment_time = DateTime.now
+      @subject.last_comment_user = current_user.sk
       @subject.save
 
       if current_user.sk.root?
@@ -72,7 +73,7 @@ class MessagesController < ApplicationController
         end
       end
       
-      page = getLastPage(@subject)
+      page = get_last_page(@subject)
       flash[:success] = "Votre message a bien été posté."
       session["successNewMessage"] = "ok"
       redirect_to subject_path(@message.subject, :page => page, :q => @q)
@@ -105,7 +106,7 @@ class MessagesController < ApplicationController
       @message.reload
       flash[:success] = "Votre message a bien été modifié."
       session["successMessage#{@message.id}"] = "ok"
-      page = getPage(@message)
+      page = get_page(@message)
       redirect_to subject_path(@message.subject, :page => page, :q => @q)
 
       # Si il y a eu un bug
@@ -122,12 +123,12 @@ class MessagesController < ApplicationController
 
     if @subject.messages.size > 0
       last = @subject.messages.order("created_at").last
-      @subject.lastcomment = last.created_at
-      @subject.lastcomment_user_id = last.user_id
+      @subject.last_comment_time = last.created_at
+      @subject.last_comment_user_id = last.user_id
       @subject.save
     else
-      @subject.lastcomment = @subject.created_at
-      @subject.lastcomment_user_id = @subject.user_id
+      @subject.last_comment_time = @subject.created_at
+      @subject.last_comment_user_id = @subject.user_id
       @subject.save
     end
 
@@ -140,7 +141,7 @@ class MessagesController < ApplicationController
   def error_create(err)
     session["errorNewMessage"] = err
     session[:oldContent] = params[:message][:content]
-    page = getLastPage(@subject)
+    page = get_last_page(@subject)
     redirect_to subject_path(@subject, :page => page, :q => @q) and return true
   end
   
@@ -148,7 +149,7 @@ class MessagesController < ApplicationController
     session["errorMessage#{@message.id}"] = err
     @message.reload
     session[:oldContent] = params[:message][:content]
-    page = getPage(@message)
+    page = get_page(@message)
     redirect_to subject_path(@message.subject, :page => page, :q => @q) and return true
   end
   
@@ -157,12 +158,14 @@ class MessagesController < ApplicationController
     return if check_nil_object(@message)
   end
   
-  # Il faut être admin si le sujet est pour admin
+  # Il faut être correcteur/wepion si le sujet est pour correcteur/wepion
   def get_subject
     @subject = Subject.find_by_id(params[:subject_id])
     return if check_nil_object(@subject)
-    
-    unless (current_user.sk.admin? || current_user.sk.corrector? || !@subject.admin)
+  end
+  
+  def can_see_subject
+    if !@subject.can_be_seen_by(current_user.sk)
       render 'errors/access_refused' and return
     end
   end
@@ -172,12 +175,12 @@ class MessagesController < ApplicationController
     @q = params[:q].to_i if params.has_key?:q
   end
   
-  def getLastPage(s)
+  def get_last_page(s)
     tot = s.messages.count
     return [0,((tot-1)/10).floor].max + 1
   end
   
-  def getPage(m)
+  def get_page(m)
     tot = m.subject.messages.where("id <= ?", m.id).count
     return [0,((tot-1)/10).floor].max + 1
   end

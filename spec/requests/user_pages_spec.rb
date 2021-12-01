@@ -563,13 +563,13 @@ describe "User pages" do
       let!(:other_zero_user2) { FactoryGirl.create(:user, country: other_country, rating: 0) }
       before do
         zero_user.created_at = DateTime.now - 40.days
-        zero_user.last_connexion = "2009-01-01"
+        zero_user.last_connexion_date = "2009-01-01"
         zero_user.save
         other_zero_user.created_at = DateTime.now - 20.days
-        other_zero_user.last_connexion = "2009-01-01"
+        other_zero_user.last_connexion_date = "2009-01-01"
         other_zero_user.save
         other_zero_user2.created_at = DateTime.now - 40.days
-        other_zero_user2.last_connexion = "2020-01-01"
+        other_zero_user2.last_connexion_date = "2020-01-01"
         other_zero_user2.save
       end
       specify { expect { User.delete_unconfirmed }.to change(User, :count).by(-1) } # Only zero_user should be deleted

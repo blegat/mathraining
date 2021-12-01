@@ -235,7 +235,7 @@ class ApplicationController < ActionController::Base
       if t.status != 0
         c.destroy # Should not happen in theory
       else
-        debut = t.takentime.to_i
+        debut = t.taken_time.to_i
         fin = debut + t.virtualtest.duration*60
         if fin < time_now
           c.destroy

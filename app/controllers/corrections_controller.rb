@@ -25,7 +25,7 @@ class CorrectionsController < ApplicationController
       lastid = correction.id
     end
 
-    if lastid != params[:lastcomment].to_i
+    if lastid != params[:last_comment_id].to_i
       session[:ancientexte] = params[:correction][:content]
       flash[:danger] = "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire."
       redirect_to problem_path(@problem, :sub => @submission) and return
@@ -95,21 +95,21 @@ class CorrectionsController < ApplicationController
           link = Solvedproblem.new
           link.user_id = @submission.user.id
           link.problem_id = @problem.id
-          link.resolutiontime = DateTime.now
+          link.correction_time = DateTime.now
           link.submission_id = @submission.id
 
           last_user_corr = @submission.corrections.where("user_id = ?", @submission.user_id).order(:created_at).last
-          truetime = (last_user_corr.nil? ? @submission.created_at : last_user_corr.created_at)
-          link.truetime = truetime
+          resolution_time = (last_user_corr.nil? ? @submission.created_at : last_user_corr.created_at)
+          link.resolution_time = resolution_time
           link.save
           
           # On update les statistiques du problème
-          @problem.nb_solved = @problem.nb_solved + 1
-          if @problem.first_solved.nil? or @problem.first_solved > truetime
-            @problem.first_solved = truetime
+          @problem.nb_solves = @problem.nb_solves + 1
+          if @problem.first_solve_time.nil? or @problem.first_solve_time > resolution_time
+            @problem.first_solve_time = resolution_time
           end
-          if @problem.last_solved.nil? or @problem.last_solved < truetime
-            @problem.last_solved = truetime
+          if @problem.last_solve_time.nil? or @problem.last_solve_time < resolution_time
+            @problem.last_solve_time = resolution_time
           end
           @problem.save
         end
@@ -156,8 +156,8 @@ class CorrectionsController < ApplicationController
         @submission.followings.update_all(read: false)
       end
 
-      # On change la valeur de lastcomment
-      @submission.lastcomment = correction.created_at
+      # On change la valeur de last_comment_time
+      @submission.last_comment_time = correction.created_at
       @submission.save
 
       flash[:success] = "Réponse postée#{m}."

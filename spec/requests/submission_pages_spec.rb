@@ -489,8 +489,8 @@ describe "Submission pages" do
           expect(good_corrector.rating).to eq(rating_before)
           expect(good_corrector_solvedproblem.submission).to eq(other_correct_submission)
           # NB: We need be_within(1.second) below, see https://stackoverflow.com/questions/20403063/trouble-comparing-time-with-rspec
-          expect(good_corrector_solvedproblem.resolutiontime).to be_within(1.second).of other_correction.created_at
-          expect(good_corrector_solvedproblem.truetime).to be_within(1.second).of other_correct_submission.created_at
+          expect(good_corrector_solvedproblem.correction_time).to be_within(1.second).of other_correction.created_at
+          expect(good_corrector_solvedproblem.resolution_time).to be_within(1.second).of other_correct_submission.created_at
         end
       end
     end
@@ -500,7 +500,7 @@ describe "Submission pages" do
       let!(:problem_in_test) { FactoryGirl.create(:problem, virtualtest: virtualtest) }
       let!(:waiting_submission_in_test) { FactoryGirl.create(:submission, problem: problem_in_test, user: user, status: 0, intest: true) }
       before do
-        Takentest.create(user: user, virtualtest: virtualtest, takentime: DateTime.now - 2.weeks)
+        Takentest.create(user: user, virtualtest: virtualtest, taken_time: DateTime.now - 2.weeks)
         Following.create(user: root, submission: waiting_submission_in_test, read: true, kind: 0)
         visit problem_path(problem_in_test, :sub => waiting_submission_in_test)
       end

@@ -266,7 +266,7 @@ describe "Contest pages" do
       describe "and adds an organizer" do
         before do
           # Ensure that user_with_rating_200 appears in the list of possible organizers:
-          user_with_rating_200.last_connexion = DateTime.now.to_date
+          user_with_rating_200.last_connexion_date = DateTime.now.to_date
           user_with_rating_200.save
           visit contest_path(offline_contest)
           select "#{user_with_rating_200.name} (200)", from: "contestorganization_user_id"

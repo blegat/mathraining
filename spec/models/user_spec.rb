@@ -16,18 +16,18 @@
 #  email_confirm             :boolean          default(TRUE)
 #  skin                      :integer          default(0)
 #  active                    :boolean          default(TRUE)
-#  seename                   :integer          default(1)
+#  see_name                  :integer          default(1)
 #  sex                       :integer          default(0)
 #  wepion                    :boolean          default(FALSE)
 #  year                      :integer          default(0)
 #  rating                    :integer          default(0)
-#  forumseen                 :datetime         default(Thu, 01 Jan 2009 01:00:00 CET +01:00)
-#  last_connexion            :date             default(Thu, 01 Jan 2009)
+#  last_forum_visit_time     :datetime         default(Thu, 01 Jan 2009 01:00:00 CET +01:00)
+#  last_connexion_date       :date             default(Thu, 01 Jan 2009)
 #  follow_message            :boolean          default(FALSE)
 #  corrector                 :boolean          default(FALSE)
 #  group                     :string           default("")
 #  valid_name                :boolean          default(FALSE)
-#  consent_date              :datetime
+#  consent_time              :datetime
 #  country_id                :integer
 #  recup_password_date_limit :datetime
 #  last_policy_read          :boolean          default(FALSE)
@@ -115,9 +115,9 @@ describe User do
         expect(@user.shortname).to eq("Jean D.")
       end
       
-      describe "when seename = false" do
+      describe "when see_name = 0" do
         before do
-          @user.seename = false
+          @user.see_name = 0
           @user.save
         end
         it do
@@ -253,8 +253,8 @@ describe User do
       end
     end
     
-    describe "for a student with some rating and seename = false" do
-      before { @user.update_attribute(:seename, false) }
+    describe "for a student with some rating and see_name = 0" do
+      before { @user.update_attribute(:see_name, 0) }
       it "should have correct color" do
         ratings_to_test = [0, 100, 200, 400, 800, 1600, 3200, 6400, 12800]
         ratings_to_test.each do |rating|

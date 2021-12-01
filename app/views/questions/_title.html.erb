@@ -2,7 +2,7 @@
 
 <% nb = f.solvedquestions.where(:correct => true).count %>
 <% pct = 0 %>
-<% pct = f.nb_firstguess.to_f / f.nb_tries.to_f if f.nb_tries > 0 %>
+<% pct = f.nb_first_guesses.to_f / f.nb_tries.to_f if f.nb_tries > 0 %>
 <% pct2 = [1.4*pct,1].min %>
 
 <h3>Exercice <%= number if f.online? %>

@@ -18,9 +18,9 @@ class SubmissionsController < ApplicationController
   # Voir toutes les soumissions à un problème (via javascript uniquement)
   def index
     if @what == 0
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :lastcomment).includes(:user).where('user_id != ? AND status = 2 AND star = ? AND visible = ?', current_user.sk, false, true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = 2 AND star = ? AND visible = ?', current_user.sk, false, true).order('created_at DESC')
     elsif @what == 1
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :lastcomment).includes(:user).where('user_id != ? AND status != 2 AND visible = ?', current_user.sk, true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status != 2 AND visible = ?', current_user.sk, true).order('created_at DESC')
     end
 
     respond_to do |format|
@@ -45,7 +45,7 @@ class SubmissionsController < ApplicationController
 
     submission = @problem.submissions.build(content: params[:submission][:content])
     submission.user = current_user.sk
-    submission.lastcomment = DateTime.current
+    submission.last_comment_time = DateTime.now
 
     if params[:commit] == "Enregistrer comme brouillon"
       submission.visible = false
@@ -102,7 +102,7 @@ class SubmissionsController < ApplicationController
     submission.user = current_user.sk
     submission.intest = true
     submission.visible = false
-    submission.lastcomment = DateTime.current
+    submission.last_comment_time = DateTime.now
 
     if submission.save
       j = 1
@@ -243,20 +243,20 @@ class SubmissionsController < ApplicationController
         sp = Solvedproblem.where(:problem => @problem, :user => u).first
         if sp.submission == @submission
           which = -1
-          resolutiontime = nil
-          truetime = nil
+          correction_time = nil
+          resolution_time = nil
           Submission.where(:problem => @problem, :user => u, :status => 2).each do |s| 
             lastcomm = s.corrections.where("user_id != ?", u.id).order(:created_at).last
-            if(which == -1 || lastcomm.created_at < resolutiontime)
+            if(which == -1 || lastcomm.created_at < correction_time)
               which = s.id
-              resolutiontime = lastcomm.created_at
-              usercomm = s.corrections.where("user_id = ? AND created_at < ?", u.id, resolutiontime).last
-              truetime = (usercomm.nil? ? s.created_at : usercomm.created_at)
+              correction_time = lastcomm.created_at
+              usercomm = s.corrections.where("user_id = ? AND created_at < ?", u.id, correction_time).last
+              resolution_time = (usercomm.nil? ? s.created_at : usercomm.created_at)
             end
           end
           sp.submission_id = which
-          sp.resolutiontime = resolutiontime
-          sp.truetime = truetime
+          sp.correction_time = correction_time
+          sp.resolution_time = resolution_time
           sp.save
         end
       end
@@ -417,8 +417,8 @@ class SubmissionsController < ApplicationController
         redirect_to lepath
       else
         @submission.status = 0
-        @submission.created_at = DateTime.current
-        @submission.lastcomment = @submission.created_at
+        @submission.created_at = DateTime.now
+        @submission.last_comment_time = @submission.created_at
         @submission.visible = true
         @submission.save
         flash[:success] = "Votre solution a bien été soumise."

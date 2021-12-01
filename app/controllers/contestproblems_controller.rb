@@ -229,8 +229,8 @@ class ContestproblemsController < ApplicationController
     mes.user_id = 0    
     mes.content = helpers.get_new_correction_forum_message(contest, contestproblem)
     mes.save
-    sub.lastcomment = mes.created_at
-    sub.lastcomment_user_id = 0 # Message automatique
+    sub.last_comment_time = mes.created_at
+    sub.last_comment_user_id = 0 # Message automatique
     sub.save
     
     sub.following_users.each do |u|

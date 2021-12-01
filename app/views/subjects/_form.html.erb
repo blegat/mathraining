@@ -263,17 +263,17 @@ function checkProblem() {
   <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput#{@postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
 </div>
 
-<!-- Case admin -->
+<!-- Case correcteurs -->
 <% if current_user.sk.admin || current_user.sk.corrector %>
   <% checked = "" %>
   <% if erreur %>
-    <% checked = "checked" if session[:oldAll][:admin].to_i == 1 %>
+    <% checked = "checked" if session[:oldAll][:for_correctors].to_i == 1 %>
   <% elsif @edit %>
-    <% checked = "checked" if @subject.admin %>
+    <% checked = "checked" if @subject.for_correctors %>
   <% end %>
   <div class="checkbox">
   <label>
-    <%= f.check_box :admin, :disabled => current_user.other, :checked => checked %>
+    <%= f.check_box :for_correctors, :disabled => current_user.other, :checked => checked %>
     Cochez si ce sujet est réservé aux correcteurs.
   </label>
   </div>
@@ -299,13 +299,13 @@ function checkProblem() {
 <% if current_user.sk.wepion || current_user.sk.admin? %>
   <% checked = "" %>
   <% if erreur %>
-    <% checked = "checked" if session[:oldAll][:wepion].to_i == 1 %>
+    <% checked = "checked" if session[:oldAll][:for_wepion].to_i == 1 %>
   <% elsif @edit %>
-    <% checked = "checked" if @subject.wepion %>
+    <% checked = "checked" if @subject.for_wepion %>
   <% end %>
   <div class="checkbox">
   <label>
-    <%= f.check_box :wepion, :disabled => current_user.other, :checked => checked %>
+    <%= f.check_box :for_wepion, :disabled => current_user.other, :checked => checked %>
     Cochez si ce sujet est destiné aux étudiants de Wépion.
   </label>
   </div>

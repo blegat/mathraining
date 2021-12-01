@@ -157,7 +157,7 @@ describe "Virtualtest pages" do
             describe "and the time stops" do
               let!(:takentest) { Takentest.where(:user => user_with_rating_200, :virtualtest => virtualtest).first }
               before do
-                takentest.takentime = DateTime.now - virtualtest.duration - 1
+                takentest.taken_time = DateTime.now - virtualtest.duration - 1
                 takentest.save
                 visit virtualtest_path(virtualtest, :p => problem) # Should redirect to virtualtests page
               end

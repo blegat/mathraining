@@ -4,11 +4,11 @@
 #
 # Table name: privacypolicies
 #
-#  id          :integer          not null, primary key
-#  content     :text
-#  description :text
-#  publication :datetime
-#  online      :boolean          default(FALSE)
+#  id               :integer          not null, primary key
+#  content          :text
+#  description      :text
+#  publication_time :datetime
+#  online           :boolean          default(FALSE)
 #
 class Privacypolicy < ActiveRecord::Base
 

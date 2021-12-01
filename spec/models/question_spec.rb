@@ -2,19 +2,19 @@
 #
 # Table name: questions
 #
-#  id            :integer          not null, primary key
-#  statement     :text
-#  is_qcm        :boolean
-#  decimal       :boolean          default(FALSE)
-#  answer        :float
-#  many_answers  :boolean          default(FALSE)
-#  chapter_id    :integer
-#  position      :integer
-#  online        :boolean          default(FALSE)
-#  explanation   :text
-#  level         :integer          default(1)
-#  nb_tries      :integer          default(0)
-#  nb_firstguess :integer          default(0)
+#  id               :integer          not null, primary key
+#  statement        :text
+#  is_qcm           :boolean
+#  decimal          :boolean          default(FALSE)
+#  answer           :float
+#  many_answers     :boolean          default(FALSE)
+#  chapter_id       :integer
+#  position         :integer
+#  online           :boolean          default(FALSE)
+#  explanation      :text
+#  level            :integer          default(1)
+#  nb_tries         :integer          default(0)
+#  nb_first_guesses :integer          default(0)
 #
 require "spec_helper"
 

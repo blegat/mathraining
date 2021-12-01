@@ -34,9 +34,9 @@ describe "Stats pages" do
       end
       specify do
         expect(chapter1.nb_tries).to eq(1)
-        expect(chapter1.nb_solved).to eq(0)
+        expect(chapter1.nb_completions).to eq(0)
         expect(exercise11.nb_tries).to eq(1)
-        expect(exercise11.nb_firstguess).to eq(0)
+        expect(exercise11.nb_first_guesses).to eq(0)
       end
       
       describe "and then solves it correctly" do
@@ -49,9 +49,9 @@ describe "Stats pages" do
         end
         specify do
           expect(chapter1.nb_tries).to eq(1)
-          expect(chapter1.nb_solved).to eq(0)
+          expect(chapter1.nb_completions).to eq(0)
           expect(exercise11.nb_tries).to eq(1)
-          expect(exercise11.nb_firstguess).to eq(0)
+          expect(exercise11.nb_first_guesses).to eq(0)
         end
       end
     end
@@ -66,9 +66,9 @@ describe "Stats pages" do
       end
       specify do
         expect(chapter1.nb_tries).to eq(1)
-        expect(chapter1.nb_solved).to eq(0)
+        expect(chapter1.nb_completions).to eq(0)
         expect(exercise11.nb_tries).to eq(1)
-        expect(exercise11.nb_firstguess).to eq(1)
+        expect(exercise11.nb_first_guesses).to eq(1)
       end
       
       describe "and solves the second exercise of the chapter" do
@@ -81,19 +81,19 @@ describe "Stats pages" do
         end
         specify do
           expect(chapter1.nb_tries).to eq(1)
-          expect(chapter1.nb_solved).to eq(1)
+          expect(chapter1.nb_completions).to eq(1)
           expect(exercise12.nb_tries).to eq(1)
-          expect(exercise12.nb_firstguess).to eq(1)
+          expect(exercise12.nb_first_guesses).to eq(1)
         end
         
         describe "and recomputes the chapter stats" do
           before do
-            # Change nb_tries and nb_solved in a wrong way
+            # Change nb_tries and nb_completions in a wrong way
             chapter1.nb_tries = 42
-            chapter1.nb_solved = 42
+            chapter1.nb_completions = 42
             chapter1.save
             chapter2.nb_tries = 42
-            chapter2.nb_solved = 42
+            chapter2.nb_completions = 42
             chapter2.save
             Chapter.update_stats
             chapter1.reload
@@ -101,23 +101,23 @@ describe "Stats pages" do
           end
           specify do
             expect(chapter1.nb_tries).to eq(1)
-            expect(chapter1.nb_solved).to eq(1)
+            expect(chapter1.nb_completions).to eq(1)
             expect(chapter2.nb_tries).to eq(0)
-            expect(chapter2.nb_solved).to eq(0)
+            expect(chapter2.nb_completions).to eq(0)
           end
         end
         
         describe "and recomputes the question stats" do
           before do
-            # Change nb_tries and nb_firstguess in a wrong way
+            # Change nb_tries and nb_first_guesses in a wrong way
             exercise11.nb_tries = 42
-            exercise11.nb_firstguess = 42
+            exercise11.nb_first_guesses = 42
             exercise11.save
             exercise12.nb_tries = 42
-            exercise12.nb_firstguess = 42
+            exercise12.nb_first_guesses = 42
             exercise12.save
             exercise21.nb_tries = 42
-            exercise21.nb_firstguess = 42
+            exercise21.nb_first_guesses = 42
             exercise21.save
             Question.update_stats
             exercise11.reload
@@ -126,11 +126,11 @@ describe "Stats pages" do
           end
           specify do
             expect(exercise11.nb_tries).to eq(1)
-            expect(exercise11.nb_firstguess).to eq(1)
+            expect(exercise11.nb_first_guesses).to eq(1)
             expect(exercise12.nb_tries).to eq(1)
-            expect(exercise12.nb_firstguess).to eq(1)
+            expect(exercise12.nb_first_guesses).to eq(1)
             expect(exercise21.nb_tries).to eq(0)
-            expect(exercise21.nb_firstguess).to eq(0)
+            expect(exercise21.nb_first_guesses).to eq(0)
           end
         end
       end
@@ -155,9 +155,9 @@ describe "Stats pages" do
         problem.reload
       end
       specify do
-        expect(problem.nb_solved).to eq(1)
-        expect(problem.first_solved).to be_within(1.second).of(now - 7.days)
-        expect(problem.last_solved).to be_within(1.second).of(now - 7.days)
+        expect(problem.nb_solves).to eq(1)
+        expect(problem.first_solve_time).to be_within(1.second).of(now - 7.days)
+        expect(problem.last_solve_time).to be_within(1.second).of(now - 7.days)
       end
       
       describe "and marks a second solution as wrong" do
@@ -169,9 +169,9 @@ describe "Stats pages" do
           problem.reload
         end
         specify do
-          expect(problem.nb_solved).to eq(1)
-          expect(problem.first_solved).to be_within(1.second).of(now - 7.days)
-          expect(problem.last_solved).to be_within(1.second).of(now - 7.days)
+          expect(problem.nb_solves).to eq(1)
+          expect(problem.first_solve_time).to be_within(1.second).of(now - 7.days)
+          expect(problem.last_solve_time).to be_within(1.second).of(now - 7.days)
         end
         
         describe "and marks a third solution as correct" do
@@ -183,33 +183,33 @@ describe "Stats pages" do
             problem.reload
           end
           specify do
-            expect(problem.nb_solved).to eq(2)
-            expect(problem.first_solved).to be_within(1.second).of(now - 7.days)
-            expect(problem.last_solved).to be_within(1.second).of(now - 2.days)
+            expect(problem.nb_solves).to eq(2)
+            expect(problem.first_solve_time).to be_within(1.second).of(now - 7.days)
+            expect(problem.last_solve_time).to be_within(1.second).of(now - 2.days)
           end
           
           describe "and recomputes the problem stats" do
             before do
-              # Change nb_solved, first_solved and last_solved in a wrong way
-              problem.nb_solved = 42
-              problem.first_solved = now
-              problem.last_solved = now
+              # Change nb_solves, first_solve_time and last_solve_time in a wrong way
+              problem.nb_solves = 42
+              problem.first_solve_time = now
+              problem.last_solve_time = now
               problem.save
-              problem2.nb_solved = 42
-              problem2.first_solved = now
-              problem2.last_solved = now
+              problem2.nb_solves = 42
+              problem2.first_solve_time = now
+              problem2.last_solve_time = now
               problem2.save
               Problem.update_stats
               problem.reload
               problem2.reload
             end
             specify do
-              expect(problem.nb_solved).to eq(2)
-              expect(problem.first_solved).to be_within(1.second).of(now - 7.days)
-              expect(problem.last_solved).to be_within(1.second).of(now - 2.days)
-              expect(problem2.nb_solved).to eq(0)
-              expect(problem2.first_solved).to eq(nil)
-              expect(problem2.last_solved).to eq(nil)
+              expect(problem.nb_solves).to eq(2)
+              expect(problem.first_solve_time).to be_within(1.second).of(now - 7.days)
+              expect(problem.last_solve_time).to be_within(1.second).of(now - 2.days)
+              expect(problem2.nb_solves).to eq(0)
+              expect(problem2.first_solve_time).to eq(nil)
+              expect(problem2.last_solve_time).to eq(nil)
             end
           end
         end
@@ -222,10 +222,10 @@ describe "Stats pages" do
     describe "computes solvedquestion stats" do
       let!(:now) { DateTime.now }
       let!(:mondaybeforelastmonday) { Record.get_monday_before_last_monday(now.in_time_zone.to_date) }
-      let!(:solvedq11) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise11, correct: true, guess: exercise11.answer, resolutiontime: now-28.days) }
-      let!(:solvedq12) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise12, correct: true, guess: exercise12.answer, resolutiontime: now-28.days) }
-      let!(:solvedq21) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise21, correct: false, guess: exercise21.answer + 1, resolutiontime: now-21.days) }
-      let!(:solvedq22) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise22, correct: true, guess: exercise22.answer, resolutiontime: now-14.days) }
+      let!(:solvedq11) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise11, correct: true, guess: exercise11.answer, resolution_time: now-28.days) }
+      let!(:solvedq12) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise12, correct: true, guess: exercise12.answer, resolution_time: now-28.days) }
+      let!(:solvedq21) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise21, correct: false, guess: exercise21.answer + 1, resolution_time: now-21.days) }
+      let!(:solvedq22) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise22, correct: true, guess: exercise22.answer, resolution_time: now-14.days) }
       
       before { Record.update }
       
@@ -236,10 +236,10 @@ describe "Stats pages" do
       let!(:record4) { Record.where(:date => mondaybeforelastmonday).first }
       
       specify do
-        expect(record1.number_solved).to eq(2)
-        expect(record2.number_solved).to eq(0)
-        expect(record3.number_solved).to eq(1)
-        expect(record4.number_solved).to eq(0)
+        expect(record1.nb_questions_solved).to eq(2)
+        expect(record2.nb_questions_solved).to eq(0)
+        expect(record3.nb_questions_solved).to eq(1)
+        expect(record4.nb_questions_solved).to eq(0)
       end
     end
     
@@ -269,38 +269,35 @@ describe "Stats pages" do
       let!(:record4) { Record.where(:date => mondaybeforelastmonday).first }
       
       specify do
-        expect(record1.number_submission).to eq(1)
+        expect(record1.nb_submissions).to eq(1)
         expect(record1.complete).to eq(true)
-        expect(record1.correction_time).to eq(2.0)
+        expect(record1.avg_correction_time).to eq(2.0)
         
-        expect(record2.number_submission).to eq(3)
+        expect(record2.nb_submissions).to eq(3)
         expect(record2.complete).to eq(true)
-        expect(record2.correction_time).to eq(7.0/3.0)
+        expect(record2.avg_correction_time).to eq(7.0/3.0)
         
-        expect(record3.number_submission).to eq(1)
+        expect(record3.nb_submissions).to eq(1)
         expect(record3.complete).to eq(false)
         
-        expect(record4.number_submission).to eq(0)
+        expect(record4.nb_submissions).to eq(0)
         expect(record4.complete).to eq(true)
-        expect(record4.correction_time).to eq(0.0)
+        expect(record4.avg_correction_time).to eq(0.0)
       end
     end
     
     describe "computes visitor stats" do
       let!(:today) { DateTime.now.in_time_zone.to_date }
       before do
-        user1.last_connexion = today - 2
-        user1.save
-        user2.last_connexion = today - 1
-        user2.save
-        admin.last_connexion = today - 1
-        admin.save
+        user1.update_attribute(:last_connexion_date, today - 2)
+        user2.update_attribute(:last_connexion_date, today - 1)
+        admin.update_attribute(:last_connexion_date, today - 1)
         Visitor.compute
       end
       let!(:visitor_data) { Visitor.where(:date => today - 1).first }
       specify do
-        expect(visitor_data.number_user).to eq(1)
-        expect(visitor_data.number_admin).to eq(1)
+        expect(visitor_data.nb_users).to eq(1)
+        expect(visitor_data.nb_admins).to eq(1)
       end
     end
   end

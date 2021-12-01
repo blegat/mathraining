@@ -18,18 +18,18 @@
 #  email_confirm             :boolean          default(TRUE)
 #  skin                      :integer          default(0)
 #  active                    :boolean          default(TRUE)
-#  seename                   :integer          default(1)
+#  see_name                  :integer          default(1)
 #  sex                       :integer          default(0)
 #  wepion                    :boolean          default(FALSE)
 #  year                      :integer          default(0)
 #  rating                    :integer          default(0)
-#  forumseen                 :datetime         default(Thu, 01 Jan 2009 01:00:00 CET +01:00)
-#  last_connexion            :date             default(Thu, 01 Jan 2009)
+#  last_forum_visit_time     :datetime         default(Thu, 01 Jan 2009 01:00:00 CET +01:00)
+#  last_connexion_date       :date             default(Thu, 01 Jan 2009)
 #  follow_message            :boolean          default(FALSE)
 #  corrector                 :boolean          default(FALSE)
 #  group                     :string           default("")
 #  valid_name                :boolean          default(FALSE)
-#  consent_date              :datetime
+#  consent_time              :datetime
 #  country_id                :integer
 #  recup_password_date_limit :datetime
 #  last_policy_read          :boolean          default(FALSE)
@@ -121,7 +121,7 @@ class User < ActiveRecord::Base
 
   # Nom complet, avec seulement l'initiale s'il faut
   def name
-    if self.seename == 0
+    if self.see_name == 0
       return self.shortname
     else
       return self.fullname
@@ -196,23 +196,23 @@ class User < ActiveRecord::Base
   def combien_forum(include_myself)
     if include_myself
       if self.admin? or (self.corrector? and self.wepion?)
-        return Subject.where("lastcomment > ?", self.forumseen).count
+        return Subject.where("last_comment_time > ?", self.last_forum_visit_time).count
       elsif self.corrector?
-        return Subject.where("wepion = ? AND lastcomment > ?", false, self.forumseen).count
+        return Subject.where("for_wepion = ? AND last_comment_time > ?", false, self.last_forum_visit_time).count
       elsif self.wepion?
-        lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen).count
+        lastsubjects = Subject.where("for_correctors = ? AND last_comment_time > ?", false, self.last_forum_visit_time).count
       else
-        lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen).count
+        lastsubjects = Subject.where("for_wepion = ? AND for_correctors = ? AND last_comment_time > ?", false, false, self.last_forum_visit_time).count
       end
     else
       if self.admin? or (self.corrector? and self.wepion?)
-        return Subject.where("lastcomment > ?", self.forumseen).where.not(lastcomment_user: self.sk).count
+        return Subject.where("last_comment_time > ?", self.last_forum_visit_time).where.not(last_comment_user: self.sk).count
       elsif self.corrector?
-        return Subject.where("wepion = ? AND lastcomment > ?", false, self.forumseen).where.not(lastcomment_user: self.sk).count
+        return Subject.where("for_wepion = ? AND last_comment_time > ?", false, self.last_forum_visit_time).where.not(last_comment_user: self.sk).count
       elsif self.wepion?
-        lastsubjects = Subject.where("admin = ? AND lastcomment > ?", false, self.forumseen).where.not(lastcomment_user: self.sk).count
+        lastsubjects = Subject.where("for_correctors = ? AND last_comment_time > ?", false, self.last_forum_visit_time).where.not(last_comment_user: self.sk).count
       else
-        lastsubjects = Subject.where("wepion = ? AND admin = ? AND lastcomment > ?", false, false, self.forumseen).where.not(lastcomment_user: self.sk).count
+        lastsubjects = Subject.where("for_wepion = ? AND for_correctors = ? AND last_comment_time > ?", false, false, self.last_forum_visit_time).where.not(last_comment_user: self.sk).count
       end
     end
   end
@@ -308,7 +308,7 @@ class User < ActiveRecord::Base
     end
     # Utilisateurs ayant confirmé mais n'étant jamais venu après un mois (rating = 0 est normalement redondant)
     onemonthago = Date.today - 31
-    User.where("admin = ? AND rating = ? AND created_at < ? AND last_connexion < ?", false, 0, onemonthago, "2012-01-01").each do |u|
+    User.where("admin = ? AND rating = ? AND created_at < ? AND last_connexion_date < ?", false, 0, onemonthago, "2012-01-01").each do |u|
       u.destroy
     end
   end

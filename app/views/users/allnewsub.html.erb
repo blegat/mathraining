@@ -19,7 +19,7 @@
   <% if s.intest? %>
     <% p = s.problem %>
     <% t = p.virtualtest %>
-    <% date_start = t.takentests.where(:user_id => s.user_id).first.takentime %>
+    <% date_start = t.takentests.where(:user_id => s.user_id).first.taken_time %>
     <% date_sub = date_start + (t.duration).minutes %>
   <% end %>
   <% interval_id = [((s.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>

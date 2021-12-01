@@ -4,10 +4,10 @@
 #
 # Table name: visitors
 #
-#  id           :integer          not null, primary key
-#  date         :date
-#  number_user  :integer
-#  number_admin :integer
+#  id        :integer          not null, primary key
+#  date      :date
+#  nb_users  :integer
+#  nb_admins :integer
 #
 class Visitor < ActiveRecord::Base
   def self.compute
@@ -31,14 +31,14 @@ class Visitor < ActiveRecord::Base
     end
     
     # Compute number of users and admins connected yesterday
-    num_users = User.where("admin = ? AND last_connexion >= ?", false, yesterday).count
-    num_admins = User.where("admin = ? AND last_connexion >= ?", true, yesterday).count
+    num_users = User.where("admin = ? AND last_connexion_date >= ?", false, yesterday).count
+    num_admins = User.where("admin = ? AND last_connexion_date >= ?", true, yesterday).count
     
     # Create new Visitor element
     v = Visitor.new
     v.date = yesterday
-    v.number_user = num_users
-    v.number_admin = num_admins
+    v.nb_users = num_users
+    v.nb_admins = num_admins
     v.save    
   end
 end

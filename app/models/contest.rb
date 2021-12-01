@@ -102,9 +102,9 @@ class Contest < ActiveRecord::Base
     mes.content = get_problems_in_one_day_forum_message(contest, contestproblems)
     mes.created_at = contestproblems[0].start_time - 1.day + (contestproblems[0].number).seconds
     mes.save
-    if mes.created_at > sub.lastcomment # Security: should always be true
-      sub.lastcomment = mes.created_at
-      sub.lastcomment_user_id = 0 # Message automatique
+    if mes.created_at > sub.last_comment_time # Security: should always be true
+      sub.last_comment_time = mes.created_at
+      sub.last_comment_user_id = 0 # Message automatique
       sub.save
     end
     
@@ -125,9 +125,9 @@ class Contest < ActiveRecord::Base
     mes.content = get_problems_now_forum_message(contest, contestproblems)
     mes.created_at = contestproblems[0].start_time + (contestproblems[0].number).seconds
     mes.save
-    if mes.created_at > sub.lastcomment # Security: should always be true
-      sub.lastcomment = mes.created_at
-      sub.lastcomment_user_id = 0 # Message automatique
+    if mes.created_at > sub.last_comment_time # Security: should always be true
+      sub.last_comment_time = mes.created_at
+      sub.last_comment_user_id = 0 # Message automatique
       sub.save
     end
     

@@ -63,7 +63,7 @@ describe "Page user/index" do
           else # Correct
             sub = FactoryGirl.create(:submission, problem: p, user: u, status: 2)
             time = DateTime.now - ((rand() * 28).to_i).days # Date of resolution in the last 4 weeks
-            FactoryGirl.create(:solvedproblem, problem: p, user: u, submission: sub, truetime: time)
+            FactoryGirl.create(:solvedproblem, problem: p, user: u, submission: sub, resolution_time: time)
           end
         end
       end
@@ -72,7 +72,7 @@ describe "Page user/index" do
         if r.rand() < 0.5 # Tried to solved the exercise
           correct = r.rand() < 0.5 # Correct solution or not
           time = DateTime.now - ((rand() * 28).to_i).days # Date of resolution in the last 4 weeks
-          FactoryGirl.create(:solvedquestion, question: q, user: u, correct: correct, resolutiontime: (correct ? time : nil))
+          FactoryGirl.create(:solvedquestion, question: q, user: u, correct: correct, resolution_time: (correct ? time : nil))
         end
       end
     end

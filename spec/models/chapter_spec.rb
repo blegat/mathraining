@@ -9,10 +9,10 @@
 #  online           :boolean          default(FALSE)
 #  section_id       :integer
 #  nb_tries         :integer          default(0)
-#  nb_solved        :integer          default(0)
+#  nb_completions   :integer          default(0)
 #  position         :integer          default(0)
 #  author           :string
-#  publication_time :date
+#  publication_date :date
 #
 require "spec_helper"
 

@@ -49,9 +49,9 @@ html>body tbody.scroll {
   
   <!-- On va parcourir tous les exercices et problèmes -->
   
-  <% questions = @user.solvedquestions.joins(question: :chapter).select("solvedquestions.question_id AS id, solvedquestions.resolutiontime AS time, questions.level AS level, questions.chapter_id AS chapter_id, chapters.name AS chapter_name").where(:correct => true).order("resolutiontime DESC").to_a %>
+  <% questions = @user.solvedquestions.joins(question: :chapter).select("solvedquestions.question_id AS id, solvedquestions.resolution_time AS time, questions.level AS level, questions.chapter_id AS chapter_id, chapters.name AS chapter_name").where(:correct => true).order("resolution_time DESC").to_a %>
 
-  <% problems = @user.solvedproblems.joins(:problem).select("solvedproblems.problem_id AS id, solvedproblems.truetime AS time, solvedproblems.submission_id AS submission_id, problems.level AS level, problems.number AS number, problems.virtualtest_id AS virtualtest_id, problems.section_id AS section_id").order("truetime DESC").to_a %>
+  <% problems = @user.solvedproblems.joins(:problem).select("solvedproblems.problem_id AS id, solvedproblems.resolution_time AS time, solvedproblems.submission_id AS submission_id, problems.level AS level, problems.number AS number, problems.virtualtest_id AS virtualtest_id, problems.section_id AS section_id").order("resolution_time DESC").to_a %>
 
   <% act = Array.new %>
   <% q_encours = 0 %>
@@ -206,7 +206,7 @@ html>body tbody.scroll {
 <% if @signed_in && current_user.sk.root? %>
   <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
     <div class="basic_container" style="padding:5px;">
-      Connecté le <span style="color:<%= couleur %>"><%= write_date_only_small(@user.last_connexion) %></span>
+      Connecté le <span style="color:<%= couleur %>"><%= write_date_only_small(@user.last_connexion_date) %></span>
     </div>
   </div>
   

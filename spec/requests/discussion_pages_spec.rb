@@ -7,7 +7,7 @@ describe "Discussion pages" do
   
   let(:root) { FactoryGirl.create(:root) }
   let(:user) { FactoryGirl.create(:user) }
-  let!(:other_user) { FactoryGirl.create(:user, last_connexion: DateTime.now) } # last_connexion to be sure that other_user appears in the list
+  let!(:other_user) { FactoryGirl.create(:user, last_connexion_date: DateTime.now) } # last_connexion_date to be sure that other_user appears in the list
   let!(:other_user2) { FactoryGirl.create(:user) }
   let(:content) { "Salut mon ami!" }
   let(:content2) { "Salut mon pote!" }

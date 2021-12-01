@@ -2,19 +2,19 @@
 #
 # Table name: questions
 #
-#  id            :integer          not null, primary key
-#  statement     :text
-#  is_qcm        :boolean
-#  decimal       :boolean          default(FALSE)
-#  answer        :float
-#  many_answers  :boolean          default(FALSE)
-#  chapter_id    :integer
-#  position      :integer
-#  online        :boolean          default(FALSE)
-#  explanation   :text
-#  level         :integer          default(1)
-#  nb_tries      :integer          default(0)
-#  nb_firstguess :integer          default(0)
+#  id               :integer          not null, primary key
+#  statement        :text
+#  is_qcm           :boolean
+#  decimal          :boolean          default(FALSE)
+#  answer           :float
+#  many_answers     :boolean          default(FALSE)
+#  chapter_id       :integer
+#  position         :integer
+#  online           :boolean          default(FALSE)
+#  explanation      :text
+#  level            :integer          default(1)
+#  nb_tries         :integer          default(0)
+#  nb_first_guesses :integer          default(0)
 #
 class Question < ActiveRecord::Base
 
@@ -39,19 +39,19 @@ class Question < ActiveRecord::Base
     return 3*level
   end
   
-  # Mets à jour les nb_tries et nb_solved de chaque question (fait tous les mardis à 3 heures du matin (voir schedule.rb))
+  # Mets à jour les nb_tries et nb_first_guesses de chaque question (fait tous les mardis à 3 heures du matin (voir schedule.rb))
   # NB: Ils sont plus ou moins maintenus à jour en live, mais pas lorsqu'un utilisateur est supprimé, par exemple
   def self.update_stats
     nb_tries_by_question = Solvedquestion.group(:question_id).count
-    nb_firstguess_by_question = Solvedquestion.where(:correct => true, :nb_guess => 1).group(:question_id).count
+    nb_first_guesses_by_question = Solvedquestion.where(:correct => true, :nb_guess => 1).group(:question_id).count
     Question.where(:online => true).each do |q|
       nb_tries = nb_tries_by_question[q.id]
-      nb_firstguess = nb_firstguess_by_question[q.id]
+      nb_first_guesses = nb_first_guesses_by_question[q.id]
       nb_tries = 0 if nb_tries.nil?
-      nb_firstguess = 0 if nb_firstguess.nil?
-      if q.nb_tries != nb_tries || q.nb_firstguess != nb_firstguess
+      nb_first_guesses = 0 if nb_first_guesses.nil?
+      if q.nb_tries != nb_tries || q.nb_first_guesses != nb_first_guesses
         q.nb_tries = nb_tries
-        q.nb_firstguess = nb_firstguess
+        q.nb_first_guesses = nb_first_guesses
         q.save
       end
     end

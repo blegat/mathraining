@@ -144,7 +144,7 @@ FactoryGirl.define do
   factory :privacypolicy do
     sequence(:content) { |n| "Voici toute la politique de confidentialité #{n}" }
     sequence(:description) { |n| "Voici les modifications #{n}" }
-    publication DateTime.current
+    publication_time DateTime.now
     online false
   end
   
@@ -209,8 +209,8 @@ FactoryGirl.define do
     association :problem
     association :submission
     association :user
-    resolutiontime DateTime.current
-    truetime DateTime.current
+    correction_time DateTime.now
+    resolution_time DateTime.now
   end
   
   # Subject
@@ -218,8 +218,8 @@ FactoryGirl.define do
     sequence(:title) { |n| "Titre #{n}" }
     sequence(:content) { |n| "Contenu #{n}" }
     association :user
-    lastcomment DateTime.current
-    association :lastcomment_user, :factory => :user
+    last_comment_time DateTime.now
+    association :last_comment_user, :factory => :user
     association :category
     chapter_id 0
     section_id 0
@@ -237,7 +237,7 @@ FactoryGirl.define do
     association :problem
     association :user
     content "Interesting submission"
-    lastcomment DateTime.current
+    last_comment_time DateTime.now
   end
   
   # Theory
@@ -259,7 +259,7 @@ FactoryGirl.define do
     rating 0
     password "foobar"
     password_confirmation "foobar"
-    consent_date DateTime.now
+    consent_time DateTime.now
     last_policy_read true
     valid_name true
     factory :admin do

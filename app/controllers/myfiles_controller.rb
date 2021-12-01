@@ -103,7 +103,7 @@ class MyfilesController < ApplicationController
   #  if type == "Subject" || type == "Message"
   #    # Only admins and correctors can see corrector subjects - Only admins and wepion students can see wepion subjects
   #    subject = (type == "Subject" ? @myfile.myfiletable : @myfile.myfiletable.subject)
-  #    redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && subject.admin) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && subject.wepion)
+  #    redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && subject.for_correctors) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && subject.for_wepion)
   #  elsif type == "Tchatmessage"
   #    # Only roots and participants to the discussion
   #    tchatmessage = @myfile.myfiletable

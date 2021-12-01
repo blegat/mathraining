@@ -2,12 +2,12 @@
 #
 # Table name: solvedproblems
 #
-#  id             :integer          not null, primary key
-#  problem_id     :integer
-#  user_id        :integer
-#  resolutiontime :datetime
-#  submission_id  :integer
-#  truetime       :datetime
+#  id              :integer          not null, primary key
+#  problem_id      :integer
+#  user_id         :integer
+#  correction_time :datetime
+#  submission_id   :integer
+#  resolution_time :datetime
 #
 require "spec_helper"
 

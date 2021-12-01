@@ -4,12 +4,12 @@
 #
 # Table name: records
 #
-#  id                :integer          not null, primary key
-#  date              :date
-#  number_submission :integer
-#  number_solved     :integer
-#  correction_time   :float
-#  complete          :boolean
+#  id                  :integer          not null, primary key
+#  date                :date
+#  nb_submissions      :integer
+#  nb_questions_solved :integer
+#  avg_correction_time :float
+#  complete            :boolean
 #
 class Record < ActiveRecord::Base
 
@@ -27,8 +27,8 @@ class Record < ActiveRecord::Base
       nextmonday = curmonday+7
       r = Record.new
       r.date = curmonday
-      r.number_submission = Submission.where("status != -1 AND created_at >= ? AND created_at < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
-      r.number_solved = Solvedquestion.where("correct = ? AND resolutiontime >= ? AND resolutiontime < ?", true, curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
+      r.nb_submissions = Submission.where("status != -1 AND created_at >= ? AND created_at < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
+      r.nb_questions_solved = Solvedquestion.where("correct = ? AND resolution_time >= ? AND resolution_time < ?", true, curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
       r.complete = false
       r.save
       curmonday = nextmonday
@@ -51,9 +51,9 @@ class Record < ActiveRecord::Base
       end
 
       if number > 0
-        r.correction_time = total/number.to_f
+        r.avg_correction_time = total/number.to_f
       else
-        r.correction_time = 0
+        r.avg_correction_time = 0
       end
       r.complete = true
       r.save

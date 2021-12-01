@@ -9,9 +9,9 @@ Les tableaux suivants donnent :
 </ul>
 
 <% access_chapters = accessible_chapters(["id"]).map(&:id) %>
-<% chapters = Chapter.select(:id, :section_id, :name, :nb_tries, :nb_solved).where(:online => true).order(:level, :position) %>
+<% chapters = Chapter.select(:id, :section_id, :name, :nb_tries, :nb_completions).where(:online => true).order(:level, :position) %>
 <% chapters_by_section = chapters.group_by{|c| c.section_id} %>
-<% questions_by_chapter = Question.select(:id, :chapter_id, :nb_tries, :nb_firstguess).where(:online => true).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
+<% questions_by_chapter = Question.select(:id, :chapter_id, :nb_tries, :nb_first_guesses).where(:online => true).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
 
 <% Section.where(:fondation => false).order(:id).each do |section| %>
   <% if chapters_by_section[section.id].nil? %>
@@ -40,7 +40,7 @@ Les tableaux suivants donnent :
     <tr style="background-color:rgb(255,255,255);" class="hidden-large">
     <td colspan="<%= maxexo-1 %>"><%= link_to chapter.name, chapter %></td>
     <% pct = 0 %>
-    <% pct = (chapter.nb_solved * 100) / chapter.nb_tries if chapter.nb_tries > 0 %>
+    <% pct = (chapter.nb_completions * 100) / chapter.nb_tries if chapter.nb_tries > 0 %>
     <td style="text-align:center;"><%= pct %>%</td>
     </tr>
     <tr style="background-color:rgb(250,250,250);">
@@ -52,7 +52,7 @@ Les tableaux suivants donnent :
       <% numexo = questions_by_chapter[chapter.id].size %>
       <% questions_by_chapter[chapter.id].each do |e| %>
         <% pct = 0 %>
-        <% pct = e.nb_firstguess.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
+        <% pct = e.nb_first_guesses.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
         <% pct2 = [1.4*pct,1].min %>
         <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);">
         <% if can_see_exercises %>

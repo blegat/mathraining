@@ -88,7 +88,7 @@ class ChaptersController < ApplicationController
   # Mettre en ligne : il faut vérifier qu'on est admin
   def put_online
     @chapter.online = true
-    @chapter.publication_time = Date.today
+    @chapter.publication_date = Date.today
     @chapter.save
     @section = @chapter.section
     @chapter.questions.each do |q|

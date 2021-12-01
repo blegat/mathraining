@@ -55,10 +55,10 @@ describe "Privacy policy pages" do
   end
   
   describe "when one policy" do
-    let!(:policy1) { FactoryGirl.create(:privacypolicy, online: true, publication: DateTime.now - 2.weeks) }
-    let!(:policy2) { FactoryGirl.create(:privacypolicy, online: true, publication: DateTime.now - 1.week) }
-    let!(:policy3_offline) { FactoryGirl.create(:privacypolicy, online: false, publication: DateTime.now) }
-    before { user.update_attributes(:consent_date => DateTime.now - 10.days, :last_policy_read => false) }
+    let!(:policy1) { FactoryGirl.create(:privacypolicy, online: true, publication_time: DateTime.now - 2.weeks) }
+    let!(:policy2) { FactoryGirl.create(:privacypolicy, online: true, publication_time: DateTime.now - 1.week) }
+    let!(:policy3_offline) { FactoryGirl.create(:privacypolicy, online: false, publication_time: DateTime.now) }
+    before { user.update_attributes(:consent_time => DateTime.now - 10.days, :last_policy_read => false) }
     
     describe "user" do
       before { sign_in user }
@@ -93,7 +93,7 @@ describe "Privacy policy pages" do
           end
           specify do
             expect(user.last_policy_read).to eq(true)
-            expect(user.consent_date).to be >= policy2.publication
+            expect(user.consent_time).to be >= policy2.publication_time
           end
         end
       end
@@ -171,7 +171,7 @@ describe "Privacy policy pages" do
           end
           specify do
             expect(policy3_offline.online).to eq(true)
-            expect(policy3_offline.publication).to be >= (DateTime.now - 10.minutes)
+            expect(policy3_offline.publication_time).to be >= (DateTime.now - 10.minutes)
           end
           
           describe "and visits any page" do

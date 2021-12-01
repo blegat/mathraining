@@ -64,7 +64,7 @@
 
 <!-- Dernière activité -->
 <td class="<%= 'hidden-small' unless hide_user %><%= 'hidden-xs' if hide_user %>" style="width:250px;">
-<%= write_date(s.lastcomment) %>
+<%= write_date(s.last_comment_time) %>
 </td>
 
 <% if !hide_user %>

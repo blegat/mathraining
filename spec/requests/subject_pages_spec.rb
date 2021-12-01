@@ -217,6 +217,46 @@ describe "Subject pages" do
         it { should have_content(error_access_refused) }
       end
     end
+    
+    describe "tries to visit a wepion subject" do
+      before { sub_other_user.update_attribute(:for_wepion, true) }
+      
+      describe "while not in wepion" do
+        before { visit subject_path(sub_other_user) }
+        it { should have_content(error_access_refused) }
+      end
+      
+      describe "while in wepion" do
+        before do
+          user.update_attribute(:wepion, true)
+          visit subject_path(sub_other_user)
+        end
+        it do
+          should have_content(sub_other_user.title)
+          should have_content(sub_other_user.content)
+        end
+      end
+    end
+    
+    describe "tries to visit a corrector subject" do
+      before { sub_other_user.update_attribute(:for_correctors, true) }
+      
+      describe "while not coorrector" do
+        before { visit subject_path(sub_other_user) }
+        it { should have_content(error_access_refused) }
+      end
+      
+      describe "while corrector" do
+        before do
+          user.update_attribute(:corrector, true)
+          visit subject_path(sub_other_user)
+        end
+        it do
+          should have_content(sub_other_user.title)
+          should have_content(sub_other_user.content)
+        end
+      end
+    end
   end
 
   describe "admin" do
@@ -270,6 +310,28 @@ describe "Subject pages" do
       before { visit subject_path(sub_user) }
       specify {	expect { click_link("Supprimer ce sujet") }.to change(Message, :count).by(-1) }
     end
+    
+    describe "visits a wepion subject" do
+      before do
+        sub_other_user.update_attribute(:for_wepion, true)
+        visit subject_path(sub_other_user)
+      end
+      it do
+        should have_content(sub_other_user.title)
+        should have_content(sub_other_user.content)
+      end
+    end
+    
+    describe "visits a corrector subject" do
+      before do
+        sub_other_user.update_attribute(:for_correctors, true)
+        visit subject_path(sub_other_user)
+      end
+      it do
+        should have_content(sub_other_user.title)
+        should have_content(sub_other_user.content)
+      end
+    end
   end
 
   describe "root" do
@@ -301,12 +363,12 @@ describe "Subject pages" do
     describe "visits the subject of an user" do
       let!(:mes) { FactoryGirl.create(:message, subject: sub_other_user) }
       before do
-        # Set lastcomment and lastcomment_user_id correctly for sub_user and sub_other_user
-        sub_user.lastcomment = sub_user.created_at
-        sub_user.lastcomment_user_id = sub_user.user_id
+        # Set last_comment_time and last_comment_user_id correctly for sub_user and sub_other_user
+        sub_user.last_comment_time = sub_user.created_at
+        sub_user.last_comment_user_id = sub_user.user_id
         sub_user.save
-        sub_other_user.lastcomment = mes.created_at
-        sub_other_user.lastcomment_user_id = mes.user_id
+        sub_other_user.last_comment_time = mes.created_at
+        sub_other_user.last_comment_user_id = mes.user_id
         sub_other_user.save
         visit subject_path(sub_other_user)
       end
@@ -334,7 +396,7 @@ describe "Subject pages" do
           expect(Message.order(:id).last.content).to include(old_title) # In the remark saying that the message was migrated
           expect(Message.order(:id).last.subject).to eq(sub_user)
           expect(mes.subject).to eq(sub_user)
-          expect(sub_user.lastcomment_user_id).to eq(mes.user_id)
+          expect(sub_user.last_comment_user_id).to eq(mes.user_id)
         end
       end
       

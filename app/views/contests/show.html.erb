@@ -49,7 +49,7 @@
   <%= form_for contestorganization, :html => {:class => "form-inline", :style => "margin-top:10px;"} do |f| %>
     <% mtn = DateTime.now.to_date - 14 %>
     <%= f.hidden_field :contest_id, :value => @contest.id %>
-    <%= f.select :user_id, options_for_select(User.where("last_connexion >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Nouvel organisateur..."), -1), {}, {:class => "form-control select2", :style => "width:300px;"} %>
+    <%= f.select :user_id, options_for_select(User.where("last_connexion_date >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Nouvel organisateur..."), -1), {}, {:class => "form-control select2", :style => "width:300px;"} %>
     <%= f.submit "Ajouter", class: "btn btn btn-primary" %>
   <% end %>
 

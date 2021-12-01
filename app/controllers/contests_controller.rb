@@ -171,8 +171,8 @@ class ContestsController < ApplicationController
       end
     end
     
-    s.lastcomment = DateTime.now
-    s.lastcomment_user_id = 0 # Message automatique
+    s.last_comment_time = DateTime.now
+    s.last_comment_user_id = 0 # Message automatique
     s.save
   end
 end

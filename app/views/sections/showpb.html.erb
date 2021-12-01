@@ -22,7 +22,7 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
 
 <% else %>
 
-<% problems = accessible_problems_from_section(@section, ["id", "number", "level", "online", "statement", "origin", "virtualtest_id", "nb_solved", "first_solved", "last_solved"]) %>
+<% problems = accessible_problems_from_section(@section, ["id", "number", "level", "online", "statement", "origin", "virtualtest_id", "nb_solves", "first_solve_time", "last_solve_time"]) %>
 <% problems_by_level = problems.group_by{|p| p.level} %>
 
 <% if !current_user.sk.admin? %>
@@ -118,7 +118,7 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
       <div class="module right-part">
       <center><h4>Statistiques</h4></center>
       <center>
-      <% nb_sol = p.nb_solved %>
+      <% nb_sol = p.nb_solves %>
       <% if nb_sol >= 1 %>
         Résolu par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
         entre le <b><%= write_date_only(p.first_solved) %></b><br/>

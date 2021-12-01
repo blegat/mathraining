@@ -4,7 +4,7 @@ class SubjectsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate]
   before_action :get_subject, only: [:show, :update, :destroy]
   before_action :get_subject2, only: [:migrate]
-  before_action :admin_subject_user, only: [:show]
+  before_action :can_see_subject, only: [:show]
   before_action :author, only: [:update, :destroy]
   before_action :admin_user, only: [:destroy, :migrate]
   before_action :notskin_user, only: [:create, :update]
@@ -52,9 +52,9 @@ class SubjectsController < ApplicationController
     end
     
     if (current_user.sk.admin? || current_user.sk.corrector?)
-      admin_allowed_values = [false, true]
+      correctors_allowed_values = [false, true]
     else
-      admin_allowed_values = false
+      correctors_allowed_values = false
     end
     
     if (current_user.sk.admin? || current_user.sk.wepion?)
@@ -64,20 +64,20 @@ class SubjectsController < ApplicationController
     end
     
     if search_personne
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
     elsif search_category >= 0
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, category: search_category).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, category: search_category).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, category: search_category).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, category: search_category).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
     elsif search_section >= 0
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: search_section).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: search_section).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
     elsif search_section_problems >= 0
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
     elsif search_chapter
-      @importants = Subject.where(important: true,  admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: search_chapter).order("lastcomment DESC").includes(:user, :lastcomment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, admin: admin_allowed_values, wepion: wepion_allowed_values, chapter: search_chapter).order("lastcomment DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :lastcomment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, chapter: search_chapter).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, chapter: search_chapter).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
     end
   end
 
@@ -95,12 +95,12 @@ class SubjectsController < ApplicationController
   def create    
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
-    @subject = Subject.new(params.require(:subject).permit(:title, :content, :admin, :important, :wepion))
+    @subject = Subject.new(params.require(:subject).permit(:title, :content, :for_correctors, :important, :for_wepion))
     @subject.user = current_user.sk
-    @subject.lastcomment = DateTime.current
-    @subject.lastcomment_user = current_user.sk
+    @subject.last_comment_time = DateTime.now
+    @subject.last_comment_user = current_user.sk
     
-    @subject.wepion = false if @subject.admin # On n'autorise pas wépion si admin
+    @subject.for_wepion = false if @subject.for_correctors # On n'autorise pas wépion si pour les correcteurs
 
     if @subject.title.size > 0
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
@@ -197,11 +197,11 @@ class SubjectsController < ApplicationController
     params[:subject][:content].strip! if !params[:subject][:content].nil?
     @subject.title = params[:subject][:title]
     @subject.content = params[:subject][:content]
-    @subject.admin = params[:subject][:admin] if !params[:subject][:admin].nil?
+    @subject.for_correctors = params[:subject][:for_correctors] if !params[:subject][:for_correctors].nil?
     @subject.important = params[:subject][:important] if !params[:subject][:important].nil?
-    @subject.wepion = params[:subject][:wepion] if !params[:subject][:wepion].nil?
+    @subject.for_wepion = params[:subject][:for_wepion] if !params[:subject][:for_wepion].nil?
     
-    @subject.wepion = false if @subject.admin # On n'autorise pas wépion si admin
+    @subject.for_wepion = false if @subject.for_correctors # On n'autorise pas wépion si pour les correcteurs
     
     if @subject.valid?
 
@@ -312,9 +312,9 @@ class SubjectsController < ApplicationController
       m.save
     end
 
-    if @subject.lastcomment > @migreur.lastcomment
-      @migreur.lastcomment = @subject.lastcomment
-      @migreur.lastcomment_user_id = @subject.lastcomment_user_id
+    if @subject.last_comment_time > @migreur.last_comment_time
+      @migreur.last_comment_time = @subject.last_comment_time
+      @migreur.last_comment_user_id = @subject.last_comment_user_id
       @migreur.save
     end
 
@@ -349,15 +349,15 @@ class SubjectsController < ApplicationController
     return if check_nil_object(@subject)
   end
   
+  def can_see_subject
+    if !@subject.can_be_seen_by(current_user.sk)
+      render 'errors/access_refused' and return
+    end
+  end
+  
   def get_q
     @q = 0
     @q = params[:q].to_i if params.has_key?:q
-  end
-
-  def admin_subject_user
-    unless ((@signed_in && (current_user.sk.admin? || current_user.sk.corrector?)) || !@subject.admin)
-      render 'errors/access_refused' and return
-    end
   end
 
   def author

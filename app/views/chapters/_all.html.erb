@@ -15,15 +15,15 @@
 <p><%= raw(htmlise(@chapter.description)) %></p>
 
 <!-- Auteur(s) et date de publication -->
-<% authorOk = (!@chapter.author.nil? && @chapter.author.size != 0) %>
-<% publicationOk = !@chapter.publication_time.nil? %>
-<% if authorOk || publicationOk %>
+<% author_ok = (!@chapter.author.nil? && @chapter.author.size != 0) %>
+<% publication_ok = !@chapter.publication_date.nil? %>
+<% if author_ok || publication_ok %>
   <br/>Ce chapitre a été
-  <% if authorOk %>
-    écrit par <b><%= @chapter.author %></b><%= "." if !publicationOk %><%= " et " if publicationOk %>
+  <% if author_ok %>
+    écrit par <b><%= @chapter.author %></b><%= "." if !publication_ok %><%= " et " if publication_ok %>
   <% end %>
-  <% if publicationOk %>
-    mis en ligne le <b><%= write_date_only(@chapter.publication_time) %></b>.
+  <% if publication_ok %>
+    mis en ligne le <b><%= write_date_only(@chapter.publication_date) %></b>.
   <% end %>
 <% end %>
 

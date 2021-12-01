@@ -52,7 +52,7 @@ feature 'Emailer' do
 
   describe "tchatmessage emails" do
     let(:user) { FactoryGirl.create(:user) }
-    let!(:other_user) { FactoryGirl.create(:user, last_connexion: DateTime.now) } # last_connexion to be sure that other_user appears in the list
+    let!(:other_user) { FactoryGirl.create(:user, last_connexion_date: DateTime.now) } # last_connexion_date to be sure that other_user appears in the list
   
     before do
       clear_emails
@@ -128,7 +128,7 @@ feature 'Emailer' do
         sign_in root
         visit subject_path(sub)
         fill_in "MathInputNewMessage", with: "Nouveau message pour Wépion"
-        check "subject[wepion]"
+        check "subject[for_wepion]"
         check "groupeA"
         click_button "Poster"
         open_email(user_in_group_A.email)
@@ -151,7 +151,7 @@ feature 'Emailer' do
     let!(:running_contest) { FactoryGirl.create(:contest, status: 1) }
     let!(:running_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 1, status: 1, start_time: DateTime.now + 1.day - 5.minutes, end_time: DateTime.now + 3.days, reminder_status: 0) }
     let!(:running_contestproblemcheck) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem) }
-    let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: category, lastcomment: DateTime.now - 2.days) }
+    let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: category, last_comment_time: DateTime.now - 2.days) }
   
     before do
       Followingcontest.create(:contest => running_contest, :user => user_following_contest)

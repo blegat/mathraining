@@ -366,7 +366,7 @@ Votre navigateur ne supporte pas les canvas.
         <% yy.push(-1) %>
         <% xx.push(convert_date(missing)) %>
       <% end %>
-      <% yy.push(v.number_user + v.number_admin) %>
+      <% yy.push(v.nb_users + v.nb_admins) %>
       <% xx.push(convert_date(v.date)) %>
       <% prev = v.date %>
     <% end %>
@@ -385,12 +385,12 @@ Votre navigateur ne supporte pas les canvas.
     <% yy3 = Array.new %>
     <% Record.order(:date).each do |r| %>
       <% xx.push(convert_date(r.date)) %>
-      <% yy.push(r.number_solved) %>
-      <% yy2.push(r.number_submission) %>
-      <% if r.correction_time.nil? %>
+      <% yy.push(r.nb_questions_solved) %>
+      <% yy2.push(r.nb_submissions) %>
+      <% if r.avg_correction_time.nil? %>
         <% yy3.push(-1) %>
       <% else %>
-        <% yy3.push(r.correction_time) %>
+        <% yy3.push(r.avg_correction_time) %>
       <% end %>
     <% end %>
     xxx = <%= ruby_to_javascript_string(xx) %>;

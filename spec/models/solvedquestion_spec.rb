@@ -2,14 +2,14 @@
 #
 # Table name: solvedquestions
 #
-#  id             :integer          not null, primary key
-#  user_id        :integer
-#  question_id    :integer
-#  guess          :float
-#  correct        :boolean
-#  nb_guess       :integer
-#  resolutiontime :datetime
-#  updated_at     :datetime         not null
+#  id              :integer          not null, primary key
+#  user_id         :integer
+#  question_id     :integer
+#  guess           :float
+#  correct         :boolean
+#  nb_guess        :integer
+#  resolution_time :datetime
+#  updated_at      :datetime         not null
 #
 require "spec_helper"
 

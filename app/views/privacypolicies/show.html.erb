@@ -2,15 +2,15 @@
 
 <h1><%= title_1("Politique de confidentialité") %></h1>
 
-<% prev = Privacypolicy.where("online = ? AND publication < ?", true, @privacypolicy.publication).order("publication").last %>
-<% nex = Privacypolicy.where("online = ? AND publication > ?", true, @privacypolicy.publication).order("publication").first %>
+<% prev = Privacypolicy.where("online = ? AND publication_time < ?", true, @privacypolicy.publication_time).order("publication_time").last %>
+<% nex = Privacypolicy.where("online = ? AND publication_time > ?", true, @privacypolicy.publication_time).order("publication_time").first %>
 <center>
 <% if !prev.nil? %>
-  <%= link_to "Version du #{write_date_only(prev.publication)}", prev %> - 
+  <%= link_to "Version du #{write_date_only(prev.publication_time)}", prev %> - 
 <% end %>
-<b>Version du <%= write_date_only(@privacypolicy.publication) %></b>
+<b>Version du <%= write_date_only(@privacypolicy.publication_time) %></b>
 <% if !nex.nil? %>
-  - <%= link_to "Version du #{write_date_only(nex.publication)}", nex %>
+  - <%= link_to "Version du #{write_date_only(nex.publication_time)}", nex %>
 <% else %>
   (dernière version)
 <% end %>

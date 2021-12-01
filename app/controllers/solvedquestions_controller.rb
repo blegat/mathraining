@@ -17,7 +17,7 @@ class SolvedquestionsController < ApplicationController
     if check_answer(true)
       @question.nb_tries = @question.nb_tries+1
       if @link.correct
-        @question.nb_firstguess = @question.nb_firstguess+1
+        @question.nb_first_guesses = @question.nb_first_guesses+1
       end
       @question.save
       
@@ -108,7 +108,7 @@ class SolvedquestionsController < ApplicationController
       @link.nb_guess = (first_sub ? 1 : @link.nb_guess + 1)
       good_guess = true
       autre = first_sub
-      @link.resolutiontime = DateTime.now
+      @link.resolution_time = DateTime.now
       if @question.many_answers
         # Plusieurs reponses possibles
         if params[:ans]
@@ -199,7 +199,7 @@ class SolvedquestionsController < ApplicationController
       if first_sub || @link.guess != guess
         @link.nb_guess = (first_sub ? 1 : @link.nb_guess + 1)
         @link.guess = guess
-        @link.resolutiontime = DateTime.now
+        @link.resolution_time = DateTime.now
 
         if @question.decimal
           if absolu(@question.answer, guess) < 0.001

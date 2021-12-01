@@ -19,8 +19,8 @@ module SessionsHelper
       @current_user = User.find_by_remember_token(cookies[:remember_token])
       if !@current_user.nil?
         mtn = DateTime.now.in_time_zone.to_date
-        if mtn != @current_user.last_connexion
-          @current_user.last_connexion = mtn
+        if mtn != @current_user.last_connexion_date
+          @current_user.last_connexion_date = mtn
           @current_user.save
         end
       end

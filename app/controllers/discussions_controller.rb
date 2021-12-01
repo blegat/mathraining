@@ -49,7 +49,7 @@ class DiscussionsController < ApplicationController
       if @discussion.nil?
         deja = false
         @discussion = Discussion.new
-        @discussion.last_message = DateTime.now
+        @discussion.last_message_time = DateTime.now
         @discussion.save
       else
         deja = true
@@ -81,7 +81,7 @@ class DiscussionsController < ApplicationController
             end
             l.save
           end
-          @discussion.last_message = DateTime.now
+          @discussion.last_message_time = DateTime.now
           @discussion.save
         end
         redirect_to @discussion

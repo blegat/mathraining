@@ -106,6 +106,5 @@
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->
 <% if !current_user.other && current_user.sk.combien_forum(true) > 0 %>
-  <% current_user.sk.forumseen = DateTime.current %>
-  <% current_user.sk.save %>
+  <% current_user.sk.update_attribute(:last_forum_visit_time, DateTime.now) %>
 <% end %>

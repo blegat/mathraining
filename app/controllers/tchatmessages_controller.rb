@@ -35,7 +35,7 @@ class TchatmessagesController < DiscussionsController
         end
         l.save
       end
-      @discussion.last_message = DateTime.now
+      @discussion.last_message_time = DateTime.now
       @discussion.save
       redirect_to @discussion
     end

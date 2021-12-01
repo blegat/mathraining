@@ -7,7 +7,7 @@
 #  id             :integer          not null, primary key
 #  user_id        :integer
 #  virtualtest_id :integer
-#  takentime      :datetime
+#  taken_time     :datetime
 #  status         :integer
 #
 class Takentest < ActiveRecord::Base

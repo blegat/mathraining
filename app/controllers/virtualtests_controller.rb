@@ -88,7 +88,7 @@ class VirtualtestsController < ApplicationController
     t.user = current_user.sk
     t.virtualtest = @virtualtest
     t.status = 0
-    t.takentime = DateTime.now
+    t.taken_time = DateTime.now
     t.save
     
     c = Takentestcheck.new

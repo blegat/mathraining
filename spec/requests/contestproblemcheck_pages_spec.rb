@@ -13,7 +13,7 @@ describe "Contestproblemcheck pages" do
   let!(:running_contest) { FactoryGirl.create(:contest, status: 1) }
   let!(:running_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 1, status: 1, start_time: DateTime.now + 2.days, end_time: DateTime.now + 2.days) }
   let!(:running_contestproblemcheck) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem) }
-  let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: category, lastcomment: DateTime.now - 2.days) }
+  let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: category, last_comment_time: DateTime.now - 2.days) }
   
   before do
     Followingsubject.create(:subject => running_contestsubject, :user => user_following_subject)
@@ -81,7 +81,7 @@ describe "Contestproblemcheck pages" do
         expect(running_contestproblem.reminder_status).to eq(1)
         expect(running_contestsubject.messages.count).to eq(num_messages_before + 1)
         expect(running_contestsubject.messages.order(:id).last.created_at).to eq(running_contestproblem.start_time - 1.day + running_contestproblem.number.seconds)
-        expect(running_contestsubject.lastcomment).to eq(running_contestproblem.start_time - 1.day + running_contestproblem.number.seconds)
+        expect(running_contestsubject.last_comment_time).to eq(running_contestproblem.start_time - 1.day + running_contestproblem.number.seconds)
       end
     end
     
@@ -100,7 +100,7 @@ describe "Contestproblemcheck pages" do
         expect(running_contestproblem.reminder_status).to eq(2)
         expect(running_contestsubject.messages.count).to eq(num_messages_before + 1)
         expect(running_contestsubject.messages.order(:id).last.created_at).to eq(running_contestproblem.start_time + running_contestproblem.number.seconds)
-        expect(running_contestsubject.lastcomment).to eq(running_contestproblem.start_time + running_contestproblem.number.seconds)
+        expect(running_contestsubject.last_comment_time).to eq(running_contestproblem.start_time + running_contestproblem.number.seconds)
       end
     end
   end

@@ -124,12 +124,12 @@
     <center><h4>Statistiques</h4></center>
     <!-- Statistiques -->
     <center>
-    Complété par <b><%= c.nb_solved %></b> personne<%= "s" if c.nb_solved > 1 %><br/>
-    <% if c.publication_time %>
-      depuis le <b><%= write_date_only(c.publication_time) %></b><br/>
+    Complété par <b><%= c.nb_completions %></b> personne<%= "s" if c.nb_completions > 1 %><br/>
+    <% unless c.publication_date.nil? %>
+      depuis le <b><%= write_date_only(c.publication_date) %></b><br/>
     <% end %>
     <% if c.nb_tries > 0 %>
-      Taux de réussite : <b><%= (c.nb_solved*100)/c.nb_tries %></b>%
+      Taux de réussite : <b><%= (c.nb_completions*100)/c.nb_tries %></b>%
     <% end %>
     </center>
     </div>
@@ -192,7 +192,7 @@
   <% end %>
 <% end %>
 
-<% chapters = @section.chapters.select(:id, :name, :description, :online, :level, :nb_tries, :nb_solved, :publication_time).order(:level, :position) %>
+<% chapters = @section.chapters.select(:id, :name, :description, :online, :level, :nb_tries, :nb_completions, :publication_date).order(:level, :position) %>
 <% chapters_by_level = chapters.group_by{|c| c.level} %>
 <% chapters_id = chapters.map(&:id) %>
 <% @questions_by_chapter = Question.select(:id, :online, :chapter_id).where(:chapter_id => chapters_id).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>

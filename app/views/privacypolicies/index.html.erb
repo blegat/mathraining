@@ -4,11 +4,11 @@
 
 <table class="table table-bordered">
 <tr><th style="width:150px; text-align:center;">Publication</th><th style="width:80px; text-align:center;">Texte</th><th>Modifications</th></tr>
-<% Privacypolicy.all.order(:publication).each do |p| %>
+<% Privacypolicy.all.order(:publication_time).each do |p| %>
 <tr class="<%= 'success' if p.online? %><%= 'danger' unless p.online? %>">
 <td style="text-align:center;">
 <% if p.online %>
-  <%= write_date_only(p.publication) %>
+  <%= write_date_only(p.publication_time) %>
 <% else %>
   -
 <% end %>

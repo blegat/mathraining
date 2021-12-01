@@ -130,7 +130,7 @@ class UsersController < ApplicationController
 
   # S'inscrire au site 2 : il faut être hors ligne
   def create
-    @user = User.new(params.require(:user).permit(:first_name, :last_name, :seename, :email, :email_confirmation, :sex, :year, :password, :password_confirmation, :accept_analytics))
+    @user = User.new(params.require(:user).permit(:first_name, :last_name, :see_name, :email, :email_confirmation, :sex, :year, :password, :password_confirmation, :accept_analytics))
     @user.key = SecureRandom.urlsafe_base64
     
     if(!params[:user][:country].nil? && params[:user][:country].to_i > 0)
@@ -151,7 +151,7 @@ class UsersController < ApplicationController
       UserMailer.registration_confirmation(@user.id).deliver
       
       user_reload = User.find(@user.id) # Reload because email and email_confirmation can be different after downcaise otherwise!
-      user_reload.consent_date = DateTime.now
+      user_reload.consent_time = DateTime.now
       user_reload.last_policy_read = true
       user_reload.save
       
@@ -171,7 +171,7 @@ class UsersController < ApplicationController
     old_last_name = @user.last_name
     old_first_name = @user.first_name
 
-    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :seename, :sex, :year, :password, :password_confirmation, :email, :accept_analytics))
+    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :see_name, :sex, :year, :password, :password_confirmation, :email, :accept_analytics))
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
       @user.adapt_name
@@ -336,12 +336,12 @@ class UsersController < ApplicationController
 
   # Voir toutes les soumissions (admin)
   def allsub
-    @notifications = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where(visible: true).order("submissions.lastcomment DESC").paginate(page: params[:page]).to_a
+    @notifications = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where(visible: true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
 
   # Voir les soumissions auxquelles on participe (admin)
   def allmysub
-    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns).includes(:user).where("status > 0").order("submissions.lastcomment DESC").paginate(page: params[:page]).to_a
+    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns).includes(:user).where("status > 0").order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
   
   # Voir toutes les nouvelles soumissions (admin)
@@ -351,8 +351,8 @@ class UsersController < ApplicationController
 
   # Voir les nouveaux commentaires des soumissions auxquelles on participe (admin)
   def allmynewsub
-    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns).includes(:user).where(followings: {read: false}).order("submissions.lastcomment").to_a
-    @notifications_other = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where("status = 3").order("submissions.lastcomment").to_a
+    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
+    @notifications_other = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where("status = 3").order("submissions.last_comment_time").to_a
   end
 
   # Voir les notifications (étudiant)
@@ -387,7 +387,7 @@ class UsersController < ApplicationController
       @user.email = @user.id.to_s
       @user.first_name = "Compte"
       @user.last_name = "supprimé"
-      @user.seename = 1
+      @user.see_name = 1
       @user.wepion = false
       @user.valid_name = true
       @user.follow_message = false
@@ -450,7 +450,7 @@ class UsersController < ApplicationController
       render 'read_legal'
     else
       user = current_user
-      user.consent_date = DateTime.now
+      user.consent_time = DateTime.now
       user.last_policy_read = true
       user.save
       redirect_to root_path
@@ -589,11 +589,11 @@ class UsersController < ApplicationController
 
     twoweeksago = Date.today - 14
 
-    Solvedproblem.where(:user_id => ids).includes(:problem).where("truetime > ?", twoweeksago).find_each do |s|
+    Solvedproblem.where(:user_id => ids).includes(:problem).where("resolution_time > ?", twoweeksago).find_each do |s|
       recent[global_user_id_to_local_id[s.user_id]] += s.problem.value
     end
 
-    Solvedquestion.where(:user_id => ids).includes(:question).where("resolutiontime > ? AND correct = ?", twoweeksago, true).find_each do |s|
+    Solvedquestion.where(:user_id => ids).includes(:question).where("resolution_time > ? AND correct = ?", twoweeksago, true).find_each do |s|
       recent[global_user_id_to_local_id[s.user_id]] += s.question.value
     end
 
@@ -603,7 +603,7 @@ class UsersController < ApplicationController
   end
   
   def needed_columns
-    return "submissions.id, submissions.user_id, submissions.problem_id, submissions.status, submissions.star, submissions.created_at, submissions.lastcomment, submissions.intest, problems.level, problems.section_id"
+    return "submissions.id, submissions.user_id, submissions.problem_id, submissions.status, submissions.star, submissions.created_at, submissions.last_comment_time, submissions.intest, problems.level, problems.section_id"
   end
   
 end

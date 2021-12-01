@@ -11,10 +11,10 @@
 #  online           :boolean          default(FALSE)
 #  section_id       :integer
 #  nb_tries         :integer          default(0)
-#  nb_solved        :integer          default(0)
+#  nb_completions   :integer          default(0)
 #  position         :integer          default(0)
 #  author           :string
-#  publication_time :date
+#  publication_date :date
 #
 class Chapter < ActiveRecord::Base
 
@@ -77,15 +77,15 @@ class Chapter < ActiveRecord::Base
     end
   end
    
-  # Mets à jour les nb_tries et nb_solved de chaque chapitre (fait tous les lundis à 3 heures du matin (voir schedule.rb))
+  # Mets à jour les nb_tries et nb_completions de chaque chapitre (fait tous les lundis à 3 heures du matin (voir schedule.rb))
   # NB: Ils sont plus ou moins maintenus à jour en live, mais pas lorsqu'un utilisateur est supprimé, par exemple
   def self.update_stats
     Chapter.where(:online => true).each do |c|
       nb_tries = Solvedquestion.where(:question => c.questions).distinct.count(:user_id)
-      nb_solved = c.users.count
-      if c.nb_tries != nb_tries || c.nb_solved != nb_solved
+      nb_completions = c.users.count
+      if c.nb_tries != nb_tries || c.nb_completions != nb_completions
         c.nb_tries = nb_tries
-        c.nb_solved = nb_solved
+        c.nb_completions = nb_completions
         c.save
       end
     end

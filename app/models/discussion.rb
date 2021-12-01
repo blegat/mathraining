@@ -4,8 +4,8 @@
 #
 # Table name: discussions
 #
-#  id           :integer          not null, primary key
-#  last_message :datetime
+#  id                :integer          not null, primary key
+#  last_message_time :datetime
 #
 class Discussion < ActiveRecord::Base
 

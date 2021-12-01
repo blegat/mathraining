@@ -13,7 +13,7 @@ class PrivacypoliciesController < ApplicationController
 
   # Voir la dernière politique de confidentialité
   def last_policy
-    @last_policy = Privacypolicy.where(:online => true).order(:publication).last
+    @last_policy = Privacypolicy.where(:online => true).order(:publication_time).last
     if @last_policy.nil?
       flash[:danger] = "Le site n'a actuellement aucune politique de confidentalité."
       redirect_to root_path
@@ -29,10 +29,10 @@ class PrivacypoliciesController < ApplicationController
   # Créer une politique de confidentialité
   def new
     @privacypolicy = Privacypolicy.new
-    @privacypolicy.publication = DateTime.now
+    @privacypolicy.publication_time = DateTime.now
     @privacypolicy.online = false
     @privacypolicy.description = " - À écrire - "
-    @last_policy = Privacypolicy.where(:online => true).order(:publication).last
+    @last_policy = Privacypolicy.where(:online => true).order(:publication_time).last
     if !@last_policy.nil?
       @privacypolicy.content = @last_policy.content
     else
@@ -74,7 +74,7 @@ class PrivacypoliciesController < ApplicationController
   # Mettre en ligne : doit être hors-ligne
   def put_online
     @privacypolicy.online = true
-    @privacypolicy.publication = DateTime.now
+    @privacypolicy.publication_time = DateTime.now
     @privacypolicy.save
     User.all.each do |u|
       u.last_policy_read = false
