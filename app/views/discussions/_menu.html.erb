@@ -22,7 +22,7 @@ var showAllDiscussions = function () {
       <div id="remaining_discussions" style="display:none;">
     <% end %>
     <%= link_to discussion_path(d.id), :class => "list-group-item #{"active" if d.id == @discussion.id} #{"jaune" if d.nonread > 0 && d.id != @discussion.id}" do %>
-      <b><%= d.first_name %> <%= d.last_name if d.see_name != 0 %> <%= "#{d.last_name[0]}." if d.see_name == 0 %><%= " (#{d.nonread})" if d.nonread > 0 && d.id != @discussion.id %></b><br/>
+      <b><%= User.new(:first_name => d.first_name, :last_name => d.last_name, :see_name => d.see_name).name %><%= " (#{d.nonread})" if d.nonread > 0 && d.id != @discussion.id %></b><br/>
       <div style="margin-top:5px;"><%= write_date(d.last_message_time) %></div>
     <% end %>
     <% num = num + 1 %>
