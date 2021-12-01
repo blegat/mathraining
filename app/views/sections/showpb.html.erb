@@ -121,8 +121,8 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
       <% nb_sol = p.nb_solves %>
       <% if nb_sol >= 1 %>
         Résolu par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
-        entre le <b><%= write_date_only(p.first_solved) %></b><br/>
-        et le <b><%= write_date_only(p.last_solved) %></b>
+        entre le <b><%= write_date_only(p.first_solve_time) %></b><br/>
+        et le <b><%= write_date_only(p.last_solve_time) %></b>
       <% else %>
         <i>Jamais résolu</i>
       <% end %>
