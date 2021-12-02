@@ -3,28 +3,30 @@ class ChaptersController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :warning, :read]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online]
   before_action :admin_user, only: [:new, :create, :destroy, :warning, :put_online, :order_minus, :order_plus]
+  
   before_action :get_chapter, only: [:show, :edit, :update, :destroy]
   before_action :get_chapter2, only: [:warning, :put_online, :read, :order_minus, :order_plus]
   before_action :get_section, only: [:new, :create]
-  before_action :delete_online, only: [:destroy]
-  before_action :online_chapter, only: [:show, :read]
+  
+  before_action :offline_chapter, only: [:destroy, :warning, :put_online]
+  before_action :online_chapter_or_creating_user, only: [:show, :read]
   before_action :prerequisites_online, only: [:warning, :put_online]
-  before_action :creating_user, only: [:edit, :update]
+  before_action :user_that_can_update_chapter, only: [:edit, :update]
 
-  # Voir un chapitre : il faut vérifier que le chapitre est en ligne (ou qu'on est admin)
+  # Show one chapter
   def show
   end
 
-  # Créer un chapitre : il faut vérifier que l'on est admin
+  # Create a chapter (show the form)
   def new
     @chapter = Chapter.new
   end
 
-  # Editer un chapitre : il faut vérifier que l'on est admin
+  # Update a chapter (show the form)
   def edit
   end
 
-  # Créer un chapitre 2 : il faut vérifier que l'on est admin
+  # Create a chapter (send the form)
   def create
     last_chapter = @section.chapters.where(:level => params[:chapter][:level]).order(:position).last
     if last_chapter.nil?
@@ -43,7 +45,7 @@ class ChaptersController < ApplicationController
     end
   end
 
-  # Editer un chapitre 2 : il faut vérifier que l'on est admin
+  # Update a chapter (send the form)
   def update
     old_level = @chapter.level
     if @chapter.update_attributes(params.require(:chapter).permit(:name, :description, :level, :author))
@@ -64,18 +66,18 @@ class ChaptersController < ApplicationController
     end
   end
 
-  # Supprimer un chapitre : il faut vérifier que l'on est admin (et que le chapitre n'est pas en ligne)
+  # Delete a chapter
   def destroy
     @chapter.destroy
     flash[:success] = "Chapitre supprimé."
     redirect_to section_path(@section)
   end
 
-  # Warning : il faut vérifier qu'on est admin
+  # Warning page before putting a chapter online
   def warning
   end
 
-  # Marquer tout le chapitre comme lu : il faut être inscrit et que le chapitre existe et soit en ligne
+  # Mark the full chapter as read
   def read
     @chapter.theories.each do |t|
       if t.online && !current_user.sk.theories.exists?(t.id)
@@ -85,7 +87,7 @@ class ChaptersController < ApplicationController
     redirect_to chapter_path(@chapter, :type => 10)
   end
 
-  # Mettre en ligne : il faut vérifier qu'on est admin
+  # Put the chapter online
   def put_online
     @chapter.online = true
     @chapter.publication_date = Date.today
@@ -104,70 +106,71 @@ class ChaptersController < ApplicationController
     redirect_to @chapter
   end
   
-  # Déplacer vers le haut
+  # Move the chapter up (in his level)
   def order_minus
     chapter2 = @section.chapters.where("level = ? AND position < ?", @chapter.level, @chapter.position).order('position').reverse_order.first
-    swap_position(@chapter, chapter2)
-    flash[:success] = "Chapitre déplacé vers le haut."
+    unless chapter2.nil?
+      swap_position(@chapter, chapter2)
+      flash[:success] = "Chapitre déplacé vers le haut."
+    end
     redirect_to @chapter
   end
 
-  # Déplacer vers le bas
+  # Move the chapter down (in his level)
   def order_plus
     chapter2 = @section.chapters.where("level = ? AND position > ?", @chapter.level, @chapter.position).order('position').first
-    swap_position(@chapter, chapter2)
-    flash[:success] = "Chapitre déplacé vers le bas."
+    unless chapter2.nil?
+      swap_position(@chapter, chapter2)
+      flash[:success] = "Chapitre déplacé vers le bas."
+    end
     redirect_to @chapter
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the chapter
   def get_chapter
     @chapter = Chapter.find_by_id(params[:id])
     return if check_nil_object(@chapter)
     @section = @chapter.section
   end
   
+  # Get the chapter (v2)
   def get_chapter2
     @chapter = Chapter.find_by_id(params[:chapter_id])
     return if check_nil_object(@chapter)
     @section = @chapter.section
   end
   
+  # Get the section
   def get_section
     @section = Section.find_by_id(params[:section_id])
     return if check_nil_object(@section)
   end
+  
+  ########## CHECK METHODS ##########
 
-  # Vérifie que le chapitre est en ligne (ou qu'on est admin)
-  def online_chapter
-    unless ((@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) || @chapter.online)
+  # Check that the chapter is online or that current user can see it (creator or admin)
+  def online_chapter_or_creating_user
+    unless @chapter.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id)))
       render 'errors/access_refused' and return
     end
   end
 
-  # Vérifie que le chapitre n'est pas en ligne pour pouvoir le supprimer
-  def delete_online
+  # Check that the chapter is offline
+  def offline_chapter
     return if check_online_object(@chapter)
   end
 
-  # Vérifie avant de mettre en ligne que les prérequis sont en ligne
+  # Check that the prerequisites are online
   def prerequisites_online
     @chapter.prerequisites.each do |p|
       if !p.online
         flash[:danger] = "Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne."
         redirect_to @chapter and return
       end
-    end
-    if @chapter.online
-      redirect_to @chapter and return
-    end
-  end
-  
-  def creating_user
-    unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter.id))))
-      render 'errors/access_refused' and return
     end
   end
 

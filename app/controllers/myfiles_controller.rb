@@ -1,11 +1,18 @@
 #encoding: utf-8
 class MyfilesController < ApplicationController
-  before_action :signed_in_user, only: [:index, :show, :edit]
-  before_action :signed_in_user_danger, only: [:fake_delete, :update]
-  before_action :get_myfile, only: [:show, :edit, :update]
-  before_action :get_myfile2, only: [:fake_delete]
-  before_action :root_user, only: [:fake_delete, :edit, :update, :show, :index]
+  before_action :signed_in_user, only: [:index, :show]
+  before_action :signed_in_user_danger, only: [:fake_delete]
+  before_action :root_user, only: [:fake_delete, :show, :index]
   
+  before_action :get_myfile, only: [:show]
+  before_action :get_myfile2, only: [:fake_delete]
+  
+  # Show all the files
+  def index
+    @list = Myfile.order("id DESC").paginate(:page => params[:page], :per_page => 30).includes(file_attachment: :blob).includes(:myfiletable)
+  end
+  
+  # Show one file (redirect to somewhere depending on the context)
   def show
     type = @myfile.myfiletable_type
     about = @myfile.myfiletable
@@ -27,24 +34,8 @@ class MyfilesController < ApplicationController
       redirect_to myfiles_path
     end
   end
-  
-  def edit
-  end
-  
-  def update
-    if !params["file"].nil?
-      if @myfile.update_attributes(file: params["file".to_sym])
-        flash[:success] = "C'est remplacé !"
-      else
-        flash[:danger] = "Une condition n'est pas respectée..."
-      end
-    else
-      flash[:danger] = "Pièce jointe vide."
-    end
-    redirect_to edit_myfile_path(@myfile)
-  end
 
-  # Supprimer la pièce jointe fictivement
+  # Delete fictively a file (replacing it with a fake file)
   def fake_delete
     @fakething = @myfile.fake_del
     flash[:success] = "Contenu de la pièce jointe supprimé."
@@ -78,26 +69,26 @@ class MyfilesController < ApplicationController
     end
   end
 
-  # Voir toutes les pièces jointes
-  def index
-    @list = Myfile.order("id DESC").paginate(:page => params[:page], :per_page => 30).includes(file_attachment: :blob).includes(:myfiletable)
-  end
-
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the file
   def get_myfile
     @myfile = Myfile.find_by_id(params[:id])
     return if check_nil_object(@myfile)
   end
   
+  # Get the file (v2)
   def get_myfile2
     @myfile = Myfile.find_by_id(params[:myfile_id])
     return if check_nil_object(@myfile)
   end
+  
+  ########## CHECK METHODS ##########
 
-  # Vérifie qu'on a accès à la pièce jointe
-  # Plus utilisé avec ActiveStorage mais il faudrait sûrement le rééutiliser
+  # Check we have access to the file
+  # Not used anymore with ActiveStorage, but maybe we should still use it in some way?
   #def have_access
   #  type = @myfile.myfiletable_type
   #  if type == "Subject" || type == "Message"

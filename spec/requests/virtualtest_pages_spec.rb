@@ -207,8 +207,8 @@ describe "Virtualtest pages" do
     end
     
     describe "tries visiting online virtualtest without starting it" do
-      before { visit virtualtest_path(virtualtest) } # Should redirect to virtualtests_path
-      it { should have_selector("h1", text: "Tests virtuels") }
+      before { visit virtualtest_path(virtualtest) }
+      it { should have_content(error_access_refused) }
     end
   end
   

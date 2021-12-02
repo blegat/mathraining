@@ -9,6 +9,7 @@ describe "Submission pages" do
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user, rating: 200) }
   let(:other_user) { FactoryGirl.create(:user, rating: 200) }
+  let(:other_user2) { FactoryGirl.create(:user, rating: 200) }
   let(:good_corrector) { FactoryGirl.create(:corrector) }
   let(:bad_corrector) { FactoryGirl.create(:corrector) }
   
@@ -17,6 +18,8 @@ describe "Submission pages" do
   
   let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: user, status: 0) } 
   let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user, status: 1) }
+  let!(:good_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user2, status: 2) }
+  let!(:good_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_submission, user: other_user2) }
   
   let!(:good_corrector_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: 2) }
   let!(:good_corrector_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_corrector_submission, user: good_corrector) }
@@ -66,10 +69,25 @@ describe "Submission pages" do
             click_button "Soumettre cette solution"
           end
           specify do
-            expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
-            expect(problem.submissions.order(:id).last.status).to eq(0)
+            expect(page).to have_success_message("Votre solution a bien été soumise.")
             expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
             expect(page).to have_selector("div", text: newsubmission)
+            expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
+            expect(problem.submissions.order(:id).last.status).to eq(0)
+          end
+        end
+        
+        describe "and sends new submission while one is already waiting" do # Can only be done with several tabs
+          before do
+            FactoryGirl.create(:submission, problem: problem, user: user, status: 0)
+            fill_in "MathInput", with: newsubmission
+            click_button "Soumettre cette solution"
+          end
+          specify do
+            expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
+            expect(page).to have_no_link("Nouvelle soumission")
+            expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
+            expect(problem.submissions.where(:user => user).count).to eq(1) # Only the one created by FactoryGirl 
           end
         end
         
@@ -80,54 +98,107 @@ describe "Submission pages" do
           end
           let!(:submission) { problem.submissions.order(:id).last }
           specify do
-            expect(submission.content).to eq(newsubmission)
-            expect(submission.status).to eq(-1)
+            expect(page).to have_success_message("Votre brouillon a bien été enregistré.")
             expect(page).to have_selector("h3", text: "Nouvelle soumission")
             expect(page).to have_button("Soumettre cette solution")
             expect(page).to have_button("Enregistrer le brouillon")
             expect(page).to have_button("Supprimer ce brouillon")
+            expect(submission.content).to eq(newsubmission)
+            expect(submission.status).to eq(-1)
           end
+        end
+      end
+    end
+      
+    describe "visits problem with a draft" do
+      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: -1, content: newsubmission) }
+      before { visit problem_path(problem) }
+      it do
+        should have_selector("h1", text: "Problème ##{problem.number}")
+        should have_selector("div", text: problem.statement)
+        should have_link("Reprendre le brouillon")
+      end
+      
+      describe "and visits draft page" do
+        before { click_link "Reprendre le brouillon" }
+        it do
+          should have_selector("h3", text: "Énoncé")
+          should have_selector("h3", text: "Nouvelle soumission")
+          should have_button("Soumettre cette solution")
+          should have_button("Enregistrer le brouillon")
+          should have_button("Soumettre cette solution")
+        end
           
-          specify { expect { click_button "Supprimer ce brouillon" }.to change(Submission, :count).by(-1) }
+        specify { expect { click_button "Supprimer ce brouillon" }.to change(Submission, :count).by(-1) }
           
-          describe "and updates the draft" do
-            before do
-              fill_in "MathInput", with: newsubmission2
-              click_button "Enregistrer le brouillon"
-              submission.reload
-            end
-            specify do
-              expect(submission.content).to eq(newsubmission2)
-              expect(submission.status).to eq(-1)
-              expect(page).to have_selector("h3", text: "Nouvelle soumission")
-            end
+        describe "and updates the draft" do
+          before do
+            fill_in "MathInput", with: newsubmission2
+            click_button "Enregistrer le brouillon"
+            draft_submission.reload
           end
-          
-          describe "and updates the draft for an empty draft" do
-            before do
-              fill_in "MathInput", with: ""
-              click_button "Enregistrer le brouillon"
-              submission.reload
-            end
-            specify do
-              expect(page).to have_error_message("Soumission doit être rempli")
-              expect(submission.content).to eq(newsubmission)
-              expect(submission.status).to eq(-1)
-            end
+          specify do
+            expect(page).to have_success_message("Votre brouillon a bien été enregistré.")
+            expect(page).to have_selector("h3", text: "Nouvelle soumission")
+            expect(draft_submission.content).to eq(newsubmission2)
+            expect(draft_submission.status).to eq(-1)
           end
-          
-          describe "and sends the draft as submission" do
-            before do
-              fill_in "MathInput", with: newsubmission2
-              click_button "Soumettre cette solution"
-              submission.reload
-            end
-            specify do
-              expect(submission.content).to eq(newsubmission2)
-              expect(submission.status).to eq(0)
-              expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
-              expect(page).to have_selector("div", text: newsubmission2)
-            end
+        end
+        
+        describe "and updates the draft for an empty draft" do
+          before do
+            fill_in "MathInput", with: ""
+            click_button "Enregistrer le brouillon"
+            draft_submission.reload
+          end
+          specify do
+            expect(page).to have_error_message("Soumission doit être rempli")
+            expect(draft_submission.content).to eq(newsubmission)
+            expect(draft_submission.status).to eq(-1)
+          end
+        end
+        
+        describe "and sends the draft as submission" do
+          before do
+            fill_in "MathInput", with: newsubmission2
+            click_button "Soumettre cette solution"
+            draft_submission.reload
+          end
+          specify do
+            expect(page).to have_success_message("Votre solution a bien été soumise.")
+            expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
+            expect(page).to have_selector("div", text: newsubmission2)
+            expect(draft_submission.content).to eq(newsubmission2)
+            expect(draft_submission.status).to eq(0)
+          end
+        end
+        
+        describe "and tries to update the draft of somebody else (hack)" do # Not possible without hack
+          before do
+            draft_submission.update_attribute(:user, other_user)
+            fill_in "MathInput", with: newsubmission2
+            click_button "Enregistrer le brouillon"
+            draft_submission.reload
+          end
+          specify do
+            expect(page).to have_content(error_access_refused)
+            expect(draft_submission.content).to eq(newsubmission)
+            expect(draft_submission.status).to eq(-1)
+          end
+        end
+        
+        describe "and tries to update a draft that is already sent (hack)" do # Can only be done with several tabs
+          before do
+            draft_submission.update_attribute(:status, 0)
+            fill_in "MathInput", with: newsubmission2
+            click_button "Enregistrer le brouillon"
+            draft_submission.reload
+          end
+          specify do
+            expect(page).to_not have_success_message("Votre brouillon a bien été enregistré.")
+            expect(page).to have_selector("h1", text: "Problème ##{problem.number}") # We simply redirect in this case (because it could happen)
+            expect(draft_submission.content).to eq(newsubmission)
+            expect(draft_submission.status).to eq(0)
           end
         end
       end
@@ -185,6 +256,40 @@ describe "Submission pages" do
       end
     end
     
+    describe "gives a star to a submission" do
+      before do
+        visit problem_path(problem_with_submissions, :sub => good_submission)
+        click_link "Étoiler cette solution"
+        good_submission.reload
+      end
+      specify { expect(good_submission.star).to eq(true) }
+    end
+    
+    describe "removes a star from a submission" do
+      before do
+        good_submission.update_attribute(:star, true)
+        visit problem_path(problem_with_submissions, :sub => good_submission)
+        click_link "Ne plus étoiler cette solution"
+        good_submission.reload
+      end
+      specify { expect(good_submission.star).to eq(false) }
+    end
+
+    describe "tries to give a star to a submission that he cannot see (hack)" do
+      before do
+        visit problem_path(problem_with_submissions, :sub => good_submission)
+        # Say that some admin marked the solution of the corrector as bad, in the meantime
+        good_corrector_submission.update_attribute(:status, 1)
+        good_corrector_solvedproblem.destroy
+        click_link "Étoiler cette solution"
+        good_submission.reload
+      end
+      specify do
+        expect(good_submission.star).to eq(false)
+        expect(page).to have_content(error_access_refused)
+      end
+    end
+    
     describe "visits waiting submission" do
       before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
       it do
@@ -219,21 +324,32 @@ describe "Submission pages" do
           expect(page).to have_link("0", href: allnewsub_path) # no more waiting submission
           expect(page).to have_link("Étoiler cette solution")
         end
-        
-        describe "and gives a star" do
-          before do
-            click_link "Étoiler cette solution"
-            waiting_submission.reload
-          end
-          specify { expect(waiting_submission.star).to eq(true) }
-          
-          describe "and removes the star" do
-            before do
-              click_link "Ne plus étoiler cette solution"
-              waiting_submission.reload
-            end
-            specify { expect(waiting_submission.star).to eq(false) }
-          end
+      end
+      
+      describe "and tries to accept it without any comment" do
+        before do
+          fill_in "MathInput", with: ""
+          click_button "Poster et accepter la soumission"
+          waiting_submission.reload
+        end
+        specify do
+          expect(page).to have_error_message("Commentaire doit être rempli")
+          expect(waiting_submission.status).to eq(0)
+          expect(waiting_submission.corrections.count).to eq(0)
+        end
+      end
+      
+      describe "and rejects it while another comment was posted" do
+        before do
+          FactoryGirl.create(:correction, submission: waiting_submission, user: user, content: "J'ajoute une précision")
+          fill_in "MathInput", with: newcorrection
+          click_button "Poster et refuser la soumission"
+          waiting_submission.reload
+        end
+        specify do
+          expect(page).to have_error_message("Un nouveau commentaire a été posté avant le vôtre !")
+          expect(waiting_submission.status).to eq(0)
+          expect(waiting_submission.corrections.count).to eq(1)
         end
       end
       
@@ -534,6 +650,19 @@ describe "Submission pages" do
             expect(waiting_submission_in_test.score).to eq(3)
             expect(page).to have_content("3 / 7")
           end
+        end
+      end
+      
+      describe "and corrects it without giving a score" do
+        before do
+          fill_in "MathInput", with: newcorrection
+          click_button "Poster et refuser la soumission"
+          waiting_submission_in_test.reload
+        end
+        specify do
+          expect(page).to have_error_message("Veuillez donner un score à cette solution.")
+          expect(waiting_submission_in_test.status).to eq(0)
+          expect(waiting_submission_in_test.score).to eq(-1)
         end
       end
     end

@@ -36,7 +36,6 @@ Rails.application.routes.draw do
     match '/put_online', to: 'theories#put_online', :via => [:put], as: :put_online
     match '/read', to: 'theories#read', :via => [:put], as: :read
     match '/unread', to: 'theories#unread', :via => [:put], as: :unread
-    match '/latex', to: 'theories#latex', :via => [:get], as: :latex
   end
 
   # Questions
@@ -74,7 +73,7 @@ Rails.application.routes.draw do
     # Submissions
     resources :submissions, only: [:create] do
       match '/update_intest', to: 'submissions#update_intest', :via => [:post], as: :update_intest
-      match '/update_brouillon', to: 'submissions#update_brouillon', :via => [:post], as: :update_brouillon
+      match '/update_draft', to: 'submissions#update_draft', :via => [:post], as: :update_draft
       match '/read', to: 'submissions#read', :via => [:put], as: :read
       match '/unread', to: 'submissions#unread', :via => [:put], as: :unread
       match '/star', to: 'submissions#star', :via => [:put], as: :star
@@ -192,7 +191,7 @@ Rails.application.routes.draw do
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]
   
   # Attached files
-  resources :myfiles, only: [:edit, :update, :show, :index] do
+  resources :myfiles, only: [:show, :index] do
   	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:put], as: :fake_delete
   	#member do
   	#	get :download
@@ -202,8 +201,8 @@ Rails.application.routes.draw do
   # Discussions
   resources :discussions, only: [:new, :create, :show] do
     match '/unread', to: 'discussions#unread', :via => [:put], as: :unread
+    resources :tchatmessages, only: [:create]
   end
-  resources :tchatmessages, only: [:create]
   resources :links, only: []
   
   # Names validation

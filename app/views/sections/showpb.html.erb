@@ -41,7 +41,7 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
       <% num_correct_sub = num_sub_by_problem_and_status[[p.id, 2]] unless current_user.sk.admin? %>
       <% num_correct_sub = 0 if num_correct_sub.nil? %>
 
-      <% num_brouillons = 0 %>
+      <% num_drafts = 0 %>
 
       <% classe = "" %>
       <!-- Si déjà résolu : vert -->
@@ -64,8 +64,8 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
         
         <% num_waiting_sub = num_sub_by_problem_and_status[[p.id, 0]] unless current_user.sk.admin? %>
         <% num_waiting_sub = 0 if num_waiting_sub.nil? %>
-        <% num_brouillons = num_sub_by_problem_and_status[[p.id, -1]] unless current_user.sk.admin? %>
-        <% num_brouillons = 0 if num_brouillons.nil? %>
+        <% num_drafts = num_sub_by_problem_and_status[[p.id, -1]] unless current_user.sk.admin? %>
+        <% num_drafts = 0 if num_drafts.nil? %>
 
         <!-- Si aucune soumission (ou admin) : jaune -->
         <% if current_user.sk.admin? || num_waiting_sub + num_incorrect_sub == 0 %>
@@ -94,7 +94,7 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
       
       <tr><td class="real-content">
       
-      <% if num_brouillons > 0 %>
+      <% if num_drafts > 0 %>
         <div class="intro">
         <i>(Vous avez un brouillon enregistré pour ce problème.)</i>
         </div>

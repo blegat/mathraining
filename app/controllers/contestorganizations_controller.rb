@@ -2,26 +2,27 @@
 class ContestorganizationsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :destroy]
   before_action :admin_user, only: [:create, :destroy]
+  
   before_action :get_contestorganization, only: [:destroy]
 
-  # Ajouter un organisateur
+  # Add an organizer to a contest
   def create
     contestorganization = Contestorganization.create(params.require(:contestorganization).permit(:contest_id, :user_id))
-    contest = Contest.find(params[:contestorganization][:contest_id])
-    redirect_to contest
+    redirect_to contest_path(contestorganization.contest)
   end
 
-  # Supprimer un organisateur
+  # Delete an organizer of a contest
   def destroy
     contest = @contestorganization.contest
     @contestorganization.destroy
     redirect_to contest_path(contest)
   end
 
-  ########## PARTIE PRIVEE ##########
   private
+  
+  ########## GET METHODS ##########
 
-  # On récupère
+  # Get an organizer of a contest
   def get_contestorganization
     @contestorganization = Contestorganization.find_by_id(params[:id])
     return if check_nil_object(@contestorganization)

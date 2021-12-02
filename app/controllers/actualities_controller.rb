@@ -3,18 +3,19 @@ class ActualitiesController < ApplicationController
   before_action :signed_in_user, only: [:edit, :new]
   before_action :signed_in_user_danger, only: [:destroy, :update, :create]
   before_action :admin_user, only: [:destroy, :update, :edit, :new, :create]
+  
   before_action :get_actuality, only: [:edit, :update, :destroy]
 
-  # Création d'une actualité : que pour les admins
+  # Create an actuality (show the form)
   def new
     @actuality = Actuality.new
   end
 
-  # Editer une actualité : que pour les admins
+  # Update an actuality (show the form)
   def edit
   end
   
-  # Création d'une actualité 2 : que pour les admins
+  # Create an actuality (send the form)
   def create
     @actuality = Actuality.create(params.require(:actuality).permit(:title, :content))
     if @actuality.save
@@ -25,7 +26,7 @@ class ActualitiesController < ApplicationController
     end
   end
 
-  # Editer une actualité 2 : que pour les admins
+  # Update an actuality (send the form)
   def update
     if @actuality.update_attributes(params.require(:actuality).permit(:title, :content))
       flash[:success] = "Actualité modifiée."
@@ -35,16 +36,18 @@ class ActualitiesController < ApplicationController
     end
   end
 
-  # Supprimer une actualité : que pour les admins
+  # Deletes an actuality
   def destroy
     @actuality.destroy
     flash[:success] = "Actualité supprimée."
     redirect_to root_path
   end
   
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the actuality
   def get_actuality
     @actuality = Actuality.find_by_id(params[:id])
     return if check_nil_object(@actuality)

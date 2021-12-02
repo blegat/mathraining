@@ -3,15 +3,18 @@ class PrivacypoliciesController < ApplicationController
   before_action :signed_in_user, only: [:index, :edit, :edit_description]
   before_action :signed_in_user_danger, only: [:new, :update, :update_description, :destroy, :put_online]
   before_action :root_user, only: [:index, :new, :edit, :update, :destroy, :put_online]
+  
   before_action :get_policy, only: [:show, :edit, :update, :destroy]
   before_action :get_policy2, only: [:edit_description, :put_online]
+  
   before_action :is_offline, only: [:edit, :destroy, :put_online]
   before_action :is_online, only: [:show]
   
+  # Show all privacy policies
   def index
   end
 
-  # Voir la dernière politique de confidentialité
+  # Show the last privacy policy
   def last_policy
     @last_policy = Privacypolicy.where(:online => true).order(:publication_time).last
     if @last_policy.nil?
@@ -22,35 +25,26 @@ class PrivacypoliciesController < ApplicationController
     end
   end
   
-  # Voir une version de la politique de confidentialité
+  # Show one privacy policy
   def show
   end
 
-  # Créer une politique de confidentialité
+  # Create a privacy policy (automatic from the last one)
   def new
-    @privacypolicy = Privacypolicy.new
-    @privacypolicy.publication_time = DateTime.now
-    @privacypolicy.online = false
-    @privacypolicy.description = " - À écrire - "
-    @last_policy = Privacypolicy.where(:online => true).order(:publication_time).last
-    if !@last_policy.nil?
-      @privacypolicy.content = @last_policy.content
-    else
-      @privacypolicy.content = @privacypolicy.description
-    end
-    @privacypolicy.save
+    last_policy = Privacypolicy.where(:online => true).order(:publication_time).last
+    Privacypolicy.create(:publication_time => DateTime.now, :online => false, :description => " - À écrire - ", :content => (!last_policy.nil? ? last_policy.content : " - À écrire - "))
     redirect_to privacypolicies_path
   end
 
-  # Editer une politique de confidentialité : doit être hors ligne
+  # Update a privacy policy (show the form)
   def edit
   end
   
-  # Editer la description d'une politique de confidentialité (peut être en ligne)
+  # Update the description of a privacy policy (show the form)
   def edit_description
   end
 
-  # Editer une politique de confidentialité 2 : soit le contenu soit la description
+  # Update a privacy policy or its description (send the form)
   def update
     if @privacypolicy.update_attributes(params.require(:privacypolicy).permit(:description, :content))
       flash[:success] = "Modification enregistrée."
@@ -64,14 +58,14 @@ class PrivacypoliciesController < ApplicationController
     end
   end
   
-  # Supprimer une politique de confidentialité : doit être hors-ligne
+  # Delete a privacy policy
   def destroy
     @privacypolicy.destroy
     flash[:success] = "Politique de confidentialité supprimée."
     redirect_to privacypolicies_path
   end
 
-  # Mettre en ligne : doit être hors-ligne
+  # Put a privacy policy online
   def put_online
     @privacypolicy.online = true
     @privacypolicy.publication_time = DateTime.now
@@ -83,25 +77,30 @@ class PrivacypoliciesController < ApplicationController
     redirect_to @privacypolicy
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the privacy policy
   def get_policy
     @privacypolicy = Privacypolicy.find_by_id(params[:id])
     return if check_nil_object(@privacypolicy)
   end
   
+  # Get the privacy policy (v2)
   def get_policy2
     @privacypolicy = Privacypolicy.find_by_id(params[:privacypolicy_id])
     return if check_nil_object(@privacypolicy)
   end
   
-  # Vérifie que la politique de confidentialité est hors-ligne
+  ########## CHECK METHODS ##########
+  
+  # Check that the privacy policy is offline
   def is_offline
     return if check_online_object(@privacypolicy)
   end
   
-  # Vérifie que la politique de confidentialité est en ligne
+  # Check that the privacy policy is online
   def is_online
     return if check_offline_object(@privacypolicy)
   end

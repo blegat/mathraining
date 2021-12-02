@@ -3,12 +3,14 @@ class ColorsController < ApplicationController
   before_action :signed_in_user, only: [:index]
   before_action :signed_in_user_danger, only: [:destroy, :update, :create]
   before_action :root_user
+  
   before_action :get_color, only: [:update, :destroy]
   
+  # Show all colors (with fields and links to modify them)
   def index
   end
 
-  # Créer un niveau
+  # Create a color (send the form)
   def create
     @color = Color.new(params.require(:color).permit(:pt, :name, :femininename, :color))
     if @color.save
@@ -19,7 +21,7 @@ class ColorsController < ApplicationController
     redirect_to colors_path
   end
 
-  # Modifier un niveau
+  # Update a color (send the form)
   def update
     if @color.update_attributes(params.require(:color).permit(:pt, :name, :femininename, :color))
       flash[:success] = "Niveau et couleur modifiés."
@@ -29,16 +31,18 @@ class ColorsController < ApplicationController
     redirect_to colors_path
   end
 
-  # Supprimer un niveau
+  # Delete a color
   def destroy
     @color.destroy
     flash[:success] = "Niveau et couleur supprimés."
     redirect_to colors_path
   end
   
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the color
   def get_color
     @color = Color.find_by_id(params[:id])
     return if check_nil_object(@color)

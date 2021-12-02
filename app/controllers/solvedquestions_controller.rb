@@ -1,53 +1,107 @@
 #encoding: utf-8
 class SolvedquestionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update]
+  
   before_action :get_question, only: [:create, :update]
-  before_action :before_create, only: [:create]
-  before_action :before_update, only: [:update]
-  before_action :waiting_time, only: [:update]
-  before_action :online_chapter
+  
+  before_action :first_try, only: [:create]
+  before_action :not_first_try_not_solved, only: [:update]
+  before_action :waited_enough_time, only: [:update]
+  before_action :online_chapter_or_admin
   before_action :unlocked_chapter
 
-  # On tente de résoudre une question (pour la première fois)
+  # Try to solve a question (first time)
   def create
-    @link = Solvedquestion.new
-    @link.user = current_user.sk
-    @link.question = @question
+    @solvedquestion = Solvedquestion.new
+    @solvedquestion.user = current_user.sk
+    @solvedquestion.question = @question
     
     if check_answer(true)
       @question.nb_tries = @question.nb_tries+1
-      if @link.correct
+      if @solvedquestion.correct
         @question.nb_first_guesses = @question.nb_first_guesses+1
       end
       @question.save
       
-      # On augmente chapter.nb_tries si c'est le premier exercice essayé
+      # We update chapter.nb_tries if it is the first question that this user tries
       already = false
-      chapter = @question.chapter
-      chapter.questions.where("id != ?", @question.id).each do |q|
+      @chapter.questions.where("id != ?", @question.id).each do |q|
         already = true if(Solvedquestion.where(:user => current_user.sk, :question => q).count > 0)
       end
       
       unless already
-        chapter.nb_tries = chapter.nb_tries+1
-        chapter.save
+        @chapter.nb_tries = @chapter.nb_tries+1
+        @chapter.save
       end
 
-      redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     end
   end
 
-  # On tente de résoudre un exercice une nouvelle fois
+  # Try to solve a question (next times)
   def update    
     if check_answer(false)
-      redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     end
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
-  # Retourne la différence (en valeur absolue) entre a et b
+  ########## GET METHODS ##########
+  
+  # Get the question
+  def get_question
+    @question = Question.find_by_id(params[:question_id])
+    return if check_nil_object(@question)
+    @chapter = @question.chapter
+  end
+  
+  ########## CHECK METHODS ##########
+
+  # Check that this is the first try of current user
+  def first_try
+    previous = Solvedquestion.where(:question_id => @question, :user_id => current_user.sk).count
+    if previous > 0
+      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+    end
+  end
+  
+  # Check that this is not the first try of current user and that he did not solve the question already
+  def not_first_try_not_solved
+    @solvedquestion = Solvedquestion.where(:user => current_user.sk, :question => @question).first
+    if @solvedquestion.nil? || @solvedquestion.correct
+      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+    end
+  end
+  
+  # Check that current user waited enough (if needed) before trying again
+  def waited_enough_time
+    if @solvedquestion.nb_guess >= 3 && DateTime.now < @solvedquestion.updated_at + 175
+      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+    end
+  end
+
+  # Check that the chapter is online or that current user is admin
+  def online_chapter_or_admin
+    if !@chapter.online && !current_user.sk.admin?
+      render 'errors/access_refused' and return
+    end
+  end
+
+  # Check that the prerequisites of the chapter have been completed
+  def unlocked_chapter
+    if !current_user.sk.admin?
+      @chapter.prerequisites.each do |p|
+        if (!p.section.fondation && !current_user.sk.chapters.exists?(p.id))
+          render 'errors/access_refused' and return
+        end
+      end
+    end
+  end
+  
+  ########## HELPER METHODS ##########
+  
+  # Helper method to get absolute difference between two numbers
   def absolu(a, b)
     if a > b
       return a-b
@@ -56,61 +110,15 @@ class SolvedquestionsController < ApplicationController
     end
   end
   
-  def get_question
-    @question = Question.find_by_id(params[:question_id])
-    if @question.nil?
-      render 'errors/access_refused' and return
-    end
-    @chapter = @question.chapter
-  end
-
-  # On récupère l'exercice et le chapitre  
-  def before_create
-    previous = Solvedquestion.where(:question_id => @question, :user_id => current_user.sk).count
-    if previous > 0
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
-    end
-  end
-  
-  def before_update
-    @link = Solvedquestion.where(:user => current_user.sk, :question => @question).first
-    if @link.nil? || @link.correct
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
-    end
-  end
-  
-  def waiting_time
-    if @link.nb_guess >= 3 && DateTime.now < @link.updated_at + 175
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
-    end
-  end
-
-  # Il faut que le chapitre soit en ligne
-  def online_chapter
-    redirect_to root_path unless (current_user.sk.admin? || @chapter.online)
-  end
-
-  # Il faut qu'on puisse faire les exercices
-  def unlocked_chapter
-    if !current_user.sk.admin?
-      @chapter.prerequisites.each do |p|
-        if (!p.section.fondation && !current_user.sk.chapters.exists?(p.id))
-          redirect_to root_path and return
-        end
-      end
-    end
-  end
-  
-  def check_answer(first_sub)
+  # Helper method to check if the given answer is correct
+  def check_answer(first_sub) # QCM
     if @question.is_qcm
-      # QCM
-      @link.guess = 0.0
-      @link.nb_guess = (first_sub ? 1 : @link.nb_guess + 1)
+      @solvedquestion.guess = 0.0
+      @solvedquestion.nb_guess = (first_sub ? 1 : @solvedquestion.nb_guess + 1)
       good_guess = true
       autre = first_sub
-      @link.resolution_time = DateTime.now
-      if @question.many_answers
-        # Plusieurs reponses possibles
+      @solvedquestion.resolution_time = DateTime.now
+      if @question.many_answers # Many answers possible
         if params[:ans]
           answer = params[:ans]
         else
@@ -118,120 +126,106 @@ class SolvedquestionsController < ApplicationController
         end
 
         @question.items.each do |c|
-          if answer[c.id.to_s]
-            # Répondu vrai
+          if answer[c.id.to_s] # Answered "true"
             if !c.ok
               good_guess = false
             end
-            if !first_sub && !@link.items.exists?(c.id)
+            if !first_sub && !@solvedquestion.items.exists?(c.id)
               autre = true
             end
-          else
-            # Répondu faux
+          else # Answered "false"
             if c.ok
               good_guess = false
             end
-            if !first_sub && @link.items.exists?(c.id)
+            if !first_sub && @solvedquestion.items.exists?(c.id)
               autre = true
             end
           end
         end
 
-        # Il s'agit de la même réponse que la précédente : on ne la compte pas
+        # If the same answer as the previous one: we don't count it
         if !autre
-          redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id)
+          redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
           return false
         end
 
-        if good_guess
-          # Correct
-          @link.correct = true
-          @link.save
-          @link.items.clear
-        else
-          # Incorrect
-          @link.correct = false
-          @link.save
-          @link.items.clear
+        if good_guess # Correct
+          @solvedquestion.correct = true
+          @solvedquestion.save
+          @solvedquestion.items.clear
+        else # Incorrect
+          @solvedquestion.correct = false
+          @solvedquestion.save
+          @solvedquestion.items.clear
           @question.items.each do |c|
             if answer[c.id.to_s]
-              @link.items << c
+              @solvedquestion.items << c
             end
           end
         end
 
-      else
-        # Reponse unique
+      else # Unique answer
         if !params[:ans]
           flash[:danger] = "Veuillez cocher une réponse."
-          redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id)
+          redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
           return false
         end
         
-        # Il s'agit de la même réponse que la précédente : on ne la compte pas
-        if !first_sub && params[:ans].to_i == @link.items.first.id
-          redirect_to chapter_path(@question.chapter, :type => 5, :which => @question.id)
+        # If the same answer as the previous one: we don't count it
+        if !first_sub && params[:ans].to_i == @solvedquestion.items.first.id
+          redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
           return false
         end
         
         rep = @question.items.where(:ok => true).first
 
         if rep.id == params[:ans].to_i
-          @link.correct = true
-          @link.save
-          @link.items.clear
+          @solvedquestion.correct = true
+          @solvedquestion.save
+          @solvedquestion.items.clear
         else
-          @link.correct = false
-          @link.save
+          @solvedquestion.correct = false
+          @solvedquestion.save
             
           item = Item.find_by_id(params[:ans])
-          @link.items.clear
-          @link.items << item
+          @solvedquestion.items.clear
+          @solvedquestion.items << item
         end
       end
-    else
-      # EXO
+    else # EXERCISE
       if @question.decimal
         guess = params[:solvedquestion][:guess].gsub(",",".").gsub(" ","").to_f # Replace "," by "." and remove possible white space after comma
       else
         guess = params[:solvedquestion][:guess].to_i
       end
-      if first_sub || @link.guess != guess
-        @link.nb_guess = (first_sub ? 1 : @link.nb_guess + 1)
-        @link.guess = guess
-        @link.resolution_time = DateTime.now
+      if first_sub || @solvedquestion.guess != guess
+        @solvedquestion.nb_guess = (first_sub ? 1 : @solvedquestion.nb_guess + 1)
+        @solvedquestion.guess = guess
+        @solvedquestion.resolution_time = DateTime.now
 
         if @question.decimal
-          if absolu(@question.answer, guess) < 0.001
-            @link.correct = true
-          else
-            @link.correct = false
-          end
+          @solvedquestion.correct = (absolu(@question.answer, guess) < 0.001)
         else
-          if @question.answer.to_i == guess
-            @link.correct = true
-          else
-            @link.correct = false
-          end
+          @solvedquestion.correct = (@question.answer.to_i == guess)
         end
-        @link.save
+        @solvedquestion.save
       end
     end
 
-    if @link.correct
+    if @solvedquestion.correct
       point_attribution(current_user.sk, @question)
     end
     
     return true
   end
 
-  # Attribution des points pour un exercice
+  # Helper method to give points of a question to a user
   def point_attribution(user, question)
     pt = question.value
 
     partials = user.pointspersections
 
-    if !question.chapter.section.fondation # Pas un fondement
+    if !question.chapter.section.fondation
       user.rating = user.rating + pt
       user.save
     end

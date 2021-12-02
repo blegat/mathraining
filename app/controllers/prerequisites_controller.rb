@@ -4,11 +4,11 @@ class PrerequisitesController < ApplicationController
   before_action :signed_in_user_danger, only: [:add_prerequisite, :remove_prerequisite]
   before_action :admin_user
 
-  # Graphe des prérequis
+  # Show the graph of prerequisites
   def graph_prerequisites
   end
 
-  # Ajouter un prérequis
+  # Add one prerequisite to a chapter
   def add_prerequisite
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])
@@ -30,21 +30,17 @@ class PrerequisitesController < ApplicationController
       redirect_to graph_prerequisites_path and return
     end
     
-    pre = Prerequisite.new
-    pre.chapter = chapter
-    pre.prerequisite = prerequisite
+    pre = Prerequisite.new(:chapter => chapter, :prerequisite => prerequisite)
     if pre.save
       flash[:success] = "Lien ajouté."
       redirect_to graph_prerequisites_path
-      # Sinon @chapter.available_prerequsites
-      # ne prend pas en compte les nouveaux changements
     else
       flash[:danger] = error_list_for(pre)
       redirect_to graph_prerequisites_path
     end
   end
 
-  # Supprimer un prérequis
+  # Remove one prerequisite of a chapter
   def remove_prerequisite
     chapter = Chapter.find_by_id(params[:prerequisite][:chapter_id])
     prerequisite = Chapter.find_by_id(params[:prerequisite][:prerequisite_id])

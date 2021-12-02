@@ -1,12 +1,14 @@
 #encoding: utf-8
 class ContestcorrectionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:update]
+  
   before_action :get_contestcorrection, only: [:update]
-  before_action :is_organizer, only: [:update]
+  
+  before_action :organizer_of_contest, only: [:update]
   before_action :can_update_correction, only: [:update]
   before_action :has_reserved, only: [:update]
 
-  # Modifier une correction
+  # Update a correction (send the form)
   def update  
     if @send_solution == 1 # Not normal
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
@@ -16,13 +18,10 @@ class ContestcorrectionsController < ApplicationController
     @contestcorrection.content = params[:contestcorrection][:content]
     if @contestcorrection.valid?
     
-      # Pièces jointes
-      @error = false
+      # Attached files
       @error_message = ""
-      
-      update_files(@contestcorrection) # Fonction commune pour toutes les pièces jointes
-
-      if @error
+      update_files(@contestcorrection)
+      if !@error_message.empty?
         flash[:danger] = @error_message
         session[:ancientexte] = params[:contestcorrection][:content]
         redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution) and return
@@ -88,9 +87,11 @@ class ContestcorrectionsController < ApplicationController
     end
   end
 
-  ########## PARTIE PRIVEE ##########
   private
+  
+  ########## GET METHODS ##########
 
+  # Get the correction
   def get_contestcorrection
     @contestcorrection = Contestcorrection.find_by_id(params[:id])
     return if check_nil_object(@contestcorrection)
@@ -99,12 +100,9 @@ class ContestcorrectionsController < ApplicationController
     @contest = @contestproblem.contest
   end
   
-  def is_organizer
-    if !@contest.is_organized_by(current_user)
-      render 'errors/access_refused' and return
-    end
-  end
+  ########## CHECK METHODS ##########
   
+  # Check that the correction can be updated
   def can_update_correction
     if @contestproblem.status != 3 && @contestproblem.status != 5 && !@contestsolution.official
       flash[:danger] = "Vous ne pouvez pas modifier cette correction."
@@ -112,6 +110,7 @@ class ContestcorrectionsController < ApplicationController
     end
   end
   
+  # Check that current user has reserved the solution
   def has_reserved
     if @contestsolution.reservation != current_user.sk.id
       flash[:danger] = "Vous n'avez pas réservé."

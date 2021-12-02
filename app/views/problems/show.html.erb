@@ -171,11 +171,11 @@
     <%= render 'submissions/index', problem: @problem %>
 
     <!-- Si pas encore résolu le problème -->
-    <% @brouillon = false %>
+    <% @draft = false %>
     <% unless (@resolu || !@cansendnewsub) %>
-      <% @brouillon = true if @problem.submissions.where('user_id = ? AND status < 0', current_user.sk).count > 0 %>
+      <% @draft = true if @problem.submissions.where('user_id = ? AND status < 0', current_user.sk).count > 0 %>
       <% if soumission != 0 %>
-        <% if !@brouillon %>
+        <% if !@draft %>
           <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-default btn-grey" %>
         <% else %>
           <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-default btn-grey" %>
@@ -207,10 +207,10 @@
   <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
   <% unless (@resolu || !@cansendnewsub) %>
     <hr>
-    <% if !@brouillon %>
+    <% if !@draft %>
       <%= render 'submissions/new', problem: @problem %>
     <% else %>
-      <%= render 'submissions/newbrouillon', problem: @problem %>
+      <%= render 'submissions/newdraft', problem: @problem %>
     <% end %>
   <% end %>
 

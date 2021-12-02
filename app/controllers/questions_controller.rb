@@ -2,14 +2,16 @@
 class QuestionsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :explanation]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_item, :add_item, :switch_item, :update_item, :order_minus, :order_plus, :put_online, :update_explanation, :up_item, :down_item]
-  before_action :get_chapter, only: [:new, :create]
+  
   before_action :get_question, only: [:edit, :update, :destroy]
   before_action :get_question2, only: [:manage_items, :remove_item, :add_item, :switch_item, :up_item, :down_item, :update_item, :order_minus, :order_plus, :put_online, :explanation, :update_explanation]
-  before_action :creating_user
+  before_action :get_chapter, only: [:new, :create]
   before_action :get_item, only: [:remove_item, :switch_item, :up_item, :down_item, :update_item]
+  
+  before_action :user_that_can_update_chapter
   before_action :offline_question, only: [:add_item, :remove_item, :destroy]
 
-  # Créer une question
+  # Create a question (show the form)
   def new
     @question = Question.new
     if params[:qcm] == '1'
@@ -17,20 +19,16 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # Editer une question
+  # Update a question (show the form)
   def edit
     if !@question.decimal
       @question.answer = @question.answer.to_i
     end
   end
 
-  # Créer une question 2
+  # Create a question (send the form)
   def create
-    @question = Question.new
-    @question.online = false
-    @question.chapter = @chapter
-    @question.statement = params[:question][:statement]
-    @question.level = params[:question][:level]
+    @question = Question.new(:online => false, :chapter => @chapter, :statement => params[:question][:statement], :level => params[:question][:level])
     if @chapter.section.fondation?
       @question.level = 0
     end
@@ -71,7 +69,7 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # Editer un exercice 2
+  # Update a question (send the form)
   def update
     @question.statement = params[:question][:statement]
     unless @question.online
@@ -86,7 +84,7 @@ class QuestionsController < ApplicationController
           if @question.many_answers
             # Must check there is only one true
             i = 0
-            @question.items.each do |c|
+            @question.items.order(:id).each do |c|
               if c.ok
                 if i > 0
                   c.ok = false
@@ -99,7 +97,7 @@ class QuestionsController < ApplicationController
             if @question.items.count > 0 && i == 0
               # There is no good answer
               flash[:info] = "Attention, il n'y avait aucune réponse correcte à cet exercice, une réponse correcte a été rajoutée aléatoirement."
-              @item = @question.items.first
+              @item = @question.items.order(:id).first
               @item.ok = true
               @item.save
             end
@@ -124,18 +122,18 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # Supprimer un exercice (plus possible si en ligne)
+  # Delete a question
   def destroy
     @question.destroy
     flash[:success] = "Exercice supprimé."
     redirect_to @chapter
   end
 
-  # Page pour modifier les choix
+  # Show page to manage items of a qcm
   def manage_items
   end
 
-  # Supprimer un choix
+  # Delete an item of a qcm
   def remove_item
     if !@question.many_answers && @item.ok && @question.items.count > 1
       # No more good answer
@@ -151,7 +149,7 @@ class QuestionsController < ApplicationController
     redirect_to question_manage_items_path(params[:question_id])
   end
 
-  # Ajouter un choix
+  # Add an item to a qcm
   def add_item
     @item = Item.new
     @item.question_id = params[:question_id]
@@ -185,7 +183,7 @@ class QuestionsController < ApplicationController
     redirect_to question_manage_items_path(@question)
   end
 
-  # Modifier la véracité d'un choix
+  # Toggle the truth of an item
   def switch_item
     if !@question.many_answers
       @question.items.each do |f|
@@ -202,17 +200,17 @@ class QuestionsController < ApplicationController
     redirect_to question_manage_items_path(@question)
   end
   
-  # Déplacer un choix vers le haut
+  # Move an item up
   def up_item 
     order_op2(true, @item)
   end
   
-  # Déplacer un choix vers le bas
+  # Move an item down
   def down_item
     order_op2(false, @item)
   end
 
-  # Modifier un choix
+  # Update an item
   def update_item
     @item.ans = params[:item][:ans]
     if @item.save
@@ -223,17 +221,17 @@ class QuestionsController < ApplicationController
     redirect_to question_manage_items_path(@question)
   end
 
-  # Déplacer
+  # Move a question up
   def order_minus
     order_op(true, @question)
   end
 
-  # Déplacer
+  # Move a question down
   def order_plus
     order_op(false, @question)
   end
 
-  # Mettre en ligne
+  # Put a question online
   def put_online
     @question.online = true
     @question.save
@@ -243,11 +241,11 @@ class QuestionsController < ApplicationController
     redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
   end
 
-  # Modifier l'explication
+  # Update the explanation of a question (show the form)
   def explanation
   end
 
-  # Modifier l'explication 2
+  # Update the explanation of a question (send the form)
   def update_explanation
     @question.explanation = params[:question][:explanation]
     if @question.save
@@ -258,37 +256,46 @@ class QuestionsController < ApplicationController
     end
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
-  def get_chapter
-    @chapter = Chapter.find_by_id(params[:chapter_id])
-    return if check_nil_object(@chapter)
-  end
+  ########## GET METHODS ##########
   
+  # Get the question
   def get_question
     @question = Question.find_by_id(params[:id])
     return if check_nil_object(@question)
     @chapter = @question.chapter
   end
   
+  # Get the question (v2)
   def get_question2
     @question = Question.find_by_id(params[:question_id])
     return if check_nil_object(@question)
     @chapter = @question.chapter
   end
   
+  # Get the chapter
+  def get_chapter
+    @chapter = Chapter.find_by_id(params[:chapter_id])
+    return if check_nil_object(@chapter)
+  end
+  
+  # Get the item
   def get_item
     @item = Item.find_by_id(params[:id])
     return if check_nil_object(@item)
   end
+  
+  ########## CHECK METHODS ##########
 
-  # Vérifie que l'exercice n'est pas en ligne
+  # Check that the question is offline
   def offline_question
     return if check_online_object(@question)
   end
   
-  # Modification de l'ordre des exercices
+  ########## HELPER METHODS ##########
+  
+  # Helper method to move one question up or down
   def order_op(haut, question)
     if haut
       sign = '<'
@@ -305,13 +312,11 @@ class QuestionsController < ApplicationController
       end
       swap_position(question, question2)
       flash[:success] = "Exercice déplacé vers le #{name}."
-    else
-      flash[:info] = "Exercice déjà le plus #{name} possible."
     end
     redirect_to chapter_path(question.chapter, :type => 5, :which => question.id)
   end
   
-  # Modification de l'ordre des choix d'un QCM
+  # Helper method to move one item up or down
   def order_op2(haut, item)
     if haut
       sign = '<'
@@ -328,15 +333,8 @@ class QuestionsController < ApplicationController
       end
       swap_position(item, item2)
       flash[:success] = "Choix déplacé vers le #{name}."
-    else
-      flash[:info] = "Choix déjà le plus #{name} possible."
     end
     redirect_to question_manage_items_path(params[:question_id])
   end
   
-  def creating_user
-    unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter))))
-      render 'errors/access_refused' and return
-    end
-  end
 end

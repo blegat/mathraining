@@ -2,10 +2,13 @@
 class DiscussionsController < ApplicationController
   before_action :signed_in_user, only: [:show, :new]
   before_action :signed_in_user_danger, only: [:create, :unread]
+  
   before_action :get_discussion, only: [:show]
   before_action :get_discussion2, only: [:unread]
+  
   before_action :is_involved, only: [:show, :unread]
 
+  # Show 10 messages of a discussion (in html or js)
   def show
     nb_mes = 10
     page = 1
@@ -21,6 +24,7 @@ class DiscussionsController < ApplicationController
     end
   end
 
+  # Create a discussion (show the form)
   def new
     if (params.has_key?:qui)
       other = User.find_by_id(params[:qui].to_i)
@@ -33,6 +37,7 @@ class DiscussionsController < ApplicationController
     @discussion = Discussion.new
   end
 
+  # Create a discussion (send the form)
   def create
     params[:content].strip! if !params[:content].nil?
     if params[:destinataire].to_i == 0
@@ -89,7 +94,7 @@ class DiscussionsController < ApplicationController
     end
   end
   
-  # Marquer comme non lu
+  # Mark a discussion as unread
   def unread
     l = current_user.sk.links.where(:discussion_id => @discussion.id).first
     l.nonread = l.nonread + 1
@@ -97,19 +102,25 @@ class DiscussionsController < ApplicationController
     redirect_to new_discussion_path
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the discussion
   def get_discussion
     @discussion = Discussion.find_by_id(params[:id])
     return if check_nil_object(@discussion)
   end
   
+  # Get the discussion (v2)
   def get_discussion2
     @discussion = Discussion.find_by_id(params[:discussion_id])
     return if check_nil_object(@discussion)
   end
+  
+  ########## CHECK METHODS ##########
 
+  # Check that current user is involved in the discussion
   def is_involved
     if !current_user.sk.discussions.include?(@discussion)
       render 'errors/access_refused' and return
@@ -119,43 +130,33 @@ class DiscussionsController < ApplicationController
     end
   end
   
+  ########## HELPER METHODS ##########
+  
+  # Helper method to get the discussion between two users (if any)
   def get_discussion_between(x, y)
     return Discussion.joins("INNER JOIN links a ON discussions.id = a.discussion_id").joins("INNER JOIN links b ON discussions.id = b.discussion_id").where("a.user_id" => x, "b.user_id" => y).first
   end
 
+  # Helper method to send a message in the discussion
   def send_message
-    @tchatmessage = Tchatmessage.new()
-    @tchatmessage.content = @content
-    @tchatmessage.user = current_user.sk
-    @tchatmessage.discussion = @discussion
+    @tchatmessage = Tchatmessage.new(:content => @content, :user => current_user.sk, :discussion => @discussion)
     @erreur = false
 
-    # Pièces jointes
-    @error = false
+    # Attached files
     @error_message = ""
-
-    attach = create_files # Fonction commune pour toutes les pièces jointes
-
-    if @error
+    attach = create_files
+    if !@error_message.empty?
       flash[:danger] = @error_message
       session[:ancientexte] = @content
       @erreur = true
       return
     end
 
-    # Si le message a bien été sauvé
     if @tchatmessage.save
-
-      # On enregistre les pièces jointes
-      j = 1
-      while j < attach.size()+1 do
-        attach[j-1].update_attribute(:myfiletable, @tchatmessage)
-        attach[j-1].save
-        j = j+1
-      end
+      attach_files(attach, @tchatmessage)
     else
       @erreur = true
-      destroy_files(attach, attach.size()+1)
+      destroy_files(attach)
       session[:ancientexte] = @content
       flash[:danger] = error_list_for(@tchatmessage)
       return

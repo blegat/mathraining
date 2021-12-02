@@ -3,18 +3,19 @@ class ProblemsController < ApplicationController
   before_action :signed_in_user, only: [:show, :edit, :new, :explanation, :markscheme]
   before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order_minus, :order_plus, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  
   before_action :get_problem, only: [:edit, :update, :show, :destroy]
   before_action :get_problem2, only: [:explanation, :update_explanation, :markscheme, :update_markscheme, :order_minus, :order_plus, :delete_prerequisite, :add_prerequisite, :add_virtualtest, :put_online]
   before_action :get_section, only: [:new, :create]
-  before_action :offline_problem, only: [:destroy]
-  before_action :has_access, only: [:show]
-  before_action :online_problem, only: [:show]
+  
+  before_action :offline_problem, only: [:destroy, :put_online]
+  before_action :user_that_can_see_problem, only: [:show]
+  before_action :online_problem_or_admin, only: [:show]
   before_action :can_be_online, only: [:put_online]
-  before_action :enough_points, only: [:show]
 
-  # Voir le problème : il faut avoir accès
+  # Show one problem
   def show
-    if params.has_key?("auto")
+    if params.has_key?("auto") # Automatically show the correct submission of current user, if any
       s = current_user.sk.solvedproblems.where(:problem_id => @problem).first
       if s.nil?
         redirect_to problem_path(@problem)
@@ -24,21 +25,18 @@ class ProblemsController < ApplicationController
     end
   end
 
-  # Créer un problème : il faut être admin
+  # Create a problem (show the form)
   def new
     @problem = Problem.new
   end
 
-  # Editer un problème : il faut être admin
+  # Update a problem (show the form)
   def edit
   end
 
-  # Créer un problème 2 : il faut être admin
+  # Create a problem (send the form)
   def create
-    @problem = Problem.new
-    @problem.statement = params[:problem][:statement]
-    @problem.origin = params[:problem][:origin]
-    @problem.level = params[:problem][:level]
+    @problem = Problem.new(params.require(:problem).permit(:statement, :origin, :level))
     @problem.online = false
     @problem.section = @section
 
@@ -58,7 +56,7 @@ class ProblemsController < ApplicationController
     end
   end
 
-  # Editer un problème 2 : il faut être admin
+  # Update a problem (send the form)
   def update
     @problem.statement = params[:problem][:statement]
     @problem.origin = params[:problem][:origin]
@@ -82,14 +80,14 @@ class ProblemsController < ApplicationController
     end
   end
 
-  # Supprimer un problème : seulement si hors-ligne, et il faut être admin
+  # Delete a problem
   def destroy
     @problem.destroy
     flash[:success] = "Problème supprimé."
     redirect_to pb_sections_path(@problem.section)
   end
 
-  # Mettre un problème en ligne : il faut qu'il puisse l'être
+  # Put a problem online
   def put_online
     @problem.online = true
     if @problem.virtualtest_id == 0
@@ -102,15 +100,15 @@ class ProblemsController < ApplicationController
     redirect_to problem_path(@problem)
   end
 
-  # Modifier l'explication d'un problème
+  # Update the explanation of a problem (show the form)
   def explanation
   end
   
-  # Modifier le marking scheme d'un problème
+  # Update the marking scheme of a problem (show the form)
   def markscheme
   end
 
-  # Modifier l'explication d'un problème 2
+  # Update the explanation of a problem (send the form)
   def update_explanation
     @problem.explanation = params[:problem][:explanation]
     if @problem.save
@@ -121,7 +119,7 @@ class ProblemsController < ApplicationController
     end
   end
   
-  # Modifier le marking scheme d'un problème 2
+  # Update the marking scheme of a problem (send the form)
   def update_markscheme
     @problem.markscheme = params[:problem][:markscheme]
     if @problem.save
@@ -132,7 +130,7 @@ class ProblemsController < ApplicationController
     end
   end
 
-  # Supprimer un prérequis
+  # Delete a prerequisite to one problem
   def delete_prerequisite
     @chapter = Chapter.find_by_id(params[:chapter_id])
     if !@chapter.nil?
@@ -141,7 +139,7 @@ class ProblemsController < ApplicationController
     redirect_to @problem
   end
 
-  # Ajouter un prérequis
+  # Add a prerequisite to one problem
   def add_prerequisite
     if !params[:chapter_problem][:chapter_id].empty?
       @chapter = Chapter.find_by_id(params[:chapter_problem][:chapter_id])
@@ -152,7 +150,7 @@ class ProblemsController < ApplicationController
     redirect_to @problem
   end
 
-  # Ajouter à un test virtuel
+  # Add a problem to a virtualtest
   def add_virtualtest
     if !params[:problem][:virtualtest_id].empty?
       if params[:problem][:virtualtest_id].to_i == 0
@@ -172,7 +170,7 @@ class ProblemsController < ApplicationController
     redirect_to @problem
   end
 
-  # Déplacer dans un test virtuel
+  # Move the problem up in its virtualtest
   def order_minus
     t = @problem.virtualtest
     problem2 = t.problems.where("position < ?", @problem.position).order('position').reverse_order.first
@@ -181,7 +179,7 @@ class ProblemsController < ApplicationController
     redirect_to virtualtests_path
   end
 
-  # Déplacer dans un test virtuel
+  # Move a problem down in its virtualtest
   def order_plus
     t = @problem.virtualtest
     problem2 = t.problems.where("position > ?", @problem.position).order('position').first
@@ -190,55 +188,43 @@ class ProblemsController < ApplicationController
     redirect_to virtualtests_path
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the problem
   def get_problem
     @problem = Problem.find_by_id(params[:id])
     return if check_nil_object(@problem)
   end
   
+  # Get the problem (v2)
   def get_problem2
     @problem = Problem.find_by_id(params[:problem_id])
     return if check_nil_object(@problem)
   end
   
+  # Get the section
   def get_section
     @section = Section.find_by_id(params[:section_id])
     return if check_nil_object(@section)
   end
+  
+  ########## CHECK METHODS ##########
 
-  # Vérifie que le problème est hors-ligne pour le supprimer
+  # Check that the problem is offline
   def offline_problem
     return if check_online_object(@problem)
   end
 
-  # Vérifie qu'on peut voir ce problème
-  def has_access
-    visible = true
-    if !current_user.sk.admin?
-      @problem.chapters.each do |c|
-        visible = false if !current_user.sk.chap_solved?(c)
-      end
-    end
-
-    if @problem.virtualtest_id > 0 and !current_user.sk.admin? and current_user.sk.status(@problem.virtualtest_id) <= 0
-      visible = false
-    end
-
-    if !visible
-      render 'errors/access_refused' and return
-    end
-  end
-
-  # Vérifie que le problème est en ligne
-  def online_problem
+  # Check that the problem is online or current user is admin
+  def online_problem_or_admin
     if !@problem.online && !current_user.sk.admin
       render 'errors/access_refused' and return
     end
   end
 
-  # Vérifie que le problème peut être en ligne
+  # Check that the problem can be put online
   def can_be_online
     ok = true
     nombre = 0

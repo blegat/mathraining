@@ -1,29 +1,27 @@
 #encoding: utf-8
 class TheoriesController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order_minus, :order_plus, :put_online, :read, :unread, :latex]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order_minus, :order_plus, :put_online, :read, :unread]
   before_action :admin_user, only: [:put_online]
-  before_action :get_chapter, only: [:new, :create]
+  
   before_action :get_theory, only: [:edit, :update, :destroy]
-  before_action :get_theory2, only: [:order_minus, :order_plus, :read, :unread, :latex, :put_online]
-  before_action :creating_user, only: [:new, :edit, :create, :update, :destroy, :order_minus, :order_plus]
+  before_action :get_theory2, only: [:order_minus, :order_plus, :read, :unread, :put_online]
+  before_action :get_chapter, only: [:new, :create]
+  
+  before_action :user_that_can_update_chapter, only: [:new, :edit, :create, :update, :destroy, :order_minus, :order_plus]
 
-  # Créer une théorie
+  # Create a theory (show the form)
   def new
     @theory = Theory.new
   end
 
-  # Editer une théorie
+  # Update a theory (show the form)
   def edit
   end
 
-  # Créer une théorie 2
+  # Create a theory (send the form)
   def create
-    @theory = Theory.new
-    @theory.title = params[:theory][:title]
-    @theory.content = params[:theory][:content]
-    @theory.online = false
-    @theory.chapter = @chapter
+    @theory = Theory.new(:title => params[:theory][:title], :content => params[:theory][:content], :online => false, :chapter => @chapter)
     if @chapter.theories.empty?
       @theory.position = 1
     else
@@ -38,7 +36,7 @@ class TheoriesController < ApplicationController
     end
   end
 
-  # Editer une théorie 2
+  # Update a theory (send the form)
   def update
     @theory.title = params[:theory][:title]
     @theory.content = params[:theory][:content]
@@ -50,21 +48,21 @@ class TheoriesController < ApplicationController
     end
   end
 
-  # Supprimer une théorie
+  # Delete a theory
   def destroy
     @theory.destroy
     flash[:success] = "Point théorique supprimé."
     redirect_to @chapter
   end
 
-  # Mettre une théorie en ligne
+  # Put a theory online
   def put_online
     @theory.online = true
     @theory.save
     redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
-  # Déplacer
+  # Move a theory up
   def order_minus
     @theory2 = @chapter.theories.where("position < ?", @theory.position).order('position').reverse_order.first
     swap_position(@theory, @theory2)
@@ -72,7 +70,7 @@ class TheoriesController < ApplicationController
     redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
-  # Déplacer
+  # Move a theory down
   def order_plus
     @theory2 = @chapter.theories.where("position > ?", @theory.position).order('position').first
     swap_position(@theory, @theory2)
@@ -80,47 +78,39 @@ class TheoriesController < ApplicationController
     redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
-  # Marquer comme lu
+  # Mark a theory as read
   def read
     current_user.sk.theories << @theory
     redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
-  # Marquer comme non lu
+  # Mark a theory as unread
   def unread
     current_user.sk.theories.delete(@theory)
     redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 
-  # Rendre en LaTeX
-  def latex
-    render text: markdown_to_latex(@theory.content)
-  end
-
-  ########## PARTIE PRIVEE ##########
   private
   
-  def get_chapter
-    @chapter = Chapter.find_by_id(params[:chapter_id])
-    return if check_nil_object(@chapter)
-  end
+  ########## GET METHODS ##########
   
+  # Get the theory
   def get_theory
     @theory = Theory.find_by_id(params[:id])
     return if check_nil_object(@theory)
     @chapter = @theory.chapter
   end
   
+  # Get the theory (v2)
   def get_theory2
     @theory = Theory.find_by_id(params[:theory_id])
     return if check_nil_object(@theory)
     @chapter = @theory.chapter
   end
   
-  def creating_user
-    unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter.id))))
-      render 'errors/access_refused' and return
-    end
+  # Get the chapter
+  def get_chapter
+    @chapter = Chapter.find_by_id(params[:chapter_id])
+    return if check_nil_object(@chapter)
   end
-
 end

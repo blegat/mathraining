@@ -2,8 +2,10 @@
 class FollowingcontestsController < ApplicationController
   before_action :signed_in_user, only: [:remove_followingcontest]
   before_action :signed_in_user_danger, only: [:add_followingcontest]
+  
   before_action :get_contest, only: [:remove_followingcontest, :add_followingcontest]
   
+  # Create a followingcontest between current user and a contest
   def add_followingcontest
     current_user.sk.followed_contests << @contest unless current_user.sk.followed_contests.exists?(@contest.id)
 
@@ -11,6 +13,7 @@ class FollowingcontestsController < ApplicationController
     redirect_to @contest
   end
 
+  # Remove a followingcontest between current user and a contest
   def remove_followingcontest
     current_user.sk.followed_contests.destroy(@contest)
     
@@ -18,9 +21,11 @@ class FollowingcontestsController < ApplicationController
     redirect_to @contest
   end
   
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the contest
   def get_contest
     @contest = Contest.find_by_id(params[:contest_id])
     return if check_nil_object(@contest)

@@ -1,7 +1,7 @@
 #encoding: utf-8
 class SolvedproblemsController < ApplicationController
 
-  # Index
+  # Show all (recently) solved problems
   def index
   end
   

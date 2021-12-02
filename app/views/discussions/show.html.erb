@@ -65,11 +65,9 @@ $(window).scroll(scrollHandler);
       <% @ancientexte = session[:ancientexte] %>
       <% session[:ancientexte] = nil %>
 
-      <%= form_for @tchatmessage, :html => { :multipart => true } do |f| %>
+      <%= form_for [@discussion, @tchatmessage], :html => { :multipart => true } do |f| %>
 
         <%= render 'shared/error_messages', object: f.object %>
-
-        <%= f.hidden_field :discussion_id, value: @discussion.id %>
 
         <div class="form-group">
           <div class="well" id="MathPreview"></div>

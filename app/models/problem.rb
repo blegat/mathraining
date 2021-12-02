@@ -48,6 +48,19 @@ class Problem < ActiveRecord::Base
     return 15*level
   end
   
+  def can_be_seen_by(user)
+    return true if user.admin?
+    return false if user.rating < 200
+    if self.virtualtest_id == 0 # Not in a virtualtest: prerequisites should be completed
+      self.chapters.each do |c|
+        return false if !user.chap_solved?(c)
+      end
+    else # In a virtualtest: the user should have started it at least
+      return false if user.status(self.virtualtest_id) <= 0
+    end
+    return true
+  end
+  
   # Mets à jour nb_solves, first_solve_time, last_solve_time de chaque problème (fait tous les mercredis à 3 heures du matin (voir schedule.rb))
   # NB: Ils sont plus ou moins maintenus à jour en live, mais pas lorsqu'un utilisateur est supprimé, par exemple
   def self.update_stats

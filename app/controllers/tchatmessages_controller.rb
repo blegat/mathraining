@@ -2,8 +2,12 @@
 class TchatmessagesController < DiscussionsController
   before_action :signed_in_user_danger, only: [:create]
   before_action :notskin_user, only: [:create]
-  before_action :is_involved_2, only: [:create]
+  
+  before_action :get_discussion2, only: [:create]
+  
+  before_action :is_involved, only: [:create]
 
+  # Create a tchatmessage (send the form)
   def create
     params[:content].strip! if !params[:content].nil?
     link = current_user.sk.links.where(:discussion_id => @discussion.id).first
@@ -39,14 +43,5 @@ class TchatmessagesController < DiscussionsController
       @discussion.save
       redirect_to @discussion
     end
-  end
-
-  ########## PARTIE PRIVEE ##########
-  private
-
-  def is_involved_2
-    @discussion = Discussion.find_by_id(params[:tchatmessage][:discussion_id])
-    return if check_nil_object(@discussion)
-    render 'errors/access_refused' and return unless @discussion.users.include?(current_user.sk)
   end
 end

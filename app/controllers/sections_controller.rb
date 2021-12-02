@@ -2,22 +2,23 @@
 class SectionsController < ApplicationController
   before_action :signed_in_user, only: [:edit]
   before_action :signed_in_user_danger, only: [:update]
-  before_action :get_section
   before_action :admin_user, only: [:edit, :update]
+  
+  before_action :get_section
 
-  # Montrer la section
+  # Show the chapters of a section
   def show
   end
 
-  # Montrer les problèmes de la section
+  # Show the problems of a section
   def showpb
   end
 
-  # Editer une section
+  # Update a section (show the form)
   def edit
   end
 
-  # Editer une section 2
+  # Update a section (send the form)
   def update
     if @section.update_attributes(name: params[:section][:name], description: params[:section][:description])
       flash[:success] = "Section modifiée."
@@ -27,10 +28,11 @@ class SectionsController < ApplicationController
     end
   end
 
-  ########## PARTIE PRIVEE ##########
   private
+  
+  ########## GET METHODS ##########
 
-  # Récupérer la section
+  # Get the section
   def get_section
     @section = Section.find_by_id(params[:id])
     return if check_nil_object(@section)

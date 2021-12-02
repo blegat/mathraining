@@ -3,13 +3,14 @@ class CategoriesController < ApplicationController
   before_action :signed_in_user, only: [:index]
   before_action :signed_in_user_danger, only: [:destroy, :update, :create]
   before_action :root_user
+  
   before_action :get_category, only: [:update, :destroy]
 
-  # Page des catégories
+  # Show all categories (with fields and links to modify them)
   def index
   end
 
-  # Créer une catégorie
+  # Create a category (send the form)
   def create
     @category = Category.new(params.require(:category).permit(:name))
     if @category.save
@@ -20,7 +21,7 @@ class CategoriesController < ApplicationController
     redirect_to categories_path
   end
 
-  # Modifier un niveau
+  # Update a category (send the form)
   def update
     if @category.update_attributes(params.require(:category).permit(:name))
       flash[:success] = "Catégorie modifiée."
@@ -30,16 +31,18 @@ class CategoriesController < ApplicationController
     redirect_to categories_path
   end
 
-  # Supprimer un niveau
+  # Delete a category
   def destroy
     @category.destroy
     flash[:success] = "Catégorie supprimée."
     redirect_to categories_path
   end
   
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the category
   def get_category
     @category = Category.find_by_id(params[:id])
     return if check_nil_object(@category)

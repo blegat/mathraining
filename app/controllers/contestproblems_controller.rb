@@ -3,30 +3,34 @@ class ContestproblemsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :show]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :publish_results, :authorize_corrections, :unauthorize_corrections]
   before_action :root_user, only: [:authorize_corrections, :unauthorize_corrections]
+  
   before_action :check_contests, only: [:show] # Defined in application_controller.rb
+  
   before_action :get_contest, only: [:new, :create]
   before_action :get_contestproblem, only: [:show, :edit, :update, :destroy]
   before_action :get_contestproblem2, only: [:publish_results, :authorize_corrections, :unauthorize_corrections]
-  before_action :is_organizer, only: [:new, :create, :publish_results]
-  before_action :is_organizer_or_root, only: [:edit, :update, :destroy]
+  
+  before_action :organizer_of_contest, only: [:new, :create, :publish_results]
+  before_action :organizer_of_contest_or_root, only: [:edit, :update, :destroy]
   before_action :offline_contest, only: [:new, :create, :destroy]
   before_action :check_dates, only: [:create, :update]
   before_action :can_publish_results, only: [:publish_results]
   before_action :has_access, only: [:show]
   
+  # Show a problem of a contest
   def show
   end
 
-  # Ajouter un problème
+  # Create a problem (show the form)
   def new
     @contestproblem = Contestproblem.new
   end
   
-  # Editer un problème
+  # Update a problem (show the form)
   def edit
   end
   
-  # Ajouter un problème 2
+  # Create a problem (send the form)
   def create
     @contestproblem = Contestproblem.new(params.require(:contestproblem).permit(:statement, :origin, :start_time, :end_time))
     if @date_problem
@@ -40,12 +44,12 @@ class ContestproblemsController < ApplicationController
       flash[:success] = "Problème ajouté."
       
       update_contest_details
-      change_numbers
+      update_problem_numbers
       redirect_to @contestproblem
     end
   end
   
-  # Editer un problème 2
+  # Update a problem (send the form)
   def update
     @contestproblem.statement = params[:contestproblem][:statement]
     @contestproblem.origin = params[:contestproblem][:origin]
@@ -61,22 +65,23 @@ class ContestproblemsController < ApplicationController
     if @contestproblem.save
       flash[:success] = "Problème modifié."
       update_contest_details
-      change_numbers
+      update_problem_numbers
       redirect_to @contestproblem
     else
       render 'edit'
     end
   end
   
-  # Supprimer un problème
+  # Delete a problem
   def destroy
     @contestproblem.destroy
     flash[:success] = "Problème supprimé."
     update_contest_details
-    change_numbers
+    update_problem_numbers
     redirect_to @contest
   end
   
+  # Publish results of a problem
   def publish_results
     @contestproblem.status = 4
     @contestproblem.save
@@ -88,6 +93,7 @@ class ContestproblemsController < ApplicationController
     redirect_to @contestproblem
   end
   
+  # Temporarily authorize new corrections for a problem that is already corrected
   def authorize_corrections
     if @contestproblem.status == 4
       @contestproblem.status = 5
@@ -97,6 +103,7 @@ class ContestproblemsController < ApplicationController
     redirect_to @contestproblem
   end
   
+  # Stop authorizing new corrections for a problem
   def unauthorize_corrections
     if @contestproblem.status == 5
       @contestproblem.status = 4
@@ -106,50 +113,47 @@ class ContestproblemsController < ApplicationController
     redirect_to @contestproblem
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the problem
   def get_contestproblem
     @contestproblem = Contestproblem.find_by_id(params[:id])
     return if check_nil_object(@contestproblem)
     @contest = @contestproblem.contest
   end
   
+  # Get the problem (v2)
   def get_contestproblem2
     @contestproblem = Contestproblem.find_by_id(params[:contestproblem_id])
     return if check_nil_object(@contestproblem)
     @contest = @contestproblem.contest
   end
   
+  # Get the contest
   def get_contest
     @contest = Contest.find_by_id(params[:contest_id])
     return if check_nil_object(@contest)
   end
   
-  def is_organizer
-    if !@contest.is_organized_by(current_user)
-      render 'errors/access_refused' and return
-    end
-  end
+  ########## CHECK METHODS ##########
   
-  def is_organizer_or_root
-    if !@contest.is_organized_by_or_root(current_user)
-      render 'errors/access_refused' and return
-    end
-  end
-  
+  # Check that the contest is offline
   def offline_contest
     if @contest.status > 0
       render 'errors/access_refused' and return
     end
   end
   
+  # Check that current user has access to the problem
   def has_access
     if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.status <= 1
       render 'errors/access_refused' and return
     end
   end
   
+  # Check that the dates in the form are suitable
   def check_dates
     date_now = DateTime.now.in_time_zone
     start_date = nil
@@ -185,6 +189,7 @@ class ContestproblemsController < ApplicationController
     end
   end
   
+  # Check if results of the problem can be published
   def can_publish_results
     if @contestproblem.status != 3
       flash[:danger] = "Une erreur est survenue."
@@ -200,7 +205,10 @@ class ContestproblemsController < ApplicationController
     end
   end
   
-  def change_numbers
+  ########## HELPER METHODS ##########
+  
+  # Helper method to update problem numbers
+  def update_problem_numbers
     x = 1
     @contest.contestproblems.order(:start_time, :end_time, :id).each do |p|
       p.number = x
@@ -209,6 +217,7 @@ class ContestproblemsController < ApplicationController
     end
   end
   
+  # Helper method to update contest details (number of problems, start time, end time...)
   def update_contest_details
     @contest.num_problems = @contest.contestproblems.count
     if @contest.num_problems > 0
@@ -221,20 +230,17 @@ class ContestproblemsController < ApplicationController
     @contest.save
   end
   
+  # Helper method to create automatic message on forum to say that results have been published
   def automatic_results_published_post(contestproblem)
     contest = contestproblem.contest
     sub = contest.subject
-    mes = Message.new
-    mes.subject = sub
-    mes.user_id = 0    
-    mes.content = helpers.get_new_correction_forum_message(contest, contestproblem)
-    mes.save
+    mes = Message.create(:subject => sub, :user_id => 0, :content => helpers.get_new_correction_forum_message(contest, contestproblem))
     sub.last_comment_time = mes.created_at
-    sub.last_comment_user_id = 0 # Message automatique
+    sub.last_comment_user_id = 0 # Automatic message
     sub.save
     
     sub.following_users.each do |u|
-      UserMailer.new_followed_message(u.id, sub.id, -1).deliver if Rails.env.production?
+      UserMailer.new_followed_message(u.id, sub.id, -1).deliver
     end
   end
 

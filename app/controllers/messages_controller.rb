@@ -1,22 +1,25 @@
 #encoding: utf-8
 class MessagesController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy]
-  before_action :get_subject, only: [:create]
-  before_action :get_message, only: [:update, :destroy]
-  before_action :can_see_subject, only: [:create]
-  before_action :author, only: [:update]
   before_action :admin_user, only: [:destroy]
-  before_action :notskin_user, only: [:create, :update]
+  
+  before_action :get_message, only: [:update, :destroy]
+  before_action :get_subject, only: [:create]
   before_action :get_q, only: [:create, :update, :destroy]
+  
+  before_action :user_that_can_see_subject, only: [:create]
+  before_action :author, only: [:update]
+  before_action :notskin_user, only: [:create, :update]
+  
 
-  # Créer un message 2
+  # Create a message (send the form)
   def create
     params[:message][:content].strip! if !params[:message][:content].nil?
     @message = Message.new(params.require(:message).permit(:content))
     @message.user = current_user.sk
     @message.subject = @subject
 
-    # On vérifie qu'il n'y a pas eu de nouveau message entre
+    # Check that no new message was posted
     lastid = -1
     lastmessage = @subject.messages.order("id DESC").first
     if !lastmessage.nil?
@@ -27,32 +30,19 @@ class MessagesController < ApplicationController
       error_create(["Un nouveau message a été posté avant le vôtre ! Veuillez en prendre connaissance avant de poster votre message."]) and return
     end
 
-    # Pièces jointes
-    @error = false
+    # Attached files
     @error_message = ""
+    attach = create_files
+    error_create([@error_message]) and return if !@error_message.empty?
 
-    attach = create_files # Fonction commune pour toutes les pièces jointes
-
-    if @error
-      error_create([@error_message]) and return
-    end
-
-    # Si le message a bien été sauvé
     if @message.save
+      attach_files(attach, @message)
 
-      # On enregistre les pièces jointes
-      j = 1
-      while j < attach.size()+1 do
-        attach[j-1].update_attribute(:myfiletable, @message)
-        attach[j-1].save
-        j = j+1
-      end
-
-      # Envoi d'un e-mail aux utilisateurs suivant le sujet
+      # Send an email to users following the subject
       @subject.following_users.each do |u|
         if u != current_user.sk
           if (@subject.for_correctors && !u.corrector && !u.admin) || (@subject.for_wepion && !u.wepion && !u.admin)
-            # Ce n'est pas vraiment normal qu'il suive ce sujet
+            # Not really normal that this user follows this subject
           else
             UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.id).deliver
           end
@@ -77,30 +67,22 @@ class MessagesController < ApplicationController
       flash[:success] = "Votre message a bien été posté."
       session["successNewMessage"] = "ok"
       redirect_to subject_path(@message.subject, :page => page, :q => @q)
-
-      # Si il y a eu un problème : on supprime les pièces jointes
-    else
-      destroy_files(attach, attach.size()+1)
+    else # The message could not be saved correctly
+      destroy_files(attach)
       error_create(@message.errors.full_messages)
     end
   end
 
-  # Editer un message 2
+  # Update a message (send the form)
   def update
-    # Si la modification du message réussit
     params[:message][:content].strip! if !params[:message][:content].nil?
     @message.content = params[:message][:content]
     if @message.valid?
 
-      # Pièces jointes
-      @error = false
+      # Attached files
       @error_message = ""
-
-      attach = update_files(@message) # Fonction commune pour toutes les pièces jointes
-
-      if @error
-        error_update([@error_message]) and return
-      end
+      update_files(@message)
+      error_update([@error_message]) and return if !@error_message.empty?
       
       @message.save
       @message.reload
@@ -108,14 +90,12 @@ class MessagesController < ApplicationController
       session["successMessage#{@message.id}"] = "ok"
       page = get_page(@message)
       redirect_to subject_path(@message.subject, :page => page, :q => @q)
-
-      # Si il y a eu un bug
     else
       error_update(@message.errors.full_messages) and return
     end
   end
 
-  # Supprimer un message : il faut être admin
+  # Delete a message
   def destroy
     @subject = @message.subject
 
@@ -135,66 +115,71 @@ class MessagesController < ApplicationController
     redirect_to subject_path(@subject, :q => @q)
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
-  def error_create(err)
-    session["errorNewMessage"] = err
-    session[:oldContent] = params[:message][:content]
-    page = get_last_page(@subject)
-    redirect_to subject_path(@subject, :page => page, :q => @q) and return true
-  end
+  ########## GET METHODS ##########
   
-  def error_update(err)
-    session["errorMessage#{@message.id}"] = err
-    @message.reload
-    session[:oldContent] = params[:message][:content]
-    page = get_page(@message)
-    redirect_to subject_path(@message.subject, :page => page, :q => @q) and return true
-  end
-  
+  # Get the message
   def get_message
     @message = Message.find_by_id(params[:id])
     return if check_nil_object(@message)
   end
   
-  # Il faut être correcteur/wepion si le sujet est pour correcteur/wepion
+  # Get the subject
   def get_subject
     @subject = Subject.find_by_id(params[:subject_id])
     return if check_nil_object(@subject)
   end
   
-  def can_see_subject
-    if !@subject.can_be_seen_by(current_user.sk)
-      render 'errors/access_refused' and return
-    end
-  end
-  
+  # Get the "q" value that is used through the forum
   def get_q
     @q = 0
     @q = params[:q].to_i if params.has_key?:q
   end
   
-  def get_last_page(s)
-    tot = s.messages.count
-    return [0,((tot-1)/10).floor].max + 1
-  end
+  ########## CHECK METHODS ##########
   
-  def get_page(m)
-    tot = m.subject.messages.where("id <= ?", m.id).count
-    return [0,((tot-1)/10).floor].max + 1
-  end
-
-  # Il faut être l'auteur ou admin pour modifier un message
+  # Check that current user is the author of the message (or is admin or root)
   def author
     if @message.user_id > 0
       unless (current_user.sk == @message.user || (current_user.sk.admin && !@message.user.admin) || current_user.sk.root)
         render 'errors/access_refused' and return
       end
-    else # Message automatique
+    else # Automatic message
       unless current_user.sk.root
         render 'errors/access_refused' and return
       end
     end
+  end
+  
+  ########## HELPER METHODS ##########
+  
+  # Helper method when an error occurred during create
+  def error_create(err)
+    session["errorNewMessage"] = err
+    session[:oldContent] = params[:message][:content]
+    page = get_last_page(@subject)
+    redirect_to subject_path(@subject, :page => page, :q => @q)
+  end
+  
+  # Helper method when an error occurred during update
+  def error_update(err)
+    session["errorMessage#{@message.id}"] = err
+    @message.reload
+    session[:oldContent] = params[:message][:content]
+    page = get_page(@message)
+    redirect_to subject_path(@message.subject, :page => page, :q => @q)
+  end
+  
+  # Helper method to get the last page of a subject
+  def get_last_page(s)
+    tot = s.messages.count
+    return [0,((tot-1)/10).floor].max + 1
+  end
+  
+  # Helper method to get the page of a subject containing a message
+  def get_page(m)
+    tot = m.subject.messages.where("id <= ?", m.id).count
+    return [0,((tot-1)/10).floor].max + 1
   end
 end

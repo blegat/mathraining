@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-
 class FollowingsubjectsController < ApplicationController
   before_action :signed_in_user, only: [:remove_followingsubject]
   before_action :signed_in_user_danger, only: [:add_followingsubject]
+  
   before_action :get_subject, only: [:remove_followingsubject, :add_followingsubject]
 
+  # Create a followingsubject between current user and a subject
   def add_followingsubject
     current_user.sk.followed_subjects << @subject unless current_user.sk.followed_subjects.exists?(@subject.id)
     
@@ -12,6 +13,7 @@ class FollowingsubjectsController < ApplicationController
     redirect_back(fallback_location: subject_path(@subject))
   end
 
+  # Remove a followingsubject between current user and a subject
   def remove_followingsubject
     current_user.sk.followed_subjects.destroy(@subject)
     
@@ -19,9 +21,11 @@ class FollowingsubjectsController < ApplicationController
     redirect_back(fallback_location: subject_path(@subject))
   end
   
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the subject
   def get_subject
     @subject = Subject.find_by_id(params[:subject_id])
     return if check_nil_object(@subject)

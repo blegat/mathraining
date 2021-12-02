@@ -8,24 +8,42 @@ describe "Contest pages" do
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user_with_rating_199) { FactoryGirl.create(:user, rating: 199) }
   let(:user_with_rating_200) { FactoryGirl.create(:user, rating: 200) }
-  let(:user_participating) { FactoryGirl.create(:user, rating: 250) }
+  let(:user_participating1) { FactoryGirl.create(:user, rating: 250) }
+  let(:user_participating2) { FactoryGirl.create(:user, rating: 251) }
+  let(:user_participating3) { FactoryGirl.create(:user, rating: 252) }
+  let(:user_participating4) { FactoryGirl.create(:user, rating: 253) }
+  let(:user_participating5) { FactoryGirl.create(:user, rating: 254) }
   let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
   
   let!(:category) { FactoryGirl.create(:category, name: "Mathraining") } # For the Forum subject
   
   let!(:contest) { FactoryGirl.create(:contest) }
-  let!(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest) }
-  let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user_participating, score: 7) }
-  let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating, rank: 1, score: 7, medal: -1) }
+  let!(:contestproblem1) { FactoryGirl.create(:contestproblem, contest: contest) }
+  let!(:contestproblem2) { FactoryGirl.create(:contestproblem, contest: contest) }
+  let!(:contestsolution11) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating1, score: 7) }
+  let!(:contestsolution12) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating2, score: 6) }
+  let!(:contestsolution13) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating3, score: 5) }
+  let!(:contestsolution14) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating4, score: 5) }
+  let!(:contestsolution15) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating5, score: 7) }
+  let!(:contestsolution21) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating1, score: 7) }
+  let!(:contestsolution22) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating2, score: 7) }
+  let!(:contestsolution23) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating3, score: 6) }
+  let!(:contestsolution24) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating4, score: 2) }
+  let!(:contestsolution25) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating5, score: 0) }
+  let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating1, rank: 1, score: 14, medal: -1) }
+  let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating2, rank: 2, score: 13, medal: -1) }
+  let!(:contestscore3) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating3, rank: 3, score: 11, medal: -1) }
+  let!(:contestscore4) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating4, rank: 4, score: 7,  medal: -1) }
+  let!(:contestscore5) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating5, rank: 4, score: 7,  medal: -1) }
   
   let!(:offline_contest) { FactoryGirl.create(:contest, status: 0) }
   let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, status: 0, start_time: DateTime.now + 1.day, end_time: DateTime.now + 2.days) }
   
   let(:newnumber) { 42 }
   let(:newdescription) { "Voici une toute nouvelle description" }
-  let(:bronze_cutoff) { 7 }
-  let(:silver_cutoff) { 14 }
-  let(:gold_cutoff) { 21 }
+  let(:bronze_cutoff) { 11 }
+  let(:silver_cutoff) { 13 }
+  let(:gold_cutoff) { 14 }
   
   before do
     Contestorganization.create(:contest => contest, :user => user_organizer)
@@ -47,9 +65,12 @@ describe "Contest pages" do
       before { visit contest_path(contest) }
       it do
         should have_content("Concours ##{contest.number}") # Not h1: not correctly detected because of "Suivre ce concours"
-        should have_selector("h3", text: "Problème ##{contestproblem.number}")
-        should have_content(contestproblem.statement)
-        should have_content(contestproblem.origin)
+        should have_selector("h3", text: "Problème ##{contestproblem1.number}")
+        should have_content(contestproblem1.statement)
+        should have_content(contestproblem1.origin)
+        should have_selector("h3", text: "Problème ##{contestproblem2.number}")
+        should have_content(contestproblem2.statement)
+        should have_content(contestproblem2.origin)
         should have_link("Classement final", href: contest_path(contest, :tab => 1))
         should have_link("Statistiques", href: contest_path(contest, :tab => 2))
       end
@@ -160,18 +181,44 @@ describe "Contest pages" do
       
       describe "and define cutoffs" do
         before do
+          # Put wrong scores (to check they are re-computed correctly), as well as a fake score that should not exist
+          contestscore1.update_attributes(score: 23, rank: 7, medal: -1)
+          contestscore2.update_attributes(score: 23, rank: 7, medal: -1)
+          contestscore3.update_attributes(score: 23, rank: 7, medal: -1)
+          contestscore4.update_attributes(score: 23, rank: 7, medal: -1)
+          contestscore5.destroy
+          FactoryGirl.create(:contestscore, contest: contest, score: 23, rank: 7, medal: -1)
           fill_in "bronze_cutoff", with: bronze_cutoff
           fill_in "silver_cutoff", with: silver_cutoff
           fill_in "gold_cutoff", with: gold_cutoff
           click_button "Distribuer les médailles"
           contest.reload
-          contestscore.reload
+          contestscore1.reload
+          contestscore2.reload
+          contestscore3.reload
+          contestscore4.reload
         end
+        let!(:contestscore5_new) { contest.contestscores.where(:user => user_participating5).first }
         specify do
           expect(contest.bronze_cutoff).to eq(bronze_cutoff)
           expect(contest.silver_cutoff).to eq(silver_cutoff)
           expect(contest.gold_cutoff).to eq(gold_cutoff)
-          expect(contestscore.medal).to eq(2) # Bronze medal for score = 7
+          expect(contest.contestscores.count).to eq(5)
+          expect(contestscore1.score).to eq(14)
+          expect(contestscore2.score).to eq(13)
+          expect(contestscore3.score).to eq(11)
+          expect(contestscore4.score).to eq(7)
+          expect(contestscore5_new.score).to eq(7)
+          expect(contestscore1.rank).to eq(1)
+          expect(contestscore2.rank).to eq(2)
+          expect(contestscore3.rank).to eq(3)
+          expect(contestscore4.rank).to eq(4)
+          expect(contestscore5_new.rank).to eq(4)
+          expect(contestscore1.medal).to eq(4)     # Gold medal for 14
+          expect(contestscore2.medal).to eq(3)     # Silver medal for 13
+          expect(contestscore3.medal).to eq(2)     # Bronze medal for 11
+          expect(contestscore4.medal).to eq(0)     # No medal (7 = 5+2)
+          expect(contestscore5_new.medal).to eq(1) # Honourable mention (7 = 7+0)
           expect(page).to have_success_message("Les médailles ont été distribuées !")
         end
       end

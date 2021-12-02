@@ -45,7 +45,6 @@ describe "Myfile pages" do
       it do
         should have_selector("h1", text: "Pièces jointes")
         should have_link("Voir", href: myfile_path(subjectmyfile))
-        should have_link("(R)", href: edit_myfile_path(subjectmyfile))
         should have_link(href: rails_blob_url(subjectmyfile.file, :only_path => true, :disposition => 'attachment'))
       end
     end
@@ -192,34 +191,6 @@ describe "Myfile pages" do
     describe "visits a non-existing file" do
       before { visit myfile_path(123456) }
       it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to replace a file by another one" do
-      before { visit edit_myfile_path(subjectmyfile) }
-      it { should have_selector("h1", text: "Remplacer un fichier") }
-      
-      describe "and replaces it" do
-        before do
-          attach_file("file", File.absolute_path(attachments_folder + new_image))
-          click_button "Remplacer"
-          subjectmyfile.reload
-        end
-        specify do
-          expect(page).to have_success_message("C'est remplacé !")
-          expect(subjectmyfile.file.filename.to_s).to eq(new_image)
-        end
-      end
-      
-      describe "and replaces it with an empty file" do
-        before do
-          click_button "Remplacer"
-          subjectmyfile.reload
-        end
-        specify do
-          expect(page).to have_error_message("Pièce jointe vide.")
-          expect(subjectmyfile.file.filename.to_s).to eq(old_image)
-        end
-      end
     end
   end
   

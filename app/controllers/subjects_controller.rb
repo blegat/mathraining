@@ -2,21 +2,25 @@
 class SubjectsController < ApplicationController
   before_action :signed_in_user, only: [:index, :show, :new]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate]
-  before_action :get_subject, only: [:show, :update, :destroy]
-  before_action :get_subject2, only: [:migrate]
-  before_action :can_see_subject, only: [:show]
-  before_action :author, only: [:update, :destroy]
   before_action :admin_user, only: [:destroy, :migrate]
   before_action :notskin_user, only: [:create, :update]
+  
+  before_action :get_subject, only: [:show, :update, :destroy]
+  before_action :get_subject2, only: [:migrate]
+  
+  before_action :user_that_can_see_subject, only: [:show]
+  before_action :author, only: [:update, :destroy]
+  
+  
   before_action :get_q, only: [:create, :update, :destroy, :migrate]
   
-  # Voir tous les sujets
+  # Show the list of (recent) subjects
   def index
     search_category = -1
     search_section = -1
     search_section_problems = -1
     search_chapter = -1
-    search_personne = false
+    search_nothing = false
     q = -1
 
     @category = nil
@@ -44,10 +48,10 @@ class SubjectsController < ApplicationController
         return if check_offline_object(@chapter)
         @section = @chapter.section
       else
-        search_personne = true
+        search_nothing = true
       end
     else
-      search_personne = true
+      search_nothing = true
       q = 0
     end
     
@@ -63,7 +67,7 @@ class SubjectsController < ApplicationController
       wepion_allowed_values = false
     end
     
-    if search_personne
+    if search_nothing
       @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
       @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
     elsif search_category >= 0
@@ -81,17 +85,17 @@ class SubjectsController < ApplicationController
     end
   end
 
-  # Montre un sujet
+  # Show one subject
   def show
     @messages = @subject.messages.order(:created_at).paginate(:page => params[:page], :per_page => 10)
   end
 
-  # Créer un sujet
+  # Create a subject (show form)
   def new
     @subject = Subject.new
   end
 
-  # Créer un sujet 2
+  # Create a subject (send form)
   def create    
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
@@ -100,75 +104,23 @@ class SubjectsController < ApplicationController
     @subject.last_comment_time = DateTime.now
     @subject.last_comment_user = current_user.sk
     
-    @subject.for_wepion = false if @subject.for_correctors # On n'autorise pas wépion si pour les correcteurs
+    @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
 
     if @subject.title.size > 0
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
     end
 
-    category_id = params[:subject][:category_id].to_i
-    if category_id < 1000
-      @subject.category = Category.find_by_id(category_id)
-      return if check_nil_object(@subject.category)
-      @subject.section = nil
-      @subject.chapter = nil
-      @subject.question = nil
-      @subject.problem = nil
-    else
-      section_id = category_id/1000
-      @subject.category = nil
-      @subject.section = Section.find_by_id(section_id)
-      return if check_nil_object(@subject.section)
-      chapter_id = params[:subject][:chapter_id].to_i
-      if chapter_id == 0 # No particular chapter
-        @subject.chapter = nil
-        @subject.question = nil
-        @subject.problem = nil
-      elsif chapter_id == -1 # Problems of this section
-        @subject.chapter = nil
-        @subject.question = nil
-        problem_id = params[:subject][:problem_id].to_i
-        if problem_id == 0
-          error_create(["Un problème doit être sélectionné."]) and return
-        end
-        @subject.problem = Problem.find_by_id(problem_id)
-        return if check_nil_object(@subject.problem)
-        return if check_offline_object(@subject.problem)
-        # Here we can check that the user has indeed access to the problem but it is annoying to do
-      else
-        @subject.chapter = Chapter.find_by_id(chapter_id)
-        return if check_nil_object(@subject.chapter)
-        return if check_offline_object(@subject.chapter)
-        @subject.problem = nil
-        question_id = params[:subject][:question_id].to_i
-        if question_id == 0
-          @subject.question = nil
-        else
-          @subject.question = Question.find_by_id(question_id)
-          return if check_nil_object(@subject.question)
-          return if check_offline_object(@subject.question)
-          # Here we can check that the user has indeed access to the question but it is annoying to do
-        end
-      end
-    end
+    # Set associated object (category, section, chapter, exercise, problem)
+    err = set_associated_object
+    error_create([err]) and return if !err.empty?
 
-    # Pièces jointes
-    @error = false
+    # Attached files
     @error_message = ""
+    attach = create_files
+    error_create([@error_message]) and return if !@error_message.empty?
 
-    attach = create_files # Fonction commune pour toutes les pièces jointes
-
-    if @error
-      error_create([@error_message]) and return
-    end
-
-    # Si on parvient à enregistrer
     if @subject.save
-      j = 1
-      while j < attach.size()+1 do
-        attach[j-1].update_attribute(:myfiletable, @subject)
-        j = j+1
-      end
+      attach_files(attach, @subject)
 
       if current_user.sk.root?
         for g in ["A", "B"] do
@@ -181,17 +133,14 @@ class SubjectsController < ApplicationController
       end
 
       flash[:success] = "Votre sujet a bien été posté."
-
       redirect_to subject_path(@subject, :q => @q)
-
-      # Si il y a eu une erreur
     else
-      destroy_files(attach, attach.size()+1)
+      destroy_files(attach)
       error_create(@subject.errors.full_messages) and return
     end
   end
 
-  # Editer un sujet 2
+  # Update a subject (send the form)
   def update    
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
@@ -201,69 +150,22 @@ class SubjectsController < ApplicationController
     @subject.important = params[:subject][:important] if !params[:subject][:important].nil?
     @subject.for_wepion = params[:subject][:for_wepion] if !params[:subject][:for_wepion].nil?
     
-    @subject.for_wepion = false if @subject.for_correctors # On n'autorise pas wépion si pour les correcteurs
+    @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
     
     if @subject.valid?
 
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
 
-      category_id = params[:subject][:category_id].to_i
-      if category_id < 1000
-        @subject.category = Category.find_by_id(category_id)
-        return if check_nil_object(@subject.category)
-        @subject.section = nil
-        @subject.chapter = nil
-        @subject.question = nil
-        @subject.problem = nil
-      else
-        section_id = category_id/1000
-        @subject.category = nil
-        @subject.section = Section.find_by_id(section_id)
-        return if check_nil_object(@subject.section)
-        chapter_id = params[:subject][:chapter_id].to_i
-        if chapter_id == 0 # No particular chapter
-          @subject.chapter = nil
-          @subject.question = nil
-          @subject.problem = nil
-        elsif chapter_id == -1 # Problems of this section
-          @subject.chapter = nil
-          @subject.question = nil
-          problem_id = params[:subject][:problem_id].to_i
-          if problem_id == 0
-            error_update(["Un problème doit être sélectionné."]) and return
-          end
-          @subject.problem = Problem.find_by_id(problem_id)
-          return if check_nil_object(@subject.problem)
-          return if check_offline_object(@subject.problem)
-          # Here we can check that the user has indeed access to the problem but it is annoying to do
-        else
-          @subject.chapter = Chapter.find_by_id(chapter_id)
-          return if check_nil_object(@subject.chapter)
-          return if check_offline_object(@subject.chapter)
-          @subject.problem = nil
-          question_id = params[:subject][:question_id].to_i
-          if question_id == 0
-            @subject.question = nil
-          else
-            @subject.question = Question.find_by_id(question_id)
-            return if check_nil_object(@subject.question)
-            return if check_offline_object(@subject.question)
-            # Here we can check that the user has indeed access to the question but it is annoying to do
-          end
-        end
-      end
+      # Set associated object (category, section, chapter, exercise, problem)
+      err = set_associated_object
+      error_update([err]) and return if !err.empty?
 
-      @subject.save
-
-      # Pièces jointes
-      @error = false
+      # Attached files
       @error_message = ""
-
-      attach = update_files(@subject) # Fonction commune pour toutes les pièces jointes
-
-      if @error
-        error_update([@error_message]) and return
-      end
+      update_files(@subject)
+      error_update([@error_message]) and return if !@error_message.empty?
+      
+      @subject.save
       flash[:success] = "Votre sujet a bien été modifié."
       session["successSubject"] = "ok"
       redirect_to subject_path(@subject, :q => @q)
@@ -272,14 +174,14 @@ class SubjectsController < ApplicationController
     end
   end
 
-  # Supprimer un sujet : il faut être admin
+  # Delete a subject
   def destroy
     @subject.destroy
     flash[:success] = "Sujet supprimé."
     redirect_to subjects_path(:q => @q)
   end
 
-  # Migrer un sujet vers un autre : il faut être root
+  # Migrate a subject to another one
   def migrate    
     autre_id = params[:migreur].to_i
     @migreur = Subject.find_by_id(autre_id)
@@ -324,42 +226,31 @@ class SubjectsController < ApplicationController
     redirect_to subject_path(@migreur, :q => @q)
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
-  def error_create(err)
-    session["errorSubject"] = err
-    session[:oldAll] = params[:subject]
-    redirect_to new_subject_path(:q => @q) and return true
-  end
+  ########## GET METHODS ##########
   
-  def error_update(err)
-    session["errorSubject"] = err
-    session[:oldAll] = params[:subject]
-    redirect_to subject_path(@subject, :q => @q) and return true
-  end
-  
+  # Get the subject
   def get_subject
     @subject = Subject.find_by_id(params[:id])
     return if check_nil_object(@subject)
   end
   
+  # Get the subject (v2)
   def get_subject2
     @subject = Subject.find_by_id(params[:subject_id])
     return if check_nil_object(@subject)
   end
   
-  def can_see_subject
-    if !@subject.can_be_seen_by(current_user.sk)
-      render 'errors/access_refused' and return
-    end
-  end
-  
+  # Get the "q" value that is used through the forum
   def get_q
     @q = 0
     @q = params[:q].to_i if params.has_key?:q
   end
+  
+  ########## CHECK METHODS ##########
 
+  # Check that current user is the author of the subject (or is admin or root)
   def author
     if @subject.user_id > 0
       unless (current_user.sk == @subject.user || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root)
@@ -370,5 +261,72 @@ class SubjectsController < ApplicationController
         render 'errors/access_refused' and return
       end
     end
+  end
+  
+  ########## HELPER METHODS ##########
+  
+  # Helper method to set the object associated to a subject
+  def set_associated_object
+    category_id = params[:subject][:category_id].to_i
+    if category_id < 1000
+      @subject.category = Category.find_by_id(category_id)
+      return "Une erreur est survenue." if check_nil_object(@subject.category)
+      @subject.section = nil
+      @subject.chapter = nil
+      @subject.question = nil
+      @subject.problem = nil
+    else
+      section_id = category_id/1000
+      @subject.category = nil
+      @subject.section = Section.find_by_id(section_id)
+      return "Une erreur est survenue." if check_nil_object(@subject.section)
+      chapter_id = params[:subject][:chapter_id].to_i
+      if chapter_id == 0 # No particular chapter
+        @subject.chapter = nil
+        @subject.question = nil
+        @subject.problem = nil
+      elsif chapter_id == -1 # Problems of this section
+        @subject.chapter = nil
+        @subject.question = nil
+        problem_id = params[:subject][:problem_id].to_i
+        if problem_id == 0
+          return "Un problème doit être sélectionné."
+        end
+        @subject.problem = Problem.find_by_id(problem_id)
+        return "Une erreur est survenue." if check_nil_object(@subject.problem)
+        return "Une erreur est survenue." if check_offline_object(@subject.problem)
+        # Here we can check that the user has indeed access to the problem but it is annoying to do
+      else
+        @subject.chapter = Chapter.find_by_id(chapter_id)
+        return "Une erreur est survenue." if check_nil_object(@subject.chapter)
+        return "Une erreur est survenue." if check_offline_object(@subject.chapter)
+        @subject.problem = nil
+        question_id = params[:subject][:question_id].to_i
+        if question_id == 0
+          @subject.question = nil
+        else
+          @subject.question = Question.find_by_id(question_id)
+          return "Une erreur est survenue." if check_nil_object(@subject.question)
+          return "Une erreur est survenue." if check_offline_object(@subject.question)
+          # Here we can check that the user has indeed access to the question but it is annoying to do
+        end
+      end
+    end
+    
+    return "" # Return empty string when no error
+  end
+  
+  # Helper method when an error occurred during create
+  def error_create(err)
+    session["errorSubject"] = err
+    session[:oldAll] = params[:subject]
+    redirect_to new_subject_path(:q => @q)
+  end
+  
+  # Helper method when an error occurred during update
+  def error_update(err)
+    session["errorSubject"] = err
+    session[:oldAll] = params[:subject]
+    redirect_to subject_path(@subject, :q => @q)
   end
 end

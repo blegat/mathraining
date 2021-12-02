@@ -288,7 +288,7 @@ describe "Question pages" do
       before { visit edit_question_path(offline_qcm) }
       it { should have_selector("h1", text: "Modifier un exercice") }
       
-      describe "and sends with good information" do
+      describe "and modifies from many answers to one answer" do
         before do
           fill_in "MathInput", with: newstatement3
           uncheck "Cochez si plusieurs réponses sont possibles"
@@ -298,11 +298,40 @@ describe "Question pages" do
           offline_item_correct2.reload
         end
         specify do
+          expect(page).to have_info_message("Attention, il y avait plusieurs réponses correctes à cet exercice, seule la première a été gardée.")
           expect(offline_qcm.statement).to eq(newstatement3)
           expect(offline_qcm.many_answers).to eq(false)
           expect(offline_qcm.level).to eq(newlevel3)
           expect(offline_qcm.is_qcm).to eq(true)
-          expect(offline_item_correct2.ok).to eq(false) # Qcm modified from many answer to single answer so second correct is set to incorrect
+          expect(offline_item_correct.ok).to eq(true)
+          expect(offline_item_incorrect.ok).to eq(false)
+          expect(offline_item_correct2.ok).to eq(false) # Set to false because we can have only one answer
+        end
+      end
+      
+      describe "and modifies from many answers to one answer (v2)" do
+        before do
+          # Put all items as incorrect before modification
+          offline_item_correct.update_attribute(:ok, false)
+          offline_item_correct2.update_attribute(:ok, false)
+          fill_in "MathInput", with: newstatement3
+          uncheck "Cochez si plusieurs réponses sont possibles"
+          fill_in "Niveau", with: newlevel3
+          click_button "Modifier"
+          offline_qcm.reload
+          offline_item_correct.reload
+          offline_item_incorrect.reload
+          offline_item_correct2.reload
+        end
+        specify do
+          expect(page).to have_info_message("Attention, il n'y avait aucune réponse correcte à cet exercice, une réponse correcte a été rajoutée aléatoirement.")
+          expect(offline_qcm.statement).to eq(newstatement3)
+          expect(offline_qcm.many_answers).to eq(false)
+          expect(offline_qcm.level).to eq(newlevel3)
+          expect(offline_qcm.is_qcm).to eq(true)
+          expect(offline_item_correct.ok).to eq(true) # Set as true because we need to have an answer
+          expect(offline_item_incorrect.ok).to eq(false)
+          expect(offline_item_correct2.ok).to eq(false)
         end
       end
     end

@@ -9,16 +9,17 @@ class ApplicationController < ActionController::Base
   before_action :check_takentests
   #before_action :warning
 
-  ########## PARTIE PRIVEE ##########
   private
 
+  # Can be used when doing big changes on the server
   #def warning
-  #  flash[:info] = "Le site est en maintenance pour quelques minutes... Merci de votre patience !".html_safe
+  #  flash[:info] = "Le site est en maintenance pour quelques minutes... Merci pour votre patience !".html_safe
   #  if !@signed_in || !current_user.root?
   #    redirect_to root_path if request.path != "/"
   #  end
   #end
   
+  # Create some global variables that are always needed
   def load_global_variables
     @signed_in = signed_in?
     if params.has_key?(:start_benchmark)
@@ -33,15 +34,19 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Check that the user consented to the last policy
   def has_consent
     pp = request.fullpath.to_s
     if @signed_in && !current_user.last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
-      if Privacypolicy.where(:online => true).count > 0 # Si aucune privacy policy alors on ne redirige pas...
+      if Privacypolicy.where(:online => true).count > 0
         render 'users/read_legal' and return
+      else # If no policy at all, we automatically mark it as read
+        current_user.update_attribute(:last_policy_read, true)
       end
     end
   end
   
+  # Check that the user is signed in, and if not then redirect to the page "Please sign in to see this page"
   def signed_in_user
     unless @signed_in
       store_location
@@ -50,57 +55,92 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  # Dans le cas d'une page compromettante (du type "rendre quelqu'un administrateur"), on ne permet pas une redirection douteuse
+  # In the case of a compromising page (like "delete a user"), we don't allow a redirection (to avoid hacks)
   def signed_in_user_danger
     unless @signed_in
       render 'errors/access_refused' and return
     end
   end
   
-  # Vérifie qu'on est pas connecté
+  # Check that the user is signed out
   def signed_out_user
     if @signed_in
       redirect_to root_path
     end
   end
 
-  # Vérifie qu'il ne s'agit pas d'un administrateur dans la peau de quelqu'un
+  # Check that current user is not in the skin of somebody else
   def notskin_user
     if @signed_in && current_user.other
       flash[:danger] = "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un."
-      redirect_to(:back)
+      redirect_back(fallback_location: root_path)
     end
   end
 
-  # Vérifie qu'on est administrateur
+  # Check that current user is an admin
   def admin_user
     if !@signed_in || !current_user.sk.admin
       render 'errors/access_refused' and return
     end
   end
 
-  # Vérifie qu'on est root
+  # Check that current user is a root
   def root_user
     if !@signed_in || !current_user.sk.root
       render 'errors/access_refused' and return
     end
   end
   
-  # Vérifie qu'on est correcteur ou admin
+  # Check that current user is an admin or corrector
   def corrector_user
     if !@signed_in || (!current_user.sk.admin && !current_user.sk.corrector)
       render 'errors/access_refused' and return
     end
   end
   
-  # Vérifie que l'on a assez de points si on est étudiant
-  def enough_points
-    if !has_enough_points
+  # Check that current user can update @chapter (that must be defined)
+  def user_that_can_update_chapter
+    unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter.id))))
       render 'errors/access_refused' and return
     end
   end
   
-  # Vérifie qu'un objet existe: doit être utilisé comme "return if check_nil_object(...)"
+  # Check that current user can see @problem (that must be defined)
+  def user_that_can_see_problem
+    if !@problem.can_be_seen_by(current_user.sk)
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Check that current user can see @subject (that must be defined)
+  def user_that_can_see_subject
+    if !@subject.can_be_seen_by(current_user.sk)
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Check that current user is an organizer of @contest (that must be defined)
+  def organizer_of_contest
+    if !@contest.is_organized_by(current_user)
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Check that current user is a root or an organizer of @contest (that must be defined)
+  def organizer_of_contest_or_root
+    if !@contest.is_organized_by_or_root(current_user)
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Check that current user is an admin or an organizer of @contest (that must be defined)
+  def organizer_of_contest_or_admin
+    if !@contest.is_organized_by_or_admin(current_user)
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Check that an object exists: should be used as "return if check_nil_object(...)"
   def check_nil_object(object)
     if object.nil?
       render 'errors/access_refused' and return true
@@ -108,7 +148,7 @@ class ApplicationController < ActionController::Base
     return false
   end
   
-  # Vérifie qu'un objet est en ligne: doit être utilisé comme "return if check_offline_object(...)"
+  # Check that an object is ONLINE: should be used as "return if check_offline_object(...)"
   def check_offline_object(object)
     if !object.online
       render 'errors/access_refused' and return true
@@ -116,7 +156,7 @@ class ApplicationController < ActionController::Base
     return false
   end
   
-  # Vérifie qu'un objet est hors-ligne: doit être utilisé comme "return if check_online_object(...)"
+  # Check that an object if OFFLINE: should be used as "return if check_online_object(...)"
   def check_online_object(object)
     if object.online
       render 'errors/access_refused' and return true
@@ -124,7 +164,7 @@ class ApplicationController < ActionController::Base
     return false
   end
   
-  # Intervertit deux positions
+  # Swap the positions of two objects
   def swap_position(a, b)
     x = a.position
     a.position = b.position
@@ -133,47 +173,21 @@ class ApplicationController < ActionController::Base
     b.save
   end
 
-  # Gérer les pièces jointes
+  # Method called from several locations to create files from a form
   def create_files
     attach = Array.new
-    totalsize = 0
-
-    i = 1
-    k = 1
-    postfix = (params["postfix"].nil? ? "" : params["postfix"]);
-    while !params["hidden#{postfix}_#{k}".to_sym].nil? do
-      if !params["file#{postfix}_#{k}".to_sym].nil?
-        
-        attach.push()
-        attach[i-1] = Myfile.new(:file => params["file#{postfix}_#{k}".to_sym])
-        if !attach[i-1].save
-          destroy_files(attach, i)
-          nom = params["file#{postfix}_#{k}".to_sym].original_filename
-          @error = true
-          @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          return [];
-        end
-        totalsize = totalsize + attach[i-1].file.blob.byte_size
-
-        i = i+1
-      end
-      k = k+1
-    end
-
-    if totalsize > 5.megabytes
-      destroy_files(attach, i)
-      @error = true
-      @error_message = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)."
-      return [];
-    end
-
+    totalsize = add_new_files(attach)
+    return [] if !@error_message.empty?
+    check_files_total_size(totalsize)
+    destroy_files(attach) and return [] if !@error_message.empty?
     return attach
   end
 
-  def update_files(about)
+  # Method called from several locations to update files from a form: we should be sure that the object is valid
+  def update_files(object)
     totalsize = 0
     postfix = (params["postfix"].nil? ? "" : params["postfix"]);
-    about.myfiles.each do |f|
+    object.myfiles.each do |f|
       if params["prevFile#{postfix}_#{f.id}".to_sym].nil?
         f.destroy # Should automatically purge the file
       else
@@ -181,53 +195,68 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    about.fakefiles.each do |f|
+    object.fakefiles.each do |f|
       if params["prevFakeFile#{postfix}_#{f.id}".to_sym].nil?
         f.destroy
       end
     end
-
+    
     attach = Array.new
-
-    i = 1
+    totalsize += add_new_files(attach)
+    return [] if !@error_message.empty?
+    check_files_total_size(totalsize)
+    destroy_files(attach) and return [] if !@error_message.empty?
+    
+    attach_files(attach, object)
+  end
+  
+  # Helper method called by create_files and update_files to create all new files
+  def add_new_files(attach)
+    totalsize = 0
     k = 1
+    postfix = (params["postfix"].nil? ? "" : params["postfix"]);
     while !params["hidden#{postfix}_#{k}".to_sym].nil? do
       if !params["file#{postfix}_#{k}".to_sym].nil?
-        
-        attach.push()
-        attach[i-1] = Myfile.new(:file => params["file#{postfix}_#{k}".to_sym])
-        attach[i-1].myfiletable = about
-        if !attach[i-1].save
-          destroy_files(attach, i)
+        attach.push(Myfile.new(:file => params["file#{postfix}_#{k}".to_sym]))
+        if !attach.last.save
+          attach.pop()
+          destroy_files(attach)
           nom = params["file#{postfix}_#{k}".to_sym].original_filename
-          @error = true
           @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          return []
+          return 0;
         end
-        totalsize = totalsize + attach[i-1].file.blob.byte_size
-
-        i = i+1
+        totalsize = totalsize + attach.last.file.blob.byte_size
       end
       k = k+1
     end
-
-    if totalsize > 5.megabytes
-      destroy_files(attach, i)
-      @error = true
-      @error_message = "Vos pièces jointes font plus de 5 Mo au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)"
-      return []
-    end
+    
+    return totalsize
   end
-
-  def destroy_files(attach, i)
-    j = 1
-    while j < i do
-      attach[j-1].destroy # Should automatically purge the file
-      j = j+1
+  
+  # Helper method called by create_files and update_files to check maximum total size of files
+  def check_files_total_size(totalsize)
+    limit = (Rails.env.test? ? 15.kilobytes : 5.megabytes) # In test mode we put a very small limit
+    limit_str = (Rails.env.test? ? "15 ko" : "5 Mo")
+    if totalsize > limit
+      @error_message = "Vos pièces jointes font plus de #{limit_str} au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)"
     end
   end
   
-  # Regarde s'il y a un test virtuel qui vient de se terminer
+  # Method called from several locations to attach the uploaded files to an object
+  def attach_files(attach, object)
+    attach.each do |a|
+      a.update_attribute(:myfiletable, object)
+    end
+  end
+
+  # Method called from several locations to delete some temporarily uploaded files (because of another error)
+  def destroy_files(attach)
+    attach.each do |a|
+      a.destroy # Should automatically purge the file
+    end
+  end
+  
+  # Check if some test just got finished
   def check_takentests
     time_now = DateTime.now.to_i
     Takentestcheck.all.each do |c|
@@ -283,6 +312,7 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Method called from different locations to recompute all the contest scores
   def compute_new_contest_rankings(contest)
     # Find all users with a score > 0 in the contest
     userset = Set.new

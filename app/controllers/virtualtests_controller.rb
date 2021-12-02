@@ -3,34 +3,35 @@ class VirtualtestsController < ApplicationController
   before_action :signed_in_user, only: [:show, :new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :begin_test]
   before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :put_online, :destroy]
+  
   before_action :get_virtualtest, only: [:show, :edit, :update, :destroy]
   before_action :get_virtualtest2, only: [:begin_test, :put_online]
-  before_action :has_access, only: [:show, :begin_test]
-  before_action :online_test, only: [:show, :begin_test]
+  
+  before_action :has_access, only: [:begin_test]
+  before_action :online_test_or_admin_user, only: [:begin_test]
   before_action :can_begin, only: [:begin_test]
   before_action :can_be_online, only: [:put_online]
-  before_action :delete_online, only: [:destroy]
-  before_action :enough_points, only: [:show, :begin_test]
+  before_action :offline_test, only: [:destroy]
   before_action :in_test, only: [:show]
 
-  # Voir tous les tests virtuels
+  # Show all virtualtests (that can be seen)
   def index
   end
 
-  # Montrer un test virtuel
+  # Show one virtualtest
   def show
   end
 
-  # Créer un test virtuel
+  # Create a virtualtest (show the form)
   def new
     @virtualtest = Virtualtest.new
   end
 
-  # Editer un test virtuel
+  # Update a virtualtest (show the form)
   def edit
   end
 
-  # Créer un test virtuel 2
+  # Create a virtualtest (send the form)
   def create
     @virtualtest = Virtualtest.new
     @virtualtest.duration = params[:virtualtest][:duration]
@@ -51,7 +52,7 @@ class VirtualtestsController < ApplicationController
     end
   end
 
-  # Editer un test virtuel 2
+  # Update a virtualtest (send the form)
   def update
     @virtualtest.duration = params[:virtualtest][:duration]
     if @virtualtest.save
@@ -62,7 +63,7 @@ class VirtualtestsController < ApplicationController
     end
   end
 
-  # Supprimer un test virtuel
+  # Delete a virtualtest
   def destroy
     @virtualtest.problems.each do |p|
       p.virtualtest_id = 0
@@ -74,7 +75,7 @@ class VirtualtestsController < ApplicationController
     redirect_to virtualtests_path
   end
 
-  # Mettre en ligne
+  # Put a virtualtest online
   def put_online
     @virtualtest.online = true
     @virtualtest.save
@@ -82,44 +83,44 @@ class VirtualtestsController < ApplicationController
     redirect_to virtualtests_path
   end
 
-  # Commencer le test
+  # Begin a virtualtest
   def begin_test
-    t = Takentest.new
-    t.user = current_user.sk
-    t.virtualtest = @virtualtest
-    t.status = 0
-    t.taken_time = DateTime.now
-    t.save
-    
-    c = Takentestcheck.new
-    c.takentest = t
-    c.save
-    
+    t = Takentest.create(:user => current_user.sk, :virtualtest => @virtualtest, :status => 0, :taken_time => DateTime.now)    
+    Takentestcheck.create(:takentest => t)    
     redirect_to @virtualtest
   end
 
-  ########## PARTIE PRIVEE ##########
   private
+  
+  ########## GET METHODS ##########
 
-  # On récupère
+  # Get the virtualtest
   def get_virtualtest
     @virtualtest = Virtualtest.find_by_id(params[:id])
     return if check_nil_object(@virtualtest)
   end
 
+  # Get the virtualtest (v2)
   def get_virtualtest2
     @virtualtest = Virtualtest.find_by_id(params[:virtualtest_id])
     return if check_nil_object(@virtualtest)
   end
   
-  # Vérifie que le test est en cours
+  ########## CHECK METHODS ##########
+  
+  # Check that current user is currently doing the virtualtest
   def in_test
-    redirect_to virtualtests_path if current_user.sk.admin || current_user.sk.status(@virtualtest.id) != 0
+    virtualtest_status = current_user.sk.status(@virtualtest.id)
+    render 'errors/access_refused' and return if current_user.sk.admin || virtualtest_status == -1 # Test not started
+    redirect_to virtualtests_path and return if virtualtest_status == 1 # Test finished: smoothly redirect because it can happen when timer stops
   end
 
-  # Vérifie qu'on a accès à ce test
+  # Check that current user has access to the virtualtest
   def has_access
     if !current_user.sk.admin?
+      if !has_enough_points
+        render 'errors/access_refused' and return
+      end
       visible = true
       @virtualtest.problems.each do |p|
         p.chapters.each do |c|
@@ -132,14 +133,14 @@ class VirtualtestsController < ApplicationController
     end
   end
 
-  # Vérifie que le test est en ligne ou qu'on est admin
-  def online_test
+  # Check that the virtualtest is online or that current user is admin
+  def online_test_or_admin_user
     if !@virtualtest.online && !current_user.sk.admin
       render 'errors/access_refused' and return
     end
   end
 
-  # Vérifie que le test peut être en ligne
+  # Check that the virtual test can be put online
   def can_be_online
     nb_prob = 0
     can_online = true
@@ -150,7 +151,7 @@ class VirtualtestsController < ApplicationController
     redirect_to virtualtests_path if !can_online || nb_prob == 0
   end
 
-  # Vérifie qu'on peut commencer le test
+  # Check that current user can start the test
   def can_begin
     if current_user.sk.status(@virtualtest) >= 0
       redirect_to virtualtests_path
@@ -160,10 +161,8 @@ class VirtualtestsController < ApplicationController
     end
   end
 
-  # Vérifie qu'on ne supprime pas un test en ligne
-  def delete_online
-    if @virtualtest.online
-      render 'errors/access_refused' and return
-    end
+  # Check that the vitualtest is offline
+  def offline_test
+    return if check_online_object(@virtualtest)
   end
 end

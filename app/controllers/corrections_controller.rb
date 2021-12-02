@@ -1,25 +1,27 @@
 #encoding: utf-8
 class CorrectionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create]
+  
   before_action :get_submission, only: [:create]
+  
   before_action :correct_user, only: [:create]
   before_action :not_plagiarized, only: [:create]
   before_action :notskin_user, only: [:create]
 
-  # Créer une correction : il faut être soit admin, soit correcteur, soit l'étudiant de la soumission, et le problème doit être non plagié
+  # Create a correction (send the form)
   def create
     params[:correction][:content].strip! if !params[:correction][:content].nil?
     attach = Array.new
     totalsize = 0
 
-    # Si il faut donner un score, on vérifie que le score est donné
+    # If a score is needed, we check that the score is set
     if @submission.status == 0 && @submission.intest && @submission.score == -1 && (params["score".to_sym].nil? || params["score".to_sym].blank?)
       flash[:danger] = "Veuillez donner un score à cette solution."
       session[:ancientexte] = params[:correction][:content]
       redirect_to problem_path(@problem, :sub => @submission) and return
     end
 
-    # On vérifie qu'il n'y a pas eu de nouveau message entre
+    # We check that no new message was posted
     lastid = -1
     @submission.corrections.order(:created_at).each do |correction|
       lastid = correction.id
@@ -31,13 +33,10 @@ class CorrectionsController < ApplicationController
       redirect_to problem_path(@problem, :sub => @submission) and return
     end
 
-    # Pièces jointes
-    @error = false
+    # Attached files
     @error_message = ""
-
-    attach = create_files # Fonction commune pour toutes les pièces jointes
-
-    if @error
+    attach = create_files
+    if !@error_message.empty?
       flash[:danger] = @error_message
       session[:ancientexte] = params[:correction][:content]
       redirect_to problem_path(@problem, :sub => @submission) and return
@@ -46,37 +45,31 @@ class CorrectionsController < ApplicationController
     correction = @submission.corrections.build(params.require(:correction).permit(:content))
     correction.user = current_user.sk
 
-    # Si la sauvegarde se passe bien
     if correction.save
-      # On enregistre les pièces jointes
-      j = 1
-      while j < attach.size()+1 do
-        attach[j-1].update_attribute(:myfiletable, correction)
-        j = j+1
-      end
+      attach_files(attach, correction)
 
-      # On attribue le score s'il faut
+      # Give the score to the submission
       if @submission.status == 0 && @submission.intest && @submission.score == -1
         @submission.score = params["score".to_sym].to_i
       end
 
-      # On supprime les réservations s'il faut
+      # Delete reservations if needed
       if @submission.status == 0 && current_user.sk != @submission.user
         @submission.followings.each do |f|
           Following.delete(f.id)
         end
       end
 
-      # On change le statut de la soumission
-      # Il ne change pas s'il vaut 2 (déjà résolu)
+      # Now we change the status of the submission
+      # It does not change if it is already equal to 2 (correct)
 
-      # Si erroné et étudiant : nouveau commentaire
+      # If wrong and current user is the student: new status is 3 (new comment)
       if current_user.sk == @submission.user and @submission.status == 1
         @submission.status = 3
         @submission.save
         m = ''
 
-      # Si correcteur et nouvelle soumission : cela dépend du bouton
+      # If new/wrong, current user is corrector and he wants to keep it wrong: new status is 1 (wrong)
       elsif (current_user.sk != @submission.user) and (@submission.status == 0 or @submission.status == 3) and
         (params[:commit] == "Poster et refuser la soumission" or
         params[:commit] == "Poster et laisser la soumission comme erronée")
@@ -84,12 +77,12 @@ class CorrectionsController < ApplicationController
         @submission.save
         m = ' et soumission marquée comme incorrecte'
 
-      # Si soumission erronée et on accepte : devient correcte
+      # If current user is corrector and he wants to accept it: new status is 2 (correct)
       elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
         @submission.status = 2
         @submission.save
 
-        # On donne les points et on enregistre qu'il est résolu
+        # If this is the first correct submission of the user to this problem, we give the points and mark problem as solved
         unless @submission.user.pb_solved?(@problem)
           point_attribution(@submission.user, @problem)
           link = Solvedproblem.new
@@ -103,7 +96,7 @@ class CorrectionsController < ApplicationController
           link.resolution_time = resolution_time
           link.save
           
-          # On update les statistiques du problème
+          # Update the statistics of the problem
           @problem.nb_solves = @problem.nb_solves + 1
           if @problem.first_solve_time.nil? or @problem.first_solve_time > resolution_time
             @problem.first_solve_time = resolution_time
@@ -115,15 +108,14 @@ class CorrectionsController < ApplicationController
         end
         m = ' et soumission marquée comme correcte'
 
-        # On supprime les brouillons !
-        pb = @submission.problem
-        brouillon = pb.submissions.where('user_id = ? AND status = -1', @submission.user).first
-        if !brouillon.nil?
-          brouillon.destroy
+        # Delete the drafts of the user to the problem
+        draft = @problem.submissions.where('user_id = ? AND status = -1', @submission.user).first
+        if !draft.nil?
+          draft.destroy
         end
       end
 
-      # On gère les notifications
+      # Deal with notifications
       if current_user.sk != @submission.user
         following = Following.where(:user_id => current_user.sk.id, :submission_id => @submission.id).first
         if following.nil?
@@ -156,48 +148,53 @@ class CorrectionsController < ApplicationController
         @submission.followings.update_all(read: false)
       end
 
-      # On change la valeur de last_comment_time
+      # Change the value of last_comment_time
       @submission.last_comment_time = correction.created_at
       @submission.save
 
       flash[:success] = "Réponse postée#{m}."
-      redirect_to problem_path(@submission.problem, :sub => @submission)
+      redirect_to problem_path(@problem, :sub => @submission)
 
-    # Si il y a eu une erreur au moment de sauver
-    else
-      destroy_files(attach, attach.size()+1)
+    else # If there is an error when saving
+      destroy_files(attach)
       session[:ancientexte] = params[:correction][:content]
       flash[:danger] = error_list_for(correction)
-      redirect_to problem_path(@submission.problem, :sub => @submission)
+      redirect_to problem_path(@problem, :sub => @submission)
     end
   end
 
-  ########## PARTIE PRIVEE ##########
   private
   
+  ########## GET METHODS ##########
+  
+  # Get the submission
   def get_submission
     @submission = Submission.find_by_id(params[:submission_id])
     return if check_nil_object(@submission)
     @problem = @submission.problem
   end
+  
+  ########## CHECK METHODS ##########
 
-  # Vérifie qu'il s'agit du bon utilisateur ou d'un admin ou d'un correcteur
+  # Check that current user is the submission user, or an admin or a corrector having access to the problem
   def correct_user
-    if @submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@submission.problem))
+    if @submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@problem))
       render 'errors/access_refused' and return
     end
   end
 
-  # Vérifie que l'étudiant n'a pas de solution plagiée à ce problème
+  # Check that the student does not have a plagiarized submission to this problem
   def not_plagiarized
-    if Submission.where(:user_id => @submission.user, :problem_id => @submission.problem, :status => 4).count > 0
+    if Submission.where(:user_id => @submission.user, :problem_id => @problem, :status => 4).count > 0
       render 'errors/access_refused' and return
     end
   end
+  
+  ########## GET METHODS ##########
 
-  # Attribution des points d'un problème
+  # Helper method to give the points of a problem to a user
   def point_attribution(user, problem)
-    if !user.pb_solved?(problem) # Eviter les doubles comptages
+    if !user.pb_solved?(problem) # Avoid giving two times the points to a same problem
       pt = problem.value
 
       partials = user.pointspersections

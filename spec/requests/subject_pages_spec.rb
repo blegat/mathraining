@@ -483,6 +483,31 @@ describe "Subject pages" do
       end
     end
     
+    describe "modifies a subject with too many files" do # 3 x image1 should do > 15 ko, which is the limit in test mode
+      let!(:subjectmyfile) { FactoryGirl.create(:subjectmyfile, myfiletable: sub_user) }
+      before do
+        visit subject_path(sub_user)
+        click_link("Modifier ce sujet")
+        wait_for_ajax
+        fill_in "MathInputEditSubject", with: newcontent
+        click_button "addFileEditSubject" # Ajouter une pièce jointe
+        wait_for_ajax
+        attach_file("fileEditSubject_1", File.absolute_path(attachments_folder + image1))
+        click_button "addFileEditSubject" # Ajouter une pièce jointe
+        wait_for_ajax
+        attach_file("fileEditSubject_2", File.absolute_path(attachments_folder + image1))
+        click_button "Modifier"
+        sub_user.reload
+        sleep(10)
+      end
+      specify do
+        expect(page).to have_error_message("Vos pièces jointes font plus de 15 ko au total")
+        expect(sub_user.content).not_to eq(newcontent)
+        expect(sub_user.myfiles.count).to eq(1)
+        expect(sub_user.myfiles.first.file.filename.to_s).to eq(image1)
+      end
+    end
+    
     describe "creates a subject in relation with a section" do
       before do
         visit new_subject_path

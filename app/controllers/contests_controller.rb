@@ -3,28 +3,31 @@ class ContestsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online]
   before_action :admin_user, only: [:new, :create, :destroy, :put_online]
+  
   before_action :check_contests, only: [:index, :show] # Defined in application_controller.rb
+  
   before_action :get_contest, only: [:show, :edit, :update, :destroy]
   before_action :get_contest2, only: [:put_online, :cutoffs, :define_cutoffs]
-  before_action :is_organizer_or_admin, only: [:edit, :update, :cutoffs, :define_cutoffs]
-  before_action :can_see, only: [:show]
+  
+  before_action :organizer_of_contest_or_admin, only: [:edit, :update, :cutoffs, :define_cutoffs]
+  before_action :can_see_contest, only: [:show]
   before_action :can_be_online, only: [:put_online]
-  before_action :delete_online, only: [:destroy]
+  before_action :offline_contest, only: [:destroy]
   before_action :can_define_cutoffs, only: [:cutoffs, :define_cutoffs]
 
-  # Voir tous les concours
+  # Show all the contests
   def index
   end
 
-  # Montrer un concours
+  # Show one contest
   def show
   end
  
-  # Choisir les médailles 
+  # Choose the cutoffs for a contest (show the form)
   def cutoffs
   end
   
-  # Choisir les médailles 2
+  # Choose the cutoffs for a contest (send the form)
   def define_cutoffs
     @contest.bronze_cutoff = params[:bronze_cutoff].to_i
     @contest.silver_cutoff = params[:silver_cutoff].to_i
@@ -38,16 +41,16 @@ class ContestsController < ApplicationController
     redirect_to @contest
   end
 
-  # Créer un concours
+  # Create a contest (show the form)
   def new
     @contest = Contest.new
   end
 
-  # Editer un concours
+  # Update a contest (show the form)
   def edit
   end
 
-  # Créer un concours 2
+  # Create a contest (send the form)
   def create
     @contest = Contest.new(params.require(:contest).permit(:number, :description, :medal))
 
@@ -59,7 +62,7 @@ class ContestsController < ApplicationController
     end
   end
 
-  # Editer un concours 2
+  # Update a contest (send the form)
   def update
     if @contest.update_attributes(params.require(:contest).permit(:number, :description, :medal))
       flash[:success] = "Concours modifié."
@@ -69,21 +72,21 @@ class ContestsController < ApplicationController
     end
   end
 
-  # Supprimer un concours
+  # Delete a contest
   def destroy
     @contest.destroy
     flash[:success] = "Concours supprimé."
     redirect_to contests_path
   end
 
-  # Mettre en ligne
+  # Put a contest online
   def put_online
     @contest.status = 1
     @contest.save
     date_in_one_day = 1.day.from_now
     @contest.contestproblems.order(:number, :id).each do |p|
       p.status = 1
-      if p.start_time <= date_in_one_day # Problem start in less than one day: there will be no post on the forum one day before
+      if p.start_time <= date_in_one_day # Problem starts in less than one day: there will be no post on the forum one day before
         p.reminder_status = 1
       end
       p.save
@@ -91,43 +94,40 @@ class ContestsController < ApplicationController
       c.contestproblem = p
       c.save
     end
-    # On crée le sujet de forum correspondant
     
+    # Create the subject on the forum for this new contest
     create_forum_subject(@contest)
 
     flash[:success] = "Concours mis en ligne."
     redirect_to contests_path
   end
 
-  ########## PARTIE PRIVEE ##########
   private
 
-  # On récupère
+  ########## GET METHODS ##########
+
+  # Get the contest
   def get_contest
     @contest = Contest.find_by_id(params[:id])
     return if check_nil_object(@contest)
   end
   
-  # On récupère
+  # Get the contest (v2)
   def get_contest2
     @contest = Contest.find_by_id(params[:contest_id])
     return if check_nil_object(@contest)
   end
   
-  def is_organizer_or_admin
-    if !@contest.is_organized_by_or_admin(current_user)
-      render 'errors/access_refused' and return
-    end
-  end
+  ########## CHECK METHODS ##########
   
-  # Si le concours n'est pas en ligne et on n'est ni organisateur ni administrateur, on ne peut pas voir le concours
-  def can_see
+  # Check if current user can see the contest
+  def can_see_contest
     if (@contest.status == 0 && (!@signed_in || !@contest.is_organized_by_or_admin(current_user)))
       render 'errors/access_refused' and return
     end
   end
 
-  # Vérifie que le concours peut être en ligne
+  # Check if the contest can be put online
   def can_be_online
     date_in_one_hour = 1.hour.from_now
     if @contest.contestproblems.count == 0
@@ -143,36 +143,30 @@ class ContestsController < ApplicationController
     end
   end
 
-  # Vérifie qu'on ne supprime pas un concours en ligne
-  def delete_online
+  # Check that the contest is offline
+  def offline_contest
     if @contest.status > 0
       render 'errors/access_refused' and return
     end
   end
   
-  # Vérifie qu'on peut définir les cutoffs pour les médailles
+  # Check if cutoffs can be defined for this contest
   def can_define_cutoffs
     if @contest.status != 3 || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.sk.root)
       render 'errors/access_refused' and return
     end
   end
 
-  # Créer le sujet de Forum associé au concours
+  ########## HELPER METHODS ##########
+
+  # Helper method to create the forum subject for a contest
   def create_forum_subject(contest)
-    s = Subject.new
-    s.contest = contest
-    s.user_id = 0
-    s.title = "Concours ##{contest.number}"
-    s.content = helpers.get_new_contest_forum_message(contest)
-    
-    Category.all.each do |c|
+    s = Subject.create(:contest => contest, :user_id => 0, :title => "Concours ##{contest.number}", :content => helpers.get_new_contest_forum_message(contest), :last_comment_time => DateTime.now, :last_comment_user_id => 0)
+
+    Category.select(:name, :id).each do |c|
       if c.name == "Mathraining"
-        s.category = c
+        s.update_attribute(:category_id, c.id)
       end
     end
-    
-    s.last_comment_time = DateTime.now
-    s.last_comment_user_id = 0 # Message automatique
-    s.save
   end
 end

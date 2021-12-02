@@ -2,7 +2,7 @@
 
 <% @submission = problem.submissions.where('user_id = ? AND status = -1', current_user.sk).first %>
 
-<%= form_for :submission, url: problem_submission_update_brouillon_path(problem, @submission), :html => { :multipart => true } do |f| %>
+<%= form_for :submission, url: problem_submission_update_draft_path(problem, @submission), :html => { :multipart => true } do |f| %>
 
   <!-- Nouvelle soumission -->
   <h3>Nouvelle soumission</h3>

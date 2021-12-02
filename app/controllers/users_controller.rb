@@ -2,17 +2,19 @@
 class UsersController < ApplicationController
   before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :allnewsub, :allmynewsub, :notifs_show, :groups, :read_legal, :followed_users, :remove_followingmessage]
   before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user, :add_followingmessage]
-  before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
-  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name]
-  before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:unactivate, :reactivate, :switch_wepion, :change_group]
-  before_action :target_not_root, only: [:destroy, :destroydata]
   before_action :corrector_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
   before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_names, :validate_name, :change_name]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :group_user, only: [:groups]
+  
+  before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
+  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name]
+  
+  before_action :correct_user, only: [:edit, :update]
+  before_action :target_not_root, only: [:destroy, :destroydata]
 
-  # Index de tous les users avec scores
+  # Show all users with their scores
   def index
     @number_by_page = (Rails.env.test? ? 10 : 50) # For tests we put only 10 by page
 
@@ -94,7 +96,7 @@ class UsersController < ApplicationController
     fill_user_info(@all_users, @x_recent, @x_persection, @x_globalrank, @x_rating, @x_country, @x_linked_name)
   end
 
-  # Index des utilisateurs suivis
+  # Show all followed users
   def followed_users
     @allsec = Section.order(:id).where(:fondation => false).to_a
 
@@ -118,17 +120,21 @@ class UsersController < ApplicationController
     @x_linked_name = Array.new(num)
     fill_user_info(@all_users, @x_recent, @x_persection, @x_globalrank, @x_rating, @x_country, @x_linked_name)
   end
+  
+  # Show one user
+  def show
+  end
 
-  # S'inscrire au site : il faut être en ligne
+  # Create a user, i.e. register on the website (show the form)
   def new
     @user = User.new
   end
 
-  # Modifier son compte : il faut être en ligne et que ce soit la bonne personne
+  # Update a user (show the form)
   def edit
   end
 
-  # S'inscrire au site 2 : il faut être hors ligne
+  # Create a user, i.e. register on the website (send the form)
   def create
     @user = User.new(params.require(:user).permit(:first_name, :last_name, :see_name, :email, :email_confirmation, :sex, :year, :password, :password_confirmation, :accept_analytics))
     @user.key = SecureRandom.urlsafe_base64
@@ -162,11 +168,7 @@ class UsersController < ApplicationController
     end
   end
 
-  # Voir un utilisateur
-  def show
-  end
-
-  # Modifier son compte 2 : il faut être en ligne et que ce soit la bonne personne
+  # Update a user (send the form)
   def update
     old_last_name = @user.last_name
     old_first_name = @user.first_name
@@ -192,7 +194,7 @@ class UsersController < ApplicationController
     end
   end
 
-  # Supprimer un utilisateur : il faut être root
+  # Delete a user
   def destroy
     remove_skins(@user)
     @user.destroy
@@ -200,7 +202,7 @@ class UsersController < ApplicationController
     redirect_to @user
   end
 
-  # Rendre administrateur : il faut être root
+  # Mark user as administrator
   def create_administrator
     @user.admin = true
     @user.save
@@ -209,7 +211,7 @@ class UsersController < ApplicationController
     redirect_to @user
   end
 
-  # Ajouter / Enlever du groupe Wépion
+  # Add or remove a user from Wépion group
   def switch_wepion
     if !@user.admin?
       if @user.wepion
@@ -224,7 +226,7 @@ class UsersController < ApplicationController
     redirect_to @user
   end
 
-  # Ajouter / Enlever des correcteurs
+  # Add or remove a user from correctors
   def switch_corrector
     if !@user.admin?
       if !@user.corrector
@@ -237,7 +239,7 @@ class UsersController < ApplicationController
     redirect_to @user
   end
 
-  # Changer de groupe
+  # Change the Wépion group of a user
   def change_group
     g = params[:group]
     @user.group = g
@@ -246,7 +248,7 @@ class UsersController < ApplicationController
     redirect_to @user
   end
 
-  # Activer son compte
+  # Activate an account
   def activate
     if !@user.email_confirm && @user.key.to_s == params[:key].to_s
       @user.toggle!(:email_confirm)
@@ -259,11 +261,11 @@ class UsersController < ApplicationController
     redirect_to root_path
   end
   
-  # Mot de passe oublié : première page
+  # Password forgotten: first page
   def forgot_password
   end
 
-  # Mot de passe oublié : vérification du captcha et envoi de l'email
+  # Password forgotten: check captcha and send email
   def password_forgotten
     @user = User.new
     render 'forgot_password' and return if (Rails.env.production? and !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
@@ -285,7 +287,7 @@ class UsersController < ApplicationController
     redirect_to root_path
   end
 
-  # Mot de passe oublié : page pour changer son mot de passe (a laquelle on arrive depuis l'email)
+  # Password forgotten: page to change password (we arrive here from email)
   def recup_password  
     if @user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?
       flash[:danger] = "Ce lien n'est pas valide (ou a déjà été utilisé)."
@@ -294,22 +296,22 @@ class UsersController < ApplicationController
       flash[:danger] = "Ce lien n'est plus valide (il expirait après une heure). Veuillez en redemander un autre."
       redirect_to root_path
     else
-      # Si le paramètre "signed_out" n'est pas présent alors on le rajoute
-      # C'est pour éviter le problème qui arrive si quelqu'un essaye de se connecter depuis cette page
-      # En effet quand on se connecte on est redirigé vers la page précédente, et celle-ci déconnectait immédiatement l'utilisateur...
+      # If the "signed_out" parameter is not there than we add it
+      # This is to avoid the problem that occurs when somebody tries to connect from this page
+      # Indeed when we connect, we are redirected to the previous page, and this page automatically disconnects the user
       if(params[:signed_out].nil?)
         if @signed_in
           sign_out
         end
         redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
       elsif @signed_in
-        # Si on a "signed_out" et qu'on est connecté, ça veut dire qu'on vient de se connecter
+        # If the "signed_out" is present and we are connected, it means that we just connected
         redirect_to root_path
       end
     end
   end
   
-  # Mot de passe oublié : verification du nouveau mot de passe
+  # Password forgotten: check and set new password
   def change_password
     if (@user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?)
       flash[:danger] = "Une erreur est survenue. Il semble que votre lien pour changer de mot de passe ne soit plus valide."
@@ -334,34 +336,34 @@ class UsersController < ApplicationController
   
   end
 
-  # Voir toutes les soumissions (admin)
+  # Show all submissions
   def allsub
-    @notifications = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where(visible: true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+    @notifications = Submission.joins(:problem).select(needed_columns_for_submissions).includes(:user, followings: :user).where(visible: true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
 
-  # Voir les soumissions auxquelles on participe (admin)
+  # Show all submissions in which we took part
   def allmysub
-    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns).includes(:user).where("status > 0").order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns_for_submissions).includes(:user).where("status > 0").order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
   
-  # Voir toutes les nouvelles soumissions (admin)
+  # Show all new submissions
   def allnewsub
-    @notifications = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where(status: 0, visible: true).order("submissions.created_at").to_a
+    @notifications = Submission.joins(:problem).select(needed_columns_for_submissions).includes(:user, followings: :user).where(status: 0, visible: true).order("submissions.created_at").to_a
   end
 
-  # Voir les nouveaux commentaires des soumissions auxquelles on participe (admin)
+  # Show all new comments to submissions in which we took part
   def allmynewsub
-    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
-    @notifications_other = Submission.joins(:problem).select(needed_columns).includes(:user, followings: :user).where("status = 3").order("submissions.last_comment_time").to_a
+    @notifications = current_user.sk.followed_submissions.joins(:problem).select(needed_columns_for_submissions).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
+    @notifications_other = Submission.joins(:problem).select(needed_columns_for_submissions).includes(:user, followings: :user).where("status = 3").order("submissions.last_comment_time").to_a
   end
 
-  # Voir les notifications (étudiant)
+  # Show notifications of new corrections (for a student)
   def notifs_show
     @notifs = current_user.sk.notifs.order("created_at")
     render :notifs
   end
 
-  # Prendre la peau d'un utilisateur
+  # Take the skin of a user
   def take_skin
     unless @user.admin || !@user.active # Cannot take the skin of an admin or inactive user
       current_user.update_attribute(:skin, @user.id)
@@ -370,7 +372,7 @@ class UsersController < ApplicationController
     redirect_back(fallback_location: root_path)
   end
 
-  # Quitter la peau d'un utilisateur
+  # Leave the skin of a user
   def leave_skin
     if current_user.id == params[:user_id].to_i
       current_user.update_attribute(:skin, 0)
@@ -379,7 +381,7 @@ class UsersController < ApplicationController
     redirect_back(fallback_location: root_path)
   end
 
-  # Supprimer les données d'un compte
+  # Deletes data of one account
   def destroydata
     if @user.active
       flash[:success] = "Les données personnelles de #{@user.name} ont été supprimées."
@@ -410,18 +412,20 @@ class UsersController < ApplicationController
     redirect_to root_path
   end
 
+  # Show Wépion groups
   def groups
   end
 
+  # Show correctors (and some statistics)
   def correctors
   end
   
-  # Page with all names to validate
+  # Show all names to validate
   def validate_names
     @users_to_validate = User.where(:admin => false, :valid_name => false, :email_confirm => true).all
   end
   
-  # To validate one name (called by javascript)
+  # Validate one name (through js)
   def validate_name
     u = User.find(params[:userid].to_i)
     suggestion = params[:suggestion].to_i
@@ -433,17 +437,23 @@ class UsersController < ApplicationController
       end
       u.save
     end
+    
+    respond_to do |format|
+      format.js
+    end
   end
   
-  # To change one name
+  # Link to change one user name
   def change_name
     current_user.update_attribute(:skin, @user.id)
     redirect_to edit_user_path(@user)
   end
   
+  # Page to read last privacy policy
   def read_legal
   end
   
+  # Accept last privacy policy
   def accept_legal
     if !params.has_key?("consent1") || !params.has_key?("consent2")
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir continuer sur le site."
@@ -457,6 +467,7 @@ class UsersController < ApplicationController
     end
   end
 
+  # Start following a user
   def add_followed_user
     unless current_user.sk == @user or current_user.sk.followed_users.exists?(@user.id) or @user.admin?
       if current_user.sk.followed_users.size >= 30
@@ -469,12 +480,14 @@ class UsersController < ApplicationController
     redirect_to @user
   end
 
+  # Stop following a user
   def remove_followed_user
     current_user.sk.followed_users.destroy(@user)
     flash[:success] = "Vous ne suivez plus #{ @user.name }."
     redirect_to @user
   end
 
+  # Start receiving emails for new tchatmessages
   def add_followingmessage
     current_user.sk.follow_message = true
     current_user.sk.save
@@ -483,6 +496,7 @@ class UsersController < ApplicationController
     redirect_back(fallback_location: new_discussion_path)
   end
 
+  # Stop receiving emails for new tchatmessages
   def remove_followingmessage
     current_user.sk.follow_message = false
     current_user.sk.save
@@ -491,9 +505,11 @@ class UsersController < ApplicationController
     redirect_back(fallback_location: new_discussion_path)
   end
 
-  ########## PARTIE PRIVEE ##########
   private
+  
+  ########## GET METHODS ##########
 
+  # Get the user
   def get_user
     @user = User.find_by_id(params[:id])
     if @user.nil? || !@user.active?
@@ -501,6 +517,7 @@ class UsersController < ApplicationController
     end
   end
   
+  # Get the user 2
   def get_user2
     @user = User.find_by_id(params[:user_id])
     if @user.nil? || !@user.active?
@@ -508,32 +525,39 @@ class UsersController < ApplicationController
     end
   end
   
-  # Vérifie qu'il s'agit de la bonne personne
-  def correct_user
-    if current_user.sk.id != @user.id
-      render 'errors/access_refused' and return
-    end
-  end
-
+  ########## CHECK METHODS ##########
+  
+  # Check that current user is in some Wépion group
   def group_user
     if !current_user.sk.admin && current_user.sk.group == ""
       render 'errors/access_refused' and return
     end
   end
   
+  # Check that the targer user is current user
+  def correct_user
+    if current_user.sk.id != @user.id
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Check that the target user is not a root
   def target_not_root
     if @user.root?
       render 'errors/access_refused' and return
     end
   end
   
-  # Make everybody with some skin leaves this skin
+  ########## HELPER METHODS ##########
+  
+  # Helper method to make everybody with some skin leaves this skin
   def remove_skins(user)
     User.where(skin: @user.id).each do |u|
       u.update_attribute(:skin, 0)
     end
   end
-
+  
+  # Helper method to fill informations for a set of users (for ranking page)
   def fill_user_info(users, recent, persection, globalrank, rating, country, linked_name)
     global_user_id_to_local_id = Array.new((User.last.nil? ? 0 : User.last.id) + 1)
 
@@ -602,7 +626,8 @@ class UsersController < ApplicationController
     end
   end
   
-  def needed_columns
+  # Helper method to list columns that are needed to list submissions
+  def needed_columns_for_submissions
     return "submissions.id, submissions.user_id, submissions.problem_id, submissions.status, submissions.star, submissions.created_at, submissions.last_comment_time, submissions.intest, problems.level, problems.section_id"
   end
   

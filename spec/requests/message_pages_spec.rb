@@ -169,6 +169,19 @@ describe "Message pages" do
         end
       end
     end
+    
+    describe "mistakenly sends a message while in the skin of someone" do # Can happen with multiple tabs
+      before do
+        visit subject_path(sub)
+        root.update_attribute(:skin, user.id)
+        fill_in "MathInputNewMessage", with: content2
+        click_button "Poster"
+      end
+      specify do
+        expect(page).to have_error_message("Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un.")
+        expect(sub.messages.order(:id).last.content).not_to eq(content2)
+      end
+    end
   end
   
   # -- TESTS THAT REQUIRE JAVASCRIPT --
