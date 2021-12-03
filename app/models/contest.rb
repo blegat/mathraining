@@ -45,15 +45,15 @@ class Contest < ActiveRecord::Base
   validates :number, presence: true, numericality: { greater_than: 0 }
   
   def is_organized_by(user)
-    return (!user.nil? && organizers.include?(user.sk))
+    return organizers.include?(user)
   end
   
   def is_organized_by_or_root(user)
-    return ((!user.nil? && user.sk.root?) || is_organized_by(user))
+    return user.root? || is_organized_by(user)
   end
   
   def is_organized_by_or_admin(user)
-    return ((!user.nil? && user.sk.admin?) || is_organized_by(user))
+    return user.admin? || is_organized_by(user)
   end
   
   # Méthode appelée toutes les heures piles (voir schedule.rb)

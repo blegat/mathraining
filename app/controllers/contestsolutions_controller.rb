@@ -119,7 +119,7 @@ class ContestsolutionsController < ApplicationController
   def can_send_solution
     @send_solution = 0 # Cannot send a solution
     mycontestsolution = nil
-    if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.status == 2
+    if !@contest.is_organized_by_or_admin(current_user.sk) && @contestproblem.status == 2
       mycontestsolution = @contestproblem.contestsolutions.where(:user => current_user.sk).first
       if !mycontestsolution.nil?
         @send_solution = 2 # A solution already exists
@@ -140,7 +140,7 @@ class ContestsolutionsController < ApplicationController
     end
   end
   
-  # Check if current_user can delete a solution
+  # Check if current user can delete a solution
   def can_delete_solution
     unless @contestproblem.status == 2 && !@contestsolution.official && @contestsolution.user == current_user.sk && !current_user.other
       flash[:danger] = "Vous ne pouvez pas supprimer cette solution."

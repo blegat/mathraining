@@ -148,7 +148,7 @@ class ContestproblemsController < ApplicationController
   
   # Check that current user has access to the problem
   def has_access
-    if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.status <= 1
+    if !@contest.is_organized_by_or_admin(current_user.sk) && @contestproblem.status <= 1
       render 'errors/access_refused' and return
     end
   end

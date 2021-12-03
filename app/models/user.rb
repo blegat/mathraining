@@ -193,7 +193,7 @@ class User < ActiveRecord::Base
   end
 
   # Rend le nombre de nouveaux messages sur le forum
-  def combien_forum(include_myself)
+  def num_unseen_subjects(include_myself)
     if include_myself
       if self.admin? or (self.corrector? and self.wepion?)
         return Subject.where("last_comment_time > ?", self.last_forum_visit_time).count

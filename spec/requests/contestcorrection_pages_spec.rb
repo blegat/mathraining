@@ -20,7 +20,7 @@ describe "Contestcorrection pages" do
   let!(:contestproblem_finished) { FactoryGirl.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: 3) }
   
   let(:officialsol_finished) { contestproblem_finished.contestsolutions.where(:official => true).first }
-  let!(:usersol_finished) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_finished, user: user_participating) }
+  let!(:usersol_finished) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_finished, user: user_participating, corrected: false) }
   
   let!(:newcorrection) { "Voici une correction spontanée." }
   let!(:newcorrection2) { "Voici une nouvelle correction." }

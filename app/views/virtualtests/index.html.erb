@@ -8,14 +8,7 @@
 
 <%= render 'infovt' %>
 
-<% if !@signed_in %>
-
-  <!-- Si pas connecté, on ne peut rien voir -->
-  <div style="font-weight:bold;">
-  Les tests virtuels ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.
-  </div>
-
-<% elsif !current_user.sk.admin? && current_user.sk.rating < 200 %>
+<% if !has_enough_points %>
 
   <!-- Si moins de 200 points, on ne peut rien voir -->
   <div style="font-weight:bold;">

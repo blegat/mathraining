@@ -4,7 +4,7 @@ module ProblemsHelper
   
   # Get all accessible problems, for the current user
   def accessible_problems(columns)
-    return [] if (!@signed_in || (!current_user.sk.admin? && current_user.sk.rating < 200))
+    return [] if !has_enough_points
     
     return Problems.select(get_problem_columns_string(column)) if current_user.sk.admin?
     
@@ -20,7 +20,7 @@ module ProblemsHelper
   
   # Get all accessible problems of one section, for the current user
   def accessible_problems_from_section(section, columns)
-    return [] if (!@signed_in || (!current_user.sk.admin? && current_user.sk.rating < 200))
+    return [] if !has_enough_points
     
     return section.problems.select(get_problem_columns_string(columns)).order("level, number") if current_user.sk.admin?
     

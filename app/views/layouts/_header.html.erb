@@ -146,13 +146,13 @@
 
       <!-- Forum -->
       <% if @signed_in %>
-        <% combien_nouveau = current_user.sk.combien_forum(false) %>
+        <% num_unseen_subjects = current_user.sk.num_unseen_subjects(false) %>
       <% end %>
 
-      <% if @signed_in && combien_nouveau == 0 %>
+      <% if @signed_in && num_unseen_subjects == 0 %>
         <li><%= link_to "Forum", subjects_path %></li>
       <% elsif @signed_in %>
-        <li style="font-weight:bold;"><%= link_to "Forum (#{combien_nouveau})", subjects_path %></li>
+        <li style="font-weight:bold;"><%= link_to "Forum (#{num_unseen_subjects})", subjects_path %></li>
       <% end %>
 
       <!-- Statistiques -->

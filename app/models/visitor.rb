@@ -18,11 +18,7 @@ class Visitor < ActiveRecord::Base
     elsif(timenow.hour == 23) # In case of ~23:59
       yesterday = timenow.to_date
     else # Strange: do not compute visitors
-      return if !Rails.env.test?
-    end
-    
-    if Rails.env.test? # We want to be able to test this method at any time of the day
-      yesterday = timenow.to_date - 1.day
+      return
     end
     
     # Check if already computed (strange)

@@ -109,7 +109,7 @@ class MyfilesController < ApplicationController
   #    contestsolution = (type == "Contestsolution" ? @myfile.myfiletable : @myfile.myfiletable.contestsolution)
   #    contestproblem = contestsolution.contestproblem
   #    contest = contestproblem.contest
-  #    redirect_to root_path unless (contest.is_organized_by_or_root(current_user) || contestsolution.user == current_user.sk || (contestproblem.status >= 4 && contestsolution.score == 7))
+  #    redirect_to root_path unless (contest.is_organized_by_or_root(current_user.sk) || contestsolution.user == current_user.sk || (contestproblem.status >= 4 && contestsolution.score == 7))
   #    redirect_to root_path if (type == "Contestcorrection" && contestsolution.user == current_user.sk && contestproblem.status < 4)
   #  end
   #end

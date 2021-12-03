@@ -122,7 +122,7 @@ class ContestsController < ApplicationController
   
   # Check if current user can see the contest
   def can_see_contest
-    if (@contest.status == 0 && (!@signed_in || !@contest.is_organized_by_or_admin(current_user)))
+    if (@contest.status == 0 && !(@signed_in && @contest.is_organized_by_or_admin(current_user.sk)))
       render 'errors/access_refused' and return
     end
   end

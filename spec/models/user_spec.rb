@@ -281,4 +281,76 @@ describe User do
       end
     end
   end
+  
+  describe "number of unseen forum subjects" do
+    let!(:user) {                  FactoryGirl.create(:user,  last_forum_visit_time: DateTime.now - 3.days) }
+    let!(:user_wepion) {           FactoryGirl.create(:user,  last_forum_visit_time: DateTime.now - 3.days, wepion: true) }
+    let!(:user_corrector) {        FactoryGirl.create(:user,  last_forum_visit_time: DateTime.now - 3.days, corrector: true) }
+    let!(:user_wepion_corrector) { FactoryGirl.create(:user,  last_forum_visit_time: DateTime.now - 3.days, wepion: true, corrector: true) }
+    let!(:user_admin) {            FactoryGirl.create(:admin, last_forum_visit_time: DateTime.now - 3.days) }
+    
+    let!(:subject)            { FactoryGirl.create(:subject, last_comment_time: DateTime.now - 1.day, last_comment_user: user) }
+    let!(:subject_wepion)     { FactoryGirl.create(:subject, last_comment_time: DateTime.now - 1.day, last_comment_user: user_wepion, for_wepion: true) }
+    let!(:subject_correctors) { FactoryGirl.create(:subject, last_comment_time: DateTime.now - 1.day, last_comment_user: user_admin, for_correctors: true) }
+    
+    describe "when all subjects are new" do
+      it do
+        expect(user.num_unseen_subjects(true)).to eq(1)
+        expect(user_wepion.num_unseen_subjects(true)).to eq(2)
+        expect(user_corrector.num_unseen_subjects(true)).to eq(2)
+        expect(user_wepion_corrector.num_unseen_subjects(true)).to eq(3)
+        expect(user_admin.num_unseen_subjects(true)).to eq(3)
+        
+        expect(user.num_unseen_subjects(false)).to eq(0) # One subject less
+        expect(user_wepion.num_unseen_subjects(false)).to eq(1) # One subject less
+        expect(user_corrector.num_unseen_subjects(false)).to eq(2)
+        expect(user_wepion_corrector.num_unseen_subjects(false)).to eq(3)
+        expect(user_admin.num_unseen_subjects(false)).to eq(2) # One subject less
+      end
+    end
+    
+    describe "when all subjects are older" do
+      before do
+        subject.update_attribute(:last_comment_time, DateTime.now - 4.days)
+        subject_wepion.update_attribute(:last_comment_time, DateTime.now - 4.days)
+        subject_correctors.update_attribute(:last_comment_time, DateTime.now - 4.days)
+      end
+      
+      it do
+        expect(user.num_unseen_subjects(true)).to eq(0)
+        expect(user_wepion.num_unseen_subjects(true)).to eq(0)
+        expect(user_corrector.num_unseen_subjects(true)).to eq(0)
+        expect(user_wepion_corrector.num_unseen_subjects(true)).to eq(0)
+        expect(user_admin.num_unseen_subjects(true)).to eq(0)
+        
+        expect(user.num_unseen_subjects(false)).to eq(0)
+        expect(user_wepion.num_unseen_subjects(false)).to eq(0)
+        expect(user_corrector.num_unseen_subjects(false)).to eq(0)
+        expect(user_wepion_corrector.num_unseen_subjects(false)).to eq(0)
+        expect(user_admin.num_unseen_subjects(false)).to eq(0)
+      end
+    end
+    
+    describe "when some subjects are older" do
+      before do
+        subject.update_attribute(:last_comment_time, DateTime.now - 4.days)
+        subject_wepion.update_attribute(:last_comment_time, DateTime.now - 1.days)
+        subject_correctors.update_attribute(:last_comment_time, DateTime.now - 4.days)
+      end
+      
+      it do
+        expect(user.num_unseen_subjects(true)).to eq(0)
+        expect(user_wepion.num_unseen_subjects(true)).to eq(1)
+        expect(user_corrector.num_unseen_subjects(true)).to eq(0)
+        expect(user_wepion_corrector.num_unseen_subjects(true)).to eq(1)
+        expect(user_admin.num_unseen_subjects(true)).to eq(1)
+        
+        expect(user.num_unseen_subjects(false)).to eq(0)
+        expect(user_wepion.num_unseen_subjects(false)).to eq(0)
+        expect(user_corrector.num_unseen_subjects(false)).to eq(0)
+        expect(user_wepion_corrector.num_unseen_subjects(false)).to eq(1)
+        expect(user_admin.num_unseen_subjects(false)).to eq(1)
+      end
+    end
+  end
 end

@@ -44,20 +44,13 @@ class Submission < ActiveRecord::Base
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :status, presence: true, inclusion: { in: [-1, 0, 1, 2, 3, 4] }
 
-  # Rend true si la soumission est correcte
-  def correct?
-    status == 2
-  end
-
   # Rend l'icone correspondante
   def icon
     if star
       'star1.png'
     else
       case status
-      when -1
-        'tiret.gif'
-      when 0
+      when -1, 0
         'tiret.gif'
       when 1, 3, 4
         'X.gif'

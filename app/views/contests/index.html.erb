@@ -5,14 +5,14 @@
 
 <%= render 'infocontest' %>
 
-<% if !@signed_in || (!current_user.sk.admin? && current_user.sk.rating < 200) %>
+<% if !has_enough_points %>
 <div style="font-weight:bold; margin-bottom:15px;">
 Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.
 </div>
 <% end %>
 
 <% Contest.order("number DESC").all.each do |c| %>
-  <% if c.status > 0 || c.is_organized_by_or_admin(current_user) %>
+  <% if c.status > 0 || (@signed_in && c.is_organized_by_or_admin(current_user.sk)) %>
   
     <% real_status = c.status %>
     <% nb_prob = c.num_problems %>

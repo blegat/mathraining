@@ -45,6 +45,14 @@ describe Prerequisite do
   let(:b) { @pre.prerequisite }
   let(:c) { FactoryGirl.create(:chapter) }
   let(:d) { FactoryGirl.create(:chapter) }
+  let(:e) { FactoryGirl.create(:chapter) }
+  let(:f) { FactoryGirl.create(:chapter) }
+  let(:g) { FactoryGirl.create(:chapter) }
+  let(:h) { FactoryGirl.create(:chapter) }
+  let(:i) { FactoryGirl.create(:chapter) }
+  let(:j) { FactoryGirl.create(:chapter) }
+  let(:k) { FactoryGirl.create(:chapter) }
+
   describe "when there is a loop" do
     # a->b->c->a
     before do
@@ -95,7 +103,7 @@ describe Prerequisite do
     it { should_not be_valid }
   end
 
-  describe "when there seems to create a redundance (start)" do
+  describe "when it seems to create a redundance (start)" do
     # a->b->c
     # \_d__/
     before do
@@ -106,7 +114,7 @@ describe Prerequisite do
     it { should be_valid }
   end
 
-  describe "when there seems to create a redundance (start)" do
+  describe "when it seems to create a redundance (end)" do
     # c->a->b
     # \_d__/
     before do

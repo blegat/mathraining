@@ -1,8 +1,7 @@
 <!-- Couleur -->
-<% cansee = true %>
-<% if !sol.corrected || (sol.contestproblem.status < 4 && !@contest.is_organized_by_or_root(current_user)) %>
+<% cansee_score = (sol.contestproblem.status >= 4 || @contest.is_organized_by_or_root(current_user.sk)) %>
+<% if !sol.corrected || !cansee_score %>
   <tr class="warning">
-  <% cansee = false %>
 <% elsif sol.score == 7 %>
   <tr class="success">
 <% else %>
@@ -11,7 +10,7 @@
 
 <!-- Icone -->
 <td style="width:50px; text-align:center;">
-  <% if !cansee %>
+  <% if !cansee_score %>
     <%= image_tag "tiret.gif" %>
   <% else %>
     <%= image_tag sol.icon %>
@@ -28,12 +27,11 @@
 </td>
 
 <td style="width:40px; text-align:center;">
-  <% cansee_score = false %>
-  <% if (cansee || @contest.is_organized_by_or_root(current_user)) && !sol.official? && sol.score >= 0 %>
-    <% cansee_score = true %>
+  <% if cansee_score && !sol.official? && sol.score >= 0 %>
+    <%= sol.score %>
+  <% else %>
+    -
   <% end %>
-  <%= sol.score if cansee_score %>
-  <%= '-' if !cansee_score %>
 </td>
 
 <!-- Voir -->

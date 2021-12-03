@@ -121,21 +121,21 @@ class ApplicationController < ActionController::Base
   
   # Check that current user is an organizer of @contest (that must be defined)
   def organizer_of_contest
-    if !@contest.is_organized_by(current_user)
+    if !(@signed_in && @contest.is_organized_by(current_user.sk))
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is a root or an organizer of @contest (that must be defined)
   def organizer_of_contest_or_root
-    if !@contest.is_organized_by_or_root(current_user)
+    if !(@signed_in && @contest.is_organized_by_or_root(current_user.sk))
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is an admin or an organizer of @contest (that must be defined)
   def organizer_of_contest_or_admin
-    if !@contest.is_organized_by_or_admin(current_user)
+    if !(@signed_in && @contest.is_organized_by_or_admin(current_user.sk))
       render 'errors/access_refused' and return
     end
   end

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
+
 describe "Stats pages" do
 
   subject { page }
@@ -244,61 +245,159 @@ describe "Stats pages" do
     end
     
     describe "computes submission stats" do
-      let!(:now) { DateTime.now }
-      let!(:mondaybeforelastmonday) { Record.get_monday_before_last_monday(now.in_time_zone.to_date) }
+      let!(:now) { Time.zone.local(2015, 1, 14, 5, 0, 0) } # Wednesday 14/01/2015 at 5 am
+      let!(:mondaybeforelastmonday) { Record.get_monday_before_last_monday(now.in_time_zone.to_date) } # 05/01/2015
       let!(:problem1) { FactoryGirl.create(:problem, section: section, online: true, number: 1111, level: 1) }
       let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true, number: 1112, level: 2) }
       let!(:problem3) { FactoryGirl.create(:problem, section: section, online: true, number: 1113, level: 3) }
-      let!(:submission11) { FactoryGirl.create(:submission, user: user1, problem: problem1, status: 2, created_at: now-28.days) } # Correct
-      let!(:correction11) { FactoryGirl.create(:correction, user: admin, submission: submission11,     created_at: now-26.days) } # 2 days later
-      let!(:submission12) { FactoryGirl.create(:submission, user: user1, problem: problem2, status: 2, created_at: now-21.days) } # Correct
-      let!(:correction12) { FactoryGirl.create(:correction, user: admin, submission: submission12,     created_at: now-20.days) } # 1 day later
-      let!(:submission13) { FactoryGirl.create(:submission, user: user1, problem: problem3, status: 1, created_at: now-21.days) } # Wrong
-      let!(:correction13) { FactoryGirl.create(:correction, user: admin, submission: submission13,     created_at: now-19.days) } # 2 days later
-      let!(:submission21) { FactoryGirl.create(:submission, user: user2, problem: problem1, status: 1, created_at: now-21.days) } # Wrong
-      let!(:correction21) { FactoryGirl.create(:correction, user: admin, submission: submission21,     created_at: now-17.days) } # 4 days later
-      let!(:submission22) { FactoryGirl.create(:submission, user: user2, problem: problem2, status: 0, created_at: now-14.days) } # Not checked
+      let!(:submission11) { FactoryGirl.create(:submission, user: user1, problem: problem1, status: 2,  created_at: now-28.days) } # Correct
+      let!(:correction11) { FactoryGirl.create(:correction, user: admin, submission: submission11,      created_at: now-26.days) } # 2 days later
+      let!(:submission12) { FactoryGirl.create(:submission, user: user1, problem: problem2, status: 2,  created_at: now-21.days) } # Correct
+      let!(:correction12) { FactoryGirl.create(:correction, user: admin, submission: submission12,      created_at: now-20.days) } # 1 day later
+      let!(:submission13) { FactoryGirl.create(:submission, user: user1, problem: problem3, status: 1,  created_at: now-21.days) } # Wrong
+      let!(:correction13) { FactoryGirl.create(:correction, user: admin, submission: submission13,      created_at: now-19.days) } # 2 days later
+      let!(:submission21) { FactoryGirl.create(:submission, user: user2, problem: problem1, status: 1,  created_at: now-21.days) } # Wrong
+      let!(:correction21) { FactoryGirl.create(:correction, user: admin, submission: submission21,      created_at: now-17.days) } # 4 days later
+      let!(:submission22) { FactoryGirl.create(:submission, user: user2, problem: problem2, status: 0,  created_at: now-14.days) } # Not checked
       let!(:submission23) { FactoryGirl.create(:submission, user: user2, problem: problem3, status: -1, created_at: now-14.days) } # Draft
       
-      before { Record.update }
+      before do
+        travel_to now
+        Record.update
+      end
       
-      # We can test that there is no record for mondaybeforelastmonday + 7 but it can be wrong if db is run exactly monday at midnight...
-      let!(:record1) { Record.where(:date => mondaybeforelastmonday - 21).first }
-      let!(:record2) { Record.where(:date => mondaybeforelastmonday - 14).first }
-      let!(:record3) { Record.where(:date => mondaybeforelastmonday - 7).first }
-      let!(:record4) { Record.where(:date => mondaybeforelastmonday).first }
+      let!(:record0) { Record.where(:date => mondaybeforelastmonday - 35).first } # 01/12/2014 -> should not exist
+      let!(:record1) { Record.where(:date => mondaybeforelastmonday - 28).first } # 08/12/2014
+      let!(:record2) { Record.where(:date => mondaybeforelastmonday - 21).first } # 15/12/2014
+      let!(:record3) { Record.where(:date => mondaybeforelastmonday - 14).first } # 22/12/2014
+      let!(:record4) { Record.where(:date => mondaybeforelastmonday - 7).first }  # 29/12/2014
+      let!(:record5) { Record.where(:date => mondaybeforelastmonday).first }      # 05/01/2015
       
       specify do
-        expect(record1.nb_submissions).to eq(1)
+        expect(Record.count).to eq(5)
+        
+        expect(record0).to eq(nil)
+        
+        expect(record1.nb_submissions).to eq(0)
         expect(record1.complete).to eq(true)
-        expect(record1.avg_correction_time).to eq(2.0)
+        expect(record1.avg_correction_time).to eq(0.0)
         
-        expect(record2.nb_submissions).to eq(3)
+        expect(record2.nb_submissions).to eq(1)
         expect(record2.complete).to eq(true)
-        expect(record2.avg_correction_time).to eq(7.0/3.0)
+        expect(record2.avg_correction_time).to eq(2.0)
         
-        expect(record3.nb_submissions).to eq(1)
-        expect(record3.complete).to eq(false)
+        expect(record3.nb_submissions).to eq(3)
+        expect(record3.complete).to eq(true)
+        expect(record3.avg_correction_time).to eq(7.0/3.0)
         
-        expect(record4.nb_submissions).to eq(0)
-        expect(record4.complete).to eq(true)
-        expect(record4.avg_correction_time).to eq(0.0)
+        expect(record4.nb_submissions).to eq(1)
+        expect(record4.complete).to eq(false)
+        
+        expect(record5.nb_submissions).to eq(0)
+        expect(record5.complete).to eq(true)
+        expect(record5.avg_correction_time).to eq(0.0)
+      end
+      
+      describe "and recompute submission stats a week later" do
+        let!(:correction22) { FactoryGirl.create(:correction, user: admin, submission: submission22, created_at: now+2.days+6.hours) } # 16.25 days later
+        before do
+          submission22.update_attribute(:status, 3)
+          submission23.update_attributes(status: 0, created_at: now+2.days) # Draft was sent but not corrected
+          travel_to now+7.days
+          Record.update
+          record4.reload
+          record5.reload
+        end
+        
+        let!(:record6) { Record.where(:date => mondaybeforelastmonday+7).first } # 12/01/2015
+        
+        specify do
+          expect(Record.count).to eq(6)
+          
+          expect(record4.nb_submissions).to eq(1)
+          expect(record4.complete).to eq(true)
+          expect(record4.avg_correction_time).to eq(16.25)
+          
+          expect(record5.nb_submissions).to eq(0)
+          expect(record5.complete).to eq(true)
+          expect(record5.avg_correction_time).to eq(0.0)
+          
+          expect(record6.nb_submissions).to eq(1)
+          expect(record6.complete).to eq(false)
+        end
       end
     end
     
-    describe "computes visitor stats" do
-      let!(:today) { DateTime.now.in_time_zone.to_date }
+    describe "computes visitor stats just after midnight" do
+      let!(:time_now) { Time.zone.local(2021, 12, 3, 0, 0, 23) } # We set current date to 03/12/2021 at 00:00:23
+      let!(:date_now) { time_now.to_date }
       before do
-        user1.update_attribute(:last_connexion_date, today - 2)
-        user2.update_attribute(:last_connexion_date, today - 1)
-        admin.update_attribute(:last_connexion_date, today - 1)
+        travel_to time_now
+        user1.update_attribute(:last_connexion_date, date_now - 1)
+        user2.update_attribute(:last_connexion_date, date_now - 2)
+        admin.update_attribute(:last_connexion_date, date_now) # Should also be counted for yesterday
         Visitor.compute
+        travel_back
       end
-      let!(:visitor_data) { Visitor.where(:date => today - 1).first }
+      let!(:visitor_data) { Visitor.where(:date => date_now - 1).first }
       specify do
         expect(visitor_data.nb_users).to eq(1)
         expect(visitor_data.nb_admins).to eq(1)
       end
+    end
+    
+    describe "computes visitor stats just after midnight, two times" do # In case crontab does two times the job for some reason
+      let!(:time_now) { Time.zone.local(2021, 12, 3, 0, 0, 23) } # We set current date to 03/12/2021 at 00:00:23
+      let!(:date_now) { time_now.to_date }
+      let!(:num_visitor_records_before) { Visitor.count }
+      before do
+        travel_to time_now
+        user1.update_attribute(:last_connexion_date, date_now)
+        user2.update_attribute(:last_connexion_date, date_now)
+        admin.update_attribute(:last_connexion_date, date_now - 1) # Should also be counted for yesterday
+        Visitor.compute
+        Visitor.compute # The second time it should do nothing
+        travel_back
+      end
+      let!(:visitor_data) { Visitor.where(:date => date_now - 1).first }
+      specify do
+        expect(Visitor.count).to eq(num_visitor_records_before + 1)
+        expect(visitor_data.nb_users).to eq(2)
+        expect(visitor_data.nb_admins).to eq(1)
+      end
+    end
+    
+    describe "computes visitor stats just before midnight" do # Should not occur in general, but in case crontab is too early...
+      let!(:time_now) { Time.zone.local(2021, 12, 3, 23, 58, 12) } # We set current date to 03/12/2021 at 23:58:12 
+      let!(:date_now) { time_now.to_date }
+      before do
+        travel_to time_now
+        user1.update_attribute(:last_connexion_date, date_now)
+        user2.update_attribute(:last_connexion_date, date_now - 1)
+        admin.update_attribute(:last_connexion_date, date_now - 2)
+        Visitor.compute
+        travel_back
+      end
+      let!(:visitor_data) { Visitor.where(:date => date_now).first }
+      specify do
+        expect(visitor_data.nb_users).to eq(1)
+        expect(visitor_data.nb_admins).to eq(0)
+      end
+    end
+    
+    describe "computes visitor stats in the middle of the day" do # Should not occur in general, but in case crontab is completely broken
+      let!(:time_now) { Time.zone.local(2021, 12, 3, 7, 23, 15) } # We set current date to 03/12/2021 at 07:23:15 
+      let!(:date_now) { time_now.to_date }
+      let!(:num_visitor_records_before) { Visitor.count }
+      before do
+        travel_to time_now
+        user1.update_attribute(:last_connexion_date, date_now)
+        user2.update_attribute(:last_connexion_date, date_now - 1)
+        admin.update_attribute(:last_connexion_date, date_now - 2)
+        Visitor.compute
+        travel_back
+      end
+      specify { expect(Visitor.count).to eq(num_visitor_records_before) }
     end
   end
 end

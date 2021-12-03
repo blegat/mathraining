@@ -66,6 +66,7 @@ RSpec.configure do |config|
   config.order = "random"
   
   config.include CapybaraSelect2
+  config.include ActiveSupport::Testing::TimeHelpers # To change the current time manually
   
   config.include Capybara::DSL
   

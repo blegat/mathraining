@@ -55,7 +55,7 @@
 
 <% end %>
 
-<% organizer = @contest.is_organized_by_or_admin(current_user) %>
+<% organizer = @signed_in && @contest.is_organized_by_or_admin(current_user.sk) %>
 
 <% if organizer && @contest.status == 3 && @contest.medal && @contest.gold_cutoff == 0 %>
   <center>
@@ -483,7 +483,7 @@
   <% num = num+1 %>
 <% end %>
 
-<% if @contest.status == 0 && @contest.is_organized_by(current_user) %>
+<% if @contest.status == 0 && @signed_in && @contest.is_organized_by(current_user.sk) %>
   <% if num == 0 %>
     <br/><br/><center>
   <% else %>
@@ -508,6 +508,6 @@
   </center>
 <% end %>
 
-<% if @contest.status == 0 && @contest.is_organized_by(current_user) && !current_user.sk.admin? %>
+<% if @contest.status == 0 && @signed_in && @contest.is_organized_by(current_user.sk) && !current_user.sk.admin? %>
   <br/><center>Pour mettre le concours en ligne, contacter un administrateur</center>
 <% end %>

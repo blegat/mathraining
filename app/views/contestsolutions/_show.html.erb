@@ -4,7 +4,7 @@
 <% if @contestsolution.official? %>
   Solution officielle
   <% can_see_correction = true %>
-<% elsif @signed_in && @contestsolution.user == current_user.sk %>
+<% elsif @contestsolution.user == current_user.sk %>
   Votre solution
   <% if @contestproblem.status == 2 %>
     (modifiable)
@@ -21,7 +21,7 @@
   <% can_see_correction = true %>
 <% end %>
 
-<% if @contest.is_organized_by_or_root(current_user) %>
+<% if @contest.is_organized_by_or_root(current_user.sk) %>
   <% if !@contestsolution.corrected %>
     (à corriger)
   <% elsif @contestsolution.official? %>
@@ -40,7 +40,7 @@
     <%= render 'subjects/content', ms: @contestsolution, kind: "contestsolution" %>
   </div>
 
-  <% if @signed_in && (@contestproblem.status == 2 && @contestsolution.user == current_user.sk) %>
+  <% if (@contestproblem.status == 2 && @contestsolution.user == current_user.sk) %>
     <% @ancientexte = session[:ancientexte] %>
     
     <div id="form" class="myoverflow" style="height:0px; margin-top:12px;">

@@ -32,7 +32,7 @@ describe "Problem pages" do
       before { visit pb_sections_path(section) }
       it do
         should have_selector("h1", text: section.name)
-        should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.")
+        should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
       end
     end
     

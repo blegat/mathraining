@@ -34,7 +34,7 @@ describe "Virtualtest pages" do
       before { visit virtualtests_path }
       it do
         should have_selector("h1", text: "Tests virtuels")
-        should have_selector("div", text: "Les tests virtuels ne sont accessibles qu'aux utilisateurs connectés ayant un score d'au moins 200.")
+        should have_selector("div", text: "Les tests virtuels ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
       end
     end
     
