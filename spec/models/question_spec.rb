@@ -64,7 +64,7 @@ describe Question do
   # Explanation
   describe "when explication is not present" do
     before { @ex.explanation = nil }
-    it { should be_valid }
+    it { should_not be_valid }
   end
 
   # Level

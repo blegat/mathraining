@@ -106,6 +106,22 @@ describe "Contestproblem pages" do
         end
       end
       
+      describe "and creates a problem with empty statement" do
+        before do
+          fill_in "MathInput", with: ""
+          fill_in "Origine", with: neworigin
+          fill_in "Parution du problème", with: stringtime3
+          fill_in "Date limite pour l'envoi des solutions", with: stringtime5
+          click_button "Ajouter"
+          offline_contestproblem.reload
+        end
+        let!(:newcontestproblem) {offline_contest.contestproblems.order(:id).last}
+        specify do
+          expect(page).to have_error_message("Énoncé doit être rempli")
+          expect(offline_contest.contestproblems.count).to eq(1)
+        end
+      end
+      
       describe "and creates a problem before the first one" do
         before do
           fill_in "MathInput", with: newstatement
@@ -203,6 +219,43 @@ describe "Contestproblem pages" do
           expect(offline_contestproblem.end_time).to eq(datetime5)
         end
       end
+      
+      describe "and modifies it with empty statement" do
+        before do
+          fill_in "MathInput", with: ""
+          fill_in "Origine", with: neworigin
+          fill_in "Parution du problème", with: stringtime3
+          fill_in "Date limite pour l'envoi des solutions", with: stringtime5
+          click_button "Modifier"
+          offline_contestproblem.reload
+        end
+        specify do
+          expect(page).to have_error_message("Énoncé doit être rempli")
+          expect(offline_contestproblem.number).to eq(1)
+          expect(offline_contestproblem.origin).not_to eq(neworigin)
+          expect(offline_contestproblem.start_time).not_to eq(datetime3)
+          expect(offline_contestproblem.end_time).not_to eq(datetime5)
+        end
+      end
+      
+      describe "and modifies it with second date before the first date" do
+        before do
+          fill_in "MathInput", with: newstatement
+          fill_in "Origine", with: neworigin
+          fill_in "Parution du problème", with: stringtime5
+          fill_in "Date limite pour l'envoi des solutions", with: stringtime3
+          click_button "Modifier"
+          offline_contestproblem.reload
+        end
+        specify do
+          expect(page).to have_error_message("La deuxième date doit être strictement après la première date.")
+          expect(offline_contestproblem.number).to eq(1)
+          expect(offline_contestproblem.statement).not_to eq(newstatement)
+          expect(offline_contestproblem.origin).not_to eq(neworigin)
+          expect(offline_contestproblem.start_time).not_to eq(datetime5)
+          expect(offline_contestproblem.end_time).not_to eq(datetime3)
+        end
+      end
     end
     
     describe "visits contestproblem edit page for a problem that started" do
@@ -263,6 +316,11 @@ describe "Contestproblem pages" do
           expect(offline_contestproblem.end_time).to eq(datetime4)
         end
       end
+    end
+    
+    describe "tries to visit contestproblem creation page for an offline contest" do
+      before { visit new_contest_contestproblem_path(contest) }
+      it { should have_content(error_access_refused) }
     end
   end
   

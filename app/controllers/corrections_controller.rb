@@ -85,11 +85,10 @@ class CorrectionsController < ApplicationController
         # If this is the first correct submission of the user to this problem, we give the points and mark problem as solved
         unless @submission.user.pb_solved?(@problem)
           point_attribution(@submission.user, @problem)
-          link = Solvedproblem.new
-          link.user_id = @submission.user.id
-          link.problem_id = @problem.id
-          link.correction_time = DateTime.now
-          link.submission_id = @submission.id
+          link = Solvedproblem.new(:user            => @submission.user,
+                                   :problem         => @problem,
+                                   :correction_time => DateTime.now,
+                                   :submission      => @submission)
 
           last_user_corr = @submission.corrections.where("user_id = ?", @submission.user_id).order(:created_at).last
           resolution_time = (last_user_corr.nil? ? @submission.created_at : last_user_corr.created_at)
@@ -117,11 +116,9 @@ class CorrectionsController < ApplicationController
 
       # Deal with notifications
       if current_user.sk != @submission.user
-        following = Following.where(:user_id => current_user.sk.id, :submission_id => @submission.id).first
+        following = Following.where(:user => current_user.sk, :submission => @submission).first
         if following.nil?
-          following = Following.new
-          following.user = current_user.sk
-          following.submission = @submission
+          following = Following.new(:user => current_user.sk, :submission => @submission)
           if @submission.followings.where("user_id != ?", current_user.sk.id).count > 0
             following.kind = 2 # New corrector for this submission (there was already another one)
           else

@@ -121,6 +121,18 @@ describe "Question pages" do
         end
         specify { expect(online_exercise.explanation).to eq(newexplanation) }
       end
+      
+      describe "and tries to modify it with empty string" do
+        before do
+          fill_in "MathInput", with: ""
+          click_button "Modifier"
+          online_exercise.reload
+        end
+        specify do
+          expect(page).to have_error_message("Explication doit être rempli")
+          expect(online_exercise.explanation).not_to eq("")
+        end
+      end
     end
     
     describe "checks question order" do
@@ -229,18 +241,34 @@ describe "Question pages" do
       describe "and sends with good information" do
         before do
           fill_in "MathInput", with: newstatement
-          fill_in "Réponse", with: newanswer
-          if newdecimal
-            check "Cochez si la réponse est décimale"
-          end
+          fill_in "Réponse", with: "4,56" # A comma is also allowed
+          check "Cochez si la réponse est décimale"
           fill_in "Niveau", with: newlevel
           click_button "Modifier"
           offline_exercise.reload
         end
         specify do
           expect(offline_exercise.statement).to eq(newstatement)
-          expect(offline_exercise.answer).to eq(newanswer)
-          expect(offline_exercise.decimal).to eq(newdecimal)
+          expect(offline_exercise.answer).to eq(4.56)
+          expect(offline_exercise.decimal).to eq(true)
+          expect(offline_exercise.level).to eq(newlevel)
+          expect(offline_exercise.is_qcm).to eq(false)
+        end
+      end
+      
+      describe "and sends a decimal answer with non-decimal checkbox" do
+        before do
+          fill_in "MathInput", with: newstatement
+          fill_in "Réponse", with: "4.2"
+          uncheck "Cochez si la réponse est décimale"
+          fill_in "Niveau", with: newlevel
+          click_button "Modifier"
+          offline_exercise.reload
+        end
+        specify do
+          expect(offline_exercise.statement).to eq(newstatement)
+          expect(offline_exercise.answer).to eq(4) # Should be rounded to 4
+          expect(offline_exercise.decimal).to eq(false)
           expect(offline_exercise.level).to eq(newlevel)
           expect(offline_exercise.is_qcm).to eq(false)
         end
@@ -288,6 +316,28 @@ describe "Question pages" do
       before { visit edit_question_path(offline_qcm) }
       it { should have_selector("h1", text: "Modifier un exercice") }
       
+      describe "and modifies from one answers to many answers" do
+        before do
+          fill_in "MathInput", with: newstatement3
+          check "Cochez si plusieurs réponses sont possibles"
+          fill_in "Niveau", with: newlevel3
+          click_button "Modifier"
+          offline_qcm.reload
+          offline_item_correct.reload
+          offline_item_incorrect.reload
+          offline_item_correct2.reload
+        end
+        specify do
+          expect(offline_qcm.statement).to eq(newstatement3)
+          expect(offline_qcm.many_answers).to eq(true)
+          expect(offline_qcm.level).to eq(newlevel3)
+          expect(offline_qcm.is_qcm).to eq(true)
+          expect(offline_item_correct.ok).to eq(true)
+          expect(offline_item_incorrect.ok).to eq(false)
+          expect(offline_item_correct2.ok).to eq(true)
+        end
+      end
+      
       describe "and modifies from many answers to one answer" do
         before do
           fill_in "MathInput", with: newstatement3
@@ -295,6 +345,8 @@ describe "Question pages" do
           fill_in "Niveau", with: newlevel3
           click_button "Modifier"
           offline_qcm.reload
+          offline_item_correct.reload
+          offline_item_incorrect.reload
           offline_item_correct2.reload
         end
         specify do
@@ -370,6 +422,18 @@ describe "Question pages" do
         end
       end
       
+      describe "and tries to add a new empty choice" do
+        before do
+          fill_in "create_item_field", with: ""
+          check "create_item_value"
+          click_button "create_item_button"
+        end
+        specify do
+          expect(page).to have_error_message("Réponse doit être rempli")
+          expect(offline_qcm.items.count).to eq(3)
+        end
+      end
+      
       describe "and udpates a choice value" do
         before do
           fill_in ("update_item_field_" + offline_item_correct.id.to_s), with: newitem
@@ -377,6 +441,18 @@ describe "Question pages" do
           offline_item_correct.reload
         end
         specify { expect(offline_item_correct.ans).to eq(newitem) }
+      end
+      
+      describe "and tries to update a choice with empty string" do
+        before do
+          fill_in ("update_item_field_" + offline_item_correct.id.to_s), with: ""
+          click_button ("update_item_button_" + offline_item_correct.id.to_s)
+          offline_item_correct.reload
+        end
+        specify do
+          expect(page).to have_error_message("Réponse doit être rempli")
+          expect(offline_item_correct.ans).not_to eq("")
+        end
       end
       
       describe "and make a correct choice incorrect" do

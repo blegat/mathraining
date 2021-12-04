@@ -161,7 +161,12 @@ class ContestsController < ApplicationController
 
   # Helper method to create the forum subject for a contest
   def create_forum_subject(contest)
-    s = Subject.create(:contest => contest, :user_id => 0, :title => "Concours ##{contest.number}", :content => helpers.get_new_contest_forum_message(contest), :last_comment_time => DateTime.now, :last_comment_user_id => 0)
+    s = Subject.create(:contest              => contest,
+                       :user_id              => 0,
+                       :title                => "Concours ##{contest.number}",
+                       :content              => helpers.get_new_contest_forum_message(contest),
+                       :last_comment_time    => DateTime.now,
+                       :last_comment_user_id => 0)
 
     Category.select(:name, :id).each do |c|
       if c.name == "Mathraining"

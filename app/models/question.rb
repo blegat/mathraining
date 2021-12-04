@@ -29,7 +29,7 @@ class Question < ActiveRecord::Base
   # VALIDATIONS
 
   validates :statement, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
-  validates :explanation, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
+  validates :explanation, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :answer, presence: true
   validates :position, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :level, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 4 }

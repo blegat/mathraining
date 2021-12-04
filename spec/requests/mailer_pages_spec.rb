@@ -20,11 +20,11 @@ feature 'Emailer' do
       check "consent1"
       check "consent2"
       click_button "Créer mon compte"
-      open_email("jean@biboux.com")
     end
     
     specify do
       expect(page).to have_success_message("Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte.")
+      open_email("jean@biboux.com")
       expect(current_email.subject).to eq("Mathraining - Confirmation d'inscription")
       expect(current_email).to have_content("Bonjour Jean")
       expect(current_email).to have_content("Bienvenue sur Mathraining !")
@@ -39,11 +39,12 @@ feature 'Emailer' do
       visit forgot_password_path
       fill_in "Email", with: user.email
       click_button "Envoyer l'e-mail"
-      open_email(user.email)
+      
     end
      
     specify do
       expect(page).to have_success_message("Vous allez recevoir un e-mail d'ici quelques minutes")
+      open_email(user.email)
       expect(current_email.subject).to eq("Mathraining - Mot de passe oublié")
       expect(current_email).to have_content("Il semblerait que vous ayez oublié votre mot de passe.")
       expect(current_email).to have_link("https://www.mathraining.be/users/#{ user.id }/recup_password?key=#{ user.key }")
@@ -63,10 +64,10 @@ feature 'Emailer' do
       select other_user.name, from: "destinataire"
       fill_in "MathInput", with: "Salut !"
       click_button "Envoyer"
-      open_email(other_user.email)
     end
   
     specify do
+      open_email(other_user.email)
       expect(current_email.subject).to eq("Mathraining - Nouveau message de #{user.name}")
       expect(current_email).to have_content "#{user.name} vous a envoyé un message sur Mathraining"
       expect(current_email).to have_link("ici", href: discussion_url(Discussion.order(:id).last, :host => "www.mathraining.be"))
@@ -86,10 +87,10 @@ feature 'Emailer' do
       visit subject_path(sub)
       fill_in "MathInputNewMessage", with: "Voici un nouveau message"
       click_button "Poster"
-      open_email(other_user.email)
     end
     
     specify do
+      open_email(other_user.email)
       expect(page).to have_success_message("Votre message a bien été posté.")
       expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ sub.title }'")
       expect(current_email).to have_content("#{user.name} a posté un message sur le sujet '#{ sub.title }' que vous suivez")
@@ -111,10 +112,10 @@ feature 'Emailer' do
         fill_in "MathInput", with: "Message important pour Wépion"
         check "groupeA"
         click_button "Créer"
-        open_email(user_in_group_A.email)
       end
       
       specify do
+        open_email(user_in_group_A.email)
         expect(current_email.subject).to eq("Mathraining - Message à l'attention des élèves de Wépion")
         expect(current_email).to have_content("#{root.name} a posté un nouveau message sur Mathraining")
         expect(current_email).to have_link("ici", href: subject_url(Subject.order(:id).last, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
@@ -131,10 +132,10 @@ feature 'Emailer' do
         check "subject[for_wepion]"
         check "groupeA"
         click_button "Poster"
-        open_email(user_in_group_A.email)
       end
       
       specify do
+        open_email(user_in_group_A.email)
         expect(current_email.subject).to eq("Mathraining - Message à l'attention des élèves de Wépion")
         expect(current_email).to have_content("#{root.name} a posté un nouveau message sur Mathraining")
         expect(current_email).to have_link("ici", href: subject_url(sub, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
@@ -145,20 +146,43 @@ feature 'Emailer' do
   describe "contest emails" do
     let!(:user_following_contest) { FactoryGirl.create(:user) }
     let!(:user_following_subject) { FactoryGirl.create(:user) }
+    let!(:root) { FactoryGirl.create(:root) }
   
     let!(:category) { FactoryGirl.create(:category, name: "Mathraining") } # For the Forum subject
     
     let!(:running_contest) { FactoryGirl.create(:contest, status: 1) }
+    let!(:finished_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: 3, start_time: DateTime.now - 4.days, end_time: DateTime.now - 2.days) }
+    let!(:finished_contestproblem_officialsol) { finished_contestproblem.contestsolutions.where(:official => true).first }
     let!(:running_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 1, status: 1, start_time: DateTime.now + 1.day - 5.minutes, end_time: DateTime.now + 3.days, reminder_status: 0) }
     let!(:running_contestproblemcheck) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem) }
     let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: category, last_comment_time: DateTime.now - 2.days) }
+    
   
     before do
       Followingcontest.create(:contest => running_contest, :user => user_following_contest)
       Followingsubject.create(:subject => running_contestsubject, :user => user_following_subject)
+      Contestorganization.create(:contest => running_contest, :user => root)
+    end
+    
+    describe "publication of results" do
+      before do
+        clear_emails
+        finished_contestproblem_officialsol.update_attribute(:star, true)
+        sign_in root
+        visit contestproblem_path(finished_contestproblem)
+        click_button "Publier les résultats"
+      end
+      
+      specify do
+        open_email(user_following_subject.email)
+        expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ running_contestsubject.title }'")
+        expect(current_email).to have_content("Un message automatique a été posté sur le sujet '#{ running_contestsubject.title }' que vous suivez")
+        expect(current_email).to have_link("ici", href: subject_url(running_contestsubject, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
+        expect(current_email).to have_link("ici", href: remove_followingsubject_url(:subject_id => running_contestsubject, :host => "www.mathraining.be"))
+      end
     end
   
-    describe "one problem at a time" do
+    describe "new problem in one day" do
       before do
         clear_emails
         Contest.check_contests_starts
@@ -181,7 +205,7 @@ feature 'Emailer' do
       end
     end
     
-    describe "three problems at a time" do
+    describe "new problems in one day" do
       let!(:running_contestproblem2) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: 1, start_time: running_contestproblem.start_time, end_time: DateTime.now + 4.days, reminder_status: 0) }
       let!(:running_contestproblemcheck2) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem2) }
       let!(:running_contestproblem3) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: 1, start_time: running_contestproblem.start_time, end_time: DateTime.now + 6.days, reminder_status: 0) }

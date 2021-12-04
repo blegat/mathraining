@@ -365,9 +365,7 @@ class ApplicationController < ActionController::Base
       end
       cs = Contestscore.where(:contest => @contest, :user_id => u).first
       if cs.nil?
-        cs = Contestscore.new
-        cs.contest = contest
-        cs.user_id = u
+        cs = Contestscore.new(:contest => contest, :user_id => u)
       end
       cs.rank = rank
       cs.score = score

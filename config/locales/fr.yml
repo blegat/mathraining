@@ -84,6 +84,7 @@ fr:
         statement: "Énoncé"
         level: "Niveau"
         answer: "Réponse"
+        explanation: "Explication"
       section:
         description: "Introduction"
         name: "Nom"

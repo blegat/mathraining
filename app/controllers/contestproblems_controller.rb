@@ -180,12 +180,8 @@ class ContestproblemsController < ApplicationController
       flash.now[:danger] = "La deuxième date doit être strictement après la première date."
       @date_problem = true
     elsif start_date.min != 0
-      if !Rails.env.development?
-        flash.now[:danger] = "La première date doit être à une heure pile."
-        @date_problem = true
-      else
-        flash[:info] = "La première date devrait être à une heure pile (en production)."
-      end
+      flash.now[:danger] = "La première date doit être à une heure pile#{ '(en production)' if Rails.env.development?}."
+      @date_problem = true if !Rails.env.development?
     end
   end
   
@@ -195,12 +191,12 @@ class ContestproblemsController < ApplicationController
       flash[:danger] = "Une erreur est survenue."
       redirect_to @contestproblem and return
     end
-    if @contestproblem.contestsolutions.where(:star => true).count == 0
-      flash[:danger] = "Il faut au minimum une solution étoilée pour publier les résultats."
+    if @contestproblem.contestsolutions.where(:corrected => false).count > 0
+      flash[:danger] = "Les solutions ne sont pas toutes corrigées."
       redirect_to @contestproblem and return
     end
-    if @contestproblem.contestsolutions.where(:corrected => false).count > 0
-      flash[:danger] = "Toutes les solutions ne sont pas corrigées."
+    if @contestproblem.contestsolutions.where(:star => true).count == 0
+      flash[:danger] = "Il faut au minimum une solution étoilée pour publier les résultats."
       redirect_to @contestproblem and return
     end
   end
@@ -211,8 +207,7 @@ class ContestproblemsController < ApplicationController
   def update_problem_numbers
     x = 1
     @contest.contestproblems.order(:start_time, :end_time, :id).each do |p|
-      p.number = x
-      p.save
+      p.update_attribute(:number, x)
       x = x+1
     end
   end

@@ -53,9 +53,7 @@ class DiscussionsController < ApplicationController
 
       if @discussion.nil?
         deja = false
-        @discussion = Discussion.new
-        @discussion.last_message_time = DateTime.now
-        @discussion.save
+        @discussion = Discussion.create(:last_message_time => DateTime.now)
       else
         deja = true
         link = current_user.sk.links.where(:discussion_id => @discussion.id).first
@@ -139,7 +137,9 @@ class DiscussionsController < ApplicationController
 
   # Helper method to send a message in the discussion
   def send_message
-    @tchatmessage = Tchatmessage.new(:content => @content, :user => current_user.sk, :discussion => @discussion)
+    @tchatmessage = Tchatmessage.new(:content    => @content,
+                                     :user       => current_user.sk,
+                                     :discussion => @discussion)
     @erreur = false
 
     # Attached files

@@ -28,18 +28,14 @@ class QuestionsController < ApplicationController
 
   # Create a question (send the form)
   def create
-    @question = Question.new(:online => false, :chapter => @chapter, :statement => params[:question][:statement], :level => params[:question][:level])
-    if @chapter.section.fondation?
-      @question.level = 0
-    end
-    @question.explanation = ""
+    @question = Question.new(:online      => false,
+                             :chapter     => @chapter,
+                             :statement   => params[:question][:statement],
+                             :level       => (@chapter.section.fondation? ? 0 : params[:question][:level]),
+                             :explanation => "À écrire")
     if params[:question][:is_qcm] == '1'
       @question.is_qcm = true
-      if params[:question][:many_answers] == '1'
-        @question.many_answers = true
-      else
-        @question.many_answers = false
-      end
+      @question.many_answers = (params[:question][:many_answers] == '1')
       @question.answer = 0
     else
       @question.is_qcm = false
@@ -73,10 +69,7 @@ class QuestionsController < ApplicationController
   def update
     @question.statement = params[:question][:statement]
     unless @question.online
-      @question.level = params[:question][:level]
-      if @chapter.section.fondation?
-        @question.level = 0
-      end
+      @question.level = (@chapter.section.fondation? ? 0 : params[:question][:level])
       if @question.is_qcm
         if params[:question][:many_answers] == '1'
           @question.many_answers = true
@@ -151,10 +144,9 @@ class QuestionsController < ApplicationController
 
   # Add an item to a qcm
   def add_item
-    @item = Item.new
-    @item.question_id = params[:question_id]
-    @item.ok = params[:item][:ok]
-    @item.ans = params[:item][:ans]
+    @item = Item.new(:question_id => params[:question_id],
+                     :ok          => params[:item][:ok],
+                     :ans         => params[:item][:ans])
     last_pos = 0
     last_item = @question.items.order(:position).last
     if !last_item.nil?

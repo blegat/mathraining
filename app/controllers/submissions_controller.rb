@@ -164,12 +164,10 @@ class SubmissionsController < ApplicationController
       @what = 2
     else
       if @submission.followings.count == 0 # Avoid adding two times the same Following
-        f = Following.new
-        f.user = current_user.sk
-        f.submission = @submission
-        f.read = true
-        f.kind = 0
-        f.save
+        f = Following.create(:user       => current_user.sk,
+                             :submission => @submission,
+                             :read       => true,
+                             :kind       => 0)
       end
       @what = 3
     end

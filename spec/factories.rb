@@ -183,7 +183,7 @@ FactoryGirl.define do
     end
     sequence(:position) { |n| n }
     level 1
-    sequence(:explanation) { |n| "voici une explication #{ n }" }
+    sequence(:explanation) { |n| "Voici une explication #{ n }" }
   end
   
   # Section

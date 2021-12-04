@@ -200,6 +200,45 @@ describe "Contestcorrection pages" do
           end
         end
         
+        describe "and tries to publish the results while they were already published" do
+          before do
+            contestproblem_finished.update_attribute(:status, 4) # Simulate publication of results by somebody else
+            click_button "Publier les résultats"
+            contestproblem_finished.reload
+          end
+          specify do
+            expect(page).to have_error_message("Une erreur est survenue.")
+            expect(contestproblem_finished.status).to eq(4)
+            expect(contestsubject.messages.count).to eq(0)
+          end
+        end
+        
+        describe "and tries to publish the results while the star was removed" do
+          before do
+            usersol_finished.update_attribute(:star, false) # Simulate the star being removed by another corrector
+            click_button "Publier les résultats"
+            contestproblem_finished.reload
+          end
+          specify do
+            expect(page).to have_error_message("Il faut au minimum une solution étoilée pour publier les résultats.")
+            expect(contestproblem_finished.status).to eq(3)
+            expect(contestsubject.messages.count).to eq(0)
+          end
+        end
+        
+        describe "and tries to publish the results while the solution was uncorrected" do
+          before do
+            usersol_finished.update_attributes(corrected: false, star: false) # Simulate another corrector marking the solution as non corrected
+            click_button "Publier les résultats"
+            contestproblem_finished.reload
+          end
+          specify do
+            expect(page).to have_error_message("Les solutions ne sont pas toutes corrigées.")
+            expect(contestproblem_finished.status).to eq(3)
+            expect(contestsubject.messages.count).to eq(0)
+          end
+        end
+        
         describe "and tries to modify it after results were published" do
           before do
             # Need to reserve again:
