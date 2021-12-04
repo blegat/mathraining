@@ -220,9 +220,10 @@ describe User do
     describe "for an admin" do
       before { @user.update_attribute(:admin, true) }
       it do
-        expect(@user.level[:color]).to eq("#000000")
-        expect(@user.colored_name).to eq("<span style='color:#000000; font-weight:bold;'>Jean Dupont</span>")
-        expect(@user.linked_name).to eq("<a href='#{user_path(@user)}'>" + @user.colored_name + "</a>")
+        c = "#000000"
+        expect(@user.level[:color]).to eq(c)
+        expect(@user.colored_name).to eq("<span style='color:#{c}; font-weight:bold;'>Jean Dupont</span>")
+        expect(@user.linked_name).to eq("<a href='#{user_path(@user)}' style='color:#{c}'>" + @user.colored_name + "</a>")
       end
     end
     
@@ -234,8 +235,9 @@ describe User do
         @user.save
       end
       it do
-        expect(@user.level[:color]).to eq("#BBBB00")
-        expect(@user.colored_name).to eq("<span style='color:#BBBB00; font-weight:bold;'>Compte supprimé</span>")
+        c = "#BBBB00"
+        expect(@user.level[:color]).to eq(c)
+        expect(@user.colored_name).to eq("<span style='color:#{c}; font-weight:bold;'>Compte supprimé</span>")
         expect(@user.linked_name).to eq(@user.colored_name)
       end
     end
@@ -248,7 +250,7 @@ describe User do
         	c = Color.where("pt <= ?", rating).order("pt").last.color
         	expect(@user.level[:color]).to eq(c)
           expect(@user.colored_name).to eq("<span style='color:#{c}; font-weight:bold;'>Jean Dupont</span>")
-          expect(@user.linked_name).to eq("<a href='#{user_path(@user)}'>" + @user.colored_name + "</a>")
+          expect(@user.linked_name).to eq("<a href='#{user_path(@user)}' style='color:#{c}'>" + @user.colored_name + "</a>")
         end
       end
     end
@@ -262,7 +264,7 @@ describe User do
         	c = Color.where("pt <= ?", rating).order("pt").last.color
         	expect(@user.level[:color]).to eq(c)
           expect(@user.colored_name).to eq("<span style='color:#{c}; font-weight:bold;'>Jean D.</span>")
-          expect(@user.linked_name).to eq("<a href='#{user_path(@user)}'>" + @user.colored_name + "</a>")
+          expect(@user.linked_name).to eq("<a href='#{user_path(@user)}' style='color:#{c}'>" + @user.colored_name + "</a>")
         end
       end
     end
@@ -276,7 +278,7 @@ describe User do
         	c = Color.where("pt <= ?", rating).order("pt").last.color
         	expect(@user.level[:color]).to eq(c)
           expect(@user.colored_name).to eq("<span style='color:black; font-weight:bold;'>J</span><span style='color:#{c}; font-weight:bold;'>ean Dupont</span>")
-          expect(@user.linked_name).to eq("<a href='#{user_path(@user)}'>" + @user.colored_name + "</a>")
+          expect(@user.linked_name).to eq("<a href='#{user_path(@user)}' style='color:#{c}'>" + @user.colored_name + "</a>")
         end
       end
     end

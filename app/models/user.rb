@@ -302,7 +302,8 @@ class User < ActiveRecord::Base
     if !self.active?
       return self.colored_name(name_type)
     else
-      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}'>" + self.colored_name(name_type) + "</a>"
+      # Note: We give a color to the "a" so that the link is underlined with this color when it is hovered/clicked
+      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]}'>" + self.colored_name(name_type) + "</a>"
     end
   end
   
