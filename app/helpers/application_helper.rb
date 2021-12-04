@@ -11,17 +11,21 @@ module ApplicationHelper
   
   # Transform list of errors in readable html list
   def errors_to_list(errors)
-    if errors.count == 0
-      return "Une erreur est survenue."
+    if errors.count <= 1
+      s = "Une erreur est survenue."
     else
-      s = "Le formulaire contient #{ errors.count } erreur#{ 's' if errors.count > 1 }.\n"
-      s += "<ul>\n"
+      s = "Plusieurs erreurs sont survenues."
+    end
+    
+    if errors.count > 0
+      s += "\n<ul>\n"
       errors.each do |msg|
         s += "<li>#{ msg }</li>\n"
       end
       s += "</ul>"
-      return s.html_safe
     end
+    
+    return s.html_safe
   end
   
   # Get html list of errors for an invalid object
@@ -48,8 +52,8 @@ module ApplicationHelper
     gsub(/\:\-[P]/, image_tag("Smiley5.gif", alt: ":-P")).
     gsub(/\:&#39;\(/, image_tag("Smiley6.gif", alt: ":'(")).
     gsub(/\;\-\)/, image_tag("Smiley7.gif", alt: ";-)")).
-    gsub(/\:\-\|/, image_tag("Smiley8.gif", alt: ":-|"))
-    .gsub(/[3]\:\[/, image_tag("Smiley9.gif", alt: "3:["))
+    gsub(/\:\-\|/, image_tag("Smiley8.gif", alt: ":-|")).
+    gsub(/[3]\:\[/, image_tag("Smiley9.gif", alt: "3:["))
   end
 
   # To read code on admin side

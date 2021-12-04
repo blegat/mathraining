@@ -24,17 +24,50 @@ describe "Authentication" do
       let(:user) { FactoryGirl.create(:user) }
       before { sign_in(user) }
 
-      it do
-        should have_link("Scores", href: users_path)
-        should have_link("Compte", href: edit_user_path(user))
-        should have_link("Déconnexion", href: signout_path)
-        should have_no_link("Connexion")
+      specify do
+        expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(user.remember_token)
+        expect(page).to have_link("Scores", href: users_path)
+        expect(page).to have_link("Compte", href: edit_user_path(user))
+        expect(page).to have_link("Déconnexion", href: signout_path)
+        expect(page).to have_no_link("Connexion")
       end
       
       describe "followed by signout" do
         before { sign_out }
-        it { should have_link("Connexion") }
+        specify do
+          expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(nil)
+          expect(page).to have_link("Connexion")
+        end
       end
+    end
+  end
+  
+  describe "visits a page only for connected people" do
+    let!(:user) { FactoryGirl.create(:user) }
+    before { visit subjects_path }
+    
+    it do
+      should have_content(error_must_be_connected)
+      should have_button("connect_button")
+    end
+    
+    describe "and signin with main form" do
+      before do
+        fill_in "connect_email", with: user.email
+        fill_in "connect_password", with: user.password
+        click_button "connect_button"
+      end
+      it { should have_selector("h1", text: "Forum") }
+    end
+    
+    describe "and signin with header form" do
+      before do
+        click_link "Connexion"
+        fill_in "header_connect_email", with: user.email
+        fill_in "header_connect_password", with: user.password
+        click_button "header_connect_button"
+      end
+      it { should have_selector("h1", text: "Forum") }
     end
   end
 end

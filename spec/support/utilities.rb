@@ -3,9 +3,9 @@ include ApplicationHelper
 def sign_in(user)
   visit root_path
   click_link "Connexion"
-  fill_in "tf1", with: user.email
-  fill_in "tf2", with: user.password
-  click_button "Connexion"
+  fill_in "header_connect_email", with: user.email
+  fill_in "header_connect_password", with: user.password
+  click_button "header_connect_button"
 end
 
 def sign_out

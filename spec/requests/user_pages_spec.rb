@@ -210,9 +210,9 @@ describe "User pages" do
             describe "and tries to sign in with new password" do
               before do
                 click_link "Connexion"
-                fill_in "tf1", with: zero_user.email
-                fill_in "tf2", with: new_password
-                click_button "Connexion"
+                fill_in "header_connect_email", with: zero_user.email
+                fill_in "header_connect_password", with: new_password
+                click_button "header_connect_button"
               end
               it { should have_link("Déconnexion", href: signout_path) }
             end

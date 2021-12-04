@@ -6,22 +6,22 @@
 <%= form_for(:session, url: sessions_path(redirection: request.original_fullpath)) do |f| %>
   <div class="form-group">
     <%= f.label :email %>
-    <%= f.email_field :email, :class => "form-control", :style => "width:200px;" %>
+    <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :id => "connect_email" %>
   </div>
 			
   <div class="form-group">
     <%= f.label :password, "Mot de passe" %>
-    <%= f.password_field :password, :class => "form-control", :style => "width:200px;" %>
+    <%= f.password_field :password, :class => "form-control", :style => "width:200px;", :id => "connect_password" %>
   </div>
   
   <div class="checkbox">
   <label>
-    <%= f.check_box :remember_me %>
+    <%= f.check_box :remember_me, :id => "connect_remember" %>
     Garder ma session active
   </label>
   </div>
   
-  <%= f.submit "Connexion", class: "btn btn-lg btn-primary" %>
+  <%= f.submit "Connexion", class: "btn btn-lg btn-primary", id: "connect_button" %>
 <% end %>
 
 <br/>

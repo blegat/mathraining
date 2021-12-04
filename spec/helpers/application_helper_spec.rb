@@ -25,4 +25,19 @@ describe ApplicationHelper do
       expect(write_date_only_with_day(date)).to eq("vendredi 12 juin 2009")
     end
   end
+  
+  describe "errors formatting" do
+    let!(:error1) { "La date n'est pas valide" }
+    let!(:error2) { "Contenu doit être rempli" }
+    it do
+      expect(errors_to_list([])).to eq("Une erreur est survenue.")
+      msg = errors_to_list([error1]) 
+      expect(msg).to include("Une erreur est survenue.")
+      expect(msg).to include(error1)
+      msg = errors_to_list([error1, error2])
+      expect(msg).to include("Plusieurs erreurs sont survenues.")
+      expect(msg).to include(error1)
+      expect(msg).to include(error2)
+    end
+  end
 end
