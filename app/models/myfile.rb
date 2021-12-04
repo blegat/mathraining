@@ -20,29 +20,31 @@ class Myfile < ActiveRecord::Base
   validates :file, attached: true,
                    content_type: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf', 'application/zip', 'application/msword', 'text/plain'], 
                    size: { less_than: 1.megabytes }
+                   
+  # OTHER METHODS
 
-  # Indique si la pièce jointe est une image (pour voir si on l'affiche ou non)
+  # Tell if the file is an image
   def is_image
     return (self.file.blob.content_type == 'image/jpeg' || self.file.blob.content_type == 'image/jpg' || self.file.blob.content_type == 'image/png' || self.file.blob.content_type == 'image/gif' || self.file.blob.content_type == 'image/bmp')
   end
   
+  # Delete the content of the file: replace it with a Fakefile
   def fake_del
-    ff = Fakefile.new
-    ff.fakefiletable_type = self.myfiletable_type
-    ff.fakefiletable_id = self.myfiletable_id
-    ff.filename = self.file.filename.to_s
-    ff.content_type = self.file.blob.content_type
-    ff.byte_size = self.file.blob.byte_size
-    ff.created_at = self.file.blob.created_at
-    ff.save
+    ff = Fakefile.create(:fakefiletable_type => self.myfiletable_type,
+                         :fakefiletable_id   => self.myfiletable_id,
+                         :filename           => self.file.filename.to_s,
+                         :content_type       => self.file.blob.content_type,
+                         :byte_size          => self.file.blob.byte_size,
+                         :created_at         => self.file.blob.created_at)
     self.destroy # Should automatically purge the file
     return ff
   end
   
+  # Delete the content of old files in tchatmessages (done every day at 2 am (see schedule.rb))
   def self.fake_dels
-    ajd = DateTime.now.to_date
+    today = DateTime.now.to_date
     Myfile.where(:myfiletable_type => "Tchatmessage").each do |f|
-      if f.file.blob.created_at.to_date + 28 < ajd
+      if f.file.blob.created_at.to_date + 28 < today
         f.fake_del
       end
     end

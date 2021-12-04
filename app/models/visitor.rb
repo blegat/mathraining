@@ -10,6 +10,8 @@
 #  nb_admins :integer
 #
 class Visitor < ActiveRecord::Base
+
+  # Compute the number of visitors for the last day (done every day at midnight (see schedule.rb))
   def self.compute
     # Get date of yesterday
     timenow = DateTime.now.in_time_zone
@@ -31,10 +33,6 @@ class Visitor < ActiveRecord::Base
     num_admins = User.where("admin = ? AND last_connexion_date >= ?", true, yesterday).count
     
     # Create new Visitor element
-    v = Visitor.new
-    v.date = yesterday
-    v.nb_users = num_users
-    v.nb_admins = num_admins
-    v.save    
+    Visitor.create(:date => yesterday, :nb_users => num_users, :nb_admins => num_admins)  
   end
 end

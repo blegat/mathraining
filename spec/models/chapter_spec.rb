@@ -33,7 +33,6 @@ describe Chapter do
   it { should respond_to(:questions) }
   it { should respond_to(:prerequisites) }
   it { should respond_to(:backwards) }
-  it { should respond_to(:available_prerequisites) }
   it { should respond_to(:recursive_prerequisites) }
 
   it { should be_valid }
@@ -113,12 +112,6 @@ describe Chapter do
       specify { expect(@chap.recursive_prerequisites).to include(chap2.id) }
       specify { expect(@chap.recursive_prerequisites).to include(chap3.id) }
       specify { expect(@chap.recursive_prerequisites).not_to include(chap4.id) }
-    end
-    describe "available_prerequisites should be correct" do
-      specify { expect(@chap.available_prerequisites).not_to include(chap1) }
-      specify { expect(@chap.available_prerequisites).not_to include(chap2) }
-      specify { expect(@chap.available_prerequisites).not_to include(chap3) }
-      specify { expect(@chap.available_prerequisites).to include(chap4) }
     end
   end
 

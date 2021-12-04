@@ -42,12 +42,15 @@ class Problem < ActiveRecord::Base
   validates :origin, length: { maximum: 255 }
   validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 5 }
   validates :nb_solves, presence: true, numericality: { greater_or_equal_to: 0 }
+  
+  # OTHER METHODS
 
-  # Retourne la valeur du problème
+  # Return the value of the problem
   def value
     return 15*level
   end
   
+  # Tell if the problem can be seen by the given user
   def can_be_seen_by(user)
     return true if user.admin?
     return false if user.rating < 200
@@ -61,8 +64,8 @@ class Problem < ActiveRecord::Base
     return true
   end
   
-  # Mets à jour nb_solves, first_solve_time, last_solve_time de chaque problème (fait tous les mercredis à 3 heures du matin (voir schedule.rb))
-  # NB: Ils sont plus ou moins maintenus à jour en live, mais pas lorsqu'un utilisateur est supprimé, par exemple
+  # Update the nb_solves, first_solve_time and last_solve_time of each problem (done every wednesday at 3 am (see schedule.rb))
+  # NB: They are more or less maintained correct, but not when a user is deleted for instance
   def self.update_stats
     Problem.where(:online => true).each do |p|
       nb_solves = p.solvedproblems.count

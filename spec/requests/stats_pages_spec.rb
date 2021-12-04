@@ -221,32 +221,43 @@ describe "Stats pages" do
   describe "cron job" do
   
     describe "computes solvedquestion stats" do
-      let!(:now) { DateTime.now }
-      let!(:mondaybeforelastmonday) { Record.get_monday_before_last_monday(now.in_time_zone.to_date) }
-      let!(:solvedq11) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise11, correct: true, guess: exercise11.answer, resolution_time: now-28.days) }
-      let!(:solvedq12) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise12, correct: true, guess: exercise12.answer, resolution_time: now-28.days) }
+      let!(:now) { Time.zone.local(2015, 1, 14, 5, 0, 0) } # Wednesday 14/01/2015 at 5 am
+      let!(:today) { now.in_time_zone.to_date }
+      let!(:mondaybeforelastmonday) { today - 9 } # 05/01/2015
+      let!(:solvedq11) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise11, correct: true,  guess: exercise11.answer, resolution_time: now-28.days) }
+      let!(:solvedq12) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise12, correct: true,  guess: exercise12.answer, resolution_time: now-28.days) }
       let!(:solvedq21) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise21, correct: false, guess: exercise21.answer + 1, resolution_time: now-21.days) }
-      let!(:solvedq22) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise22, correct: true, guess: exercise22.answer, resolution_time: now-14.days) }
+      let!(:solvedq22) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise22, correct: true,  guess: exercise22.answer, resolution_time: now-14.days) }
       
-      before { Record.update }
+      before do
+        travel_to now
+        Record.update
+        travel_back
+      end
       
-      # NB: We can test that there is no record for mondaybeforelastmonday + 7 but it can be wrong if db is run exactly monday at midnight...
-      let!(:record1) { Record.where(:date => mondaybeforelastmonday - 21).first }
-      let!(:record2) { Record.where(:date => mondaybeforelastmonday - 14).first }
-      let!(:record3) { Record.where(:date => mondaybeforelastmonday - 7).first }
-      let!(:record4) { Record.where(:date => mondaybeforelastmonday).first }
+      let!(:record0) { Record.where(:date => mondaybeforelastmonday - 35).first } # 01/12/2014 -> should not exist
+      let!(:record1) { Record.where(:date => mondaybeforelastmonday - 28).first } # 08/12/2014
+      let!(:record2) { Record.where(:date => mondaybeforelastmonday - 21).first } # 15/12/2014
+      let!(:record3) { Record.where(:date => mondaybeforelastmonday - 14).first } # 22/12/2014
+      let!(:record4) { Record.where(:date => mondaybeforelastmonday - 7).first }  # 29/12/2014
+      let!(:record5) { Record.where(:date => mondaybeforelastmonday).first }      # 05/01/2015
       
       specify do
-        expect(record1.nb_questions_solved).to eq(2)
-        expect(record2.nb_questions_solved).to eq(0)
-        expect(record3.nb_questions_solved).to eq(1)
-        expect(record4.nb_questions_solved).to eq(0)
+        expect(Record.count).to eq(5)
+        
+        expect(record0).to eq(nil)
+        expect(record1.nb_questions_solved).to eq(0)
+        expect(record2.nb_questions_solved).to eq(2)
+        expect(record3.nb_questions_solved).to eq(0)
+        expect(record4.nb_questions_solved).to eq(1)
+        expect(record5.nb_questions_solved).to eq(0)
       end
     end
     
     describe "computes submission stats" do
       let!(:now) { Time.zone.local(2015, 1, 14, 5, 0, 0) } # Wednesday 14/01/2015 at 5 am
-      let!(:mondaybeforelastmonday) { Record.get_monday_before_last_monday(now.in_time_zone.to_date) } # 05/01/2015
+      let!(:today) { now.in_time_zone.to_date }
+      let!(:mondaybeforelastmonday) { today - 9 } # 05/01/2015
       let!(:problem1) { FactoryGirl.create(:problem, section: section, online: true, number: 1111, level: 1) }
       let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true, number: 1112, level: 2) }
       let!(:problem3) { FactoryGirl.create(:problem, section: section, online: true, number: 1113, level: 3) }
@@ -264,6 +275,7 @@ describe "Stats pages" do
       before do
         travel_to now
         Record.update
+        travel_back
       end
       
       let!(:record0) { Record.where(:date => mondaybeforelastmonday - 35).first } # 01/12/2014 -> should not exist
@@ -305,6 +317,7 @@ describe "Stats pages" do
           submission23.update_attributes(status: 0, created_at: now+2.days) # Draft was sent but not corrected
           travel_to now+7.days
           Record.update
+          travel_back
           record4.reload
           record5.reload
         end

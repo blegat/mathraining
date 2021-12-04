@@ -34,13 +34,15 @@ class Question < ActiveRecord::Base
   validates :position, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :level, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 4 }
 
-  # Retourne la valeur de l'exercice
+  # OTHER METHODS
+
+  # Return the value of the question
   def value
     return 3*level
   end
   
-  # Mets à jour les nb_tries et nb_first_guesses de chaque question (fait tous les mardis à 3 heures du matin (voir schedule.rb))
-  # NB: Ils sont plus ou moins maintenus à jour en live, mais pas lorsqu'un utilisateur est supprimé, par exemple
+  # Update the nb_tries and nb_first_guesses of each question (done every tuesday at 3 am (see schedule.rb))
+  # NB: They are more or less maintained correct, but not when a user is deleted for instance
   def self.update_stats
     nb_tries_by_question = Solvedquestion.group(:question_id).count
     nb_first_guesses_by_question = Solvedquestion.where(:correct => true, :nb_guess => 1).group(:question_id).count

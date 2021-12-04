@@ -19,12 +19,12 @@
 #
 class Submission < ActiveRecord::Base
 
-  # status = -1 : brouillon
-  #           0 : pas corrigé
-  #           1 : erroné (lu)
-  #           2 : résolu
-  #           3 : erroné + commentaire d'un étudiant jamais lu
-  #           4 : plagié (plus possible de soumettre sur ce problème ni de commenter)
+  # status = -1 : draft
+  #           0 : not corrected yet
+  #           1 : wrong (last comment read)
+  #           2 : correct
+  #           3 : wrong + unread comment from the student
+  #           4 : plagiarized (not possible to submit a new submission or to comment)
 
   # BELONGS_TO, HAS_MANY
 
@@ -43,8 +43,10 @@ class Submission < ActiveRecord::Base
   validates :problem_id, presence: true
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :status, presence: true, inclusion: { in: [-1, 0, 1, 2, 3, 4] }
+  
+  # OTHER METHODS
 
-  # Rend l'icone correspondante
+  # Give the icon for the submission
   def icon
     if star
       'star1.png'

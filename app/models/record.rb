@@ -13,9 +13,9 @@
 #
 class Record < ActiveRecord::Base
 
-  # Mets à jour les statistiques, si possible (fait tous les jours à 2 heures du matin (voir schedule.rb))
+  # Update the statistics, if possible (done every day at 2 am (see schedule.rb))
   def self.update
-    mondaybeforelastmonday = get_monday_before_last_monday(DateTime.now.in_time_zone.to_date)
+    mondaybeforelastmonday = get_monday_before_last_monday
     lastrecord = Record.order(:date).last
     if(lastrecord.nil?)
       lastdate = Date.parse('1-12-2014')
@@ -25,12 +25,12 @@ class Record < ActiveRecord::Base
     curmonday = lastdate+7
     while(curmonday <= mondaybeforelastmonday)
       nextmonday = curmonday+7
-      r = Record.new
-      r.date = curmonday
-      r.nb_submissions = Submission.where("status != -1 AND created_at >= ? AND created_at < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
-      r.nb_questions_solved = Solvedquestion.where("correct = ? AND resolution_time >= ? AND resolution_time < ?", true, curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
-      r.complete = false
-      r.save
+      nb_submissions = Submission.where("status != -1 AND created_at >= ? AND created_at < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
+      nb_questions_solved = Solvedquestion.where("correct = ? AND resolution_time >= ? AND resolution_time < ?", true, curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
+      r = Record.create(:date                => curmonday,
+                        :nb_submissions      => nb_submissions,
+                        :nb_questions_solved => nb_questions_solved,
+                        :complete            => false)
       curmonday = nextmonday
     end
 
@@ -60,9 +60,11 @@ class Record < ActiveRecord::Base
     end
   end
   
-  def self.get_monday_before_last_monday(today)
+  # Helper method to get the monday before the last monday
+  def self.get_monday_before_last_monday
+    today = DateTime.now.in_time_zone.to_date
     yesterday = today-1
-    lastdimanche = yesterday - yesterday.wday
-    return lastdimanche-6
+    last_sunday = yesterday - yesterday.wday
+    return last_sunday-6
   end
 end

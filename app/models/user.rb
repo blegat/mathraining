@@ -118,8 +118,10 @@ class User < ActiveRecord::Base
   validates_confirmation_of :email, case_sensitive: false
   validates :year, presence: true
   validates :country, presence: true
+  
+  # OTHER METHODS
 
-  # Nom complet, avec seulement l'initiale s'il faut
+  # Complete name (with only initial of last name if the user asked to)
   def name
     if self.see_name == 0
       return self.shortname
@@ -128,25 +130,27 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Nom complet
+  # Complete name
   def fullname
     return "#{self.first_name} #{self.last_name}"
   end
   
-  # Nom complet avec seulement l'initiale
+  # Complete name but with only initial of last name
   def shortname
     return "#{self.first_name} #{self.last_name[0]}."
   end
 
+  # Tells if the user solved the given problem
   def pb_solved?(problem)
     return (self.solvedproblems.where(:problem_id => problem).count > 0)
   end
 
+  # Tells if the user completed the given chapter
   def chap_solved?(chapter)
     return self.chapters.include?(chapter)
   end
 
-  # Rend le statut pour un certain test virtuel
+  # Gives the status for the given virtual test (-1 = not started, 0 = started, 1 = ended)
   def status(virtualtest)
     x = self.takentests.where(:virtualtest_id => virtualtest).first
     if x.nil?
@@ -156,7 +160,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Rend le nombre de soumissions qu'on peut corriger
+  # Gives the number of submissions that the user can correct
   def num_notifications_new
     if sk.admin
       return Submission.where(status: 0, visible: true).count
@@ -165,12 +169,12 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Rend le nombre de soumissions avec un nouveau commentaire pour nous
+  # Gives the number of submissions with a new comment to read
   def num_notifications_update
     return followed_submissions.where(followings: { read: false }).count
   end
 
-  # Rend le niveau de l'utilisateur
+  # Gives the "level" of the user
   def level
     if admin
       return {color:"#000000"}
@@ -192,7 +196,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Rend le nombre de nouveaux messages sur le forum
+  # Gives the number of unseen subjects on the forum
   def num_unseen_subjects(include_myself)
     if include_myself
       if self.admin? or (self.corrector? and self.wepion?)
@@ -217,7 +221,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Rend la peau de l'utilisateur : current_user.sk à mettre quasi partout
+  # Gives the skin of the user: current_user.sk must be used almost everywhere
   def sk
     if self.admin? && self.skin != 0
       return User.find(self.skin)
@@ -226,7 +230,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Rend true si l'utilisateur n'est pas dans sa propre peau
+  # Tells if the user is not in his own skin
   def other
     if self.admin? && self.skin != 0
       return true
@@ -235,6 +239,7 @@ class User < ActiveRecord::Base
     end
   end
   
+  # Adapt the name of the user automatically
   def adapt_name
     (0..1).each do |j|
       if(j == 0)
@@ -275,6 +280,7 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Returns the colored name of the user:
   # name_type = 0 : to respect the user choice (full name or not)
   # name_type = 1 : to show the full name
   # name_type = 2 : to show the name with initial only for last name
@@ -291,6 +297,7 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Returns the colored linked name of the user (see colored_name for explanations about name_type)
   def linked_name(name_type = 0)
     if !self.active?
       return self.colored_name(name_type)
@@ -299,14 +306,14 @@ class User < ActiveRecord::Base
     end
   end
   
-  # Supprime les utilisateurs n'étant jamais venus (fait tous les jours à 2 heures du matin (voir schedule.rb))
+  # Deletes the user that never came on the website (done very day at 2 am (see schedule.rb))
   def self.delete_unconfirmed
-    # Utilisateurs n'ayant pas confirmé leur e-mail après une semaine
+    # Users that have not confirmed their email after one week
     oneweekago = Date.today - 7
     User.where("email_confirm = ? AND created_at < ?", false, oneweekago).each do |u|
       u.destroy
     end
-    # Utilisateurs ayant confirmé mais n'étant jamais venu après un mois (rating = 0 est normalement redondant)
+    # Users having confirmed their email but that never came on the website after one month (rating = 0 should be redundant))
     onemonthago = Date.today - 31
     User.where("admin = ? AND rating = ? AND created_at < ? AND last_connexion_date < ?", false, 0, onemonthago, "2012-01-01").each do |u|
       u.destroy
@@ -315,14 +322,14 @@ class User < ActiveRecord::Base
 
   private
 
-  # Créer un token aléatoire
+  # Create a random token
   def create_remember_token
     begin
       self.remember_token = SecureRandom.urlsafe_base64
     end while User.exists?(:remember_token => self.remember_token)
   end
 
-  # Créer les points associés à l'utilisateur
+  # Create the points per section associated to the user
   def create_points
     Section.all.to_a.each do |s|
       newpoint = Pointspersection.new
@@ -332,7 +339,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Détruire les discussions de cet utilisateur
+  # Delete all discussions of the user
   def destroy_discussions
     self.discussions.each do |d|
       d.destroy

@@ -24,6 +24,8 @@ class Prerequisite < ActiveRecord::Base
   validate :no_loop
   validate :not_redundant
   validate :create_no_redundance
+  
+  # OTHER METHODS
 
   # Check that the new connection does not create a loop in the graph
   def no_loop
@@ -76,6 +78,7 @@ class Prerequisite < ActiveRecord::Base
   private
 
   # Find a path between current and target (or return nil if none)
+  # NB: This method ignores the current link chapter -> prerequisite in the graph
   def find_path_from_to(current, target, visited)
     if target == current
       return [current.name]
@@ -95,17 +98,8 @@ class Prerequisite < ActiveRecord::Base
     return nil
   end
 
-  # Print a path in a readable string
-  def path_to_s(path)
-    current = path.pop
-    if path.empty?
-      return current
-    else
-      return "#{path_to_s(path)} -> #{current}"
-    end
-  end
-
   # Get all prerequisites of current (including itself), not going through already visited ones
+  # NB: This method ignores the current link chapter -> prerequisite in the graph
   def recursive_prerequisites(current, visited)
     unless visited.include?(current)
       visited.add(current)
@@ -118,6 +112,7 @@ class Prerequisite < ActiveRecord::Base
   end
   
   # Get all backwards of current (including itself), not going through already visited ones
+  # NB: This method ignores the current link chapter -> prerequisite in the graph
   def recursive_backwards(current, visited)
     unless visited.include?(current)
       visited.add(current)
@@ -126,6 +121,16 @@ class Prerequisite < ActiveRecord::Base
           recursive_backwards(current_backward, visited)
         end
       end
+    end
+  end
+  
+  # Print a path in a readable string
+  def path_to_s(path)
+    current = path.pop
+    if path.empty?
+      return current
+    else
+      return "#{path_to_s(path)} -> #{current}"
     end
   end
 end

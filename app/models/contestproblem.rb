@@ -51,14 +51,10 @@ class Contestproblem < ActiveRecord::Base
   
   private
   
-  # Créer la solution officielle
+  # OTHER METHODS
+  
+  # Create the official solution just after the creation
   def create_official_solution
-    official_solution = Contestsolution.new
-    official_solution.contestproblem = self
-    official_solution.user_id = 0
-    official_solution.content = "-"
-    official_solution.official = true
-    official_solution.corrected = true
-    official_solution.save
+    Contestsolution.create(:contestproblem => self, :user_id => 0, :content => "-", :official => true, :corrected => true)
   end
 end

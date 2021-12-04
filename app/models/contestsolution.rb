@@ -36,7 +36,9 @@ class Contestsolution < ActiveRecord::Base
   
   after_create :create_correction
   
-  # Rend l'icone correspondante
+  # OTHER METHODS
+  
+  # Give the icon for the solution
   def icon
     if !corrected
       'tiret.gif'
@@ -53,12 +55,9 @@ class Contestsolution < ActiveRecord::Base
   
   private
   
-  # Créer la correction associée à la solution
+  # Create the correction just after the creation
   def create_correction
-    correction = Contestcorrection.new
-    correction.contestsolution = self
-    correction.content = "-"
-    correction.save
+    Contestcorrection.create(:contestsolution => self, :content => "-")
   end
 
 end

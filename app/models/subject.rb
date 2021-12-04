@@ -48,8 +48,9 @@ class Subject < ActiveRecord::Base
   validates :last_comment_time, presence: true
   validates :last_comment_user_id, presence: true
   
+  # OTHER METHODS
   
-  # Tells if the subject can be seen by some user
+  # Tells if the subject can be seen by the given user
   def can_be_seen_by(user)
     if self.for_wepion && !user.admin? && !user.wepion?
       return false
