@@ -29,9 +29,7 @@ describe "Contestproblem pages" do
   let(:user_with_rating_200) { FactoryGirl.create(:user, rating: 200) }
   let(:user_participating) { FactoryGirl.create(:user, rating: 250) }
   let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
-  
-  let!(:category) { FactoryGirl.create(:category, name: "Mathraining") } # For the Forum subject
-  
+
   let!(:contest) { FactoryGirl.create(:contest) }
   let!(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest, number: 1) }
   let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user_participating, score: 7) }

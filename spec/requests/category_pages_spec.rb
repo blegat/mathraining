@@ -74,7 +74,7 @@ describe "Category pages" do
       end
       
       describe "and deletes one" do
-        specify { expect { click_link("Supprimer cette catégorie") }.to change(Category, :count).by(-1) }
+        specify { expect { page.all(:link, "Supprimer cette catégorie").first.click }.to change(Category, :count).by(-1) }
       end
     end
   end

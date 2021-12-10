@@ -7,13 +7,11 @@ describe "Contestproblemcheck pages" do
 
   let!(:user_following_contest) { FactoryGirl.create(:user) }
   let!(:user_following_subject) { FactoryGirl.create(:user) }
-  
-  let!(:category) { FactoryGirl.create(:category, name: "Mathraining") } # For the Forum subject
     
   let!(:running_contest) { FactoryGirl.create(:contest, status: 1) }
   let!(:running_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 1, status: 1, start_time: DateTime.now + 2.days, end_time: DateTime.now + 2.days) }
   let!(:running_contestproblemcheck) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem) }
-  let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: category, last_comment_time: DateTime.now - 2.days) }
+  let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: Category.where(:name => "Mathraining").first, last_comment_time: DateTime.now - 2.days) }
   
   before do
     Followingsubject.create(:subject => running_contestsubject, :user => user_following_subject)

@@ -15,8 +15,6 @@ describe "Contest pages" do
   let(:user_participating5) { FactoryGirl.create(:user, rating: 254) }
   let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
   
-  let!(:category) { FactoryGirl.create(:category, name: "Mathraining") } # For the Forum subject
-  
   let!(:contest) { FactoryGirl.create(:contest) }
   let!(:contestproblem1) { FactoryGirl.create(:contestproblem, contest: contest) }
   let!(:contestproblem2) { FactoryGirl.create(:contestproblem, contest: contest) }
@@ -289,7 +287,7 @@ describe "Contest pages" do
           expect(page).to have_success_message("Concours mis en ligne")
           expect(offline_contest.status).to eq(1)
           expect(offline_contestproblem.status).to eq(1)
-          expect(Subject.order(:id).last.category).to eq(category)
+          expect(Subject.order(:id).last.category.name).to eq("Mathraining")
           expect(Subject.order(:id).last.title).to eq("Concours ##{offline_contest.number}")
           expect(Subject.order(:id).last.contest).to eq(offline_contest)
         end

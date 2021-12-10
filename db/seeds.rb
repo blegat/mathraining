@@ -233,3 +233,10 @@ Color.create(pt: 2000, name: "Chevronné",    color: "#A000A0", femininename: "C
 Color.create(pt: 3200, name: "Expert",       color: "#FFA000", femininename: "Experte")
 Color.create(pt: 5000, name: "Maître",       color: "#FF4400", femininename: "Maître")
 Color.create(pt: 7500, name: "Grand Maître", color: "#CC0000", femininename: "Grand Maître")
+
+# Categories
+Category.create(name: "Divers")
+Category.create(name: "Compétitions")
+Category.create(name: "Marathons")
+Category.create(name: "Mathraining")
+Category.create(name: "Wépion")
