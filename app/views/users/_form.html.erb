@@ -48,14 +48,14 @@
   <% (0..(lastyear-1900)).each do |i| %>
     <% liste.push(lastyear-i) %>
   <% end %>
-  <%= f.select(:year, liste, { :include_blank => "Choisir..." }, { :class => "form-control", :style => "width:100px;"}) %>
+  <%= f.select(:year, liste, { :include_blank => (modif ? nil : "Choisir...") }, { :class => "form-control", :style => "width:100px;"}) %>
 </div>
 
 <!-- Pays de résidence -->
 <div class="form-group">
   <%= f.label :country %>
   <% countries_array = Country.all.map { |c| [c.name, c.id] } %>
-  <%= f.select(:country, options_for_select(countries_array, @user.country_id), { :include_blank => "Choisir..." }, { :class => "form-control", :style => "width:250px;" }) %>
+  <%= f.select(:country, options_for_select(countries_array, @user.country_id), { :include_blank => (modif ? nil : "Choisir...") }, { :class => "form-control", :style => "width:250px;" }) %>
 </div>
 
 <!-- Email -->

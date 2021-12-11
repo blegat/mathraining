@@ -88,6 +88,9 @@ fr:
       section:
         description: "Introduction"
         name: "Nom"
+        abbreviation: "Abréviation"
+        short_abbreviation: "Abréviation courte"
+        initials: "Initiales"
       subject:
         title: "Titre"
         content: "Message"

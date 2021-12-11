@@ -71,9 +71,11 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   
   config.include Rails.application.routes.url_helpers
+  
+  config.before(:suite) do
+    Rails.application.load_seed # Needed at least to have colors for users
+  end
 end
-
-Rails.application.load_seed
 
 #Capybara::Webkit.configure do |config|
 #  config.block_unknown_urls

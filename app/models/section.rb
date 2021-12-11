@@ -21,6 +21,9 @@ class Section < ActiveRecord::Base
   # VALIDATIONS
 
   validates :name, presence: true, length: { maximum: 255 }, uniqueness: true
+  validates :abbreviation, presence: true, length: { maximum: 15 }, uniqueness: true
+  validates :short_abbreviation, presence: true, length: { maximum: 8 }, uniqueness: true
+  validates :initials, presence: true, length: { maximum: 2 } # uniqueness: true is not set because otherwise the tests would fail
   validates :description, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   
 end

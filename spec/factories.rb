@@ -188,7 +188,10 @@ FactoryGirl.define do
   
   # Section
   factory :section do
-    sequence(:name) { |n| "Section#{n}" }
+    sequence(:name) { |n| "Section #{n}" }
+    sequence(:abbreviation) { |n| "Sec. #{n}" }
+    sequence(:short_abbreviation) { |n| "S. #{n}" }
+    sequence(:initials) { |n| "S" }
     description "Description"
     factory :fondation_section do
       fondation true

@@ -10,6 +10,9 @@ describe "Section pages" do
   let(:section) { FactoryGirl.create(:section) }
   let(:section_fondation) { FactoryGirl.create(:fondation_section) }
   let(:newtitle) { "Mon nouveau titre de section" }
+  let(:newabbreviation) { "Nouv. Tit. Sec." }
+  let(:newshortabbreviation) { "Nv. Tit." }
+  let(:newinitials) { "NT" }
   let(:newdescription) { "Ma nouvelle description de section" }
   
   describe "visitor" do
@@ -53,12 +56,18 @@ describe "Section pages" do
       before do
         visit edit_section_path(section)
         fill_in "Nom", with: newtitle
+        fill_in "Abréviation", with: newabbreviation
+        fill_in "Abréviation courte", with: newshortabbreviation
+        fill_in "Initiales", with: newinitials
         fill_in "MathInput", with: newdescription
         click_button "Modifier"
         section.reload
       end
       specify do
         expect(section.name).to eq(newtitle)
+        expect(section.abbreviation).to eq(newabbreviation)
+        expect(section.short_abbreviation).to eq(newshortabbreviation)
+        expect(section.initials).to eq(newinitials)
         expect(section.description).to eq(newdescription)
       end
     end

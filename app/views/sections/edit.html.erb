@@ -9,6 +9,21 @@
     <%= f.label :name %>
     <%= f.text_field :name, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;" %>
   </div>
+  
+  <div class="form-group">
+    <%= f.label :abbreviation %>
+    <%= f.text_field :abbreviation, :class => "form-control", :maxlength => "15", :style => "width:100%; max-width:400px;" %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :short_abbreviation %>
+    <%= f.text_field :short_abbreviation, :class => "form-control", :maxlength => "8", :style => "width:100%; max-width:400px;" %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :initials %>
+    <%= f.text_field :initials, :class => "form-control", :maxlength => "2", :style => "width:100%; max-width:400px;" %>
+  </div>
 
   <div class="form-group">
     <%= f.label :description %>

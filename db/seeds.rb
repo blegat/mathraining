@@ -10,15 +10,50 @@
 
 
 # Sections
-section = Array.new
+Section.delete_all
 
-section[1] = Section.create!(name: "Combinatoire",             description: "", fondation: false)
-section[2] = Section.create!(name: "Géométrie",                description: "", fondation: false)
-section[3] = Section.create!(name: "Théorie des nombres",      description: "", fondation: false)
-section[4] = Section.create!(name: "Algèbre",                  description: "", fondation: false)
-section[5] = Section.create!(name: "Équations fonctionnelles", description: "", fondation: false)
-section[6] = Section.create!(name: "Inégalités",               description: "", fondation: false)
-section[7] = Section.create!(name: "Fondements",               description: "", fondation: true)
+Section.create!(name:               "Combinatoire",
+                abbreviation:       "Combinatoire",
+                short_abbreviation: "Comb.",
+                initials:           "C",
+                description:        "",
+                fondation:          false)
+Section.create!(name:               "Géométrie",
+                abbreviation:       "Géométrie",
+                short_abbreviation: "Géom.",
+                initials:           "G",
+                description:        "",
+                fondation:          false)
+Section.create!(name:               "Théorie des nombres",
+                abbreviation:       "Th. Nombres",
+                short_abbreviation: "Th. Nb.",
+                initials:           "TN",
+                description:        "",
+                fondation:          false)
+Section.create!(name:               "Algèbre",
+                abbreviation:       "Algèbre",
+                short_abbreviation: "Alg.",
+                initials:           "A",
+                description:        "",
+                fondation:          false)
+Section.create!(name:               "Équations fonctionnelles",
+                abbreviation:       "Éq. Fonct.",
+                short_abbreviation: "Éq. Fct.",
+                initials:           "ÉF",
+                description:        "",
+                fondation:          false)
+Section.create!(name:               "Inégalités",
+                abbreviation:       "Inégalités",
+                short_abbreviation: "Inég.",
+                initials:           "I",
+                description:        "",
+                fondation:          false)
+Section.create!(name:               "Fondements",
+                abbreviation:       "Fondements",
+                short_abbreviation: "Fond.",
+                initials:           "F",
+                description:        "",
+                fondation:          true)
 
 # Countries
 cy = [
@@ -218,11 +253,13 @@ cy = [
 ["Zambie", "zm"],
 ["Zimbabwe", "zw"]]
 
+Country.delete_all
 cy.each do |c|
-    Country.create(name: c[0], code: c[1])
+  Country.create(name: c[0], code: c[1])
 end
 
 # Colors
+Color.delete_all
 Color.create(pt: 0,    name: "Novice",       color: "#888888", femininename: "Novice")
 Color.create(pt: 70,   name: "Débutant",     color: "#08D508", femininename: "Débutante")
 Color.create(pt: 200,  name: "Initié",       color: "#008800", femininename: "Initiée")
@@ -235,6 +272,7 @@ Color.create(pt: 5000, name: "Maître",       color: "#FF4400", femininename: "M
 Color.create(pt: 7500, name: "Grand Maître", color: "#CC0000", femininename: "Grand Maître")
 
 # Categories
+Category.delete_all
 Category.create(name: "Divers")
 Category.create(name: "Compétitions")
 Category.create(name: "Marathons")

@@ -156,15 +156,14 @@ Votre navigateur ne supporte pas les canvas.
 
 Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier correcteur ayant corrigé une soumission à un problème de ce type.
 
-<% abreviation = ["Combinatoire", "Géométrie", "Th. Nombres", "Algèbre", "Éq. Fonct.", "Inégalités"] %>
 <div style="width:100%; overflow-x:auto; margin-top:20px;">
 <center>
 <table class="table table-bordered" style="min-width:790px; width:790px; margin:0px;">
 <tr>
 <th style="width:70px;"></th>
-<% sections = Section.select(:id).where(:fondation => false).order(:id).to_a %>
+<% sections = Section.select(:id, :abbreviation).where(:fondation => false).order(:id).to_a %>
 <% sections.each do |sec| %>
-  <th style="width:120px; text-align:center;"><%= abreviation[sec.id-1] %></th>
+  <th style="width:120px; text-align:center;"><%= sec.abbreviation %></th>
 <% end %>
 </tr>
 

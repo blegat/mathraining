@@ -35,6 +35,6 @@ $ rails s  # And then visit localhost:3000 in your browser
 ```
 To run tests, do:
 ```sh
-$ rake db:test:prepare  # Needs to be done when the database structure changes
-$ rspec .               # The '.' can be replaced by the path to one file in spec/
+$ rake db:test:prepare  # Must be done when the db structure changes
+$ rspec .               # '.' can be replaced by a path to one file in spec/
 ```
