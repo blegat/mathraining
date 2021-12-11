@@ -6,24 +6,35 @@ Mathraining
 Description
 -----------
 Code source de [Mathraining](http://www.mathraining.be),
-le site interactif d'entraînement aux Olympiades Internationales de Mathématiques.
+le site interactif d'initiation à la résolution de problèmes mathématiques avancés.
 
 Vous êtes libres et encouragés à participer à son développement en soumettant
-des bugs, suggestions ou même en participant à l'écriture du site web.
+des bugs ou suggestions d'amélioration.
 
-Si vous ne connaissez pas Git,
-lisez la partie *Utilisation linéaire de Git* de
-[ce tutoriel](http://sites.uclouvain.be/SystInfo/notes/Outils/html/git.html)
-écrit par Benoît Legat.
-
-To test the website locally, do
+How to test the website locally
+-------------------------------
+First you need to clone the github repository (or a fork of it) on your computer:
 ```sh
-$ rake db:migrate
-$ rails s
+$ git clone https://github.com/blegat/mathraining
 ```
-To run tests, do
+In the created folder 'mathraining', you should install the needed 'gems':
 ```sh
-$ rake db:migrate
-$ rake db:test:prepare
-$ rspec .
+$ bundle config set --local without 'production'
+$ bundle install
+```
+Then it is time to create the database:
+```sh
+$ rake db:create    # Create the database
+$ rake db:migrate   # Migrate the database (see db/migrate/)
+$ rake db:seed      # Seed the database (see db/seeds.rb)
+$ rake db:populate  # Populate the database (see lib/tasks/sample_data.rake)
+```
+To test the website locally, you can simply do:
+```sh
+$ rails s  # And then visit localhost:3000 in your browser
+```
+To run tests, do:
+```sh
+$ rake db:test:prepare  # Needs to be done when the database structure changes
+$ rspec .               # The '.' can be replaced by the path to one file in spec/
 ```
