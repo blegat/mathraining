@@ -28,26 +28,35 @@ html>body tbody.scroll {
   <% end %>
 <% end %>
 
+<% prev_day = Date.today %>
+
 <table class="table">
 <% Solvedproblem.joins(:problem).joins(problem: :section).joins("LEFT JOIN followings ON followings.submission_id = solvedproblems.submission_id").select("solvedproblems.user_id, solvedproblems.problem_id, solvedproblems.submission_id, problems.number AS problem_number, problems.level, solvedproblems.correction_time, sections.short_abbreviation AS section_short_abbreviation, followings.user_id AS corrector_id").includes(:user, submission: {followings: :user}).where("correction_time > ? AND followings.kind = 1", oneweekago).order("correction_time DESC").each do |s| %>
+
+  <% border_style = "" %>
+  <% if s.correction_time.in_time_zone.to_date != prev_day %>
+    <% prev_day = s.correction_time.in_time_zone.to_date %>
+    <% border_style = "border-top:1px solid black;" %>
+  <% end %>
+
   <tr>
   <!-- Date -->
-  <td><%= write_date_only_small(s.correction_time) %></td>
+  <td style="<%= border_style %>"><%= write_date_only_small(s.correction_time) %></td>
   
   <!-- Heure -->
-  <td class="hidden-xs"><%= write_hour(s.correction_time) %></td>
+  <td style="<%= border_style %>" class="hidden-xs"><%= write_hour(s.correction_time) %></td>
   
   <!-- Qui -->
-  <td><%= raw(s.user.linked_name) %></td>
+  <td style="<%= border_style %>"><%= raw(s.user.linked_name) %></td>
   
   <!-- Section -->
-  <td class="hidden-xs"><%= s.section_short_abbreviation %></td>
+  <td style="<%= border_style %>" class="hidden-xs"><%= s.section_short_abbreviation %></td>
   
   <!-- Niveau -->
-  <td class="hidden-xs">Niv. <%= s.level %></td>
+  <td style="<%= border_style %>" class="hidden-xs">Niv. <%= s.level %></td>
   
   <!-- Problème -->
-  <td>
+  <td style="<%= border_style %>">
   <% if (@signed_in && current_user.sk.admin?) || problem_status[s.problem_id] == 1 %>
     <span class="hidden-xs hidden-sm"><%= link_to "Problème ##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
     <span class="visible-xs visible-sm"><%= link_to "##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
@@ -57,7 +66,7 @@ html>body tbody.scroll {
   </td>
   
   <!-- Correcteur -->
-  <td class="hidden-xs">
+  <td style="<%= border_style %>" class="hidden-xs">
     <% s.submission.followings.each do |f| %>
       <% if f.kind == 1 %>
         <%= raw(f.user.linked_name) %>
