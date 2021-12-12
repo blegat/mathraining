@@ -15,7 +15,7 @@ module SessionsHelper
   end
 
   def current_user
-    if @current_user.nil?
+    if @current_user.nil? && !cookies[:remember_token].nil?
       @current_user = User.find_by_remember_token(cookies[:remember_token])
       if !@current_user.nil?
         mtn = DateTime.now.in_time_zone.to_date

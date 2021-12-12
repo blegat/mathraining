@@ -4,11 +4,14 @@
 #
 # Table name: sections
 #
-#  id          :integer          not null, primary key
-#  name        :string
-#  description :text
-#  fondation   :boolean          default(FALSE)
-#  max_score   :integer          default(0)
+#  id                 :integer          not null, primary key
+#  name               :string
+#  description        :text
+#  fondation          :boolean          default(FALSE)
+#  max_score          :integer          default(0)
+#  abbreviation       :string
+#  short_abbreviation :string
+#  initials           :string
 #
 class Section < ActiveRecord::Base
 

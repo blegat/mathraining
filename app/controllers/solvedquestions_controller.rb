@@ -1,14 +1,15 @@
 #encoding: utf-8
 class SolvedquestionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update]
+  before_action :non_admin_user, only: [:create, :update]
   
   before_action :get_question, only: [:create, :update]
   
+  before_action :online_chapter, only: [:create, :update]
+  before_action :unlocked_chapter, only: [:create, :update]
   before_action :first_try, only: [:create]
   before_action :not_first_try_not_solved, only: [:update]
   before_action :waited_enough_time, only: [:update]
-  before_action :online_chapter_or_admin
-  before_action :unlocked_chapter
 
   # Try to solve a question (first time)
   def create
@@ -81,42 +82,29 @@ class SolvedquestionsController < ApplicationController
     end
   end
 
-  # Check that the chapter is online or that current user is admin
-  def online_chapter_or_admin
-    if !@chapter.online && !current_user.sk.admin?
-      render 'errors/access_refused' and return
-    end
+  # Check that the chapter is online
+  def online_chapter
+    return if check_offline_object(@chapter)
   end
 
   # Check that the prerequisites of the chapter have been completed
   def unlocked_chapter
-    if !current_user.sk.admin?
-      @chapter.prerequisites.each do |p|
-        if (!p.section.fondation && !current_user.sk.chapters.exists?(p.id))
-          render 'errors/access_refused' and return
-        end
+    @chapter.prerequisites.each do |p|
+      if (!current_user.sk.chapters.exists?(p.id))
+        render 'errors/access_refused' and return
       end
     end
   end
   
   ########## HELPER METHODS ##########
   
-  # Helper method to get absolute difference between two numbers
-  def absolu(a, b)
-    if a > b
-      return a-b
-    else
-      return b-a
-    end
-  end
-  
   # Helper method to check if the given answer is correct
-  def check_answer(first_sub) # QCM
-    if @question.is_qcm
+  def check_answer(first_sub)
+    if @question.is_qcm # QCM
       @solvedquestion.guess = 0.0
       @solvedquestion.nb_guess = (first_sub ? 1 : @solvedquestion.nb_guess + 1)
       good_guess = true
-      autre = first_sub
+      diff_sub = first_sub
       @solvedquestion.resolution_time = DateTime.now
       if @question.many_answers # Many answers possible
         if params[:ans]
@@ -130,21 +118,21 @@ class SolvedquestionsController < ApplicationController
             if !c.ok
               good_guess = false
             end
-            if !first_sub && !@solvedquestion.items.exists?(c.id)
-              autre = true
+            if !diff_sub && !@solvedquestion.items.exists?(c.id)
+              diff_sub = true
             end
           else # Answered "false"
             if c.ok
               good_guess = false
             end
-            if !first_sub && @solvedquestion.items.exists?(c.id)
-              autre = true
+            if !diff_sub && @solvedquestion.items.exists?(c.id)
+              diff_sub = true
             end
           end
         end
 
         # If the same answer as the previous one: we don't count it
-        if !autre
+        if !diff_sub
           redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
           return false
         end
@@ -204,7 +192,7 @@ class SolvedquestionsController < ApplicationController
         @solvedquestion.resolution_time = DateTime.now
 
         if @question.decimal
-          @solvedquestion.correct = (absolu(@question.answer, guess) < 0.001)
+          @solvedquestion.correct = ((@question.answer - guess).abs < 0.001)
         else
           @solvedquestion.correct = (@question.answer.to_i == guess)
         end

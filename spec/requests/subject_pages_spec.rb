@@ -160,6 +160,16 @@ describe "Subject pages" do
           it { should have_link(title) }
         end
       end
+      
+      describe "and tries to create a subject with empty title" do
+        before do
+          select category.name, from: "Catégorie"
+          fill_in "Titre", with: ""
+          fill_in "MathInput", with: content
+          click_button "Créer"
+        end
+        it { should have_error_message("Titre doit être rempli") }
+      end
     end
     
     describe "visits his subject page" do
@@ -181,6 +191,20 @@ describe "Subject pages" do
           should have_success_message("Votre sujet a bien été modifié.")
           should have_content("#{newtitle} - #{category2.name}")
           should have_selector("div", text: newcontent)
+        end
+      end
+      
+      describe "and tries to edit it with empty content" do
+        before do
+          select category2.name, from: "Catégorie"
+          fill_in "Titre", with: newtitle
+          fill_in "MathInputEditSubject", with: ""
+          click_button "Modifier"
+          sub_user.reload
+        end
+        specify do
+          expect(page).to have_error_message("Message doit être rempli")
+          expect(sub_user.title).not_to eq(newtitle)
         end
       end
     end

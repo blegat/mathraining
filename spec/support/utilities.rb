@@ -8,6 +8,10 @@ def sign_in(user)
   click_button "header_connect_button"
 end
 
+def sign_in_controller(user)
+  cookies[:remember_token] = user.remember_token
+end
+
 def sign_out
   visit root_path
   click_link "Déconnexion"

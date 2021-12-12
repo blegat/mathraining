@@ -1,6 +1,7 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :mark_as_plagiarism, :search_script]
+  before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
   before_action :root_user, only: [:update_score, :uncorrect, :mark_as_plagiarism]
   
   before_action :get_submission, only: [:destroy]
@@ -9,6 +10,7 @@ class SubmissionsController < ApplicationController
   
   before_action :in_test_or_root_user, only: [:destroy]
   before_action :corrector_user_having_access, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :search_script]
+  before_action :online_problem, only: [:create, :create_intest]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
   before_action :user_that_can_see_problem, only: [:create]
@@ -315,6 +317,11 @@ class SubmissionsController < ApplicationController
   end
   
   ########## CHECK METHODS ##########
+  
+  # Check that the problem is online
+  def online_problem
+    return if check_offline_object(@problem)
+  end
 
   # Check that current user did not already solve the problem
   def not_solved

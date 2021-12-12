@@ -115,6 +115,8 @@ fr:
         year: "Année de naissance"
         country: "Pays"
         email: "Adresse e-mail"
+      virtualtest:
+        duration: "Durée"
   will_paginate:
     previous_label: "Page précédente"
     next_label: "Page suivante"

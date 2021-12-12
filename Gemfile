@@ -70,6 +70,7 @@ group :test do
   gem 'capybara-select-2'
   gem 'capybara-screenshot'
   gem 'selenium-webdriver', '3.142'
+  gem 'rails-controller-testing'
   #gem 'poltergeist'
   # Code coverage
   gem 'simplecov', :require => false

@@ -3,12 +3,13 @@ class VirtualtestsController < ApplicationController
   before_action :signed_in_user, only: [:show, :new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :begin_test]
   before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :put_online, :destroy]
+  before_action :non_admin_user, only: [:begin_test]
   
   before_action :get_virtualtest, only: [:show, :edit, :update, :destroy]
   before_action :get_virtualtest2, only: [:begin_test, :put_online]
   
   before_action :has_access, only: [:begin_test]
-  before_action :online_test_or_admin_user, only: [:begin_test]
+  before_action :online_test, only: [:begin_test]
   before_action :can_begin, only: [:begin_test]
   before_action :can_be_online, only: [:put_online]
   before_action :offline_test, only: [:destroy]
@@ -111,33 +112,34 @@ class VirtualtestsController < ApplicationController
   # Check that current user is currently doing the virtualtest
   def in_test
     virtualtest_status = current_user.sk.status(@virtualtest.id)
-    render 'errors/access_refused' and return if current_user.sk.admin || virtualtest_status == -1 # Test not started
+    render 'errors/access_refused' and return if virtualtest_status == -1 # Test not started
     redirect_to virtualtests_path and return if virtualtest_status == 1 # Test finished: smoothly redirect because it can happen when timer stops
   end
 
   # Check that current user has access to the virtualtest
   def has_access
-    if !current_user.sk.admin?
-      if !has_enough_points
-        render 'errors/access_refused' and return
+    if !has_enough_points
+      render 'errors/access_refused' and return
+    end
+    visible = true
+    @virtualtest.problems.each do |p|
+      p.chapters.each do |c|
+        visible = false if !current_user.sk.chap_solved?(c)
       end
-      visible = true
-      @virtualtest.problems.each do |p|
-        p.chapters.each do |c|
-          visible = false if !current_user.sk.chap_solved?(c)
-        end
-      end
-      if !visible
-        render 'errors/access_refused' and return
-      end
+    end
+    if !visible
+      render 'errors/access_refused' and return
     end
   end
 
-  # Check that the virtualtest is online or that current user is admin
-  def online_test_or_admin_user
-    if !@virtualtest.online && !current_user.sk.admin
-      render 'errors/access_refused' and return
-    end
+  # Check that the virtualtest is online
+  def online_test
+    return if check_offline_object(@virtualtest)
+  end
+  
+  # Check that the vitualtest is offline
+  def offline_test
+    return if check_online_object(@virtualtest)
   end
 
   # Check that the virtual test can be put online
@@ -159,10 +161,5 @@ class VirtualtestsController < ApplicationController
       flash[:danger] = "Vous avez déjà un test virtuel en cours !"
       redirect_to virtualtests_path
     end
-  end
-
-  # Check that the vitualtest is offline
-  def offline_test
-    return if check_online_object(@virtualtest)
   end
 end

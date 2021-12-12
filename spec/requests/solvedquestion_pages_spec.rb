@@ -125,7 +125,7 @@ describe "Solvedquestion pages" do
         end
       end
       
-      describe "and makes a mistake" do
+      describe "and makes a mistake (too large)" do
         before do
           fill_in "solvedquestion[guess]", with: exercise_decimal.answer + 0.002
           click_button "Soumettre"
@@ -136,6 +136,20 @@ describe "Solvedquestion pages" do
           expect(page).to have_no_content(exercise_decimal.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
+        end
+      
+        describe "and makes another mistake (too small)" do
+          before do
+            fill_in "solvedquestion[guess]", with: exercise_decimal.answer - 0.002
+            click_button "Soumettre"
+            user.reload
+          end
+          specify do
+            expect(page).to have_content("Votre réponse (#{(exercise_decimal.answer-0.002).to_s}) est erronée. Vous avez déjà commis 2 erreurs.")
+            expect(page).to have_no_content(exercise_decimal.explanation)
+            expect(user.rating).to eq(rating_before)
+            expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
+          end
         end
       end
     end
@@ -221,6 +235,31 @@ describe "Solvedquestion pages" do
           expect(page).to have_no_content(qcm_multiple.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
+        end
+        
+        describe "and makes another mistake" do
+          before do
+            uncheck "ans[#{item_multiple_correct.id}]"
+            uncheck "ans[#{item_multiple_incorrect.id}]"
+            click_button "Soumettre"
+            user.reload
+          end
+          it { should have_content("Votre réponse est erronée. Vous avez déjà commis 2 erreurs.") }
+          
+          describe "and correctly solves it" do
+            before do
+              check "ans[#{item_multiple_correct.id}]"
+              uncheck "ans[#{item_multiple_incorrect.id}]"
+              click_button "Soumettre"
+              user.reload
+            end
+            specify do
+              expect(page).to have_content("Vous avez résolu cet exercice après 2 erreurs.")
+              expect(page).to have_content(qcm_multiple.explanation)
+              expect(user.rating).to eq(rating_before + qcm_multiple.value)
+              expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm_multiple.value)
+            end
+          end
         end
         
         describe "and makes the same mistake" do

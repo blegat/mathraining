@@ -12,16 +12,15 @@ describe "Authentication" do
   end
   
   describe "tries to signin" do
+    let(:user) { FactoryGirl.create(:user) }
     before { visit root_path }
 
     describe "with invalid information" do
       before { click_button "Connexion" }
-       
       it { should have_error_message("invalide") }
     end
 
     describe "with valid information" do
-      let(:user) { FactoryGirl.create(:user) }
       before { sign_in(user) }
 
       specify do
@@ -38,6 +37,28 @@ describe "Authentication" do
           expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(nil)
           expect(page).to have_link("Connexion")
         end
+      end
+    end
+    
+    describe "to an inactive account" do
+      before do
+        user.update_attribute(:active, false)
+        sign_in(user)
+      end
+      it do
+        should have_error_message("Ce compte a été désactivé et n'est plus accessible.")
+        should have_no_content(user.fullname) # Should not be connected
+      end
+    end
+    
+    describe "to an account without confirmed email" do
+      before do
+        user.update_attribute(:email_confirm, false)
+        sign_in(user)
+      end
+      it do
+        should have_error_message("Vous devez activer votre compte via l'e-mail qui vous a été envoyé.")
+        should have_no_content(user.fullname) # Should not be connected
       end
     end
   end

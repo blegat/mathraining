@@ -363,6 +363,38 @@ describe "User pages" do
         it { should have_error_message("Vous ne pouvez pas suivre plus de 30 utilisateurs.") }
       end
     end
+    
+    describe "tries to edit the profile of another user" do
+      before { visit edit_user_path(other_zero_user) }
+      it { should have_content(error_access_refused) }
+    end
+    
+    describe "tries to visit the profile of an inactive user" do
+      before do
+        other_zero_user.update_attribute(:active, false)
+        visit user_path(other_zero_user)
+      end
+      it { should have_content(error_access_refused) }
+    end
+    
+    describe "tries to visit wepion groups while not being in it" do
+      before do
+        zero_user.update_attributes(:wepion => false, :group => "")
+        visit groups_path
+      end
+      it { should have_content(error_access_refused) }
+    end
+    
+    describe "visits the website while the account is deactivated" do
+      before do
+        zero_user.update_attribute(:active, false)
+        visit users_path
+      end
+      it do
+        should have_selector("h1", text: "Actualités")   # Should be redirected to root path
+        should have_no_content(zero_user.fullname) # Should be signed out
+      end
+    end
   end
 
   describe "admin" do
@@ -376,6 +408,19 @@ describe "User pages" do
     describe "tries to delete himself" do
       before { visit user_path(admin) }
       it { should have_no_link("Supprimer") }
+    end
+    
+    describe "visits wepion groups" do
+      before do
+        zero_user.update_attributes(:wepion => true, :group => "A")
+        other_zero_user.update_attributes(:wepion => false, :group => "")
+        visit groups_path
+      end
+      it do
+        should have_selector("h1", text: "Groupes Wépion")
+        should have_link(zero_user.name, href: user_path(zero_user))
+        should have_no_link(other_zero_user.name)
+      end
     end
   end
 

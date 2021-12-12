@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
     user = User.where(:email => email).first
     
     if user && user.authenticate(params[:session][:password])
-      if !user.active
+      if !user.active # NB: The email of inactive accounts is set to the id of the user, so this should not happen in general
         flash[:danger] = "Ce compte a été désactivé et n'est plus accessible."
         redirect_back(fallback_location: root_path)
       elsif user.email_confirm

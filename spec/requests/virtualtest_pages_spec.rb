@@ -94,6 +94,18 @@ describe "Virtualtest pages" do
         should have_button("Commencer ce test")
       end
       
+      describe "and tries to start the test while already in another test" do
+        before do
+          other_virtualtest = FactoryGirl.create(:virtualtest, online: true, number: 43, duration: 60)
+          Takentest.create(virtualtest: other_virtualtest, user: user_with_rating_200, taken_time: DateTime.now - 10.minutes, status: 0)
+          click_button "Commencer ce test"
+        end
+        specify do
+          expect(page).to have_error_message("Vous avez déjà un test virtuel en cours !")
+          expect(Takentest.where(:virtualtest => virtualtest, :user => user_with_rating_200).count).to eq(0)
+        end
+      end
+      
       describe "and starts the test" do
         before { click_button "Commencer ce test"  }
         it do
@@ -251,29 +263,56 @@ describe "Virtualtest pages" do
           expect(page).to have_content("(Au moins un problème nécessaire)")
           expect { click_link "Supprimer ce test" }.to change(Virtualtest, :count).by(-1)
         end
-        
-        describe "and visits modification page" do
-          before { click_link "Modifier ce test" }
-          it { should have_selector("h1", text: "Modifier un test virtuel") }
-          
-          describe "and modifies the test" do
-            before do
-              fill_in "virtualtest[duration]", with: duration2
-              click_button "Modifier"
-            end
-            specify do
-              expect(Virtualtest.order(:id).last.duration).to eq(duration2)
-              expect(page).to have_success_message("Test virtuel modifié.")
-            end
-          end
+      end
+      
+      describe "and tries to create a new test with duration 0" do
+        before do
+          fill_in "virtualtest[duration]", with: 0
+          click_button "Créer"
+        end
+        specify do
+          expect(page).to have_error_message("Durée doit être supérieur à 0")
+          expect(page).to have_selector("h1", text: "Créer un test virtuel")
+        end
+      end
+    end
+    
+    describe "visits test modification page" do
+      before do
+        virtualtest.update_attribute(:online, false)
+        visit edit_virtualtest_path(virtualtest)
+      end
+      it { should have_selector("h1", text: "Modifier un test virtuel") }
+      
+      describe "and modifies the test" do
+        before do
+          fill_in "virtualtest[duration]", with: duration2
+          click_button "Modifier"
+          virtualtest.reload
+        end
+        specify do
+          expect(virtualtest.duration).to eq(duration2)
+          expect(page).to have_success_message("Test virtuel modifié.")
+        end
+      end
+      
+      describe "and tries to put duration 0" do
+        before do
+          fill_in "virtualtest[duration]", with: 0
+          click_button "Modifier"
+          virtualtest.reload
+        end
+        specify do
+          expect(virtualtest.duration).not_to eq(0)
+          expect(page).to have_error_message("Durée doit être supérieur à 0")
+          expect(page).to have_selector("h1", text: "Modifier un test virtuel")
         end
       end
     end
     
     describe "visits an offline test with online problems" do
       before do
-        virtualtest.online = false
-        virtualtest.save
+        virtualtest.update_attribute(:online, false)
         visit virtualtests_path
       end
       specify do
