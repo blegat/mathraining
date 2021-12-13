@@ -37,7 +37,7 @@ class Record < ActiveRecord::Base
     Record.where(:complete => false).each do |r|
       curmonday = r.date
       nextmonday = curmonday+7
-      if(Submission.where("created_at >= ? AND created_at < ? AND status == 0", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count > 0)
+      if(Submission.where("created_at >= ? AND created_at < ? AND status = 0", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count > 0)
         next # not all submissions are corrected
       end
 
