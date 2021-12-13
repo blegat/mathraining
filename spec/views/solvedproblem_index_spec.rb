@@ -45,14 +45,14 @@ describe "Page solvedproblem/index" do
       should have_content(problem1.section.short_abbreviation)
       should have_no_link("Problème ##{problem1.number}") # No access to this problem
       should have_content("Problème ##{problem1.number}")
-      should have_link(admin.name, href: user_path(admin))
+      should have_no_link(admin.name, href: user_path(admin)) # Not visible to visitors
       
       should have_link(user2.name, href: user_path(user2))
       should have_content("Niv. #{problem2_with_prerequisite.level}")
       should have_content(problem2_with_prerequisite.section.short_abbreviation)
       should have_no_link("Problème ##{problem2_with_prerequisite.number}") # No access to this problem
       should have_content("Problème ##{problem2_with_prerequisite.number}")
-      should have_link(admin2.name, href: user_path(admin2))
+      should have_no_link(admin2.name, href: user_path(admin2)) # Not visible to visitors
       
       should have_no_link(user3.name) # Not recent enough
       should have_no_content("Problème ##{problem3.number}")
@@ -70,10 +70,12 @@ describe "Page solvedproblem/index" do
       should have_link(user1.name, href: user_path(user1))
       should have_no_link("Problème ##{problem1.number}") # No access to this problem
       should have_content("Problème ##{problem1.number}")
+      should have_link(admin.name, href: user_path(admin))
       
       should have_link(user2.name, href: user_path(user2))
       should have_no_link("Problème ##{problem2_with_prerequisite.number}") # No access to this problem
       should have_content("Problème ##{problem2_with_prerequisite.number}")
+      should have_link(admin2.name, href: user_path(admin2)) 
       
       should have_no_link(user3.name) # Not recent enough
       should have_no_content("Problème ##{problem3.number}")

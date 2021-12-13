@@ -65,14 +65,16 @@ html>body tbody.scroll {
   <% end %>
   </td>
   
-  <!-- Correcteur -->
-  <td style="<%= border_style %>" class="hidden-xs">
-    <% s.submission.followings.each do |f| %>
-      <% if f.kind == 1 %>
-        <%= raw(f.user.linked_name) %>
+  <% if @signed_in %>
+    <!-- Correcteur -->
+    <td style="<%= border_style %>" class="hidden-xs">
+      <% s.submission.followings.each do |f| %>
+        <% if f.kind == 1 %>
+          <%= raw(f.user.linked_name) %>
+        <% end %>
       <% end %>
-    <% end %>
-  </td>
+    </td>
+  <% end %>
   
   </tr>
 <% end %>
