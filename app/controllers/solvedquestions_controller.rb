@@ -89,9 +89,11 @@ class SolvedquestionsController < ApplicationController
 
   # Check that the prerequisites of the chapter have been completed
   def unlocked_chapter
-    @chapter.prerequisites.each do |p|
-      if (!current_user.sk.chapters.exists?(p.id))
-        render 'errors/access_refused' and return
+    unless @chapter.section.fondation
+      @chapter.prerequisites.each do |p|
+        if (!current_user.sk.chapters.exists?(p.id))
+          render 'errors/access_refused' and return
+        end
       end
     end
   end
