@@ -71,7 +71,9 @@
 <% end %>
 
 <!-- Affichage de la soumission -->
+<div class="myoverflow">
 <%= render 'subjects/content', ms: @submission, kind: "submission" %>
+</div>
 
 <!-- Si soumission en test avec score, on affiche le score -->
 <% if @submission.intest && @submission.score != -1 && (current_user.sk.admin? || current_user.sk.corrector? || current_user.sk == @submission.user) %>
