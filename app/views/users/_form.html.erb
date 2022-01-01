@@ -3,14 +3,20 @@
 <!-- Prénom -->
 <div class="form-group">
   <%= f.label :first_name %>
-  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (@signed_in && current_user.other && !current_user.root) %>
+  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !current_user.root) %>
 </div>
 
 <!-- Nom -->
 <div class="form-group">
   <%= f.label :last_name %>
-  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (@signed_in && current_user.other && !current_user.root)%>
+  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !current_user.root) %>
 </div>
+
+<% if(modif && !@user.can_change_name) %>
+  (Vous ne pouvez plus modifier votre nom car vous avez abusé de cette possibilité.)<br/>
+<% elsif modif && !@user.root %>
+  (Les changements de noms sont sujets à vérification, dans un souci d'uniformité entre utilisateurs. En cas d'abus, la possibilité de modifier votre nom vous sera retirée.)<br/>
+<% end %>
 
 <!-- Voir nom entier? -->
 <div class="radio">

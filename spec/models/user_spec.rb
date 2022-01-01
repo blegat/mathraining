@@ -32,6 +32,7 @@
 #  recup_password_date_limit :datetime
 #  last_policy_read          :boolean          default(FALSE)
 #  accept_analytics          :boolean          default(TRUE)
+#  can_change_name           :boolean
 #
 require "spec_helper"
 

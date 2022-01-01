@@ -155,6 +155,7 @@ Rails.application.routes.draw do
     match '/add_followed_user', to: 'users#add_followed_user', :via => [:put], as: :add_followed_user
     match '/remove_followed_user', to: 'users#remove_followed_user', :via => [:put], as: :remove_followed_user
     match '/change_name', to: 'users#change_name', :via => [:put], as: :change_name
+    match '/switch_can_change_name', to: 'users#switch_can_change_name', :via => [:put], as: :switch_can_change_name
   end
   match '/accept_legal', to: 'users#accept_legal', :via => [:patch], as: :accept_legal
   match '/groups', to: 'users#groups', :via => [:get], as: :groups

@@ -950,6 +950,12 @@ html>body tbody.scroll {
         <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :style => "color:red;" %>
       <% end %>
     <% end %>
+    <% if current_user.sk.root && !@user.root %>
+      <%= " | " if i > 0 %>
+      <% i = i+1 %>
+      <% link_name = (@user.can_change_name ? "Interdire le changement de nom" : "Autoriser le changement de nom") %>
+      <%= link_to link_name, user_switch_can_change_name_path(@user), :method => :put %>
+    <% end %>
     <% if current_user.sk.admin && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>

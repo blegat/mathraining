@@ -305,6 +305,35 @@ describe "User pages" do
       end
     end
     
+    describe "tries to edit his name while he cannot" do
+      before do
+        zero_user.update_attribute(:can_change_name, false)
+        visit edit_user_path(zero_user)
+      end
+      
+      it do
+        should have_field("Prénom", disabled: true)
+        should have_field("Nom", disabled: true)
+      end        
+    end
+    
+    describe "tries to edit his name while he cannot (with hack)" do
+      before do
+        visit edit_user_path(zero_user)
+        zero_user.update_attribute(:can_change_name, false) # Done after the user loaded the page, so that the fields are enabled
+        fill_in "Prénom", with: new_first_name
+        fill_in "Nom", with: new_last_name
+        click_button "Mettre à jour"
+        zero_user.reload
+      end
+      
+      specify do
+        expect(page).to have_success_message("Votre profil a bien été mis à jour.")
+        expect(zero_user.first_name).not_to eq(new_first_name)
+        expect(zero_user.last_name).not_to eq(new_last_name)
+      end
+    end
+    
     describe "tries to visit unranked scores page" do
       before { visit users_path(:title => 100) }
       it { should have_no_link(zero_user.name, href: user_path(zero_user)) }
@@ -553,6 +582,29 @@ describe "User pages" do
         expect(page).to have_success_message("Vous êtes maintenant dans la peau de")
         expect(root.skin).to eq(zero_user.id)
         expect { click_link "Sortir de ce corps" and root.reload }.to change{root.skin}.to(0)
+      end
+    end
+    
+    describe "forbids a user to change his name" do
+      before do
+        visit user_path(zero_user)
+        click_link("Interdire le changement de nom")
+        zero_user.reload
+      end
+      specify do
+        expect(page).to have_success_message("Cet utilisateur ne peut maintenant plus changer son nom.")
+        expect(zero_user.can_change_name).to eq(false)
+      end
+      
+      describe "and allows him to change his name" do
+        before do
+          click_link("Autoriser le changement de nom")
+          zero_user.reload
+        end
+        specify do
+          expect(page).to have_success_message("Cet utilisateur peut à nouveau changer son nom.")
+          expect(zero_user.can_change_name).to eq(true)
+        end
       end
     end
     

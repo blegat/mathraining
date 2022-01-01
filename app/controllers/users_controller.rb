@@ -4,12 +4,12 @@ class UsersController < ApplicationController
   before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user, :add_followingmessage]
   before_action :admin_user, only: [:unactivate, :reactivate, :switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
-  before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_names, :validate_name, :change_name]
+  before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_names, :validate_name, :change_name, :switch_can_change_name]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :group_user, only: [:groups]
   
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
-  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name]
+  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name, :switch_can_change_name]
   
   before_action :correct_user, only: [:edit, :update]
   before_action :target_not_root, only: [:destroy, :destroydata]
@@ -176,6 +176,10 @@ class UsersController < ApplicationController
     if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :see_name, :sex, :year, :password, :password_confirmation, :email, :accept_analytics))
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
+      if !@user.can_change_name && !current_user.root?
+        @user.last_name = old_last_name
+        @user.first_name = old_first_name
+      end
       @user.adapt_name
       @user.save
       flash[:success] = "Votre profil a bien été mis à jour."
@@ -236,6 +240,17 @@ class UsersController < ApplicationController
       end
       @user.toggle!(:corrector)
     end
+    redirect_to @user
+  end
+  
+  # Forbid or allow a user to change his name
+  def switch_can_change_name
+    if @user.can_change_name
+      flash[:success] = "Cet utilisateur ne peut maintenant plus changer son nom."
+    else
+      flash[:success] = "Cet utilisateur peut à nouveau changer son nom."
+    end
+    @user.toggle!(:can_change_name)
     redirect_to @user
   end
 
