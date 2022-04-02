@@ -141,7 +141,7 @@ var showFalse = function () {
   </tbody>
   </table>
   
-  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = 0 AND visible = ?', current_user.sk, true).order('created_at DESC') %>
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = 0 AND visible = ?', current_user.sk, true).order('created_at') %>
   
   <% if !submissions.empty? %>
     <h3>Soumissions en attente</h3>
