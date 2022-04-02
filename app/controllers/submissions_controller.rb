@@ -24,7 +24,7 @@ class SubmissionsController < ApplicationController
     if @what == 0
       @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = 2 AND star = ? AND visible = ?', current_user.sk, false, true).order('created_at DESC')
     elsif @what == 1
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status != 2 AND visible = ?', current_user.sk, true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status != 2 AND status != 0 AND visible = ?', current_user.sk, true).order('created_at DESC')
     end
 
     respond_to do |format|

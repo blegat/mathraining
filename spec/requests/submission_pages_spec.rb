@@ -290,6 +290,15 @@ describe "Submission pages" do
       end
     end
     
+    describe "visits problem with waiting submission" do
+      before { visit problem_path(problem_with_submissions) }
+      it do
+        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))
+        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
+        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
+      end
+    end
+    
     describe "visits waiting submission" do
       before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
       it do
@@ -764,20 +773,17 @@ describe "Submission pages" do
       it do
         should have_link(good_corrector.name, href: user_path(good_corrector))
         should have_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))
-        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
         should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
       end
     end
     
-    describe "shows incorrect and waiting submissions to a problem" do
+    describe "shows incorrect submissions to a problem" do
       before do
         visit problem_path(problem_with_submissions)
-        click_link "Afficher les soumissions erronées ou en attente"
+        click_link "Afficher les soumissions erronées"
         wait_for_ajax
       end
       it do
-        should have_link(user.name, href: user_path(user))
-        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
         should have_link(other_user.name, href: user_path(other_user))
         should have_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
         should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))

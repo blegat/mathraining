@@ -125,11 +125,11 @@ var showFalse = function () {
 
 <% end %>
 
-<!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées, en attente ou plagiée -->
+<!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées, en attente ou plagiées -->
 <% if current_user.sk.admin || (current_user.sk.corrector && current_user.sk.pb_solved?(problem)) %>
 
-  <h3>Soumissions erronées ou en attente</h3>
-  <%= link_to "Afficher les soumissions erronées ou en attente", "javascript:showFalse()", id: "btn_false" %>
+  <h3>Soumissions erronées</h3>
+  <%= link_to "Afficher les soumissions erronées", "javascript:showFalse()", id: "btn_false" %>
   <p id="loading_false" style="display:none;">Chargement...</p>
   <p id="none_false" style="display:none;">Aucune soumission.</p>
   <table class="table table-bordered" style="width:auto; display:none;" id="all_false">
@@ -140,5 +140,21 @@ var showFalse = function () {
     <!-- This body is filled via javascript, see showFalse() -->
   </tbody>
   </table>
+  
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = 0 AND visible = ?', current_user.sk, true).order('created_at DESC') %>
+  
+  <% if !submissions.empty? %>
+    <h3>Soumissions en attente</h3>
+    <table class="table table-bordered" style="width:auto;">
+    <thead class="fixed">
+    <tr><th style="text-align:center; width:70px;">Statut</th><th class="hidden-small" style="width:250px;">Date de la soumission</th><th class="hidden-small" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody class="scroll">
+      <% submissions.each do |s| %>
+        <%= render 'submissions/showline', s: s %>
+      <% end %>
+    </tbody>
+    </table>
+  <% end %>
 
 <% end %>
