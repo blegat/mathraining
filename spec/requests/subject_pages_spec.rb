@@ -522,7 +522,6 @@ describe "Subject pages" do
         attach_file("fileEditSubject_2", File.absolute_path(attachments_folder + image1))
         click_button "Modifier"
         sub_user.reload
-        sleep(10)
       end
       specify do
         expect(page).to have_error_message("Vos pièces jointes font plus de 15 ko au total")
@@ -545,6 +544,7 @@ describe "Subject pages" do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq(title)
         expect(newsubject.content).to eq(content)
+        expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(nil)
         expect(newsubject.question).to eq(nil)
@@ -567,6 +567,7 @@ describe "Subject pages" do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq(title)
         expect(newsubject.content).to eq(content)
+        expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(chapter)
         expect(newsubject.question).to eq(nil)
@@ -592,6 +593,7 @@ describe "Subject pages" do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq("Exercice 2")
         expect(newsubject.content).to eq(content)
+        expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(chapter)
         expect(newsubject.question).to eq(question2)
@@ -617,6 +619,7 @@ describe "Subject pages" do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq("Problème \##{problem2.number}")
         expect(newsubject.content).to eq(content)
+        expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(nil)
         expect(newsubject.question).to eq(nil)
@@ -636,6 +639,92 @@ describe "Subject pages" do
         click_button "Créer"
       end
       it { should have_error_message("Un problème doit être sélectionné.") }
+    end
+    
+    describe "creates a subject when category filter is used" do
+      before do
+        visit new_subject_path(:q => category2.id * 1000000)
+        fill_in "Titre", with: title
+        fill_in "MathInput", with: content
+        click_button "Créer"
+      end
+      let!(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été posté.")
+        expect(newsubject.title).to eq(title)
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.category).to eq(category2)
+        expect(newsubject.section).to eq(nil)
+        expect(newsubject.chapter).to eq(nil)
+        expect(newsubject.question).to eq(nil)
+        expect(newsubject.problem).to eq(nil)
+      end
+    end
+    
+    describe "creates a subject when section filter is used" do
+      before do
+        visit new_subject_path(:q => section.id * 1000)
+        select chapter.name, from: "Chapitre"
+        wait_for_ajax
+        fill_in "Titre", with: title
+        fill_in "MathInput", with: content
+        click_button "Créer"
+      end
+      let!(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été posté.")
+        expect(newsubject.title).to eq(title)
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.category).to eq(nil)
+        expect(newsubject.section).to eq(section)
+        expect(newsubject.chapter).to eq(chapter)
+        expect(newsubject.question).to eq(nil)
+        expect(newsubject.problem).to eq(nil)
+      end
+    end
+    
+    describe "creates a subject when problems of a section filter is used" do
+    let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true) }
+      before do
+        visit new_subject_path(:q => section.id * 1000 + 1)
+        select "Problème \##{problem2.number}", from: "Problème" # NB: problem should not appear because there is already a subject!
+        wait_for_ajax # Titre should be automaticaly filled with "Problème #..."
+        fill_in "MathInput", with: content
+        click_button "Créer"
+      end
+      let!(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été posté.")
+        expect(newsubject.title).to eq("Problème \##{problem2.number}")
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.category).to eq(nil)
+        expect(newsubject.section).to eq(section)
+        expect(newsubject.chapter).to eq(nil)
+        expect(newsubject.question).to eq(nil)
+        expect(newsubject.problem).to eq(problem2)
+      end
+    end
+    
+    describe "creates a subject when chapter filter is used" do
+    let!(:question2) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 2) }
+      before do
+        visit new_subject_path(:q => chapter.id)
+        select "Exercice 2", from: "Exercice" # NB: Exercise 1 should not appear because there is already a subject!
+        wait_for_ajax # Titre should be automatically filled with "Exercice 2"
+        fill_in "MathInput", with: content
+        click_button "Créer"
+      end
+      let!(:newsubject) { Subject.order(:id).last }
+      specify do
+        expect(page).to have_success_message("Votre sujet a bien été posté.")
+        expect(newsubject.title).to eq("Exercice 2")
+        expect(newsubject.content).to eq(content)
+        expect(newsubject.category).to eq(nil)
+        expect(newsubject.section).to eq(section)
+        expect(newsubject.chapter).to eq(chapter)
+        expect(newsubject.question).to eq(question2)
+        expect(newsubject.problem).to eq(nil)
+      end
     end
   end
   

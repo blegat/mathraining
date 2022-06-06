@@ -61,6 +61,7 @@ describe "Chapter pages" do
       it do
         should have_selector("h3", text: online_theory.title)
         should have_button("Marquer toute la théorie comme lue")
+        should have_link("forum", href: subjects_path(:q => online_chapter))
       end
       
       describe "and mark it as read" do

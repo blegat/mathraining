@@ -26,19 +26,23 @@ class SubjectsController < ApplicationController
     @category = nil
     @chapter = nil
     @section = nil
+    @title_complement = ""
     if(params.has_key?:q)
       q = params[:q].to_i
       if q >= 1000000
         search_category = q/1000000
         @category = Category.find_by_id(search_category)
+        @title_complement = @category.name
         return if check_nil_object(@category)
       elsif q >= 1000
         if q % 1000 == 0
           search_section = q/1000
           @section = Section.find_by_id(search_section)
+          @title_complement = @section.name
         elsif q % 1000 == 1
           search_section_problems = (q-1)/1000
           @section = Section.find_by_id(search_section_problems)
+          @title_complement = helpers.get_problem_category_name(@section.name)
         end
         return if check_nil_object(@section)
       elsif q > 0
@@ -47,6 +51,7 @@ class SubjectsController < ApplicationController
         return if check_nil_object(@chapter)
         return if check_offline_object(@chapter)
         @section = @chapter.section
+        @title_complement = @chapter.name
       else
         search_nothing = true
       end

@@ -250,6 +250,20 @@ describe "Contestsolution pages" do
       end
     end
     
+    describe "creates a solution with a exe file" do
+      before do
+        visit contestproblem_path(contestproblem_running)
+        fill_in "MathInput", with: newsolution
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
+        click_button "Enregistrer"
+      end
+      it do
+        should have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
+      end
+    end
+    
     describe "edits a solution with a file" do
       let!(:usercontestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_running, user: user_with_rating_200) }
       let!(:contestsolutionmyfile) { FactoryGirl.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
@@ -269,6 +283,31 @@ describe "Contestsolution pages" do
         expect(usercontestsolution.content).to eq(newsolution2)
         expect(usercontestsolution.myfiles.count).to eq(1)
         expect(usercontestsolution.myfiles.first.file.filename.to_s).to eq(image2)
+      end
+    end
+    
+    describe "edits a solution with too many files" do # 3 x image1 should do > 15 ko, which is the limit in test mode
+      let!(:usercontestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_running, user: user_with_rating_200) }
+      let!(:contestsolutionmyfile) { FactoryGirl.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
+      before do
+        visit contestproblem_path(contestproblem_running, :sol => usercontestsolution)
+        click_link("Modifier la solution")
+        wait_for_ajax
+        fill_in "MathInput", with: newsolution2
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_1", File.absolute_path(attachments_folder + image1))
+        click_button "Ajouter une pièce jointe"
+        wait_for_ajax
+        attach_file("file_2", File.absolute_path(attachments_folder + image1))
+        click_button "Enregistrer"
+        usercontestsolution.reload
+      end
+      specify do
+        expect(page).to have_error_message("Vos pièces jointes font plus de 15 ko au total")
+        expect(usercontestsolution.content).not_to eq(newsolution2)
+        expect(usercontestsolution.myfiles.count).to eq(1)
+        expect(usercontestsolution.myfiles.first.file.filename.to_s).to eq(image1)
       end
     end
   end

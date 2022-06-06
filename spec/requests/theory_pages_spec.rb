@@ -20,7 +20,10 @@ describe "Theory pages" do
   describe "visitor" do
     describe "visits online theory" do
       before { visit chapter_path(chapter, :type => 1, :which => online_theory) }
-      it { should have_selector("h3", text: online_theory.title) }
+      it do
+        should have_selector("h3", text: online_theory.title)
+        should have_no_link("forum", href: subjects_path(:q => chapter))
+      end
     end
     
     describe "visits offline theory" do
@@ -40,6 +43,7 @@ describe "Theory pages" do
         should have_no_link("haut")
         should have_button("Marquer comme lu")
         should have_no_button("Marquer comme non lu")
+        should have_link("forum", href: subjects_path(:q => chapter))
       end
       
       describe "and mark it as read" do

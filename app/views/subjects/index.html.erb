@@ -15,32 +15,30 @@
 <% liste = Array.new %>
 
 <% Category.select("id, name").order(:id).each do |c| %>
-    <% liste.push([c.name, 1000000*c.id]) %>
+  <% liste.push([c.name, 1000000*c.id]) %>
 <% end %>
 
 <% liste2 = Array.new %>
 
 <% last_section_id = -1 %>
+<% last_section_name = "" %>
+<% last_section_fondation = true %>
 
-<% Chapter.joins(:section).select("chapters.id, chapters.name, chapters.section_id AS section_id, sections.name AS section_name").where(:online => true).order("sections.fondation DESC, chapters.section_id, chapters.level, chapters.position").each do |c| %>
+<% Chapter.joins(:section).select("chapters.id, chapters.name, chapters.section_id AS section_id, sections.name AS section_name, sections.fondation AS section_fondation").where(:online => true).order("sections.fondation DESC, chapters.section_id, chapters.level, chapters.position").each do |c| %>
   <% if c.section_id != last_section_id %>
+    <% if !last_section_fondation %>
+      <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + get_problem_category_name(last_section_name), 1000*last_section_id+1]) %>
+    <% end %>
     <% liste2.push([c.section_name, 1000*c.section_id]) %>
     <% last_section_id = c.section_id %>
+    <% last_section_name = c.section_name %>
+    <% last_section_fondation = c.section_fondation? %>
   <% end %>
   <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
 <% end %>
+<% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + get_problem_category_name(last_section_name), 1000*last_section_id+1]) %>
 
-<% if !@category.nil? %>
-  <% title_complement = @category.name %>
-<% elsif @section.nil? %>
-  <% title_complement = "" %>
-<% elsif @chapitre.nil? %>
-  <% title_complement = @section.name %>
-<% else %>
-  <% title_complement = @chapitre.name %>
-<% end %>
-
-<h1><%= title_1("Forum#{(' - ' + title_complement) if !title_complement.empty?}") %>
+<h1><%= title_1("Forum#{(' - ' + @title_complement) if !@title_complement.empty?}") %>
 
 <!-- Trier selon section, chapitre, catégorie... -->
 <span style="float:right; margin-left:20px; margin-top:5px; margin-bottom:20px;">
