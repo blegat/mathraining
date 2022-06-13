@@ -182,7 +182,7 @@ class SubmissionsController < ApplicationController
   # Unreserve a submission (only through js)
   def unreserve
     f = @submission.followings.first
-    if @submission.status != 0 || f.nil? || f.user != current_user.sk || f.kind != 0 # Not supposed to happen
+    if @submission.status != 0 || f.nil? || (f.user != current_user.sk && !current_user.sk.root?) || f.kind != 0 # Not supposed to happen
       @what = 0
     else
       Following.delete(f.id)

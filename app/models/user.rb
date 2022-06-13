@@ -166,7 +166,7 @@ class User < ActiveRecord::Base
     if sk.admin
       return Submission.where(status: 0, visible: true).count
     elsif sk.corrector
-      return Submission.where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id}) AND status = 0 AND visible = #{true_value_sql}").count
+      return Submission.where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id}) AND status = 0 AND visible = #{(Rails.env.production? ? 'true' : '1')}").count
     end
   end
 
