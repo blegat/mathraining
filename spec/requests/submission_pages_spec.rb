@@ -528,6 +528,7 @@ describe "Submission pages" do
           expect(page).to have_content("Cette soumission est en train d'être corrigée par #{admin.name}.")
           expect(page).to have_no_button("Réserver cette soumission")
           expect(page).to have_no_button("Annuler ma réservation")
+          expect(page).to have_no_button("Annuler la réservation")
           expect(page).to have_button("Poster et refuser la soumission", disabled: true)
           expect(page).to have_button("Poster et accepter la soumission", disabled: true)
           expect(waiting_submission.followings.count).to eq(1)
@@ -544,6 +545,7 @@ describe "Submission pages" do
         specify do
           expect(page).to have_content("Vous avez réservé cette soumission pour la corriger.")
           expect(page).to have_button("Annuler ma réservation")
+          expect(page).to have_no_button("Annuler la réservation")
           expect(page).to have_button("Poster et refuser la soumission")
           expect(page).to have_button("Poster et accepter la soumission")
           expect(waiting_submission.followings.count).to eq(1)
@@ -560,6 +562,7 @@ describe "Submission pages" do
             expect(page).to have_content("Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !")
             expect(page).to have_button("Réserver cette soumission")
             expect(page).to have_no_button("Annuler ma réservation")
+            expect(page).to have_no_button("Annuler la réservation")
             expect(page).to have_button("Poster et refuser la soumission", disabled: true)
             expect(page).to have_button("Poster et accepter la soumission", disabled: true)
             expect(waiting_submission.followings.count).to eq(0)
@@ -672,6 +675,40 @@ describe "Submission pages" do
           expect(page).to have_error_message("Veuillez donner un score à cette solution.")
           expect(waiting_submission_in_test.status).to eq(0)
           expect(waiting_submission_in_test.score).to eq(-1)
+        end
+      end
+    end
+    
+    describe "visits a solution reserved by somebody else" do
+      before do
+        Following.create(:user => good_corrector, :submission => waiting_submission, :read => true, :kind => 0)
+        visit problem_path(problem_with_submissions, :sub => waiting_submission)
+      end
+      specify do
+        expect(page).to have_content("Cette soumission est en train d'être corrigée par #{good_corrector.name}.")
+        expect(page).to have_no_button("Réserver cette soumission")
+        expect(page).to have_no_button("Annuler ma réservation")
+        expect(page).to have_button("Annuler la réservation")
+        expect(page).to have_button("Poster et refuser la soumission", disabled: true)
+        expect(page).to have_button("Poster et accepter la soumission", disabled: true)
+      end
+      
+      # -- TESTS THAT REQUIRE JAVASCRIPT --
+      
+      describe "and unreserves it", :js => true do
+        before do
+          click_button "Annuler la réservation"
+          wait_for_ajax
+          waiting_submission.reload
+        end
+        specify do
+          expect(page).to have_content("Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !")
+          expect(page).to have_button("Réserver cette soumission")
+          expect(page).to have_no_button("Annuler ma réservation")
+          expect(page).to have_no_button("Annuler la réservation")
+          expect(page).to have_button("Poster et refuser la soumission", disabled: true)
+          expect(page).to have_button("Poster et accepter la soumission", disabled: true)
+          expect(waiting_submission.followings.count).to eq(0)
         end
       end
     end
