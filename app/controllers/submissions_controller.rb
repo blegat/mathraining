@@ -162,7 +162,9 @@ class SubmissionsController < ApplicationController
   # Reserve a submission (only through js)
   def reserve
     if @submission.followings.count > 0 && @submission.followings.first.user != current_user.sk # Already reserved by somebody else
-      @correct_name = @submission.followings.first.user.name
+      f = @submission.followings.first
+      @correct_name = f.user.name
+      @reservation_date = f.created_at
       @what = 2
     else
       if @submission.followings.count == 0 # Avoid adding two times the same Following

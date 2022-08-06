@@ -12,7 +12,12 @@ correct2.style.display = "none"
 correct3.style.display = "none"
 
 <% if @what == 2 %>
-  correct2.innerHTML = "Cette soumission est en train d'être corrigée par <b><%= @correct_name %></b>."
+  txt = "Cette soumission est en train d'être corrigée par <b><%= @correct_name %></b>."
+  <% if current_user.sk.root? %>
+    txt = txt + " Elle a été réservée le <%= write_date(@reservation_date) %>."
+  <% end %>
+  var correct2_text = document.getElementById("correct2_text");
+  correct2_text.innerHTML = txt
   correct2.style.display = "block"
 <% elsif @what == 3 %>
   correct3.style.display = "block"

@@ -686,6 +686,7 @@ describe "Submission pages" do
       end
       specify do
         expect(page).to have_content("Cette soumission est en train d'être corrigée par #{good_corrector.name}.")
+        expect(page).to have_content("Elle a été réservée le ")
         expect(page).to have_no_button("Réserver cette soumission")
         expect(page).to have_no_button("Annuler ma réservation")
         expect(page).to have_button("Annuler la réservation")

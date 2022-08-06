@@ -60,10 +60,14 @@
   </div>
   
   <div id="correct2" style="background-color:#ffd9de; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 2 %>">
-    Cette soumission est en train d'être corrigée par <b><%= corrector_name %></b>.
-    <% if current_user.sk.root? %>
-      Elle a été réservée le <%= write_date(f.created_at) %>.
-    <% end %>
+    <span id="correct2_text">
+      <% if reservation_case == 2 %>
+        Cette soumission est en train d'être corrigée par <b><%= corrector_name %></b>.
+        <% if current_user.sk.root? %>
+          Elle a été réservée le <%= write_date(f.created_at) %>.
+        <% end %>
+      <% end %>
+    </span>
     <div class="hidden-large" style="height:7px;"></div>
     <% if current_user.sk.root? %>
       <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler la réservation</button>
