@@ -7,8 +7,8 @@
 <% date_begin_bad = date_end - 4.days %>
 <% time_interval = 20.minutes %>
 <% date_begin = date_begin_bad.beginning_of_hour %>
-<% while date_begin + 20.minutes <= date_begin_bad %>
-  <% date_begin = date_begin + 20.minutes %>
+<% while date_begin + time_interval <= date_begin_bad %>
+  <% date_begin = date_begin + time_interval %>
 <% end %>
 <% num_intervals = ((date_end - date_begin) / time_interval).ceil %>
 <% new_sub = Array.new(num_intervals, 0) %>
@@ -22,7 +22,7 @@
     <% date_start = t.takentests.where(:user_id => s.user_id).first.taken_time %>
     <% date_sub = date_start + (t.duration).minutes %>
   <% end %>
-  <% interval_id = [((s.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
+  <% interval_id = [((date_sub - date_begin) / time_interval).floor, num_intervals-1].min %>
   <% new_sub[interval_id] = new_sub[interval_id] + 1 %>
 <% end %>
 
