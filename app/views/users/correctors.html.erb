@@ -172,34 +172,20 @@ Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier cor
   <% last_following_user_by_level_and_section[lev] = Array.new %>
 <% end %>
 
-<!-- Load last 100 followings to have less than 30 sql requests -->
-<% num_preload = 100 %>
-<% recent_followings = Following.joins(submission: :problem).select("followings.user_id, problems.level, problems.section_id").where(:kind => 1).includes(:user).order("followings.created_at DESC").limit(num_preload) %>
-<% recent_followings.each do |f| %>
-  <% if last_following_user_by_level_and_section[f.level][f.section_id].nil? %>
-    <% last_following_user_by_level_and_section[f.level][f.section_id] = f.user %>
-  <% end %>
+<% User.find_by_sql("SELECT users.*, problems.level AS problem_level, problems.section_id FROM followings f1 INNER JOIN submissions ON f1.submission_id = submissions.id INNER JOIN problems ON submissions.problem_id = problems.id INNER JOIN users ON users.id = f1.user_id JOIN (SELECT problems.level AS problem_level, problems.section_id, MAX(f2.created_at) AS max_created_at FROM followings f2 INNER JOIN submissions ON f2.submission_id = submissions.id INNER JOIN problems ON submissions.problem_id = problems.id GROUP BY problems.level, problems.section_id) f ON f.problem_level = problems.level AND f.section_id = problems.section_id AND f.max_created_at = f1.created_at").each do |u| %>
+  <% last_following_user_by_level_and_section[u.problem_level][u.section_id] = u %>
 <% end %>
-<% need_reload = (recent_followings.size == num_preload) %>
 
 <% (1..5).each do |lev| %>
   <tr>
   <th style="text-align:center;">Niv. <%= lev %></th>
   <% sections.each do |sec| %>
     <td style="text-align:center; background-color:rgb(250, 250, 250);">
-      <% u = nil %>
-      <% if !last_following_user_by_level_and_section[lev][sec.id].nil? %>
-        <% u = last_following_user_by_level_and_section[lev][sec.id] %>
-      <% elsif need_reload %>
-        <% f = Following.joins(submission: :problem).where(problems: {level: lev, section_id: sec.id}, kind: 1).order("created_at").last %>
-        <% if !f.nil? %>
-          <% u = f.user %>
-        <% end %>
-      <% end %>
-      <% if u.nil? %>
-        -
-      <% else %>
+      <% u = last_following_user_by_level_and_section[lev][sec.id] %>
+      <% if !u.nil? %>
         <%= raw(u.linked_name(2)) %>
+      <% else %>
+        -
       <% end %>
     </td>
   <% end %>
