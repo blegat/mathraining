@@ -4,7 +4,7 @@
 
 <!-- Graphique du nombre de soumissions en attente -->
 <% date_end = Time.now %>
-<% date_begin_bad = date_end - 4.days %>
+<% date_begin_bad = date_end - 7.days %>
 <% time_interval = 20.minutes %>
 <% date_begin = date_begin_bad.beginning_of_hour %>
 <% while date_begin + time_interval <= date_begin_bad %>
@@ -14,7 +14,7 @@
 <% new_sub = Array.new(num_intervals, 0) %>
 <% new_cor = Array.new(num_intervals, 0) %>
 
-<% Submission.where("visible = ? AND created_at > ?", true, date_begin).each do |s| %>
+<% Submission.select(:created_at, :intest, :problem_id, :user_id).where("visible = ? AND created_at > ?", true, date_begin).each do |s| %>
   <% date_sub = s.created_at %>
   <% if s.intest? %>
     <% p = s.problem %>
@@ -26,7 +26,7 @@
   <% new_sub[interval_id] = new_sub[interval_id] + 1 %>
 <% end %>
 
-<% Following.where("kind = 1 AND created_at > ?", date_begin).each do |f| %>
+<% Following.select(:created_at).where("kind = 1 AND created_at > ?", date_begin).each do |f| %>
   <% interval_id = [((f.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
   <% new_cor[interval_id] = new_cor[interval_id] + 1 %>
 <% end %>
@@ -96,12 +96,12 @@ Votre navigateur ne supporte pas les canvas.
   if(pct > 0.6)
   {
     <% d = date_end %>
-    <% num_hours = 0 %>
+    <% num_days = 0 %>
     <% while(d > date_begin - 1.minute) %>
       <% ratio = (d - date_begin)/(date_end - date_begin) %>
-      ctx.fillText("H-<%= num_hours %>",pct*<%= 50+(800*ratio) %>,pct*265+7);
-      <% num_hours = num_hours + 6 %>
-      <% d = date_end - (num_hours).hours %>
+      ctx.fillText("J-<%= num_days %>",pct*<%= 50+(800*ratio) %>,pct*265+7);
+      <% num_days = num_days + 1 %>
+      <% d = date_end - (num_days).days %>
     <% end %>
   }
   
