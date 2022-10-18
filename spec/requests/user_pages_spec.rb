@@ -686,7 +686,7 @@ describe "User pages" do
       
       before { visit validate_names_path }
       it do
-        should have_selector("h1", text: "Valider les noms")
+        should have_selector("h1", text: "Valider")
         should have_no_link(user0.name, href: user_path(user0))
         should have_link(user1.name, href: user_path(user1))
         should have_link(user2.name, href: user_path(user2))
@@ -733,6 +733,20 @@ describe "User pages" do
         end
       end
       
+      describe "and passes one name" do
+        before do
+          click_link "pass-#{user2.id}"
+          wait_for_ajax
+          user2.reload
+        end
+        specify do
+          expect(user2.first_name).to eq("jeaN")
+          expect(user2.last_name).to eq("boulanger")
+          expect(user2.valid_name).to eq(false)
+          expect(page).to have_no_link(user2.name, href: user_path(user2)) # Should disappear
+        end
+      end
+      
       describe "and clicks to change one name" do
         before do
           click_link "change-#{user3.id}"
@@ -757,7 +771,7 @@ describe "User pages" do
             expect(user3.last_name).to eq("de la Terre")
             expect(user3.valid_name).to eq(true)
             expect(root.skin).to eq(0)
-            expect(page).to have_selector("h1", text: "Valider les noms")
+            expect(page).to have_selector("h1", text: "Valider")
             expect(page).to have_no_link(user3.name, href: user_path(user3))
           end
         end
