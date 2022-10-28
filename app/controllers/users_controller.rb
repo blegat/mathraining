@@ -363,7 +363,7 @@ class UsersController < ApplicationController
   
   # Show all new submissions
   def allnewsub
-    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(status: 0, visible: true).order("submissions.created_at").to_a
+    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(status: 0, visible: true).order("submissions.created_at").to_a
   end
 
   # Show all new comments to submissions in which we took part
@@ -642,8 +642,12 @@ class UsersController < ApplicationController
   end
   
   # Helper method to list columns that are needed to list submissions
-  def needed_columns_for_submissions
-    return "submissions.id, submissions.user_id, submissions.problem_id, submissions.status, submissions.star, submissions.created_at, submissions.last_comment_time, submissions.intest, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation"
+  def needed_columns_for_submissions(include_content_length = false)
+    columns = "submissions.id, submissions.user_id, submissions.problem_id, submissions.status, submissions.star, submissions.created_at, submissions.last_comment_time, submissions.intest, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation"
+    if include_content_length
+      columns += ", length(submissions.content) AS content_length"
+    end
+    return columns
   end
   
 end

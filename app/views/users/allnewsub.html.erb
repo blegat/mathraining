@@ -163,10 +163,10 @@ Votre navigateur ne supporte pas les canvas.
   <% end %>
 
   <table class="table table-bordered">
-  <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th class="hidden-small">Correcteur</th><th style="text-align:center;">Type</th><th></th></tr>
+  <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th>Qui</th><th class="hidden-small">Correcteur</th><th style="text-align:center;">Type</th><th class="hidden-small" style="text-align:center;">Long.</th><th></th></tr>
   <% @notifications.each do |n| %>
     <% hidden_sub = (!current_user.sk.admin? && problem_solved[n.problem_id] != true) %>
-    <%= render 'submissions/showline', s: n, show_section_and_level: true, hidden_sub: hidden_sub, show_num_waiting_days_from: "created_at", show_correctors: true %>
+    <%= render 'submissions/showline', s: n, hide_last_activity: true, show_section_and_level: true, hidden_sub: hidden_sub, show_num_waiting_days_from: "created_at", show_correctors: true, show_content_length: true %>
   <% end %>
   </table>
 

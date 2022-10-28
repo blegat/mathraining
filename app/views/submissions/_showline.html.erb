@@ -12,11 +12,17 @@
 <% if !(defined? show_num_waiting_days_from) %>
   <% show_num_waiting_days_from = "" %>
 <% end %>
+<% if !(defined? hide_last_activity) %>
+  <% hide_last_activity = false %>
+<% end %>
 <% if !(defined? show_section_and_level) %>
   <% show_section_and_level = false %>
 <% end %>
 <% if !(defined? highlight_this_sub) %>
   <% highlight_this_sub = false %>
+<% end %>
+<% if !(defined? show_content_length) %>
+  <% show_content_length = false %>
 <% end %>
 
 <!-- Couleur -->
@@ -61,10 +67,12 @@
 <% end %>
 </td>
 
-<!-- Dernière activité -->
-<td class="<%= 'hidden-small' unless hide_user %><%= 'hidden-xs' if hide_user %>" style="width:250px;">
-<%= write_date(s.last_comment_time) %>
-</td>
+<% if !hide_last_activity %>
+  <!-- Dernière activité -->
+  <td class="<%= 'hidden-small' unless hide_user %><%= 'hidden-xs' if hide_user %>" style="width:250px;">
+  <%= write_date(s.last_comment_time) %>
+  </td>
+<% end %>
 
 <% if !hide_user %>
   <!-- Nom (si on l'affiche) -->
@@ -93,6 +101,15 @@
     <% if !hidden_sub %>
       <%= s.section_short_abbreviation %>
       <%= s.problem_level %>
+    <% end %>
+  </td>
+<% end %>
+
+<% if show_content_length %>
+  <!-- Longueur du contenu (si on l'affiche) -->
+  <td class="hidden-small" style="text-align:center; width:60px;">
+    <% if !hidden_sub %>
+      <%= s.content_length %>
     <% end %>
   </td>
 <% end %>
