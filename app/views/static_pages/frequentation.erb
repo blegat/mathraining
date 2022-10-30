@@ -2,9 +2,64 @@
 
 <h1><%= title_1("Statistiques diverses") %></h1>
 
+<% very_first_date = Date.new(2014,12,8) %>
+<% very_last_date = Date.today %>
+<% num_days = (very_last_date - very_first_date).to_i %>
+
+<center><span id="interval"></span></center>
+ 
+<div id="slider-range" style="margin-top:5px;"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.1.js"
+			  integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
+			  crossorigin="anonymous"></script>
+			  
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"
+			  integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c="
+			  crossorigin="anonymous"></script>
+			  
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+<script>
+var start_range = 0;
+var end_range = <%= num_days %>;
+var first_date = new Date("2014-12-08");
+
+function format_date(days_after_first_date){
+  var d = new Date(first_date);
+  d.setDate(d.getDate() + days_after_first_date);
+  var day = d.getDate();
+  var month = d.getUTCMonth() + 1;
+  var year = d.getUTCFullYear();
+  return (day < 10 ? "0" : "") + day + "/" + (month < 10 ? "0" : "") + month + "/" + year;
+}
+
+$( function() {
+  $( "#slider-range" ).slider({
+    range: true,
+    min: 0,
+    max: <%= num_days %>,
+    values: [ 0, <%= num_days %>  ],
+    slide: function( event, ui ) {
+      $( "#interval" ).html( format_date(ui.values[0]) + " - " + format_date(ui.values[1]) );
+      start_range = ui.values[0];
+      end_range = ui.values[1];
+      drawGraph(0, false);
+      drawGraph(1, true);
+      drawGraph(2, true);
+      drawGraph(3, false);
+    }
+  });
+  
+  $( "#interval" ).html( format_date( $( "#slider-range" ).slider( "values", 0 ) ) +
+    " - " + format_date( $( "#slider-range" ).slider( "values", 1 ) ) );
+} );
+</script>
+
+
 <h3>Fréquentation du site</h3>
 
-Le graphique suivant reprend le nombre d'utilisateurs connectés chaque jour sur le site, depuis le 19 mars 2015.<br/><br/>
+Le graphique suivant reprend le nombre d'utilisateurs connectés chaque jour sur le site. Les données commencent le 19 mars 2015.<br/><br/>
 
 <center>
 <!-- Endroit pour dessiner la fréquentation -->
@@ -17,7 +72,7 @@ Votre navigateur ne supporte pas les canvas.
 
 <h3>Résolutions d'exercices</h3>
 
-Ci-dessous, le nombre d'exercices résolus par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
+Ci-dessous, le nombre d'exercices résolus chaque semaine.<br/><br/>
 
 <center>
 <!-- Endroit pour dessiner les résolutions d'exercices -->
@@ -30,7 +85,7 @@ Votre navigateur ne supporte pas les canvas.
 
 <h3>Soumissions aux problèmes</h3>
 
-Ci-dessous, le nombre de soumissions par semaine depuis le lancement du site, le 8 décembre 2014.<br/><br/>
+Ci-dessous, le nombre de soumissions aux problèmes du site, par semaine.<br/><br/>
 
 <center>
 <!-- Endroit pour dessiner les soumissions aux problèmes -->
@@ -43,7 +98,7 @@ Votre navigateur ne supporte pas les canvas.
 
 <h3>Temps de correction</h3>
 
-Chaque soumission à un problème doit être corrigée par un correcteur. Le graphique ci-dessous donne, pour chaque semaine depuis le 8 décembre 2014, le temps moyen de correction d'une soumission (en jours).<br/><br/>
+Chaque soumission à un problème doit être corrigée par un correcteur. Le graphique suivant donne, pour chaque semaine, le temps moyen de correction d'une soumission (en jours).<br/><br/>
 
 <center>
 <!-- Endroit pour dessiner les temps de correction -->
@@ -93,14 +148,55 @@ Votre navigateur ne supporte pas les canvas.
 
 <script type="text/javascript">
 
-  var graphique = [,,,];
+  var graphique = [,,,,,];
+  var start_index = -1;
+  var end_index = -1;
+  var max_value = -1;
+  function computeIndicesAndMaxValue(n) {
+    var abs_int = graphique[n][0];
+    var val = graphique[n][2];
+    
+    start_index = 0;
+    end_index = val.length-1;
+    for(i = 0; i < val.length; i++) {
+      if(abs_int[i] < start_range) {
+        start_index = i+1;
+      }
+      else {
+        break;
+      }
+    }
+    for(i = val.length-1; i >= 0; i--) {
+      if(abs_int[i] > end_range) {
+        end_index = i-1;
+      }
+      else {
+        break;
+      }
+    }
+    if(end_index <= start_index) {
+      start_index = end_index-1;
+      if(start_index < 0) {
+        start_index = 0;
+        end_index = 1;
+      }
+    }
+
+    max_value = 1;
+    for(i = start_index; i <= end_index; i++) {
+      if(max_value < val[i]) {
+        max_value = val[i];
+      }
+    }
+  }
   
   function drawGraph(n, batonnets) {
-  var abs = graphique[n][0];
-  var val = graphique[n][1];
-  var namec = graphique[n][2];
-  var namecont = graphique[n][3];
-  var couleur = graphique[n][4];
+  var abs_int = graphique[n][0];
+  var abs = graphique[n][1];
+  var val = graphique[n][2];
+  var namec = graphique[n][3];
+  var namecont = graphique[n][4];
+  var couleur = graphique[n][5];
   var c = $(namec);
   var ctx = c.get(0).getContext('2d');
   var container = $(c).parent();
@@ -121,18 +217,14 @@ Votre navigateur ne supporte pas les canvas.
   ctx.lineWidth = 1.5;
   ctx.strokeStyle = 'black';
   ctx.stroke();
+  
+  computeIndicesAndMaxValue(n);
     
   // Affichage des barres horizontales
-    
-  var maxvalue = 0;
-  for(i = 0; i < val.length; i++) {
-    if(maxvalue < val[i]) {
-      maxvalue = val[i];
-    }
-  }
-  var maxi = 1.1*maxvalue;
+
+  var maxi = 1.1*max_value;
   
-  var tranche = Math.floor(maxvalue/4);
+  var tranche = Math.floor(max_value/4);
   if(tranche == 0){
     tranche = 1;
   }
@@ -150,7 +242,7 @@ Votre navigateur ne supporte pas les canvas.
     ctx.font="9px Arial";
   }
   
-  var encours = Math.floor(maxvalue);
+  var encours = Math.floor(max_value);
   
   while(encours > 0) {
     var haut = 450 - 450*(encours/maxi);
@@ -165,15 +257,18 @@ Votre navigateur ne supporte pas les canvas.
 
   ctx.stroke();
   
+  // Affichage des barres verticales et des dates en abscisse
+  
   ctx.font="12px Arial";
   ctx.textAlign = 'center';
   ctx.beginPath();
   
-  encours = val.length-1;
+  encours = end_index;
   var printw = 10000;
   
-  while(encours >= 0) {
-    var w = 3 + 800*encours/(val.length-1);
+  while(encours >= start_index) {
+    var N = end_index - start_index + (batonnets ? 1 : 0);
+    var w = 3 + 800*(encours - start_index + (batonnets ? 0.5 : 0))/N;
     if((w < printw - 50 && pct > 0.8) || (w < printw - 70 && pct > 0.7)) {
       ctx.fillText(abs[encours],pct*(50+w),pct*455+15);
       printw = w;
@@ -192,7 +287,7 @@ Votre navigateur ne supporte pas les canvas.
   // Commencement du graphique
 
   // On parcourt de droite à gauche
-  encours = val.length-1;
+  encours = end_index;
   premier = true
 
   ctx.fillStyle = couleur;
@@ -201,12 +296,13 @@ Votre navigateur ne supporte pas les canvas.
   ctx.textAlign = 'center';
   ctx.lineWidth = 2;
 
-  while(encours >= 0) {
-    var w = 3 + 800*encours/(val.length-1);
+  while(encours >= start_index) {
+    var N = end_index - start_index + (batonnets ? 1 : 0);
+    var w = 3 + 800*(encours - start_index + (batonnets ? 0.5 : 0))/N;
     var huser = 450 - 450*(val[encours]/maxi);
     if(val[encours] >= 0) {
       if(batonnets) {
-        var halfwidth = 400/(val.length-1);
+        var halfwidth = 400/N;
         var gg = Math.round(pct*(50+w-halfwidth));
         var dd = Math.round(pct*(50+w+halfwidth));
         ctx.fillRect(gg,pct*(huser+5),dd-gg,pct*450*(val[encours]/maxi));
@@ -225,7 +321,9 @@ Votre navigateur ne supporte pas les canvas.
     encours = encours-1;
   } 
   if(!batonnets) { 
-    ctx.stroke();
+    if (!premier) {
+      ctx.stroke();
+    }
   }
   else {
     ctx.beginPath();
@@ -237,12 +335,13 @@ Votre navigateur ne supporte pas les canvas.
   
   }
   
-  function showXY(n, x, y) {
-    var abs = graphique[n][0];
-    var val = graphique[n][1];
-    var namec = graphique[n][2];
-    var namecont = graphique[n][3];
-    var couleur = graphique[n][4];
+  function showXY(n, x, y, batonnets) {  
+    var abs_int = graphique[n][0];
+    var abs = graphique[n][1];
+    var val = graphique[n][2];
+    var namec = graphique[n][3];
+    var namecont = graphique[n][4];
+    var couleur = graphique[n][5];
     
     var c = $(namec);
     var canvas = c.get(0)
@@ -250,20 +349,18 @@ Votre navigateur ne supporte pas les canvas.
     
     var pct = c.width()/900.0;
     
-    var maxvalue = 0;
-    for(i = 0; i < val.length; i++) {
-      if(maxvalue < val[i]) {
-        maxvalue = val[i];
-      }
-    }
-    var maxi = 1.1*maxvalue;
+    computeIndicesAndMaxValue(n);
     
-    var realx = Math.round((x-53)*(val.length-1)/800.0);
-    if(realx < 0) {
-      realx = 0;
+    var maxi = 1.1*max_value;
+    
+    var N = end_index - start_index + (batonnets ? 1 : 0);
+    var realx = Math.round((x-53)*N/800.0 + start_index - (batonnets ? 0.5 : 0));
+
+    if(realx < start_index) {
+      realx = start_index;
     }
-    else if(realx > val.length-1) {
-      realx = val.length-1;
+    else if(realx > end_index) {
+      realx = end_index;
     }
     
     if(val[realx] < 0)
@@ -271,12 +368,12 @@ Votre navigateur ne supporte pas les canvas.
       realxleft = realx;
       realxright = realx;
       realx = -1;
-      while(realxleft >= 0 || realxright < val.length) {
-        if(realxleft >= 0 && val[realxleft] >= 0) {
+      while(realxleft >= start_index || realxright <= end_index) {
+        if(realxleft >= start_index && val[realxleft] >= 0) {
           realx = realxleft;
           break;
         }
-        if(realxright < val.length && val[realxright] >= 0) {
+        if(realxright <= end_index && val[realxright] >= 0) {
           realx = realxright;
           break;
         }
@@ -288,7 +385,7 @@ Votre navigateur ne supporte pas les canvas.
       }
     }
     
-    var pointx = (53+800*realx/(val.length-1))*pct;
+    var pointx = (53 + 800*(realx - start_index + (batonnets ? 0.5 : 0))/N)*pct;
     var pointy = (455 - 450*(val[realx]/maxi))*pct;
     
     var h = 30;
@@ -330,7 +427,7 @@ Votre navigateur ne supporte pas les canvas.
   }
   
   function listen(n, batonnets) {
-    var c = $(graphique[n][2]);
+    var c = $(graphique[n][3]);
     var canvas = c.get(0);
     
     canvas.addEventListener("mousemove", function(evt){
@@ -340,7 +437,7 @@ Votre navigateur ne supporte pas les canvas.
       var mouseY = evt.clientY - rect.top;
       if(mouseX >= 50*pct && mouseX <= 856*pct && mouseY >= 5*pct && mouseY <= 455*pct) {
         drawGraph(n, batonnets);
-        showXY(n, mouseX/pct, mouseY/pct)
+        showXY(n, mouseX/pct, mouseY/pct, batonnets)
       }
       else {
         drawGraph(n, batonnets);
@@ -352,38 +449,48 @@ Votre navigateur ne supporte pas les canvas.
   }
   
   <!-- Calcul des graphiques -->
+  var xxx_int = [];
   var xxx = [];
   var yyy = [];
+  <% xx_int = Array.new %>
   <% xx = Array.new %>
   <% yy = Array.new %>
   <% @visiteurs = Visitor.order("date").to_a %>
-  <% premierjour = @visiteurs[0].date %>
+  
+  <% premierjour = very_first_date %>
   <% dernierjour = DateTime.now.in_time_zone.to_date - 1.day %>
   <% prev = premierjour %>
   <% if premierjour < dernierjour %>
     <% @visiteurs.each do |v| %>
       <% ((prev+1)..(v.date-1)).each do |missing| %>
-        <% yy.push(-1) %>
+        <% xx_int.push((missing-very_first_date).to_i) %>
         <% xx.push(convert_date(missing)) %>
+        <% yy.push(-1) %>
       <% end %>
-      <% yy.push(v.nb_users + v.nb_admins) %>
+      <% xx_int.push((v.date-very_first_date).to_i) %>
       <% xx.push(convert_date(v.date)) %>
+      <% yy.push(v.nb_users + v.nb_admins) %>
       <% prev = v.date %>
     <% end %>
     <% ((prev+1)..dernierjour).each do |missing| %>
+      <% xx_int.push((missing-very_first_date).to_i) %>
+      <% xx.push(convert_date(missing)) %>
       <% yy.push(-1) %>
-        <% xx.push(convert_date(missing)) %>
     <% end %>
+    
+    xxx_int = <%= ruby_to_javascript(xx_int) %>;
     xxx = <%= ruby_to_javascript_string(xx) %>;
     yyy = <%= ruby_to_javascript(yy) %>;
     
-    graphique[0] = [xxx, yyy, '#myCanvas1', 'contenant1', 'orange'];
-      
+    graphique[0] = [xxx_int, xxx, yyy, '#myCanvas1', 'contenant1', 'orange'];
+    
+    <% xx_int = Array.new %>
     <% xx = Array.new %>
     <% yy = Array.new %>
     <% yy2 = Array.new %>
     <% yy3 = Array.new %>
     <% Record.order(:date).each do |r| %>
+      <% xx_int.push((r.date-very_first_date).to_i) %>
       <% xx.push(convert_date(r.date)) %>
       <% yy.push(r.nb_questions_solved) %>
       <% yy2.push(r.nb_submissions) %>
@@ -393,16 +500,18 @@ Votre navigateur ne supporte pas les canvas.
         <% yy3.push(r.avg_correction_time) %>
       <% end %>
     <% end %>
+    
+    xxx_int = <%= ruby_to_javascript(xx_int) %>;
     xxx = <%= ruby_to_javascript_string(xx) %>;
     yyy = <%= ruby_to_javascript(yy) %>;
     
-    graphique[1] = [xxx, yyy, '#myCanvas2', 'contenant2', 'blue'];
+    graphique[1] = [xxx_int, xxx, yyy, '#myCanvas2', 'contenant2', 'blue'];
       
     yyy = <%= ruby_to_javascript(yy2) %>;
-    graphique[2] = [xxx, yyy, '#myCanvas3', 'contenant3', 'red'];
+    graphique[2] = [xxx_int, xxx, yyy, '#myCanvas3', 'contenant3', 'red'];
       
     yyy = <%= ruby_to_javascript(yy3) %>;
-    graphique[3] = [xxx, yyy, '#myCanvas4', 'contenant4', 'green'];
+    graphique[3] = [xxx_int, xxx, yyy, '#myCanvas4', 'contenant4', 'green'];
   <% end %>
   
   function respondCanvas(){
@@ -433,3 +542,4 @@ Votre navigateur ne supporte pas les canvas.
   });
 
 </script>
+
