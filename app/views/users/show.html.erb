@@ -20,7 +20,7 @@ html>body tbody.scroll {
   <% if actualrating > 0 %>
     <% rank = User.where("rating > ? AND admin = ? AND active = ?", actualrating, false, true).count + 1 %>
     <% num_users = User.where("rating > 0 AND admin = ? AND active = ?", false, true).count %>
-    <% rank_top = (100.0 * rank / num_users).ceil %>
+    <% rank_centile = (rank == 1 ? 100 : (100.0 * (num_users - rank + 1) / num_users).round(1)) %>
   <% end %>
   <% niveau = @user.level %>
   <% couleur = niveau[:color] %>
@@ -157,8 +157,8 @@ html>body tbody.scroll {
       </tr>
         
       <tr>
-      <td class="mytitle">Top</td>
-      <td class="myvalue" style="color:<%= couleur %>;"><%= "#{rank_top}%" if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
+      <td class="mytitle">Centile</td>
+      <td class="myvalue" style="color:<%= couleur %>;"><%= "#{rank_centile}%" if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
       </tr>
     </table>
     
