@@ -5,7 +5,7 @@ class CorrectionsController < ApplicationController
   before_action :get_submission, only: [:create]
   
   before_action :correct_user, only: [:create]
-  before_action :not_plagiarized, only: [:create]
+  before_action :no_recent_plagiarism, only: [:create]
   before_action :notskin_user, only: [:create]
 
   # Create a correction (send the form)
@@ -179,11 +179,14 @@ class CorrectionsController < ApplicationController
       render 'errors/access_refused' and return
     end
   end
-
-  # Check that the student does not have a plagiarized submission to this problem
-  def not_plagiarized
-    if Submission.where(:user_id => @submission.user, :problem_id => @problem, :status => 4).count > 0
-      render 'errors/access_refused' and return
+  
+  # Check that the student has no (recent) plagiarized solution to the problem
+  def no_recent_plagiarism
+    if @submission.user == current_user.sk
+      s = current_user.sk.submissions.where(:problem => @problem, :status => 4).order(:last_comment_time).last
+      if !s.nil? && s.last_comment_time.to_date + 6.months > Date.today
+        redirect_to problem_path(@problem, :sub => @submission) and return
+      end
     end
   end
   

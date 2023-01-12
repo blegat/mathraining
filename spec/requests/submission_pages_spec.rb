@@ -91,6 +91,36 @@ describe "Submission pages" do
           end
         end
         
+        describe "and sends new submission while another one was recently plagiarized" do # Can only be done with several tabs
+          before do
+            FactoryGirl.create(:submission, problem: problem, user: user, status: 4, last_comment_time: DateTime.now - 3.months)
+            fill_in "MathInput", with: newsubmission
+            click_button "Soumettre cette solution"
+          end
+          specify do
+            expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
+            expect(page).to have_no_link("Nouvelle soumission")
+            expect(page).to have_content("Vous avez soumis une solution plagiée à ce problème.")
+            expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
+            expect(problem.submissions.where(:user => user).count).to eq(1) # Only the plagiarized one created by FactoryGirl 
+          end
+        end
+        
+        describe "and sends new submission while another one was plagiarized long ago" do
+          before do
+            FactoryGirl.create(:submission, problem: problem, user: user, status: 4, last_comment_time: DateTime.now - 2.years)
+            fill_in "MathInput", with: newsubmission
+            click_button "Soumettre cette solution"
+          end
+          specify do
+            expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
+            expect(page).to have_no_content("Vous avez soumis une solution plagiée à ce problème.") # not shown for old plagiarism
+            expect(page).to have_success_message("Votre solution a bien été soumise.")
+            expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
+            expect(page).to have_selector("div", text: newsubmission)
+          end
+        end
+        
         describe "and saves as draft" do
           before do
             fill_in "MathInput", with: newsubmission

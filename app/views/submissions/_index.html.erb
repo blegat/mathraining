@@ -65,6 +65,8 @@ var showFalse = function () {
 
   <!-- Dernières soumissions de l'étudiant en question -->
   <% @cansendnewsub = true %>
+  <% @cansendnewcomment = true %>
+  <% date_submission_allowed = nil %>
   <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where('user_id = ? AND status >= 0', current_user.sk).order('created_at DESC') %>
 
   <% if !submissions.empty? %>
@@ -77,14 +79,26 @@ var showFalse = function () {
     <tbody class="scroll">
     <% submissions.each do |s| %>
       <%= render 'submissions/showline', s: s, hide_user: true %>
-      <% if s.status == 0 or s.status == 4 %>
-        <!-- Solution en attente ou plagiée -->
+      <% if s.status == 0 %>
+        <!-- Solution en attente -->
         <% @cansendnewsub = false %>
+      <% elsif s.status == 4 %>
+        <!-- Solution plagiée -->
+        <% one_date_submission_allowed = s.last_comment_time.to_date + 6.months %>
+        <% if date_submission_allowed.nil? or date_submission_allowed < one_date_submission_allowed %>
+          <% date_submission_allowed = one_date_submission_allowed %>
+        <% end %>
       <% end %>
     <% end %>
     </tbody>
     </table>
 
+  <% end %>
+  
+  <% if !date_submission_allowed.nil? and date_submission_allowed > Date.today %>
+    <% @cansendnewsub = false %>
+    <% @cansendnewcomment = false %>
+    <span style="color:red;">Vous avez soumis une solution plagiée à ce problème. Vous aurez à nouveau la possibilité de proposer une solution à partir du <%= write_date_only(date_submission_allowed) %>.</span>
   <% end %>
 
   <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->

@@ -13,6 +13,7 @@ class SubmissionsController < ApplicationController
   before_action :online_problem, only: [:create, :create_intest]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
+  before_action :no_recent_plagiarism, only: [:create, :update_draft]
   before_action :user_that_can_see_problem, only: [:create]
   before_action :author, only: [:update_intest, :update_draft]
   before_action :in_test, only: [:create_intest, :update_intest]
@@ -332,7 +333,15 @@ class SubmissionsController < ApplicationController
 
   # Check that current user can create a new submission for the problem
   def can_submit
-    if current_user.sk.submissions.where(:problem => @problem, :status => [-1, 0, 4]).count > 0 # Draft or waiting or plagiarized submission
+    if current_user.sk.submissions.where(:problem => @problem, :status => [-1, 0]).count > 0 # Draft or waiting
+      redirect_to problem_path(@problem) and return
+    end
+  end
+  
+  # Check that current user has no (recent) plagiarized solution to the problem
+  def no_recent_plagiarism
+    s = current_user.sk.submissions.where(:problem => @problem, :status => 4).order(:last_comment_time).last
+    if !s.nil? && s.last_comment_time.to_date + 6.months > Date.today
       redirect_to problem_path(@problem) and return
     end
   end
