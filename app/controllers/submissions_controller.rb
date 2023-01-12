@@ -261,6 +261,7 @@ class SubmissionsController < ApplicationController
   # Mark a submission as plagiarized
   def mark_as_plagiarism
     @submission.status = 4
+    @submission.last_comment_time = DateTime.now # Because the new date for submission is 6 months after that date
     @submission.save
     redirect_to problem_path(@problem, :sub => @submission)
   end
