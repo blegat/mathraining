@@ -63,7 +63,9 @@ function checkProblem() {
 <% liste2 = Array.new %>
 
 <% Category.select(:id, :name).order(:id).each do |c| %>
-  <% liste.push([c.name, c.id]) %>
+  <% unless c.name == "Wépion" && !current_user.sk.wepion? && !current_user.sk.admin? %>
+    <% liste.push([c.name, c.id]) %>
+  <% end %>
 <% end %>
 
 <% Section.select(:id, :name).order("fondation DESC, id").each do |s| %>

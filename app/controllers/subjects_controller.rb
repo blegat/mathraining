@@ -32,6 +32,7 @@ class SubjectsController < ApplicationController
       if q >= 1000000
         search_category = q/1000000
         @category = Category.find_by_id(search_category)
+        render 'errors/access_refused' and return if @category.name == "Wépion" && !current_user.sk.wepion? && !current_user.sk.admin?
         @title_complement = @category.name
         return if check_nil_object(@category)
       elsif q >= 1000
