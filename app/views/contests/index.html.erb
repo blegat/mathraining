@@ -14,7 +14,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
 <% Contest.order("number DESC").all.each do |c| %>
   <% if !c.in_construction? || (@signed_in && c.is_organized_by_or_admin(current_user.sk)) %>
   
-    <% if c.in_construction? || (c.in_progress? && c.contestproblems.where("status >= 2").count == 0) %>
+    <% if c.in_construction? || (c.in_progress? && c.contestproblems.where(:status => [:in_progress, :in_correction, :corrected, :in_recorrection]).count == 0) %>
       <% classe = "greyy" %>
     <% elsif c.in_progress? %>
       <% classe = "orangey" %>

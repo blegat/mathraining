@@ -129,7 +129,7 @@
 
   <!-- Warning quand l'utilisateur a soumis une solution ultérieurement -->
   <% if @submission.user != current_user.sk && (@submission.wrong? || @submission.wrong_to_read? || @submission.plagiarized?) %>
-    <% later_submission = @problem.submissions.where(:user => @submission.user).waiting.first %>
+    <% later_submission = @problem.submissions.where(:user => @submission.user, :status => :waiting).first %>
     <% if !later_submission.nil? %>
       <div style="text-align:center; margin-top:20px; background-color:#ffe7c5; padding:10px; border:1px solid #dddddd;"><span style="font-weight:bold; text-decoration:underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "nouvelle soumission", problem_path(@problem, :sub => later_submission) %> à ce problème le <%= write_date(later_submission.created_at) %>.</div>
     <% end %>
@@ -137,7 +137,7 @@
   
   <!-- Warning quand l'utilisateur a déjà soumis une solution plagiée -->
   <% if @submission.user != current_user.sk && !@submission.correct? && !@submission.plagiarized? %>
-    <% plagiarized_submission = @problem.submissions.where(:user => @submission.user).plagiarized.first %>
+    <% plagiarized_submission = @problem.submissions.where(:user => @submission.user, :status => :plagiarized).first %>
     <% if !plagiarized_submission.nil? %>
       <div style="text-align:center; margin-top:20px; background-color:#ffe7c5; padding:10px; border:1px solid #dddddd;"><span style="font-weight:bold; text-decoration:underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "solution plagiée", problem_path(@problem, :sub => plagiarized_submission) %> à ce problème le <%= write_date(plagiarized_submission.created_at) %>.</div>
     <% end %>

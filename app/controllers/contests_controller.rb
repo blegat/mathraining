@@ -88,7 +88,6 @@ class ContestsController < ApplicationController
       if p.start_time <= date_in_one_day # Problem starts in less than one day: there will be no post on the forum one day before
         p.early_reminder_sent!
       end
-      p.save
       c = Contestproblemcheck.new
       c.contestproblem = p
       c.save

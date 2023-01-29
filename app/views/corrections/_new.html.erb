@@ -25,13 +25,12 @@
   <!-- Si administrateur : tous les boutons différents -->
   <% if current_user.sk != @submission.user %>
     N'hésitez pas à faire des commentaires, même minimes, pouvant permettre à l'étudiant de progresser. On signalera par exemple une erreur de notation, un oubli de cas particulier, une suggestion d'amélioration... Si une grosse partie est manquante, alors on refusera la solution en demandant de la compléter.<br/><br/>
-    <% case @submission.status.to_sym %>
-    <% when :wrong %>
+    <% if @submission.wrong? %>
       <%= f.submit "Poster", class: "btn btn-primary", style: "margin-bottom:5px;", :disabled => current_user.other %>
       <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", style: "margin-bottom:5px;", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => current_user.other %>
-    <% when :correct %>
+    <% elsif @submission.correct? %>
       <%= f.submit "Poster", class: "btn btn-primary", :disabled => current_user.other %>
-    <% when :wrong_to_read %>
+    <% elsif @submission.wrong_to_read? %>
       <%= f.submit "Poster et laisser la soumission comme erronée", class: "btn btn-danger", style: "margin-bottom:5px;", :disabled => current_user.other %>
       <%= f.submit "Poster et accepter la soumission", class: "btn btn-success", style: "margin-bottom:5px;", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => current_user.other %>
     <% else ## Pas encore corrigé %>

@@ -65,7 +65,7 @@ class CorrectionsController < ApplicationController
 
       # If wrong and current user is the student: new status is wrong_to_read
       if current_user.sk == @submission.user and @submission.wrong?
-        @submission.wrong_to_read!
+        @submission.status = :wrong_to_read
         @submission.save
         m = ''
 
@@ -73,13 +73,13 @@ class CorrectionsController < ApplicationController
       elsif (current_user.sk != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
         (params[:commit] == "Poster et refuser la soumission" or
         params[:commit] == "Poster et laisser la soumission comme erronée")
-        @submission.wrong!
+        @submission.status = :wrong
         @submission.save
         m = ' et soumission marquée comme incorrecte'
 
       # If current user is corrector and he wants to accept it: new status is correct
       elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
-        @submission.correct!
+        @submission.status = :correct
         @submission.save
 
         # If this is the first correct submission of the user to this problem, we give the points and mark problem as solved

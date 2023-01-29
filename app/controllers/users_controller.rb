@@ -353,7 +353,7 @@ class UsersController < ApplicationController
 
   # Show all submissions
   def allsub
-    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(visible: true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:visible => true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
 
   # Show all submissions in which we took part
@@ -363,7 +363,7 @@ class UsersController < ApplicationController
   
   # Show all new submissions
   def allnewsub
-    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting, visible: true).order("submissions.created_at").to_a
+    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting, :visible => true).order("submissions.created_at").to_a
   end
 
   # Show all new comments to submissions in which we took part

@@ -52,7 +52,7 @@ class SubmissionsController < ApplicationController
 
     if params[:commit] == "Enregistrer comme brouillon"
       submission.visible = false
-      submission.draft!
+      submission.status = :draft
     end
 
     if submission.save
@@ -137,7 +137,6 @@ class SubmissionsController < ApplicationController
     un_read(true, "lue")
     if @submission.wrong_to_read?
       @submission.wrong!
-      @submission.save
     end
   end
 
@@ -219,10 +218,10 @@ class SubmissionsController < ApplicationController
   def uncorrect
     u = @submission.user
     if @submission.correct?
-      @submission.wrong!
+      @submission.status = :wrong
       @submission.star = false
       @submission.save
-      nb_corr = Submission.where(:problem => @problem, :user => u).correct.count
+      nb_corr = Submission.where(:problem => @problem, :user => u, :status => :correct).count
       if nb_corr == 0
         # Si c'était la seule soumission correcte, alors il faut agir et baisser le score
         sp = Solvedproblem.where(:submission => @submission).first
@@ -239,7 +238,7 @@ class SubmissionsController < ApplicationController
           which = -1
           correction_time = nil
           resolution_time = nil
-          Submission.where(:problem => @problem, :user => u).correct.each do |s| 
+          Submission.where(:problem => @problem, :user => u, :status => :correct).each do |s| 
             lastcomm = s.corrections.where("user_id != ?", u.id).order(:created_at).last
             if(which == -1 || lastcomm.created_at < correction_time)
               which = s.id
@@ -260,7 +259,7 @@ class SubmissionsController < ApplicationController
 
   # Mark a submission as plagiarized
   def mark_as_plagiarism
-    @submission.plagiarized!
+    @submission.status = :plagiarized
     @submission.last_comment_time = DateTime.now # Because the new date for submission is 6 months after that date
     @submission.save
     redirect_to problem_path(@problem, :sub => @submission)
@@ -428,7 +427,7 @@ class SubmissionsController < ApplicationController
         flash[:success] = "Votre brouillon a bien été enregistré."
         redirect_to lepath
       else
-        @submission.waiting!
+        @submission.status = :waiting
         @submission.created_at = DateTime.now
         @submission.last_comment_time = @submission.created_at
         @submission.visible = true
