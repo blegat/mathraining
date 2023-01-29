@@ -15,7 +15,7 @@ class CorrectionsController < ApplicationController
     totalsize = 0
 
     # If a score is needed, we check that the score is set
-    if @submission.status == 0 && @submission.intest && @submission.score == -1 && (params["score".to_sym].nil? || params["score".to_sym].blank?)
+    if @submission.waiting? && @submission.intest && @submission.score == -1 && (params["score".to_sym].nil? || params["score".to_sym].blank?)
       flash[:danger] = "Veuillez donner un score à cette solution."
       session[:ancientexte] = params[:correction][:content]
       redirect_to problem_path(@problem, :sub => @submission) and return
@@ -49,37 +49,37 @@ class CorrectionsController < ApplicationController
       attach_files(attach, correction)
 
       # Give the score to the submission
-      if @submission.status == 0 && @submission.intest && @submission.score == -1
+      if @submission.waiting? && @submission.intest && @submission.score == -1
         @submission.score = params["score".to_sym].to_i
       end
 
       # Delete reservations if needed
-      if @submission.status == 0 && current_user.sk != @submission.user
+      if @submission.waiting? && current_user.sk != @submission.user
         @submission.followings.each do |f|
           Following.delete(f.id)
         end
       end
 
       # Now we change the status of the submission
-      # It does not change if it is already equal to 2 (correct)
+      # It does not change if it is already correct
 
-      # If wrong and current user is the student: new status is 3 (new comment)
-      if current_user.sk == @submission.user and @submission.status == 1
-        @submission.status = 3
+      # If wrong and current user is the student: new status is wrong_to_read
+      if current_user.sk == @submission.user and @submission.wrong?
+        @submission.wrong_to_read!
         @submission.save
         m = ''
 
-      # If new/wrong, current user is corrector and he wants to keep it wrong: new status is 1 (wrong)
-      elsif (current_user.sk != @submission.user) and (@submission.status == 0 or @submission.status == 3) and
+      # If new/wrong, current user is corrector and he wants to keep it wrong: new status is wrong
+      elsif (current_user.sk != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
         (params[:commit] == "Poster et refuser la soumission" or
         params[:commit] == "Poster et laisser la soumission comme erronée")
-        @submission.status = 1
+        @submission.wrong!
         @submission.save
         m = ' et soumission marquée comme incorrecte'
 
-      # If current user is corrector and he wants to accept it: new status is 2 (correct)
+      # If current user is corrector and he wants to accept it: new status is correct
       elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
-        @submission.status = 2
+        @submission.correct!
         @submission.save
 
         # If this is the first correct submission of the user to this problem, we give the points and mark problem as solved
@@ -108,7 +108,7 @@ class CorrectionsController < ApplicationController
         m = ' et soumission marquée comme correcte'
 
         # Delete the drafts of the user to the problem
-        draft = @problem.submissions.where('user_id = ? AND status = -1', @submission.user).first
+        draft = @problem.submissions.where(:user => @submission.user, :status => :draft).first
         if !draft.nil?
           draft.destroy
         end
@@ -183,7 +183,7 @@ class CorrectionsController < ApplicationController
   # Check that the student has no (recent) plagiarized solution to the problem
   def no_recent_plagiarism
     if @submission.user == current_user.sk
-      s = current_user.sk.submissions.where(:problem => @problem, :status => 4).order(:last_comment_time).last
+      s = current_user.sk.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
       if !s.nil? && s.last_comment_time.to_date + 6.months > Date.today
         redirect_to problem_path(@problem, :sub => @submission) and return
       end

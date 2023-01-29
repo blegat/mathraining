@@ -8,11 +8,11 @@
   <% end %>
 <% end %>
 
-<% if status == 1 %>
+<% if @contestproblem.not_started_yet? %>
   <b>Attention : les dates pour ce problème ont déjà été publiées ! Merci de ne pas les modifier sauf nécessité absolue.</b><br/><br/>
 <% end %>
 
-<% if status >= 2 %>
+<% if @contestproblem.at_least(:in_progress) %>
   <b>Attention : ce problème a déjà été publié ! Merci de ne le modifier qu'en cas de nécessité absolue.</b><br/><br/>
 <% end %>
 
@@ -35,7 +35,7 @@
 <div class="form-group">
   <%= f.label :start_time %>
   <div class="input-group date" id="start_time" style='max-width:500px;'>
-    <%= f.text_field :start_time, :class => "form-control", :value => convert_date(start_time), :disabled => (status >= 2) %>
+    <%= f.text_field :start_time, :class => "form-control", :value => convert_date(@contestproblem.start_time), :disabled => @contestproblem.at_least(:in_progress) %>
     <span class="input-group-addon">
       <span class="glyphicon glyphicon-calendar"></span>
     </span>
@@ -46,7 +46,7 @@
 <div class="form-group">
   <%= f.label :end_time %>
   <div class="input-group date" id="end_time" style="max-width:500px;">
-    <%= f.text_field :end_time, :class => "form-control", :value => convert_date(end_time), :disabled => (status >= 3)  %>
+    <%= f.text_field :end_time, :class => "form-control", :value => convert_date(@contestproblem.end_time), :disabled => @contestproblem.at_least(:in_correction)  %>
     <span class="input-group-addon">
       <span class="glyphicon glyphicon-calendar"></span>
     </span>
@@ -69,11 +69,11 @@
     $("#end_time").on("dp.change", function (e) {
       $('#start_time').data("DateTimePicker").maxDate(e.date);
     });
-    <% if !start_time.nil? %>
-      $('#end_time').data("DateTimePicker").minDate('<%= convert_date(start_time) %>');
+    <% if !@contestproblem.start_time.nil? %>
+      $('#end_time').data("DateTimePicker").minDate('<%= convert_date(@contestproblem.start_time) %>');
     <% end %>
-    <% if !end_time.nil? %>
-      $('#start_time').data("DateTimePicker").maxDate('<%= convert_date(end_time) %>');
+    <% if !@contestproblem.end_time.nil? %>
+      $('#start_time').data("DateTimePicker").maxDate('<%= convert_date(@contestproblem.end_time) %>');
     <% end %>
   });
 </script>

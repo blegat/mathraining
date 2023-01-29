@@ -63,7 +63,7 @@ module ContestsHelper
     end
     
     text = text + "\r\n\r\n"
-    if contest.contestproblems.where("status < 4").count > 0
+    if contest.contestproblems.where(:status => [:not_started_yet, :in_progress, :in_correction]).count > 0
       text = text + "Le nouveau classement général suite à cette correction peut être consulté à [url=" + contest_path(contest, :tab => 1) + "]cet endroit[/url]."    
     else
       text = text + "Il s'agissait du dernier problème. Le classement final peut être consulté à [url=" + contest_path(contest, :tab => 1) + "]cet endroit[/url], et quelques statistiques se trouvent [url=" + contest_path(contest, :tab => 2) + "]ici[/url]."    

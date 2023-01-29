@@ -12,7 +12,7 @@ describe "Myfile pages" do
   let(:message) { FactoryGirl.create(:message, subject: sub) }
   
   let(:problem) { FactoryGirl.create(:problem, online: true) }
-  let(:submission) { FactoryGirl.create(:submission, problem: problem, status: 2) }
+  let(:submission) { FactoryGirl.create(:submission, problem: problem, status: :correct) }
   let(:correction) { FactoryGirl.create(:correction, submission: submission) }
   
   let(:contest) { FactoryGirl.create(:contest) }

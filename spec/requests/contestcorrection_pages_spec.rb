@@ -14,10 +14,10 @@ describe "Contestcorrection pages" do
   let(:user_participating) { FactoryGirl.create(:user, rating: 200) }
   let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
   
-  let!(:contest) { FactoryGirl.create(:contest, status: 1) }
+  let!(:contest) { FactoryGirl.create(:contest, status: :in_progress) }
   let!(:contestsubject) { FactoryGirl.create(:subject, contest: contest, user_id: 0) }
   
-  let!(:contestproblem_finished) { FactoryGirl.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: 3) }
+  let!(:contestproblem_finished) { FactoryGirl.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: :in_correction) }
   
   let(:officialsol_finished) { contestproblem_finished.contestsolutions.where(:official => true).first }
   let!(:usersol_finished) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_finished, user: user_participating, corrected: false) }
@@ -189,7 +189,7 @@ describe "Contestcorrection pages" do
             contestproblem_finished.reload
           end
           specify do
-            expect(contestproblem_finished.status).to eq(4)
+            expect(contestproblem_finished.corrected?).to eq(true)
             expect(contest.contestscores.count).to eq(1)
             expect(contest.contestscores.first.user).to eq(user_participating)
             expect(contest.contestscores.first.score).to eq(7)
@@ -202,13 +202,13 @@ describe "Contestcorrection pages" do
         
         describe "and tries to publish the results while they were already published" do
           before do
-            contestproblem_finished.update_attribute(:status, 4) # Simulate publication of results by somebody else
+            contestproblem_finished.corrected! # Simulate publication of results by somebody else
             click_button "Publier les résultats"
             contestproblem_finished.reload
           end
           specify do
             expect(page).to have_error_message("Une erreur est survenue.")
-            expect(contestproblem_finished.status).to eq(4)
+            expect(contestproblem_finished.corrected?).to eq(true)
             expect(contestsubject.messages.count).to eq(0)
           end
         end
@@ -221,7 +221,7 @@ describe "Contestcorrection pages" do
           end
           specify do
             expect(page).to have_error_message("Il faut au minimum une solution étoilée pour publier les résultats.")
-            expect(contestproblem_finished.status).to eq(3)
+            expect(contestproblem_finished.in_correction?).to eq(true)
             expect(contestsubject.messages.count).to eq(0)
           end
         end
@@ -234,7 +234,7 @@ describe "Contestcorrection pages" do
           end
           specify do
             expect(page).to have_error_message("Les solutions ne sont pas toutes corrigées.")
-            expect(contestproblem_finished.status).to eq(3)
+            expect(contestproblem_finished.in_correction?).to eq(true)
             expect(contestsubject.messages.count).to eq(0)
           end
         end
@@ -246,8 +246,7 @@ describe "Contestcorrection pages" do
             usersol_finished.save
             visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
             # Simulate publication of corrections by somebody else in the meanwhile:
-            contestproblem_finished.status = 4
-            contestproblem_finished.save
+            contestproblem_finished.corrected!
             # Tries to modify the correction (too late)
             fill_in "MathInput", with: newcorrection2
             click_button "Enregistrer"

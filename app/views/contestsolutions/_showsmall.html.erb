@@ -1,5 +1,5 @@
 <!-- Couleur -->
-<% cansee_score = (sol.contestproblem.status >= 4 || @contest.is_organized_by_or_root(current_user.sk)) %>
+<% cansee_score = (sol.contestproblem.at_least(:corrected) || @contest.is_organized_by_or_root(current_user.sk)) %>
 <% if !sol.corrected || !cansee_score %>
   <tr class="warning">
 <% elsif sol.score == 7 %>

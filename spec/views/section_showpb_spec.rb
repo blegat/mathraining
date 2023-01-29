@@ -200,7 +200,7 @@ describe "Page section/showpb" do
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: 0)
+        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :in_progress)
         visit pb_sections_path(section)
       end
       it do
@@ -239,7 +239,7 @@ describe "Page section/showpb" do
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: 1)
+        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
         visit pb_sections_path(section)
       end
       it do
@@ -275,21 +275,21 @@ describe "Page section/showpb" do
     end
     
     describe "with many submissions" do
-      let!(:sub1) { FactoryGirl.create(:submission, problem: online_problem, user: user, status: 2) } # Correct
+      let!(:sub1) { FactoryGirl.create(:submission, problem: online_problem, user: user, status: :correct) }
       let!(:sp1) { FactoryGirl.create(:solvedproblem, problem: online_problem, user: user, submission: sub1) }
-      let!(:sub2) { FactoryGirl.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: 1) } # Incorrect
-      let!(:sub3) { FactoryGirl.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: 3) } # Other incorrect
-      let!(:sub4) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: 1) } # Incorrect
-      let!(:sub5) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: 0) } # Waiting
-      let!(:sub6) { FactoryGirl.create(:submission, problem: problem_in_online_virtualtest, user: user, status: -1) } # Brouillon
-      let!(:sub7) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: 3) } # Incorrect
-      let!(:sub8) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: 0) } # Waiting
-      let!(:sub9) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: 2) } # Correct
+      let!(:sub2) { FactoryGirl.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: :wrong) }
+      let!(:sub3) { FactoryGirl.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: :wrong_to_read) }
+      let!(:sub4) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :wrong) }
+      let!(:sub5) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :waiting) }
+      let!(:sub6) { FactoryGirl.create(:submission, problem: problem_in_online_virtualtest, user: user, status: :draft) }
+      let!(:sub7) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
+      let!(:sub8) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :waiting) }
+      let!(:sub9) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :correct) }
       let!(:sp9) { FactoryGirl.create(:solvedproblem, problem: problem_with_prerequisite_in_online_virtualtest, user: user, submission: sub9) }
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: 1)
+        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
         visit pb_sections_path(section)
       end
       it do
@@ -331,21 +331,21 @@ describe "Page section/showpb" do
     end
     
     describe "with many submissions (2)" do
-      let!(:sub1) { FactoryGirl.create(:submission, problem: online_problem, user: user, status: 2) } # Correct
-      let!(:sub2) { FactoryGirl.create(:submission, problem: online_problem, user: user, status: 2) } # Correct too
+      let!(:sub1) { FactoryGirl.create(:submission, problem: online_problem, user: user, status: :correct) }
+      let!(:sub2) { FactoryGirl.create(:submission, problem: online_problem, user: user, status: :correct) }
       let!(:sp1) { FactoryGirl.create(:solvedproblem, problem: online_problem, user: user, submission: sub2) }
-      let!(:sub2) { FactoryGirl.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: 4) } # Plagiarism
-      let!(:sub3) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: 3) } # Incorrect
-      let!(:sub4) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: 1) } # Incorrect
-      let!(:sub5) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: -1) } # Brouillon
-      let!(:sub6) { FactoryGirl.create(:submission, problem: problem_in_online_virtualtest, user: user, status: 0) } # Waiting
-      let!(:sub7) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: 3) } # Incorrect
-      let!(:sub8) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: 3) } # Incorrect
-      let!(:sub9) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: 4) } # Plagiarism
+      let!(:sub2) { FactoryGirl.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: :plagiarized) }
+      let!(:sub3) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :wrong_to_read) }
+      let!(:sub4) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :wrong) }
+      let!(:sub5) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :draft) }
+      let!(:sub6) { FactoryGirl.create(:submission, problem: problem_in_online_virtualtest, user: user, status: :waiting) }
+      let!(:sub7) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
+      let!(:sub8) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
+      let!(:sub9) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :plagiarized) }
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: 1)
+        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
         visit pb_sections_path(section)
       end
       it do

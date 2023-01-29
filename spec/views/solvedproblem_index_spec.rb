@@ -19,13 +19,13 @@ describe "Page solvedproblem/index" do
   let!(:problem3) { FactoryGirl.create(:problem, online: true, level: 3) }
   let!(:chapter) { FactoryGirl.create(:chapter, online: true) }
   
-  let!(:submission1) { FactoryGirl.create(:submission, problem: problem1, user: user1, status: 2, created_at: DateTime.now - 4.days) }
+  let!(:submission1) { FactoryGirl.create(:submission, problem: problem1, user: user1, status: :correct, created_at: DateTime.now - 4.days) }
   let!(:solvedproblem1) { FactoryGirl.create(:solvedproblem, problem: problem1, submission: submission1, user: user1, resolution_time: DateTime.now - 4.days, correction_time: DateTime.now - 2.days) }
   let!(:following1) { FactoryGirl.create(:following, submission: submission1, user: admin, read: true, kind: 1, created_at: solvedproblem1.correction_time) }
-  let!(:submission2) { FactoryGirl.create(:submission, problem: problem2_with_prerequisite, user: user2, status: 2, created_at: DateTime.now - 23.days) }
+  let!(:submission2) { FactoryGirl.create(:submission, problem: problem2_with_prerequisite, user: user2, status: :correct, created_at: DateTime.now - 23.days) }
   let!(:solvedproblem2) { FactoryGirl.create(:solvedproblem, problem: problem2_with_prerequisite, submission: submission2, user: user2, resolution_time: DateTime.now - 23.days, correction_time: DateTime.now - 1.day) }
   let!(:following2) { FactoryGirl.create(:following, submission: submission2, user: admin2, read: true, kind: 1, created_at: solvedproblem2.correction_time) }
-  let!(:submission3_old) { FactoryGirl.create(:submission, problem: problem3, user: user3, status: 2, created_at: DateTime.now - 36.days) }
+  let!(:submission3_old) { FactoryGirl.create(:submission, problem: problem3, user: user3, status: :correct, created_at: DateTime.now - 36.days) }
   let!(:solvedproblem3_old) { FactoryGirl.create(:solvedproblem, problem: problem3, submission: submission3_old, user: user3, resolution_time: DateTime.now - 36.days, correction_time: DateTime.now - 34.days) }
   let!(:following3_old) { FactoryGirl.create(:following, submission: submission3_old, user: admin, read: true, kind: 1, created_at: solvedproblem3_old.correction_time) }
   

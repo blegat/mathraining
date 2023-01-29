@@ -30,22 +30,22 @@
   <tr style="background-color:#E0E0E0;"> <!-- Si non-visible : gris -->
 <% elsif highlight_this_sub %>
   <tr class="warning"> <!-- Si cette soumission doit être highlightée : toujours jaune -->
-<% elsif s.status == 2 %>
-  <tr class="success"> <!-- Si status = 2 (accepté) : toujours vert -->
-<% elsif s.status == 1 or s.status == 4 %>
-  <tr class="danger"> <!-- Si status = 1 (refusé) ou status = 4 (plagiat) : toujours rouge -->
-<% elsif s.status == 0 %>
+<% elsif s.correct? %>
+  <tr class="success"> <!-- Si correct : toujours vert -->
+<% elsif s.wrong? or s.plagiarized? %>
+  <tr class="danger"> <!-- Si incorrect ou plagiat : toujours rouge -->
+<% elsif s.waiting? %>
   <% if !show_correctors || s.followings.first.nil? %>
-    <tr class="warning"> <!-- Si status = 0 (pas encore corrigé) : toujours jaune, sauf si... -->
+    <tr class="warning"> <!-- Si en attente (pas encore corrigé) : toujours jaune, sauf si... -->
   <% elsif s.followings.first.user == current_user.sk %>
     <tr style="background-color:#f3ffd9;"> <!-- si réservé par moi : un peu plus vert -->
   <% else %>
     <tr style="background-color:#ffeedb;"> <!-- si réservé par quelqu'un d'autre : un peu plus rouge -->
   <% end %>
-<!-- Si status = 3 (nouveau commentaire jamais lu) : bleu si on est correcteur, rouge si on est pas correcteur -->
-<% elsif s.status == 3 && current_user.sk != s.user %>
+<!-- Si nouveau commentaire jamais lu : bleu si on est correcteur, rouge si on est pas correcteur -->
+<% elsif s.wrong_to_read? && current_user.sk != s.user %>
   <tr class="info">
-<% elsif s.status == 3 %>
+<% elsif s.wrong_to_read? %>
   <tr class="danger">
 <% end %>
 

@@ -6,11 +6,11 @@
   <% can_see_correction = true %>
 <% elsif @contestsolution.user == current_user.sk %>
   Votre solution
-  <% if @contestproblem.status == 2 %>
+  <% if @contestproblem.in_progress? %>
     (modifiable)
-  <% elsif @contestproblem.status == 3 %>
+  <% elsif @contestproblem.in_correction? %>
     (en attente de correction)
-  <% elsif @contestproblem.status >= 4 %>
+  <% elsif @contestproblem.at_least(:corrected) %>
     <% if @contestsolution.star %>
       <%= image_tag @contestsolution.icon %>
     <% end %>
@@ -40,7 +40,7 @@
     <%= render 'subjects/content', ms: @contestsolution, kind: "contestsolution" %>
   </div>
 
-  <% if (@contestproblem.status == 2 && @contestsolution.user == current_user.sk) %>
+  <% if (@contestproblem.in_progress? && @contestsolution.user == current_user.sk) %>
     <% @ancientexte = session[:ancientexte] %>
     
     <div id="form" class="myoverflow" style="height:0px; margin-top:12px;">

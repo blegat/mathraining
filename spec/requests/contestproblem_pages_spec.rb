@@ -35,8 +35,8 @@ describe "Contestproblem pages" do
   let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user_participating, score: 7) }
   let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating, rank: 1, score: 7, medal: -1) }
   
-  let!(:offline_contest) { FactoryGirl.create(:contest, status: 0) }
-  let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, number: 1, status: 0, start_time: datetime2, end_time: datetime4) }
+  let!(:offline_contest) { FactoryGirl.create(:contest, status: :in_construction) }
+  let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, number: 1, status: :in_construction, start_time: datetime2, end_time: datetime4) }
   
   let(:newstatement) { "Nouvel énoncé de problème" }
   let(:neworigin) { "Nouvelle origine de problème" }
@@ -258,10 +258,8 @@ describe "Contestproblem pages" do
     
     describe "visits contestproblem edit page for a problem that started" do
       before do
-        offline_contest.status = 1
-        offline_contest.save
-        offline_contestproblem.status = 2
-        offline_contestproblem.save
+        offline_contest.in_progress!
+        offline_contestproblem.in_progress!
         visit edit_contestproblem_path(offline_contestproblem)
       end
       it do
@@ -288,10 +286,8 @@ describe "Contestproblem pages" do
     
     describe "visits contestproblem edit page for a problem that ended" do
       before do
-        offline_contest.status = 1
-        offline_contest.save
-        offline_contestproblem.status = 3
-        offline_contestproblem.save
+        offline_contest.in_progress!
+        offline_contestproblem.in_correction!
         visit edit_contestproblem_path(offline_contestproblem)
       end
       it do
@@ -340,7 +336,7 @@ describe "Contestproblem pages" do
         specify do
           expect(page).to have_success_message("Les organisateurs peuvent à présent modifier leurs corrections.")
           expect(page).to have_link("Stopper nouvelles corrections")
-          expect(contestproblem.status).to eq(5)
+          expect(contestproblem.in_recorrection?).to eq(true)
         end
         
         describe "and unauthorizes them" do
@@ -350,7 +346,7 @@ describe "Contestproblem pages" do
           end
           specify do
             expect(page).to have_success_message("Les organisateurs ne peuvent plus modifier leurs corrections.")
-            expect(contestproblem.status).to eq(4)
+            expect(contestproblem.corrected?).to eq(true)
           end
         end
       end

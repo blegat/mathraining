@@ -1,8 +1,8 @@
 <% if r[0] == @submission %>
   <% color_class = "info" %>
-<% elsif r[0].status == 2 %>
+<% elsif r[0].correct? %>
   <% color_class = "success" %>
-<% elsif r[0].status == 0 %>
+<% elsif r[0].waiting? %>
   <% color_class = "warning" %>
 <% else %>
   <% color_class = "danger" %>

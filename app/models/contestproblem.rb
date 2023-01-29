@@ -18,16 +18,16 @@ include ApplicationHelper
 
 class Contestproblem < ActiveRecord::Base
 
-  # status = 0 --> in construction (contest is not online)
-  # status = 1 --> contest is online but problem is not published yet
-  # status = 2 --> problem is published and students can send solutions
-  # status = 3 --> problem is finished and solutions are being corrected
-  # status = 4 --> problem is finished ans solutions have been corrected
-  # status = 5 --> same as status = 4 but organizers are temporarily allowed to modify corrections
+  enum status: {:in_construction => 0, # in construction (contest is not online)
+                :not_started_yet => 1, # contest is online but problem is not published yet
+                :in_progress     => 2, # problem is published and students can send solutions
+                :in_correction   => 3, # problem is finished and solutions are being corrected
+                :corrected       => 4, # problem is finished ans solutions have been corrected
+                :in_recorrection => 5} # same as :corrected but organizers are temporarily allowed to modify corrections
 
-  # reminder_status = 0 --> no reminder sent for this problem yet
-  # reminder_status = 1 --> reminder sent one day before publication
-  # reminder_status = 2 --> reminder sent at publication
+  enum reminder_status: {:no_reminder_sent    => 0, # no reminder sent for this problem yet
+                         :early_reminder_sent => 1, # reminder sent one day before publication
+                         :all_reminders_sent  => 2} # reminder sent at publication
 
   # BELONGS_TO, HAS_MANY
 
@@ -49,9 +49,17 @@ class Contestproblem < ActiveRecord::Base
   
   after_create :create_official_solution
   
-  private
-  
   # OTHER METHODS
+  
+  def at_least(status_key)
+    return Contestproblem.statuses[status] >= Contestproblem.statuses[status_key]
+  end
+  
+  def at_most(status_key)
+    return Contestproblem.statuses[status] <= Contestproblem.statuses[status_key]
+  end
+  
+  private
   
   # Create the official solution just after the creation
   def create_official_solution

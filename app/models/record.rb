@@ -25,7 +25,7 @@ class Record < ActiveRecord::Base
     curmonday = lastdate+7
     while(curmonday <= mondaybeforelastmonday)
       nextmonday = curmonday+7
-      nb_submissions = Submission.where("status != -1 AND created_at >= ? AND created_at < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
+      nb_submissions = Submission.where("status != ? AND created_at >= ? AND created_at < ?", Submission.statuses[:draft], curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
       nb_questions_solved = Solvedquestion.where("correct = ? AND resolution_time >= ? AND resolution_time < ?", true, curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
       r = Record.create(:date                => curmonday,
                         :nb_submissions      => nb_submissions,
@@ -37,13 +37,13 @@ class Record < ActiveRecord::Base
     Record.where(:complete => false).each do |r|
       curmonday = r.date
       nextmonday = curmonday+7
-      if(Submission.where("created_at >= ? AND created_at < ? AND status = 0", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count > 0)
+      if(Submission.where("created_at >= ? AND created_at < ? AND status = ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime, Submission.statuses[:waiting]).count > 0)
         next # not all submissions are corrected
       end
 
       total = 0
       number = 0
-      Submission.where("created_at >= ? AND created_at < ? AND status != -1", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).each do |s|
+      Submission.where("created_at >= ? AND created_at < ? AND status != ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime, Submission.statuses[:draft]).each do |s|
         submission_date = s.created_at
         first_correction_date = s.corrections.where("user_id != ?", s.user_id).order(:created_at).first.created_at
         total = total + (first_correction_date - submission_date)/(60*60*24).to_f

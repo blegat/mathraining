@@ -7,7 +7,6 @@
 
 <!-- Solution de l'étudiant -->
 <h3>Votre solution</h3>
-<% statut = current_user.sk.status(@virtualtest) %>
 <% @submission = Submission.where(user_id: current_user.sk.id, problem_id: @problem.id, intest: true).first %>
 
 <% solutionexists = true %>

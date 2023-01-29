@@ -37,16 +37,6 @@ describe Submission do
     it { should_not be_valid }
   end
 
-  # Status
-  describe "when the status is not present" do
-    before { @p.status = " " }
-    it { should_not be_valid }
-  end
-  describe "when the status is not in the allowed range" do
-    before { @p.status = 5 }
-    it { should_not be_valid }
-  end
-
   # User
   describe "when user is not present" do
     before { @p.user = nil }

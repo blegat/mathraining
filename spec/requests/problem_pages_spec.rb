@@ -88,7 +88,7 @@ describe "Problem pages" do
     end
     
     describe "visits online problem with auto param" do
-      let!(:correct_submission) { FactoryGirl.create(:submission, :user => user_with_rating_200, :problem => online_problem, :status => 2) }
+      let!(:correct_submission) { FactoryGirl.create(:submission, :user => user_with_rating_200, :problem => online_problem, :status => :correct) }
       let!(:solvedproblem) { FactoryGirl.create(:solvedproblem, :user => user_with_rating_200, :problem => online_problem, :submission => correct_submission) }
       before { visit problem_path(online_problem, :auto => 1) }
       it do

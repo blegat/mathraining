@@ -33,7 +33,7 @@ FactoryGirl.define do
     start_time DateTime.new(2020, 2, 3)
     end_time DateTime.new(2020, 3, 5)
     medal true
-    status 3 # Finished
+    status :completed
   end
   
   # Contestproblem
@@ -44,8 +44,8 @@ FactoryGirl.define do
     sequence(:origin) { |n| "Origine du problème #{n}" }
     start_time DateTime.new(2020, 2, 3)
     end_time DateTime.new(2020, 3, 5)
-    status 4 # Corrected
-    reminder_status 2 # No reminder needed
+    status :corrected
+    reminder_status :all_reminders_sent
     # NB: The associated official contestsolution is created automatically
   end
   

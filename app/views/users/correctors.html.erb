@@ -28,9 +28,9 @@ Le graphique suivant montre, en <span style="color:green;">vert</span>, les soum
   <% date = Rails.env.production? ? x.second.in_time_zone.to_date : x.second.to_date %>
   <% diff = (today - date).to_i %>
   <% if diff < 31 %>
-    <% if status == 0 %>
+    <% if status == "waiting" %>
       <% numberdontknow[diff] = numberdontknow[diff] + n %>
-    <% elsif status == 2 %>
+    <% elsif status == "correct" %>
       <% numbercorrect[diff] = numbercorrect[diff] + n %>
     <% else %>
       <% numberincorrect[diff] = numberincorrect[diff] + n %>

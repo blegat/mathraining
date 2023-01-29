@@ -151,11 +151,11 @@ class User < ActiveRecord::Base
     return self.chapters.include?(chapter)
   end
 
-  # Gives the status for the given virtual test (-1 = not started, 0 = started, 1 = ended)
-  def status(virtualtest)
-    x = self.takentests.where(:virtualtest_id => virtualtest).first
+  # Gives the status for the given virtual test ("not_started", "in_progress", "finished")
+  def test_status(virtualtest)
+    x = self.takentests.where(:virtualtest => virtualtest).first
     if x.nil?
-      return -1
+      return "not_started"
     else
       return x.status
     end
@@ -164,9 +164,9 @@ class User < ActiveRecord::Base
   # Gives the number of submissions that the user can correct
   def num_notifications_new
     if sk.admin
-      return Submission.where(status: 0, visible: true).count
+      return Submission.where(:status => :waiting, :visible => true).count
     elsif sk.corrector
-      return Submission.where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id}) AND status = 0 AND visible = #{(Rails.env.production? ? 'true' : '1')}").count
+      return Submission.where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id})").where(:status => :waiting, :visible => true).count
     end
   end
 

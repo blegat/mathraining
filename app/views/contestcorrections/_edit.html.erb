@@ -51,12 +51,12 @@ var unreserve = function () {
 <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" id="PJ" <%= 'disabled="disabled"' if @was_reserved %> />
 <br/><br/>
 
-<% if @contestproblem.status == 5 %>
+<% if @contestproblem.in_recorrection? %>
   <span style="color:red;"><b>Attention !</b> Vos modifications de la correction, du score attribué et de l'éventuelle étoile seront directement visibles par tous.</span><br/><br/>
 <% end %>
 
 <% if !@contestsolution.official? %>
-  <%= f.button "Enregistrer provisoirement", type: "submit", name: "status", value: "unknown", class: "btn btn-primary", style: "margin-bottom:5px; #{'display:none;' if @contestproblem.status == 5}", disabled: (current_user.other || @was_reserved), id: "BT1" %>
+  <%= f.button "Enregistrer provisoirement", type: "submit", name: "status", value: "unknown", class: "btn btn-primary", style: "margin-bottom:5px; #{'display:none;' if @contestproblem.in_recorrection?}", disabled: (current_user.other || @was_reserved), id: "BT1" %>
   <%= f.button "Enregistrer", type: "submit", name: "status", value: "good", class: "btn btn-success", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT2" %>
   <%= f.button "Enregistrer et étoiler (si 7/7)", type: "submit", name: "status", value: "star", class: "btn btn-warning", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT3" %>
 <% else %>

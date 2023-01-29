@@ -6,16 +6,15 @@
 	<% end %>
 <% end %>
 
-<% if @submission.status >= 0 %>
+<% if !@submission.draft? %>
   <h3>Soumission
-  <% case @submission.status %>
-  <% when 0 %>
+  <% if @submission.waiting? %>
     (en attente de correction)
-  <% when 1, 3 %>
+  <% elsif @submission.wrong? or @submission.wrong_to_read? %>
     (erronée)
-  <% when 4 %>
+  <% elsif @submission.plagiarized? %>
     (plagiée)
-  <% when 2 %>
+  <% elsif @submission.correct? %>
     (correcte)
     <% if @submission.star %>
       <%= image_tag @submission.icon %>
@@ -30,7 +29,7 @@
 <% @unactivate = 0 %>
 <% reservation_case = 0 %>
 <% corrector_name = "" %>
-<% if current_user.sk != @submission.user && @submission.status == 0 && @submission.visible %>
+<% if current_user.sk != @submission.user && @submission.waiting? && @submission.visible %>
   <script type="text/javascript">
   var reserve = function () {
     $.getScript("<%= reserve_url(:submission_id => @submission) %>");
@@ -81,7 +80,7 @@
   </div>
 <% end %>
 
-<% if @submission.status == 4 && current_user.sk == @submission.user %>
+<% if @submission.plagiarized? && current_user.sk == @submission.user %>
   Vous ne pouvez plus voir cette solution.
 <% else %>
 
@@ -111,12 +110,12 @@
   <% end %>
 
   <!-- Affichage des corrections -->
-  <% if @submission.status >= 0 %>
+  <% unless @submission.draft? %>
     <%= render 'corrections/index' %>
   <% end %>
 
   <!-- Marquer comme lu ou non lu -->
-  <% if (current_user.sk.admin || (current_user.sk.corrector && @resolu && current_user.sk != @submission.user)) && @submission.status != 0 %>
+  <% if (current_user.sk.admin || (current_user.sk.corrector && @resolu && current_user.sk != @submission.user)) && !@submission.draft? %>
     <!-- <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %> NE MARCHE PLUS -->
     <% following = @submission.followings.where(:user_id => current_user.sk).first %>
     <% if !following.nil? %>
@@ -129,16 +128,16 @@
   <% end %>
 
   <!-- Warning quand l'utilisateur a soumis une solution ultérieurement -->
-  <% if @submission.user != current_user.sk && @submission.status != 0 && @submission.status != 2 && @submission.status != 4 %>
-    <% later_submission = @problem.submissions.where("user_id = ? AND status = 0", @submission.user).first %>
+  <% if @submission.user != current_user.sk && (@submission.wrong? || @submission.wrong_to_read? || @submission.plagiarized?) %>
+    <% later_submission = @problem.submissions.where(:user => @submission.user).waiting.first %>
     <% if !later_submission.nil? %>
       <div style="text-align:center; margin-top:20px; background-color:#ffe7c5; padding:10px; border:1px solid #dddddd;"><span style="font-weight:bold; text-decoration:underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "nouvelle soumission", problem_path(@problem, :sub => later_submission) %> à ce problème le <%= write_date(later_submission.created_at) %>.</div>
     <% end %>
   <% end %>
   
   <!-- Warning quand l'utilisateur a déjà soumis une solution plagiée -->
-  <% if @submission.user != current_user.sk && @submission.status != 2 && @submission.status != 4 %>
-    <% plagiarized_submission = @problem.submissions.where("user_id = ? AND status = 4", @submission.user).first %>
+  <% if @submission.user != current_user.sk && !@submission.correct? && !@submission.plagiarized? %>
+    <% plagiarized_submission = @problem.submissions.where(:user => @submission.user).plagiarized.first %>
     <% if !plagiarized_submission.nil? %>
       <div style="text-align:center; margin-top:20px; background-color:#ffe7c5; padding:10px; border:1px solid #dddddd;"><span style="font-weight:bold; text-decoration:underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "solution plagiée", problem_path(@problem, :sub => plagiarized_submission) %> à ce problème le <%= write_date(plagiarized_submission.created_at) %>.</div>
     <% end %>
@@ -149,35 +148,35 @@
     <br/>Cette soumission fait partie d'un test virtuel qui n'est pas terminé. Vous ne pourrez la corriger qu'une fois le temps de celui-ci écoulé.<br/>
   <% elsif !current_user.sk.admin? && current_user.sk == @submission.user && @submission.intest && @submission.score == -1 %>
     <br/>Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.<br/>
-  <% elsif (current_user.sk.admin? || (current_user.sk.corrector && @resolu)) && @submission.status == 4 %>
+  <% elsif (current_user.sk.admin? || (current_user.sk.corrector && @resolu)) && @submission.plagiarized? %>
     <br/><span style="color:red;">Cette solution a été plagiée et n'est plus visible par l'étudiant.</span><br/>
-  <% elsif (current_user.sk.admin? || (current_user.sk == @submission.user && @cansendnewcomment) || (current_user.sk.corrector && @resolu)) && @submission.status >= 0 %>
+  <% elsif (current_user.sk.admin? || (current_user.sk == @submission.user && @cansendnewcomment) || (current_user.sk.corrector && @resolu)) && !@submission.draft? %>
     <br/><%= render 'corrections/new' %>
   <% end %>
 
 <% end %>
 
 <!-- Supprimer la soumission : pas possible si correcte -->
-<% if current_user.sk.root? && @submission.status != 2 && @submission.status >= 0 %>
+<% if current_user.sk.root? && !@submission.correct? && !@submission.draft? %>
   <br/><center>
   <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette soumission ? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :style => "color:red;" %>
 
   <!-- Marquer la soumission comme plagiée -->
-  <% if current_user.sk.root? && @submission.status != 4 && @submission.status >= 0 && !@submission.user.pb_solved?(@submission.problem) %>
+  <% if current_user.sk.root? && !@submission.plagiarized? && !@submission.draft? && !@submission.user.pb_solved?(@submission.problem) %>
   - <%= link_to 'Marquer comme plagiat', problem_submission_mark_as_plagiarism_path(@problem, @submission), data: { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme plagiée ? L'étudiant sera banni pendant 2 semaines et ne pourra plus rien faire sur ce problème pendant 6 mois." }, :method => :put, :style => "color:red;" %>
   <% end %>
   </center>
 <% end %>
 
 <!-- Repasser la soumission comme erronée -->
-<% if current_user.sk.root? && @submission.status == 2 %>
+<% if current_user.sk.root? && @submission.correct? %>
   <br/><center>
   <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? nil : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ? L'utilisateur a peut-être déjà lu les solutions des autres." }), :method => :put, :style => "color:red;" %>
   </center>
 <% end %>
 
 <!-- Marquer la soumission comme élégante -->
-<% if (current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk)) && @submission.status == 2 %>
+<% if (current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk)) && @submission.correct? %>
   <br/><center>
     <% if @submission.star %>
       <center><%= link_to 'Ne plus étoiler cette solution', problem_submission_unstar_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>

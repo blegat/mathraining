@@ -15,10 +15,10 @@ describe "Contestsolution pages" do
   let(:user_with_rating_200) { FactoryGirl.create(:user, rating: 200) }
   let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
   
-  let!(:contest) { FactoryGirl.create(:contest, status: 1) }
-  let!(:contestproblem_finished) { FactoryGirl.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: 3) }
-  let!(:contestproblem_running) { FactoryGirl.create(:contestproblem, contest: contest, number: 2, start_time: datetime_before2, end_time: datetime_after, status: 2) }
-  let!(:contestproblem_not_started) { FactoryGirl.create(:contestproblem, contest: contest, number: 3, start_time: datetime_after, end_time: datetime_after2, status: 1) }
+  let!(:contest) { FactoryGirl.create(:contest, status: :in_progress) }
+  let!(:contestproblem_finished) { FactoryGirl.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: :in_correction) }
+  let!(:contestproblem_running) { FactoryGirl.create(:contestproblem, contest: contest, number: 2, start_time: datetime_before2, end_time: datetime_after, status: :in_progress) }
+  let!(:contestproblem_not_started) { FactoryGirl.create(:contestproblem, contest: contest, number: 3, start_time: datetime_after, end_time: datetime_after2, status: :not_started_yet) }
   
   let(:officialsol_finished) { contestproblem_finished.contestsolutions.where(:official => true).first }
   let(:officialsol_running) { contestproblem_running.contestsolutions.where(:official => true).first }
@@ -93,8 +93,7 @@ describe "Contestsolution pages" do
       
       describe "and writes a solution too late" do
         before do
-          contestproblem_running.status = 3
-          contestproblem_running.save
+          contestproblem_running.in_correction!
           fill_in "MathInput", with: newsolution
           click_button "Enregistrer"
         end
@@ -159,8 +158,7 @@ describe "Contestsolution pages" do
         
         describe "and edits the solution too late" do
           before do
-            contestproblem_running.status = 3
-            contestproblem_running.save
+            contestproblem_running.in_correction!
             fill_in "MathInput", with: newsolution2
             click_button "Enregistrer"
           end
@@ -172,8 +170,7 @@ describe "Contestsolution pages" do
         
         describe "and deletes the solution too late" do
           before do
-            contestproblem_running.status = 3
-            contestproblem_running.save
+            contestproblem_running.in_correction!
             click_link("Supprimer la solution")
           end
           specify do

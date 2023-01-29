@@ -34,8 +34,8 @@ describe "Contest pages" do
   let!(:contestscore4) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating4, rank: 4, score: 7,  medal: -1) }
   let!(:contestscore5) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating5, rank: 4, score: 7,  medal: -1) }
   
-  let!(:offline_contest) { FactoryGirl.create(:contest, status: 0) }
-  let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, status: 0, start_time: DateTime.now + 1.day, end_time: DateTime.now + 2.days) }
+  let!(:offline_contest) { FactoryGirl.create(:contest, status: :in_construction) }
+  let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, status: :in_construction, start_time: DateTime.now + 1.day, end_time: DateTime.now + 2.days) }
   
   let(:newnumber) { 42 }
   let(:newdescription) { "Voici une toute nouvelle description" }
@@ -285,8 +285,8 @@ describe "Contest pages" do
         end
         specify do
           expect(page).to have_success_message("Concours mis en ligne")
-          expect(offline_contest.status).to eq(1)
-          expect(offline_contestproblem.status).to eq(1)
+          expect(offline_contest.in_progress?).to eq(true)
+          expect(offline_contestproblem.not_started_yet?).to eq(true)
           expect(Subject.order(:id).last.category.name).to eq("Mathraining")
           expect(Subject.order(:id).last.title).to eq("Concours ##{offline_contest.number}")
           expect(Subject.order(:id).last.contest).to eq(offline_contest)
@@ -303,8 +303,8 @@ describe "Contest pages" do
         end
         specify do
           expect(page).to have_error_message("Un concours ne peut être mis en ligne moins d'une heure avant le premier problème.")
-          expect(offline_contest.status).to eq(0)
-          expect(offline_contestproblem.status).to eq(0)
+          expect(offline_contest.in_construction?).to eq(true)
+          expect(offline_contestproblem.in_construction?).to eq(true)
         end
       end
       

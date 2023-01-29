@@ -46,7 +46,7 @@ describe VirtualtestsController, :type => :controller do
       describe "having already started that test" do
         before do
           user_with_rating_200.chapters << chapter
-          Takentest.create(virtualtest: virtualtest, user: user_with_rating_200, taken_time: DateTime.now - 2.days, status: 1)
+          Takentest.create(virtualtest: virtualtest, user: user_with_rating_200, taken_time: DateTime.now - 2.days, status: :finished)
           put :begin_test, :params => { :virtualtest_id => virtualtest.id }
         end
         specify { expect(response).to redirect_to(virtualtests_path) }

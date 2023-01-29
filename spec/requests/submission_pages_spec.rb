@@ -16,12 +16,12 @@ describe "Submission pages" do
   let!(:problem) { FactoryGirl.create(:problem, online: true) }
   let!(:problem_with_submissions) { FactoryGirl.create(:problem, online: true) }
   
-  let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: user, status: 0) } 
-  let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user, status: 1) }
-  let!(:good_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user2, status: 2) }
+  let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: user, status: :waiting) } 
+  let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user, status: :wrong) }
+  let!(:good_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user2, status: :correct) }
   let!(:good_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_submission, user: other_user2) }
   
-  let!(:good_corrector_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: 2) }
+  let!(:good_corrector_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: :correct) }
   let!(:good_corrector_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_corrector_submission, user: good_corrector) }
   
   let(:newsubmission) { "Voici ma belle soumission." }
@@ -73,13 +73,13 @@ describe "Submission pages" do
             expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
             expect(page).to have_selector("div", text: newsubmission)
             expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
-            expect(problem.submissions.order(:id).last.status).to eq(0)
+            expect(problem.submissions.order(:id).last.waiting?).to eq(true)
           end
         end
         
         describe "and sends new submission while one is already waiting" do # Can only be done with several tabs
           before do
-            FactoryGirl.create(:submission, problem: problem, user: user, status: 0)
+            FactoryGirl.create(:submission, problem: problem, user: user, status: :waiting)
             fill_in "MathInput", with: newsubmission
             click_button "Soumettre cette solution"
           end
@@ -93,7 +93,7 @@ describe "Submission pages" do
         
         describe "and sends new submission while another one was recently plagiarized" do # Can only be done with several tabs
           before do
-            FactoryGirl.create(:submission, problem: problem, user: user, status: 4, last_comment_time: DateTime.now - 3.months)
+            FactoryGirl.create(:submission, problem: problem, user: user, status: :plagiarized, last_comment_time: DateTime.now - 3.months)
             fill_in "MathInput", with: newsubmission
             click_button "Soumettre cette solution"
           end
@@ -108,7 +108,7 @@ describe "Submission pages" do
         
         describe "and sends new submission while another one was plagiarized long ago" do
           before do
-            FactoryGirl.create(:submission, problem: problem, user: user, status: 4, last_comment_time: DateTime.now - 2.years)
+            FactoryGirl.create(:submission, problem: problem, user: user, status: :plagiarized, last_comment_time: DateTime.now - 2.years)
             fill_in "MathInput", with: newsubmission
             click_button "Soumettre cette solution"
           end
@@ -134,14 +134,14 @@ describe "Submission pages" do
             expect(page).to have_button("Enregistrer le brouillon")
             expect(page).to have_button("Supprimer ce brouillon")
             expect(submission.content).to eq(newsubmission)
-            expect(submission.status).to eq(-1)
+            expect(submission.draft?).to eq(true)
           end
         end
       end
     end
       
     describe "visits problem with a draft" do
-      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: -1, content: newsubmission) }
+      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, content: newsubmission) }
       before { visit problem_path(problem) }
       it do
         should have_selector("h1", text: "Problème ##{problem.number}")
@@ -171,7 +171,7 @@ describe "Submission pages" do
             expect(page).to have_success_message("Votre brouillon a bien été enregistré.")
             expect(page).to have_selector("h3", text: "Nouvelle soumission")
             expect(draft_submission.content).to eq(newsubmission2)
-            expect(draft_submission.status).to eq(-1)
+            expect(draft_submission.draft?).to eq(true)
           end
         end
         
@@ -184,7 +184,7 @@ describe "Submission pages" do
           specify do
             expect(page).to have_error_message("Soumission doit être rempli")
             expect(draft_submission.content).to eq(newsubmission)
-            expect(draft_submission.status).to eq(-1)
+            expect(draft_submission.draft?).to eq(true)
           end
         end
         
@@ -199,7 +199,7 @@ describe "Submission pages" do
             expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
             expect(page).to have_selector("div", text: newsubmission2)
             expect(draft_submission.content).to eq(newsubmission2)
-            expect(draft_submission.status).to eq(0)
+            expect(draft_submission.waiting?).to eq(true)
           end
         end
         
@@ -213,13 +213,13 @@ describe "Submission pages" do
           specify do
             expect(page).to have_content(error_access_refused)
             expect(draft_submission.content).to eq(newsubmission)
-            expect(draft_submission.status).to eq(-1)
+            expect(draft_submission.draft?).to eq(true)
           end
         end
         
         describe "and tries to update a draft that is already sent (hack)" do # Can only be done with several tabs
           before do
-            draft_submission.update_attribute(:status, 0)
+            draft_submission.waiting!
             fill_in "MathInput", with: newsubmission2
             click_button "Enregistrer le brouillon"
             draft_submission.reload
@@ -228,7 +228,7 @@ describe "Submission pages" do
             expect(page).to_not have_success_message("Votre brouillon a bien été enregistré.")
             expect(page).to have_selector("h1", text: "Problème ##{problem.number}") # We simply redirect in this case (because it could happen)
             expect(draft_submission.content).to eq(newsubmission)
-            expect(draft_submission.status).to eq(0)
+            expect(draft_submission.waiting?).to eq(true)
           end
         end
       end
@@ -236,7 +236,7 @@ describe "Submission pages" do
     
     describe "sends a submission to a virtualtest problem (later)" do
       let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true) }
-      let!(:takentest) { Takentest.create(:virtualtest => virtualtest, :user => user, :status => 1) }
+      let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished) }
       before do
         problem.update_attribute(:virtualtest, virtualtest)
         visit problem_path(problem)
@@ -246,7 +246,7 @@ describe "Submission pages" do
       end
       specify do
         expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
-        expect(problem.submissions.order(:id).last.status).to eq(0)
+        expect(problem.submissions.order(:id).last.waiting?).to eq(true)
         expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
         expect(page).to have_selector("div", text: newsubmission)
       end
@@ -309,7 +309,7 @@ describe "Submission pages" do
       before do
         visit problem_path(problem_with_submissions, :sub => good_submission)
         # Say that some admin marked the solution of the corrector as bad, in the meantime
-        good_corrector_submission.update_attribute(:status, 1)
+        good_corrector_submission.wrong!
         good_corrector_solvedproblem.destroy
         click_link "Étoiler cette solution"
         good_submission.reload
@@ -356,7 +356,7 @@ describe "Submission pages" do
           waiting_submission.reload
         end
         specify do
-          expect(waiting_submission.status).to eq(2)
+          expect(waiting_submission.correct?).to eq(true)
           expect(waiting_submission.corrections.last.content).to eq(newcorrection)
           expect(page).to have_selector("h3", text: "Soumission (correcte)")
           expect(page).to have_selector("div", text: newcorrection)
@@ -373,7 +373,7 @@ describe "Submission pages" do
         end
         specify do
           expect(page).to have_error_message("Commentaire doit être rempli")
-          expect(waiting_submission.status).to eq(0)
+          expect(waiting_submission.waiting?).to eq(true)
           expect(waiting_submission.corrections.count).to eq(0)
         end
       end
@@ -387,7 +387,7 @@ describe "Submission pages" do
         end
         specify do
           expect(page).to have_error_message("Un nouveau commentaire a été posté avant le vôtre !")
-          expect(waiting_submission.status).to eq(0)
+          expect(waiting_submission.waiting?).to eq(true)
           expect(waiting_submission.corrections.count).to eq(1)
         end
       end
@@ -399,7 +399,7 @@ describe "Submission pages" do
           waiting_submission.reload
         end
         specify do
-          expect(waiting_submission.status).to eq(1)
+          expect(waiting_submission.wrong?).to eq(true)
           expect(waiting_submission.corrections.last.content).to eq(newcorrection)
           expect(page).to have_selector("h3", text: "Soumission (erronée)")
           expect(page).to have_selector("div", text: newcorrection)
@@ -446,7 +446,7 @@ describe "Submission pages" do
                 waiting_submission.reload
               end
               specify do
-                expect(waiting_submission.status).to eq(3)
+                expect(waiting_submission.wrong_to_read?).to eq(true)
                 expect(waiting_submission.corrections.last.content).to eq(newanswer)
                 expect(page).to have_selector("h3", text: "Soumission (erronée)")
                 expect(page).to have_selector("div", text: newanswer)
@@ -504,7 +504,7 @@ describe "Submission pages" do
                       waiting_submission.reload
                     end
                     specify do
-                      expect(waiting_submission.status).to eq(2)
+                      expect(waiting_submission.correct?).to eq(true)
                       expect(waiting_submission.corrections.last.content).to eq(newcorrection2)
                       expect(page).to have_selector("h3", text: "Soumission (correcte)")
                       expect(page).to have_selector("div", text: newcorrection2)
@@ -610,7 +610,7 @@ describe "Submission pages" do
       specify do
         expect(page).to have_link("Supprimer cette soumission")
         expect(page).to have_link("Marquer comme plagiat")
-        expect { click_link("Marquer comme plagiat") and wrong_submission.reload }.to change{wrong_submission.status}.from(1).to(4)
+        expect { click_link("Marquer comme plagiat") and wrong_submission.reload }.to change{wrong_submission.status}.from("wrong").to("plagiarized")
         expect { click_link("Supprimer cette soumission") }.to change{problem_with_submissions.submissions.count}.by(-1)
       end
     end
@@ -626,14 +626,14 @@ describe "Submission pages" do
           good_corrector.reload
         end
         specify do
-          expect(good_corrector_submission.status).to eq(1)
+          expect(good_corrector_submission.wrong?).to eq(true)
           expect(good_corrector.rating).to eq(rating_before - problem_with_submissions.value)
           expect(Solvedproblem.where(:user => good_corrector, :problem => problem_with_submissions).count).to eq(0)
         end
       end
     
       describe "when there is another correct submission" do
-        let!(:other_correct_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: 2, created_at: DateTime.now - 2.weeks) }
+        let!(:other_correct_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: :correct, created_at: DateTime.now - 2.weeks) }
         let!(:other_correction) { FactoryGirl.create(:correction, submission: other_correct_submission, user: root, created_at: DateTime.now - 1.week) }
         before do
           visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
@@ -643,7 +643,7 @@ describe "Submission pages" do
           good_corrector_solvedproblem.reload
         end
         specify do
-          expect(good_corrector_submission.status).to eq(1)
+          expect(good_corrector_submission.wrong?).to eq(true)
           expect(good_corrector.rating).to eq(rating_before)
           expect(good_corrector_solvedproblem.submission).to eq(other_correct_submission)
           # NB: We need be_within(1.second) below, see https://stackoverflow.com/questions/20403063/trouble-comparing-time-with-rspec
@@ -656,7 +656,7 @@ describe "Submission pages" do
     describe "visits reserved virtualtest submission" do
       let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true, number: 12) }
       let!(:problem_in_test) { FactoryGirl.create(:problem, virtualtest: virtualtest) }
-      let!(:waiting_submission_in_test) { FactoryGirl.create(:submission, problem: problem_in_test, user: user, status: 0, intest: true) }
+      let!(:waiting_submission_in_test) { FactoryGirl.create(:submission, problem: problem_in_test, user: user, status: :waiting, intest: true) }
       before do
         Takentest.create(user: user, virtualtest: virtualtest, taken_time: DateTime.now - 2.weeks)
         Following.create(user: root, submission: waiting_submission_in_test, read: true, kind: 0)
@@ -675,7 +675,7 @@ describe "Submission pages" do
           waiting_submission_in_test.reload
         end
         specify do
-          expect(waiting_submission_in_test.status).to eq(1)
+          expect(waiting_submission_in_test.wrong?).to eq(true)
           expect(waiting_submission_in_test.score).to eq(4)
           expect(page).to have_content("4 / 7")
         end
@@ -703,7 +703,7 @@ describe "Submission pages" do
         end
         specify do
           expect(page).to have_error_message("Veuillez donner un score à cette solution.")
-          expect(waiting_submission_in_test.status).to eq(0)
+          expect(waiting_submission_in_test.waiting?).to eq(true)
           expect(waiting_submission_in_test.score).to eq(-1)
         end
       end
@@ -826,7 +826,7 @@ describe "Submission pages" do
         waiting_submission.reload
       end
       specify do
-        expect(waiting_submission.status).to eq(0)
+        expect(waiting_submission.waiting?).to eq(true)
         expect(waiting_submission.corrections.count).to eq(0)
         expect(Myfile.count).to eq(numfiles_before)
       end
