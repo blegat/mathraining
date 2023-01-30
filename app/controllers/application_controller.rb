@@ -277,15 +277,14 @@ class ApplicationController < ActionController::Base
     time_now = DateTime.now.to_i
     Takentestcheck.all.each do |c|
       t = c.takentest
-      if t.status != 0
+      if t.finished?
         c.destroy # Should not happen in theory
       else
         debut = t.taken_time.to_i
         fin = debut + t.virtualtest.duration*60
         if fin < time_now
           c.destroy
-          t.status = 1
-          t.save
+          t.finished!
           u = t.user
           v = t.virtualtest
           v.problems.each do |p|
@@ -305,24 +304,21 @@ class ApplicationController < ActionController::Base
     # Note: Problems in Contestproblemcheck are also used in contest.rb to check problems for which an email or forum subject must be created
     Contestproblemcheck.all.order(:id).each do |c|
       p = c.contestproblem
-      if p.status == 1 # Contest is online but problem is not published yet
+      if p.not_started_yet? # Contest is online but problem is not published yet
         if p.start_time <= date_now
-          p.status = 2
-          p.save
+          p.in_progress!
         end
       end
-      if p.status == 2 # Problem has started but not ended
+      if p.in_progress? # Problem has started but not ended
         if p.end_time <= date_now
-          p.status = 3
-          p.save
+          p.in_correction!
           contest = p.contest
-          if contest.contestproblems.where("status <= 2").count == 0 # All problems of the contest are finished: mark the contest as finished
-            contest.status = 2
-            contest.save
+          if contest.contestproblems.where(:status => [:not_started_yet, :in_progress]).count == 0 # All problems of the contest are finished: mark the contest as finished
+            contest.in_correction!
           end
         end
       end
-      if p.status >= 3 and p.reminder_status >= 2 # Avoid to delete if reminders were not sent yet
+      if p.at_least(:in_correction) && p.all_reminders_sent? # Avoid to delete if reminders were not sent yet
         c.destroy
       end
     end
@@ -332,7 +328,7 @@ class ApplicationController < ActionController::Base
   def compute_new_contest_rankings(contest)
     # Find all users with a score > 0 in the contest
     userset = Set.new
-    probs = contest.contestproblems.where("status >= 4")
+    probs = contest.contestproblems.where(:status => [:corrected, :in_recorrection])
     probs.each do |p|
       p.contestsolutions.where("score > 0 AND official = ?", false).each do |s|
         userset.add(s.user_id)
@@ -406,11 +402,11 @@ class ApplicationController < ActionController::Base
     
     # Change some details of the contest
     contest.num_participants = scores.size
-    contest_fully_corrected = (contest.contestproblems.where("status < 4").count == 0)
-    if contest_fully_corrected
-      contest.status = 3
-    end
     contest.save
+    contest_fully_corrected = (contest.contestproblems.where(:status => [:not_started_yet, :in_progress, :in_correction]).count == 0)
+    if contest_fully_corrected
+      contest.completed!
+    end
   end
   
 end

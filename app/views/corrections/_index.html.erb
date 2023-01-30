@@ -17,7 +17,7 @@
   
 <% end %>
 
-<% if @submission.user == current_user.sk && @submission.status == 1 %>
+<% if @submission.user == current_user.sk && @submission.wrong? %>
   <% last_correction = @submission.corrections.order(:created_at).last %>
   <% if !last_correction.nil? && last_correction.user != current_user.sk %>
   

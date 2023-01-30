@@ -86,7 +86,7 @@ class VirtualtestsController < ApplicationController
 
   # Begin a virtualtest
   def begin_test
-    t = Takentest.create(:user => current_user.sk, :virtualtest => @virtualtest, :status => 0, :taken_time => DateTime.now)    
+    t = Takentest.create(:user => current_user.sk, :virtualtest => @virtualtest, :status => :in_progress, :taken_time => DateTime.now)    
     Takentestcheck.create(:takentest => t)    
     redirect_to @virtualtest
   end
@@ -111,9 +111,9 @@ class VirtualtestsController < ApplicationController
   
   # Check that current user is currently doing the virtualtest
   def in_test
-    virtualtest_status = current_user.sk.status(@virtualtest.id)
-    render 'errors/access_refused' and return if virtualtest_status == -1 # Test not started
-    redirect_to virtualtests_path and return if virtualtest_status == 1 # Test finished: smoothly redirect because it can happen when timer stops
+    virtualtest_status = current_user.sk.test_status(@virtualtest)
+    render 'errors/access_refused' and return if virtualtest_status == "not_started"
+    redirect_to virtualtests_path and return if virtualtest_status == "finished" # Smoothly redirect because it can happen when timer stops
   end
 
   # Check that current user has access to the virtualtest
@@ -155,9 +155,9 @@ class VirtualtestsController < ApplicationController
 
   # Check that current user can start the test
   def can_begin
-    if current_user.sk.status(@virtualtest) >= 0
+    if current_user.sk.test_status(@virtualtest) != "not_started"
       redirect_to virtualtests_path
-    elsif Takentest.where(user_id: current_user.sk.id, status: 0).count > 0
+    elsif Takentest.where(:user => current_user.sk, :status => :in_progress).count > 0
       flash[:danger] = "Vous avez déjà un test virtuel en cours !"
       redirect_to virtualtests_path
     end

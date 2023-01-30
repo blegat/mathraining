@@ -353,23 +353,23 @@ class UsersController < ApplicationController
 
   # Show all submissions
   def allsub
-    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(visible: true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:visible => true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
 
   # Show all submissions in which we took part
   def allmysub
-    @notifications = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where("status > 0").order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+    @notifications = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where("status != ? AND status != ?", Submission.statuses[:draft], Submission.statuses[:waiting]).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
   
   # Show all new submissions
   def allnewsub
-    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(status: 0, visible: true).order("submissions.created_at").to_a
+    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting, :visible => true).order("submissions.created_at").to_a
   end
 
   # Show all new comments to submissions in which we took part
   def allmynewsub
     @notifications = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
-    @notifications_other = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where("status = 3").order("submissions.last_comment_time").to_a
+    @notifications_other = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:status => :wrong_to_read).order("submissions.last_comment_time").to_a
   end
 
   # Show notifications of new corrections (for a student)

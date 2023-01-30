@@ -81,15 +81,13 @@ class ContestsController < ApplicationController
 
   # Put a contest online
   def put_online
-    @contest.status = 1
-    @contest.save
+    @contest.in_progress!
     date_in_one_day = 1.day.from_now
     @contest.contestproblems.order(:number, :id).each do |p|
-      p.status = 1
+      p.not_started_yet!
       if p.start_time <= date_in_one_day # Problem starts in less than one day: there will be no post on the forum one day before
-        p.reminder_status = 1
+        p.early_reminder_sent!
       end
-      p.save
       c = Contestproblemcheck.new
       c.contestproblem = p
       c.save
@@ -122,7 +120,7 @@ class ContestsController < ApplicationController
   
   # Check if current user can see the contest
   def can_see_contest
-    if (@contest.status == 0 && !(@signed_in && @contest.is_organized_by_or_admin(current_user.sk)))
+    if (@contest.in_construction? && !(@signed_in && @contest.is_organized_by_or_admin(current_user.sk)))
       render 'errors/access_refused' and return
     end
   end
@@ -145,14 +143,14 @@ class ContestsController < ApplicationController
 
   # Check that the contest is offline
   def offline_contest
-    if @contest.status > 0
+    if !@contest.in_construction?
       render 'errors/access_refused' and return
     end
   end
   
   # Check if cutoffs can be defined for this contest
   def can_define_cutoffs
-    if @contest.status != 3 || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.sk.root)
+    if !@contest.completed? || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.sk.root)
       render 'errors/access_refused' and return
     end
   end

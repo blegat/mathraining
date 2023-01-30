@@ -102,15 +102,15 @@ class MyfilesController < ApplicationController
   #  elsif type == "Submission" || type == "Correction"
   #    # Only admins, submission user, correctors having solved the problem, and users having solved the problem (if submission is correct)
   #    submission = (type == "Submission" ? @myfile.myfiletable : @myfile.myfiletable.submission)
-  #    redirect_to root_path unless (current_user.sk.admin? || current_user.sk == submission.user || current_user.sk.pb_solved?(submission.problem) && (current_user.sk.corrector? || submission.status == 2))
+  #    redirect_to root_path unless (current_user.sk.admin? || current_user.sk == submission.user || current_user.sk.pb_solved?(submission.problem) && (current_user.sk.corrector? || submission.correct?))
   #  elsif type == "Contestsolution" || type == "Contestcorrection"
-  #    # Only organizers and solution user, or anybody if corrections are finished (status >= 4) and solution has 7
-  #    # Only exception is that the solution user cannot see the correction if it is not published yet (status < 4)
+  #    # Only organizers and solution user, or anybody if corrections are finished (status >= :corrected) and solution has 7
+  #    # Only exception is that the solution user cannot see the correction if it is not published yet (status <= :in_correction)
   #    contestsolution = (type == "Contestsolution" ? @myfile.myfiletable : @myfile.myfiletable.contestsolution)
   #    contestproblem = contestsolution.contestproblem
   #    contest = contestproblem.contest
-  #    redirect_to root_path unless (contest.is_organized_by_or_root(current_user.sk) || contestsolution.user == current_user.sk || (contestproblem.status >= 4 && contestsolution.score == 7))
-  #    redirect_to root_path if (type == "Contestcorrection" && contestsolution.user == current_user.sk && contestproblem.status < 4)
+  #    redirect_to root_path unless (contest.is_organized_by_or_root(current_user.sk) || contestsolution.user == current_user.sk || (contestproblem.at_least(:corrected) && contestsolution.score == 7))
+  #    redirect_to root_path if (type == "Contestcorrection" && contestsolution.user == current_user.sk && contestproblem.at_most(:in_correction))
   #  end
   #end
 

@@ -58,8 +58,8 @@ class Problem < ActiveRecord::Base
       self.chapters.each do |c|
         return false if !user.chap_solved?(c)
       end
-    else # In a virtualtest: the user should have started it at least
-      return false if user.status(self.virtualtest_id) <= 0
+    else # In a virtualtest: the user should have finished the test
+      return false if user.test_status(self.virtualtest) != "finished"
     end
     return true
   end

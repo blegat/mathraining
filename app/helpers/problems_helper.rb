@@ -46,7 +46,7 @@ module ProblemsHelper
   end
   
   def virtualtests_done_request
-    return "(" + current_user.sk.takentests.select(:virtualtest_id).where(:status => 1).to_sql + ")"
+    return "(" + current_user.sk.takentests.select(:virtualtest_id).where(:status => :finished).to_sql + ")"
   end
   
   def num_problem_unsolved_prerequisites_request

@@ -40,10 +40,10 @@
 <br/><br/><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
   <% c = c+1 %>
-  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.status == 0 %> (<%= link_to "supprimer", contestorganization_path(Contestorganization.where(:contest_id => @contest, :user_id => o.id).first), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
+  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.in_construction? %> (<%= link_to "supprimer", contestorganization_path(Contestorganization.where(:contest_id => @contest, :user_id => o.id).first), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
 <% end %>
 
-<% if @signed_in && current_user.sk.admin? && @contest.status == 0 %>
+<% if @signed_in && current_user.sk.admin? && @contest.in_construction? %>
 
   <% contestorganization = Contestorganization.new %>
   <%= form_for contestorganization, :html => {:class => "form-inline", :style => "margin-top:10px;"} do |f| %>
@@ -57,7 +57,7 @@
 
 <% organizer = @signed_in && @contest.is_organized_by_or_admin(current_user.sk) %>
 
-<% if organizer && @contest.status == 3 && @contest.medal && @contest.gold_cutoff == 0 %>
+<% if organizer && @contest.completed? && @contest.medal && @contest.gold_cutoff == 0 %>
   <center>
   <%= link_to "Définir les médailles", contest_cutoffs_path(@contest), class: 'btn btn-lg btn-default btn-grey', style: 'margin-top:10px;' %>
   </center>
@@ -65,7 +65,7 @@
 
 <% tab = 0 %>
 <% nb_prob = @contest.contestproblems.count %>
-<% nb_prob_corrected = @contest.contestproblems.where("status >= 4").count %>
+<% nb_prob_corrected = @contest.contestproblems.where(:status => [:corrected, :in_recorrection]).count %>
 
 <% if nb_prob_corrected > 0 %>
   <% if params.has_key?:tab %>
@@ -90,12 +90,12 @@
 <% if tab == 0 %>
   <% @contest.contestproblems.order(:number).each do |p| %>
     <% can_see = 0 %>
-    <% if p.status <= 1 %>
+    <% if p.at_most(:not_started_yet) %>
       <% classe = "greyy" %>
-    <% elsif p.status == 2 %>
+    <% elsif p.in_progress? %>
       <% classe = "orangey" %>
       <% can_see = 1 %>
-    <% elsif p.status == 3 %>
+    <% elsif p.in_correction? %>
       <% classe = "yellowy" %>
       <% can_see = 1 %>
     <% else %>
@@ -112,7 +112,7 @@
     <center><h3>
     <% if can_see >= 1 && @signed_in %>
       <%= link_to "Problème ##{p.number}", p %>
-      <% if current_user.sk.root? && p.status == 5 %>
+      <% if current_user.sk.root? && p.in_recorrection? %>
         (corrections modifiables)
       <% end %>
     <% else %>
@@ -147,13 +147,13 @@
       <div class="module right-part">
       <center><h4>Statistiques</h4></center>
       <center>
-      <% if p.status >= 2 %>
+      <% if p.at_least(:in_progress) %>
         <% nb_sol = p.contestsolutions.count - 1 %>
         Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
-        <% if p.status >= 4 %>
+        <% if p.at_least(:corrected) %>
           <% nb_perfect = p.contestsolutions.where(:score => 7, :official => false).count %>
           Scores parfaits : <b><%= nb_perfect %></b>
-        <% elsif p.status == 3 %>
+        <% elsif p.in_correction? %>
           En cours de correction
         <% end %>
       <% end %>
@@ -162,22 +162,22 @@
       </div>
     <% end %>
     
-    <% if p.status <= 2 && @contest.status > 0 %>
-        <% if p.status <= 1 %>
-          <% date_limit = p.start_time.to_i %>
-          <% message_before = "Publication dans : " %>
-          <% message_zero = "En ligne" %>
-        <% else %>
-          <% date_limit = p.end_time.to_i %>
-          <% message_before = "Temps restant : " %>
-          <% message_zero = "Temps écoulé" %>
-        <% end %>
-        <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
-        <div class="row content">
-        <div class="module bottom-part">
-        <center><span style="font-size:20px;"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
-        </div>
-        </div>
+    <% if p.at_most(:in_progress) && !@contest.in_construction? %>
+      <% if p.at_most(:not_started_yet) %>
+        <% date_limit = p.start_time.to_i %>
+        <% message_before = "Publication dans : " %>
+        <% message_zero = "En ligne" %>
+      <% else %>
+        <% date_limit = p.end_time.to_i %>
+        <% message_before = "Temps restant : " %>
+        <% message_zero = "Temps écoulé" %>
+      <% end %>
+      <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
+      <div class="row content">
+      <div class="module bottom-part">
+      <center><span style="font-size:20px;"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
+      </div>
+      </div>
     <% end %>
     
     <% if can_see == 2 && !p.origin.nil? && p.origin != "" %>
@@ -253,7 +253,7 @@
       <% end %>
       <td><%= raw(line.user.linked_name) %></td>
       <% allprobs.each do |p| %>
-        <% if p.status >= 4 %>
+        <% if p.at_least(:corrected) %>
           <% x = allsols[p.number][line.user.id] %>
         <% else %>
           <% x = nil %>
@@ -265,7 +265,7 @@
           <% score = 0 %>
           <% id = nil %>
         <% end %>
-        <% if p.status >= 4 && score > 0 %>
+        <% if p.at_least(:corrected) && score > 0 %>
           <% if score == 7 %>
             <td style="background-color:#ddffdd; text-align:center;">
             <%= link_to "7", contestproblem_path(p, :sol => id) %>
@@ -279,7 +279,7 @@
             <% end %>
             </td>
           <% end %>
-        <% elsif p.status >= 4 %>
+        <% elsif p.at_least(:corrected) %>
           <td style="background-color:#ffdddd; text-align:center;">
             <% if !id.nil? and organizer %>
               <%= link_to "0", contestproblem_path(p, :sol => id) %>
@@ -483,7 +483,7 @@
   <% num = num+1 %>
 <% end %>
 
-<% if @contest.status == 0 && @signed_in && @contest.is_organized_by(current_user.sk) %>
+<% if @contest.in_construction? && @signed_in && @contest.is_organized_by(current_user.sk) %>
   <% if num == 0 %>
     <br/><br/><center>
   <% else %>
@@ -493,7 +493,7 @@
   <% num = num+1 %>
 <% end %>
 
-<% if @signed_in && @contest.status == 0 && current_user.sk.admin? %>
+<% if @signed_in && @contest.in_construction? && current_user.sk.admin? %>
   <% if num == 0 %>
     <br/><br/><center>
   <% else %>
@@ -508,6 +508,6 @@
   </center>
 <% end %>
 
-<% if @contest.status == 0 && @signed_in && @contest.is_organized_by(current_user.sk) && !current_user.sk.admin? %>
+<% if @contest.in_construction? && @signed_in && @contest.is_organized_by(current_user.sk) && !current_user.sk.admin? %>
   <br/><center>Pour mettre le concours en ligne, contacter un administrateur</center>
 <% end %>

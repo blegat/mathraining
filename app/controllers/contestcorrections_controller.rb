@@ -69,7 +69,7 @@ class ContestcorrectionsController < ApplicationController
       
       @contestsolution.save
       
-      if @contestproblem.status == 5 && @contestsolution.score != old_score
+      if @contestproblem.in_recorrection? && @contestsolution.score != old_score
         compute_new_contest_rankings(@contest)
       end
       
@@ -104,7 +104,7 @@ class ContestcorrectionsController < ApplicationController
   
   # Check that the correction can be updated
   def can_update_correction
-    if @contestproblem.status != 3 && @contestproblem.status != 5 && !@contestsolution.official
+    if !@contestproblem.in_correction? && !@contestproblem.in_recorrection? && !@contestsolution.official
       flash[:danger] = "Vous ne pouvez pas modifier cette correction."
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     end

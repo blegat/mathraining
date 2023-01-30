@@ -150,10 +150,10 @@ feature 'Emailer' do
   
     let!(:category) { FactoryGirl.create(:category, name: "Mathraining") } # For the Forum subject
     
-    let!(:running_contest) { FactoryGirl.create(:contest, status: 1) }
-    let!(:finished_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: 3, start_time: DateTime.now - 4.days, end_time: DateTime.now - 2.days) }
+    let!(:running_contest) { FactoryGirl.create(:contest, status: :in_progress) }
+    let!(:finished_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: :in_correction, start_time: DateTime.now - 4.days, end_time: DateTime.now - 2.days) }
     let!(:finished_contestproblem_officialsol) { finished_contestproblem.contestsolutions.where(:official => true).first }
-    let!(:running_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 1, status: 1, start_time: DateTime.now + 1.day - 5.minutes, end_time: DateTime.now + 3.days, reminder_status: 0) }
+    let!(:running_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 1, status: :not_started_yet, start_time: DateTime.now + 1.day - 5.minutes, end_time: DateTime.now + 3.days, reminder_status: :no_reminder_sent) }
     let!(:running_contestproblemcheck) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem) }
     let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: category, last_comment_time: DateTime.now - 2.days) }
     
@@ -206,9 +206,9 @@ feature 'Emailer' do
     end
     
     describe "new problems in one day" do
-      let!(:running_contestproblem2) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: 1, start_time: running_contestproblem.start_time, end_time: DateTime.now + 4.days, reminder_status: 0) }
+      let!(:running_contestproblem2) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: :not_started_yet, start_time: running_contestproblem.start_time, end_time: DateTime.now + 4.days, reminder_status: :no_reminder_sent) }
       let!(:running_contestproblemcheck2) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem2) }
-      let!(:running_contestproblem3) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: 1, start_time: running_contestproblem.start_time, end_time: DateTime.now + 6.days, reminder_status: 0) }
+      let!(:running_contestproblem3) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: :not_started_yet, start_time: running_contestproblem.start_time, end_time: DateTime.now + 6.days, reminder_status: :no_reminder_sent) }
       let!(:running_contestproblemcheck3) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem3) }
       
       before do

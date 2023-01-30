@@ -15,7 +15,9 @@
 <% liste = Array.new %>
 
 <% Category.select("id, name").order(:id).each do |c| %>
-  <% liste.push([c.name, 1000000*c.id]) %>
+  <% unless c.name == "Wépion" && !current_user.sk.wepion? && !current_user.sk.admin? %>
+    <% liste.push([c.name, 1000000*c.id]) %>
+  <% end %>
 <% end %>
 
 <% liste2 = Array.new %>

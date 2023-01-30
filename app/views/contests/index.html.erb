@@ -12,22 +12,17 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
 <% end %>
 
 <% Contest.order("number DESC").all.each do |c| %>
-  <% if c.status > 0 || (@signed_in && c.is_organized_by_or_admin(current_user.sk)) %>
+  <% if !c.in_construction? || (@signed_in && c.is_organized_by_or_admin(current_user.sk)) %>
   
-    <% real_status = c.status %>
-    <% nb_prob = c.num_problems %>
-    
-    <% if real_status == 1 and c.contestproblems.where("status >= 2").count == 0 %>
-      <% real_status = 0 %>
-    <% end %>
-    
-    <% if real_status == 0 %>
+    <% if c.in_construction? || (c.in_progress? && c.contestproblems.where(:status => [:in_progress, :in_correction, :corrected, :in_recorrection]).count == 0) %>
       <% classe = "greyy" %>
-    <% elsif real_status == 1 %>
+    <% elsif c.in_progress? %>
       <% classe = "orangey" %>
-    <% elsif real_status >= 2 %>
+    <% else %>
       <% classe = "yellowy" %>
     <% end %>
+
+    <% nb_prob = c.num_problems %>
     
     <table class="table table-bordered virtualtest <%= classe %>">
     <tr><td class="title">
@@ -49,11 +44,11 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
       Fin : <b><%= write_date_only_with_day(c.end_time) %></b><br/>
     <% end %>
     <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %>
-    <% if real_status == 0 %>
+    <% if classe == "greyy" %>
       (à venir)
-    <% elsif real_status == 1 %>
+    <% elsif classe == "orangey" %>
       (en cours)
-    <% elsif real_status >= 2 %>
+    <% elsif classe == "yellowy" %>
       (terminé)
     <% end %>
     
@@ -61,7 +56,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
     
     <div class="module right-info">
     <h4>Statistiques</h4>
-      <% nb_prob_corrected = c.contestproblems.where("status >= 4").count %>
+      <% nb_prob_corrected = c.contestproblems.where(:status => [:corrected, :in_recorrection]).count %>
       <% if nb_prob_corrected == 0 %>
         <i>Aucun problème corrigé</i>
       <% else %>

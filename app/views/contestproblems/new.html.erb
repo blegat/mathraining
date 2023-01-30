@@ -3,7 +3,7 @@
 <h1><%= title_3((link_to "Concours", contests_path), (link_to "Concours ##{@contest.number}", @contest), "Ajouter un problème") %></h1>
 
 <%= form_for(@contestproblem, url: contest_contestproblems_path) do |f| %>
-  <%= render 'form', f: f, status: 0, start_time: @contestproblem.start_time, end_time: @contestproblem.end_time %>
+  <%= render 'form', f: f %>
   <%= f.submit "Ajouter", class: "btn btn-lg btn-primary" %>
 <% end %>
     

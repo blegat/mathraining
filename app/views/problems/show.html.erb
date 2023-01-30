@@ -173,7 +173,7 @@
     <!-- Si pas encore résolu le problème -->
     <% @draft = false %>
     <% unless (@resolu || !@cansendnewsub) %>
-      <% @draft = true if @problem.submissions.where('user_id = ? AND status < 0', current_user.sk).count > 0 %>
+      <% @draft = true if @problem.submissions.where(:user => current_user.sk, :status => :draft).count > 0 %>
       <% if soumission != 0 %>
         <% if !@draft %>
           <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-default btn-grey" %>
@@ -219,7 +219,7 @@
   <% @submission = Submission.find_by_id(soumission) %>
 
   <!-- On vérifie que l'on peut la regarder -->
-  <% if @submission.problem == @problem && (@submission.status >= 0 || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.status == 2) || current_user.sk.admin || (current_user.sk.corrector && @resolu && @submission.visible)) %>
+  <% if @submission.problem == @problem && (!@submission.draft? || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.correct?) || current_user.sk.admin || (current_user.sk.corrector && @resolu && @submission.visible)) %>
     <hr>
     <%= render 'submissions/show' %>
   <% end %>

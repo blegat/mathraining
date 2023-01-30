@@ -13,6 +13,7 @@ class SubmissionsController < ApplicationController
   before_action :online_problem, only: [:create, :create_intest]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
+  before_action :no_recent_plagiarism, only: [:create, :update_draft]
   before_action :user_that_can_see_problem, only: [:create]
   before_action :author, only: [:update_intest, :update_draft]
   before_action :in_test, only: [:create_intest, :update_intest]
@@ -22,9 +23,9 @@ class SubmissionsController < ApplicationController
   # Show all submissions to a problem (only through js)
   def index
     if @what == 0
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = 2 AND star = ? AND visible = ?', current_user.sk, false, true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND star = ? AND visible = ?', current_user.sk, Submission.statuses[:correct], false, true).order('created_at DESC')
     elsif @what == 1
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status != 2 AND status != 0 AND visible = ?', current_user.sk, true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status != ? AND status != ? AND visible = ?', current_user.sk, Submission.statuses[:correct], Submission.statuses[:waiting], true).order('created_at DESC')
     end
 
     respond_to do |format|
@@ -51,13 +52,13 @@ class SubmissionsController < ApplicationController
 
     if params[:commit] == "Enregistrer comme brouillon"
       submission.visible = false
-      submission.status = -1
+      submission.status = :draft
     end
 
     if submission.save
       attach_files(attach, submission)
 
-      if submission.status == -1
+      if submission.draft?
         flash[:success] = "Votre brouillon a bien été enregistré."
         redirect_to problem_path(@problem, :sub => 0)
       else
@@ -134,9 +135,8 @@ class SubmissionsController < ApplicationController
   # Mark a submission as read
   def read
     un_read(true, "lue")
-    if @submission.status == 3
-      @submission.status = 1
-      @submission.save
+    if @submission.wrong_to_read?
+      @submission.wrong!
     end
   end
 
@@ -184,7 +184,7 @@ class SubmissionsController < ApplicationController
   # Unreserve a submission (only through js)
   def unreserve
     f = @submission.followings.first
-    if @submission.status != 0 || f.nil? || (f.user != current_user.sk && !current_user.sk.root?) || f.kind != 0 # Not supposed to happen
+    if !@submission.waiting? || f.nil? || (f.user != current_user.sk && !current_user.sk.root?) || f.kind != 0 # Not supposed to happen
       @what = 0
     else
       Following.delete(f.id)
@@ -217,11 +217,11 @@ class SubmissionsController < ApplicationController
   # Mark a correct solution as incorrect (only in case of mistake)
   def uncorrect
     u = @submission.user
-    if @submission.status == 2
-      @submission.status = 1
+    if @submission.correct?
+      @submission.status = :wrong
       @submission.star = false
       @submission.save
-      nb_corr = Submission.where(:problem => @problem, :user => u, :status => 2).count
+      nb_corr = Submission.where(:problem => @problem, :user => u, :status => :correct).count
       if nb_corr == 0
         # Si c'était la seule soumission correcte, alors il faut agir et baisser le score
         sp = Solvedproblem.where(:submission => @submission).first
@@ -238,7 +238,7 @@ class SubmissionsController < ApplicationController
           which = -1
           correction_time = nil
           resolution_time = nil
-          Submission.where(:problem => @problem, :user => u, :status => 2).each do |s| 
+          Submission.where(:problem => @problem, :user => u, :status => :correct).each do |s| 
             lastcomm = s.corrections.where("user_id != ?", u.id).order(:created_at).last
             if(which == -1 || lastcomm.created_at < correction_time)
               which = s.id
@@ -259,7 +259,8 @@ class SubmissionsController < ApplicationController
 
   # Mark a submission as plagiarized
   def mark_as_plagiarism
-    @submission.status = 4
+    @submission.status = :plagiarized
+    @submission.last_comment_time = DateTime.now # Because the new date for submission is 6 months after that date
     @submission.save
     redirect_to problem_path(@problem, :sub => @submission)
   end
@@ -332,7 +333,15 @@ class SubmissionsController < ApplicationController
 
   # Check that current user can create a new submission for the problem
   def can_submit
-    if current_user.sk.submissions.where(:problem => @problem, :status => [-1, 0, 4]).count > 0 # Draft or waiting or plagiarized submission
+    if current_user.sk.submissions.where(:problem => @problem, :status => [:draft, :waiting]).count > 0
+      redirect_to problem_path(@problem) and return
+    end
+  end
+  
+  # Check that current user has no (recent) plagiarized solution to the problem
+  def no_recent_plagiarism
+    s = current_user.sk.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
+    if !s.nil? && s.last_comment_time.to_date + 6.months > Date.today
       redirect_to problem_path(@problem) and return
     end
   end
@@ -341,7 +350,7 @@ class SubmissionsController < ApplicationController
   def in_test
     @t = @problem.virtualtest
     return if check_nil_object(@t)
-    redirect_to virtualtests_path if current_user.sk.status(@t) != 0
+    redirect_to virtualtests_path if current_user.sk.test_status(@t) != "in_progress"
   end
   
   # Check that current user is doing a test with this problem, or is a root
@@ -360,7 +369,7 @@ class SubmissionsController < ApplicationController
 
   # Check that the submission is a draft
   def is_draft
-    unless @submission.status == -1
+    unless @submission.draft?
       redirect_to @problem
     end
   end
@@ -418,7 +427,7 @@ class SubmissionsController < ApplicationController
         flash[:success] = "Votre brouillon a bien été enregistré."
         redirect_to lepath
       else
-        @submission.status = 0
+        @submission.status = :waiting
         @submission.created_at = DateTime.now
         @submission.last_comment_time = @submission.created_at
         @submission.visible = true

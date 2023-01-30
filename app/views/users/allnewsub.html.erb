@@ -31,7 +31,7 @@
   <% new_cor[interval_id] = new_cor[interval_id] + 1 %>
 <% end %>
 
-<% num_waiting_now = Submission.where(status: 0, visible: true).count %>
+<% num_waiting_now = Submission.where(:status => :waiting, :visible => true).count %>
 <% graph = Array.new(num_intervals+1, 0) %>
 <% graph[num_intervals] = num_waiting_now %>
 <% r = (num_intervals-1)..0 %>

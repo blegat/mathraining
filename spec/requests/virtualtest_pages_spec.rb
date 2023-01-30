@@ -97,7 +97,7 @@ describe "Virtualtest pages" do
       describe "and tries to start the test while already in another test" do
         before do
           other_virtualtest = FactoryGirl.create(:virtualtest, online: true, number: 43, duration: 60)
-          Takentest.create(virtualtest: other_virtualtest, user: user_with_rating_200, taken_time: DateTime.now - 10.minutes, status: 0)
+          Takentest.create(virtualtest: other_virtualtest, user: user_with_rating_200, taken_time: DateTime.now - 10.minutes, status: :in_progress)
           click_button "Commencer ce test"
         end
         specify do
@@ -193,7 +193,7 @@ describe "Virtualtest pages" do
           end
           
           describe "and writes a new solution after having written another one in another tab" do
-            let!(:submission) { FactoryGirl.create(:submission, problem: problem, user: user_with_rating_200, status: 0, intest: true, visible: false, content: newsolution) }
+            let!(:submission) { FactoryGirl.create(:submission, problem: problem, user: user_with_rating_200, status: :waiting, intest: true, visible: false, content: newsolution) }
             before do
               fill_in "MathInput", with: newsolution2
               click_button "Enregistrer cette solution"

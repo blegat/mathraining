@@ -59,9 +59,9 @@ describe "Page user/index" do
       Problem.all.each do |p|
         if r.rand() < 0.5 # Tried to solve the problem
           if r.rand() < 0.5 # Incorrect
-            FactoryGirl.create(:submission, problem: p, user: u, status: 1)
+            FactoryGirl.create(:submission, problem: p, user: u, status: :wrong)
           else # Correct
-            sub = FactoryGirl.create(:submission, problem: p, user: u, status: 2)
+            sub = FactoryGirl.create(:submission, problem: p, user: u, status: :correct)
             time = DateTime.now - ((rand() * 28).to_i).days # Date of resolution in the last 4 weeks
             FactoryGirl.create(:solvedproblem, problem: p, user: u, submission: sub, resolution_time: time)
           end

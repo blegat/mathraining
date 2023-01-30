@@ -31,7 +31,7 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
     Chaque problème de niveau <%= level %> vaut <b><%= 15*level %></b> points.<br/>
     
     <% problems_by_level[level].each do |p| %>
-      <% num_correct_sub = num_sub_by_problem_and_status[[p.id, 2]] unless current_user.sk.admin? %>
+      <% num_correct_sub = num_sub_by_problem_and_status[[p.id, "correct"]] unless current_user.sk.admin? %>
       <% num_correct_sub = 0 if num_correct_sub.nil? %>
 
       <% num_drafts = 0 %>
@@ -47,17 +47,17 @@ Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins
 
       <!-- Si connecté -->
       <% else %>    
-        <% num_incorrect_sub = num_sub_by_problem_and_status[[p.id, 1]] unless current_user.sk.admin? %>
+        <% num_incorrect_sub = num_sub_by_problem_and_status[[p.id, "wrong"]] unless current_user.sk.admin? %>
         <% num_incorrect_sub = 0 if num_incorrect_sub.nil? %>
-        <% num_incorrect_sub2 = num_sub_by_problem_and_status[[p.id, 3]] unless current_user.sk.admin? %>
+        <% num_incorrect_sub2 = num_sub_by_problem_and_status[[p.id, "wrong_to_read"]] unless current_user.sk.admin? %>
         <% num_incorrect_sub2 = 0 if num_incorrect_sub2.nil? %>
-        <% num_incorrect_sub3 = num_sub_by_problem_and_status[[p.id, 4]] unless current_user.sk.admin? %>
+        <% num_incorrect_sub3 = num_sub_by_problem_and_status[[p.id, "plagiarized"]] unless current_user.sk.admin? %>
         <% num_incorrect_sub3 = 0 if num_incorrect_sub3.nil? %>
         <% num_incorrect_sub = num_incorrect_sub + num_incorrect_sub2 + num_incorrect_sub3 %>
         
-        <% num_waiting_sub = num_sub_by_problem_and_status[[p.id, 0]] unless current_user.sk.admin? %>
+        <% num_waiting_sub = num_sub_by_problem_and_status[[p.id, "waiting"]] unless current_user.sk.admin? %>
         <% num_waiting_sub = 0 if num_waiting_sub.nil? %>
-        <% num_drafts = num_sub_by_problem_and_status[[p.id, -1]] unless current_user.sk.admin? %>
+        <% num_drafts = num_sub_by_problem_and_status[[p.id, "draft"]] unless current_user.sk.admin? %>
         <% num_drafts = 0 if num_drafts.nil? %>
 
         <!-- Si aucune soumission (ou admin) : jaune -->

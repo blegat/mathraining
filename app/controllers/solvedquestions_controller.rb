@@ -184,9 +184,9 @@ class SolvedquestionsController < ApplicationController
       end
     else # EXERCISE
       if @question.decimal
-        guess = params[:solvedquestion][:guess].gsub(",",".").gsub(" ","").to_f # Replace "," by "." and remove possible white space after comma
+        guess = params[:solvedquestion][:guess].gsub(",",".").gsub(" ","").to_f # Replace ',' by '.' and remove white spaces (possible after comma)
       else
-        guess = params[:solvedquestion][:guess].to_i
+        guess = params[:solvedquestion][:guess].gsub(" ","").to_i # Remove ',', '.' and ' ' in case of "12 345" instead of "12345"
       end
       if first_sub || @solvedquestion.guess != guess
         @solvedquestion.nb_guess = (first_sub ? 1 : @solvedquestion.nb_guess + 1)

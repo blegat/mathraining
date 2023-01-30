@@ -24,10 +24,10 @@ html>body tbody.scroll {
   <% end %>
   <% niveau = @user.level %>
   <% couleur = niveau[:color] %>
-  <% status = (@user.sex == 0 ? niveau[:name] : niveau[:femininename]) %>
+  <% grade = (@user.sex == 0 ? niveau[:name] : niveau[:femininename]) %>
 <% else %>
   <% couleur = "black" %>
-  <% status = (@user.sex == 0 ? "Administrateur" : "Administratrice") %>
+  <% grade = (@user.sex == 0 ? "Administrateur" : "Administratrice") %>
 <% end %>
 
 
@@ -106,7 +106,7 @@ html>body tbody.scroll {
         <% if t == 0 %>
           <% peutvoir = (cansee_prob[p.id] == true) %>
         <% else %>
-          <% peutvoir = (@signed_in && current_user.sk.status(t) > 0) %>
+          <% peutvoir = (@signed_in && current_user.sk.test_status(t) == "finished") %>
         <% end %>
       <% end %>
       <% p_encours = p_encours + 1 %>
@@ -131,7 +131,7 @@ html>body tbody.scroll {
   <div class="basic_container <%= class_name %>">
   <table style="margin:0px; margin-top:15px; width:100%; height:90px; padding:0px;">
   <tr><td style="font-size:20px; padding-left:10px; padding-right:10px;"><%= raw(@user.colored_name) %></td></tr>
-  <tr><td style="font-size:16px; font-weight:bold; padding-top:5px;"><%= status %></td></tr>
+  <tr><td style="font-size:16px; font-weight:bold; padding-top:5px;"><%= grade %></td></tr>
   <tr><td style="padding-top:10px;"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :style => "margin-left:5px; margin-top:-2px;" %></td></tr>
   <!-- <tr><td style="padding-top:15px;">Inscrit le <%= write_date_only(@user.created_at) %></td></tr> -->
@@ -467,7 +467,7 @@ html>body tbody.scroll {
       <% actcontest = Array.new %>
       <% @user.contestscores.includes(:contest).each do |cs| %>
         <% contest = cs.contest %>
-        <% if contest.status == 3 %>
+        <% if contest.completed? %>
           <% start_time = contest.start_time %>
           <% end_time = contest.end_time %>
           <% num_participants = contest.num_participants %>
@@ -478,7 +478,7 @@ html>body tbody.scroll {
         <% end %>
       <% end %>
       
-      <% @user.organized_contests.where("status = 3").each do |contest| %>
+      <% @user.organized_contests.where(:status => :completed).each do |contest| %>
         <% start_time = contest.start_time %>
         <% end_time = contest.end_time %>
         <% num_participants = contest.num_participants %>

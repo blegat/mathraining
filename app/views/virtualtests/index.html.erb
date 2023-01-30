@@ -46,15 +46,15 @@
     <!-- Si on a accès à ce test virtuel -->
     <% if access %>
       <% compteur = compteur + 1 %>
-      <% status = current_user.sk.status(t.id) %>
+      <% status = current_user.sk.test_status(t) %>
       
       <% classe = "" %>
       <!-- Si (administrateur et en ligne) OU (étudiant et pas encore fait) : jaune -->
-      <% if (current_user.sk.admin? && t.online?) || (!current_user.sk.admin? && status == -1) %>
+      <% if (current_user.sk.admin? && t.online?) || (!current_user.sk.admin? && status == "not_started") %>
         <% classe = "yellowy" %>
 
       <!-- Si (administrateur et pas en ligne) OU (étudiant et en cours) : orange -->
-      <% elsif (current_user.sk.admin? && !t.online?) || status == 0 %>
+      <% elsif (current_user.sk.admin? && !t.online?) || status == "in_progress" %>
         <% classe = "orangey" %>
 
       <!-- Sinon : déjà fait donc vert -->
@@ -93,7 +93,7 @@
       </div>
       
       <!-- Statistiques -->
-      <% nb_u = t.takentests.where(:status => 1).count %>
+      <% nb_u = t.takentests.where(:status => :finished).count %>
       
       <% moy = 0 %>
       <% arr = Array.new %>
@@ -118,7 +118,7 @@
       <div class="module right-info" style="padding-bottom:10px;">
       <h4>Statistiques</h4>
       Terminé par <b><%= nb_u %></b> personne<%= "s" if nb_u > 1 %><br/>
-      <% if current_user.sk.admin || (nb_u >= 3 && status > 0) %>
+      <% if current_user.sk.admin || (nb_u >= 3 && status == "finished") %>
         Score moyen : <b><%= moy.round(1) if moy >= 0 %><%= "-" if moy < 0 %> / <%= 7*h %></b>
       <% end %>
       </div>
@@ -128,7 +128,7 @@
       <% can_online = true %>
       <% total = 0 %>
       <!-- Si admin ou étudiant ayant commencé : on affiche les problèmes -->
-      <% if current_user.sk.admin || status >= 0 %>
+      <% if current_user.sk.admin || status != "not_started" %>
         <% h = 0 %>
         <% t.problems.order(:position).each do |p| %>
           <% can_online = false if !p.online? %>
@@ -136,7 +136,7 @@
           
           <% sc_show = "" %>
           <% sub_id = -1 %>
-          <% if !current_user.sk.admin? && status > 0 %>
+          <% if !current_user.sk.admin? && status == "finished" %>
             <% s = p.submissions.where(user_id: current_user.sk.id, intest: true).first %>
             <% if s.nil? %>
               <% sc_show = "0" %>
@@ -163,7 +163,7 @@
           <% end %>
           <div class="module left-part" style="<%= "padding-bottom:0px !important;" if liste %>">
           <center><h4>
-          <% if !current_user.sk.admin && status == 0 %>
+          <% if !current_user.sk.admin && status == "in_progress" %>
             <%= link_to "Problème #{h}", virtualtest_path(t, :p => p.id) %>
           <% elsif sub_id < 0 %>
             <%= link_to "Problème #{h}", problem_path(p) %>
@@ -187,7 +187,7 @@
           <% if current_user.sk.admin? %>
             <%= arr[h].round(1) if arr[h] >= 0 %>
             <%= "-" if arr[h] < 0 %>
-          <% elsif status == 0 %>
+          <% elsif status == "in_progress" %>
             -
           <% else %>
             <%= sc_show %>
@@ -199,12 +199,12 @@
       <% end %>
       
       <!-- Si l'étudiant n'a pas encore commencé le test -->
-      <% if !current_user.sk.admin? && status == -1 %>
+      <% if !current_user.sk.admin? && status == "not_started" %>
         <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: current_user.other, style: "margin-top:15px; margin-bottom:5px;", data: (Rails.env.test? ? nil : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
       <% end %>
       
       <!-- Si étudiant en test --->
-      <% if !current_user.sk.admin? && status == 0 %>
+      <% if !current_user.sk.admin? && status == "in_progress" %>
         <% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => t.id).first.taken_time %>
         <% depart = initial.to_i %>
         <% @virtualtest = t %>
@@ -218,7 +218,7 @@
       <% end %>
       
       <!-- Si étudiant qui a fini -->
-      <% if !current_user.sk.admin? && status == 1 %>
+      <% if !current_user.sk.admin? && status == "finished" %>
       <div class="row content">
         <div class="module bottom-part" style="padding-bottom:10px;">
         <h4>Score</h4>

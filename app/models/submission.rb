@@ -18,13 +18,13 @@
 #  star              :boolean          default(FALSE)
 #
 class Submission < ActiveRecord::Base
-
-  # status = -1 : draft
-  #           0 : not corrected yet
-  #           1 : wrong (last comment read)
-  #           2 : correct
-  #           3 : wrong + unread comment from the student
-  #           4 : plagiarized (not possible to submit a new submission or to comment)
+  
+  enum status: {:draft         => -1, # draft (only for the student)
+                :waiting       =>  0, # waiting for a correction
+                :wrong         =>  1, # wrong (and last comment was marked as read)
+                :correct       =>  2, # correct
+                :wrong_to_read =>  3, # wrong, but last comment was not read yet
+                :plagiarized   =>  4} # plagiarized
 
   # BELONGS_TO, HAS_MANY
 
@@ -42,22 +42,20 @@ class Submission < ActiveRecord::Base
   validates :user_id, presence: true
   validates :problem_id, presence: true
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
-  validates :status, presence: true, inclusion: { in: [-1, 0, 1, 2, 3, 4] }
   
   # OTHER METHODS
 
   # Give the icon for the submission
   def icon
     if star
-      'star1.png'
+      return 'star1.png'
     else
-      case status
-      when -1, 0
-        'tiret.gif'
-      when 1, 3, 4
-        'X.gif'
-      when 2
-        'V.gif'
+      if draft? or waiting?
+        return 'tiret.gif'
+      elsif wrong? or wrong_to_read? or plagiarized?
+        return 'X.gif'
+      elsif correct?
+        return 'V.gif'
       end
     end
   end

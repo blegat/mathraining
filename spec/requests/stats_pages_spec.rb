@@ -261,16 +261,16 @@ describe "Stats pages" do
       let!(:problem1) { FactoryGirl.create(:problem, section: section, online: true, number: 1111, level: 1) }
       let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true, number: 1112, level: 2) }
       let!(:problem3) { FactoryGirl.create(:problem, section: section, online: true, number: 1113, level: 3) }
-      let!(:submission11) { FactoryGirl.create(:submission, user: user1, problem: problem1, status: 2,  created_at: now-28.days) } # Correct
+      let!(:submission11) { FactoryGirl.create(:submission, user: user1, problem: problem1, status: :correct,  created_at: now-28.days) }
       let!(:correction11) { FactoryGirl.create(:correction, user: admin, submission: submission11,      created_at: now-26.days) } # 2 days later
-      let!(:submission12) { FactoryGirl.create(:submission, user: user1, problem: problem2, status: 2,  created_at: now-21.days) } # Correct
+      let!(:submission12) { FactoryGirl.create(:submission, user: user1, problem: problem2, status: :correct,  created_at: now-21.days) }
       let!(:correction12) { FactoryGirl.create(:correction, user: admin, submission: submission12,      created_at: now-20.days) } # 1 day later
-      let!(:submission13) { FactoryGirl.create(:submission, user: user1, problem: problem3, status: 1,  created_at: now-21.days) } # Wrong
+      let!(:submission13) { FactoryGirl.create(:submission, user: user1, problem: problem3, status: :wrong,  created_at: now-21.days) }
       let!(:correction13) { FactoryGirl.create(:correction, user: admin, submission: submission13,      created_at: now-19.days) } # 2 days later
-      let!(:submission21) { FactoryGirl.create(:submission, user: user2, problem: problem1, status: 1,  created_at: now-21.days) } # Wrong
+      let!(:submission21) { FactoryGirl.create(:submission, user: user2, problem: problem1, status: :wrong_to_read,  created_at: now-21.days) }
       let!(:correction21) { FactoryGirl.create(:correction, user: admin, submission: submission21,      created_at: now-17.days) } # 4 days later
-      let!(:submission22) { FactoryGirl.create(:submission, user: user2, problem: problem2, status: 0,  created_at: now-14.days) } # Not checked
-      let!(:submission23) { FactoryGirl.create(:submission, user: user2, problem: problem3, status: -1, created_at: now-14.days) } # Draft
+      let!(:submission22) { FactoryGirl.create(:submission, user: user2, problem: problem2, status: :waiting,  created_at: now-14.days) }
+      let!(:submission23) { FactoryGirl.create(:submission, user: user2, problem: problem3, status: :draft, created_at: now-14.days) }
       
       before do
         travel_to now
@@ -313,8 +313,9 @@ describe "Stats pages" do
       describe "and recompute submission stats a week later" do
         let!(:correction22) { FactoryGirl.create(:correction, user: admin, submission: submission22, created_at: now+2.days+6.hours) } # 16.25 days later
         before do
-          submission22.update_attribute(:status, 3)
-          submission23.update_attributes(status: 0, created_at: now+2.days) # Draft was sent but not corrected
+          submission22.wrong_to_read!
+          submission23.waiting!
+          submission23.update_attribute(:created_at, now+2.days) # Draft was sent but not corrected
           travel_to now+7.days
           Record.update
           travel_back

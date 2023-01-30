@@ -53,10 +53,10 @@ class ContestproblemsController < ApplicationController
   def update
     @contestproblem.statement = params[:contestproblem][:statement]
     @contestproblem.origin = params[:contestproblem][:origin]
-    if @contestproblem.status <= 1
+    if @contestproblem.at_most(:not_started_yet)
       @contestproblem.start_time = params[:contestproblem][:start_time]
     end
-    if @contestproblem.status <= 2
+    if @contestproblem.at_most(:in_progress)
       @contestproblem.end_time = params[:contestproblem][:end_time]
     end
     if @date_problem
@@ -83,8 +83,7 @@ class ContestproblemsController < ApplicationController
   
   # Publish results of a problem
   def publish_results
-    @contestproblem.status = 4
-    @contestproblem.save
+    @contestproblem.corrected!
     
     compute_new_contest_rankings(@contest)
     
@@ -95,9 +94,8 @@ class ContestproblemsController < ApplicationController
   
   # Temporarily authorize new corrections for a problem that is already corrected
   def authorize_corrections
-    if @contestproblem.status == 4
-      @contestproblem.status = 5
-      @contestproblem.save
+    if @contestproblem.corrected?
+      @contestproblem.in_recorrection!
       flash[:success] = "Les organisateurs peuvent à présent modifier leurs corrections. N'oubliez pas de stopper cette autorisation temporaire quand ils ont terminé !"      
     end      
     redirect_to @contestproblem
@@ -105,9 +103,8 @@ class ContestproblemsController < ApplicationController
   
   # Stop authorizing new corrections for a problem
   def unauthorize_corrections
-    if @contestproblem.status == 5
-      @contestproblem.status = 4
-      @contestproblem.save
+    if @contestproblem.in_recorrection?
+      @contestproblem.corrected!
       flash[:success] = "Les organisateurs ne peuvent plus modifier leurs corrections."
     end      
     redirect_to @contestproblem
@@ -141,14 +138,14 @@ class ContestproblemsController < ApplicationController
   
   # Check that the contest is offline
   def offline_contest
-    if @contest.status > 0
+    if !@contest.in_construction?
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user has access to the problem
   def has_access
-    if !@contest.is_organized_by_or_admin(current_user.sk) && @contestproblem.status <= 1
+    if !@contest.is_organized_by_or_admin(current_user.sk) && @contestproblem.at_most(:not_started_yet)
       render 'errors/access_refused' and return
     end
   end
@@ -158,22 +155,22 @@ class ContestproblemsController < ApplicationController
     date_now = DateTime.now.in_time_zone
     start_date = nil
     end_date = nil
-    if !@contestproblem.nil? && @contestproblem.status >= 2
+    if !@contestproblem.nil? && @contestproblem.at_least(:in_progress)
       start_date = @contestproblem.start_time
     elsif !params[:contestproblem][:start_time].nil?
       start_date = Time.zone.parse(params[:contestproblem][:start_time])
     end
-    if !@contestproblem.nil? && @contestproblem.status >= 3
+    if !@contestproblem.nil? && @contestproblem.at_least(:in_correction)
       end_date = @contestproblem.end_time
     elsif !params[:contestproblem][:end_time].nil?
       end_date = Time.zone.parse(params[:contestproblem][:end_time])
     end
     @date_problem = false
     
-    if (@contestproblem.nil? || @contestproblem.status <= 2) && !end_date.nil? && date_now >= end_date
+    if (@contestproblem.nil? || @contestproblem.at_most(:in_progress)) && !end_date.nil? && date_now >= end_date
       flash.now[:danger] = "La deuxième date ne peut pas être dans le passé."
       @date_problem = true
-    elsif (@contestproblem.nil? || @contestproblem.status <= 1) && !start_date.nil? && date_now >= start_date
+    elsif (@contestproblem.nil? || @contestproblem.at_most(:not_started_yet)) && !start_date.nil? && date_now >= start_date
       flash.now[:danger] = "La première date ne peut pas être dans le passé."
       @date_problem = true
     elsif !start_date.nil? && !end_date.nil? && start_date >= end_date
@@ -187,7 +184,7 @@ class ContestproblemsController < ApplicationController
   
   # Check if results of the problem can be published
   def can_publish_results
-    if @contestproblem.status != 3
+    if !@contestproblem.in_correction?
       flash[:danger] = "Une erreur est survenue."
       redirect_to @contestproblem and return
     end

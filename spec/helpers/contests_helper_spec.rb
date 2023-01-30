@@ -55,7 +55,7 @@ describe ContestsHelper do
       describe "when nobody solved the problem" do
         before do
           contestproblem1.update_attribute(:contest, contest)
-          contestproblem1.update_attribute(:status, 4)
+          contestproblem1.corrected!
           Contestsolution.create(:contestproblem => contestproblem1, :user => user1, :content => "Ma solution", :score => 3)
         end
         it do
@@ -68,10 +68,10 @@ describe ContestsHelper do
       
       describe "when one student solved the problem" do
         before do
+          contestproblem2.update_attribute(:contest, contest)
+          contestproblem2.in_correction! # This problem is not corrected yet so we should not get 'Le classement final...'
           contestproblem1.update_attribute(:contest, contest)
-          contestproblem1.update_attribute(:status, 4)
-          contestproblem1.update_attribute(:contest, contest)
-          contestproblem1.update_attribute(:status, 3)
+          contestproblem1.corrected!
           Contestsolution.create(:contestproblem => contestproblem1, :user => user1, :content => "Ma solution", :score => 7)
         end
         it do
@@ -85,7 +85,7 @@ describe ContestsHelper do
       describe "when three students solved the problem" do
         before do
           contestproblem1.update_attribute(:contest, contest)
-          contestproblem1.update_attribute(:status, 4)
+          contestproblem1.corrected!
           Contestsolution.create(:contestproblem => contestproblem1, :user => user1, :content => "Ma solution", :score => 7)
           Contestsolution.create(:contestproblem => contestproblem1, :user => user2, :content => "Ma solution", :score => 7)
           Contestsolution.create(:contestproblem => contestproblem1, :user => user3, :content => "Ma solution", :score => 7)

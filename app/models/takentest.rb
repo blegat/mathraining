@@ -12,6 +12,10 @@
 #
 class Takentest < ActiveRecord::Base
 
+  #             :not_started => -1  # used in user.rb (method test_status)
+  enum status: {:in_progress =>  0, # started the test but didn't finish yet
+                :finished    =>  1} # finished the test
+
   # BELONGS_TO, HAS_MANY
 
   belongs_to :user
@@ -19,6 +23,6 @@ class Takentest < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :status, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
+  validates :status, presence: true
 
 end

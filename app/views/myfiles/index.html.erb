@@ -56,7 +56,7 @@
   <td class="hidden-xs">
   <% if type == "Subject" || type == "Message" %>
     Forum
-  <% elsif type == "Submission" && about.status == -1 %>
+  <% elsif type == "Submission" && about.draft? %>
     Brouillon
   <% elsif type == "Submission" || type == "Correction" %>
     Soumission

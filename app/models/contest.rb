@@ -22,10 +22,10 @@ include ContestsHelper
 
 class Contest < ActiveRecord::Base
 
-  # status = 0 --> in construction (only visible by organizers)
-  # status = 1 --> online and not finished
-  # status = 2 --> online and finished (but not corrected)
-  # status = 3 --> online, finished, and corrected
+  enum status: {:in_construction => 0, # in construction (only visible by organizers)
+                :in_progress     => 1, # online and not finished (but maybe not started)
+                :in_correction   => 2, # online and finished (but not corrected)
+                :completed       => 3} # online, finished, and corrected
 
   # BELONGS_TO, HAS_MANY
 
@@ -67,14 +67,13 @@ class Contest < ActiveRecord::Base
     date_in_one_day_plus_1_min = 1.day.from_now + 1.minute # idem
     Contestproblemcheck.all.order(:id).each do |c|
       p = c.contestproblem
-      if p.reminder_status == 0 # Check reminder for problem published in one day
+      if p.no_reminder_sent? # Check reminder for problem published in one day
         if date_in_one_day_plus_1_min >= p.start_time
           c = p.contest
           allp = c.contestproblems.where("start_time = ?", p.start_time).order(:number).all.to_a
           allid = Array.new
           allp.each do |pp|
-            pp.reminder_status = 1
-            pp.save
+            pp.early_reminder_sent!
             allid.push(pp.id)
           end
           self.automatic_start_in_one_day_problem_post(allp)
@@ -83,13 +82,12 @@ class Contest < ActiveRecord::Base
           end
         end
       end
-      if p.reminder_status == 1 # Check reminder for problem published now
+      if p.early_reminder_sent? # Check reminder for problem published now
         if date_now_plus_1_min >= p.start_time
           c = p.contest
           allp = c.contestproblems.where("start_time = ? AND end_time = ?", p.start_time, p.end_time).order(:number).all.to_a
           allp.each do |pp|
-            pp.reminder_status = 2
-            pp.save
+            pp.all_reminders_sent!
           end
           self.automatic_start_problem_post(allp)
         end
