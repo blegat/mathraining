@@ -6,7 +6,7 @@
     <td class="title"><%= f.title %></td>
 
     <!-- Date -->
-    <td class="date"><%= write_date(f.created_at) %></td>
+    <td class="date"><%= write_date_only(f.created_at) %></td>
   </tr>
 
   <!-- Cas gsm : titre et date sur des lignes différentes -->
@@ -14,7 +14,7 @@
   <tr class="info visible-xs"><td class="title"><%= f.title %></td></tr>
 
   <!-- Date -->
-  <tr class="info visible-xs"><td class="date"><%= write_date(f.created_at) %></td></tr>
+  <tr class="info visible-xs"><td class="date"><%= write_date_only(f.created_at) %></td></tr>
 
   <!-- Contenu -->
   <tr><td class="content" colspan="2"><div><%= raw(htmlise(f.content)) %></div></td></tr>
