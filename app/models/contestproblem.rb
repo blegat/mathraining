@@ -11,8 +11,8 @@
 #  origin          :string
 #  start_time      :datetime
 #  end_time        :datetime
-#  status          :integer          default(0)
-#  reminder_status :integer          default(0)
+#  status          :integer          default("in_construction")
+#  reminder_status :integer          default("no_reminder_sent")
 #
 include ApplicationHelper
 

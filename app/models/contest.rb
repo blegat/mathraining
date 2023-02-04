@@ -7,7 +7,7 @@
 #  id               :integer          not null, primary key
 #  number           :integer
 #  description      :text
-#  status           :integer          default(0)
+#  status           :integer          default("in_construction")
 #  medal            :boolean          default(FALSE)
 #  start_time       :datetime
 #  end_time         :datetime
