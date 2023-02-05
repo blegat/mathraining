@@ -160,11 +160,6 @@
 <% if current_user.sk.root? && !@submission.correct? && !@submission.draft? %>
   <br/><center>
   <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette soumission ? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :style => "color:red;" %>
-
-  <!-- Marquer la soumission comme plagiée -->
-  <% if current_user.sk.root? && !@submission.plagiarized? && !@submission.draft? && !@submission.user.pb_solved?(@submission.problem) %>
-  - <%= link_to 'Marquer comme plagiat', problem_submission_mark_as_plagiarism_path(@problem, @submission), data: { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme plagiée ? L'étudiant sera banni pendant 2 semaines et ne pourra plus rien faire sur ce problème pendant 6 mois." }, :method => :put, :style => "color:red;" %>
-  <% end %>
   </center>
 <% end %>
 
@@ -186,7 +181,10 @@
   </center>
 <% end %>
 
-<!-- Chercher un possible plagiat -->
 <% if current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk) %>
+  <!-- Suspicions de plagiat -->
+  <%= render 'suspicions/show' %>
+  
+  <!-- Chercher un possible plagiat -->
   <%= render 'submissions/search_string' %>
 <% end %>

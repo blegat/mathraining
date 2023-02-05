@@ -137,10 +137,7 @@ class CorrectionsController < ApplicationController
           end
         end
 
-        notif = Notif.new
-        notif.user = @submission.user
-        notif.submission = @submission
-        notif.save
+        Notif.create(:user => @submission.user, :submission => @submission) # (will not be created if already exists)
       else
         @submission.followings.update_all(read: false)
       end

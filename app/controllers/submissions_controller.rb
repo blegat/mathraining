@@ -1,15 +1,15 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
-  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :mark_as_plagiarism, :search_script]
+  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :search_script]
   before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
-  before_action :root_user, only: [:update_score, :uncorrect, :mark_as_plagiarism]
+  before_action :root_user, only: [:update_score, :uncorrect]
   
   before_action :get_submission, only: [:destroy]
-  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :mark_as_plagiarism, :search_script]
+  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script]
   before_action :get_problem, only: [:create, :create_intest, :index]
   
   before_action :in_test_or_root_user, only: [:destroy]
-  before_action :corrector_user_having_access, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :search_script]
+  before_action :user_that_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :search_script]
   before_action :online_problem, only: [:create, :create_intest]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
@@ -216,52 +216,8 @@ class SubmissionsController < ApplicationController
   
   # Mark a correct solution as incorrect (only in case of mistake)
   def uncorrect
-    u = @submission.user
-    if @submission.correct?
-      @submission.status = :wrong
-      @submission.star = false
-      @submission.save
-      nb_corr = Submission.where(:problem => @problem, :user => u, :status => :correct).count
-      if nb_corr == 0
-        # Si c'était la seule soumission correcte, alors il faut agir et baisser le score
-        sp = Solvedproblem.where(:submission => @submission).first
-        sp.destroy
-        u.rating = u.rating - @problem.value
-        u.save
-        pps = Pointspersection.where(:user => u, :section_id => @problem.section).first
-        pps.points = pps.points - @problem.value
-        pps.save
-      else
-        # Si il y a d'autres soumissions il faut peut-être modifier le submission_id du Solvedproblem correspondant
-        sp = Solvedproblem.where(:problem => @problem, :user => u).first
-        if sp.submission == @submission
-          which = -1
-          correction_time = nil
-          resolution_time = nil
-          Submission.where(:problem => @problem, :user => u, :status => :correct).each do |s| 
-            lastcomm = s.corrections.where("user_id != ?", u.id).order(:created_at).last
-            if(which == -1 || lastcomm.created_at < correction_time)
-              which = s.id
-              correction_time = lastcomm.created_at
-              usercomm = s.corrections.where("user_id = ? AND created_at < ?", u.id, correction_time).last
-              resolution_time = (usercomm.nil? ? s.created_at : usercomm.created_at)
-            end
-          end
-          sp.submission_id = which
-          sp.correction_time = correction_time
-          sp.resolution_time = resolution_time
-          sp.save
-        end
-      end
-    end
-    redirect_to problem_path(@problem, :sub => @submission)
-  end
-
-  # Mark a submission as plagiarized
-  def mark_as_plagiarism
-    @submission.status = :plagiarized
-    @submission.last_comment_time = DateTime.now # Because the new date for submission is 6 months after that date
-    @submission.save
+    @submission.mark_incorrect
+    flash[:success] = "Soumission marquée comme erronée."
     redirect_to problem_path(@problem, :sub => @submission)
   end
 
@@ -371,13 +327,6 @@ class SubmissionsController < ApplicationController
   def is_draft
     unless @submission.draft?
       redirect_to @problem
-    end
-  end
-
-  # Check that current user is a corrector (or admin) having access to the problem
-  def corrector_user_having_access
-    unless current_user.sk.admin or (current_user.sk.corrector && current_user.sk.pb_solved?(@problem) && current_user.sk != @submission.user)
-      render 'errors/access_refused' and return
     end
   end
   

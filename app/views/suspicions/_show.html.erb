@@ -1,0 +1,65 @@
+<script type="text/javascript">
+  var showNewSuspicionForm = function () {
+    document.getElementById("btn_show_new_suspicion_form").style.display = 'none';
+    document.getElementById("new_suspicion_form").style.display = 'block';
+  }
+  var editSuspicion = function (suspicion_id) {
+    document.getElementById("line_suspicion_edit_" + suspicion_id).style.display = 'revert';
+  }
+</script>
+
+<h3>Suspicions de plagiat</h3>
+<% suspicions = @submission.suspicions %>
+
+<% if suspicions.size > 0 %>
+  <% correctors = User.select(:id, :first_name, :last_name, :see_name).where("admin = ? OR corrector = ?", true, true).order("first_name, last_name") %>
+  
+  <table class="table table-bordered">
+  <tr><th class="hidden-xs">Date</th><th>Détecté par</th><th>Source</th><th style="text-align:center;">Statut</th><% if current_user.sk.root? %><th style="text-align:center;">Action</th><% end %>
+  </tr>
+  <% suspicions.each do |s| %>
+    <tr class="<%= s.color_class %>">
+    <td class="hidden-xs" style="width:250px;"><%= write_date(s.created_at) %></td>
+    <td style="width:200px;"><%= raw(s.user.linked_name) %></td>
+    <td><%= link_to s.source, s.source, target: "_blank" %></td>
+    <td style="text-align:center; width:110px;"><%= s.status_string %></td>
+    <% if current_user.sk.root? %>
+      <td style="text-align:center; width:100px;">
+      <%= link_to "Modifier", "javascript:editSuspicion(#{s.id})" %>
+      </td>
+    <% end %>
+    </tr>
+    
+    <% if current_user.sk.root? %>
+      <%= form_for s, :url => suspicion_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ? Si vous confirmez une suspicion, l'étudiant sera sanctionné." } do |f| %>
+        <tr id="line_suspicion_edit_<%= s.id %>" class="<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
+        <td class="hidden-xs" style="text-align:center; vertical-align:middle;">
+        <% unless s.confirmed? %>
+          <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette suspicion de plagiat ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :style => "color:red;" %>
+        <% end %>
+        </td>
+        <td>
+        <%= f.select(:user_id, options_for_select(correctors.collect {|u| [ u.name, u.id ] }, s.user_id), {}, { :class => "form-control", :id => "edit_user_field_#{s.id}" }) %>
+        </td>
+        <td><%= f.text_field :source, :class => "form-control", :id => "edit_source_field_#{s.id}" %></td>
+        <td><%= f.select(:status, options_for_select({ "À confirmer" => :waiting_confirmation, "Confirmé" => :confirmed, "Pardonné" => :forgiven, "Rejeté" => :rejected }, s.status), {}, { :class => "form-control", :id => "edit_status_field_#{s.id}" }) %></td>
+        <td style="text-align:center;"><%= f.submit "Modifier", :class => "btn btn-primary", :id => "edit_button_#{s.id}" %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  <% end %>
+  </table>
+<% end %>
+
+<%= link_to "Soumettre une nouvelle suspicion de plagiat", "javascript:showNewSuspicionForm()", id: "btn_show_new_suspicion_form" %>
+
+<% new_suspicion = Suspicion.new %>
+<div id="new_suspicion_form" style="display:<%= Rails.env.test? ? 'block' : 'none' %>;">
+<%= form_for new_suspicion, url: submission_suspicions_path(@submission) do |f| %>
+  <div class="form-group">
+  <%= f.label :source, "Source (lien vers une autre soumission ou une source extérieure)" %>
+  <%= f.text_field :source, :class => "form-control", :id => "new_source_field" %>
+  </div>
+  <%= f.submit "Envoyer pour confirmation", :class => "btn btn-primary", :id => "new_button" %>
+<% end %>
+</div>

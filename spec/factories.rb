@@ -239,8 +239,16 @@ FactoryGirl.define do
   factory :submission do
     association :problem
     association :user
-    content "Interesting submission"
+    sequence(:content) { |n| "Interesting submission #{n}" }
     last_comment_time DateTime.now
+  end
+  
+  # Suspicion
+  factory :suspicion do
+    association :submission
+    association :user
+    sequence(:source) { |n| "http://www.google_#{n}.com" }
+    status :waiting_confirmation
   end
   
   # Theory

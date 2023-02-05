@@ -80,7 +80,6 @@ Rails.application.routes.draw do
       match '/unstar', to: 'submissions#unstar', :via => [:put], as: :unstar
       match '/update_score', to: 'submissions#update_score', :via => [:put], as: :update_score
       match '/uncorrect', to: 'submissions#uncorrect', :via => [:put], as: :uncorrect
-      match '/mark_as_plagiarism', to: 'submissions#mark_as_plagiarism', :via => [:put], as: :mark_as_plagiarism
       
       resources :corrections, only: [:create]
     end
@@ -91,6 +90,8 @@ Rails.application.routes.draw do
   # Submissions
   resources :submissions, only: [:index, :destroy] do
     match '/search_script', to: 'submissions#search_script', :via => [:post], as: :search_script
+    
+    resources :suspicions, only: [:create]
   end
 
   match '/allsub', to: 'users#allsub', :via => [:get], as: :allsub
@@ -99,6 +100,9 @@ Rails.application.routes.draw do
   match '/allmynewsub', to: 'users#allmynewsub', :via => [:get], as: :allmynewsub
   match '/reserve', to: 'submissions#reserve', :via => [:get], as: :reserve
   match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
+  
+  # Suspicions
+  resources :suspicions, only: [:index, :destroy, :update]
   
   # Virtual tests
   resources :virtualtests do

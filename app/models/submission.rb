@@ -34,6 +34,7 @@ class Submission < ActiveRecord::Base
   has_many :followings, dependent: :destroy
   has_many :followers, through: :followings, source: :user
   has_many :notifs, dependent: :destroy
+  has_many :suspicions, dependent: :destroy
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 
@@ -56,6 +57,49 @@ class Submission < ActiveRecord::Base
         return 'X.gif'
       elsif correct?
         return 'V.gif'
+      end
+    end
+  end
+  
+  # Mark the submission as wrong
+  def mark_incorrect
+    u = self.user
+    pb = self.problem
+    if self.correct?
+      self.status = :wrong
+      self.star = false
+      self.save
+      nb_corr = Submission.where(:problem => pb, :user => u, :status => :correct).count
+      if nb_corr == 0
+        # Si c'était la seule soumission correcte, alors il faut agir et baisser le score
+        sp = Solvedproblem.where(:submission => self).first
+        sp.destroy unless sp.nil? # Should never be nil, but for security (and for tests)
+        u.rating = u.rating - pb.value
+        u.save
+        pps = Pointspersection.where(:user => u, :section_id => pb.section).first
+        pps.points = pps.points - pb.value
+        pps.save
+      else
+        # Si il y a d'autres soumissions il faut peut-être modifier le submission_id du Solvedproblem correspondant
+        sp = Solvedproblem.where(:problem => pb, :user => u).first
+        if sp.submission == self
+          which = -1
+          correction_time = nil
+          resolution_time = nil
+          Submission.where(:problem => pb, :user => u, :status => :correct).each do |s| 
+            lastcomm = s.corrections.where("user_id != ?", u.id).order(:created_at).last
+            if(which == -1 || lastcomm.created_at < correction_time)
+              which = s.id
+              correction_time = lastcomm.created_at
+              usercomm = s.corrections.where("user_id = ? AND created_at < ?", u.id, correction_time).last
+              resolution_time = (usercomm.nil? ? s.created_at : usercomm.created_at)
+            end
+          end
+          sp.submission_id = which
+          sp.correction_time = correction_time
+          sp.resolution_time = resolution_time
+          sp.save
+        end
       end
     end
   end

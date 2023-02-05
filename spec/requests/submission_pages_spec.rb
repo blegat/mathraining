@@ -609,8 +609,6 @@ describe "Submission pages" do
       before { visit problem_path(problem_with_submissions, :sub => wrong_submission) }
       specify do
         expect(page).to have_link("Supprimer cette soumission")
-        expect(page).to have_link("Marquer comme plagiat")
-        expect { click_link("Marquer comme plagiat") and wrong_submission.reload }.to change{wrong_submission.status}.from("wrong").to("plagiarized")
         expect { click_link("Supprimer cette soumission") }.to change{problem_with_submissions.submissions.count}.by(-1)
       end
     end

@@ -114,6 +114,13 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Check that current user is a corrector (or admin) that can correct the submission
+  def user_that_can_correct_submission
+    unless @signed_in && (current_user.sk.admin || (current_user.sk.corrector && current_user.sk.pb_solved?(@problem) && current_user.sk != @submission.user))
+      render 'errors/access_refused' and return
+    end
+  end
+  
   # Check that current user can update @chapter (that must be defined)
   def user_that_can_update_chapter
     unless (@signed_in && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter.id))))
