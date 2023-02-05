@@ -11,14 +11,14 @@ class SuspicionsController < ApplicationController
     if current_user.sk.root?
       if params.has_key?:show_all
         # Show all suspicions
-        @suspicions = Suspicion.joins(:submission).joins(submission: [{ problem: :section }]).select("suspicions.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).all.order(:created_at).paginate(:page => params[:page], :per_page => 50)
+        @suspicions = Suspicion.joins(:submission).joins(submission: [{ problem: :section }]).select("suspicions.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).all.order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
       else
         # Show suspicions waiting for confirmation
-        @suspicions = Suspicion.joins(:submission).joins(submission: [{ problem: :section }]).select("suspicions.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).where(:status => :waiting_confirmation).order(:created_at).paginate(:page => params[:page], :per_page => 50)
+        @suspicions = Suspicion.joins(:submission).joins(submission: [{ problem: :section }]).select("suspicions.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).where(:status => :waiting_confirmation).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
       end
     else
       # Show all my suspicions
-      @suspicions = current_user.sk.suspicions.joins(:submission).joins(submission: [{ problem: :section }]).select("suspicions.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).order(:created_at).paginate(:page => params[:page], :per_page => 50)
+      @suspicions = current_user.sk.suspicions.joins(:submission).joins(submission: [{ problem: :section }]).select("suspicions.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
     end
   end
   
