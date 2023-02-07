@@ -61,6 +61,25 @@ describe "Authentication" do
         should have_no_content(user.fullname) # Should not be connected
       end
     end
+    
+    describe "to an account that was recently banned" do
+      before do
+        user.update_attribute(:last_ban_date, DateTime.now - 1.week)
+        sign_in(user)
+      end
+      it do
+        should have_error_message("Ce compte a été temporairement désactivé pour cause de plagiat.")
+        should have_no_content(user.fullname) # Should not be connected
+      end
+    end
+    
+    describe "to an account that was banned some time ago" do
+      before do
+        user.update_attribute(:last_ban_date, DateTime.now - 1.month)
+        sign_in(user)
+      end
+      it { should have_content(user.fullname) } # Should be connected
+    end
   end
   
   describe "visits a page only for connected people" do

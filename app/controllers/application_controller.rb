@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
 
   before_action :load_global_variables
-  before_action :active_user_or_signed_out
   before_action :has_consent
   before_action :check_takentests
   #before_action :warning
@@ -32,14 +31,6 @@ class ApplicationController < ActionController::Base
       else
         @benchmark_start_time = Time.now
       end
-    end
-  end
-  
-  # Check that the current user (if any) is active
-  def active_user_or_signed_out
-    if @signed_in && !current_user.active
-      sign_out
-      redirect_to root_path
     end
   end
   

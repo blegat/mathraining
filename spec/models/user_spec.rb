@@ -33,6 +33,7 @@
 #  last_policy_read          :boolean          default(FALSE)
 #  accept_analytics          :boolean          default(TRUE)
 #  can_change_name           :boolean          default(TRUE)
+#  last_ban_date             :datetime
 #
 require "spec_helper"
 

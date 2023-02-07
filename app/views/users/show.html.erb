@@ -131,10 +131,10 @@ html>body tbody.scroll {
   <div class="basic_container <%= class_name %>">
   <table style="margin:0px; margin-top:15px; width:100%; height:90px; padding:0px;">
   <tr><td style="font-size:20px; padding-left:10px; padding-right:10px;"><%= raw(@user.colored_name) %></td></tr>
-  <tr><td style="font-size:16px; font-weight:bold; padding-top:5px;"><%= grade %></td></tr>
+  <tr><td style="font-size:16px; font-weight:bold; padding-top:5px;"><%= grade %> <%= "<span style='color:red;'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if @signed_in && current_user.sk.root? && @user.is_banned %></td></tr>
   <tr><td style="padding-top:10px;"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :style => "margin-left:5px; margin-top:-2px;" %></td></tr>
-  <!-- <tr><td style="padding-top:15px;">Inscrit le <%= write_date_only(@user.created_at) %></td></tr> -->
+  <!--<tr><td style="padding-top:15px;">Inscrit le <%= write_date_only(@user.created_at) %></td></tr> -->
   </table>
   <% if @signed_in && current_user.sk != @user %>
     <%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey", :style => "width:170px; margin-top:10px;", :disabled => !@signed_in %>

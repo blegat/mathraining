@@ -31,7 +31,7 @@
     </tr>
     
     <% if current_user.sk.root? %>
-      <%= form_for s, :url => suspicion_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ? Si vous confirmez une suspicion, l'étudiant sera sanctionné." } do |f| %>
+      <%= form_for s, :url => suspicion_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ? Si vous confirmez une suspicion, l'étudiant ne pourra plus soumettre de solution à ce problème avant 6 mois." } do |f| %>
         <tr id="line_suspicion_edit_<%= s.id %>" class="<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
         <td class="hidden-xs" style="text-align:center; vertical-align:middle;">
         <% unless s.confirmed? %>
@@ -49,6 +49,26 @@
     <% end %>
   <% end %>
   </table>
+<% end %>
+
+<% if current_user.sk.root? && @submission.plagiarized? %>
+  <% num_plagiarism = @submission.user.submissions.where(:status => :plagiarized).count %>
+  <%= @submission.user.name %> a envoyé <b><%= num_plagiarism %> soumission<%= 's' if num_plagiarism > 1 %> plagiée<%= 's' if num_plagiarism > 1 %></b> sur Mathraining.<br/><br/>
+  <% if @submission.user.is_banned %>
+    <span style="color:red;">Il est actuellement banni du site, jusqu'au <%= write_date(@submission.user.end_of_ban) %>.</span>
+  <% elsif !@submission.user.last_ban_date.nil? %>
+    <span style="color:orange;">Il a déjà été banni le <%= write_date(@submission.user.last_ban_date) %>. Une nouvelle sanction peut être appliquée si la date de ce plagiat est postérieure à ce précédent bannissement.</span>
+  <% else %>
+    Il n'a jamais été banni.
+  <% end %>
+  <br/><br/>
+  
+  <% unless @submission.user.is_banned %>
+    <% end_of_ban = DateTime.now + 2.weeks %>
+    <center>
+    <%= link_to "Bannir #{@submission.user.name} pour deux semaines", user_ban_temporarily_path(@submission.user), :method => :put, style: "color:red;", data: { confirm: "Êtes-vous sûr de vouloir bannir #{@submission.user.name} jusqu'au #{write_date_only(end_of_ban)} ?" } %>
+    </center><br/>
+  <% end %>
 <% end %>
 
 <%= link_to "Soumettre une nouvelle suspicion de plagiat", "javascript:showNewSuspicionForm()", id: "btn_show_new_suspicion_form" %>

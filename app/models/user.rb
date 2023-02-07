@@ -35,6 +35,7 @@
 #  last_policy_read          :boolean          default(FALSE)
 #  accept_analytics          :boolean          default(TRUE)
 #  can_change_name           :boolean          default(TRUE)
+#  last_ban_date             :datetime
 #
 include ERB::Util
 
@@ -309,6 +310,17 @@ class User < ActiveRecord::Base
     end
   end
   
+  # Tells if the user is currently banned
+  def is_banned
+    return false if self.last_ban_date.nil?
+    return (self.end_of_ban > DateTime.now)
+  end
+  
+  def end_of_ban
+    return nil if self.last_ban_date.nil?
+    return self.last_ban_date + 2.weeks
+  end
+  
   # Deletes the user that never came on the website (done very day at 2 am (see schedule.rb))
   def self.delete_unconfirmed
     # Users that have not confirmed their email after one week
@@ -322,8 +334,12 @@ class User < ActiveRecord::Base
       u.destroy
     end
   end
-
-  private
+  
+  # Create a new random token, to automatically sign out the user from everywhere
+  def update_remember_token
+    self.create_remember_token
+    self.save
+  end
 
   # Create a random token
   def create_remember_token
@@ -331,6 +347,8 @@ class User < ActiveRecord::Base
       self.remember_token = SecureRandom.urlsafe_base64
     end while User.exists?(:remember_token => self.remember_token)
   end
+  
+  private
 
   # Create the points per section associated to the user
   def create_points

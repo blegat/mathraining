@@ -413,17 +413,6 @@ describe "User pages" do
       end
       it { should have_content(error_access_refused) }
     end
-    
-    describe "visits the website while the account is deactivated" do
-      before do
-        zero_user.update_attribute(:active, false)
-        visit users_path
-      end
-      it do
-        should have_selector("h1", text: "Actualités")   # Should be redirected to root path
-        should have_no_content(zero_user.fullname) # Should be signed out
-      end
-    end
   end
 
   describe "admin" do
@@ -486,6 +475,7 @@ describe "User pages" do
     describe "deletes data of a student" do
       let!(:sub) { FactoryGirl.create(:subject) }
       let!(:contest) { FactoryGirl.create(:contest) }
+      let!(:old_remember_token) { zero_user.remember_token }
       before do
         other_root.update_attribute(:skin, zero_user.id) # We have a root with his skin
         zero_user.followed_users << other_zero_user # He follows other_zero_user
@@ -505,6 +495,7 @@ describe "User pages" do
         expect(zero_user.backwardfollowingusers.count).to eq(0)
         expect(zero_user.followed_subjects.count).to eq(0)
         expect(zero_user.followed_contests.count).to eq(0)
+        expect(zero_user.remember_token).not_to eq(old_remember_token) # should be disconnected
       end
     end
     

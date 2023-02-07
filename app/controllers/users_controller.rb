@@ -1,15 +1,15 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :allnewsub, :allmynewsub, :notifs_show, :groups, :read_legal, :followed_users, :remove_followingmessage]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :unactivate, :reactivate, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user, :add_followingmessage]
-  before_action :admin_user, only: [:unactivate, :reactivate, :switch_wepion, :change_group]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user, :add_followingmessage, :switch_can_change_name, :ban_temporarily]
+  before_action :admin_user, only: [:switch_wepion, :change_group]
   before_action :corrector_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
-  before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_names, :validate_name, :change_name, :switch_can_change_name]
+  before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_names, :validate_name, :change_name, :switch_can_change_name, :ban_temporarily]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :group_user, only: [:groups]
   
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
-  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name, :switch_can_change_name]
+  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name, :switch_can_change_name, :ban_temporarily]
   
   before_action :correct_user, only: [:edit, :update]
   before_action :target_not_root, only: [:destroy, :destroydata]
@@ -253,6 +253,16 @@ class UsersController < ApplicationController
     @user.toggle!(:can_change_name)
     redirect_to @user
   end
+  
+  # Deactivate the account for two weeks (because of plagiarism)
+  def ban_temporarily
+    unless @user.is_banned
+      @user.update_attribute(:last_ban_date, DateTime.now)
+      @user.update_remember_token # sign out the user
+      flash[:success] = "Cet utilisateur a été banni jusqu'au #{write_date(@user.end_of_ban)}."
+    end
+    redirect_to @user
+  end
 
   # Change the Wépion group of a user
   def change_group
@@ -423,6 +433,7 @@ class UsersController < ApplicationController
         f.destroy
       end
       remove_skins(@user)
+      @user.update_remember_token # sign out the user
     end
     redirect_to root_path
   end
