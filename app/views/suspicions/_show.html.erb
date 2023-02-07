@@ -51,7 +51,7 @@
   </table>
 <% end %>
 
-<% if current_user.sk.root? && @submission.plagiarized? %>
+<% if current_user.sk.root? && @submission.plagiarized? && @submission.user.active? %>
   <% num_plagiarism = @submission.user.submissions.where(:status => :plagiarized).count %>
   <%= @submission.user.name %> a envoyé <b><%= num_plagiarism %> soumission<%= 's' if num_plagiarism > 1 %> plagiée<%= 's' if num_plagiarism > 1 %></b> sur Mathraining.<br/><br/>
   <% if @submission.user.is_banned %>
