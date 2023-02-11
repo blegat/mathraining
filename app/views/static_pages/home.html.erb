@@ -50,6 +50,23 @@
   </h3>
 </div>
 
+<% user_with_recent_corrections = User.left_joins(:followings).where("followings.created_at > ? AND kind = 1", Date.today - 2.years).group(:id).select("users.*, count(followings.id) AS num_corrections").order("num_corrections DESC").to_a %>
+
+<% if user_with_recent_corrections.size > 0 %>
+  <div class="home_thanks">
+    Merci aux correcteurs du jour :
+    <% first = true %>
+    <% user_with_recent_corrections.each do |u| %>
+      <%= " - " unless first %>
+      <% first = false %>
+      <%= raw(u.linked_name) %>
+      <% if @signed_in %>
+        (<%= u.num_corrections %>)
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
 <!-- Afficher les actualités -->
 <h1><%= title_1("Actualités") %></h1>
 <% actualities = Actuality.order("created_at DESC").paginate(:page => params[:page], :per_page => 5) %>
