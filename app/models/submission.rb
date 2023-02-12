@@ -49,14 +49,16 @@ class Submission < ActiveRecord::Base
   # Give the icon for the submission
   def icon
     if star
-      return 'star1.png'
+      return star_icon
     else
-      if draft? or waiting?
-        return 'tiret.gif'
-      elsif wrong? or wrong_to_read? or plagiarized?
-        return 'X.gif'
-      elsif correct?
-        return 'V.gif'
+      if correct?
+        return v_icon
+      elsif draft? or waiting?
+        return dash_icon
+      elsif wrong? or wrong_to_read?
+        return x_icon
+      elsif plagiarized?
+        return warning_icon
       end
     end
   end

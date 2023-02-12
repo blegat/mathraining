@@ -17,10 +17,10 @@
       <%= raw(c.ans) %>
 
       <% if c.ok %>
-        <%= image_tag "V.gif", :style => "margin-left:10px;" %>
+        <%= image_tag v_icon, :style => "margin-left:10px;" %>
       <% end %>
       <% if !c.ok && f.many_answers %>
-        <%= image_tag "X.gif", :style => "margin-left:10px;" %>
+        <%= image_tag x_icon, :style => "margin-left:10px;" %>
       <% end %>
       </li>
     <% end %>

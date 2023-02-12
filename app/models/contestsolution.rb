@@ -41,14 +41,14 @@ class Contestsolution < ActiveRecord::Base
   # Give the icon for the solution
   def icon
     if !corrected
-      'tiret.gif'
+      return dash_icon
     else
       if star
-        'star1.png'
+        return star_icon
       elsif score == 7
-        'V.gif'
+        return v_icon
       else
-        'X.gif'
+        return x_icon
       end
     end
   end

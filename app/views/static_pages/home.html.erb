@@ -52,9 +52,10 @@
 
 <% user_with_recent_corrections = User.left_joins(:followings).where("followings.created_at > ? AND kind = 1", Date.today.in_time_zone).group(:id).select("users.*, count(followings.id) AS num_corrections").order("num_corrections DESC").to_a %>
 
-<% if user_with_recent_corrections.size > 0 %>
+<% num_users_to_display = user_with_recent_corrections.size %>
+<% if num_users_to_display > 0 %>
   <div class="home_thanks">
-    Merci aux correcteurs du jour :
+    Merci au<%= 'x' if num_users_to_display > 1 %> correcteur<%= 's' if num_users_to_display > 1 %> du jour :
     <% first = true %>
     <% user_with_recent_corrections.each do |u| %>
       <%= " - " unless first %>

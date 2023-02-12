@@ -95,7 +95,7 @@
         <% end %>
         <% compteur = compteur + 1 %>
         <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %>
-        <%= image_tag "V.gif", :style => "margin-left:10px; margin-top:-3px;", :id => "V-#{t.id}" if @signed_in && !current_user.sk.admin && @theory_status[t.id] == "read" %></li>
+        <%= image_tag v_icon, :style => "margin-left:10px; margin-top:-3px;", :id => "V-#{t.id}" if @signed_in && !current_user.sk.admin && @theory_status[t.id] == "read" %></li>
       <% end %>
     <% end %>
   <% end %>

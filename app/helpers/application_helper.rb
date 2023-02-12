@@ -211,4 +211,24 @@ module ApplicationHelper
   def false_value_sql
     return (Rails.env.production? ? "false" : "0")
   end
+  
+  def x_icon
+    return 'x-mid.svg' # 'X.gif'
+  end
+  
+  def v_icon
+    return 'check-lg.svg' # 'V.gif'
+  end
+  
+  def dash_icon
+    return 'dash-mid.svg' # 'tiret.gif'
+  end
+  
+  def star_icon
+    return 'star-fill-small.svg' # 'star1.png'
+  end
+  
+  def warning_icon
+    return 'exclamation-triangle.svg' # 'X.gif'
+  end
 end
