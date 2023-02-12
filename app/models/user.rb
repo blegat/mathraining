@@ -348,6 +348,73 @@ class User < ActiveRecord::Base
     end while User.exists?(:remember_token => self.remember_token)
   end
   
+  # Recompute all scores
+  def self.recompute_scores(check_only = true) 
+    all_warnings = []
+    problem_scores = Array.new
+    question_scores = Array.new
+    problem_scores_by_section = Array.new
+    question_scores_by_section = Array.new
+    Section.all.each do |s|
+      real_max_score = 0
+      unless s.fondation
+        problem_scores_by_section[s.id] = Array.new
+        question_scores_by_section[s.id] = Array.new
+        real_max_score = 15 * s.problems.sum(:level) + 3 * Question.where(:chapter_id => s.chapters).sum(:level)
+      end
+      if s.max_score != real_max_score
+        all_warnings.push("Section " + s.id.to_s + " should have max score " + real_max_score.to_s + " instead of " + s.max_score.to_s + "!")
+        unless check_only
+          s.update_attribute(:max_score, real_max_score)
+        end
+      end
+    end
+    
+    User.joins(solvedproblems: :problem).select("users.id, problems.section_id, 15*sum(problems.level) AS x").group("users.id, problems.section_id").each do |u|
+      problem_scores_by_section[u.section_id][u.id] = u.x
+      problem_scores[u.id] = 0 if problem_scores[u.id].nil?
+      problem_scores[u.id] += u.x
+    end
+    
+    User.joins(solvedquestions: [{question: [{chapter: :section}]}]).where("solvedquestions.correct = ? AND sections.fondation = ?", true, false).select("users.id, chapters.section_id, 3*sum(questions.level) AS x").group("users.id, chapters.section_id").each do |u|
+      question_scores_by_section[u.section_id][u.id] = u.x
+      question_scores[u.id] = 0 if question_scores[u.id].nil?
+      question_scores[u.id] += u.x
+    end
+    
+    User.where(:admin => false, :active => true).select("users.*").each do |u|
+      current_score = u.rating
+      problem_score = problem_scores[u.id]
+      problem_score = 0 if problem_score.nil?
+      question_score = question_scores[u.id]
+      question_score = 0 if question_score.nil?
+      real_score = problem_score + question_score
+      if current_score != real_score
+        all_warnings.push("User " + u.id.to_s + " should have score " + real_score.to_s + " instead of " + current_score.to_s + "!")
+        unless check_only
+          u.update_attribute(:rating, real_score)
+        end
+      end
+    end
+    
+    Pointspersection.joins(:section).where("sections.fondation = ?", false).each do |pps|
+      current_score = pps.points
+      problem_score = problem_scores_by_section[pps.section_id][pps.user_id]
+      problem_score = 0 if problem_score.nil?
+      question_score = question_scores_by_section[pps.section_id][pps.user_id]
+      question_score = 0 if question_score.nil?
+      real_score = problem_score + question_score
+      if current_score != real_score
+        all_warnings.push("User " + pps.user_id.to_s + " should have score " + real_score.to_s + " instead of " + current_score.to_s + " for section " + pps.section_id.to_s + "!")
+        unless check_only
+          pps.update_attribute(:points, real_score)
+        end
+      end
+    end
+    
+    return all_warnings
+  end
+  
   private
 
   # Create the points per section associated to the user

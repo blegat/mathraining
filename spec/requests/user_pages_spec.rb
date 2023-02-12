@@ -664,6 +664,38 @@ describe "User pages" do
     end
   end
   
+  describe "command line" do
+    let!(:user) { FactoryGirl.create(:user) }
+    let!(:section) { FactoryGirl.create(:section, :fondation => false) }
+    let!(:section2) { FactoryGirl.create(:section, :fondation => false) }
+    let!(:section_fondation) { FactoryGirl.create(:section, :fondation => true) }
+    let!(:chapter) { FactoryGirl.create(:chapter, :section => section) }
+    let!(:chapter_fondation) { FactoryGirl.create(:chapter, :section => section_fondation) }
+    let!(:question) { FactoryGirl.create(:exercise, :chapter => chapter, :level => 2) }
+    let!(:question2) { FactoryGirl.create(:exercise, :chapter => chapter, :level => 3) }
+    let!(:question_fondation) { FactoryGirl.create(:exercise, :chapter => chapter_fondation, :level => 4) }
+    let!(:problem) { FactoryGirl.create(:problem, :section => section2, :level => 4) }
+    let!(:submission) { FactoryGirl.create(:submission, :problem => problem, :user => user, :status => "correct") }
+    let!(:solvedproblem) { FactoryGirl.create(:solvedproblem, :problem => problem, :user => user, :submission => submission) }
+    let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, :question => question, :user => user, :correct => true) }
+    let!(:solvedquestion_wrong) { FactoryGirl.create(:solvedquestion, :question => question2, :user => user, :correct => false) }
+    let!(:solvedquestion_fondation) { FactoryGirl.create(:solvedquestion, :question => question_fondation, :user => user, :correct => true) }
+    let!(:pointspersection) { Pointspersection.create(:user => user, :section => section, :points => 0) }
+    let!(:pointspersection2) { Pointspersection.create(:user => user, :section => section2, :points => 0) }
+    
+    describe "recomputed scores" do
+      before do
+        User.recompute_scores(false)
+        user.reload
+      end
+      specify do
+        expect(user.rating).to eq(problem.value + question.value)
+        expect(user.pointspersections.where(:section => section).first.points).to eq(question.value)
+        expect(user.pointspersections.where(:section => section2).first.points).to eq(problem.value)
+      end
+    end
+  end
+  
   # -- TESTS THAT REQUIRE JAVASCRIPT --
   
   describe "root", :js => true do

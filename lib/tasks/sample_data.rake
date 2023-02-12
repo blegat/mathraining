@@ -317,8 +317,8 @@ def update_users_ratings
     end
     
     user.solvedquestions.where(:correct => true).each do |q|
-      rating += q.question.value
       unless q.question.chapter.section.fondation
+        rating += q.question.value
         rating_by_section[q.question.chapter.section_id] += q.question.value
       end
     end
