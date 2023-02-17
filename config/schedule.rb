@@ -43,4 +43,5 @@ end
 
 every :day, :at => '12am' do
   runner "Visitor.compute"  # Compute the number of visitors of the day before
+  runner "Solvedquestion.detect_suspicious_users" # Search for suspicious users and post a message on forum if needed
 end

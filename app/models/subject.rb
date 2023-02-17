@@ -21,8 +21,12 @@
 #  contest_id           :integer
 #  problem_id           :integer
 #  last_comment_user_id :integer
+#  subject_type         :integer          default("normal")
 #
 class Subject < ActiveRecord::Base
+
+  enum subject_type: {:normal           => 0, # all normal subjects
+                      :corrector_alerts => 1} # subject with automatic alert about strange behaviors
 
   # BELONGS_TO, HAS_MANY
 

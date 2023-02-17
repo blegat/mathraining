@@ -19,6 +19,7 @@
 #  contest_id           :integer
 #  problem_id           :integer
 #  last_comment_user_id :integer
+#  subject_type         :integer          default("normal")
 #
 require "spec_helper"
 

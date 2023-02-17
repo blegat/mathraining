@@ -164,12 +164,7 @@ class ContestsController < ApplicationController
                        :title                => "Concours ##{contest.number}",
                        :content              => helpers.get_new_contest_forum_message(contest),
                        :last_comment_time    => DateTime.now,
-                       :last_comment_user_id => 0)
-
-    Category.select(:name, :id).each do |c|
-      if c.name == "Mathraining"
-        s.update_attribute(:category_id, c.id)
-      end
-    end
+                       :last_comment_user_id => 0,
+                       :category             => Category.where(:name => "Mathraining").first)
   end
 end
