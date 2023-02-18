@@ -153,8 +153,35 @@ Votre navigateur ne supporte pas les canvas.
 </script>
 
 
+<% level = 0 %>
+<% if(params.has_key?:level) %>
+  <% level = params[:level].to_i %>
+<% end %>
+<% level_choices = [["Tous les niveaux", 0]] %>
+<% (1..5).each do |x| %>
+  <% level_choices.push(["Niveau #{x}", x]) %>
+<% end %>
 
+<% section = 0 %>
+<% if(params.has_key?:section) %>
+  <% section = params[:section].to_i %>
+<% end %>
+<% section_choices = [["Toutes les sections", 0]] %>
+<% Section.where(:fondation => false).order(:id).each do |s| %>
+  <% section_choices.push([s.name, s.id]) %>
+<% end %>
 
+<form action="" method="get" name="search_section_and_level">
+  <div class="row" style="margin-bottom:5px;">
+  <div class="col-md-7"></div>
+  <div class="col-md-3" style="padding-bottom:5px;">
+  <%= select_tag :section, options_for_select(section_choices, section).html_safe, :class =>"form-control", :onchange => ("javascript: document.search_section_and_level.submit();") %>
+  </div>
+  <div class="col-md-2" style="padding-bottom:5px;">
+  <%= select_tag :level, options_for_select(level_choices, level).html_safe, :class =>"form-control", :onchange => ("javascript: document.search_section_and_level.submit();") %>
+  </div>
+  </div>
+</form>
 
 
 <% if @notifications.size == 0 %>

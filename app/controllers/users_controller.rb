@@ -373,7 +373,9 @@ class UsersController < ApplicationController
   
   # Show all new submissions
   def allnewsub
-    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting, :visible => true).order("submissions.created_at").to_a
+    level_condition = ((params.has_key?:level) and params[:level].to_i > 0) ? "problems.level = #{params[:level].to_i}" : ""
+    section_condition = ((params.has_key?:section) and params[:section].to_i > 0) ? "problems.section_id = #{params[:section].to_i}" : ""
+    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting, :visible => true).where(level_condition).where(section_condition).order("submissions.created_at").to_a
   end
 
   # Show all new comments to submissions in which we took part
