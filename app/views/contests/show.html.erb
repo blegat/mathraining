@@ -400,9 +400,13 @@
     
     ctx.textAlign = 'right';
     <% i = maxi - 1 %>
+    <% step = 1 %>
+    <% while i/step > 12 %>
+      <% step += 1 %>
+    <% end %>
     <% while(i > 0) %>
       ctx.fillText("<%= i %>", pct*44 -4,pct*(<%= 255-240*i/maxi %>+4));
-      <% i = i - 2 %>
+      <% i = i - step %>
     <% end %>
     
     }
