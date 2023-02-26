@@ -93,7 +93,7 @@ var showFalse = function () {
 
   <% end %>
   
-  <% if !date_submission_allowed.nil? and date_submission_allowed > Date.today %>
+  <% if !date_submission_allowed.nil? and date_submission_allowed > Date.today and !current_user.sk.pb_solved?(problem) %>
     <% @cansendnewsub = false %>
     <% @cansendnewcomment = false %>
     <span style="color:red;">Vous avez soumis une solution plagiée à ce problème. Vous aurez à nouveau la possibilité de proposer une solution à partir du <%= write_date_only(date_submission_allowed) %>.</span>
