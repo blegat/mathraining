@@ -47,7 +47,7 @@ class Record < ActiveRecord::Base
         submission_date = s.created_at
         first_correction = s.corrections.where("user_id != ?", s.user_id).order(:created_at).first
         unless first_correction.nil? # can happen for a plagiarized submission without any correction
-          first_correction_date = .created_at
+          first_correction_date = first_correction.created_at
           total = total + (first_correction_date - submission_date)/(60*60*24).to_f
           number = number+1
         end
