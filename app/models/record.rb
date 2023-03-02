@@ -45,9 +45,12 @@ class Record < ActiveRecord::Base
       number = 0
       Submission.where("created_at >= ? AND created_at < ? AND status != ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime, Submission.statuses[:draft]).each do |s|
         submission_date = s.created_at
-        first_correction_date = s.corrections.where("user_id != ?", s.user_id).order(:created_at).first.created_at
-        total = total + (first_correction_date - submission_date)/(60*60*24).to_f
-        number = number+1
+        first_correction = s.corrections.where("user_id != ?", s.user_id).order(:created_at).first
+        unless first_correction.nil? # can happen for a plagiarized submission without any correction
+          first_correction_date = .created_at
+          total = total + (first_correction_date - submission_date)/(60*60*24).to_f
+          number = number+1
+        end
       end
 
       if number > 0
