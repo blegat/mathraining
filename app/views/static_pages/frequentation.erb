@@ -29,8 +29,8 @@ function format_date(days_after_first_date){
   var d = new Date(first_date);
   d.setDate(d.getDate() + days_after_first_date);
   var day = d.getDate();
-  var month = d.getUTCMonth() + 1;
-  var year = d.getUTCFullYear();
+  var month = d.getMonth() + 1;
+  var year = d.getFullYear();
   return (day < 10 ? "0" : "") + day + "/" + (month < 10 ? "0" : "") + month + "/" + year;
 }
 
