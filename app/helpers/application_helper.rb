@@ -34,10 +34,66 @@ module ApplicationHelper
   end
 
   private
+  
+  # Can we mix the letters of word w?
+  def can_mix(w, admin)
+    if w == "url" || w == "hide"
+      return false
+    end
+    if admin
+      if w == "ol" || w == "ul" || w == "li" || w == "evidence" || w == "proof" || w == "result" || w == "remark" || w == "statement" || w == "indice" || w == "center" || w == "img" || w == "href"
+        return false
+      end
+    end
+    return true
+  end
+  
+  # Mixing letters because why not?
+  def mix(m, admin = false)
+    if Rails.env.test? # Avoid breaking all tests...
+      return m
+    end
+    letters = m.split('')
+    mm = ""
+    cur_word = ""
+    last_non_alpha = ""
+    running_img = false
+    running_link = false
+    letters.each do |l|
+      if l =~ /[[:alpha:]]/
+        cur_word += l
+      else
+        if admin and cur_word == "img" and last_non_alpha == '<'
+          running_img = true
+        end
+        if admin and cur_word == "a" and last_non_alpha == '<'
+          running_link = true
+        end
+        if can_mix(cur_word, admin) and last_non_alpha != '\\' and last_non_alpha != '{' and not running_img and not running_link
+          cur_word = cur_word.chars.shuffle.join
+        end
+        mm += cur_word
+        mm += l
+        cur_word = ""
+        if running_img and l == '>' and last_non_alpha == '/'
+          running_img = false
+        end
+        if running_link and l == '>'
+          running_link = false
+        end
+        last_non_alpha = l
+      end
+    end
+    if can_mix(cur_word, admin) and last_non_alpha != '\\' and last_non_alpha != '{' and not running_img and not running_link
+      cur_word = cur_word.chars.shuffle.join
+    end
+    mm += cur_word
+    return mm
+  end
 
   # To read bbcode on user side
   def bbcode(m)
-    (h m.gsub(/\\\][ \r]*\n/,'\] ').
+    (h mix(m).gsub(/\\\][ \r]*\n/,'\] ').
     gsub(/\$\$[ \r]*\n/,'$$ ')).
     gsub(/\[b\](.*?)\[\/b\]/mi, '<b>\1</b>').
     gsub(/\[u\](.*?)\[\/u\]/mi, '<u>\1</u>').
@@ -58,7 +114,7 @@ module ApplicationHelper
 
   # To read code on admin side
   def htmlise(m)
-    m2 = m.gsub(/<hr>[ \r]*\n/,'<hr>').
+    m2 = mix(m, true).gsub(/<hr>[ \r]*\n/,'<hr>').
     gsub(/\\\][ \r]*\n/,'\] ').
     gsub(/\$\$[ \r]*\n/,'$$ ').
     gsub(/<\/h2>[ \r]*\n/,'</h2>').
@@ -116,14 +172,14 @@ module ApplicationHelper
   def write_date(date_utc)
     date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
-    return "#{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}"
+    return mix("#{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}")
   end
   
   # Write 12 juin 2009
   def write_date_only(date_utc)
     date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
-    return "#{ date.day } #{ mois[date.month-1]} #{date.year}"
+    return mix("#{ date.day } #{ mois[date.month-1]} #{date.year}")
   end
   
   # Write 12/06/09
@@ -137,7 +193,7 @@ module ApplicationHelper
     date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
-    return "#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}"
+    return mix("#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}")
   end
   
   # Write vendredi 12 juin 2009
@@ -145,7 +201,7 @@ module ApplicationHelper
     date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
-    return "#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year}"
+    return mix("#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year}")
   end
   
   # Write vendredi 12 juin 2009 with HTML link to timeanddate.com
@@ -153,7 +209,7 @@ module ApplicationHelper
     date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
-    return link_to "#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}", "https://www.timeanddate.com/worldclock/fixedtime.html?msg=Mathraining+-+Concours+%23#{contest.number}+-+Probl%C3%A8me+%23#{contestproblem.number}&iso=#{date.year}#{'0' if date.month < 10}#{date.month}#{'0' if date.day < 10}#{date.day}T#{'0' if date.hour < 10}#{date.hour}#{'0' if date.min < 10}#{date.min}&p1=48", :target => "blank_"
+    return link_to "#{ mix(jour[date.wday]) } #{ date.day } #{ mix(mois[date.month-1])} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}", "https://www.timeanddate.com/worldclock/fixedtime.html?msg=Mathraining+-+Concours+%23#{contest.number}+-+Probl%C3%A8me+%23#{contestproblem.number}&iso=#{date.year}#{'0' if date.month < 10}#{date.month}#{'0' if date.day < 10}#{date.day}T#{'0' if date.hour < 10}#{date.hour}#{'0' if date.min < 10}#{date.min}&p1=48", :target => "blank_"
   end
   
   # Write vendredi 12 juin 2009 with bbcode link to timeanddate.com
@@ -161,7 +217,7 @@ module ApplicationHelper
     date = date_utc.in_time_zone
     mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     jour = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
-    return "[url=https://www.timeanddate.com/worldclock/fixedtime.html?msg=Mathraining+-+Concours+%23#{contest.number}+-+Probl%C3%A8me+%23#{contestproblem.number}&iso=#{date.year}#{'0' if date.month < 10}#{date.month}#{'0' if date.day < 10}#{date.day}T#{'0' if date.hour < 10}#{date.hour}#{'0' if date.min < 10}#{date.min}&p1=48]#{ jour[date.wday] } #{ date.day } #{ mois[date.month-1]} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}[/url]"
+    return "[url=https://www.timeanddate.com/worldclock/fixedtime.html?msg=Mathraining+-+Concours+%23#{contest.number}+-+Probl%C3%A8me+%23#{contestproblem.number}&iso=#{date.year}#{'0' if date.month < 10}#{date.month}#{'0' if date.day < 10}#{date.day}T#{'0' if date.hour < 10}#{date.hour}#{'0' if date.min < 10}#{date.min}&p1=48]#{ mix(jour[date.wday]) } #{ date.day } #{ mix(mois[date.month-1])} #{date.year} à #{date.hour}h#{"0" if date.min < 10}#{date.min}[/url]"
   end
   
   # Get plural of 'Grand maître', 'Expert', ...
