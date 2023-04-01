@@ -76,8 +76,10 @@ class Submission < ActiveRecord::Base
         # Si c'était la seule soumission correcte, alors il faut agir et baisser le score
         sp = Solvedproblem.where(:submission => self).first
         sp.destroy unless sp.nil? # Should never be nil, but for security (and for tests)
-        u.rating = u.rating - pb.value
-        u.save
+        if u.active
+          u.rating = u.rating - pb.value
+          u.save
+        end
         pps = Pointspersection.where(:user => u, :section_id => pb.section).first
         pps.points = pps.points - pb.value
         pps.save
