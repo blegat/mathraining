@@ -11,7 +11,7 @@
   <% id = 0 %>
 <% end %>
 
-<h1><%= title_3("Théorie", (link_to @section.name, @section), "#{@chapter.name}#{' (en construction)' unless @chapter.online}", false) %></h1>
+<h1><%= title_3("Théorie", (link_to @section.name, @section), "#{mix(@chapter.name)}#{' (en construction)' unless @chapter.online}", false) %></h1>
 
 <div class="row" style="margin:0px;">
 
@@ -56,7 +56,7 @@
           <% kind = "list-group-item-success" %>
         <% end %>
           
-        <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item #{kind} #{actif}" %>
+        <%= link_to mix(f.title), chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item #{kind} #{actif}" %>
 
         <% i = i + 1 %>
       <% end %>

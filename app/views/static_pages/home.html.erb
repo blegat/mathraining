@@ -36,17 +36,17 @@
   <% number = User.where("admin = ? AND rating > 0 AND active = ?", false, true).count %>
   <center>
   <table class="home-stats">
-  <tr><td class="left"><%= raw(readable_number(number)) %></td><td class="right">utilisateurs classés</td></tr>
-  <tr><td class="left"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
-  <tr><td class="left"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
-  <tr><td class="left"><%= raw(readable_number(tot)) %></td><td class="right">points distribués</td></tr>
+  <tr><td class="left"><%= raw(readable_number(number)) %></td><td class="right"><%= mix("utilisateurs classés") %></td></tr>
+  <tr><td class="left"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right"><%= mix("problèmes résolus") %></td></tr>
+  <tr><td class="left"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right"><%= mix("exercices résolus") %></td></tr>
+  <tr><td class="left"><%= raw(readable_number(tot)) %></td><td class="right"><%= mix("points distribués") %></td></tr>
   </table>
   </center>
   </div>
   </div>
    
   <h3>
-  Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques
+  <%= mix("Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques") %>
   </h3>
 </div>
 
