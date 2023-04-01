@@ -3,7 +3,7 @@
   <!-- Cas normal -->
   <tr class="info hidden-xs">
     <!-- Titre -->
-    <td class="title"><%= mix(f.title) %></td>
+    <td class="title"><%= f.title %></td>
 
     <!-- Date -->
     <td class="date"><%= write_date_only(f.created_at) %></td>
@@ -11,7 +11,7 @@
 
   <!-- Cas gsm : titre et date sur des lignes différentes -->
   <!-- Titre -->
-  <tr class="info visible-xs"><td class="title"><%= mix(f.title) %></td></tr>
+  <tr class="info visible-xs"><td class="title"><%= f.title %></td></tr>
 
   <!-- Date -->
   <tr class="info visible-xs"><td class="date"><%= write_date_only(f.created_at) %></td></tr>

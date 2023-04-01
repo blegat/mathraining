@@ -1,5 +1,5 @@
 <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
-  <h3><%= mix(f.title) %></h3>
+  <h3><%= f.title %></h3>
   <div>
   <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="form-group"><div class="well" id="MathPreview"></div> <div class="well hidden-preview" id="MathBuffer"></div> <textarea id="MathInput" class="form-control" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>') )%>
   </div>

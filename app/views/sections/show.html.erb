@@ -56,7 +56,7 @@
 <% def affiche_chapitre(c, classe, fond) %>
   <table class="table table-bordered chapter <%= classe %>" id="chapter<%= c.id %>">
   <tr><td class="title">
-  <center><h3><%= link_to mix(c.name), c %><%= " (en construction)" if classe == "orangey" %></h3></center>
+  <center><h3><%= link_to c.name, c %><%= " (en construction)" if classe == "orangey" %></h3></center>
   </td></tr>
   
   <tr><td class="real-content">
@@ -94,7 +94,7 @@
           <ul>
         <% end %>
         <% compteur = compteur + 1 %>
-        <li><%= link_to mix(t.title), chapter_path(c, :type => 1, :which => t.id) %>
+        <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %>
         <%= image_tag v_icon, :style => "margin-left:10px; margin-top:-3px;", :id => "V-#{t.id}" if @signed_in && !current_user.sk.admin && @theory_status[t.id] == "read" %></li>
       <% end %>
     <% end %>

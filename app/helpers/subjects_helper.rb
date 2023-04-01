@@ -10,13 +10,13 @@ module SubjectsHelper
       minute = (between_dates/60).floor
       heure = (minute / 60).floor
       minute = minute - 60*heure
-      return mix("il y a #{heure} heure#{'s' if heure > 1}, #{minute} minute#{'s' if minute > 1}")
+      return "il y a #{heure} heure#{'s' if heure > 1}, #{minute} minute#{'s' if minute > 1}"
     elsif between_dates >= 60
       minute = (between_dates/60).floor
-      return mix("il y a #{minute} minute#{'s' if minute > 1}")
+      return "il y a #{minute} minute#{'s' if minute > 1}"
     else
       seconde = between_dates.floor
-      return mix("il y a #{seconde} seconde#{'s' if seconde > 1}")
+      return "il y a #{seconde} seconde#{'s' if seconde > 1}"
     end
   end
 
