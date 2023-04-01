@@ -19,7 +19,7 @@
       <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
     <% end %>
 
-    <%= link_to mix(s.title), subject_path(s, :q => q) %> - <%= get_category_name(s) %>
+    <%= link_to s.title, subject_path(s, :q => q) %> - <%= get_category_name(s) %>
 
     <% if s.for_correctors? || s.for_wepion? %>
       </td></tr></table>
