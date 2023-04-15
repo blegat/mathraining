@@ -238,7 +238,7 @@ Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un g
     <tr style="background-color:rgb(<%= (250-c[:nb_recent]*1.5).round %>,250,<%= (250-c[:nb_recent]*1.5).round %>)">
   <% end %>
   <td><%= raw(u.linked_name) %></td>
-  <td style="text-align:center;"><%= c[:nb_corrections] %></td>
+  <td style="text-align:center;"><%= c[:nb_corrections] %><%= image_tag "Smiley4.gif", :style => "margin-left:8px;" if c[:nb_corrections] >= 20000 %></td>
   <td style="text-align:center;"><%= c[:nb_recent] %></td>
   <td class="hidden-xs"><%= write_date_only(c[:first_correction].in_time_zone) %></td>
   <td class="hidden-xs"><%= write_date_only(c[:last_correction].in_time_zone) %></td>
