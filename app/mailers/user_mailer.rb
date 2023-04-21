@@ -5,12 +5,12 @@ class UserMailer < AsyncMailer
 
   def registration_confirmation(userid)
     @user = User.find(userid)
-    mail(to: @user.email, subject: "Mathraining - Confirmation d'inscription", from: "mathraining@mathraining.be")
+    mail(to: @user.email, subject: "Mathraining - Confirmation d'inscription", from: "no-reply@mathraining.be")
   end
 
   def forgot_password(userid)
     @user = User.find(userid)
-    mail(to: @user.email, subject: "Mathraining - Mot de passe oublié", from: "mathraining@mathraining.be")
+    mail(to: @user.email, subject: "Mathraining - Mot de passe oublié", from: "no-reply@mathraining.be")
   end
 
   def new_followed_message(userid, subjectid, authorid)
@@ -23,14 +23,14 @@ class UserMailer < AsyncMailer
     end
     @tot = @subject.messages.count
     @page = [0,((@tot-1)/10).floor].max + 1
-    mail(to: @user.email, subject: "Mathraining - Nouveau message sur le sujet '" + @subject.title + "'", from: "mathraining@mathraining.be")
+    mail(to: @user.email, subject: "Mathraining - Nouveau message sur le sujet '" + @subject.title + "'", from: "no-reply@mathraining.be")
   end
 
   def new_followed_tchatmessage(userid, authorid, id)
     @user = User.find(userid)
     @qui = User.find(authorid).name
     @id = id
-    mail(to: @user.email, subject: "Mathraining - Nouveau message de " + @qui, from: "mathraining@mathraining.be")
+    mail(to: @user.email, subject: "Mathraining - Nouveau message de " + @qui, from: "no-reply@mathraining.be")
   end
 
   def new_message_group(userid, subjectid, authorid)
@@ -39,7 +39,7 @@ class UserMailer < AsyncMailer
     @qui = User.find(authorid).name
     @tot = @subject.messages.count
     @page = [0,((@tot-1)/10).floor].max + 1
-    mail(to: @user.email, subject: "Mathraining - Message à l'attention des élèves de Wépion", from: "mathraining@mathraining.be")
+    mail(to: @user.email, subject: "Mathraining - Message à l'attention des élèves de Wépion", from: "no-reply@mathraining.be")
   end
   
   def new_followed_contestproblem(userid, contestproblemsids)
@@ -63,7 +63,7 @@ class UserMailer < AsyncMailer
     end
     @contestproblem = Contestproblem.find(contestproblemsids[0])
     @contest = @contestproblem.contest
-    mail(to: @user.email, subject: "Mathraining - Concours #" + @contest.number.to_s + " - " + @debut, from: "mathraining@mathraining.be")
+    mail(to: @user.email, subject: "Mathraining - Concours #" + @contest.number.to_s + " - " + @debut, from: "no-reply@mathraining.be")
   end
 
 end
