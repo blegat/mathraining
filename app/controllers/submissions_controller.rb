@@ -2,14 +2,14 @@
 class SubmissionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :search_script]
   before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
-  before_action :root_user, only: [:update_score, :uncorrect]
+  before_action :root_user, only: [:update_score]
   
   before_action :get_submission, only: [:destroy]
   before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script]
   before_action :get_problem, only: [:create, :create_intest, :index]
   
   before_action :in_test_or_root_user, only: [:destroy]
-  before_action :user_that_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :search_script]
+  before_action :user_that_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :search_script, :uncorrect]
   before_action :online_problem, only: [:create, :create_intest]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
@@ -19,6 +19,7 @@ class SubmissionsController < ApplicationController
   before_action :in_test, only: [:create_intest, :update_intest]
   before_action :is_draft, only: [:update_draft]
   before_action :can_see_submissions, only: [:index]
+  before_action :can_uncorrect_submission, only: [:uncorrect]
 
   # Show all submissions to a problem (only through js)
   def index
@@ -339,6 +340,20 @@ class SubmissionsController < ApplicationController
       redirect_to root_path if !current_user.sk.admin? and !current_user.sk.pb_solved?(@problem)
     else # (@what == 1) # See incorrect submissions (need to be admin or corrector)
       redirect_to root_path if !current_user.sk.admin? and !current_user.sk.corrector?
+    end
+  end
+  
+  # Check that current user can uncorrect the current submission
+  def can_uncorrect_submission
+    # Submission must be correct to be marked as wrong
+    redirect_to problem_path(@problem, :sub => @submission) unless @submission.correct?
+    unless current_user.sk.root?
+      # Corrector should have accepted the solution a few minutes ago
+      eleven_minutes_ago = DateTime.now - 11.minutes
+      if Solvedproblem.where(:user => @submission.user, :problem => @problem).first.correction_time < eleven_minutes_ago or @submission.corrections.where(:user => current_user.sk).where("created_at > ?", eleven_minutes_ago).count == 0
+        flash[:danger] = "Vous ne pouvez plus marquer cette solution comme erronée."
+        redirect_to problem_path(@problem, :sub => @submission)
+      end
     end
   end
   

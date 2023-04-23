@@ -200,11 +200,14 @@ var hideStatement = function () {
   </center>
 <% end %>
 
-<!-- Repasser la soumission comme erronée -->
-<% if current_user.sk.root? && @submission.correct? %>
-  <br/><center>
-  <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? nil : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ? L'utilisateur a peut-être déjà lu les solutions des autres." }), :method => :put, :style => "color:red;" %>
-  </center>
+<!-- Repasser la soumission comme erronée (root ou correcteur qui vient d'accepter) -->
+<% if @submission.correct? %>
+  <% ten_minutes_ago = DateTime.now - 10.minutes %>
+  <% if current_user.sk.root? || (current_user.sk.corrector? && @resolu && current_user.sk != @submission.user && Solvedproblem.where(:user => @submission.user, :problem => @problem).first.correction_time > ten_minutes_ago && @submission.corrections.where(:user => current_user.sk).where("created_at > ?", ten_minutes_ago).count > 0) %>
+    <br/><center>
+    <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? nil : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?" }), :method => :put, :style => "color:red;" %>
+    </center>
+  <% end %>
 <% end %>
 
 <!-- Marquer la soumission comme élégante -->

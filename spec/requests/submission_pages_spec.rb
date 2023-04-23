@@ -350,10 +350,12 @@ describe "Submission pages" do
       end
       
       describe "and accepts it" do
+        let!(:rating_before) { user.rating }
         before do
           fill_in "MathInput", with: newcorrection
           click_button "Poster et accepter la soumission"
           waiting_submission.reload
+          user.reload
         end
         specify do
           expect(waiting_submission.correct?).to eq(true)
@@ -361,7 +363,39 @@ describe "Submission pages" do
           expect(page).to have_selector("h3", text: "Soumission (correcte)")
           expect(page).to have_selector("div", text: newcorrection)
           expect(page).to have_link("0", href: allnewsub_path) # no more waiting submission
+          expect(page).to have_link("Marquer comme erronée")
           expect(page).to have_link("Étoiler cette solution")
+          expect(user.rating).to eq(rating_before + waiting_submission.problem.value)
+        end
+        
+        describe "and mark as wrong because of a misclick" do
+          before do
+            click_link "Marquer comme erronée"
+            waiting_submission.reload
+            user.reload
+          end
+          specify do
+            expect(waiting_submission.wrong?).to eq(true)
+            expect(page).to have_selector("h3", text: "Soumission (erronée)")
+            expect(page).not_to have_link("Marquer comme erronée")
+            expect(user.rating).to eq(rating_before)
+          end
+        end
+        
+        describe "and mark as wrong but too late" do
+          before do
+            waiting_submission.corrections.last.update_attribute(:created_at, DateTime.now - 20.minutes)
+            click_link "Marquer comme erronée"
+            waiting_submission.reload
+            user.reload
+          end
+          specify do
+            expect(waiting_submission.correct?).to eq(true)
+            expect(page).to have_error_message("Vous ne pouvez plus marquer cette solution comme erronée")
+            expect(page).to have_selector("h3", text: "Soumission (correcte)")
+            expect(page).not_to have_link("Marquer comme erronée") # Because too late
+            expect(user.rating).to eq(rating_before + waiting_submission.problem.value)
+          end
         end
       end
       
