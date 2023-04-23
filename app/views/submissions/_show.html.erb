@@ -6,6 +6,31 @@
 	<% end %>
 <% end %>
 
+<script type="text/javascript">
+var showStatement = function () {
+  document.getElementById("link_show_statement").style.display = 'none';
+  document.getElementById("link_hide_statement").style.display = 'inline';
+  document.getElementById("statement_reminder").style.display = 'table';
+}
+var hideStatement = function () {
+  document.getElementById("link_show_statement").style.display = 'inline';
+  document.getElementById("link_hide_statement").style.display = 'none';
+  document.getElementById("statement_reminder").style.display = 'none';
+}
+</script>
+
+<% show_statement_reminder = false %>
+<% if current_user.sk.admin? || (current_user.sk.corrector? && @resolu && current_user.sk != @submission.user) %>
+  <% if @submission.waiting? %>
+    <% show_statement_reminder = true %>
+  <% else %>
+    <% following = @submission.followings.where(:user_id => current_user.sk).first %>
+    <% if !following.nil? %>
+      <% show_statement_reminder = true %>
+    <% end %>
+  <% end %>
+<% end %>
+
 <% if !@submission.draft? %>
   <h3>Soumission
   <% if @submission.waiting? %>
@@ -20,12 +45,17 @@
       <%= image_tag @submission.icon %>
     <% end %>
   <% end %>
+  <% if show_statement_reminder %>
+   -
+    <a id="link_show_statement" href="javascript:showStatement()" style="font-size:16px;">Rappel de l'énoncé</a>
+    <a id="link_hide_statement" href="javascript:hideStatement()" style="font-size:16px; display:none;">Cacher l'énoncé</a>
+  <% end %>
   </h3>
 <% else %>
   <h3>Brouillon</h3>
 <% end %>
 
-<!-- Si administrateur, on propose de réserver la soumission -->
+<!-- Si administrateur ou correcteur, on propose de réserver la soumission -->
 <% @unactivate = 0 %>
 <% reservation_case = 0 %>
 <% corrector_name = "" %>
@@ -83,6 +113,13 @@
 <% if @submission.plagiarized? && current_user.sk == @submission.user %>
   Vous ne pouvez plus voir cette solution.
 <% else %>
+
+  <!-- Rappel de l'énoncé -->
+  <% if show_statement_reminder %>
+    <table id="statement_reminder" class="table table-bordered greyy" style="margin-bottom:0px!important; margin-top:20px; display:none;">
+    <tr><td style="padding:10px; background-color:#f0f0f0;"><%= raw(htmlise(@problem.statement)) %></td></tr>
+    </table>
+  <% end %>
 
   <!-- Affichage de la soumission -->
   <div class="myoverflow">
