@@ -205,6 +205,7 @@ FactoryGirl.define do
     correct false
     guess 42
     nb_guess 1
+    resolution_time DateTime.now
   end
   
   # Solved problem

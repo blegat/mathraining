@@ -115,7 +115,7 @@ describe SolvedquestionsController, :type => :controller do
       end
       
       describe "if did not wait enough" do
-        let!(:previous_solvedquestion) { FactoryGirl.create(:solvedquestion, question: question, user: user, correct: false, guess: question.answer-1, nb_guess: 4, updated_at: DateTime.now - 1.minute) }
+        let!(:previous_solvedquestion) { FactoryGirl.create(:solvedquestion, question: question, user: user, correct: false, guess: question.answer-1, nb_guess: 4, resolution_time: DateTime.now - 1.minute) }
         before do
           user.chapters << prerequisite
           patch :update, :params => { :id => previous_solvedquestion.id, :question_id => question.id, :solvedquestion => {:guess => question.answer} }

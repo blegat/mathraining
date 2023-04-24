@@ -8,7 +8,6 @@
 #  user_id              :integer
 #  chapter_id           :integer
 #  created_at           :datetime         not null
-#  updated_at           :datetime         not null
 #  last_comment_time    :datetime
 #  for_correctors       :boolean          default(FALSE)
 #  important            :boolean          default(FALSE)

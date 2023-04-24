@@ -9,7 +9,6 @@
 #  correct         :boolean
 #  nb_guess        :integer
 #  resolution_time :datetime
-#  updated_at      :datetime         not null
 #
 require "spec_helper"
 

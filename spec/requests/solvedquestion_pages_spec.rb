@@ -81,7 +81,7 @@ describe "Solvedquestion pages" do
           describe "and waits for 3 minutes" do
             let(:solvedquestion) { Solvedquestion.where(:user => user, :question => exercise).first }
             before do
-              solvedquestion.updated_at = DateTime.now - 190
+              solvedquestion.resolution_time = DateTime.now - 190
               solvedquestion.save
               visit chapter_path(chapter, :type => 5, :which => exercise)
             end

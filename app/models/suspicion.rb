@@ -10,7 +10,6 @@
 #  source        :string
 #  status        :integer          default("waiting_confirmation")
 #  created_at    :datetime         not null
-#  updated_at    :datetime         not null
 #
 class Suspicion < ActiveRecord::Base
   

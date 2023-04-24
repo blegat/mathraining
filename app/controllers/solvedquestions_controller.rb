@@ -77,7 +77,7 @@ class SolvedquestionsController < ApplicationController
   
   # Check that current user waited enough (if needed) before trying again
   def waited_enough_time
-    if @solvedquestion.nb_guess >= 3 && DateTime.now < @solvedquestion.updated_at + 175
+    if @solvedquestion.nb_guess >= 3 && DateTime.now < @solvedquestion.resolution_time + 175
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     end
   end

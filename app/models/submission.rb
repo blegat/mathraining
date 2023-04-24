@@ -9,7 +9,6 @@
 #  user_id           :integer
 #  content           :text
 #  created_at        :datetime         not null
-#  updated_at        :datetime         not null
 #  status            :integer          default("waiting")
 #  intest            :boolean          default(FALSE)
 #  visible           :boolean          default(TRUE)
