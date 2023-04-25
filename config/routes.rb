@@ -94,10 +94,10 @@ Rails.application.routes.draw do
     resources :suspicions, only: [:create]
   end
 
-  match '/allsub', to: 'users#allsub', :via => [:get], as: :allsub
-  match '/allmysub', to: 'users#allmysub', :via => [:get], as: :allmysub
-  match '/allnewsub', to: 'users#allnewsub', :via => [:get], as: :allnewsub
-  match '/allmynewsub', to: 'users#allmynewsub', :via => [:get], as: :allmynewsub
+  match '/allsub', to: 'submissions#allsub', :via => [:get], as: :allsub
+  match '/allmysub', to: 'submissions#allmysub', :via => [:get], as: :allmysub
+  match '/allnewsub', to: 'submissions#allnewsub', :via => [:get], as: :allnewsub
+  match '/allmynewsub', to: 'submissions#allmynewsub', :via => [:get], as: :allmynewsub
   match '/reserve', to: 'submissions#reserve', :via => [:get], as: :reserve
   match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
   

@@ -1,9 +1,8 @@
 #encoding: utf-8
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :allsub, :allmysub, :allnewsub, :allmynewsub, :notifs_show, :groups, :read_legal, :followed_users, :remove_followingmessage]
+  before_action :signed_in_user, only: [:edit, :notifs_show, :groups, :read_legal, :followed_users, :remove_followingmessage]
   before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user, :add_followingmessage, :switch_can_change_name, :ban_temporarily]
   before_action :admin_user, only: [:switch_wepion, :change_group]
-  before_action :corrector_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
   before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_names, :validate_name, :change_name, :switch_can_change_name, :ban_temporarily]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :group_user, only: [:groups]
@@ -358,30 +357,6 @@ class UsersController < ApplicationController
         redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
       end
     end
-  
-  end
-
-  # Show all submissions
-  def allsub
-    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:visible => true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
-  end
-
-  # Show all submissions in which we took part
-  def allmysub
-    @notifications = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where("status != ? AND status != ?", Submission.statuses[:draft], Submission.statuses[:waiting]).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
-  end
-  
-  # Show all new submissions
-  def allnewsub
-    level_condition = ((params.has_key?:level) and params[:level].to_i > 0) ? "problems.level = #{params[:level].to_i}" : ""
-    section_condition = ((params.has_key?:section) and params[:section].to_i > 0) ? "problems.section_id = #{params[:section].to_i}" : ""
-    @notifications = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting, :visible => true).where(level_condition).where(section_condition).order("submissions.created_at").to_a
-  end
-
-  # Show all new comments to submissions in which we took part
-  def allmynewsub
-    @notifications = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
-    @notifications_other = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:status => :wrong_to_read).order("submissions.last_comment_time").to_a
   end
 
   # Show notifications of new corrections (for a student)
@@ -652,15 +627,5 @@ class UsersController < ApplicationController
     Pointspersection.where(:user_id => ids).all.each do |p|
 	    persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
     end
-  end
-  
-  # Helper method to list columns that are needed to list submissions
-  def needed_columns_for_submissions(include_content_length = false)
-    columns = "submissions.id, submissions.user_id, submissions.problem_id, submissions.status, submissions.star, submissions.created_at, submissions.last_comment_time, submissions.intest, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation"
-    if include_content_length
-      columns += ", length(submissions.content) AS content_length"
-    end
-    return columns
-  end
-  
+  end  
 end

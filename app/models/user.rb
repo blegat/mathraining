@@ -163,11 +163,11 @@ class User < ActiveRecord::Base
   end
 
   # Gives the number of submissions that the user can correct
-  def num_notifications_new
+  def num_notifications_new(levels)
     if sk.admin
-      return Submission.where(:status => :waiting, :visible => true).count
+      return Submission.joins(:problem).where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).count
     elsif sk.corrector
-      return Submission.where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id})").where(:status => :waiting, :visible => true).count
+      return Submission.joins(:problem).where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id})").where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).count
     end
   end
 

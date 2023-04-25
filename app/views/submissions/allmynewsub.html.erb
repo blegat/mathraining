@@ -6,11 +6,11 @@
 
 <% to_me = Array.new %>
 
-<% if @notifications.size > 0 %>
+<% if @submissions.size > 0 %>
   <table class="table table-bordered">
   <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th class="hidden-small">Dernière activité</th><th>Qui</th><th style="text-align:center;">Type</th><th></th></tr>
   
-  <% @notifications.each do |n| %>
+  <% @submissions.each do |n| %>
     <% to_me.push(n.id) %>
     <%= render 'submissions/showline', s: n, show_section_and_level: true, show_num_waiting_days_from: "last_comment_time", highlight_this_sub: true %>
   <% end %>
@@ -24,7 +24,7 @@
 
 <% first_other = true %>
 
-<% @notifications_other.each do |n| %>
+<% @submissions_other.each do |n| %>
 
   <% if !current_user.sk.admin? %>
     <% problem_solved = Array.new %>

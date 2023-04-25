@@ -1,8 +1,10 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
+  before_action :signed_in_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :search_script]
   before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
   before_action :root_user, only: [:update_score]
+  before_action :corrector_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
   
   before_action :get_submission, only: [:destroy]
   before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script]
@@ -251,6 +253,38 @@ class SubmissionsController < ApplicationController
       format.js
     end
   end
+  
+  # Show all submissions
+  def allsub
+    @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:visible => true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+  end
+
+  # Show all submissions in which we took part
+  def allmysub
+    @submissions = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where("status != ? AND status != ?", Submission.statuses[:draft], Submission.statuses[:waiting]).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+  end
+  
+  # Show all new submissions
+  def allnewsub
+    levels = [1, 2, 3, 4, 5]
+    if (params.has_key?:levels)
+      levels = []
+      levels_int = params[:levels].to_i
+      for l in [1, 2, 3, 4, 5]
+        if (levels_int & (1 << (l-1)) != 0)
+          levels.push(l)
+        end
+      end
+    end
+    section_condition = ((params.has_key?:section) and params[:section].to_i > 0) ? "problems.section_id = #{params[:section].to_i}" : ""
+    @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting, :visible => true).where(section_condition).where("problems.level in (?)", levels).order("submissions.created_at").to_a
+  end
+
+  # Show all new comments to submissions in which we took part
+  def allmynewsub
+    @submissions = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
+    @submissions_other = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:status => :wrong_to_read).order("submissions.last_comment_time").to_a
+  end
 
   private
   
@@ -429,5 +463,14 @@ class SubmissionsController < ApplicationController
       stop2 = content.size
     end
     return [(start1 > 0 ? "..." : "") + content[start1, stop1-start1], content[start2, stop2-start2] + (stop2 < content.size ? "..." : "")]
+  end
+  
+  # Helper method to list columns that are needed to list submissions
+  def needed_columns_for_submissions(include_content_length = false)
+    columns = "submissions.id, submissions.user_id, submissions.problem_id, submissions.status, submissions.star, submissions.created_at, submissions.last_comment_time, submissions.intest, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation"
+    if include_content_length
+      columns += ", length(submissions.content) AS content_length"
+    end
+    return columns
   end
 end

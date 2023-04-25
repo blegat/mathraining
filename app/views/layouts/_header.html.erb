@@ -27,12 +27,18 @@
 
         <!-- Nouvelles soumissions et nouveaux commentaires -->
 
-        <% num_notifications_new = current_user.sk.num_notifications_new %>
+        <% num_notifications_new12 = current_user.sk.num_notifications_new([1, 2]) %>
+        <% num_notifications_new345 = current_user.sk.num_notifications_new([3, 4, 5]) %>
         <% num_notifications_update = current_user.sk.num_notifications_update %>
-        <% if num_notifications_new > 0 %>
-          <%= link_to "#{num_notifications_new}", allnewsub_path, class: "btn btn-danger" %>
+        <% if num_notifications_new12 > 0 %>
+          <%= link_to "#{num_notifications_new12}", allnewsub_path(:levels => 3), class: "btn btn-success" %>
         <% else %>
-          <%= link_to "0", allnewsub_path, class: "btn btn-default btn-grey" %>
+          <%= link_to "0", allnewsub_path(:levels => 3), class: "btn btn-default btn-grey" %>
+        <% end %>
+        <% if num_notifications_new345 > 0 %>
+          <%= link_to "#{num_notifications_new345}", allnewsub_path(:levels => 28), class: "btn btn-danger" %>
+        <% else %>
+          <%= link_to "0", allnewsub_path(:levels => 28), class: "btn btn-default btn-grey" %>
         <% end %>
         <% if num_notifications_update > 0 %>
           <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
@@ -74,10 +80,15 @@
         <form role="search" style="margin-left:15px; margin-bottom:5px;">
         
         <!-- Nouvelles soumissions et nouveaux commentaires -->
-        <% if num_notifications_new > 0 %>
-          <%= link_to "#{num_notifications_new}", allnewsub_path, class: "btn btn-danger" %>
+        <% if num_notifications_new12 > 0 %>
+          <%= link_to "#{num_notifications_new12}", allnewsub_path(:levels => 3), class: "btn btn-success" %>
         <% else %>
-          <%= link_to "0", allnewsub_path, class: "btn btn-default btn-grey" %>
+          <%= link_to "0", allnewsub_path(:levels => 3), class: "btn btn-default btn-grey" %>
+        <% end %>
+        <% if num_notifications_new345 > 0 %>
+          <%= link_to "#{num_notifications_new345}", allnewsub_path(:levels => 28), class: "btn btn-danger" %>
+        <% else %>
+          <%= link_to "0", allnewsub_path(:levels => 28), class: "btn btn-default btn-grey" %>
         <% end %>
         <% if num_notifications_update > 0 %>
           <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-warning" %>

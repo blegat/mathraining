@@ -13,8 +13,8 @@ describe "Submission pages" do
   let(:good_corrector) { FactoryGirl.create(:corrector) }
   let(:bad_corrector) { FactoryGirl.create(:corrector) }
   
-  let!(:problem) { FactoryGirl.create(:problem, online: true) }
-  let!(:problem_with_submissions) { FactoryGirl.create(:problem, online: true) }
+  let!(:problem) { FactoryGirl.create(:problem, online: true, :level => 1) }
+  let!(:problem_with_submissions) { FactoryGirl.create(:problem, online: true, :level => 1) }
   
   let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: user, status: :waiting) } 
   let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user, status: :wrong) }
@@ -255,10 +255,10 @@ describe "Submission pages" do
   
   describe "bad corrector" do
     before { sign_in bad_corrector }
-    it { should have_link("0", href: allnewsub_path) } # 0 waiting submission (because cannot see it)
+    it { should have_link("0", href: allnewsub_path(:levels => 3)) } # 0 waiting submission of level 1, 2 (because cannot see it)
     
     describe "visits submissions page" do
-      before { visit allnewsub_path }
+      before { visit allnewsub_path(:levels => 3) }
       it do
         should have_selector("h1", text: "Soumissions")
         should have_no_link(user.name, href: user_path(user))
@@ -276,10 +276,10 @@ describe "Submission pages" do
     
   describe "good corrector" do
     before { sign_in good_corrector }
-    it { should have_link("1", href: allnewsub_path) } # 1 waiting submission
+    it { should have_link("1", href: allnewsub_path(:levels => 3)) } # 1 waiting submission
     
     describe "visits submissions page" do
-      before { visit allnewsub_path }
+      before { visit allnewsub_path(:levels => 3) }
       it do
         should have_selector("h1", text: "Soumissions")
         should have_link(user.name, href: user_path(user))
@@ -362,7 +362,7 @@ describe "Submission pages" do
           expect(waiting_submission.corrections.last.content).to eq(newcorrection)
           expect(page).to have_selector("h3", text: "Soumission (correcte)")
           expect(page).to have_selector("div", text: newcorrection)
-          expect(page).to have_link("0", href: allnewsub_path) # no more waiting submission
+          expect(page).to have_link("0", href: allnewsub_path(:levels => 3)) # no more waiting submission
           expect(page).to have_link("Marquer comme erronée")
           expect(page).to have_link("Étoiler cette solution")
           expect(user.rating).to eq(rating_before + waiting_submission.problem.value)
@@ -437,7 +437,7 @@ describe "Submission pages" do
           expect(waiting_submission.corrections.last.content).to eq(newcorrection)
           expect(page).to have_selector("h3", text: "Soumission (erronée)")
           expect(page).to have_selector("div", text: newcorrection)
-          expect(page).to have_link("0", href: allnewsub_path) # no more waiting submission
+          expect(page).to have_link("0", href: allnewsub_path(:levels => 3)) # no more waiting submission
         end
         
         describe "and user" do
@@ -492,7 +492,8 @@ describe "Submission pages" do
                   sign_in good_corrector
                 end
                 it do
-                  should have_link("0", href: allnewsub_path)
+                  should have_link("0", href: allnewsub_path(:levels => 3))
+                  should have_link("0", href: allnewsub_path(:levels => 28))
                   should have_link("1", href: allmynewsub_path)
                 end
                 
