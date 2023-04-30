@@ -71,6 +71,9 @@ class SuspicionsController < ApplicationController
           Notif.create(:user => @submission.user, :submission => @submission) # (will not be created if already exists)
         end
       end
+      if @submission.plagiarized? && @submission.followings.count == 0
+        Following.create(:user => @suspicion.user, :submission => @submission, :kind => 1, :read => true, :created_at => @suspicion.created_at)
+      end
       flash[:success] = "Suspicion modifiée."
     end
     redirect_to problem_path(@submission.problem, :sub => @submission)

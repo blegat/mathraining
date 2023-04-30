@@ -170,7 +170,8 @@ describe "Suspicion pages" do
         specify do
           expect(suspicion.confirmed?).to eq(true)
           expect(waiting_submission.plagiarized?).to eq(true)
-          expect(corrector.followings.where(:submission => waiting_submission).count).to eq(0) # reservation should be deleted
+          expect(corrector.followings.where(:submission => waiting_submission, :kind => 0).count).to eq(0) # reservation should be deleted
+          expect(corrector.followings.where(:submission => waiting_submission, :kind => 1).count).to eq(1) # corrector "corrected" that submission
         end
       end
       
@@ -183,7 +184,8 @@ describe "Suspicion pages" do
         specify do
           expect(page).to have_selector("td", text: "Pardonné")
           expect(waiting_submission.plagiarized?).to eq(false)
-          expect(corrector.followings.where(:submission => waiting_submission).count).to eq(1) # reservation should not be deleted
+          expect(corrector.followings.where(:submission => waiting_submission, :kind => 0).count).to eq(1) # reservation should not be deleted
+          expect(corrector.followings.where(:submission => waiting_submission, :kind => 1).count).to eq(0) # should not be created
         end
       end
     end
