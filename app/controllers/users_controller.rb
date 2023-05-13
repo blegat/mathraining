@@ -425,7 +425,7 @@ class UsersController < ApplicationController
   
   # Show all names to validate
   def validate_names
-    @users_to_validate = User.where(:valid_name => false, :email_confirm => true, :admin => false).order(:id).all
+    @users_to_validate = User.where(:valid_name => false, :email_confirm => true, :admin => false).order("id DESC").all
   end
   
   # Validate one name (through js)
