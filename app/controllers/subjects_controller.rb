@@ -12,7 +12,7 @@ class SubjectsController < ApplicationController
   before_action :author, only: [:update, :destroy]
   
   
-  before_action :get_q, only: [:create, :update, :destroy, :migrate]
+  before_action :get_q, only: [:index, :show, :new, :create, :update, :destroy, :migrate]
   
   # Show the list of (recent) subjects
   def index
@@ -21,44 +21,39 @@ class SubjectsController < ApplicationController
     search_section_problems = -1
     search_chapter = -1
     search_nothing = false
-    q = -1
 
     @category = nil
     @chapter = nil
     @section = nil
     @title_complement = ""
-    if(params.has_key?:q)
-      q = params[:q].to_i
-      if q >= 1000000
-        search_category = q/1000000
+    if !@q.nil? # NB: @q is never equal to 0, see get_q
+      if @q >= 1000000
+        search_category = @q/1000000
         @category = Category.find_by_id(search_category)
         render 'errors/access_refused' and return if @category.name == "Wépion" && !current_user.sk.wepion? && !current_user.sk.admin?
         @title_complement = @category.name
         return if check_nil_object(@category)
-      elsif q >= 1000
-        if q % 1000 == 0
-          search_section = q/1000
+      elsif @q >= 1000
+        if @q % 1000 == 0
+          search_section = @q/1000
           @section = Section.find_by_id(search_section)
           @title_complement = @section.name
-        elsif q % 1000 == 1
-          search_section_problems = (q-1)/1000
+        elsif @q % 1000 == 1
+          search_section_problems = (@q-1)/1000
           @section = Section.find_by_id(search_section_problems)
           @title_complement = helpers.get_problem_category_name(@section.name)
         end
         return if check_nil_object(@section)
-      elsif q > 0
-        search_chapter = q
+      else
+        search_chapter = @q
         @chapter = Chapter.find_by_id(search_chapter)
         return if check_nil_object(@chapter)
         return if check_offline_object(@chapter)
         @section = @chapter.section
         @title_complement = @chapter.name
-      else
-        search_nothing = true
       end
     else
       search_nothing = true
-      q = 0
     end
     
     if (current_user.sk.admin? || current_user.sk.corrector?)
@@ -250,8 +245,8 @@ class SubjectsController < ApplicationController
   
   # Get the "q" value that is used through the forum
   def get_q
-    @q = 0
     @q = params[:q].to_i if params.has_key?:q
+    @q = nil if @q == 0 # avoid q = 0 when there is no filter
   end
   
   ########## CHECK METHODS ##########

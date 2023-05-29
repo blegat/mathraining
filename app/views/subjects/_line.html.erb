@@ -2,6 +2,7 @@
 <% if current_user.sk.last_forum_visit_time < s.last_comment_time && s.last_comment_user != current_user.sk %>
   <% style = "background-color:#fffad2;" %>
 <% end %>
+
 <tr style="<%= style %>">
 
   <!-- Titre du sujet, + "Correcteurs" ou "Wépion" s'il le faut -->
@@ -19,7 +20,7 @@
       <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
     <% end %>
 
-    <%= link_to s.title, subject_path(s, :q => q) %> - <%= get_category_name(s) %>
+    <%= link_to s.title, subject_path(s, :q => @q) %> - <%= get_category_name(s) %>
 
     <% if s.for_correctors? || s.for_wepion? %>
       </td></tr></table>
@@ -60,7 +61,7 @@
   <td class="hidden-small" style="width:200px; text-align:center; vertical-align:middle;">
     <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
-    <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
+    <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => @q) do %>
       <%= write_date_from_now(date, datenow) %>
     <% end %>
   </td>
@@ -86,7 +87,7 @@
     <td style="width:200px; text-align:center; vertical-align:middle; padding-top:5px;">
       <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
-      <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => q) do %>
+      <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => @q) do %>
         <%= write_date_from_now(date, datenow) %>
       <% end %>
     </td>

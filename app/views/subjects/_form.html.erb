@@ -35,13 +35,6 @@ function checkProblem() {
 }
 </script>
 
-<% q = -1 %>
-<% if(params.has_key?:q) %>
-  <% q = params[:q].to_i %>
-<% else %>
-  <% q = 0 %>
-<% end %>
-
 <% if @postfix.nil? %>
   <% @postfix = "" %>
 <% end %>
@@ -82,17 +75,17 @@ function checkProblem() {
   <% elsif !@subject.category_id.nil? %>
     <% selected_category = @subject.category_id %>
   <% end %>
-<% elsif q != 0 %>
-  <% if q >= 1000000 %>
-    <% selected_category = q/1000000 %>
-  <% elsif q >= 1000 %>
-    <% if q % 1000 == 0 %>
-      <% selected_category = q %>
-    <% elsif q % 1000 == 1 %>
-      <% selected_category = q-1 %>
+<% elsif !@q.nil? %>
+  <% if @q >= 1000000 %>
+    <% selected_category = @q/1000000 %>
+  <% elsif @q >= 1000 %>
+    <% if @q % 1000 == 0 %>
+      <% selected_category = @q %>
+    <% elsif @q % 1000 == 1 %>
+      <% selected_category = @q-1 %>
     <% end %>
   <% else %>
-    <% chap = Chapter.find_by_id(q) %>
+    <% chap = Chapter.find_by_id(@q) %>
     <% if !chap.nil? %>
       <% selected_category = 1000*chap.section_id %>
     <% end %>
@@ -123,15 +116,15 @@ function checkProblem() {
   <% elsif !@subject.problem_id.nil? %>
     <% selected_chapter = -1 %>
   <% end %>
-<% elsif q > 0 && selected_category > 999 %>
+<% elsif !@q.nil? && selected_category > 999 %>
   <% sect = Section.find(selected_category/1000) %>
   <% seechap = true %>
-  <% if q >= 1000 %>
-    <% if q % 1000 == 1 %>
+  <% if @q >= 1000 %>
+    <% if @q % 1000 == 1 %>
       <% selected_chapter = -1 %>
     <% end %>
   <% else %>
-    <% selected_chapter = q %>
+    <% selected_chapter = @q %>
   <% end %>
 <% end %>
 
@@ -165,7 +158,7 @@ function checkProblem() {
   <% if !@subject.question_id.nil? %>
     <% selected_exercise = @subject.question_id %>
   <% end %>
-<% elsif q > 0 && selected_chapter > 0 %>
+<% elsif !@q.nil? && selected_chapter > 0 %>
   <% seeexo = true %>
   <% chap = Chapter.find(selected_chapter) %>
 <% end %>
@@ -227,7 +220,7 @@ function checkProblem() {
   <% if !@subject.problem_id.nil? %>
     <% selected_problem = @subject.problem_id %>
   <% end %>
-<% elsif q > 0 && selected_chapter == -1 %>
+<% elsif !@q.nil? && selected_chapter == -1 %>
   <% seeprob = true %>
 <% end %>
 

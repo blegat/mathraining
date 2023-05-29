@@ -1,12 +1,5 @@
 <% provide(:title, 'Forum') %>
 
-<% q = -1 %>
-<% if(params.has_key?:q) %>
-  <% q = params[:q].to_i %>
-<% else %>
-  <% q = 0 %>
-<% end %>
-
 <!-- Calcul de la liste des sections et chapitres -->
 <% liste0 = Array.new %>
 
@@ -45,7 +38,7 @@
 <!-- Trier selon section, chapitre, catégorie... -->
 <span style="float:right; margin-left:20px; margin-top:5px; margin-bottom:20px;">
 <form action="" method="get" name="research">
-  <%= select_tag :q, grouped_options_for_select([["Tout afficher",liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], q).html_safe, :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
+  <%= select_tag :q, grouped_options_for_select([["Tout afficher",liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], @q).html_safe, :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
 </form>
 </span>
 
@@ -62,7 +55,7 @@
       <td class="hidden-large" style="text-align:center;">Dernière contribution</td>
     </tr>
     <% @importants.each do |s| %>
-      <%= render 'line', s: s, q: q %>
+      <%= render 'line', s: s %>
     <% end %>
   </table>
 <% end %>
@@ -78,7 +71,7 @@
       <td class="hidden-large" style="text-align:center;">Dernière contribution</td>
     </tr>
     <% @subjects.each do |s| %>
-      <%= render 'line', s: s, q: q %>
+      <%= render 'line', s: s %>
     <% end %>
   </table>
 <% end %>
@@ -95,7 +88,7 @@
 
 <!-- Créer un sujet -->
 <center>
-  <%= link_to "Créer un sujet", new_subject_path(:q => q), class: 'btn btn-lg btn-default btn-grey' %>
+  <%= link_to "Créer un sujet", new_subject_path(:q => @q), class: 'btn btn-lg btn-default btn-grey' %>
 </center>
 
 <!-- Modifier les catégories -->

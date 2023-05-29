@@ -133,8 +133,8 @@ class MessagesController < ApplicationController
   
   # Get the "q" value that is used through the forum
   def get_q
-    @q = 0
     @q = params[:q].to_i if params.has_key?:q
+    @q = nil if @q == 0 # avoid q = 0 when there is no filter
   end
   
   ########## CHECK METHODS ##########

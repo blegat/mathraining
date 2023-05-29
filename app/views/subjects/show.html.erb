@@ -2,9 +2,6 @@
 
 <% @nb_indice = 1 %>
 
-<% @q = 0 %>
-<% @q = params[:q].to_i if params.has_key?:q %>
-
 <% if !@subject.category.nil? %>
   <% @category = @subject.category %>
   <% title_complement = @category.name %>
