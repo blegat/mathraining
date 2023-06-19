@@ -166,7 +166,7 @@ var hideStatement = function () {
 
   <!-- Warning quand l'utilisateur a soumis une solution ultérieurement -->
   <% if @submission.user != current_user.sk && (@submission.wrong? || @submission.wrong_to_read?) %>
-    <% later_submission = @problem.submissions.where("user_id = ? AND created_at > ? AND id != ?", @submission.user, @submission.created_at, @submission.id).order("created_at DESC").first %>
+    <% later_submission = @problem.submissions.where("user_id = ? AND created_at > ? AND id != ? AND visible = ?", @submission.user, @submission.created_at, @submission.id, true).order("created_at DESC").first %>
     <% if !later_submission.nil? %>
       <div style="text-align:center; margin-top:20px; background-color:#ffe7c5; padding:10px; border:1px solid #dddddd;"><span style="font-weight:bold; text-decoration:underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "nouvelle soumission", problem_path(@problem, :sub => later_submission) %> à ce problème le <%= write_date(later_submission.created_at) %>.</div>
     <% end %>
