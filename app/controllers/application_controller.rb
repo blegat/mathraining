@@ -5,23 +5,26 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
 
   before_action :load_global_variables
+  before_action :check_under_maintenance
   before_action :has_consent
   before_action :check_takentests
-  #before_action :warning
 
   private
 
-  # Can be used when doing big changes on the server
-  #def warning
-  #  flash[:info] = "Le site est en maintenance pour quelques minutes... Merci pour votre patience !".html_safe
-  #  if !@signed_in || !current_user.root?
-  #    redirect_to root_path if request.path != "/"
-  #  end
-  #end
+  # When doing big changes on the server
+  def check_under_maintenance
+    if @under_maintenance
+      flash[:info] = @under_maintenance_message.html_safe
+      if !@signed_in || !current_user.root?
+        redirect_to root_path if request.path != "/"
+      end
+    end
+  end
   
   # Create some global variables that are always needed
   def load_global_variables
     @signed_in = signed_in?
+    
     if params.has_key?(:start_benchmark)
       cookies[:benchmark] = 1
     end
@@ -30,6 +33,18 @@ class ApplicationController < ActionController::Base
         cookies.delete(:benchmark)
       else
         @benchmark_start_time = Time.now
+      end
+    end
+    
+    @under_maintenance = false
+    @no_new_submission = false
+    Globalvariable.all.each do |g|
+      if g.key == "under_maintenance"
+        @under_maintenance = g.value
+        @under_maintenance_message = g.message
+      elsif g.key == "no_new_submission"
+        @no_new_submission = g.value
+        @no_new_submission_message = g.message
       end
     end
   end
@@ -121,7 +136,7 @@ class ApplicationController < ActionController::Base
   
   # Check that current user can see @problem (that must be defined)
   def user_that_can_see_problem
-    if !@problem.can_be_seen_by(current_user.sk)
+    if !@problem.can_be_seen_by(current_user.sk, @no_new_submission)
       render 'errors/access_refused' and return
     end
   end

@@ -20,6 +20,7 @@ class SubmissionsController < ApplicationController
   before_action :author, only: [:update_intest, :update_draft]
   before_action :in_test, only: [:create_intest, :update_intest]
   before_action :is_draft, only: [:update_draft]
+  before_action :can_update_draft, only: [:update_draft]
   before_action :can_see_submissions, only: [:index]
   before_action :can_uncorrect_submission, only: [:uncorrect]
 
@@ -324,9 +325,15 @@ class SubmissionsController < ApplicationController
 
   # Check that current user can create a new submission for the problem
   def can_submit
+    redirect_to problem_path(@problem) and return if @no_new_submission
     if current_user.sk.submissions.where(:problem => @problem, :status => [:draft, :waiting]).count > 0
       redirect_to problem_path(@problem) and return
     end
+  end
+  
+  # Check that current user can update his draft to a problem
+  def can_update_draft
+    redirect_to problem_path(@problem) if @no_new_submission
   end
   
   # Check that current user has no (recent) plagiarized solution to the problem

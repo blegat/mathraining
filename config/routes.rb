@@ -223,6 +223,9 @@ Rails.application.routes.draw do
   match '/signin', to: 'sessions#new', :via => [:get]
   match '/signout', to: 'sessions#destroy', via: :delete
   
+  # Global variables
+  resources :globalvariables, only: []
+  
   # Static pages
   root to: 'static_pages#home'
   match '/about', to: 'static_pages#about', :via => [:get]

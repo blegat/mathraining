@@ -14,6 +14,7 @@ module ProblemsHelper
                                 AND (problems.virtualtest_id IN #{virtualtests_done_request}
                                      OR (problems.virtualtest_id = 0
                                          AND #{num_problem_unsolved_prerequisites_request} = 0
+                                         AND #{@no_new_submission ? num_problem_real_submissions_request : 1} > 0
                                         )
                                     )")
   end
@@ -31,6 +32,7 @@ module ProblemsHelper
                                 AND (problems.virtualtest_id IN #{virtualtests_done_request}
                                      OR (problems.virtualtest_id = 0
                                          AND #{num_problem_unsolved_prerequisites_request} = 0
+                                         AND #{@no_new_submission ? num_problem_real_submissions_request : 1} > 0
                                         )
                                     )
                                 ORDER BY problems.level, problems.number")
@@ -54,6 +56,14 @@ module ProblemsHelper
              FROM chapters_problems
              WHERE chapters_problems.problem_id = problems.id
              AND chapters_problems.chapter_id NOT IN #{chapters_completed_request})"
+  end
+  
+  def num_problem_real_submissions_request
+    return "(SELECT COUNT (submissions.id)
+             FROM submissions
+             WHERE submissions.problem_id = problems.id
+             AND submissions.user_id = #{current_user.sk.id}
+             AND submissions.status != #{Submission.statuses[:draft]})"
   end
 
 end

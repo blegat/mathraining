@@ -12,6 +12,7 @@ class SectionsController < ApplicationController
 
   # Show the problems of a section
   def showpb
+    flash.now[:info] = @no_new_submission_message if @no_new_submission
   end
 
   # Update a section (show the form)

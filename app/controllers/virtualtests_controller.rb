@@ -17,6 +17,7 @@ class VirtualtestsController < ApplicationController
 
   # Show all virtualtests (that can be seen)
   def index
+    flash.now[:info] = @no_new_submission_message if @no_new_submission
   end
 
   # Show one virtualtest
@@ -155,6 +156,7 @@ class VirtualtestsController < ApplicationController
 
   # Check that current user can start the test
   def can_begin
+    redirect_to virtualtests_path if @no_new_submissions
     if current_user.sk.test_status(@virtualtest) != "not_started"
       redirect_to virtualtests_path
     elsif Takentest.where(:user => current_user.sk, :status => :in_progress).count > 0

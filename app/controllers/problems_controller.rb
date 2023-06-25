@@ -15,6 +15,7 @@ class ProblemsController < ApplicationController
 
   # Show one problem
   def show
+    flash.now[:info] = @no_new_submission_message if @no_new_submission and params.has_key?("sub") and params[:sub] == "0"
     if params.has_key?("auto") # Automatically show the correct submission of current user, if any
       s = current_user.sk.solvedproblems.where(:problem_id => @problem).first
       if s.nil?

@@ -51,10 +51,11 @@ class Problem < ActiveRecord::Base
   end
   
   # Tell if the problem can be seen by the given user
-  def can_be_seen_by(user)
+  def can_be_seen_by(user, no_new_submission)
     return true if user.admin?
     return false if user.rating < 200
     if self.virtualtest_id == 0 # Not in a virtualtest: prerequisites should be completed
+      return false if no_new_submission and self.submissions.where("user_id = ? AND status != ?", user.id, Submission.statuses[:draft]).count == 0
       self.chapters.each do |c|
         return false if !user.chap_solved?(c)
       end
