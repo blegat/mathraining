@@ -8,8 +8,9 @@
 <% num_nuwsubs = newsubs.values.sum %>
 Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 2 %> en attente de correction, réparties comme suit par niveau et par section.<br/>
 
+<div style="width:100%; overflow-x:auto; margin-top:20px; margin-bottom:20px;">
 <center>
-<table class="table table-bordered" style="min-width:490px; width:490px; margin:0px; margin-top:20px; margin-bottom:20px;">
+<table class="table table-bordered" style="min-width:490px; width:490px; margin:0px;">
 <tr>
 <th style="width:70px;"></th>
 <% sections.each do |sec| %>
@@ -33,6 +34,7 @@ Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 
 <% end %>
 </table>
 </center>
+</div>
 
 Le graphique suivant montre, en <span style="color:green;">vert</span>, les soumissions correctes, en <span style="color:red;">rouge</span> les soumissions incorrectes, et en <span style="color:grey;">gris</span> les soumissions en attente de correction.<br/><br/>
 
