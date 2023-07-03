@@ -6,7 +6,7 @@
 
 <% newsubs = Submission.joins(:problem).where(:status => :waiting, :visible => true).group("problems.section_id").group("problems.level").count %>
 <% num_nuwsubs = newsubs.values.sum %>
-Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 2 %> en attente de correction, réparties comme suit par niveau et par section.<br/>
+Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 2 %> en attente de correction. Le tableau suivant montre comment les solutions non encore corrigées sont réparties, par niveau et par section.<br/>
 
 <div style="width:100%; overflow-x:auto; margin-top:20px; margin-bottom:20px;">
 <center>
