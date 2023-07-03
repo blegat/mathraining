@@ -84,14 +84,12 @@
 <% if show_correctors %>
   <!-- Correcteur (si on l'affiche) -->
   <td class="hidden-small" style="width:200px;">
-  <% if !hidden_sub %>
     <% premier = true %>
     <% s.followings.each do |f| %>
       <%= " - " if !premier %>
       <%= raw(f.user.linked_name) %>
       <% premier = false %>
     <% end %>
-  <% end %>
   </td>
 <% end %>
 
