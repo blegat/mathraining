@@ -286,40 +286,6 @@ describe "Submission pages" do
       end
     end
     
-    describe "gives a star to a submission" do
-      before do
-        visit problem_path(problem_with_submissions, :sub => good_submission)
-        click_link "Étoiler cette solution"
-        good_submission.reload
-      end
-      specify { expect(good_submission.star).to eq(true) }
-    end
-    
-    describe "removes a star from a submission" do
-      before do
-        good_submission.update_attribute(:star, true)
-        visit problem_path(problem_with_submissions, :sub => good_submission)
-        click_link "Ne plus étoiler cette solution"
-        good_submission.reload
-      end
-      specify { expect(good_submission.star).to eq(false) }
-    end
-
-    describe "tries to give a star to a submission that he cannot see (hack)" do
-      before do
-        visit problem_path(problem_with_submissions, :sub => good_submission)
-        # Say that some admin marked the solution of the corrector as bad, in the meantime
-        good_corrector_submission.wrong!
-        good_corrector_solvedproblem.destroy
-        click_link "Étoiler cette solution"
-        good_submission.reload
-      end
-      specify do
-        expect(good_submission.star).to eq(false)
-        expect(page).to have_content(error_access_refused)
-      end
-    end
-    
     describe "visits problem with waiting submission" do
       before { visit problem_path(problem_with_submissions) }
       it do
@@ -364,7 +330,7 @@ describe "Submission pages" do
           expect(page).to have_selector("div", text: newcorrection)
           expect(page).to have_link("0", href: allnewsub_path(:levels => 3)) # no more waiting submission
           expect(page).to have_link("Marquer comme erronée")
-          expect(page).to have_link("Étoiler cette solution")
+          expect(page).not_to have_link("Étoiler cette solution") # only for roots
           expect(user.rating).to eq(rating_before + waiting_submission.problem.value)
         end
         
@@ -646,6 +612,25 @@ describe "Submission pages" do
         expect(page).to have_link("Supprimer cette soumission")
         expect { click_link("Supprimer cette soumission") }.to change{problem_with_submissions.submissions.count}.by(-1)
       end
+    end
+    
+    describe "gives a star to a submission" do
+      before do
+        visit problem_path(problem_with_submissions, :sub => good_submission)
+        click_link "Étoiler cette solution"
+        good_submission.reload
+      end
+      specify { expect(good_submission.star).to eq(true) }
+    end
+    
+    describe "removes a star from a submission" do
+      before do
+        good_submission.update_attribute(:star, true)
+        visit problem_path(problem_with_submissions, :sub => good_submission)
+        click_link "Ne plus étoiler cette solution"
+        good_submission.reload
+      end
+      specify { expect(good_submission.star).to eq(false) }
     end
     
     describe "marks a solution as wrong" do

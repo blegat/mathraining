@@ -3,7 +3,7 @@ class SubmissionsController < ApplicationController
   before_action :signed_in_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :search_script]
   before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
-  before_action :root_user, only: [:update_score]
+  before_action :root_user, only: [:update_score, :star, :unstar]
   before_action :corrector_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
   
   before_action :get_submission, only: [:destroy]
@@ -11,7 +11,7 @@ class SubmissionsController < ApplicationController
   before_action :get_problem, only: [:create, :create_intest, :index]
   
   before_action :in_test_or_root_user, only: [:destroy]
-  before_action :user_that_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :search_script, :uncorrect]
+  before_action :user_that_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :search_script, :uncorrect]
   before_action :online_problem, only: [:create, :create_intest]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]

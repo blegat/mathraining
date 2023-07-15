@@ -210,8 +210,8 @@ var hideStatement = function () {
   <% end %>
 <% end %>
 
-<!-- Marquer la soumission comme élégante -->
-<% if (current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk)) && @submission.correct? %>
+<!-- Etoiler la soumission -->
+<% if current_user.sk.root? && @submission.correct? %>
   <br/><center>
     <% if @submission.star %>
       <center><%= link_to 'Ne plus étoiler cette solution', problem_submission_unstar_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
