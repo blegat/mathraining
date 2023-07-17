@@ -327,12 +327,12 @@ class User < ActiveRecord::Base
   end
 
   # Returns the colored linked name of the user (see colored_name for explanations about name_type)
-  def linked_name(name_type = 0)
+  def linked_name(name_type = 0, add_corrector_prefix = true)
     if !self.active?
       return self.colored_name(name_type)
     else
       # Note: We give a color to the "a" so that the link is underlined with this color when it is hovered/clicked
-      return self.corrector_prefix + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]}'>" + self.colored_name(name_type, false) + "</a>"
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]}'>" + self.colored_name(name_type, false) + "</a>"
     end
   end
   

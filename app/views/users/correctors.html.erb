@@ -236,7 +236,7 @@ Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier cor
       <% if u.nil? %>
         -
       <% else %>
-        <%= raw(u.linked_name(2)) %>
+        <%= raw(u.linked_name(2, false)) %>
       <% end %>
     </td>
   <% end %>
