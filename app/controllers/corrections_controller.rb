@@ -116,6 +116,7 @@ class CorrectionsController < ApplicationController
 
       # Deal with notifications
       if current_user.sk != @submission.user
+        need_correction_level_update = false
         following = Following.where(:user => current_user.sk, :submission => @submission).first
         if following.nil?
           following = Following.new(:user => current_user.sk, :submission => @submission)
@@ -124,9 +125,14 @@ class CorrectionsController < ApplicationController
           else
             following.kind = 1 # First corrector of the submission
           end
+          need_correction_level_update = true
         end
         following.read = true
         following.save
+        
+        if need_correction_level_update
+          current_user.sk.update_correction_level
+        end
 
         @submission.followings.each do |f|
           if f.user == current_user.sk

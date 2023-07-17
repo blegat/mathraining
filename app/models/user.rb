@@ -281,21 +281,48 @@ class User < ActiveRecord::Base
       end
     end
   end
+  
+  # Update correction level
+  def update_correction_level
+    num_corrections = self.followings.where("kind > 0").count
+    level = 0
+    a = 1
+    b = 1
+    while num_corrections >= b
+      c = a+b
+      a = b
+      b = c
+      level = level + 1
+    end
+    level = level - (Rails.env.production? ? 8 : 1)
+    if self.correction_level < level
+      self.update_attribute(:correction_level, level)
+    end
+  end
+  
+  # Gives the corrector prefix (if any) for the name
+  def corrector_prefix
+    if (self.admin? || self.corrector?) && self.correction_level > 0
+      return "<b><sup>#{self.correction_level}</sup></b>"
+    else
+      return ""
+    end
+  end
 
   # Returns the colored name of the user:
   # name_type = 0 : to respect the user choice (full name or not)
   # name_type = 1 : to show the full name
   # name_type = 2 : to show the name with initial only for last name
-  def colored_name(name_type = 0)
+  def colored_name(name_type = 0, add_corrector_prefix = true)
     goodname = self.name      if name_type == 0
     goodname = self.fullname  if name_type == 1
     goodname = self.shortname if name_type == 2
     if !self.corrector?
-      return "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span>"
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span>"
     else
       debut = goodname[0]
       fin = goodname[1..-1]
-      return "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
     end
   end
 
@@ -305,7 +332,7 @@ class User < ActiveRecord::Base
       return self.colored_name(name_type)
     else
       # Note: We give a color to the "a" so that the link is underlined with this color when it is hovered/clicked
-      return "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]}'>" + self.colored_name(name_type) + "</a>"
+      return self.corrector_prefix + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]}'>" + self.colored_name(name_type, false) + "</a>"
     end
   end
   
@@ -315,6 +342,7 @@ class User < ActiveRecord::Base
     return (self.end_of_ban > DateTime.now)
   end
   
+  # Gives the date of end of ban (if any)
   def end_of_ban
     return nil if self.last_ban_date.nil?
     return self.last_ban_date + 2.weeks

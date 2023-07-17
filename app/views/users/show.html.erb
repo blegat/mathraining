@@ -130,7 +130,7 @@ html>body tbody.scroll {
 <div class="col-lg-<%= largeur %> col-md-<%= largeur %> col-sm-<%= largeur %> col-xs-12" style="text-align:center; padding:5px;">
   <div class="basic_container <%= class_name %>">
   <table style="margin:0px; margin-top:15px; width:100%; height:90px; padding:0px;">
-  <tr><td style="font-size:20px; padding-left:10px; padding-right:10px;"><%= raw(@user.colored_name) %></td></tr>
+  <tr><td style="font-size:20px; padding-left:10px; padding-right:10px;"><%= raw(@user.colored_name(0, false)) %></td></tr>
   <tr><td style="font-size:16px; font-weight:bold; padding-top:5px;"><%= grade %> <%= "<span style='color:red;'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if @signed_in && current_user.sk.root? && @user.is_banned %></td></tr>
   <tr><td style="padding-top:10px;"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :style => "margin-left:5px; margin-top:-2px;" %></td></tr>
@@ -782,7 +782,14 @@ html>body tbody.scroll {
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
     <div class="basic_container">
     <div class="container_title">Corrections</div>
-    <div style="padding-left:20px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> a participé à la correction de <span style="font-weight:bold; color:<%= couleur %>;"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site, merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !</div>    
+    <div style="padding-left:20px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> a participé à la correction de <span style="font-weight:bold; color:<%= couleur %>;"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
+    
+    <% if @user.correction_level > 0 %>
+      <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span style="font-weight:bold; color:<%= couleur %>;"><%= @user.correction_level %></span> de l'Ordre de Mathraining.
+    <% end %>
+    
+    Merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !
+    </div>    
     <div style="width:100%;">
     <% Groupdate.time_zone = false unless Rails.env.production? %>
     <% count_by_month_str = @user.followings.where("kind > 0").group_by_month(:created_at).count %>
