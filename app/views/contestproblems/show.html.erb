@@ -15,7 +15,7 @@
 <%= raw(htmlise(@contestproblem.statement)) %>
 
 <!-- Origine si organisateur ou root ou problème terminé -->
-<% if @contest.is_organized_by_or_root(current_user.sk) || @contestproblem.at_least(:corrected) %>
+<% if @contest.is_organized_by_or_root(current_user.sk) || @contestproblem.at_least(:in_correction) %>
 
   <% taille = @contestproblem.statement.size() %>
   <% liste = false %>

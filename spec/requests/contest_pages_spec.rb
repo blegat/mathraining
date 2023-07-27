@@ -34,6 +34,12 @@ describe "Contest pages" do
   let!(:contestscore4) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating4, rank: 4, score: 7,  medal: -1) }
   let!(:contestscore5) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating5, rank: 4, score: 7,  medal: -1) }
   
+  let!(:contest_in_progress) { FactoryGirl.create(:contest, status: :in_progress) }
+  let!(:contestproblem1_corrected) { FactoryGirl.create(:contestproblem, contest: contest_in_progress, status: :corrected) }
+  let!(:contestproblem2_in_correction) { FactoryGirl.create(:contestproblem, contest: contest_in_progress, status: :in_correction) }
+  let!(:contestproblem3_in_progress) { FactoryGirl.create(:contestproblem, contest: contest_in_progress, status: :in_progress) }
+  let!(:contestproblem4_not_started_yet) { FactoryGirl.create(:contestproblem, contest: contest_in_progress, status: :not_started_yet) }
+  
   let!(:offline_contest) { FactoryGirl.create(:contest, status: :in_construction) }
   let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, status: :in_construction, start_time: DateTime.now + 1.day, end_time: DateTime.now + 2.days) }
   
@@ -88,7 +94,7 @@ describe "Contest pages" do
   describe "user with rating 199" do
     before { sign_in user_with_rating_199 }
     
-    describe "visits one contest page" do    
+    describe "visits finished contest page" do    
       before { visit contest_path(contest) }
       it do
         should have_content("Concours ##{contest.number}") # Not h1: not correctly detected because of "Suivre ce concours"
@@ -132,6 +138,25 @@ describe "Contest pages" do
     describe "tries to visit an offline contest page" do
       before { visit contest_path(offline_contest) }
       it { should have_content(error_access_refused) }
+    end
+  end
+  
+  describe "user with rating 200" do # NB: This test should probably be moved to "views" tests
+    before { sign_in user_with_rating_200 }
+    
+    describe "visits running contest page" do    
+      before { visit contest_path(contest_in_progress) }
+      it do
+        should have_content("Concours ##{contest_in_progress.number}") # Not h1: not correctly detected because of "Suivre ce concours"
+        should have_content(contestproblem1_corrected.statement)
+        should have_content(contestproblem1_corrected.origin)
+        should have_content(contestproblem2_in_correction.statement)
+        should have_content(contestproblem2_in_correction.origin)
+        should have_content(contestproblem3_in_progress.statement)
+        should have_no_content(contestproblem3_in_progress.origin)
+        should have_no_content(contestproblem4_not_started_yet.statement)
+        should have_no_content(contestproblem4_not_started_yet.origin)
+      end
     end
   end
   
