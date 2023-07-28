@@ -33,15 +33,7 @@
       <b>Message automatique</b>
     <% end %>
   <% else %>
-    <% prems = true %>
-    <% @contest.organizers.order("last_name ASC, first_name ASC").each do |o| %>
-      <% if prems %>
-        <% prems = false %>
-      <% else %>
-        -
-      <% end %>
-      <%= raw(o.linked_name) %>
-    <% end %>
+    <b>Organisateurs</b>
   <% end %>
   </td></tr>
 
