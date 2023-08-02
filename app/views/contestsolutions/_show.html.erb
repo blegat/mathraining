@@ -34,9 +34,49 @@
 <% end %>
 </h3>
 
+<% if (@contestsolution.official? || @contestproblem.in_correction? || @contestproblem.in_recorrection?) && @contest.is_organized_by(current_user.sk) %>
+
+  <% @was_reserved = false %>
+
+  <script type="text/javascript">
+  var reserve = function () {
+    $.getScript("<%= reserve_sol_url(:id => @contestsolution) %>");
+  }
+  var unreserve = function () {
+    $.getScript("<%= unreserve_sol_url(:id => @contestsolution) %>");
+  }
+  </script>
+
+  <% res = @contestsolution.reservation %>
+  <% if res == 0 %>
+    <% @was_reserved = true %>
+    <% reservation_case = 1 %>
+  <% elsif res == current_user.sk.id %>
+    <% reservation_case = 3 %>
+  <% else %>
+    <% @was_reserved = true %>
+    <% reservation_case = 2 %>
+    <% other_name = User.find(res).name %>
+  <% end %>
+
+  <div id="correct1" style="background-color:#fffad2; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 1 %>">
+    Cliquez ici pour réserver.
+    <button id="button-reserve" class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver</button>
+  </div>
+
+  <div id="correct2" style="background-color:#ffd9de; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 2 %>">
+    Réservé par <b><%= other_name %></b>.
+  </div>
+
+  <div id="correct3" style="background-color:#d7efd9; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 3 %>">
+    Cliquez ici pour annuler votre réservation.
+    <button id="button-unreserve" class="btn btn-default btn-grey" margin-bottom:53px; style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
+  </div>
+<% end %>
+
 <!-- Affichage de la soumission (on ajoute 'fake' à l'id si on ne peut pas modifier la solution) -->
 <% if !@contestsolution.official %>
-  <div id="the<%= 'fake' if @contestsolution.user != current_user.sk %>" class="myoverflow" style="margin-top:-12px;">
+  <div id="the<%= 'fake' if @contestsolution.user != current_user.sk %>" class="myoverflow">
     <%= render 'subjects/content', ms: @contestsolution, kind: "contestsolution" %>
   </div>
 

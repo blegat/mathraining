@@ -38,9 +38,9 @@
   <% if !show_correctors || s.followings.first.nil? %>
     <tr class="warning"> <!-- Si en attente (pas encore corrigé) : toujours jaune, sauf si... -->
   <% elsif s.followings.first.user == current_user.sk %>
-    <tr style="background-color:#f3ffd9;"> <!-- si réservé par moi : un peu plus vert -->
+    <tr style="background-color:rgb(225,255,205);"> <!-- si réservé par moi : un peu plus vert -->
   <% else %>
-    <tr style="background-color:#ffeedb;"> <!-- si réservé par quelqu'un d'autre : un peu plus rouge -->
+    <tr style="background-color:rgb(255,225,205);"> <!-- si réservé par quelqu'un d'autre : un peu plus rouge -->
   <% end %>
 <!-- Si nouveau commentaire jamais lu : bleu si on est correcteur, rouge si on est pas correcteur -->
 <% elsif s.wrong_to_read? && current_user.sk != s.user %>
