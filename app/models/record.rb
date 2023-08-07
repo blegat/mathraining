@@ -37,19 +37,49 @@ class Record < ActiveRecord::Base
     Record.where(:complete => false).each do |r|
       curmonday = r.date
       nextmonday = curmonday+7
-      if(Submission.where("created_at >= ? AND created_at < ? AND status = ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime, Submission.statuses[:waiting]).count > 0)
-        next # not all submissions are corrected
+      curmonday_time = curmonday.to_time.to_datetime
+      nextmonday_time = nextmonday.to_time.to_datetime
+      
+      # check submissions not in a test
+      if Submission.where("created_at >= ? AND created_at < ? AND status = ? AND intest = ?", curmonday_time, nextmonday_time, Submission.statuses[:waiting], false).count > 0
+        next # not all submissions were corrected
+      end
+      
+      # check submissions in a test (the time used to compute correction time is the moment where the test ended, intead of s.created_at)
+      all_subs_in_test_corrected = true
+      modified_start_for_test = curmonday-2 # hardcoded, knowing that the longest test lasts for 2 days
+      modified_start_for_test_time = modified_start_for_test.to_time.to_datetime
+      Submission.where("created_at >= ? AND created_at < ? AND status = ? AND intest = ?", modified_start_for_test_time, nextmonday_time, Submission.statuses[:waiting], true).each do |s|
+        p = s.problem
+        t = p.virtualtest
+        date_start = t.takentests.where(:user_id => s.user_id).first.taken_time
+        date_sub = date_start + (t.duration).minutes
+        if date_sub >= curmonday_time and date_sub < nextmonday_time
+          all_subs_in_test_corrected = false
+        end
+      end
+      
+      unless all_subs_in_test_corrected
+        next # not all submissions from a test were corrected
       end
 
       total = 0
       number = 0
-      Submission.where("created_at >= ? AND created_at < ? AND status != ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime, Submission.statuses[:draft]).each do |s|
+      Submission.where("created_at >= ? AND created_at < ? AND status != ? AND (intest = ? OR created_at >= ?)", modified_start_for_test_time, nextmonday_time, Submission.statuses[:draft], true, curmonday_time).each do |s|
         submission_date = s.created_at
-        first_correction = s.corrections.where("user_id != ?", s.user_id).order(:created_at).first
-        unless first_correction.nil? # can happen for a plagiarized submission without any correction
-          first_correction_date = first_correction.created_at
-          total = total + (first_correction_date - submission_date)/(60*60*24).to_f
-          number = number+1
+        if s.intest?
+          p = s.problem
+          t = p.virtualtest
+          date_start = t.takentests.where(:user_id => s.user_id).first.taken_time
+          submission_date = date_start + (t.duration).minutes
+        end
+        if submission_date >= curmonday_time and submission_date < nextmonday_time
+          first_correction = s.corrections.where("user_id != ?", s.user_id).order(:created_at).first
+          unless first_correction.nil? # can happen for a plagiarized submission without any correction
+            first_correction_date = first_correction.created_at
+            total = total + (first_correction_date - submission_date)/(60*60*24).to_f
+            number = number+1
+          end
         end
       end
 

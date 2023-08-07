@@ -255,22 +255,27 @@ describe "Stats pages" do
     end
     
     describe "computes submission stats" do
-      let!(:now) { Time.zone.local(2015, 1, 14, 5, 0, 0) } # Wednesday 14/01/2015 at 5 am
+      let!(:now) { Time.zone.local(2015, 1, 21, 5, 0, 0) } # Wednesday 21/01/2015 at 5 am
       let!(:today) { now.in_time_zone.to_date }
-      let!(:mondaybeforelastmonday) { today - 9 } # 05/01/2015
+      let!(:mondaybeforelastmonday) { today - 9 } # 12/01/2015
       let!(:problem1) { FactoryGirl.create(:problem, section: section, online: true, number: 1111, level: 1) }
       let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true, number: 1112, level: 2) }
       let!(:problem3) { FactoryGirl.create(:problem, section: section, online: true, number: 1113, level: 3) }
-      let!(:submission11) { FactoryGirl.create(:submission, user: user1, problem: problem1, status: :correct,  created_at: now-28.days) }
-      let!(:correction11) { FactoryGirl.create(:correction, user: admin, submission: submission11,      created_at: now-26.days) } # 2 days later
-      let!(:submission12) { FactoryGirl.create(:submission, user: user1, problem: problem2, status: :correct,  created_at: now-21.days) }
-      let!(:correction12) { FactoryGirl.create(:correction, user: admin, submission: submission12,      created_at: now-20.days) } # 1 day later
-      let!(:submission13) { FactoryGirl.create(:submission, user: user1, problem: problem3, status: :wrong,  created_at: now-21.days) }
-      let!(:correction13) { FactoryGirl.create(:correction, user: admin, submission: submission13,      created_at: now-19.days) } # 2 days later
-      let!(:submission21) { FactoryGirl.create(:submission, user: user2, problem: problem1, status: :wrong_to_read,  created_at: now-21.days) }
-      let!(:correction21) { FactoryGirl.create(:correction, user: admin, submission: submission21,      created_at: now-17.days) } # 4 days later
-      let!(:submission22) { FactoryGirl.create(:submission, user: user2, problem: problem2, status: :waiting,  created_at: now-14.days) }
-      let!(:submission23) { FactoryGirl.create(:submission, user: user2, problem: problem3, status: :draft, created_at: now-14.days) }
+      let!(:sub11) { FactoryGirl.create(:submission, user: user1, problem: problem1, status: :correct, created_at: now-35.days) } # 17/12
+      let!(:cor11) { FactoryGirl.create(:correction, user: admin, submission: sub11, created_at: now-33.days) } # 2 days later
+      let!(:sub12) { FactoryGirl.create(:submission, user: user1, problem: problem2, status: :correct, created_at: now-28.days) } # 24/12
+      let!(:cor12) { FactoryGirl.create(:correction, user: admin, submission: sub12, created_at: now-27.days) } # 1 day later
+      let!(:sub13) { FactoryGirl.create(:submission, user: user1, problem: problem3, status: :wrong, created_at: now-28.days) } # 24/12
+      let!(:cor13) { FactoryGirl.create(:correction, user: admin, submission: sub13, created_at: now-26.days) } # 2 days later
+      let!(:sub21) { FactoryGirl.create(:submission, user: user2, problem: problem1, status: :wrong_to_read, created_at: now-28.days) } # 24/12
+      let!(:cor21) { FactoryGirl.create(:correction, user: admin, submission: sub21, created_at: now-24.days) } # 4 days later
+      let!(:sub22) { FactoryGirl.create(:submission, user: user2, problem: problem2, status: :waiting, created_at: now-21.days) } # 31/12
+      let!(:sub23) { FactoryGirl.create(:submission, user: user2, problem: problem3, status: :draft, created_at: now-21.days) }
+      
+      let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true, duration: 2880) } # Test taking 2 days
+      let!(:problem4_in_test) { FactoryGirl.create(:problem, section: section, online: true, number: 1114, level: 4, virtualtest: virtualtest) }
+      let!(:takentest) { Takentest.create(user: user1, virtualtest: virtualtest, taken_time: now-17.days, status: :in_progress) } # 04/01
+      let!(:sub14) { FactoryGirl.create(:submission, user: user1, problem: problem4_in_test, status: :waiting, intest: true, created_at: now-17.days+1.hour)} # 04/01 + 1 hour, but can only be corrected from 04/01 + 2 days = 06/01
       
       before do
         travel_to now
@@ -278,15 +283,16 @@ describe "Stats pages" do
         travel_back
       end
       
-      let!(:record0) { Record.where(:date => mondaybeforelastmonday - 35).first } # 01/12/2014 -> should not exist
-      let!(:record1) { Record.where(:date => mondaybeforelastmonday - 28).first } # 08/12/2014
-      let!(:record2) { Record.where(:date => mondaybeforelastmonday - 21).first } # 15/12/2014
-      let!(:record3) { Record.where(:date => mondaybeforelastmonday - 14).first } # 22/12/2014
-      let!(:record4) { Record.where(:date => mondaybeforelastmonday - 7).first }  # 29/12/2014
-      let!(:record5) { Record.where(:date => mondaybeforelastmonday).first }      # 05/01/2015
+      let!(:record0) { Record.where(:date => mondaybeforelastmonday - 42).first } # 01/12/2014 -> should not exist
+      let!(:record1) { Record.where(:date => mondaybeforelastmonday - 35).first } # 08/12/2014
+      let!(:record2) { Record.where(:date => mondaybeforelastmonday - 28).first } # 15/12/2014
+      let!(:record3) { Record.where(:date => mondaybeforelastmonday - 21).first } # 22/12/2014
+      let!(:record4) { Record.where(:date => mondaybeforelastmonday - 14).first } # 29/12/2014
+      let!(:record5) { Record.where(:date => mondaybeforelastmonday - 7).first }  # 05/01/2015
+      let!(:record6) { Record.where(:date => mondaybeforelastmonday).first }      # 12/01/2015
       
       specify do
-        expect(Record.count).to eq(5)
+        expect(Record.count).to eq(6)
         
         expect(record0).to eq(nil)
         
@@ -302,42 +308,52 @@ describe "Stats pages" do
         expect(record3.complete).to eq(true)
         expect(record3.avg_correction_time).to eq(7.0/3.0)
         
-        expect(record4.nb_submissions).to eq(1)
+        expect(record4.nb_submissions).to eq(2) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
         expect(record4.complete).to eq(false)
         
         expect(record5.nb_submissions).to eq(0)
-        expect(record5.complete).to eq(true)
-        expect(record5.avg_correction_time).to eq(0.0)
+        expect(record5.complete).to eq(false) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
+        
+        expect(record6.nb_submissions).to eq(0)
+        expect(record6.complete).to eq(true)
+        expect(record6.avg_correction_time).to eq(0.0)
       end
       
       describe "and recompute submission stats a week later" do
-        let!(:correction22) { FactoryGirl.create(:correction, user: admin, submission: submission22, created_at: now+2.days+6.hours) } # 16.25 days later
+        let!(:cor22) { FactoryGirl.create(:correction, user: admin, submission: sub22, created_at: now+2.days+6.hours) } # 23.25 days later
+        let!(:cor14) { FactoryGirl.create(:correction, user: admin, submission: sub14, created_at: now+1.day+12.hours) } # 16.5 days after end of test
         before do
-          submission22.wrong_to_read!
-          submission23.waiting!
-          submission23.update_attribute(:created_at, now+2.days) # Draft was sent but not corrected
+          sub22.wrong_to_read!
+          sub23.waiting!
+          sub23.update_attribute(:created_at, now+2.days) # Draft was sent but not corrected
+          sub14.correct!
           travel_to now+7.days
           Record.update
           travel_back
           record4.reload
           record5.reload
+          record6.reload
         end
         
-        let!(:record6) { Record.where(:date => mondaybeforelastmonday+7).first } # 12/01/2015
+        let!(:record7) { Record.where(:date => mondaybeforelastmonday+7).first } # 19/01/2015
         
         specify do
-          expect(Record.count).to eq(6)
+          expect(Record.count).to eq(7)
           
-          expect(record4.nb_submissions).to eq(1)
+          expect(record4.nb_submissions).to eq(2) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
           expect(record4.complete).to eq(true)
-          expect(record4.avg_correction_time).to eq(16.25)
+          expect(record4.avg_correction_time).to eq(23.25)
           
-          expect(record5.nb_submissions).to eq(0)
+          expect(record5.nb_submissions).to eq(0) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
           expect(record5.complete).to eq(true)
-          expect(record5.avg_correction_time).to eq(0.0)
+          expect(record5.avg_correction_time).to eq(16.5)
           
-          expect(record6.nb_submissions).to eq(1)
-          expect(record6.complete).to eq(false)
+          expect(record6.nb_submissions).to eq(0)
+          expect(record6.complete).to eq(true)
+          expect(record6.avg_correction_time).to eq(0.0)
+          
+          expect(record7.nb_submissions).to eq(1)
+          expect(record7.complete).to eq(false)
         end
       end
     end
