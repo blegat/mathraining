@@ -149,7 +149,7 @@
           En cours de correction
           <% if organizer %>
             <% nb_not_corrected = p.contestsolutions.where(:score => -1, :official => false).count %>
-            (<%= nb_not_corrected %> restant<%= "s" if nb_not_corrected > 1 %>)
+            (<%= nb_not_corrected %> restante<%= "s" if nb_not_corrected > 1 %>)
           <% end %>
         <% end %>
       <% end %>
