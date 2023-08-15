@@ -32,8 +32,9 @@ class Solvedquestion < ActiveRecord::Base
   # Find users having solved many questions in a very short amount of time
   def self.detect_suspicious_users
     suspect_time_range = [3.minutes, 10.minutes]
-    suspect_num_solves = [5]
+    suspect_num_solves = [5, 8]
     suspect_time_for_one_question = 1.minute
+    suspect_num_fast_solves = 10
     
     # Find all resolution times by user during the last day
     end_of_period = Date.today.in_time_zone
@@ -52,7 +53,7 @@ class Solvedquestion < ActiveRecord::Base
     resolution_times_by_user.each do |user_id, resolution_times|
       max_num_solves_in_time_range = [0, 0]
       first_to_check = [0, 0]
-      num_rapid_solves = 0
+      num_fast_solves = 0
       fastest_solve = 1.hour
       (0..(resolution_times.size-1)).each do |i|
         (0..(suspect_time_range.size-1)).each do |j|
@@ -64,21 +65,21 @@ class Solvedquestion < ActiveRecord::Base
         if i > 0
           fastest_solve = [fastest_solve, resolution_times[i] - resolution_times[i-1]].min
           if resolution_times[i] - resolution_times[i-1] < suspect_time_for_one_question
-            num_rapid_solves += 1
+            num_fast_solves += 1
           end
         end
         
       end
-      suspect = false
-      (0..(suspect_num_solves.size-1)).each do |j|
-        if max_num_solves_in_time_range[j] >= suspect_num_solves[j]
-          suspect = true
-        end
-      end
+      
+      suspect = true
+      suspect = false if max_num_solves_in_time_range[0] < suspect_num_solves[0] # solved 5 questions in 3 min
+      suspect = false if max_num_solves_in_time_range[1] < suspect_num_solves[1] # solved 8 questions in 10 min
+      suspect = false if num_fast_solves < suspect_num_fast_solves               # solved 10 questions in < 1 min
+      
       if suspect
         user = User.find(user_id)
         if user.active
-          suspect_users.push({:user => user, :num_solves_in_time_range => max_num_solves_in_time_range, :num_rapid_solves => num_rapid_solves, :fastest_solve => fastest_solve})
+          suspect_users.push({:user => user, :num_solves_in_time_range => max_num_solves_in_time_range, :num_fast_solves => num_fast_solves, :fastest_solve => fastest_solve})
         end
       end
     end
@@ -93,7 +94,7 @@ class Solvedquestion < ActiveRecord::Base
         end
         forum_message += ". "
         forum_message += (s[:user].sex == 0 ? "Il" : "Elle")
-        forum_message += " a résolu " + s[:num_rapid_solves].to_s + " exercice#{'s' if s[:num_rapid_solves] >= 2} après moins d'une minute de réflexion, #{'dont un ' if s[:num_rapid_solves] >= 2}" + "en " + s[:fastest_solve].to_i.to_s + " secondes."
+        forum_message += " a résolu " + s[:num_fast_solves].to_s + " exercice#{'s' if s[:num_fast_solves] >= 2} après moins d'une minute de réflexion, #{'dont un ' if s[:num_fast_solves] >= 2}" + "en " + s[:fastest_solve].to_i.to_s + " secondes."
       end
       
       subject = Subject.where(:subject_type => :corrector_alerts).first
