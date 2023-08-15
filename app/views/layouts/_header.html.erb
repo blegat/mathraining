@@ -47,14 +47,14 @@
           <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
         <% end %>
         
-        <!-- Nouvelles suspicions de plagiat (pour les root) -->
-        <% if current_user.sk.root? && num_waiting_suspicions > 0 %>
-          <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
-        <% end %>
-        
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
         <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
           <%= link_to "#{num_waiting_starproposals}", starproposals_path, class: "btn btn-yellow" %>
+        <% end %>
+        
+        <!-- Nouvelles suspicions de plagiat (pour les root) -->
+        <% if current_user.sk.root? && num_waiting_suspicions > 0 %>
+          <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
         <% end %>
         
         <!-- Corrections (pour les correcteurs) -->
@@ -102,14 +102,14 @@
           <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
         <% end %>
         
-        <!-- Nouvelles suspicions de plagiat (pour les root) -->
-        <% if current_user.sk.root? && num_waiting_suspicions > 0 %>
-          <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
-        <% end %>
-        
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
         <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
           <%= link_to "#{num_waiting_starproposals}", starproposals_path, class: "btn btn-yellow" %>
+        <% end %>
+        
+        <!-- Nouvelles suspicions de plagiat (pour les root) -->
+        <% if current_user.sk.root? && num_waiting_suspicions > 0 %>
+          <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
         <% end %>
         
         <!-- Corrections (pour les correcteurs) -->

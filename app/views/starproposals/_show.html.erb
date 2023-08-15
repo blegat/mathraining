@@ -13,7 +13,7 @@
 
 <% if starproposals.size > 0 %>  
   <table class="table table-bordered">
-  <tr><th class="hidden-xs hidden-sm">Date</th><th>Propposé par</th><th>Raison et Réponse</th><th style="text-align:center;">Statut</th><% if current_user.sk.root? %><th style="text-align:center;">Action</th><% end %>
+  <tr><th class="hidden-xs hidden-sm">Date</th><th>Proposé par</th><th>Raison</th><th style="text-align:center;">Statut</th><% if current_user.sk.root? %><th style="text-align:center;">Action</th><% end %>
   </tr>
   <% starproposals.each do |s| %>
     <tr class="<%= s.color_class %>">
