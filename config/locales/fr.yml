@@ -91,6 +91,9 @@ fr:
         abbreviation: "Abréviation"
         short_abbreviation: "Abréviation courte"
         initials: "Initiales"
+      starproposal:
+        reason: "Raison"
+        answer: "Réponse"
       subject:
         title: "Titre"
         content: "Message"
@@ -100,6 +103,8 @@ fr:
         problem_id: "Problème"
       submission:
         content: "Soumission"
+      suspicion:
+        source: "Source"
       tchatmessage:
         content: "Message"
       theory:

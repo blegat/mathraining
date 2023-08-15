@@ -33,6 +33,7 @@
 #  accept_analytics          :boolean          default(TRUE)
 #  can_change_name           :boolean          default(TRUE)
 #  last_ban_date             :datetime
+#  correction_level          :integer          default(0)
 #
 require "spec_helper"
 

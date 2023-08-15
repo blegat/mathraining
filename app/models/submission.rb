@@ -34,6 +34,7 @@ class Submission < ActiveRecord::Base
   has_many :followers, through: :followings, source: :user
   has_many :notifs, dependent: :destroy
   has_many :suspicions, dependent: :destroy
+  has_many :starproposals, dependent: :destroy
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 

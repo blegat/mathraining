@@ -217,6 +217,14 @@ FactoryGirl.define do
     resolution_time DateTime.now
   end
   
+  # Star proposal
+  factory :starproposal do
+    association :submission
+    association :user
+    sequence(:reason) { |n| "Ma raison numéro #{n} !" }
+    status :waiting_treatment
+  end
+  
   # Subject
   factory :subject do
     sequence(:title) { |n| "Titre #{n}" }

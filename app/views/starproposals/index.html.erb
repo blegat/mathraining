@@ -1,36 +1,36 @@
-<% provide(:title, 'Suspicions de plagiats') %>
+<% provide(:title, "Propositions d'étoiles") %>
 
 <% show_all = false %>
 <% if !current_user.sk.root? || (params.has_key?:show_all) %>
   <% show_all = true %>
 <% end %>
 
-<h1><%= title_1("Suspicions de plagiats") %>
+<h1><%= title_1("Propositions d'étoiles") %>
 <% if current_user.sk.root? %>
   <span style="font-size:20px;"> - 
   <% if show_all %>
-    <%= link_to "Nouvelles suspicions uniquement", suspicions_path %></span>
+    <%= link_to "Nouvelles propositions uniquement", starproposals_path %></span>
   <% else %>
-    <%= link_to "Tout voir", suspicions_path(:show_all => 1) %></span>
+    <%= link_to "Tout voir", starproposals_path(:show_all => 1) %></span>
   <% end %>
 <% end %>
 </h1>
 
 <center>
-  <%= will_paginate @suspicions, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-  <%= will_paginate @suspicions, :style => "margin-top:15px; margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+  <%= will_paginate @starproposals, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
+  <%= will_paginate @starproposals, :style => "margin-top:15px; margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
-<% if @suspicions.size == 0 %>
+<% if @starproposals.size == 0 %>
   <% if show_all %>
-    Aucune suspicion.
+    Aucune proposition.
   <% else %>
-    Aucune nouvelle suspicion.
+    Aucune nouvelle proposition.
   <% end %>
 <% else %>
   <table class="table table-bordered">
-  <tr><th class="hidden-xs hidden-sm">Date</th><% if current_user.sk.root? %><th class="hidden-xs">Détecté par</th><% end %><th>Auteur</th><th style="text-align:center;">Type</th><% if show_all %><th style="text-align:center;">Statut</th><% end %><th></th></tr>
-  <% @suspicions.each do |s| %>
+  <tr><th class="hidden-xs hidden-sm">Date</th><% if current_user.sk.root? %><th class="hidden-xs">Proposé par</th><% end %><th>Auteur</th><th style="text-align:center;">Type</th><% if show_all %><th style="text-align:center;">Statut</th><% end %><th></th></tr>
+  <% @starproposals.each do |s| %>
     <tr class="<%= s.color_class %>">
     <td class="hidden-xs hidden-sm" style="width:200px;"><%= write_date(s.created_at) %></td>
     <% if current_user.sk.root? %>

@@ -203,25 +203,34 @@ var hideStatement = function () {
 <!-- Repasser la soumission comme erronée (root ou correcteur qui vient d'accepter) -->
 <% if @submission.correct? %>
   <% ten_minutes_ago = DateTime.now - 10.minutes %>
-  <% if current_user.sk.root? || (current_user.sk.corrector? && @resolu && current_user.sk != @submission.user && Solvedproblem.where(:user => @submission.user, :problem => @problem).first.correction_time > ten_minutes_ago && @submission.corrections.where(:user => current_user.sk).where("created_at > ?", ten_minutes_ago).count > 0) %>
-    <br/><center>
-    <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? nil : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?" }), :method => :put, :style => "color:red;" %>
-    </center>
+  <% if current_user.sk.root? || (current_user.sk.corrector? && @resolu && current_user.sk != @submission.user && @submission.corrections.where(:user => current_user.sk).where("created_at > ?", ten_minutes_ago).count > 0) %>
+    <% sp = Solvedproblem.where(:user => @submission.user, :problem => @problem).first %>
+    <!-- NB: sp.nil? can happen in test environment only -->
+    <% if current_user.sk.root? || (!sp.nil? && sp.correction_time > ten_minutes_ago) %>
+      <br/><center>
+      <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? nil : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?" }), :method => :put, :style => "color:red;" %>
+      </center>
+    <% end %>
   <% end %>
 <% end %>
 
-<!-- Etoiler la soumission -->
-<% if current_user.sk.root? && @submission.correct? %>
-  <br/><center>
-    <% if @submission.star %>
-      <center><%= link_to 'Ne plus étoiler cette solution', problem_submission_unstar_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
-    <% else %>
-      <center><%= link_to 'Étoiler cette solution', problem_submission_star_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
-    <% end %>
-  </center>
-<% end %>
-
 <% if current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk) %>
+  <% if @submission.correct? %>
+    <!-- Propositions d'étoiles -->
+    <%= render 'starproposals/show' %>
+    
+    <!-- Etoiler la soumission -->
+    <% if current_user.sk.root? %>
+      <br/><center>
+        <% if @submission.star %>
+          <center><%= link_to 'Ne plus étoiler cette solution', problem_submission_unstar_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
+        <% else %>
+          <center><%= link_to 'Étoiler cette solution', problem_submission_star_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
+        <% end %>
+      </center>
+    <% end %>
+  <% end %>
+  
   <!-- Suspicions de plagiat -->
   <%= render 'suspicions/show' %>
   

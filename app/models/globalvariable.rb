@@ -4,9 +4,10 @@
 #
 # Table name: globalvariables
 #
-#  id    :integer          not null, primary key
-#  key   :string
-#  value :text
+#  id      :integer          not null, primary key
+#  key     :string
+#  value   :boolean
+#  message :text
 #
 class Globalvariable < ActiveRecord::Base
 

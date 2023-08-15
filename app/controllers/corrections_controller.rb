@@ -193,7 +193,7 @@ class CorrectionsController < ApplicationController
     end
   end
   
-  ########## GET METHODS ##########
+  ########## HELPER METHODS ##########
 
   # Helper method to give the points of a problem to a user
   def point_attribution(user, problem)

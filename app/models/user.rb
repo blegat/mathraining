@@ -35,6 +35,7 @@
 #  accept_analytics          :boolean          default(TRUE)
 #  can_change_name           :boolean          default(TRUE)
 #  last_ban_date             :datetime
+#  correction_level          :integer          default(0)
 #
 include ERB::Util
 
@@ -70,6 +71,7 @@ class User < ActiveRecord::Base
   has_many :pointspersections, dependent: :destroy
   has_many :submissions, dependent: :destroy
   has_many :suspicions, dependent: :destroy
+  has_many :starproposals, dependent: :destroy
   has_many :followings, dependent: :destroy
   has_many :followed_submissions, through: :followings, source: :submission
   has_many :notifs, dependent: :destroy

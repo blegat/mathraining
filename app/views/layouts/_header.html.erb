@@ -22,6 +22,7 @@
       <!-- Dans le cas normal -->
       <% if @signed_in and (current_user.sk.admin || current_user.sk.corrector) %>
         <% num_waiting_suspicions = (current_user.sk.root ? Suspicion.where(:status => :waiting_confirmation).count : 0) %>
+        <% num_waiting_starproposals = (current_user.sk.root ? Starproposal.where(:status => :waiting_treatment).count : 0) %>
       
         <form class="navbar-form navbar-left hidden-small" role="search">
 
@@ -47,8 +48,13 @@
         <% end %>
         
         <!-- Nouvelles suspicions de plagiat (pour les root) -->
-        <% if current_user.sk.root && num_waiting_suspicions > 0 %>
+        <% if current_user.sk.root? && num_waiting_suspicions > 0 %>
           <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
+        <% end %>
+        
+        <!-- Nouvelles propositions d'étoiles (pour les root) -->
+        <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
+          <%= link_to "#{num_waiting_starproposals}", starproposals_path, class: "btn btn-yellow" %>
         <% end %>
         
         <!-- Corrections (pour les correcteurs) -->
@@ -97,8 +103,13 @@
         <% end %>
         
         <!-- Nouvelles suspicions de plagiat (pour les root) -->
-        <% if current_user.sk.root && num_waiting_suspicions > 0 %>
+        <% if current_user.sk.root? && num_waiting_suspicions > 0 %>
           <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
+        <% end %>
+        
+        <!-- Nouvelles propositions d'étoiles (pour les root) -->
+        <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
+          <%= link_to "#{num_waiting_starproposals}", starproposals_path, class: "btn btn-yellow" %>
         <% end %>
         
         <!-- Corrections (pour les correcteurs) -->

@@ -92,6 +92,7 @@ Rails.application.routes.draw do
     match '/search_script', to: 'submissions#search_script', :via => [:post], as: :search_script
     
     resources :suspicions, only: [:create]
+    resources :starproposals, only: [:create]
   end
 
   match '/allsub', to: 'submissions#allsub', :via => [:get], as: :allsub
@@ -103,6 +104,9 @@ Rails.application.routes.draw do
   
   # Suspicions
   resources :suspicions, only: [:index, :destroy, :update]
+  
+  # Star proposals
+  resources :starproposals, only: [:index, :destroy, :update]
   
   # Virtual tests
   resources :virtualtests do

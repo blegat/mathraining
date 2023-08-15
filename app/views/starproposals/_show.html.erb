@@ -1,0 +1,60 @@
+<script type="text/javascript">
+  var showNewStarproposalForm = function () {
+    document.getElementById("btn_show_new_starproposal_form").style.display = 'none';
+    document.getElementById("new_starproposal_form").style.display = 'block';
+  }
+  var editStarproposal = function (starproposal_id) {
+    document.getElementById("line_starproposal_edit_" + starproposal_id).style.display = 'revert';
+  }
+</script>
+
+<h3>Propositions d'étoile</h3>
+<% starproposals = @submission.starproposals %>
+
+<% if starproposals.size > 0 %>  
+  <table class="table table-bordered">
+  <tr><th class="hidden-xs hidden-sm">Date</th><th>Propposé par</th><th>Raison et Réponse</th><th style="text-align:center;">Statut</th><% if current_user.sk.root? %><th style="text-align:center;">Action</th><% end %>
+  </tr>
+  <% starproposals.each do |s| %>
+    <tr class="<%= s.color_class %>">
+    <td class="hidden-xs" style="width:200px;"><%= write_date(s.created_at) %></td>
+    <td style="width:200px;"><%= raw(s.user.linked_name) %></td>
+    <td><%= raw(bbcode(s.reason)) %><% unless s.waiting_treatment? %><br/><br/><b>Réponse</b> : <%= raw(bbcode(s.answer)) %><% end %></td>
+    <td style="text-align:center; width:110px;"><%= s.status_string %></td>
+    <% if current_user.sk.root? %>
+      <td style="text-align:center; width:100px;">
+      <%= link_to "Traîter", "javascript:editStarproposal(#{s.id})" %>
+      </td>
+    <% end %>
+    </tr>
+    
+    <% if current_user.sk.root? %>
+      <%= form_for s, :url => starproposal_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ?" } do |f| %>
+        <tr id="line_starproposal_edit_<%= s.id %>" class="<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
+        <td class="hidden-xs hidden-sm" style="text-align:center; vertical-align:middle;">
+        <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette proposition d'étoile ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :style => "color:red;" %>
+        </td>
+        <td>
+        </td>
+        <td><%= f.text_area :answer, :class => "form-control", :id => "edit_answer_field_#{s.id}", :style => "height:70px;" %></td>
+        <td><%= f.select(:status, options_for_select({ "En attente" => :waiting_treatment, "Accepté" => :accepted, "Rejeté" => :rejected }, s.status), {}, { :class => "form-control", :id => "edit_status_field_#{s.id}" }) %></td>
+        <td style="text-align:center;"><%= f.submit "Modifier", :class => "btn btn-primary", :id => "edit_button_#{s.id}" %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  <% end %>
+  </table>
+<% end %>
+
+<%= link_to "Proposer une étoile", "javascript:showNewStarproposalForm()", id: "btn_show_new_starproposal_form" %>
+
+<% new_starproposal = Starproposal.new %>
+<div id="new_starproposal_form" style="display:<%= Rails.env.test? ? 'block' : 'none' %>;">
+<%= form_for new_starproposal, url: submission_starproposals_path(@submission) do |f| %>
+  <div class="form-group">
+  <%= f.label :reason, "Pourquoi étoiler cette soumission ?" %>
+  <%= f.text_area :reason, :class => "form-control", :id => "new_reason_field", :maxlength => "2000", :style => "height:70px;" %>
+  </div>
+  <%= f.submit "Envoyer pour traitement", :class => "btn btn-primary", :id => "new_starproposal_button" %>
+<% end %>
+</div>

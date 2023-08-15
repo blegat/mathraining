@@ -6,6 +6,9 @@
 <% if current_user.sk.root? || current_user.sk.suspicions.count > 0 %>
  - <%= link_to "Plagiats", suspicions_path %>
 <% end %>
+<% if current_user.sk.root? || current_user.sk.starproposals.count > 0 %>
+ - <%= link_to "Étoiles", starproposals_path %>
+<% end %>
 </span>
 </h1>
 
