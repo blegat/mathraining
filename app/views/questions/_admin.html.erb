@@ -14,13 +14,13 @@
   <% if f.online %>
     <%= link_to "Modifier cet exercice", edit_question_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
     <% if f.is_qcm %>
-      <%= link_to "Modifier les réponses de cet exercice", question_manage_items_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
+      <%= link_to "Modifier les réponses", question_manage_items_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
     <% end %>
     <%= link_to "Modifier l'explication", question_explanation_path(f) %>
   <% else %>
     <%= link_to "Modifier cet exercice", edit_question_path(f) %> |
     <% if f.is_qcm %>
-      <%= link_to "Modifier les réponses de cet exercice", question_manage_items_path(f) %> |
+      <%= link_to "Modifier les réponses", question_manage_items_path(f) %> |
     <% end %>
     <%= link_to "Modifier l'explication", question_explanation_path(f) %> |
     <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet exercice ?" } %>

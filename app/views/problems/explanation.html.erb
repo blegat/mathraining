@@ -1,4 +1,4 @@
-<% provide(:title, "Modifier la solution d'un problème") %>
+<% provide(:title, "Modifier la solution d'un problème".html_safe) %>
 
 <h1><%= title_4("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), (link_to "Problème ##{ @problem.number }", @problem), "Modifier la solution") %></h1>
 

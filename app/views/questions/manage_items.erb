@@ -1,4 +1,4 @@
-<% provide(:title, "Modifier les choix de l'exercice") %>
+<% provide(:title, "Modifier les choix d'un exercice".html_safe) %>
 
 <h1><%= title_4("Théorie", (link_to @question.chapter.section.name, @question.chapter.section), (link_to @question.chapter.name, chapter_path(@question.chapter, :type => 5, :which => @question.id)), "Choix") %></h1>
 

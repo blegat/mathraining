@@ -1,4 +1,4 @@
-<% provide(:title, "Propositions d'étoiles") %>
+<% provide(:title, "Propositions d'étoiles".html_safe) %>
 
 <% show_all = false %>
 <% if !current_user.sk.root? || (params.has_key?:show_all) %>
