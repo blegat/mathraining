@@ -193,7 +193,9 @@ Rails.application.routes.draw do
   match '/last_policy', to: 'privacypolicies#last_policy', :via => [:get], as: :last_policy
   
   # Pictures
-  resources :pictures, only: [:index, :show, :new, :create, :destroy]
+  resources :pictures, only: [:index, :show, :new, :create, :destroy] do
+    match '/image', to: "pictures#image", :via => [:get]
+  end
   
   # Actualities
   resources :actualities, only: [:update, :edit, :destroy, :new, :create]

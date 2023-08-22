@@ -1,17 +1,23 @@
 #encoding: utf-8
 class PicturesController < ApplicationController
-  before_action :signed_in_user, only: [:show, :new]
+  before_action :signed_in_user, only: [:index, :show, :new]
   before_action :signed_in_user_danger, only: [:create, :destroy]
   
   before_action :get_picture, only: [:show, :destroy]
+  before_action :get_picture2, only: [:image]
   
-  before_action :admin_user_or_chapter_creator
+  before_action :admin_user_or_chapter_creator, only: [:index, :show, :new, :create, :destroy]
   before_action :author, only: [:show, :destroy]
+  before_action :check_access_key, only: [:image]
+  
+  # Show all pictures
+  def index
+  end
 
   # Show one picture
   def show
   end
-
+  
   # Create a picture (show the form)
   def new
     @picture = Picture.new
@@ -33,6 +39,11 @@ class PicturesController < ApplicationController
     @picture.destroy
     redirect_to pictures_path
   end
+  
+  # Used to have a permanent link /picture/[:id]/image?key=[:access_key]
+  def image
+    redirect_to url_for(@picture.image)
+  end
 
   private
   
@@ -41,6 +52,12 @@ class PicturesController < ApplicationController
   # Get the picture
   def get_picture
     @picture = Picture.find_by_id(params[:id])
+    return if check_nil_object(@picture)
+  end
+  
+  # Get the picture
+  def get_picture2
+    @picture = Picture.find_by_id(params[:picture_id])
     return if check_nil_object(@picture)
   end
   
@@ -56,6 +73,13 @@ class PicturesController < ApplicationController
   # Check that current user is the author of the picture
   def author
     if @picture.user.id != current_user.sk.id
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Check that the access key is present and correct
+  def check_access_key
+    if !params.has_key?:key or params[:key] != @picture.access_key
       render 'errors/access_refused' and return
     end
   end

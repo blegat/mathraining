@@ -5,5 +5,5 @@
 <br/>
 <center>
 <%= image_tag @picture.image, :style => "width:800px;" %><br/><br/>
-<%= rails_blob_url(@picture.image, :only_path => true) %>
+<%= picture_image_url(@picture, :only_path => true, :key => @picture.access_key) %>
 </center>
