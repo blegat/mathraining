@@ -65,7 +65,7 @@ describe "Actuality pages" do
           expect(page).to have_success_message("Image ajoutée.")
           expect(page).to have_selector("h1", text: "Récupérer un url")
           expect(page).to have_xpath("//img[contains(@src, '#{good_image}')]")
-          expect(page).to have_content(rails_blob_url(Picture.last.image, :only_path => true))
+          expect(page).to have_content(picture_image_url(Picture.last, :only_path => true, :key => Picture.last.access_key))
         end
         
         let!(:picture) { Picture.last }
@@ -78,6 +78,16 @@ describe "Actuality pages" do
             expect(page).to have_link("Supprimer cette image", href: picture_path(picture))
             expect { click_link("Supprimer cette image", href: picture_path(picture)) }.to change(Picture, :count).by(-1)
           end
+        end
+        
+        describe "and visitor tries to see the picture with correct access key" do
+          before { visit picture_image_path(picture, :key => picture.access_key) }
+          it { should have_no_content(error_access_refused) }
+        end
+        
+        describe "and visitor tries to see the picture with incorrect access key" do
+          before { visit picture_image_path(picture, :key => picture.access_key + "WRONG") }
+          it { should have_content(error_access_refused) }
         end
         
         describe "and another admin tries to see it" do
