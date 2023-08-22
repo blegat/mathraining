@@ -23,7 +23,7 @@ class ColorsController < ApplicationController
 
   # Update a color (send the form)
   def update
-    if @color.update_attributes(params.require(:color).permit(:pt, :name, :femininename, :color))
+    if @color.update(params.require(:color).permit(:pt, :name, :femininename, :color))
       flash[:success] = "Niveau et couleur modifiés."
     else
       flash[:danger] = error_list_for(@color)

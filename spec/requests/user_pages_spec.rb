@@ -408,7 +408,7 @@ describe "User pages" do
     
     describe "tries to visit wepion groups while not being in it" do
       before do
-        zero_user.update_attributes(:wepion => false, :group => "")
+        zero_user.update(:wepion => false, :group => "")
         visit groups_path
       end
       it { should have_content(error_access_refused) }
@@ -430,8 +430,8 @@ describe "User pages" do
     
     describe "visits wepion groups" do
       before do
-        zero_user.update_attributes(:wepion => true, :group => "A")
-        other_zero_user.update_attributes(:wepion => false, :group => "")
+        zero_user.update(:wepion => true, :group => "A")
+        other_zero_user.update(:wepion => false, :group => "")
         visit groups_path
       end
       it do

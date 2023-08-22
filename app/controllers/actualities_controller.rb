@@ -28,7 +28,7 @@ class ActualitiesController < ApplicationController
 
   # Update an actuality (send the form)
   def update
-    if @actuality.update_attributes(params.require(:actuality).permit(:title, :content))
+    if @actuality.update(params.require(:actuality).permit(:title, :content))
       flash[:success] = "Actualité modifiée."
       redirect_to root_path
     else

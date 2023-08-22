@@ -1,5 +1,3 @@
-require "resque_web"
-
 Rails.application.routes.draw do
 
   # Sections
@@ -242,7 +240,5 @@ Rails.application.routes.draw do
   get '/422', to: 'errors#unacceptable'
   get '/500', to: 'errors#internal_error'
   get '*unmatched_route', to: 'errors#not_found', constraints: lambda { |req| req.path.exclude? 'rails/active_storage' }
-
-  mount ResqueWeb::Engine => '/resque_web'
 
 end

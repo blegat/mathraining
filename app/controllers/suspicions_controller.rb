@@ -45,7 +45,7 @@ class SuspicionsController < ApplicationController
   # Update a suspicion (for example its status, to confirm it)
   def update
     old_status = @suspicion.status
-    if @suspicion.update_attributes(params.require(:suspicion).permit(:user_id, :source, :status))
+    if @suspicion.update(params.require(:suspicion).permit(:user_id, :source, :status))
       if @submission.correct? && params[:suspicion][:status] == "confirmed"
         # Mark submission as incorrect (changing the user's score if needed)
         @submission.mark_incorrect

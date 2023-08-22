@@ -23,7 +23,7 @@ class CategoriesController < ApplicationController
 
   # Update a category (send the form)
   def update
-    if @category.update_attributes(params.require(:category).permit(:name))
+    if @category.update(params.require(:category).permit(:name))
       flash[:success] = "Catégorie modifiée."
     else
       flash[:danger] = error_list_for(@category)

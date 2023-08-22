@@ -1,16 +1,28 @@
 source 'https://rubygems.org'
 
-ruby "2.5.1"
+ruby "2.7.8"
 
-gem 'rails', '= 5.2.0'
+gem 'rails', '= 6.0'
+# The following lines are probably not mandatory but without them the 'Resolving dependencies' of 'bundle update rails' was taking ages
+gem 'actioncable', '= 6.0'
+gem 'actionmailer', '= 6.0'
+gem 'actionpack', '= 6.0'
+gem 'actionview', '= 6.0'
+gem 'activejob', '= 6.0'
+gem 'activemodel', '= 6.0'
+gem 'activerecord', '= 6.0'
+gem 'activestorage', '= 6.0'
+gem 'activesupport', '= 6.0'
+gem 'railties', '= 6.0'
+
 #gem 'activeresource', '~> 4.1.0'
 # gem 'protected_attributes'
 gem "bootstrap-sass", "~> 3.4.1"
 gem 'bcrypt', '3.1.16'
 gem 'faker', '1.0.1'
-gem 'will_paginate', '3.1.6'
+gem 'will_paginate', '3.1.7'
 gem 'bootstrap-will_paginate', '0.0.10'
-gem 'rails-i18n'
+gem 'rails-i18n', '~> 7.0'
 #gem 'mathjax-rails', "~> 0.0.4"
 #gem "paperclip", "~> 5.2.0"
 gem "recaptcha", "~> 4.1.0", :require => "recaptcha/rails"
@@ -25,7 +37,7 @@ gem 'eventmachine', "1.2.3"
 
 gem "resque", "~> 1.27.3"
 gem 'resque_mailer'
-gem 'resque-web', require: 'resque_web'
+#gem 'resque-web', require: 'resque_web'
 gem 'resque_action_mailer_backend'
 
 # Markdown
@@ -34,7 +46,7 @@ gem 'resque_action_mailer_backend'
 #gem 'pagedown-rails', '~> 1.1.2' # client-side
 
 group :development, :test do
-  gem "sqlite3", "~> 1.3.6"
+  gem "sqlite3", "~> 1.4"
   gem 'rspec-rails', '3.5'
   gem 'random_record'
 
@@ -48,7 +60,7 @@ gem 'web-console', '~> 2.0', group: :development
 # in production environments by default.
 #group :assets do ## Removed in Rails 4 and was making rake assets:precompile fail!
   gem 'sass-rails',   '~> 5.0.1'
-  gem 'coffee-rails', '~> 4.2.1'
+  gem 'coffee-rails', '~> 5.0.0'
   gem 'uglifier', '>= 1.2.3'
 #end
 
@@ -58,10 +70,10 @@ gem 'jquery-rails'
 
 gem 'select2-rails'
 
-gem 'activerecord-session_store'
+gem 'activerecord-session_store', '= 1.1.3'
 
 group :test do
-  gem 'capybara', '3.18.0'
+  gem 'capybara', '3.39.2'
   gem 'capybara-email'
   gem 'puma'
   gem 'factory_girl_rails', '4.1.0'
@@ -69,7 +81,7 @@ group :test do
   #gem 'capybara-webkit'
   gem 'capybara-select-2'
   gem 'capybara-screenshot'
-  gem 'selenium-webdriver', '3.142'
+  gem 'selenium-webdriver'
   gem 'rails-controller-testing'
   #gem 'poltergeist'
   # Code coverage

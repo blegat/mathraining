@@ -228,7 +228,7 @@ describe "Contestcorrection pages" do
         
         describe "and tries to publish the results while the solution was uncorrected" do
           before do
-            usersol_finished.update_attributes(corrected: false, star: false) # Simulate another corrector marking the solution as non corrected
+            usersol_finished.update(corrected: false, star: false) # Simulate another corrector marking the solution as non corrected
             click_button "Publier les résultats"
             contestproblem_finished.reload
           end

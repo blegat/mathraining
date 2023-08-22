@@ -58,7 +58,7 @@ describe "Privacy policy pages" do
     let!(:policy1) { FactoryGirl.create(:privacypolicy, online: true, publication_time: DateTime.now - 2.weeks) }
     let!(:policy2) { FactoryGirl.create(:privacypolicy, online: true, publication_time: DateTime.now - 1.week) }
     let!(:policy3_offline) { FactoryGirl.create(:privacypolicy, online: false, publication_time: DateTime.now) }
-    before { user.update_attributes(:consent_time => DateTime.now - 10.days, :last_policy_read => false) }
+    before { user.update(:consent_time => DateTime.now - 10.days, :last_policy_read => false) }
     
     describe "user" do
       before { sign_in user }

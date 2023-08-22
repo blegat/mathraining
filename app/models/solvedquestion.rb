@@ -111,8 +111,8 @@ class Solvedquestion < ActiveRecord::Base
         m = Message.create(:user_id    => 0,
                            :subject_id => subject.id,
                            :content    => forum_message)
-        subject.update_attributes(:last_comment_time => m.created_at,
-                                  :last_comment_user_id => 0)
+        subject.update(:last_comment_time => m.created_at,
+                       :last_comment_user_id => 0)
       end
     end
   end
