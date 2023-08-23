@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby "2.7.8"
+ruby "3.0.0"
 
 gem 'rails', '= 6.0.6'
 
@@ -9,8 +9,8 @@ gem 'rails', '= 6.0.6'
 gem "bootstrap-sass", "~> 3.4.1"
 gem 'bcrypt', '3.1.16'
 gem 'faker', '1.0.1'
-gem 'will_paginate', '3.1.7'
-gem 'bootstrap-will_paginate', '0.0.10'
+gem 'will_paginate', '3.3.0'
+gem 'bootstrap-will_paginate', '1.0.0'
 gem 'rails-i18n', '~> 7.0'
 #gem 'mathjax-rails', "~> 0.0.4"
 #gem "paperclip", "~> 5.2.0"
@@ -36,7 +36,7 @@ gem 'resque_action_mailer_backend'
 
 group :development, :test do
   gem "sqlite3", "~> 1.4"
-  gem 'rspec-rails', '3.5'
+  gem 'rspec-rails', '~> 5.0'
   gem 'random_record'
 
   gem 'bullet'
@@ -59,7 +59,7 @@ gem 'jquery-rails'
 
 gem 'select2-rails'
 
-gem 'activerecord-session_store', '= 1.1.3'
+gem 'activerecord-session_store', '= 2.0.0'
 
 group :test do
   gem 'capybara', '3.39.2'

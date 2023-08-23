@@ -8,10 +8,11 @@
       <br/><b><%= n_real + n_fake %> pièces jointes :</b><br/>
     <% end %>
     
-    <% files = SortedSet.new %>
+    <% files = Array.new %>
     <% s.myfiles.each do |f| %>
-      <% files.add([f.file.filename.to_s, f]) %>
+      <% files.push([f.file.filename.to_s, f]) %>
     <% end %>
+    <% files.sort! %>
     
     <% files.each do |ff| %>
       <% f = ff[1] %>
