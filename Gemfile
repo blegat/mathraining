@@ -2,18 +2,7 @@ source 'https://rubygems.org'
 
 ruby "2.7.8"
 
-gem 'rails', '= 6.0'
-# The following lines are probably not mandatory but without them the 'Resolving dependencies' of 'bundle update rails' was taking ages
-gem 'actioncable', '= 6.0'
-gem 'actionmailer', '= 6.0'
-gem 'actionpack', '= 6.0'
-gem 'actionview', '= 6.0'
-gem 'activejob', '= 6.0'
-gem 'activemodel', '= 6.0'
-gem 'activerecord', '= 6.0'
-gem 'activestorage', '= 6.0'
-gem 'activesupport', '= 6.0'
-gem 'railties', '= 6.0'
+gem 'rails', '= 6.0.6'
 
 #gem 'activeresource', '~> 4.1.0'
 # gem 'protected_attributes'
