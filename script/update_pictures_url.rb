@@ -137,5 +137,6 @@ def replace_all_urls_on_mathraining
   res = res + replace_all_urls_in_model(Chapter, "description")
   res = res + replace_all_urls_in_model(Contest, "description")
   res = res + replace_all_urls_in_model(Privacypolicy, "content")
+  res = res + replace_all_urls_in_model(Item, "ans")
   $summaries.append("Found " + res.to_s + " urls in total")
 end
