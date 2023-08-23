@@ -48,7 +48,7 @@ class ChaptersController < ApplicationController
   # Update a chapter (send the form)
   def update
     old_level = @chapter.level
-    if @chapter.update_attributes(params.require(:chapter).permit(:name, :description, :level, :author))
+    if @chapter.update(params.require(:chapter).permit(:name, :description, :level, :author))
       if old_level != @chapter.level
         last_chapter = @section.chapters.where(:level => params[:chapter][:level]).order(:position).last
         if last_chapter.nil?

@@ -172,7 +172,7 @@ class UsersController < ApplicationController
     old_last_name = @user.last_name
     old_first_name = @user.first_name
 
-    if @user.update_attributes(params.require(:user).permit(:first_name, :last_name, :see_name, :sex, :year, :password, :password_confirmation, :email, :accept_analytics))
+    if @user.update(params.require(:user).permit(:first_name, :last_name, :see_name, :sex, :year, :password, :password_confirmation, :email, :accept_analytics))
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
       if !@user.can_change_name && !current_user.root?
@@ -347,7 +347,7 @@ class UsersController < ApplicationController
       if (params[:user][:password].nil? or params[:user][:password].length == 0)
         session["errorChange"] = ["Mot de passe est vide"]
         redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
-      elsif (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.update_attributes(params.require(:user).permit(:password, :password_confirmation))
+      elsif (not Rails.env.production? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.update(params.require(:user).permit(:password, :password_confirmation))
         @user.update_attribute(:key, SecureRandom.urlsafe_base64)
         @user.update_attribute(:recup_password_date_limit, nil)
         flash[:success] = "Votre mot de passe vient d'être modifié. Vous pouvez maintenant vous connecter à votre compte."

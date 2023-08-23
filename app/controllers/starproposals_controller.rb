@@ -46,7 +46,7 @@ class StarproposalsController < ApplicationController
   def update
     params[:starproposal][:answer].strip! if !params[:starproposal][:answer].nil?
     old_status = @starproposal.status
-    if @starproposal.update_attributes(params.require(:starproposal).permit(:answer, :status))
+    if @starproposal.update(params.require(:starproposal).permit(:answer, :status))
       if params[:starproposal][:status] == "accepted"
         @submission.star = true
         @submission.save

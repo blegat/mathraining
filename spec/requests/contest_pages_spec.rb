@@ -205,10 +205,10 @@ describe "Contest pages" do
       describe "and define cutoffs" do
         before do
           # Put wrong scores (to check they are re-computed correctly), as well as a fake score that should not exist
-          contestscore1.update_attributes(score: 23, rank: 7, medal: -1)
-          contestscore2.update_attributes(score: 23, rank: 7, medal: -1)
-          contestscore3.update_attributes(score: 23, rank: 7, medal: -1)
-          contestscore4.update_attributes(score: 23, rank: 7, medal: -1)
+          contestscore1.update(score: 23, rank: 7, medal: -1)
+          contestscore2.update(score: 23, rank: 7, medal: -1)
+          contestscore3.update(score: 23, rank: 7, medal: -1)
+          contestscore4.update(score: 23, rank: 7, medal: -1)
           contestscore5.destroy
           FactoryGirl.create(:contestscore, contest: contest, score: 23, rank: 7, medal: -1)
           fill_in "bronze_cutoff", with: bronze_cutoff

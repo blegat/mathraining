@@ -1,94 +1,20 @@
+require "active_support/core_ext/integer/time"
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  # Code is not reloaded between requests
-  config.cache_classes = true
-
-  # Full error reports are disabled and caching is turned on
-  config.consider_all_requests_local       = false
-  config.action_controller.perform_caching = true
-
-  # Disable Rails's static asset server (Apache or nginx will already do this)
-  config.serve_static_assets = true
-
-  # Compress JavaScripts and CSS
-  config.assets.compress = true
-
-  # Don't fallback to assets pipeline if a precompiled asset is missed
-  config.assets.compile = false
-
-  # Generate digests for assets URLs
-  config.assets.digest = true
-
-  # Defaults to nil and saved in location specified by config.assets.prefix
-  # config.assets.manifest = YOUR_PATH
-
-  # Specifies the header that your server uses for sending files
-  # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
-  # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for nginx
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
-
-  # See everything in the log (default is :info)
-  # config.log_level = :debug
-
-  # Prepend all log lines with the following tags
-  # config.log_tags = [ :subdomain, :uuid ]
-
-  # Use a different logger for distributed setups
-  # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
-
-  # Use a different cache store in production
-  # config.cache_store = :mem_cache_store
-
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server
-  # config.action_controller.asset_host = "http://assets.example.com"
-
-  # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-
-  # Disable delivery errors, bad email addresses will be ignored
-  # config.action_mailer.raise_delivery_errors = false
-
-  # Enable threaded mode
-  # config.threadsafe!
-
-  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
-  # the I18n.default_locale when a translation can not be found)
-  config.i18n.fallbacks = true
-
-  # Send deprecation notices to registered listeners
-  config.active_support.deprecation = :notify
-
-  # Log the query plan for queries taking more than this (works
-  # with SQLite, MySQL, and PostgreSQL)
-  # config.active_record.auto_explain_threshold_in_seconds = 0.5
-  
-  config.eager_load = true
-  
-  # For deliver_later to work :
-  config.active_job.queue_adapter = :resque
-  
-  # Hide renderings from logs
-  config.action_view.logger = nil
-  
-  # Personalized logs 
-  config.log_tags = [ lambda { |req| Time.now}, :remote_ip ] # Include IP address in the logs
-  config.log_level = :info # Set to :debug for more information (not sure it works with lograge)
-
-  # -- Stuff added when upgrading to rails 5.2.0 --
   # Code is not reloaded between requests.
-  #config.cache_classes = true
+  config.cache_classes = true
 
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
   # and those relying on copy on write to perform better.
   # Rake tasks automatically ignore this option for performance.
-  #config.eager_load = true
+  config.eager_load = true
 
   # Full error reports are disabled and caching is turned on.
-  #config.consider_all_requests_local       = false
-  #config.action_controller.perform_caching = true
+  config.consider_all_requests_local       = false
+  config.action_controller.perform_caching = true
 
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
@@ -98,31 +24,29 @@ Rails.application.configure do
   # Apache or NGINX already handles this.
   #config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
-  # Compress JavaScripts and CSS.
-  #config.assets.js_compressor = :uglifier
+  # Compress CSS using a preprocessor.
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  #config.assets.compile = false
-
-  # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
+  config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.action_controller.asset_host = 'http://assets.example.com'
+  # config.asset_host = 'http://assets.example.com'
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
 
-  # Store uploaded files on the local file system (see config/storage.yml for options)
+  # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 
-  # Use the lowest log level to ensure availability of diagnostic information
-  # when problems arise.
-  #config.log_level = :debug
+  # Include generic and useful information about system operation, but avoid logging too much
+  # information to avoid inadvertent exposure of personally identifiable information (PII).
+  config.log_level = :info # Set to :debug for more information (not sure it works with lograge)
+  config.log_tags = [ lambda { |req| Time.now}, :remote_ip ] # Include IP address in the logs
 
   # Prepend all log lines with the following tags.
   #config.log_tags = [ :request_id ]
@@ -130,9 +54,9 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
-  # Use a real queuing backend for Active Job (and separate queues per environment)
+  # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter     = :resque
-  # config.active_job.queue_name_prefix = "mathraining_#{Rails.env}"
+  # config.active_job.queue_name_prefix = "mathraining_production"
 
   #config.action_mailer.perform_caching = false
 
@@ -142,16 +66,22 @@ Rails.application.configure do
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
-  #config.i18n.fallbacks = true
+  config.i18n.fallbacks = true
 
   # Send deprecation notices to registered listeners.
-  #config.active_support.deprecation = :notify
+  config.active_support.deprecation = :notify
+
+  # Log disallowed deprecations.
+  config.active_support.disallowed_deprecation = :log
+
+  # Tell Active Support which deprecation messages to disallow.
+  config.active_support.disallowed_deprecation_warnings = []
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   #config.log_formatter = ::Logger::Formatter.new
 
   # Use a different logger for distributed setups.
-  # require 'syslog/logger'
+  # require "syslog/logger"
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
   #if ENV["RAILS_LOG_TO_STDOUT"].present?
@@ -162,4 +92,45 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   #config.active_record.dump_schema_after_migration = false
+
+  # Inserts middleware to perform automatic connection switching.
+  # The `database_selector` hash is used to pass options to the DatabaseSelector
+  # middleware. The `delay` is used to determine how long to wait after a write
+  # to send a subsequent read to the primary.
+  #
+  # The `database_resolver` class is used by the middleware to determine which
+  # database is appropriate to use based on the time delay.
+  #
+  # The `database_resolver_context` class is used by the middleware to set
+  # timestamps for the last write to the primary. The resolver uses the context
+  # class timestamps to determine how long to wait before reading from the
+  # replica.
+  #
+  # By default Rails will store a last write timestamp in the session. The
+  # DatabaseSelector middleware is designed as such you can define your own
+  # strategy for connection switching and pass that into the middleware through
+  # these configuration options.
+  # config.active_record.database_selector = { delay: 2.seconds }
+  # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
+  # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+  
+  # ===== Not part from the default production.rb =====
+  
+  # Disable Rails's static asset server (Apache or nginx will already do this)
+  config.serve_static_assets = true
+  
+  # Compress JavaScripts and CSS
+  config.assets.compress = true
+
+  # Generate digests for assets URLs
+  config.assets.digest = true
+  
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  config.force_ssl = true
+  
+  # For deliver_later to work :
+  config.active_job.queue_adapter = :resque
+  
+  # Hide renderings from logs
+  config.action_view.logger = nil
 end

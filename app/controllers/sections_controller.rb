@@ -21,7 +21,7 @@ class SectionsController < ApplicationController
 
   # Update a section (send the form)
   def update
-    if @section.update_attributes(params.require(:section).permit(:name, :abbreviation, :short_abbreviation, :initials, :description))
+    if @section.update(params.require(:section).permit(:name, :abbreviation, :short_abbreviation, :initials, :description))
       flash[:success] = "Section modifiée."
       redirect_to @section
     else

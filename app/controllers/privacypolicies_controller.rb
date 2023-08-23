@@ -46,7 +46,7 @@ class PrivacypoliciesController < ApplicationController
 
   # Update a privacy policy or its description (send the form)
   def update
-    if @privacypolicy.update_attributes(params.require(:privacypolicy).permit(:description, :content))
+    if @privacypolicy.update(params.require(:privacypolicy).permit(:description, :content))
       flash[:success] = "Modification enregistrée."
       redirect_to privacypolicies_path
     else

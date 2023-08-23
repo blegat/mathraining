@@ -64,7 +64,7 @@ class ContestsController < ApplicationController
 
   # Update a contest (send the form)
   def update
-    if @contest.update_attributes(params.require(:contest).permit(:number, :description, :medal))
+    if @contest.update(params.require(:contest).permit(:number, :description, :medal))
       flash[:success] = "Concours modifié."
       redirect_to contest_path
     else

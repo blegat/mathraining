@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Ruby 2.5.1
+    - name: Set up Ruby 3.0.0
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.5.1 # Not needed with a .ruby-version file
+        ruby-version: 3.0.0 # Not needed with a .ruby-version file
 #       bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Build and test with Rake
       env:
@@ -21,7 +21,7 @@ jobs:
       run: |
         bundle install
         #bundle update rake
-        #gem update --system 2.5.1
+        #gem update --system 3.0.0
         #gem install bundler --version 2.2.27
         export SECRET_KEY_BASE=$(bundle exec rake secret)
         RAILS_ENV=test bundle exec rake db:migrate --trace

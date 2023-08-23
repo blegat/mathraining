@@ -418,7 +418,7 @@ def create_subjects
                            user:       User.where(:admin => false).order(:created_at).last,
                            content:    "Je me demandais : comment devient-on correcteur ?",
                            created_at: DateTime.now - 5.days)
-  subject.update_attributes(last_comment_time: message.created_at, last_comment_user: message.user)
+  subject.update(last_comment_time: message.created_at, last_comment_user: message.user)
   
   # One important subject for Wépion
   user = User.where(:root => true).first
@@ -438,7 +438,7 @@ def create_subjects
                            user:       User.where(:wepion => true).first,
                            content:    "Merci pour cette information précieuse.",
                            created_at: time + 2.hours)
-  subject.update_attributes(last_comment_time: message.created_at, last_comment_user: message.user)
+  subject.update(last_comment_time: message.created_at, last_comment_user: message.user)
   
   # One important subject for correctors
   user = User.where(:root => false, :admin => true).first
