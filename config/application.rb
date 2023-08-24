@@ -20,7 +20,7 @@ Bundler.require(*Rails.groups)
 module Mathraining
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.0
+    config.load_defaults 7.0
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
@@ -70,6 +70,8 @@ module Mathraining
     config.assets.precompile += ["application-print.css"]
     
     config.time_zone = 'Brussels'
+    
+    config.active_storage.variant_processor = :mini_magick # default is vips
     
     # lograge is a gem for 'better' logs
     config.lograge.enabled = true

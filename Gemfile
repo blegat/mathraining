@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.0.0'
 
-gem 'rails', '= 6.1.7.6'
+gem 'rails', '= 7.0'
 
 gem 'bootstrap-sass', '~> 3.4.1'
 gem 'bcrypt', '3.1.16'
@@ -30,7 +30,7 @@ group :development, :test do
 end
 
 group :development do
-  gem 'annotate', '~> 3.1.1'
+  gem 'annotate', '~> 3.2'
   gem 'web-console', '~> 2.0'
 end
 
