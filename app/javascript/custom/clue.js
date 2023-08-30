@@ -14,6 +14,18 @@ var Clue = {
         el.height('auto');
       });
     }
-    return false;
   }
 }
+
+class ClueClass extends HTMLButtonElement {
+  constructor() { super(); }
+  connectedCallback() {
+  this.addEventListener("click", e => {
+      e.preventDefault();
+      Clue.toggle(this.dataset.textId);
+      return false;
+    });
+  }
+}
+
+customElements.define("clue-onclick", ClueClass, { extends: "button" });

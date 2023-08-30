@@ -15,16 +15,16 @@
   <% correctors = User.select(:id, :first_name, :last_name, :see_name).where("admin = ? OR corrector = ?", true, true).order("first_name, last_name") %>
   
   <table class="table table-bordered">
-  <tr><th class="hidden-xs hidden-sm">Date</th><th>Détecté par</th><th>Source</th><th style="text-align:center;">Statut</th><% if current_user.sk.root? %><th style="text-align:center;">Action</th><% end %>
+  <tr class="table-light"><th class="d-none d-lg-table-cell">Date</th><th>Détecté par</th><th>Source</th><th class="text-center">Statut</th><% if current_user.sk.root? %><th class="text-center">Action</th><% end %>
   </tr>
   <% suspicions.each do |s| %>
-    <tr class="<%= s.color_class %>">
-    <td class="hidden-xs hidden-sm" style="width:200px;"><%= write_date(s.created_at) %></td>
+    <tr class="table-<%= s.color_class %>">
+    <td class="d-none d-lg-table-cell" style="width:200px;"><%= write_date(s.created_at) %></td>
     <td style="width:200px;"><%= raw(s.user.linked_name) %></td>
     <td><%= link_to s.source, s.source, target: "_blank" %></td>
-    <td style="text-align:center; width:110px;"><%= s.status_string %></td>
+    <td class="text-center" style="width:110px;"><%= s.status_string %></td>
     <% if current_user.sk.root? %>
-      <td style="text-align:center; width:100px;">
+      <td class="text-center" style="width:100px;">
       <%= link_to "Modifier", "javascript:editSuspicion(#{s.id})" %>
       </td>
     <% end %>
@@ -32,18 +32,18 @@
     
     <% if current_user.sk.root? %>
       <%= form_for s, :url => suspicion_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ? Si vous confirmez une suspicion, l'étudiant ne pourra plus soumettre de solution à ce problème avant 6 mois." } do |f| %>
-        <tr id="line_suspicion_edit_<%= s.id %>" class="<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
-        <td class="hidden-xs hidden-sm" style="text-align:center; vertical-align:middle;">
+        <tr id="line_suspicion_edit_<%= s.id %>" class="table-<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
+        <td class="d-none d-lg-table-cell text-center align-middle">
         <% unless s.confirmed? %>
           <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette suspicion de plagiat ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :style => "color:red;" %>
         <% end %>
         </td>
         <td>
-        <%= f.select(:user_id, options_for_select(correctors.collect {|u| [ u.name, u.id ] }, s.user_id), {}, { :class => "form-control", :id => "edit_user_field_#{s.id}" }) %>
+        <%= f.select(:user_id, options_for_select(correctors.collect {|u| [ u.name, u.id ] }, s.user_id), {}, { :class => "form-select", :id => "edit_user_field_#{s.id}" }) %>
         </td>
         <td><%= f.text_field :source, :class => "form-control", :id => "edit_source_field_#{s.id}" %></td>
-        <td><%= f.select(:status, options_for_select({ "À confirmer" => :waiting_confirmation, "Confirmé" => :confirmed, "Pardonné" => :forgiven, "Rejeté" => :rejected }, s.status), {}, { :class => "form-control", :id => "edit_status_field_#{s.id}" }) %></td>
-        <td style="text-align:center;"><%= f.submit "Modifier", :class => "btn btn-primary", :id => "edit_button_#{s.id}" %></td>
+        <td><%= f.select(:status, options_for_select({ "À confirmer" => :waiting_confirmation, "Confirmé" => :confirmed, "Pardonné" => :forgiven, "Rejeté" => :rejected }, s.status), {}, { :class => "form-select", :id => "edit_status_field_#{s.id}" }) %></td>
+        <td class="text-center"><%= f.submit "Modifier", :class => "btn btn-primary", :id => "edit_button_#{s.id}" %></td>
         </tr>
       <% end %>
     <% end %>
@@ -53,33 +53,32 @@
 
 <% if current_user.sk.root? && @submission.plagiarized? && @submission.user.active? %>
   <% num_plagiarism = @submission.user.submissions.where(:status => :plagiarized).count %>
-  <%= @submission.user.name %> a envoyé <b><%= num_plagiarism %> soumission<%= 's' if num_plagiarism > 1 %> plagiée<%= 's' if num_plagiarism > 1 %></b> sur Mathraining.<br/><br/>
+  <p><%= @submission.user.name %> a envoyé <b><%= num_plagiarism %> soumission<%= 's' if num_plagiarism > 1 %> plagiée<%= 's' if num_plagiarism > 1 %></b> sur Mathraining.</p>
   <% if @submission.user.is_banned %>
-    <span style="color:red;">Il est actuellement banni du site, jusqu'au <%= write_date(@submission.user.end_of_ban) %>.</span>
+    <p style="color:red;">Il est actuellement banni du site, jusqu'au <%= write_date(@submission.user.end_of_ban) %>.</p>
   <% elsif !@submission.user.last_ban_date.nil? %>
-    <span style="color:orange;">Il a déjà été banni le <%= write_date(@submission.user.last_ban_date) %>. Une nouvelle sanction peut être appliquée si la date de ce plagiat est postérieure à ce précédent bannissement.</span>
+    <p style="color:orange;">Il a déjà été banni le <%= write_date(@submission.user.last_ban_date) %>. Une nouvelle sanction peut être appliquée si la date de ce plagiat est postérieure à ce précédent bannissement.</p>
   <% else %>
-    Il n'a jamais été banni.
+    <p>Il n'a jamais été banni.</p>
   <% end %>
-  <br/><br/>
   
   <% unless @submission.user.is_banned %>
     <% end_of_ban = DateTime.now + 2.weeks %>
-    <center>
+    <p class="text-center">
     <%= link_to "Bannir #{@submission.user.name} pour deux semaines", user_ban_temporarily_path(@submission.user), :method => :put, style: "color:red;", data: { confirm: "Êtes-vous sûr de vouloir bannir #{@submission.user.name} jusqu'au #{write_date_only(end_of_ban)} ?" } %>
-    </center><br/>
+    </p>
   <% end %>
 <% end %>
 
-<%= link_to "Soumettre une nouvelle suspicion de plagiat", "javascript:showNewSuspicionForm()", id: "btn_show_new_suspicion_form" %>
+<p id="btn_show_new_suspicion_form"><%= link_to "Soumettre une nouvelle suspicion de plagiat", "javascript:showNewSuspicionForm()" %></p>
 
 <% new_suspicion = Suspicion.new %>
 <div id="new_suspicion_form" style="display:<%= Rails.env.test? ? 'block' : 'none' %>;">
 <%= form_for new_suspicion, url: submission_suspicions_path(@submission) do |f| %>
-  <div class="form-group">
-  <%= f.label :source, "Source (lien vers une autre soumission ou une source extérieure)" %>
+  <div class="mb-2">
+  <%= f.label :source, "Source (lien vers une autre soumission ou une source extérieure)", :class => "form-label" %>
   <%= f.text_field :source, :class => "form-control", :id => "new_source_field" %>
   </div>
-  <%= f.submit "Envoyer pour confirmation", :class => "btn btn-primary", :id => "new_suspicion_button" %>
+  <%= f.submit "Envoyer pour confirmation", :class => "btn btn-primary mb-3", :id => "new_suspicion_button" %>
 <% end %>
 </div>

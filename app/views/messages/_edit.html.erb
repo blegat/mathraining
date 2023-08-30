@@ -1,13 +1,7 @@
-<%= form_for [m.subject, m], :url => subject_message_path(m.subject, m, :action => :update, :q => @q), :html => { :multipart => true, :style => "margin-top:20px;" }  do |f| %>
-  <% @new = false %>
-  <%= render 'messages/form', f: f, m: m %>
+<%= form_for [m.subject, m], :url => subject_message_path(m.subject, m, :action => :update, :q => @q), :html => { :multipart => true, :class => "mt-3" }  do |f| %>
+  <%= render 'messages/form', f: f, m: m, postfix: postfix %>
+  <%= render 'shared/edit_files', s: m, postfix: postfix %>
 
-  <!-- Pièces jointes -->
-  <%= render 'subjects/files', s: m %>
-  <span id="spanFiles<%= @postfix %>"></span>
-  <input type="hidden" name="postfix" value="<%= @postfix %>">
-  <input type="button" id="addFile<%= @postfix %>" value="Ajouter une pièce jointe" onclick="Joint.add('<%= @postfix %>')" <%= 'disabled="disabled"' if current_user.other %> />
-  <br /><br/>
-  <%= f.submit "Modifier", id: "Submit#{ @postfix }", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
-  <button class="btn btn-lg btn-default btn-grey" onclick="return Rolling.hideActual();">Annuler</button>
+  <%= f.submit "Modifier", id: "Submit#{ postfix }", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+  <button class="btn btn-lg btn-light" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>

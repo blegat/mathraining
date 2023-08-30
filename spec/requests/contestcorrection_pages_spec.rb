@@ -313,7 +313,7 @@ describe "Contestcorrection pages" do
     
     # -- TESTS THAT REQUIRE JAVASCRIPT --
     
-    describe "wants to modify the solution", :js => true do
+    describe "wants to modify the correction", :js => true do
       before do
         visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
         click_link("Modifier la correction")

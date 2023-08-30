@@ -1,6 +1,8 @@
-<% @postfix = "EditSubject" %>
+<% postfix = "EditSubject" %>
 
-<div id="the<%= @postfix %>" class="myoverflow">
+<% can_edit = current_user.sk.root || (s.user_id > 0 && (s.user == current_user.sk || (current_user.sk.admin && !s.user.admin))) %>
+
+<div id="the<%= postfix %>" class="myoverflow">
 
 <% if !@subject.question.nil? %>
   <%= render 'subjects/show_exo', q: @subject.question %>
@@ -10,14 +12,13 @@
   <%= render 'subjects/show_contest', contest: @subject.contest %>
 <% end %>
 
-<%= render 'subjects/content', ms: s, kind: "subject" %>
+<%= render 'shared/post', ms: s, kind: "subject", can_edit: can_edit, postfix: postfix %>
 
 </div>
 
-<% if @canmodif %>
-  <div id="form<%= @postfix %>" class="myoverflow" style="height:0px;">
-  <% @edit = true %>
-  <%= render 'subjects/edit', s: s %>
+<% if can_edit %>
+  <div id="form<%= postfix %>" class="myoverflow px-1" style="height:0px;">
+  <%= render 'subjects/edit', s: s, postfix: postfix %>
   </div>
 <% end %>
 

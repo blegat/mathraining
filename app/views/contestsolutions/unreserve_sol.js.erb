@@ -1,17 +1,19 @@
-var correct1 = document.getElementById("correct1");
-var correct2 = document.getElementById("correct2");
-var correct3 = document.getElementById("correct3");
+var div_reserved_by_nobody = document.getElementById("div_reserved_by_nobody");
+var div_reserved_by_other = document.getElementById("div_reserved_by_other");
+var div_reserved_by_me = document.getElementById("div_reserved_by_me");
+
+var line_sol = document.getElementById("line_sol_<%= @contestsolution.id %>")
 
 var MI = document.getElementById("MathInput");
 var SC = document.getElementById("score");
-var PJ = document.getElementById("PJ");
+var PJ = document.getElementById("addFile");
 var BT1 = document.getElementById("BT1");
 var BT2 = document.getElementById("BT2");
 var BT3 = document.getElementById("BT3");
 
-correct1.style.display = "block"
-correct2.style.display = "none"
-correct3.style.display = "none"
+div_reserved_by_nobody.style.display = "block"
+div_reserved_by_other.style.display = "none"
+div_reserved_by_me.style.display = "none"
 
 MI.disabled = true
 PJ.disabled = true
@@ -19,3 +21,4 @@ BT1.disabled = true
 BT2.disabled = true
 BT3.disabled = true
 if(SC) { SC.disabled = true }
+line_sol.classList.remove('table-warning-greener')

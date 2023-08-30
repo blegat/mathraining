@@ -1,40 +1,40 @@
 <% link = current_user.sk.links.where(:discussion_id => @discussion.id).first %>
 <% params[:nonread] = link.nonread %>
 
-<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
-
 <script type="text/javascript">
 
 var scrollHandler = function () {
-  var more_posts_url = $('.pagination .next_page a').attr('href')
+  var more_posts_url = $('.pagination a').last().attr('href')
   
-  var compenser = 80 // Because I could not solve bug on Android/Chrome
-  if($(window).width() >= 768)
-  {
-    if(document.getElementById('menu').offsetHeight > document.getElementById('messages').offsetHeight)
+  if (more_posts_url != undefined)
+  {  
+    var compenser = 80 // Because I could not solve bug on Android/Chrome
+    if($(window).width() >= 768)
     {
-      compenser = document.getElementById('menu').offsetHeight - document.getElementById('messages').offsetHeight
+      if(document.getElementById('main-div').offsetHeight > document.getElementById('messages').offsetHeight)
+      {
+        compenser = document.getElementById('main-div').offsetHeight - document.getElementById('messages').offsetHeight
+      }
     }
-  }
-  
-  if(more_posts_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 20 - compenser)
-  {
-    $('.toreplace').html('<br/>Chargement des messages anciens...')
-    $.getScript(more_posts_url + "?nonread=<%= params[:nonread] %>")
+    
+    if(more_posts_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 20 - compenser)
+    {
+      $('.toreplace').html('<br/>Chargement des messages anciens...')
+      $.getScript(more_posts_url + "?nonread=<%= params[:nonread] %>")
+    }
   }
 }
 
-$(window).scroll(scrollHandler);
+window.addEventListener("load", () => {
+  window.addEventListener("scroll", () => {
+    scrollHandler();
+  });
+});
 </script>
 
 <% provide(:title, 'Messages') %>
-<h1><%= title_1("Messages") %>
-  <% if !current_user.sk.follow_message %>
-    <span style="float:right;"><%= link_to "M'avertir des nouveaux messages par e-mail", add_followingmessage_path, :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, disabled: current_user.other %></span>
-  <% else %>
-    <span style="float:right;"><%= link_to "Ne plus m'avertir par e-mail", remove_followingmessage_path, class: 'btn btn-default btn-grey', disabled: current_user.other %></span>
-  <% end %>
-</h1>
+
+<%= render 'title' %>
 
 <% show = 20 %>
 <% if(params.has_key?:show) %>
@@ -43,76 +43,69 @@ $(window).scroll(scrollHandler);
 
 <% @nouveau = false %>
 
-<div class="row" style="height:80%;" id="menu">
-  <div class="col-md-3 col-sm-4 col-xs-12">
+<div class="row" style="height:80%;" id="main-div">
+  <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 noprint">
     <%= render 'menu' %>
   </div>
 
-  <div class="col-md-9 col-sm-8 col-xs-12" id="messages">
+  <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
+    <div id="messages">
+      <div class="mt-3 d-md-none"></div>
 
-    <% other = current_user.sk %>
-    <% @discussion.users.each do |u| %>
-      <% if u != current_user.sk %>
-        <% other = u %>
+      <% other = current_user.sk %>
+      <% @discussion.users.each do |u| %>
+        <% if u != current_user.sk %>
+          <% other = u %>
+        <% end %>
       <% end %>
-    <% end %>
-    <h3>Discussion avec <%= raw(other.linked_name) %></h3>
-    
-    <% if other.active %>
-    
-      <% @tchatmessage = Tchatmessage.new %>
-
-      <% @ancientexte = session[:ancientexte] %>
-      <% session[:ancientexte] = nil %>
-
-      <%= form_for [@discussion, @tchatmessage], :html => { :multipart => true } do |f| %>
-
-        <%= render 'shared/error_messages', object: f.object %>
-
-        <div class="form-group">
-          <div class="well" id="MathPreview"></div>
-          <div class="well hidden-preview" id="MathBuffer"></div>
-          <%= render 'subjects/smiley', hiddentext: false %>
-          <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
-        </div>
-
-        <span id="spanFiles"></span>
-
-        <!-- Ajouter une pièce jointe -->
-        <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
-        <br/><br/>
-        <%= f.submit "Envoyer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
-        <%= link_to 'Marquer comme non lu', discussion_unread_path(@discussion), :method => :put, :class => "btn btn-default btn-grey", :style => "float:right;", :disabled => current_user.other %>
-      <% end %>
+      <h3>Discussion avec <%= raw(other.linked_name) %></h3>
       
-    <% else %>
-    
-    <br/><center><b>Ce compte a été supprimé et vous ne pouvez donc plus lui envoyer de messages.</b></center>
-    
-    <% end %>
+      <% if other.active %>
+      
+        <% @tchatmessage = Tchatmessage.new %>
 
-    <br/>
-    <div id="all-messages">
-      <%= render @tchatmessages %>
-    </div>
+        <% @ancientexte = session[:ancientexte] %>
+        <% session[:ancientexte] = nil %>
 
-    <div id="infinite-scrolling" class="toreplace" style="text-align:center;">
-      <div style="display:none;">
-      <center>
-      <%= will_paginate @tchatmessages %>
-      </center>
+        <%= form_for [@discussion, @tchatmessage], :html => { :multipart => true } do |f| %>
+
+          <%= render 'shared/error_messages', object: f.object %>
+
+          <div class="mb-2">
+            <%= render 'shared/preview' %>
+            <%= render 'shared/smiley', hiddentext: false %>
+            <textarea name="content" maxlength="8000" class="form-control" style="height:120px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+          </div>
+
+          <%= render 'shared/edit_files' %>
+          
+          <%= f.submit "Envoyer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+          <%= link_to 'Marquer comme non lu', discussion_unread_path(@discussion), :method => :put, :class => "btn btn-light", :style => "float:right;", :disabled => current_user.other %>
+        <% end %>
+        
+      <% else %>
+      
+      <br/><center><b>Ce compte a été supprimé et vous ne pouvez donc plus lui envoyer de messages.</b></center>
+      
+      <% end %>
+
+      <br/>
+      <div id="all-messages">
+        <%= render @tchatmessages %>
       </div>
+
+      <div id="infinite-scrolling" class="toreplace" style="text-align:center;">
+        <div style="display:none;">
+        <center>
+        <%= will_paginate @tchatmessages %>
+        </center>
+        </div>
+      </div>
+
+      <% if params[:nonread].to_i > 0 %>
+        <% link.nonread = 0 %>
+        <% link.save %>
+      <% end %>
     </div>
-
-    <% if params[:nonread].to_i > 0 %>
-      <% link.nonread = 0 %>
-      <% link.save %>
-    <% end %>
-
   </div>
 </div>
-
-<script>
-PreviewSafe.Init();
-PreviewSafe.Update();
-</script>

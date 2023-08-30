@@ -4,10 +4,11 @@ ruby '3.0.0'
 
 gem 'rails', '= 7.0'
 
-gem 'bootstrap-sass', '~> 3.4.1'
+#gem 'bootstrap-sass', '~> 3.4.1'
+gem 'bootstrap', '5.3'
 gem 'bcrypt', '3.1.16'
 gem 'will_paginate', '3.3.0'
-gem 'bootstrap-will_paginate', '1.0.0'
+gem 'will_paginate-bootstrap-style'
 gem 'rails-i18n', '~> 7.0'
 gem 'recaptcha', '~> 4.1.0', :require => 'recaptcha/rails'
 gem 'thin'
@@ -42,6 +43,8 @@ gem 'uglifier', '>= 1.2.3'
 #end
 
 gem 'sassc', '= 2.1.0' # Otherwise it tries to install 2.4.0 and it fails for some reason
+
+gem 'sassc-rails'
 
 gem 'jquery-rails'
 
@@ -86,3 +89,5 @@ gem 'groupdate'
 gem 'active_storage_validations'
 gem 'mini_magick'
 gem 'image_processing', '>= 1.2'
+
+gem "importmap-rails", "~> 1.2"

@@ -52,3 +52,5 @@ var Rolling = {
     });
   }
 };
+
+export default Rolling

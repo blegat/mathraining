@@ -59,37 +59,41 @@
     <% other_name = User.find(res).name %>
   <% end %>
 
-  <div id="correct1" style="background-color:#fffad2; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 1 %>">
+  <div id="div_reserved_by_nobody" class="mb-2 p-2 ps-3 bg-as-table-warning" style="<%= "display:none;" if reservation_case != 1 %>">
     Cliquez ici pour réserver.
-    <button id="button-reserve" class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver</button>
+    <button id="button-reserve" class="btn btn-light ms-5" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver</button>
   </div>
 
-  <div id="correct2" style="background-color:#ffd9de; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 2 %>">
+  <div id="div_reserved_by_other" class="mb-2 p-2 ps-3 bg-as-table-warning-reder" style="<%= "display:none;" if reservation_case != 2 %>">
     Réservé par <b><%= other_name %></b>.
   </div>
 
-  <div id="correct3" style="background-color:#d7efd9; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 3 %>">
+  <div id="div_reserved_by_me" class="mb-2 p-2 ps-3 bg-as-table-warning-greener" style="<%= "display:none;" if reservation_case != 3 %>">
     Cliquez ici pour annuler votre réservation.
-    <button id="button-unreserve" class="btn btn-default btn-grey" margin-bottom:53px; style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
+    <button id="button-unreserve" class="btn btn-light ms-5" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
   </div>
 <% end %>
 
 <!-- Affichage de la soumission (on ajoute 'fake' à l'id si on ne peut pas modifier la solution) -->
 <% if !@contestsolution.official %>
+  <% can_edit = (@contestsolution.user == current_user.sk && @contestproblem.in_progress?) %>
+
   <div id="the<%= 'fake' if @contestsolution.user != current_user.sk %>" class="myoverflow">
-    <%= render 'subjects/content', ms: @contestsolution, kind: "contestsolution" %>
+    <%= render 'shared/post', ms: @contestsolution, kind: "contestsolution", can_edit: can_edit, reduce_margin_top: true %>
   </div>
 
-  <% if (@contestproblem.in_progress? && @contestsolution.user == current_user.sk) %>
+  <% if can_edit %>
     <% @ancientexte = session[:ancientexte] %>
     
-    <div id="form" class="myoverflow" style="height:0px; margin-top:12px;">
+    <div id="form" class="myoverflow mt-1 px-1" style="height:0px;">
     <%= render 'contestsolutions/edit' %>
     </div>
     
     <% if !session["ancientexte"].nil? %>
       <script>
-        Rolling.develop_quick("");
+        window.addEventListener("load", () => {
+          Rolling.develop_quick("");
+        });
       </script>
       <% session.delete("ancientexte") %>
     <% end %>

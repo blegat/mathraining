@@ -5,31 +5,22 @@
 <!-- Enoncé -->
 <h3>Énoncé</h3>
 <%= raw(replace_indice(htmlise(@question.statement))) %>
-<br/>
 
 <!-- Réponse -->
-<h3>Réponse</h3>
+<h3 class="mt-3">Réponse</h3>
 
-<%= render 'questions/admin_answers', f: @question %>
-
-<br/>
+<%= render 'questions/answer', question: @question %>
 
 <!-- Explication -->
-<h3>Explication</h3>
+<h3 class="mt-3">Explication</h3>
 
 <%= form_for(@question, url: question_update_explanation_path) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>
 
-  <div class="form-group">
-  <div class="well" id="MathPreview"></div>
-  <div class="well hidden-preview" id="MathBuffer"></div>
-  <%= render 'theories/font' %>
-  <%= f.text_area :explanation, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  <div class="mb-2">
+  <%= render 'shared/preview' %>
+  <%= render 'shared/font' %>
+  <%= f.text_area :explanation, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
   </div>
   <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
 <% end %>
-
-<script>
-Preview.Init();
-Preview.Update();
-</script>

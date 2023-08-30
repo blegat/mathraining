@@ -1,28 +1,31 @@
-<br/>
-<h4>Commentaires</h4>
+<h4 class="mt-3">Commentaires</h4>
 
 <% if @submission.corrections.count == 0 %>
-  Aucun commentaire.<br/>
+  <p>Aucun commentaire.</p>
 <% end %>
 
 <% @lastid = -1 %>
+<% first_comment = true %>
 
 <% @submission.corrections.order(:created_at).each do |correction| %>
 
   <% @lastid = correction.id %>
   
   <div class="myoverflow">
-  <%= render 'subjects/content', ms: correction, kind: "correction" %>
+  <%= render 'shared/post', ms: correction, kind: "correction", reduce_margin_top: first_comment %>
   </div>
   
+  <% first_comment = false %>
+  
 <% end %>
+
+<div class="mb-3"></div>
 
 <% if @submission.user == current_user.sk && @submission.wrong? %>
   <% last_correction = @submission.corrections.order(:created_at).last %>
   <% if !last_correction.nil? && last_correction.user != current_user.sk %>
   
-  <br/>
-  <div style="padding:15px; background-color:#eeeeee; border:1px solid #dddddd;">
+  <div class="p-3 mb-3" style="background-color:#eeeeee; border:1px solid #dddddd;">
   Votre solution est erronée. Deux options s'offrent à vous :
   <ul>
   <li>Si l'idée générale de votre solution est correcte mais que vous devez apporter une justification complémentaire,

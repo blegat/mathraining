@@ -32,17 +32,17 @@
 
 <% maxi = num_all.max + 1 %>
 
-Les seuils calculés par défaut pour ce concours sont <b><%= min_bronze %></b> pour le bronze, <b><%= min_silver %></b> pour l'argent et <b><%= min_gold %></b> pour l'or. Dans certains cas, on préférera modifier ces seuils manuellement pour être plus "équitable". Voici deux cas de figures typiques (mais il peut en exister d'autres) :
+<p>Les seuils calculés par défaut pour ce concours sont <b><%= min_bronze %></b> pour le bronze, <b><%= min_silver %></b> pour l'argent et <b><%= min_gold %></b> pour l'or. Dans certains cas, on préférera modifier ces seuils manuellement pour être plus "équitable". Voici deux cas de figures typiques (mais il peut en exister d'autres) :</p>
 <ul>
 <li>Si les cinq meilleurs étudiants ont obtenu des scores comme 42, 41, 40, 40, 39, que le sixème étudiant n'a obtenu que 31, et qu'il faut théoriquement attribuer 3.8 médailles d'or, on pourra accorder cinq médailles d'or au lieu de quatre. Dans le même cas de figure, si 5.7 médailles d'or devaient être théoriquement attribuées, on pourra n'en attribuer que cinq pour être plus juste.</li>
 <li>Si 18.7 étudiants doivent se voir attribuer une médaille d'argent ou d'or mais qu'un grand nombre d'ex-aequo permet d'attribuer soit 17 médailles soit 26, alors on pourra n'en attribuer que 17. Attribuer plus de médailles peut sembler plus généreux et donc préférable, mais en attribuer de trop leur retire également de la valeur.</li>
 </ul>
-En cas de doute, n'hésitez pas à contacter Nicolas R. pour avoir son avis sur le choix des seuils.
+<p>En cas de doute, n'hésitez pas à contacter Nicolas R. pour avoir son avis sur le choix des seuils.</p>
 
 <center>
 
 <!-- Endroit pour dessiner le graphique des scores -->
-<div id="contenant" style="width:100%; max-width:900px; height:280px; position:relative; display:block; margin-top:20px;">
+<div id="contenant" class="mt-3" style="width:100%; max-width:900px; height:280px; position:relative; display:block;">
 <canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top: 0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
@@ -159,20 +159,18 @@ Votre navigateur ne supporte pas les canvas.
   <% end %>
   }
 
-
-  $(document).ready( function(){
-
-  //Run function when browser  resize
-  $(window).resize( respondCanvas );
-
-  //Initial call
-  respondCanvas();
-
+  window.addEventListener("load", () => {
+    respondCanvas();
   });
+
+  window.addEventListener("resize", () => {
+    respondCanvas();
+  });
+  
 </script>
 
 <center>
-<form id="cutoff_form" action="/contests/<%= @contest.id %>/define_cutoffs" style="margin-top:20px;">
+<form id="cutoff_form" action="/contests/<%= @contest.id %>/define_cutoffs" class="mt-3">
 <table style="width:440px;">
 <tr>
 <td style="width:200px;"></td>
@@ -182,18 +180,18 @@ Votre navigateur ne supporte pas les canvas.
 </tr>
 
 <tr>
-<td style="padding:10px;"><b>Seuil choisi</b></td>
-<td style="padding-left:5px; padding-right:5px; text-align:center;">
+<td class="p-2"><b>Seuil choisi</b></td>
+<td class="px-1 text-center">
 <div class="form-group">
   <input class="form-control" style="width:70px;" type="number" name="bronze_cutoff" id="bronze_cutoff" value="<%= min_bronze %>" onchange="respondCanvas()" />
 </div>
 </td>
-<td style="padding-left:5px; padding-right:5px; text-align:center;">
+<td class="px-1 text-center">
 <div class="form-group">
   <input class="form-control" style="width:70px;" type="number" name="silver_cutoff" id="silver_cutoff" value="<%= min_silver %>" onchange="respondCanvas()" />
 </div>
 </td>
-<td style="padding-left:5px; padding-right:5px; text-align:center;">
+<td class="px-1 text-center">
 <div class="form-group">
   <input class="form-control" style="width:70px;" type="number" name="gold_cutoff" id="gold_cutoff" value="<%= min_gold %>" onchange="respondCanvas()" />
 </div>
@@ -201,27 +199,27 @@ Votre navigateur ne supporte pas les canvas.
 </tr>
 
 <tr>
-<td style="padding:10px;"><b>Nombre idéal avec au moins cette médaille</b></td>
+<td class="p-2"><b>Nombre idéal avec au moins cette médaille</b></td>
 <td style="text-align:center; font-size:18px;"><%= ("%.2f" % ideal_num_gold_silver_bronze) %></td>
 <td style="text-align:center; font-size:18px;"><%= ("%.2f" % ideal_num_gold_silver) %></td>
 <td style="text-align:center; font-size:18px;"><%= ("%.2f" % ideal_num_gold) %></td>
 </tr>
 
 <tr>
-<td style="padding:10px;"><b>Nombre choisi avec au moins cette médaille</b></td>
+<td class="p-2"><b>Nombre choisi avec au moins cette médaille</b></td>
 <td style="text-align:center; font-size:18px;"><span id="real_num_gold_silver_bronze">?</span></td>
 <td style="text-align:center; font-size:18px;"><span id="real_num_gold_silver">?</span></td>
 <td style="text-align:center; font-size:18px;"><span id="real_num_gold">?</span></td>
 </tr>
 
 <tr>
-<td style="padding:10px;"><b>Différence</b></td>
+<td class="p-2"><b>Différence</b></td>
 <td style="text-align:center; font-size:16px;"><span id="diff_gold_silver_bronze">?</span></td>
 <td style="text-align:center; font-size:16px;"><span id="diff_gold_silver">?</span></td>
 <td style="text-align:center; font-size:16px;"><span id="diff_gold">?</span></td>
 </tr>
 </table>
 
-<input type="submit" name="commit" value="Distribuer les médailles" class="btn btn-primary" style="margin-top:10px;" onclick="return confirm('Êtes vous sûr de vouloir choisir ces seuils ? Les médailles vont être publiées.')" />
+<input type="submit" name="commit" value="Distribuer les médailles" class="btn btn-primary mt-2" onclick="return confirm('Êtes vous sûr de vouloir choisir ces seuils ? Les médailles vont être publiées.')" />
 </form>
 </center>

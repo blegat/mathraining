@@ -1,14 +1,14 @@
 <script type="text/javascript">
 function checkChecked() {
-    var c1 = document.getElementById("consent1").checked;
-    var c2 = document.getElementById("consent2").checked;
-    var bt = document.getElementById("send-button");
-    if(c1 && c2) {
-      bt.disabled = false;
-    }
-    else {
-      bt.disabled = true;
-    }
+  var c1 = document.getElementById("consent1").checked;
+  var c2 = document.getElementById("consent2").checked;
+  var bt = document.getElementById("send-button");
+  if(c1 && c2) {
+    bt.disabled = false;
+  }
+  else {
+    bt.disabled = true;
+  }
 }
 </script>
 
@@ -16,19 +16,19 @@ function checkChecked() {
 
 <h1><%= title_1("Nouvelle politique de confidentialité") %></h1>
 
-Depuis votre dernière visite, notre <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> a été mise à jour.<br/><br/>
+<p>Depuis votre dernière visite, notre <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> a été mise à jour.</p>
 
-Vous pouvez trouver ci-dessous un résumé des modifications apportées au texte depuis la dernière version que vous avez acceptée.<br/><br/>
+<p>Vous pouvez trouver ci-dessous un résumé des modifications apportées au texte depuis la dernière version que vous avez acceptée.</p>
 
 <table class="table table-bordered">
-<tr><th style="width:90px; text-align:center;">Date</th><th>Modifications</th></tr>
+<tr class="table-light"><th style="width:90px; text-align:center;">Date</th><th>Modifications</th></tr>
 <% if current_user.consent_time.nil? %>
   <% thedate = Time.zone.parse('2000-01-01 00:00') %>
 <% else %>
   <% thedate = current_user.consent_time %>
 <% end %>
 <% Privacypolicy.where("online = ? AND publication_time > ?", true, thedate).order(:publication_time).each do |p| %>
-<tr class="<%= 'success' if p.online? %><%= 'danger' unless p.online? %>">
+<tr class="table-warning">
 <td style="text-align:center;">
 <%= write_date_only_small(p.publication_time) %>
 </td>
@@ -39,27 +39,28 @@ Vous pouvez trouver ci-dessous un résumé des modifications apportées au texte
 <% end %>
 </table>
 
-Si vous acceptez notre politique, alors veuillez compléter le formulaire ci-dessous. Si vous avez moins de 16 ans, vous devez être en présence de votre tuteur légal.<br/><br/>
+<p>Si vous acceptez notre politique, alors veuillez compléter le formulaire ci-dessous. Si vous avez moins de 16 ans, vous devez être en présence de votre tuteur légal.</p>
 
-Si vous refusez notre politique, alors il est malheureusement impossible de continuer à posséder un compte sur Mathraining. Nous ne collectons en effet des données que dans le but de faire fonctionner le site correctement. Dans ce cas, nous vous demandons de ne pas compléter le formulaire et de nous contacter à l'adresse<br/><br/>
-<center><%= image_tag "contact.jpg", :style => "width:250px;" %></center><br/>
-pour demander à ce que votre compte soit supprimé.
+<p>Si vous refusez notre politique, alors il est malheureusement impossible de continuer à posséder un compte sur Mathraining. Nous ne collectons en effet des données que dans le but de faire fonctionner le site correctement. Dans ce cas, nous vous demandons de ne pas compléter le formulaire et de nous contacter à l'adresse</p>
+<center><%= image_tag "contact.jpg", :style => "width:250px;" %></center>
+<p class="mt-3">pour demander à ce que votre compte soit supprimé.</p>
 
-<hr>
+<hr/>
 
 <% user = current_user %>
 
 <%= form_for user, url: accept_legal_path do |f| %>
   <!-- Lire et accepter la politique de confidentialité -->
-  <div class="checkbox">
-  <label>
-    <input type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
+  <div class="form-check mb-1">
+  <label class="form-check-label">
+    <input class="form-check-input" type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
     J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> de Mathraining.
   </label>
   </div>
-  <div class="checkbox">
-  <label>
-   <input type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
+  
+  <div class="form-check mb-2">
+  <label class="form-check-label">
+   <input class="form-check-input" type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
     J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> avec mon tuteur légal.
   </label>
   </div>

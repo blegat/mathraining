@@ -6,7 +6,7 @@ var tbody = tab.getElementsByTagName("tbody")[0];
 
 <% if !@enough_caracters %>
   loading.style.display = 'none'
-  err.style.display = 'inline'
+  err.style.display = 'block'
 <% else %>
   tbody.innerHTML = ""
   <% @all_found.each do |r| %>
@@ -16,7 +16,7 @@ var tbody = tab.getElementsByTagName("tbody")[0];
   loading.style.display = 'none';
 
   <% if @all_found.empty? %>
-    none.style.display = 'inline';
+    none.style.display = 'block';
   <% else %>
     tab.style.display = 'table';
     tab.style.width = 'auto';

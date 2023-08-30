@@ -4,7 +4,7 @@ var Joint = {
   nextids: [],
   add: function(postfix) {
 
-    if(postfix == undefined)
+    if (postfix == undefined)
     {
       postfix = ""
     }
@@ -16,7 +16,7 @@ var Joint = {
     //Find next id for this postfix
     var index = this.postfixes.indexOf(postfix);
     var id = 1;
-    if(index == -1)
+    if (index == -1)
     {
       this.postfixes.push(postfix)
       this.nextids.push(2)
@@ -30,23 +30,35 @@ var Joint = {
     //Assign different attributes to the element.
     element.setAttribute("type", "file");
     element.setAttribute("name", "file"+postfix+"_"+id);
+    element.setAttribute("class", "form-control mb-1");
 
     element2.setAttribute("type", "hidden");
     element2.setAttribute("name", "hidden"+postfix+"_"+id);
     element2.setAttribute("value", "ok");
 
-    span = document.getElementById("spanFiles"+postfix);
+    var div = document.getElementById("divFiles"+postfix);
     
-    var br = document.createElement("br");
-
-    if(id == 1)
-    {      
-      span.innerHTML = "<p style='margin-top:10px;'>Types de fichier autorisés : zip, pdf, doc, gif, jpg, png, bmp, txt.<br/>Taille maximale autorisée : 1 Mo par fichier, 5 Mo au total.<br/><b>(Pensez à compresser vos fichiers s'ils sont trop volumineux !)</b></p>";
-    }
-
-    //Append the element in page (in span).
-    span.appendChild(element2);
-    span.appendChild(element);
-    span.appendChild(br);
+    document.getElementById("allowedFiles").style.display = 'block';
+    
+    //Append the element in page (in div).
+    div.appendChild(element2);
+    div.appendChild(element);
   }
 };
+
+class JointClass extends HTMLInputElement {
+  constructor() { super(); }
+  connectedCallback() {
+  this.addEventListener("click", e => {
+      e.preventDefault();
+      var postfix = "";
+      if (this.hasAttribute("data-postfix")) {
+        postfix = this.dataset.postfix;
+      }
+      Joint.add(postfix);
+      return false;
+    });
+  }
+}
+
+customElements.define("joint-onclick", JointClass, { extends: "input" });

@@ -1,19 +1,8 @@
-<% @edit = true %>
-<% @postfix = "EditSubject" %>
-
 <!-- Formulaire -->
-<%= form_for @subject, :url => subject_path(@subject, :action => :update, :q => @q), :html => { :multipart => true, :style => "margin-top:20px;" } do |f| %>
-  <%= render 'subjects/form', f: f %>
-  
-  <!-- Pièces jointes -->
-  <%= render 'subjects/files', s: @subject %>
-  
-   <!-- Ajouter une pièce jointe -->
-  <span id="spanFiles<%= @postfix %>"></span>
-  <input type="hidden" name="postfix" value="<%= @postfix %>">
-  <input type="button" id="addFile<%= @postfix %>" value="Ajouter une pièce jointe" onclick="Joint.add('<%= @postfix %>')"/>
-  <br/><br/>
-  <%= f.submit "Modifier", id: "Submit#{ @postfix }", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
-  <button class="btn btn-lg btn-default btn-grey" onclick="return Rolling.hideActual();">Annuler</button>
+<%= form_for @subject, :url => subject_path(@subject, :action => :update, :q => @q), :html => { :multipart => true, :class => "mt-2" } do |f| %>
+  <%= render 'subjects/form', f: f, postfix: postfix, is_edit: true %>
+  <%= render 'shared/edit_files', s: @subject, postfix: postfix %>
+  <%= f.submit "Modifier", id: "Submit#{ postfix }", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+  <button class="btn btn-lg btn-light" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>
 

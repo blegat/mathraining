@@ -42,3 +42,36 @@ var Insert = {
     }
   }
 }
+
+class InsertClass extends HTMLAnchorElement {
+  constructor() { super(); }
+  connectedCallback() {
+  this.addEventListener("click", e => {
+      e.preventDefault();
+      var l = "";
+      if (this.hasAttribute("data-insert-left")) {
+        l = this.dataset.insertLeft.replaceAll('\\n', '\n');
+      }
+      var r = "";
+      if (this.hasAttribute("data-insert-right")) {
+        r = this.dataset.insertRight.replaceAll('\\n', '\n');
+      }
+      var f = "MathInput";
+      var safepreview = false; // Preview is used when there is no postfix (_font.html.erb)
+      if (this.hasAttribute("data-postfix")) {
+        f = "MathInput" + this.dataset.postfix;
+        safepreview = true; // PreviewSafe is used when there is a postfix (_smiley.html.erb)
+      }
+      Insert.insert(l, r, f);
+      if (safepreview) {
+        PreviewSafe.MyUpdate();
+      }
+      else {
+        Preview.MyUpdate();
+      }
+      return false;
+    });
+  }
+}
+
+customElements.define("insert-onclick", InsertClass, { extends: "a" });

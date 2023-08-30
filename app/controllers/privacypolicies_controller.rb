@@ -32,7 +32,7 @@ class PrivacypoliciesController < ApplicationController
   # Create a privacy policy (automatic from the last one)
   def new
     last_policy = Privacypolicy.where(:online => true).order(:publication_time).last
-    Privacypolicy.create(:publication_time => DateTime.now, :online => false, :description => " - À écrire - ", :content => (!last_policy.nil? ? last_policy.content : " - À écrire - "))
+    Privacypolicy.create(:publication_time => DateTime.now, :online => false, :description => "- À écrire -", :content => (!last_policy.nil? ? last_policy.content : "- À écrire -"))
     redirect_to privacypolicies_path
   end
 

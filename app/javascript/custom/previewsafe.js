@@ -1,5 +1,3 @@
-var allowhide = true
-
 var PreviewSafe = {
   delay: 150,        // delay after keystroke before updating
 
@@ -21,6 +19,22 @@ var PreviewSafe = {
     this.buffer = document.getElementById("MathBuffer" + s);
     this.input = document.getElementById("MathInput" + s);
     this.stop = document.getElementById("stop" + s);
+    this.bbcode = true
+    this.hiddentext = true
+  },
+  
+  //
+  //  Say if bbcode must be processed or not (in LaTeX chapter we don't allow bbcode)
+  //
+  SetBBCode: function (v) {
+    this.bbcode = v
+  },
+  
+  //
+  //  Say if [hide="Texte caché"]...[/hide] must be processed or not
+  //
+  SetHiddenText: function (v) {
+    this.hiddentext = v
   },
 
   //
@@ -65,18 +79,21 @@ var PreviewSafe = {
 
     var text = this.input.value.replace(/</g,'&lt').replace(/>/g,'&gt')
     
-    // Replace the [b], [u], [i]
-    text = text.replace(/\[b\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/b\]/gmi, '<b>$1</b>')
-               .replace(/\[u\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/u\]/gmi, '<u>$1</u>')
-               .replace(/\[i\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/i\]/gmi, '<i>$1</i>');
-    
-    // Replace the [url=www.example.com]Lien[/url]
-    text = text.replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>');
-    
-    // Replace the [hide=Texte Caché]Texte Caché[/hide]
-    if(allowhide) {
-      var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
-      while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, "<div class='clue'><div><button onclick='return false;' class='btn btn-default btn-grey'>$1</button></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$2</div></div></div>");
+    if (this.bbcode)
+    {
+      // Replace the [b], [u], [i]
+      text = text.replace(/\[b\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/b\]/gmi, '<b>$1</b>')
+                 .replace(/\[u\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/u\]/gmi, '<u>$1</u>')
+                 .replace(/\[i\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/i\]/gmi, '<i>$1</i>');
+      
+      // Replace the [url=www.example.com]Lien[/url]
+      text = text.replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>');
+      
+      // Replace the [hide=Texte Caché]Texte Caché[/hide]
+      if (this.hiddentext) {
+        var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
+        while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, "<div class='clue'><div><button onclick='return false;' class='btn btn-light'>$1</button></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$2</div></div></div>");
+      }
     }
     
     // Delete the \n and \r after the \] and $$
@@ -86,16 +103,23 @@ var PreviewSafe = {
     // Replace the \n by <br/>
     text = text.replace(/\n/g, '<br/>')
     
-    // Replace the smileys by the images
-    text = text.replace(/\:\-\)/g,'<%= image_tag "Smiley1.gif", :width => "20px", :height => "20px" %>')
-               .replace(/\:\-\(/g,'<%= image_tag "Smiley2.gif", :width => "20px", :height => "20px" %>')
-               .replace(/\:\-[D]/g,'<%= image_tag "Smiley3.gif", :width => "20px", :height => "20px" %>')
-               .replace(/\:\-[O]/g,'<%= image_tag "Smiley4.gif", :width => "20px", :height => "20px" %>')
-               .replace(/\:\-[P]/g,'<%= image_tag "Smiley5.gif", :width => "20px", :height => "20px" %>')
-               .replace(/\:\'\(/g,'<%= image_tag "Smiley6.gif", :width => "20px", :height => "20px" %>')
-               .replace(/\;\-\)/g,'<%= image_tag "Smiley7.gif", :width => "20px", :height => "20px" %>')
-               .replace(/\:\-\|/g,'<%= image_tag "Smiley8.gif", :width => "20px", :height => "20px" %>')
-               .replace(/[3]\:\[/g,'<%= image_tag "Smiley9.gif", :width => "20px", :height => "20px" %>');
+    if (this.bbcode)
+    {
+      // Replace the smileys by the images
+      var smileys = [];
+      for (let i = 1; i <= 9; i++) {
+        smileys[i] = "<img src='" + document.getElementById("smiley" + i.toString() + "-img").getAttribute("src") + "' width='20px' height='20px' />";
+      }
+      text = text.replace(/\:\-\)/g, smileys[1])
+                 .replace(/\:\-\(/g, smileys[2])
+                 .replace(/\:\-[D]/g, smileys[3])
+                 .replace(/\:\-[O]/g, smileys[4])
+                 .replace(/\:\-[P]/g, smileys[5])
+                 .replace(/\:\'\(/g, smileys[6])
+                 .replace(/\;\-\)/g, smileys[7])
+                 .replace(/\:\-\|/g, smileys[8])
+                 .replace(/[3]\:\[/g, smileys[9]);
+    }
 
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
@@ -130,3 +154,5 @@ var PreviewSafe = {
 //
 PreviewSafe.callback = MathJax.Callback(["CreatePreview",PreviewSafe]);
 PreviewSafe.callback.autoReset = true;  // make sure it can run more than once
+
+export default PreviewSafe

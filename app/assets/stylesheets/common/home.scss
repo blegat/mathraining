@@ -2,7 +2,8 @@
 
 .home {
   text-align:center;
-  margin-top:20px;
+  margin-top:10px;
+  margin-bottom:15px;
   padding:25px;
   border:1px solid #bbbbbb;
   background-color:#eeeeee;
@@ -11,7 +12,7 @@
 .home-stats {
   font-size:16px;
   border:1px solid #bbbbbb;
-  margin-top:25px;
+  margin-top:15px;
   margin-bottom:10px;
   background-color:#f6f6f6;
 }
@@ -32,8 +33,8 @@
 
 .home_thanks {
   text-align:center;
-  margin-top:15px;
+  margin-bottom:15px;
   padding:15px;
-  border:1px solid #dddddd;
-  background-color:rgb(217,237,247);
+  border:1px solid #bacbe6; // see table-primary
+  background-color:#cfe2ff; // see table-primary
 }

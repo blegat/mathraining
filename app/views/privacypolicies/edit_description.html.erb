@@ -6,17 +6,12 @@
   <%= render 'shared/error_messages', object: f.object %>
 
   <!-- Description de la politique de confidentialité -->
-  <div class="form-group">
-    <%= f.label :description %>
-    <div class="well" id="MathPreview"></div>
-    <div class="well hidden-preview" id="MathBuffer"></div>
-    <%= render 'theories/font' %>
-    <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  <div class="mb-2">
+    <%= f.label :description, :class => "form-label" %>
+    <%= render 'shared/preview' %>
+    <%= render 'shared/font' %>
+    <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
   </div>
+  
   <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
 <% end %>
-
-<script>
-Preview.Init();
-Preview.Update();
-</script>

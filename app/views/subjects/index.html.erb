@@ -36,9 +36,9 @@
 <h1><%= title_1("Forum#{(' - ' + @title_complement) if !@title_complement.empty?}") %>
 
 <!-- Trier selon section, chapitre, catégorie... -->
-<span style="float:right; margin-left:20px; margin-top:5px; margin-bottom:20px;">
+<span class="mb-2 mt-1 ms-3" style="float:right;">
 <form action="" method="get" name="research">
-  <%= select_tag :q, grouped_options_for_select([["Tout afficher",liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], @q).html_safe, :class =>"form-control", :onchange => ("javascript: document.research.submit();") %>
+  <%= select_tag :q, grouped_options_for_select([["Tout afficher",liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], @q).html_safe, :class =>"form-select", :onchange => ("javascript: document.research.submit();") %>
 </form>
 </span>
 
@@ -46,13 +46,12 @@
 
 <!-- Affichage des sujets importants -->
 <% if @importants.size > 0 %>
-  <table class="table table-bordered" style="margin-top:20px;">
-    <tr class="danger" style="font-weight:bold;">
+  <table class="table table-bordered">
+    <tr class="table-danger" style="font-weight:bold;">
       <td style="text-align:center;">Sujet important</td>
-      <td class="hidden-xs" style="width:180px; text-align:center;">Auteur</td>
-      <td class="hidden-xs" style="width:50px; text-align:center;">Rép.</td>
-      <td class="hidden-small" style="text-align:center;" colspan="2">Dernière contribution</td>
-      <td class="hidden-large" style="text-align:center;">Dernière contribution</td>
+      <td class="d-none d-md-table-cell" style="width:50px; text-align:center;">Rép.</td>
+      <td class="d-none d-lg-table-cell" style="text-align:center;" colspan="2">Dernière contribution</td>
+      <td class="d-table-cell d-lg-none" style="text-align:center;">Dernière contribution</td>
     </tr>
     <% @importants.each do |s| %>
       <%= render 'line', s: s %>
@@ -62,13 +61,12 @@
 
 <!-- Affichage des sujets non importants -->
 <% if @subjects.size > 0 %>
-  <table class="table table-bordered" style="margin-top:20px;">
-    <tr class="info" style="font-weight:bold;">
+  <table class="table table-bordered">
+    <tr class="table-primary" style="font-weight:bold;">
       <td style="text-align:center;">Sujet</td>
-      <td class="hidden-xs" style="width:180px; text-align:center;">Auteur</td>
-      <td class="hidden-xs" style="width:50px; text-align:center;">Rép.</td>
-      <td class="hidden-small" style="text-align:center;" colspan="2">Dernière contribution</td>
-      <td class="hidden-large" style="text-align:center;">Dernière contribution</td>
+      <td class="d-none d-md-table-cell" style="width:50px; text-align:center;">Rép.</td>
+      <td class="d-none d-lg-table-cell" style="text-align:center;" colspan="2">Dernière contribution</td>
+      <td class="d-table-cell d-lg-none" style="text-align:center;">Dernière contribution</td>
     </tr>
     <% @subjects.each do |s| %>
       <%= render 'line', s: s %>
@@ -77,24 +75,23 @@
 <% end %>
 
 <center>
-<%= will_paginate @subjects, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @subjects, :style => "margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+  <%= will_paginate @subjects, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+  <%= will_paginate @subjects, :class => "d-block d-sm-none mb-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <% if @subjects.size + @importants.size == 0 %>
-  <br/><b>Aucun sujet</b><br/><br/>
+  <p style="font-weight:bold;">Aucun sujet.<p>
 <% end %>
 
 
 <!-- Créer un sujet -->
 <center>
-  <%= link_to "Créer un sujet", new_subject_path(:q => @q), class: 'btn btn-lg btn-default btn-grey' %>
+  <%= button_to "Créer un sujet", new_subject_path(:q => @q), method: :get, class: 'btn btn-lg btn-light' %>
 </center>
 
 <!-- Modifier les catégories -->
 <% if current_user.sk.root? %>
-  <br/>
-  <center><%= link_to "Modifier les catégories", categories_path %></center>
+  <p class="mt-3" style="text-align:center;"><%= link_to "Modifier les catégories", categories_path %></p>
 <% end %>
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->

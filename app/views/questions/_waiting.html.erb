@@ -1,4 +1,4 @@
-<% waiting = (exo.resolution_time.to_f + total_waiting - DateTime.now.to_i).floor %>
+<% waiting = (solvedquestion.resolution_time.to_f + total_waiting - DateTime.now.to_i).floor %>
 <% waiting_m = waiting / 60 %>
 <% waiting_s = waiting % 60 %>
 <p id="waitbox" style="color:red;">Vous devez encore patienter <span id="clockbox" style="font-weight:bold;">0<%= waiting_m %>:<%= "0" if waiting_s < 10 %><%= waiting_s %></span>.</p>
@@ -9,10 +9,10 @@ var reste_debut = <%= waiting %>;
 var heure_debut_js = Math.floor(Date.now() / 1000);
 function Activate() {
   stop = true;
-  var todisable = document.getElementsByClassName("todisable");
+  var to_enable = document.getElementsByClassName("to-enable");
   var i;
-  for (i = 0; i < todisable.length; i++) {
-    todisable[i].disabled = <%= !@signed_in || current_user.other %>;
+  for (i = 0; i < to_enable.length; i++) {
+    to_enable[i].disabled = <%= !@signed_in || current_user.other %>;
   }
   document.getElementById('waitbox').style.display = "none";
 }
@@ -43,8 +43,8 @@ function RemainingTime() {
   }
 }
 
-window.onload=function() {
+window.addEventListener("load", () => {
   RemainingTime();
-  setInterval(RemainingTime,1000);
-}
+  setInterval(RemainingTime, 1000);
+});
 </script>

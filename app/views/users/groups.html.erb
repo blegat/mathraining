@@ -2,25 +2,26 @@
 
 <h1><%= title_1("Groupes Wépion") %></h1>
 
-À titre informatif, voici les élèves constituant les groupes A et B cette année. Ces listes ne sont visibles que par les étudiants desdits groupes et les professeurs.
+<p>À titre informatif, voici les élèves constituant les groupes A et B cette année. Ces listes ne sont visibles que par les étudiants desdits groupes et les professeurs.</p>
 
 <!-- On parcourt les deux groupes -->
 
 <% if current_user.sk.admin? %>
-<br/><br/>
-<% if (!params.has_key?:details) %>
-  <center><%= link_to "Afficher les détails", groups_path(:details => 1) %></center>
-<% else %>
-  <center><%= link_to "Masquer les détails", groups_path %></center>
-<% end %>
+  <p class="text-center">
+  <% if (!params.has_key?:details) %>
+    <%= link_to "Afficher les détails", groups_path(:details => 1) %>
+  <% else %>
+    <%= link_to "Masquer les détails", groups_path %>
+  <% end %>
+  </p>
 <% end %>
 
 <% if (params.has_key?:details) && current_user.sk.admin? %>
 
   <% for g in ["A", "B"] do %>
-    <h2>Groupe <%= g %></h2>
+    <h3>Groupe <%= g %></h3>
     <table class="table table-bordered">
-    <tr style="background-color:#EEEEEE"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
+    <tr class="table-light"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
     <% User.where(:group => g).order("rating DESC").each do |u| %>
       <tr>
       <td><%= raw(u.linked_name(1)) %></td>
@@ -42,10 +43,12 @@
 <% else %>
 
   <% for g in ["A", "B"] do %>
-    <h2>Groupe <%= g %></h2>
+    <h3>Groupe <%= g %></h3>
+    <ul>
     <% User.where(:group => g).order(:first_name).each do |u| %>
-      <%= raw(u.linked_name) %><br/>
+      <li><%= raw(u.linked_name) %></li>
     <% end %>
+    </ul>
   <% end %>
   
 <% end %>

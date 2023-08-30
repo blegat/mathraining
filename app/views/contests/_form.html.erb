@@ -1,28 +1,20 @@
-<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
-
 <%= render 'shared/error_messages', object: f.object %>
 
-<div class="form-group">
-  <%= f.label :number %>
+<div class="mb-2">
+  <%= f.label :number, :class => "form-label" %>
   <%= f.number_field :number, :class => "form-control", :style => "width:70px;", :min => 1, :disabled => (!@contest.in_construction? || current_user.other) %>
 </div>
 
-<div class="form-group">
-  <%= f.label :description %>
-  <div class="well" id="MathPreview"></div>
-  <div class="well hidden-preview" id="MathBuffer"></div>
-  <%= render 'subjects/smiley', hiddentext: false %>
-  <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+<div class="mb-2">
+  <%= f.label :description, :class => "form-label" %>
+  <%= render 'shared/preview' %>
+  <%= render 'shared/smiley', hiddentext: false %>
+  <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
 </div>
 
-<div class="checkbox">
-<label>
-<%= f.check_box :medal, :disabled => (!@contest.in_construction? || current_user.other) %>
+<div class="form-check mb-2">
+<label class="form-check-label">
+<%= f.check_box :medal, :class => "form-check-input", :disabled => (!@contest.in_construction? || current_user.other) %>
 Attribuer des médailles au terme de ce concours
 </label>
 </div>
-
-<script>
-PreviewSafe.Init();
-PreviewSafe.Update();
-</script>

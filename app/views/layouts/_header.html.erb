@@ -2,29 +2,25 @@
 
 <div class="noprint">
 
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary">
   <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
+    <!-- Lien Mathraining -->
+    <%= link_to root_path, class: "navbar-brand me-4", style: "font-size:24px;", id: "Accueil" do %>
+      <span style="color:black;">Math</span><span style="color:rgb(3,109,170);">raining</span>
+    <% end %>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-      <!-- Lien Mathraining -->
-      <%= link_to root_path, class: "navbar-brand", style: "font-size:24px;", id: "Accueil" do %>
-        <span style="color:black;">Math</span><span style="color:rgb(3,109,170);">raining</span>
-      <% end %>
-    </div>
-
-    <div class="navbar-collapse collapse">
-      <!-- Dans le cas normal -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    
+      <!-- Boutons en haut à gauche -->
+      <form>
+      
       <% if @signed_in and (current_user.sk.admin || current_user.sk.corrector) %>
         <% num_waiting_suspicions = (current_user.sk.root ? Suspicion.where(:status => :waiting_confirmation).count : 0) %>
         <% num_waiting_starproposals = (current_user.sk.root ? Starproposal.where(:status => :waiting_treatment).count : 0) %>
-      
-        <form class="navbar-form navbar-left hidden-small" role="search">
 
         <!-- Nouvelles soumissions et nouveaux commentaires -->
 
@@ -34,17 +30,17 @@
         <% if num_notifications_new12 > 0 %>
           <%= link_to "#{num_notifications_new12}", allnewsub_path(:levels => 3), class: "btn btn-success" %>
         <% else %>
-          <%= link_to "0", allnewsub_path(:levels => 3), class: "btn btn-default btn-grey" %>
+          <%= link_to "0", allnewsub_path(:levels => 3), class: "btn btn-light" %>
         <% end %>
         <% if num_notifications_new345 > 0 %>
           <%= link_to "#{num_notifications_new345}", allnewsub_path(:levels => 28), class: "btn btn-danger" %>
         <% else %>
-          <%= link_to "0", allnewsub_path(:levels => 28), class: "btn btn-default btn-grey" %>
+          <%= link_to "0", allnewsub_path(:levels => 28), class: "btn btn-light" %>
         <% end %>
         <% if num_notifications_update > 0 %>
           <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
         <% else %>
-          <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
+          <%= link_to "0", allmynewsub_path, class: "btn btn-light" %>
         <% end %>
         
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
@@ -56,233 +52,164 @@
         <% if current_user.sk.root? && num_waiting_suspicions > 0 %>
           <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
         <% end %>
-        
-        <!-- Corrections (pour les correcteurs) -->
-        <% if !current_user.sk.admin? %>
-          <% noti = current_user.sk.notifs.count %>
-          <% if noti != 0 %>
-            <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info", style:"margin-left:15px;" %>
-          <% end %>
-        <% end %>
-        </form>
       <% end %>
       
       <!-- Corrections (pour les étudiants non-correcteurs) -->
-      <% if @signed_in && !current_user.sk.admin? && !current_user.sk.corrector? %>
+      <% if @signed_in && !current_user.sk.admin? %>
         <% noti = current_user.sk.notifs.count %>
         <% if noti != 0 %>
-          <form class="navbar-form navbar-left hidden-small" role="search">
-          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info" %>
-          </form>
-        <% end %>
-      <% end %>
-
-      <ul class="nav navbar-nav navbar-right">
-      
-      <!-- Dans le cas gsm -->
-      <% if @signed_in and (current_user.sk.admin || current_user.sk.corrector) %>
-
-        <li class="hidden-large">
-        <form role="search" style="margin-left:15px; margin-bottom:5px;">
-        
-        <!-- Nouvelles soumissions et nouveaux commentaires -->
-        <% if num_notifications_new12 > 0 %>
-          <%= link_to "#{num_notifications_new12}", allnewsub_path(:levels => 3), class: "btn btn-success" %>
-        <% else %>
-          <%= link_to "0", allnewsub_path(:levels => 3), class: "btn btn-default btn-grey" %>
-        <% end %>
-        <% if num_notifications_new345 > 0 %>
-          <%= link_to "#{num_notifications_new345}", allnewsub_path(:levels => 28), class: "btn btn-danger" %>
-        <% else %>
-          <%= link_to "0", allnewsub_path(:levels => 28), class: "btn btn-default btn-grey" %>
-        <% end %>
-        <% if num_notifications_update > 0 %>
-          <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
-        <% else %>
-          <%= link_to "0", allmynewsub_path, class: "btn btn-default btn-grey" %>
-        <% end %>
-        
-        <!-- Nouvelles propositions d'étoiles (pour les root) -->
-        <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
-          <%= link_to "#{num_waiting_starproposals}", starproposals_path, class: "btn btn-yellow" %>
-        <% end %>
-        
-        <!-- Nouvelles suspicions de plagiat (pour les root) -->
-        <% if current_user.sk.root? && num_waiting_suspicions > 0 %>
-          <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
-        <% end %>
-        
-        <!-- Corrections (pour les correcteurs) -->
-        <% if !current_user.sk.admin? %>
-          <% noti = current_user.sk.notifs.count %>
-          <% if noti != 0 %>
-            <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info", style:"margin-left:10px;" %>
-          <% end %>
-        <% end %>
-        
-        </form>
-        </li>
-      <% end %>
-      
-      <!-- Corrections (pour les étudiants non-correcteurs) -->
-      <% if @signed_in && !current_user.sk.admin? && !current_user.sk.corrector? %>
-        <% noti = current_user.sk.notifs.count %>
-        <% if noti != 0 %>
-          <form role="search" class="hidden-large" style="margin-left:15px; margin-bottom:5px;">
-          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info" %>
-          </form>
+          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info #{ 'ms-3' if current_user.sk.corrector? }" %>
         <% end %>
       <% end %>
       
-      <% sections = Section.all.order(:id).to_a %>
+      </form>
 
-      <!-- Cours -->
-      <li id="fat-menu" class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          Théorie <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-          <% sections.each do |f| %>
-            <% if f.fondation %>
-              <li><%= link_to f.name, f %></li>
-            <% end %>
-          <% end %>
-          <li class="divider"></li>
-          <% sections.each do |f| %>
-            <% if !f.fondation %>
-              <li><%= link_to f.name, f %></li>
-            <% end %>
-          <% end %>
-          <% if @signed_in && current_user.sk.admin? %>
-          <li class="divider"></li>
-          <li><%= link_to "Modifier la structure", graph_prerequisites_path %></li>
-          <% end %>
-        </ul>
-      </li>
 
-      <!-- Problèmes -->
-      <li id="fat-menu" class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          Problèmes <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-          <% sections.each do |f| %>
-            <% if !f.fondation %>
-              <li><%= link_to f.name, pb_sections_path(f) %></li>
-            <% end %>
-          <% end %>
-          <li class="divider"></li>
-          <li><%= link_to "Tests virtuels", virtualtests_path %></li>
-          <li><%= link_to "Concours", contests_path %></li>
-        </ul>
-      </li>
+      <ul class="navbar-nav ms-auto">
+        
+        <% sections = Section.all.order(:id).to_a %>
 
-      <!-- Forum -->
-      <% if @signed_in %>
-        <% num_unseen_subjects = current_user.sk.num_unseen_subjects(false) %>
-      <% end %>
-
-      <% if @signed_in && num_unseen_subjects == 0 %>
-        <li><%= link_to "Forum", subjects_path %></li>
-      <% elsif @signed_in %>
-        <li style="font-weight:bold;"><%= link_to "Forum (#{num_unseen_subjects})", subjects_path %></li>
-      <% end %>
-
-      <!-- Statistiques -->
-      <li id="fat-menu" class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-        Statistiques <b class="caret"></b>
-      </a>
-      <ul class="dropdown-menu">
-        <li><%= link_to "Scores", users_path %></li>
-        <li><%= link_to "Résolutions récentes", solvedproblems_path %></li>
-        <li><%= link_to "Corrections", correctors_path %></li>
-        <li><%= link_to "Difficulté des chapitres", exostats_path %></li>
-        <li><%= link_to "Statistiques diverses", frequentation_path %></li>
-      </ul>
-      </li>
-
-      <!-- Menu déroulant -->
-
-      <!-- Si connecté -->
-
-      <% if @signed_in %>
-
-        <% nonlu = current_user.sk.links.where("nonread != 0").count %>
-        <% if nonlu == 0 %>
-          <li><%= link_to "Messages", new_discussion_path %></li>
-        <% else %>
-          <li style="font-weight:bold;"><%= link_to "Messages (#{nonlu})", new_discussion_path %></li>
-        <% end %>
-
-        <li id="fat-menu" class="dropdown">
-
-        <!-- Nom -->
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <% if current_user.other %>
-            [<%= raw(current_user.sk.colored_name(1)) %>]
-          <% else %>
-            <%= raw(current_user.sk.colored_name(1)) %>
-          <% end %>
-          <b class="caret"></b>
-        </a>
-
-        <ul class="dropdown-menu">
-          <% if current_user.other %>
-            <li><%= link_to "Sortir de ce corps", user_leave_skin_path(current_user), :method => :put %></li>
-          <% end %>
-          <li><%= link_to "Profil", current_user.sk %></li>
-          <li><%= link_to "Compte", edit_user_path(current_user.sk) %></li>
-          <% if @signed_in && (current_user.sk.admin || current_user.sk.group != "") %>
-            <li><%= link_to "Groupes Wépion", groups_path %></li>
-          <% end %>
-          <% if current_user.sk.root? %>
-            <li class="divider"></li>
-            <li><%= link_to "Pièces jointes", myfiles_path %></li>
-            <% num_users_to_validate = User.where(:valid_name => false, :email_confirm => true, :admin => false).count %>
-            <li><%= link_to "Valider #{num_users_to_validate} noms", validate_names_path %></li>
-          <% end %>
-          <li class="divider"></li>
-          <li>
-          <%= link_to "Déconnexion", signout_path, method: "delete" %>
-          </li>
-        </ul>
-        </li>
-
-      <!-- Si pas connecté -->
-      <% else %>
-        <li class="dropdown">
-          <a class="dropdown-toggle" href="#" data-toggle="dropdown">Connexion</a>
-
-          <!-- Formulaire pour se connecter -->
+        <!-- Cours -->
+        <li class="nav-item dropdown me-1">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Théorie
+          </a>
           <ul class="dropdown-menu">
-            <li style="padding:15px; padding-bottom:5px; padding-top:10px;">
-            <%= form_for(:session, url: sessions_path(redirection: request.original_fullpath)) do |f| %>
-              <%= f.email_field :email, :placeholder => "Adresse e-mail", :class => "form-control", :style => "width:200px;", :id => "header_connect_email" %>
-
-              <%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control", :style => "margin-top:10px; width:200px;", :id => "header_connect_password" %>
-
-              <label class="checkbox-inline" style="margin-top:10px;">
-                <%= f.check_box :remember_me, :id => "header_connect_remember" %>
-                Garder ma session active
-              </label><br/>
-
-              <%= f.submit "Connexion", class: "btn btn-default btn-primary", style: "width:200px; margin-top:10px; margin-bottom:15px;", id: "header_connect_button" %>
-              <br/>
-              <%= link_to "J'ai oublié mon mot de passe", forgot_password_path %>
+            <% sections.each do |f| %>
+              <% if f.fondation %>
+                <li><%= link_to f.name, f, :class => "dropdown-item" %></li>
+              <% end %>
             <% end %>
-            </li>
-            <li class="divider"></li>
-            <li><%= link_to "S'inscrire", signup_path %></li>
+            <li class="dropdown-divider"></li>
+            <% sections.each do |f| %>
+              <% if !f.fondation %>
+                <li><%= link_to f.name, f, :class => "dropdown-item" %></li>
+              <% end %>
+            <% end %>
+            <% if @signed_in && current_user.sk.admin? %>
+            <li class="dropdown-divider"></li>
+            <li><%= link_to "Modifier la structure", graph_prerequisites_path, :class => "dropdown-item" %></li>
+            <% end %>
           </ul>
         </li>
-      <% end %>
+
+        <!-- Problèmes -->
+        <li class="nav-item dropdown me-1">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+            Problèmes
+          </a>
+          <ul class="dropdown-menu">
+            <% sections.each do |f| %>
+              <% if !f.fondation %>
+                <li><%= link_to f.name, pb_sections_path(f), :class => "dropdown-item" %></li>
+              <% end %>
+            <% end %>
+            <li class="dropdown-divider"></li>
+            <li><%= link_to "Tests virtuels", virtualtests_path, :class => "dropdown-item" %></li>
+            <li><%= link_to "Concours", contests_path, :class => "dropdown-item" %></li>
+          </ul>
+        </li>
+
+        <!-- Forum -->
+        <% if @signed_in %>
+          <% num_unseen_subjects = current_user.sk.num_unseen_subjects(false) %>
+          
+          <li class="nav-item me-1" style="<%= 'font-weight:bold;' if num_unseen_subjects > 0 %>"><%= link_to "Forum#{' (' + num_unseen_subjects.to_s + ')' if num_unseen_subjects > 0 }", subjects_path, :class => "nav-link" %></li>
+        <% end %>
+
+        <!-- Statistiques -->
+        <li class="nav-item dropdown me-1">
+        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+          Statistiques
+        </a>
+        <ul class="dropdown-menu">
+          <li><%= link_to "Scores", users_path, :class => "dropdown-item" %></li>
+          <li><%= link_to "Résolutions récentes", solvedproblems_path, :class => "dropdown-item" %></li>
+          <li><%= link_to "Corrections", correctors_path, :class => "dropdown-item" %></li>
+          <li><%= link_to "Difficulté des chapitres", chapterstats_path, :class => "dropdown-item" %></li>
+          <li><%= link_to "Statistiques diverses", stats_path, :class => "dropdown-item" %></li>
+        </ul>
+        </li>
+
+        <!-- Menu déroulant -->
+
+        <!-- Si connecté -->
+
+        <% if @signed_in %>
+
+          <% nonlu = current_user.sk.links.where("nonread != 0").count %>
+          
+          <li class="nav-item me-1" style="<%= 'font-weight:bold;' if nonlu > 0 %>"><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "nav-link" %></li>
+
+          <li class="nav-item dropdown">
+
+          <!-- Nom -->
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            <% if current_user.other %>
+              [<%= raw(current_user.sk.colored_name(1)) %>]
+            <% else %>
+              <%= raw(current_user.sk.colored_name(1)) %>
+            <% end %>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+            <% if current_user.other %>
+              <li><%= link_to "Sortir de ce corps", user_leave_skin_path(current_user), :method => :put, :class => "dropdown-item" %></li>
+            <% end %>
+            <li><%= link_to "Profil", current_user.sk, :class => "dropdown-item" %></li>
+            <li><%= link_to "Compte", edit_user_path(current_user.sk), :class => "dropdown-item" %></li>
+            <% if @signed_in && (current_user.sk.admin || current_user.sk.group != "") %>
+              <li><%= link_to "Groupes Wépion", groups_path, :class => "dropdown-item" %></li>
+            <% end %>
+            <% if current_user.sk.root? %>
+              <li class="dropdown-divider"></li>
+              <li><%= link_to "Pièces jointes", myfiles_path, :class => "dropdown-item" %></li>
+              <% num_users_to_validate = User.where(:valid_name => false, :email_confirm => true, :admin => false).count %>
+              <li><%= link_to "Valider #{num_users_to_validate} noms", validate_names_path, :class => "dropdown-item" %></li>
+            <% end %>
+            <li class="dropdown-divider"></li>
+            <li>
+            <%= link_to "Déconnexion", signout_path, method: "delete", :class => "dropdown-item" %>
+            </li>
+          </ul>
+          </li>
+
+        <!-- Si pas connecté -->
+        <% else %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Connexion</a>
+
+            <!-- Formulaire pour se connecter -->
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li class="p-3 pb-1 pt-3">
+              <%= form_for(:session, url: sessions_path(redirection: request.original_fullpath)) do |f| %>
+                <%= f.email_field :email, :placeholder => "Adresse e-mail", :class => "form-control", :style => "width:210px;", :id => "header_connect_email" %>
+
+                <%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control mt-2", :style => " width:210px;", :id => "header_connect_password" %>
+
+                <div class="form-check mt-2">
+                  <label class="form-check-label">
+                    <%= f.check_box :remember_me, :id => "header_connect_remember", :class => "form-check-input" %>
+                    Garder ma session active
+                  </label>
+                </div>
+
+                <%= f.submit "Connexion", class: "btn btn-primary mt-2 mb-2", style: "width:210px;", id: "header_connect_button" %>
+              <% end %>
+              <%= link_to "J'ai oublié mon mot de passe", forgot_password_path %>
+              </li>
+
+              <li class="dropdown-divider"></li>
+              <li><%= link_to "S'inscrire", signup_path, :class => "dropdown-item" %></li>
+            </ul>
+          </li>
+        <% end %>
 
       </ul>
 
-    </div> <!--/.nav-collapse -->
+    </div> <!-- collapse -->
   </div> <!-- container -->
-</div> <!-- navigation -->
+</nav>
 
 </div>
 

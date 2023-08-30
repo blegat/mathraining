@@ -1,20 +1,5 @@
 <% provide(:title, @user.name) %>
 
-<!-- Style pour la barre de défilement dans le tableau -->
-<style type="text/css">
-
-html>body thead.fixed tr {
-  display: block;
-}
-
-html>body tbody.scroll {
-  display: block;
-  max-height: 340px;
-  overflow-y: scroll;
-  width: 100%;
-}
-</style>
-
 <% if !@user.admin %>
   <% actualrating = @user.rating %>
   <% if actualrating > 0 %>
@@ -120,32 +105,31 @@ html>body tbody.scroll {
 <% end %>
 
 <!-- OPEN OF THE MAIN DIV -->
-<div class="row" style="margin-left:0px; margin-right:0px; padding-top:5px;">
+<div class="row mx-0 pt-1">
 
 <% largeur = (@user.admin ? 12 : 5) %>
 <% class_name = "top_container" %>
 <% if !@signed_in || @user == current_user.sk %>
   <% class_name = "top_container_small" %>
 <% end %>
-<div class="col-lg-<%= largeur %> col-md-<%= largeur %> col-sm-<%= largeur %> col-xs-12" style="text-align:center; padding:5px;">
+<div class="col-lg-<%= largeur %> col-md-12 col-sm-12 col-xs-12 text-center p-1">
   <div class="basic_container <%= class_name %>">
-  <table style="margin:0px; margin-top:15px; width:100%; height:90px; padding:0px;">
-  <tr><td style="font-size:20px; padding-left:10px; padding-right:10px;"><%= raw(@user.colored_name(0, false)) %></td></tr>
-  <tr><td style="font-size:16px; font-weight:bold; padding-top:5px;"><%= grade %> <%= "<span style='color:red;'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if @signed_in && current_user.sk.root? && @user.is_banned %></td></tr>
-  <tr><td style="padding-top:10px;"><%= @user.country.name %>
-  <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :style => "margin-left:5px; margin-top:-2px;" %></td></tr>
-  <!--<tr><td style="padding-top:15px;">Inscrit le <%= write_date_only(@user.created_at) %></td></tr> -->
+  <table class="m-0 mt-3 p-0" style="width:100%; height:90px;">
+  <tr><td class="px-2" style="font-size:20px;"><%= raw(@user.colored_name(0, false)) %></td></tr>
+  <tr><td class="pt-1" style="font-size:16px; font-weight:bold;"><%= grade %> <%= "<span style='color:red;'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if @signed_in && current_user.sk.root? && @user.is_banned %></td></tr>
+  <tr><td class="pt-2"><%= @user.country.name %>
+  <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
   </table>
   <% if @signed_in && current_user.sk != @user %>
-    <%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-default btn-grey", :style => "width:170px; margin-top:10px;", :disabled => !@signed_in %>
+    <%= button_to "Envoyer un message", new_discussion_path, :method => :get, :params => { qui: @user }, :class => "btn btn-light", :style => "width:170px; margin-top:13px;", :disabled => !@signed_in %>
   <% end %> 
   </div>
 </div>
   
 <% if !@user.admin %>
-  <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" style="text-align:center; padding:5px;">
+  <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 text-center p-1">
     <div class="basic_container <%= class_name %>">
-    <table style="margin:0px; margin-top:15px; width:100%; height:90px; padding:0px;">
+    <table class="m-0 mt-3 p-0" style="width:100%; height:90px;">
       <tr>
       <td class="mytitle">Score</td>
       <td class="myvalue" style="color:<%= couleur %>;"><%= actualrating %></td>
@@ -164,9 +148,9 @@ html>body tbody.scroll {
     
     <% if @signed_in && @user != current_user.sk %>
       <% if !current_user.sk.followed_users.exists?(@user.id) %>
-        <%= link_to "Suivre", user_add_followed_user_path(@user), :method => :put, :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+        <%= button_to "Suivre", user_add_followed_user_path(@user), :method => :put, :class => "btn btn-light mt-2", :style => "width:140px;" %>
       <% else %>
-        <%= link_to "Ne plus suivre", user_remove_followed_user_path(@user), :method => :put, :class => "btn btn-default btn-grey", :style => "width:140px; margin-top:10px;" %>
+        <%= button_to "Ne plus suivre", user_remove_followed_user_path(@user), :method => :put, :class => "btn btn-light mt-2", :style => "width:140px;" %>
       <% end %>
     <% end %>
     
@@ -175,13 +159,13 @@ html>body tbody.scroll {
 <% end %>
   
 <% if !@user.admin %>
-  <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12" style="text-align:center; padding:5px;">
+  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 text-center p-1">
     <div class="basic_container <%= class_name %>">
     
     <center>
-    <% espace = (class_name == "top_container" ? "25px" : "10px") %>
-    <div style="width:100%; height:<%= espace %>" class="hidden-xs"></div>
-    <table style="margin-top:15px; width:90%;">
+    <% espace = (class_name == "top_container" ? "28px" : "10px") %>
+    <div style="width:100%; height:<%= espace %>" class="d-none d-sm-block"></div>
+    <table class="mt-3" style="width:90%;">
     <tr>
     <td style="width:25%; text-align:center;"><%= image_tag("Gold.svg", height: 40, alt: "Médailles d'or", title: "Médailles d'or") %></td>
     <td style="width:25%; text-align:center;"><%= image_tag("Silver.svg", height: 40, alt: "Médailles d'argent", title: "Médailles d'argent") %></td>
@@ -191,7 +175,7 @@ html>body tbody.scroll {
     <tr>
     <% num_medals = @user.contestscores.group(:medal).count %>
     <% [4, 3, 2, 1].each do |m| %>
-      <td style="text-align:center; font-size:22px; font-weight:bold; color: <%= couleur %>; padding-top:5px;">
+      <td class="text-center pt-1" style="font-size:22px; font-weight:bold; color: <%= couleur %>;">
       <%= num_medals.key?(m) ? num_medals[m] : "-" %>
       </td>
     <% end %>
@@ -204,26 +188,26 @@ html>body tbody.scroll {
 <% end %> 
   
 <% if @signed_in && current_user.sk.root? %>
-  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
-    <div class="basic_container" style="padding:5px;">
+  <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 text-center p-1">
+    <div class="basic_container p-1">
       Connecté le <span style="color:<%= couleur %>"><%= write_date_only_small(@user.last_connexion_date) %></span>
     </div>
   </div>
   
-  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
-    <div class="basic_container" style="padding:5px;">
+  <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 text-center p-1">
+    <div class="basic_container p-1">
       <span style="color:<%= couleur %>"><%= "(" if !@user.email_confirm %><%= @user.email %><%= ")" if !@user.email_confirm %></span>
     </div>
   </div>
   
-  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
-    <div class="basic_container" style="padding:5px;">
+  <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 text-center p-1">
+    <div class="basic_container p-1">
       Né en <span style="color:<%= couleur %>"><%= @user.year %></span>
     </div>
   </div>
   
-  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" style="text-align:center; padding:5px;">
-    <div class="basic_container" style="padding:5px;">
+  <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 text-center p-1">
+    <div class="basic_container p-1">
       <% if @user.wepion %>
         <%= "Groupe Wépion" %> <%= " (" << @user.group << ")" if @user.group != "" %>
       <% else %>
@@ -294,7 +278,7 @@ html>body tbody.scroll {
   </style>
   
   <!-- Exercices -->
-  <div class="col-lg-3 col-md-2 col-sm-6 col-xs-6" style="padding:5px;">
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-1">
     <table class="progress_container">
     <tr><td class="progress_title">Exercices</td></tr>
     <tr><td class="progress_circle">
@@ -310,7 +294,7 @@ html>body tbody.scroll {
   </div>
   
   <!-- Problèmes -->
-  <div class="col-lg-3 col-md-2 col-sm-6 col-xs-6" style="padding:5px;">
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-1">
     <table class="progress_container">
     <tr><td class="progress_title">Problèmes</td></tr>
     <tr><td class="progress_circle">
@@ -326,8 +310,8 @@ html>body tbody.scroll {
   </div>
   
   <!-- Progression par section -->
-  <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12" style="padding:5px;">
-    <div class="progress_container" style="padding-left:20px; padding-right:20px;">
+  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 p-1">
+    <div class="progress_container px-3">
     <% ppersection_dic = {} %>
     <% ppersection = Pointspersection.where(:user_id => @user).all.each do |pp| %>
       <% ppersection_dic[pp.section_id] = pp.points %>
@@ -340,15 +324,15 @@ html>body tbody.scroll {
       <tr>
       <td style="width:170px;"><%= s.name %></td>
         <% rate = ppersection_dic[s.id] %>
-      <td style="padding-left:5px; padding-right:5px;">
+      <td class="px-1">
         <% pct = s.max_score == 0 ? 0 : 100*rate/s.max_score.to_f %>
-        <div class="progress" style="margin-bottom:0px; height:10px;">
+        <div class="progress mb-0" style="height:10px;">
         <div class="progress-bar" role="progressbar"
         aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= couleur %>;">
         </div>
         </div>
       </td>
-      <td style="width:40px; font-weight:bold; padding-left:5px;">
+      <td class="ps-1" style="width:40px; font-weight:bold;">
         <%= pct.floor %>%
       </td>
       </tr>
@@ -358,7 +342,7 @@ html>body tbody.scroll {
   </div>
   
   <!-- Résolutions -->
-  <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
+  <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 p-1">
     <div class="basic_container">
       <div class="container_title">Résolutions</div>
       <div class="resolution_container_table">
@@ -385,7 +369,7 @@ html>body tbody.scroll {
         <% end %>
 
         <!-- Début du tableau des résolutions -->
-        <table class="table middle_aligned" style="width:100%; margin-top:0px; margin-bottom:0px;">
+        <table class="table middle_aligned my-0" style="width:100%;">
 
         <!-- On parcourt les actes un par un (cas normal) -->
         <% firstact = true %>
@@ -422,10 +406,10 @@ html>body tbody.scroll {
           <td style="width:50px; text-align:center; font-weight:bold; color:<%= couleur %>; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
           
           <!-- Date (& Heure si xs) -->
-          <td style="width:75px; text-align:center; <%= remove_border %>"><%= write_date_only_small(date) %><span class="visible-xs"><%= write_hour(date) %></span></td>
+          <td style="width:75px; text-align:center; <%= remove_border %>"><%= write_date_only_small(date) %><span class="d-inline d-md-none"><%= write_hour(date) %></span></td>
           
           <!-- Heure (sauf si xs) -->
-          <td class="hidden-xs" style="width:60px; text-align:center; <%= remove_border %>"><%= write_hour(date) %></td>
+          <td class="d-none d-md-table-cell" style="width:60px; text-align:center; <%= remove_border %>"><%= write_hour(date) %></td>
 
           <!-- Quoi -->
           <td style="<%= remove_border %>">
@@ -451,7 +435,7 @@ html>body tbody.scroll {
         
         </table>
       <% else %>
-        <div style="padding-left:10px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> n'a résolu aucun exercice ou problème.</div>
+        <div class="pe-2 pb-2" style="padding-left:10px;"><%= @user.name %> n'a résolu aucun exercice ou problème.</div>
       <% end %>
       
       </div>
@@ -459,7 +443,7 @@ html>body tbody.scroll {
   </div>
     
   <!-- Concours -->
-  <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
+  <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 p-1">
     <div class="basic_container">
       <div class="container_title">Concours</div>
       <div class="resolution_container_table">
@@ -490,7 +474,7 @@ html>body tbody.scroll {
       <% if actcontest.size > 0 %>
       
         <!-- Début du tableau des concours -->
-        <table class="table middle_aligned" style="width:100%; margin-bottom:0px;">
+        <table class="table middle_aligned mb-0" style="width:100%;">
         <% firstact = true %>
         <% actcontest.each do |ac| %>
           <tr>
@@ -509,7 +493,7 @@ html>body tbody.scroll {
           <% else %>
           
             <!-- Médaille -->
-            <td style="width:35px; padding:0px; text-align:center; <%= remove_border %>">
+            <td class="p-0 text-center" style="width:35px; <%= remove_border %>">
             <%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == 4 %>
             <%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") if ac[:medal] == 3 %>
             <%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") if ac[:medal] == 2 %>
@@ -518,28 +502,28 @@ html>body tbody.scroll {
             </td>
           
             <!-- Rang (si pas xs) -->
-            <td class="hidden-xs" style="width:90px; text-align:center; <%= remove_border %>">
+            <td class="d-none d-sm-table-cell" style="width:90px; text-align:center; <%= remove_border %>">
             <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
             </td>
             
             <!-- Points (si pas xs) -->
-            <td class="hidden-xs" style="width:100px; text-align:center; <%= remove_border %>">
+            <td class="d-none d-sm-table-cell" style="width:100px; text-align:center; <%= remove_border %>">
             <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
             </td>
             
             <!-- Rang et points (si xs) -->
-            <td class="visible-xs" style="width:100px; text-align:center; <%= remove_border %>">
+            <td class="d-table-cell d-sm-none" style="width:100px; text-align:center; <%= remove_border %>">
             <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
             <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
             </td>
             
             <!-- Case vide (si xs), pour que le colspan="3" reste correct -->
-            <td class="visible-xs" style="width:0px;"></td>
+            <td class="d-table-cell d-sm-none" style="width:0px;"></td>
             
           <% end %>
           
           <!-- Date -->
-          <td class="hidden-xs" style="width:150px; text-align:center; <%= remove_border %>"><%= write_date_only_small(ac[:start_time]) %> - <%= write_date_only_small(ac[:end_time]) %></td>
+          <td class="d-none d-sm-table-cell" style="width:150px; text-align:center; <%= remove_border %>"><%= write_date_only_small(ac[:start_time]) %> - <%= write_date_only_small(ac[:end_time]) %></td>
           
           <!-- Lien du Concours -->
           <td style="text-align:left; <%= remove_border %>;"><%= link_to "Concours ##{ac[:number]}", contest_path(ac[:id], :tab => 1) %></td>
@@ -548,7 +532,7 @@ html>body tbody.scroll {
         <% end %>
         </table>
       <% else %>
-        <div style="padding-left:10px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> n'a participé à aucun concours.</div>
+        <div class="pe-2 pb-2" style="padding-left:10px;"><%= @user.name %> n'a participé à aucun concours.</div>
       <% end %>
       </div>
     </div>
@@ -556,11 +540,11 @@ html>body tbody.scroll {
 
 
   <!-- Évolution de l'étudiant -->
-  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-1">
   <div class="basic_container">
   <div class="container_title">Évolution</div>
     
-  <div style="padding-left:20px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span style="color:<%= couleur %>"><%= write_date_only(@user.created_at) %></span>.</div>
+  <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span style="color:<%= couleur %>"><%= write_date_only(@user.created_at) %></span>.</div>
     
   <% if actualrating > 0 %>
     <div style="width:100%;">
@@ -599,176 +583,174 @@ html>body tbody.scroll {
     <% end %>
     
     <script type="text/javascript">
-      $(document).ready( function(){
-
-      // Get the canvas & context
-      var c = $('#myCanvas');
-      var ctx = c.get(0).getContext('2d');
-      var container = $(c).parent();
-
-      // Run function when browser resize
-      $(window).resize( respondCanvas );
 
       function respondCanvas(){
-      c.attr('width', $(container).width() ); //max width
-      c.attr('height', 480*$(container).width()/900.0); //max height
-
-      document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
-
-      // Redraw & reposition content
-      var x = c.width();
-      var y = c.height();
-
-      var pct = c.width()/900.0;
-
-      <% i = 1 %>
-
-      var prec = 1000;
-
-      // Affichage des niveaux avec couleurs
-      <% @niveaux.each do |n| %>
       
-        // Points à gauche du graphique
-        <% if i > 1 %>
-          <% haut = [450 - 450*(n.pt/maxi), 0].max %>
-          <% if haut > 0 %>
-            ctx.font="14px Arial";
-            ctx.fillStyle = 'black';
-            ctx.textAlign = 'right';
+        // Get the canvas & context
+        var c = $('#myCanvas');
+        var ctx = c.get(0).getContext('2d');
+        var container = $(c).parent();
+        
+        c.attr('width', $(container).width() ); //max width
+        c.attr('height', 480*$(container).width()/900.0); //max height
 
-            if (pct > 0.7){
-              if (pct * <%= haut %> < prec - 13){
-                ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
-                prec = pct * <%= haut %>;
+        document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
+
+        // Redraw & reposition content
+        var x = c.width();
+        var y = c.height();
+
+        var pct = c.width()/900.0;
+
+        <% i = 1 %>
+
+        var prec = 1000;
+
+        // Affichage des niveaux avec couleurs
+        <% @niveaux.each do |n| %>
+        
+          // Points à gauche du graphique
+          <% if i > 1 %>
+            <% haut = [450 - 450*(n.pt/maxi), 0].max %>
+            <% if haut > 0 %>
+              ctx.font="14px Arial";
+              ctx.fillStyle = 'black';
+              ctx.textAlign = 'right';
+
+              if (pct > 0.7){
+                if (pct * <%= haut %> < prec - 13){
+                  ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
+                  prec = pct * <%= haut %>;
+                }
               }
-            }
-            
-            //ctx.beginPath();
-            //ctx.moveTo(pct*50, pct*<%= haut+5 %>);
-            //ctx.lineTo(pct*856, pct*<%= haut+5 %>);
-            //ctx.strokeStyle = '<%= n.color %>';
-            //ctx.stroke();
+              
+              //ctx.beginPath();
+              //ctx.moveTo(pct*50, pct*<%= haut+5 %>);
+              //ctx.lineTo(pct*856, pct*<%= haut+5 %>);
+              //ctx.strokeStyle = '<%= n.color %>';
+              //ctx.stroke();
+            <% end %>
           <% end %>
+
+          // Calcul du bas et du haut
+          <% if i == nombrelevel %>
+            <% bas = [450 - 450*(n.pt/maxi), 0].max %>
+            <% haut = 0 %>
+          <% else %>
+            <% bas = [450 - 450*(n.pt/maxi), 0].max %>
+            <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
+          <% end %>
+          
+          // Affichage du rectangle
+          <% if bas > haut %>
+            ctx.beginPath();
+            ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
+            ctx.fillStyle = '<%= n.color %>';
+            ctx.fill();
+          <% end %>
+          <% i = i+1 %>
         <% end %>
 
-        // Calcul du bas et du haut
-        <% if i == nombrelevel %>
-          <% bas = [450 - 450*(n.pt/maxi), 0].max %>
-          <% haut = 0 %>
+
+        // On trace maintenant le graphique
+
+        <% last = actperday.first[:time].to_time.to_i %>
+
+        // Commencement du graphique
+        <% if parquoi == "jour" %>
+          <% first = actperday.last[:time].to_time.to_i - 86400 %>
+        <% elsif parquoi == "heure" %>
+          <% first = actperday.last[:time].to_time.to_i - 3600 %>
         <% else %>
-          <% bas = [450 - 450*(n.pt/maxi), 0].max %>
-          <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
+          <% first = actperday.last[:time].to_time.to_i - 60 %>
+        <% end %>
+
+        <% previousw = 2000 %>
+        
+        ctx.font="12px Arial";
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center';
+        ctx.setLineDash([10, 10]);
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'black';
+
+        // De droite vers la gauche : calcul où on met les verticales pointillées
+        <% actperday.each do |a| %>
+          <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+
+          <% if previousw - w > 50 %>
+            if (pct > 0.7){
+            <% if parquoi == "jour" %>
+              ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
+            <% elsif parquoi == "heure" %>
+              ctx.fillText("<%= write_hour_only(a[:time]) %>",pct*<%= 50+w %>,pct*471);
+            <% else %>
+              ctx.fillText("<%= write_hour(a[:time]) %>",pct*<%= 50+w %>,pct*471);
+            <% end %>
+            }
+            ctx.moveTo(pct*<%= 50+w %>, pct*5);
+            ctx.lineTo(pct*<%= 50+w %>, pct*455);
+            <% previousw = w %>
+          <% end %>
         <% end %>
         
-        // Affichage du rectangle
-        <% if bas > haut %>
-          ctx.beginPath();
-          ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
-          ctx.fillStyle = '<%= n.color %>';
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        <% w = 3 %>
+        <% r = 0 %>
+        <% previousr = r %>
+        <% h = 450 %>
+        
+        ctx.beginPath();
+        ctx.lineWidth = 2.5;
+        ctx.fillStyle = 'white' // '<%= couleur %>';
+        ctx.strokeStyle = 'white' // '<%= couleur %>';
+        ctx.moveTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
+
+        // De gauche vers la droite : on trace le graphe
+        <% actperday.reverse.each do |a| %>
+          <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+          <% r = previousr + a[:pt] %>
+          <% previousr = r %>
+          <% h = 450 - 450*(r/maxi) %>
+          ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
+        <% end %>
+        
+        ctx.stroke();
+        
+        <% w = 3 %>
+        <% r = 0 %>
+        <% previousr = r %>
+        <% h = 450 %>
+        
+        // De gauche vers la droite : on met les points
+        <% actperday.reverse.each do |a| %>
+          <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+          <% r = previousr + a[:pt] %>
+          <% previousr = r %>
+          <% h = 450 - 450*(r/maxi) %>  
+          ctx.beginPath();      
+          ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
           ctx.fill();
         <% end %>
-        <% i = i+1 %>
-      <% end %>
-
-
-      // On trace maintenant le graphique
-
-      <% last = actperday.first[:time].to_time.to_i %>
-
-      // Commencement du graphique
-      <% if parquoi == "jour" %>
-        <% first = actperday.last[:time].to_time.to_i - 86400 %>
-      <% elsif parquoi == "heure" %>
-        <% first = actperday.last[:time].to_time.to_i - 3600 %>
-      <% else %>
-        <% first = actperday.last[:time].to_time.to_i - 60 %>
-      <% end %>
-
-      <% previousw = 2000 %>
-      
-      ctx.font="12px Arial";
-      ctx.fillStyle = 'black';
-      ctx.textAlign = 'center';
-      ctx.setLineDash([10, 10]);
-      ctx.beginPath();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'black';
-
-      // De droite vers la gauche : calcul où on met les verticales pointillées
-      <% actperday.each do |a| %>
-        <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-
-        <% if previousw - w > 50 %>
-          if (pct > 0.7){
-          <% if parquoi == "jour" %>
-            ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
-          <% elsif parquoi == "heure" %>
-            ctx.fillText("<%= write_hour_only(a[:time]) %>",pct*<%= 50+w %>,pct*471);
-          <% else %>
-            ctx.fillText("<%= write_hour(a[:time]) %>",pct*<%= 50+w %>,pct*471);
-          <% end %>
-          }
-          ctx.moveTo(pct*<%= 50+w %>, pct*5);
-          ctx.lineTo(pct*<%= 50+w %>, pct*455);
-          <% previousw = w %>
-        <% end %>
-      <% end %>
-      
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      <% w = 3 %>
-      <% r = 0 %>
-      <% previousr = r %>
-      <% h = 450 %>
-      
-      ctx.beginPath();
-      ctx.lineWidth = 2.5;
-      ctx.fillStyle = 'white' // '<%= couleur %>';
-      ctx.strokeStyle = 'white' // '<%= couleur %>';
-      ctx.moveTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
-
-      // De gauche vers la droite : on trace le graphe
-      <% actperday.reverse.each do |a| %>
-        <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-        <% r = previousr + a[:pt] %>
-        <% previousr = r %>
-        <% h = 450 - 450*(r/maxi) %>
-        ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
-      <% end %>
-      
-      ctx.stroke();
-      
-      <% w = 3 %>
-      <% r = 0 %>
-      <% previousr = r %>
-      <% h = 450 %>
-      
-      // De gauche vers la droite : on met les points
-      <% actperday.reverse.each do |a| %>
-        <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-        <% r = previousr + a[:pt] %>
-        <% previousr = r %>
-        <% h = 450 - 450*(r/maxi) %>  
-        ctx.beginPath();      
-        ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
-        ctx.fill();
-      <% end %>
-      
-      // Contour du canvas
-      ctx.beginPath();
-      ctx.rect(pct*50, pct*5, pct*806, pct*450);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'black';
-      ctx.stroke();
-
+        
+        // Contour du canvas
+        ctx.beginPath();
+        ctx.rect(pct*50, pct*5, pct*806, pct*450);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
       }
 
-      //Initial call
-      respondCanvas();
-
+      window.addEventListener("load", () => {
+        respondCanvas();
       });
 
+      window.addEventListener("resize", () => {
+        respondCanvas();
+      });
     </script>
 
     </div>
@@ -779,10 +761,10 @@ html>body tbody.scroll {
 
 <% nb_corrections = @user.followings.where("kind > 0").count %>
 <% if nb_corrections > 0 %>
-  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding:5px;">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-1">
     <div class="basic_container">
     <div class="container_title">Corrections</div>
-    <div style="padding-left:20px; padding-right:10px; padding-bottom:10px;"><%= @user.name %> a participé à la correction de <span style="font-weight:bold; color:<%= couleur %>;"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
+    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span style="font-weight:bold; color:<%= couleur %>;"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
     
     <% if @user.correction_level > 0 %>
       <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span style="font-weight:bold; color:<%= couleur %>;"><%= @user.correction_level %></span> de l'Ordre de Mathraining.
@@ -816,105 +798,105 @@ html>body tbody.scroll {
       </center>
 
       <script type="text/javascript">
-        $(document).ready( function(){
-
-        //Get the canvas & context
-        var c = $('#myCanvasCorr');
-        var ctx = c.get(0).getContext('2d');
-        var container = $(c).parent();
-
-        //Run function when browser  resize
-        $(window).resize( respondCanvas );
-
-        function respondCanvas(){
-        c.attr('width', $(container).width() ); //max width
-        c.attr('height', 480*$(container).width()/900.0); //max height
-
-        document.getElementById('contenantCorr').style.height = 480*$(container).width()/900.0 + "px"
-
-        //Redraw & reposition content
-        var x = c.width();
-        var y = c.height();
-
-        var pct = c.width()/900.0;
+      
+        function respondCanvasCorr(){
         
-        ctx.beginPath();
-        ctx.rect(pct*50, pct*5, pct*806, pct*450);
-        ctx.fillStyle = 'white';
-        ctx.fill();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'black';
-        ctx.stroke();
-        
-        // Entre 50 et 856 --> largeur totale 806, à diviser en num_months
-        <% rect_width = 806.0/num_months %>
-        
-        <% for i in (first_month..last_month) do %>
-          <% n = i - first_month %>
+          //Get the canvas & context
+          var c = $('#myCanvasCorr');
+          var ctx = c.get(0).getContext('2d');
+          var container = $(c).parent();
+          
+          c.attr('width', $(container).width() ); //max width
+          c.attr('height', 480*$(container).width()/900.0); //max height
+
+          document.getElementById('contenantCorr').style.height = 480*$(container).width()/900.0 + "px"
+
+          //Redraw & reposition content
+          var x = c.width();
+          var y = c.height();
+
+          var pct = c.width()/900.0;
+          
           ctx.beginPath();
-          ctx.rect(pct*<%= 50+n*rect_width %>, pct*455, pct*<%= rect_width %>, -pct*<%= (450.0*num_corr_by_month[n])/maxi %>);
-          ctx.fillStyle = '<%= couleur %>';
+          ctx.rect(pct*50, pct*5, pct*806, pct*450);
+          ctx.fillStyle = 'white';
           ctx.fill();
           ctx.lineWidth = 1;
           ctx.strokeStyle = 'black';
           ctx.stroke();
-        <% end %>
-        
-        ctx.font="12px Arial";
-        ctx.fillStyle = 'black';
-        ctx.textAlign = 'center';
-        
-        <% last_date_x = -100 %>
-        if (pct > 0.7){
+          
+          // Entre 50 et 856 --> largeur totale 806, à diviser en num_months
+          <% rect_width = 806.0/num_months %>
+          
           <% for i in (first_month..last_month) do %>
             <% n = i - first_month %>
-            <% date_x = 50+(n+0.5)*rect_width %>
-            <% if date_x > last_date_x + 50 %>
-              <% month = (i % 12 + 1) %>
-              <% year = (i - month + 1)/12 %>
-              ctx.fillText("<%= "#{0 if month < 10}#{month}/#{year-2000}" %>", pct*<%= date_x %>, pct*471);
-              <% last_date_x = date_x %>
-            <% end %>
+            ctx.beginPath();
+            ctx.rect(pct*<%= 50+n*rect_width %>, pct*455, pct*<%= rect_width %>, -pct*<%= (450.0*num_corr_by_month[n])/maxi %>);
+            ctx.fillStyle = '<%= couleur %>';
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
           <% end %>
-        }
-        
-        if (pct > 0.7){
-          ctx.textAlign = 'right';
-          <% i = max_num_corr %>
-          <% step = max_num_corr / 10 %>
-          <% fac = 1 %>
-          <% while step >= 10 %>
-            <% fac = fac * 10 %>
-            <% step = step / 10 %>
-          <% end %>
-          <% if step < 1 %>
-            <% step = 1 %>
-          <% elsif step < 2 %>
-            <% step = 2 %>
-          <% elsif step < 5 %>
-            <% step = 5 %>
-          <% else %>
-            <% step = 10 %>
-          <% end %>
-          <% step = step * fac %>
-          <% while(i > 0) %>
-            ctx.fillText("<%= i %>", pct*43,pct*(<%= 455-450*i/maxi %>+4));
-            <% i = i - step %>
-            <% mod = i % step %>
-            <% if mod != 0 %>
-              <% i = i + step - mod %>
-              <% if mod < step * 0.2 %> 
-                <% i = i - step %>
+          
+          ctx.font="12px Arial";
+          ctx.fillStyle = 'black';
+          ctx.textAlign = 'center';
+          
+          <% last_date_x = -100 %>
+          if (pct > 0.7){
+            <% for i in (first_month..last_month) do %>
+              <% n = i - first_month %>
+              <% date_x = 50+(n+0.5)*rect_width %>
+              <% if date_x > last_date_x + 50 %>
+                <% month = (i % 12 + 1) %>
+                <% year = (i - month + 1)/12 %>
+                ctx.fillText("<%= "#{0 if month < 10}#{month}/#{year-2000}" %>", pct*<%= date_x %>, pct*471);
+                <% last_date_x = date_x %>
               <% end %>
             <% end %>
-          <% end %>
-        }
-        
+          }
+          
+          if (pct > 0.7){
+            ctx.textAlign = 'right';
+            <% i = max_num_corr %>
+            <% step = max_num_corr / 10 %>
+            <% fac = 1 %>
+            <% while step >= 10 %>
+              <% fac = fac * 10 %>
+              <% step = step / 10 %>
+            <% end %>
+            <% if step < 1 %>
+              <% step = 1 %>
+            <% elsif step < 2 %>
+              <% step = 2 %>
+            <% elsif step < 5 %>
+              <% step = 5 %>
+            <% else %>
+              <% step = 10 %>
+            <% end %>
+            <% step = step * fac %>
+            <% while(i > 0) %>
+              ctx.fillText("<%= i %>", pct*43,pct*(<%= 455-450*i/maxi %>+4));
+              <% i = i - step %>
+              <% mod = i % step %>
+              <% if mod != 0 %>
+                <% i = i + step - mod %>
+                <% if mod < step * 0.2 %> 
+                  <% i = i - step %>
+                <% end %>
+              <% end %>
+            <% end %>
+          }
+          
         }
 
-        //Initial call
-        respondCanvas();
+        window.addEventListener("load", () => {
+          respondCanvasCorr();
+        });
 
+        window.addEventListener("resize", () => {
+          respondCanvasCorr();
         });
       </script>
     <% end %>
@@ -927,8 +909,8 @@ html>body tbody.scroll {
 
 <!-- Si administrateur, différentes options -->
 <% if @signed_in && current_user.sk.admin? && !@user.root? && (current_user.sk.root? || !@user.admin) %>
-  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding:5px; text-align:center;">
-  <div class="basic_container" style="padding:5px;">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center p-1">
+  <div class="basic_container p-1">
   <% i = 0 %>
     <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>

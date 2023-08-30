@@ -10,7 +10,7 @@
 <h1><%= title_2((link_to "Tests virtuels", virtualtests_path), "Test ##{@virtualtest.number}") %></h1>
 
 <!-- Chronomètre -->
-<br/><center><span style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></span></center>
+<p class="mt-3 text-center" style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></p>
 
 <% x = 1 %>
 <% numero = 0 %>
@@ -20,19 +20,16 @@
 <% if(params.has_key?:p) %>
   <% prob = params[:p].to_i %>
 <% end %>
-
-<br/>
   
 <!-- Affichage des problèmes -->
-<ul class="nav nav-tabs nav-justified">
+<ul class="nav nav-tabs nav-justified flex-column flex-md-row mt-4 mb-3">
 <% @virtualtest.problems.order(:position).all.each do |p| %>
-  <li role="presentation"
+  <li class="nav-item">
   <% if p.id == prob %>
-    class="active"
     <% numero = x %>
     <% @problem = p %>
   <% end %>
-  ><%= link_to "Problème #{ x }", virtualtest_path(@virtualtest, :p => p.id) %></li>
+  <%= link_to "Problème #{ x }", virtualtest_path(@virtualtest, :p => p.id), :class => "nav-link #{'active' if p.id == prob}" %></li>
   <% x = x+1 %>
 <% end %> 
 </ul>

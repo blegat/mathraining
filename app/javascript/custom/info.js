@@ -15,3 +15,16 @@ var Info = {
     return false;
   }
 }
+
+class InfoClass extends HTMLButtonElement {
+  constructor() { super(); }
+  connectedCallback() {
+  this.addEventListener("click", e => {
+      e.preventDefault();
+      Info.toggle();
+      return false;
+    });
+  }
+}
+
+customElements.define("info-onclick", InfoClass, { extends: "button" });

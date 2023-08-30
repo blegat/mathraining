@@ -1,31 +1,29 @@
 <!-- Explication -->
-<h4>Explication</h4>
-<% if f.explanation.size == 0 %>
-  <p style="color:orange;"><b>Pas d'explication</b></p>
+<h4 class="mt-4">Explication</h4>
+<% if question.explanation.size == 0 %>
+  <span style="color:orange;"><b>Pas d'explication</b></span>
 <% else %>
-  <%= raw(htmlise(f.explanation)) %>
-  <br/>
+  <%= raw(htmlise(question.explanation)) %>
 <% end %>
-<br/>
 
 <!-- Modifier / Supprimer -->
 <div class="noprint">
-<center>
-  <% if f.online %>
-    <%= link_to "Modifier cet exercice", edit_question_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
-    <% if f.is_qcm %>
-      <%= link_to "Modifier les réponses", question_manage_items_path(f), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
+<p class="mt-4" style="text-align:center;">
+  <% if question.online %>
+    <%= link_to "Modifier cet exercice", edit_question_path(question), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
+    <% if question.is_qcm %>
+      <%= link_to "Modifier les réponses", question_manage_items_path(question), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
     <% end %>
-    <%= link_to "Modifier l'explication", question_explanation_path(f) %>
+    <%= link_to "Modifier l'explication", question_explanation_path(question) %>
   <% else %>
-    <%= link_to "Modifier cet exercice", edit_question_path(f) %> |
-    <% if f.is_qcm %>
-      <%= link_to "Modifier les réponses", question_manage_items_path(f) %> |
+    <%= link_to "Modifier cet exercice", edit_question_path(question) %> |
+    <% if question.is_qcm %>
+      <%= link_to "Modifier les réponses", question_manage_items_path(question) %> |
     <% end %>
-    <%= link_to "Modifier l'explication", question_explanation_path(f) %> |
-    <%= link_to "Supprimer cet exercice", f, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet exercice ?" } %>
+    <%= link_to "Modifier l'explication", question_explanation_path(question) %> |
+    <%= link_to "Supprimer cet exercice", question, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet exercice ?" } %>
   <% end %>
-<br/><br/>
+</p>
   
 <!-- Déplacer -->
 <% if number2 > 1 %>
@@ -41,23 +39,24 @@
 <% end %>
 
 <% if (up || down) %>
+<p style="text-align:center;">
   Déplacer cet exercice vers le
   <% if up %>
-    <%= link_to "haut", question_order_minus_path(f), :method => :put %>
+    <%= link_to "haut", question_order_minus_path(question), :method => :put %>
   <% end %>
   <% if up && down %>
     |
   <% end %>
   <% if down %>
-    <%= link_to "bas", question_order_plus_path(f), :method => :put %>
+    <%= link_to "bas", question_order_plus_path(question), :method => :put %>
   <% end %>
-<br/><br/>
+</p>
 <% end %>
 
 <!-- Mettre en ligne -->
-<% if !f.online && @chapter.online %>
-  <%= button_to "Mettre en ligne", question_put_online_path(f), method: :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
-  <br/>
+<center>
+<% if !question.online && @chapter.online %>
+  <%= button_to "Mettre en ligne", question_put_online_path(question), method: :put, class: 'btn btn-light', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
 <% end %>
 </center>
 </div>

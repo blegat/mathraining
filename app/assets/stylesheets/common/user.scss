@@ -1,24 +1,24 @@
 /* PROFIL */
 
-@media (max-width: 767.99px) {
+@media (max-width: 575.99px) {
   .top_container {
-    padding-bottom:15px;
+    padding-bottom:10px;
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 576px) {
   .top_container {
     min-height:165px !important;
   }
 }
 
-@media (max-width: 767.99px) {
+@media (max-width: 575.99px) {
   .top_container_small {
-    padding-bottom:15px;
+    padding-bottom:10px;
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 576px) {
   .top_container_small {
     min-height:125px !important;
   }

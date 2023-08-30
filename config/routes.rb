@@ -9,7 +9,6 @@ Rails.application.routes.draw do
 
   # Chapters
   resources :chapters, only: [:show, :update, :edit, :destroy] do
-    match '/warning', to: 'chapters#warning', :via => [:get]
     match '/put_online', to: 'chapters#put_online', :via => [:put]
     match '/order_plus', to: 'chapters#order_plus', :via => [:put], as: :order_plus
     match '/order_minus', to: 'chapters#order_minus', :via => [:put], as: :order_minus
@@ -19,6 +18,7 @@ Rails.application.routes.draw do
     resources :theories, only: [:new, :create]
     resources :questions, only: [:new, :create]
   end
+  match '/chapterstats', to: 'chapters#chapterstats', :via => [:get]
   resources :chaptercreations, only: [] # Must be added manually!
 
   # Prerequisites
@@ -203,9 +203,6 @@ Rails.application.routes.draw do
   # Attached files
   resources :myfiles, only: [:show, :index] do
   	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:put], as: :fake_delete
-  	#member do
-  	#	get :download
-  	#end
   end
   
   # Discussions
@@ -234,8 +231,8 @@ Rails.application.routes.draw do
   root to: 'static_pages#home'
   match '/about', to: 'static_pages#about', :via => [:get]
   match '/contact', to: 'static_pages#contact', :via => [:get]
-  match '/frequentation', to: 'static_pages#frequentation', :via => [:get]
-  match '/exostats', to: 'static_pages#exostats', :via => [:get]
+  match '/stats', to: 'static_pages#stats', :via => [:get]
+  match '/frequentation', to: 'static_pages#stats', :via => [:get] # For backward (old link, sometimes mentioned in the Forum)
 
   # Error pages
   get '/404', to: 'errors#not_found'

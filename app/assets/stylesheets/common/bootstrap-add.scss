@@ -1,13 +1,40 @@
 /* FAKE BOOTSTRAP ADD-ON */
 
+tr.table-warning-greener td {
+  background-color:rgb(225, 243, 175)!important;
+}
+
+tr.table-warning-reder td {
+  background-color:rgb(255, 213, 175)!important;
+}
+
+.bg-as-table-warning {
+  background-color:rgb(255, 243, 205);
+}
+
+.bg-as-table-success {
+  background-color:rgb(209, 231, 221);
+}
+
+.bg-as-table-danger {
+  background-color:rgb(248, 215, 218);
+}
+
+.bg-as-table-warning-greener {
+  background-color:rgb(225, 243, 175);
+}
+
+.bg-as-table-warning-reder {
+  background-color:rgb(255, 213, 175);
+}
+
+
 .btn-yellow {
-  background-color:#FFFF33;
+  background-color:#FFFF33!important;
   color:black;
-  border-color:#FFE600!important;
 }
 
 .btn-yellow:hover {
-  background-color:#F0F011;
+  background-color:#FFFF77!important;
   color:black;
-  border-color:#E2E002!important;
 }

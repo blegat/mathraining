@@ -10,10 +10,12 @@
  *
  */
 
-@import "bootstrap-sprockets";
+// Bootstrap parameters:
+$font-size-base: 0.875rem;
+$enable-negative-margins: true;
+
 @import "bootstrap";
-@import "bootstrap-datetimepicker";
 @import "select2";
-@import "select2-bootstrap";
+// @import "select2-bootstrap"; // Now we import the .css file for select2-bootstrap-5 only on pages needing it
 @import "./common/*";
 @import "./screen/*";

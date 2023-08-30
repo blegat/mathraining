@@ -1,5 +1,3 @@
-<% unless Rails.env.test? %>
-
 /**
 * Springy v1.2.0
 *
@@ -30,7 +28,7 @@
 // Enable strict mode for EC5 compatible browsers
 "use strict";
 
-var Graph = function() {
+export var Graph = function() {
 	this.nodeSet = {};
 	this.nodes = [];
 	this.edges = [];
@@ -41,7 +39,7 @@ var Graph = function() {
 	this.eventListeners = [];
 };
 
-var Node = function(id, data) {
+export var Node = function(id, data) {
 	this.id = id;
 	this.data = (data !== undefined) ? data : {};
 
@@ -51,7 +49,7 @@ var Node = function(id, data) {
 	// this.data.label
 };
 
-var Edge = function(id, source, target, data) {
+export var Edge = function(id, source, target, data) {
 	this.id = id;
 	/** @type {Node} */
 	this.source = source;
@@ -305,7 +303,7 @@ Graph.prototype.notify = function() {
 };
 
 // -----------
-var Layout = {};
+export var Layout = {};
 Layout.ForceDirected = function(graph, stiffness, repulsion, damping) {
 	this.graph = graph;
 	this.stiffness = stiffness; // spring stiffness constant
@@ -540,7 +538,7 @@ Layout.requestAnimationFrame = __bind(window.requestAnimationFrame ||
 
 
 	// Vector
-	var Vector = function(x, y) {
+	export var Vector = function(x, y) {
 		this.x = x;
 		this.y = y;
 	};
@@ -607,7 +605,7 @@ Layout.requestAnimationFrame = __bind(window.requestAnimationFrame ||
 	// };
 
 	// Renderer handles the layout rendering loop
-	function Renderer(layout, clear, drawEdge, drawNode) {
+	export function Renderer(layout, clear, drawEdge, drawNode) {
 		this.layout = layout;
 		this.clear = clear;
 		this.drawEdge = drawEdge;
@@ -666,5 +664,3 @@ Layout.requestAnimationFrame = __bind(window.requestAnimationFrame ||
 			}
 		};
 	}
-	
-<% end %>

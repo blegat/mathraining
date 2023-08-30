@@ -41,7 +41,7 @@ describe "Actuality pages" do
       it do
         should have_link("Modifier l'actualité", href: edit_actuality_path(actuality))
         should have_link("Supprimer l'actualité")
-        should have_link("Ajouter une actualité", href: new_actuality_path)
+        should have_button("Ajouter une actualité")
       end
     end
     

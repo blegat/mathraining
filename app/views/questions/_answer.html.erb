@@ -1,0 +1,36 @@
+<% if !question.is_qcm %>
+  <!-- pas QCM -->
+  <% if question.decimal %>
+    <% vraidecimal = true %>
+    <% if question.answer - question.answer.to_i <= 0.00001 && question.answer.to_i - question.answer <= 0.00001 %>
+      <% vraidecimal = false %>
+    <% end %>
+    <p><span style="font-size:16px;"><%= question.answer if vraidecimal %><%= question.answer.to_i if !vraidecimal %></span> (On demande une réponse <b>décimale</b>, arrondie au millième près)</p>
+  <% else %>
+    <p><span style="font-size:16px;"><%= question.answer.to_i %></span> (On demande une réponse <b>entière</b>)</p>
+  <% end %>
+<% else %>
+  <!-- QCM -->
+  <ul>
+    <% question.items.order(:position).each do |c| %>
+      <li class="p-1">
+      <%= raw(c.ans) %>
+
+      <% if c.ok %>
+        <%= image_tag v_icon, :class => "ms-2" %>
+      <% end %>
+      <% if !c.ok && question.many_answers %>
+        <%= image_tag x_icon, :class => "ms-2" %>
+      <% end %>
+      </li>
+    <% end %>
+  </ul>
+
+  <% if !question.online? %>
+    <% if question.many_answers %>
+      <p>(Éventuellement plusieurs propositions correctes)</p>
+    <% else %>
+      <p>(Une seule proposition correcte)</p>
+    <% end %>
+  <% end %>
+<% end %>

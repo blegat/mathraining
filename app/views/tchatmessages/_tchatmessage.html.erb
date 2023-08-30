@@ -1,9 +1,9 @@
-<hr style="margin-top:3px; margin-bottom:3px;"/>
+<hr class="my-1" />
 
 <% if @compteur <= params[:nonread].to_i %>
-  <div style="padding:8px; background-color:#fffad2; overflow-y:hidden;">
+  <div class="p-2" style="background-color:#fffad2; overflow-y:hidden;">
 <% else %>
-  <div style="padding:8px; overflow-y:hidden; overflow-x:visible">
+  <div class="p-2" style="overflow-y:hidden; overflow-x:visible">
 <% end %>
 
 <% @compteur = @compteur+1 %>
@@ -11,24 +11,24 @@
 <% m = tchatmessage %>
 
 <!-- Qui et quand -->
-<div style="text-align:right; float:right;">&nbsp;
+<div class="text-end" style="float:right;">&nbsp;
   <%= write_date(m.created_at) %>
 </div>
 
-<div style="margin-bottom:10px;"><b><%= m.user.name %></b></div>
+<div class="mb-2"><b><%= m.user.name %></b></div>
 
   <!-- Contenu du message -->
 <div id="normal<%= m.id %>" style="display:block;">
 <%= raw(bbcode(m.content)) %>
-<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return ShowCode.showAnormal(<%= m.id %>)'>(Montrer le code)</a></div>
+<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' data-text-id='<%= m.id %>' is='showcode-onclick'>(Montrer le code)</a></div>
 </div>
 
 <div class="tex2jax_ignore" id="anormal<%= m.id %>" style="display:none;">
 <%= raw((h m.content).gsub(/\n/, '<br/>')) %>
-<div style="text-align:right; float:right;">&nbsp; <a href='#' onclick='return ShowCode.showNormal(<%= m.id %>)'>(Cacher le code)</a></div>
+<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' data-text-id='<%= m.id %>' is='hidecode-onclick'>(Cacher le code)</a></div>
 </div>
 
 <!-- Pièces jointes -->
-<%= render '/subjects/show_files', s: m %>
+<%= render '/shared/show_files', s: m %>
 
 </div>

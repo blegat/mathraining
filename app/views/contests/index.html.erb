@@ -1,12 +1,13 @@
 <% provide(:title, 'Concours') %>
 
 <h1><%= title_1("Concours") %>
-<button class='information-tag' onclick='return Info.toggle();'>?</button></h1>
+<button class="information-tag" is="info-onclick">?</button>
+</h1>
 
 <%= render 'infocontest' %>
 
 <% if !has_enough_points %>
-<div style="font-weight:bold; margin-bottom:15px;">
+<div class="mb-3" style="font-weight:bold;">
 Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.
 </div>
 <% end %>
@@ -26,7 +27,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
     
     <table class="table table-bordered virtualtest <%= classe %>">
     <tr><td class="title">
-    <center><h3><%= link_to "Concours ##{c.number}", c %></h3></center>
+    <center><h4><%= link_to "Concours ##{c.number}", c %></h4></center>
     </td></tr>
     
     <tr><td class="real-content">
@@ -37,7 +38,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
     
     <div class="row content">
     <div class="module left-info">
-    <h4>Informations</h4>
+    <h5>Informations</h5>
     
     <% if nb_prob > 0 %>
       Début : <b><%= write_date_only_with_day(c.start_time) %></b><br/>
@@ -55,7 +56,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
     </div>
     
     <div class="module right-info">
-    <h4>Statistiques</h4>
+    <h5>Statistiques</h5>
       <% nb_prob_corrected = c.contestproblems.where(:status => [:corrected, :in_recorrection]).count %>
       <% if nb_prob_corrected == 0 %>
         <i>Aucun problème corrigé</i>
@@ -97,6 +98,6 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
 <!-- Ajouter un concours -->
 <% if @signed_in && current_user.sk.admin? %>
   <center>
-  <%= link_to "Ajouter un concours", new_contest_path, class: 'btn btn-lg btn-default btn-grey' %>
+  <%= button_to "Ajouter un concours", new_contest_path, method: :get, class: 'btn btn-lg btn-light' %>
   </center>
 <% end %>

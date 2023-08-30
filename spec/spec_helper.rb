@@ -75,7 +75,10 @@ RSpec.configure do |config|
   config.before(:suite) do
     Rails.application.load_seed # Needed at least to have colors for users
   end
+  
+  config.example_status_persistence_file_path = "tmp/examples.txt"
 end
+
 
 #Capybara::Webkit.configure do |config|
 #  config.block_unknown_urls

@@ -1,26 +1,25 @@
 <%= render 'shared/error_messages', object: f.object %>
 
 <!-- Enoncé -->
-<div class="form-group">
-  <%= f.label "Énoncé" %>
-  <div class="well" id="MathPreview"></div>
-  <div class="well hidden-preview" id="MathBuffer"></div>
-  <%= render 'theories/font' %>
-  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+<div class="mb-2">
+  <%= f.label "Énoncé", :class => "form-label" %>
+  <%= render 'shared/preview' %>
+  <%= render 'shared/font' %>
+  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
 </div>
   
 <!-- Origine -->
-<div class="form-group">
-  <%= f.label :origin %> (laisser blanc si d'origine inconnue)
+<div class="mb-2">
+  <%= f.label :origin, :class => "form-label" %> (laisser blanc si d'origine inconnue)
   <%= f.text_field :origin, :class => "form-control", :maxlength => "255", :style => "max-width:500px;", :placeholder => "Exemple : International Mathematical Olympiad 2030, Problème 1" %>
 </div>
 
 <!-- Niveau -->
 <% if !problem.nil? && problem.online %>
-  <b>Niveau (entre 1 et 5)</b> : <b><%= problem.level %></b><br/><br/>
+  <p>Niveau (entre 1 et 5) : <b><%= problem.level %></b></p>
 <% else %>
-  <div class="form-group">
-  <%= f.label :level %>
-  <%= f.number_field :level, :class => "form-control", :style => "width:50px;", :min => 1, :max => 5 %>
+  <div class="mb-2">
+  <%= f.label :level, :class => "form-label" %>
+  <%= f.number_field :level, :class => "form-control", :style => "width:70px;", :min => 1, :max => 5 %>
   </div>
 <% end %>

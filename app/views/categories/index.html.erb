@@ -2,8 +2,6 @@
 
 <h1><%= title_2((link_to "Forum", subjects_path), "Modifier les catégories") %></h1>
 
-<!-- Réponse -->
-<h3>Catégories</h3>
 <table cellpadding="5">
   <tr><th></th><th></th><th></th><th></th></tr>
 
@@ -13,13 +11,13 @@
         <td style="width:15px;">
           -
         </td>
-        <td style="padding:5px;">
+        <td class="p-1">
           <%= g.text_field :name, :class => "form-control", :style => "width:200px;" %>
         </td>
         <td>
           <%= g.submit "Modifier cette catégorie", class: "btn btn-primary" %>
         </td>
-        <td style="padding:10px;">
+        <td class="p-2">
           <%= link_to "Supprimer cette catégorie", c, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette catégorie ?" } %>
         </td>
       </tr>
@@ -30,7 +28,7 @@
     <%= form_for(:category) do |f| %>
       <td>
       </td>
-      <td style="padding:5px;">
+      <td class="p-1">
         <%= f.text_field :name, :class => "form-control", :style => "width:200px;"  %>
       </td>
       <td>

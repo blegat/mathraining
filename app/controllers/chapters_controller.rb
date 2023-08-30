@@ -1,16 +1,17 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
-  before_action :signed_in_user, only: [:new, :edit, :warning, :read]
+  before_action :signed_in_user, only: [:new, :edit, :read]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online]
-  before_action :admin_user, only: [:new, :create, :destroy, :warning, :put_online, :order_minus, :order_plus]
+  before_action :admin_user, only: [:new, :create, :destroy, :order_minus, :order_plus]
+  before_action :root_user, only: [:put_online]
   
   before_action :get_chapter, only: [:show, :edit, :update, :destroy]
-  before_action :get_chapter2, only: [:warning, :put_online, :read, :order_minus, :order_plus]
+  before_action :get_chapter2, only: [:put_online, :read, :order_minus, :order_plus]
   before_action :get_section, only: [:new, :create]
   
-  before_action :offline_chapter, only: [:destroy, :warning, :put_online]
+  before_action :offline_chapter, only: [:destroy, :put_online]
   before_action :online_chapter_or_creating_user, only: [:show, :read]
-  before_action :prerequisites_online, only: [:warning, :put_online]
+  before_action :prerequisites_online, only: [:put_online]
   before_action :user_that_can_update_chapter, only: [:edit, :update]
 
   # Show one chapter
@@ -73,10 +74,6 @@ class ChaptersController < ApplicationController
     redirect_to section_path(@section)
   end
 
-  # Warning page before putting a chapter online
-  def warning
-  end
-
   # Mark the full chapter as read
   def read
     @chapter.theories.each do |t|
@@ -124,6 +121,10 @@ class ChaptersController < ApplicationController
       flash[:success] = "Chapitre déplacé vers le bas."
     end
     redirect_to @chapter
+  end
+  
+  # Show statistics of all chapters
+  def chapterstats
   end
 
   private

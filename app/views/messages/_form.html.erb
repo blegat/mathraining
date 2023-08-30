@@ -3,62 +3,64 @@
   <% iciadmin = true %>
 <% end %>
 
-<% if @postfix.nil? %>
-  <% @postfix = "" %>
+<% if !(defined? postfix) %>
+  <% postfix = "" %>
+<% end %>
+
+<% if !(defined? show_mail_checkboxes) %>
+  <% show_mail_checkboxes = false %>
 <% end %>
 
 <% erreur = false %>
 
-<% if !session["error#{@postfix}"].nil? %>
+<% if !session["error#{postfix}"].nil? %>
   <% erreur = true %>
-  <% erreurs = session["error#{@postfix}"] %>
-  <div id="error_explanation">
-    <div class="alert alert-danger">
-      <%= errors_to_list(erreurs) %>
-    </div>
-  </div>
+  <%= render 'shared/error_messages', errors: session["error#{postfix}"] %>
 <% end %>
 
 
-<div class="form-group">
+<div class="mb-2">
   <% cont = m.content %>
   <% if erreur && !session[:oldContent].nil? %>
     <% cont = session[:oldContent] %>
   <% end %>
-  <%= f.label :content, :disabled => current_user.other %>
-  <div class="well" id="MathPreview<%= @postfix %>"></div>
-  <div class="well hidden-preview" id="MathBuffer<%= @postfix %>"></div>
-  <%= render 'subjects/smiley', hiddentext: true %>
-  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput#{@postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+  <%= f.label :content, :disabled => current_user.other, :class => "form-label" %>
+  <%= render 'shared/preview', postfix: postfix %>
+  <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
+  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id=>"MathInput#{postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
 </div>
 
 <!-- Case e-mails aux groupes A et/ou B -->
-<% if current_user.sk.root && @new && !@subject.for_correctors %>
-	<div class="checkbox">
-  <label>
-    <input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
+<% if current_user.sk.root && show_mail_checkboxes && !@subject.for_correctors %>
+	<div class="form-check">
+  <label class="form-check-label">
+    <input class="form-check-input" type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
     Prévenir tout le groupe A de ce nouveau message par e-mail.
   </label>
   </div>
-  <div class="checkbox">
-  <label>
-    <input type="checkbox" id="groupeB" name="groupeB" value="B" <%= 'disabled="true"' if current_user.other %> >
+  <div class="form-check mb-2">
+  <label class="form-check-label">
+    <input class="form-check-input" type="checkbox" id="groupeB" name="groupeB" value="B" <%= 'disabled="true"' if current_user.other %> >
     Prévenir tout le groupe B de ce nouveau message par e-mail.
   </label>
   </div>
 <% end %>
 
-<% if !session["error#{@postfix}"].nil? %>
+<% if !session["error#{postfix}"].nil? %>
   <script>
-    Rolling.develop_quick("<%= @postfix %>");
+    window.addEventListener("load", () => {
+      Rolling.develop_quick("<%= postfix %>");
+    });
   </script>
-  <% session.delete("error#{@postfix}") %>
+  <% session.delete("error#{postfix}") %>
   <% session.delete("oldContent") %>
 <% end %>
 
-<% if !session["success#{@postfix}"].nil? %>
+<% if !session["success#{postfix}"].nil? %>
   <script>
-    Rolling.showus("<%= @postfix %>");
+    window.addEventListener("load", () => {
+      Rolling.showus("<%= postfix %>");
+    });
   </script>
-  <% session.delete("success#{@postfix}") %>
+  <% session.delete("success#{postfix}") %>
 <% end %>

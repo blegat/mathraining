@@ -1,0 +1,8 @@
+<% if !(defined? postfix) %>
+  <% postfix = "" %>
+<% end %>
+
+<div class="card text-bg-light">
+  <div class="card-body" id="MathPreview<%= postfix %>"></div>
+  <div class="card-body hidden-preview" id="MathBuffer<%= postfix %>"></div>
+</div>

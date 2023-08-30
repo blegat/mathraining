@@ -4,27 +4,19 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
-<div style="margin-bottom:30px;">
 <%= raw(htmlise(@problem.statement)) %>
-</div>
 
 <!-- Explication -->
-<h3>Éléments de solution</h3>
-Ce champ ne sera visible <u>que par les administrateurs et correcteurs</u>.
-Son but est de donner les grandes idées de la solution afin de faciliter la tâche des correcteurs.<br/><br/>
+<h3 class="mt-3">Éléments de solution</h3>
+<p>Ce champ ne sera visible <u>que par les administrateurs et correcteurs</u>.
+Son but est de donner les grandes idées de la solution afin de faciliter la tâche des correcteurs.</p>
 
 <%= form_for(@problem, url: problem_update_explanation_path) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>
-  <div class="form-group">
-    <div class="well" id="MathPreview"></div>
-    <div class="well hidden-preview" id="MathBuffer"></div>
-    <%= render 'theories/font' %>
-    <%= f.text_area :explanation, :class => "form-control", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  <div class="mb-2">
+    <%= render 'shared/preview' %>
+    <%= render 'shared/font' %>
+    <%= f.text_area :explanation, :class => "form-control", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
   </div>
   <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
 <% end %>
-
-<script>
-Preview.Init();
-Preview.Update();
-</script>

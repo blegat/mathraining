@@ -56,11 +56,11 @@ describe "Page section/showpb" do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
-        should have_selector("h2", text: "Niveau 1")
-        should have_selector("h2", text: "Niveau 2")
-        should have_selector("h2", text: "Niveau 3")
-        should have_selector("h2", text: "Niveau 4")
-        should have_selector("h2", text: "Niveau 5")
+        should have_selector("h3", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 2")
+        should have_selector("h3", text: "Niveau 3")
+        should have_selector("h3", text: "Niveau 4")
+        should have_selector("h3", text: "Niveau 5")
         
         should have_selector("table", class: "yellowy", text: online_problem.statement) # Level 1
         should have_no_selector("table", text: online_problem_with_one_prerequisite.statement)
@@ -93,11 +93,11 @@ describe "Page section/showpb" do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
-        should have_selector("h2", text: "Niveau 1")
-        should have_selector("h2", text: "Niveau 2")
-        should have_selector("h2", text: "Niveau 3")
-        should have_selector("h2", text: "Niveau 4")
-        should have_selector("h2", text: "Niveau 5")
+        should have_selector("h3", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 2")
+        should have_selector("h3", text: "Niveau 3")
+        should have_selector("h3", text: "Niveau 4")
+        should have_selector("h3", text: "Niveau 5")
         
         should have_selector("table", class: "yellowy", text: online_problem.statement) # Level 1
         should have_selector("table", class: "yellowy", text: online_problem_with_one_prerequisite.statement) # Level 2
@@ -130,11 +130,11 @@ describe "Page section/showpb" do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
-        should have_selector("h2", text: "Niveau 1")
-        should have_selector("h2", text: "Niveau 2")
-        should have_selector("h2", text: "Niveau 3")
-        should have_selector("h2", text: "Niveau 4")
-        should have_selector("h2", text: "Niveau 5")
+        should have_selector("h3", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 2")
+        should have_selector("h3", text: "Niveau 3")
+        should have_selector("h3", text: "Niveau 4")
+        should have_selector("h3", text: "Niveau 5")
         
         should have_selector("table", class: "yellowy", text: online_problem.statement) # Level 1
         should have_no_selector("table", text: online_problem_with_one_prerequisite.statement)
@@ -168,11 +168,11 @@ describe "Page section/showpb" do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
-        should have_selector("h2", text: "Niveau 1")
-        should have_selector("h2", text: "Niveau 2")
-        should have_selector("h2", text: "Niveau 3")
-        should have_selector("h2", text: "Niveau 4")
-        should have_selector("h2", text: "Niveau 5")
+        should have_selector("h3", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 2")
+        should have_selector("h3", text: "Niveau 3")
+        should have_selector("h3", text: "Niveau 4")
+        should have_selector("h3", text: "Niveau 5")
         
         should have_selector("table", class: "yellowy", text: online_problem.statement) # Level 1
         should have_selector("table", class: "yellowy", text: online_problem_with_one_prerequisite.statement) # Level 2
@@ -207,11 +207,11 @@ describe "Page section/showpb" do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
-        should have_selector("h2", text: "Niveau 1")
-        should have_selector("h2", text: "Niveau 2")
-        should have_selector("h2", text: "Niveau 3")
-        should have_selector("h2", text: "Niveau 4")
-        should have_selector("h2", text: "Niveau 5")
+        should have_selector("h3", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 2")
+        should have_selector("h3", text: "Niveau 3")
+        should have_selector("h3", text: "Niveau 4")
+        should have_selector("h3", text: "Niveau 5")
         
         should have_selector("table", class: "yellowy", text: online_problem.statement) # Level 1
         should have_selector("table", class: "yellowy", text: online_problem_with_one_prerequisite.statement) # Level 2
@@ -246,11 +246,11 @@ describe "Page section/showpb" do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
-        should have_selector("h2", text: "Niveau 1")
-        should have_selector("h2", text: "Niveau 2")
-        should have_selector("h2", text: "Niveau 3")
-        should have_selector("h2", text: "Niveau 4")
-        should have_selector("h2", text: "Niveau 5")
+        should have_selector("h3", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 2")
+        should have_selector("h3", text: "Niveau 3")
+        should have_selector("h3", text: "Niveau 4")
+        should have_selector("h3", text: "Niveau 5")
         
         should have_selector("table", class: "yellowy", text: online_problem.statement) # Level 1
         should have_selector("table", class: "yellowy", text: online_problem_with_one_prerequisite.statement) # Level 2
@@ -296,11 +296,11 @@ describe "Page section/showpb" do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
-        should have_selector("h2", text: "Niveau 1")
-        should have_selector("h2", text: "Niveau 2")
-        should have_selector("h2", text: "Niveau 3")
-        should have_selector("h2", text: "Niveau 4")
-        should have_selector("h2", text: "Niveau 5")
+        should have_selector("h3", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 2")
+        should have_selector("h3", text: "Niveau 3")
+        should have_selector("h3", text: "Niveau 4")
+        should have_selector("h3", text: "Niveau 5")
         
         should have_selector("table", class: "greeny", text: online_problem.statement) # Level 1
         should have_content(online_problem.origin)
@@ -352,11 +352,11 @@ describe "Page section/showpb" do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
-        should have_selector("h2", text: "Niveau 1")
-        should have_selector("h2", text: "Niveau 2")
-        should have_selector("h2", text: "Niveau 3")
-        should have_selector("h2", text: "Niveau 4")
-        should have_selector("h2", text: "Niveau 5")
+        should have_selector("h3", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 2")
+        should have_selector("h3", text: "Niveau 3")
+        should have_selector("h3", text: "Niveau 4")
+        should have_selector("h3", text: "Niveau 5")
         
         should have_selector("table", class: "greeny", text: online_problem.statement) # Level 1
         should have_content(online_problem.origin)
@@ -397,11 +397,11 @@ describe "Page section/showpb" do
       should have_selector("h1", text: section.name)
       should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
       
-      should have_selector("h2", text: "Niveau 1")
-      should have_selector("h2", text: "Niveau 2")
-      should have_selector("h2", text: "Niveau 3")
-      should have_selector("h2", text: "Niveau 4")
-      should have_selector("h2", text: "Niveau 5")
+      should have_selector("h3", text: "Niveau 1")
+      should have_selector("h3", text: "Niveau 2")
+      should have_selector("h3", text: "Niveau 3")
+      should have_selector("h3", text: "Niveau 4")
+      should have_selector("h3", text: "Niveau 5")
       
       should have_selector("table", class: "yellowy", text: online_problem.statement)
       should have_content(online_problem.origin)

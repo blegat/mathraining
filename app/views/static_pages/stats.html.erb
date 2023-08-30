@@ -8,17 +8,19 @@
 
 <center><span id="interval"></span></center>
  
-<div id="slider-range" style="margin-top:5px;"></div>
+<div id="slider-range" class="mt-1"></div>
 
-<script src="https://code.jquery.com/jquery-3.6.1.js"
+<!--<script src="https://code.jquery.com/jquery-3.6.1.js"
 			  integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
-			  crossorigin="anonymous"></script>
+			  crossorigin="anonymous"></script>-->
 			  
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"
+<!--<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"
 			  integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c="
-			  crossorigin="anonymous"></script>
+			  crossorigin="anonymous"></script>-->
 			  
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+<!-- Does not work: <link href="https://cdn.jsdelivr.net/npm/jquery-ui@1.13.2/themes/base/theme.min.css" rel="stylesheet"> -->
 
 <script>
 var start_range = 0;
@@ -34,7 +36,7 @@ function format_date(days_after_first_date){
   return (day < 10 ? "0" : "") + day + "/" + (month < 10 ? "0" : "") + month + "/" + year;
 }
 
-$( function() {
+window.addEventListener("load", () => {
   $( "#slider-range" ).slider({
     range: true,
     min: 0,
@@ -56,14 +58,15 @@ $( function() {
 } );
 </script>
 
+<div class="mb-3"></div>
 
 <h3>Fréquentation du site</h3>
 
-Le graphique suivant reprend le nombre d'utilisateurs connectés chaque jour sur le site. Les données commencent le 19 mars 2015.<br/><br/>
+<p>Le graphique suivant reprend le nombre d'utilisateurs connectés chaque jour sur le site. Les données commencent le 19 mars 2015.</p>
 
 <center>
 <!-- Endroit pour dessiner la fréquentation -->
-<div id="contenant1" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<div id="contenant1" class="mb-3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
 <canvas id="myCanvas1" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
@@ -72,11 +75,11 @@ Votre navigateur ne supporte pas les canvas.
 
 <h3>Résolutions d'exercices</h3>
 
-Ci-dessous, le nombre d'exercices résolus chaque semaine.<br/><br/>
+<p>Ci-dessous, le nombre d'exercices résolus chaque semaine.</p>
 
 <center>
 <!-- Endroit pour dessiner les résolutions d'exercices -->
-<div id="contenant2" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<div id="contenant2" class="mb-3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
 <canvas id="myCanvas2" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
@@ -85,11 +88,11 @@ Votre navigateur ne supporte pas les canvas.
 
 <h3>Soumissions aux problèmes</h3>
 
-Ci-dessous, le nombre de soumissions aux problèmes du site, par semaine.<br/><br/>
+<p>Ci-dessous, le nombre de soumissions aux problèmes du site, par semaine.</p>
 
 <center>
 <!-- Endroit pour dessiner les soumissions aux problèmes -->
-<div id="contenant3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<div id="contenant3" class="mb-3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
 <canvas id="myCanvas3" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
@@ -98,7 +101,7 @@ Votre navigateur ne supporte pas les canvas.
 
 <h3>Temps de correction</h3>
 
-Chaque soumission à un problème doit être corrigée par un correcteur. Le graphique suivant donne, pour chaque semaine, le temps moyen de correction d'une soumission (en jours).<br/><br/>
+<p>Chaque soumission à un problème doit être corrigée par un correcteur. Le graphique suivant donne, pour chaque semaine, le temps moyen de correction d'une soumission (en jours).</p>
 
 <center>
 <!-- Endroit pour dessiner les temps de correction -->
@@ -191,148 +194,147 @@ Votre navigateur ne supporte pas les canvas.
   }
   
   function drawGraph(n, batonnets) {
-  var abs_int = graphique[n][0];
-  var abs = graphique[n][1];
-  var val = graphique[n][2];
-  var namec = graphique[n][3];
-  var namecont = graphique[n][4];
-  var couleur = graphique[n][5];
-  var c = $(namec);
-  var ctx = c.get(0).getContext('2d');
-  var container = $(c).parent();
-  c.attr('width', $(container).width() ); //max width
-  c.attr('height', 480*$(container).width()/900.0); //max height
-  document.getElementById(namecont).style.height = 480*$(container).width()/900.0 + "px"
-    
-  //Redraw & reposition content
-  var x = c.width();
-  var y = c.height();
+    var abs_int = graphique[n][0];
+    var abs = graphique[n][1];
+    var val = graphique[n][2];
+    var namec = graphique[n][3];
+    var namecont = graphique[n][4];
+    var couleur = graphique[n][5];
+    var c = $(namec);
+    var ctx = c.get(0).getContext('2d');
+    var container = $(c).parent();
+    c.attr('width', $(container).width() ); //max width
+    c.attr('height', 480*$(container).width()/900.0); //max height
+    document.getElementById(namecont).style.height = 480*$(container).width()/900.0 + "px"
+      
+    //Redraw & reposition content
+    var x = c.width();
+    var y = c.height();
 
-  var pct = c.width()/900.0;
+    var pct = c.width()/900.0;
 
-  ctx.beginPath();
-  ctx.rect(pct*50, pct*5, pct*806, pct*450);
-  ctx.fillStyle = 'white';
-  ctx.fill();
-  ctx.lineWidth = 1.5;
-  ctx.strokeStyle = 'black';
-  ctx.stroke();
-  
-  computeIndicesAndMaxValue(n);
-    
-  // Affichage des barres horizontales
-
-  var maxi = 1.1*max_value;
-  
-  var tranche = Math.floor(max_value/4);
-  if(tranche == 0){
-    tranche = 1;
-  }
-    
-  ctx.lineWidth = 0.5;
-  ctx.strokeStyle = 'grey';
-  ctx.font="14px Arial";
-  ctx.fillStyle = 'black';
-  ctx.textAlign = 'right';
-
-  ctx.setLineDash([10, 10]);
-  ctx.beginPath();
-
-  if (pct < 0.7){
-    ctx.font="9px Arial";
-  }
-  
-  var encours = Math.floor(max_value);
-  
-  while(encours > 0) {
-    var haut = 450 - 450*(encours/maxi);
-    if(haut < 0) {
-      haut = 0;
-    }
-    ctx.moveTo(pct*50, pct*(haut+5));
-    ctx.lineTo(pct*856, pct*(haut+5));
-    ctx.fillText(encours,pct*44,pct*(haut+10));
-    encours = encours - tranche;
-  }
-
-  ctx.stroke();
-  
-  // Affichage des barres verticales et des dates en abscisse
-  
-  ctx.font="12px Arial";
-  ctx.textAlign = 'center';
-  ctx.beginPath();
-  
-  encours = end_index;
-  var printw = 10000;
-  
-  while(encours >= start_index) {
-    var N = end_index - start_index + (batonnets ? 1 : 0);
-    var w = 3 + 800*(encours - start_index + (batonnets ? 0.5 : 0))/N;
-    if((w < printw - 50 && pct > 0.8) || (w < printw - 70 && pct > 0.7)) {
-      ctx.fillText(abs[encours],pct*(50+w),pct*455+15);
-      printw = w;
-      ctx.moveTo(pct*(50+w), pct*5);
-      ctx.lineTo(pct*(50+w), pct*455);
-    }
-    encours = encours-1;
-  }
-  
-  ctx.stroke();
-  ctx.setLineDash([]);
-    
-  // On trace maintenant le graphique
-  ctx.strokeStyle = 'black';
-
-  // Commencement du graphique
-
-  // On parcourt de droite à gauche
-  encours = end_index;
-  premier = true
-
-  ctx.fillStyle = couleur;
-  ctx.strokeStyle = couleur;
-  ctx.font = "12px Arial";
-  ctx.textAlign = 'center';
-  ctx.lineWidth = 2;
-
-  while(encours >= start_index) {
-    var N = end_index - start_index + (batonnets ? 1 : 0);
-    var w = 3 + 800*(encours - start_index + (batonnets ? 0.5 : 0))/N;
-    var huser = 450 - 450*(val[encours]/maxi);
-    if(val[encours] >= 0) {
-      if(batonnets) {
-        var halfwidth = 400/N;
-        var gg = Math.round(pct*(50+w-halfwidth));
-        var dd = Math.round(pct*(50+w+halfwidth));
-        ctx.fillRect(gg,pct*(huser+5),dd-gg,pct*450*(val[encours]/maxi));
-      }
-      else {
-        if(premier) {
-          ctx.beginPath();
-          ctx.moveTo(pct*(50+w), pct*(huser+5));
-          premier = false;
-        }
-        else {
-          ctx.lineTo(pct*(50+w), pct*(huser+5));
-        }
-      }
-    }
-    encours = encours-1;
-  } 
-  if(!batonnets) { 
-    if (!premier) {
-      ctx.stroke();
-    }
-  }
-  else {
     ctx.beginPath();
     ctx.rect(pct*50, pct*5, pct*806, pct*450);
+    ctx.fillStyle = 'white';
+    ctx.fill();
     ctx.lineWidth = 1.5;
     ctx.strokeStyle = 'black';
     ctx.stroke();
-  }
-  
+    
+    computeIndicesAndMaxValue(n);
+      
+    // Affichage des barres horizontales
+
+    var maxi = 1.1*max_value;
+    
+    var tranche = Math.floor(max_value/4);
+    if(tranche == 0){
+      tranche = 1;
+    }
+      
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = 'grey';
+    ctx.font="14px Arial";
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'right';
+
+    ctx.setLineDash([10, 10]);
+    ctx.beginPath();
+
+    if (pct < 0.7){
+      ctx.font="9px Arial";
+    }
+    
+    var encours = Math.floor(max_value);
+    
+    while(encours > 0) {
+      var haut = 450 - 450*(encours/maxi);
+      if(haut < 0) {
+        haut = 0;
+      }
+      ctx.moveTo(pct*50, pct*(haut+5));
+      ctx.lineTo(pct*856, pct*(haut+5));
+      ctx.fillText(encours,pct*44,pct*(haut+10));
+      encours = encours - tranche;
+    }
+
+    ctx.stroke();
+    
+    // Affichage des barres verticales et des dates en abscisse
+    
+    ctx.font="12px Arial";
+    ctx.textAlign = 'center';
+    ctx.beginPath();
+    
+    encours = end_index;
+    var printw = 10000;
+    
+    while(encours >= start_index) {
+      var N = end_index - start_index + (batonnets ? 1 : 0);
+      var w = 3 + 800*(encours - start_index + (batonnets ? 0.5 : 0))/N;
+      if((w < printw - 50 && pct > 0.8) || (w < printw - 70 && pct > 0.7)) {
+        ctx.fillText(abs[encours],pct*(50+w),pct*455+15);
+        printw = w;
+        ctx.moveTo(pct*(50+w), pct*5);
+        ctx.lineTo(pct*(50+w), pct*455);
+      }
+      encours = encours-1;
+    }
+    
+    ctx.stroke();
+    ctx.setLineDash([]);
+      
+    // On trace maintenant le graphique
+    ctx.strokeStyle = 'black';
+
+    // Commencement du graphique
+
+    // On parcourt de droite à gauche
+    encours = end_index;
+    premier = true
+
+    ctx.fillStyle = couleur;
+    ctx.strokeStyle = couleur;
+    ctx.font = "12px Arial";
+    ctx.textAlign = 'center';
+    ctx.lineWidth = 2;
+
+    while(encours >= start_index) {
+      var N = end_index - start_index + (batonnets ? 1 : 0);
+      var w = 3 + 800*(encours - start_index + (batonnets ? 0.5 : 0))/N;
+      var huser = 450 - 450*(val[encours]/maxi);
+      if(val[encours] >= 0) {
+        if(batonnets) {
+          var halfwidth = 400/N;
+          var gg = Math.round(pct*(50+w-halfwidth));
+          var dd = Math.round(pct*(50+w+halfwidth));
+          ctx.fillRect(gg,pct*(huser+5),dd-gg,pct*450*(val[encours]/maxi));
+        }
+        else {
+          if(premier) {
+            ctx.beginPath();
+            ctx.moveTo(pct*(50+w), pct*(huser+5));
+            premier = false;
+          }
+          else {
+            ctx.lineTo(pct*(50+w), pct*(huser+5));
+          }
+        }
+      }
+      encours = encours-1;
+    } 
+    if(!batonnets) { 
+      if (!premier) {
+        ctx.stroke();
+      }
+    }
+    else {
+      ctx.beginPath();
+      ctx.rect(pct*50, pct*5, pct*806, pct*450);
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+    }
   }
   
   function showXY(n, x, y, batonnets) {  
@@ -532,11 +534,13 @@ Votre navigateur ne supporte pas les canvas.
     <% end %>
   }
   
-  //Run function when browser  resize
-  $(window).resize( respondCanvas );
-
-  $(document).ready( function(){
-    //Initial call
+  // Run function when browser resize
+  window.addEventListener("resize", () => {
+    respondCanvas();
+  });
+  
+  // Initial call
+  window.addEventListener("load", () => {
     listen_all();
     respondCanvas();
   });

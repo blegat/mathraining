@@ -1,5 +1,3 @@
-<% unless Rails.env.test? %>
-
 /**
 Copyright (c) 2010 Dennis Hotson
 
@@ -59,14 +57,14 @@ OTHER DEALINGS IN THE SOFTWARE.
 		});
 
 		// convert to/from screen coordinates
-		toScreen = function(p) {
+		var toScreen = function(p) {
 			var size = currentBB.topright.subtract(currentBB.bottomleft);
 			var sx = p.subtract(currentBB.bottomleft).divide(size.x).x * canvas.width;
 			var sy = p.subtract(currentBB.bottomleft).divide(size.y).y * canvas.height;
 			return new Vector(sx, sy);
 		};
 
-		fromScreen = function(s) {
+		var fromScreen = function(s) {
 			var size = currentBB.topright.subtract(currentBB.bottomleft);
 			var px = (s.x / canvas.width) * size.x + currentBB.bottomleft.x;
 			var py = (s.y / canvas.height) * size.y + currentBB.bottomleft.y;
@@ -330,5 +328,3 @@ OTHER DEALINGS IN THE SOFTWARE.
 	}
 
 })();
-
-<% end %>

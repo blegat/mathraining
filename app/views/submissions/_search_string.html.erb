@@ -5,7 +5,7 @@
   }
 
   var showSearch = function() {
-    document.getElementById("loading_results").style.display = 'inline';
+    document.getElementById("loading_results").style.display = 'block';
     document.getElementById("none_results").style.display = 'none';
     document.getElementById("error_results").style.display = 'none';
     document.getElementById("tab_results").style.display = 'none';
@@ -13,24 +13,26 @@
 </script>
 
 <h3>Chercher une chaîne de caractères</h3>
-<%= link_to "Effectuer une recherche dans toutes les soumissions", "javascript:showForm()", id: "btn_search_string" %>
+<p id="btn_search_string"><%= link_to "Effectuer une recherche dans toutes les soumissions", "javascript:showForm()" %></p>
+
 <form id="search_string_form" style="display:none;" method="post" data-remote="true" action="/submissions/<%= @submission.id %>/search_script">
-<div class="form-group">
+<div class="mb-2">
   <input class="form-control" style="width:300px;", type="text", name="string_to_search" id="string_to_search" />
 </div>
-<div class="checkbox">
-<label style="margin-bottom:5px;" for="search_in_comments">
-  <input type="checkbox" value="1" name="search_in_comments" id="search_in_comments" />
-  Chercher également dans les commentaires.
-</label></div>
+<div class="form-check mb-2">
+  <label class="form-check-label" for="search_in_comments">
+    <input class="form-check-input" type="checkbox" value="1" name="search_in_comments" id="search_in_comments" />
+    Chercher également dans les commentaires.
+  </label>
+</div>
 <input type="submit" name="commit" value="Chercher" class="btn btn-primary" onclick="javascript:showSearch()" />
 </form>
 
-<p id="loading_results" style="display:none;"><br/>Recherche...</p>
-<p id="none_results" style="display:none;"><br/>Aucun résultat.</p>
-<p id="error_results" style="display:none;"><br/>La chaîne doit contenir au moins 3 caractères.</p>
+<p class="mt-3" id="loading_results" style="display:none;">Recherche...</p>
+<p class="mt-3" id="none_results" style="display:none;">Aucun résultat.</p>
+<p class="mt-3" id="error_results" style="display:none;">La chaîne doit contenir au moins 3 caractères.</p>
 
-<table class="table table-bordered tex2jax_ignore" style="width:auto; display:none; margin-top:20px;" id="tab_results">
+<table class="table table-bordered tex2jax_ignore mt-3" style="width:auto; display:none;" id="tab_results">
   <thead class="fixed">
   <tr><th style="width:250px;">Date</th><th style="width:200px;">Qui</th><th style="width:300px;">Prévisualisation</th><th style="width:70px;"></th></tr>
   </thead>

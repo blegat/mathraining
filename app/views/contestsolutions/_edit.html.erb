@@ -1,16 +1,9 @@
-<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
-
 <%= form_for @contestsolution, :html => { :multipart => true } do |f| %>
 
   <%= render 'submissions/form', f: f %>
+  <%= render 'shared/edit_files', s: @contestsolution %>
 
-  <!-- Pièces jointes -->
-  <%= render 'subjects/files', s: @contestsolution %>
-  <span id="spanFiles"></span>
-  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" />
-  <br/><br/>
-
-  <%= f.submit "Enregistrer", class: "btn btn-primary", style: "margin-bottom:10px;", :disabled => current_user.other %>
-  <button class="btn btn-default btn-grey" style="margin-bottom:10px;" onclick="return Rolling.hideActual();">Annuler</button>
-  <br/>(Vous pouvez modifier votre solution jusqu'à la date limite de résolution du problème.)
+  <%= f.submit "Enregistrer", class: "btn btn-primary mb-2", :disabled => current_user.other %>
+  <button class="btn btn-light mb-2" onclick="return Rolling.hideActual();">Annuler</button>
+  <p>(Vous pouvez modifier votre solution jusqu'à la date limite de résolution du problème.)</p>
 <% end %>

@@ -1,0 +1,36 @@
+<div class="font-content">
+
+<div class="font">
+<a href="#ici" is='insert-onclick' data-insert-left='<b>' data-insert-right='</b>'><%= image_tag "bold.jpg", :title => "Gras" %></a>
+<a href="#ici" is='insert-onclick' data-insert-left='<i>' data-insert-right='</i>'><%= image_tag "italics.jpg", :title => "Italique" %></a>
+<a href="#ici" is='insert-onclick' data-insert-left='<u>' data-insert-right='</u>'><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
+<a href="#ici" is='insert-onclick' data-insert-left='<h4>' data-insert-right='</h4>'><%= image_tag "title.jpg", :title => "Sous-titre", :class => "ms-3" %></a>
+<a href="#ici" is='insert-onclick' data-insert-left='<hr>'><%= image_tag "line.jpg", :title => "Séparateur horizontal" %></a>
+<a href="#ici" is='insert-onclick' data-insert-left='<ul>\n<li>Point 1' data-insert-right='</li>\n<li>Point 2</li>\n</ul>'><%= image_tag "list.jpg", :title => "Liste" %></a>
+<a href="#ici" is='insert-onclick' data-insert-left='<ol>\n<li>Point 1' data-insert-right='</li>\n<li>Point 2</li>\n</ol>'><%= image_tag "enumerate.jpg", :title => "Liste numérotée" %></a>
+<a href="#ici" is='insert-onclick' data-insert-left="<a target='blank' href='https://www.mathraining.be'>" data-insert-right='</a>'><%= image_tag "link.jpg", :title => "Lien" %></a>
+<a href="#ici" is='insert-onclick' data-insert-left="<center><img style='width:100%; max-width:600px;' src='/system/DefaultPicture.png' /></center>"><%= image_tag "picture.jpg", :title => "Image" %></a>
+</div>
+
+<div class="font">
+<a href="#ici" class="align-middle" is='insert-onclick' data-insert-left='<result>Résultat<statement>\n' data-insert-right='\n</result>'>Résultat</a> -
+<a href="#ici" class="align-middle" is='insert-onclick' data-insert-left='<proof>Démonstration<statement>\n' data-insert-right='\n</proof>'>Preuve</a> -
+<a href="#ici" class="align-middle" is='insert-onclick' data-insert-left='<remark>Remarque<statement>\n' data-insert-right='\n</remark>'>Remarque</a> -
+<a href="#ici" class="align-middle" is='insert-onclick' data-insert-left='<indice>' data-insert-right='</indice>'>Indice</a>
+</div>
+
+<div class="font">
+  <%= link_to "Mes images", pictures_path, :target => "_blank", :class => "align-middle" %> - <%= link_to "Nouvelle image", new_picture_path, :target => "_blank", :class => "align-middle" %>
+</div>
+
+<div class="font">
+<div class="form-check">
+<label class="form-check-label align-middle"><input class="form-check-input" type="checkbox" id="stop" name="stop" onclick="Preview.MyUpdate()" checked="checked" />Prévisualisation</label>
+</div>
+</div>
+
+</div>
+
+<script>
+initAndUpdatePreviewAtLoad();
+</script>

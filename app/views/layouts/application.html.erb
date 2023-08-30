@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html data-bs-theme="light">
+  <head>  
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {
@@ -21,51 +21,11 @@
     })
     </script>
     
+    <!-- NB: Before we were using MathJax 2.7.1. with this manual bug fix: https://github.com/mathjax/MathJax/issues/2005 -->
+    <!-- Now we try using MathJax 2.7.5 that is supposed to contain this bug fix (the bug was missing text on Safari/IOS) -->
     <!-- Fix for the bug on Safari/IOS : will be included in the version 2.7.5 of Mathjax -->
-    <script type="text/x-mathjax-config">
-    MathJax.Hub.Register.StartupHook("HTML-CSS Jax Ready", function () {
-      var HTMLCSS = MathJax.OutputJax["HTML-CSS"];
-      var postTranslate = HTMLCSS.postTranslate;
-      HTMLCSS.Augment({
-        postTranslate: function (state, partial) {
-          var scripts = state.jax[this.id];
-          for (var i = state.HTMLCSSlast, m = state.HTMLCSSeqn; i < m; i++) {
-            var script = scripts[i];
-            if (script && script.parentNode && script.MathJax.elementJax) {
-              if (script.MathJax.preview) {
-                script.MathJax.preview.innerHTML = "";
-                delete script.MathJax.preview;
-              }
-            }
-          }
-          postTranslate.call(this, state, partial);
-        }
-      });
-    });
-    MathJax.Hub.Register.StartupHook("CommonHTML Jax Ready", function () {
-      var CHTML = MathJax.OutputJax.CommonHTML;
-      var postTranslate = CHTML.postTranslate;
-      CHTML.Augment({
-        postTranslate: function (state) {
-          var scripts = state.jax[this.id];
-          for (var i = state.CHTMLlast, m = state.CHTMLeqn; i < m; i++) {
-            var script = scripts[i];
-            if (script && script.MathJax.elementJax) {
-              var data = script.MathJax.elementJax.CHTML;
-              if (data.preview) {
-                data.preview.innerHTML = "";
-                delete data.preview;
-              }
-            }
-          }
-          postTranslate.call(this, state);
-        }
-      });
-    });
-    </script>
     
-    <!-- <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <% if @signed_in && current_user.accept_analytics && Rails.env.production? %>
       <!-- Google tag (gtag.js) -->
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-FZ7Q2MRZ89"></script>
@@ -86,21 +46,43 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
     <link rel="icon" sizes="192x192" href="/icon-192.png">
     <link rel="icon" sizes="128x128" href="/icon-128.png">
+    
     <%= stylesheet_link_tag 'application', :media => 'screen, projection' %>
     <%= stylesheet_link_tag 'application-print', :media => 'print' %>
-    <%= javascript_include_tag "application" %>
-    <%= yield :javascript_includes %>
+    
     <%= csrf_meta_tags %>
-  <%= render 'layouts/shim' %>
 
-  <% # mathjax_tag %>
+    <% # mathjax_tag %>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= javascript_importmap_tags %>
+    <script>
+      function initAndUpdatePreviewAtLoad() {
+        window.addEventListener("load", () => {
+          Preview.Init();
+          Preview.Update();
+        });
+      }
+      
+      function initAndUpdatePreviewSafeAtLoad(disableBBCode = false, disableHiddenText = false) {
+        window.addEventListener("load", () => {
+          PreviewSafe.Init();
+          if (disableBBCode) {
+            PreviewSafe.SetBBCode(false);
+          }
+          if (disableHiddenText) {
+            PreviewSafe.SetHiddenText(false);
+          }
+          PreviewSafe.Update();
+        });
+      }
+    </script>
   </head>
   <body>
     <%= render 'layouts/header' %>
     <div class="container">
       <% flash.each do |key, value| %>
-        <%= content_tag(:div, value, class: "alert alert-#{key}", style: "padding:10px; margin-top:20px;") %>
+        <div class="alert alert-<%= key %> py-2 my-1"><%= value %></div>
       <% end %>
       <%= yield %>
       <%= render 'layouts/footer' %>
@@ -108,7 +90,7 @@
     </div>
     
     <% if defined? @benchmark_start_time %>
-      <center>Temps total de chargement: <b><%= ((Time.now.to_f - @benchmark_start_time.to_f) * 1000).round(1) %> ms</b></center><br/>
+      <div class="mb-3" style="text-align:center;">Temps total de chargement: <b><%= ((Time.now.to_f - @benchmark_start_time.to_f) * 1000).round(1) %> ms</b></div>
     <% end %>
   </body>
 </html>

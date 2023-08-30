@@ -94,7 +94,7 @@ module ApplicationHelper
   def replace_indice(m)
     m2 = m.gsub(/<\/indice>[ \r]*<br\/>/, "</indice>")
     
-    while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(0)' class='btn btn-default btn-grey'>Indice</a></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
+    while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(0)' class='btn btn-light'>Indice</a></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
     end
     
     return m2

@@ -1,20 +1,15 @@
-<% @postfix = "NewMessage" %>
+<% postfix = "NewMessage" %>
 
-<div id="the<%= @postfix %>" class="myoverflow" style="text-align:center;">
-<button onclick='return Rolling.develop("<%= @postfix %>")' class='btn btn-lg btn-default btn-grey' style='margin-top:15px; margin-bottom:1px;'>Répondre</button>
+<div id="the<%= postfix %>" class="myoverflow" style="text-align:center;">
+<button onclick='return Rolling.develop("<%= postfix %>")' class='btn btn-lg btn-light mt-3'>Répondre</button>
 </div>
 
-<div id="form<%= @postfix %>" class="myoverflow" style="height:0px;">
+<div id="form<%= postfix %>" class="myoverflow px-1" style="height:0px;">
 
 <% @message = Message.new %>
-<%= form_for [@subject, @message], :url => subject_messages_path(@subject, @message, :action => :create, :q => @q), :html => { :multipart => true, :style => "margin-top:20px;" } do |f| %>
-  <% @new = true %>
-  <%= render 'messages/form', f: f, m: @message %>
-  
-  <!-- Ajouter une pièce jointe -->
-  <span id="spanFiles<%= @postfix %>"></span>
-  <input type="hidden" name="postfix" value="<%= @postfix %>">
-  <input type="button" id="addFile<%= @postfix %>" value="Ajouter une pièce jointe" onclick="Joint.add('<%= @postfix %>')" <%= 'disabled="disabled"' if current_user.other %>/>
+<%= form_for [@subject, @message], :url => subject_messages_path(@subject, @message, :action => :create, :q => @q), :html => { :multipart => true, :class => "mt-3" } do |f| %>
+  <%= render 'messages/form', f: f, m: @message, postfix: postfix, show_mail_checkboxes: true %>
+  <%= render 'shared/edit_files', postfix: postfix %>
   
   <% lastid = -1 %>
   <% lastmessage = @subject.messages.order("id DESC").first %>
@@ -22,9 +17,9 @@
     <% lastid = lastmessage.id %>
   <% end %>
   <input type="hidden" name="lastmessage" value="<%= lastid %>">
-  <br/><br/>
+
   <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
-  <button class="btn btn-lg btn-default btn-grey" onclick="return Rolling.hideActual();">Annuler</button>
+  <button class="btn btn-lg btn-light" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>
 
 </div>

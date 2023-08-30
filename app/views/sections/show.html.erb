@@ -14,30 +14,30 @@
         <% if k % 8 == 1 && k > 1 %>
           </div>
           <br/>
-          <div class="btn-group" style="margin-top:5px;">
+          <div class="btn-group">
         <% elsif k == 1 %>
           <center>
-          <div class="btn-group"  style="margin-top:3px;">
+          <div class="btn-group mt-1">
         <% end %>
         <% if acces %>
           <% classe = "" %>  
           <% if !@signed_in %>
-            <% classe = "btn btn-default btn-grey" %>  
+            <% classe = "btn btn-light" %>  
           <% elsif !q.online? %>
             <% classe = "btn btn-warning" %>
           <% elsif current_user.sk.admin? %>
-            <% classe = "btn btn-default btn-grey" %>
+            <% classe = "btn btn-light" %>
           <% elsif @question_status[q.id] == "correct" %>
             <% classe = "btn btn-success" %>
           <% elsif @question_status[q.id] == "incorrect" %>
             <% classe = "btn btn-danger" %>
           <% else %>
-            <% classe = "btn btn-default btn-grey" %>
+            <% classe = "btn btn-light" %>
           <% end %>
           
           <%= link_to "#{j if q.online}#{'!' if !q.online}", chapter_path(chapter, :type => 5, :which => q.id), :class => classe %>
         <% else %>
-          <button class="btn disabled" id="disabled-question-<%= q.id %>"><%= j %></button>
+          <button class="btn btn-light disabled" id="disabled-question-<%= q.id %>"><%= j %></button>
         <% end %>
         <% j = j+1 if q.online %>
         <% k = k+1 %>
@@ -56,15 +56,14 @@
 <% def affiche_chapitre(c, classe, fond) %>
   <table class="table table-bordered chapter <%= classe %>" id="chapter<%= c.id %>">
   <tr><td class="title">
-  <center><h3><%= link_to c.name, c %><%= " (en construction)" if classe == "orangey" %></h3></center>
+  <center><h4><%= link_to c.name, c %><%= " (en construction)" if classe == "orangey" %></h4></center>
   </td></tr>
   
   <tr><td class="real-content">
   <div class="intro">
   <%= raw(htmlise(c.description)) %>
   <% if classe == "greyy" %>
-    <br/><br/>
-    <b>Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
+    <p class="mt-3 mb-0" style="font-weight:bold;">Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
     <% prems = true %>
     <% c.prerequisites.order(:level, :position).each do |p| %>
       <% if (!@signed_in || !current_user.sk.chapters.exists?(p.id)) %>
@@ -73,7 +72,7 @@
         <% prems = false %>
       <% end %>
     <% end %>
-    </b>
+    </p>
   <% end %>
   </div>
     
@@ -84,7 +83,7 @@
   <% end %>
   
   <div class="module left-part">
-  <center><h4>Théorie</h4></center>
+  <center><h5>Théorie</h5></center>
   <!-- Théorie -->
   <% compteur = 0 %>
   <% if !@theories_by_chapter[c.id].nil? %>
@@ -95,24 +94,24 @@
         <% end %>
         <% compteur = compteur + 1 %>
         <li><%= link_to t.title, chapter_path(c, :type => 1, :which => t.id) %>
-        <%= image_tag v_icon, :style => "margin-left:10px; margin-top:-3px;", :id => "V-#{t.id}" if @signed_in && !current_user.sk.admin && @theory_status[t.id] == "read" %></li>
+        <%= image_tag v_icon, :class => "ms-2", :style => "margin-top:-3px;", :id => "V-#{t.id}" if @signed_in && !current_user.sk.admin && @theory_status[t.id] == "read" %></li>
       <% end %>
     <% end %>
   <% end %>
 
   <% if compteur == 0 %>
-    <p style="margin-left:15px;"><i>Aucun point théorique.</i></p>
+    <p class="ms-3"><i>Aucun point théorique.</i></p>
   <% else %>
     </ul>
   <% end %>    
   </div>
   
   <% if fond %>
-    <div style="width:12%;"></div>
+    <div style="width:10%;"></div>
   <% end %>
     
-  <div class="module <%= "middle-part" if !fond %><%= "right-part" if fond %>">
-  <center><h4>Exercices</h4></center>
+  <div class="module <%= "middle-part" if !fond %><%= "right-fond-part" if fond %>">
+  <center><h5>Exercices</h5></center>
   <!-- Exercices -->
   <% affiche_exercices(c, classe != "greyy") %>
   </div>
@@ -121,7 +120,7 @@
     <div style="width:10%;"></div>
   <% else %>
     <div class="module right-part">
-    <center><h4>Statistiques</h4></center>
+    <center><h5>Statistiques</h5></center>
     <!-- Statistiques -->
     <center>
     Complété par <b><%= c.nb_completions %></b> personne<%= "s" if c.nb_completions > 1 %><br/>
@@ -140,29 +139,30 @@
 <% end %>
 
 <h1><%= title_2("Théorie", @section.name) %>
-<button class="information-tag" onclick="return Info.toggle();">?</button>
+<button class="information-tag" is="info-onclick">?</button>
 </h1>
 
 <%= render 'infofond' if @section.fondation %>
 <%= render 'info' unless @section.fondation %>
 
 <!-- Introduction -->
-<h2>Introduction</h2>
-<%= raw(htmlise(@section.description)) %>
-<br/>
+<h3 class="mt-2">Introduction</h3>
+<p><%= raw(htmlise(@section.description)) %></p>
 
 <% if @signed_in && current_user.sk.admin? %>
-<br/><%= link_to "Modifier l'introduction", edit_section_path(@section) %><br/>
+<p><%= link_to "Modifier l'introduction", edit_section_path(@section) %></p>
 <% end %>
 
 <!-- Chapitres -->
-<h2>Chapitres</h2>
+<h3>Chapitres</h3>
 
+<p>
 <% if @section.fondation %>
-  Tous les exercices sont ici directement accessibles.<br/><br/>
+  Tous les exercices sont ici directement accessibles.
 <% else %>
   Les chapitres de cette section sont ordonnés selon leur importance (des plus primordiaux aux plus avancés).
 <% end %>
+</p>
 
 <% unless @signed_in and current_user.sk.admin? %>
   <% @chapter_status = [] %>
@@ -208,14 +208,14 @@
           <% if @section.fondation %>
           
           <% elsif level == 1 %>
-            <h3>Les essentiels</h3>
-            Les chapitres suivants reprennent la théorie essentielle relative à cette section.<br/><br/>
+            <h4>Les essentiels</h4>
+            <p>Les chapitres suivants reprennent la théorie essentielle relative à cette section.</p>
           <% elsif level == 2 %>
-            <h3>Les classiques</h3>
-            Les chapitres suivants, un peu plus avancés, reprennent les résultats classiques de cette section.<br/><br/>
+            <h4>Les classiques</h4>
+            <p>Les chapitres suivants, un peu plus avancés, reprennent les résultats classiques de cette section.</p>
           <% elsif level == 3 %>
-            <h3>Les pointus</h3>
-            Les chapitres suivants reprennent des notions plus rarement utiles en compétition mais qui peuvent devenir assez puissantes si bien maitrisées.<br/><br/>
+            <h4>Les pointus</h4>
+            <p>Les chapitres suivants reprennent des notions plus rarement utiles en compétition mais qui peuvent devenir assez puissantes si bien maitrisées.</p>
           <% end %>
           <% premier = false %>
         <% end %>
@@ -245,7 +245,7 @@
 
 <!-- Ajouter un chapitre -->
 <center>
-<%= link_to "Ajouter un chapitre", new_section_chapter_path(@section), class: 'btn btn-lg btn-default btn-grey' %>
+<%= button_to "Ajouter un chapitre", new_section_chapter_path(@section), method: :get, class: 'btn btn-lg btn-light' %>
 </center>
 
 <% end %>

@@ -15,16 +15,16 @@ function nameIsOk(user_id, suggestion) {
 <h1><%= title_1("Valider <span id='num_remaining'>#{@users_to_validate.size}</span> noms") %></h1>
 
 <% if @users_to_validate.size == 0 %>
-  Aucun nom à valider !
+  <p>Aucun nom à valider !</p>
 <% else %>
-  <table class="table table-bordered" style="width:660px;">
+  <table class="table table-bordered" style="width:100%; max-width:660px;">
   <% @users_to_validate.each do |u| %>
     <tr id="user<%= u.id %>">
     <td style="width:200px;"><%= raw(u.linked_name(1)) %></td>
-    <td style="width:50px; text-align:center;"><a id="ok-<%= u.id %>" href="javascript:nameIsOk(<%= u.id %>, 0)">OK</a></td>
+    <td style="width:50px;" class="text-center"><a id="ok-<%= u.id %>" href="javascript:nameIsOk(<%= u.id %>, 0)">OK</a></td>
     <td style="width:250px;"><a id="capitalize-<%= u.id %>" href="javascript:nameIsOk(<%= u.id %>, 1)">Capitalize</a> (<%= u.first_name.my_titleize %> <%= u.last_name.my_titleize %>)</td>
-    <td style="width:80px; text-align:center;"><%= link_to "Changer", user_change_name_path(u), :method => :put, :id => "change-#{u.id}" %></td>
-    <td style="width:80px; text-align:center;"><a id="pass-<%= u.id %>" href="javascript:hideUser(<%= u.id %>)">Passer</a>
+    <td style="width:80px;" class="text-center"><%= link_to "Changer", user_change_name_path(u), :method => :put, :id => "change-#{u.id}" %></td>
+    <td style="width:80px;" class="text-center"><a id="pass-<%= u.id %>" href="javascript:hideUser(<%= u.id %>)">Passer</a>
     </tr>
   <% end %>
   </table>
