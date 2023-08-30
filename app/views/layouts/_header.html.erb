@@ -12,6 +12,23 @@
         <span class="icon-bar"></span>
       </button>
 
+      <!-- Ajout du toggle button -->
+      <button id="toggle-button">Toggle</button>
+
+      
+      <script>
+        document.getElementById("toggle-button").addEventListener("click", function() {
+          const element = document.getElementById("my-element");
+
+          if (element.style.display === "none") {
+            element.style.display = "block";
+          } else {
+            element.style.display = "none"; 
+          }
+        });
+      </script>
+
+
       <!-- Lien Mathraining -->
       <%= link_to root_path, class: "navbar-brand", style: "font-size:24px;", id: "Accueil" do %>
         <span style="color:black;">Math</span><span style="color:rgb(3,109,170);">raining</span>
@@ -20,6 +37,17 @@
 
     <div class="navbar-collapse collapse">
       <!-- Dans le cas normal -->
+      
+      // Save theme preference
+      document.cookie = "theme=dark"; 
+
+      // Get theme preference  
+      const theme = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('theme='))
+        .split('=')[1];
+
+
       <% if @signed_in and (current_user.sk.admin || current_user.sk.corrector) %>
         <% num_waiting_suspicions = (current_user.sk.root ? Suspicion.where(:status => :waiting_confirmation).count : 0) %>
         <% num_waiting_starproposals = (current_user.sk.root ? Starproposal.where(:status => :waiting_treatment).count : 0) %>

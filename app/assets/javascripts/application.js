@@ -17,4 +17,24 @@
 //= require bootstrap-sprockets
 //= require moment
 //= require bootstrap-datetimepicker
+
+// Get toggle button element
+const toggle = document.getElementById('dark-mode-toggle');
+
+// Listen for click event on toggle button
+toggle.addEventListener('click', () => {
+
+  // Toggle 'dark-mode' class on body
+  document.body.classList.toggle('dark-mode');
+  
+  // Update text of button based on body class
+  if(document.body.classList.contains('dark-mode')) {
+    toggle.innerText = 'Light Mode';
+  } else {
+    toggle.innerText = 'Dark Mode';
+  }
+  
+});
+
+//= require custom
 //= require_tree .
