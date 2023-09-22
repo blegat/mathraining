@@ -27,7 +27,7 @@
     <% end %>
 
     <% if up || down %>
-      <p style="text-align:center;">
+      <p class="text-center">
       Déplacer ce point théorique vers le
       <% if up %>
         <%= link_to "haut", theory_order_minus_path(theory), :method => :put %>

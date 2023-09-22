@@ -22,7 +22,7 @@
 <tr id="line_sol_<%= sol.id %>" class="<%= color_class %>">
 
 <!-- Icone -->
-<td style="width:50px; text-align:center;">
+<td class="text-center" style="width:50px;">
   <% if !cansee_score %>
     <%= image_tag dash_icon %>
   <% else %>
@@ -39,7 +39,7 @@
   <% end %>
 </td>
 
-<td style="width:40px; text-align:center;">
+<td class="text-center" style="width:40px;">
   <% if cansee_score && !sol.official? && sol.score >= 0 %>
     <%= sol.score %>
   <% else %>
@@ -48,7 +48,7 @@
 </td>
 
 <!-- Voir -->
-<td style="text-align:center; width:56px;">
+<td class="text-center" style="width:56px;">
 <%= link_to "Voir", contestproblem_path(sol.contestproblem, :sol => sol.id) %>
 </td>
 

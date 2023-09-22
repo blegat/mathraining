@@ -1,14 +1,14 @@
 <!-- Explication -->
 <h4 class="mt-4">Explication</h4>
 <% if question.explanation.size == 0 %>
-  <span style="color:orange;"><b>Pas d'explication</b></span>
+  <span class="text-color-orange fw-bold">Pas d'explication</span>
 <% else %>
   <%= raw(htmlise(question.explanation)) %>
 <% end %>
 
 <!-- Modifier / Supprimer -->
 <div class="noprint">
-<p class="mt-4" style="text-align:center;">
+<p class="mt-4 text-center">
   <% if question.online %>
     <%= link_to "Modifier cet exercice", edit_question_path(question), data: { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
     <% if question.is_qcm %>
@@ -39,7 +39,7 @@
 <% end %>
 
 <% if (up || down) %>
-<p style="text-align:center;">
+<p class="text-center">
   Déplacer cet exercice vers le
   <% if up %>
     <%= link_to "haut", question_order_minus_path(question), :method => :put %>

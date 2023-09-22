@@ -3,17 +3,17 @@
 <h1><%= title_2((link_to "Politique de confidentialité", last_policy_path), "Mettre à jour") %></h1>
 
 <table class="table table-bordered">
-<tr class="table-light"><th style="width:150px; text-align:center;">Publication</th><th style="width:80px; text-align:center;">Texte</th><th>Modifications</th></tr>
+<tr class="table-light"><th class="text-center" style="width:150px;">Publication</th><th class="text-center" style="width:80px;">Texte</th><th>Modifications</th></tr>
 <% Privacypolicy.all.order(:publication_time).each do |p| %>
 <tr class="<%= 'table-success' if p.online? %><%= 'table-danger' unless p.online? %>">
-<td style="text-align:center;">
+<td class="text-center">
 <% if p.online %>
   <%= write_date_only(p.publication_time) %>
 <% else %>
   -
 <% end %>
 </td>
-<td style="text-align:center;">
+<td class="text-center">
 <% if p.online %>
   <%= link_to "Voir", p %>
 <% else %>
@@ -25,8 +25,8 @@
 <br/><br/>
 <center><%= link_to "Modifier", privacypolicy_edit_description_path(p) %>
 <% if !p.online %>
-  - <%= link_to "Supprimer", p, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette politique de confidentialité ?" }, :style => "color:red;" %>
-  - <%= link_to "Publier", privacypolicy_put_online_path(p), :method => :put, data: { confirm: "ATTENTION : Après la publication tous les utilisateurs devront signer la nouvelle politique de confidentialité. Êtes-vous sûr de vouloir publier cette nouvelle version ?" }, :style => "color:red;" %>
+  - <%= link_to "Supprimer", p, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette politique de confidentialité ?" }, :class => "text-color-red" %>
+  - <%= link_to "Publier", privacypolicy_put_online_path(p), :method => :put, data: { confirm: "ATTENTION : Après la publication tous les utilisateurs devront signer la nouvelle politique de confidentialité. Êtes-vous sûr de vouloir publier cette nouvelle version ?" }, :class => "text-color-red" %>
 <% end %>
 </center>
 </td>

@@ -174,13 +174,13 @@ Votre navigateur ne supporte pas les canvas.
 <table style="width:440px;">
 <tr>
 <td style="width:200px;"></td>
-<td style="text-align:center; width:80px;"><label for="bronze_cutoff">Bronze</label></td>
-<td style="text-align:center; width:80px;"><label for="silver_cutoff">Argent</label></td>
-<td style="text-align:center; width:80px;"><label for="gold_cutoff">Or</label></td>
+<th class="text-center" style="width:80px;"><label for="bronze_cutoff">Bronze</label></th>
+<th class="text-center" style="width:80px;"><label for="silver_cutoff">Argent</label></th>
+<th class="text-center" style="width:80px;"><label for="gold_cutoff">Or</label></th>
 </tr>
 
 <tr>
-<td class="p-2"><b>Seuil choisi</b></td>
+<th class="p-2">Seuil choisi</th>
 <td class="px-1 text-center">
 <div class="form-group">
   <input class="form-control" style="width:70px;" type="number" name="bronze_cutoff" id="bronze_cutoff" value="<%= min_bronze %>" onchange="respondCanvas()" />
@@ -199,24 +199,24 @@ Votre navigateur ne supporte pas les canvas.
 </tr>
 
 <tr>
-<td class="p-2"><b>Nombre idéal avec au moins cette médaille</b></td>
-<td style="text-align:center; font-size:18px;"><%= ("%.2f" % ideal_num_gold_silver_bronze) %></td>
-<td style="text-align:center; font-size:18px;"><%= ("%.2f" % ideal_num_gold_silver) %></td>
-<td style="text-align:center; font-size:18px;"><%= ("%.2f" % ideal_num_gold) %></td>
+<th class="p-2">Nombre idéal avec au moins cette médaille</th>
+<td class="text-center fs-5"><%= ("%.2f" % ideal_num_gold_silver_bronze) %></td>
+<td class="text-center fs-5"><%= ("%.2f" % ideal_num_gold_silver) %></td>
+<td class="text-center fs-5"><%= ("%.2f" % ideal_num_gold) %></td>
 </tr>
 
 <tr>
-<td class="p-2"><b>Nombre choisi avec au moins cette médaille</b></td>
-<td style="text-align:center; font-size:18px;"><span id="real_num_gold_silver_bronze">?</span></td>
-<td style="text-align:center; font-size:18px;"><span id="real_num_gold_silver">?</span></td>
-<td style="text-align:center; font-size:18px;"><span id="real_num_gold">?</span></td>
+<th class="p-2">Nombre choisi avec au moins cette médaille</th>
+<td class="text-center fs-5"><span id="real_num_gold_silver_bronze">?</span></td>
+<td class="text-center fs-5"><span id="real_num_gold_silver">?</span></td>
+<td class="text-center fs-5"><span id="real_num_gold">?</span></td>
 </tr>
 
 <tr>
-<td class="p-2"><b>Différence</b></td>
-<td style="text-align:center; font-size:16px;"><span id="diff_gold_silver_bronze">?</span></td>
-<td style="text-align:center; font-size:16px;"><span id="diff_gold_silver">?</span></td>
-<td style="text-align:center; font-size:16px;"><span id="diff_gold">?</span></td>
+<th class="p-2">Différence</th>
+<td class="text-center fs-6"><span id="diff_gold_silver_bronze">?</span></td>
+<td class="text-center fs-6"><span id="diff_gold_silver">?</span></td>
+<td class="text-center fs-6"><span id="diff_gold">?</span></td>
 </tr>
 </table>
 

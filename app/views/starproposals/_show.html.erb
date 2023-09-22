@@ -32,7 +32,7 @@
       <%= form_for s, :url => starproposal_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ?" } do |f| %>
         <tr id="line_starproposal_edit_<%= s.id %>" class="table-<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
         <td class="d-none d-lg-table-cell text-center align-middle">
-        <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette proposition d'étoile ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :style => "color:red;" %>
+        <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette proposition d'étoile ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :class => "text-color-red" %>
         </td>
         <td>
         </td>

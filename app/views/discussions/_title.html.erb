@@ -5,7 +5,7 @@
 <%= title_1("Messages") %>
 </td>
 
-<td class="d-none d-md-table-cell ps-3" style="text-align:right;">
+<td class="d-none d-md-table-cell ps-3 text-end">
 <% if !current_user.sk.follow_message %>
   <%= button_to "M'avertir des nouveaux messages par e-mail", add_followingmessage_path, :method => :put, :class => 'btn btn-light', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => current_user.other %>
 <% else %>
@@ -16,7 +16,7 @@
 </tr>
 </table>
 
-<div class="d-block d-md-none pt-2" style="text-align:center;">
+<div class="d-block d-md-none pt-2 text-center">
 <% if !current_user.sk.follow_message %>
   <%= button_to "M'avertir des nouveaux messages par e-mail", add_followingmessage_path, :method => :put, :class => 'btn btn-light', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => current_user.other %>
 <% else %>

@@ -35,7 +35,7 @@
         <tr id="line_suspicion_edit_<%= s.id %>" class="table-<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
         <td class="d-none d-lg-table-cell text-center align-middle">
         <% unless s.confirmed? %>
-          <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette suspicion de plagiat ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :style => "color:red;" %>
+          <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette suspicion de plagiat ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :class => "text-color-red" %>
         <% end %>
         </td>
         <td>
@@ -55,9 +55,9 @@
   <% num_plagiarism = @submission.user.submissions.where(:status => :plagiarized).count %>
   <p><%= @submission.user.name %> a envoyé <b><%= num_plagiarism %> soumission<%= 's' if num_plagiarism > 1 %> plagiée<%= 's' if num_plagiarism > 1 %></b> sur Mathraining.</p>
   <% if @submission.user.is_banned %>
-    <p style="color:red;">Il est actuellement banni du site, jusqu'au <%= write_date(@submission.user.end_of_ban) %>.</p>
+    <p class="text-color-red">Il est actuellement banni du site, jusqu'au <%= write_date(@submission.user.end_of_ban) %>.</p>
   <% elsif !@submission.user.last_ban_date.nil? %>
-    <p style="color:orange;">Il a déjà été banni le <%= write_date(@submission.user.last_ban_date) %>. Une nouvelle sanction peut être appliquée si la date de ce plagiat est postérieure à ce précédent bannissement.</p>
+    <p class="text-color-orange">Il a déjà été banni le <%= write_date(@submission.user.last_ban_date) %>. Une nouvelle sanction peut être appliquée si la date de ce plagiat est postérieure à ce précédent bannissement.</p>
   <% else %>
     <p>Il n'a jamais été banni.</p>
   <% end %>
@@ -65,7 +65,7 @@
   <% unless @submission.user.is_banned %>
     <% end_of_ban = DateTime.now + 2.weeks %>
     <p class="text-center">
-    <%= link_to "Bannir #{@submission.user.name} pour deux semaines", user_ban_temporarily_path(@submission.user), :method => :put, style: "color:red;", data: { confirm: "Êtes-vous sûr de vouloir bannir #{@submission.user.name} jusqu'au #{write_date_only(end_of_ban)} ?" } %>
+    <%= link_to "Bannir #{@submission.user.name} pour deux semaines", user_ban_temporarily_path(@submission.user), :method => :put, class: "text-color-red", data: { confirm: "Êtes-vous sûr de vouloir bannir #{@submission.user.name} jusqu'au #{write_date_only(end_of_ban)} ?" } %>
     </p>
   <% end %>
 <% end %>

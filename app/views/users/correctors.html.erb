@@ -14,7 +14,7 @@
 <tr class="table-light">
 <th style="width:70px;"></th>
 <% sections.each do |sec| %>
-  <th style="width:70px; text-align:center;"><%= sec.short_abbreviation %></th>
+  <th class="text-center" style="width:70px;"><%= sec.short_abbreviation %></th>
 <% end %>
 </tr>
 
@@ -26,7 +26,7 @@
     <% num = 0 if num.nil? %>
     <% red_part = [160, 8*num].min %>
     <% green_part = 160 - red_part %>
-    <td style="text-align:center; background-color:rgb(<%= 95 + red_part %>, <%= 95 + green_part %>, 0);">
+    <td class="text-center" style="background-color:rgb(<%= 95 + red_part %>, <%= 95 + green_part %>, 0);">
       <%= num %>
     </td>
   <% end %>
@@ -36,7 +36,7 @@
 </center>
 </div>
 
-<p>Le graphique suivant montre, en <span style="color:green;">vert</span>, les soumissions correctes, en <span style="color:red;">rouge</span> les soumissions incorrectes, et en <span style="color:grey;">gris</span> les soumissions en attente de correction.</p>
+<p>Le graphique suivant montre, en <span class="text-color-green">vert</span>, les soumissions correctes, en <span class="text-color-red">rouge</span> les soumissions incorrectes, et en <span class="text-color-grey">gris</span> les soumissions en attente de correction.</p>
 
 <!-- On parcourt tous les correcteurs -->
 
@@ -195,7 +195,7 @@ Votre navigateur ne supporte pas les canvas.
 <tr class="table-light">
 <th style="width:70px;"></th>
 <% sections.each do |sec| %>
-  <th style="width:130px; text-align:center;"><%= sec.abbreviation %></th>
+  <th class="text-center" style="width:130px;"><%= sec.abbreviation %></th>
 <% end %>
 </tr>
 

@@ -22,7 +22,7 @@ var showFalse = function () {
   <% else %>
     <table class="table table-bordered" style="width:auto;">
     <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th style="width:250px;" class="d-none d-lg-table-cell">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th style="width:250px;" class="d-none d-lg-table-cell">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
     <tbody class="scroll">
     <% submissions.each do |s| %>
@@ -38,7 +38,7 @@ var showFalse = function () {
   <p id="none_correct" style="display:none;">Aucune soumission</p>
   <table class="table table-bordered" style="width:840px; display:none;" id="all_correct">
   <thead class="fixed">
-  <tr><th style="text-align:center; width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+  <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
   </thead>
   <tbody class="scroll">
     <!-- This body is filled via javascript, see showCorrect() -->
@@ -59,7 +59,7 @@ var showFalse = function () {
     
     <table class="table table-bordered" style="width:auto;">
     <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;" class="d-none d-sm-table-cell">Dernière activité</th><th style="width:70px;"></th></tr>
+    <tr><th class="text-center" style="width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;" class="d-none d-sm-table-cell">Dernière activité</th><th style="width:70px;"></th></tr>
     </thead>
     <tbody class="scroll">
     <% submissions.each do |s| %>
@@ -81,7 +81,7 @@ var showFalse = function () {
   <% if !date_submission_allowed.nil? and date_submission_allowed > Date.today and !current_user.sk.pb_solved?(problem) %>
     <% @cansendnewsub = false %>
     <% @cansendnewcomment = false %>
-    <p style="color:red;">Vous avez soumis une solution plagiée à ce problème. Vous aurez à nouveau la possibilité de proposer une solution à partir du <%= write_date_only(date_submission_allowed) %>.</p>
+    <p class="text-color-red">Vous avez soumis une solution plagiée à ce problème. Vous aurez à nouveau la possibilité de proposer une solution à partir du <%= write_date_only(date_submission_allowed) %>.</p>
   <% end %>
 
   <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
@@ -93,7 +93,7 @@ var showFalse = function () {
     <% if !submissions.empty? %>
       <table class="table table-bordered" style="width:auto;">
       <thead class="fixed">
-      <tr><th style="text-align:center; width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
+      <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
       </thead>
       <tbody class="scroll">
       <% submissions.each do |s| %>
@@ -111,7 +111,7 @@ var showFalse = function () {
     <p id="none_correct" style="display:none;">Aucune soumission.</p>
     <table class="table table-bordered" style="width:auto; display:none;" id="all_correct">
     <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
+    <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
     </thead>
     <tbody class="scroll">
       <!-- This body is filled via javascript, see showCorrect() -->
@@ -131,7 +131,7 @@ var showFalse = function () {
   <p id="none_false" style="display:none;">Aucune soumission.</p>
   <table class="table table-bordered" style="width:auto; display:none;" id="all_false">
   <thead class="fixed">
-  <tr><th style="text-align:center; width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+  <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
   </thead>
   <tbody class="scroll">
     <!-- This body is filled via javascript, see showFalse() -->
@@ -144,7 +144,7 @@ var showFalse = function () {
     <h3>Soumissions en attente</h3>
     <table class="table table-bordered" style="width:auto;">
     <thead class="fixed">
-    <tr><th style="text-align:center; width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
     <tbody class="scroll">
       <% submissions.each do |s| %>

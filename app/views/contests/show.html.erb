@@ -8,7 +8,7 @@
 </td>
 
 <% if @signed_in %>
-  <td class="d-none d-md-table-cell ps-3" style="text-align:right;">
+  <td class="d-none d-md-table-cell ps-3 text-end">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
     <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-light', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
@@ -22,7 +22,7 @@
 </h1>
 
 <% if @signed_in %>
-  <div class="d-block d-md-none pt-2" style="text-align:center;">
+  <div class="d-block d-md-none pt-2 text-center">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
     <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-light', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
@@ -192,7 +192,7 @@
       <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
       <div class="row content">
       <div class="module bottom-part">
-      <center><span style="font-size:20px;"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
+      <center><span class="fs-4"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
       </div>
       </div>
     <% end %>
@@ -211,10 +211,10 @@
   
 <% elsif tab == 1 %>
   <% if !@signed_in %>
-    <p style="text-align:center;">Le classement n'est visible que par les utilisateurs connectés.</p>
+    <p class="text-center">Le classement n'est visible que par les utilisateurs connectés.</p>
   <% else %>
     <% if @contest.contestscores.count == 0 %>
-      <p style="text-align:center;">Personne n'a résolu de problème.</p>
+      <p class="text-center">Personne n'a résolu de problème.</p>
     <% else %>
       
       <% show_medals = (@contest.medal and nb_prob_corrected == nb_prob) %>
@@ -245,22 +245,22 @@
       <% end %>
       <th style="width:<%= width_name %>px;">Nom</th>
       <% (1..nb_prob).each do |i| %>
-        <th style="text-align:center; width:<%= width_prob %>px;">P<%= i %></th>
+        <th class="text-center" style="width:<%= width_prob %>px;">P<%= i %></th>
       <% end %>
-      <th style="text-align:center; width:<%= width_total %>px;">Total</th>
+      <th class="text-center" style="width:<%= width_total %>px;">Total</th>
       </tr>
       
       <% prevrank = 0 %>
       <% @contest.contestscores.order(:rank, :user_id).includes(:user).each do |line| %>
       <tr>
-      <td style="text-align:center;">
+      <td class="text-center">
       <% if prevrank != line.rank %>
         <%= line.rank %>.
         <% prevrank = line.rank %>
       <% end %>
       </td>
       <% if show_medals %>
-        <td style="text-align:center;">
+        <td class="text-center">
         <% if line.medal == 4 %><%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") %>
         <% elsif line.medal == 3 %><%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") %>
         <% elsif line.medal == 2 %><%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") %>
@@ -284,11 +284,11 @@
         <% end %>
         <% if p.at_least(:corrected) && score > 0 %>
           <% if score == 7 %>
-            <td style="background-color:#ddffdd; text-align:center;">
+            <td class="text-center" style="background-color:#ddffdd">
             <%= link_to "7", contestproblem_path(p, :sol => id) %>
             </td>
           <% else %>
-            <td style="background-color:#ffeecc; text-align:center;">
+            <td class="text-center" style="background-color:#ffeecc;">
             <% if organizer %>
               <%= link_to score, contestproblem_path(p, :sol => id) %>
             <% else %>
@@ -297,7 +297,7 @@
             </td>
           <% end %>
         <% elsif p.at_least(:corrected) %>
-          <td style="background-color:#ffdddd; text-align:center;">
+          <td class="text-center" style="background-color:#ffdddd;">
             <% if !id.nil? and organizer %>
               <%= link_to "0", contestproblem_path(p, :sol => id) %>
             <% end %>
@@ -306,7 +306,7 @@
           <td></td>
         <% end %>
       <% end %>
-      <td style="text-align:center;"><%= line.score %></td>
+      <td class="text-center"><%= line.score %></td>
       </tr>
       <% end %>
       </table>
@@ -460,11 +460,11 @@
   <table class="table table-bordered mb-0" style="min-width:<%= width_table %>px; width:<%= width_table %>px;">
   <tr class="table-light">
   <th style="width:<%= width_name %>px;"></th>
-  <th style="width:<%= width_point %>px; text-align:center;">0 *</th>
+  <th class="text-center" style="width:<%= width_point %>px;">0 *</th>
   <% (1..7).each do |i| %>
-    <th style="width:<%= width_point %>px; text-align:center;"><%= i %></th>
+    <th class="text-center" style="width:<%= width_point %>px;"><%= i %></th>
   <% end %>
-  <th style="width:<%= width_average %>px; text-align:center;">Moyenne</th>
+  <th class="text-center" style="width:<%= width_average %>px;">Moyenne</th>
   </tr>
   
   <% allprobs.each do |p| %>
@@ -478,24 +478,24 @@
     </td>
     <% average = 0.0 %>
     <% (0..7).each do |i| %>
-      <td style="text-align:center;"><%= problem_point[p.number][i] > 0 ? problem_point[p.number][i] : "-" %></td>
+      <td class="text-center"><%= problem_point[p.number][i] > 0 ? problem_point[p.number][i] : "-" %></td>
       <% average += i * problem_point[p.number][i] %>
     <% end %>
     <% average /= num_ranked %>
-    <td style="text-align:center;"><%= ("%.2f" % average) %></td>
+    <td class="text-center"><%= ("%.2f" % average) %></td>
     </tr>
   <% end %>
   </table>
   </center>
   </div>
   
-  <p class="mt-2" style="text-align:center; font-style:italic;">* En considérant que tous les participants classés ont essayé tous les problèmes.</p>
+  <p class="mt-2 text-center fst-italic">* En considérant que tous les participants classés ont essayé tous les problèmes.</p>
 
 <% end %>
 
 <% num = 0 %>
 
-<p class="mt-3" style="text-align:center;">
+<p class="mt-3 text-center">
 
 <% if organizer %>
   <%= link_to "Modifier ce concours", edit_contest_path(@contest) %>
@@ -518,5 +518,5 @@
 </p>
 
 <% if @contest.in_construction? && @signed_in && @contest.is_organized_by(current_user.sk) && !current_user.sk.admin? %>
-  <p style="text-align:center;">Pour mettre le concours en ligne, contacter un administrateur</p>
+  <p class="text-center">Pour mettre le concours en ligne, contacter un administrateur</p>
 <% end %>

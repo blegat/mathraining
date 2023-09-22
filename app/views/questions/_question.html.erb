@@ -30,7 +30,7 @@
   <% anciens = solvedquestion.items %>
   <% if question.many_answers %>
     <%= form_for solvedquestion do |x| %>
-      <p class="mt-3 mb-3" style="font-weight:bold;">Cochez chaque proposition correcte.</p>
+      <p class="mt-3 mb-3 fw-bold">Cochez chaque proposition correcte.</p>
       <input type="hidden" name="question_id" value="<%= question.id %>" />
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
@@ -62,9 +62,9 @@
 <% end %>
 
 <% if !solvedquestion.nb_guess.nil? %>
-  <p class="mt-3" style="color:red;">Votre réponse <%= ("(<b>" + val.to_s + "</b>)").html_safe if !question.is_qcm %> est erronée. Vous avez déjà commis <b><%= solvedquestion.nb_guess %></b> erreur<%= "s" if solvedquestion.nb_guess > 1 %>.</p>
+  <p class="mt-3 text-color-red">Votre réponse <%= ("(<b>" + val.to_s + "</b>)").html_safe if !question.is_qcm %> est erronée. Vous avez déjà commis <b><%= solvedquestion.nb_guess %></b> erreur<%= "s" if solvedquestion.nb_guess > 1 %>.</p>
   
-  <p style="color:red;">À partir de la troisième erreur, vous devez attendre trois minutes avant chaque nouvelle tentative.</p>
+  <p class="text-color-red">À partir de la troisième erreur, vous devez attendre trois minutes avant chaque nouvelle tentative.</p>
   
   <% if needtowait %>
     <%= render 'questions/waiting', solvedquestion: solvedquestion, total_waiting: total_waiting %>

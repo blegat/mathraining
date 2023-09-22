@@ -51,7 +51,7 @@ var showFalse = function () {
     </table>
   <% else %>
     <% if @contest.is_organized_by_or_root(current_user.sk) %>
-      <p>Aucune solution étoilée. <span style='color:orange;'>Il en faut au minimum une !</span></p>
+      <p>Aucune solution étoilée. <span class="text-color-orange">Il en faut au minimum une !</span></p>
     <% else %>
       <p>Aucune <% "autre" if mine_is_star %> solution étoilée.</p>
     <% end %>
@@ -109,7 +109,7 @@ var showFalse = function () {
   
   <% if tocorrect.count == 0 %>
     <% if @contestproblem.contestsolutions.where(:star => true).count == 0 %>
-      <p style="text-align:center; font-style:italic;">Il faut au minimum une solution étoilée pour publier les résultats</p>
+      <p class="text-center fst-italic">Il faut au minimum une solution étoilée pour publier les résultats</p>
     <% else %>
       <center>
       <%= button_to "Publier les résultats", contestproblem_publish_results_path(@contestproblem), :method => :put, class: 'btn btn-lg btn-light', data: { confirm: "Êtes-vous sûr de vouloir publier les corrections ? Attention ! Il ne sera plus possible de modifier les corrections après cela." } %>

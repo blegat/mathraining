@@ -3,7 +3,7 @@
 <h1><%= title_1("Nouvelles réponses") %></h1>
 
 <table class="table table-bordered" style="width:auto;">
-<tr class="table-light"><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th class="d-none d-sm-table-cell" style="width:250px;">Dernière activité</th><th></th></tr>
+<tr class="table-light"><th class="text-center" style="width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th class="d-none d-sm-table-cell" style="width:250px;">Dernière activité</th><th></th></tr>
 <% @notifs.each do |n| %>
   <%= render 'submissions/showline', s: n.submission, hide_user: true %>
 <% end %>

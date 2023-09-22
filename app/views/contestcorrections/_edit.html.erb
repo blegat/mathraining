@@ -5,7 +5,7 @@
 <%= render 'shared/edit_files', s: @contestcorrection, disable: @was_reserved %>
 
 <% if @contestproblem.in_recorrection? %>
-  <p style="color:red;"><b>Attention !</b> Vos modifications de la correction, du score attribué et de l'éventuelle étoile seront directement visibles par tous.</p>
+  <p class="text-color-red"><b>Attention !</b> Vos modifications de la correction, du score attribué et de l'éventuelle étoile seront directement visibles par tous.</p>
 <% end %>
 
 <% if !@contestsolution.official? %>

@@ -35,7 +35,7 @@
         <input type="number" name="score" class="form-control" style="width:70px;" min="0" max="7" />
         </div>
         
-        <div class="p-3 mt-3" style="background-color:#eeeeee; border:1px solid #dddddd;">
+        <div class="p-3 mt-3 grey-box">
           <h5>Marking scheme</h5>
           <% if @problem.markscheme.size > 0 %>
             <%= raw(htmlise(@problem.markscheme)) %>

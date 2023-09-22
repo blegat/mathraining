@@ -31,7 +31,7 @@ Les tableaux suivants donnent :
   <table class="table table-bordered" style="width:auto;">
   <tr class="d-none d-lg-table-row table-light"><th style="width:300px;">Chapitre</th><th>Réussite</th>
   <% (1..maxexo).each do |i| %>
-    <th style="text-align:center; width:50px;">Ex. <%= i %></th>
+    <th class="text-center" style="width:50px;">Ex. <%= i %></th>
   <% end %>
   </tr>
   
@@ -41,11 +41,11 @@ Les tableaux suivants donnent :
     <td colspan="<%= maxexo-1 %>"><%= link_to chapter.name, chapter %></td>
     <% pct = 0 %>
     <% pct = (chapter.nb_completions * 100) / chapter.nb_tries if chapter.nb_tries > 0 %>
-    <td style="text-align:center;"><%= pct %>%</td>
+    <td class="text-center"><%= pct %>%</td>
     </tr>
     <tr style="background-color:rgb(250,250,250);">
     <td class="d-none d-lg-table-cell"><%= link_to chapter.name, chapter %></td>
-    <td class="d-none d-lg-table-cell" style="text-align:center;"><%= pct %>%</td>
+    <td class="d-none d-lg-table-cell text-center"><%= pct %>%</td>
     <% numexo = 0 %>
     <% can_see_exercises = access_chapters.include?(chapter.id) %>
     <% if !questions_by_chapter[chapter.id].nil? %>
@@ -54,7 +54,7 @@ Les tableaux suivants donnent :
         <% pct = 0 %>
         <% pct = e.nb_first_guesses.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
         <% pct2 = [1.4*pct,1].min %>
-        <td style="text-align:center; background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);">
+        <td class="text-center" style="background-color:rgb(<%= 50+((1-pct2)*205).to_i %>,<%= 50+(pct2*205).to_i %>,50);">
         <% if can_see_exercises %>
           <%= link_to "#{(100*pct).round(0)}%", chapter_path(chapter, :type => 5, :which => e.id), :style => "color:rgb(0,0,200);" %>
         <% else %>

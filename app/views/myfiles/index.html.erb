@@ -5,7 +5,7 @@
 <% total = ActiveStorage::Blob.sum(:byte_size) %>
 
 <center>
-<p style="font-size:18px;">
+<p class="fs-5">
 <% if total < 1000000 %>
   Total : <b><%= (total/1000.0).round(1).to_s + " ko"%></b>
 <% else %>
@@ -44,24 +44,24 @@
   </td>
 
   <!-- Qui -->
-  <td style="font-weight:bold;">
+  <td class="fw-bold">
   <% if type != "Contestcorrection" %>
     <% if about.nil? %>
       <!-- Happens in development mode when files are not uploaded correctly -->
-      <span style="color:red;">Erreur</span>
+      <span class="text-color-red">Erreur</span>
     <% else %>
       <% qui = about.user %>
       <%= raw(qui.linked_name) if !qui.nil? %>
     <% end %>
   <% else %>
-    <b>Organisateurs</b>
+    Organisateurs
   <% end %>
   </td>
 
   <!-- Où? Forum ou soumission? -->
   <td class="d-none d-lg-table-cell">
   <% if about.nil? %>
-    <span style="color:red;">Erreur</span>
+    <span class="text-color-red;">Erreur</span>
   <% elsif type == "Subject" || type == "Message" %>
     Forum
   <% elsif type == "Submission" && about.draft? %>
@@ -82,12 +82,12 @@
   </td>
 
   <!-- Taille -->
-  <td style="text-align:center;">
+  <td class="text-center">
   <%= (size / 1.kilobyte).round(1) %> ko
   </td>
 
   <!-- Voir dans le contexte -->
-  <td style="text-align:center;">
+  <td class="text-center">
   <% if !about.nil? && type != "Tchatmessage" %>
     <%= link_to "Voir", f %>
   <% else %>

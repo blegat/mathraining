@@ -79,22 +79,21 @@ window.addEventListener("load", () => {
 
           <%= render 'shared/edit_files' %>
           
-          <%= f.submit "Envoyer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+          <%= f.submit "Envoyer", class: "btn btn-lg btn-primary mb-2", :disabled => current_user.other %>
           <%= link_to 'Marquer comme non lu', discussion_unread_path(@discussion), :method => :put, :class => "btn btn-light", :style => "float:right;", :disabled => current_user.other %>
         <% end %>
         
       <% else %>
       
-      <br/><center><b>Ce compte a été supprimé et vous ne pouvez donc plus lui envoyer de messages.</b></center>
+      <p class="mt-3 text-center fw-bold">Ce compte a été supprimé et vous ne pouvez donc plus lui envoyer de messages.</p>
       
       <% end %>
 
-      <br/>
       <div id="all-messages">
         <%= render @tchatmessages %>
       </div>
 
-      <div id="infinite-scrolling" class="toreplace" style="text-align:center;">
+      <div id="infinite-scrolling" class="toreplace text-center">
         <div style="display:none;">
         <center>
         <%= will_paginate @tchatmessages %>

@@ -28,7 +28,7 @@
 
 <!-- Origine si organisateur ou root ou problème terminé -->
 <% if @contest.is_organized_by_or_root(current_user.sk) || @contestproblem.at_least(:in_correction) %>
-  <p style="font-style:italic;">Origine du problème :
+  <p class="fst-italic">Origine du problème :
   <% if @contestproblem.origin.nil? || @contestproblem.origin.size == 0 %>
     Inconnue
   <% else %>
@@ -40,14 +40,14 @@
 <!-- Chronomètre -->
 <% if @contestproblem.in_progress? %>
   <%= render 'contests/clock', date_limit: @contestproblem.end_time.to_i, message_zero: "Temps écoulé", p_id: 0 %>
-  <p class="mt-4" style="text-align:center; font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></p>
+  <p class="mt-4 text-center fs-4">Temps restant : <b><span id="clockbox0">--------</span></b></p>
 <% elsif @contestproblem.at_most(:not_started_yet) && !@contest.in_construction? %>
   <%= render 'contests/clock', date_limit: @contestproblem.start_time.to_i, message_zero: "En ligne", p_id: 0 %>
-  <p class="mt-4" style="text-align:center; font-size:20px;">Temps avant publication : <b><span id="clockbox0">--------</span></b></p>
+  <p class="mt-4 text-center fs-4">Temps avant publication : <b><span id="clockbox0">--------</span></b></p>
 <% end %>
 
 <% if @contest.is_organized_by_or_root(current_user.sk) %>
-  <p style="text-align:center;"><%= link_to "Modifier ce problème", edit_contestproblem_path(@contestproblem) %>
+  <p class="text-center"><%= link_to "Modifier ce problème", edit_contestproblem_path(@contestproblem) %>
   <% if @contest.in_construction? %>
     | <%= link_to "Supprimer ce problème", @contestproblem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
   <% end %>

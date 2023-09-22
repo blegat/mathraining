@@ -136,7 +136,7 @@
       <%= render 'intro' %>
 
       <% if !exovisibles %>
-        <p style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
+        <p class="text-color-red">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
         <% prems = true %>
         <% @chapter.prerequisites.each do |p| %>
           <% if (!p.section.fondation && (!@signed_in || !current_user.sk.chapters.exists?(p.id))) %>
@@ -175,7 +175,7 @@
 <!-- Ajouter quelque chose -->
 <% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
   <div class="noprint">
-    <p style="text-align:center;" class="mt-3">
+    <p class="mt-3 text-center">
       Ajouter un :
       <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
       <%= link_to "exercice", new_chapter_question_path(@chapter) %> |

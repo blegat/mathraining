@@ -6,7 +6,7 @@
   <div class="container">
     <!-- Lien Mathraining -->
     <%= link_to root_path, class: "navbar-brand me-4", style: "font-size:24px;", id: "Accueil" do %>
-      <span style="color:black;">Math</span><span style="color:rgb(3,109,170);">raining</span>
+      <span class="text-color-black-white">Math</span><span class="text-color-mt-blue">raining</span>
     <% end %>
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,7 +114,7 @@
         <% if @signed_in %>
           <% num_unseen_subjects = current_user.sk.num_unseen_subjects(false) %>
           
-          <li class="nav-item me-1" style="<%= 'font-weight:bold;' if num_unseen_subjects > 0 %>"><%= link_to "Forum#{' (' + num_unseen_subjects.to_s + ')' if num_unseen_subjects > 0 }", subjects_path, :class => "nav-link" %></li>
+          <li class="nav-item me-1 <%= 'fw-bold' if num_unseen_subjects > 0 %>"><%= link_to "Forum#{' (' + num_unseen_subjects.to_s + ')' if num_unseen_subjects > 0 }", subjects_path, :class => "nav-link" %></li>
         <% end %>
 
         <!-- Statistiques -->
@@ -139,7 +139,7 @@
 
           <% nonlu = current_user.sk.links.where("nonread != 0").count %>
           
-          <li class="nav-item me-1" style="<%= 'font-weight:bold;' if nonlu > 0 %>"><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "nav-link" %></li>
+          <li class="nav-item me-1 <%= 'fw-bold' if nonlu > 0 %>"><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "nav-link" %></li>
 
           <li class="nav-item dropdown">
 

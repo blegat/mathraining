@@ -9,7 +9,7 @@
 
 <% @resolu = current_user.sk.pb_solved?(@problem) %>
 
-<h1><%= title_3("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), "Problème ##{ @problem.number }#{ (' - Test #' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online } <span class='ms-3' style='color:grey;'>(#{ pt }&nbsp;points)</span>") %></h1>
+<h1><%= title_3("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), "Problème ##{ @problem.number }#{ (' - Test #' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online } <span class='ms-3 text-color-grey'>(#{ pt }&nbsp;points)</span>") %></h1>
 
 <!-- Si administrateur -->
 <% if current_user.sk.admin? %>
@@ -56,7 +56,7 @@
   <ul>
   <% @problem.chapters.each do |c| %>
     <% has_pre = true %>
-    <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span style='color:orange;'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"}, :method => :put if !@problem.online %></li>
+    <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span class='text-color-orange'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"}, :method => :put if !@problem.online %></li>
     <% enligne_ok = false if !c.online %>
   <% end %>
   </ul>
@@ -116,7 +116,7 @@
   <i>Origine du problème :
   <% if @problem.origin.nil? || @problem.origin.size == 0 %>
     <% if current_user.sk.admin? %>
-      <span style="color:orange;">Inconnue</span>
+      <span class="text-color-orange">Inconnue</span>
     <% else %>
       Inconnue
     <% end %>
@@ -134,7 +134,7 @@
   <!-- Modifier/Supprimer/... -->
 
   <div class="noprint">
-    <p style="text-align:center;">
+    <p class="text-center">
       <% if @problem.online %>
         <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
         <%= link_to "Modifier la solution", problem_explanation_path(@problem) %>
@@ -204,7 +204,7 @@
 <% if (current_user.sk.admin? || current_user.sk.corrector? && @resolu) %>
   <!-- Explication -->
   <% if @problem.explanation.size == 0 %>
-    <p style="text-align:center; color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</p>
+    <p class="text-center fw-bold text-color-orange">Pas d'éléments de solution disponibles.</p>
   <% else %>
     <div class='clue-bis'><div><center><button data-text-id='0' is='clue-onclick' class='btn btn-light'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
     <%= raw(htmlise(@problem.explanation)) %>

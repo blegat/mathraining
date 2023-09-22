@@ -25,7 +25,7 @@
   <% last_correction = @submission.corrections.order(:created_at).last %>
   <% if !last_correction.nil? && last_correction.user != current_user.sk %>
   
-  <div class="p-3 mb-3" style="background-color:#eeeeee; border:1px solid #dddddd;">
+  <div class="p-3 mb-3 grey-box">
   Votre solution est erronée. Deux options s'offrent à vous :
   <ul>
   <li>Si l'idée générale de votre solution est correcte mais que vous devez apporter une justification complémentaire,

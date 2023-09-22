@@ -116,7 +116,7 @@
   <div class="basic_container <%= class_name %>">
   <table class="m-0 mt-3 p-0" style="width:100%; height:90px;">
   <tr><td class="px-2" style="font-size:20px;"><%= raw(@user.colored_name(0, false)) %></td></tr>
-  <tr><td class="pt-1" style="font-size:16px; font-weight:bold;"><%= grade %> <%= "<span style='color:red;'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if @signed_in && current_user.sk.root? && @user.is_banned %></td></tr>
+  <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %> <%= "<span class='text-color-red'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if @signed_in && current_user.sk.root? && @user.is_banned %></td></tr>
   <tr><td class="pt-2"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
   </table>
@@ -167,15 +167,15 @@
     <div style="width:100%; height:<%= espace %>" class="d-none d-sm-block"></div>
     <table class="mt-3" style="width:90%;">
     <tr>
-    <td style="width:25%; text-align:center;"><%= image_tag("Gold.svg", height: 40, alt: "Médailles d'or", title: "Médailles d'or") %></td>
-    <td style="width:25%; text-align:center;"><%= image_tag("Silver.svg", height: 40, alt: "Médailles d'argent", title: "Médailles d'argent") %></td>
-    <td style="width:25%; text-align:center;"><%= image_tag("Bronze.svg", height: 40, alt: "Médailles de bronze", title: "Médailles de bronze") %></td>
-    <td style="width:25%; text-align:center;"><%= image_tag("MH.svg", height: 34, alt: "Mentions honorables", title: "Mentions honorables", style: "margin-top:5px;") %></td>
+    <td class="text-center" style="width:25%;"><%= image_tag("Gold.svg", height: 40, alt: "Médailles d'or", title: "Médailles d'or") %></td>
+    <td class="text-center" style="width:25%;"><%= image_tag("Silver.svg", height: 40, alt: "Médailles d'argent", title: "Médailles d'argent") %></td>
+    <td class="text-center" style="width:25%;"><%= image_tag("Bronze.svg", height: 40, alt: "Médailles de bronze", title: "Médailles de bronze") %></td>
+    <td class="text-center" style="width:25%;"><%= image_tag("MH.svg", height: 34, alt: "Mentions honorables", title: "Mentions honorables", style: "margin-top:5px;") %></td>
     </tr>
     <tr>
     <% num_medals = @user.contestscores.group(:medal).count %>
     <% [4, 3, 2, 1].each do |m| %>
-      <td class="text-center pt-1" style="font-size:22px; font-weight:bold; color: <%= couleur %>;">
+      <td class="text-center pt-1 fw-bold" style="font-size:22px; color: <%= couleur %>;">
       <%= num_medals.key?(m) ? num_medals[m] : "-" %>
       </td>
     <% end %>
@@ -332,7 +332,7 @@
         </div>
         </div>
       </td>
-      <td class="ps-1" style="width:40px; font-weight:bold;">
+      <td class="ps-1 fw-bold" style="width:40px;">
         <%= pct.floor %>%
       </td>
       </tr>
@@ -403,13 +403,13 @@
           <% end %>
           
           <!-- Points -->
-          <td style="width:50px; text-align:center; font-weight:bold; color:<%= couleur %>; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
+          <td class="text-center fw-bold" style="width:50px; color:<%= couleur %>; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
           
           <!-- Date (& Heure si xs) -->
-          <td style="width:75px; text-align:center; <%= remove_border %>"><%= write_date_only_small(date) %><span class="d-inline d-md-none"><%= write_hour(date) %></span></td>
+          <td class="text-center" style="width:75px; <%= remove_border %>"><%= write_date_only_small(date) %><span class="d-inline d-md-none"><%= write_hour(date) %></span></td>
           
           <!-- Heure (sauf si xs) -->
-          <td class="d-none d-md-table-cell" style="width:60px; text-align:center; <%= remove_border %>"><%= write_hour(date) %></td>
+          <td class="d-none d-md-table-cell text-center" style="width:60px; <%= remove_border %>"><%= write_hour(date) %></td>
 
           <!-- Quoi -->
           <td style="<%= remove_border %>">
@@ -488,7 +488,7 @@
           <% if ac[:max_score] < 0 %>
           
             <!-- Concours organisé -->
-            <td style="width:190px; text-align:center; <%= remove_border %>" colspan="3"><span style="font-weight:bold; color:<%= couleur %>">Organisateur</span></td>
+            <td class="text-center" style="width:190px; <%= remove_border %>" colspan="3"><span class="fw-bold" style="color:<%= couleur %>">Organisateur</span></td>
             
           <% else %>
           
@@ -502,19 +502,19 @@
             </td>
           
             <!-- Rang (si pas xs) -->
-            <td class="d-none d-sm-table-cell" style="width:90px; text-align:center; <%= remove_border %>">
-            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
+            <td class="d-none d-sm-table-cell text-center" style="width:90px; <%= remove_border %>">
+            <span class="fw-bold" style="color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
             </td>
             
             <!-- Points (si pas xs) -->
-            <td class="d-none d-sm-table-cell" style="width:100px; text-align:center; <%= remove_border %>">
-            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+            <td class="d-none d-sm-table-cell text-center" style="width:100px; <%= remove_border %>">
+            <span class="fw-bold" style="color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
             </td>
             
             <!-- Rang et points (si xs) -->
-            <td class="d-table-cell d-sm-none" style="width:100px; text-align:center; <%= remove_border %>">
-            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
-            <span style="font-weight:bold; color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+            <td class="d-table-cell d-sm-none text-center" style="width:100px; <%= remove_border %>">
+            <span class="fw-bold" style="color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
+            <span class="fw-bold" style="color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
             </td>
             
             <!-- Case vide (si xs), pour que le colspan="3" reste correct -->
@@ -523,10 +523,10 @@
           <% end %>
           
           <!-- Date -->
-          <td class="d-none d-sm-table-cell" style="width:150px; text-align:center; <%= remove_border %>"><%= write_date_only_small(ac[:start_time]) %> - <%= write_date_only_small(ac[:end_time]) %></td>
+          <td class="d-none d-sm-table-cell text-center" style="width:150px; <%= remove_border %>"><%= write_date_only_small(ac[:start_time]) %> - <%= write_date_only_small(ac[:end_time]) %></td>
           
           <!-- Lien du Concours -->
-          <td style="text-align:left; <%= remove_border %>;"><%= link_to "Concours ##{ac[:number]}", contest_path(ac[:id], :tab => 1) %></td>
+          <td class="text-start" style="<%= remove_border %>;"><%= link_to "Concours ##{ac[:number]}", contest_path(ac[:id], :tab => 1) %></td>
           
           </tr>
         <% end %>
@@ -764,10 +764,10 @@
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-1">
     <div class="basic_container">
     <div class="container_title">Corrections</div>
-    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span style="font-weight:bold; color:<%= couleur %>;"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
+    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold" style="color:<%= couleur %>;"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
     
     <% if @user.correction_level > 0 %>
-      <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span style="font-weight:bold; color:<%= couleur %>;"><%= @user.correction_level %></span> de l'Ordre de Mathraining.
+      <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span class="fw-bold" style="color:<%= couleur %>;"><%= @user.correction_level %></span> de l'Ordre de Mathraining.
     <% end %>
     
     Merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !
@@ -915,10 +915,10 @@
     <% if current_user.sk.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :method => :put, :style => "color:red;" %>
+      <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :method => :put, :class => "text-color-red" %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :style => "color:red;" %>
+      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :class => "text-color-red" %>
     <% end %>
     <% if current_user.sk.root? && @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>
@@ -928,15 +928,15 @@
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :method => :put, :style => "color:red;" %>
+      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :method => :put, :class => "text-color-red" %>
     <% end %>
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if !@user.corrector %>
-        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :method => :put, :style => "color:red;" %>
+        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :method => :put, :class => "text-color-red" %>
       <% else %>
-        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :style => "color:red;" %>
+        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :class => "text-color-red" %>
       <% end %>
     <% end %>
     <% if current_user.sk.root && !@user.root %>

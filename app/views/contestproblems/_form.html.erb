@@ -9,9 +9,9 @@
 <% end %>
 
 <% if @contestproblem.not_started_yet? %>
-  <p style="font-weight:bold;">Attention : les dates pour ce problème ont déjà été publiées ! Merci de ne pas les modifier sauf nécessité absolue.</p>
+  <p class="fw-bold">Attention : les dates pour ce problème ont déjà été publiées ! Merci de ne pas les modifier sauf nécessité absolue.</p>
 <% elsif @contestproblem.at_least(:in_progress) %>
-  <p style="font-weight:bold;">Attention : ce problème a déjà été publié ! Merci de ne le modifier qu'en cas de nécessité absolue.</p>
+  <p class="fw-bold">Attention : ce problème a déjà été publié ! Merci de ne le modifier qu'en cas de nécessité absolue.</p>
 <% end %>
 
 <!-- Enoncé -->
