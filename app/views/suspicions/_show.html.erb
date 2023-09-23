@@ -15,10 +15,10 @@
   <% correctors = User.select(:id, :first_name, :last_name, :see_name).where("admin = ? OR corrector = ?", true, true).order("first_name, last_name") %>
   
   <table class="table table-bordered">
-  <tr class="table-light"><th class="d-none d-lg-table-cell">Date</th><th>Détecté par</th><th>Source</th><th class="text-center">Statut</th><% if current_user.sk.root? %><th class="text-center">Action</th><% end %>
+  <tr class="table-ld-header"><th class="d-none d-lg-table-cell">Date</th><th>Détecté par</th><th>Source</th><th class="text-center">Statut</th><% if current_user.sk.root? %><th class="text-center">Action</th><% end %>
   </tr>
   <% suspicions.each do |s| %>
-    <tr class="table-<%= s.color_class %>">
+    <tr class="table-ld-<%= s.color_class %>">
     <td class="d-none d-lg-table-cell" style="width:200px;"><%= write_date(s.created_at) %></td>
     <td style="width:200px;"><%= raw(s.user.linked_name) %></td>
     <td><%= link_to s.source, s.source, target: "_blank" %></td>
@@ -32,7 +32,7 @@
     
     <% if current_user.sk.root? %>
       <%= form_for s, :url => suspicion_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ? Si vous confirmez une suspicion, l'étudiant ne pourra plus soumettre de solution à ce problème avant 6 mois." } do |f| %>
-        <tr id="line_suspicion_edit_<%= s.id %>" class="table-<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
+        <tr id="line_suspicion_edit_<%= s.id %>" class="table-ld-<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
         <td class="d-none d-lg-table-cell text-center align-middle">
         <% unless s.confirmed? %>
           <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette suspicion de plagiat ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :class => "text-color-red" %>

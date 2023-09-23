@@ -13,6 +13,9 @@
 // Bootstrap parameters:
 $font-size-base: 0.875rem;
 $enable-negative-margins: true;
+$link-decoration: none;
+$link-hover-decoration: underline;
+$body-color-dark: white;
 
 @import "bootstrap";
 @import "select2";

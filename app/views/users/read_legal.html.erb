@@ -21,14 +21,14 @@ function checkChecked() {
 <p>Vous pouvez trouver ci-dessous un résumé des modifications apportées au texte depuis la dernière version que vous avez acceptée.</p>
 
 <table class="table table-bordered">
-<tr class="table-light"><th class="text-center" style="width:90px;">Date</th><th>Modifications</th></tr>
+<tr class="table-ld-header"><th class="text-center" style="width:90px;">Date</th><th>Modifications</th></tr>
 <% if current_user.consent_time.nil? %>
   <% thedate = Time.zone.parse('2000-01-01 00:00') %>
 <% else %>
   <% thedate = current_user.consent_time %>
 <% end %>
 <% Privacypolicy.where("online = ? AND publication_time > ?", true, thedate).order(:publication_time).each do |p| %>
-<tr class="table-warning">
+<tr class="table-ld-warning">
 <td class="text-center">
 <%= write_date_only_small(p.publication_time) %>
 </td>

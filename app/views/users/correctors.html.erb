@@ -11,7 +11,7 @@
 <div class="my-3" style="width:100%; overflow-x:auto;">
 <center>
 <table class="table table-bordered m-0" style="min-width:490px; width:490px;">
-<tr class="table-light">
+<tr class="table-ld-header">
 <th style="width:70px;"></th>
 <% sections.each do |sec| %>
   <th class="text-center" style="width:70px;"><%= sec.short_abbreviation %></th>
@@ -20,13 +20,13 @@
 
 <% (1..5).each do |lev| %>
   <tr>
-  <th class="table-light text-center">Niv. <%= lev %></th>
+  <th class="table-ld-header text-center">Niv. <%= lev %></th>
   <% sections.each do |sec| %>
     <% num = newsubs[[sec.id, lev]] %>
     <% num = 0 if num.nil? %>
     <% red_part = [160, 8*num].min %>
     <% green_part = 160 - red_part %>
-    <td class="text-center" style="background-color:rgb(<%= 95 + red_part %>, <%= 95 + green_part %>, 0);">
+    <td class="text-center gradient-green-red-<%= [num, 20].min %>">
       <%= num %>
     </td>
   <% end %>
@@ -96,6 +96,8 @@ Votre navigateur ne supporte pas les canvas.
 <script type="text/javascript">
 
   function respondCanvas(){
+    //Check light or dark theme
+    var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
   
     //Get the canvas & context
     var c = $('#myCanvas');
@@ -115,10 +117,10 @@ Votre navigateur ne supporte pas les canvas.
     
     ctx.beginPath();
     ctx.rect(pct*43, pct*5, pct*620, pct*350);
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
     ctx.fill();
     ctx.lineWidth = 1;
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = (is_dark ? 'white' : 'black');
     ctx.stroke();
     
     // Entre 43 et 663 --> largeur totale 806, à diviser en 31 : 20 pixels par rectangle
@@ -129,8 +131,6 @@ Votre navigateur ne supporte pas les canvas.
       ctx.rect(pct*<%= 43+20*i %>, pct*355, pct*20, -pct*<%= size %>);
       ctx.fillStyle = 'green';
       ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'black';
       ctx.stroke();
       
       <% avant = size %>
@@ -140,8 +140,6 @@ Votre navigateur ne supporte pas les canvas.
       ctx.rect(pct*<%= 43+20*i %>, pct*<%= 355 - avant %>, pct*20, -pct*<%= size %>);
       ctx.fillStyle = 'red';
       ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'black';
       ctx.stroke();
       
       <% avant = avant + size %>
@@ -151,13 +149,11 @@ Votre navigateur ne supporte pas les canvas.
       ctx.rect(pct*<%= 43+20*i %>, pct*<%= 355 - avant %>, pct*20, -pct*<%= size %>);
       ctx.fillStyle = 'grey';
       ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'black';
       ctx.stroke();
     <% end %>
     
     ctx.font="12px Arial";
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = (is_dark ? 'white' : 'black');
     ctx.textAlign = 'center';
     
     if (pct > 0.7){
@@ -182,6 +178,10 @@ Votre navigateur ne supporte pas les canvas.
   window.addEventListener("resize", () => {
     respondCanvas();
   });
+  
+  window.addEventListener("theme-change", () => {
+    respondCanvas();
+  });
 </script>
 
 
@@ -192,7 +192,7 @@ Votre navigateur ne supporte pas les canvas.
 <div style="width:100%; overflow-x:auto;">
 <center>
 <table class="table table-bordered mb-3" style="min-width:850px; width:850px;">
-<tr class="table-light">
+<tr class="table-ld-header">
 <th style="width:70px;"></th>
 <% sections.each do |sec| %>
   <th class="text-center" style="width:130px;"><%= sec.abbreviation %></th>
@@ -220,7 +220,7 @@ Votre navigateur ne supporte pas les canvas.
 
 <% (1..5).each do |lev| %>
   <tr>
-  <th class="table-light text-center">Niv. <%= lev %></th>
+  <th class="table-ld-header text-center">Niv. <%= lev %></th>
   <% sections.each do |sec| %>
     <td class="text-center">
       <% u = nil %>
@@ -260,15 +260,12 @@ Votre navigateur ne supporte pas les canvas.
 
 <center>
 <table class="table table-bordered" style="width:auto;">
-<tr class="table-light"><th>Nom</th><th class="text-center">Corrections</th><th class="text-center">&le; 2 sem.</th><th class="d-none d-md-table-cell">Première</th><th class="d-none d-md-table-cell">Dernière</th></tr>
+<tr class="table-ld-header"><th>Nom</th><th class="text-center">Corrections</th><th class="text-center">&le; 2 sem.</th><th class="d-none d-md-table-cell">Première</th><th class="d-none d-md-table-cell">Dernière</th></tr>
 
 <% correctors.sort_by{|e| -e[:nb_corrections]}.each do |c| %>
   <% u = c[:user] %>
-  <% if c[:nb_recent] > 140 %>
-    <tr style="background-color:rgb(40,250,40)">
-  <% else %>
-    <tr style="background-color:rgb(<%= (250-c[:nb_recent]*1.5).round %>,250,<%= (250-c[:nb_recent]*1.5).round %>)">
-  <% end %>
+  <% green_class = "line-green-#{([c[:nb_recent], 200].min/2).to_i}" %>
+  <tr class="<%= green_class %>">
   <td><%= raw(u.linked_name) %></td>
   <td class="text-center"><%= c[:nb_corrections] %></td>
   <td class="text-center"><%= c[:nb_recent] %></td>

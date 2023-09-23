@@ -4,19 +4,19 @@
   <% if @contest.is_organized_by_or_root(current_user.sk) && (sol.contestproblem.in_correction? || sol.contestproblem.in_recorrection?) %>
     <% res = sol.reservation %>
     <% if res == 0 %>
-      <% color_class = "table-warning" %>
+      <% color_class = "table-ld-warning" %>
     <% elsif res == current_user.sk.id %>
-      <% color_class = "table-warning table-warning-greener" %>
+      <% color_class = "table-ld-warning-greener" %>
     <% else %>
-      <% color_class = "table-warning table-warning-reder" %>
+      <% color_class = "table-ld-warning-reder" %>
     <% end %>
   <% else %>
-    <% color_class="table-warning" %>
+    <% color_class="table-ld-warning" %>
   <% end %>
 <% elsif sol.score == 7 %>
-  <% color_class = "table-success" %>
+  <% color_class = "table-ld-success" %>
 <% else %>
-  <% color_class = "table-danger" %>
+  <% color_class = "table-ld-danger" %>
 <% end %>
 
 <tr id="line_sol_<%= sol.id %>" class="<%= color_class %>">
@@ -24,9 +24,9 @@
 <!-- Icone -->
 <td class="text-center" style="width:50px;">
   <% if !cansee_score %>
-    <%= image_tag dash_icon %>
+    <%= image_tag dash_icon, :class => "svg-black-white" %>
   <% else %>
-    <%= image_tag sol.icon %>
+    <%= image_tag sol.icon, :class => "svg-black-white" %>
   <% end %>
 </td>
 

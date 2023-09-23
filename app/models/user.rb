@@ -181,7 +181,7 @@ class User < ActiveRecord::Base
   # Gives the "level" of the user
   def level
     if admin
-      return {color:"#000000"}
+      return {color:"#000000"} # Should not be used anymore with light/dark theme!
     elsif !active
       return {color:"#BBBB00"}
     else
@@ -305,7 +305,7 @@ class User < ActiveRecord::Base
   # Gives the corrector prefix (if any) for the name
   def corrector_prefix
     if (self.admin? || self.corrector?) && self.correction_level > 0
-      return "<b><sup>#{self.correction_level}</sup></b>"
+      return "<span class='text-color-black-white fw-bold'><sup>#{self.correction_level}</sup></span>"
     else
       return ""
     end
@@ -319,12 +319,14 @@ class User < ActiveRecord::Base
     goodname = self.name      if name_type == 0
     goodname = self.fullname  if name_type == 1
     goodname = self.shortname if name_type == 2
-    if !self.corrector?
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(goodname)}</span>"
+    if self.admin?
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{html_escape(goodname)}</span>"
+    elsif !self.corrector?
+      return "<span class='fw-bold' style='color:#{self.level[:color]};'>#{html_escape(goodname)}</span>"
     else
       debut = goodname[0]
       fin = goodname[1..-1]
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span style='color:black; font-weight:bold;'>#{debut}</span><span style='color:#{self.level[:color]}; font-weight:bold;'>#{html_escape(fin)}</span>"
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{debut}</span><span class='fw-bold' style='color:#{self.level[:color]};'>#{html_escape(fin)}</span>"
     end
   end
 
@@ -332,9 +334,12 @@ class User < ActiveRecord::Base
   def linked_name(name_type = 0, add_corrector_prefix = true)
     if !self.active?
       return self.colored_name(name_type)
+    elsif self.admin?
+      # Note: We give a color to the "a" so that the link is underlined with this color when it is hovered/clicked
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' class='text-color-black-white'>" + self.colored_name(name_type, false) + "</a>"
     else
       # Note: We give a color to the "a" so that the link is underlined with this color when it is hovered/clicked
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]}'>" + self.colored_name(name_type, false) + "</a>"
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'>" + self.colored_name(name_type, false) + "</a>"
     end
   end
   

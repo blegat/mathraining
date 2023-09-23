@@ -98,21 +98,13 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
+<div class="mb-3">
 <%= raw(htmlise(@problem.statement)) %>
+</div>
 
 <!-- Origine si administrateur ou si résolu -->
 <% if current_user.sk.admin? || @resolu %>
-
-  <% taille = @problem.statement.size() %>
-  <% liste = false %>
-  <% if taille >= 5 %>
-    <% fin = @problem.statement[taille-5, taille-1] %>
-    <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
-      <% liste = true %>
-    <% end %>
-  <% end %>
-
-  <p class="<%= 'mt-2' unless liste %>">
+  <p>
   <i>Origine du problème :
   <% if @problem.origin.nil? || @problem.origin.size == 0 %>
     <% if current_user.sk.admin? %>
@@ -154,11 +146,11 @@
     <% if !@problem.online %>
       <% if has_pre && enligne_ok %>
         <center>
-        <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-light mb-3', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
+        <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-3', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
         </center>
       <% else %>
         <center>
-        <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-light mb-1', disabled: true %>
+        <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: true %>
         </center>
         <p class="mb-3 text-center">
         <% if !has_pre %>
@@ -189,9 +181,9 @@
       <% @draft = true if @problem.submissions.where(:user => current_user.sk, :status => :draft).count > 0 %>
       <% if soumission != 0 %>
         <% if !@draft %>
-          <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-light" %>
+          <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
         <% else %>
-          <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-light" %>
+          <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
         <% end %>
       <% end %>
     <% end %>
@@ -206,7 +198,7 @@
   <% if @problem.explanation.size == 0 %>
     <p class="text-center fw-bold text-color-orange">Pas d'éléments de solution disponibles.</p>
   <% else %>
-    <div class='clue-bis'><div><center><button data-text-id='0' is='clue-onclick' class='btn btn-light'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
+    <div class='clue-bis'><div><center><button data-text-id='0' is='clue-onclick' class='btn btn-ld-light-dark'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
     <%= raw(htmlise(@problem.explanation)) %>
     </div></div></div>
   <% end %>

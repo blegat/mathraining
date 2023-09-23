@@ -10,5 +10,15 @@
  *
  */
 
+// Bootstrap parameters:
+$font-size-base: 0.875rem;
+$enable-negative-margins: true;
+$link-decoration: none;
+$link-hover-decoration: underline;
+$body-color-dark: white;
+
+@import "bootstrap";
+@import "select2";
+// @import "select2-bootstrap"; // Now we import the .css file for select2-bootstrap-5 only on pages needing it
 @import "./common/*";
 @import "./print/*";

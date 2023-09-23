@@ -30,17 +30,17 @@
         <% if num_notifications_new12 > 0 %>
           <%= link_to "#{num_notifications_new12}", allnewsub_path(:levels => 3), class: "btn btn-success" %>
         <% else %>
-          <%= link_to "0", allnewsub_path(:levels => 3), class: "btn btn-light" %>
+          <%= link_to "0", allnewsub_path(:levels => 3), class: "btn btn-ld-light-dark" %>
         <% end %>
         <% if num_notifications_new345 > 0 %>
           <%= link_to "#{num_notifications_new345}", allnewsub_path(:levels => 28), class: "btn btn-danger" %>
         <% else %>
-          <%= link_to "0", allnewsub_path(:levels => 28), class: "btn btn-light" %>
+          <%= link_to "0", allnewsub_path(:levels => 28), class: "btn btn-ld-light-dark" %>
         <% end %>
         <% if num_notifications_update > 0 %>
           <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
         <% else %>
-          <%= link_to "0", allmynewsub_path, class: "btn btn-light" %>
+          <%= link_to "0", allmynewsub_path, class: "btn btn-ld-light-dark" %>
         <% end %>
         
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
@@ -65,7 +65,7 @@
       </form>
 
 
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto navbar-nav-scroll pe-3 pe-lg-0" style="--bs-scroll-height: 350px;">
         
         <% sections = Section.all.order(:id).to_a %>
 

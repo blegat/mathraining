@@ -1,54 +1,34 @@
-/* NEW */
-
-.evidence {
-  border: 1px dashed black;
-  padding:7px;
-  background-color: #F0FFFF;
-}
+/* USED IN THEORY */
 
 .result-title {
-  border: 1px solid rgb(4,136,212);
-  font-weight:bold;
-  padding:7px;
-  padding-left:9px;
-  background-color:rgb(4,136,212);
-  color:white;
+  font-weight: bold;
+  padding: 7px;
+  padding-left: 9px;
 }
 
 .result-content {
-  padding:7px;
-  padding-left:9px;
-  background-color:rgb(233,244,255);
-  border: 1px solid rgb(4,136,212);
+  padding: 7px;
+  padding-left: 9px;
 }
 
 .remark-title {
-  border: 1px solid rgb(113,186,186);
-  font-weight:bold;
-  padding:7px;
-  padding-left:9px;
-  background-color:rgb(113,186,186);
-  color:white;
+  font-weight: bold;
+  padding: 7px;
+  padding-left: 9px;
 }
 
 .remark-content {
-  padding:7px;
-  padding-left:9px;
-  background-color:rgb(240,255,255);
-  border: 1px solid rgb(113,186,186);
+  padding: 7px;
+  padding-left: 9px;
 }
 
 .proof-title {
-  border: 1px solid #dddddd;
-  font-weight:bold;
-  padding:7px;
-  padding-left:9px;
-  background-color:#eeeeee;
+  font-weight: bold;
+  padding: 7px;
+  padding-left: 9px;
 }
 
 .proof-content {
-  padding:7px;
-  padding-left:9px;
-  border: 1px solid #dddddd;
-  border-top:none;
+  padding: 7px;
+  padding-left: 9px;
 }

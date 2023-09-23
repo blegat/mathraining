@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html data-bs-theme="light">
+<% @mt_theme = 'light' %>
+<% @mt_theme = 'dark' if cookies.has_key?(:dark_theme) %>
+<html data-bs-theme="<%= @mt_theme %>">
   <head>  
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
@@ -78,6 +80,7 @@
       }
     </script>
   </head>
+  
   <body>
     <%= render 'layouts/header' %>
     <div class="container">

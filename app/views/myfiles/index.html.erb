@@ -20,7 +20,7 @@
 </center>
 
 <table class="table table-bordered">
-<tr class="table-light"><th class="d-none d-md-table-cell">Date</th><th>Qui</th><th class="d-none d-lg-table-cell">Où</th><th class="d-none d-md-table-cell">Quoi</th><th><center>Taille</center></th><th><center></center></th></tr>
+<tr class="table-ld-header"><th class="d-none d-md-table-cell">Date</th><th>Qui</th><th class="d-none d-lg-table-cell">Où</th><th class="d-none d-md-table-cell">Quoi</th><th><center>Taille</center></th><th><center></center></th></tr>
 
 <!-- Affiche toutes les pièces jointes du site -->
 <% @list.each do |f| %>
@@ -33,9 +33,9 @@
 
   <!-- Si pas tchat : vert -->
   <% if type != "Tchatmessage" %>
-    <tr class="table-success">
+    <tr class="table-ld-success">
   <% else %>
-    <tr class="table-danger">
+    <tr class="table-ld-danger">
   <% end %>
 
   <!-- Date -->

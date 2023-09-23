@@ -94,15 +94,7 @@
 
       <!-- Enoncé -->
       <div class="row content">
-      <% taille = p.statement.size() %>
-      <% liste = false %>
-      <% if taille >= 5 %>
-        <% fin = p.statement[taille-5, taille-1] %>
-        <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
-          <% liste = true %>
-        <% end %>
-      <% end %>
-      <div class="module left-part <%= 'pb-0' if liste %>">
+      <div class="module left-part">
       <center><h5>Énoncé</h5></center>
       <%= raw(htmlise(p.statement)) %>
       </div>
@@ -141,7 +133,7 @@
 <!-- Ajouter un problème -->
 <% if @signed_in && current_user.sk.admin? %>
   <center>
-  <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-light btn-lg' %>
+  <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
   </center>
 <% end %>
 

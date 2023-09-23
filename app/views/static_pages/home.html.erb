@@ -24,11 +24,8 @@
 	<div class="row">
   <div class="col-md-7 col-sm-12 col-xs-12">
   <center>
-  <% if DateTime.now.in_time_zone.month == 1 %>
-    <%= image_tag "mathraining-new-year.png", :style => "width:100%; max-width:400px;" %>
-  <% else %>
-    <%= image_tag "mathraining.png", :style => "width:100%; max-width:334px;" %>
-  <% end %>
+  <%= image_tag "mathraining.png", :class => "light-theme-only", :style => "width:100%; max-width:334px;" %>
+  <%= image_tag "mathraining-dark.png", :class => "dark-theme-only", :style => "width:100%; max-width:334px;" %>
   </center>
   </div>
   <div class="col-md-5 col-sm-12 col-xs-12">
@@ -36,10 +33,10 @@
   <% number = User.where("admin = ? AND rating > 0 AND active = ?", false, true).count %>
   <center>
   <table class="home-stats">
-  <tr><td class="left"><%= raw(readable_number(number)) %></td><td class="right">utilisateurs classés</td></tr>
-  <tr><td class="left"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
-  <tr><td class="left"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
-  <tr><td class="left"><%= raw(readable_number(tot)) %></td><td class="right">points distribués</td></tr>
+  <tr><td class="left text-color-mt-blue"><%= raw(readable_number(number)) %></td><td class="right">utilisateurs classés</td></tr>
+  <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
+  <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
+  <tr><td class="left text-color-mt-blue"><%= raw(readable_number(tot)) %></td><td class="right">points distribués</td></tr>
   </table>
   </center>
   </div>
@@ -54,7 +51,7 @@
 
 <% num_users_to_display = user_with_recent_corrections.size %>
 <% if num_users_to_display > 0 %>
-  <div class="home_thanks">
+  <div class="bg-as-table-ld-primary p-2 text-center mb-2">
     Merci au<%= 'x' if num_users_to_display > 1 %> correcteur<%= 's' if num_users_to_display > 1 %> du jour :
     <% first = true %>
     <% user_with_recent_corrections.each do |u| %>

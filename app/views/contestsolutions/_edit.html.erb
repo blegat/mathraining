@@ -4,6 +4,6 @@
   <%= render 'shared/edit_files', s: @contestsolution %>
 
   <%= f.submit "Enregistrer", class: "btn btn-primary mb-2", :disabled => current_user.other %>
-  <button class="btn btn-light mb-2" onclick="return Rolling.hideActual();">Annuler</button>
+  <button class="btn btn-ld-light-dark mb-2" onclick="return Rolling.hideActual();">Annuler</button>
   <p>(Vous pouvez modifier votre solution jusqu'à la date limite de résolution du problème.)</p>
 <% end %>

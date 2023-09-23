@@ -1,7 +1,7 @@
 <hr class="my-1" />
 
 <% if @compteur <= params[:nonread].to_i %>
-  <div class="p-2" style="background-color:#fffad2; overflow-y:hidden;">
+  <div class="p-2 unread_message" style="overflow-y:hidden;">
 <% else %>
   <div class="p-2" style="overflow-y:hidden; overflow-x:visible">
 <% end %>

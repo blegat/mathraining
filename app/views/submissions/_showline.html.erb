@@ -29,24 +29,24 @@
 <% if hidden_sub %>
   <% color_class = "table-secondary" %> <!-- Si non-visible : gris -->
 <% elsif highlight_this_sub %>
-  <% color_class = "table-warning" %> <!-- Si cette soumission doit être highlightée : toujours jaune -->
+  <% color_class = "table-ld-warning" %> <!-- Si cette soumission doit être highlightée : toujours jaune -->
 <% elsif s.correct? %>
-  <% color_class = "table-success" %> <!-- Si correct : toujours vert -->
+  <% color_class = "table-ld-success" %> <!-- Si correct : toujours vert -->
 <% elsif s.wrong? or s.plagiarized? %>
-  <% color_class = "table-danger" %> <!-- Si incorrect ou plagiat : toujours rouge -->
+  <% color_class = "table-ld-danger" %> <!-- Si incorrect ou plagiat : toujours rouge -->
 <% elsif s.waiting? %>
   <% if !(current_user.sk.admin? or (current_user.sk.corrector and current_user.sk != s.user)) || s.followings.first.nil? %>
-    <% color_class = "table-warning" %> <!-- Si en attente (pas encore corrigé) : toujours jaune, sauf si... -->
+    <% color_class = "table-ld-warning" %> <!-- Si en attente (pas encore corrigé) : toujours jaune, sauf si... -->
   <% elsif s.followings.first.user == current_user.sk %>
-    <% color_class = "table-warning table-warning-greener" %> <!-- si réservé par moi : un peu plus vert -->
+    <% color_class = "table-ld-warning-greener" %> <!-- si réservé par moi : un peu plus vert -->
   <% else %>
-    <% color_class = "table-warning table-warning-reder" %> <!-- si réservé par quelqu'un d'autre : un peu plus rouge -->
+    <% color_class = "table-ld-warning-reder" %> <!-- si réservé par quelqu'un d'autre : un peu plus rouge -->
   <% end %>
 <!-- Si nouveau commentaire jamais lu : bleu si on est correcteur, rouge si on est pas correcteur -->
 <% elsif s.wrong_to_read? && current_user.sk != s.user %>
-  <% color_class = "table-info" %>
+  <% color_class = "table-ld-info" %>
 <% elsif s.wrong_to_read? %>
-  <% color_class = "table-danger" %>
+  <% color_class = "table-ld-danger" %>
 <% end %>
 
 <tr id="line_sub_<%= s.id %>" class="<%= color_class %>">
@@ -57,7 +57,7 @@
 	  <% x = (today - s[show_num_waiting_days_from].in_time_zone.to_date).to_i %>
 	  <span class="<%= "fw-bold" if x >= 3 %> <%= "text-color-orange" if (x >= 5 and x < 7) %> <%= "text-color-red" if x >= 7 %>">J-<%= x %></span>
 	<% else %>
-	  <%= image_tag s.icon %>
+	  <%= image_tag s.icon, :class => "svg-black-white" %>
 	<% end %>
 </td>
 

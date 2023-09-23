@@ -112,7 +112,7 @@ var showFalse = function () {
       <p class="text-center fst-italic">Il faut au minimum une solution étoilée pour publier les résultats</p>
     <% else %>
       <center>
-      <%= button_to "Publier les résultats", contestproblem_publish_results_path(@contestproblem), :method => :put, class: 'btn btn-lg btn-light', data: { confirm: "Êtes-vous sûr de vouloir publier les corrections ? Attention ! Il ne sera plus possible de modifier les corrections après cela." } %>
+      <%= button_to "Publier les résultats", contestproblem_publish_results_path(@contestproblem), :method => :put, class: 'btn btn-lg btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir publier les corrections ? Attention ! Il ne sera plus possible de modifier les corrections après cela." } %>
       </center>
     <% end %>
   <% end %>

@@ -1,0 +1,123 @@
+[data-bs-theme="light"] {
+  .module {
+    border: 1px solid #dddddd;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .module {
+    border: 1px solid #666666;
+  }
+}
+
+
+/* COULEUR VERTE */
+
+[data-bs-theme="light"] {
+  .greeny .title {
+    background-color: #d7efd9;
+  }
+
+  .greeny .module {
+    background-color: #f2f7f3;  
+  }
+}
+
+[data-bs-theme="dark"] {
+  .greeny .title {
+    background-color: #205124;
+  }
+
+  .greeny .module {
+    background-color: #19401d;
+  }
+}
+
+
+/* COULEUR JAUNE */
+
+[data-bs-theme="light"] {
+  .yellowy .title {
+    background-color: #fffad2;
+  }
+
+  .yellowy .module {
+    background-color: #fffded;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .yellowy .title {
+    background-color: #5c5200;
+  }
+
+  .yellowy .module {
+    background-color: #453d00;
+  }
+}
+
+/* COULEUR GRISE */
+
+[data-bs-theme="light"] {
+  .greyy .title {
+    background-color: #f0f0f0;
+  }
+
+  .greyy .module {
+    background-color: #f9f9f9;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .greyy .title {
+    background-color: #444444;
+  }
+
+  .greyy .module {
+    background-color: #333333;
+  }
+}
+
+/* COULEUR ORANGE */
+
+[data-bs-theme="light"] {
+  .orangey .title {
+    background-color: #ffe7c5;
+  }
+
+  .orangey .module {
+    background-color: #fff4e6;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .orangey .title {
+    background-color: #714200;
+  }
+
+  .orangey .module {
+    background-color: #5a3400;
+  }
+}
+
+/* COULEUR ROUGE */
+
+[data-bs-theme="light"] {
+  .redy .title {
+    background-color: #ffd9de;
+  }
+
+  .redy .module {
+    background-color: #ffedef;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .redy .title {
+    background-color: #76000f;
+  }
+
+  .redy .module {
+    background-color: #5e000c;
+  }
+}

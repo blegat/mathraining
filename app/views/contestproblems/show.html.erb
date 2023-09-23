@@ -11,20 +11,9 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
+<div class="mb-3">
 <%= raw(htmlise(@contestproblem.statement)) %>
-
-<% taille = @contestproblem.statement.size() %>
-<% liste = false %>
-<% if taille >= 5 %>
-  <% fin = @contestproblem.statement[taille-5, taille-1] %>
-  <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
-    <% liste = true %>
-  <% end %>
-<% end %>
-
-<% if !liste %>
-  <div class="mt-3"></div>
-<% end %>
+</div>
 
 <!-- Origine si organisateur ou root ou problème terminé -->
 <% if @contest.is_organized_by_or_root(current_user.sk) || @contestproblem.at_least(:in_correction) %>

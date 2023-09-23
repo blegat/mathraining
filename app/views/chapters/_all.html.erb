@@ -38,7 +38,7 @@
     <div>
       <% numLatexTest += 1 if f.content.include? "latextest" %>
       <% if numLatexTest <= 1 %>
-        <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-light"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control mt-2" style="height:120px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeAtLoad(true);</script>')) %>
+        <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control mt-2" style="height:120px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeAtLoad(true);</script>')) %>
       <% else %>
         <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<center><i>Voir plus haut.</i></center>')) %>
       <% end %>
@@ -49,7 +49,7 @@
 
 <% if @chapter.online && @signed_in && !current_user.sk.admin? %>
   <!-- Marquer comme lu -->
-  <center><%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), :method => :put, class: 'btn btn-light mt-3', :disabled => (!@signed_in || current_user.other) %></center>
+  <center><%= button_to "Marquer toute la théorie comme lue", chapter_read_path(@chapter), :method => :put, class: 'btn btn-ld-light-dark mt-3', :disabled => (!@signed_in || current_user.other) %></center>
   
   <hr class="bottom-help" />
   <p>Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id) %> !</p>

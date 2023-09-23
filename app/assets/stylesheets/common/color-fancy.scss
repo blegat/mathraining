@@ -1,0 +1,75 @@
+/* USED IN THEORY */
+
+[data-bs-theme="light"] {
+  .result-title {
+    background-color: rgb(4,136,212);
+    border: 1px solid rgb(4,136,212);
+    color: white;
+  }
+
+  .result-content {
+    background-color: rgb(233,244,255);
+    border: 1px solid rgb(4,136,212);
+  }
+}
+
+[data-bs-theme="dark"] {
+  .result-title {
+    background-color: rgb(4,136,212);
+    border: 1px solid rgb(4,136,212);
+  }
+
+  .result-content {
+    background-color: rgb(33,37+10,41+20);
+    border: 1px solid rgb(4,136,212);
+  }
+}
+
+[data-bs-theme="light"] {
+  .remark-title {
+    background-color: rgb(113,186,186);
+    border: 1px solid rgb(113,186,186);
+    color: white;
+  }
+
+  .remark-content {
+    background-color: rgb(240,255,255);
+    border: 1px solid rgb(113,186,186);
+  }
+}
+
+[data-bs-theme="dark"] {
+  .remark-title {
+    background-color: rgb(113,186,186);
+    border: 1px solid rgb(113,186,186);
+  }
+
+  .remark-content {
+    background-color: rgb(33,37+15,41+15);
+    border: 1px solid rgb(113,186,186);
+  }
+}
+
+[data-bs-theme="light"] {
+  .proof-title {
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+  }
+
+  .proof-content {
+    border: 1px solid #dddddd;
+    border-top: none;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .proof-title {
+    background-color: #666666;
+    border: 1px solid #777777;
+  }
+
+  .proof-content {
+    border: 1px solid #777777;
+    border-top :none;
+  }
+}

@@ -27,7 +27,7 @@
   </div>
 
   <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: { confirm: "Êtes-vous sûr de vouloir soumettre cette solution ?" } %>
-  <%= f.submit "Enregistrer le brouillon", class: "btn btn-light mb-1", :disabled => (current_user.other || @no_new_submission) %>
+  <%= f.submit "Enregistrer le brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (current_user.other || @no_new_submission) %>
   <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger mb-1", :disabled => (current_user.other || @no_new_submission), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce brouillon ?" } %>
 <% end %>
 

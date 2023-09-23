@@ -1,4 +1,30 @@
-/* COULEURS */
+/* Dark-theme background-color is rgb(33, 37, 41) = 212529
+
+/* STUFF VISIBLE ONLY IN LIGHT OR DARK MODE */
+
+[data-bs-theme="light"] {
+  .dark-theme-only {
+    display: none;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .light-theme-only {
+    display: none;
+  }
+}
+
+
+/* WHITE OR BLACK SVG ICON */
+
+[data-bs-theme="dark"] {
+  .svg-black-white {
+    filter: invert(1);
+  }
+}
+
+
+/* GENERAL TEXT COLORS */
 
 .text-color-red {
   color: red;
@@ -8,12 +34,26 @@
   color: orange;
 }
 
-.text-color-green {
-  color: green;
+[data-bs-theme="light"] {
+  .text-color-green {
+    color: green;
+  }
+}
+[data-bs-theme="dark"] {
+  .text-color-green {
+    color: #66ff66;
+  }
 }
 
-.text-color-black-white {
-  color: black;
+[data-bs-theme="light"] {
+  .text-color-black-white {
+    color: black;
+  }
+}
+[data-bs-theme="dark"] {
+  .text-color-black-white {
+    color: white;
+  }
 }
 
 .text-color-mt-blue {
@@ -24,14 +64,205 @@
   color: grey;
 }
 
-.text-color-dark-light-blue {
-  color: #0000BB;
+[data-bs-theme="light"] {
+  .text-color-dark-light-blue {
+    color: #0000bb;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .text-color-dark-light-blue {
+    color: #c0c0ff;
+  }
+}
+
+
+/* CUSTOM STUFF WITH COLORS */
+
+[data-bs-theme="light"] {
+  .home {
+    background-color: #eeeeee;
+    border: 1px solid #bbbbbb;
+  }
+
+  .home-stats {
+    background-color: #f6f6f6;
+    border: 1px solid #bbbbbb;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .home {
+    background-color: #2b2f33;
+    border: 1px solid #444444;
+  }
+
+  .home-stats {
+    background-color: #212a2e;
+    border: 1px solid #444444;
+  }
 }
 
 
 
+[data-bs-theme="light"] {
+  .grey-box {
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+  }
+}
 
-.grey-box {
-  background-color: #eeeeee;
-  border: 1px solid #dddddd;
+[data-bs-theme="dark"] {
+  .grey-box {
+    background-color: #2b2f33;
+    border: 1px solid #444444;
+  }
+}
+
+
+
+[data-bs-theme="light"] {
+  .contest-score-green {
+    background-color: #ddffdd;
+  }
+  
+  .contest-score-red {
+    background-color: #ffdddd;
+  }
+  
+  .contest-score-orange {
+    background-color: #ffeecc;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .contest-score-green {
+    background-color: rgb(33, 37+40, 41);
+  }
+  
+  .contest-score-red {
+    background-color: rgb(33+40, 37, 41);
+  }
+  
+  .contest-score-orange {
+    background-color: rgb(33+30, 37+20, 41);
+  }
+}
+
+
+
+[data-bs-theme="light"] {
+  .progress_container {
+    border:1px solid #eeeeee;
+  }
+
+  .basic_container {
+    border:1px solid #eeeeee;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .progress_container {
+    border:1px solid #303030;
+  }
+
+  .basic_container {
+    border:1px solid #303030;
+  }
+}
+
+
+
+[data-bs-theme="light"] {
+  .clue {
+    background-color: #fffad2;
+    border: 1px solid #dddddd;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .clue {
+    background-color: #5c5200;
+    border: 1px solid #666666;
+  }
+}
+
+
+
+[data-bs-theme="light"] {
+  .unread_message {
+    background-color: #fffad2;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .unread_message {
+    background-color: #5c5200;
+  }
+}
+
+
+
+.error {
+  border: 1px solid rgb(200, 0, 0);
+}
+
+.error-text {
+  color: rgb(200, 0, 0);
+}
+
+
+
+.information-tag {
+  background-color:rgb(4,136,212);
+  border:1px solid rgb(4,136,212);
+  color:white;
+}
+
+[data-bs-theme="light"] {
+  .information-tag:hover, information-tag:active, information-tag:focus {
+    background-color:rgb(4,106,182);
+    border:1px solid rgb(4,106,182);
+  }
+}
+
+[data-bs-theme="dark"] {
+  .information-tag:hover, information-tag:active, information-tag:focus {
+    background-color:rgb(4,166,242);
+    border:1px solid rgb(4,166,242);
+  }
+}
+
+
+
+hr.bottom-help {
+  border-top:1px solid #888888;
+}
+
+
+
+[data-bs-theme="light"] {
+  footer {
+	  border-top: 1px solid #cccccc;
+	  a {
+		  color: #555555;
+
+		  &:hover {
+			  color: #222222;
+		  }
+	  }
+  }
+}
+
+[data-bs-theme="dark"] {
+  footer {
+	  border-top: 1px solid #cccccc;
+	  a {
+		  color: #777777;
+
+		  &:hover {
+			  color: #999999;
+		  }
+	  }
+  }
 }

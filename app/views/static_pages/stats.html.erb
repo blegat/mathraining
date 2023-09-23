@@ -194,6 +194,9 @@ Votre navigateur ne supporte pas les canvas.
   }
   
   function drawGraph(n, batonnets) {
+    //Check light or dark theme
+    var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+    
     var abs_int = graphique[n][0];
     var abs = graphique[n][1];
     var val = graphique[n][2];
@@ -215,10 +218,10 @@ Votre navigateur ne supporte pas les canvas.
 
     ctx.beginPath();
     ctx.rect(pct*50, pct*5, pct*806, pct*450);
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
     ctx.fill();
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = (is_dark ? 'white' : 'black');
     ctx.stroke();
     
     computeIndicesAndMaxValue(n);
@@ -235,7 +238,7 @@ Votre navigateur ne supporte pas les canvas.
     ctx.lineWidth = 0.5;
     ctx.strokeStyle = 'grey';
     ctx.font="14px Arial";
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = (is_dark ? 'white' : 'black');
     ctx.textAlign = 'right';
 
     ctx.setLineDash([10, 10]);
@@ -285,7 +288,7 @@ Votre navigateur ne supporte pas les canvas.
     ctx.setLineDash([]);
       
     // On trace maintenant le graphique
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = (is_dark ? 'white' : 'black');
 
     // Commencement du graphique
 
@@ -332,12 +335,15 @@ Votre navigateur ne supporte pas les canvas.
       ctx.beginPath();
       ctx.rect(pct*50, pct*5, pct*806, pct*450);
       ctx.lineWidth = 1.5;
-      ctx.strokeStyle = 'black';
+      ctx.strokeStyle = (is_dark ? 'white' : 'black');
       ctx.stroke();
     }
   }
   
-  function showXY(n, x, y, batonnets) {  
+  function showXY(n, x, y, batonnets) {
+    //Check light or dark theme
+    var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+    
     var abs_int = graphique[n][0];
     var abs = graphique[n][1];
     var val = graphique[n][2];
@@ -406,12 +412,12 @@ Votre navigateur ne supporte pas les canvas.
     if(val[realx] >= 0) {
       ctx.beginPath();
       ctx.rect(cornerx, cornery, w, h);
-      ctx.fillStyle = 'lightgrey';
+      ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
       ctx.fill();
       ctx.lineWidth = 1.5;
       ctx.font = "18px Arial";
-      ctx.strokeStyle = 'black'
-      ctx.fillStyle = 'black';
+      ctx.strokeStyle = (is_dark ? 'white' : 'black');
+      ctx.fillStyle = (is_dark ? 'white' : 'black');
       
       ctx.moveTo(cornerx+w*0.6, cornery);
       ctx.lineTo(cornerx+w*0.6, cornery+h);
@@ -421,8 +427,8 @@ Votre navigateur ne supporte pas les canvas.
       
       ctx.beginPath();
       ctx.rect(pointx-2,pointy-2,4,4);
-      ctx.strokeStyle = "black";
-      ctx.fillStyle = "black";
+      ctx.strokeStyle = (is_dark ? 'white' : 'black');
+      ctx.fillStyle = (is_dark ? 'white' : 'black');
       ctx.fill();
       ctx.stroke();
     }
@@ -534,16 +540,20 @@ Votre navigateur ne supporte pas les canvas.
     <% end %>
   }
   
-  // Run function when browser resize
-  window.addEventListener("resize", () => {
-    respondCanvas();
-  });
-  
   // Initial call
   window.addEventListener("load", () => {
     listen_all();
     respondCanvas();
   });
-
+  
+  // Run function when browser resize or theme changes
+  window.addEventListener("resize", () => {
+    respondCanvas();
+  });
+  
+  window.addEventListener("theme-change", () => {
+    respondCanvas();
+  });
+  
 </script>
 

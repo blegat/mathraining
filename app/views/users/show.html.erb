@@ -8,13 +8,35 @@
     <% rank_centile = (rank == 1 ? 100 : (100.0 * (num_users - rank + 1) / num_users).round(1)) %>
   <% end %>
   <% niveau = @user.level %>
-  <% couleur = niveau[:color] %>
+  <% couleur_light = niveau[:color] %>
+  <% couleur_dark = niveau[:color] %>
   <% grade = (@user.sex == 0 ? niveau[:name] : niveau[:femininename]) %>
 <% else %>
-  <% couleur = "black" %>
+  <% couleur_light = "black" %>
+  <% couleur_dark = "white" %>
   <% grade = (@user.sex == 0 ? "Administrateur" : "Administratrice") %>
 <% end %>
 
+<style type="text/css">
+  [data-bs-theme="light"] {
+    .user_color {
+      color: <%= couleur_light %>;
+    }
+    .user_color_bg {
+      background-color: <%= couleur_light %>;
+    }
+  }
+  [data-bs-theme="dark"] {
+    .user_color {
+      color: <%= couleur_dark %>;
+    }
+    .user_color_bg {
+      background-color: <%= couleur_dark %>;
+    }
+  }
+</style>
+
+<% couleur = "green" %>
 
 <% if !@user.admin %>
 
@@ -121,7 +143,7 @@
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
   </table>
   <% if @signed_in && current_user.sk != @user %>
-    <%= button_to "Envoyer un message", new_discussion_path, :method => :get, :params => { qui: @user }, :class => "btn btn-light", :style => "width:170px; margin-top:13px;", :disabled => !@signed_in %>
+    <%= button_to "Envoyer un message", new_discussion_path, :method => :get, :params => { qui: @user }, :class => "btn btn-ld-light-dark", :style => "width:170px; margin-top:13px;", :disabled => !@signed_in %>
   <% end %> 
   </div>
 </div>
@@ -132,25 +154,25 @@
     <table class="m-0 mt-3 p-0" style="width:100%; height:90px;">
       <tr>
       <td class="mytitle">Score</td>
-      <td class="myvalue" style="color:<%= couleur %>;"><%= actualrating %></td>
+      <td class="myvalue user_color"><%= actualrating %></td>
       </tr>
       
       <tr>
       <td class="mytitle">Rang</td>
-      <td class="myvalue" style="color:<%= couleur %>;"><%= rank if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
+      <td class="myvalue user_color"><%= rank if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
       </tr>
         
       <tr>
       <td class="mytitle">Centile</td>
-      <td class="myvalue" style="color:<%= couleur %>;"><%= "#{rank_centile}%" if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
+      <td class="myvalue user_color"><%= "#{rank_centile}%" if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
       </tr>
     </table>
     
     <% if @signed_in && @user != current_user.sk %>
       <% if !current_user.sk.followed_users.exists?(@user.id) %>
-        <%= button_to "Suivre", user_add_followed_user_path(@user), :method => :put, :class => "btn btn-light mt-2", :style => "width:140px;" %>
+        <%= button_to "Suivre", user_add_followed_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-2", :style => "width:140px;" %>
       <% else %>
-        <%= button_to "Ne plus suivre", user_remove_followed_user_path(@user), :method => :put, :class => "btn btn-light mt-2", :style => "width:140px;" %>
+        <%= button_to "Ne plus suivre", user_remove_followed_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-2", :style => "width:140px;" %>
       <% end %>
     <% end %>
     
@@ -175,7 +197,7 @@
     <tr>
     <% num_medals = @user.contestscores.group(:medal).count %>
     <% [4, 3, 2, 1].each do |m| %>
-      <td class="text-center pt-1 fw-bold" style="font-size:22px; color: <%= couleur %>;">
+      <td class="text-center pt-1 fw-bold user_color" style="font-size:22px;">
       <%= num_medals.key?(m) ? num_medals[m] : "-" %>
       </td>
     <% end %>
@@ -190,19 +212,19 @@
 <% if @signed_in && current_user.sk.root? %>
   <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 text-center p-1">
     <div class="basic_container p-1">
-      Connecté le <span style="color:<%= couleur %>"><%= write_date_only_small(@user.last_connexion_date) %></span>
+      Connecté le <span class="user_color"><%= write_date_only_small(@user.last_connexion_date) %></span>
     </div>
   </div>
   
   <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 text-center p-1">
     <div class="basic_container p-1">
-      <span style="color:<%= couleur %>"><%= "(" if !@user.email_confirm %><%= @user.email %><%= ")" if !@user.email_confirm %></span>
+      <span class="user_color"><%= "(" if !@user.email_confirm %><%= @user.email %><%= ")" if !@user.email_confirm %></span>
     </div>
   </div>
   
   <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 text-center p-1">
     <div class="basic_container p-1">
-      Né en <span style="color:<%= couleur %>"><%= @user.year %></span>
+      Né en <span class="user_color"><%= @user.year %></span>
     </div>
   </div>
   
@@ -223,15 +245,27 @@
   <style type="text/css">
 
   /* First arc will be behind and has one half grey, one half coloured */
-  <% arcgrey = "#DDDDDD" %>
+  <% arcgrey_light = "#DDDDDD" %>
+  <% arcgrey_dark = "#555555" %>
 
   .arc_first {
-    border-color: <%= couleur %> <%= couleur %> <%= arcgrey %> <%= arcgrey %>;
     -webkit-transform: rotate(45deg);
     -moz-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     -o-transform: rotate(45deg);
     transform: rotate(45deg);
+  }
+  
+  [data-bs-theme="light"] {
+    .arc_first {
+      border-color: <%= couleur_light %> <%= couleur_light %> <%= arcgrey_light %> <%= arcgrey_light %>;
+    }
+  }
+  
+  [data-bs-theme="dark"] {
+    .arc_first {
+      border-color: <%= couleur_light %> <%= couleur_light %> <%= arcgrey_dark %> <%= arcgrey_dark %>;
+    }
   }
 
   <% ["exo", "pb"].each do |i| %>
@@ -244,10 +278,12 @@
 
   /* Second arc will be on top and has one half transparent, one half grey (if <= 50%) or coloured (if > 50%) */
   <% if pct <= 50 %>
-    <% arccol = arcgrey %>
+    <% arccol_light = arcgrey_light %>
+    <% arccol_dark = arcgrey_dark %>
     <% rotation = 45 + 180.0 * pct / 50.0 %> /* 0% should be 45 deg, while 50% should be 45+180 deg **/
   <% else %>
-    <% arccol = couleur %> 
+    <% arccol_light = couleur_light %>
+    <% arccol_dark = couleur_dark %> 
     <% rotation = 45 + 180.0 * (pct - 50) / 50.0 %> /* 50% should be 45 deg, while 100% should be 45+100 deg **/
   <% end %>
 
@@ -266,12 +302,31 @@
   }
 
   .arc_second_<%= i %> {
-    border-color: <%= arccol %> <%= arccol %> transparent transparent;
     -webkit-transform: rotate(<%= rotation %>deg);
     -moz-transform: rotate(<%= rotation %>deg);
     -ms-transform: rotate(<%= rotation %>deg);
     -o-transform: rotate(<%= rotation %>deg);
     transform: rotate(<%= rotation %>deg);
+  }
+  
+  [data-bs-theme="light"] {
+    .arc_hide_<%= i %> {
+      border-color: white white transparent transparent;
+    }
+    
+    .arc_second_<%= i %> {
+      border-color: <%= arccol_light %> <%= arccol_light %> transparent transparent;
+    }
+  }
+  
+  [data-bs-theme="dark"] {
+    .arc_hide_<%= i %> {
+      border-color: rgb(33, 37, 41) rgb(33, 37, 41) transparent transparent;
+    }
+    
+    .arc_second_<%= i %> {
+      border-color: <%= arccol_dark %> <%= arccol_dark %> transparent transparent;
+    }
   }
 
   <% end %>
@@ -327,8 +382,7 @@
       <td class="px-1">
         <% pct = s.max_score == 0 ? 0 : 100*rate/s.max_score.to_f %>
         <div class="progress mb-0" style="height:10px;">
-        <div class="progress-bar" role="progressbar"
-        aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%; background-color:<%= couleur %>;">
+        <div class="progress-bar user_color_bg" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%;">
         </div>
         </div>
       </td>
@@ -403,7 +457,7 @@
           <% end %>
           
           <!-- Points -->
-          <td class="text-center fw-bold" style="width:50px; color:<%= couleur %>; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
+          <td class="text-center fw-bold user_color" style="width:50px; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
           
           <!-- Date (& Heure si xs) -->
           <td class="text-center" style="width:75px; <%= remove_border %>"><%= write_date_only_small(date) %><span class="d-inline d-md-none"><%= write_hour(date) %></span></td>
@@ -488,7 +542,7 @@
           <% if ac[:max_score] < 0 %>
           
             <!-- Concours organisé -->
-            <td class="text-center" style="width:190px; <%= remove_border %>" colspan="3"><span class="fw-bold" style="color:<%= couleur %>">Organisateur</span></td>
+            <td class="text-center" style="width:190px; <%= remove_border %>" colspan="3"><span class="fw-bold user_color">Organisateur</span></td>
             
           <% else %>
           
@@ -503,18 +557,18 @@
           
             <!-- Rang (si pas xs) -->
             <td class="d-none d-sm-table-cell text-center" style="width:90px; <%= remove_border %>">
-            <span class="fw-bold" style="color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
+            <span class="fw-bold user_color"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
             </td>
             
             <!-- Points (si pas xs) -->
             <td class="d-none d-sm-table-cell text-center" style="width:100px; <%= remove_border %>">
-            <span class="fw-bold" style="color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+            <span class="fw-bold user_color"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
             </td>
             
             <!-- Rang et points (si xs) -->
             <td class="d-table-cell d-sm-none text-center" style="width:100px; <%= remove_border %>">
-            <span class="fw-bold" style="color:<%= couleur %>;"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
-            <span class="fw-bold" style="color:<%= couleur %>;"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+            <span class="fw-bold user_color"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
+            <span class="fw-bold user_color"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
             </td>
             
             <!-- Case vide (si xs), pour que le colspan="3" reste correct -->
@@ -544,7 +598,7 @@
   <div class="basic_container">
   <div class="container_title">Évolution</div>
     
-  <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span style="color:<%= couleur %>"><%= write_date_only(@user.created_at) %></span>.</div>
+  <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span class="user_color"><%= write_date_only(@user.created_at) %></span>.</div>
     
   <% if actualrating > 0 %>
     <div style="width:100%;">
@@ -585,7 +639,9 @@
     <script type="text/javascript">
 
       function respondCanvas(){
-      
+        //Check light or dark theme
+        var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+    
         // Get the canvas & context
         var c = $('#myCanvas');
         var ctx = c.get(0).getContext('2d');
@@ -614,7 +670,7 @@
             <% haut = [450 - 450*(n.pt/maxi), 0].max %>
             <% if haut > 0 %>
               ctx.font="14px Arial";
-              ctx.fillStyle = 'black';
+              ctx.fillStyle = (is_dark ? 'white' : 'black');
               ctx.textAlign = 'right';
 
               if (pct > 0.7){
@@ -623,12 +679,6 @@
                   prec = pct * <%= haut %>;
                 }
               }
-              
-              //ctx.beginPath();
-              //ctx.moveTo(pct*50, pct*<%= haut+5 %>);
-              //ctx.lineTo(pct*856, pct*<%= haut+5 %>);
-              //ctx.strokeStyle = '<%= n.color %>';
-              //ctx.stroke();
             <% end %>
           <% end %>
 
@@ -668,12 +718,12 @@
         <% previousw = 2000 %>
         
         ctx.font="12px Arial";
-        ctx.fillStyle = 'black';
+        ctx.fillStyle = (is_dark ? 'white' : 'black');
         ctx.textAlign = 'center';
         ctx.setLineDash([10, 10]);
         ctx.beginPath();
         ctx.lineWidth = 1;
-        ctx.strokeStyle = 'black';
+        ctx.strokeStyle = (is_dark ? 'white' : 'black');
 
         // De droite vers la gauche : calcul où on met les verticales pointillées
         <% actperday.each do |a| %>
@@ -705,8 +755,8 @@
         
         ctx.beginPath();
         ctx.lineWidth = 2.5;
-        ctx.fillStyle = 'white' // '<%= couleur %>';
-        ctx.strokeStyle = 'white' // '<%= couleur %>';
+        ctx.fillStyle = (is_dark ? 'black' : 'white');
+        ctx.strokeStyle = (is_dark ? 'black' : 'white');
         ctx.moveTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
 
         // De gauche vers la droite : on trace le graphe
@@ -740,7 +790,7 @@
         ctx.beginPath();
         ctx.rect(pct*50, pct*5, pct*806, pct*450);
         ctx.lineWidth = 2;
-        ctx.strokeStyle = 'black';
+        ctx.strokeStyle = (is_dark ? 'white' : 'black');
         ctx.stroke();
       }
 
@@ -749,6 +799,10 @@
       });
 
       window.addEventListener("resize", () => {
+        respondCanvas();
+      });
+      
+      window.addEventListener("theme-change", () => {
         respondCanvas();
       });
     </script>
@@ -764,10 +818,10 @@
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-1">
     <div class="basic_container">
     <div class="container_title">Corrections</div>
-    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold" style="color:<%= couleur %>;"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
+    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold user_color"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
     
     <% if @user.correction_level > 0 %>
-      <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span class="fw-bold" style="color:<%= couleur %>;"><%= @user.correction_level %></span> de l'Ordre de Mathraining.
+      <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span class="fw-bold user_color"><%= @user.correction_level %></span> de l'Ordre de Mathraining.
     <% end %>
     
     Merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !
@@ -800,7 +854,9 @@
       <script type="text/javascript">
       
         function respondCanvasCorr(){
-        
+          //Check light or dark theme
+          var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+    
           //Get the canvas & context
           var c = $('#myCanvasCorr');
           var ctx = c.get(0).getContext('2d');
@@ -819,10 +875,10 @@
           
           ctx.beginPath();
           ctx.rect(pct*50, pct*5, pct*806, pct*450);
-          ctx.fillStyle = 'white';
+          ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
           ctx.fill();
           ctx.lineWidth = 1;
-          ctx.strokeStyle = 'black';
+          ctx.strokeStyle = (is_dark ? 'white' : 'black');
           ctx.stroke();
           
           // Entre 50 et 856 --> largeur totale 806, à diviser en num_months
@@ -832,15 +888,13 @@
             <% n = i - first_month %>
             ctx.beginPath();
             ctx.rect(pct*<%= 50+n*rect_width %>, pct*455, pct*<%= rect_width %>, -pct*<%= (450.0*num_corr_by_month[n])/maxi %>);
-            ctx.fillStyle = '<%= couleur %>';
+            ctx.fillStyle = (is_dark ? '<%= couleur_dark %>' : '<%= couleur_light %>');
             ctx.fill();
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'black';
             ctx.stroke();
           <% end %>
           
           ctx.font="12px Arial";
-          ctx.fillStyle = 'black';
+          ctx.fillStyle = (is_dark ? 'white' : 'black');
           ctx.textAlign = 'center';
           
           <% last_date_x = -100 %>
@@ -896,6 +950,10 @@
         });
 
         window.addEventListener("resize", () => {
+          respondCanvasCorr();
+        });
+        
+        window.addEventListener("theme-change", () => {
           respondCanvasCorr();
         });
       </script>

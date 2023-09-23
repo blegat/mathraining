@@ -17,5 +17,5 @@
   <%= f.button "Enregistrer (publique)", type: "submit", name: "status", value: "good", class: "btn btn-success mb-1", disabled: (current_user.other || @was_reserved), id: "BT2" %>
   <%= f.button "Enregistrer (publique étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning mb-1", disabled: (current_user.other || @was_reserved), id: "BT3" %>
 <% end %>
-<button class="btn btn-light mb-1" onclick="return Rolling.hideActual();">Annuler</button>
+<button class="btn btn-ld-light-dark mb-1" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>

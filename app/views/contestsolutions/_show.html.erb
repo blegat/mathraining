@@ -12,7 +12,7 @@
     (en attente de correction)
   <% elsif @contestproblem.at_least(:corrected) %>
     <% if @contestsolution.star %>
-      <%= image_tag @contestsolution.icon %>
+      <%= image_tag @contestsolution.icon, :class => "svg-black-white" %>
     <% end %>
     <% can_see_correction = true %>
   <% end %>
@@ -59,18 +59,18 @@
     <% other_name = User.find(res).name %>
   <% end %>
 
-  <div id="div_reserved_by_nobody" class="mb-2 p-2 ps-3 bg-as-table-warning" style="<%= "display:none;" if reservation_case != 1 %>">
+  <div id="div_reserved_by_nobody" class="mb-2 p-2 ps-3 bg-as-table-ld-warning" style="<%= "display:none;" if reservation_case != 1 %>">
     Cliquez ici pour réserver.
-    <button id="button-reserve" class="btn btn-light ms-5" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver</button>
+    <button id="button-reserve" class="btn btn-ld-light-dark ms-5" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver</button>
   </div>
 
-  <div id="div_reserved_by_other" class="mb-2 p-2 ps-3 bg-as-table-warning-reder" style="<%= "display:none;" if reservation_case != 2 %>">
+  <div id="div_reserved_by_other" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-reder" style="<%= "display:none;" if reservation_case != 2 %>">
     Réservé par <b><%= other_name %></b>.
   </div>
 
-  <div id="div_reserved_by_me" class="mb-2 p-2 ps-3 bg-as-table-warning-greener" style="<%= "display:none;" if reservation_case != 3 %>">
+  <div id="div_reserved_by_me" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-greener" style="<%= "display:none;" if reservation_case != 3 %>">
     Cliquez ici pour annuler votre réservation.
-    <button id="button-unreserve" class="btn btn-light ms-5" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
+    <button id="button-unreserve" class="btn btn-ld-light-dark ms-5" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
   </div>
 <% end %>
 

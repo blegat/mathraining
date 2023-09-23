@@ -10,9 +10,9 @@
 <% if @signed_in %>
   <td class="d-none d-md-table-cell ps-3 text-end">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-light', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
-    <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-light', id: 'link_unfollow', disabled: current_user.other %>
+    <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: current_user.other %>
   <% end %>
   </td>
 <% end %>
@@ -24,9 +24,9 @@
 <% if @signed_in %>
   <div class="d-block d-md-none pt-2 text-center">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-light', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
-    <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-light', disabled: current_user.other %>
+    <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-ld-light-dark', disabled: current_user.other %>
   <% end %>
   </div>
 <% end %>
@@ -80,7 +80,7 @@
 
 <% if organizer && @contest.completed? && @contest.medal && @contest.gold_cutoff == 0 %>
   <center>
-  <%= link_to "Définir les médailles", contest_cutoffs_path(@contest), class: 'btn btn-lg btn-light mt-2' %>
+  <%= link_to "Définir les médailles", contest_cutoffs_path(@contest), class: 'btn btn-lg btn-ld-light-dark mt-2' %>
   </center>
 <% end %>
 
@@ -143,16 +143,7 @@
     <% if can_see_statement %>
       <div class="row content">
       
-      <% taille = p.statement.size() %>
-      <% liste = false %>
-      <% if taille >= 5 %>
-        <% fin = p.statement[taille-5, taille-1] %>
-        <% if fin[3,4] == "$$" %>
-          <% liste = true %>
-        <% end %>
-      <% end %>
-      
-      <div class="module left-part <%= 'pb-0' if liste %>">
+      <div class="module left-part">
       <center><h5>Énoncé</h5></center>
       <%= raw(htmlise(p.statement)) %>
       </div>
@@ -238,7 +229,7 @@
       <% width_total = 60 %>
       <% width_table = width_rank + (show_medals ? width_medal : 0) + width_name + nb_prob*width_prob + width_total %>
       <table class="table table-bordered my-0" style="min-width:<%= width_table %>px; width:<%= width_table %>px;">
-      <tr class="table-light">
+      <tr class="table-ld-header">
       <th style="width:<%= width_rank %>px;"></th>
       <% if show_medals %>
         <th style="width:<% width_medal %>px;"></th>
@@ -284,11 +275,11 @@
         <% end %>
         <% if p.at_least(:corrected) && score > 0 %>
           <% if score == 7 %>
-            <td class="text-center" style="background-color:#ddffdd">
+            <td class="text-center contest-score-green">
             <%= link_to "7", contestproblem_path(p, :sol => id) %>
             </td>
           <% else %>
-            <td class="text-center" style="background-color:#ffeecc;">
+            <td class="text-center contest-score-orange">
             <% if organizer %>
               <%= link_to score, contestproblem_path(p, :sol => id) %>
             <% else %>
@@ -297,7 +288,7 @@
             </td>
           <% end %>
         <% elsif p.at_least(:corrected) %>
-          <td class="text-center" style="background-color:#ffdddd;">
+          <td class="text-center contest-score-red">
             <% if !id.nil? and organizer %>
               <%= link_to "0", contestproblem_path(p, :sol => id) %>
             <% end %>
@@ -354,6 +345,8 @@
 
   <script type="text/javascript">
     function respondCanvas(){
+      //Check light or dark theme
+      var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
       //Get the canvas & context
       var c = $('#myCanvas');
@@ -373,10 +366,10 @@
       
       ctx.beginPath();
       ctx.rect(pct*50, pct*5, pct*806, pct*250);
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
       ctx.fill();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = 'black';
+      ctx.strokeStyle = (is_dark ? 'white' : 'black');
       ctx.stroke();
       
       // Entre 50 et 856 --> largeur totale 806, à diviser en num_points
@@ -386,14 +379,12 @@
         <% before = 0 %>
         <% (0..3).each do |j| %>
           <% k = 4-j %>
+          ctx.fillStyle = '<%= medal_color[k] %>';
           <% if num_by_medal[k][i] > 0 %>
             <% size = (240*num_by_medal[k][i])/maxi.to_f %>
             ctx.beginPath();
             ctx.rect(pct*<%= 50+((806*(i-1))/num_points.to_f) %>, pct*<%= 255 - before %>, pct*<%= (806/num_points.to_f) %>, -pct*<%= size %>);
-            ctx.fillStyle = '<%= medal_color[k] %>';
             ctx.fill();
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'black';
             ctx.stroke();
             <% before = before + size %>
           <% end %>
@@ -401,7 +392,7 @@
       <% end %>
       
       ctx.font="12px Arial";
-      ctx.fillStyle = 'black';
+      ctx.fillStyle = (is_dark ? 'white' : 'black');
       ctx.textAlign = 'center';
       
       if(pct > 0.6)
@@ -428,6 +419,10 @@
     });
 
     window.addEventListener("resize", () => {
+      respondCanvas();
+    });
+    
+    window.addEventListener("theme-change", () => {
       respondCanvas();
     });
   </script>
@@ -458,7 +453,7 @@
   <% width_average = 90 %>
   <% width_table = width_name + 8 * width_point + width_average %>
   <table class="table table-bordered mb-0" style="min-width:<%= width_table %>px; width:<%= width_table %>px;">
-  <tr class="table-light">
+  <tr class="table-ld-header">
   <th style="width:<%= width_name %>px;"></th>
   <th class="text-center" style="width:<%= width_point %>px;">0 *</th>
   <% (1..7).each do |i| %>

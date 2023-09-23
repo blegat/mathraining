@@ -6,15 +6,15 @@
   <% reduce_margin_top = false %>
 <% end %>
 
-<table class="table table-bordered message mb-0 <%= "mt-3" unless reduce_margin_top %><%= "mt-1" if reduce_margin_top %>">
+<table class="table table-bordered post mb-0 <%= "mt-3" unless reduce_margin_top %><%= "mt-1" if reduce_margin_top %>">
 
   <!-- Cas normal -->
-  <% coul = "table-primary" %>
-  <% coul = "table-danger" if (kind == "correction" && ms.user != @submission.user) || kind == "contestcorrection" %>
+  <% coul = "table-ld-primary" %>
+  <% coul = "table-ld-danger" if (kind == "correction" && ms.user != @submission.user) || kind == "contestcorrection" %>
   <tr class="d-none d-sm-table-row <%= coul %>">
 
   <!-- Nom -->
-  <td class="author">
+  <td class="author border-end-0">
   <% if kind != "contestcorrection" %>
     <% if !ms.user.nil? %>
       <%= raw(ms.user.linked_name) %>
@@ -27,7 +27,7 @@
   </td>
 
   <!-- Date -->
-  <td class="date"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at) %><% end %></td>
+  <td class="date border-start-0"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at) %><% end %></td>
   </tr>
 
   <!-- Cas gsm -->
@@ -55,7 +55,7 @@
     
   <% bb = bbcode(ms.content) %>
   <% if kind == "subject" || kind == "message" %>
-    <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div class='clue'><div><button data-text-id='#{@nb_indice}' is='clue-onclick' class='btn btn-light'>#{$1}</button></div><div id='indice#{@nb_indice}' class='clue-hide'><div class='clue-content'>#{$2}</div></div></div>"} %>
+    <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div class='clue'><div><button data-text-id='#{@nb_indice}' is='clue-onclick' class='btn btn-ld-light-dark'>#{$1}</button></div><div id='indice#{@nb_indice}' class='clue-hide'><div class='clue-content'>#{$2}</div></div></div>"} %>
       <% @nb_indice = @nb_indice+1 %>
     <% end %>
   <% end %>

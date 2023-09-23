@@ -21,12 +21,14 @@ div_reserved_by_me.style.display = "none"
   var text_reserved_by_other = document.getElementById("text_reserved_by_other");
   text_reserved_by_other.innerHTML = txt
   div_reserved_by_other.style.display = "block"
-  line_sub.classList.add('table-warning-reder')
+  line_sub.classList.add('table-ld-warning-reder')
+  line_sub.classList.remove('table-ld-warning')
 <% elsif @what == 3 %>
   div_reserved_by_me.style.display = "block"
   MI.disabled = false
   PJ.disabled = false
   B1.disabled = false
   B2.disabled = false
-  line_sub.classList.add('table-warning-greener')
+  line_sub.classList.add('table-ld-warning-greener')
+  line_sub.classList.remove('table-ld-warning')
 <% end %>

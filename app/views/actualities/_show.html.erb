@@ -1,20 +1,20 @@
 <table class="table table-bordered actuality">
 
   <!-- Cas normal -->
-  <tr class="table-primary d-none d-md-table-row">
+  <tr class="table-ld-primary d-none d-md-table-row">
     <!-- Titre -->
-    <td class="title"><h3><%= actuality.title %></h3></td>
+    <td class="title border-end-0"><h3><%= actuality.title %></h3></td>
 
     <!-- Date -->
-    <td class="date"><%= write_date_only(actuality.created_at) %></td>
+    <td class="date border-start-0"><%= write_date_only(actuality.created_at) %></td>
   </tr>
 
   <!-- Cas gsm : titre et date sur des lignes différentes -->
   <!-- Titre -->
-  <tr class="table-primary d-table-row d-md-none"><td class="title"><%= actuality.title %></td></tr>
+  <tr class="table-ld-primary d-table-row d-md-none"><td class="title"><h3><%= actuality.title %></h3></td></tr>
 
   <!-- Date -->
-  <tr class="table-primary d-table-row d-md-none"><td class="date"><%= write_date_only(actuality.created_at) %></td></tr>
+  <tr class="table-ld-primary d-table-row d-md-none"><td class="date"><%= write_date_only(actuality.created_at) %></td></tr>
 
   <!-- Contenu -->
   <tr><td class="content" colspan="2"><div><%= raw(htmlise(actuality.content)) %></div></td></tr>

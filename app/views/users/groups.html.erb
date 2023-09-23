@@ -21,7 +21,7 @@
   <% for g in ["A", "B"] do %>
     <h3>Groupe <%= g %></h3>
     <table class="table table-bordered">
-    <tr class="table-light"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
+    <tr class="table-ld-header"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
     <% User.where(:group => g).order("rating DESC").each do |u| %>
       <tr>
       <td><%= raw(u.linked_name(1)) %></td>

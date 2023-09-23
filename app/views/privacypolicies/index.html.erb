@@ -3,9 +3,9 @@
 <h1><%= title_2((link_to "Politique de confidentialité", last_policy_path), "Mettre à jour") %></h1>
 
 <table class="table table-bordered">
-<tr class="table-light"><th class="text-center" style="width:150px;">Publication</th><th class="text-center" style="width:80px;">Texte</th><th>Modifications</th></tr>
+<tr class="table-ld-header"><th class="text-center" style="width:150px;">Publication</th><th class="text-center" style="width:80px;">Texte</th><th>Modifications</th></tr>
 <% Privacypolicy.all.order(:publication_time).each do |p| %>
-<tr class="<%= 'table-success' if p.online? %><%= 'table-danger' unless p.online? %>">
+<tr class="<%= 'table-ld-success' if p.online? %><%= 'table-ld-danger' unless p.online? %>">
 <td class="text-center">
 <% if p.online %>
   <%= write_date_only(p.publication_time) %>
@@ -35,5 +35,5 @@
 </table>
 
 <% if Privacypolicy.where(:online => false).count == 0 %>
-  <center><%= button_to "Créer une nouvelle version", new_privacypolicy_path, method: :get, class: 'btn btn-lg btn-light' %></center>
+  <center><%= button_to "Créer une nouvelle version", new_privacypolicy_path, method: :get, class: 'btn btn-lg btn-ld-light-dark' %></center>
 <% end %>

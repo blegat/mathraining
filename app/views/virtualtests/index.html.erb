@@ -200,7 +200,7 @@
       
       <!-- Si l'étudiant n'a pas encore commencé le test -->
       <% if !current_user.sk.admin? && status == "not_started" %>
-        <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-light mt-3 mb-1', disabled: (@no_new_submission || current_user.other), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
+        <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mt-3 mb-1', disabled: (@no_new_submission || current_user.other), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
       <% end %>
       
       <!-- Si étudiant en test --->
@@ -241,11 +241,11 @@
         </p>
         <% if nb_prob > 0 && can_online %>
           <center>
-          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-light', data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
+          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
           </center>
         <% else %>
           <center>
-          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-light', disabled: true %>
+          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', disabled: true %>
           </center>
           <p class="text-center mt-2 mb-0">
           <%= "(Au moins un problème nécessaire)" if nb_prob == 0 %>
@@ -262,7 +262,7 @@
   <!-- Ajouter un test -->
   <% if current_user.sk.admin? %>
     <center>
-    <%= button_to "Ajouter un test virtuel", new_virtualtest_path, method: :get, class: 'btn btn-lg btn-light' %>
+    <%= button_to "Ajouter un test virtuel", new_virtualtest_path, method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
     </center>
   <% end %>
 

@@ -56,7 +56,7 @@
 <!-- Mettre en ligne -->
 <center>
 <% if !question.online && @chapter.online %>
-  <%= button_to "Mettre en ligne", question_put_online_path(question), method: :put, class: 'btn btn-light', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
+  <%= button_to "Mettre en ligne", question_put_online_path(question), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
 <% end %>
 </center>
 </div>

@@ -27,7 +27,7 @@
     <div class="form-check mb-1">
     <label class="form-check-label">
       <input class="form-check-input" type="checkbox" name="prevFakeFile<%= postfix %>_<%= f.id %>" value="1" checked="checked" />
-      <span style="color:#0000BB;"><%= f.filename %> (désactivée)</span>
+      <span class="text-color-dark-light-blue"><%= f.filename %> (désactivée)</span>
     </label>
     </div>
   <% end %>
@@ -46,5 +46,5 @@
   <input type="hidden" name="postfix" value="<%= postfix %>">
 <% end %>
 
-<input type="button" value="Ajouter une pièce jointe" is="joint-onclick" id="addFile<%= postfix %>" data-postfix="<%= postfix %>" class="btn btn-sm btn-light mb-2" <%= 'disabled="disabled"'.html_safe if current_user.sk.other or disable %> />
+<input type="button" value="Ajouter une pièce jointe" is="joint-onclick" id="addFile<%= postfix %>" data-postfix="<%= postfix %>" class="btn btn-sm btn-ld-light-dark mb-2" <%= 'disabled="disabled"'.html_safe if current_user.sk.other or disable %> />
 </div>

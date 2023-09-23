@@ -16,7 +16,8 @@ var BT3 = document.getElementById("BT3");
   div_reserved_by_other.innerHTML = "Réservé par <b><%= @correct_name %></b>."
   div_reserved_by_other.style.display = "block"
   div_reserved_by_me.style.display = "none"
-  line_sol.classList.add('table-warning-reder')
+  line_sol.classList.add('table-ld-warning-reder')
+  line_sol.classList.remove('table-ld-warning')
 <% else %>
   div_reserved_by_nobody.style.display = "none"
   div_reserved_by_other.style.display = "none"
@@ -27,5 +28,6 @@ var BT3 = document.getElementById("BT3");
   BT1.disabled = false
   BT2.disabled = false
   BT3.disabled = false
-  line_sol.classList.add('table-warning-greener')
+  line_sol.classList.add('table-ld-warning-greener')
+  line_sol.classList.remove('table-ld-warning')
 <% end %>

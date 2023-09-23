@@ -80,7 +80,7 @@ window.addEventListener("load", () => {
           <%= render 'shared/edit_files' %>
           
           <%= f.submit "Envoyer", class: "btn btn-lg btn-primary mb-2", :disabled => current_user.other %>
-          <%= link_to 'Marquer comme non lu', discussion_unread_path(@discussion), :method => :put, :class => "btn btn-light", :style => "float:right;", :disabled => current_user.other %>
+          <%= link_to 'Marquer comme non lu', discussion_unread_path(@discussion), :method => :put, :class => "btn btn-ld-light-dark", :style => "float:right;", :disabled => current_user.other %>
         <% end %>
         
       <% else %>
