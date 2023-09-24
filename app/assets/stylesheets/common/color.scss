@@ -15,7 +15,7 @@
 }
 
 
-/* WHITE OR BLACK SVG ICON */
+/* WHITE OR BLACK SVG */
 
 [data-bs-theme="dark"] {
   .svg-black-white {
@@ -203,12 +203,24 @@
 
 
 
-.error {
-  border: 1px solid rgb(200, 0, 0);
+[data-bs-theme="light"] {
+  .error {
+    border: 1px solid rgb(200, 0, 0);
+  }
+
+  .error-text {
+    color: rgb(200, 0, 0);
+  }
 }
 
-.error-text {
-  color: rgb(200, 0, 0);
+[data-bs-theme="dark"] {
+  .error {
+    border: 1px solid rgb(255, 100, 100);
+  }
+
+  .error-text {
+    color: rgb(255, 100, 100);
+  }
 }
 
 
@@ -258,10 +270,10 @@ hr.bottom-help {
   footer {
 	  border-top: 1px solid #cccccc;
 	  a {
-		  color: #777777;
+		  color: #999999;
 
 		  &:hover {
-			  color: #999999;
+			  color: #bbbbbb;
 		  }
 	  }
   }

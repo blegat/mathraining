@@ -183,8 +183,8 @@
 [data-bs-theme="dark"] {
   .table-ld-danger {
     --bs-table-color: #fff;
-    --bs-table-bg: #772d0f;
-    --bs-table-border-color: #8b4123;
+    --bs-table-bg: #6a121a;
+    --bs-table-border-color: #7e262e;
     color: var(--bs-table-color);
     border-color: var(--bs-table-border-color);
   }
@@ -329,8 +329,8 @@
 [data-bs-theme="dark"] {
   .table-ld-info {
     --bs-table-color: #fff;
-    --bs-table-bg: #065a6c;
-    --bs-table-border-color: #1a6e80;
+    --bs-table-bg: #065263;
+    --bs-table-border-color: #1a6677;
     color: var(--bs-table-color);
     border-color: var(--bs-table-border-color);
   }

@@ -4,13 +4,6 @@
   }
 }
 
-[data-bs-theme="dark"] {
-  .module {
-    border: 1px solid #666666;
-  }
-}
-
-
 /* COULEUR VERTE */
 
 [data-bs-theme="light"] {
@@ -24,12 +17,17 @@
 }
 
 [data-bs-theme="dark"] {
+  .greeny {
+    border: 1px solid #75c87c;
+  }
+
   .greeny .title {
     background-color: #205124;
   }
 
   .greeny .module {
     background-color: #19401d;
+    border: 1px solid #55bb5d;
   }
 }
 
@@ -47,12 +45,17 @@
 }
 
 [data-bs-theme="dark"] {
+  .yellowy {
+    border: 1px solid #dac200;
+  }
+  
   .yellowy .title {
     background-color: #5c5200;
   }
 
   .yellowy .module {
     background-color: #453d00;
+    border: 1px solid #baa500;
   }
 }
 
@@ -69,12 +72,17 @@
 }
 
 [data-bs-theme="dark"] {
+  .greyy {
+    border: 1px solid #aaaaaa;
+  }
+  
   .greyy .title {
     background-color: #444444;
   }
 
   .greyy .module {
     background-color: #333333;
+    border: 1px solid #999999;
   }
 }
 
@@ -91,12 +99,17 @@
 }
 
 [data-bs-theme="dark"] {
+  .orangey {
+    border: 1px solid #ffae3d;
+  }
+  
   .orangey .title {
     background-color: #714200;
   }
 
   .orangey .module {
     background-color: #5a3400;
+    border: 1px solid #ff9c10;
   }
 }
 
@@ -113,11 +126,16 @@
 }
 
 [data-bs-theme="dark"] {
+  .redy {
+    border: 1px solid #ff4b63;
+  }
+  
   .redy .title {
     background-color: #76000f;
   }
 
   .redy .module {
     background-color: #5e000c;
+    border: 1px solid #fe1c3a;
   }
 }
