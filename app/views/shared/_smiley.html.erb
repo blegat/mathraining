@@ -5,10 +5,10 @@
 <% end %>
 
 <div class="smiley">
-<a href="#!" is='insert-onclick' data-insert-left='[b]' data-insert-right='[/b]' data-postfix='<%= postfix %>'><%= image_tag "bold.jpg", :title => "Gras" %></a>
-<a href="#!" is='insert-onclick' data-insert-left='[i]' data-insert-right='[/i]' data-postfix='<%= postfix %>'><%= image_tag "italics.jpg", :title => "Italique" %></a>
-<a href="#!" is='insert-onclick' data-insert-left='[u]' data-insert-right='[/u]' data-postfix='<%= postfix %>'><%= image_tag "underlined.jpg", :title => "Souligné" %></a>
-<a href="#!" is='insert-onclick' data-insert-left='[url=https://www.mathraining.be]' data-insert-right='[/url]' data-postfix='<%= postfix %>'><%= image_tag "link.jpg", :title => "Lien", :class => "ms-2" %></a>
+<a href="#!" is='insert-onclick' data-insert-left='[b]' data-insert-right='[/b]' data-postfix='<%= postfix %>'><%= image_tag "bold.svg", :class => "svg-black-white", :title => "Gras" %></a>
+<a href="#!" is='insert-onclick' data-insert-left='[i]' data-insert-right='[/i]' data-postfix='<%= postfix %>'><%= image_tag "italic.svg", :class => "svg-black-white ms-1", :title => "Italique" %></a>
+<a href="#!" is='insert-onclick' data-insert-left='[u]' data-insert-right='[/u]' data-postfix='<%= postfix %>'><%= image_tag "underlined.svg", :class => "svg-black-white ms-1", :title => "Souligné" %></a>
+<a href="#!" is='insert-onclick' data-insert-left='[url=https://www.mathraining.be]' data-insert-right='[/url]' data-postfix='<%= postfix %>'><%= image_tag "link.svg", :class => "svg-black-white ms-3", :title => "Lien" %></a>
 
 <% if hiddentext %>
 <a href="#!" is='insert-onclick' data-insert-left='[hide=Texte caché]\n' data-insert-right='\n[/hide]' data-postfix='<%= postfix %>' class="ms-3 align-middle" >Texte caché</a>
