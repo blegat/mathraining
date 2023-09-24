@@ -1,10 +1,10 @@
 /* SCROLL FOR TABLE WITH FIXED HEIGHT */
 
-thead.fixed tr {
+table.fixed-scroll thead tr {
   display: block;
 }
 
- tbody.scroll {
+table.fixed-scroll tbody {
   display: block;
   max-height: 440px;
   overflow-y: scroll;

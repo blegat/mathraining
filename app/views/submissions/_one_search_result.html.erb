@@ -7,7 +7,7 @@
 <% else %>
   <% color_class = "danger" %>
 <% end %>
-<tr class="table-<%= color_class %>">
+<tr class="table-ld-<%= color_class %>">
 <td style="width:250px;"><%= write_date(r[0].created_at) %></td>
 <td style="width:200px;"><%= raw(r[0].user.linked_name) %></td>
 <td style="width:300px;"><%= r[1][0] %><b><u><%= @string_to_search %></u></b><%= r[1][1] %></td>

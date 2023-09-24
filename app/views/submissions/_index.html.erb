@@ -1,13 +1,27 @@
 <script type="text/javascript">
-var showCorrect = function () {
+var fixLastCellWidthOfTableHeader = function(table_id) {
+  var t = document.getElementById(table_id);
+  var h = t.getElementsByTagName("thead")[0];
+  var b = t.getElementsByTagName("tbody")[0];
+  var cells = h.getElementsByTagName("th");
+  if (cells.length == 0) return;
+  var last_cell = cells[cells.length-1];
+  last_cell.style.width = (54+(b.offsetWidth - b.clientWidth)).toString() + "px";
+}
+
+var showCorrect = function() {
   document.getElementById("btn_correct").style.display = 'none';
   document.getElementById("loading_correct").style.display = 'inline';
-  $.getScript("<%= submissions_url(:problem_id => problem, :what => 0) %>");
+  $.getScript("<%= submissions_url(:problem_id => problem, :what => 0) %>").done(function(script, textStatus) {
+    fixLastCellWidthOfTableHeader("all_correct");
+  });
 }
-var showFalse = function () {
+var showFalse = function() {
   document.getElementById("btn_false").style.display = 'none';
   document.getElementById("loading_false").style.display = 'inline';
-  $.getScript("<%= submissions_url(:problem_id => problem, :what => 1) %>");
+  $.getScript("<%= submissions_url(:problem_id => problem, :what => 1) %>").done(function(script, textStatus) {
+    fixLastCellWidthOfTableHeader("all_false");
+  });
 }
 </script>
 
@@ -21,14 +35,10 @@ var showFalse = function () {
     <p>Aucune soumission.</p>
   <% else %>
     <table class="table table-bordered" style="width:auto;">
-    <thead class="fixed">
-    <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th style="width:250px;" class="d-none d-lg-table-cell">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
-    </thead>
-    <tbody class="scroll">
-    <% submissions.each do |s| %>
+    <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th style="width:250px;" class="d-none d-lg-table-cell">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:54px;"></th></tr>
+      <% submissions.each do |s| %>
         <%= render 'submissions/showline', s: s %>
       <% end %>
-    </tbody>
     </table>
   <% end %>
   
@@ -36,11 +46,11 @@ var showFalse = function () {
   <p id="btn_correct"><%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()" %></p>
   <p id="loading_correct" style="display:none;">Chargement...</p>
   <p id="none_correct" style="display:none;">Aucune soumission</p>
-  <table class="table table-bordered" style="width:840px; display:none;" id="all_correct">
-  <thead class="fixed">
+  <table class="table table-bordered fixed-scroll" style="width:840px; display:none;" id="all_correct">
+  <thead>
   <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
   </thead>
-  <tbody class="scroll">
+  <tbody>
     <!-- This body is filled via javascript, see showCorrect() -->
   </tbody>
   </table>
@@ -58,10 +68,7 @@ var showFalse = function () {
     <h3>Vos soumissions</h3>
     
     <table class="table table-bordered" style="width:auto;">
-    <thead class="fixed">
-    <tr><th class="text-center" style="width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;" class="d-none d-sm-table-cell">Dernière activité</th><th style="width:70px;"></th></tr>
-    </thead>
-    <tbody class="scroll">
+    <tr><th class="text-center" style="width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th style="width:250px;" class="d-none d-sm-table-cell">Dernière activité</th><th style="width:54px;"></th></tr>
     <% submissions.each do |s| %>
       <%= render 'submissions/showline', s: s, hide_user: true %>
       <% if s.waiting? %>
@@ -73,7 +80,6 @@ var showFalse = function () {
         <% end %>
       <% end %>
     <% end %>
-    </tbody>
     </table>
 
   <% end %>
@@ -92,14 +98,10 @@ var showFalse = function () {
 
     <% if !submissions.empty? %>
       <table class="table table-bordered" style="width:auto;">
-      <thead class="fixed">
-      <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
-      </thead>
-      <tbody class="scroll">
+      <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:54px;"></tr>
       <% submissions.each do |s| %>
         <%= render 'submissions/showline', s: s %>
       <% end %>
-      </tbody>
       </table>
     <% else %>
     	<p>Aucune soumission.</p>
@@ -109,11 +111,11 @@ var showFalse = function () {
     <p id="btn_correct"><%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()" %></p>
     <p id="loading_correct" style="display:none;">Chargement...</p>
     <p id="none_correct" style="display:none;">Aucune soumission.</p>
-    <table class="table table-bordered" style="width:auto; display:none;" id="all_correct">
-    <thead class="fixed">
+    <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_correct">
+    <thead>
     <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
     </thead>
-    <tbody class="scroll">
+    <tbody>
       <!-- This body is filled via javascript, see showCorrect() -->
     </tbody>
     </table>
@@ -129,11 +131,11 @@ var showFalse = function () {
   <p id="btn_false"><%= link_to "Afficher les soumissions erronées", "javascript:showFalse()" %></p>
   <p id="loading_false" style="display:none;">Chargement...</p>
   <p id="none_false" style="display:none;">Aucune soumission.</p>
-  <table class="table table-bordered" style="width:auto; display:none;" id="all_false">
-  <thead class="fixed">
+  <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_false">
+  <thead>
   <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
   </thead>
-  <tbody class="scroll">
+  <tbody>
     <!-- This body is filled via javascript, see showFalse() -->
   </tbody>
   </table>
@@ -142,16 +144,19 @@ var showFalse = function () {
   
   <% if !submissions.empty? %>
     <h3>Soumissions en attente</h3>
-    <table class="table table-bordered" style="width:auto;">
-    <thead class="fixed">
+    <table class="table table-bordered fixed-scroll" style="width:auto;" id="all_waiting">
+    <thead>
     <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
     </thead>
-    <tbody class="scroll">
+    <tbody>
       <% submissions.each do |s| %>
         <%= render 'submissions/showline', s: s %>
       <% end %>
     </tbody>
     </table>
+    <script>
+      fixLastCellWidthOfTableHeader("all_waiting");
+    </script>
   <% end %>
 
 <% end %>

@@ -21,12 +21,10 @@ var showFalse = function () {
   <% if !sol.nil? %>
     <h3>Votre solution</h3>
     <table class="table table-bordered" style="width:auto;">
-    <tbody class="scroll">
       <% if sol.star %>
         <% mine_is_star = true %>
       <% end %>
       <%= render 'contestsolutions/showsmall', sol: sol %>
-    </tbody>
     </table>
   <% end %>
 <% end %>
@@ -43,11 +41,9 @@ var showFalse = function () {
   <% starred = @contestproblem.contestsolutions.where("star = ? AND (official = ? OR user_id != ?)", true, true, current_user.sk.id).order(:user_id).includes(:user) %>
   <% if starred.count > 0 %>
     <table class="table table-bordered" style="width:auto;">
-    <tbody class="scroll">
     <% starred.each do |sol| %>
       <%= render 'contestsolutions/showsmall', sol: sol %>
     <% end %>
-    </tbody>
     </table>
   <% else %>
     <% if @contest.is_organized_by_or_root(current_user.sk) %>
@@ -61,8 +57,8 @@ var showFalse = function () {
   <% good = @contestproblem.contestsolutions.where("star = ? AND score = ? AND corrected = ? AND (official = ? OR user_id != ?)", false, 7, true, true, current_user.sk.id).order(:user_id).includes(:user) %>
   <% if good.count > 0 %>
     <p id="btn_correct"><%= link_to "Afficher les autres solutions correctes", "javascript:showCorrect()" %></p>
-    <table class="table table-bordered" style="width:auto; display:none;" id="all_correct">
-    <tbody class="scroll">
+    <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_correct">
+    <tbody>
     <% good.each do |sol| %>
       <%= render 'contestsolutions/showsmall', sol: sol %>
     <% end %>
@@ -79,8 +75,8 @@ var showFalse = function () {
   <% bad = @contestproblem.contestsolutions.where("score < 7 AND corrected = ?", true).order(:user_id).includes(:user) %>
   <% if bad.count > 0 %>
     <p id="btn_false"><%= link_to "Afficher les solutions erronées et non-publiques", "javascript:showFalse()" %></p>
-    <table class="table table-bordered" style="width:auto; display:none;" id="all_false">
-    <tbody class="scroll">
+    <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_false">
+    <tbody>
     <% bad.each do |sol| %>
       <%= render 'contestsolutions/showsmall', sol: sol %>
     <% end %>
@@ -96,8 +92,8 @@ var showFalse = function () {
   <h3>Solutions à corriger</h3>
   <% tocorrect = @contestproblem.contestsolutions.where(:corrected => false).order(:user_id).all %>
   <% if tocorrect.count > 0 %>
-    <table class="table table-bordered" style="width:auto;">
-    <tbody class="scroll">
+    <table class="table table-bordered fixed-scroll" style="width:auto;">
+    <tbody>
     <% tocorrect.each do |sol| %>
       <%= render 'contestsolutions/showsmall', sol: sol %>
     <% end %>
