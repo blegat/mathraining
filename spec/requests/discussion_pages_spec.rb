@@ -77,7 +77,6 @@ describe "Discussion pages" do
       
       describe "and creates a discussion without choosing the user" do
         before do
-          select "Choisir un destinataire...", from: "destinataire"
           fill_in "MathInput", with: content
           click_button "Envoyer"
           user.reload
