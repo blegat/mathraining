@@ -59,7 +59,10 @@ describe "User pages" do
       
       describe "after saving the user" do
         before { click_button "Créer mon compte" }
-        it { should have_success_message("confirmer votre inscription") }
+        specify do
+          expect(page).to have_success_message("confirmer votre inscription")
+          expect(User.order(:id).last.email_confirm).to eq(false)
+        end
       end
     end
     
