@@ -144,7 +144,7 @@
       // To initialize select2 when page is loaded and $ (jquery) is defined
       var select2Initialized = false;
       
-      function initializeSelect2IfPossible() {
+      function initializeSelect2IfPossible(placeholder) {
         if ("$" in window) {
           if (!select2Initialized) {
             select2Initialized = true;
@@ -152,15 +152,14 @@
               theme: "bootstrap-5",
               language: "fr",
               width: "300",
-              containerCssClass: 'select2--small',
-              dropdownCssClass: 'select2--small',
+              placeholder: placeholder
             });
           }
         }
       }
       
-      function initializeSelect2WhenPossible() {
-        callMethodWhenPossible(initializeSelect2IfPossible);
+      function initializeSelect2WhenPossible(placeholder) {
+        callMethodWhenPossible(() => initializeSelect2IfPossible(placeholder));
       }
       
     </script>

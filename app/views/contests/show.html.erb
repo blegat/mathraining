@@ -46,15 +46,13 @@
 
 <% if @signed_in && current_user.sk.admin? && @contest.in_construction? %>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-
   <% contestorganization = Contestorganization.new %>
   <%= form_for contestorganization, :html => {:class => "form-inline mt-2"} do |f| %>
     <% mtn = DateTime.now.to_date - 14 %>
     <div class="row g-2 align-items-center">
       <div class="col-auto">
         <%= f.hidden_field :contest_id, :value => @contest.id %>
-        <%= f.select :user_id, options_for_select(User.where("last_connexion_date >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Nouvel organisateur..."), -1), {}, {:class => "form-select select2 p-1 ps-2", :style => "width:300px;"} %>
+        <%= f.select :user_id, options_for_select(User.where("last_connexion_date >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, ""), -1), {}, {:class => "form-select select2 p-1 ps-2", :style => "width:300px;"} %>
       </div>
       <div class="col-auto">
         <%= f.submit "Ajouter", class: "btn btn btn-primary" %>
@@ -62,7 +60,7 @@
     </div>
   <% end %>
   
-  <script>initializeSelect2WhenPossible()</script>
+  <script>initializeSelect2WhenPossible("Nouvel organisateur")</script>
   
 <% end %>
 
