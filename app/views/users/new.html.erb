@@ -5,11 +5,13 @@ function checkChecked() {
     var bt = document.getElementById("send-button");
     var war = document.getElementById("warning");
     if(c1 && c2) {
-      warning.style.color = "white";
+      warning.classList.remove('text-color-red')
+      warning.classList.add('text-color-transparent')
       bt.disabled = false;
     }
     else {
-      warning.style.color = "red";
+      warning.classList.remove('text-color-transparent')
+      warning.classList.add('text-color-red')
       bt.disabled = true;
     }
 }
