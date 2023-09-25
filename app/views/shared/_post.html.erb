@@ -82,7 +82,7 @@
   <% if can_edit %>
     <tr><td colspan="2" class="modify">
       <% if kind == "subject" %>
-        <a href='#' onclick='return Rolling.develop("<%= postfix %>")'>Modifier ce sujet</a>
+        <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)'>Modifier ce sujet</a>
         <% if current_user.sk.admin? %>
           | <%= link_to "Supprimer ce sujet", subject_path(ms), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce sujet et tous les messages associés ?" }  %>
           | <a href='#' id='showform' onclick='document.getElementById("migration_form").style.display="inline"; return false;' style='display:inline;'>Migrer ce sujet</a>
@@ -96,7 +96,7 @@
           </span>
         <% end %>
       <% elsif kind == "message" %>
-        <a href='#' onclick='return Rolling.develop("<%= postfix %>")' id='LinkEdit<%= postfix %>'>Modifier ce message</a>
+        <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)' id='LinkEdit<%= postfix %>'>Modifier ce message</a>
         <% if current_user.sk.admin? %>
            | <%= link_to "Supprimer ce message", subject_message_path(@subject, ms), method: :delete, id: "LinkDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>
         <% end %>

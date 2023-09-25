@@ -85,7 +85,7 @@
 
 <!-- Endroit pour dessiner le graphique des corrections -->
 <div id="contenant" class="mb-3" style="width:100%; max-width:700px; height:380px; position:relative; display:block;">
-<canvas id="myCanvas" width="700" height="380" style="position:absolute; left:0px; top: 0px;">
+<canvas id="myCanvas" width="700" height="380" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
 </div>
@@ -96,24 +96,22 @@ Votre navigateur ne supporte pas les canvas.
 <script type="text/javascript">
 
   function respondCanvas(){
-    //Check light or dark theme
+    // Check light or dark theme
     var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
-  
-    //Get the canvas & context
-    var c = $('#myCanvas');
-    var ctx = c.get(0).getContext('2d');
-    var container = $(c).parent();
     
-    c.attr('width', $(container).width() ); //max width
-    c.attr('height', 380*$(container).width()/700.0); //max height
+    // Get the canvas & context
+    var c = document.getElementById('myCanvas');
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    c.setAttribute('width', container.offsetWidth); //max width
+    c.setAttribute('height', 380*container.offsetWidth/700.0); //max height
 
-    document.getElementById('contenant').style.height = 380*$(container).width()/700.0 + "px"
+    container.style.height = 380*container.offsetWidth/700.0 + "px"
 
-    //Redraw & reposition content
-    var x = c.width();
-    var y = c.height();
+    // Draw content
 
-    var pct = c.width()/700.0;
+    var pct = c.offsetWidth/700.0;
     
     ctx.beginPath();
     ctx.rect(pct*43, pct*5, pct*620, pct*350);
@@ -171,10 +169,6 @@ Votre navigateur ne supporte pas les canvas.
     <% end %>
   }
 
-  window.addEventListener("load", () => {
-    respondCanvas();
-  });
-
   window.addEventListener("resize", () => {
     respondCanvas();
   });
@@ -182,6 +176,8 @@ Votre navigateur ne supporte pas les canvas.
   window.addEventListener("theme-change", () => {
     respondCanvas();
   });
+  
+  respondCanvas();
 </script>
 
 

@@ -28,6 +28,7 @@
   <%= render 'shared/preview', postfix: postfix %>
   <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
   <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id=>"MathInput#{postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+  <!-- Do not call initAndUpdatePreviewSafeWhenPossible: it will be done only after rolling to show the form -->
 </div>
 
 <!-- Case e-mails aux groupes A et/ou B -->
@@ -47,20 +48,12 @@
 <% end %>
 
 <% if !session["error#{postfix}"].nil? %>
-  <script>
-    window.addEventListener("load", () => {
-      Rolling.develop_quick("<%= postfix %>");
-    });
-  </script>
+  <script>rollingDevelopQuickWhenPossible("<%= postfix %>", true)</script>
   <% session.delete("error#{postfix}") %>
   <% session.delete("oldContent") %>
 <% end %>
 
 <% if !session["success#{postfix}"].nil? %>
-  <script>
-    window.addEventListener("load", () => {
-      Rolling.showus("<%= postfix %>");
-    });
-  </script>
+  <script>rollingShowusWhenPossible("<%= postfix %>")</script>
   <% session.delete("success#{postfix}") %>
 <% end %>

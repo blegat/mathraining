@@ -36,26 +36,36 @@ function format_date(days_after_first_date){
   return (day < 10 ? "0" : "") + day + "/" + (month < 10 ? "0" : "") + month + "/" + year;
 }
 
-window.addEventListener("load", () => {
-  $( "#slider-range" ).slider({
-    range: true,
-    min: 0,
-    max: <%= num_days %>,
-    values: [ 0, <%= num_days %>  ],
-    slide: function( event, ui ) {
-      $( "#interval" ).html( format_date(ui.values[0]) + " - " + format_date(ui.values[1]) );
-      start_range = ui.values[0];
-      end_range = ui.values[1];
-      drawGraph(0, false);
-      drawGraph(1, true);
-      drawGraph(2, true);
-      drawGraph(3, false);
+var sliderRangeInitialized = false;
+
+function initSliderRangeIfPossible(){
+  if ("$" in window) {
+    if (!sliderRangeInitialized) {
+      sliderRangeInitialized = true;
+      $( "#slider-range" ).slider({
+        range: true,
+        min: 0,
+        max: <%= num_days %>,
+        values: [ 0, <%= num_days %>  ],
+        slide: function( event, ui ) {
+          $( "#interval" ).html( format_date(ui.values[0]) + " - " + format_date(ui.values[1]) );
+          start_range = ui.values[0];
+          end_range = ui.values[1];
+          drawGraph(0, false);
+          drawGraph(1, true);
+          drawGraph(2, true);
+          drawGraph(3, false);
+        }
+      });
+      
+      $( "#interval" ).html( format_date( $( "#slider-range" ).slider( "values", 0 ) ) +
+        " - " + format_date( $( "#slider-range" ).slider( "values", 1 ) ) );
     }
-  });
-  
-  $( "#interval" ).html( format_date( $( "#slider-range" ).slider( "values", 0 ) ) +
-    " - " + format_date( $( "#slider-range" ).slider( "values", 1 ) ) );
-} );
+  }
+}
+
+callMethodWhenPossible(initSliderRangeIfPossible);
+
 </script>
 
 <div class="mb-3"></div>
@@ -66,8 +76,8 @@ window.addEventListener("load", () => {
 
 <center>
 <!-- Endroit pour dessiner la fréquentation -->
-<div id="contenant1" class="mb-3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-<canvas id="myCanvas1" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+<div class="mb-3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas1" width="900" height="480" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
 </div>
@@ -79,8 +89,8 @@ Votre navigateur ne supporte pas les canvas.
 
 <center>
 <!-- Endroit pour dessiner les résolutions d'exercices -->
-<div id="contenant2" class="mb-3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-<canvas id="myCanvas2" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+<div class="mb-3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas2" width="900" height="480" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
 </div>
@@ -92,8 +102,8 @@ Votre navigateur ne supporte pas les canvas.
 
 <center>
 <!-- Endroit pour dessiner les soumissions aux problèmes -->
-<div id="contenant3" class="mb-3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-<canvas id="myCanvas3" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+<div class="mb-3" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas3" width="900" height="480" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
 </div>
@@ -105,8 +115,8 @@ Votre navigateur ne supporte pas les canvas.
 
 <center>
 <!-- Endroit pour dessiner les temps de correction -->
-<div id="contenant4" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-<canvas id="myCanvas4" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+<div style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+<canvas id="myCanvas4" width="900" height="480" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
 </div>
@@ -194,27 +204,28 @@ Votre navigateur ne supporte pas les canvas.
   }
   
   function drawGraph(n, batonnets) {
-    //Check light or dark theme
+    // Check light or dark theme
     var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
     var abs_int = graphique[n][0];
     var abs = graphique[n][1];
     var val = graphique[n][2];
     var namec = graphique[n][3];
-    var namecont = graphique[n][4];
-    var couleur = graphique[n][5];
-    var c = $(namec);
-    var ctx = c.get(0).getContext('2d');
-    var container = $(c).parent();
-    c.attr('width', $(container).width() ); //max width
-    c.attr('height', 480*$(container).width()/900.0); //max height
-    document.getElementById(namecont).style.height = 480*$(container).width()/900.0 + "px"
-      
-    //Redraw & reposition content
-    var x = c.width();
-    var y = c.height();
+    var couleur = graphique[n][4];
+    
+    // Get the canvas & context
+    var c = document.getElementById(namec);
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    c.setAttribute('width', container.offsetWidth); //max width
+    c.setAttribute('height', 480*container.offsetWidth/900.0); //max height
 
-    var pct = c.width()/900.0;
+    container.style.height = 480*container.offsetWidth/900.0 + "px"
+
+    // Draw content
+
+    var pct = c.offsetWidth/900.0;
 
     ctx.beginPath();
     ctx.rect(pct*50, pct*5, pct*806, pct*450);
@@ -341,21 +352,21 @@ Votre navigateur ne supporte pas les canvas.
   }
   
   function showXY(n, x, y, batonnets) {
-    //Check light or dark theme
+    // Check light or dark theme
     var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
     var abs_int = graphique[n][0];
     var abs = graphique[n][1];
     var val = graphique[n][2];
     var namec = graphique[n][3];
-    var namecont = graphique[n][4];
-    var couleur = graphique[n][5];
+    var couleur = graphique[n][4];
     
-    var c = $(namec);
-    var canvas = c.get(0)
-    var ctx = canvas.getContext('2d');
+    // Get the canvas & context
+    var c = document.getElementById(namec);
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
     
-    var pct = c.width()/900.0;
+    var pct = c.offsetWidth/900.0;
     
     computeIndicesAndMaxValue(n);
     
@@ -435,12 +446,11 @@ Votre navigateur ne supporte pas les canvas.
   }
   
   function listen(n, batonnets) {
-    var c = $(graphique[n][3]);
-    var canvas = c.get(0);
+    var c = document.getElementById(graphique[n][3]);
     
-    canvas.addEventListener("mousemove", function(evt){
-      var pct = c.width()/900.0;
-      var rect = canvas.getBoundingClientRect();
+    c.addEventListener("mousemove", (evt) => {
+      var pct = c.offsetWidth/900.0;
+      var rect = c.getBoundingClientRect();
       var mouseX = evt.clientX - rect.left;
       var mouseY = evt.clientY - rect.top;
       if(mouseX >= 50*pct && mouseX <= 856*pct && mouseY >= 5*pct && mouseY <= 455*pct) {
@@ -451,7 +461,7 @@ Votre navigateur ne supporte pas les canvas.
         drawGraph(n, batonnets);
       }
     });
-    canvas.addEventListener("mouseleave", function(){
+    c.addEventListener("mouseleave", () => {
       drawGraph(n, batonnets);
     });
   }
@@ -490,7 +500,7 @@ Votre navigateur ne supporte pas les canvas.
     xxx = <%= ruby_to_javascript_string(xx) %>;
     yyy = <%= ruby_to_javascript(yy) %>;
     
-    graphique[0] = [xxx_int, xxx, yyy, '#myCanvas1', 'contenant1', 'orange'];
+    graphique[0] = [xxx_int, xxx, yyy, 'myCanvas1', 'orange'];
     
     <% xx_int = Array.new %>
     <% xx = Array.new %>
@@ -513,13 +523,13 @@ Votre navigateur ne supporte pas les canvas.
     xxx = <%= ruby_to_javascript_string(xx) %>;
     yyy = <%= ruby_to_javascript(yy) %>;
     
-    graphique[1] = [xxx_int, xxx, yyy, '#myCanvas2', 'contenant2', 'blue'];
+    graphique[1] = [xxx_int, xxx, yyy, 'myCanvas2', 'blue'];
       
     yyy = <%= ruby_to_javascript(yy2) %>;
-    graphique[2] = [xxx_int, xxx, yyy, '#myCanvas3', 'contenant3', 'red'];
+    graphique[2] = [xxx_int, xxx, yyy, 'myCanvas3', 'red'];
       
     yyy = <%= ruby_to_javascript(yy3) %>;
-    graphique[3] = [xxx_int, xxx, yyy, '#myCanvas4', 'contenant4', 'green'];
+    graphique[3] = [xxx_int, xxx, yyy, 'myCanvas4', 'green'];
   <% end %>
   
   function respondCanvas(){
@@ -540,12 +550,6 @@ Votre navigateur ne supporte pas les canvas.
     <% end %>
   }
   
-  // Initial call
-  window.addEventListener("load", () => {
-    listen_all();
-    respondCanvas();
-  });
-  
   // Run function when browser resize or theme changes
   window.addEventListener("resize", () => {
     respondCanvas();
@@ -554,6 +558,9 @@ Votre navigateur ne supporte pas les canvas.
   window.addEventListener("theme-change", () => {
     respondCanvas();
   });
+  
+  listen_all();
+  respondCanvas();
   
 </script>
 

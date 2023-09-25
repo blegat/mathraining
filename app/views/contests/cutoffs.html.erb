@@ -43,7 +43,7 @@
 
 <!-- Endroit pour dessiner le graphique des scores -->
 <div id="contenant" class="mt-3" style="width:100%; max-width:900px; height:280px; position:relative; display:block;">
-<canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top: 0px;">
+<canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
 </div>
@@ -51,32 +51,87 @@ Votre navigateur ne supporte pas les canvas.
 </center>
 
 
+<center>
+<form id="cutoff_form" action="/contests/<%= @contest.id %>/define_cutoffs" class="mt-3">
+<table style="width:440px;">
+<tr>
+<td style="width:200px;"></td>
+<th class="text-center" style="width:80px;"><label for="bronze_cutoff">Bronze</label></th>
+<th class="text-center" style="width:80px;"><label for="silver_cutoff">Argent</label></th>
+<th class="text-center" style="width:80px;"><label for="gold_cutoff">Or</label></th>
+</tr>
+
+<tr>
+<th class="p-2">Seuil choisi</th>
+<td class="px-1 text-center">
+<div class="form-group">
+  <input class="form-control" style="width:70px;" type="number" name="bronze_cutoff" id="bronze_cutoff" value="<%= min_bronze %>" onchange="respondCanvas()" />
+</div>
+</td>
+<td class="px-1 text-center">
+<div class="form-group">
+  <input class="form-control" style="width:70px;" type="number" name="silver_cutoff" id="silver_cutoff" value="<%= min_silver %>" onchange="respondCanvas()" />
+</div>
+</td>
+<td class="px-1 text-center">
+<div class="form-group">
+  <input class="form-control" style="width:70px;" type="number" name="gold_cutoff" id="gold_cutoff" value="<%= min_gold %>" onchange="respondCanvas()" />
+</div>
+</td>
+</tr>
+
+<tr>
+<th class="p-2">Nombre idéal avec au moins cette médaille</th>
+<td class="text-center fs-5"><%= ("%.2f" % ideal_num_gold_silver_bronze) %></td>
+<td class="text-center fs-5"><%= ("%.2f" % ideal_num_gold_silver) %></td>
+<td class="text-center fs-5"><%= ("%.2f" % ideal_num_gold) %></td>
+</tr>
+
+<tr>
+<th class="p-2">Nombre choisi avec au moins cette médaille</th>
+<td class="text-center fs-5"><span id="real_num_gold_silver_bronze">?</span></td>
+<td class="text-center fs-5"><span id="real_num_gold_silver">?</span></td>
+<td class="text-center fs-5"><span id="real_num_gold">?</span></td>
+</tr>
+
+<tr>
+<th class="p-2">Différence</th>
+<td class="text-center fs-6"><span id="diff_gold_silver_bronze">?</span></td>
+<td class="text-center fs-6"><span id="diff_gold_silver">?</span></td>
+<td class="text-center fs-6"><span id="diff_gold">?</span></td>
+</tr>
+</table>
+
+<input type="submit" name="commit" value="Distribuer les médailles" class="btn btn-primary mt-2" onclick="return confirm('Êtes vous sûr de vouloir choisir ces seuils ? Les médailles vont être publiées.')" />
+</form>
+</center>
+
 
 <script type="text/javascript">
   function respondCanvas(){
+  // Check light or dark theme
+  var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
   
-  //Get the canvas & context
-  var c = $('#myCanvas');
-  var ctx = c.get(0).getContext('2d');
-  var container = $(c).parent();
+  // Get the canvas & context
+  var c = document.getElementById('myCanvas');
+  var ctx = c.getContext('2d');
+  var container = c.parentElement;
   
-  c.attr('width', $(container).width() ); //max width
-  c.attr('height', 280*$(container).width()/900.0); //max height
+  c.setAttribute('width', container.offsetWidth); //max width
+  c.setAttribute('height', 280*container.offsetWidth/900.0); //max height
 
-  document.getElementById('contenant').style.height = 280*$(container).width()/900.0 + "px"
+  container.style.height = 280*container.offsetWidth/900.0 + "px"
 
-  //Redraw & reposition content
-  var x = c.width();
-  var y = c.height();
+  // Draw content
 
-  var pct = c.width()/900.0;
+  var pct = c.offsetWidth/900.0;
   
   ctx.beginPath();
   ctx.rect(pct*50, pct*5, pct*806, pct*250);
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
   ctx.fill();
   ctx.lineWidth = 1;
-  ctx.strokeStyle = 'black';
+  ctx.strokeStyle = (is_dark ? 'white' : 'black');
   ctx.stroke();
   
   var gold_cutoff = document.getElementById('gold_cutoff').value;
@@ -159,67 +214,14 @@ Votre navigateur ne supporte pas les canvas.
   <% end %>
   }
 
-  window.addEventListener("load", () => {
-    respondCanvas();
-  });
-
   window.addEventListener("resize", () => {
     respondCanvas();
   });
+
+  window.addEventListener("theme-change", () => {
+    respondCanvas();
+  });
+  
+  respondCanvas();
   
 </script>
-
-<center>
-<form id="cutoff_form" action="/contests/<%= @contest.id %>/define_cutoffs" class="mt-3">
-<table style="width:440px;">
-<tr>
-<td style="width:200px;"></td>
-<th class="text-center" style="width:80px;"><label for="bronze_cutoff">Bronze</label></th>
-<th class="text-center" style="width:80px;"><label for="silver_cutoff">Argent</label></th>
-<th class="text-center" style="width:80px;"><label for="gold_cutoff">Or</label></th>
-</tr>
-
-<tr>
-<th class="p-2">Seuil choisi</th>
-<td class="px-1 text-center">
-<div class="form-group">
-  <input class="form-control" style="width:70px;" type="number" name="bronze_cutoff" id="bronze_cutoff" value="<%= min_bronze %>" onchange="respondCanvas()" />
-</div>
-</td>
-<td class="px-1 text-center">
-<div class="form-group">
-  <input class="form-control" style="width:70px;" type="number" name="silver_cutoff" id="silver_cutoff" value="<%= min_silver %>" onchange="respondCanvas()" />
-</div>
-</td>
-<td class="px-1 text-center">
-<div class="form-group">
-  <input class="form-control" style="width:70px;" type="number" name="gold_cutoff" id="gold_cutoff" value="<%= min_gold %>" onchange="respondCanvas()" />
-</div>
-</td>
-</tr>
-
-<tr>
-<th class="p-2">Nombre idéal avec au moins cette médaille</th>
-<td class="text-center fs-5"><%= ("%.2f" % ideal_num_gold_silver_bronze) %></td>
-<td class="text-center fs-5"><%= ("%.2f" % ideal_num_gold_silver) %></td>
-<td class="text-center fs-5"><%= ("%.2f" % ideal_num_gold) %></td>
-</tr>
-
-<tr>
-<th class="p-2">Nombre choisi avec au moins cette médaille</th>
-<td class="text-center fs-5"><span id="real_num_gold_silver_bronze">?</span></td>
-<td class="text-center fs-5"><span id="real_num_gold_silver">?</span></td>
-<td class="text-center fs-5"><span id="real_num_gold">?</span></td>
-</tr>
-
-<tr>
-<th class="p-2">Différence</th>
-<td class="text-center fs-6"><span id="diff_gold_silver_bronze">?</span></td>
-<td class="text-center fs-6"><span id="diff_gold_silver">?</span></td>
-<td class="text-center fs-6"><span id="diff_gold">?</span></td>
-</tr>
-</table>
-
-<input type="submit" name="commit" value="Distribuer les médailles" class="btn btn-primary mt-2" onclick="return confirm('Êtes vous sûr de vouloir choisir ces seuils ? Les médailles vont être publiées.')" />
-</form>
-</center>

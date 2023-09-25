@@ -4,7 +4,12 @@
 <script type="text/javascript">
 
 var scrollHandler = function () {
-  var more_posts_url = $('.pagination a').last().attr('href')
+  var paginations = document.getElementsByClassName("pagination")
+  if (paginations.length == 0) return;
+  var pagination = paginations[paginations.length-1]
+  var links = pagination.getElementsByTagName("a")
+  if (links.length == 0) return;
+  var more_posts_url = links[links.length-1].getAttribute("href")
   
   if (more_posts_url != undefined)
   {  
@@ -19,8 +24,8 @@ var scrollHandler = function () {
     
     if(more_posts_url.length > 0 && $(window).scrollTop() + $(window).height() > $(document).height() - 20 - compenser)
     {
-      $('.toreplace').html('<br/>Chargement des messages anciens...')
-      $.getScript(more_posts_url + "?nonread=<%= params[:nonread] %>")
+      $('#infinite-scrolling').html('<br/>Chargement des messages anciens...')
+      $.getScript(more_posts_url)
     }
   }
 }
@@ -73,8 +78,9 @@ window.addEventListener("load", () => {
 
           <div class="mb-2">
             <%= render 'shared/preview' %>
-            <%= render 'shared/smiley', hiddentext: false %>
+            <%= render 'shared/smiley' %>
             <textarea name="content" maxlength="8000" class="form-control" style="height:120px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+            <script>initAndUpdatePreviewSafeWhenPossible()</script>
           </div>
 
           <%= render 'shared/edit_files' %>
@@ -93,7 +99,7 @@ window.addEventListener("load", () => {
         <%= render @tchatmessages %>
       </div>
 
-      <div id="infinite-scrolling" class="toreplace text-center">
+      <div id="infinite-scrolling" class="text-center">
         <div style="display:none;">
         <center>
         <%= will_paginate @tchatmessages %>

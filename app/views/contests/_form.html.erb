@@ -8,8 +8,9 @@
 <div class="mb-2">
   <%= f.label :description, :class => "form-label" %>
   <%= render 'shared/preview' %>
-  <%= render 'shared/smiley', hiddentext: false %>
+  <%= render 'shared/smiley' %>
   <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+  <script>initAndUpdatePreviewSafeWhenPossible()</script>
 </div>
 
 <div class="form-check mb-2">

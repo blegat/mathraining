@@ -37,10 +37,6 @@
 </div>
 
 <% if !session["ancientexte"].nil? %>
-  <script>
-    window.addEventListener("load", () => {
-      Rolling.develop_quick("");
-    });
-  </script>
+  <script>rollingDevelopQuickWhenPossible("")</script>
   <% session.delete("ancientexte") %>
 <% end %>

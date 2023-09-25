@@ -287,6 +287,11 @@ function checkProblem() {
   <%= render 'shared/preview', postfix: postfix %>
   <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
   <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
+  <% if is_edit %>
+    <!-- Do not call initAndUpdatePreviewSafeWhenPossible(): it will be done only after rolling to show the form -->
+  <% else %>
+    <script>initAndUpdatePreviewSafeWhenPossible(false, true)</script>
+  <% end %>
 </div>
 
 <!-- Case correcteurs -->
@@ -364,11 +369,7 @@ function checkProblem() {
 
 <% if !session["errorSubject"].nil? %>
   <% if is_edit %>
-    <script>
-      window.addEventListener("load", () => {
-        Rolling.develop_quick("<%= postfix %>");
-      });
-    </script>
+    <script>rollingDevelopQuickWhenPossible("<%= postfix %>", true)</script>
   <% end %>
   <% session.delete("errorSubject") %>
   <% session.delete("oldAll") %>
@@ -376,11 +377,7 @@ function checkProblem() {
 
 <% if !session["successSubject"].nil? %>
   <% if is_edit %>
-    <script>
-      window.addEventListener("load", () => {
-        Rolling.showus("<%= postfix %>");
-      });
-    </script>
+    <script>rollingShowusWhenPossible("<%= postfix %>")</script>
   <% end %>
   <% session.delete("successSubject") %>
 <% end %>

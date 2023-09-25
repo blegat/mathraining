@@ -13,9 +13,5 @@
 <% end %>
 
 <% if !params[:message].nil? && (params[:message].to_i == m.id) %>
-  <script>
-    window.addEventListener("load", () => {
-      Rolling.showus("<%= postfix %>");
-    });
-  </script>
+  <script>rollingShowusWhenPossible("<%= postfix %>")</script>
 <% end %>

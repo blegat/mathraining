@@ -96,7 +96,7 @@
 
 <!-- Endroit pour dessiner le graphique des soumissions en attente -->
 <div id="contenant" class="mt-3 mb-2" style="width:100%; max-width:900px; height:280px; position:relative; display:block;">
-<canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top: 0px;">
+<canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
 </div>
@@ -106,24 +106,22 @@ Votre navigateur ne supporte pas les canvas.
 
 <script type="text/javascript">
   function respondCanvas() {
-    //Check light or dark theme
+    // Check light or dark theme
     var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
-    //Get the canvas & context
-    var c = $('#myCanvas');
-    var ctx = c.get(0).getContext('2d');
-    var container = $(c).parent();
+    // Get the canvas & context
+    var c = document.getElementById('myCanvas');
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    c.setAttribute('width', container.offsetWidth); //max width
+    c.setAttribute('height', 280*container.offsetWidth/900.0); //max height
 
-    c.attr('width', $(container).width() ); //max width
-    c.attr('height', 280*$(container).width()/900.0); //max height
+    container.style.height = 280*container.offsetWidth/900.0 + "px"
 
-    document.getElementById('contenant').style.height = 280*$(container).width()/900.0 + "px"
+    // Draw content
 
-    //Redraw & reposition content
-    var x = c.width();
-    var y = c.height();
-
-    var pct = c.width()/900.0;
+    var pct = c.offsetWidth/900.0;
     
     // Rectangle et fond blanc
     ctx.beginPath();
@@ -189,10 +187,6 @@ Votre navigateur ne supporte pas les canvas.
     ctx.stroke() 
   }
 
-  window.addEventListener("load", () => {
-    respondCanvas();
-  });
-
   window.addEventListener("resize", () => {
     respondCanvas();
   });
@@ -200,6 +194,8 @@ Votre navigateur ne supporte pas les canvas.
   window.addEventListener("theme-change", () => {
     respondCanvas();
   });
+  
+  respondCanvas();
 </script>
 
 

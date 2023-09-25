@@ -1,24 +1,24 @@
 <script type="text/javascript">
 
-var delta_between_server_and_local
+var delta_between_server_and_local<%= p_id %>
 
-function ComputeDelta(){
+function computeDelta<%= p_id %>(){
   if (!Date.now) {
     Date.now = function() { return new Date().getTime(); }
   }
-  delta_between_server_and_local = <%= DateTime.now.to_i %> - Math.floor(Date.now() / 1000)
-  if ( Math.abs(delta_between_server_and_local) < 10 ){
-    delta_between_server_and_local = 0
+  delta_between_server_and_local<%= p_id %> = <%= DateTime.now.to_i %> - Math.floor(Date.now() / 1000)
+  if ( Math.abs(delta_between_server_and_local<%= p_id %>) < 10 ){
+    delta_between_server_and_local<%= p_id %> = 0
   }
 }
 
-function RemainingTime<%= p_id %>(){
+function remainingTime<%= p_id %>(){
 
 if (!Date.now) {
-    Date.now = function() { return new Date().getTime(); }
+  Date.now = function() { return new Date().getTime(); }
 }
 
-var d = Math.floor(Date.now() / 1000) + delta_between_server_and_local
+var d = Math.floor(Date.now() / 1000) + delta_between_server_and_local<%= p_id %>
 
 var reste = <%= date_limit %> - d
 
@@ -29,7 +29,7 @@ else {
   var restej = Math.floor(reste / 86400)
   var actualize = false
   
-  if(restej > 1)
+  if (restej > 1)
   {
     text = restej + " jours"
   }
@@ -58,11 +58,10 @@ else {
 
 }
 
-window.addEventListener("load",function(){
-  ComputeDelta();
-  if(RemainingTime<%= p_id %>())
-  {
-    setInterval(RemainingTime<%= p_id %>,1000);
-  }
-},false);
+computeDelta<%= p_id %>();
+
+if(remainingTime<%= p_id %>())
+{
+  setInterval(remainingTime<%= p_id %>, 1000);
+}
 </script>

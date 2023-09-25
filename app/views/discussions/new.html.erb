@@ -40,23 +40,14 @@ var showAllUsers = function () {
         <%= select_tag :destinataire, options_for_select(users.collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-select select2 p-1 ps-2", :style => "width:300px;" %>        
       </div>
       
-      <script>
-        window.addEventListener("load", () => {
-          $('.select2').select2({
-            theme: "bootstrap-5",
-            language: "fr",
-            width: "300",
-            containerCssClass: 'select2--small',
-            dropdownCssClass: 'select2--small',
-          });
-        });
-      </script>
+      <script>initializeSelect2WhenPossible()</script>
 
       <div class="mb-2">
         <%= f.label :message, :class => "form-label" %>
         <%= render 'shared/preview' %>
-        <%= render 'shared/smiley', hiddentext: false %>
+        <%= render 'shared/smiley' %>
         <textarea name="content" maxlength="8000" class="form-control" style="height:120px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+        <script>initAndUpdatePreviewSafeWhenPossible()</script>
       </div>
       
       <%= render 'shared/edit_files' %>

@@ -208,11 +208,11 @@
         <% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => t.id).first.taken_time %>
         <% depart = initial.to_i %>
         <% @virtualtest = t %>
-        <%= render 'contests/clock', date_limit: depart + 60*@virtualtest.duration, message_zero: "Temps écoulé", p_id: 0 %>
         
         <div class="row content">
         <div class="module bottom-part">
         <span style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></span>
+        <%= render 'contests/clock', date_limit: depart + 60*@virtualtest.duration, message_zero: "Temps écoulé", p_id: 0 %>
         </div>
         </div>
       <% end %>

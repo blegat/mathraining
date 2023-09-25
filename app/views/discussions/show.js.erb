@@ -1,8 +1,8 @@
 $('#all-messages').append('<%= j render @tchatmessages %>');
 <% if @tchatmessages.next_page %>
-  $('.toreplace').html('<div style="display:none;"><%= j will_paginate @tchatmessages %></div>');
+  $('#infinite-scrolling').html('<div style="display:none;"><%= j will_paginate @tchatmessages %></div>');
 <% else %>
-  $('.pagination').remove();
+  $('#infinite-scrolling').remove();
   $('.toreplace').remove();
 <% end %>
 MathJax.Hub.Typeset()

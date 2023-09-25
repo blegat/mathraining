@@ -17,6 +17,8 @@ import "custom/tainsert"
 
 // NB: Import of springy and springyui is done only in graph_prerequisites.html.erb
 
-window.Preview = Preview
-window.PreviewSafe = PreviewSafe
-window.Rolling = Rolling
+window.Preview = Preview;
+window.PreviewSafe = PreviewSafe;
+window.Rolling = Rolling;
+
+window.dispatchEvent(new CustomEvent("importmap-scripts-loaded"));

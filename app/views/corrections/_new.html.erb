@@ -2,7 +2,7 @@
 <%= form_for :correction, url: problem_submission_corrections_path(@problem, @submission), :html => { :multipart => true } do |f| %>
   <div class="mb-2">
     <%= render 'shared/preview' %>
-    <%= render 'shared/smiley', hiddentext: false %>
+    <%= render 'shared/smiley' %>
 
     <% @ancientexte = session[:ancientexte] %>
     <% if @ancientexte.nil? %>
@@ -10,6 +10,7 @@
     <% else %>
       <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :value => @ancientexte, :style => "height:200px;", :id=>"MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || @unactivate > 0) %>
     <% end %>
+    <script>initAndUpdatePreviewSafeWhenPossible()</script>
   <% session.delete(:ancientexte) %>
   </div>
   

@@ -14,7 +14,7 @@ var Rolling = {
     return false;
   },
 
-  develop: function(m) {
+  develop: function(m, enableHiddenText=false) {
     this.hideActual();
     this.actual = m;
     $("#the" + m).animate({height:'0px'}, this.rollingTime);
@@ -26,12 +26,15 @@ var Rolling = {
       var yyy = document.getElementById("form" + m).offsetTop - 50;
       body.animate({scrollTop:yyy}, this.rollingTime/2);
       PreviewSafe.Init(m);
+      if (!enableHiddenText) {
+        PreviewSafe.SetHiddenText(false);
+      }
       PreviewSafe.Update();
     });
     return false;
   },
 
-  develop_quick: function(m) {
+  develop_quick: function(m, enableHiddenText=false) {
     this.actual = m;
     $("#the" + m).height(0);
     $("#form" + m).height('auto');
@@ -40,6 +43,9 @@ var Rolling = {
       var yyy = document.getElementById("form" + m).offsetTop - 40;
       body.scrollTop(yyy);
       PreviewSafe.Init(m);
+      if (!enableHiddenText) {
+        PreviewSafe.SetHiddenText(false);
+      }
       PreviewSafe.Update();
     });
   },

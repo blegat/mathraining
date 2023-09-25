@@ -605,8 +605,8 @@
 
     <!-- Endroit pour dessiner l'évolution -->
     <center>
-    <div id="contenant" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-    <canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+    <div style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+    <canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top:0px;">
     Votre navigateur ne supporte pas les canvas.
     </canvas>
     </div>
@@ -639,24 +639,22 @@
     <script type="text/javascript">
 
       function respondCanvas(){
-        //Check light or dark theme
+        // Check light or dark theme
         var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
         // Get the canvas & context
-        var c = $('#myCanvas');
-        var ctx = c.get(0).getContext('2d');
-        var container = $(c).parent();
+        var c = document.getElementById('myCanvas');
+        var ctx = c.getContext('2d');
+        var container = c.parentElement;
         
-        c.attr('width', $(container).width() ); //max width
-        c.attr('height', 480*$(container).width()/900.0); //max height
+        c.setAttribute('width', container.offsetWidth); //max width
+        c.setAttribute('height', 480*container.offsetWidth/900.0); //max height
 
-        document.getElementById('contenant').style.height = 480*$(container).width()/900.0 + "px"
+        container.style.height = 480*container.offsetWidth/900.0 + "px"
 
-        // Redraw & reposition content
-        var x = c.width();
-        var y = c.height();
+        // Draw content
 
-        var pct = c.width()/900.0;
+        var pct = c.offsetWidth/900.0;
 
         <% i = 1 %>
 
@@ -794,10 +792,6 @@
         ctx.stroke();
       }
 
-      window.addEventListener("load", () => {
-        respondCanvas();
-      });
-
       window.addEventListener("resize", () => {
         respondCanvas();
       });
@@ -805,6 +799,8 @@
       window.addEventListener("theme-change", () => {
         respondCanvas();
       });
+      
+      respondCanvas();
     </script>
 
     </div>
@@ -844,8 +840,8 @@
       
       <center>
       <!-- Endroit pour dessiner le graphique des corrections -->
-      <div id="contenantCorr" style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
-      <canvas id="myCanvasCorr" width="900" height="480" style="position:absolute; left:0px; top: 0px;">
+      <div style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+      <canvas id="myCanvasCorr" width="900" height="480" style="position:absolute; left:0px; top:0px;">
       Votre navigateur ne supporte pas les canvas.
       </canvas>
       </div>
@@ -854,24 +850,22 @@
       <script type="text/javascript">
       
         function respondCanvasCorr(){
-          //Check light or dark theme
+          // Check light or dark theme
           var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
-          //Get the canvas & context
-          var c = $('#myCanvasCorr');
-          var ctx = c.get(0).getContext('2d');
-          var container = $(c).parent();
+          // Get the canvas & context
+          var c = document.getElementById('myCanvasCorr');
+          var ctx = c.getContext('2d');
+          var container = c.parentElement;
           
-          c.attr('width', $(container).width() ); //max width
-          c.attr('height', 480*$(container).width()/900.0); //max height
+          c.setAttribute('width', container.offsetWidth); //max width
+          c.setAttribute('height', 480*container.offsetWidth/900.0); //max height
 
-          document.getElementById('contenantCorr').style.height = 480*$(container).width()/900.0 + "px"
+          container.style.height = 480*container.offsetWidth/900.0 + "px"
 
-          //Redraw & reposition content
-          var x = c.width();
-          var y = c.height();
+          // Draw content
 
-          var pct = c.width()/900.0;
+          var pct = c.offsetWidth/900.0;
           
           ctx.beginPath();
           ctx.rect(pct*50, pct*5, pct*806, pct*450);
@@ -945,10 +939,6 @@
           
         }
 
-        window.addEventListener("load", () => {
-          respondCanvasCorr();
-        });
-
         window.addEventListener("resize", () => {
           respondCanvasCorr();
         });
@@ -956,6 +946,8 @@
         window.addEventListener("theme-change", () => {
           respondCanvasCorr();
         });
+        
+        respondCanvasCorr();
       </script>
     <% end %>
     

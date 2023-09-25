@@ -58,26 +58,111 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%= javascript_importmap_tags %>
-    <script>
-      function initAndUpdatePreviewAtLoad() {
-        window.addEventListener("load", () => {
-          Preview.Init();
-          Preview.Update();
+    <script type="text/javascript">
+    
+      function callMethodWhenPossible(method) {
+        method();
+        ["DOMContentLoaded", "load", "importmap-scripts-loaded"].forEach(function(e){
+          window.addEventListener(e, () => {
+            method();
+          });
         });
+      }
+    
+      // To initialize and update Preview when page is loaded and Preview is defined
+      var initAndUpdatePreviewDone = false;
+      
+      function initAndUpdatePreviewIfPossible() {
+        if ("Preview" in window) {
+          if (!initAndUpdatePreviewDone) {
+            initAndUpdatePreviewDone = true;
+            Preview.Init();
+            Preview.Update();
+          }
+        }
+      }
+    
+      function initAndUpdatePreviewWhenPossible() {
+        callMethodWhenPossible(initAndUpdatePreviewIfPossible);
       }
       
-      function initAndUpdatePreviewSafeAtLoad(disableBBCode = false, disableHiddenText = false) {
-        window.addEventListener("load", () => {
-          PreviewSafe.Init();
-          if (disableBBCode) {
-            PreviewSafe.SetBBCode(false);
+      // To initialize and update PreviewSafe when page is loaded and PreviewSafe is defined
+      var initAndUpdatePreviewSafeDone = false;
+      
+      function initAndUpdatePreviewSafeIfPossible(disableBBCode, enableHiddenText) {
+        if ("PreviewSafe" in window) {
+          if (!initAndUpdatePreviewSafeDone) {
+            initAndUpdatePreviewSafeDone = true;
+            PreviewSafe.Init();
+            if (disableBBCode) {
+              PreviewSafe.SetBBCode(false);
+            }
+            if (!enableHiddenText) {
+              PreviewSafe.SetHiddenText(false);
+            }
+            PreviewSafe.Update();
           }
-          if (disableHiddenText) {
-            PreviewSafe.SetHiddenText(false);
-          }
-          PreviewSafe.Update();
-        });
+        }
       }
+      
+      function initAndUpdatePreviewSafeWhenPossible(disableBBCode = false, enableHiddenText = false) {
+        callMethodWhenPossible(() => initAndUpdatePreviewSafeIfPossible(disableBBCode, enableHiddenText));
+      }
+      
+      // To call Rolling.develop_quick when page is loaded and Rolling is defined
+      var rollingDevelopQuickDone = false;
+      
+      function rollingDevelopQuickIfPossible(m, enableHiddenText) {
+        if ("Rolling" in window) {
+          if (!rollingDevelopQuickDone) {
+            rollingDevelopQuickDone = true;
+            Rolling.develop_quick(m, enableHiddenText);
+          }
+        }
+      }
+    
+      function rollingDevelopQuickWhenPossible(m, enableHiddenText = false) {
+        callMethodWhenPossible(() => rollingDevelopQuickIfPossible(m, enableHiddenText));
+      }
+      
+      // To call Rolling.develop_quick when page is loaded and Rolling is defined
+      var rollingShowusDone = false;
+      
+      function rollingShowusIfPossible(m) {
+        if ("Rolling" in window) {
+          if (!rollingShowusDone) {
+            rollingShowusDone = true;
+            Rolling.showus(m);
+          }
+        }
+      }
+    
+      function rollingShowusWhenPossible(m) {
+        callMethodWhenPossible(() => rollingShowusIfPossible(m));
+      }
+      
+      // To initialize select2 when page is loaded and $ (jquery) is defined
+      var select2Initialized = false;
+      
+      function initializeSelect2IfPossible() {
+        if ("$" in window) {
+          if (!select2Initialized) {
+            select2Initialized = true;
+            $('.select2').select2({
+              theme: "bootstrap-5",
+              language: "fr",
+              width: "300",
+              containerCssClass: 'select2--small',
+              dropdownCssClass: 'select2--small',
+            });
+          }
+        }
+      }
+      
+      function initializeSelect2WhenPossible() {
+        callMethodWhenPossible(initializeSelect2IfPossible);
+      }
+      
     </script>
   </head>
   

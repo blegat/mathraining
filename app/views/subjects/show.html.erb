@@ -1,8 +1,5 @@
 <% provide(:title, @subject.title.html_safe) %>
 
-<!-- Do not do PreviewSafe.Init() & PreviewSafe.Update() at page load: it will be done only when "opening" (rolling) the forms -->
-<% @doNotInitPreviewSafeAtLoad = true %>
-
 <% @nb_indice = 1 %>
 
 <% if !@subject.category.nil? %>

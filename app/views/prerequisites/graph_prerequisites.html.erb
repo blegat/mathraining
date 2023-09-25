@@ -124,9 +124,16 @@
     });
   }
   
-  window.addEventListener("load", () => {
-    drawGraph();
-  });
+  var drawGraphDone = false;
+  function drawGraphIfPossible() {
+    if ("$" in window) {
+      if (!drawGraphDone) {
+        drawGraphDone = true;
+        drawGraph();
+      }
+    }
+  }
+  callMethodWhenPossible(drawGraphIfPossible);
 </script>
 
 

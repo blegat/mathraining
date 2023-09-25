@@ -62,17 +62,7 @@
     </div>
   <% end %>
   
-  <script>
-    window.addEventListener("load", () => {
-      $('.select2').select2({
-        theme: "bootstrap-5",
-        language: "fr",
-        width: "300",
-        containerCssClass: 'select2--small',
-        dropdownCssClass: 'select2--small',
-      });
-    });
-  </script>
+  <script>initializeSelect2WhenPossible()</script>
   
 <% end %>
 
@@ -180,10 +170,10 @@
         <% message_before = "Temps restant : " %>
         <% message_zero = "Temps écoulé" %>
       <% end %>
-      <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
       <div class="row content">
       <div class="module bottom-part">
       <center><span class="fs-4"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
+      <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
       </div>
       </div>
     <% end %>
@@ -335,7 +325,7 @@
 
   <!-- Endroit pour dessiner le graphique des scores -->
   <div id="contenant" class="mt-3" style="width:100%; max-width:900px; height:280px; position:relative; display:block;">
-  <canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top: 0px;">
+  <canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top:0px;">
   Votre navigateur ne supporte pas les canvas.
   </canvas>
   </div>
@@ -345,24 +335,22 @@
 
   <script type="text/javascript">
     function respondCanvas(){
-      //Check light or dark theme
+      // Check light or dark theme
       var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
-      //Get the canvas & context
-      var c = $('#myCanvas');
-      var ctx = c.get(0).getContext('2d');
-      var container = $(c).parent();
+      // Get the canvas & context
+      var c = document.getElementById('myCanvas');
+      var ctx = c.getContext('2d');
+      var container = c.parentElement;
       
-      c.attr('width', $(container).width() ); //max width
-      c.attr('height', 280*$(container).width()/900.0); //max height
+      c.setAttribute('width', container.offsetWidth); //max width
+      c.setAttribute('height', 280*container.offsetWidth/900.0); //max height
 
-      document.getElementById('contenant').style.height = 280*$(container).width()/900.0 + "px"
+      container.style.height = 280*container.offsetWidth/900.0 + "px"
 
-      //Redraw & reposition content
-      var x = c.width();
-      var y = c.height();
+      // Draw content
 
-      var pct = c.width()/900.0;
+      var pct = c.offsetWidth/900.0;
       
       ctx.beginPath();
       ctx.rect(pct*50, pct*5, pct*806, pct*250);
@@ -414,10 +402,6 @@
       <% end %>
     }
 
-    window.addEventListener("load", () => {
-      respondCanvas();
-    });
-
     window.addEventListener("resize", () => {
       respondCanvas();
     });
@@ -425,6 +409,8 @@
     window.addEventListener("theme-change", () => {
       respondCanvas();
     });
+    
+    respondCanvas();
   </script>
   
   <h3>Scores par problème</h3>

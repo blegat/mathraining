@@ -4,6 +4,10 @@
   <% postfix = "" %>
 <% end %>
 
+<% if !(defined? hiddentext) %>
+  <% hiddentext = false %>
+<% end %>
+
 <div class="smiley">
 <a href="#!" is='insert-onclick' data-insert-left='[b]' data-insert-right='[/b]' data-postfix='<%= postfix %>'><%= image_tag "bold.svg", :class => "svg-black-white", :title => "Gras" %></a>
 <a href="#!" is='insert-onclick' data-insert-left='[i]' data-insert-right='[/i]' data-postfix='<%= postfix %>'><%= image_tag "italic.svg", :class => "svg-black-white ms-1", :title => "Italique" %></a>
@@ -34,9 +38,3 @@
 </div>
 
 </div>
-
-<% unless defined?(@doNotInitPreviewSafeAtLoad) %>
-<script>
-initAndUpdatePreviewSafeAtLoad(false<%= ", true" unless hiddentext %>);
-</script>
-<% end %>

@@ -12,4 +12,5 @@
   <%= render 'shared/preview' %>
   <%= render 'shared/font' %>
   <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  <script>initAndUpdatePreviewWhenPossible()</script>
 </div>
