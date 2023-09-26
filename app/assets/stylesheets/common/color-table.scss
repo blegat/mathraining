@@ -171,6 +171,28 @@
 
 
 [data-bs-theme="light"] {
+  .table-ld-secondary {
+    --bs-table-color: #000;
+    --bs-table-bg: #e2e3e5;
+    --bs-table-border-color: #cbccce;
+    color: var(--bs-table-color);
+    border-color: var(--bs-table-border-color);
+  }
+}
+
+[data-bs-theme="dark"] {
+  .table-ld-secondary {
+    --bs-table-color: #fff;
+    --bs-table-bg: #444444;
+    --bs-table-border-color: #555555;
+    color: var(--bs-table-color);
+    border-color: var(--bs-table-border-color);
+  }
+}
+
+
+
+[data-bs-theme="light"] {
   .table-ld-danger {
     --bs-table-color: #000;
     --bs-table-bg: #f8d7da;
@@ -211,16 +233,16 @@
 [data-bs-theme="dark"] {
   .table-ld-warning {
     --bs-table-color: #fff;
-    --bs-table-bg: #5b4500;
-    --bs-table-border-color: #5f5914;
+    --bs-table-bg: #453400;
+    --bs-table-border-color: #594814;
     color: var(--bs-table-color);
     border-color: var(--bs-table-border-color);
   }
   
   .bg-as-table-ld-warning {
     color: #fff;
-    background-color: #5b4500;
-    border: 1px solid #5f5914;
+    background-color: #453400;
+    border: 1px solid #594814;
   }
 }
 
@@ -245,16 +267,16 @@
 [data-bs-theme="dark"] {
   .table-ld-warning-greener {
     --bs-table-color: #fff;
-    --bs-table-bg: #5b5900;
-    --bs-table-border-color: #5f5914;
+    --bs-table-bg: #455400;
+    --bs-table-border-color: #594814;
     color: var(--bs-table-color);
     border-color: var(--bs-table-border-color);
   }
   
   .bg-as-table-ld-warning-greener {
     color: #fff;
-    background-color: #5b5900;
-    border: 1px solid #5f5914;
+    background-color: #455400;
+    border: 1px solid #594814;
   }
 }
 
@@ -279,16 +301,16 @@
 [data-bs-theme="dark"] {
   .table-ld-warning-reder {
     --bs-table-color: #fff;
-    --bs-table-bg: #6f4500;
-    --bs-table-border-color: #5f5914;
+    --bs-table-bg: #653400;
+    --bs-table-border-color: #594814;
     color: var(--bs-table-color);
     border-color: var(--bs-table-border-color);
   }
   
   .bg-as-table-ld-warning-reder {
     color: #fff;
-    background-color: #6f4500;
-    border: 1px solid #5f5914;
+    background-color: #653400;
+    border: 1px solid #594814;
   }
 }
 
@@ -329,8 +351,8 @@
 [data-bs-theme="dark"] {
   .table-ld-info {
     --bs-table-color: #fff;
-    --bs-table-bg: #065263;
-    --bs-table-border-color: #1a6677;
+    --bs-table-bg: #054856;
+    --bs-table-border-color: #195c6a;
     color: var(--bs-table-color);
     border-color: var(--bs-table-border-color);
   }

@@ -7,6 +7,6 @@ table.fixed-scroll thead tr {
 table.fixed-scroll tbody {
   display: block;
   max-height: 440px;
-  overflow-y: scroll;
+  overflow-y: auto;
   width: 100%;
 }

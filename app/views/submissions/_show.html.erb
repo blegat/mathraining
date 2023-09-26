@@ -194,7 +194,7 @@ var hideStatement = function () {
 
 <!-- Supprimer la soumission : pas possible si correcte -->
 <% if current_user.sk.root? && !@submission.correct? && !@submission.draft? %>
-  <p class="mt-2 text-center">
+  <p class="text-center">
   <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette soumission ? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :class => "text-color-red" %>
   </p>
 <% end %>

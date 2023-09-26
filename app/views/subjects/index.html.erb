@@ -80,7 +80,8 @@
 </center>
 
 <% if @subjects.size + @importants.size == 0 %>
-  <p class="fw-bold">Aucun sujet.<p>
+  <!-- In a table to be sure it takes 100% without overlap with the select -->
+  <table class="mb-3" style="width:100%;"><tr><td class="fw-bold">Aucun sujet.</td></tr></table>
 <% end %>
 
 

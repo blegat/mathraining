@@ -42,7 +42,7 @@
         <% else %>
           <%= link_to "0", allmynewsub_path, class: "btn btn-ld-light-dark-er" %>
         <% end %>
-        
+
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
         <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
           <%= link_to "#{num_waiting_starproposals}", starproposals_path, class: "btn btn-yellow" %>
@@ -58,7 +58,7 @@
       <% if @signed_in && !current_user.sk.admin? %>
         <% noti = current_user.sk.notifs.count %>
         <% if noti != 0 %>
-          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info #{ 'ms-3' if current_user.sk.corrector? }" %>
+          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info #{ 'ms-2' if current_user.sk.corrector? }" %>
         <% end %>
       <% end %>
       
@@ -114,7 +114,14 @@
         <% if @signed_in %>
           <% num_unseen_subjects = current_user.sk.num_unseen_subjects(false) %>
           
-          <li class="nav-item me-1 <%= 'fw-bold' if num_unseen_subjects > 0 %>"><%= link_to "Forum#{' (' + num_unseen_subjects.to_s + ')' if num_unseen_subjects > 0 }", subjects_path, :class => "nav-link" %></li>
+          <li class="nav-item me-1">
+          <%= link_to subjects_path, :class => "nav-link #{'fw-bold' if num_unseen_subjects > 0 }" do %>
+            Forum
+            <% if num_unseen_subjects > 0 %>
+              (<%= num_unseen_subjects %>)
+            <% end %>
+          <% end %>
+          </li>
         <% end %>
 
         <!-- Statistiques -->
@@ -138,17 +145,15 @@
         <% if @signed_in %>
 
           <% nonlu = current_user.sk.links.where("nonread != 0").count %>
-          
-          <li class="nav-item me-1 <%= 'fw-bold' if nonlu > 0 %>"><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "nav-link" %></li>
 
           <li class="nav-item dropdown">
 
           <!-- Nom -->
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+          <a class="nav-link dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <% if current_user.other %>
-              [<%= raw(current_user.sk.colored_name(1)) %>]
+              [<%= raw(current_user.sk.colored_name(1)) %> <%= '(' + nonlu.to_s + ')' if nonlu > 0 %>]
             <% else %>
-              <%= raw(current_user.sk.colored_name(1)) %>
+              <%= raw(current_user.sk.colored_name(1)) %> <%= '(' + nonlu.to_s + ')' if nonlu > 0 %>
             <% end %>
           </a>
 
@@ -161,6 +166,7 @@
             <% if @signed_in && (current_user.sk.admin || current_user.sk.group != "") %>
               <li><%= link_to "Groupes Wépion", groups_path, :class => "dropdown-item" %></li>
             <% end %>
+            <li><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "dropdown-item" %></li>
             <% if current_user.sk.root? %>
               <li class="dropdown-divider"></li>
               <li><%= link_to "Pièces jointes", myfiles_path, :class => "dropdown-item" %></li>
@@ -181,13 +187,13 @@
 
             <!-- Formulaire pour se connecter -->
             <ul class="dropdown-menu dropdown-menu-end">
-              <li class="p-3 pb-1 pt-3">
+              <li class="p-3 pb-1">
               <%= form_for(:session, url: sessions_path(redirection: request.original_fullpath)) do |f| %>
                 <%= f.email_field :email, :placeholder => "Adresse e-mail", :class => "form-control", :style => "width:210px;", :id => "header_connect_email" %>
 
-                <%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control mt-2", :style => " width:210px;", :id => "header_connect_password" %>
+                <%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control mt-2 mb-1", :style => " width:210px;", :id => "header_connect_password" %>
 
-                <div class="form-check mt-2">
+                <div class="form-check mt-2 mb-0">
                   <label class="form-check-label">
                     <%= f.check_box :remember_me, :id => "header_connect_remember", :class => "form-check-input" %>
                     Garder ma session active
