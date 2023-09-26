@@ -85,49 +85,46 @@
       </td></tr>
       
       <tr><td class="real-content">
-      
-      <% if num_drafts > 0 %>
-        <div class="intro">
-        <i>(Vous avez un brouillon enregistré pour ce problème.)</i>
-        </div>
-      <% end %>
 
-      <!-- Enoncé -->
-      <div class="row content">
-      <div class="module left-part">
-      <center><h5>Énoncé</h5></center>
-      <%= raw(htmlise(p.statement)) %>
-      </div>
-      
-      <div class="module right-part">
-      <center><h5>Statistiques</h5></center>
-      <center>
-      <% nb_sol = p.nb_solves %>
-      <% if nb_sol >= 1 %>
-        Résolu par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
-        entre le <b><%= write_date_only(p.first_solve_time) %></b><br/>
-        et le <b><%= write_date_only(p.last_solve_time) %></b>
-      <% else %>
-        <i>Jamais résolu</i>
-      <% end %>
-      </center>
-      </div>
-      </div>
-
-      <!-- Origine si administrateur ou si résolu -->
-      <% if (current_user.sk.admin? || num_correct_sub > 0) && !p.origin.nil? && p.origin.size > 0 %>
-        <div class="row content">
-        <div class="module bottom-part">
-        Origine du problème : <b><%= p.origin %></b>
+      <div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
+        <% if num_drafts > 0 %>
+          <div class="g-col-12 g-col-md-24 intro">
+            <i>(Vous avez un brouillon enregistré pour ce problème.)</i>
+          </div>
+        <% end %>
+        
+        <div class="g-col-12 g-col-md-15 g-col-lg-16 g-col-xl-17 module left-part">
+          <center><h5>Énoncé</h5></center>
+          <%= raw(htmlise(p.statement)) %>
         </div>
+        
+        <div class="g-col-12 g-col-md-9 g-col-lg-8 g-col-xl-7 module right-part">
+          <center><h5>Statistiques</h5></center>
+          <center>
+          <% nb_sol = p.nb_solves %>
+          <% if nb_sol >= 1 %>
+            Résolu par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
+            entre le <b><%= write_date_only(p.first_solve_time) %></b><br/>
+            et le <b><%= write_date_only(p.last_solve_time) %></b>
+          <% else %>
+            <i>Jamais résolu</i>
+          <% end %>
+          </center>
         </div>
-      <% end %>
 
+        <!-- Origine si administrateur ou si résolu -->
+        <% if (current_user.sk.admin? || num_correct_sub > 0) && !p.origin.nil? && p.origin.size > 0 %>
+          <div class="g-col-12 g-col-md-24 module bottom-part">
+            Origine du problème : <b><%= p.origin %></b>
+          </div>
+        <% end %>
+      </div>
       </td></tr>
       </table> 
     <% end %>
   <% end %>
 <% end %>
+
 
 
 <!-- Ajouter un problème -->

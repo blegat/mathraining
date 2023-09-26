@@ -21,30 +21,32 @@
 
 <div class="home">
 
-	<div class="row">
-  <div class="col-md-7 col-sm-12 col-xs-12">
-  <center>
-  <%= image_tag "mathraining.png", :class => "light-theme-only", :style => "width:100%; max-width:334px;" %>
-  <%= image_tag "mathraining-dark.png", :class => "dark-theme-only", :style => "width:100%; max-width:334px;" %>
-  </center>
+	<div class="grid" style="--bs-columns:12;">
+    <div class="g-col-12 g-col-md-7">
+    <center>
+    <%= image_tag "mathraining.png", :class => "light-theme-only", :style => "width:100%; max-width:334px;" %>
+    <%= image_tag "mathraining-dark.png", :class => "dark-theme-only", :style => "width:100%; max-width:334px;" %>
+    </center>
+    </div>
+    <div class="g-col-12 g-col-md-5">
+    <% tot = User.where("admin = ?", false).sum(:rating) %>
+    <% number = User.where("admin = ? AND rating > 0 AND active = ?", false, true).count %>
+    <center>
+    <table class="home-stats">
+    <tr><td class="left top text-color-mt-blue"><%= raw(readable_number(number)) %></td><td class="right top">utilisateurs classés</td></tr>
+    <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
+    <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
+    <tr><td class="left bottom text-color-mt-blue"><%= raw(readable_number(tot)) %></td><td class="right bottom">points distribués</td></tr>
+    </table>
+    </center>
+    </div>
+  
+    <div class="g-col-12">
+      <h3 class="mt-3">
+      Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques
+      </h3>
+    </div>
   </div>
-  <div class="col-md-5 col-sm-12 col-xs-12">
-  <% tot = User.where("admin = ?", false).sum(:rating) %>
-  <% number = User.where("admin = ? AND rating > 0 AND active = ?", false, true).count %>
-  <center>
-  <table class="home-stats">
-  <tr><td class="left text-color-mt-blue"><%= raw(readable_number(number)) %></td><td class="right">utilisateurs classés</td></tr>
-  <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
-  <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
-  <tr><td class="left text-color-mt-blue"><%= raw(readable_number(tot)) %></td><td class="right">points distribués</td></tr>
-  </table>
-  </center>
-  </div>
-  </div>
-   
-  <h3 class="mt-3">
-  Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques
-  </h3>
 </div>
 
 <% user_with_recent_corrections = User.left_joins(:followings).where("followings.created_at > ? AND kind = 1", Date.today.in_time_zone).group(:id).select("users.*, count(followings.id) AS num_corrections").order("num_corrections DESC").to_a %>

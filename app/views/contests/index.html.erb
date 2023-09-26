@@ -32,64 +32,61 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
     
     <tr><td class="real-content">
     
-    <div class="intro">
-    <%= raw(bbcode(c.description)) %>
-    </div>
+    <div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
     
-    <div class="row content">
-    <div class="module left-info">
-    <h5>Informations</h5>
-    
-    <% if nb_prob > 0 %>
-      Début : <b><%= write_date_only_with_day(c.start_time) %></b><br/>
-      Fin : <b><%= write_date_only_with_day(c.end_time) %></b><br/>
-    <% end %>
-    <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %>
-    <% if classe == "greyy" %>
-      (à venir)
-    <% elsif classe == "orangey" %>
-      (en cours)
-    <% elsif classe == "yellowy" %>
-      (terminé)
-    <% end %>
-    
-    </div>
-    
-    <div class="module right-info">
-    <h5>Statistiques</h5>
-      <% nb_prob_corrected = c.contestproblems.where(:status => [:corrected, :in_recorrection]).count %>
-      <% if nb_prob_corrected == 0 %>
-        <i>Aucun problème corrigé</i>
-      <% else %>
-        <% if nb_prob_corrected < nb_prob %>
-          Après <%= nb_prob_corrected %> problème<%= 's' if nb_prob_corrected >= 2 %> :<br/>
-        <% else %>
-          À la fin du concours :<br/>
-        <% end %>
-        <% num_participants = c.num_participants %>
-        <% if num_participants == 0 %>
-          <i>Personne n'a résolu de problème</i>
-        <% else %>
-          <b><%= num_participants %></b> participants classés<br/>
-          <% bestscore = c.contestscores.where(:rank => 1).first.score %>
-          <% numbest = c.contestscores.where(:rank => 1).count %>
-          Meilleur score : <b><%= bestscore %>/<%= 7*nb_prob_corrected %></b> (<%= numbest %> fois)
-        <% end %>
-      <% end %>
-    </div>
-    </div>
-    
-    <div class="row content">
-      <div class="module bottom-part text-start">
-      Organisé par 
-      <% i = 0 %>
-      <% total = c.organizers.count %>
-      <% c.organizers.order(:last_name, :first_name).each do |o| %>
-        <% i = i+1 %>
-        <%= raw(o.linked_name) %><% if i == total - 1 %> et<% elsif i < total - 1 %>, <% else %>.<% end %>
-      <% end %>
+      <div class="g-col-12 g-col-md-24 intro">
+        <%= raw(bbcode(c.description)) %>
       </div>
-    </div>
+
+      <div class="g-col-12 g-col-md-12 module left-info">
+        <h5>Informations</h5>
+        
+        <% if nb_prob > 0 %>
+          Début : <b><%= write_date_only_with_day(c.start_time) %></b><br/>
+          Fin : <b><%= write_date_only_with_day(c.end_time) %></b><br/>
+        <% end %>
+        <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %>
+        <% if classe == "greyy" %>
+          (à venir)
+        <% elsif classe == "orangey" %>
+          (en cours)
+        <% elsif classe == "yellowy" %>
+          (terminé)
+        <% end %>
+      </div>
+      
+      <div class="g-col-12 g-col-md-12 module right-info">
+        <h5>Statistiques</h5>
+        <% nb_prob_corrected = c.contestproblems.where(:status => [:corrected, :in_recorrection]).count %>
+        <% if nb_prob_corrected == 0 %>
+          <i>Aucun problème corrigé</i>
+        <% else %>
+          <% if nb_prob_corrected < nb_prob %>
+            Après <%= nb_prob_corrected %> problème<%= 's' if nb_prob_corrected >= 2 %> :<br/>
+          <% else %>
+            À la fin du concours :<br/>
+          <% end %>
+          <% num_participants = c.num_participants %>
+          <% if num_participants == 0 %>
+            <i>Personne n'a résolu de problème</i>
+          <% else %>
+            <b><%= num_participants %></b> participants classés<br/>
+            <% bestscore = c.contestscores.where(:rank => 1).first.score %>
+            <% numbest = c.contestscores.where(:rank => 1).count %>
+            Meilleur score : <b><%= bestscore %>/<%= 7*nb_prob_corrected %></b> (<%= numbest %> fois)
+          <% end %>
+        <% end %>
+      </div>
+
+      <div class="g-col-12 g-col-md-24 module bottom-part text-start">
+        Organisé par 
+        <% i = 0 %>
+        <% total = c.organizers.count %>
+        <% c.organizers.order(:last_name, :first_name).each do |o| %>
+          <% i = i+1 %>
+          <%= raw(o.linked_name) %><% if i == total - 1 %> et<% elsif i < total - 1 %>, <% else %>.<% end %>
+        <% end %>
+      </div>
     
     </td></tr></table>
   <% end %>

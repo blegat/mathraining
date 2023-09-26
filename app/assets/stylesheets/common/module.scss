@@ -1,66 +1,43 @@
 /* CHAPITRES, PROBLEMES, TEST VIRTUELS */
 
-.real-content {
-  padding-top:10px !important;
-  padding-bottom:15px !important;
-  padding-left:0px !important;
-  padding-right:0px !important;
-}
+/* Note: We use 12 columns for screens with a width < 768px, and 24 columns for larger screens (to have more flexibility)
+   The reason why we don't use 24 columns for small screens is because the number of columns and the gap size seem to have
+   an impact on the minimal width of the grid. Using 24 columns with a gap of 15px gives a minimal width that is too large. */
 
-.intro {
-  padding-bottom:5px;
-  margin-left:25px;
-  margin-right:25px;
-  margin-top:10px;
-}
-
-.module {
-  padding-top:8px;
-}
-
-.chapter {
-
+.chapter, .problem, .virtualtest {
   h4 {
-    margin:5px;
+    margin: 5px;
+  }
+  
+  .real-content {
+    padding:15px !important;
   }
 
   .intro {
     text-align:justify;
+    padding-left:5px;
+    padding-right:5px;
   }
 
-  .content {
-    padding-bottom:5px;
-    margin-left:20px;
-    margin-right:20px;
-    margin-top:10px;
-  }
-
-  .middle-part {
-    padding-bottom:10px;
-  }
-
-  .right-part {
-    padding-bottom:10px;
+  .module {
+    padding-top:8px;
   }
   
-  .right-fond-part {
-    padding-bottom:10px;
+  .content {
+    --bs-columns: 12;
+    --bs-gap: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .chapter, .problem, .virtualtest {
+    .content {
+      --bs-columns: 24;
+    }
   }
 }
 
 .problem {
-  
-  h4 {
-    margin:5px;
-  }
-
-  .content {
-    padding-bottom:5px;
-    margin-left:20px;
-    margin-right:20px;
-    margin-top:10px;
-  }
-
   .left-part {
     padding-left:15px;
     padding-right:15px;
@@ -72,7 +49,6 @@
   }
 
   .bottom-part {
-    width:100%;
     padding-left:15px;
     padding-right:5px;
     padding-top:5px;
@@ -81,18 +57,6 @@
 }
 
 .virtualtest {
-
-  h4 {
-    margin:5px;
-  }
-
-  .content {
-    padding-bottom:5px;
-    margin-left:20px;
-    margin-right:20px;
-    margin-top:10px;
-  }
-
   .left-info {
     text-align:center;
     padding-bottom:10px;
@@ -123,180 +87,4 @@
     padding-top:10px;
     padding-bottom:10px;
   }
-}
-
-@media (min-width: 992px) {
-  .chapter .left-part {
-    width:32%;
-    width:-webkit-calc(34% - 10px);
-    width:calc(34% - 10px);
-    margin-right:10px;
-  }
-  
-  .chapter .middle-part {
-    width:34%;
-    width:-webkit-calc(36% - 20px);
-    width:calc(36% - 20px);
-    margin-left:10px;
-    margin-right:10px;
-  }
-
-  .chapter .right-part {
-    width:29%;
-    width:-webkit-calc(30% - 10px);
-    width:calc(30% - 10px);
-    margin-left:10px;
-  }
-  
-  .chapter .right-fond-part { // Contains exercises (as middle-part) but is on the right (as right part)
-    width:34%;
-    width:-webkit-calc(36% - 10px);
-    width:calc(36% - 10px);
-    margin-left:10px; 
-  }
-  
-  .chapter .content {
-    display:-webkit-box;
-    display:-mot-box;
-    display:-ms-flexbox;
-    display:-webkit-flex;
-    display:flex;
-  }
-  
-  .problem .left-part {
-    width:68%;
-    width:-webkit-calc(70% - 10px);
-    width:calc(70% - 10px);
-    margin-right:10px;
-  }
-  
-  .problem .right-part {
-    width:29%;
-    width:-webkit-calc(30% - 10px);
-    width:calc(30% - 10px);
-    margin-left:10px;
-  }
-  
-  .problem .content {
-    display:-webkit-box;
-    display:-mot-box;
-    display:-ms-flexbox;
-    display:-webkit-flex;
-    display:flex;
-  }
-  
-  .virtualtest .left-info {
-    width:48.5%;
-    width:-webkit-calc(50% - 10px);
-    width:calc(50% - 10px);
-    margin-right:10px;
-  }
-  
-  .virtualtest .right-info {
-    width:48.5%;
-    width:-webkit-calc(50% - 10px);
-    width:calc(50% - 10px);
-    margin-left:10px;
-  }
-  
-  .virtualtest .left-part {
-    width:78%;
-    width:-webkit-calc(80% - 10px);
-    width:calc(80% - 10px);
-    margin-right:10px;
-  }
-  
-  .virtualtest .right-part {
-    width:19%;
-    width:-webkit-calc(20% - 10px);
-    width:calc(20% - 10px);
-    margin-left:10px;
-  }
-  
-  .virtualtest .content {
-    display:-webkit-box;
-    display:-mot-box;
-    display:-ms-flexbox;
-    display:-webkit-flex;
-    display:flex;
-  }
-}
-
-@media (max-width: 991.99px) {  
-  .chapter .left-part {
-    width:100%;
-    margin-bottom:15px;
-  }
-  
-  .chapter .middle-part {
-    width:100%;
-    margin-bottom:15px;
-  }
-
-  .chapter .right-part {
-    width:100%;
-  }
-  
-  .chapter .right-fond-part {
-    width:100%;
-  }
-  
-  .problem .left-part {
-    width:100%;
-    margin-bottom:15px;
-  }
-
-  .problem .right-part {
-    width:100%;
-  }
-  
-  .virtualtest .left-part {
-    width:100%;
-    margin-bottom:15px;
-  }
-
-  .virtualtest .right-part {
-    width:100%;
-  }
-  
-  .virtualtest .left-info {
-    width:100%;
-    margin-bottom:15px;
-  }
-
-  .virtualtest .right-info {
-    width:100%;
-  }
-}
-
-
-@media (max-width: 543.99px) {
-  .intro {
-    margin-left:15px!important;
-    margin-right:15px!important;
-  }
-  .content {
-    margin-left:10px!important;
-    margin-right:10px!important;
-  }
-  .real-content {
-    padding-bottom:5px !important;
-  }
-}
-
-/* EXERCICE AUQUEL ON REFERE DANS UN SUJET */
-
-.reference {
-  margin-bottom:0px!important;
-  margin-top:15px;
-}
-
-.reference .title {
-  padding:10px;
-  text-align:center;
-  font-style:italic;
-}
-
-.reference .content {
-  padding:10px;
 }

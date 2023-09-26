@@ -40,12 +40,11 @@
 <% end %>
 
 <form action="" method="get" name="search_section_and_levels">
-  <div class="row mb-1">
-  <div class="col-md-7"></div>
-  <div class="col-md-3 pb-1">
+  <div class="grid mb-1" style="--bs-columns:12; --bs-gap:10px;">
+  <div class="g-col-12 g-start-md-6 g-col-md-4 g-start-lg-8 g-col-lg-3">
   <%= select_tag :section, options_for_select(section_choices, section).html_safe, :class =>"form-select", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
   </div>
-  <div class="col-md-2 pb-1">
+  <div class="g-col-12 g-col-md-3 g-col-lg-2">
   <%= select_tag :levels, options_for_select(levels_choices, levels_int).html_safe, :class =>"form-select", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
   </div>
   </div>
