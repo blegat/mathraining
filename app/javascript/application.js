@@ -22,3 +22,5 @@ window.PreviewSafe = PreviewSafe;
 window.Rolling = Rolling;
 
 window.dispatchEvent(new CustomEvent("importmap-scripts-loaded"));
+
+window.importJSDone = true; // Used in tests to be sure that everything is imported before clicking

@@ -733,6 +733,7 @@ describe "User pages" do
       
       describe "and validates one name" do
         before do
+          wait_for_js_imports
           click_link "ok-#{user1.id}"
           wait_for_ajax
           user1.reload
@@ -747,6 +748,7 @@ describe "User pages" do
       
       describe "and capitalizes one name" do
         before do
+          wait_for_js_imports
           click_link "capitalize-#{user2.id}"
           wait_for_ajax
           user2.reload
@@ -761,6 +763,7 @@ describe "User pages" do
       
       describe "and passes one name" do
         before do
+          wait_for_js_imports
           click_link "pass-#{user2.id}"
           wait_for_ajax
           user2.reload
@@ -775,6 +778,7 @@ describe "User pages" do
       
       describe "and clicks to change one name" do
         before do
+          wait_for_js_imports
           click_link "change-#{user3.id}"
           root.reload
         end

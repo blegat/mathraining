@@ -454,6 +454,7 @@ describe "Subject pages" do
         visit new_subject_path
         fill_in "Titre", with: title
         fill_in "MathInput", with: content
+        wait_for_js_imports
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_1", File.absolute_path(attachments_folder + image1))
@@ -473,6 +474,7 @@ describe "Subject pages" do
         visit new_subject_path
         fill_in "Titre", with: title
         fill_in "MathInput", with: content
+        wait_for_js_imports
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
@@ -489,6 +491,7 @@ describe "Subject pages" do
       before do
         subjectmyfile.fake_del
         visit subject_path(sub_user)
+        wait_for_js_imports
         click_link("Modifier ce sujet")
         wait_for_ajax
         fill_in "MathInputEditSubject", with: newcontent
@@ -511,6 +514,7 @@ describe "Subject pages" do
       let!(:subjectmyfile) { FactoryGirl.create(:subjectmyfile, myfiletable: sub_user) }
       before do
         visit subject_path(sub_user)
+        wait_for_js_imports
         click_link("Modifier ce sujet")
         wait_for_ajax
         fill_in "MathInputEditSubject", with: newcontent
@@ -534,6 +538,7 @@ describe "Subject pages" do
     describe "creates a subject in relation with a section" do
       before do
         visit new_subject_path
+        wait_for_js_imports
         select section.name, from: "Catégorie"
         fill_in "Titre", with: title
         fill_in "MathInput", with: content
@@ -555,6 +560,7 @@ describe "Subject pages" do
     describe "creates a subject in relation with a chapter" do
       before do
         visit new_subject_path
+        wait_for_js_imports
         select section.name, from: "Catégorie"
         wait_for_ajax
         select chapter.name, from: "Chapitre"
@@ -579,6 +585,7 @@ describe "Subject pages" do
       let!(:question2) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 2) }
       before do
         visit new_subject_path
+        wait_for_js_imports
         select section.name, from: "Catégorie"
         wait_for_ajax
         select chapter.name, from: "Chapitre"
@@ -605,6 +612,7 @@ describe "Subject pages" do
       let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true) }
       before do
         visit new_subject_path
+        wait_for_js_imports
         select section.name, from: "Catégorie"
         wait_for_ajax
         select "Problèmes de #{section.name.downcase}", from: "Chapitre"
@@ -630,6 +638,7 @@ describe "Subject pages" do
     describe "creates a subject in relation with no problem" do
       before do
         visit new_subject_path
+        wait_for_js_imports
         select section.name, from: "Catégorie"
         wait_for_ajax
         select "Problèmes de #{section.name.downcase}", from: "Chapitre"
@@ -664,6 +673,7 @@ describe "Subject pages" do
     describe "creates a subject when section filter is used" do
       before do
         visit new_subject_path(:q => section.id * 1000)
+        wait_for_js_imports
         select chapter.name, from: "Chapitre"
         wait_for_ajax
         fill_in "Titre", with: title
@@ -687,6 +697,7 @@ describe "Subject pages" do
     let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true) }
       before do
         visit new_subject_path(:q => section.id * 1000 + 1)
+        wait_for_js_imports
         select "Problème \##{problem2.number}", from: "Problème" # NB: problem should not appear because there is already a subject!
         wait_for_ajax # Titre should be automaticaly filled with "Problème #..."
         fill_in "MathInput", with: content
@@ -709,6 +720,7 @@ describe "Subject pages" do
     let!(:question2) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 2) }
       before do
         visit new_subject_path(:q => chapter.id)
+        wait_for_js_imports
         select "Exercice 2", from: "Exercice" # NB: Exercise 1 should not appear because there is already a subject!
         wait_for_ajax # Titre should be automatically filled with "Exercice 2"
         fill_in "MathInput", with: content
@@ -739,6 +751,7 @@ describe "Subject pages" do
     describe "updates a subject, from a question to a section" do
       before do
         visit subject_path(sub_question)
+        wait_for_js_imports
         click_link "Modifier ce sujet"
         wait_for_ajax
         select other_section.name, from: "Catégorie"
@@ -762,6 +775,7 @@ describe "Subject pages" do
     describe "updates a suject, from a category to a chapter" do
       before do
         visit subject_path(sub_category)
+        wait_for_js_imports
         click_link "Modifier ce sujet"
         wait_for_ajax
         select section.name, from: "Catégorie"
@@ -786,6 +800,7 @@ describe "Subject pages" do
     describe "updates a suject, from a chapter to a question" do
       before do
         visit subject_path(sub_chapter)
+        wait_for_js_imports
         click_link "Modifier ce sujet"
         wait_for_ajax
         select other_chapter.name, from: "Chapitre"
@@ -810,6 +825,7 @@ describe "Subject pages" do
     describe "updates a suject, from a chapter to a problem" do
       before do
         visit subject_path(sub_chapter)
+        wait_for_js_imports
         click_link "Modifier ce sujet"
         wait_for_ajax
         select "Problèmes de #{section.name.downcase}", from: "Chapitre"
@@ -834,6 +850,7 @@ describe "Subject pages" do
     describe "updates a suject, from a question to no problem" do
       before do
         visit subject_path(sub_question)
+        wait_for_js_imports
         click_link "Modifier ce sujet"
         wait_for_ajax
         select "Problèmes de #{section.name.downcase}", from: "Chapitre"

@@ -230,6 +230,7 @@ describe "Contestsolution pages" do
       before do
         visit contestproblem_path(contestproblem_running)
         fill_in "MathInput", with: newsolution
+        wait_for_js_imports
         click_button "Ajouter une pièce jointe" # We don't fill file1
         wait_for_ajax
         click_button "Ajouter une pièce jointe"
@@ -251,6 +252,7 @@ describe "Contestsolution pages" do
       before do
         visit contestproblem_path(contestproblem_running)
         fill_in "MathInput", with: newsolution
+        wait_for_js_imports
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
@@ -266,6 +268,7 @@ describe "Contestsolution pages" do
       let!(:contestsolutionmyfile) { FactoryGirl.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
       before do
         visit contestproblem_path(contestproblem_running, :sol => usercontestsolution)
+        wait_for_js_imports
         click_link("Modifier la solution")
         wait_for_ajax
         uncheck "prevFile_1"
@@ -288,6 +291,7 @@ describe "Contestsolution pages" do
       let!(:contestsolutionmyfile) { FactoryGirl.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
       before do
         visit contestproblem_path(contestproblem_running, :sol => usercontestsolution)
+        wait_for_js_imports
         click_link("Modifier la solution")
         wait_for_ajax
         fill_in "MathInput", with: newsolution2

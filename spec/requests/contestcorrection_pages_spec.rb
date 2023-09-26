@@ -316,6 +316,7 @@ describe "Contestcorrection pages" do
     describe "wants to modify the correction", :js => true do
       before do
         visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
+        wait_for_js_imports
         click_link("Modifier la correction")
         wait_for_ajax
       end
@@ -329,16 +330,18 @@ describe "Contestcorrection pages" do
       
       describe "and does not want anymore" do
         before do
+          wait_for_js_imports
           click_button "Annuler"
           wait_for_ajax
         end
-        specify { expect { click_button "Annuler" }.to raise_error(Capybara::ElementNotFound) } # Button should have disappeared
+        specify { expect(page.evaluate_script("$('#form').height()")).to eq(0) } # Form should have disappeared
       end
       
       describe "and reserves it while somebody else reserved it" do
         before do
           usersol_finished.reservation = root.id
           usersol_finished.save
+          wait_for_js_imports
           click_button "button-reserve"
           wait_for_ajax
           usersol_finished.reload
@@ -351,6 +354,7 @@ describe "Contestcorrection pages" do
       
       describe "and reserves it" do
         before do
+          wait_for_js_imports
           click_button "button-reserve"
           wait_for_ajax
           usersol_finished.reload
@@ -366,6 +370,7 @@ describe "Contestcorrection pages" do
       
         describe "and unreserves it" do
           before do
+            wait_for_js_imports
             click_button "button-unreserve"
             wait_for_ajax
             usersol_finished.reload
@@ -385,6 +390,7 @@ describe "Contestcorrection pages" do
     describe "modifies a solution by adding a file", :js => true do
       before do
         visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
+        wait_for_js_imports
         click_link("Modifier la correction")
         wait_for_ajax
         click_button "button-reserve"
@@ -394,7 +400,7 @@ describe "Contestcorrection pages" do
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_1", File.absolute_path(attachments_folder + image1))
-        click_button "Enregistrer"
+        click_button "BT2" # Name is 'Enregistrer' but capybara does not click on the right button, so we use the id instead...
         usersol_finished.reload
       end
       specify do

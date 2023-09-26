@@ -218,6 +218,7 @@ describe "Discussion pages" do
       before do
         visit discussion_path(discussion)
         fill_in "MathInput", with: content3
+        wait_for_js_imports
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_1", File.absolute_path(attachments_folder + image2))
@@ -236,6 +237,7 @@ describe "Discussion pages" do
       before do
         visit discussion_path(discussion)
         fill_in "MathInput", with: content3
+        wait_for_js_imports
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
@@ -250,6 +252,7 @@ describe "Discussion pages" do
     describe "creates a discussion with a wrong file" do
       before do
         visit new_discussion_path
+        wait_for_js_imports
         wait_for_ajax
         select2 other_user.name, xpath: '//div[@id="destinataire-div"]' # NB: from: "destinataire" does not work
         fill_in "MathInput", with: content
@@ -282,6 +285,7 @@ describe "Discussion pages" do
       describe "and scrolls to the bottom" do
         before do
           visit discussion_path(discussion, :anchor => "footer")
+          wait_for_js_imports # Not sure this is a good solution for this case
           wait_for_ajax
         end
         it do

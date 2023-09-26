@@ -746,6 +746,7 @@ describe "Submission pages" do
       
       describe "and unreserves it", :js => true do
         before do
+          wait_for_js_imports
           click_button "Annuler la réservation"
           wait_for_ajax
           waiting_submission.reload
@@ -772,6 +773,7 @@ describe "Submission pages" do
       before do
         visit problem_path(problem, :sub => 0)
         fill_in "MathInput", with: newsubmission
+        wait_for_js_imports
         click_button "Ajouter une pièce jointe" # We don't fill file1
         wait_for_ajax
         click_button "Ajouter une pièce jointe"
@@ -789,7 +791,9 @@ describe "Submission pages" do
       describe "and updates it with a wrong file" do
         before do
           fill_in "MathInput", with: newsubmission2
+          wait_for_js_imports
           click_button "Ajouter une pièce jointe"
+          wait_for_ajax
           attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
           click_button "Enregistrer le brouillon"
           newsub.reload
@@ -807,6 +811,7 @@ describe "Submission pages" do
       before do
         visit problem_path(problem, :sub => 0)
         fill_in "MathInput", with: newsubmission
+        wait_for_js_imports
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_1", File.absolute_path(attachments_folder + image2))
@@ -831,6 +836,7 @@ describe "Submission pages" do
       let!(:numfiles_before) { Myfile.count }
       before do
         visit problem_path(problem_with_submissions, :sub => waiting_submission)
+        wait_for_js_imports
         click_button "Réserver cette soumission"
         wait_for_ajax
         fill_in "MathInput", with: newcorrection
@@ -853,6 +859,7 @@ describe "Submission pages" do
     describe "shows correct submissions to a problem" do
       before do
         visit problem_path(problem_with_submissions)
+        wait_for_js_imports
         click_link "Afficher les autres soumissions correctes"
         wait_for_ajax
       end
@@ -866,6 +873,7 @@ describe "Submission pages" do
     describe "shows incorrect submissions to a problem" do
       before do
         visit problem_path(problem_with_submissions)
+        wait_for_js_imports
         click_link "Afficher les soumissions erronées"
         wait_for_ajax
       end
@@ -883,6 +891,7 @@ describe "Submission pages" do
         Correction.create(user: other_user, submission: wrong_submission, content: "Bonjour, ceci est ma correction")
         good_corrector_submission.update_attribute(:content, "Salut, ceci est ma solution")
         visit problem_path(problem_with_submissions, :sub => waiting_submission)
+        wait_for_js_imports
         click_link "Effectuer une recherche dans toutes les soumissions"
         wait_for_ajax
         fill_in "string_to_search", with: "Bonjour, "

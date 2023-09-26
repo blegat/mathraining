@@ -192,6 +192,7 @@ describe "Message pages" do
     describe "creates a message with two files" do
       before do
         visit subject_path(sub)
+        wait_for_js_imports
         click_button "Répondre"
         wait_for_ajax
         fill_in "MathInputNewMessage", with: content
@@ -216,6 +217,7 @@ describe "Message pages" do
       let!(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: mes_user) }
       before do
         visit subject_path(sub)
+        wait_for_js_imports
         click_link("LinkEditMessage#{mes_user.id}")
         wait_for_ajax
         fill_in "MathInputMessage#{mes_user.id}", with: content2

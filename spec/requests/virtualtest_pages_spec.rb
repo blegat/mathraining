@@ -381,6 +381,7 @@ describe "Virtualtest pages" do
         click_button "Commencer ce test"
         # No dialog box to accept in test environment: it was deactivated because we had issues with testing
         visit virtualtest_path(virtualtest, :p => problem)
+        wait_for_js_imports
         click_button "Écrire une solution"
         wait_for_ajax
         fill_in "MathInput", with: newsolution
@@ -400,6 +401,7 @@ describe "Virtualtest pages" do
       
       describe "and replace the file by another one" do
         before do
+          wait_for_js_imports
           click_link "Modifier la solution"
           wait_for_ajax
           fill_in "MathInput", with: newsolution2
@@ -424,6 +426,7 @@ describe "Virtualtest pages" do
         click_button "Commencer ce test"
         # No dialog box to accept in test environment: it was deactivated because we had issues with testing
         visit virtualtest_path(virtualtest, :p => problem)
+        wait_for_js_imports
         click_button "Écrire une solution"
         wait_for_ajax
         fill_in "MathInput", with: newsolution

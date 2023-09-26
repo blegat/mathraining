@@ -33,6 +33,7 @@ Capybara.register_driver :selenium_firefox do |app|
 end
 
 Capybara.javascript_driver = :selenium_firefox_headless
+# Looks like the following line does not work anymore... We added $.fx.off = true in application.html.erb to disable animations in test mode
 Capybara.disable_animation = true # Otherwise we need to wait for rolling animations
 
 #DatabaseCleaner.strategy = :truncation # Not sure if it should be used?

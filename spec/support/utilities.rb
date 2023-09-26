@@ -113,6 +113,16 @@ RSpec::Matchers.define :have_user_line do |line_id, rank_str, user|
   end
 end
 
+def wait_for_js_imports # Not sure it is really useful but it does not cost to keep it
+  Timeout.timeout(Capybara.default_max_wait_time) do
+    loop until finished_all_js_imports?
+  end
+end
+
+def finished_all_js_imports?
+  return page.evaluate_script('"importJSDone" in window')
+end
+
 def wait_for_ajax
   Timeout.timeout(Capybara.default_max_wait_time) do
     loop until finished_all_ajax_requests?
@@ -120,7 +130,7 @@ def wait_for_ajax
 end
 
 def finished_all_ajax_requests?
-  page.evaluate_script('jQuery.active').zero?
+  page.evaluate_script('jQuery.active').zero? # Not sure it is still working...
 end
 
 # The following method has some issues: instead of using it we prefer to remove confirmations when Rails.env.test? = true

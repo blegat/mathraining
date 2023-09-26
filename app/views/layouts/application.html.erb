@@ -162,6 +162,21 @@
         callMethodWhenPossible(() => initializeSelect2IfPossible(placeholder));
       }
       
+      <% if Rails.env.test? %>
+        // Disable animations in test environment, to go faster and avoid random errors
+        var animationsDisabled = false;
+        
+        function disableAnimations() {
+          if ("$" in window) {
+            if (!animationsDisabled) {
+              animationsDisabled = true;
+              $.fx.off = true;
+            }
+          }
+        }
+        
+        callMethodWhenPossible(disableAnimations);
+      <% end %>
     </script>
   </head>
   
