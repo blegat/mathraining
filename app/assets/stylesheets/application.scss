@@ -10,10 +10,16 @@
  *
  */
 
-@import "bootstrap-sprockets";
+// Bootstrap parameters:
+$font-size-base: 0.875rem;
+$enable-negative-margins: true;
+$link-decoration: none;
+$link-hover-decoration: underline;
+$body-color-dark: white;
+$enable-cssgrid: true;
+$grid-columns: 24;
+
 @import "bootstrap";
-@import "bootstrap-datetimepicker";
 @import "select2";
-@import "select2-bootstrap";
 @import "./common/*";
 @import "./screen/*";

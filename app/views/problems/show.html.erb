@@ -9,33 +9,40 @@
 
 <% @resolu = current_user.sk.pb_solved?(@problem) %>
 
-<h1><%= title_3("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), "Problème ##{ @problem.number }#{ (' - Test #' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online } <span style='margin-left:20px; color:grey;'>(#{ pt }&nbsp;points)</span>") %></h1>
+<h1><%= title_3("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), "Problème ##{ @problem.number }#{ (' - Test #' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online } <span class='ms-3 text-color-grey'>(#{ pt }&nbsp;points)</span>") %></h1>
 
 <!-- Si administrateur -->
 <% if current_user.sk.admin? %>
 
+  <p>
+  <% selectionne = 0 %>
+  <% if @problem.virtualtest_id == 0 %>
+    Ce problème ne fait partie d'aucun test virtuel.
+  <% else %>
+    <% vt = @problem.virtualtest %>
+    Ce problème fait partie du <b>test virtuel #<%= vt.number %></b>.
+    <% selectionne = vt.id %>
+  <% end %>
+  </p>
+
   <!-- Dans un test virtuel ou non -->
   <% if !@problem.online? %>
-    <%= form_for(:problem, :url => problem_add_virtualtest_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
-    <div class="form-inline">
-      <% selectionne = 0 %>
-        <% if @problem.virtualtest_id == 0 %>
-          Ce problème ne fait partie d'aucun test virtuel.
-        <% else %>
-          <% vt = @problem.virtualtest %>
-          Ce problème fait partie du <b>test virtuel #<%= vt.number %></b>.
-          <% selectionne = vt.id %>
-        <% end %>
-
-        <% liste = Array.new %>
-        <% liste.push(["Aucun test virtuel", 0]) %>
-        <% Virtualtest.where(online: false).all.each do |t| %>
-          <% liste.push(["Test virtuel ##{ t.number }", t.id]) %>
-        <% end %>
-
-        Faire appartenir ce problème à :
-        <%= f.select(:virtualtest_id, options_for_select(liste, selectionne), {}, {:prompt => true, :class => "form-control"}) %>
-        <%= f.submit "OK", class: "btn btn-primary", id: "add_to_virtualtest_button" %>
+    <%= form_for(:problem, :url => problem_add_virtualtest_path(@problem), :html => { :class => "mb-3"} ) do |f| %>
+      <div class="row g-2 align-items-center">
+        <div class="col-auto">
+          Faire appartenir ce problème à :
+        </div>
+        <div class="col-auto">
+          <% liste = Array.new %>
+          <% liste.push(["Aucun test virtuel", 0]) %>
+          <% Virtualtest.where(online: false).all.each do |t| %>
+            <% liste.push(["Test virtuel ##{ t.number }", t.id]) %>
+          <% end %>
+          <%= f.select(:virtualtest_id, options_for_select(liste, selectionne), {}, {:prompt => true, :class => "form-select"}) %>
+        </div>
+        <div class="col-auto">
+          <%= f.submit "OK", class: "btn btn-primary", id: "add_to_virtualtest_button" %>
+        </div>
       </div>
     <% end %>
   <% end %>
@@ -48,34 +55,40 @@
 
   <ul>
   <% @problem.chapters.each do |c| %>
-  <% has_pre = true %>
-  <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span style='color:orange;'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"}, :method => :put if !@problem.online %></li>
-  <% enligne_ok = false if !c.online %>
+    <% has_pre = true %>
+    <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span class='text-color-orange'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"}, :method => :put if !@problem.online %></li>
+    <% enligne_ok = false if !c.online %>
   <% end %>
   </ul>
 
   <% if !@problem.online %>
-  <% liste = Array.new %>
+    <% liste = Array.new %>
 
-  <% Section.where(:fondation => false).all.each do |s| %>
-    <% if !s.fondation || fondement %>
-    <% liste2 = Array.new %>
-    <% liste2.push(s.name) %>
-    <% liste3 = Array.new %>
-    <% s.chapters.order(:name).each do |c| %>
-      <% liste3.push([c.name, c.id]) %>
+    <% Section.where(:fondation => false).all.each do |s| %>
+      <% if !s.fondation || fondement %>
+        <% liste2 = Array.new %>
+        <% liste2.push(s.name) %>
+        <% liste3 = Array.new %>
+        <% s.chapters.order(:name).each do |c| %>
+          <% liste3.push([c.name, c.id]) %>
+        <% end %>
+        <% liste2.push(liste3) %>
+
+        <% liste.push(liste2) %>
+      <% end %>
     <% end %>
-    <% liste2.push(liste3) %>
 
-    <% liste.push(liste2) %>
-    <% end %>
-  <% end %>
-
-  <%= form_for("chapter_problem", :url => problem_add_prerequisite_path(@problem), :html => { :class => "form-horizontal"} ) do |f| %>
-    <div class="form-inline">
-        Ajouter le prérequis :
-        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, {:prompt => true, :class => "form-control"}) %>
-        <%= f.submit "OK", class: "btn btn-primary", id: "new_prerequisite_button" %>
+    <%= form_for("chapter_problem", :url => problem_add_prerequisite_path(@problem), :html => { :class => "mb-3"} ) do |f| %>
+      <div class="row g-2 align-items-center">
+        <div class="col-auto">
+          Ajouter le prérequis :
+        </div>
+        <div class="col-auto">
+          <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, {:prompt => true, :class => "form-select"}) %>
+        </div>
+        <div class="col-auto">
+          <%= f.submit "OK", class: "btn btn-primary", id: "new_prerequisite_button" %>
+        </div>
       </div>
     <% end %>
 
@@ -85,29 +98,17 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
-<div style="margin-bottom:30px;">
-  <%= raw(htmlise(@problem.statement)) %>
+<div class="mb-3">
+<%= raw(htmlise(@problem.statement)) %>
+</div>
 
 <!-- Origine si administrateur ou si résolu -->
 <% if current_user.sk.admin? || @resolu %>
-
-  <% taille = @problem.statement.size() %>
-  <% liste = false %>
-  <% if taille >= 5 %>
-    <% fin = @problem.statement[taille-5, taille-1] %>
-    <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
-      <% liste = true %>
-    <% end %>
-  <% end %>
-
-  <% if !liste %>
-    <br/><br/>
-  <% end %>
-
+  <p>
   <i>Origine du problème :
   <% if @problem.origin.nil? || @problem.origin.size == 0 %>
     <% if current_user.sk.admin? %>
-      <span style="color:orange;">Inconnue</span>
+      <span class="text-color-orange">Inconnue</span>
     <% else %>
       Inconnue
     <% end %>
@@ -115,8 +116,8 @@
     <b><%= @problem.origin %></b>
   <% end %>
   </i>
+  </p>
 <% end %>
-</div>
 
 <!-- Si administrateur -->
 
@@ -125,7 +126,7 @@
   <!-- Modifier/Supprimer/... -->
 
   <div class="noprint">
-    <center>
+    <p class="text-center">
       <% if @problem.online %>
         <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
         <%= link_to "Modifier la solution", problem_explanation_path(@problem) %>
@@ -140,21 +141,25 @@
         <% end %>
         <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
       <% end %>
-    </center>
+    </p>
 
     <% if !@problem.online %>
-    	<br/>
-      <center>
+      <% if has_pre && enligne_ok %>
+        <center>
+        <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-3', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
+        </center>
+      <% else %>
+        <center>
+        <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: true %>
+        </center>
+        <p class="mb-3 text-center">
         <% if !has_pre %>
-          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
           (Au moins un chapitre prérequis nécessaire)
-        <% elsif !enligne_ok %>
-          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px;" %>
-          (Chapitres prérequis doivent être en ligne)
         <% else %>
-          <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
+          (Chapitres prérequis doivent être en ligne)
         <% end %>
-      </center> <br/>
+        </p>
+      <% end %>
     <% end %>
 
     <!-- Toutes les soumissions des étudiants -->
@@ -176,9 +181,9 @@
       <% @draft = true if @problem.submissions.where(:user => current_user.sk, :status => :draft).count > 0 %>
       <% if soumission != 0 %>
         <% if !@draft %>
-          <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-default btn-grey" %>
+          <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
         <% else %>
-          <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-default btn-grey" %>
+          <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
         <% end %>
       <% end %>
     <% end %>
@@ -189,12 +194,11 @@
 <!-- Si administrateur ou correcteur ayant résolu -->
 
 <% if (current_user.sk.admin? || current_user.sk.corrector? && @resolu) %>
-  <br/>
   <!-- Explication -->
   <% if @problem.explanation.size == 0 %>
-    <center><span style="color:orange; font-weight:bold;">Pas d'éléments de solution disponibles.</span></center>
+    <p class="text-center fw-bold text-color-orange">Pas d'éléments de solution disponibles.</p>
   <% else %>
-    <div class='clue-bis'><div><center><a href='#' onclick='return Clue.toggle(0)' class='btn btn-default btn-grey'>Éléments de solution (pour les correcteurs)</a></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
+    <div class='clue-bis'><div><center><button data-text-id='0' is='clue-onclick' class='btn btn-ld-light-dark'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
     <%= raw(htmlise(@problem.explanation)) %>
     </div></div></div>
   <% end %>

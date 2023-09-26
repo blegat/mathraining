@@ -59,8 +59,8 @@ describe "Contest pages" do
       before { visit contests_path }
       it do
         should have_selector("h1", text: "Concours")
-        should have_selector("h3", text: "Concours ##{contest.number}")
-        should have_no_selector("h3", text: "Concours ##{offline_contest.number}")
+        should have_selector("h4", text: "Concours ##{contest.number}")
+        should have_no_selector("h4", text: "Concours ##{offline_contest.number}")
         should have_selector("div", text: "Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.")
       end
     end
@@ -69,10 +69,10 @@ describe "Contest pages" do
       before { visit contest_path(contest) }
       it do
         should have_content("Concours ##{contest.number}") # Not h1: not correctly detected because of "Suivre ce concours"
-        should have_selector("h3", text: "Problème ##{contestproblem1.number}")
+        should have_selector("h4", text: "Problème ##{contestproblem1.number}")
         should have_content(contestproblem1.statement)
         should have_content(contestproblem1.origin)
-        should have_selector("h3", text: "Problème ##{contestproblem2.number}")
+        should have_selector("h4", text: "Problème ##{contestproblem2.number}")
         should have_content(contestproblem2.statement)
         should have_content(contestproblem2.origin)
         should have_link("Classement final", href: contest_path(contest, :tab => 1))
@@ -253,7 +253,7 @@ describe "Contest pages" do
 
     describe "visits contests page" do
       before { visit contests_path }
-      it { should have_link("Ajouter un concours", href: new_contest_path) }
+      it { should have_button("Ajouter un concours") }
     end
      
     describe "visits contest creation page" do

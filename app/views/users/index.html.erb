@@ -62,38 +62,40 @@
 
 <% if @signed_in %>
   <!-- Tabs -->
-  <ul class="nav nav-tabs nav-justified">
-    <li role="presentation" class="active"><%= link_to "Tous les utilisateurs", users_path %></li>
-    <li role="presentation"><%= link_to "Utilisateurs suivis", followed_users_path %></li>
+  <ul class="nav nav-tabs nav-justified flex-column flex-sm-row mt-3 mb-3">
+    <li class="nav-item"><%= link_to "Tous les utilisateurs", users_path, :class => "nav-link active" %></li>
+    <li class="nav-item"><%= link_to "Utilisateurs suivis", followed_users_path, :class => "nav-link" %></li>
   </ul>
 <% end %>
 
-<div style="text-align:right; max-width:800px; margin:0 auto; margin-top:15px;">
-  <form action="" method="get" class="form-inline" name="research">
-    <!-- Trier selon titre -->
-    <span class="hidden-xs">Titre : </span>
-    <%= select_tag :title, options_for_select(title_list, @title).html_safe, :class => "form-control", :style => "margin-bottom:10px;", :onchange => ("javascript: document.research.submit();") %>
-    <!-- Trier selon pays -->
-    <span class="hidden-xs" style="margin-left:10px;">Pays : </span>
-    <%= select_tag :country, options_for_select(country_list, @country).html_safe, :class => "form-control", :style => "margin-bottom:10px;",  :onchange => ("javascript: document.research.submit();") %>
-  </form>
+<center>
+<form action="" method="get" class="form-inline" name="research">
+<div class="row g-2 align-items-center justify-content-center justify-content-sm-end mb-2">
+  <div class="col-auto">
+    <%= select_tag :title, options_for_select(title_list, @title).html_safe, :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
+  </div>
+  <div class="col-auto">
+    <%= select_tag :country, options_for_select(country_list, @country).html_safe, :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
+  </div>
 </div>
+</form>
+</center>
 
 <% if @real_users %>
   <% if @all_users.size == 0 %>
-    <center><div style="margin-top:5px;">Aucun utilisateur.</div></center>
+    <p class="mt-2 text-center">Aucun utilisateur.</p>
   <% else %>
     <center>
-      <table id="users_table" class="table table-bordered" style="max-width:800px; margin-top:5px;">
-        <tr>
+      <table id="users_table" class="table table-bordered mt-1" style="max-width:800px;">
+        <tr class="table-ld-header">
           <th style="width:20px;"></th>
           <th style="width:230px;">Nom</th>
-          <th style="width:50px; text-align:center;">Pays</th>
-          <th style="width:90px; text-align:center;">Score</th>
+          <th class="text-center" style="width:50px;">Pays</th>
+          <th class="text-center" style="width:90px;">Score</th>
           <% @allsec.each do |s| %>
-            <th class="hidden-xs" style="width:60px;"><center><%= s.initials %></center></th>
+            <th class="d-none d-md-table-cell" style="width:60px;"><center><%= s.initials %></center></th>
           <% end %>
-          <th class="hidden-small" style="width:100px;"><center>&le; 2 sem.</center></th>
+          <th class="d-none d-lg-table-cell" style="width:100px;"><center>&le; 2 sem.</center></th>
         </tr>
 
         <% local_id = 0 %>
@@ -107,26 +109,26 @@
       
       </table>
     </center>
-
+    
     <center>
-    <%= will_paginate @all_users, :style => "margin-top:-5px; margin-bottom:-25px;", :class => "hidden-xs", :inner_window => 2 %>
-    <%= will_paginate @all_users, :style => "margin-top:15px; margin-bottom:-5px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+      <%= will_paginate @all_users, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+      <%= will_paginate @all_users, :class => "d-block d-sm-none mb-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
     </center>
   <% end %>
 
 <% elsif @signed_in && current_user.sk.root %>
-  <br/>
+  <ul>
   <% @all_users.each do |u| %>
-    <%= raw(u.linked_name) %> (<%= write_date_only(u.created_at) %>)<br/>
+    <li><%= raw(u.linked_name) %> (<%= write_date_only(u.created_at) %>)</li>
   <% end %>
+  </ul>
 <% end %>
 
 <div id="for_admin">
 <!-- Si root : bouton pour modifier les niveaux et couleurs -->
 <% if @signed_in && current_user.sk.root %>
-  <br/>
-  <center>
-  <%= button_to "Modifier les niveaux et couleurs", colors_path, method: :get, class: 'btn btn-default btn-grey' %>
-  </center>
+  <p class="text-center">
+  <%= link_to "Modifier les niveaux et couleurs", colors_path %>
+  </p>
 <% end %>
 </div>

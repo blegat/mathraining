@@ -617,7 +617,7 @@ describe "Submission pages" do
     describe "gives a star to a submission" do
       before do
         visit problem_path(problem_with_submissions, :sub => good_submission)
-        click_link "Étoiler cette solution"
+        click_button "Étoiler cette solution"
         good_submission.reload
       end
       specify { expect(good_submission.star).to eq(true) }
@@ -627,7 +627,7 @@ describe "Submission pages" do
       before do
         good_submission.update_attribute(:star, true)
         visit problem_path(problem_with_submissions, :sub => good_submission)
-        click_link "Ne plus étoiler cette solution"
+        click_button "Ne plus étoiler cette solution"
         good_submission.reload
       end
       specify { expect(good_submission.star).to eq(false) }
@@ -734,7 +734,7 @@ describe "Submission pages" do
       end
       specify do
         expect(page).to have_content("Cette soumission est en train d'être corrigée par #{good_corrector.name}.")
-        expect(page).to have_content("Elle a été réservée le ")
+        expect(page).to have_content("Réservée le ")
         expect(page).to have_no_button("Réserver cette soumission")
         expect(page).to have_no_button("Annuler ma réservation")
         expect(page).to have_button("Annuler la réservation")

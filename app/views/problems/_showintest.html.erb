@@ -1,38 +1,35 @@
 <!-- Enoncé -->
 <h3>Énoncé</h3>
 
-<div style="margin-bottom:30px;">
+<div>
   <%= raw(htmlise(@problem.statement)) %>
 </div>
 
 <!-- Solution de l'étudiant -->
-<h3>Votre solution</h3>
+<h3 class="mt-4">Votre solution</h3>
 <% @submission = Submission.where(user_id: current_user.sk.id, problem_id: @problem.id, intest: true).first %>
-
-<% solutionexists = true %>
 
 <!-- Si une soumission a déjà été faite -->
 <% if !@submission.nil? %>
-  <div id="the" class="myoverflow" style="margin-top:-12px;">
-  <%= render 'subjects/content', ms: @submission, kind: "submission_in_test" %>
+  <div id="the" class="myoverflow">
+  <%= render 'shared/post', ms: @submission, kind: "submission_in_test", can_edit: true, reduce_margin_top: true %>
   </div>
 
 <!-- Si pas encore de soumission -->
 <% else %>
-  <% solutionexists = false %>
   <div id="the" class="myoverflow">
   <!-- On propose d'écrire une solution -->
-  <span style="color:orange;">Vous n'avez pas encore envoyé de solution à ce problème.</span><br/><br/>
-  N'hésitez pas à écrire tout ce que vous trouvez même s'il ne s'agit pas d'une solution complète au problème ! Lors d'un vrai test ou d'une vraie compétition, vous rendrez également vos feuilles de brouillon et celles-ci pourront vous rapporter des points si elles contiennent des éléments pouvant mener à une solution.<br/><br/>
-  <center><button class="btn btn-default btn-grey" onclick='return Rolling.develop("")'>Écrire une solution</button></center>
+  <p class="text-color-orange">Vous n'avez pas encore envoyé de solution à ce problème.</p>
+  <p>N'hésitez pas à écrire tout ce que vous trouvez même s'il ne s'agit pas d'une solution complète au problème ! Lors d'un vrai test ou d'une vraie compétition, vous rendrez également vos feuilles de brouillon et celles-ci pourront vous rapporter des points si elles contiennent des éléments pouvant mener à une solution.</p>
+  <center><button class="btn btn-ld-light-dark" onclick='return Rolling.develop("")'>Écrire une solution</button></center>
   </div>
 <% end %>
 
 
 <% @ancientexte = session[:ancientexte] %>
 
-<div id="form" class="myoverflow" style="height:0px; <%= 'margin-top:12px;' if solutionexists %>">
-<% if solutionexists %>
+<div id="form" class="myoverflow px-1" style="height:0px;">
+<% if !@submission.nil? %>
   <%= render 'submissions/edit_in_test' %>
 <% else %>
   <%= render 'submissions/new_in_test' %>
@@ -40,8 +37,6 @@
 </div>
 
 <% if !session["ancientexte"].nil? %>
-  <script>
-    Rolling.develop_quick("");
-  </script>
+  <script>rollingDevelopQuickWhenPossible("")</script>
   <% session.delete("ancientexte") %>
 <% end %>

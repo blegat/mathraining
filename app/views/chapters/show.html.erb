@@ -13,18 +13,17 @@
 
 <h1><%= title_3("Théorie", (link_to @section.name, @section), "#{@chapter.name}#{' (en construction)' unless @chapter.online}", false) %></h1>
 
-<div class="row" style="margin:0px;">
+<div class="grid mt-3 mx-0" style="--bs-columns: 12;">
 
   <!-- MENU -->
-  <div class="col-md-2 col-sm-3 col-xs-12 noprint list-group chap-menu">
+  <div class="g-col-12 g-col-md-3 g-col-lg-2 noprint list-group">
     <% number = 0 %>
     <% number2 = 0 %>
     <% i = 1 %>
-    <br/>
-    <h4 class="list-group-item-heading">Général</h4>
-    <%= link_to "Résumé", chapter_path(@chapter), :class => "list-group-item #{ 'active' if type == 0}" %>
-    <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item #{ 'active' if type == 10}" %>
-    <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item", :target => "_blank" if @signed_in %>
+    <h5>Général</h5>
+    <%= link_to "Résumé", chapter_path(@chapter), :class => "list-group-item list-group-item-action #{ 'active' if type == 0}" %>
+    <%= link_to "Chapitre entier", chapter_path(@chapter, :type => 10), :class => "list-group-item list-group-item-action #{ 'active' if type == 10}" %>
+    <%= link_to "Forum", subjects_path(:q => @chapter.id), :class => "list-group-item list-group-item-action", :target => "_blank" if @signed_in and @chapter.online %>
 
     <!-- Points théoriques -->
     <% compteur = 0 %>
@@ -32,7 +31,7 @@
     <% listex.each do |f| %>
       <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
         <% if compteur == 0 %>
-          <br/><h4 class="list-group-item-heading">Points théoriques</h4>
+          <h5 class="mt-3">Points théoriques</h5>
         <% end %>
         <% compteur = compteur + 1 %>
         
@@ -56,7 +55,7 @@
           <% kind = "list-group-item-success" %>
         <% end %>
           
-        <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item #{kind} #{actif}" %>
+        <%= link_to f.title, chapter_path(@chapter, :type => 1, :which => f.id), :class => "list-group-item list-group-item-action #{kind} #{actif}" %>
 
         <% i = i + 1 %>
       <% end %>
@@ -79,7 +78,7 @@
       <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
 
         <% if compteur == 0 %>
-          <br/><h4 class="list-group-item-heading">Exercices</h4>
+          <h5 class="mt-3">Exercices</h5>
         <% end %>
 
         <% compteur = compteur + 1 %>
@@ -111,9 +110,9 @@
           <% else %>
             <% kind = "list-group-item-warning" %>
           <% end %>
-          <%= link_to "Exercice #{j if f.online}", chapter_path(@chapter, :type => 5, :which => f.id), :class => "list-group-item #{kind} #{actif}" %>
+          <%= link_to "Exercice #{j if f.online}", chapter_path(@chapter, :type => 5, :which => f.id), :class => "list-group-item list-group-item-action #{kind} #{actif}" %>
         <% else %>
-          <span class="list-group-item disabled"><%= "Exercice #{j}" %></span>
+          <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true"><%= "Exercice #{j}" %></a>
         <% end %> 
         <% j = j+1 if f.online %>
         <% i = i+1 %>
@@ -127,7 +126,9 @@
     <% end %>
   </div>
     
-  <div class="col-md-10 col-sm-9 col-xs-12">
+  <div class="g-col-12 g-col-md-9 g-col-lg-10">
+  
+    <div class="mt-3 d-md-none"></div>
 
     <!-- RESUME -->
 
@@ -135,7 +136,7 @@
       <%= render 'intro' %>
 
       <% if !exovisibles %>
-        <br/><span style="color:red;">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
+        <p class="text-color-red">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
         <% prems = true %>
         <% @chapter.prerequisites.each do |p| %>
           <% if (!p.section.fondation && (!@signed_in || !current_user.sk.chapters.exists?(p.id))) %>
@@ -144,7 +145,7 @@
             <% prems = false %>
           <% end %>
         <% end %>
-        </span>
+        </p>
       <% end %>
     <% end %>
 
@@ -157,15 +158,15 @@
     <!-- POINTS THEORIQUES -->
 
     <% if type == 1 && @chapter.theories.exists?(id) %>
-      <% f = Theory.find(id) %>
-      <%= render 'theories/show', f: f, number: number, id: id %>
+      <% theory = Theory.find(id) %>
+      <%= render 'theories/show', theory: theory, number: number, id: id %>
     <% end %>
 
     <!-- QUESTIONS -->
 
     <% if type == 5 && @chapter.questions.exists?(id) && exovisibles %>
-      <% f = Question.find(id) %>
-      <%= render 'questions/show', f: f, number: number, number2: number2, number_tot: @chapter.questions.count, id: id %>
+      <% question = Question.find(id) %>
+      <%= render 'questions/show', question: question, number: number, number2: number2, number_tot: @chapter.questions.count, id: id %>
     <% end %>
 
   </div>
@@ -174,17 +175,17 @@
 <!-- Ajouter quelque chose -->
 <% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
   <div class="noprint">
-    <center>
-      <br/>
+    <p class="mt-3 text-center">
       Ajouter un :
       <%= link_to "point théorique", new_chapter_theory_path(@chapter) %> |
       <%= link_to "exercice", new_chapter_question_path(@chapter) %> |
       <%= link_to "QCM", new_chapter_question_path(@chapter, :qcm => 1) %>
+    </p>
 
-      <% if !@chapter.online && current_user.sk.admin? %>
-        <br/><br/>
-        <%= button_to "Mettre ce chapitre en ligne", chapter_warning_path(@chapter), method: :get, class: 'btn btn-lg btn-default btn-grey	' %>
-      <% end %>
-    </center>
+    <% if !@chapter.online && current_user.sk.root? %>
+      <center>
+      <%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), :method => :put, class: 'btn btn-danger', data: {confirm: "Êtes-vous sûr de vouloir mettre ce chapitre en ligne ?"} %>
+      </center>
+    <% end %>
   </div>
 <% end %>

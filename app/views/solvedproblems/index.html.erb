@@ -2,22 +2,7 @@
 
 <h1><%= title_1("Résolutions récentes") %></h1>
 
-Le tableau suivant reprend toutes les solutions ayant été <b>corrigées</b> les sept derniers jours. Elles sont classées selon leur date de correction, indiquée au début de chaque ligne.<br/><br/>
-
-<!-- Style pour la barre de défilement dans le tableau -->
-<style type="text/css">
-
-html>body thead.fixed tr {
-	display: block;
-}
-
-html>body tbody.scroll {
-	display: block;
-	max-height: 150px;
-	overflow-y: scroll;
-	width: 100%;
-}
-</style>
+<p>Le tableau suivant reprend toutes les solutions ayant été <b>corrigées</b> les sept derniers jours. Elles sont classées selon leur date de correction, indiquée au début de chaque ligne.</p>
 
 <% oneweekago = Date.today - 7 %>
 
@@ -44,30 +29,30 @@ html>body tbody.scroll {
   <td style="<%= border_style %>"><%= write_date_only_small(s.correction_time) %></td>
   
   <!-- Heure -->
-  <td style="<%= border_style %>" class="hidden-xs"><%= write_hour(s.correction_time) %></td>
+  <td style="<%= border_style %>" class="d-none d-md-table-cell"><%= write_hour(s.correction_time) %></td>
   
   <!-- Qui -->
   <td style="<%= border_style %>"><%= raw(s.user.linked_name) %></td>
   
   <!-- Section -->
-  <td style="<%= border_style %>" class="hidden-xs"><%= s.section_short_abbreviation %></td>
+  <td style="<%= border_style %>" class="d-none d-md-table-cell"><%= s.section_short_abbreviation %></td>
   
   <!-- Niveau -->
-  <td style="<%= border_style %>" class="hidden-xs">Niv. <%= s.level %></td>
+  <td style="<%= border_style %>" class="d-none d-md-table-cell">Niv. <%= s.level %></td>
   
   <!-- Problème -->
   <td style="<%= border_style %>">
   <% if (@signed_in && current_user.sk.admin?) || problem_status[s.problem_id] == 1 %>
-    <span class="hidden-xs hidden-sm"><%= link_to "Problème ##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
-    <span class="visible-xs visible-sm"><%= link_to "##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
+    <span class="d-none d-lg-inline"><%= link_to "Problème ##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
+    <span class="d-inline d-lg-none"><%= link_to "##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
   <% else %>
-    <span class="hidden-xs">Problème </span>#<%= s.problem_number %>
+    <span class="d-none d-md-inline">Problème </span>#<%= s.problem_number %>
   <% end %>
   </td>
   
   <% if @signed_in %>
     <!-- Correcteur -->
-    <td style="<%= border_style %>" class="hidden-xs">
+    <td style="<%= border_style %>" class="d-none d-md-table-cell">
       <% s.submission.followings.each do |f| %>
         <% if f.kind == 1 %>
           <%= raw(f.user.linked_name) %>

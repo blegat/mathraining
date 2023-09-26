@@ -1,6 +1,6 @@
 <%= render 'shared/error_messages', object: f.object %>
 
-<div class="form-group">
-<%= f.label "Durée (en minutes)" %>
-<%= f.number_field :duration, :class => "form-control", :style => "width:70px;", :min => 0 %>
+<div class="mb-2">
+<%= f.label "Durée (en minutes)", :class => "form-label" %>
+<%= f.number_field :duration, :class => "form-control", :style => "width:90px;", :min => 0 %>
 </div>

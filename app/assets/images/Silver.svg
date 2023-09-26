@@ -1,6 +1,76 @@
-<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="20" height="20" fill="white"/>
-<line x1="2.78087" y1="1.3753" x2="6.78087" y2="6.3753" stroke="#C4C4C4" stroke-width="2"/>
-<line y1="-1" x2="6.40312" y2="-1" transform="matrix(-0.624695 0.780869 0.780869 0.624695 18 2)" stroke="#C4C4C4" stroke-width="2"/>
-<circle cx="10" cy="12" r="6.5" fill="#C4C4C4" stroke="#B3B3B3"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="20"
+   height="20"
+   viewBox="0 0 20 20"
+   fill="none"
+   version="1.1"
+   id="svg249"
+   sodipodi:docname="Silver.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <metadata
+     id="metadata255">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs253" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1600"
+     inkscape:window-height="877"
+     id="namedview251"
+     showgrid="false"
+     inkscape:pagecheckerboard="true"
+     inkscape:zoom="35.5"
+     inkscape:cx="10"
+     inkscape:cy="10"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg249" />
+  <line
+     x1="2.78087"
+     y1="1.3753"
+     x2="6.78087"
+     y2="6.3753"
+     stroke="#C4C4C4"
+     stroke-width="2"
+     id="line243" />
+  <line
+     y1="-1"
+     x2="6.40312"
+     y2="-1"
+     transform="matrix(-0.624695 0.780869 0.780869 0.624695 18 2)"
+     stroke="#C4C4C4"
+     stroke-width="2"
+     id="line245" />
+  <circle
+     cx="10"
+     cy="12"
+     r="6.5"
+     fill="#C4C4C4"
+     stroke="#B3B3B3"
+     id="circle247" />
 </svg>

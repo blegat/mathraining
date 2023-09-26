@@ -1,0 +1,25 @@
+[data-bs-theme="light"] {
+  @for $i from 0 through 100 {
+    .line-green-#{$i} td{ background-color:rgb(255-2*$i, 255, 255-2*$i); }
+  }
+}
+
+[data-bs-theme="dark"] {
+  @for $i from 0 through 100 {
+    .line-green-#{$i} td{ background-color:rgb(33, 37+1.5*$i, 41); }
+  }
+}
+
+
+
+[data-bs-theme="light"] {
+  @for $i from 0 through 20 {
+    .gradient-green-red-#{$i} { background-color:rgb(95+8*$i, 255-8*$i, 95); }
+  }
+}
+
+[data-bs-theme="dark"] {
+  @for $i from 0 through 20 {
+    .gradient-green-red-#{$i} { background-color:rgb(6*$i, 120-6*$i, 0); }
+  }
+}

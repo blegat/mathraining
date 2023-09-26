@@ -6,27 +6,27 @@
 
 <% newsubs = Submission.joins(:problem).where(:status => :waiting, :visible => true).group("problems.section_id").group("problems.level").count %>
 <% num_nuwsubs = newsubs.values.sum %>
-Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 2 %> en attente de correction. Le tableau suivant en illustre la répartition, par niveau et par section.<br/>
+<p>Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 2 %> en attente de correction. Le tableau suivant en illustre la répartition, par niveau et par section.</p>
 
-<div style="width:100%; overflow-x:auto; margin-top:20px; margin-bottom:20px;">
+<div class="my-3" style="width:100%; overflow-x:auto;">
 <center>
-<table class="table table-bordered" style="min-width:490px; width:490px; margin:0px;">
-<tr>
+<table class="table table-bordered m-0" style="min-width:490px; width:490px;">
+<tr class="table-ld-header">
 <th style="width:70px;"></th>
 <% sections.each do |sec| %>
-  <th style="width:70px; text-align:center;"><%= sec.short_abbreviation %></th>
+  <th class="text-center" style="width:70px;"><%= sec.short_abbreviation %></th>
 <% end %>
 </tr>
 
 <% (1..5).each do |lev| %>
   <tr>
-  <th style="text-align:center;">Niv. <%= lev %></th>
+  <th class="table-ld-header text-center">Niv. <%= lev %></th>
   <% sections.each do |sec| %>
     <% num = newsubs[[sec.id, lev]] %>
     <% num = 0 if num.nil? %>
     <% red_part = [160, 8*num].min %>
     <% green_part = 160 - red_part %>
-    <td style="text-align:center; background-color:rgb(<%= 95 + red_part %>, <%= 95 + green_part %>, 0);">
+    <td class="text-center gradient-green-red-<%= [num, 20].min %>">
       <%= num %>
     </td>
   <% end %>
@@ -36,7 +36,7 @@ Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 
 </center>
 </div>
 
-Le graphique suivant montre, en <span style="color:green;">vert</span>, les soumissions correctes, en <span style="color:red;">rouge</span> les soumissions incorrectes, et en <span style="color:grey;">gris</span> les soumissions en attente de correction.<br/><br/>
+<p>Le graphique suivant montre, en <span class="text-color-green">vert</span>, les soumissions correctes, en <span class="text-color-red">rouge</span> les soumissions incorrectes, et en <span class="text-color-grey">gris</span> les soumissions en attente de correction.</p>
 
 <!-- On parcourt tous les correcteurs -->
 
@@ -84,8 +84,8 @@ Le graphique suivant montre, en <span style="color:green;">vert</span>, les soum
 <center>
 
 <!-- Endroit pour dessiner le graphique des corrections -->
-<div id="contenant" style="width:100%; max-width:700px; height:380px; position:relative; display:block;">
-<canvas id="myCanvas" width="700" height="380" style="position:absolute; left:0px; top: 0px;">
+<div id="contenant" class="mb-3" style="width:100%; max-width:700px; height:380px; position:relative; display:block;">
+<canvas id="myCanvas" width="700" height="380" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
 </div>
@@ -94,109 +94,104 @@ Votre navigateur ne supporte pas les canvas.
 
 
 <script type="text/javascript">
-  $(document).ready( function(){
-
-  //Get the canvas & context
-  var c = $('#myCanvas');
-  var ctx = c.get(0).getContext('2d');
-  var container = $(c).parent();
-
-  //Run function when browser  resize
-  $(window).resize( respondCanvas );
 
   function respondCanvas(){
-  c.attr('width', $(container).width() ); //max width
-  c.attr('height', 380*$(container).width()/700.0); //max height
-
-  document.getElementById('contenant').style.height = 380*$(container).width()/700.0 + "px"
-
-  //Redraw & reposition content
-  var x = c.width();
-  var y = c.height();
-
-  var pct = c.width()/700.0;
-  
-  ctx.beginPath();
-  ctx.rect(pct*43, pct*5, pct*620, pct*350);
-  ctx.fillStyle = 'white';
-  ctx.fill();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = 'black';
-  ctx.stroke();
-  
-  // Entre 43 et 663 --> largeur totale 806, à diviser en 31 : 20 pixels par rectangle
-  
-  <% for i in (0..30) do %>
-    ctx.beginPath();
-    <% size = (330*numbercorrect[30-i])/maxi %>
-    ctx.rect(pct*<%= 43+20*i %>, pct*355, pct*20, -pct*<%= size %>);
-    ctx.fillStyle = 'green';
-    ctx.fill();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'black';
-    ctx.stroke();
+    // Check light or dark theme
+    var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
-    <% avant = size %>
+    // Get the canvas & context
+    var c = document.getElementById('myCanvas');
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    c.setAttribute('width', container.offsetWidth); //max width
+    c.setAttribute('height', 380*container.offsetWidth/700.0); //max height
+
+    container.style.height = 380*container.offsetWidth/700.0 + "px"
+
+    // Draw content
+
+    var pct = c.offsetWidth/700.0;
     
     ctx.beginPath();
-    <% size = (330*numberincorrect[30-i])/maxi %>
-    ctx.rect(pct*<%= 43+20*i %>, pct*<%= 355 - avant %>, pct*20, -pct*<%= size %>);
-    ctx.fillStyle = 'red';
+    ctx.rect(pct*43, pct*5, pct*620, pct*350);
+    ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
     ctx.fill();
     ctx.lineWidth = 1;
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = (is_dark ? 'white' : 'black');
     ctx.stroke();
     
-    <% avant = avant + size %>
+    // Entre 43 et 663 --> largeur totale 806, à diviser en 31 : 20 pixels par rectangle
     
-    ctx.beginPath();
-    <% size = (330*numberdontknow[30-i])/maxi %>
-    ctx.rect(pct*<%= 43+20*i %>, pct*<%= 355 - avant %>, pct*20, -pct*<%= size %>);
-    ctx.fillStyle = 'grey';
-    ctx.fill();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'black';
-    ctx.stroke();
-  <% end %>
+    <% for i in (0..30) do %>
+      ctx.beginPath();
+      <% size = (330*numbercorrect[30-i])/maxi %>
+      ctx.rect(pct*<%= 43+20*i %>, pct*355, pct*20, -pct*<%= size %>);
+      ctx.fillStyle = 'green';
+      ctx.fill();
+      ctx.stroke();
+      
+      <% avant = size %>
+      
+      ctx.beginPath();
+      <% size = (330*numberincorrect[30-i])/maxi %>
+      ctx.rect(pct*<%= 43+20*i %>, pct*<%= 355 - avant %>, pct*20, -pct*<%= size %>);
+      ctx.fillStyle = 'red';
+      ctx.fill();
+      ctx.stroke();
+      
+      <% avant = avant + size %>
+      
+      ctx.beginPath();
+      <% size = (330*numberdontknow[30-i])/maxi %>
+      ctx.rect(pct*<%= 43+20*i %>, pct*<%= 355 - avant %>, pct*20, -pct*<%= size %>);
+      ctx.fillStyle = 'grey';
+      ctx.fill();
+      ctx.stroke();
+    <% end %>
+    
+    ctx.font="12px Arial";
+    ctx.fillStyle = (is_dark ? 'white' : 'black');
+    ctx.textAlign = 'center';
+    
+    if (pct > 0.7){
+      ctx.fillText("aujourd'hui",pct*(663-13),pct*371);
+      ctx.fillText("il y a 10 jours",pct*(663-13-10*20),pct*371);
+      ctx.fillText("il y a 20 jours",pct*(663-13-20*20),pct*371);
+      ctx.fillText("il y a 30 jours",pct*(663-13-30*20),pct*371);
+    }
   
-  ctx.font="12px Arial";
-  ctx.fillStyle = 'black';
-  ctx.textAlign = 'center';
-  
-  if (pct > 0.7){
-  ctx.fillText("aujourd'hui",pct*(663-13),pct*371);
-  ctx.fillText("il y a 10 jours",pct*(663-13-10*20),pct*371);
-  ctx.fillText("il y a 20 jours",pct*(663-13-20*20),pct*371);
-  ctx.fillText("il y a 30 jours",pct*(663-13-30*20),pct*371);
+    ctx.textAlign = 'right';
+    <% i = maxi - 1 %>
+    <% while(i > 0) %>
+      ctx.fillText("<%= i %>", pct*36,pct*(<%= 355-330*i/maxi %>+4));
+      <% i = i - 10 %>
+    <% end %>
   }
-  
-  ctx.textAlign = 'right';
-  <% i = maxi - 1 %>
-  <% while(i > 0) %>
-    ctx.fillText("<%= i %>", pct*36,pct*(<%= 355-330*i/maxi %>+4));
-    <% i = i - 10 %>
-  <% end %>
-  
-  }
 
-  //Initial call
-  respondCanvas();
-
+  window.addEventListener("resize", () => {
+    respondCanvas();
   });
+  
+  window.addEventListener("theme-change", () => {
+    respondCanvas();
+  });
+  
+  respondCanvas();
 </script>
 
 
-<h2>Dernières corrections</h2>
+<h3>Dernières corrections</h3>
 
-Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier correcteur ayant corrigé une soumission à un problème de ce type.
+<p>Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier correcteur ayant corrigé une soumission à un problème de ce type.</p>
 
-<div style="width:100%; overflow-x:auto; margin-top:20px;">
+<div style="width:100%; overflow-x:auto;">
 <center>
-<table class="table table-bordered" style="min-width:850px; width:850px; margin:0px;">
-<tr>
+<table class="table table-bordered mb-3" style="min-width:850px; width:850px;">
+<tr class="table-ld-header">
 <th style="width:70px;"></th>
 <% sections.each do |sec| %>
-  <th style="width:130px; text-align:center;"><%= sec.abbreviation %></th>
+  <th class="text-center" style="width:130px;"><%= sec.abbreviation %></th>
 <% end %>
 </tr>
 
@@ -221,9 +216,9 @@ Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier cor
 
 <% (1..5).each do |lev| %>
   <tr>
-  <th style="text-align:center;">Niv. <%= lev %></th>
+  <th class="table-ld-header text-center">Niv. <%= lev %></th>
   <% sections.each do |sec| %>
-    <td style="text-align:center; background-color:rgb(250, 250, 250);">
+    <td class="text-center">
       <% u = nil %>
       <% if !last_following_user_by_level_and_section[lev][sec.id].nil? %>
         <% u = last_following_user_by_level_and_section[lev][sec.id] %>
@@ -248,9 +243,9 @@ Pour chaque section et chaque niveau, le tableau ci-dessous donne le dernier cor
 </div>
 
 
-<h2>Correcteurs</h2>
+<h3>Correcteurs</h3>
 
-Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un grand merci à eux tous !
+<p>Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un grand merci à eux tous !</p>
 
 <% nb_recent_by_user = Following.where("created_at >= '#{twoweeksago}' AND kind > 0").group(:user_id).count %>
 
@@ -260,21 +255,18 @@ Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un g
 <% end %>
 
 <center>
-<table class="table table-bordered" style="margin-top:20px; width:auto;">
-<tr><th>Nom</th><th style="text-align:center;">Corrections</th><th style="text-align:center;">&le; 2 sem.</th><th class="hidden-xs">Première</th><th class="hidden-xs">Dernière</th></tr>
+<table class="table table-bordered" style="width:auto;">
+<tr class="table-ld-header"><th>Nom</th><th class="text-center">Corrections</th><th class="text-center">&le; 2 sem.</th><th class="d-none d-md-table-cell">Première</th><th class="d-none d-md-table-cell">Dernière</th></tr>
 
 <% correctors.sort_by{|e| -e[:nb_corrections]}.each do |c| %>
   <% u = c[:user] %>
-  <% if c[:nb_recent] > 140 %>
-    <tr style="background-color:rgb(40,250,40)">
-  <% else %>
-    <tr style="background-color:rgb(<%= (250-c[:nb_recent]*1.5).round %>,250,<%= (250-c[:nb_recent]*1.5).round %>)">
-  <% end %>
+  <% green_class = "line-green-#{([c[:nb_recent], 200].min/2).to_i}" %>
+  <tr class="<%= green_class %>">
   <td><%= raw(u.linked_name) %></td>
-  <td style="text-align:center;"><%= c[:nb_corrections] %><%= image_tag "Smiley4.gif", :style => "margin-left:8px;" if c[:nb_corrections] >= 20000 %></td>
-  <td style="text-align:center;"><%= c[:nb_recent] %></td>
-  <td class="hidden-xs"><%= write_date_only(c[:first_correction].in_time_zone) %></td>
-  <td class="hidden-xs"><%= write_date_only(c[:last_correction].in_time_zone) %></td>
+  <td class="text-center"><%= c[:nb_corrections] %></td>
+  <td class="text-center"><%= c[:nb_recent] %></td>
+  <td class="d-none d-md-table-cell"><%= write_date_only(c[:first_correction].in_time_zone) %></td>
+  <td class="d-none d-md-table-cell"><%= write_date_only(c[:last_correction].in_time_zone) %></td>
   </tr>
 <% end %>
 </table>

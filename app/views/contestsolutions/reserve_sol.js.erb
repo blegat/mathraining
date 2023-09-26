@@ -1,27 +1,33 @@
-var correct1 = document.getElementById("correct1");
-var correct2 = document.getElementById("correct2");
-var correct3 = document.getElementById("correct3");
+var div_reserved_by_nobody = document.getElementById("div_reserved_by_nobody");
+var div_reserved_by_other = document.getElementById("div_reserved_by_other");
+var div_reserved_by_me = document.getElementById("div_reserved_by_me");
+
+var line_sol = document.getElementById("line_sol_<%= @contestsolution.id %>")
 
 var MI = document.getElementById("MathInput");
 var SC = document.getElementById("score");
-var PJ = document.getElementById("PJ");
+var PJ = document.getElementById("addFile");
 var BT1 = document.getElementById("BT1");
 var BT2 = document.getElementById("BT2");
 var BT3 = document.getElementById("BT3");
 
 <% if @ok == 0 %>
-  correct1.style.display = "none"
-  correct2.innerHTML = "Réservé par <b><%= @correct_name %></b>."
-  correct2.style.display = "block"
-  correct3.style.display = "none"
+  div_reserved_by_nobody.style.display = "none"
+  div_reserved_by_other.innerHTML = "Réservé par <b><%= @correct_name %></b>."
+  div_reserved_by_other.style.display = "block"
+  div_reserved_by_me.style.display = "none"
+  line_sol.classList.add('table-ld-warning-reder')
+  line_sol.classList.remove('table-ld-warning')
 <% else %>
-  correct1.style.display = "none"
-  correct2.style.display = "none"
-  correct3.style.display = "block"
+  div_reserved_by_nobody.style.display = "none"
+  div_reserved_by_other.style.display = "none"
+  div_reserved_by_me.style.display = "block"
   if(SC) { SC.disabled = false }
   MI.disabled = false
   PJ.disabled = false
   BT1.disabled = false
   BT2.disabled = false
   BT3.disabled = false
+  line_sol.classList.add('table-ld-warning-greener')
+  line_sol.classList.remove('table-ld-warning')
 <% end %>

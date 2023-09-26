@@ -1,7 +1,11 @@
-<% if object.errors.any? %>
-  <div id="error_explanation">
-    <div class="alert alert-danger">
+<% if defined?(object) %>
+  <% if object.errors.any? %>
+    <div class="alert alert-danger py-2">
       <%= error_list_for(object) %>
     </div>
+  <% end %>
+<% elsif defined?(errors) %>
+  <div class="alert alert-danger py-2">
+    <%= errors_to_list(errors) %>
   </div>
 <% end %>

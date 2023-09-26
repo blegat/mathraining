@@ -1,114 +1,77 @@
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+<% if question.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
 
 <!-- Titre -->
-<%= render 'questions/title', f: f, number: number %>
+<%= render 'questions/title', question: question, number: number %>
 
 <!-- Enoncé -->
 <div>
-  <%= raw(replace_indice(htmlise(f.statement))) %>
-</div><br/>
+  <%= raw(replace_indice(htmlise(question.statement))) %>
+</div>
 
 <!-- Si administrateur -->
 <% if !@chapter.online? || (@signed_in && current_user.sk.admin?) %>
 
   <!-- Réponse -->
-  <h4>Réponse</h4>
+  <h4 class="mt-4">Réponse</h4>
+  <%= render 'questions/answer', question: question %>
   
-  <%= render 'questions/admin_answers', f: f %>
-  <br/><br/>
-  
-  <!-- Pour les admins -->
-  <%= render 'questions/admin', f: f, number2: number2, number_tot: number_tot %>
+  <!-- Pour les admins (dont l'explication) -->
+  <%= render 'questions/admin', question: question, number2: number2, number_tot: number_tot %>
 
 <!-- Si étudiant inscrit -->
 <% elsif @signed_in %>
 
-  <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => id) %>
+  <% solvedquestion = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => id) %>
   
   <!-- Si il y a déjà eu au moins un essai -->
-  <% if exo.size > 0 %>
-    <% exo = exo.first %>
+  <% if solvedquestion.size > 0 %>
+    <% solvedquestion = solvedquestion.first %>
     
     <!-- Si l'exercice est déjà résolu -->
-    <% if exo.correct? %>
-      <p style="color:green;"><b>
-      <% if exo.nb_guess-1 > 0 %>
-        Vous avez résolu cet exercice après <%= exo.nb_guess-1 %> erreur<%= "s" if exo.nb_guess-1 > 1 %>.
+    <% if solvedquestion.correct? %>
+      <p class="mt-3 fw-bold text-color-green">
+      <% if solvedquestion.nb_guess-1 > 0 %>
+        Vous avez résolu cet exercice après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
       <% else %>
         Vous avez résolu cet exercice du premier coup !
       <% end %>
-      </b><br/><br/></p>
+      </p>
       
       <!-- Réponse -->
-      <h4>Réponse</h4>
-      
-      <% if !f.is_qcm %>
-        <!-- pas QCM -->
-        <% if f.decimal %>
-          <% vraidecimal = true %>
-          <% if f.answer - f.answer.to_i <= 0.00001 && f.answer.to_i - f.answer <= 0.00001 %>
-            <% vraidecimal = false %>
-          <% end %>
-          <span style="font-size:16px;"><%= f.answer if vraidecimal %><%= f.answer.to_i if !vraidecimal %></span> (On demande une réponse <b>décimale</b>, arrondie au millième près)
-        <% else %>
-          <span style="font-size:16px;"><%= f.answer.to_i %></span> (On demande une réponse <b>entière</b>)
-        <% end %>
-        <br/>
-      <% else %>
-        <!-- QCM -->
-        <ul>
-          <% f.items.order(:position).each do |c| %>
-            <li style="padding:5px;">
-            <%= raw(c.ans) %>
-
-            <% if c.ok %>
-              <%= image_tag v_icon, :style => "margin-left:10px;" %>
-            <% end %>
-            <% if !c.ok && f.many_answers %>
-              <%= image_tag x_icon, :style => "margin-left:10px;" %>
-            <% end %>
-            </li>
-          <% end %>
-        </ul>
-      <% end %>
+      <h4 class="mt-4">Réponse</h4>
+      <%= render 'questions/answer', question: question %>
       
       <!-- Explication -->
-      <% if f.explanation.size > 0 %>
-        <br/>
-        <h4>Explication</h4>
-        <%= raw(htmlise(f.explanation)) %>
+      <% if question.explanation.size > 0 %>
+        <h4 class="mt-4">Explication</h4>
+        <%= raw(htmlise(question.explanation)) %>
       <% end %>
-      <br/>
       
     <!-- Si l'étudiant s'est déjà trompé -->
     <% else %>
-      <%= render 'questions/question', f: f, exo: exo %>
+      <%= render 'questions/question', question: question, solvedquestion: solvedquestion %>
     <% end %>
 
   <!-- Si l'étudiant n'a pas encore essayé l'exercice -->
   <% else %>
   
-    <% exo = Solvedquestion.new %>
-    <%= render 'questions/question', f: f, exo: exo %>
+    <% solvedquestion = Solvedquestion.new %>
+    <%= render 'questions/question', question: question, solvedquestion: solvedquestion %>
   <% end %>
 
-  <hr style="border-top:1px dashed lightgray;" />
-  <% subject = f.subject %>
-  <% if subject.nil? %>
-    Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> !
-  <% else %>
-    Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subject, :target => "_blank" %> !
-  <% end %>
+  <hr class="bottom-help" />
+  <% subject = question.subject %>
+  <p>Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path : subjects_path(:q => @chapter.id)), :target => "_blank" %> !</p>
 
 <!-- Si étudiant non inscrit -->
 <% else %>
 
-  <% exo = Solvedquestion.new %>
-  <%= render 'questions/question', f: f, exo: exo %>
+  <% solvedquestion = Solvedquestion.new %>
+  <%= render 'questions/question', question: question, solvedquestion: solvedquestion %>
   
-  <hr style="border-top:1px dashed lightgray;" />
-  <center>Pour pouvoir répondre aux exercices, vous devez être connecté.</center>
+  <hr class="bottom-help" />
+  <p class="text-center">Pour pouvoir répondre aux exercices, vous devez être connecté.</p>
 <% end %>
 
 <% end %>

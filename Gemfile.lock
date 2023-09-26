@@ -81,11 +81,10 @@ GEM
     bcrypt (3.1.16)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
-    bootstrap-sass (3.4.1)
-      autoprefixer-rails (>= 5.2.1)
-      sassc (>= 2.0.0)
-    bootstrap-will_paginate (1.0.0)
-      will_paginate
+    bootstrap (5.3.0)
+      autoprefixer-rails (>= 9.1.0)
+      popper_js (>= 2.11.7, < 3)
+      sassc-rails (>= 2.0.0)
     bootstrap3-datetimepicker-rails (4.14.30)
       momentjs-rails (>= 2.8.1)
     builder (3.2.4)
@@ -152,6 +151,9 @@ GEM
     image_processing (1.12.2)
       mini_magick (>= 4.9.5, < 5)
       ruby-vips (>= 2.0.17, < 3)
+    importmap-rails (1.2.1)
+      actionpack (>= 6.0.0)
+      railties (>= 6.0.0)
     jquery-rails (4.6.0)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
@@ -204,6 +206,7 @@ GEM
     nokogiri (1.15.4-x86_64-linux)
       racc (~> 1.4)
     pg (1.5.3)
+    popper_js (2.11.8)
     public_suffix (5.0.3)
     puma (6.3.1)
       nio4r (~> 2.0)
@@ -315,6 +318,12 @@ GEM
       tilt (>= 1.1, < 3)
     sassc (2.1.0-x86_64-linux)
       ffi (~> 1.9)
+    sassc-rails (2.1.2)
+      railties (>= 4.0.0)
+      sassc (>= 2.0)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     select2-rails (4.0.13)
     selenium-webdriver (4.11.0)
       rexml (~> 3.2, >= 3.2.5)
@@ -366,6 +375,8 @@ GEM
     whenever (1.0.0)
       chronic (>= 0.6.3)
     will_paginate (3.3.0)
+    will_paginate-bootstrap-style (0.2.4)
+      will_paginate (~> 3.0, >= 3.0.0)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.6.11)
@@ -378,8 +389,7 @@ DEPENDENCIES
   activerecord-session_store (= 2.0.0)
   annotate (~> 3.2)
   bcrypt (= 3.1.16)
-  bootstrap-sass (~> 3.4.1)
-  bootstrap-will_paginate (= 1.0.0)
+  bootstrap (= 5.3)
   bootstrap3-datetimepicker-rails (~> 4.14.30)
   bullet
   capybara (= 3.39.2)
@@ -394,6 +404,7 @@ DEPENDENCIES
   glyphicons-rails
   groupdate
   image_processing (>= 1.2)
+  importmap-rails (~> 1.2)
   jquery-rails
   less-rails
   lograge
@@ -413,6 +424,7 @@ DEPENDENCIES
   rspec-rails (~> 5.0)
   sass-rails (~> 5.0.1)
   sassc (= 2.1.0)
+  sassc-rails
   select2-rails
   selenium-webdriver
   simplecov
@@ -423,6 +435,7 @@ DEPENDENCIES
   web-console (~> 2.0)
   whenever
   will_paginate (= 3.3.0)
+  will_paginate-bootstrap-style
 
 RUBY VERSION
    ruby 3.0.0p0

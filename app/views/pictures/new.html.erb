@@ -2,22 +2,26 @@
 
 <h1><%= title_2((link_to "Vos images", pictures_path), "Uploader une nouvelle image") %></h1>
 
-<br/>
+<p>
 Votre image doit respecter les conditions suivantes :
-<br/><br/>
+</p>
 
 <ul>
 <li>Faire moins de 1 Mo</li>
 <li>Être de type : gif, png, bmp, ou jp(e)g</li>
 <li>Être jolie :-)</li>
 </ul>
-<br/>
 
-<%= form_for @picture, :url => pictures_path, :html => { :multipart => true } do |form| %>	
+
+<%= form_for @picture, :url => pictures_path, :html => { :multipart => true } do |f| %>	
   <%= render 'shared/error_messages', object: @picture %>
-  <%= form.hidden_field :user_id, value: current_user.sk.id %>
-  <%= form.label "Choisissez votre image :" %>
-  <%= form.file_field :image %>
-  <br/>
-  <%= form.submit "Uploader", class: "btn btn-primary" %>
+  
+  <%= f.hidden_field :user_id, value: current_user.sk.id %>
+  
+  <div class="mb-2">
+  <%= f.label "Choisissez votre image :", class: "form-label" %>
+  <%= f.file_field :image, class: "form-control" %>
+  </div>
+  
+  <%= f.submit "Uploader", class: "btn btn-primary" %>
 <% end %>

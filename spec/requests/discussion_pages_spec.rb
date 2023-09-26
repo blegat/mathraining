@@ -77,7 +77,6 @@ describe "Discussion pages" do
       
       describe "and creates a discussion without choosing the user" do
         before do
-          select "Choisir un destinataire...", from: "destinataire"
           fill_in "MathInput", with: content
           click_button "Envoyer"
           user.reload
@@ -141,7 +140,7 @@ describe "Discussion pages" do
     describe "wants to a send a message to a new guy" do
       before do
         visit user_path(other_user)
-        click_link "Envoyer un message"
+        click_button "Envoyer un message"
       end
       it do
         should have_current_path(new_discussion_path(:qui => other_user))
@@ -153,7 +152,7 @@ describe "Discussion pages" do
       let!(:discussion) { create_discussion_between(user, other_user, content, content2) }
       before do
         visit user_path(other_user)
-        click_link "Envoyer un message"
+        click_button "Envoyer un message"
       end
       it { should have_current_path(discussion_path(discussion)) }
     end
@@ -169,23 +168,23 @@ describe "Discussion pages" do
     describe "asks to receive emails for new messages" do
       before do
         visit new_discussion_path
-        click_link "M'avertir des nouveaux messages par e-mail"
+        click_button("M'avertir des nouveaux messages par e-mail", :match => :first)
         user.reload
       end
       specify do
         expect(page).to have_success_message("Vous recevrez dorénavant un e-mail à chaque nouveau message privé.")
-        expect(page).to have_link("Ne plus m'avertir par e-mail")
+        expect(page).to have_button("Ne plus m'avertir par e-mail")
         expect(user.follow_message).to eq(true)
       end
       
       describe "and asks to not receive them anymore" do
         before do
-          click_link "Ne plus m'avertir par e-mail"
+          click_button("Ne plus m'avertir par e-mail", :match => :first)
           user.reload
         end
         specify do
           expect(page).to have_success_message("Vous ne recevrez maintenant plus d'e-mail lors d'un nouveau message privé.")
-          expect(page).to have_link("M'avertir des nouveaux messages par e-mail")
+          expect(page).to have_button("M'avertir des nouveaux messages par e-mail")
           expect(user.follow_message).to eq(false)
         end
       end

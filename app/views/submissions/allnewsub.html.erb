@@ -40,13 +40,12 @@
 <% end %>
 
 <form action="" method="get" name="search_section_and_levels">
-  <div class="row" style="margin-bottom:5px;">
-  <div class="col-md-7"></div>
-  <div class="col-md-3" style="padding-bottom:5px;">
-  <%= select_tag :section, options_for_select(section_choices, section).html_safe, :class =>"form-control", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
+  <div class="grid mb-1" style="--bs-columns:12; --bs-gap:10px;">
+  <div class="g-col-12 g-start-md-6 g-col-md-4 g-start-lg-8 g-col-lg-3">
+  <%= select_tag :section, options_for_select(section_choices, section).html_safe, :class =>"form-select", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
   </div>
-  <div class="col-md-2" style="padding-bottom:5px;">
-  <%= select_tag :levels, options_for_select(levels_choices, levels_int).html_safe, :class =>"form-control", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
+  <div class="g-col-12 g-col-md-3 g-col-lg-2">
+  <%= select_tag :levels, options_for_select(levels_choices, levels_int).html_safe, :class =>"form-select", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
   </div>
   </div>
 </form>
@@ -95,8 +94,8 @@
 <center>
 
 <!-- Endroit pour dessiner le graphique des soumissions en attente -->
-<div id="contenant" style="width:100%; max-width:900px; height:280px; position:relative; display:block; margin-top:20px; margin-bottom:10px;">
-<canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top: 0px;">
+<div id="contenant" class="mt-3 mb-2" style="width:100%; max-width:900px; height:280px; position:relative; display:block;">
+<canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
 </div>
@@ -105,102 +104,102 @@ Votre navigateur ne supporte pas les canvas.
 
 
 <script type="text/javascript">
-  $(document).ready( function(){
+  function respondCanvas() {
+    // Check light or dark theme
+    var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+    
+    // Get the canvas & context
+    var c = document.getElementById('myCanvas');
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    c.setAttribute('width', container.offsetWidth); //max width
+    c.setAttribute('height', 280*container.offsetWidth/900.0); //max height
 
-  //Get the canvas & context
-  var c = $('#myCanvas');
-  var ctx = c.get(0).getContext('2d');
-  var container = $(c).parent();
+    container.style.height = 280*container.offsetWidth/900.0 + "px"
 
-  //Run function when browser  resize
-  $(window).resize( respondCanvas );
+    // Draw content
 
-  function respondCanvas(){
-  c.attr('width', $(container).width() ); //max width
-  c.attr('height', 280*$(container).width()/900.0); //max height
-
-  document.getElementById('contenant').style.height = 280*$(container).width()/900.0 + "px"
-
-  //Redraw & reposition content
-  var x = c.width();
-  var y = c.height();
-
-  var pct = c.width()/900.0;
-  
-  // Rectangle et fond blanc
-  ctx.beginPath();
-  ctx.rect(pct*50, pct*5, pct*806, pct*250);
-  ctx.fillStyle = 'white';
-  ctx.fill(); 
-  
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = 'black';
-  ctx.stroke();  
-  
-  // Labels axe des X
-  ctx.font="12px Arial";
-  ctx.fillStyle = 'black';
-  ctx.textAlign = 'center';
-  
-  ctx.setLineDash([10, 10]);
-  ctx.beginPath();
-  
-  if(pct > 0.6)
-  {
-    <% d = date_end %>
-    <% num_days = 0 %>
-    <% while(d > date_begin - 1.minute) %>
-      <% ratio = (d - date_begin)/(date_end - date_begin) %>
-      ctx.fillText("J-<%= num_days %>",pct*<%= 50+(800*ratio) %>,pct*265+7);
-      <% num_days = num_days + 1 %>
-      <% d = date_end - (num_days).days %>
+    var pct = c.offsetWidth/900.0;
+    
+    // Rectangle et fond blanc
+    ctx.beginPath();
+    ctx.rect(pct*50, pct*5, pct*806, pct*250);
+    ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
+    ctx.fill(); 
+    
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = (is_dark ? 'white' : 'black');
+    ctx.stroke();  
+    
+    // Labels axe des X
+    ctx.font="12px Arial";
+    ctx.fillStyle = (is_dark ? 'white' : 'black');
+    ctx.textAlign = 'center';
+    
+    ctx.setLineDash([10, 10]);
+    ctx.beginPath();
+    
+    if(pct > 0.6)
+    {
+      <% d = date_end %>
+      <% num_days = 0 %>
+      <% while(d > date_begin - 1.minute) %>
+        <% ratio = (d - date_begin)/(date_end - date_begin) %>
+        ctx.fillText("J-<%= num_days %>",pct*<%= 50+(800*ratio) %>,pct*265+7);
+        <% num_days = num_days + 1 %>
+        <% d = date_end - (num_days).days %>
+      <% end %>
+    }
+    
+    // Barres horizontales (et labels axe des Y)
+    if (pct < 0.7)
+    {
+      ctx.font="9px Arial";
+    }
+    
+    ctx.textAlign = 'right';
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = (is_dark ? '#bbbbbb' : 'grey');
+    <% i = graph_maxi - 1 %>
+    <% i_step = [(i/5.0).ceil, 1].max %>
+    <% while(i > 0) %>
+      haut = <%= 255-240*i/graph_maxi.to_f %>
+      ctx.moveTo(pct*50, pct*(haut));
+      ctx.lineTo(pct*856, pct*(haut));
+      ctx.fillText("<%= i %>", pct*44-2, pct*(haut+4));
+      <% i = i - i_step %>
     <% end %>
-  }
-  
-  // Barres horizontales (et labels axe des Y)
-  if (pct < 0.7)
-  {
-    ctx.font="9px Arial";
-  }
-  
-  ctx.textAlign = 'right';
-  ctx.lineWidth = 0.5;
-  ctx.strokeStyle = 'grey';
-  <% i = graph_maxi - 1 %>
-  <% i_step = [(i/5.0).ceil, 1].max %>
-  <% while(i > 0) %>
-    haut = <%= 255-240*i/graph_maxi.to_f %>
-    ctx.moveTo(pct*50, pct*(haut));
-    ctx.lineTo(pct*856, pct*(haut));
-    ctx.fillText("<%= i %>", pct*44-2, pct*(haut+4));
-    <% i = i - i_step %>
-  <% end %>
-  ctx.stroke();
-  
-  // Graphique: entre 50 et 850 --> largeur totale 800, à diviser en num_intervals
-  
-  ctx.beginPath();
-  ctx.moveTo(pct*850, pct*<%= 255 - 240*graph[num_intervals]/graph_maxi.to_f %>);
-  ctx.strokeStyle = 'orange';
-  ctx.setLineDash([]);
-  ctx.lineWidth = 2;
-  <% width_one_interval = 800.0 / num_intervals %>
-  <% (r.first).downto(r.last).each do |i| %>
-    ctx.lineTo(pct*<%= 50+(i+1)*width_one_interval %>, pct*<%= 255 - 240*graph[i]/graph_maxi.to_f %>);
-  <% end %>
-  ctx.stroke() 
-  
+    ctx.stroke();
+    
+    // Graphique: entre 50 et 850 --> largeur totale 800, à diviser en num_intervals
+    
+    ctx.beginPath();
+    ctx.moveTo(pct*850, pct*<%= 255 - 240*graph[num_intervals]/graph_maxi.to_f %>);
+    ctx.strokeStyle = 'orange';
+    ctx.setLineDash([]);
+    ctx.lineWidth = 2;
+    <% width_one_interval = 800.0 / num_intervals %>
+    <% (r.first).downto(r.last).each do |i| %>
+      ctx.lineTo(pct*<%= 50+(i+1)*width_one_interval %>, pct*<%= 255 - 240*graph[i]/graph_maxi.to_f %>);
+    <% end %>
+    ctx.stroke() 
   }
 
-  //Initial call
-  respondCanvas();
-
+  window.addEventListener("resize", () => {
+    respondCanvas();
   });
+  
+  window.addEventListener("theme-change", () => {
+    respondCanvas();
+  });
+  
+  respondCanvas();
 </script>
 
 
 <% if @submissions.size == 0 %>
-  Il n'y a plus rien à corriger, beau boulot !
+  <p>Il n'y a plus rien à corriger, beau boulot !</p>
 <% else %>
 
   <% if !current_user.sk.admin? %>
@@ -211,7 +210,7 @@ Votre navigateur ne supporte pas les canvas.
   <% end %>
 
   <table class="table table-bordered">
-  <tr><th style="text-align:center;">Statut</th><th class="hidden-small">Date de la soumission</th><th>Qui</th><th class="hidden-small">Correcteur</th><th style="text-align:center;">Type</th><th class="hidden-small" style="text-align:center;">Long.</th><th></th></tr>
+  <tr class="table-ld-header"><th class="text-center">Statut</th><th class="d-none d-lg-table-cell">Date de la soumission</th><th>Qui</th><th class="d-none d-lg-table-cell">Correcteur</th><th class="text-center">Type</th><th class="d-none d-lg-table-cell text-center">Long.</th><th></th></tr>
   <% @submissions.each do |n| %>
     <% hidden_sub = (!current_user.sk.admin? && problem_solved[n.problem_id] != true) %>
     <%= render 'submissions/showline', s: n, hide_last_activity: true, show_section_and_level: true, hidden_sub: hidden_sub, show_num_waiting_days_from: "created_at", show_correctors: true, show_content_length: true %>

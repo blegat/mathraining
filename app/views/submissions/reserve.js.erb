@@ -1,28 +1,34 @@
-var correct1 = document.getElementById("correct1");
-var correct2 = document.getElementById("correct2");
-var correct3 = document.getElementById("correct3");
+var div_reserved_by_nobody = document.getElementById("div_reserved_by_nobody");
+var div_reserved_by_other = document.getElementById("div_reserved_by_other");
+var div_reserved_by_me = document.getElementById("div_reserved_by_me");
 
 var MI = document.getElementById("MathInput");
-var PJ = document.getElementById("PJ");
+var PJ = document.getElementById("addFile");
 var B1 = document.getElementById("B1");
 var B2 = document.getElementById("B2");
 
-correct1.style.display = "none"
-correct2.style.display = "none"
-correct3.style.display = "none"
+var line_sub = document.getElementById("line_sub_<%= @submission.id %>")
+
+div_reserved_by_nobody.style.display = "none"
+div_reserved_by_other.style.display = "none"
+div_reserved_by_me.style.display = "none"
 
 <% if @what == 2 %>
   txt = "Cette soumission est en train d'être corrigée par <b><%= @correct_name %></b>."
   <% if current_user.sk.root? %>
     txt = txt + " Elle a été réservée le <%= write_date(@reservation_date) %>."
   <% end %>
-  var correct2_text = document.getElementById("correct2_text");
-  correct2_text.innerHTML = txt
-  correct2.style.display = "block"
+  var text_reserved_by_other = document.getElementById("text_reserved_by_other");
+  text_reserved_by_other.innerHTML = txt
+  div_reserved_by_other.style.display = "block"
+  line_sub.classList.add('table-ld-warning-reder')
+  line_sub.classList.remove('table-ld-warning')
 <% elsif @what == 3 %>
-  correct3.style.display = "block"
+  div_reserved_by_me.style.display = "block"
   MI.disabled = false
   PJ.disabled = false
   B1.disabled = false
   B2.disabled = false
+  line_sub.classList.add('table-ld-warning-greener')
+  line_sub.classList.remove('table-ld-warning')
 <% end %>

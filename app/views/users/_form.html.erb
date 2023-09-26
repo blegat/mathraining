@@ -1,109 +1,114 @@
 <%= render 'shared/error_messages', object: f.object %>
 
 <!-- Prénom -->
-<div class="form-group">
-  <%= f.label :first_name %>
+<div class="mb-2">
+  <%= f.label :first_name, :class => "form-label" %>
   <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !current_user.root) %>
 </div>
 
 <!-- Nom -->
-<div class="form-group">
-  <%= f.label :last_name %>
+<div class="mb-2">
+  <%= f.label :last_name, :class => "form-label" %>
   <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !current_user.root) %>
 </div>
 
 <% if(modif && !@user.can_change_name) %>
-  (Vous ne pouvez plus modifier votre nom car vous avez abusé de cette possibilité.)<br/>
+  <p>(Vous ne pouvez plus modifier votre nom car vous avez abusé de cette possibilité.)</p>
 <% elsif modif && !@user.root %>
-  (Les changements de noms sont sujets à vérification, dans un souci d'uniformité entre utilisateurs. En cas d'abus, la possibilité de modifier votre nom vous sera retirée.)<br/>
+  <p>(Les changements de noms sont sujets à vérification, dans un souci d'uniformité entre utilisateurs. En cas d'abus, la possibilité de modifier votre nom vous sera retirée.)</p>
 <% end %>
 
 <!-- Voir nom entier? -->
-<div class="radio">
-<label>
-  <%= f.radio_button :see_name, 1 %>
+<div class="form-check">
+<label class="form-check-label">
+  <%= f.radio_button :see_name, 1, :class => "form-check-input" %>
   Apparaître avec mon nom entier sur le site.
 </label>
 </div>
-<div class="radio">
-<label>
-  <%= f.radio_button :see_name, 0 %>
+<div class="form-check mb-2">
+<label class="form-check-label">
+  <%= f.radio_button :see_name, 0, :class => "form-check-input" %>
   N'afficher que l'initiale de mon nom de famille.
 </label>
 </div>
 
 <!-- Sexe -->
-<div class="form-group">
-  <%= f.label :sex %><br/>
-  <label class="radio-inline">
-  <%= f.radio_button :sex, 0 %>
-  <span style="margin-right:10px;">Masculin</span>
+<div class="mb-2">
+  <div><%= f.label :sex, :class => "form-label" %></div>
+  <div class="form-check form-check-inline">
+  <label class="form-check-label">
+  <%= f.radio_button :sex, 0, :class => "form-check-input" %>
+  Masculin
   </label>
-  <label class="radio-inline">
-  <%= f.radio_button :sex, 1 %>
+  </div>
+  
+  <div class="form-check form-check-inline">
+  <label class="form-check-label">
+  <%= f.radio_button :sex, 1, :class => "form-check-input" %>
   Féminin
   </label>
+  </div>
 </div>
 
 <!-- Année de naissance -->
-<div class="form-group">
-  <%= f.label :year %>
+<div class="mb-2">
+  <%= f.label :year, :class => "form-label" %>
   <% liste = Array.new %>
   <% date = DateTime.now.in_time_zone %>
   <% lastyear = date.year %>
   <% (0..(lastyear-1900)).each do |i| %>
     <% liste.push(lastyear-i) %>
   <% end %>
-  <%= f.select(:year, liste, { :include_blank => (modif ? nil : "Choisir...") }, { :class => "form-control", :style => "width:100px;"}) %>
+  <%= f.select(:year, liste, { :include_blank => (modif ? nil : "Choisir...") }, { :class => "form-select", :style => "width:120px;"}) %>
 </div>
 
 <!-- Pays de résidence -->
-<div class="form-group">
-  <%= f.label :country %>
+<div class="mb-2">
+  <%= f.label :country, :class => "form-label" %>
   <% countries_array = Country.all.map { |c| [c.name, c.id] } %>
-  <%= f.select(:country, options_for_select(countries_array, @user.country_id), { :include_blank => (modif ? nil : "Choisir...") }, { :class => "form-control", :style => "width:250px;" }) %>
+  <%= f.select(:country, options_for_select(countries_array, @user.country_id), { :include_blank => (modif ? nil : "Choisir...") }, { :class => "form-select", :style => "width:250px;" }) %>
 </div>
 
 <!-- Email -->
-<div class="form-group">
-  <%= f.label :email %>
+<div class="mb-2">
+  <%= f.label :email, :class => "form-label" %>
   <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => ((modif && !current_user.admin?) || (@signed_in && current_user.other && !current_user.root))  %>
 </div>
 
 <% if(@signed_in && !current_user.other && current_user.admin?) %>
-  (Vous pouvez modifier votre adresse car vous êtes administrateur.)<br/><br/>
+  <p>(Vous pouvez modifier votre adresse e-mail car vous êtes administrateur.)</p>
 <% end %>
 
 <!-- Confirmation e-mail -->
 <% if !modif %>
-<div class="form-group">
-  <%= f.label :email_confirmation %>
+<div class="mb-2">
+  <%= f.label :email_confirmation, :class => "form-label" %>
   <%= f.email_field :email_confirmation, :class => "form-control", :style => "width:250px;", :disabled => modif %>
 </div>
 <% end %>
 
 <!-- Mot de passe -->
-<div class="form-group">
-  <%= f.label :password %>
+<div class="mb-2">
+  <%= f.label :password, :class => "form-label" %>
   <%= f.password_field :password, :class => "form-control", :style => "width:250px;", :disabled => (@signed_in && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
 <!-- Confirmation mot de passe -->
-<div class="form-group">
-  <%= f.label :password_confirmation %>
+<div class="mb-2">
+  <%= f.label :password_confirmation, :class => "form-label" %>
   <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (@signed_in && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
 <% if !modif && Rails.env.production? %>
-  Veuillez prouver que vous n'êtes pas un robot.<br/><br/>
+  <p class="mb-2">Veuillez prouver que vous n'êtes pas un robot.</p>
   <%= recaptcha_tags :display => { :theme => "clean" } %>
-  <br/>
+  <div class="mb-2"></div>
 <% end %>
 
 <!-- Accepter Google Analytics -->
-<div class="checkbox">
-<%= f.label :accept_analytics, :style => "margin-bottom:5px;" do %>
-  <%= f.check_box :accept_analytics %>
+<div class="form-check">
+<%= f.label :accept_analytics, :class => "form-check-label mb-1" do %>
+  <%= f.check_box :accept_analytics, :class => "form-check-input" %>
   J'accepte de contribuer aux statistiques de visites anonymes de Mathraining en autorisant les cookies de Google Analytics.
   Ces statistiques permettent uniquement aux administrateurs d'en savoir plus sur la manière dont les utilisateurs naviguent sur le site, mais elles ne permettent aucunement d'identifier les visiteurs.
   Le nombre total de pages visitées par mois est par exemple un indicateur de la popularité du site, qui peut être mis en valeur à différentes occasions.
@@ -112,16 +117,18 @@
 
 <% if !modif %>
   <!-- Lire et accepter la politique de confidentialité -->
-  <div class="checkbox">
-  <label>
-    <input type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
+  <div class="form-check">
+  <label class="form-check-label">
+    <input type="checkbox" class="form-check-input" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
     J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> de Mathraining.
   </label>
   </div>
-  <div class="checkbox">
-  <label>
-    <input type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
+  <div class="form-check">
+  <label class="form-check-label">
+    <input type="checkbox" class="form-check-input" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
     J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> avec mon tuteur légal.
   </label>
   </div>
 <% end %>
+
+<div class="mb-2"></div>

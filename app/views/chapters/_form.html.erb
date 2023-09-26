@@ -1,28 +1,28 @@
 <%= render 'shared/error_messages', object: f.object %>
 
 <!-- Titre -->
-<div class="form-group">
-  <%= f.label :name %>
+<div class="mb-2">
+  <%= f.label :name, :class => "form-label" %>
   <%= f.text_field :name, :class => "form-control", :style => "width:100%; max-width:400px;" %>
 </div>
 
 <!-- Résumé -->
-<div class="form-group">
-  <%= f.label :description %>
-  <div class="well" id="MathPreview"></div>
-  <div class="well hidden-preview" id="MathBuffer"></div>
-  <%= render 'theories/font' %>
-  <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+<div class="mb-2">
+  <%= f.label :description, :class => "form-label" %>
+  <%= render 'shared/preview' %>
+  <%= render 'shared/font' %>
+  <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  <script>initAndUpdatePreviewWhenPossible()</script>
 </div>
 
 <!-- Niveau -->
-<div class="form-group">
-  <%= f.label :level %>
-  <%= f.number_field :level, :class => "form-control", :style => "width:50px;", :min => 1, :max => (@section.fondation ? 1 : 3) %>
+<div class="mb-2">
+  <%= f.label :level, :class => "form-label" %>
+  <%= f.number_field :level, :class => "form-control", :style => "width:70px;", :min => 1, :max => (@section.fondation ? 1 : 3) %>
 </div>
 
 <!-- Auteur(s) -->
-<div class="form-group">
-  <%= f.label :author %>
+<div class="mb-2">
+  <%= f.label :author, :class => "form-label" %>
   <%= f.text_field :author, :class => "form-control", :style => "width:100%; max-width:400px;" %>
 </div>

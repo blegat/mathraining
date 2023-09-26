@@ -6,7 +6,7 @@ var choisi = dest.options[dest.selectedIndex].value;
 
 for(i = dest.options.length - 1 ; i >= 1 ; i--)
 {
-    dest.remove(i);
+  dest.remove(i);
 }
 
 <% User.select(:id, :rating, :first_name, :last_name, :see_name, :admin).where("id != ? AND active = ?", current_user.sk.id, true).order("first_name, last_name, rating").each do |u| %>

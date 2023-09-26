@@ -75,7 +75,7 @@ describe "Subject pages" do
       before { visit subjects_path }
       it do
         should have_selector("h1", text: "Forum")
-        should have_link("Créer un sujet")
+        should have_button("Créer un sujet")
       
         should have_link(sub_nothing.title)
         should have_link(sub_category.title)
@@ -406,7 +406,7 @@ describe "Subject pages" do
         let!(:old_num_messages) { Message.count }
         before do
           fill_in "migreur", with: sub_user.id
-          click_button "Do it !"
+          click_button "Migrer"
           sub_user.reload
           mes.reload
         end
@@ -427,7 +427,7 @@ describe "Subject pages" do
       describe "and migrates it to a wrong subject" do
         before do
           fill_in "migreur", with: Subject.order(:id).last.id + 1
-          click_button "Do it !"
+          click_button "Migrer"
         end
         it { should have_error_message("Ce sujet n'existe pas.") }
       end
@@ -437,7 +437,7 @@ describe "Subject pages" do
           sub_user.created_at = sub_other_user.created_at + 1.day
           sub_user.save
           fill_in "migreur", with: sub_user.id
-          click_button "Do it !"
+          click_button "Migrer"
         end
         it { should have_error_message("Le sujet le plus récent doit être migré vers le sujet le moins récent.") }
       end

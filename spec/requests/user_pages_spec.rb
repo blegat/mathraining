@@ -59,7 +59,10 @@ describe "User pages" do
       
       describe "after saving the user" do
         before { click_button "Créer mon compte" }
-        it { should have_success_message("confirmer votre inscription") }
+        specify do
+          expect(page).to have_success_message("confirmer votre inscription")
+          expect(User.order(:id).last.email_confirm).to eq(false)
+        end
       end
     end
     
@@ -360,13 +363,13 @@ describe "User pages" do
     describe "visits another user profile" do
       before { visit user_path(other_zero_user) }
       it do
-        should have_link("Envoyer un message")
-        should have_link("Suivre")
+        should have_button("Envoyer un message")
+        should have_button("Suivre")
       end
       
       describe "and follows him" do
         before do
-          click_link("Suivre")
+          click_button("Suivre")
           visit followed_users_path
         end
         it { should have_link(other_zero_user.name, href: user_path(other_zero_user)) }
@@ -374,7 +377,7 @@ describe "User pages" do
         describe "and stops to follow him" do
           before do
             visit user_path(other_zero_user)
-            click_link "Ne plus suivre"
+            click_button "Ne plus suivre"
             visit followed_users_path
           end
           it { should have_no_link(other_zero_user.name, href: user_path(other_zero_user)) }
@@ -387,7 +390,7 @@ describe "User pages" do
             u = FactoryGirl.create(:user)
             zero_user.followed_users << u
           end
-          click_link("Suivre")
+          click_button("Suivre")
         end
         it { should have_error_message("Vous ne pouvez pas suivre plus de 30 utilisateurs.") }
       end
@@ -604,7 +607,7 @@ describe "User pages" do
       it do
         should have_link(zero_user.name, href: user_path(zero_user))
         should have_no_link(ranked_user.name, href: user_path(ranked_user))
-        should have_button("Modifier les niveaux et couleurs")
+        should have_link("Modifier les niveaux et couleurs")
       end
     end
     

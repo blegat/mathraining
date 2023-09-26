@@ -13,9 +13,9 @@ function checkChapter() {
       chapter = -category/1000;
     }
 
-    <% if @edit && !@subject.question_id.nil? %>
+    <% if is_edit && !@subject.question_id.nil? %>
     	$.getScript("<%= new_subject_url %>?chap=" + chapter + "&exo_id=<%= @subject.question_id %>")
-    <% elsif @edit && !@subject.problem_id.nil? %>
+    <% elsif is_edit && !@subject.problem_id.nil? %>
     	$.getScript("<%= new_subject_url %>?chap=" + chapter + "&prob_id=<%= @subject.problem_id %>")
     <% else %>
     	$.getScript("<%= new_subject_url %>?chap=" + chapter)
@@ -35,20 +35,15 @@ function checkProblem() {
 }
 </script>
 
-<% if @postfix.nil? %>
-  <% @postfix = "" %>
+<% if !(defined? postfix) %>
+  <% postfix = "" %>
 <% end %>
 
 <% erreur = false %>
 
 <% if !session["errorSubject"].nil? %>
   <% erreur = true %>
-  <% erreurs = session["errorSubject"] %>
-  <div id="error_explanation">
-    <div class="alert alert-danger">
-      <%= errors_to_list(erreurs) %>
-    </div>
-  </div>
+  <%= render 'shared/error_messages', errors: session["errorSubject"] %>
 <% end %>
 
 <!-- Calcul de la liste des sections et chapitres -->
@@ -69,7 +64,7 @@ function checkProblem() {
 
 <% if erreur %>
   <% selected_category = session[:oldAll][:category_id].to_i %>
-<% elsif @edit %>
+<% elsif is_edit %>
   <% if !@subject.section_id.nil? %>
     <% selected_category = 1000*@subject.section_id %>
   <% elsif !@subject.category_id.nil? %>
@@ -93,9 +88,9 @@ function checkProblem() {
 <% end %>
 
 <!-- Catégorie -->
-<div class="form-group">
-  <%= f.label :category_id, :disabled => current_user.other %>
-  <%= f.select(:category_id, grouped_options_for_select([['En dehors des cours', liste], ['En lien avec les cours', liste2]], selected_category), {}, { :class => "form-control", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkCategory();") }) %>
+<div class="mb-2">
+  <%= f.label :category_id, :class => "form-label", :disabled => current_user.other %>
+  <%= f.select(:category_id, grouped_options_for_select([['En dehors des cours', liste], ['En lien avec les cours', liste2]], selected_category), {}, { :class => "form-select", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkCategory();") }) %>
 </div>
 
 <% selected_chapter = 0 %>
@@ -108,7 +103,7 @@ function checkProblem() {
   <% if !session[:oldAll][:chapter_id].nil? %>
     <% selected_chapter = session[:oldAll][:chapter_id].to_i %>
   <% end %>
-<% elsif @edit && selected_category > 999 %>
+<% elsif is_edit && selected_category > 999 %>
   <% sect = @subject.section %>
   <% seechap = true %>
   <% if !@subject.chapter_id.nil? %>
@@ -139,9 +134,9 @@ function checkProblem() {
   <% end %>
 <% end %>
 
-<div class="form-group">
-  <%= f.label :chapter_id, :disabled => current_user.other, :style => "#{'display:none;' if !seechap}", :id => "label_chap" %>
-  <%= f.select(:chapter_id, options_for_select(listechap, selected_chapter).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px; #{'display:none;' if !seechap}", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
+<div class="mb-2">
+  <%= f.label :chapter_id, :class => "form-label", :disabled => current_user.other, :style => "#{'display:none;' if !seechap}", :id => "label_chap" %>
+  <%= f.select(:chapter_id, options_for_select(listechap, selected_chapter).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{'display:none;' if !seechap}", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
 </div>
 
 <% selected_exercise = 0 %>
@@ -152,7 +147,7 @@ function checkProblem() {
   <% seeexo = true %>
   <% chap = Chapter.find(selected_chapter) %>
   <% selected_exercise = session[:oldAll][:question_id].to_i %>
-<% elsif @edit && selected_chapter > 0 %>
+<% elsif is_edit && selected_chapter > 0 %>
   <% seeexo = true %>
   <% chap = @subject.chapter %>
   <% if !@subject.question_id.nil? %>
@@ -200,11 +195,11 @@ function checkProblem() {
   <% end %>
 <% end %>
 
-<div class="form-group">
-  <%= f.label :question_id, :disabled => current_user.other, :style => "#{ 'display:none;' if !seeexo }", :id => "label_exo" %>
-  <div id="alert-no-exercise-access" style="color:red; <%= 'display:none;' if exovisibles %> margin-bottom:7px;">Vous n'avez pas accès aux exercices de ce chapitre.</div>
-  <div id="alert-some-exercise-hidden" style="color:orange; <%= 'display:none;' if !some_exo_hidden %> margin-bottom:7px;">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
-  <%= f.select(:question_id, options_for_select(listeexo, selected_exercise).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :disabled => current_user.other, :onchange => ("javascript: checkQuestion();")}) %>
+<div class="mb-2">
+  <%= f.label :question_id, :class => "form-label", :disabled => current_user.other, :style => "#{ 'display:none;' if !seeexo }", :id => "label_exo" %>
+  <p id="alert-no-exercise-access" style="<%= 'display:none;' if exovisibles %>" class="mb-2 text-color-red">Vous n'avez pas accès aux exercices de ce chapitre.</p>
+  <p id="alert-some-exercise-hidden" style="<%= 'display:none;' if !some_exo_hidden %>" class="mb-2 text-color-orange">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
+  <%= f.select(:question_id, options_for_select(listeexo, selected_exercise).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :disabled => current_user.other, :onchange => ("javascript: checkQuestion();")}) %>
 </div>
 
 
@@ -215,7 +210,7 @@ function checkProblem() {
 <% if erreur && selected_chapter == -1 %>
   <% seeprob = true %>
   <% selected_problem = session[:oldAll][:problem_id].to_i %>
-<% elsif @edit && selected_chapter == -1 %>
+<% elsif is_edit && selected_chapter == -1 %>
   <% seeprob = true %>
   <% if !@subject.problem_id.nil? %>
     <% selected_problem = @subject.problem_id %>
@@ -251,18 +246,18 @@ function checkProblem() {
 <% end %>
 
 
-<div class="form-group">
-  <%= f.label :problem_id, :disabled => current_user.other, :style => "#{ 'display:none;' if !seeprob }", :id => "label_prob" %>
-  <div id="alert-no-problem-access" style="color:red; <%= 'display:none;' if probvisibles %> margin-bottom:7px;">Vous n'avez pas accès aux problèmes.</div>
-  <div id="alert-some-problem-hidden" style="color:orange; <%= 'display:none;' if !some_prob_hidden %> margin-bottom:7px;">Certains problèmes n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</div>
-  <%= f.select(:problem_id, options_for_select(listeprob, selected_problem).html_safe, {}, { :class => "form-control", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeprob }", :disabled => current_user.other, :onchange => ("javascript: checkProblem();")}) %>
+<div class="mb-2">
+  <%= f.label :problem_id, :class => "form-label", :disabled => current_user.other, :style => "#{ 'display:none;' if !seeprob }", :id => "label_prob" %>
+  <p id="alert-no-problem-access" class="text-color-red" style="<%= 'display:none;' if probvisibles %>">Vous n'avez pas accès aux problèmes.</p>
+  <p id="alert-some-problem-hidden" class="text-color-orange" style="<%= 'display:none;' if !some_prob_hidden %>">Certains problèmes n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
+  <%= f.select(:problem_id, options_for_select(listeprob, selected_problem).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeprob }", :disabled => current_user.other, :onchange => ("javascript: checkProblem();")}) %>
 </div>
 
 
 <!-- Titre -->
 <% if selected_exercise > 0 || selected_problem > 0 %>
-  <div class="form-group">
-    <%= f.label :title, :disabled => current_user.other %>
+  <div class="mb-2">
+    <%= f.label :title, :class => "form-label", :disabled => current_user.other %>
     <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled", :value => forced_title %>
     <input type="hidden" id="hidden_title" name="subject[title]" value="<%= forced_title %>" />
   </div>
@@ -270,29 +265,33 @@ function checkProblem() {
   <% tit = "" %>
   <% if erreur %>
     <% tit = session[:oldAll][:title] %>
-  <% elsif @edit %>
+  <% elsif is_edit %>
     <% tit = @subject.title %>
   <% end %>
-  <div class="form-group">
-    <%= f.label :title, :disabled => current_user.other %>
+  <div class="mb-2">
+    <%= f.label :title, :class => "form-label", :disabled => current_user.other %>
     <%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :value => tit %>
     <input type="hidden" id="hidden_title" name="" value="" />
   </div>
 <% end %>
 
 <!-- Message -->
-<div class="form-group">
+<div class="mb-2">
   <% cont = "" %>
   <% if erreur %>
     <% cont = session[:oldAll][:content] %>
-  <% elsif @edit %>
+  <% elsif is_edit %>
     <% cont = @subject.content %>
   <% end %>
-  <%= f.label :content, :disabled => current_user.other %>
-  <div class="well" id="MathPreview<%= @postfix %>"></div>
-  <div class="well hidden-preview" id="MathBuffer<%= @postfix %>"></div>
-  <%= render 'subjects/smiley', hiddentext: true %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput#{@postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
+  <%= f.label :content, :class => "form-label", :disabled => current_user.other %>
+  <%= render 'shared/preview', postfix: postfix %>
+  <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
+  <% if is_edit %>
+    <!-- Do not call initAndUpdatePreviewSafeWhenPossible(): it will be done only after rolling to show the form -->
+  <% else %>
+    <script>initAndUpdatePreviewSafeWhenPossible(false, true)</script>
+  <% end %>
 </div>
 
 <!-- Case correcteurs -->
@@ -300,31 +299,34 @@ function checkProblem() {
   <% checked = "" %>
   <% if erreur %>
     <% checked = "checked" if session[:oldAll][:for_correctors].to_i == 1 %>
-  <% elsif @edit %>
+  <% elsif is_edit %>
     <% checked = "checked" if @subject.for_correctors %>
   <% end %>
-  <div class="checkbox">
-  <label>
-    <%= f.check_box :for_correctors, :disabled => current_user.other, :checked => checked %>
+  <div class="form-check mb-1">
+  <label class="form-check-label">
+    <%= f.check_box :for_correctors, :class => "form-check-input", :disabled => current_user.other, :checked => checked %>
     Cochez si ce sujet est réservé aux correcteurs.
   </label>
   </div>
 <% end %>
+
+<% someCheckBox = false %>
 
 <!-- Case important -->
 <% if current_user.sk.admin? %>
   <% checked = "" %>
   <% if erreur %>
     <% checked = "checked" if session[:oldAll][:important].to_i == 1 %>
-  <% elsif @edit %>
+  <% elsif is_edit %>
     <% checked = "checked" if @subject.important %>
   <% end %>
-  <div class="checkbox">
-  <label>
-    <%= f.check_box :important, :disabled => current_user.other, :checked => checked %>
+  <div class="form-check mb-1">
+   <label class="form-check-label">
+    <%= f.check_box :important, :class => "form-check-input", :disabled => current_user.other, :checked => checked %>
     Cochez si ce sujet doit toujours apparaître en premier lieu.
   </label>
   </div>
+  <% someCheckBox = true %>
 <% end %>
 
 <!-- Case wépion -->
@@ -332,55 +334,50 @@ function checkProblem() {
   <% checked = "" %>
   <% if erreur %>
     <% checked = "checked" if session[:oldAll][:for_wepion].to_i == 1 %>
-  <% elsif @edit %>
+  <% elsif is_edit %>
     <% checked = "checked" if @subject.for_wepion %>
   <% end %>
-  <div class="checkbox">
-  <label>
-    <%= f.check_box :for_wepion, :disabled => current_user.other, :checked => checked %>
+  <div class="form-check mb-1">
+  <label class="form-check-label">
+    <%= f.check_box :for_wepion, :class => "form-check-input", :disabled => current_user.other, :checked => checked %>
     Cochez si ce sujet est destiné aux étudiants de Wépion.
   </label>
   </div>
+  <% someCheckBox = true %>
 <% end %>
 
 <!-- Case e-mails aux groupes A et/ou B -->
-<% if current_user.sk.root && !@edit %>
-  <div class="checkbox">
-  <label>
-    <input type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
+<% if current_user.sk.root && !is_edit %>
+  <div class="form-check mb-1">
+  <label class="form-check-label">
+    <input class="form-check-input" type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
     Prévenir tout le groupe A de ce nouveau message par e-mail.
   </label>
   </div>
-  <div class="checkbox">
-  <label>
-    <input type="checkbox" id="groupeB" name="groupeB" value="B" <%= 'disabled="true"' if current_user.other %> >
+  <div class="form-check mb-1">
+  <label class="form-check-label">
+    <input class="form-check-input" type="checkbox" id="groupeB" name="groupeB" value="B" <%= 'disabled="true"' if current_user.other %> >
     Prévenir tout le groupe B de ce nouveau message par e-mail.
   </label>
   </div>
+  <% someCheckBox = true %>
+<% end %>
+
+<% if someCheckBox %>
+  <div class="mb-2"></div>
 <% end %>
 
 <% if !session["errorSubject"].nil? %>
-  <% if @edit %>
-    <script>
-      Rolling.develop_quick("<%= @postfix %>");
-    </script>
+  <% if is_edit %>
+    <script>rollingDevelopQuickWhenPossible("<%= postfix %>", true)</script>
   <% end %>
   <% session.delete("errorSubject") %>
   <% session.delete("oldAll") %>
 <% end %>
 
 <% if !session["successSubject"].nil? %>
-  <% if @edit %>
-    <script>
-      Rolling.showus("<%= @postfix %>");
-    </script>
+  <% if is_edit %>
+    <script>rollingShowusWhenPossible("<%= postfix %>")</script>
   <% end %>
   <% session.delete("successSubject") %>
-<% end %>
-
-<% if !@edit %>
-  <script>
-  PreviewSafe.Init();
-  PreviewSafe.Update();
-  </script>
 <% end %>

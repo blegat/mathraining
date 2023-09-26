@@ -17,8 +17,8 @@
 </h1>
 
 <center>
-  <%= will_paginate @starproposals, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-  <%= will_paginate @starproposals, :style => "margin-top:15px; margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+  <%= will_paginate @starproposals, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+  <%= will_paginate @starproposals, :class => "d-block d-sm-none mb-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <% if @starproposals.size == 0 %>
@@ -29,19 +29,19 @@
   <% end %>
 <% else %>
   <table class="table table-bordered">
-  <tr><th class="hidden-xs hidden-sm">Date</th><% if current_user.sk.root? %><th class="hidden-xs">Proposé par</th><% end %><th>Auteur</th><th style="text-align:center;">Type</th><% if show_all %><th style="text-align:center;">Statut</th><% end %><th></th></tr>
+  <tr class="table-ld-header"><th class="d-none d-lg-table-cell">Date</th><% if current_user.sk.root? %><th class="d-none d-md-table-cell">Proposé par</th><% end %><th>Auteur</th><th class="text-center">Type</th><% if show_all %><th class="text-center">Statut</th><% end %><th></th></tr>
   <% @starproposals.each do |s| %>
-    <tr class="<%= s.color_class %>">
-    <td class="hidden-xs hidden-sm" style="width:200px;"><%= write_date(s.created_at) %></td>
+    <tr class="table-ld-<%= s.color_class %>">
+    <td class="d-none d-lg-table-cell" style="width:200px;"><%= write_date(s.created_at) %></td>
     <% if current_user.sk.root? %>
-      <td class="hidden-xs"><%= raw(s.user.linked_name) %></td>
+      <td class="d-none d-md-table-cell"><%= raw(s.user.linked_name) %></td>
     <% end %>
     <td><%= raw(s.submission.user.linked_name) %></td>
-    <td style="text-align:center; width:100px;"><%= s.section_short_abbreviation %> <%= s.problem_level %></td>
+    <td class="text-center" style="width:100px;"><%= s.section_short_abbreviation %> <%= s.problem_level %></td>
     <% if show_all %>
-      <td style="text-align:center; width:110px;"><%= s.status_string %></td>
+      <td class="text-center" style="width:110px;"><%= s.status_string %></td>
     <% end %>
-    <td style="text-align:center; width:54px;"><%= link_to "Voir", problem_path(s.submission.problem_id, :sub => s.submission_id) %></td>
+    <td class="text-center" style="width:54px;"><%= link_to "Voir", problem_path(s.submission.problem_id, :sub => s.submission_id) %></td>
     </tr>
   <% end %>
   </table>

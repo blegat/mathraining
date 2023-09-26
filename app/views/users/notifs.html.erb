@@ -2,29 +2,9 @@
 
 <h1><%= title_1("Nouvelles réponses") %></h1>
 
-<!-- Style pour la barre de défilement dans le tableau -->
-<style type="text/css">
-
-html>body thead.fixed tr {
-  display: block;
-}
-
-html>body tbody.scroll {
-  display: block;
-  max-height: 500px;
-  overflow-y: scroll;
-  width: 100%;
-}
-</style>
-
 <table class="table table-bordered" style="width:auto;">
-<thead class="fixed">
-<tr><th style="text-align:center; width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th class="hidden-xs" style="width:250px;">Dernière activité</th><th style="width:70px;"></th></tr>
-</thead>
-<tbody class="scroll">
-<% @new = true %>
+<tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th class="d-none d-sm-table-cell" style="width:250px;">Dernière activité</th><th></th></tr>
 <% @notifs.each do |n| %>
   <%= render 'submissions/showline', s: n.submission, hide_user: true %>
 <% end %>
-</tbody>
 </table>

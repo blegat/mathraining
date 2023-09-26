@@ -17,27 +17,25 @@
 
 <!-- Résumé -->
 <h3>Résumé</h3>
-<p><%= raw(htmlise(@chapter.description)) %></p>
+<%= raw(htmlise(@chapter.description)) %>
 
 <!-- Auteur(s) et date de publication -->
 <% author_ok = (!@chapter.author.nil? && @chapter.author.size != 0) %>
 <% publication_ok = !@chapter.publication_date.nil? %>
 <% if author_ok || publication_ok %>
-  <br/>Ce chapitre a été
+  <p class="mt-4">Ce chapitre a été
   <% if author_ok %>
     écrit par <b><%= @chapter.author %></b><%= "." if !publication_ok %><%= " et " if publication_ok %>
   <% end %>
   <% if publication_ok %>
     mis en ligne le <b><%= write_date_only(@chapter.publication_date) %></b>.
   <% end %>
+  </p>
 <% end %>
-
-<br/>
 
 <!-- Modifier / Supprimer -->
 <% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
-  <br/>
-  <center>
+  <p class="text-center">
   <%= link_to "Modifier ce chapitre", edit_chapter_path(@chapter) %>
   
   <% total = @section.chapters.where(:level => @chapter.level).count %>
@@ -58,5 +56,5 @@
   <% if !@chapter.online && current_user.sk.admin? %>
     | <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce chapitre ?" } %>
   <% end %>
-  </center>
+  </p>
 <% end %>

@@ -1,17 +1,12 @@
-<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
-
 <% @submission = problem.submissions.where(:user => current_user.sk, :status => :draft).first %>
 
 <%= form_for :submission, url: problem_submission_update_draft_path(problem, @submission), :html => { :multipart => true } do |f| %>
 
   <!-- Nouvelle soumission -->
   <h3>Nouvelle soumission</h3>
+  
   <%= render 'submissions/form', f: f, form_disabled: @no_new_submission %>
-
-  <%= render 'subjects/files', s: @submission %>
-  <span id="spanFiles"></span>
-  <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
-  <br/><br/>
+  <%= render 'shared/edit_files', s: @submission, disable: @no_new_submission %>
   
   <script type="text/javascript">
   function checkChecked() {
@@ -22,21 +17,18 @@
   }
   </script>
   
-  <label style="font-weight:normal;">
-    <input type="checkbox" id="consent" name="consent" value="1" <%= 'disabled="disabled"' if @no_new_submission %> onchange="javascript:checkChecked();">
-    Je comprends que les correcteurs du site sont bénévoles et vont corriger cette solution pendant leur temps libre pour me faire progresser.
-    Je certifie dès lors que cette solution est le fruit de mon travail et qu'elle ne provient pas d'une source extérieure.
+  <div class="form-check mb-2">
+  <label class="form-check-label">
+    <input class="form-check-input" type="checkbox" id="consent" name="consent" value="1" <%= 'disabled="disabled"' if @no_new_submission %> onchange="javascript:checkChecked();">
+    Je comprends que les correcteurs sont bénévoles et vont corriger cette solution pendant leur temps libre pour me faire progresser.
+    Je certifie donc que cette solution est le fruit de mon travail et qu'elle ne provient pas d'une source extérieure.
     Je garantis également que cette solution n'a pas déjà été soumise via un autre compte Mathraining.<sup>1</sup>
-  </label><br/><br/>
+  </label>
+  </div>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary", id: "send-button", style: "margin-bottom:5px;", :disabled => !Rails.env.test?, data: { confirm: "Êtes-vous sûr de vouloir soumettre cette solution ?" } %>
-  <%= f.submit "Enregistrer le brouillon", class: "btn btn-default btn-grey", style: "margin-bottom:5px;", :disabled => (current_user.other || @no_new_submission) %>
-  <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger", style: "margin-bottom:5px;", :disabled => (current_user.other || @no_new_submission), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce brouillon ?" } %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: { confirm: "Êtes-vous sûr de vouloir soumettre cette solution ?" } %>
+  <%= f.submit "Enregistrer le brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (current_user.other || @no_new_submission) %>
+  <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger mb-1", :disabled => (current_user.other || @no_new_submission), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce brouillon ?" } %>
 <% end %>
 
-<br/><span style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui renvoient une solution déjà envoyée sur un précédent compte.</span>
-
-<script>
-PreviewSafe.Init();
-PreviewSafe.Update();
-</script>
+<p class="mt-2" style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui renvoient une solution déjà envoyée sur un précédent compte.</p>

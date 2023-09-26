@@ -1,14 +1,35 @@
-<div class="noprint">
-<footer style="margin-top:15px;" id="footer">
-<small>
-  <a href="https://github.com/blegat/mathraining" target="_blank">Github repository</a>
-</small>
-<nav>
-<ul>
-  <li><%= link_to "Confidentialité", last_policy_path %></li>
-  <li><%= link_to "À propos", about_path %></li>
-  <li><%= link_to "Contact", contact_path %></li>
-</ul>
-</nav>
+<script type="text/javascript">
+var theme_event = new CustomEvent("theme-change");
+
+function setDarkTheme() {
+  document.documentElement.setAttribute('data-bs-theme', 'dark')
+  
+  window.dispatchEvent(theme_event);
+  
+  var date = new Date();
+  date.setTime(date.getTime() + (30*365*24*60*60*1000));
+  var in_long_time = date.toUTCString();
+  document.cookie = "dark_theme=1; Expires="  + in_long_time + "; Path=/; SameSite=Strict";
+}
+
+function setLightTheme() {
+  document.documentElement.setAttribute('data-bs-theme', 'light')
+  
+  window.dispatchEvent(theme_event);
+  
+  document.cookie = 'dark_theme=0; Path=/; SameSite=Strict; Max-Age=-99999999;';  
+}
+</script>
+
+<footer id="footer" class="d-flex flex-wrap justify-content-between align-items-center pt-1 my-3 border-top">
+  <p class="mb-0 text-body-secondary">
+  <%= link_to "Thème sombre", "javascript:setDarkTheme();", :class => "light-theme-only" %>
+  <%= link_to "Thème clair", "javascript:setLightTheme();", :class => "dark-theme-only" %>
+  </p>
+  
+  <ul class="nav justify-content-end">
+    <li class="nav-item"><%= link_to "Confidentialité", last_policy_path %></li>
+    <li class="nav-item"><%= link_to "À propos", about_path %></li>
+    <li class="nav-item"><%= link_to "Contact", contact_path %></li>
+  </ul>
 </footer>
-</div>

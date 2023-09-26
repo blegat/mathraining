@@ -15,7 +15,7 @@ var tbody = tab.getElementsByTagName("tbody")[0];
 loading.style.display = 'none';
 
 <% if @submissions.empty? %>
-  none.style.display = 'inline';
+  none.style.display = 'block';
 <% else %>
   tab.style.display = 'table';
   tab.style.width = 'auto';

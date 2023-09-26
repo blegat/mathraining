@@ -68,7 +68,7 @@ describe "Virtualtest pages" do
       before { visit virtualtests_path }
       it do
         should have_selector("h1", text: "Tests virtuels")
-        should have_no_selector("h3", text: "Test \##{virtualtest.number}")
+        should have_no_selector("h4", text: "Test \##{virtualtest.number}")
       end
     end
     
@@ -88,7 +88,7 @@ describe "Virtualtest pages" do
       before { visit virtualtests_path }
       it do
         should have_selector("h1", text: "Tests virtuels")
-        should have_selector("h3", text: "Test \##{virtualtest.number}")
+        should have_selector("h4", text: "Test \##{virtualtest.number}")
         should have_content("2 problèmes")
         should have_no_content("Score moyen")
         should have_button("Commencer ce test")
@@ -118,7 +118,7 @@ describe "Virtualtest pages" do
         describe "and visits the virtualtests" do
           before { visit virtualtests_path }
           it do
-            should have_selector("h3", text: "Test \##{virtualtest.number}")
+            should have_selector("h4", text: "Test \##{virtualtest.number}")
             should have_no_content("Score moyen")
             should have_no_button("Commencer ce test")
             should have_link("Problème 1", href: virtualtest_path(virtualtest, :p => problem))
@@ -135,7 +135,7 @@ describe "Virtualtest pages" do
             should have_selector("h3", text: "Énoncé")
             should have_content(problem.statement)
             should have_selector("h3", text: "Votre solution")
-            should have_selector("span", text: "Vous n'avez pas encore envoyé de solution à ce problème.")
+            should have_selector("p", text: "Vous n'avez pas encore envoyé de solution à ce problème.")
             should have_button("Écrire une solution")
             should have_button("Enregistrer cette solution") # NB: Users actually need to click on "Écrire une solution" to see the form
           end
@@ -231,7 +231,7 @@ describe "Virtualtest pages" do
       before { visit virtualtests_path }
       it do
         should have_selector("h1", text: "Tests virtuels")
-        should have_selector("h3", text: "Test \##{virtualtest.number}")
+        should have_selector("h4", text: "Test \##{virtualtest.number}")
         should have_content("2 problèmes")
         should have_content(problem.statement)
         should have_content("Score moyen")
@@ -239,7 +239,7 @@ describe "Virtualtest pages" do
         should have_no_link("Modifier ce test")
         should have_no_link("Supprimer ce test")
         should have_no_button("Mettre en ligne")
-        should have_link("Ajouter un test virtuel")
+        should have_button("Ajouter un test virtuel")
       end
     end
     

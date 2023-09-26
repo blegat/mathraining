@@ -1,13 +1,6 @@
 <% provide(:title, 'Messages') %>
-<h1><%= title_1("Messages") %>
-  <% if !current_user.sk.follow_message %>
-    <span style="float:right;"><%= link_to "M'avertir des nouveaux messages par e-mail", add_followingmessage_path, :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, disabled: current_user.other %></span>
-  <% else %>
-    <span style="float:right;"><%= link_to "Ne plus m'avertir par e-mail", remove_followingmessage_path, class: 'btn btn-default btn-grey', disabled: current_user.other %></span>
-  <% end %>
-</h1>
 
-<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
+<%= render 'title' %>
 
 <script type="text/javascript">
 var showAllUsers = function () {
@@ -15,17 +8,16 @@ var showAllUsers = function () {
 }
 </script>
 
-
 <% @nouveau = true %>
 
-<div class="row">
-  <div class="noprint">
-  <div class="col-md-3 col-sm-4 col-xs-12">
+<div class="grid" style="--bs-columns: 12;">
+  <div class="g-col-12 g-col-md-4 g-col-lg-3 noprint">
     <%= render 'menu' %>
   </div>
-  </div>
 
-  <div class="col-md-9 col-sm-8 col-xs-12">
+  <div class="g-col-12 g-col-md-8 g-col-lg-9">
+  
+    <div class="mt-3 d-md-none"></div>
 
     <h3>Nouvelle discussion</h3>
 
@@ -35,48 +27,31 @@ var showAllUsers = function () {
     <%= form_for @discussion, :html => { :multipart => true } do |f| %>
 
       <%= render 'shared/error_messages', object: f.object %>
-
-      <div class="form-inline" id="destinataire-div">
-        <%= f.label :destinataire %><br/>
+      
+      <div class="mb-2" id="destinataire-div">
+        <%= f.label :destinataire, :class => "form-label" %>
+        - <%= link_to "Afficher les utilisateurs inactifs", "javascript:showAllUsers()", id: "show_all" %>
+        <span style="display:none;" id="thanks">À votre service !</span>
+        
         <% mtn = DateTime.now.to_date - 14 %>
         <% users = User.select(:id, :rating, :first_name, :last_name, :see_name, :admin).where("id != ? AND (last_connexion_date >= ? OR id = ?) AND active = ?", current_user.sk.id, mtn, params[:qui].to_i, true).order("first_name, last_name, rating") %>
-        <%= select_tag :destinataire, options_for_select(users.collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, "Choisir un destinataire..."), params[:qui].to_i), :class => "form-control select2", :style => "width:300px;" %>
-        <div class="visible-xs" style="height:7px;"></div>
-        <%= link_to "Afficher les utilisateurs inactifs", "javascript:showAllUsers()", style: "margin-left:10px;", id: "show_all" %>
-        <span style="margin-left:10px; display:none;" id="thanks">À votre service !</span>
-      </div><br/>
-
-      <div class="form-group">
-        <%= f.label :message %>
-        <div class="well" id="MathPreview"></div>
-        <div class="well hidden-preview" id="MathBuffer"></div>
-        <%= render 'subjects/smiley', hiddentext: false %>
-        <textarea name="content" maxlength="8000" class="form-control" style="height:120px; margin-top:5px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+        <%= select_tag :destinataire, options_for_select(users.collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, ""), params[:qui].to_i), :class => "form-select select2", :style => "width:300px;" %>
       </div>
       
-      <script type="text/javascript">
-      $(document).ready(function() {
-      $('.select2').select2({
-        theme: "bootstrap",
-        language: "fr",
-        width: "300"
-      });
-      });
-      </script>
+      <script>initializeSelect2WhenPossible("Choisir un destinataire")</script>
 
-      <span id="spanFiles"></span>
-
-      <!-- Ajouter une pièce jointe -->
-      <input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()"/>
-      <br/><br/>
+      <div class="mb-2">
+        <%= f.label :message, :class => "form-label" %>
+        <%= render 'shared/preview' %>
+        <%= render 'shared/smiley' %>
+        <textarea name="content" maxlength="8000" class="form-control" style="height:120px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+        <script>initAndUpdatePreviewSafeWhenPossible()</script>
+      </div>
+      
+      <%= render 'shared/edit_files' %>
+      
       <%= f.submit "Envoyer", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
     <% end %>
 
   </div>
 </div>
-
-
-<script>
-PreviewSafe.Init();
-PreviewSafe.Update();
-</script>

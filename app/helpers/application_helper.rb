@@ -61,18 +61,21 @@ module ApplicationHelper
     m2 = m.gsub(/<hr>[ \r]*\n/,'<hr>').
     gsub(/\\\][ \r]*\n/,'\] ').
     gsub(/\$\$[ \r]*\n/,'$$ ').
+    gsub(/<h2>/,'<h2 class="mt-3">').
+    gsub(/<h3>/,'<h3 class="mt-3">').
+    gsub(/<h4>/,'<h4 class="mt-3">').
+    gsub(/<h5>/,'<h5 class="mt-3">').
     gsub(/<\/h2>[ \r]*\n/,'</h2>').
     gsub(/<\/h3>[ \r]*\n/,'</h3>').
     gsub(/<\/h4>[ \r]*\n/,'</h4>').
+    gsub(/<\/h5>[ \r]*\n/,'</h5>').
+    gsub(/<ol>/, '<ol class="mb-1">').
+    gsub(/<ul>/, '<ul class="mb-1">').
     gsub(/<\/ol>[ \r]*\n/, '</ol>').
     gsub(/\n[ \r]*<\/ol>/, '</ol>').
     gsub(/<\/ul>[ \r]*\n/, '</ul>').
     gsub(/\n[ \r]*<\/ul>/, '</ul>').
     gsub(/\n[ \r]*<li>/, '<li>').
-    gsub(/<evidence>[ \r]*\n/, '<evidence>').
-    gsub(/<\/evidence>[ \r]*\n/, '</evidence>').
-    gsub(/<evidence>/, '<div class="evidence">').
-    gsub(/<\/evidence>/, '</div>').
     gsub(/<\/result>[ \r]*\n/, '</result>').
     gsub(/<\/proof>[ \r]*\n/, '</proof>').
     gsub(/<\/remark>[ \r]*\n/, '</remark>').
@@ -94,7 +97,7 @@ module ApplicationHelper
   def replace_indice(m)
     m2 = m.gsub(/<\/indice>[ \r]*<br\/>/, "</indice>")
     
-    while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><a href='#' onclick='return Clue.toggle(0)' class='btn btn-default btn-grey'>Indice</a></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
+    while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><button data-text-id='0' is='clue-onclick' class='btn btn-ld-light-dark'>Indice</button></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
     end
     
     return m2

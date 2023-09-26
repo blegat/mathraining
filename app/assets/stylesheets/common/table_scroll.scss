@@ -1,0 +1,12 @@
+/* SCROLL FOR TABLE WITH FIXED HEIGHT */
+
+table.fixed-scroll thead tr {
+  display: block;
+}
+
+table.fixed-scroll tbody {
+  display: block;
+  max-height: 440px;
+  overflow-y: auto;
+  width: 100%;
+}

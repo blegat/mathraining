@@ -1,0 +1,90 @@
+/* CHAPITRES, PROBLEMES, TEST VIRTUELS */
+
+/* Note: We use 12 columns for screens with a width < 768px, and 24 columns for larger screens (to have more flexibility)
+   The reason why we don't use 24 columns for small screens is because the number of columns and the gap size seem to have
+   an impact on the minimal width of the grid. Using 24 columns with a gap of 15px gives a minimal width that is too large. */
+
+.chapter, .problem, .virtualtest {
+  h4 {
+    margin: 5px;
+  }
+  
+  .real-content {
+    padding:15px !important;
+  }
+
+  .intro {
+    text-align:justify;
+    padding-left:5px;
+    padding-right:5px;
+  }
+
+  .module {
+    padding-top:8px;
+  }
+  
+  .content {
+    --bs-columns: 12;
+    --bs-gap: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .chapter, .problem, .virtualtest {
+    .content {
+      --bs-columns: 24;
+    }
+  }
+}
+
+.problem {
+  .left-part {
+    padding-left:15px;
+    padding-right:15px;
+    padding-bottom:10px;
+  }
+
+  .right-part {
+    padding-bottom:10px;
+  }
+
+  .bottom-part {
+    padding-left:15px;
+    padding-right:5px;
+    padding-top:5px;
+    padding-bottom:5px;
+  }
+}
+
+.virtualtest {
+  .left-info {
+    text-align:center;
+    padding-bottom:10px;
+  }
+
+  .right-info {
+    text-align:center;
+    padding-bottom:10px;
+  }
+
+  .left-part {
+    padding-left:20px;
+    padding-right:20px;
+    padding-bottom:15px;
+  }
+
+  .right-part {
+    text-align:center;
+    font-size:30px;
+    padding-bottom:10px;
+  }
+
+  .bottom-part {
+    width:100%;
+    text-align:center;
+    padding-left:20px;
+    padding-right:20px;
+    padding-top:10px;
+    padding-bottom:10px;
+  }
+}

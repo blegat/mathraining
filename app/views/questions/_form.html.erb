@@ -1,12 +1,12 @@
 <%= render 'shared/error_messages', object: f.object %>
 
 <!-- Enoncé -->
-<div class="form-group">
-  <%= f.label "Énoncé" %>
-  <div class="well" id="MathPreview"></div>
-  <div class="well hidden-preview" id="MathBuffer"></div>
-  <%= render 'theories/font' %>
-  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+<div class="mb-2">
+  <%= f.label "Énoncé", :class => "form-label" %>
+  <%= render 'shared/preview' %>
+  <%= render 'shared/font' %>
+  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  <script>initAndUpdatePreviewWhenPossible()</script>
 </div>
 
 <!-- Si déjà en ligne -->
@@ -15,7 +15,7 @@
   <!-- Réponse -->
   <% if !@question.is_qcm %>
     <!-- pas QCM -->
-    Réponse : 
+    <p>Réponse : 
     <% if question.decimal %>
       <% vraidecimal = true %>
       <% if question.answer - question.answer.to_i <= 0.00001 && question.answer.to_i - question.answer <= 0.00001 %>
@@ -25,19 +25,18 @@
     <% else %>
       <span style="font-size:16px;"><%= question.answer.to_i %></span> (réponse <b>entière</b>)
     <% end %>
-    <br/><br/>
+    </p>
   <% else %>
     <!-- QCM -->
     <% if question.many_answers %>
-      <b>Plusieurs réponses possibles</b><br/>
+      <p><b>Plusieurs réponses possibles</b></p>
     <% else %>
-      <b>Une seule réponse possible</b><br/>
+      <p><b>Une seule réponse possible</b></p>
     <% end %>
-    <br/>
   <% end %>
     
   <!-- Niveau -->
-  <b>Niveau (entre 1 et 4)</b> : <b><%= question.level %></b><br/><br/>
+  <p>Niveau (entre 1 et 4) : <b><%= question.level %></b></p>
   
 <!-- Si pas encore en ligne -->
 <% else %>
@@ -45,29 +44,30 @@
   <!-- Réponse -->
   <% if not @question.is_qcm %>
     <!-- pas QCM -->
-    <div class="form-group">
-      <%= f.label :answer %>
+    <div class="mb-2">
+      <%= f.label :answer, :class => "form-label" %>
       <%= f.text_field :answer, :class => "form-control", :style => "width:100px;" %>
     </div>
-    <div class="checkbox">
-    <label>
-      <%= f.check_box(:decimal) %>
+    
+    <div class="form-check mb-2">
+    <label class="form-check-label">
+      <%= f.check_box :decimal, :class => "form-check-input" %>
       Cochez si la réponse est décimale
     </label>
     </div>
   <% else %>
     <!-- QCM -->
-    <div class="checkbox">
-    <label>
-      <%= f.check_box(:many_answers) %>
+    <div class="form-check mb-2">
+    <label class="form-check-label">
+      <%= f.check_box :many_answers, :class => "form-check-input" %>
       Cochez si plusieurs réponses sont possibles
     </label>
     </div>
   <% end %>
     
   <!-- Niveau -->
-  <div class="form-group">
-    <%= f.label :level %>
-    <%= f.number_field :level, :class => "form-control", :style => "width:50px;", :min => 1, :max => 4 %>
+  <div class="mb-2">
+    <%= f.label :level, :class => "form-label" %>
+    <%= f.number_field :level, :class => "form-control", :style => "width:70px;", :min => 1, :max => 4 %>
   </div>
 <% end %>

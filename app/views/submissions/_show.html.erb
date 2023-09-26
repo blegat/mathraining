@@ -42,7 +42,7 @@ var hideStatement = function () {
   <% elsif @submission.correct? %>
     (correcte)
     <% if @submission.star %>
-      <%= image_tag @submission.icon %>
+      <%= image_tag @submission.icon, :class => "svg-black-white" %>
     <% end %>
   <% end %>
   <% if show_statement_reminder %>
@@ -81,32 +81,31 @@ var hideStatement = function () {
     <% corrector_name = f.user.name %>
   <% end %>
   
-  <div id="correct1" style="background-color:#fffad2; padding:10px; border:1px solid #dddddd;
-; <%= "display:none;" if reservation_case != 1 %>">
+  <div id="div_reserved_by_nobody" class="mb-2 p-2 ps-3 bg-as-table-ld-warning" style="<%= "display:none;" if reservation_case != 1 %>">
     Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !
-    <div class="hidden-large" style="height:7px;"></div>
-    <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver cette soumission</button>
+    <div class="d-block d-lg-none" style="height:7px;"></div>
+    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver cette soumission</button>
   </div>
   
-  <div id="correct2" style="background-color:#ffd9de; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 2 %>">
-    <span id="correct2_text">
+  <div id="div_reserved_by_other" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-reder" style="<%= "display:none;" if reservation_case != 2 %>">
+    <span id="text_reserved_by_other">
       <% if reservation_case == 2 %>
         Cette soumission est en train d'être corrigée par <b><%= corrector_name %></b>.
         <% if current_user.sk.root? %>
-          Elle a été réservée le <%= write_date(f.created_at) %>.
+          Réservée le <%= write_date(f.created_at) %>.
         <% end %>
       <% end %>
     </span>
-    <div class="hidden-large" style="height:7px;"></div>
+    <div class="d-block d-lg-none" style="height:7px;"></div>
     <% if current_user.sk.root? %>
-      <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler la réservation</button>
+      <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler la réservation</button>
     <% end %>
   </div>
   
-  <div id="correct3" style="background-color:#d7efd9; padding:10px; border:1px solid #dddddd; <%= "display:none;" if reservation_case != 3 %>">
+  <div id="div_reserved_by_me" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-greener" style="<%= "display:none;" if reservation_case != 3 %>">
     Vous avez réservé cette soumission pour la corriger.
-    <div class="hidden-large" style="height:7px;"></div>
-    <button class="btn btn-default btn-grey" style="margin-left:30px;" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler ma réservation</button>
+    <div class="d-block d-lg-none" style="height:7px;"></div>
+    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler ma réservation</button>
   </div>
 <% end %>
 
@@ -116,29 +115,29 @@ var hideStatement = function () {
 
   <!-- Rappel de l'énoncé -->
   <% if show_statement_reminder %>
-    <table id="statement_reminder" class="table table-bordered greyy" style="margin-bottom:0px!important; margin-top:20px; display:none;">
-    <tr><td style="padding:10px; background-color:#f0f0f0;"><%= raw(htmlise(@problem.statement)) %></td></tr>
-    </table>
+    <div id="statement_reminder" class="grey-box mb-1 p-2" style="display:none; width:100%;">
+    <%= raw(htmlise(@problem.statement)) %>
+    </div>
   <% end %>
 
   <!-- Affichage de la soumission -->
   <div class="myoverflow">
-  <%= render 'subjects/content', ms: @submission, kind: "submission" %>
+  <%= render 'shared/post', ms: @submission, kind: "submission", reduce_margin_top: true %>
   </div>
 
   <!-- Si soumission en test avec score, on affiche le score -->
   <% if @submission.intest && @submission.score != -1 && (current_user.sk.admin? || current_user.sk.corrector? || current_user.sk == @submission.user) %>
-    <br/>
-    <h4>Score obtenu</h4>
-    <center><div style="padding:3px; font-size:24px; border:1px solid #dddddd; background-color:#fffad2;"><%= @submission.score %> / 7</center>
+
+    <h4 class="mt-3">Score obtenu</h4>
+    <center><div class="bg-as-table-ld-warning p-1 fs-3"><%= @submission.score %> / 7</center>
 
     <% if current_user.sk.root? %>
-      <div style="text-align:center; margin-top:10px; margin-bottom:-10px;">
+      <div class="text-center mt-2 mb-n2">
       <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Modifier ce score</a>
       <span id='formulaire' style="display:none;">
-      <%= form_tag problem_submission_update_score_path(@problem, @submission), :method => :put, :class => "form-inline", :style => "margin-top:5px;" do %>
+      <%= form_tag problem_submission_update_score_path(@problem, @submission), :method => :put, :class => "mt-1" do %>
         Nouveau score :
-        <%= number_field_tag "new_score", @submission.score, min: 0, max: 7 %>
+        <%= number_field_tag "new_score", @submission.score, :min => 0, :max => 7, :style => "width:50px;" %>
         <%= submit_tag "Modifier", data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir modifier le score obtenu ?"}) %>
       <% end %>
       </span>
@@ -157,9 +156,9 @@ var hideStatement = function () {
     <% following = @submission.followings.where(:user_id => current_user.sk).first %>
     <% if !following.nil? %>
       <% if following.read %>
-        <br/><center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
+        <center><%= link_to 'Marquer comme non lu', problem_submission_unread_path(@problem, @submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %></center>
       <% else %>
-        <br/><center><%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
+        <center><%= link_to 'Marquer comme lu', problem_submission_read_path(@problem, @submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %></center>
       <% end %>
     <% end %>
   <% end %>
@@ -168,7 +167,7 @@ var hideStatement = function () {
   <% if @submission.user != current_user.sk && (@submission.wrong? || @submission.wrong_to_read?) %>
     <% later_submission = @problem.submissions.where("user_id = ? AND created_at > ? AND id != ? AND visible = ?", @submission.user, @submission.created_at, @submission.id, true).order("created_at DESC").first %>
     <% if !later_submission.nil? %>
-      <div style="text-align:center; margin-top:20px; background-color:#ffe7c5; padding:10px; border:1px solid #dddddd;"><span style="font-weight:bold; text-decoration:underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "nouvelle soumission", problem_path(@problem, :sub => later_submission) %> à ce problème le <%= write_date(later_submission.created_at) %>.</div>
+      <div class="mb-3 p-2 bg-as-table-ld-warning-reder text-center"><span class="fw-bold text-decoration-underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "nouvelle soumission", problem_path(@problem, :sub => later_submission) %> à ce problème le <%= write_date(later_submission.created_at) %>.</div>
     <% end %>
   <% end %>
   
@@ -176,28 +175,28 @@ var hideStatement = function () {
   <% if @submission.user != current_user.sk && !@submission.correct? && !@submission.plagiarized? %>
     <% plagiarized_submission = @problem.submissions.where(:user => @submission.user, :status => :plagiarized).first %>
     <% if !plagiarized_submission.nil? %>
-      <div style="text-align:center; margin-top:20px; background-color:#ffe7c5; padding:10px; border:1px solid #dddddd;"><span style="font-weight:bold; text-decoration:underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "solution plagiée", problem_path(@problem, :sub => plagiarized_submission) %> à ce problème le <%= write_date(plagiarized_submission.created_at) %>.</div>
+      <div class="mb-3 p-2 bg-as-table-ld-warning-reder text-center"><span class="fw-bold text-decoration-underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "solution plagiée", problem_path(@problem, :sub => plagiarized_submission) %> à ce problème le <%= write_date(plagiarized_submission.created_at) %>.</div>
     <% end %>
   <% end %>
 
   <!-- Formulaire pour nouvelle correction -->
   <% if current_user.sk.admin? && !@submission.visible && @submission.intest %>
-    <br/>Cette soumission fait partie d'un test virtuel qui n'est pas terminé. Vous ne pourrez la corriger qu'une fois le temps de celui-ci écoulé.<br/>
+    <p>Cette soumission fait partie d'un test virtuel qui n'est pas terminé. Vous ne pourrez la corriger qu'une fois le temps de celui-ci écoulé.</p>
   <% elsif !current_user.sk.admin? && current_user.sk == @submission.user && @submission.intest && @submission.score == -1 %>
-    <br/>Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.<br/>
+    <p>Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.</p>
   <% elsif (current_user.sk.admin? || (current_user.sk.corrector && @resolu)) && @submission.plagiarized? %>
-    <br/><span style="color:red;">Cette solution a été plagiée et n'est plus visible par l'étudiant.</span><br/>
+    <p class="text-color-red">Cette solution a été plagiée et n'est plus visible par l'étudiant.</p>
   <% elsif (current_user.sk.admin? || (current_user.sk == @submission.user && @cansendnewcomment) || (current_user.sk.corrector && @resolu)) && !@submission.draft? %>
-    <br/><%= render 'corrections/new' %>
+    <%= render 'corrections/new' %>
   <% end %>
 
 <% end %>
 
 <!-- Supprimer la soumission : pas possible si correcte -->
 <% if current_user.sk.root? && !@submission.correct? && !@submission.draft? %>
-  <br/><center>
-  <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette soumission ? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :style => "color:red;" %>
-  </center>
+  <p class="text-center">
+  <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette soumission ? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :class => "text-color-red" %>
+  </p>
 <% end %>
 
 <!-- Repasser la soumission comme erronée (root ou correcteur qui vient d'accepter) -->
@@ -207,28 +206,17 @@ var hideStatement = function () {
     <% sp = Solvedproblem.where(:user => @submission.user, :problem => @problem).first %>
     <!-- NB: sp.nil? can happen in test environment only -->
     <% if current_user.sk.root? || (!sp.nil? && sp.correction_time > ten_minutes_ago) %>
-      <br/><center>
-      <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?" }), :method => :put, :style => "color:red;" %>
-      </center>
+      <p class="text-center">
+      <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?" }), :method => :put, :class => "text-color-red" %>
+      </p>
     <% end %>
   <% end %>
 <% end %>
 
 <% if current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk) %>
   <% if @submission.correct? %>
-    <!-- Propositions d'étoiles -->
-    <%= render 'starproposals/show' %>
-    
-    <!-- Etoiler la soumission -->
-    <% if current_user.sk.root? %>
-      <br/><center>
-        <% if @submission.star %>
-          <center><%= link_to 'Ne plus étoiler cette solution', problem_submission_unstar_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
-        <% else %>
-          <center><%= link_to 'Étoiler cette solution', problem_submission_star_path(@problem, @submission), :method => :put, :class => "btn btn-default btn-grey", :disabled => current_user.other %></center>
-        <% end %>
-      </center>
-    <% end %>
+    <!-- Propositions d'étoiles + Bouton direct pour étoiler (pour root) -->
+    <%= render 'starproposals/show' %>    
   <% end %>
   
   <!-- Suspicions de plagiat -->

@@ -67,7 +67,7 @@ describe "Problem pages" do
       it do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
-        should have_selector("h2", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 1")
         should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem, :auto => 1))
         should have_selector("div", text: online_problem.statement)
         should have_no_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem, :auto => 1))
@@ -157,7 +157,7 @@ describe "Problem pages" do
       it do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
-        should have_selector("h2", text: "Niveau 1")
+        should have_selector("h3", text: "Niveau 1")
         should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem, :auto => 1))
         should have_selector("div", text: online_problem.statement)
         should have_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem, :auto => 1))

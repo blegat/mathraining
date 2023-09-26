@@ -17,37 +17,36 @@
 <% end %>
 
 <!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
-<h1 style="margin-bottom:0px;">
+<h1 class="mb-0">
 <table style="width:100%;">
 <tr><td>
 <%= title_2((link_to "Forum", subjects_path(:q => @q)), "#{@subject.title}#{('<span style="font-size:20px;"> - ' + title_complement + '</span>') if !title_complement.empty?}") %>
 </td>
 
-<td class="hidden-xs" style="padding-left:15px; text-align:right;">
+<td class="d-none d-md-table-cell ps-3 text-end">
 <% if !current_user.followed_subjects.exists?(@subject.id) %>
-  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), :method => :put, class: 'btn btn-default btn-grey', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
+  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
-  <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', id: 'link_unfollow', disabled: current_user.other %>
+  <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: current_user.other %>
 <% end %>
 </td>
 
 </tr>
 </table>
-</h1>
 
-<div class="visible-xs" style="text-align:center; padding-top:10px;">
+<div class="d-block d-md-none pt-2 text-center">
 <% if !current_user.followed_subjects.exists?(@subject.id) %>
-  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), :method => :put, class: 'btn btn-default btn-grey', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
+  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), :method => :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
-  <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-default btn-grey', disabled: current_user.other %>
+  <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-ld-light-dark', disabled: current_user.other %>
 <% end %>
 </div>
 
 </h1>
 
 <center>
-<%= will_paginate @messages, :style => "margin-top:-5px; margin-bottom:-25px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @messages, :style => "margin-top:15px; margin-bottom:-5px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+  <%= will_paginate @messages, list_classes: %w(pagination justify-content-center d-none d-sm-flex mt-3 mb-n1), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+  <%= will_paginate @messages, :class => "d-block d-sm-none mt-3 mb-n1", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->
@@ -74,8 +73,8 @@
 <% end %>
 
 <center>
-<%= will_paginate @messages, :style => "margin-top:0px; margin-bottom:-30px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @messages, :style => "margin-top:15px; margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+  <%= will_paginate @messages, list_classes: %w(pagination justify-content-center d-none d-sm-flex mt-3), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+  <%= will_paginate @messages, :class => "d-block d-sm-none mt-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <a name="bottom"></a>

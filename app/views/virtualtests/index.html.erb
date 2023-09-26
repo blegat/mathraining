@@ -1,21 +1,21 @@
 <% provide(:title, 'Tests virtuels') %>
 
-<% compteur = 0 %>
-
 <h1><%= title_1("Tests virtuels") %>
-<button class="information-tag" onclick="return Info.toggle();">?</button>
+<button class="information-tag" is="info-onclick">?</button>
 </h1>
 
 <%= render 'infovt' %>
 
 <% if !has_enough_points %>
-
+  
   <!-- Si moins de 200 points, on ne peut rien voir -->
-  <div style="font-weight:bold;">
+  <p class="mt-3 fw-bold">
   Les tests virtuels ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.
-  </div>
+  </p>
 
 <% else %>
+
+  <% compteur = 0 %>
 
   <% Virtualtest.order(:number).all.each do |t| %>
 
@@ -64,192 +64,186 @@
       
       <table class="table table-bordered virtualtest <%= classe %>">
       <tr><td class="title">
-      <center><h3>Test #<%= t.number %><%= " (en construction)" if !t.online %></h3></center>
+      <center><h4>Test #<%= t.number %><%= " (en construction)" if !t.online %></h4></center>
       </td></tr>
       
       <tr><td class="real-content">
+      <div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
       
-      <!-- Prérequis (si admin) -->
-      <% if current_user.sk.admin? %>
-        <div class="intro">
-        <b>Prérequis : </b>
-        <% prems = true %>
-        <% pre.each do |c| %>
-          <%= "-" if !prems %>
-          <%= link_to c.name, c %>
-          <%= "(en construction)" if !c.online %>
-          <% prems = false %>
+        <!-- Prérequis (si admin) -->
+        <% if current_user.sk.admin? %>
+          <div class="g-col-12 g-col-md-24 intro">
+            <b>Prérequis : </b>
+            <% prems = true %>
+            <% pre.each do |c| %>
+              <%= "-" if !prems %>
+              <%= link_to c.name, c %>
+              <%= "(en construction)" if !c.online %>
+              <% prems = false %>
+            <% end %>
+          </div>
         <% end %>
+        
+        <!-- Information -->
+        <div class="g-col-12 g-col-md-12 module left-info">
+          <h5>Informations</h5>
+          <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %><br/>
+          Durée : <b><%= t.duration / 60 %>h<%= "0" if (t.duration % 60) < 10 %><%= t.duration % 60 %></b><br/>
+          Niveau moyen : <b><% "-" if niveaumoyen == 0 %><%= niveaumoyen.round(1) if niveaumoyen > 0 %></b>
         </div>
-      <% end %>
-      
-      <!-- Information -->
-      <div class="row content">
-      <div class="module left-info">
-      <h4>Informations</h4>
-      <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %><br/>
-      Durée : <b><%= t.duration / 60 %>h<%= "0" if (t.duration % 60) < 10 %><%= t.duration % 60 %></b><br/>
-      Niveau moyen : <b><% "-" if niveaumoyen == 0 %><%= niveaumoyen.round(1) if niveaumoyen > 0 %></b>
-      </div>
-      
-      <!-- Statistiques -->
-      <% nb_u = t.takentests.where(:status => :finished).count %>
-      
-      <% moy = 0 %>
-      <% arr = Array.new %>
-      <% h = 0 %>
-      <% t.problems.order(:position).each do |p| %>
-        <% h = h+1 %>
-        <% nb_u_real = nb_u %>
-        <% sc = 0 %>
-        <% p.submissions.where(intest: true).each do |s| %>
-          <% if s.score == -1 && s.visible %>
-            <% nb_u_real = nb_u_real - 1 %>
-          <% elsif s.visible %>
-            <% sc = sc + s.score %>
-          <% end %>
-        <% end %>
-        <% arr[h] = sc.to_f / nb_u_real if nb_u_real > 0 %>
-        <% arr[h] = -1 if nb_u_real <= 0 %>
-        <% moy = moy + arr[h] if arr[h] >= 0 %>
-        <% moy = -1000 if arr[h] < 0 %>
-      <% end %>
-      
-      <div class="module right-info" style="padding-bottom:10px;">
-      <h4>Statistiques</h4>
-      Terminé par <b><%= nb_u %></b> personne<%= "s" if nb_u > 1 %><br/>
-      <% if current_user.sk.admin || (nb_u >= 3 && status == "finished") %>
-        Score moyen : <b><%= moy.round(1) if moy >= 0 %><%= "-" if moy < 0 %> / <%= 7*h %></b>
-      <% end %>
-      </div>
-      </div>
-      
-      <% existetotal = true %>
-      <% can_online = true %>
-      <% total = 0 %>
-      <!-- Si admin ou étudiant ayant commencé : on affiche les problèmes -->
-      <% if current_user.sk.admin || status != "not_started" %>
+        
+        <!-- Statistiques -->
+        <% nb_u = t.takentests.where(:status => :finished).count %>
+        
+        <% moy = 0 %>
+        <% arr = Array.new %>
         <% h = 0 %>
         <% t.problems.order(:position).each do |p| %>
-          <% can_online = false if !p.online? %>
           <% h = h+1 %>
-          
-          <% sc_show = "" %>
-          <% sub_id = -1 %>
-          <% if !current_user.sk.admin? && status == "finished" %>
-            <% s = p.submissions.where(user_id: current_user.sk.id, intest: true).first %>
-            <% if s.nil? %>
-              <% sc_show = "0" %>
-            <% elsif s.score == -1 %>
-              <% sub_id = s.id %>
-              <% sc_show = "?" %>
-              <% existetotal = false %>
-            <% else %>
-              <% sub_id = s.id %>
-              <% sc_show = s.score.to_s %>
-              <% total = total + s.score %>
+          <% nb_u_real = nb_u %>
+          <% sc = 0 %>
+          <% p.submissions.where(intest: true).each do |s| %>
+            <% if s.score == -1 && s.visible %>
+              <% nb_u_real = nb_u_real - 1 %>
+            <% elsif s.visible %>
+              <% sc = sc + s.score %>
             <% end %>
           <% end %>
-          
-          <!-- Enoncé -->
-          <div class="row content">
-          <% taille = p.statement.size() %>
-          <% liste = false %>
-          <% if taille >= 5 %>
-            <% fin = p.statement[taille-5, taille-1] %>
-            <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
-              <% liste = true %>
-            <% end %>
-          <% end %>
-          <div class="module left-part" style="<%= "padding-bottom:0px !important;" if liste %>">
-          <center><h4>
-          <% if !current_user.sk.admin && status == "in_progress" %>
-            <%= link_to "Problème #{h}", virtualtest_path(t, :p => p.id) %>
-          <% elsif sub_id < 0 %>
-            <%= link_to "Problème #{h}", problem_path(p) %>
-          <% else %>
-            <%= link_to "Problème #{h}", problem_path(p, :sub => sub_id) %>
-          <% end %>
-          </h4></center>
-          <!-- Déplacer -->
-          <% if current_user.sk.admin? && !t.online? && nb_prob > 1 %>
-            <center>Déplacer ce problème vers le
-            <%= link_to "haut", problem_order_minus_path(p), :method => :put if h > 1 %>
-            <%= "|" if h > 1 && h < nb_prob %>
-            <%= link_to "bas", problem_order_plus_path(p), :method => :put if h < nb_prob %>
-            </center><br/>
-          <% end %>
-          <%= raw(htmlise(p.statement)) %>         
-          </div>
-
-          <div class="module right-part" style="padding-bottom:10px;">
-          <center><h4>Score<%= " moyen" if current_user.sk.admin? %></h4></center>
-          <% if current_user.sk.admin? %>
-            <%= arr[h].round(1) if arr[h] >= 0 %>
-            <%= "-" if arr[h] < 0 %>
-          <% elsif status == "in_progress" %>
-            -
-          <% else %>
-            <%= sc_show %>
-          <% end %>
-           / 7
-          </div>
-          </div>
+          <% arr[h] = sc.to_f / nb_u_real if nb_u_real > 0 %>
+          <% arr[h] = -1 if nb_u_real <= 0 %>
+          <% moy = moy + arr[h] if arr[h] >= 0 %>
+          <% moy = -1000 if arr[h] < 0 %>
         <% end %>
-      <% end %>
-      
-      <!-- Si l'étudiant n'a pas encore commencé le test -->
-      <% if !current_user.sk.admin? && status == "not_started" %>
-        <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: (@no_new_submission || current_user.other), style: "margin-top:15px; margin-bottom:5px;", data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
-      <% end %>
-      
-      <!-- Si étudiant en test --->
-      <% if !current_user.sk.admin? && status == "in_progress" %>
-        <% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => t.id).first.taken_time %>
-        <% depart = initial.to_i %>
-        <% @virtualtest = t %>
-        <%= render 'contests/clock', date_limit: depart + 60*@virtualtest.duration, message_zero: "Temps écoulé", p_id: 0 %>
         
-        <div class="row content">
-        <div class="module bottom-part">
-        <span style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></span>
+        <div class="g-col-12 g-col-md-12 module right-info pb-2">
+          <h5>Statistiques</h5>
+          Terminé par <b><%= nb_u %></b> personne<%= "s" if nb_u > 1 %><br/>
+          <% if current_user.sk.admin || (nb_u >= 3 && status == "finished") %>
+            Score moyen : <b><%= moy.round(1) if moy >= 0 %><%= "-" if moy < 0 %> / <%= 7*h %></b>
+          <% end %>
         </div>
-        </div>
-      <% end %>
-      
-      <!-- Si étudiant qui a fini -->
-      <% if !current_user.sk.admin? && status == "finished" %>
-      <div class="row content">
-        <div class="module bottom-part" style="padding-bottom:10px;">
-        <h4>Score</h4>
-        <span style="font-weight:bold; font-size:30px;">
-        <% if existetotal %> 
-          <%= total %>
-        <% else %>
-          ?
-        <% end %>
-        / <%= 7*nb_prob %>
-        </span>
-        </div>
-        </div>
-      <% end %>
-      
-      <!-- Si test en construction -->
-      <% if !t.online? && current_user.sk.admin? %>
-        <center>
-        <br/>
-        <%= link_to "Modifier ce test", edit_virtualtest_path(t) %> - <%= link_to "Supprimer ce test", t, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce test virtuel ? Cela ne supprimera pas les problèmes associés." } %>
-        <% if nb_prob > 0 && can_online %>
-          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', style: "margin-bottom:5px; margin-top:10px;", data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
-        <% else %>
-          <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-default btn-grey', disabled: true, style: "margin-bottom:10px; margin-top:10px;" %>
-          <%= "(Au moins un problème nécessaire)" if nb_prob == 0 %>
-          <%= "(Problèmes doivent être en ligne)" if nb_prob > 0 %>
-          <br/>
-        <% end %>
-        </center>
-      <% end %>
+        
+        <% existetotal = true %>
+        <% can_online = true %>
+        <% total = 0 %>
+        <!-- Si admin ou étudiant ayant commencé : on affiche les problèmes -->
+        <% if current_user.sk.admin || status != "not_started" %>
+          <% h = 0 %>
+          <% t.problems.order(:position).each do |p| %>
+            <% can_online = false if !p.online? %>
+            <% h = h+1 %>
+            
+            <% sc_show = "" %>
+            <% sub_id = -1 %>
+            <% if !current_user.sk.admin? && status == "finished" %>
+              <% s = p.submissions.where(user_id: current_user.sk.id, intest: true).first %>
+              <% if s.nil? %>
+                <% sc_show = "0" %>
+              <% elsif s.score == -1 %>
+                <% sub_id = s.id %>
+                <% sc_show = "?" %>
+                <% existetotal = false %>
+              <% else %>
+                <% sub_id = s.id %>
+                <% sc_show = s.score.to_s %>
+                <% total = total + s.score %>
+              <% end %>
+            <% end %>
+            
+            <!-- Enoncé -->
+            <div class="g-col-12 g-col-md-18 g-col-lg-19 module left-part">
+              <center><h5>
+              <% if !current_user.sk.admin && status == "in_progress" %>
+                <%= link_to "Problème #{h}", virtualtest_path(t, :p => p.id) %>
+              <% elsif sub_id < 0 %>
+                <%= link_to "Problème #{h}", problem_path(p) %>
+              <% else %>
+                <%= link_to "Problème #{h}", problem_path(p, :sub => sub_id) %>
+              <% end %>
+              </h5></center>
+              <!-- Déplacer -->
+              <% if current_user.sk.admin? && !t.online? && nb_prob > 1 %>
+                <p class="text-center">Déplacer ce problème vers le
+                <%= link_to "haut", problem_order_minus_path(p), :method => :put if h > 1 %>
+                <%= "|" if h > 1 && h < nb_prob %>
+                <%= link_to "bas", problem_order_plus_path(p), :method => :put if h < nb_prob %>
+                </p>
+              <% end %>
+              <%= raw(htmlise(p.statement)) %>
+            </div>
 
+            <div class="g-col-12 g-col-md-6 g-col-lg-5 module right-part pb-2">
+              <center><h5>Score<%= " moyen" if current_user.sk.admin? %></h5></center>
+              <% if current_user.sk.admin? %>
+                <%= arr[h].round(1) if arr[h] >= 0 %>
+                <%= "-" if arr[h] < 0 %>
+              <% elsif status == "in_progress" %>
+                -
+              <% else %>
+                <%= sc_show %>
+              <% end %>
+               / 7
+            </div>
+          <% end %>
+        <% end %>
+        
+        <!-- Si l'étudiant n'a pas encore commencé le test -->
+        <% if !current_user.sk.admin? && status == "not_started" %>
+          <div class="g-col-12 g-col-md-24">
+            <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.other), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
+          </div>
+        <% end %>
+        
+        <!-- Si étudiant en test --->
+        <% if !current_user.sk.admin? && status == "in_progress" %>
+          <% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => t.id).first.taken_time %>
+          <% depart = initial.to_i %>
+          <% @virtualtest = t %>
+          
+          <div class="g-col-12 g-col-md-24 module bottom-part">
+            <span style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></span>
+            <%= render 'contests/clock', date_limit: depart + 60*@virtualtest.duration, message_zero: "Temps écoulé", p_id: 0 %>
+          </div>
+        <% end %>
+        
+        <!-- Si étudiant qui a fini -->
+        <% if !current_user.sk.admin? && status == "finished" %>
+          <div class="g-col-12 g-col-md-24 module bottom-part">
+            <h5>Score</h5>
+            <span class="fw-bold" style="font-size:30px;">
+            <% if existetotal %> 
+              <%= total %>
+            <% else %>
+              ?
+            <% end %>
+            / <%= 7*nb_prob %>
+            </span>
+          </div>
+        <% end %>
+        
+        <!-- Si test en construction -->
+        <% if !t.online? && current_user.sk.admin? %>
+          <div class="g-col-12 g-col-md-24">
+            <p class="mb-2 text-center">
+            <%= link_to "Modifier ce test", edit_virtualtest_path(t) %> - <%= link_to "Supprimer ce test", t, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce test virtuel ? Cela ne supprimera pas les problèmes associés." } %>
+            </p>
+            <% if nb_prob > 0 && can_online %>
+              <center>
+              <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
+              </center>
+            <% else %>
+              <center>
+              <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', disabled: true %>
+              </center>
+              <p class="text-center mt-2 mb-0">
+              <%= "(Au moins un problème nécessaire)" if nb_prob == 0 %>
+              <%= "(Problèmes doivent être en ligne)" if nb_prob > 0 %>
+              </p>
+            <% end %>
+          </div>
+        <% end %>
+        
+      </div>
       </td></tr>
       </table>
     <% end %>
@@ -258,12 +252,12 @@
   <!-- Ajouter un test -->
   <% if current_user.sk.admin? %>
     <center>
-    <%= link_to "Ajouter un test virtuel", new_virtualtest_path, class: 'btn btn-lg btn-default btn-grey' %>
+    <%= button_to "Ajouter un test virtuel", new_virtualtest_path, method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
     </center>
   <% end %>
 
   <% if compteur == 0 %>
-    Aucun test virtuel n'est disponible.
+    <p>Aucun test virtuel n'est disponible.</p>
   <% end %>
 
 <% end %>

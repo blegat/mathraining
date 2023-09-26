@@ -21,40 +21,39 @@
 
 <div class="home">
 
-	<div class="row">
-  <div class="col-lg-7 col-sm-7 col-xs-12">
-  <center>
-  <% if DateTime.now.in_time_zone.month == 1 %>
-    <%= image_tag "mathraining-new-year.png", :style => "width:100%; max-width:400px;" %>
-  <% else %>
-    <%= image_tag "mathraining.png", :style => "width:100%; max-width:334px;" %>
-  <% end %>
-  </center>
+	<div class="grid" style="--bs-columns:12; --bs-gap:5px;">
+    <div class="g-col-12 g-col-md-6 g-col-lg-7">
+    <center>
+    <%= image_tag "mathraining.png", :class => "light-theme-only", :style => "width:100%; max-width:334px;" %>
+    <%= image_tag "mathraining-dark.png", :class => "dark-theme-only", :style => "width:100%; max-width:334px;" %>
+    </center>
+    </div>
+    <div class="g-col-12 g-col-md-6 g-col-lg-5 pt-2">
+    <% tot = User.where("admin = ?", false).sum(:rating) %>
+    <% number = User.where("admin = ? AND rating > 0 AND active = ?", false, true).count %>
+    <center>
+    <table class="home-stats">
+    <tr><td class="left top text-color-mt-blue"><%= raw(readable_number(number)) %></td><td class="right top">utilisateurs classés</td></tr>
+    <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
+    <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
+    <tr><td class="left bottom text-color-mt-blue"><%= raw(readable_number(tot)) %></td><td class="right bottom">points distribués</td></tr>
+    </table>
+    </center>
+    </div>
+  
+    <div class="g-col-12">
+      <h3 class="mt-3">
+      Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques
+      </h3>
+    </div>
   </div>
-  <div class="col-lg-5 col-sm-5 col-xs-12">
-  <% tot = User.where("admin = ?", false).sum(:rating) %>
-  <% number = User.where("admin = ? AND rating > 0 AND active = ?", false, true).count %>
-  <center>
-  <table class="home-stats">
-  <tr><td class="left"><%= raw(readable_number(number)) %></td><td class="right">utilisateurs classés</td></tr>
-  <tr><td class="left"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
-  <tr><td class="left"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
-  <tr><td class="left"><%= raw(readable_number(tot)) %></td><td class="right">points distribués</td></tr>
-  </table>
-  </center>
-  </div>
-  </div>
-   
-  <h3>
-  Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques
-  </h3>
 </div>
 
 <% user_with_recent_corrections = User.left_joins(:followings).where("followings.created_at > ? AND kind = 1", Date.today.in_time_zone).group(:id).select("users.*, count(followings.id) AS num_corrections").order("num_corrections DESC").to_a %>
 
 <% num_users_to_display = user_with_recent_corrections.size %>
 <% if num_users_to_display > 0 %>
-  <div class="home_thanks">
+  <div class="bg-as-table-ld-primary p-2 text-center mb-2">
     Merci au<%= 'x' if num_users_to_display > 1 %> correcteur<%= 's' if num_users_to_display > 1 %> du jour :
     <% first = true %>
     <% user_with_recent_corrections.each do |u| %>
@@ -69,22 +68,5 @@
 <% end %>
 
 <!-- Afficher les actualités -->
-<h1><%= title_1("Actualités") %></h1>
-<% actualities = Actuality.order("created_at DESC").paginate(:page => params[:page], :per_page => 5) %>
-
-<% actualities.each do |a| %>
-  <%= render 'actualities/show', f: a %>
-<% end %>
-
-<center>
-<%= will_paginate actualities, :style => "margin-top:-20px; #{'margin-bottom:-20px;' unless @signed_in && current_user.sk.admin?}", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate actualities, :style => "margin-top:-5px; #{'margin-bottom: 15px;' if @signed_in && current_user.sk.admin?}", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
-</center>
-
-
-<!-- Ajouter une actualité -->
-<% if @signed_in && current_user.sk.admin? %>
-<center><%= link_to "Ajouter une actualité", new_actuality_path, :class => "btn btn-grey btn-default btn-lg" %></center>
-<% end %>	
-
+<%= render 'actualities/index' %>
 

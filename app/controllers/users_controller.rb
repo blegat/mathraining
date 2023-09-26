@@ -143,8 +143,7 @@ class UsersController < ApplicationController
       @user.country = c
     end
 
-    # Don't do e-mail and captcha in development and tests
-    @user.email_confirm = !Rails.env.production?
+    @user.email_confirm = false
     
     # Remove white spaces at start and end, and add '.' if needed
     @user.adapt_name
@@ -160,7 +159,8 @@ class UsersController < ApplicationController
       user_reload.last_policy_read = true
       user_reload.save
       
-      flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
+      flash[:info] = "Lien (développement uniquement) : localhost:3000/activate?id=#{@user.id}&key=#{@user.key}" if !Rails.env.production?
+      flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas de la page)."
       redirect_to root_path
     else
       render 'new'

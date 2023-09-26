@@ -2,17 +2,16 @@
 
 <h1><%= title_4("Théorie", (link_to @question.chapter.section.name, @question.chapter.section), (link_to @question.chapter.name, chapter_path(@question.chapter, :type => 5, :which => @question.id)), "Choix") %></h1>
 
-Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne saurait être enregistrée.<br/>
+<p>Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne sera pas enregistrée.</p>
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>	
 <%= raw(replace_indice(htmlise(@question.statement))) %>
-<br/>
 
 <!-- Réponse -->
-<h3>Réponse</h3>	
+<h3 class="mt-3">Réponse</h3>	
 <table cellpadding="5">
-<tr><th></th><th></th><th style="padding:5px; text-align:center;">Rép ?</th><th></th><th></th><th></th><th></th></tr>
+<tr><th></th><th></th><th class="p-1 text-center">Rép ?</th><th></th><th></th><th></th><th></th></tr>
 <% i = 0 %>
 <% nb_item = @question.items.count %>
 <% @question.items.order(:position).each do |f| %>
@@ -21,29 +20,29 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
       <td style="width:15px;">
         -
       </td>
-      <td style="padding:5px;">
+      <td class="p-1">
         <%= g.text_field :ans, :class => "form-control", :style => "width:200px;", :id => "update_item_field_" + f.id.to_s %>
       </td>
       <td>
         <center>
         <% if f.ok %>
-          <%= image_tag v_icon %>
+          <%= image_tag v_icon, :class => "svg-black-white" %>
         <% else %>
-          <%= image_tag x_icon %>
+          <%= image_tag x_icon, :class => "svg-black-white" %>
         <% end %>
         </center>
       </td>
       <td>
         <%= g.submit "Modifier ce choix", :class => "btn btn-primary", :id => "update_item_button_" + f.id.to_s %>
       </td>
-      <td style="padding:10px;">
+      <td class="p-2">
         <%= "Déplacer vers le : " if nb_item > 1 %>
         <%= link_to "haut", question_up_item_path(@question, f), :method => :put, :id => ("update_item_up_" + f.id.to_s) if i > 0 %>
         <%= " - " if i > 0 && i < nb_item-1 %>
         <%= link_to "bas", question_down_item_path(@question, f), :method => :put, :id => ("update_item_down_" + f.id.to_s) if i < nb_item-1 %>
       </td>
       <% unless @question.online %>
-        <td style="padding:10px;">
+        <td class="p-2">
           <% if f.ok %>
             <% if @question.many_answers %>
               <%= link_to "Rendre ce choix erroné", question_switch_item_path(@question, f), :method => :put, :id => ("update_item_incorrect_" + f.id.to_s) %>
@@ -52,7 +51,7 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
             <%= link_to "Rendre ce choix correct", question_switch_item_path(@question, f), :method => :put, :id => ("update_item_correct_" + f.id.to_s) %>
           <% end %>
         </td>
-        <td style="padding:10px;">
+        <td class="p-2">
           <%= link_to "Supprimer ce choix", question_remove_item_path(@question, f), :method => :put, :id => ("update_item_delete_" + f.id.to_s) %>
         </td>
       <% end %>
@@ -68,12 +67,12 @@ Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" 
   <%= form_for(:item, url: question_add_item_path(@question)) do |f| %>
     <td>
     </td>
-    <td style="padding:5px;">
+    <td class="p-1">
       <%= f.text_field :ans, :class => "form-control", :style => "width:200px;", :id => "create_item_field" %>
     </td>
     <td>
       <center>
-      <%= f.check_box :ok, :id => "create_item_value" %>
+      <%= f.check_box :ok, :id => "create_item_value", :class => "form-check-input" %>
       </center>
     </td>
     <td>

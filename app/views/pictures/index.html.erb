@@ -2,20 +2,20 @@
 
 <h1><%= title_1("Vos images") %></h1>
 
-Pour récupérer l'url d'une image, cliquez dessus.<br/><br/>
+<p>Pour récupérer l'url d'une image, cliquez dessus.</p>
 <div class="column">
 
 <% i = 0 %>
 <% current_user.sk.pictures.each do |p| %>
   <% if i % 4 == 0 %>
-    <div class="row">
+    <div class="grid" style="--bs-columns:12;">
   <% end %>
 
-  <div class="col-md-3 col-sm-4 col-xs-6">
-  <%= link_to image_tag(p.image, :style => "margin-bottom:15px; width:100%;"), p, target: "_blank" %>
-  <center>
+  <div class="g-col-6 g-col-md-4 g-col-lg-3">
+  <%= link_to image_tag(p.image, :class => "mb-2", :style => "width:100%;"), p, target: "_blank" %>
+  <p class="text-center">
   <%= link_to "Supprimer cette image", p, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous) ! Êtes-vous sûr de vouloir supprimer cette image ?" } %>
-  </center><br/><br/>
+  </p>
   </div>
 
   <% if i % 4 == 3 %>
@@ -26,4 +26,4 @@ Pour récupérer l'url d'une image, cliquez dessus.<br/><br/>
 <% end %>
 </div>
 
-<center><%= link_to "Uploader une nouvelle image", new_picture_path, class: 'btn btn-lg btn-grey btn-default' %></center>
+<center><%= button_to "Uploader une nouvelle image", new_picture_path, method: :get, class: 'btn btn-lg btn-ld-light-dark' %></center>

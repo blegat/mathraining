@@ -11,48 +11,32 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
-<div style="margin-bottom:10px;">
+<div class="mb-3">
 <%= raw(htmlise(@contestproblem.statement)) %>
+</div>
 
 <!-- Origine si organisateur ou root ou problème terminé -->
 <% if @contest.is_organized_by_or_root(current_user.sk) || @contestproblem.at_least(:in_correction) %>
-
-  <% taille = @contestproblem.statement.size() %>
-  <% liste = false %>
-  <% if taille >= 5 %>
-    <% fin = @contestproblem.statement[taille-5, taille-1] %>
-    <% if fin == "</ol>" || fin == "</ul>" || fin[3,4] == "$$" %>
-      <% liste = true %>
-    <% end %>
-  <% end %>
-
-  <% if !liste %>
-    <br/><br/>
-  <% end %>
-
-  <i>Origine du problème :
+  <p class="fst-italic">Origine du problème :
   <% if @contestproblem.origin.nil? || @contestproblem.origin.size == 0 %>
     Inconnue
   <% else %>
     <b><%= @contestproblem.origin %></b>
   <% end %>
-  </i>
+  </p>
 <% end %>
-
-</div>
 
 <!-- Chronomètre -->
 <% if @contestproblem.in_progress? %>
+  <p class="mt-4 text-center fs-4">Temps restant : <b><span id="clockbox0">--------</span></b></p>
   <%= render 'contests/clock', date_limit: @contestproblem.end_time.to_i, message_zero: "Temps écoulé", p_id: 0 %>
-  <br/><center><span style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></span></center>
 <% elsif @contestproblem.at_most(:not_started_yet) && !@contest.in_construction? %>
+  <p class="mt-4 text-center fs-4">Temps avant publication : <b><span id="clockbox0">--------</span></b></p>
   <%= render 'contests/clock', date_limit: @contestproblem.start_time.to_i, message_zero: "En ligne", p_id: 0 %>
-  <br/><center><span style="font-size:20px;">Temps avant publication : <b><span id="clockbox0">--------</span></b></span></center>
 <% end %>
 
 <% if @contest.is_organized_by_or_root(current_user.sk) %>
-  <center>
-  <br/><%= link_to "Modifier ce problème", edit_contestproblem_path(@contestproblem) %>
+  <p class="text-center"><%= link_to "Modifier ce problème", edit_contestproblem_path(@contestproblem) %>
   <% if @contest.in_construction? %>
     | <%= link_to "Supprimer ce problème", @contestproblem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
   <% end %>
@@ -63,7 +47,7 @@
       | <%= link_to "Stopper nouvelles corrections", contestproblem_unauthorize_corrections_path(@contestproblem), :method => :put %>
     <% end %>
   <% end %>
-  </center>
+  </p>
 <% end %>
 
 <!-- Les solutions -->

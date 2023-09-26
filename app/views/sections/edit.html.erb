@@ -5,37 +5,32 @@
 <%= form_for(@section) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>
 
-  <div class="form-group">
-    <%= f.label :name %>
+  <div class="mb-2">
+    <%= f.label :name, :class => "form-label" %>
     <%= f.text_field :name, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;" %>
   </div>
   
-  <div class="form-group">
-    <%= f.label :abbreviation %>
+  <div class="mb-2">
+    <%= f.label :abbreviation, :class => "form-label" %>
     <%= f.text_field :abbreviation, :class => "form-control", :maxlength => "15", :style => "width:100%; max-width:400px;" %>
   </div>
   
-  <div class="form-group">
-    <%= f.label :short_abbreviation %>
+  <div class="mb-2">
+    <%= f.label :short_abbreviation, :class => "form-label" %>
     <%= f.text_field :short_abbreviation, :class => "form-control", :maxlength => "8", :style => "width:100%; max-width:400px;" %>
   </div>
   
-  <div class="form-group">
-    <%= f.label :initials %>
+  <div class="mb-2">
+    <%= f.label :initials, :class => "form-label" %>
     <%= f.text_field :initials, :class => "form-control", :maxlength => "2", :style => "width:100%; max-width:400px;" %>
   </div>
 
-  <div class="form-group">
-    <%= f.label :description %>
-    <div class="well" id="MathPreview"></div>
-    <div class="well hidden-preview" id="MathBuffer"></div>
-    <%= render 'theories/font' %>
-    <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px; margin-top:5px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  <div class="mb-2">
+    <%= f.label :description, :class => "form-label" %>
+    <%= render 'shared/preview' %>
+    <%= render 'shared/font' %>
+    <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+    <script>initAndUpdatePreviewWhenPossible()</script>
   </div>
   <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
 <% end %>
-
-<script>
-Preview.Init();
-Preview.Update();
-</script>

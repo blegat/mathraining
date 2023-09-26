@@ -1,8 +1,12 @@
-/* HOME */
+/* ERRORS */
 
 .error {
-  text-align:center;
-  margin-top:20px;
-  padding:25px;
-  border:1px solid rgb(200,0,0);
+  text-align: center;
+  margin-top: 20px;
+  padding: 25px;
+}
+
+// Avoid very big white space after the list of form errors
+.alert ul {
+  margin-bottom: 0px;
 }

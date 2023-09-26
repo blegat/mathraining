@@ -55,10 +55,10 @@ describe "Page section/showpb" do
         should have_link(theory11.title, href: chapter_path(chapter1, :type => 1, :which => theory11))
         should have_link(theory12.title, href: chapter_path(chapter1, :type => 1, :which => theory12))
         should have_no_link(theory13_offline.title)
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter1, :type => 5, :which => question11))
-        should have_link(class: "btn-grey", text: "2", href: chapter_path(chapter1, :type => 5, :which => question12))
-        should have_no_link(class: "btn-grey", href: chapter_path(chapter1, :type => 5, :which => question13_offline))
-        should have_link(class: "btn-grey", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter1, :type => 5, :which => question11))
+        should have_link(class: "btn-ld-light-dark", text: "2", href: chapter_path(chapter1, :type => 5, :which => question12))
+        should have_no_link(class: "btn-ld-light-dark", href: chapter_path(chapter1, :type => 5, :which => question13_offline))
+        should have_link(class: "btn-ld-light-dark", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
         
         should have_selector("table", id: "chapter#{chapter2.id}", class: "greyy", text: chapter2.name)
         should have_selector("table", id: "chapter#{chapter2.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter1.name}")
@@ -95,23 +95,23 @@ describe "Page section/showpb" do
         should have_link(theory11.title, href: chapter_path(chapter1, :type => 1, :which => theory11))
         should have_link(theory12.title, href: chapter_path(chapter1, :type => 1, :which => theory12))
         should have_no_link(theory13_offline.title)
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter1, :type => 5, :which => question11))
-        should have_link(class: "btn-grey", text: "2", href: chapter_path(chapter1, :type => 5, :which => question12))
-        should have_no_link(class: "btn-grey", href: chapter_path(chapter1, :type => 5, :which => question13_offline))
-        should have_link(class: "btn-grey", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter1, :type => 5, :which => question11))
+        should have_link(class: "btn-ld-light-dark", text: "2", href: chapter_path(chapter1, :type => 5, :which => question12))
+        should have_no_link(class: "btn-ld-light-dark", href: chapter_path(chapter1, :type => 5, :which => question13_offline))
+        should have_link(class: "btn-ld-light-dark", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
         
         should have_selector("table", id: "chapter#{chapter2.id}", class: "yellowy", text: chapter2.name)
         should have_link(theory21.title, href: chapter_path(chapter2, :type => 1, :which => theory21))
         should have_no_link(theory22_offline.title)
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter2, :type => 5, :which => question21))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter2, :type => 5, :which => question21))
         should have_no_link(href: chapter_path(chapter2, :type => 5, :which => question22_offline))
         
         should have_selector("table", id: "chapter#{chapter3.id}", class: "yellowy", text: chapter3.name)
         should have_link(theory31.title, href: chapter_path(chapter3, :type => 1, :which => theory31))
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
         
         should have_selector("table", id: "chapter#{chapter4.id}", class: "yellowy", text: chapter4.name)
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter4, :type => 5, :which => question41))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter4, :type => 5, :which => question41))
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
@@ -142,7 +142,7 @@ describe "Page section/showpb" do
         should have_link(class: "btn-success", text: "1", href: chapter_path(chapter1, :type => 5, :which => question11))
         should have_link(class: "btn-danger", text: "2", href: chapter_path(chapter1, :type => 5, :which => question12))
         should have_no_link(href: chapter_path(chapter1, :type => 5, :which => question13_offline))
-        should have_link(class: "btn-grey", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
+        should have_link(class: "btn-ld-light-dark", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
         
         should have_selector("table", id: "chapter#{chapter2.id}", class: "greyy", text: chapter2.name)
         should have_selector("table", id: "chapter#{chapter2.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter1.name}")
@@ -199,7 +199,7 @@ describe "Page section/showpb" do
         
         should have_selector("table", id: "chapter#{chapter3.id}", class: "yellowy", text: chapter3.name)
         should have_link(theory31.title, href: chapter_path(chapter3, :type => 1, :which => theory31))
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
         
         should have_selector("table", id: "chapter#{chapter4.id}", class: "greyy", text: chapter4.name)
         should have_selector("table", id: "chapter#{chapter4.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter3.name}")
@@ -240,14 +240,14 @@ describe "Page section/showpb" do
         should have_selector("table", id: "chapter#{chapter2.id}", class: "yellowy", text: chapter2.name)
         should have_link(theory21.title, href: chapter_path(chapter2, :type => 1, :which => theory21))
         should have_no_link(theory22_offline.title)
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter2, :type => 5, :which => question21))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter2, :type => 5, :which => question21))
         
         should have_selector("table", id: "chapter#{chapter3.id}", class: "yellowy", text: chapter3.name)
         should have_link(theory31.title, href: chapter_path(chapter3, :type => 1, :which => theory31))
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
         
         should have_selector("table", id: "chapter#{chapter4.id}", class: "yellowy", text: chapter4.name)
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter4, :type => 5, :which => question41))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter4, :type => 5, :which => question41))
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
@@ -268,23 +268,23 @@ describe "Page section/showpb" do
         should have_link(theory11.title, href: chapter_path(chapter1, :type => 1, :which => theory11))
         should have_link(theory12.title, href: chapter_path(chapter1, :type => 1, :which => theory12))
         should have_no_link(theory13_offline.title) # Even for admin there is no link to an offline theory inside an online chapter
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter1, :type => 5, :which => question11))
-        should have_link(class: "btn-grey", text: "2", href: chapter_path(chapter1, :type => 5, :which => question12))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter1, :type => 5, :which => question11))
+        should have_link(class: "btn-ld-light-dark", text: "2", href: chapter_path(chapter1, :type => 5, :which => question12))
         should have_link(class: "btn-warning", text: "!", href: chapter_path(chapter1, :type => 5, :which => question13_offline))
-        should have_link(class: "btn-grey", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
+        should have_link(class: "btn-ld-light-dark", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
         
         should have_selector("table", id: "chapter#{chapter2.id}", class: "yellowy", text: chapter2.name)
         should have_link(theory21.title, href: chapter_path(chapter2, :type => 1, :which => theory21))
         should have_no_link(theory22_offline.title) # Even for admin there is no link to an offline theory inside an online chapter
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter2, :type => 5, :which => question21))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter2, :type => 5, :which => question21))
         should have_link(class: "btn-warning", text: "!", href: chapter_path(chapter2, :type => 5, :which => question22_offline))
         
         should have_selector("table", id: "chapter#{chapter3.id}", class: "yellowy", text: chapter3.name)
         should have_link(theory31.title, href: chapter_path(chapter3, :type => 1, :which => theory31))
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
         
         should have_selector("table", id: "chapter#{chapter4.id}", class: "yellowy", text: chapter4.name)
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter4, :type => 5, :which => question41))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter4, :type => 5, :which => question41))
         
         should have_selector("table", id: "chapter#{chapter5_offline.id}", class: "orangey", text: chapter5_offline.name)
         should have_link(theory51_offline.title, href: chapter_path(chapter5_offline, :type => 1, :which => theory51_offline))
@@ -306,23 +306,23 @@ describe "Page section/showpb" do
         should have_link(theory11.title, href: chapter_path(chapter1, :type => 1, :which => theory11))
         should have_link(theory12.title, href: chapter_path(chapter1, :type => 1, :which => theory12))
         should have_no_link(theory13_offline.title) # Even for admin there is no link to an offline theory inside an online chapter
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter1, :type => 5, :which => question11))
-        should have_link(class: "btn-grey", text: "2", href: chapter_path(chapter1, :type => 5, :which => question12))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter1, :type => 5, :which => question11))
+        should have_link(class: "btn-ld-light-dark", text: "2", href: chapter_path(chapter1, :type => 5, :which => question12))
         should have_link(class: "btn-warning", text: "!", href: chapter_path(chapter1, :type => 5, :which => question13_offline))
-        should have_link(class: "btn-grey", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
+        should have_link(class: "btn-ld-light-dark", text: "3", href: chapter_path(chapter1, :type => 5, :which => question14))
         
         should have_selector("table", id: "chapter#{chapter2.id}", class: "yellowy", text: chapter2.name)
         should have_link(theory21.title, href: chapter_path(chapter2, :type => 1, :which => theory21))
         should have_no_link(theory22_offline.title) # Even for admin there is no link to an offline theory inside an online chapter
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter2, :type => 5, :which => question21))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter2, :type => 5, :which => question21))
         should have_link(class: "btn-warning", text: "!", href: chapter_path(chapter2, :type => 5, :which => question22_offline))
         
         should have_selector("table", id: "chapter#{chapter3.id}", class: "yellowy", text: chapter3.name)
         should have_link(theory31.title, href: chapter_path(chapter3, :type => 1, :which => theory31))
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter3, :type => 5, :which => question31))
         
         should have_selector("table", id: "chapter#{chapter4.id}", class: "yellowy", text: chapter4.name)
-        should have_link(class: "btn-grey", text: "1", href: chapter_path(chapter4, :type => 5, :which => question41))
+        should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_path(chapter4, :type => 5, :which => question41))
         
         should have_selector("table", id: "chapter#{chapter5_offline.id}", class: "orangey", text: chapter5_offline.name)
         should have_link(theory51_offline.title, href: chapter_path(chapter5_offline, :type => 1, :which => theory51_offline))

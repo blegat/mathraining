@@ -1,0 +1,50 @@
+<% if !(defined? postfix) %>
+  <% postfix = "" %>
+<% end %>
+
+<% if !(defined? disable) %>
+  <% disable = false %>
+<% end %>
+
+<% if !(defined? s) %>
+  <% numFiles = 0 %>
+<% else %>
+  <% numFiles = s.myfiles.count + s.fakefiles.count %>
+<% end %>
+
+<div>
+<label class="form-label">Pièces jointes <%= '(décochez pour supprimer)' if numFiles > 0 %></label>
+<% if numFiles > 0 %>
+  <% s.myfiles.order(:id).each do |f| %>
+    <div class="form-check mb-1">
+    <label class="form-check-label">
+      <input class="form-check-input" type="checkbox" name="prevFile<%= postfix %>_<%= f.id %>" value="1" checked="checked" />
+      <%= link_to f.file.filename, rails_blob_path(f.file, disposition: 'attachment') %>
+    </label>
+    </div>
+  <% end %>
+  <% s.fakefiles.order(:id).each do |f| %>
+    <div class="form-check mb-1">
+    <label class="form-check-label">
+      <input class="form-check-input" type="checkbox" name="prevFakeFile<%= postfix %>_<%= f.id %>" value="1" checked="checked" />
+      <span class="text-color-dark-light-blue"><%= f.filename %> (désactivée)</span>
+    </label>
+    </div>
+  <% end %>
+  <div class="mb-2"></div>
+<% end %>
+
+<div id="divFiles<%= postfix %>"></div>
+
+<p id="allowedFiles" class="mt-2 mb-2 fst-italic" style="display:none;">
+  Types de fichier autorisés : zip, pdf, doc, gif, jpg, png, bmp, txt.<br/>
+  Taille maximale autorisée : 1 Mo par fichier, 5 Mo au total.<br/>
+  <b>(Pensez à compresser vos fichiers s'ils sont trop volumineux !)</b>
+</p>
+
+<% if postfix != "" %>
+  <input type="hidden" name="postfix" value="<%= postfix %>">
+<% end %>
+
+<input type="button" value="Ajouter une pièce jointe" is="joint-onclick" id="addFile<%= postfix %>" data-postfix="<%= postfix %>" class="btn btn-sm btn-ld-light-dark mb-2" <%= 'disabled="disabled"'.html_safe if current_user.sk.other or disable %> />
+</div>

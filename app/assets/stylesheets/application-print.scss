@@ -10,5 +10,16 @@
  *
  */
 
+// Bootstrap parameters:
+$font-size-base: 0.875rem;
+$enable-negative-margins: true;
+$link-decoration: none;
+$link-hover-decoration: underline;
+$body-color-dark: white;
+$enable-cssgrid: true;
+$grid-columns: 24;
+
+@import "bootstrap";
+@import "select2";
 @import "./common/*";
 @import "./print/*";

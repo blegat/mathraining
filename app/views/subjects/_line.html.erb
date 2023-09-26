@@ -1,23 +1,24 @@
 <!-- S'agit-il d'un nouveau message? On le met dans style -->
+<% highlighting = false %>
 <% if current_user.sk.last_forum_visit_time < s.last_comment_time && s.last_comment_user != current_user.sk %>
-  <% style = "background-color:#fffad2;" %>
+  <% highlighting = true %>
 <% end %>
 
-<tr style="<%= style %>">
+<tr class="<%= "table-ld-warning" if highlighting %>">
 
   <!-- Titre du sujet, + "Correcteurs" ou "Wépion" s'il le faut -->
   <td style="vertical-align:middle;">
     <% if s.for_correctors? || s.for_wepion? %>
-      <table style="border:none; padding:0px; margin:0px;"><tr><td style="border:none; vertical-align:middle; padding:0px; padding-right:5px;">
+      <table class="p-0 m-0"><tr><td class="p-0 pe-1 align-middle">
       <% if s.for_correctors? %>
-        <span class="hidden-small label label-warning">Correcteurs</span>
-        <span class="hidden-large label label-warning">C</span>
+        <span class="d-none d-lg-inline badge rounded-pill bg-warning text-dark">Correcteurs</span>
+        <span class="d-inline d-lg-none badge rounded-pill bg-warning text-dark">C</span>
       <% elsif s.for_wepion? %>
-        <span class="hidden-small label label-success">Wépion</span>
-        <span class="hidden-large label label-success">W</span>
+        <span class="d-none d-lg-inline badge rounded-pill bg-success">Wépion</span>
+        <span class="d-inline d-lg-none badge rounded-pill bg-success">W</span>
       <% end %>
       </td>
-      <td style="border-left:1px dotted grey; padding:0px; padding-left:5px;">
+      <td class="p-0 ps-1" style="border-left:1px dotted grey;">
     <% end %>
 
     <%= link_to s.title, subject_path(s, :q => @q) %> - <%= get_category_name(s) %>
@@ -27,17 +28,8 @@
     <% end %>
   </td>
 
-  <!-- Auteur du sujet -->
-  <td class="hidden-xs" style="text-align:center; font-weight:bold; vertical-align:middle;">
-    <% if s.user_id > 0 %>
-      <%= raw(s.user.linked_name) %>
-    <% else %>
-      <b>Message automatique</b>
-    <% end %>
-  </td>
-
   <!-- Nombre de messages -->
-  <td class="hidden-xs" style="text-align:center; vertical-align:middle;">
+  <td class="d-none d-md-table-cell align-middle text-center">
     <%= x = s.messages.count %>
   </td>
 
@@ -49,7 +41,7 @@
   <!-- Cas normal -->
 
   <!-- Dernier message -->
-  <td class="hidden-small" style="width:180px; text-align:center; font-weight:bold; vertical-align:middle;">
+  <td class="d-none d-lg-table-cell align-middle text-center" style="width:180px;">
     <% if !qui.nil? %>
       <%= raw(qui.linked_name) %>
     <% else %>
@@ -58,7 +50,7 @@
   </td>
 
   <!-- Date du dernier message -->
-  <td class="hidden-small" style="width:200px; text-align:center; vertical-align:middle;">
+  <td class="d-none d-lg-table-cell align-middle text-center" style="width:220px;">
     <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
     <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => @q) do %>
@@ -68,12 +60,12 @@
 
   <!-- Cas gsm -->
 
-  <td class="hidden-large" style="width:200px;">
+  <td class="d-table-cell d-lg-none" style="width:220px;">
   <table style="width:100%;">
 
     <!-- Dernier message -->
     <tr>
-    <td style="width:180px; text-align:center; font-weight:bold; vertical-align:middle; padding-bottom:5px; border-bottom:1px dashed grey;">
+    <td class="align-middle text-center pb-1" style="width:220px; border-bottom:1px dashed grey;">
       <% if !qui.nil? %>
         <%= raw(qui.linked_name) %>
       <% else %>
@@ -84,7 +76,7 @@
 
     <!-- Date du dernier message -->
     <tr>
-    <td style="width:200px; text-align:center; vertical-align:middle; padding-top:5px;">
+    <td class="align-middle text-center pt-1" style="width:220px;">
       <% page = [0,((num_messages-1)/10).floor].max + 1 %>
 
       <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => @q) do %>

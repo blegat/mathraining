@@ -7,23 +7,22 @@ var showAllDiscussions = function () {
 }
 </script>
 
-<div class="list-group chap-menu" style="margin-bottom:0px;">
-  <br/>
-  <h4 class="list-group-item-heading">Nouveau message</h4>
-  <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item #{"active" if @nouveau}" %>
-  <br/>
-  <h4 class="list-group-item-heading">Discussions</h4>
+<div class="list-group mb-0">
+  <h5 class="mt-1">Nouveau message</h5>
+  <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item list-group-item-action #{"active" if @nouveau}" %>
+
+  <h4 class="mt-3">Discussions</h4>
   
   <% num = 0 %>
   <% num_max = 5 %>
   <% Discussion.find_by_sql("SELECT discussions.id, discussions.last_message_time, a.nonread, users.first_name, users.last_name, users.see_name FROM discussions INNER JOIN links AS a ON discussions.id = a.discussion_id INNER JOIN links AS b ON discussions.id = b.discussion_id INNER JOIN users ON b.user_id = users.id WHERE a.user_id = #{current_user.sk.id} AND b.user_id != #{current_user.sk.id} ORDER BY last_message_time DESC").each do |d| %>
     <% if num == num_max %>
-      <a id="show_all_discussions" class="list-group-item" onclick="showAllDiscussions();" style="cursor:pointer; text-align:center;">Tout charger</a>
+      <a id="show_all_discussions" class="list-group-item list-group-item-action text-center" onclick="showAllDiscussions();" style="cursor:pointer;">Tout charger</a>
       <div id="remaining_discussions" style="display:none;">
     <% end %>
-    <%= link_to discussion_path(d.id), :class => "list-group-item #{"active" if d.id == @discussion.id} #{"jaune" if d.nonread > 0 && d.id != @discussion.id}" do %>
+    <%= link_to discussion_path(d.id), :class => "list-group-item list-group-item-action #{"active" if d.id == @discussion.id} #{"list-group-item-warning" if d.nonread > 0 && d.id != @discussion.id}" do %>
       <b><%= User.new(:first_name => d.first_name, :last_name => d.last_name, :see_name => d.see_name).name %><%= " (#{d.nonread})" if d.nonread > 0 && d.id != @discussion.id %></b><br/>
-      <div style="margin-top:5px;"><%= write_date(d.last_message_time) %></div>
+      <div class="mt-1"><%= write_date(d.last_message_time) %></div>
     <% end %>
     <% num = num + 1 %>
   <% end %>

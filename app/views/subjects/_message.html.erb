@@ -1,17 +1,17 @@
-<% @postfix = "Message#{m.id}" %>
+<% postfix = "Message#{m.id}" %>
 
-<div id="the<%= @postfix %>" class="myoverflow">
-<%= render 'subjects/content', ms: m, kind: "message" %>
+<% can_edit = current_user.sk.root || (m.user_id > 0 && (m.user == current_user.sk || (current_user.sk.admin && !m.user.admin))) %>
+
+<div id="the<%= postfix %>" class="myoverflow">
+<%= render 'shared/post', ms: m, kind: "message", can_edit: can_edit, postfix: postfix %>
 </div>
 
-<% if @canmodif %>
-  <div id="form<%= @postfix %>" class="myoverflow" style="height:0px;">
-  <%= render 'messages/edit', m: m %>
+<% if can_edit %>
+  <div id="form<%= postfix %>" class="myoverflow px-1" style="height:0px;">
+  <%= render 'messages/edit', m: m, postfix: postfix %>
   </div>
 <% end %>
 
 <% if !params[:message].nil? && (params[:message].to_i == m.id) %>
-  <script>
-    Rolling.showus("<%= @postfix %>");
-  </script>
+  <script>rollingShowusWhenPossible("<%= postfix %>")</script>
 <% end %>

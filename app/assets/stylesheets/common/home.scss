@@ -2,38 +2,33 @@
 
 .home {
   text-align:center;
-  margin-top:20px;
+  margin-top:10px;
+  margin-bottom:15px;
   padding:25px;
-  border:1px solid #bbbbbb;
-  background-color:#eeeeee;
 }
 
 .home-stats {
   font-size:16px;
-  border:1px solid #bbbbbb;
-  margin-top:25px;
   margin-bottom:10px;
-  background-color:#f6f6f6;
 }
 
 .home-stats .left {
   text-align:right;
   padding-left:10px;
-  padding-right:10px;
+  padding-right:15px;
   font-weight:bold;
   font-size:18px;
-  color:rgb(3,109,170);
 }
 
 .home-stats .right {
   text-align:left;
-  padding-right:10px;
+  padding-right:15px;
 }
 
-.home_thanks {
-  text-align:center;
-  margin-top:15px;
-  padding:15px;
-  border:1px solid #dddddd;
-  background-color:rgb(217,237,247);
+.home-stats .top {
+  padding-top:5px;
+}
+
+.home-stats .bottom {
+  padding-bottom:5px;
 }

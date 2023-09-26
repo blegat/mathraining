@@ -5,21 +5,22 @@
 <% total = ActiveStorage::Blob.sum(:byte_size) %>
 
 <center>
+<p class="fs-5">
 <% if total < 1000000 %>
   Total : <b><%= (total/1000.0).round(1).to_s + " ko"%></b>
 <% else %>
   Total : <b><%= (total/1000000.0).round(2).to_s + " Mo"%></b>
 <% end %>
-</center><br/>
+</p>
+</center>
 
 <center>
-<%= will_paginate @list, :style => "margin-top:-10px;", :class => "hidden-xs", :inner_window => 2 %>
-<%= will_paginate @list, :style => "margin-bottom:15px;", :class => "visible-xs", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
-</center>
+  <%= will_paginate @list, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+  <%= will_paginate @list, :class => "d-block d-sm-none mb-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <table class="table table-bordered">
-<tr><th class="hidden-xs">Date</th><th>Qui</th><th class="hidden-xs">Où</th><th class="hidden-xs">Quoi</th><th><center>Taille</center></th><th><center></center></th></tr>
+<tr class="table-ld-header"><th class="d-none d-md-table-cell">Date</th><th>Qui</th><th class="d-none d-lg-table-cell">Où</th><th class="d-none d-md-table-cell">Quoi</th><th><center>Taille</center></th><th><center></center></th></tr>
 
 <!-- Affiche toutes les pièces jointes du site -->
 <% @list.each do |f| %>
@@ -32,29 +33,36 @@
 
   <!-- Si pas tchat : vert -->
   <% if type != "Tchatmessage" %>
-    <tr style="background-color:#DDFFDD;">
+    <tr class="table-ld-success">
   <% else %>
-    <tr style="background-color:#E2E2FF;">
+    <tr class="table-ld-danger">
   <% end %>
 
   <!-- Date -->
-  <td class="hidden-xs">
+  <td class="d-none d-md-table-cell">
   <%= write_date(date) %>
   </td>
 
   <!-- Qui -->
-  <td style="font-weight:bold;">
+  <td class="fw-bold">
   <% if type != "Contestcorrection" %>
-    <% qui = about.user %>
-    <%= raw(qui.linked_name) if !qui.nil? %>
+    <% if about.nil? %>
+      <!-- Happens in development mode when files are not uploaded correctly -->
+      <span class="text-color-red">Erreur</span>
+    <% else %>
+      <% qui = about.user %>
+      <%= raw(qui.linked_name) if !qui.nil? %>
+    <% end %>
   <% else %>
-    <b>Organisateurs</b>
+    Organisateurs
   <% end %>
   </td>
 
   <!-- Où? Forum ou soumission? -->
-  <td class="hidden-xs">
-  <% if type == "Subject" || type == "Message" %>
+  <td class="d-none d-lg-table-cell">
+  <% if about.nil? %>
+    <span class="text-color-red;">Erreur</span>
+  <% elsif type == "Subject" || type == "Message" %>
     Forum
   <% elsif type == "Submission" && about.draft? %>
     Brouillon
@@ -68,19 +76,19 @@
   </td>
 
   <!-- Télécharger -->
-  <td class="hidden-xs">
+  <td class="d-none d-md-table-cell">
   <% truncated = name.size > 30 ? [name[0,20],name[-7,7]].join("...") : name %>
   <%= link_to truncated, rails_blob_path(f.file, disposition: 'attachment') %>
   </td>
 
   <!-- Taille -->
-  <td style="text-align:center;">
+  <td class="text-center">
   <%= (size / 1.kilobyte).round(1) %> ko
   </td>
 
   <!-- Voir dans le contexte -->
-  <td style="text-align:center;">
-  <% if type != "Tchatmessage" %>
+  <td class="text-center">
+  <% if !about.nil? && type != "Tchatmessage" %>
     <%= link_to "Voir", f %>
   <% else %>
     -

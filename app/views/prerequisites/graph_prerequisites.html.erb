@@ -2,37 +2,23 @@
 
 <h1><%= title_2("Théorie", "Modifier la structure des sections") %></h1>
 
-<% allsections = Array.new %>
+<% section_is_fondation = Array.new %>
 <% Section.all.each do |s| %>
-  <% allsections[s.id] = s.fondation? %>
+  <% section_is_fondation[s.id] = s.fondation? %>
 <% end %>
 
 <!-- Graphique des prérequis -->
-<script>
-  var graph = new Graph();
+<script type="module">
+  import "custom/springy"
+  import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
+  window.Graph = Graph
+  window.Node = Node
+  window.Edge = Edge
+  window.Layout = Layout
+  window.Vector = Vector
+  window.Renderer = Renderer
+  import "custom/springyui"
 
-  var noeud = new Array();
-  var prereq = new Array();
-  var fond = new Array();
-  var depart = graph.newNode({label: "Départ", color: "#0000FF", text: "#FFFFFF", bold: true});
-  <% existe = Set.new %>
-  <% maximum = 1 %>
-  <% chapters = Array.new %>
-  <% Chapter.includes(:section, :prerequisites).all.each do |chapter| %>
-    <% unless allsections[chapter.section_id] %>
-      <% chapters.push(chapter) %>
-      prereq[<%= chapter.id %>] = <%= x = chapter.number_prerequisites() %>;
-      <% if x+1 > maximum %>
-        <% maximum = x+1 %>
-      <% end %>
-      <% existe.add(chapter.id) %>
-      fond[<%= chapter.id %>] = <%= allsections[chapter.section_id] %>
-    <% end %>
-  <% end %>
-
-  couleur = 0;
-  couleurmaxi = 0;
-  
   function decitohexa(dose){
     var deux = dose % 16;
     var un = Math.floor(dose/16);
@@ -65,54 +51,89 @@
     var dose3 = 255-Math.floor(couleurmax[i][2]*a/b);
     return decitohexa(dose1).concat(decitohexa(dose2)).concat(decitohexa(dose3));
   }
-    
 
-  <% Chapter.includes(:section).all.each do |chapter| %>
-    <% unless allsections[chapter.section_id] %>
-      couleur = 1+prereq[<%= chapter.id %>];
-      couleurmaxi = <%= maximum %>;
-      <% nom = chapter.name %>
-      <% if nom.size > 25 %>
-        <% nom = nom.slice(0..22) + "..." %>
+  function drawGraph() {
+    var graph = new Graph();
+
+    var noeud = new Array();
+    var prereq = new Array();
+    var fond = new Array();
+    var depart = graph.newNode({label: "Départ", color: "#0000FF", text: "#FFFFFF", bold: true});
+    <% existe = Set.new %>
+    <% maximum = 1 %>
+    <% chapters = Array.new %>
+    <% Chapter.includes(:section, :prerequisites).all.each do |chapter| %>
+      <% unless section_is_fondation[chapter.section_id] %>
+        <% chapters.push(chapter) %>
+        prereq[<%= chapter.id %>] = <%= x = chapter.number_prerequisites() %>;
+        <% if x+1 > maximum %>
+          <% maximum = x+1 %>
+        <% end %>
+        <% existe.add(chapter.id) %>
+        fond[<%= chapter.id %>] = <%= section_is_fondation[chapter.section_id] %>
       <% end %>
-      <% if allsections[chapter.section_id] %>
-        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
-      <% else %>
-        noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
+    <% end %>
+
+    var couleur = 0;
+    var couleurmaxi = 0;   
+    var taille = 0 
+
+    <% Chapter.includes(:section).all.each do |chapter| %>
+      <% unless section_is_fondation[chapter.section_id] %>
+        couleur = 1+prereq[<%= chapter.id %>];
+        couleurmaxi = <%= maximum %>;
+        <% nom = chapter.name %>
+        <% if nom.size > 25 %>
+          <% nom = nom.slice(0..22) + "..." %>
+        <% end %>
+        <% if section_is_fondation[chapter.section_id] %>
+          noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
+        <% else %>
+          noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
+        <% end %>
+        if(prereq[<%= chapter.id %>] == 0){
+          graph.newEdge(depart, noeud[<%= chapter.id %>], {color: "#CCCCCC"});
+        }
       <% end %>
-      if(prereq[<%= chapter.id %>] == 0){
-        graph.newEdge(depart, noeud[<%= chapter.id %>], {color: "#CCCCCC"});
-      }
     <% end %>
-  <% end %>
 
-  <% Prerequisite.all.each do |p| %>
-    <% if existe.include?(p.prerequisite_id) && existe.include?(p.chapter_id) %>
-      if (fond[<%= p.chapter_id %>] && !fond[<%= p.prerequisite_id %>]){
-        couleur = "FF0000";
-        taille = 5;
-      }
-      else if(fond[<%= p.chapter_id %>] || fond[<%= p.prerequisite_id %>]){
-        couleur = "00BB00";
-        taille = 1;
-      }
-      else{
-        couleur = "000000";
-        taille = 1;
-      }
-      graph.newEdge(noeud[<%= p.prerequisite_id %>], noeud[<%= p.chapter_id %>], {color: couleur, width: taille});
+    <% Prerequisite.all.each do |p| %>
+      <% if existe.include?(p.prerequisite_id) && existe.include?(p.chapter_id) %>
+        if (fond[<%= p.chapter_id %>] && !fond[<%= p.prerequisite_id %>]){
+          couleur = "FF0000";
+          taille = 5;
+        }
+        else if(fond[<%= p.chapter_id %>] || fond[<%= p.prerequisite_id %>]){
+          couleur = "00BB00";
+          taille = 1;
+        }
+        else{
+          couleur = "000000";
+          taille = 1;
+        }
+        graph.newEdge(noeud[<%= p.prerequisite_id %>], noeud[<%= p.chapter_id %>], {color: couleur, width: taille});
+      <% end %>
     <% end %>
-  <% end %>
 
 
-  $(document).ready(function() {
     var springy = window.springy = jQuery('#structure').springy({
       graph: graph,
       nodeSelected: function(node) {
         console.log('Node selected: ' + JSON.stringify(node.data));
       }
     });
-  });
+  }
+  
+  var drawGraphDone = false;
+  function drawGraphIfPossible() {
+    if ("$" in window) {
+      if (!drawGraphDone) {
+        drawGraphDone = true;
+        drawGraph();
+      }
+    }
+  }
+  callMethodWhenPossible(drawGraphIfPossible);
 </script>
 
 
@@ -139,20 +160,20 @@
   <% end %>
 <% end %>
 
-<div class="row">
+<div class="grid mt-3" style="--bs-columns:12;">
 
   <!-- Ajouter un lien -->
-  <div class="col-sm-6 col-xs-6">
+  <div class="g-col-12 g-col-md-6">
     <center>
       <%= form_for(:prerequisite, url: add_prerequisite_path) do |f| %>
         <h3> Ajouter un lien </h3>
-        <div class="form-group">
-        <%= f.label "Prérequis" %>
-        <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true, :id => "add_form_prerequisite" }) %>
+        <div class="mb-2">
+        <%= f.label "Prérequis", :class => "form-label" %>
+        <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "add_form_prerequisite" }) %>
         </div>
-        <div class="form-group">
-        <%= f.label "Chapitre" %>
-        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true, :id => "add_form_chapter" }) %>
+        <div class="mb-2">
+        <%= f.label "Chapitre", :class => "form-label" %>
+        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "add_form_chapter" }) %>
         </div>
         <%= f.submit "Ajouter ce lien", class: "btn btn-primary" %>
       <% end %>
@@ -160,17 +181,17 @@
   </div>
   
   <!-- Supprimer un lien -->
-  <div class="col-sm-6 col-xs-6">
+  <div class="g-col-12 g-col-md-6">
     <center>
       <%= form_for(:prerequisite, url: remove_prerequisite_path) do |f| %>
         <h3> Supprimer un lien </h3>
-        <div class="form-group">
-        <%= f.label "Prérequis" %>
-        <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true, :id => "delete_form_prerequisite" }) %>
+        <div class="mb-2">
+        <%= f.label "Prérequis", :class => "form-label" %>
+        <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "delete_form_prerequisite" }) %>
         </div>
-        <div class="form-group">
-        <%= f.label "Chapitre" %>
-        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-control", :style => "width:300px;", :prompt => true, :id => "delete_form_chapter" }) %>
+        <div class="mb-2">
+        <%= f.label "Chapitre", :class => "form-label" %>
+        <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "delete_form_chapter" }) %>
         </div>
         <%= f.submit "Supprimer ce lien", class: "btn btn-primary" %>
       <% end %>

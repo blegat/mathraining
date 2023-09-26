@@ -1,18 +1,17 @@
-<% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
-  <h3><%= f.title %></h3>
+<% if theory.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+  <h3><%= theory.title %></h3>
   <div>
-  <%= raw(htmlise(f.content).gsub(/\/latextest\//, '<div class="form-group"><div class="well" id="MathPreview"></div> <div class="well hidden-preview" id="MathBuffer"></div> <textarea id="MathInput" class="form-control" style="height:120px; margin-top:5px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script> PreviewSafe.Init(); PreviewSafe.Update(); </script>') )%>
+  <%= raw(htmlise(theory.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control mt-2" style="height:120px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(true)</script>') )%>
   </div>
-  <br/>
 
   <div class="noprint">
   <!-- Si administrateur ou hors-ligne (pour étudiant créateur) -->
   <% if !@chapter.online? || (@signed_in && current_user.sk.admin?) %>
-    <center>
+    <p class="mt-3 text-center">
     <!-- Modifier/Supprimer -->
-      <%= link_to "Modifier ce point théorique", edit_theory_path(f) %> |
-      <%= link_to "Supprimer ce point théorique", f, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce point théorique ?" } %>
-    <br/><br/>
+      <%= link_to "Modifier ce point théorique", edit_theory_path(theory) %> |
+      <%= link_to "Supprimer ce point théorique", theory, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce point théorique ?" } %>
+    </p>
     
     <!-- Déplacer -->
     <% if number > 1 %>
@@ -28,38 +27,39 @@
     <% end %>
 
     <% if up || down %>
+      <p class="text-center">
       Déplacer ce point théorique vers le
       <% if up %>
-        <%= link_to "haut", theory_order_minus_path(f), :method => :put %>
+        <%= link_to "haut", theory_order_minus_path(theory), :method => :put %>
       <% end %>
       <% if up && down %>
         |
       <% end %>
       <% if down %>
-        <%= link_to "bas", theory_order_plus_path(f), :method => :put %>
+        <%= link_to "bas", theory_order_plus_path(theory), :method => :put %>
       <% end %>
-      <br/><br/>
+      </p>
     <% end %>
     
     <!-- Mettre en ligne -->
-    <% if !f.online && @chapter.online %>
-      <%= button_to "Mettre en ligne", theory_put_online_path(f), method: :put, class: 'btn btn-default btn-grey', data: { confirm: "Êtes-vous sûr de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
-      <br/>
+    <% if !theory.online && @chapter.online %>
+      <center>
+      <%= button_to "Mettre en ligne", theory_put_online_path(theory), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
+      </center>
     <% end %>
-    </center>
   
   <!-- Si étudiant (connecté) -->
   <% elsif @signed_in %>
     <center>
       <% if current_user.sk.theories.exists?(id) %>
-        <%= button_to "Marquer comme non lu", theory_unread_path(f), method: :put, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
+        <%= button_to "Marquer comme non lu", theory_unread_path(theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>
       <% else %>
-        <%= button_to "Marquer comme lu", theory_read_path(f), method: :put, class: 'btn btn-default btn-grey', :disabled => current_user.other %>
+        <%= button_to "Marquer comme lu", theory_read_path(theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>
       <% end %>
     </center>
 
-    <hr style="border-top:1px dashed lightgray;" />
-    Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> !
+    <hr class="bottom-help" />
+    <p>Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> !</p>
   <% end %>
 
   </div>

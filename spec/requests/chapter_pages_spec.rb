@@ -5,6 +5,7 @@ describe "Chapter pages" do
 
   subject { page }
 
+  let(:root) { FactoryGirl.create(:root) }
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
   let(:section) { FactoryGirl.create(:section) }
@@ -100,49 +101,8 @@ describe "Chapter pages" do
         expect(page).to have_link("Modifier les prérequis")
         expect(page).to have_link("point théorique")
         expect(page).to have_link("QCM")
-        expect(page).to have_button("Mettre ce chapitre en ligne")
+        expect(page).to have_no_button("Mettre ce chapitre en ligne") # Only for root
         expect { click_link("Supprimer ce chapitre") }.to change(Chapter, :count).by(-1) .and change(Question, :count).by(-2) .and change(Theory, :count).by(-1) .and change(Item, :count).by(-1)
-      end
-    end
-    
-    describe "visits warning page to put online" do
-      before { visit chapter_warning_path(offline_chapter) }
-      it do
-        should have_selector("h1", text: "Mise en ligne")
-        should have_button("Mettre ce chapitre en ligne")
-      end
-      
-      describe "and puts it online" do
-        before do
-          click_button "Mettre ce chapitre en ligne"
-          offline_chapter.reload
-          offline_qcm.reload
-          offline_exercise.reload
-          offline_theory.reload
-        end
-        specify do
-          expect(offline_chapter.online).to eq(true)
-          expect(offline_qcm.online).to eq(true)
-          expect(offline_exercise.online).to eq(true)
-          expect(offline_theory.online).to eq(true)
-        end
-      end
-    end
-    
-    describe "tries to put online an online chapter" do
-      before { visit chapter_warning_path(online_chapter) }
-      it do
-        should have_no_selector("h1", text: "Mise en ligne")
-        should have_no_button("Mettre ce chapitre en ligne")
-      end
-    end
-    
-    describe "tries to put online a chapter with offline prerequisites" do
-      before { visit chapter_warning_path(offline_chapter_2) }
-      it do
-        should have_no_selector("h1", text: "Mise en ligne")
-        should have_error_message("Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne.")
-        should have_button("Mettre ce chapitre en ligne") # Redirects to the chapter page with this button (even if we cannot use it)
       end
     end
     
@@ -216,6 +176,44 @@ describe "Chapter pages" do
         expect(offline_chapter.description).to eq(newdescription)
         expect(offline_chapter.level).to eq(newlevel)
         expect(offline_chapter.position).to eq(section.chapters.where(:level => newlevel).order(:position).last.position)
+      end
+    end
+  end
+  
+  describe "root" do
+    before { sign_in root }
+    
+    describe "puts a chapter online" do
+      before do
+        visit chapter_path(offline_chapter)
+        click_button "Mettre ce chapitre en ligne"
+        offline_chapter.reload
+        offline_qcm.reload
+        offline_exercise.reload
+        offline_theory.reload
+      end
+      specify do
+        expect(offline_chapter.online).to eq(true)
+        expect(offline_qcm.online).to eq(true)
+        expect(offline_exercise.online).to eq(true)
+        expect(offline_theory.online).to eq(true)
+      end
+    end
+    
+    describe "tries to put online an online chapter" do
+      before { visit chapter_path(online_chapter) }
+      it { should have_no_button("Mettre ce chapitre en ligne") }
+    end
+    
+    describe "tries to put online a chapter with offline prerequisites" do
+      before do
+        visit chapter_path(offline_chapter_2)
+        click_button("Mettre ce chapitre en ligne")
+        offline_chapter_2.reload
+      end
+      specify do
+        expect(page).to have_error_message("Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne.")
+        expect(offline_chapter_2.online).to eq(false)
       end
     end
   end

@@ -1,26 +1,21 @@
-<script>allowhide = false</script> <!-- This disables the "[hide][/hide]" in previewsafe -->
-  
 <%= form_for @contestcorrection, :html => { :multipart => true } do |f| %>
 
 <%= render 'contestcorrections/form', f: f %>
 
-<%= render 'subjects/files', s: @contestcorrection %>
-<span id="spanFiles"></span>
-<input type="button" value="Ajouter une pièce jointe" onclick="Joint.add()" id="PJ" <%= 'disabled="disabled"' if @was_reserved %> />
-<br/><br/>
+<%= render 'shared/edit_files', s: @contestcorrection, disable: @was_reserved %>
 
 <% if @contestproblem.in_recorrection? %>
-  <span style="color:red;"><b>Attention !</b> Vos modifications de la correction, du score attribué et de l'éventuelle étoile seront directement visibles par tous.</span><br/><br/>
+  <p class="text-color-red"><b>Attention !</b> Vos modifications de la correction, du score attribué et de l'éventuelle étoile seront directement visibles par tous.</p>
 <% end %>
 
 <% if !@contestsolution.official? %>
-  <%= f.button "Enregistrer provisoirement", type: "submit", name: "status", value: "unknown", class: "btn btn-primary", style: "margin-bottom:5px; #{'display:none;' if @contestproblem.in_recorrection?}", disabled: (current_user.other || @was_reserved), id: "BT1" %>
-  <%= f.button "Enregistrer", type: "submit", name: "status", value: "good", class: "btn btn-success", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT2" %>
-  <%= f.button "Enregistrer et étoiler (si 7/7)", type: "submit", name: "status", value: "star", class: "btn btn-warning", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT3" %>
+  <%= f.button "Enregistrer provisoirement", type: "submit", name: "status", value: "unknown", class: "btn btn-primary mb-1", style: "#{'display:none;' if @contestproblem.in_recorrection?}", disabled: (current_user.other || @was_reserved), id: "BT1" %>
+  <%= f.button "Enregistrer", type: "submit", name: "status", value: "good", class: "btn btn-success mb-1", disabled: (current_user.other || @was_reserved), id: "BT2" %>
+  <%= f.button "Enregistrer et étoiler (si 7/7)", type: "submit", name: "status", value: "star", class: "btn btn-warning mb-1", disabled: (current_user.other || @was_reserved), id: "BT3" %>
 <% else %>
-  <%= f.button "Enregistrer (non-publique)", type: "submit", name: "status", value: "bad", class: "btn btn-danger", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT1" %>
-  <%= f.button "Enregistrer (publique)", type: "submit", name: "status", value: "good", class: "btn btn-success", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT2" %>
-  <%= f.button "Enregistrer (publique étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning", style: "margin-bottom:5px;", disabled: (current_user.other || @was_reserved), id: "BT3" %>
+  <%= f.button "Enregistrer (non-publique)", type: "submit", name: "status", value: "bad", class: "btn btn-danger mb-1", disabled: (current_user.other || @was_reserved), id: "BT1" %>
+  <%= f.button "Enregistrer (publique)", type: "submit", name: "status", value: "good", class: "btn btn-success mb-1", disabled: (current_user.other || @was_reserved), id: "BT2" %>
+  <%= f.button "Enregistrer (publique étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning mb-1", disabled: (current_user.other || @was_reserved), id: "BT3" %>
 <% end %>
-<button class="btn btn-default btn-grey" style="margin-bottom:5px;" onclick="return Rolling.hideActual();">Annuler</button>
+<button class="btn btn-ld-light-dark mb-1" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>
