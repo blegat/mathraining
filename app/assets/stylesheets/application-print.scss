@@ -10,6 +10,47 @@
  *
  */
 
+// Import Font Ubuntu (NB: Other orders do not work!)
+
+@font-face {
+  font-family: "Ubuntu";
+  font-weight: 700;
+  font-style: italic;
+  src: font-url("Ubuntu-BI.ttf");
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-weight: 500;
+  font-style: italic;
+  src: font-url("Ubuntu-MI.ttf");
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-weight: 400;
+  font-style: italic;
+  src: font-url("Ubuntu-RI.ttf");
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-weight: 700;
+  src: font-url("Ubuntu-B.ttf");
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-weight: 500;
+  src: font-url("Ubuntu-M.ttf");
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-weight: 400;
+  src: font-url("Ubuntu-R.ttf");
+}
+
 // Bootstrap parameters:
 $font-size-base: 0.875rem;
 $enable-negative-margins: true;
@@ -18,6 +59,8 @@ $link-hover-decoration: underline;
 $body-color-dark: white;
 $enable-cssgrid: true;
 $grid-columns: 24;
+$font-family-base: "Ubuntu", sans-serif;
+$font-family-sans-serif: "Ubuntu", sans-serif;
 
 @import "bootstrap";
 @import "select2";
