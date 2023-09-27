@@ -1,0 +1,5 @@
+<p class="mb-2">Veuillez prouver que vous n'êtes pas un robot.</p>
+<% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
+<%= recaptcha_tags theme: "#{ mt_theme }" %>
+<!-- NB: Maybe possible to dynamically change the theme when event "theme-change" is emitted, but not easy and not important -->
+<div class="mb-2"></div>

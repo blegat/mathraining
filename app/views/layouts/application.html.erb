@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<% @mt_theme = 'light' %>
-<% @mt_theme = 'dark' if cookies.has_key?(:dark_theme) %>
-<html data-bs-theme="<%= @mt_theme %>">
+<% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
+<html data-bs-theme="<%= mt_theme %>">
   <head>  
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({

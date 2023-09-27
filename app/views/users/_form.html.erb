@@ -99,10 +99,8 @@
   <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (@signed_in && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
-<% if !modif && Rails.env.production? %>
-  <p class="mb-2">Veuillez prouver que vous n'êtes pas un robot.</p>
-  <%= recaptcha_tags :display => { :theme => "clean" } %>
-  <div class="mb-2"></div>
+<% if !modif && !Rails.env.test? %>
+  <%= render 'users/captcha' %>
 <% end %>
 
 <!-- Accepter Google Analytics -->

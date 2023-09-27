@@ -10,7 +10,7 @@ gem 'bcrypt', '3.1.16'
 gem 'will_paginate', '3.3.0'
 gem 'will_paginate-bootstrap-style'
 gem 'rails-i18n', '~> 7.0'
-gem 'recaptcha', '~> 4.1.0', :require => 'recaptcha/rails'
+gem 'recaptcha', '~> 5.15', :require => 'recaptcha/rails'
 gem 'thin'
 
 # Doing tasks every monday...
