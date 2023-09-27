@@ -42,7 +42,7 @@ gem 'coffee-rails', '~> 5.0.0'
 gem 'uglifier', '>= 1.2.3'
 #end
 
-#gem 'sassc', '= 2.1.0' # Otherwise it tries to install 2.4.0 and it fails for some reason
+gem 'sassc', '= 2.2.0' # Otherwise it tries to install 2.4.0 and it fails for some reason
 gem 'sassc-rails'
 
 gem 'jquery-rails'
