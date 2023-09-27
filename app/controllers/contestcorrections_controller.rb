@@ -9,11 +9,7 @@ class ContestcorrectionsController < ApplicationController
   before_action :has_reserved, only: [:update]
 
   # Update a correction (send the form)
-  def update  
-    if @send_solution == 1 # Not normal
-      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
-    end
-    
+  def update    
     params[:contestcorrection][:content].strip! if !params[:contestcorrection][:content].nil?
     @contestcorrection.content = params[:contestcorrection][:content]
     if @contestcorrection.valid?

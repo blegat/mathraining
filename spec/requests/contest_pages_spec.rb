@@ -193,7 +193,19 @@ describe "Contest pages" do
           expect(offline_contest.number).to eq(newnumber)
           expect(offline_contest.description).to eq(newdescription)
           expect(offline_contest.medal).to eq(true)
-          expect(page).to have_content("Concours modifié.")
+          expect(page).to have_success_message("Concours modifié.")
+        end
+      end
+      
+      describe "and tries to remove the description" do
+        before do
+          fill_in "MathInput", with: ""
+          click_button "Modifier"
+          offline_contest.reload
+        end
+        specify do
+          expect(page).to have_error_message("Description doit être rempli(e)")
+          expect(offline_contest.description).not_to eq("")
         end
       end
     end
@@ -245,6 +257,31 @@ describe "Contest pages" do
           expect(page).to have_success_message("Les médailles ont été distribuées !")
         end
       end
+      
+      describe "and define cutoffs with negative bronze" do
+        before do
+          fill_in "bronze_cutoff", with: -2
+          fill_in "silver_cutoff", with: silver_cutoff
+          fill_in "gold_cutoff", with: gold_cutoff
+          click_button "Distribuer les médailles"
+        end
+        let!(:contestscore5_new) { contest.contestscores.where(:user => user_participating5).first }
+        specify do
+          expect(page).to have_error_message("Seuil pour le bronze doit être supérieur ou égal à 0")
+          expect(contest.bronze_cutoff).to eq(0)
+          expect(contest.silver_cutoff).to eq(0)
+          expect(contest.gold_cutoff).to eq(0)
+        end
+      end
+    end
+    
+    describe "tries to define cutoffs while there are no medals" do
+      before do
+        contest.medal = false
+        contest.save
+        visit contest_cutoffs_path(contest)
+      end
+      it { should have_content(error_access_refused) }
     end
   end
   
@@ -281,6 +318,14 @@ describe "Contest pages" do
           it { should have_error_message("Un concours doit contenir au moins un problème !") }
         end
       end
+      
+      describe "and creates a new contest without numbe" do
+        before do
+          fill_in "MathInput", with: newdescription
+          click_button "Créer"
+        end
+        it { should have_error_message("Numéro doit être rempli") }
+      end
     end  
     
     describe "visits online contest page" do
@@ -300,6 +345,14 @@ describe "Contest pages" do
         expect(page).to have_link("Supprimer ce concours")
         expect(page).to have_button("Ajouter") # To add an organizer
         expect { click_link "Supprimer ce concours" }.to change(Contest, :count).by(-1)
+      end
+      
+      describe "and deletes the contest while it was put online" do
+        before do
+          offline_contest.in_progress!
+          click_link "Supprimer ce concours"
+        end
+        it { should have_content(error_access_refused) }
       end
 
       describe "and puts it online" do

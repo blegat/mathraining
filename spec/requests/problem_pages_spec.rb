@@ -22,6 +22,7 @@ describe "Problem pages" do
   let(:newlevel) { 5 }
   let(:newexplanation) { "Explication du problème pour les correcteurs." }
   let(:newmarkscheme) { "Marking scheme pour un problème de test virtuel." }
+  let(:no_new_sub_message) {"On ne soumet plus pour l'instant !" }
   
   before do
     online_problem_with_prerequisite.chapters << chapter
@@ -125,6 +126,17 @@ describe "Problem pages" do
         should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite, :auto => 1))
         should have_selector("div", text: online_problem_with_prerequisite.statement)
         should have_no_button("Ajouter un problème")
+      end
+    end
+    
+    describe "visits problems of a section while no new submissions are allowed" do
+      before do
+        Globalvariable.create(:key => "no_new_submission", :value => 1, :message => no_new_sub_message)
+        visit pb_sections_path(section)
+      end
+      it do
+        should have_info_message(no_new_sub_message)
+        should have_no_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite, :auto => 1))
       end
     end
     

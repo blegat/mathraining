@@ -43,6 +43,9 @@ class Contest < ActiveRecord::Base
   validates :status, presence: true
   validates :description, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :number, presence: true, numericality: { greater_than: 0 }
+  validates :bronze_cutoff, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :silver_cutoff, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :gold_cutoff, presence: true, numericality: { greater_than_or_equal_to: 0 }
   
   # OTHER METHODS
   

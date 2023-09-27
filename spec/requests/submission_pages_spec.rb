@@ -77,6 +77,15 @@ describe "Submission pages" do
           end
         end
         
+        describe "and sends new submission while they are forbidden" do
+          before do
+            Globalvariable.create(:key => "no_new_submission", :value => 1, :message => "On ne soumet plus pour l'instant !")
+            fill_in "MathInput", with: newsubmission
+            click_button "Soumettre cette solution"
+          end
+          specify { expect(problem.submissions.count).to eq(0) }
+        end
+        
         describe "and sends new submission while one is already waiting" do # Can only be done with several tabs
           before do
             FactoryGirl.create(:submission, problem: problem, user: user, status: :waiting)

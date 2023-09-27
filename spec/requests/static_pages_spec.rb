@@ -20,6 +20,17 @@ describe "Static pages" do
 		it { should have_selector("h1", text: "Contact") }
 	end
 	
+	describe "Contact page while site is under maintenance" do
+	  before do
+	    Globalvariable.create(:key => "under_maintenance", :value => 1, :message => "Site en maintenance !")
+	    visit contact_path
+	  end
+	  it do
+	    should have_selector("h1", text: "Actualités")
+	    should have_info_message("Site en maintenance !")
+	  end
+	end
+	
 	describe "Any page, starting benchmark" do
 	  before { visit root_path(:start_benchmark => 1) }
 	  it { should have_content("Temps total de chargement") }

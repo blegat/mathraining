@@ -65,17 +65,17 @@ Votre navigateur ne supporte pas les canvas.
 <th class="p-2">Seuil choisi</th>
 <td class="px-1 text-center">
 <div class="form-group">
-  <input class="form-control" style="width:70px;" type="number" name="bronze_cutoff" id="bronze_cutoff" value="<%= min_bronze %>" onchange="respondCanvas()" />
+  <input class="form-control" style="width:70px;" type="number" name="bronze_cutoff" id="bronze_cutoff" value="<%= min_bronze %>" min="0" onchange="respondCanvas()" />
 </div>
 </td>
 <td class="px-1 text-center">
 <div class="form-group">
-  <input class="form-control" style="width:70px;" type="number" name="silver_cutoff" id="silver_cutoff" value="<%= min_silver %>" onchange="respondCanvas()" />
+  <input class="form-control" style="width:70px;" type="number" name="silver_cutoff" id="silver_cutoff" value="<%= min_silver %>" min="0" onchange="respondCanvas()" />
 </div>
 </td>
 <td class="px-1 text-center">
 <div class="form-group">
-  <input class="form-control" style="width:70px;" type="number" name="gold_cutoff" id="gold_cutoff" value="<%= min_gold %>" onchange="respondCanvas()" />
+  <input class="form-control" style="width:70px;" type="number" name="gold_cutoff" id="gold_cutoff" value="<%= min_gold %>" min="0" onchange="respondCanvas()" />
 </div>
 </td>
 </tr>
