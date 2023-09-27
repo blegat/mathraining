@@ -122,6 +122,12 @@ class UsersController < ApplicationController
   
   # Show one user
   def show
+    @user_color_light = "black"
+    @user_color_dark = "white"
+    unless @user.admin?
+      @user_color_light = @user.level.color
+      @user_color_dark = @user.level.color
+    end
   end
 
   # Create a user, i.e. register on the website (show the form)

@@ -8,35 +8,10 @@
     <% rank_centile = (rank == 1 ? 100 : (100.0 * (num_users - rank + 1) / num_users).round(1)) %>
   <% end %>
   <% niveau = @user.level %>
-  <% couleur_light = niveau[:color] %>
-  <% couleur_dark = niveau[:color] %>
   <% grade = (@user.sex == 0 ? niveau[:name] : niveau[:femininename]) %>
 <% else %>
-  <% couleur_light = "black" %>
-  <% couleur_dark = "white" %>
   <% grade = (@user.sex == 0 ? "Administrateur" : "Administratrice") %>
 <% end %>
-
-<style type="text/css">
-  [data-bs-theme="light"] {
-    .user_color {
-      color: <%= couleur_light %>;
-    }
-    .user_color_bg {
-      background-color: <%= couleur_light %>;
-    }
-  }
-  [data-bs-theme="dark"] {
-    .user_color {
-      color: <%= couleur_dark %>;
-    }
-    .user_color_bg {
-      background-color: <%= couleur_dark %>;
-    }
-  }
-</style>
-
-<% couleur = "green" %>
 
 <% if !@user.admin %>
 
@@ -243,13 +218,13 @@
   
   [data-bs-theme="light"] {
     .arc_first {
-      border-color: <%= couleur_light %> <%= couleur_light %> <%= arcgrey_light %> <%= arcgrey_light %>;
+      border-color: <%= @user_color_light %> <%= @user_color_light %> <%= arcgrey_light %> <%= arcgrey_light %>;
     }
   }
   
   [data-bs-theme="dark"] {
     .arc_first {
-      border-color: <%= couleur_light %> <%= couleur_light %> <%= arcgrey_dark %> <%= arcgrey_dark %>;
+      border-color: <%= @user_color_dark %> <%= @user_color_dark %> <%= arcgrey_dark %> <%= arcgrey_dark %>;
     }
   }
 
@@ -267,8 +242,8 @@
     <% arccol_dark = arcgrey_dark %>
     <% rotation = 45 + 180.0 * pct / 50.0 %> /* 0% should be 45 deg, while 50% should be 45+180 deg **/
   <% else %>
-    <% arccol_light = couleur_light %>
-    <% arccol_dark = couleur_dark %> 
+    <% arccol_light = @user_color_light %>
+    <% arccol_dark = @user_color_dark %> 
     <% rotation = 45 + 180.0 * (pct - 50) / 50.0 %> /* 50% should be 45 deg, while 100% should be 45+100 deg **/
   <% end %>
 
@@ -864,7 +839,7 @@
             <% n = i - first_month %>
             ctx.beginPath();
             ctx.rect(pct*<%= 50+n*rect_width %>, pct*455, pct*<%= rect_width %>, -pct*<%= (450.0*num_corr_by_month[n])/maxi %>);
-            ctx.fillStyle = (is_dark ? '<%= couleur_dark %>' : '<%= couleur_light %>');
+            ctx.fillStyle = (is_dark ? '<%= @user_color_dark %>' : '<%= @user_color_light %>');
             ctx.fill();
             ctx.stroke();
           <% end %>
