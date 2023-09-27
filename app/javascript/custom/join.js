@@ -46,6 +46,7 @@ var Joint = {
   }
 };
 
+/* Does not work on Safari
 class JointClass extends HTMLInputElement {
   constructor() { super(); }
   connectedCallback() {
@@ -62,3 +63,6 @@ class JointClass extends HTMLInputElement {
 }
 
 customElements.define("joint-onclick", JointClass, { extends: "input" });
+*/
+
+export default Joint

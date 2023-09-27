@@ -17,6 +17,7 @@ var Clue = {
   }
 }
 
+/* Does not work on Safari
 class ClueClass extends HTMLButtonElement {
   constructor() { super(); }
   connectedCallback() {
@@ -29,3 +30,6 @@ class ClueClass extends HTMLButtonElement {
 }
 
 customElements.define("clue-onclick", ClueClass, { extends: "button" });
+*/
+
+export default Clue

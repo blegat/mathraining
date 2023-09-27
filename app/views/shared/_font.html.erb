@@ -1,22 +1,22 @@
 <div class="font-content">
 
 <div class="font">
-<a href="#ici" is='insert-onclick' data-insert-left='<b>' data-insert-right='</b>'><%= image_tag "bold.svg", :class => "svg-black-white", :title => "Gras" %></a>
-<a href="#ici" is='insert-onclick' data-insert-left='<i>' data-insert-right='</i>' class='ms-1'><%= image_tag "italic.svg", :class => "svg-black-white", :title => "Italique" %></a>
-<a href="#ici" is='insert-onclick' data-insert-left='<u>' data-insert-right='</u>' class='ms-1'><%= image_tag "underlined.svg", :class => "svg-black-white", :title => "Souligné" %></a>
-<a href="#ici" is='insert-onclick' data-insert-left='<h4>' data-insert-right='</h4>' class='ms-3'><%= image_tag "title.svg", :class => "svg-black-white", :title => "Sous-titre" %></a>
-<a href="#ici" is='insert-onclick' data-insert-left='<hr>'><%= image_tag "line.svg", :class => "svg-black-white", :title => "Séparateur horizontal" %></a>
-<a href="#ici" is='insert-onclick' data-insert-left='<ul>\n<li>Point 1' data-insert-right='</li>\n<li>Point 2</li>\n</ul>' class='ms-1'><%= image_tag "list.svg", :class => "svg-black-white", :title => "Liste" %></a>
-<a href="#ici" is='insert-onclick' data-insert-left='<ol>\n<li>Point 1' data-insert-right='</li>\n<li>Point 2</li>\n</ol>' class='ms-1'><%= image_tag "enumerate.svg", :class => "svg-black-white", :title => "Liste numérotée" %></a>
-<a href="#ici" is='insert-onclick' data-insert-left="<a target='blank' href='https://www.mathraining.be'>" data-insert-right='</a>' class='ms-1'><%= image_tag "link.svg", :class => "svg-black-white", :title => "Lien" %></a>
-<a href="#ici" is='insert-onclick' data-insert-left="<center><img style='width:100%; max-width:600px;' src='/system/DefaultPicture.png' /></center>" class='ms-1'><%= image_tag "picture.svg", :class => "svg-black-white", :title => "Image" %></a>
+<a href="#ici" onclick="Insert.insert('<b>', '</b>', 'MathInput'); return Preview.MyUpdate();"><%= image_tag "bold.svg", :class => "svg-black-white", :title => "Gras" %></a>
+<a href="#ici" onclick="Insert.insert('<i>', '</i>', 'MathInput'); return Preview.MyUpdate();" class='ms-1'><%= image_tag "italic.svg", :class => "svg-black-white", :title => "Italique" %></a>
+<a href="#ici" onclick="Insert.insert('<u>', '</u>', 'MathInput'); return Preview.MyUpdate();" class='ms-1'><%= image_tag "underlined.svg", :class => "svg-black-white", :title => "Souligné" %></a>
+<a href="#ici" onclick="Insert.insert('<h4>', '</h4>', 'MathInput'); return Preview.MyUpdate();" class='ms-3'><%= image_tag "title.svg", :class => "svg-black-white", :title => "Sous-titre" %></a>
+<a href="#ici" onclick="Insert.insert('<hr>', '', 'MathInput'); return Preview.MyUpdate();"><%= image_tag "line.svg", :class => "svg-black-white", :title => "Séparateur horizontal" %></a>
+<a href="#ici" onclick="Insert.insert('<ul>\n<li>Point 1', '</li>\n<li>Point 2</li>\n</ul>', 'MathInput'); return Preview.MyUpdate();" class='ms-1'><%= image_tag "list.svg", :class => "svg-black-white", :title => "Liste" %></a>
+<a href="#ici" onclick="Insert.insert('<ol>\n<li>Point 1', '</li>\n<li>Point 2</li>\n</ol>', 'MathInput'); return Preview.MyUpdate();" class='ms-1'><%= image_tag "enumerate.svg", :class => "svg-black-white", :title => "Liste numérotée" %></a>
+<a href="#ici" onclick='Insert.insert("<a target=\"blank\" href=\"https://www.mathraining.be\">", "</a>", "MathInput"); return Preview.MyUpdate();' class='ms-1'><%= image_tag "link.svg", :class => "svg-black-white", :title => "Lien" %></a>
+<a href="#ici" onclick='Insert.insert("<center><img style=\"width:100%; max-width:600px;\" src=\"/system/DefaultPicture.png\" /></center>", "", "MathInput"); return Preview.MyUpdate();' class='ms-1'><%= image_tag "picture.svg", :class => "svg-black-white", :title => "Image" %></a>
 </div>
 
 <div class="font">
-<a href="#ici" class="align-middle" is='insert-onclick' data-insert-left='<result>Résultat<statement>\n' data-insert-right='\n</result>'>Résultat</a> -
-<a href="#ici" class="align-middle" is='insert-onclick' data-insert-left='<proof>Démonstration<statement>\n' data-insert-right='\n</proof>'>Preuve</a> -
-<a href="#ici" class="align-middle" is='insert-onclick' data-insert-left='<remark>Remarque<statement>\n' data-insert-right='\n</remark>'>Remarque</a> -
-<a href="#ici" class="align-middle" is='insert-onclick' data-insert-left='<indice>' data-insert-right='</indice>'>Indice</a>
+<a href="#ici" class="align-middle" onclick="Insert.insert('<result>Résultat<statement>\n', '\n</result>', 'MathInput'); return Preview.MyUpdate();">Résultat</a> -
+<a href="#ici" class="align-middle" onclick="Insert.insert('<proof>Démonstration<statement>\n', '\n</proof>', 'MathInput'); return Preview.MyUpdate();">Preuve</a> -
+<a href="#ici" class="align-middle" onclick="Insert.insert('<remark>Remarque<statement>\n', '\n</remark>', 'MathInput'); return Preview.MyUpdate();">Remarque</a> -
+<a href="#ici" class="align-middle" onclick="Insert.insert('<indice>', '</indice>', 'MathInput'); return Preview.MyUpdate();">Indice</a>
 </div>
 
 <div class="font">

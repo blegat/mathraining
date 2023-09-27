@@ -10,6 +10,7 @@ var ShowHideCode = {
   }
 }
 
+/* Does not work on Safari
 class ShowCodeClass extends HTMLAnchorElement {
   constructor() { super(); }
   connectedCallback() {
@@ -34,3 +35,6 @@ class HideCodeClass extends HTMLAnchorElement {
 
 customElements.define("showcode-onclick", ShowCodeClass, { extends: "a" });
 customElements.define("hidecode-onclick", HideCodeClass, { extends: "a" });
+*/
+
+export default ShowHideCode

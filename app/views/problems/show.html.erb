@@ -198,7 +198,7 @@
   <% if @problem.explanation.size == 0 %>
     <p class="text-center fw-bold text-color-orange">Pas d'éléments de solution disponibles.</p>
   <% else %>
-    <div class='clue-bis'><div><center><button data-text-id='0' is='clue-onclick' class='btn btn-ld-light-dark'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
+    <div class='clue-bis'><div><center><button onclick='return Clue.toggle(0)' class='btn btn-ld-light-dark'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
     <%= raw(htmlise(@problem.explanation)) %>
     </div></div></div>
   <% end %>

@@ -6,20 +6,25 @@ import "jquery_ujs"
 import "select2"
 import "select2_locale_fr"
 
-import "custom/clue"
-import "custom/info"
-import "custom/join"
+import Clue from "custom/clue"
+import Info from "custom/info"
+import Joint from "custom/join"
 import Preview from "custom/preview"
 import PreviewSafe from "custom/previewsafe"
 import Rolling from "custom/rolling"
-import "custom/showcode"
-import "custom/tainsert"
+import ShowHideCode from "custom/showcode"
+import Insert from "custom/tainsert"
 
 // NB: Import of springy and springyui is done only in graph_prerequisites.html.erb
 
+window.Clue = Clue;
+window.Info = Info;
+window.Joint = Joint;
 window.Preview = Preview;
 window.PreviewSafe = PreviewSafe;
 window.Rolling = Rolling;
+window.ShowHideCode = ShowHideCode;
+window.Insert = Insert;
 
 window.dispatchEvent(new CustomEvent("importmap-scripts-loaded"));
 

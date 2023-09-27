@@ -43,6 +43,7 @@ var Insert = {
   }
 }
 
+/* Does not work on Safari
 class InsertClass extends HTMLAnchorElement {
   constructor() { super(); }
   connectedCallback() {
@@ -75,3 +76,6 @@ class InsertClass extends HTMLAnchorElement {
 }
 
 customElements.define("insert-onclick", InsertClass, { extends: "a" });
+*/
+
+export default Insert

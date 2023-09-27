@@ -55,7 +55,7 @@
     
   <% bb = bbcode(ms.content) %>
   <% if kind == "subject" || kind == "message" %>
-    <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div class='clue'><div><button data-text-id='#{@nb_indice}' is='clue-onclick' class='btn btn-ld-light-dark'>#{$1}</button></div><div id='indice#{@nb_indice}' class='clue-hide'><div class='clue-content'>#{$2}</div></div></div>"} %>
+    <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div class='clue'><div><button onclick='return Clue.toggle(#{@nb_indice})' class='btn btn-ld-light-dark'>#{$1}</button></div><div id='indice#{@nb_indice}' class='clue-hide'><div class='clue-content'>#{$2}</div></div></div>"} %>
       <% @nb_indice = @nb_indice+1 %>
     <% end %>
   <% end %>
@@ -66,13 +66,13 @@
   <!-- Version compilée -->
   <div id="normal<%= theid %>" style="display:block;">
   <%= raw(bb) %>
-  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' data-text-id='<%= theid %>' is='showcode-onclick'>(Montrer le code)</a></div>
+  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="return ShowHideCode.showCode('<%= theid %>');">(Montrer le code)</a></div>
   </div>
 
   <!-- Version non-compilée (code) -->
   <div class="tex2jax_ignore" id="anormal<%= theid %>" style="display:none;">
   <%= raw((h ms.content).gsub(/\n/, '<br/>')) %>
-  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' data-text-id='<%= theid %>' is='hidecode-onclick'>(Cacher le code)</a></div>
+  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="return ShowHideCode.hideCode('<%= theid %>');">(Cacher le code)</a></div>
   </div>
 
   <!-- Pièces jointes -->

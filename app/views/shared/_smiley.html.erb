@@ -9,26 +9,23 @@
 <% end %>
 
 <div class="smiley">
-<a href="#!" is='insert-onclick' data-insert-left='[b]' data-insert-right='[/b]' data-postfix='<%= postfix %>'><%= image_tag "bold.svg", :class => "svg-black-white", :title => "Gras" %></a>
-<a href="#!" is='insert-onclick' data-insert-left='[i]' data-insert-right='[/i]' data-postfix='<%= postfix %>' class='ms-1'><%= image_tag "italic.svg", :class => "svg-black-white", :title => "Italique" %></a>
-<a href="#!" is='insert-onclick' data-insert-left='[u]' data-insert-right='[/u]' data-postfix='<%= postfix %>' class='ms-1'><%= image_tag "underlined.svg", :class => "svg-black-white", :title => "Souligné" %></a>
-<a href="#!" is='insert-onclick' data-insert-left='[url=https://www.mathraining.be]' data-insert-right='[/url]' data-postfix='<%= postfix %>' class='ms-3'><%= image_tag "link.svg", :class => "svg-black-white", :title => "Lien" %></a>
+<a href="#!" onclick="Insert.insert('[b]', '[/b]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();"><%= image_tag "bold.svg", :class => "svg-black-white", :title => "Gras" %></a>
+<a href="#!" onclick="Insert.insert('[i]', '[/i]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();" class='ms-1'><%= image_tag "italic.svg", :class => "svg-black-white", :title => "Italique" %></a>
+<a href="#!" onclick="Insert.insert('[u]', '[/u]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();" class='ms-1'><%= image_tag "underlined.svg", :class => "svg-black-white", :title => "Souligné" %></a>
+<a href="#!" onclick="Insert.insert('[url=https://www.mathraining.be]', '[/url]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();" class='ms-3'><%= image_tag "link.svg", :class => "svg-black-white", :title => "Lien" %></a>
 
 <% if hiddentext %>
-<a href="#!" is='insert-onclick' data-insert-left='[hide=Texte caché]\n' data-insert-right='\n[/hide]' data-postfix='<%= postfix %>' class="ms-3 align-middle" >Texte caché</a>
+<a href="#!" onclick="Insert.insert('[hide=Texte caché]\n', '\n[/hide]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();" class="ms-3 align-middle" >Texte caché</a>
 <% end %>
 </div>
 
+<% smileys = [":-)", ":-(", ";-)", ":'(", ":-D", ":-O", ":-P", ":-|", "3:["]; %>
+<% ids =     [ 1,     2,     7,     6,     3,     4,     5,     8,     9   ]; %>
+
 <div class="smiley">
-<a href="#!" is='insert-onclick' data-insert-left=' :-)' data-postfix='<%= postfix %>'><%= image_tag "Smiley1.gif", :title => ":-)", :id => "smiley1-img" %></a>
-<a href="#!" is='insert-onclick' data-insert-left=' :-(' data-postfix='<%= postfix %>'><%= image_tag "Smiley2.gif", :title => ":-(", :id => "smiley2-img" %></a>
-<a href="#!" is='insert-onclick' data-insert-left=' ;-(' data-postfix='<%= postfix %>'><%= image_tag "Smiley7.gif", :title => ";-)", :id => "smiley7-img" %></a>
-<a href="#!" is='insert-onclick' data-insert-left=" :'(" data-postfix='<%= postfix %>'><%= image_tag "Smiley6.gif", :title => ":'(", :id => "smiley6-img" %></a>
-<a href="#!" is='insert-onclick' data-insert-left=' :-D' data-postfix='<%= postfix %>'><%= image_tag "Smiley3.gif", :title => ":-D", :id => "smiley3-img" %></a>
-<a href="#!" is='insert-onclick' data-insert-left=' :-O' data-postfix='<%= postfix %>'><%= image_tag "Smiley4.gif", :title => ":-O", :id => "smiley4-img" %></a>
-<a href="#!" is='insert-onclick' data-insert-left=' :-P' data-postfix='<%= postfix %>'><%= image_tag "Smiley5.gif", :title => ":-P", :id => "smiley5-img" %></a>
-<a href="#!" is='insert-onclick' data-insert-left=' :-|' data-postfix='<%= postfix %>'><%= image_tag "Smiley8.gif", :title => ":-|", :id => "smiley8-img" %></a>
-<a href="#!" is='insert-onclick' data-insert-left=' 3:[' data-postfix='<%= postfix %>'><%= image_tag "Smiley9.gif", :title => "3:[", :id => "smiley9-img" %></a>
+<% (0..8).each do |s| %>
+  <a href="#!" onclick='Insert.insert(" <%= smileys[s] %>", "", "MathInput<%= postfix %>"); return PreviewSafe.MyUpdate();'><%= image_tag "Smiley#{ids[s]}.gif", :title => ":-)", :id => "smiley#{ids[s]}-img" %></a>
+<% end %>
 </div>
 
 <div class="smiley">

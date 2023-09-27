@@ -16,6 +16,7 @@ var Info = {
   }
 }
 
+/* Does not work on Safari
 class InfoClass extends HTMLButtonElement {
   constructor() { super(); }
   connectedCallback() {
@@ -28,3 +29,6 @@ class InfoClass extends HTMLButtonElement {
 }
 
 customElements.define("info-onclick", InfoClass, { extends: "button" });
+*/
+
+export default Info

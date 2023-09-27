@@ -141,7 +141,7 @@
 <% end %>
 
 <h1><%= title_2("Théorie", @section.name) %>
-<button class="information-tag" is="info-onclick">?</button>
+<button class="information-tag" onclick="return Info.toggle();">?</button>
 </h1>
 
 <%= render 'infofond' if @section.fondation %>
