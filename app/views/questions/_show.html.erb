@@ -62,7 +62,7 @@
 
   <hr class="bottom-help" />
   <% subject = question.subject %>
-  <p>Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path : subjects_path(:q => @chapter.id)), :target => "_blank" %> !</p>
+  <p>Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path(subject) : subjects_path(:q => @chapter.id)), :target => "_blank" %> !</p>
 
 <!-- Si étudiant non inscrit -->
 <% else %>
