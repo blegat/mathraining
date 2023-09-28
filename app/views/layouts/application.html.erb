@@ -223,28 +223,6 @@
         callMethodWhenPossible(disableAnimations);
       <% end %>
     </script>
-    
-    <% if !@user_color_light.nil? && !@user_color_dark.nil? %>
-    <!-- The following is for users/show -->
-      <style type="text/css">
-        [data-bs-theme="light"] {
-          .user_color {
-            color: <%= @user_color_light %>;
-          }
-          .user_color_bg {
-            background-color: <%= @user_color_light %>;
-          }
-        }
-        [data-bs-theme="dark"] {
-          .user_color {
-            color: <%= @user_color_dark %>;
-          }
-          .user_color_bg {
-            background-color: <%= @user_color_dark %>;
-          }
-        }
-      </style>
-    <% end %>
   </head>
   
   <body>

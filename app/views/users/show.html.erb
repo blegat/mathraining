@@ -1,3 +1,5 @@
+<% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
+
 <% provide(:title, @user.name) %>
 
 <% if !@user.admin %>
@@ -9,9 +11,40 @@
   <% end %>
   <% niveau = @user.level %>
   <% grade = (@user.sex == 0 ? niveau[:name] : niveau[:femininename]) %>
+  <% user_color_light = niveau[:color] %>
+  <% user_color_dark = niveau[:color] %>
 <% else %>
   <% grade = (@user.sex == 0 ? "Administrateur" : "Administratrice") %>
+  <% user_color_light = "black" %>
+  <% user_color_dark = "white" %>
 <% end %>
+
+<style type="text/css">
+  /* NB: Instead of using _light and _dark classes as we do today, another option would be to have only one class and
+     to change its definition using [data-bs-theme=light] and [data-bs-theme=dark] as usual. Unfortunately, that approach
+     does not work on Safari where the [data-...] tags look unsupported when declared inside the html file like here */
+  <% toSwap = [] %>
+  .user_color_light {
+    color: <%= user_color_light %>!important;
+  }
+  .user_color_dark {
+    color: <%= user_color_dark %>!important;
+  }
+  <% toSwap.push("user_color") %>
+  
+  <% if !@user.admin %>
+    /* Those classes can only be used for students (because user_color_light == user_color_dark)
+       We use them when possible, so that javascript does not have too much work when changing theme */
+    .user_color {
+      color: <%= user_color_light %>!important;
+    }
+    .user_color_bg {
+      background-color: <%= user_color_light %>;
+    }
+  <% end %>
+</style>
+
+
 
 <% if !@user.admin %>
 
@@ -179,15 +212,15 @@
   
 <% if @signed_in && current_user.sk.root? %>
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
-    Connecté le <span class="user_color"><%= write_date_only_small(@user.last_connexion_date) %></span>
+    Connecté le <span class="user_color_<%= mt_theme %>"><%= write_date_only_small(@user.last_connexion_date) %></span>
   </div>
   
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
-    <span class="user_color"><%= "(" if !@user.email_confirm %><%= @user.email %><%= ")" if !@user.email_confirm %></span>
+    <span class="user_color_<%= mt_theme %>"><%= "(" if !@user.email_confirm %><%= @user.email %><%= ")" if !@user.email_confirm %></span>
   </div>
   
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
-    Né en <span class="user_color"><%= @user.year %></span>
+    Né en <span class="user_color_<%= mt_theme %>"><%= @user.year %></span>
   </div>
   
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
@@ -204,103 +237,94 @@
   <!-- Style pour les progress bar circulaires -->
   <style type="text/css">
 
-  /* First arc will be behind and has one half grey, one half coloured */
-  <% arcgrey_light = "#e9ecef" %>
-  <% arcgrey_dark = "#343a40" %>
+    /* First arc will be behind and has one half grey, one half coloured */
+    <% arcgrey_light = "#e9ecef" %>
+    <% arcgrey_dark = "#343a40" %>
 
-  .arc_first {
-    -webkit-transform: rotate(45deg);
-    -moz-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    -o-transform: rotate(45deg);
-    transform: rotate(45deg);
-  }
-  
-  [data-bs-theme="light"] {
     .arc_first {
-      border-color: <%= @user_color_light %> <%= @user_color_light %> <%= arcgrey_light %> <%= arcgrey_light %>;
-    }
-  }
-  
-  [data-bs-theme="dark"] {
-    .arc_first {
-      border-color: <%= @user_color_dark %> <%= @user_color_dark %> <%= arcgrey_dark %> <%= arcgrey_dark %>;
-    }
-  }
-
-  <% ["exo", "pb"].each do |i| %>
-  
-  <% if i == "exo" %>
-    <% pct = pct_exo %>
-  <% else %>
-    <% pct = pct_pb %>
-  <% end %>
-
-  /* Second arc will be on top and has one half transparent, one half grey (if <= 50%) or coloured (if > 50%) */
-  <% if pct <= 50 %>
-    <% arccol_light = arcgrey_light %>
-    <% arccol_dark = arcgrey_dark %>
-    <% rotation = 45 + 180.0 * pct / 50.0 %> /* 0% should be 45 deg, while 50% should be 45+180 deg **/
-  <% else %>
-    <% arccol_light = @user_color_light %>
-    <% arccol_dark = @user_color_dark %> 
-    <% rotation = 45 + 180.0 * (pct - 50) / 50.0 %> /* 50% should be 45 deg, while 100% should be 45+100 deg **/
-  <% end %>
-
-  .arc_hide_<%= i %> {
-    top: 0;
-    left: 0;
-    width: 102px;
-    height: 102px;
-    border: 9px solid;
-    border-color: white white transparent transparent;
-    -webkit-transform: rotate(<%= rotation %>deg);
-    -moz-transform: rotate(<%= rotation %>deg);
-    -ms-transform: rotate(<%= rotation %>deg);
-    -o-transform: rotate(<%= rotation %>deg);
-    transform: rotate(<%= rotation %>deg);
-  }
-
-  .arc_second_<%= i %> {
-    -webkit-transform: rotate(<%= rotation %>deg);
-    -moz-transform: rotate(<%= rotation %>deg);
-    -ms-transform: rotate(<%= rotation %>deg);
-    -o-transform: rotate(<%= rotation %>deg);
-    transform: rotate(<%= rotation %>deg);
-  }
-  
-  [data-bs-theme="light"] {
-    .arc_hide_<%= i %> {
-      border-color: white white transparent transparent;
+      -webkit-transform: rotate(45deg);
+      -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      -o-transform: rotate(45deg);
+      transform: rotate(45deg);
     }
     
-    .arc_second_<%= i %> {
-      border-color: <%= arccol_light %> <%= arccol_light %> transparent transparent;
+    .arc_first_light {
+      border-color: <%= user_color_light %> <%= user_color_light %> <%= arcgrey_light %> <%= arcgrey_light %>;
     }
-  }
-  
-  [data-bs-theme="dark"] {
-    .arc_hide_<%= i %> {
-      border-color: rgb(33, 37, 41) rgb(33, 37, 41) transparent transparent;
+    .arc_first_dark {
+      border-color: <%= user_color_dark %> <%= user_color_dark %> <%= arcgrey_dark %> <%= arcgrey_dark %>;
     }
-    
-    .arc_second_<%= i %> {
-      border-color: <%= arccol_dark %> <%= arccol_dark %> transparent transparent;
-    }
-  }
+    <% toSwap.push("arc_first") %>
 
-  <% end %>
+    <% ["exo", "pb"].each do |i| %>
+    
+      <% if i == "exo" %>
+        <% pct = pct_exo %>
+      <% else %>
+        <% pct = pct_pb %>
+      <% end %>
+
+      /* Second arc will be on top and has one half transparent, one half grey (if <= 50%) or coloured (if > 50%) */
+      <% if pct <= 50 %>
+        <% arccol_light = arcgrey_light %>
+        <% arccol_dark = arcgrey_dark %>
+        <% rotation = 45 + 180.0 * pct / 50.0 %> /* 0% should be 45 deg, while 50% should be 45+180 deg **/
+      <% else %>
+        <% arccol_light = user_color_light %>
+        <% arccol_dark = user_color_dark %> 
+        <% rotation = 45 + 180.0 * (pct - 50) / 50.0 %> /* 50% should be 45 deg, while 100% should be 45+100 deg **/
+      <% end %>
+
+      .arc_hide_<%= i %> {
+        top: 0;
+        left: 0;
+        width: 102px;
+        height: 102px;
+        border: 9px solid;
+        border-color: white white transparent transparent;
+        -webkit-transform: rotate(<%= rotation %>deg);
+        -moz-transform: rotate(<%= rotation %>deg);
+        -ms-transform: rotate(<%= rotation %>deg);
+        -o-transform: rotate(<%= rotation %>deg);
+        transform: rotate(<%= rotation %>deg);
+      }
+      
+      .arc_second_<%= i %> {
+        -webkit-transform: rotate(<%= rotation %>deg);
+        -moz-transform: rotate(<%= rotation %>deg);
+        -ms-transform: rotate(<%= rotation %>deg);
+        -o-transform: rotate(<%= rotation %>deg);
+        transform: rotate(<%= rotation %>deg);
+      }
+      
+      .arc_hide_<%= i %>_light {
+        border-color: white white transparent transparent;
+      }
+      .arc_hide_<%= i %>_dark {
+        border-color: rgb(33, 37, 41) rgb(33, 37, 41) transparent transparent;
+      }
+      <% toSwap.push("arc_hide_#{i}") %>
+      
+      .arc_second_<%= i %>_light {
+        border-color: <%= arccol_light %> <%= arccol_light %> transparent transparent;
+      }
+      .arc_second_<%= i %>_dark {
+        border-color: <%= arccol_dark %> <%= arccol_dark %> transparent transparent;
+      }
+      <% toSwap.push("arc_second_#{i}") %>
+    <% end %>
   </style>
-  
+
   <!-- Exercices -->
   <div class="g-col-6 g-col-md-3 basic_container p-1">
     <table class="progress_container">
     <tr><td class="progress_title">Exercices</td></tr>
     <tr><td class="progress_circle">
     <div class="wrapper">
-      <div class="arc arc_first"></div>
-      <div class="arc arc_hide_exo"></div>
-      <div class="arc arc_second_exo"></div>
+      <div class="arc arc_first arc_first_<%= mt_theme %>"></div>
+      <div class="arc arc_hide_exo arc_hide_exo_<%= mt_theme %>"></div>
+      <div class="arc arc_second_exo arc_second_exo_<%= mt_theme %>"></div>
       <div class="progress_nb"><%= nb_q %></div>
       <div class="progress_pct">/ <%= numberexo %></div>
     </div>
@@ -314,9 +338,9 @@
     <tr><td class="progress_title">Problèmes</td></tr>
     <tr><td class="progress_circle">
     <div class="wrapper">
-      <div class="arc arc_first"></div>
-      <div class="arc arc_hide_pb"></div>
-      <div class="arc arc_second_pb"></div>
+      <div class="arc arc_first arc_first_<%= mt_theme %>"></div>
+      <div class="arc arc_hide_pb arc_hide_pb_<%= mt_theme %>"></div>
+      <div class="arc arc_second_pb arc_second_pb_<%= mt_theme %>"></div>
       <div class="progress_nb"><%= nb_p %></div>
       <div class="progress_pct">/ <%= numberpb %></div>
     </div>
@@ -771,10 +795,10 @@
 <% if nb_corrections > 0 %>
   <div class="g-col-12 basic_container p-1">
     <div class="container_title">Corrections</div>
-    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold user_color"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
+    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold user_color_<%= mt_theme %>"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
     
     <% if @user.correction_level > 0 %>
-      <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span class="fw-bold user_color"><%= @user.correction_level %></span> de l'Ordre de Mathraining.
+      <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span class="fw-bold user_color_<%= mt_theme %>"><%= @user.correction_level %></span> de l'Ordre de Mathraining.
     <% end %>
     
     Merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !
@@ -839,7 +863,7 @@
             <% n = i - first_month %>
             ctx.beginPath();
             ctx.rect(pct*<%= 50+n*rect_width %>, pct*455, pct*<%= rect_width %>, -pct*<%= (450.0*num_corr_by_month[n])/maxi %>);
-            ctx.fillStyle = (is_dark ? '<%= @user_color_dark %>' : '<%= @user_color_light %>');
+            ctx.fillStyle = (is_dark ? '<%= user_color_dark %>' : '<%= user_color_light %>');
             ctx.fill();
             ctx.stroke();
           <% end %>
@@ -970,3 +994,19 @@
 
 </div>
 <!-- END OF THE MAIN DIV -->
+
+<!-- Script to replace all _light classes by _dark classes (or vice versa) when theme changes -->
+<script type="text/javascript">
+  window.addEventListener("theme-change", () => {
+    var theme = document.documentElement.getAttribute('data-bs-theme');
+    var old_theme = (theme == 'light' ? 'dark' : 'light');
+    var els;
+    <% toSwap.each do |c| %>
+      els = document.getElementsByClassName("<%= c %>_" + old_theme); /* this is live and gets updated when changing classes below! */
+      while (els.length > 0) {
+        els[0].classList.add("<%= c %>_" + theme);
+        els[0].classList.remove("<%= c %>_" + old_theme);
+      }
+    <% end %>
+  });
+</script>
