@@ -66,13 +66,13 @@
   <!-- Version compilée -->
   <div id="normal<%= theid %>" style="display:block;">
   <%= raw(bb) %>
-  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="return ShowHideCode.showCode('<%= theid %>');">(Montrer le code)</a></div>
+  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.showCode('<%= theid %>'); return false;">(Montrer le code)</a></div>
   </div>
 
   <!-- Version non-compilée (code) -->
   <div class="tex2jax_ignore" id="anormal<%= theid %>" style="display:none;">
   <%= raw((h ms.content).gsub(/\n/, '<br/>')) %>
-  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="return ShowHideCode.hideCode('<%= theid %>');">(Cacher le code)</a></div>
+  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.hideCode('<%= theid %>'); return false;">(Cacher le code)</a></div>
   </div>
 
   <!-- Pièces jointes -->

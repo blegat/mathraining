@@ -20,12 +20,12 @@
   <!-- Contenu du message -->
 <div id="normal<%= m.id %>" style="display:block;">
 <%= raw(bbcode(m.content)) %>
-<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="return ShowHideCode.showCode('<%= m.id %>');">(Montrer le code)</a></div>
+<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.showCode('<%= m.id %>'); return false;">(Montrer le code)</a></div>
 </div>
 
 <div class="tex2jax_ignore" id="anormal<%= m.id %>" style="display:none;">
 <%= raw((h m.content).gsub(/\n/, '<br/>')) %>
-<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="return ShowHideCode.hideCode('<%= m.id %>');">(Cacher le code)</a></div>
+<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.hideCode('<%= m.id %>'); return false;">(Cacher le code)</a></div>
 </div>
 
 <!-- Pièces jointes -->
