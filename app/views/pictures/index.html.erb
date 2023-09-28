@@ -1,12 +1,27 @@
 <% provide(:title, 'Vos images') %>
 
-<h1><%= title_1("Vos images") %></h1>
+<% show_all = (current_user.sk.root? && params.has_key?(:show_all)) %>
+<% title = show_all ? "Toutes les images" : "Vos images" %>
+<h1>
+<%= title_1(title) %>
+<% if current_user.sk.root? %>
+  <span style="font-size:20px;">
+  <% if !show_all %>
+    - <%= link_to "Tout voir", pictures_path(:show_all => 1) %>
+  <% else %>
+    - <%= link_to "Mes images seulement", pictures_path %>
+  <% end %>
+  </span>
+<% end %>
+</h1>
 
 <p>Pour récupérer l'url d'une image, cliquez dessus.</p>
 <div class="column">
 
+<% pics = (show_all ? Picture.all.order("id DESC") : current_user.sk.pictures.order("id DESC")) %>
+
 <% i = 0 %>
-<% current_user.sk.pictures.each do |p| %>
+<% pics.each do |p| %>
   <% if i % 4 == 0 %>
     <div class="grid" style="--bs-columns:12;">
   <% end %>
@@ -14,6 +29,9 @@
   <div class="g-col-6 g-col-md-4 g-col-lg-3">
   <%= link_to image_tag(p.image, :class => "mb-2", :style => "width:100%;"), p, target: "_blank" %>
   <p class="text-center">
+  <% if show_all %>
+    <%= raw(p.user.linked_name) %><br/>
+  <% end %>
   <%= link_to "Supprimer cette image", p, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous) ! Êtes-vous sûr de vouloir supprimer cette image ?" } %>
   </p>
   </div>
