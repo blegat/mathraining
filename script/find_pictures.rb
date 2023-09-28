@@ -57,7 +57,7 @@ def find_pictures_in_model(model, att)
   model.find_each.each do |object|
     x = find_pictures_in_object(object, att)
     if x > 0
-      $details.append("Found " + res.to_s + " occurrences in attribute " + att + " of object " + object.id.to_s + " of " + model.to_s)
+      $details.append("Found " + x.to_s + " occurrences in attribute " + att + " of object " + object.id.to_s + " of " + model.to_s)
       res = res + x
     end
   end
