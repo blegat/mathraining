@@ -15,7 +15,7 @@
 <% end %>
 </h1>
 
-<p>Pour récupérer l'url d'une image, cliquez dessus.</p>
+<p>Pour récupérer l'url d'une image ou la supprimer, cliquez dessus.</p>
 <div class="column">
 
 <% pics = (show_all ? Picture.all.order("id DESC") : current_user.sk.pictures.order("id DESC")) %>
@@ -32,7 +32,6 @@
   <% if show_all %>
     <%= raw(p.user.linked_name) %><br/>
   <% end %>
-  <%= link_to "Supprimer cette image", p, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous) ! Êtes-vous sûr de vouloir supprimer cette image ?" } %>
   </p>
   </div>
 

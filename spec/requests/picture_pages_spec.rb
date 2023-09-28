@@ -66,17 +66,17 @@ describe "Actuality pages" do
           expect(page).to have_selector("h1", text: "Récupérer un url")
           expect(page).to have_xpath("//img[contains(@src, '#{good_image}')]")
           expect(page).to have_content(picture_image_url(Picture.last, :only_path => true, :key => Picture.last.access_key))
+          expect(page).to have_link("Supprimer cette image", href: picture_path(Picture.last))
+          expect { click_link("Supprimer cette image", href: picture_path(Picture.last)) }.to change(Picture, :count).by(-1)
         end
         
         let!(:picture) { Picture.last }
         
         describe "and visits pictures page" do
           before { visit pictures_path }
-          specify do
-            expect(page).to have_selector("h1", text: "Vos images")
-            expect(page).to have_xpath("//img[contains(@src, '#{good_image}')]")
-            expect(page).to have_link("Supprimer cette image", href: picture_path(picture))
-            expect { click_link("Supprimer cette image", href: picture_path(picture)) }.to change(Picture, :count).by(-1)
+          it do
+            should have_selector("h1", text: "Vos images")
+            should have_xpath("//img[contains(@src, '#{good_image}')]")
           end
         end
         

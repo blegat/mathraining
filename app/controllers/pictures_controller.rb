@@ -7,7 +7,7 @@ class PicturesController < ApplicationController
   before_action :get_picture2, only: [:image]
   
   before_action :admin_user_or_chapter_creator, only: [:index, :show, :new, :create, :destroy]
-  before_action :author, only: [:show, :destroy]
+  before_action :author_or_root, only: [:show, :destroy]
   before_action :check_access_key, only: [:image]
   
   # Show all pictures
@@ -71,8 +71,8 @@ class PicturesController < ApplicationController
   end
   
   # Check that current user is the author of the picture
-  def author
-    if @picture.user.id != current_user.sk.id
+  def author_or_root
+    if @picture.user.id != current_user.sk.id && !current_user.sk.root?
       render 'errors/access_refused' and return
     end
   end
