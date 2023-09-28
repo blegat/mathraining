@@ -61,10 +61,10 @@ module ApplicationHelper
     m2 = m.gsub(/<hr>[ \r]*\n/,'<hr>').
     gsub(/\\\][ \r]*\n/,'\] ').
     gsub(/\$\$[ \r]*\n/,'$$ ').
-    gsub(/<h2>/,'<h2 class="mt-3">').
-    gsub(/<h3>/,'<h3 class="mt-3">').
-    gsub(/<h4>/,'<h4 class="mt-3">').
-    gsub(/<h5>/,'<h5 class="mt-3">').
+    gsub(/\n[ \r]*<h2>/,'<h2 class="mt-3">').
+    gsub(/\n[ \r]*<h3>/,'<h3 class="mt-3">').
+    gsub(/\n[ \r]*<h4>/,'<h4 class="mt-3">').
+    gsub(/\n[ \r]*<h5>/,'<h5 class="mt-3">').
     gsub(/<\/h2>[ \r]*\n/,'</h2>').
     gsub(/<\/h3>[ \r]*\n/,'</h3>').
     gsub(/<\/h4>[ \r]*\n/,'</h4>').

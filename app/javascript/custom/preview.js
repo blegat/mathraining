@@ -62,10 +62,10 @@ var Preview = {
     replace(/<hr>[ \r]*\n/g,'<hr>').
     replace(/\][ \r]*\n/g,'\] ').
     replace(/\$\$[ \r]*\n/g,'$$$ ').
-    replace(/<h2>/g,'<h2 class="mt-3">').
-    replace(/<h3>/g,'<h3 class="mt-3">').
-    replace(/<h4>/g,'<h4 class="mt-3">').
-    replace(/<h5>/g,'<h5 class="mt-3">').
+    replace(/\n[ \r]*<h2>/g,'<h2 class="mt-3">').
+    replace(/\n[ \r]*<h3>/g,'<h3 class="mt-3">').
+    replace(/\n[ \r]*<h4>/g,'<h4 class="mt-3">').
+    replace(/\n[ \r]*<h5>/g,'<h5 class="mt-3">').
     replace(/<\/h2>[ \r]*\n/g,'</h2>').
     replace(/<\/h3>[ \r]*\n/g,'</h3>').
     replace(/<\/h4>[ \r]*\n/g,'</h4>').
