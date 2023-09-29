@@ -41,9 +41,9 @@ function checkProblem() {
 
 <% erreur = false %>
 
-<% if !session["errorSubject"].nil? %>
+<% if !session[:errorSubject].nil? %>
   <% erreur = true %>
-  <%= render 'shared/error_messages', errors: session["errorSubject"] %>
+  <%= render 'shared/error_messages', errors: session[:errorSubject] %>
 <% end %>
 
 <!-- Calcul de la liste des sections et chapitres -->
@@ -367,17 +367,17 @@ function checkProblem() {
   <div class="mb-2"></div>
 <% end %>
 
-<% if !session["errorSubject"].nil? %>
+<% if !session[:errorSubject].nil? %>
   <% if is_edit %>
     <script>rollingDevelopQuickWhenPossible("<%= postfix %>", true)</script>
   <% end %>
-  <% session.delete("errorSubject") %>
-  <% session.delete("oldAll") %>
+  <% session.delete(:errorSubject) %>
+  <% session.delete(:oldAll) %>
 <% end %>
 
-<% if !session["successSubject"].nil? %>
+<% if !session[:successSubject].nil? %>
   <% if is_edit %>
     <script>rollingShowusWhenPossible("<%= postfix %>")</script>
   <% end %>
-  <% session.delete("successSubject") %>
+  <% session.delete(:successSubject) %>
 <% end %>

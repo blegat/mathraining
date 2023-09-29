@@ -319,15 +319,15 @@ class SubjectsController < ApplicationController
   
   # Helper method when an error occurred during create
   def error_create(err)
-    session["errorSubject"] = err
-    session[:oldAll] = params[:subject]
+    session[:errorSubject] = err
+    session[:oldAll] = params[:subject].to_unsafe_h
     redirect_to new_subject_path(:q => @q)
   end
   
   # Helper method when an error occurred during update
   def error_update(err)
-    session["errorSubject"] = err
-    session[:oldAll] = params[:subject]
+    session[:errorSubject] = err
+    session[:oldAll] = params[:subject].to_unsafe_h
     redirect_to subject_path(@subject, :q => @q)
   end
 end
