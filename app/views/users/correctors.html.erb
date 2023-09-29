@@ -187,11 +187,11 @@ Votre navigateur ne supporte pas les canvas.
 
 <div style="width:100%; overflow-x:auto;">
 <center>
-<table class="table table-bordered mb-3" style="min-width:850px; width:850px;">
+<table class="table table-bordered mb-3" style="min-width:880px; width:880px;">
 <tr class="table-ld-header">
 <th style="width:70px;"></th>
 <% sections.each do |sec| %>
-  <th class="text-center" style="width:130px;"><%= sec.abbreviation %></th>
+  <th class="text-center" style="width:135px;"><%= sec.abbreviation %></th>
 <% end %>
 </tr>
 
@@ -231,7 +231,7 @@ Votre navigateur ne supporte pas les canvas.
       <% if u.nil? %>
         -
       <% else %>
-        <%= raw(u.linked_name(2, false)) %>
+        <%= raw(u.linked_name(2)) %>
       <% end %>
     </td>
   <% end %>

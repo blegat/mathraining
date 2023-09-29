@@ -144,7 +144,7 @@
 <% end %>
 <div class="g-col-12 g-col-lg-<%= largeur %> basic_container text-center p-1">
   <table class="m-0 mt-2 mb-2 p-0" style="width:100%; height:90px;">
-  <tr><td class="px-2" style="font-size:20px;"><%= raw(@user.colored_name(0, false)) %></td></tr>
+  <tr><td class="px-2" style="font-size:20px;"><%= raw(@user.colored_name) %></td></tr>
   <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %> <%= "<span class='text-color-red'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if @signed_in && current_user.sk.root? && @user.is_banned %></td></tr>
   <tr><td class="pt-2"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
