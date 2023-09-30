@@ -34,9 +34,11 @@
       <p><b>Une seule réponse possible</b></p>
     <% end %>
   <% end %>
-    
-  <!-- Niveau -->
-  <p>Niveau (entre 1 et 4) : <b><%= question.level %></b></p>
+  
+  <% unless @chapter.section.fondation? %>
+    <!-- Niveau -->
+    <p>Niveau (entre 1 et 4) : <b><%= question.level %></b></p>
+  <% end %>
   
 <!-- Si pas encore en ligne -->
 <% else %>
@@ -64,10 +66,12 @@
     </label>
     </div>
   <% end %>
-    
-  <!-- Niveau -->
-  <div class="mb-2">
-    <%= f.label :level, :class => "form-label" %>
-    <%= f.number_field :level, :class => "form-control", :style => "width:70px;", :min => 1, :max => 4 %>
-  </div>
+  
+  <% unless @chapter.section.fondation? %>
+    <!-- Niveau -->
+    <div class="mb-2">
+      <%= f.label :level, :class => "form-label" %>
+      <%= f.number_field :level, :class => "form-control", :style => "width:70px;", :min => 1, :max => 4 %>
+    </div>
+  <% end %>
 <% end %>
