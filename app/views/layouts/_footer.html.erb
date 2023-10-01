@@ -9,7 +9,7 @@ function setDarkTheme() {
   var date = new Date();
   date.setTime(date.getTime() + (30*365*24*60*60*1000));
   var in_long_time = date.toUTCString();
-  document.cookie = "dark_theme=1; Expires="  + in_long_time + "; Path=/; SameSite=Strict";
+  document.cookie = "dark_theme=1; Expires="  + in_long_time + "; Path=/; SameSite=Lax";
 }
 
 function setLightTheme() {
@@ -17,7 +17,7 @@ function setLightTheme() {
   
   window.dispatchEvent(theme_event);
   
-  document.cookie = 'dark_theme=0; Path=/; SameSite=Strict; Max-Age=-99999999;';  
+  document.cookie = 'dark_theme=0; Path=/; SameSite=Lax; Max-Age=-99999999;';  
 }
 </script>
 
