@@ -14,6 +14,7 @@ def fill_solved_fondation_chapters(apply = false)
       end
       if first_question
         chapter_set = question_set
+        first_question = false
       else
         chapter_set = chapter_set.intersection(question_set)
       end
