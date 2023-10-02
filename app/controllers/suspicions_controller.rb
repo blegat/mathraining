@@ -50,10 +50,8 @@ class SuspicionsController < ApplicationController
         # Mark submission as incorrect (changing the user's score if needed)
         @submission.mark_incorrect
       elsif @submission.waiting? and @suspicion.status == "confirmed"
-        # Delete the reservations, if any
-        @submission.followings.where(:kind => 0).each do |f|
-          f.destroy
-        end
+        # Delete the reservation, if any
+        @submission.followings.where(:kind => 0).destroy_all
       end
       if old_status != "confirmed" && @suspicion.status == "confirmed" && !@submission.plagiarized?
         # Mark submission as plagiarized
@@ -68,6 +66,10 @@ class SuspicionsController < ApplicationController
           last_comment = @submission.corrections.order(:id).last
           @submission.last_comment_time = (last_comment.nil? ? @submission.created_at : last_comment.created_at)
           @submission.save
+          if @submission.waiting?
+            # Delete the 'following' that was added automatically when submission was marked as plagiarized
+            @submission.followings.destroy_all
+          end
           Notif.create(:user => @submission.user, :submission => @submission) # (will not be created if already exists)
         end
       end

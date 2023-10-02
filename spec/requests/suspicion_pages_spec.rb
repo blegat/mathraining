@@ -213,6 +213,7 @@ describe "Suspicion pages" do
     
     describe "unconfirm a suspicion on a plagiarized submission without comment" do
       let!(:suspicion) { FactoryGirl.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
+      let!(:auto_following) { FactoryGirl.create(:following, :user => corrector, :submission => plagiarized_submission, :kind => 1) }
       before do
         visit problem_path(problem, :sub => plagiarized_submission)
         select "Rejeté", from: "edit_status_field_#{suspicion.id}"
@@ -223,6 +224,7 @@ describe "Suspicion pages" do
       specify do
         expect(suspicion.rejected?).to eq(true)
         expect(plagiarized_submission.waiting?).to eq(true) # waiting because there is no comment on this submission
+        expect(plagiarized_submission.followings.count).to eq (0) # auto_following should be deleted automatically
       end
     end
     

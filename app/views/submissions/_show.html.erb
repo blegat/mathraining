@@ -151,7 +151,7 @@ var hideStatement = function () {
   <% end %>
 
   <!-- Marquer comme lu ou non lu -->
-  <% if (current_user.sk.admin || (current_user.sk.corrector && @resolu && current_user.sk != @submission.user)) && !@submission.draft? %>
+  <% if (current_user.sk.admin || (current_user.sk.corrector && @resolu && current_user.sk != @submission.user)) && !@submission.draft? && !@submission.waiting? %>
     <!-- <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %> NE MARCHE PLUS -->
     <% following = @submission.followings.where(:user_id => current_user.sk).first %>
     <% if !following.nil? %>
@@ -207,7 +207,7 @@ var hideStatement = function () {
     <!-- NB: sp.nil? can happen in test environment only -->
     <% if current_user.sk.root? || (!sp.nil? && sp.correction_time > ten_minutes_ago) %>
       <p class="text-center">
-      <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?" }), :method => :put, :class => "text-color-red" %>
+      <%= link_to 'Marquer comme erronée', problem_submission_uncorrect_path(@problem, @submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?#{ " Les propositions d'étoiles seront automatiquement supprimées !" if @submission.starproposals.count > 0 }" }), :method => :put, :class => "text-color-red" %>
       </p>
     <% end %>
   <% end %>
