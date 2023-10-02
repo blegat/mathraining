@@ -119,7 +119,7 @@
       <% end %>
     <% end %>
       
-    <% if !@chapter.section.fondation && @chapter.online? && exovisibles && pasfait == 0 && @signed_in && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
+    <% if @chapter.online? && exovisibles && pasfait == 0 && @signed_in && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
       <% current_user.sk.chapters << @chapter %>
       <% @chapter.nb_completions = @chapter.nb_completions + 1 %>
       <% @chapter.save %>
