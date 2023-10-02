@@ -23,7 +23,7 @@ var Rolling = {
     el.height(0).animate({height:autoHeight}, this.rollingTime, function(){
       el.height('auto');
       var body = $('body,html');
-      var yyy = document.getElementById("form" + m).offsetTop - 50;
+      var yyy = document.getElementById("form" + m).offsetTop - 60;
       body.animate({scrollTop:yyy}, this.rollingTime/2);
       PreviewSafe.Init(m);
       if (!enableHiddenText) {
@@ -40,7 +40,7 @@ var Rolling = {
     $("#form" + m).height('auto');
     var body = $('body,html');
     MathJax.Hub.Queue(function () {
-      var yyy = document.getElementById("form" + m).offsetTop - 40;
+      var yyy = document.getElementById("form" + m).offsetTop - 60;
       body.scrollTop(yyy);
       PreviewSafe.Init(m);
       if (!enableHiddenText) {
@@ -53,7 +53,7 @@ var Rolling = {
   showus: function(m) {
     var body = $('body,html');
     MathJax.Hub.Queue(function () {
-      var yyy = document.getElementById("the" + m).offsetTop - 40;
+      var yyy = document.getElementById("the" + m).offsetTop - 60;
       body.scrollTop(yyy);
     });
   }
