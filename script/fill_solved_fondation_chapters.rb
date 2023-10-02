@@ -21,8 +21,10 @@ def fill_solved_fondation_chapters(apply = false)
     end
     $result[chapter.id] = chapter_set
     if apply
-      chapter_set.each do |user|
-        chapter.users << user
+      chapter_set.each do |user_id|
+        unless chapter.users.exists?(user_id)
+          chapter.users << User.find(user_id)
+        end
       end
     end
   end
