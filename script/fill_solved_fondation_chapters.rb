@@ -9,8 +9,8 @@ def fill_solved_fondation_chapters(apply = false)
     first_question = true
     chapter.questions.where(:online => true).each do |question|
       question_set = Set.new
-      question.users.select(:id).each do |user|
-        question_set.add(user)
+      question.solvedquestions.where(:correct => true).select(:user_id).each do |sq|
+        question_set.add(sq.user_id)
       end
       if first_question
         chapter_set = question_set
