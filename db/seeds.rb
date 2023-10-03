@@ -80,7 +80,7 @@ cy = [
 ["Bénin", "bj"],
 ["Bhoutan", "bt"],
 ["Biélorussie", "by"],
-["Birmanie", "mm"],
+["Myanmar", "mm"],
 ["Bolivie", "bo"],
 ["Bosnie-Herzégovine", "ba"],
 ["Botswana", "bw"],
@@ -99,8 +99,8 @@ cy = [
 ["Chypre", "cy"],
 ["Colombie", "co"],
 ["Comores", "km"],
-["Congo-Brazzaville", "cg"],
-["Congo-Kinshasa", "cd"],
+["République du Congo", "cg"],
+["République démocratique du Congo", "cd"],
 ["Corée du Nord", "kp"],
 ["Corée du Sud", "kr"],
 ["Costa Rica", "cr"],
@@ -229,7 +229,7 @@ cy = [
 ["Suède", "se"],
 ["Suisse", "ch"],
 ["Suriname", "sr"],
-["Swaziland", "sz"],
+["Eswatini", "sz"],
 ["Syrie", "sy"],
 ["Tadjikistan", "tj"],
 ["Tanzanie", "tz"],
@@ -255,7 +255,7 @@ cy = [
 
 Country.delete_all
 cy.each do |c|
-  Country.create(name: c[0], code: c[1])
+  Country.create(name: c[0], code: c[1], name_without_accent: I18n.transliterate(c[0]))
 end
 
 # Colors

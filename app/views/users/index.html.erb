@@ -12,17 +12,17 @@
 <% Country.all.order(:id).each do |c| %>
   <% num = num_by_country[c.id] %>
   <% if !num.nil? and num > 0 %>
-    <% by_countries.push([-num, c.name, c.id]) %>
+    <% by_countries.push([-num, c.name_without_accent, c.name, c.id]) %>
     <% @allcountries[c.id] = [c.name, c.code] %>
   <% elsif c.id == @country %>
-    <% by_countries.push([0, c.name, c.id]) %>
+    <% by_countries.push([0, c.name_without_accent, c.name, c.id]) %>
   <% end %>
 <% end %>
 
 <% by_countries.sort! %>
 
 <% by_countries.each do |b| %>
-  <% country_list.push([b[1] + " (#{-b[0]})", b[2]]) %>
+  <% country_list.push([b[2] + " (#{-b[0]})", b[3]]) %>
 <% end %>
 
 <!-- Liste des titres -->
