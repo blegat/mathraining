@@ -133,7 +133,7 @@
     <!-- RESUME -->
 
     <% if type == 0 %>
-      <%= render 'intro' %>
+      <%= render 'intro', allow_edit: true %>
 
       <% if !exovisibles %>
         <p class="text-color-red">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :

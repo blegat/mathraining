@@ -1,32 +1,5 @@
-<!-- Prérequis -->
-<h3>Prérequis</h3>
-<% if @chapter.prerequisites.count == 0 %>
-  <p>Aucun prérequis.</p>
-<% else %>
-  <ul>
-    <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
-      <li><%= link_to prerequisite.name, prerequisite %></li>
-    <% end %>
-  </ul>
-<% end %>
-
-<!-- Résumé -->
-<h3>Résumé</h3>
-<%= raw(htmlise(@chapter.description)) %>
-
-<!-- Auteur(s) et date de publication -->
-<% author_ok = (!@chapter.author.nil? && @chapter.author.size != 0) %>
-<% publication_ok = !@chapter.publication_date.nil? %>
-<% if author_ok || publication_ok %>
-  <p class="mt-4">Ce chapitre a été
-  <% if author_ok %>
-    écrit par <b><%= @chapter.author %></b><%= "." if !publication_ok %><%= " et " if publication_ok %>
-  <% end %>
-  <% if publication_ok %>
-    mis en ligne le <b><%= write_date_only(@chapter.publication_date) %></b>.
-  <% end %>
-  </p>
-<% end %>
+<!-- Prérequis, résumé, auteurs -->
+<%= render 'intro' %>
 
 <!-- Toutes les théories -->
 <% listex = @chapter.theories.order(:position) %>
