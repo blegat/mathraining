@@ -130,6 +130,18 @@ describe "Submission pages" do
           end
         end
         
+        describe "and sends new submission while he did not solve chapters to write a submission" do # Hack
+          before do
+            FactoryGirl.create(:chapter, online: true, submission_prerequisite: true)
+            fill_in "MathInput", with: newsubmission
+            click_button "Soumettre cette solution"
+          end
+          specify do
+            expect(page).to have_content(error_access_refused)
+            expect(problem.submissions.count).to eq(0)
+          end
+        end
+        
         describe "and saves as draft" do
           before do
             fill_in "MathInput", with: newsubmission

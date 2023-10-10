@@ -8,6 +8,7 @@ class ContestsolutionsController < ApplicationController
   before_action :get_contestproblem, only: [:create]
   
   before_action :can_send_solution, only: [:create, :update]
+  before_action :user_that_can_write_submission, only: [:create]
   before_action :can_delete_solution, only: [:destroy]
   before_action :organizer_of_contest, only: [:reserve_sol, :unreserve_sol]
   before_action :can_reserve, only: [:reserve_sol, :unreserve_sol]

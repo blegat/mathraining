@@ -1,12 +1,12 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
-  before_action :signed_in_user, only: [:new, :edit, :read]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online]
+  before_action :signed_in_user, only: [:new, :edit]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :destroy, :read, :order_minus, :order_plus, :put_online, :switch_submission_prerequisite]
   before_action :admin_user, only: [:new, :create, :destroy, :order_minus, :order_plus]
-  before_action :root_user, only: [:put_online]
+  before_action :root_user, only: [:put_online, :switch_submission_prerequisite]
   
   before_action :get_chapter, only: [:show, :edit, :update, :destroy]
-  before_action :get_chapter2, only: [:put_online, :read, :order_minus, :order_plus]
+  before_action :get_chapter2, only: [:read, :order_minus, :order_plus, :put_online, :switch_submission_prerequisite]
   before_action :get_section, only: [:new, :create]
   
   before_action :offline_chapter, only: [:destroy, :put_online]
@@ -16,6 +16,10 @@ class ChaptersController < ApplicationController
 
   # Show one chapter
   def show
+  end
+  
+  # Show statistics of all chapters
+  def chapterstats
   end
 
   # Create a chapter (show the form)
@@ -123,8 +127,15 @@ class ChaptersController < ApplicationController
     redirect_to @chapter
   end
   
-  # Show statistics of all chapters
-  def chapterstats
+  # Set or unset this chapter as a prerequisite to send submissions
+  def switch_submission_prerequisite
+    if !@chapter.submission_prerequisite
+      flash[:success] = "Ce chapitre est maintenant prérequis pour écrire une soumission."
+    else
+      flash[:success] = "Ce chapitre n'est plus prérequis pour écrire une soumission."
+    end
+    @chapter.toggle!(:submission_prerequisite)
+    redirect_to @chapter
   end
 
   private

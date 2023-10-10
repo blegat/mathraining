@@ -148,6 +148,13 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Check that current user can write a submission
+  def user_that_can_write_submission
+    if !current_user.sk.can_write_submission?
+      render 'errors/access_refused' and return
+    end
+  end
+  
   # Check that current user is an organizer of @contest (that must be defined)
   def organizer_of_contest
     if !(@signed_in && @contest.is_organized_by(current_user.sk))

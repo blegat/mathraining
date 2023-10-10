@@ -10,6 +10,7 @@ class VirtualtestsController < ApplicationController
   
   before_action :has_access, only: [:begin_test]
   before_action :online_test, only: [:begin_test]
+  before_action :user_that_can_write_submission, only: [:begin_test]
   before_action :can_begin, only: [:begin_test]
   before_action :can_be_online, only: [:put_online]
   before_action :offline_test, only: [:destroy]

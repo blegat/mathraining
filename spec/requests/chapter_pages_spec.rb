@@ -9,6 +9,7 @@ describe "Chapter pages" do
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
   let(:section) { FactoryGirl.create(:section) }
+  let(:section_fondation) { FactoryGirl.create(:fondation_section) }
   let!(:online_chapter) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 1) }
   let!(:online_theory) { FactoryGirl.create(:theory, chapter: online_chapter, online: true) }
   let!(:online_exercise) { FactoryGirl.create(:exercise, chapter: online_chapter, online: true) }
@@ -19,6 +20,7 @@ describe "Chapter pages" do
   let!(:offline_theory) { FactoryGirl.create(:theory, chapter: offline_chapter, online: false) }
   let!(:offline_chapter_2) { FactoryGirl.create(:chapter, section: section, online: false, name: "Autre chapitre hors-ligne", level: 3) }
   let!(:prerequisite_link) { FactoryGirl.create(:prerequisite, chapter: offline_chapter_2, prerequisite: offline_chapter) }
+  let(:chapter_fondation) { FactoryGirl.create(:chapter, section: section_fondation, online: true, name: "Chapitre fondamental en ligne") }
   let(:title) { "Mon titre de chapitre" }
   let(:description) { "Ma description de chapitre" }
   let(:level) { 2 }
@@ -214,6 +216,31 @@ describe "Chapter pages" do
       specify do
         expect(page).to have_error_message("Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne.")
         expect(offline_chapter_2.online).to eq(false)
+      end
+    end
+    
+    describe "mark a fondation chapter as prerequisite for submissions" do
+      before do
+        visit chapter_path(chapter_fondation)
+        click_link("Marquer comme prérequis aux soumissions")
+        chapter_fondation.reload
+      end
+      specify do
+        expect(page).to have_success_message("Ce chapitre est maintenant prérequis pour écrire une soumission.")
+        expect(page).to have_content("Ce chapitre est un prérequis pour écrire une soumission à un problème.")
+        expect(chapter_fondation.submission_prerequisite).to eq(true)
+      end
+      
+      describe "and unmark it" do
+        before do
+          click_link("Marquer comme non prérequis aux soumissions")
+          chapter_fondation.reload
+        end
+        specify do
+          expect(page).to have_success_message("Ce chapitre n'est plus prérequis pour écrire une soumission.")
+          expect(page).to have_no_content("Ce chapitre est un prérequis pour écrire une soumission à un problème.")
+          expect(chapter_fondation.submission_prerequisite).to eq(false)
+        end
       end
     end
   end

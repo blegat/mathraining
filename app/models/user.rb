@@ -63,8 +63,8 @@ class User < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   has_secure_password
-  has_and_belongs_to_many :theories
-  has_and_belongs_to_many :chapters
+  has_and_belongs_to_many :theories, -> { distinct }
+  has_and_belongs_to_many :chapters, -> { distinct }
   has_many :solvedquestions, dependent: :destroy
   has_many :solvedproblems, dependent: :destroy
   has_many :pictures
@@ -152,6 +152,11 @@ class User < ActiveRecord::Base
   # Tells if the user completed the given chapter
   def chap_solved?(chapter)
     return self.chapters.include?(chapter)
+  end
+  
+  # Tells if the user completed all chapters which are prerequisite to write a submission
+  def can_write_submission?
+    return (self.chapters.where(:online => true, :submission_prerequisite => true).count == Chapter.where(:online => true, :submission_prerequisite => true).count)
   end
 
   # Gives the status for the given virtual test ("not_started", "in_progress", "finished")

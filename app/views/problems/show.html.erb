@@ -211,10 +211,15 @@
   <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
   <% unless (@resolu || !@cansendnewsub) %>
     <hr>
-    <% if !@draft %>
-      <%= render 'submissions/new', problem: @problem %>
+    <% if current_user.sk.can_write_submission? %>
+      <% if !@draft %>
+        <%= render 'submissions/new', problem: @problem %>
+      <% else %>
+        <%= render 'submissions/newdraft', problem: @problem %>
+      <% end %>
     <% else %>
-      <%= render 'submissions/newdraft', problem: @problem %>
+      Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :
+      <%= render 'submissions/chapters_to_write_submission' %>
     <% end %>
   <% end %>
 

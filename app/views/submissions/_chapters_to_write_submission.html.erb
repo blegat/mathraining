@@ -1,0 +1,5 @@
+<ul class="mt-1 mb-0">
+<% Chapter.where(:online => true, :submission_prerequisite => true).order(:position).each do |c| %>
+  <li><%= link_to c.name, c %> <%= image_tag v_icon, :class => "ms-2 svg-black-white", :style => "margin-top:-3px;" if current_user.sk.chap_solved?(c) %></li>
+<% end %>
+</ul>

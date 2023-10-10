@@ -73,8 +73,11 @@
 <% if @send_solution %>
   <% solution = 0 %>
   <hr>
-  <% if @send_solution %>
+  <% if current_user.sk.can_write_submission? %>
     <%= render 'contestsolutions/new' %>
+  <% else %>
+    Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :
+    <%= render 'submissions/chapters_to_write_submission' %>
   <% end %>
 <% elsif !@existing.nil? %>
   <% solution = @existing.id %>

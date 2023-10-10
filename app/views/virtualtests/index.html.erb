@@ -189,9 +189,16 @@
         
         <!-- Si l'étudiant n'a pas encore commencé le test -->
         <% if !current_user.sk.admin? && status == "not_started" %>
-          <div class="g-col-12 g-col-md-24">
-            <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.other), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
-          </div>
+          <% if current_user.sk.can_write_submission? %>
+            <div class="g-col-12 g-col-md-24">
+              <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.other), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
+            </div>
+          <% else %>
+            <div class="g-col-12 g-col-md-24 module bottom-part text-start">
+              Pour pouvoir commencer un test virtuel, vous devez d'abord compléter les chapitres suivants :
+              <%= render 'submissions/chapters_to_write_submission' %>
+            </div>
+          <% end %>
         <% end %>
         
         <!-- Si étudiant en test --->

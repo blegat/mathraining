@@ -17,6 +17,7 @@ class SubmissionsController < ApplicationController
   before_action :can_submit, only: [:create]
   before_action :no_recent_plagiarism, only: [:create, :update_draft]
   before_action :user_that_can_see_problem, only: [:create]
+  before_action :user_that_can_write_submission, only: [:create, :update_draft]
   before_action :author, only: [:update_intest, :update_draft]
   before_action :in_test, only: [:create_intest, :update_intest]
   before_action :is_draft, only: [:update_draft]

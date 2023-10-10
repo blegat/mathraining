@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   # Chapters
   resources :chapters, only: [:show, :update, :edit, :destroy] do
     match '/put_online', to: 'chapters#put_online', :via => [:put]
+    match '/switch_submission_prerequisite', to: 'chapters#switch_submission_prerequisite', :via => [:put]
     match '/order_plus', to: 'chapters#order_plus', :via => [:put], as: :order_plus
     match '/order_minus', to: 'chapters#order_minus', :via => [:put], as: :order_minus
 

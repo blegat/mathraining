@@ -39,9 +39,13 @@
   </p>
 <% end %>
 
-<% if allow_edit %>
+<% if allow_edit %>  
   <!-- Modifier / Supprimer -->
   <% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+    <% if @chapter.submission_prerequisite? %>
+      <p class="fw-bold">Ce chapitre est un prérequis pour écrire une soumission à un problème.</p>
+    <% end %>
+    
     <p class="text-center">
     <%= link_to "Modifier ce chapitre", edit_chapter_path(@chapter) %>
     
@@ -57,11 +61,18 @@
     <% end %>
     
     <% if haut || bas %>
-      | Déplacer vers le <%= link_to "haut", chapter_order_minus_path(@chapter), :method => :put if haut %> <%= '-' if haut && bas %> <%= link_to "bas", chapter_order_plus_path(@chapter), :method => :put if bas %>
+      | Déplacer vers le
+      <%= link_to "haut", chapter_order_minus_path(@chapter), :method => :put if haut %>
+      <%= '-' if haut && bas %>
+      <%= link_to "bas", chapter_order_plus_path(@chapter), :method => :put if bas %>
     <% end %>
     
     <% if !@chapter.online && current_user.sk.admin? %>
       | <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce chapitre ?" } %>
+    <% end %>
+    
+    <% if @section.fondation? && current_user.sk.root? %>
+      | <%= link_to "Marquer comme #{'non' if @chapter.submission_prerequisite?} prérequis aux soumissions", chapter_switch_submission_prerequisite_path(@chapter), :method => :put %>
     <% end %>
     </p>
   <% end %>
