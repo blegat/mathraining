@@ -17,19 +17,23 @@ describe "Actuality pages" do
     describe "visits root path" do
       before { visit root_path }
       it do
+        should have_content("Actualités")
+        should have_content(actuality.title)
+        should have_content(actuality.content)
         should have_no_link("Modifier l'actualité")
         should have_no_link("Supprimer l'actualité")
+        should have_no_button("Ajouter une actualité")
       end
     end
     
     describe "tries to create an actuality" do
       before { visit new_actuality_path }
-      it { should have_no_selector("h1", text: "Ajouter une actualité") }
+      it { should have_content(error_access_refused) }
     end
     
     describe "tries to edit an actuality" do
       before { visit edit_actuality_path(actuality) }
-      it { should have_no_selector("h1", text: "Modifier une actualité") }
+      it { should have_content(error_access_refused) }
     end
   end
 
@@ -38,10 +42,14 @@ describe "Actuality pages" do
     
     describe "visits root path" do
       before { visit root_path }
-      it do
-        should have_link("Modifier l'actualité", href: edit_actuality_path(actuality))
-        should have_link("Supprimer l'actualité")
-        should have_button("Ajouter une actualité")
+      specify do
+        expect(page).to have_content("Actualités")
+        expect(page).to have_content(actuality.title)
+        expect(page).to have_content(actuality.content)
+        expect(page).to have_link("Modifier l'actualité", href: edit_actuality_path(actuality))
+        expect(page).to have_link("Supprimer l'actualité")
+        expect(page).to have_button("Ajouter une actualité")
+        expect { click_link("Supprimer l'actualité") }.to change(Actuality, :count).by(-1)
       end
     end
     
@@ -103,13 +111,9 @@ describe "Actuality pages" do
       end
     end
     
-    describe "deletes an actuality" do
-      specify { expect { click_link("Supprimer l'actualité") }.to change(Actuality, :count).by(-1) }
-    end
-    
     describe "visits an actuality that does not exist" do
       before { visit edit_actuality_path(3000) }
-      it { should have_selector("div.error", text: "Cette page n'existe pas ou vous n'y avez pas accès.") }
+      it { should have_content(error_access_refused) }
     end
   end
 end

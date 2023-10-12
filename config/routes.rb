@@ -220,6 +220,12 @@ Rails.application.routes.draw do
   # Colors
   resources :colors, only: [:index, :create, :update, :destroy]
   
+  # Faqs
+  resources :faqs, only: [:index, :new, :create, :edit, :update, :destroy] do
+    match '/order_plus', to: 'faqs#order_plus', :via => [:put], as: :order_plus
+    match '/order_minus', to: 'faqs#order_minus', :via => [:put], as: :order_minus
+  end
+  
   # Sessions
   resources :sessions, only: [:new, :create, :destroy]
   match '/signin', to: 'sessions#new', :via => [:get]

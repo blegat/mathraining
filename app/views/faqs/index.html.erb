@@ -1,0 +1,15 @@
+<h1><%= title_1("Questions fréquemment posées") %></h1>
+
+<% num_faqs = @faqs.count %>
+<% i = 1 %>
+<% @faqs.each do |f| %>
+  <% is_first = (i == 1) %>
+  <% is_last = (i == num_faqs) %>
+  <%= render 'faqs/show', faq: f, is_first: is_first, is_last: is_last %>
+  <% i = i+1 %>
+<% end %>
+
+<!-- Ajouter une question -->
+<% if @signed_in && current_user.sk.admin? %>
+<center><%= button_to "Ajouter une question", new_faq_path, :class => "btn btn-lg btn-ld-light-dark", :method => "get" %></center>
+<% end %>	

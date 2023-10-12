@@ -65,6 +65,9 @@ fr:
         score: "Score"
       correction:
         content: "Commentaire"
+      faq:
+        question: "Question"
+        answer: "Réponse"
       item:
         ans: "Réponse"
       message:

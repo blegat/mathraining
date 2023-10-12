@@ -82,6 +82,13 @@ FactoryGirl.define do
     code "be" # Should be a value for which a flag exists!
   end
   
+  # Faq
+  factory :faq do
+    question "C'est quoi Mathraining ?"
+    answer "Un merveilleux site."
+    position 1
+  end
+  
   # Following
   factory :following do
     association :submission
