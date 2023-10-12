@@ -158,7 +158,7 @@ class ProblemsController < ApplicationController
         @problem.virtualtest_id = 0
       else
         t = Virtualtest.find(params[:problem][:virtualtest_id].to_i)
-        lastnumero = t.problems.order(:position).reverse_order.first
+        lastnumero = t.problems.order(:position).last
         if lastnumero.nil?
           @problem.position = 1
         else
@@ -174,7 +174,7 @@ class ProblemsController < ApplicationController
   # Move the problem up in its virtualtest
   def order_minus
     t = @problem.virtualtest
-    problem2 = t.problems.where("position < ?", @problem.position).order('position').reverse_order.first
+    problem2 = t.problems.where("position < ?", @problem.position).order('position').last
     swap_position(@problem, problem2)
     flash[:success] = "Problème déplacé vers le haut."
     redirect_to virtualtests_path

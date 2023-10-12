@@ -109,7 +109,7 @@ class ChaptersController < ApplicationController
   
   # Move the chapter up (in his level)
   def order_minus
-    chapter2 = @section.chapters.where("level = ? AND position < ?", @chapter.level, @chapter.position).order('position').reverse_order.first
+    chapter2 = @section.chapters.where("level = ? AND position < ?", @chapter.level, @chapter.position).order('position').last
     unless chapter2.nil?
       swap_position(@chapter, chapter2)
       flash[:success] = "Chapitre déplacé vers le haut."

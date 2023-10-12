@@ -25,7 +25,7 @@ class TheoriesController < ApplicationController
     if @chapter.theories.empty?
       @theory.position = 1
     else
-      need = @chapter.theories.order('position').reverse_order.first
+      need = @chapter.theories.order('position').last
       @theory.position = need.position + 1
     end
     if @theory.save
@@ -64,7 +64,7 @@ class TheoriesController < ApplicationController
 
   # Move a theory up
   def order_minus
-    @theory2 = @chapter.theories.where("position < ?", @theory.position).order('position').reverse_order.first
+    @theory2 = @chapter.theories.where("position < ?", @theory.position).order('position').last
     swap_position(@theory, @theory2)
     flash[:success] = "Point théorique déplacé vers le haut."
     redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)

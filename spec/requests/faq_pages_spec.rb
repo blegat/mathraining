@@ -72,6 +72,7 @@ describe "Faq pages" do
           faq2.reload
         end
         specify do
+          expect(page).to have_success_message("Question déplacée vers le bas")
           expect(faq.position).to eq(2)
           expect(faq2.position).to eq(1)
         end
@@ -84,6 +85,7 @@ describe "Faq pages" do
           faq2.reload
         end
         specify do
+          expect(page).to have_success_message("Question déplacée vers le haut")
           expect(faq.position).to eq(2)
           expect(faq2.position).to eq(1)
         end
@@ -100,20 +102,21 @@ describe "Faq pages" do
           click_button "Créer"
         end
         specify do
+          expect(page).to have_success_message("Question ajoutée")
           expect(Faq.order(:id).last.question).to eq(newquestion)
           expect(Faq.order(:id).last.answer).to eq(newanswer)
         end
       end
       describe "and sends with wrong information" do
         before do
-          fill_in "Question", with: ""
-          fill_in "MathInput", with: newanswer
+          fill_in "Question", with: newquestion
+          fill_in "MathInput", with: ""
           click_button "Créer"
         end
         specify do
-          expect(page).to have_error_message("erreur")
+          expect(page).to have_error_message("Réponse doit être rempli")
           expect(page).to have_selector("h1", text: "Ajouter une question")
-          expect(Faq.order(:id).last.answer).to_not eq(newanswer)
+          expect(Faq.order(:id).last.question).to_not eq(newquestion)
         end
       end
     end
@@ -129,6 +132,7 @@ describe "Faq pages" do
           faq.reload
         end
         specify do
+          expect(page).to have_success_message("Question modifiée")
           expect(faq.question).to eq(newquestion)
           expect(faq.answer).to eq(newanswer)
         end
@@ -141,7 +145,7 @@ describe "Faq pages" do
           faq.reload
         end
         specify do
-          expect(page).to have_error_message("erreur")
+          expect(page).to have_error_message("Question doit être rempli")
           expect(page).to have_selector("h1", text: "Modifier une question")
           expect(faq.answer).to_not eq(newanswer)
         end

@@ -49,7 +49,7 @@ class QuestionsController < ApplicationController
     end
     before = 0
     unless @chapter.questions.empty?
-      need = @chapter.questions.order('position').reverse_order.first
+      need = @chapter.questions.order('position').last
       before = need.position
     end
     @question.position = before + 1
@@ -298,7 +298,7 @@ class QuestionsController < ApplicationController
     end
     if question.chapter.questions.exists?(["position #{sign} ?", question.position])
       if haut
-        question2 = question.chapter.questions.where("position #{sign} ?", question.position).order('position').reverse_order.first
+        question2 = question.chapter.questions.where("position #{sign} ?", question.position).order('position').last
       else
         question2 = question.chapter.questions.where("position #{sign} ?", question.position).order('position').first
       end
@@ -319,7 +319,7 @@ class QuestionsController < ApplicationController
     end
     if item.question.items.exists?(["position #{sign} ?", item.position])
       if haut
-        item2 = item.question.items.where("position #{sign} ?", item.position).order('position').reverse_order.first
+        item2 = item.question.items.where("position #{sign} ?", item.position).order('position').last
       else
         item2 = item.question.items.where("position #{sign} ?", item.position).order('position').first
       end

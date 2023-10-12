@@ -23,13 +23,13 @@ class FaqsController < ApplicationController
   
   # Create a frequently asked question (send the form)
   def create
+    position = 1
+    if Faq.count > 0
+      position = Faq.order(:position).last.position + 1
+    end
     @faq = Faq.create(params.require(:faq).permit(:question, :answer))
+    @faq.position = position
     if @faq.save
-      @faq.position = 1
-      if Faq.count > 0
-        @faq.position = Faq.order(:position).last.position + 1
-      end
-      @faq.save
       flash[:success] = "Question ajoutée."
       redirect_to faqs_path
     else
@@ -56,7 +56,7 @@ class FaqsController < ApplicationController
   
   # Move the question up
   def order_minus
-    faq2 = Faq.where("position < ?", @faq.position).order('position').reverse_order.first
+    faq2 = Faq.where("position < ?", @faq.position).order('position').last
     swap_position(@faq, faq2)
     flash[:success] = "Question déplacée vers le haut."
     redirect_to faqs_path
