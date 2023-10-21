@@ -2,10 +2,10 @@
 
 <!-- Enoncé -->
 <div class="mb-2">
-  <%= f.label "Énoncé", :class => "form-label" %>
+  <%= f.label "Énoncé", :for => "MathInput", :class => "form-label" %>
   <%= render 'shared/preview' %>
   <%= render 'shared/font' %>
-  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :onkeyup => "Preview.MyUpdate()" %>
   <script>initAndUpdatePreviewWhenPossible()</script>
 </div>
   

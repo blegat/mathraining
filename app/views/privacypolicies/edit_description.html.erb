@@ -7,10 +7,10 @@
 
   <!-- Description de la politique de confidentialité -->
   <div class="mb-2">
-    <%= f.label :description, :class => "form-label" %>
+    <%= f.label :description, :for => "MathInput", :class => "form-label" %>
     <%= render 'shared/preview' %>
     <%= render 'shared/font' %>
-    <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+    <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :onkeyup => "Preview.MyUpdate()" %>
     <script>initAndUpdatePreviewWhenPossible()</script>
   </div>
   

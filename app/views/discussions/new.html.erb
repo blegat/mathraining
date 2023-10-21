@@ -29,7 +29,7 @@ var showAllUsers = function () {
       <%= render 'shared/error_messages', object: f.object %>
       
       <div class="mb-2" id="destinataire-div">
-        <%= f.label :destinataire, :class => "form-label" %>
+        <%= f.label :destinataire, :for => "destinataire", :class => "form-label" %>
         - <%= link_to "Afficher les utilisateurs inactifs", "javascript:showAllUsers()", id: "show_all" %>
         <span style="display:none;" id="thanks">À votre service !</span>
         
@@ -41,7 +41,7 @@ var showAllUsers = function () {
       <script>initializeSelect2WhenPossible("Choisir un destinataire")</script>
 
       <div class="mb-2">
-        <%= f.label :message, :class => "form-label" %>
+        <%= f.label :message, :for => "MathInput", :class => "form-label" %>
         <%= render 'shared/preview' %>
         <%= render 'shared/smiley' %>
         <textarea name="content" maxlength="8000" class="form-control" style="height:120px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>

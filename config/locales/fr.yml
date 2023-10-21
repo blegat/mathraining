@@ -94,6 +94,8 @@ fr:
         abbreviation: "Abréviation"
         short_abbreviation: "Abréviation courte"
         initials: "Initiales"
+      solvedquestion:
+        guess: "Votre réponse"
       starproposal:
         reason: "Raison"
         answer: "Réponse"

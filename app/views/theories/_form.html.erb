@@ -6,9 +6,9 @@
 </div>
 
 <div class="mb-2">
-  <%= f.label :content, :class => "form-label" %>
+  <%= f.label :content, :for => "MathInput", :class => "form-label" %>
   <%= render 'shared/preview' %>
   <%= render 'shared/font' %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "16000", :style => "height:250px;", :id=>"MathInput", :onkeyup => "Preview.MyUpdate()" %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "16000", :style => "height:250px;", :id => "MathInput", :onkeyup => "Preview.MyUpdate()" %>
   <script>initAndUpdatePreviewWhenPossible()</script>
 </div>

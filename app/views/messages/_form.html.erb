@@ -24,10 +24,10 @@
   <% if erreur && !session[:oldContent].nil? %>
     <% cont = session[:oldContent] %>
   <% end %>
-  <%= f.label :content, :disabled => current_user.other, :class => "form-label" %>
+  <%= f.label :content, :for => "MathInput#{postfix}", :disabled => current_user.other, :class => "form-label" %>
   <%= render 'shared/preview', postfix: postfix %>
   <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id=>"MathInput#{postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id => "MathInput#{postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
   <!-- Do not call initAndUpdatePreviewSafeWhenPossible: it will be done only after rolling to show the form -->
 </div>
 

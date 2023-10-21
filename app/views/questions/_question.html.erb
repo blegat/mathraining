@@ -19,7 +19,7 @@
   <%= form_for(solvedquestion) do |g| %>
     <input type="hidden" name="question_id" value="<%= question.id %>" />
     <div class="mb-2">
-    <%= g.label "Votre réponse", :class => "form-label to-enable", :disabled => !@signed_in || current_user.other || needtowait %>
+    <%= g.label :guess, :class => "form-label to-enable", :disabled => !@signed_in || current_user.other || needtowait %>
     <%= g.text_field :guess, class: "form-control to-enable ms-1", style: "width:70px;", value: val, :disabled => !@signed_in || current_user.other || needtowait %>
     </div>
     <%= g.submit "Soumettre", class: "btn btn-primary to-enable", :disabled => !@signed_in || current_user.other || needtowait %>

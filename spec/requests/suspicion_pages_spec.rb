@@ -33,7 +33,7 @@ describe "Suspicion pages" do
         
       describe "and submits a new suspicion" do
         before do
-          fill_in "new_source_field", with: new_source
+          fill_in "suspicion_source", with: new_source
           click_button "new_suspicion_button"
         end
         specify do
@@ -51,7 +51,7 @@ describe "Suspicion pages" do
       
       describe "and submits an empty suspicion" do
         before do
-          fill_in "new_source_field", with: ""
+          fill_in "suspicion_source", with: ""
           click_button "new_suspicion_button"
         end
         it { should have_error_message("Source doit être rempli") }
