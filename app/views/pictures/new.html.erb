@@ -16,7 +16,8 @@ Votre image doit respecter les conditions suivantes :
 <%= form_for @picture, :url => pictures_path, :html => { :multipart => true } do |f| %>	
   <%= render 'shared/error_messages', object: @picture %>
   
-  <%= f.hidden_field :user_id, value: current_user.sk.id %>
+  <!-- To avoid error when no picture is chosen -->
+  <%= f.hidden_field :useless, value: 0 %>
   
   <div class="mb-2">
   <%= f.label "Choisissez votre image :", class: "form-label" %>

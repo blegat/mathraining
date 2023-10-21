@@ -100,7 +100,11 @@ class SubjectsController < ApplicationController
   def create    
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
-    @subject = Subject.new(params.require(:subject).permit(:title, :content, :for_correctors, :important, :for_wepion))
+    allowed_params = [:title, :content]
+    allowed_params << :for_correctors if (current_user.sk.corrector? || current_user.sk.admin?)
+    allowed_params << :important if current_user.sk.admin?
+    allowed_params << :for_wepion if (current_user.sk.wepion? || current_user.sk.admin?)
+    @subject = Subject.new(params.require(:subject).permit(allowed_params))
     @subject.user = current_user.sk
     @subject.last_comment_time = DateTime.now
     @subject.last_comment_user = current_user.sk
@@ -147,9 +151,9 @@ class SubjectsController < ApplicationController
     params[:subject][:content].strip! if !params[:subject][:content].nil?
     @subject.title = params[:subject][:title]
     @subject.content = params[:subject][:content]
-    @subject.for_correctors = params[:subject][:for_correctors] if !params[:subject][:for_correctors].nil?
-    @subject.important = params[:subject][:important] if !params[:subject][:important].nil?
-    @subject.for_wepion = params[:subject][:for_wepion] if !params[:subject][:for_wepion].nil?
+    @subject.for_correctors = params[:subject][:for_correctors] if !params[:subject][:for_correctors].nil? && (current_user.sk.corrector? || current_user.sk.admin?)
+    @subject.important = params[:subject][:important] if !params[:subject][:important].nil? && current_user.sk.admin?
+    @subject.for_wepion = params[:subject][:for_wepion] if !params[:subject][:for_wepion].nil? && (current_user.sk.wepion? || current_user.sk.admin?)
     
     @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
     

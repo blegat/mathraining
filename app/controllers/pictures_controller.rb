@@ -25,7 +25,8 @@ class PicturesController < ApplicationController
 
   # Create a picture (send the form)
   def create
-    @picture = Picture.new(params.require(:picture).permit(:user_id, :image))
+    @picture = Picture.new(params.require(:picture).permit(:image))
+    @picture.user = current_user.sk
     if @picture.save
       flash[:success] = "Image ajoutée."
       redirect_to @picture
