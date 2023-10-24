@@ -35,7 +35,7 @@
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
-            <input class="form-check-input" type="checkbox" class="to-enable" id="ans[<%= c.id %>]" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
+            <input class="form-check-input to-enable" type="checkbox" id="ans[<%= c.id %>]" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
             <%= raw(c.ans) %>
           </label>
         </div>
@@ -50,7 +50,7 @@
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
-            <input class="form-check-input" type="radio" class="to-enable" id="ans[<%= c.id %>]" name="ans" value="<%= c.id %>" <%= "checked" if !item.nil? && c.id == item.id %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
+            <input class="form-check-input to-enable" type="radio" id="ans[<%= c.id %>]" name="ans" value="<%= c.id %>" <%= "checked" if !item.nil? && c.id == item.id %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
             <%= raw(c.ans) %>
           </label>
         </div>
