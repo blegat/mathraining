@@ -98,7 +98,7 @@ class MessagesController < ApplicationController
   # Delete a message
   def destroy
     @subject = @message.subject
-
+    page = get_page(@message)
     @message.destroy
 
     if @subject.messages.size > 0
@@ -111,8 +111,9 @@ class MessagesController < ApplicationController
       @subject.last_comment_user_id = @subject.user_id
       @subject.save
     end
-
-    redirect_to subject_path(@subject, :q => @q)
+    
+    page = [1,page-1].max if (@subject.messages.count <= (page-1) * 10) # if last message is destroyed and it was alone on its page
+    redirect_to subject_path(@subject, :page => page, :q => @q)
   end
 
   private
