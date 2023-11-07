@@ -18,11 +18,10 @@ class SolvedquestionsController < ApplicationController
     @solvedquestion.question = @question
     
     if check_answer(true)
-      @question.nb_tries = @question.nb_tries+1
+      @question.update_attribute(:nb_tries, @question.nb_tries+1)
       if @solvedquestion.correct
-        @question.nb_first_guesses = @question.nb_first_guesses+1
+        @question.update_attribute(:nb_first_guesses, @question.nb_first_guesses+1)
       end
-      @question.save
       
       # We update chapter.nb_tries if it is the first question that this user tries
       already = false
@@ -31,8 +30,7 @@ class SolvedquestionsController < ApplicationController
       end
       
       unless already
-        @chapter.nb_tries = @chapter.nb_tries+1
-        @chapter.save
+        @chapter.update_attribute(:nb_tries, @chapter.nb_tries+1)
       end
 
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
@@ -216,13 +214,11 @@ class SolvedquestionsController < ApplicationController
     partials = user.pointspersections
 
     if !question.chapter.section.fondation
-      user.rating = user.rating + pt
-      user.save
+      user.update_attribute(:rating, user.rating + pt)
     end
 
     partial = partials.where(:section_id => question.chapter.section.id).first
-    partial.points = partial.points + pt
-    partial.save
+    partial.update_attribute(:points, partial.points + pt)
   end
 
 end

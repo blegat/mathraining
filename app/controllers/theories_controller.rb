@@ -57,8 +57,7 @@ class TheoriesController < ApplicationController
 
   # Put a theory online
   def put_online
-    @theory.online = true
-    @theory.save
+    @theory.update_attribute(:online, true)
     redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
   

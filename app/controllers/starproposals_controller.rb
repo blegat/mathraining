@@ -48,8 +48,7 @@ class StarproposalsController < ApplicationController
     old_status = @starproposal.status
     if @starproposal.update(params.require(:starproposal).permit(:answer, :status))
       if params[:starproposal][:status] == "accepted"
-        @submission.star = true
-        @submission.save
+        @submission.update_attribute(:star, true)
       end
       flash[:success] = "Proposition d'étoile modifiée."
     end

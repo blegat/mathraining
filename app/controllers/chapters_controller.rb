@@ -61,8 +61,7 @@ class ChaptersController < ApplicationController
         else
           position = last_chapter.position + 1
         end
-        @chapter.position = position
-        @chapter.save
+        @chapter.update_attribute(:position, position)
       end
       flash[:success] = "Chapitre modifié."
       redirect_to chapter_path(@chapter)
@@ -90,18 +89,15 @@ class ChaptersController < ApplicationController
 
   # Put the chapter online
   def put_online
-    @chapter.online = true
-    @chapter.publication_date = Date.today
-    @chapter.save
+    @chapter.update(:online           => true,
+                    :publication_date => Date.today)
     @section = @chapter.section
     @chapter.questions.each do |q|
       @section.max_score = @section.max_score + q.value
-      q.online = true
-      q.save
+      q.update_attribute(:online, true)
     end
     @chapter.theories.each do |t|
-      t.online = true
-      t.save
+      t.update_attribute(:online, true)
     end
     @section.save
     redirect_to @chapter

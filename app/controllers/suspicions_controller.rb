@@ -55,17 +55,15 @@ class SuspicionsController < ApplicationController
       end
       if old_status != "confirmed" && @suspicion.status == "confirmed" && !@submission.plagiarized?
         # Mark submission as plagiarized
-        @submission.status = :plagiarized
-        @submission.last_comment_time = DateTime.now # Because the new date for submission is 6 months after that date
-        @submission.save
+        @submission.update(:status            => :plagiarized,
+                           :last_comment_time => DateTime.now) # Because the new date for submission is 6 months after that date
         Notif.create(:user => @submission.user, :submission => @submission) # (will not be created if already exists)
       elsif old_status == "confirmed" && @suspicion.status != "confirmed"
         # Mark submission as wrong or waiting instead of plagiarized (if no other suspicion is confirmed)
         if @submission.suspicions.where(:status => :confirmed).count == 0
           @submission.status = (@submission.corrections.where("user_id != ?", @submission.user).count == 0 ? :waiting : :wrong)
           last_comment = @submission.corrections.order(:id).last
-          @submission.last_comment_time = (last_comment.nil? ? @submission.created_at : last_comment.created_at)
-          @submission.save
+          @submission.update_attribute(:last_comment_time, (last_comment.nil? ? @submission.created_at : last_comment.created_at))
           if @submission.waiting?
             # Delete the 'following' that was added automatically when submission was marked as plagiarized
             @submission.followings.destroy_all

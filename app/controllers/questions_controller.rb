@@ -79,9 +79,8 @@ class QuestionsController < ApplicationController
             @question.items.order(:id).each do |c|
               if c.ok
                 if i > 0
-                  c.ok = false
                   flash[:info] = "Attention, il y avait plusieurs réponses correctes à cet exercice, seule la première a été gardée."
-                  c.save
+                  c.update_attribute(:ok, false)
                 end
                 i = i+1
               end
@@ -90,8 +89,7 @@ class QuestionsController < ApplicationController
               # There is no good answer
               flash[:info] = "Attention, il n'y avait aucune réponse correcte à cet exercice, une réponse correcte a été rajoutée aléatoirement."
               @item = @question.items.order(:id).first
-              @item.ok = true
-              @item.save
+              @item.update_attribute(:ok, true)
             end
           end
           @question.many_answers = false
@@ -137,11 +135,9 @@ class QuestionsController < ApplicationController
 
   # Put a question online
   def put_online
-    @question.online = true
-    @question.save
+    @question.update_attribute(:online, true)
     @section = @question.chapter.section
-    @section.max_score = @section.max_score + @question.value
-    @section.save
+    @section.update_attribute(:max_score, @section.max_score + @question.value)
     redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
   end
 
@@ -151,8 +147,7 @@ class QuestionsController < ApplicationController
 
   # Update the explanation of a question (send the form)
   def update_explanation
-    @question.explanation = params[:question][:explanation]
-    if @question.save
+    if @question.update(:explanation => params[:question][:explanation]) # Do not use update_attribute because it does not trigger validations
       flash[:success] = "Explication modifiée."
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     else

@@ -84,16 +84,14 @@ class ContestsolutionsController < ApplicationController
       @correct_name = User.find(@contestsolution.reservation).name
       @ok = 0
     else
-      @contestsolution.reservation = current_user.sk.id
-      @contestsolution.save
+      @contestsolution.update_attribute(:reservation, current_user.sk.id)
       @ok = 1
     end
   end
 
   # Un-reserve a solution
   def unreserve
-    @contestsolution.reservation = 0
-    @contestsolution.save
+    @contestsolution.update_attribute(:reservation, 0)
   end
 
   private

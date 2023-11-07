@@ -204,11 +204,10 @@ class ApplicationController < ActionController::Base
   def swap_position(a, b)
     if !a.nil? && !b.nil? && a != b
       x = a.position
-      a.position = b.position
-      b.position = x
-      a.save
-      b.save
-      if a.position < b.position
+      y = b.position
+      a.update_attribute(:position, y)
+      b.update_attribute(:position, x)
+      if x > y
         return " vers le haut"
       else
         return " vers le bas"
@@ -317,8 +316,7 @@ class ApplicationController < ActionController::Base
           v = t.virtualtest
           v.problems.each do |p|
             p.submissions.where(user_id: u.id, intest: true).each do |s|
-              s.visible = true
-              s.save
+              s.update_attribute(:visible, true)
             end
           end
         end
@@ -429,8 +427,7 @@ class ApplicationController < ActionController::Base
     end
     
     # Change some details of the contest
-    contest.num_participants = scores.size
-    contest.save
+    contest.update_attribute(:num_participants, scores.size)
     contest_fully_corrected = (contest.contestproblems.where(:status => [:not_started_yet, :in_progress, :in_correction]).count == 0)
     if contest_fully_corrected
       contest.completed!

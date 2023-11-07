@@ -26,8 +26,7 @@ class ItemsController < ApplicationController
       # We put the other one to false
       @question.items.each do |f|
         if f.ok
-          f.ok = false
-          f.save
+          f.update_attribute(:ok, false)
         end
       end
     end
@@ -60,8 +59,7 @@ class ItemsController < ApplicationController
       # We put one in random to true
       @item.destroy
       item2 = @question.items.last
-      item2.ok = true
-      item2.save
+      item2.update_attribute(:ok, true)
       flash[:info] = "Vous avez supprimé une réponse correcte : une autre a été mise correcte à la place par défaut."
     else
       @item.destroy
@@ -75,20 +73,17 @@ class ItemsController < ApplicationController
       # Mark all items as wrong
       @question.items.each do |f|
         if f.ok
-          f.ok = false
-          f.save
+          f.update_attribute(:ok, false)
         end
       end
     end
-    @item.ok = true
-    @item.save
+    @item.update_attribute(:ok, true)
     redirect_to question_manage_items_path(@question)
   end
   
   # Mark item as not correct
   def uncorrect
-    @item.ok = false
-    @item.save
+    @item.update_attribute(:ok, false)
     redirect_to question_manage_items_path(@question)
   end
   

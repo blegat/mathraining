@@ -69,9 +69,7 @@ class VirtualtestsController < ApplicationController
   # Delete a virtualtest
   def destroy
     @virtualtest.problems.each do |p|
-      p.virtualtest_id = 0
-      p.position = 0
-      p.save
+      p.update(:virtualtest_id => 0, :position => 0)
     end
     @virtualtest.destroy
     flash[:success] = "Test virtuel supprimé."
@@ -80,8 +78,7 @@ class VirtualtestsController < ApplicationController
 
   # Put a virtualtest online
   def put_online
-    @virtualtest.online = true
-    @virtualtest.save
+    @virtualtest.update_attribute(:online, true)
     flash[:success] = "Test virtuel mis en ligne."
     redirect_to virtualtests_path
   end

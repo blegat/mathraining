@@ -33,14 +33,12 @@ class TchatmessagesController < DiscussionsController
     else
       @discussion.links.each do |l|
         if l.user_id != current_user.sk.id
-          l.nonread = l.nonread + 1
+          l.update_attribute(:nonread, l.nonread + 1)
         else
-          l.nonread = 0
+          l.update_attribute(:nonread, 0)
         end
-        l.save
       end
-      @discussion.last_message_time = DateTime.now
-      @discussion.save
+      @discussion.update_attribute(:last_message_time, DateTime.now)
       redirect_to @discussion
     end
   end

@@ -49,9 +49,8 @@ class MessagesController < ApplicationController
         end
       end
 
-      @subject.last_comment_time = DateTime.now
-      @subject.last_comment_user = current_user.sk
-      @subject.save
+      @subject.update(:last_comment_time => DateTime.now,
+                      :last_comment_user => current_user.sk)
 
       if current_user.sk.root?
         for g in ["A", "B"] do
@@ -103,13 +102,11 @@ class MessagesController < ApplicationController
 
     if @subject.messages.size > 0
       last = @subject.messages.order("created_at").last
-      @subject.last_comment_time = last.created_at
-      @subject.last_comment_user_id = last.user_id
-      @subject.save
+      @subject.update(:last_comment_time    => last.created_at,
+                      :last_comment_user_id => last.user_id)
     else
-      @subject.last_comment_time = @subject.created_at
-      @subject.last_comment_user_id = @subject.user_id
-      @subject.save
+      @subject.update(:last_comment_time    => @subject.created_at,
+                      :last_comment_user_id => @subject.user_id)
     end
     
     page = [1,page-1].max if (@subject.messages.count <= (page-1) * 10) # if last message is destroyed and it was alone on its page

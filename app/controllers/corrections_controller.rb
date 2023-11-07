@@ -85,15 +85,13 @@ class CorrectionsController < ApplicationController
         # If this is the first correct submission of the user to this problem, we give the points and mark problem as solved
         unless @submission.user.pb_solved?(@problem)
           point_attribution(@submission.user, @problem)
-          link = Solvedproblem.new(:user            => @submission.user,
-                                   :problem         => @problem,
-                                   :correction_time => DateTime.now,
-                                   :submission      => @submission)
-
           last_user_corr = @submission.corrections.where("user_id = ?", @submission.user_id).order(:created_at).last
           resolution_time = (last_user_corr.nil? ? @submission.created_at : last_user_corr.created_at)
-          link.resolution_time = resolution_time
-          link.save
+          Solvedproblem.create(:user            => @submission.user,
+                               :problem         => @problem,
+                               :correction_time => DateTime.now,
+                               :submission      => @submission,
+                               :resolution_time => resolution_time)
           
           # Update the statistics of the problem
           @problem.nb_solves = @problem.nb_solves + 1
@@ -138,14 +136,13 @@ class CorrectionsController < ApplicationController
           if f.user == current_user.sk
             f.touch
           else
-            f.read = false
-            f.save
+            f.update_attribute(:read, false)
           end
         end
 
         Notif.create(:user => @submission.user, :submission => @submission) # (will not be created if already exists)
       else
-        @submission.followings.update_all(read: false)
+        @submission.followings.update_all(:read => false)
       end
 
       # Change the value of last_comment_time
@@ -202,12 +199,10 @@ class CorrectionsController < ApplicationController
 
       partials = user.pointspersections
 
-      user.rating = user.rating + pt
-      user.save
+      user.update_attribute(:rating, user.rating + pt)
 
       partial = partials.where(:section_id => problem.section.id).first
-      partial.points = partial.points + pt
-      partial.save
+      partial.update_attribute(:points, partial.points + pt)
     end
   end
 end

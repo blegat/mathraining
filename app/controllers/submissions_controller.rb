@@ -152,15 +152,13 @@ class SubmissionsController < ApplicationController
 
   # Give a star to a submission
   def star
-    @submission.star = true if @submission.user != current_user.sk # Cannot star own solution
-    @submission.save
+    @submission.update_attribute(:star, true)
     redirect_to problem_path(@problem, :sub => @submission)
   end
 
   # Remove the star of a submission
   def unstar
-    @submission.star = false if @submission.user != current_user.sk # Cannot unstar own solution
-    @submission.save
+    @submission.update_attribute(:star, false)
     redirect_to problem_path(@problem, :sub => @submission)
   end
 
@@ -217,8 +215,7 @@ class SubmissionsController < ApplicationController
   # Update the score of a submission in a test
   def update_score
     if @submission.intest && @submission.score != -1
-      @submission.score = params[:new_score].to_i
-      @submission.save
+      @submission.update(:score => params[:new_score].to_i) # Do not use update_attribute because it does not trigger validations
     end
     redirect_to problem_path(@problem, :sub => @submission)
   end

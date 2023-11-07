@@ -90,14 +90,12 @@ class ProblemsController < ApplicationController
 
   # Put a problem online
   def put_online
-    @problem.online = true
+    @problem.update_attribute(:online, true)
     if @problem.virtualtest_id == 0
-      @problem.markscheme = ""
+      @problem.update_attribute(:markscheme, "")
     end
-    @problem.save
     @section = @problem.section
-    @section.max_score = @section.max_score + @problem.value
-    @section.save
+    @section.update_attribute(:max_score, @section.max_score + @problem.value)
     redirect_to problem_path(@problem)
   end
 
@@ -111,8 +109,7 @@ class ProblemsController < ApplicationController
 
   # Update the explanation of a problem (send the form)
   def update_explanation
-    @problem.explanation = params[:problem][:explanation]
-    if @problem.save
+    if @problem.update(:explanation => params[:problem][:explanation]) # Do not use update_attribute because it does not trigger validations
       flash[:success] = "Élements de solution modifiés."
       redirect_to problem_path(@problem)
     else
@@ -122,8 +119,7 @@ class ProblemsController < ApplicationController
   
   # Update the marking scheme of a problem (send the form)
   def update_markscheme
-    @problem.markscheme = params[:problem][:markscheme]
-    if @problem.save
+    if @problem.update(:markscheme => params[:problem][:markscheme]) # Do not use update_attribute because it does not trigger validations
       flash[:success] = "Marking scheme modifié."
       redirect_to problem_path(@problem)
     else

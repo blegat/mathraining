@@ -78,14 +78,12 @@ class DiscussionsController < ApplicationController
         else
           @discussion.links.each do |l|
             if l.user != current_user.sk
-              l.nonread = l.nonread + 1
+              l.update_attribute(:nonread, l.nonread + 1)
             else
-              l.nonread = 0
+              l.update_attribute(:nonread, 0)
             end
-            l.save
           end
-          @discussion.last_message_time = DateTime.now
-          @discussion.save
+          @discussion.update_attribute(:last_message_time, DateTime.now)
         end
         redirect_to @discussion
       end
@@ -95,8 +93,7 @@ class DiscussionsController < ApplicationController
   # Mark a discussion as unread
   def unread
     l = current_user.sk.links.where(:discussion_id => @discussion.id).first
-    l.nonread = l.nonread + 1
-    l.save
+    l.update_attribute(:nonread, l.nonread + 1)
     redirect_to new_discussion_path
   end
 

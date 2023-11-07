@@ -277,9 +277,7 @@ class UsersController < ApplicationController
 
   # Change the Wépion group of a user
   def change_group
-    g = params[:group]
-    @user.group = g
-    @user.save
+    @user.update_attribute(:group, params[:group])
     flash[:success] = "Utilisateur changé de groupe."
     redirect_to @user
   end
@@ -399,16 +397,15 @@ class UsersController < ApplicationController
   def destroydata
     if @user.active
       flash[:success] = "Les données personnelles de #{@user.name} ont été supprimées."
-      @user.active = false
-      @user.email = @user.id.to_s
-      @user.first_name = "Compte"
-      @user.last_name = "supprimé"
-      @user.see_name = 1
-      @user.wepion = false
-      @user.valid_name = true
-      @user.follow_message = false
-      @user.rating = 0
-      @user.save
+      @user.update(:active         => false,
+                   :email          => @user.id.to_s,
+                   :first_name     => "Compte",
+                   :last_name      => "supprimé",
+                   :see_name       => 1,
+                   :wepion         => false,
+                   :valid_name     => true,
+                   :follow_message => false,
+                   :rating         => 0)
       @user.followingsubjects.each do |f|
         f.destroy
       end
@@ -501,8 +498,7 @@ class UsersController < ApplicationController
 
   # Start receiving emails for new tchatmessages
   def add_followingmessage
-    current_user.sk.follow_message = true
-    current_user.sk.save
+    current_user.sk.update_attribute(:follow_message, true)
     
     flash[:success] = "Vous recevrez dorénavant un e-mail à chaque nouveau message privé."
     redirect_back(fallback_location: new_discussion_path)
@@ -510,8 +506,7 @@ class UsersController < ApplicationController
 
   # Stop receiving emails for new tchatmessages
   def remove_followingmessage
-    current_user.sk.follow_message = false
-    current_user.sk.save
+    current_user.sk.update_attribute(:follow_message, false)
     
     flash[:success] = "Vous ne recevrez maintenant plus d'e-mail lors d'un nouveau message privé."
     redirect_back(fallback_location: new_discussion_path)

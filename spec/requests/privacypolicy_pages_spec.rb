@@ -168,10 +168,12 @@ describe "Privacy policy pages" do
           before do
             click_link("Publier")
             policy3_offline.reload
+            root.reload
           end
           specify do
             expect(policy3_offline.online).to eq(true)
             expect(policy3_offline.publication_time).to be >= (DateTime.now - 10.minutes)
+            expect(root.last_policy_read).to eq(false)
           end
           
           describe "and visits any page" do

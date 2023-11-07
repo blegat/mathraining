@@ -201,10 +201,10 @@ class SubjectsController < ApplicationController
       redirect_to @subject and return
     end
     
-    premier_message = Message.new(content: @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]", created_at: @subject.created_at)
-    premier_message.user = @subject.user
-    premier_message.subject = @migreur
-    premier_message.save
+    premier_message = Message.create(:content    => @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]",
+                                     :created_at => @subject.created_at,
+                                     :user       => @subject.user,
+                                     :subject    => @migreur)
 
     @subject.myfiles.each do |f|
       f.update_attribute(:myfiletable, premier_message)
@@ -215,14 +215,12 @@ class SubjectsController < ApplicationController
     end
 
     @subject.messages.each do |m|
-      m.subject = @migreur
-      m.save
+      m.update_attribute(:subject, @migreur)
     end
 
     if @subject.last_comment_time > @migreur.last_comment_time
-      @migreur.last_comment_time = @subject.last_comment_time
-      @migreur.last_comment_user_id = @subject.last_comment_user_id
-      @migreur.save
+      @migreur.update(:last_comment_time    => @subject.last_comment_time,
+                      :last_comment_user_id => @subject.last_comment_user_id)
     end
 
     @subject.reload # Important because otherwise the "destroy" below also destroys the old messages and files of the subject

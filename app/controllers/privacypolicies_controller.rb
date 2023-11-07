@@ -67,13 +67,9 @@ class PrivacypoliciesController < ApplicationController
 
   # Put a privacy policy online
   def put_online
-    @privacypolicy.online = true
-    @privacypolicy.publication_time = DateTime.now
-    @privacypolicy.save
-    User.all.each do |u|
-      u.last_policy_read = false
-      u.save
-    end
+    @privacypolicy.update(:online           => true,
+                          :publication_time => DateTime.now)
+    User.all.update_all(:last_policy_read => false)
     redirect_to @privacypolicy
   end
 
