@@ -40,10 +40,10 @@
 
   <script type="text/javascript">
   var reserve = function () {
-    $.getScript("<%= reserve_sol_url(:id => @contestsolution) %>");
+    $.getScript("<%= contestsolution_reserve_url(@contestsolution) %>");
   }
   var unreserve = function () {
-    $.getScript("<%= unreserve_sol_url(:id => @contestsolution) %>");
+    $.getScript("<%= contestsolution_unreserve_url(@contestsolution) %>");
   }
   </script>
 

@@ -58,7 +58,7 @@
       <% if @signed_in && !current_user.sk.admin? %>
         <% noti = current_user.sk.notifs.count %>
         <% if noti != 0 %>
-          <%= link_to "#{noti}", notifs_show_path, class: "btn btn-info #{ 'ms-2' if current_user.sk.corrector? }" %>
+          <%= link_to "#{noti}", notifs_path, class: "btn btn-info #{ 'ms-2' if current_user.sk.corrector? }" %>
         <% end %>
       <% end %>
       

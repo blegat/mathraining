@@ -432,10 +432,10 @@ describe "Submission pages" do
             sign_out
             sign_in user
           end
-          it { should have_link("1", href: notifs_show_path) }
+          it { should have_link("1", href: notifs_path) }
           
           describe "visits answers page" do
-            before { visit notifs_show_path }
+            before { visit notifs_path }
             it do
               should have_selector("h1", text: "Nouvelles réponses")
               should have_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
@@ -449,11 +449,11 @@ describe "Submission pages" do
               should have_selector("div", text: newcorrection)
               should have_selector("div", text: "Votre solution est erronée.")
               should have_selector("h4", text: "Poster un commentaire")
-              should have_no_link(href: notifs_show_path) # no more notification
+              should have_no_link(href: notifs_path) # no more notification
             end
             
             describe "visits answers page" do
-              before { visit notifs_show_path }
+              before { visit notifs_path }
               it do
                 should have_selector("h1", text: "Nouvelles réponses")
                 should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))

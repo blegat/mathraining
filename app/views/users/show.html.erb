@@ -957,30 +957,33 @@
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Rendre administrateur', user_add_administrator_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :method => :put, :class => "text-color-red" %>
+      <%= link_to 'Rendre administrateur', user_set_administrator_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :method => :put, :class => "text-color-red" %>
     <% end %>
     <% if current_user.sk.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if !@user.corrector %>
-        <%= link_to 'Rendre correcteur', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :method => :put, :class => "text-color-red" %>
+        <%= link_to 'Rendre correcteur', user_set_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :method => :put, :class => "text-color-red" %>
       <% else %>
-        <%= link_to 'Retirer des correcteurs', user_switch_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :class => "text-color-red" %>
+        <%= link_to 'Retirer des correcteurs', user_unset_corrector_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :class => "text-color-red" %>
       <% end %>
     <% end %>
     <% if current_user.sk.root && !@user.root %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <% link_name = (@user.can_change_name ? "Interdire le changement de nom" : "Autoriser le changement de nom") %>
-      <%= link_to link_name, user_switch_can_change_name_path(@user), :method => :put %>
+      <% if @user.can_change_name %>
+        <%= link_to "Interdire le changement de nom", user_unset_can_change_name_path(@user), :method => :put %>
+      <% else %>
+        <%= link_to "Autoriser le changement de nom", user_set_can_change_name_path(@user), :method => :put %>
+      <% end %>
     <% end %>
     <% if current_user.sk.admin && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if @user.wepion %>
-        <%= link_to 'Retirer du groupe Wépion', user_switch_wepion_path(@user), :method => :put %>
+        <%= link_to 'Retirer du groupe Wépion', user_unset_wepion_path(@user), :method => :put %>
       <% else %>
-        <%= link_to 'Ajouter au groupe Wépion', user_switch_wepion_path(@user), :method => :put %>
+        <%= link_to 'Ajouter au groupe Wépion', user_set_wepion_path(@user), :method => :put %>
       <% end %>
     <% end %>
     <% if current_user.sk.admin && @user.wepion %>

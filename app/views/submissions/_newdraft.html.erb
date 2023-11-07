@@ -1,6 +1,6 @@
 <% @submission = problem.submissions.where(:user => current_user.sk, :status => :draft).first %>
 
-<%= form_for :submission, url: problem_submission_update_draft_path(problem, @submission), :html => { :multipart => true } do |f| %>
+<%= form_for :submission, url: submission_update_draft_path(@submission), :html => { :multipart => true } do |f| %>
 
   <!-- Nouvelle soumission -->
   <h3>Nouvelle soumission</h3>

@@ -10,95 +10,91 @@ Rails.application.routes.draw do
   # Chapters
   resources :chapters, only: [:show, :update, :edit, :destroy] do
     match '/put_online', to: 'chapters#put_online', :via => [:put]
-    match '/switch_submission_prerequisite', to: 'chapters#switch_submission_prerequisite', :via => [:put]
-    match '/order', to: 'chapters#order', :via => [:put], as: :order
+    match '/mark_submission_prerequisite', to: 'chapters#mark_submission_prerequisite', :via => [:put]
+    match '/unmark_submission_prerequisite', to: 'chapters#unmark_submission_prerequisite', :via => [:put]
+    match '/order', to: 'chapters#order', :via => [:put]
     match '/read', to: 'chapters#read', :via => [:put]
 
     resources :theories, only: [:new, :create]
     resources :questions, only: [:new, :create]
   end
   match '/chapterstats', to: 'chapters#chapterstats', :via => [:get]
-  resources :chaptercreations, only: [] # Must be added manually!
+  resources :chaptercreations, only: [] # Must be added manually in the database!
 
   # Prerequisites
-  resources :prerequisites, only: []
   match '/graph_prerequisites', to: "prerequisites#graph_prerequisites", :via => [:get]
   match '/add_prerequisite', to: "prerequisites#add_prerequisite", :via => [:post]
   match '/remove_prerequisite', to: "prerequisites#remove_prerequisite", :via => [:post]
 
   # Theories
   resources :theories, only: [:update, :edit, :destroy] do
-    match '/order', to: 'theories#order', :via => [:put], as: :order
-    match '/put_online', to: 'theories#put_online', :via => [:put], as: :put_online
-    match '/read', to: 'theories#read', :via => [:put], as: :read
-    match '/unread', to: 'theories#unread', :via => [:put], as: :unread
+    match '/order', to: 'theories#order', :via => [:put]
+    match '/put_online', to: 'theories#put_online', :via => [:put]
+    match '/read', to: 'theories#read', :via => [:put]
+    match '/unread', to: 'theories#unread', :via => [:put]
   end
 
   # Questions
   resources :questions, only: [:update, :edit, :destroy] do
-    match '/order', to: 'questions#order', :via => [:put], as: :order
-    match '/put_online', to: 'questions#put_online', :via => [:put], as: :put_online
+    match '/order', to: 'questions#order', :via => [:put]
+    match '/put_online', to: 'questions#put_online', :via => [:put]
     match '/explanation', to: "questions#explanation", :via => [:get]
-    match '/update_explanation', to: "questions#update_explanation", :via => [:patch], as: :update_explanation
+    match '/update_explanation', to: "questions#update_explanation", :via => [:patch]
     match '/manage_items', to: "questions#manage_items", :via => [:get]
     
-    # Items
     resources :items, only: [:create]
   end
   
   # Items
   resources :items, only: [:update, :destroy] do
-    match '/correct', to: "items#correct", :via => [:put], as: :correct
-    match '/uncorrect', to: "items#uncorrect", :via => [:put], as: :uncorrect
-    match '/order', to: "items#order", :via => [:put], as: :order
+    match '/correct', to: "items#correct", :via => [:put]
+    match '/uncorrect', to: "items#uncorrect", :via => [:put]
+    match '/order', to: "items#order", :via => [:put]
   end
 
   resources :solvedquestions, only: [:create, :update]
   
   # Problems
   resources :problems, only: [:update, :edit, :destroy, :show] do
-    match '/delete_prerequsite', to: 'problems#delete_prerequisite', :via => [:put], as: :delete_prerequisite
-    match '/add_prerequsite', to: 'problems#add_prerequisite', :via => [:post], as: :add_prerequisite
-    match '/order', to: 'problems#order', :via => [:put], as: :order
-    match '/put_online', to: 'problems#put_online', :via => [:put], as: :put_online
+    match '/delete_prerequisite', to: 'problems#delete_prerequisite', :via => [:put]
+    match '/add_prerequisite', to: 'problems#add_prerequisite', :via => [:post]
+    match '/order', to: 'problems#order', :via => [:put]
+    match '/put_online', to: 'problems#put_online', :via => [:put]
     match '/explanation', to: "problems#explanation", :via => [:get]
     match '/markscheme', to: "problems#markscheme", :via => [:get]
-    match '/update_explanation', to: "problems#update_explanation", :via => [:patch], as: :update_explanation
-    match '/update_markscheme', to: "problems#update_markscheme", :via => [:patch], as: :update_markscheme
-    match '/add_virtualtest', to: 'problems#add_virtualtest', :via => [:post], as: :add_virtualtest
-    match '/create_intest', to: 'submissions#create_intest', :via => [:post], as: :create_intest
+    match '/update_explanation', to: "problems#update_explanation", :via => [:patch]
+    match '/update_markscheme', to: "problems#update_markscheme", :via => [:patch]
+    match '/add_virtualtest', to: 'problems#add_virtualtest', :via => [:post]
     
-    # Submissions
-    resources :submissions, only: [:create] do
-      match '/update_intest', to: 'submissions#update_intest', :via => [:post], as: :update_intest
-      match '/update_draft', to: 'submissions#update_draft', :via => [:post], as: :update_draft
-      match '/read', to: 'submissions#read', :via => [:put], as: :read
-      match '/unread', to: 'submissions#unread', :via => [:put], as: :unread
-      match '/star', to: 'submissions#star', :via => [:put], as: :star
-      match '/unstar', to: 'submissions#unstar', :via => [:put], as: :unstar
-      match '/update_score', to: 'submissions#update_score', :via => [:put], as: :update_score
-      match '/uncorrect', to: 'submissions#uncorrect', :via => [:put], as: :uncorrect
-      
-      resources :corrections, only: [:create]
-    end
+    resources :submissions, only: [:create]
+    match '/create_intest', to: 'submissions#create_intest', :via => [:post]
   end
   
   resources :solvedproblems, only: [:index]
 
   # Submissions
-  resources :submissions, only: [:index, :destroy] do
-    match '/search_script', to: 'submissions#search_script', :via => [:post], as: :search_script
+  resources :submissions, only: [:index, :destroy] do # 'index' only via JS
+    match '/update_intest', to: 'submissions#update_intest', :via => [:post]
+    match '/update_draft', to: 'submissions#update_draft', :via => [:post]
+    match '/read', to: 'submissions#read', :via => [:put]
+    match '/unread', to: 'submissions#unread', :via => [:put]
+    match '/star', to: 'submissions#star', :via => [:put]
+    match '/unstar', to: 'submissions#unstar', :via => [:put]
+    match '/update_score', to: 'submissions#update_score', :via => [:put]
+    match '/uncorrect', to: 'submissions#uncorrect', :via => [:put]
+    match '/reserve', to: 'submissions#reserve', :via => [:get] # only via JS
+    match '/unreserve', to: 'submissions#unreserve', :via => [:get] # only via JS
+    match '/search_script', to: 'submissions#search_script', :via => [:post]
     
+    resources :corrections, only: [:create]
     resources :suspicions, only: [:create]
     resources :starproposals, only: [:create]
   end
 
-  match '/allsub', to: 'submissions#allsub', :via => [:get], as: :allsub
-  match '/allmysub', to: 'submissions#allmysub', :via => [:get], as: :allmysub
-  match '/allnewsub', to: 'submissions#allnewsub', :via => [:get], as: :allnewsub
-  match '/allmynewsub', to: 'submissions#allmynewsub', :via => [:get], as: :allmynewsub
-  match '/reserve', to: 'submissions#reserve', :via => [:get], as: :reserve
-  match '/unreserve', to: 'submissions#unreserve', :via => [:get], as: :unreserve
+  match '/allsub', to: 'submissions#allsub', :via => [:get]
+  match '/allmysub', to: 'submissions#allmysub', :via => [:get]
+  match '/allnewsub', to: 'submissions#allnewsub', :via => [:get]
+  match '/allmynewsub', to: 'submissions#allmynewsub', :via => [:get]
   
   # Suspicions
   resources :suspicions, only: [:index, :destroy, :update]
@@ -108,15 +104,15 @@ Rails.application.routes.draw do
   
   # Virtual tests
   resources :virtualtests do
-    match '/put_online', to: 'virtualtests#put_online', :via => [:put], as: :put_online
-    match '/begin_test', to: 'virtualtests#begin_test', :via => [:put], as: :begin_test
+    match '/put_online', to: 'virtualtests#put_online', :via => [:put]
+    match '/begin_test', to: 'virtualtests#begin_test', :via => [:put]
   end
   
   # Contests
   resources :contests do
-    match '/put_online', to: 'contests#put_online', :via => [:put], as: :put_online
+    match '/put_online', to: 'contests#put_online', :via => [:put]
     match '/cutoffs', to: "contests#cutoffs", :via => [:get]
-    match '/define_cutoffs', to: 'contests#define_cutoffs', :via => [:get], as: :define_cutoffs
+    match '/define_cutoffs', to: 'contests#define_cutoffs', :via => [:get]
     
     resources :contestproblems, only: [:new, :create]
   end
@@ -124,24 +120,27 @@ Rails.application.routes.draw do
   
   # Contest problems
   resources :contestproblems, only: [:show, :edit, :update, :destroy] do
-    match '/publish_results', to: 'contestproblems#publish_results', :via => [:put], as: :publish_results
-    match '/authorize_corrections', to: 'contestproblems#authorize_corrections', :via => [:put], as: :authorize_corrections
-    match '/unauthorize_corrections', to: 'contestproblems#unauthorize_corrections', :via => [:put], as: :unauthorize_corrections
+    match '/publish_results', to: 'contestproblems#publish_results', :via => [:put]
+    match '/authorize_corrections', to: 'contestproblems#authorize_corrections', :via => [:put]
+    match '/unauthorize_corrections', to: 'contestproblems#unauthorize_corrections', :via => [:put]
+    
     resources :contestsolutions, only: [:create]
   end
   
   # Contest solutions
-  resources :contestsolutions, only: [:update, :destroy]
-  match '/reserve_sol', to: 'contestsolutions#reserve_sol', :via => [:get], as: :reserve_sol
-  match '/unreserve_sol', to: 'contestsolutions#unreserve_sol', :via => [:get], as: :unreserve_sol
+  resources :contestsolutions, only: [:update, :destroy] do
+    match '/reserve', to: 'contestsolutions#reserve', :via => [:get] # only via JS
+    match '/unreserve', to: 'contestsolutions#unreserve', :via => [:get] # only via JS
+  end
   
   # Contest corrections
   resources :contestcorrections, only: [:update]
   
   # Subjects
   resources :subjects, only: [:index, :show, :new, :create, :update, :destroy] do
+    match '/migrate', to: 'subjects#migrate', :via => [:put]
+  
     resources :messages, only: [:create, :update, :destroy]
-    match '/migrate', to: 'subjects#migrate', :via => [:put], as: :migrate
   end
   
   # Categories (for subjects)
@@ -149,48 +148,51 @@ Rails.application.routes.draw do
   
   # Users
   resources :users do
-    match '/add_administrator', to: 'users#create_administrator', :via => [:put], as: :add_administrator
-    match '/switch_wepion', to: 'users#switch_wepion', :via => [:put], as: :switch_wepion
-    match '/switch_corrector', to: 'users#switch_corrector', :via => [:put], as: :switch_corrector
-    match '/destroydata', to: 'users#destroydata', :via => [:put], as: :destroydata
-    match '/take_skin', to: 'users#take_skin', :via => [:put], as: :take_skin
-    match '/leave_skin', to: 'users#leave_skin', :via => [:put], as: :leave_skin
-    match '/change_group', to: 'users#change_group', :via => [:put], as: :change_group
-    match '/recup_password', to: 'users#recup_password', :via => [:get], as: :recup_password
+    match '/set_administrator', to: 'users#set_administrator', :via => [:put]
+    match '/set_wepion', to: 'users#set_wepion', :via => [:put]
+    match '/unset_wepion', to: 'users#unset_wepion', :via => [:put]
+    match '/set_corrector', to: 'users#set_corrector', :via => [:put]
+    match '/unset_corrector', to: 'users#unset_corrector', :via => [:put]
+    match '/destroydata', to: 'users#destroydata', :via => [:put]
+    match '/take_skin', to: 'users#take_skin', :via => [:put]
+    match '/leave_skin', to: 'users#leave_skin', :via => [:put]
+    match '/change_group', to: 'users#change_group', :via => [:put]
+    match '/recup_password', to: 'users#recup_password', :via => [:get]
     match '/change_password', to: 'users#change_password', :via => [:post]
-    match '/add_followed_user', to: 'users#add_followed_user', :via => [:put], as: :add_followed_user
-    match '/remove_followed_user', to: 'users#remove_followed_user', :via => [:put], as: :remove_followed_user
-    match '/change_name', to: 'users#change_name', :via => [:put], as: :change_name
-    match '/switch_can_change_name', to: 'users#switch_can_change_name', :via => [:put], as: :switch_can_change_name
-    match '/ban_temporarily', to: 'users#ban_temporarily', :via => [:put], as: :ban_temporarily
+    match '/add_followed_user', to: 'users#add_followed_user', :via => [:put]
+    match '/remove_followed_user', to: 'users#remove_followed_user', :via => [:put]
+    match '/change_name', to: 'users#change_name', :via => [:put]
+    match '/set_can_change_name', to: 'users#set_can_change_name', :via => [:put]
+    match '/unset_can_change_name', to: 'users#unset_can_change_name', :via => [:put]
+    match '/ban_temporarily', to: 'users#ban_temporarily', :via => [:put]
+    match '/validate_name', to: 'users#validate_name', :via => [:get] # only via JS
   end
-  match '/accept_legal', to: 'users#accept_legal', :via => [:patch], as: :accept_legal
-  match '/groups', to: 'users#groups', :via => [:get], as: :groups
-  match '/correctors', to: 'users#correctors', :via => [:get], as: :correctors
-  match '/followed_users', to: 'users#followed_users', :via => [:get], as: :followed_users
-  match '/notifs', to: 'users#notifs_show', :via => [:get], as: :notifs_show
+  match '/accept_legal', to: 'users#accept_legal', :via => [:patch]
+  match '/groups', to: 'users#groups', :via => [:get]
+  match '/correctors', to: 'users#correctors', :via => [:get]
+  match '/followed_users', to: 'users#followed_users', :via => [:get]
+  match '/notifs', to: 'users#notifs', :via => [:get]
   match '/signup', to: 'users#new', :via => [:get]
   match '/activate', to: 'users#activate', :via => [:get]
   match '/forgot_password', to: 'users#forgot_password', :via => [:get]
   match '/password_forgotten', to: 'users#password_forgotten', :via => [:post]
+  match '/validate_names', to: 'users#validate_names', :via => [:get]
   
   # Email subscriptions (subjects, discussions and contests)
-  resources :followingsubjects, only: []
   match '/add_followingsubject', to: "followingsubjects#add_followingsubject", :via => [:put]
   match '/remove_followingsubject', to: "followingsubjects#remove_followingsubject", :via => [:get] # Get because it should be doable via email link
   match '/add_followingmessage', to: "users#add_followingmessage", :via => [:put]
   match '/remove_followingmessage', to: "users#remove_followingmessage", :via => [:get] # Get because it should be doable via email link
-  resources :followingcontests, only: []
   match '/add_followingcontest', to: "followingcontests#add_followingcontest", :via => [:put]
   match '/remove_followingcontest', to: "followingcontests#remove_followingcontest", :via => [:get] # Get because it should be doable via email link
   
   # Privacy policies
   resources :privacypolicies, only: [:index, :show, :new, :edit, :update, :destroy] do
-    match '/put_online', to: 'privacypolicies#put_online', :via => [:put], as: :put_online
+    match '/put_online', to: 'privacypolicies#put_online', :via => [:put]
     match '/edit_description', to: 'privacypolicies#edit_description', :via => [:get]
-    match '/update_description', to: 'privacypolicies#update_description', :via => [:patch], as: :update_description
+    match '/update_description', to: 'privacypolicies#update_description', :via => [:patch]
   end
-  match '/last_policy', to: 'privacypolicies#last_policy', :via => [:get], as: :last_policy
+  match '/last_policy', to: 'privacypolicies#last_policy', :via => [:get]
   
   # Pictures
   resources :pictures, only: [:index, :show, :new, :create, :destroy] do
@@ -202,35 +204,28 @@ Rails.application.routes.draw do
   
   # Attached files
   resources :myfiles, only: [:show, :index] do
-  	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:put], as: :fake_delete
+  	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:put]
   end
   
   # Discussions
-  resources :discussions, only: [:new, :create, :show] do
-    match '/unread', to: 'discussions#unread', :via => [:put], as: :unread
+  resources :discussions, only: [:new, :create, :show] do # 'show' via HTML or JS 
+    match '/unread', to: 'discussions#unread', :via => [:put]
+    
     resources :tchatmessages, only: [:create]
   end
-  resources :links, only: []
-  
-  # Names validation
-  match '/validate_names', to: 'users#validate_names', :via => [:get], as: :validate_names
-  match '/validate_name', to: 'users#validate_name', :via => [:get], as: :validate_name
   
   # Colors
   resources :colors, only: [:index, :create, :update, :destroy]
   
   # Faqs
   resources :faqs, only: [:index, :new, :create, :edit, :update, :destroy] do
-    match '/order', to: 'faqs#order', :via => [:put], as: :order
+    match '/order', to: 'faqs#order', :via => [:put]
   end
   
   # Sessions
   resources :sessions, only: [:new, :create, :destroy]
   match '/signin', to: 'sessions#new', :via => [:get]
   match '/signout', to: 'sessions#destroy', via: :delete
-  
-  # Global variables
-  resources :globalvariables, only: []
   
   # Static pages
   root to: 'static_pages#home'

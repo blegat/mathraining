@@ -1,12 +1,12 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :destroy, :read, :order, :put_online, :switch_submission_prerequisite]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :destroy, :read, :order, :put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
   before_action :admin_user, only: [:new, :create, :destroy, :order]
-  before_action :root_user, only: [:put_online, :switch_submission_prerequisite]
+  before_action :root_user, only: [:put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
   
   before_action :get_chapter, only: [:show, :edit, :update, :destroy]
-  before_action :get_chapter2, only: [:read, :order, :put_online, :switch_submission_prerequisite]
+  before_action :get_chapter2, only: [:read, :order, :put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
   before_action :get_section, only: [:new, :create]
   
   before_action :offline_chapter, only: [:destroy, :put_online]
@@ -117,14 +117,17 @@ class ChaptersController < ApplicationController
     redirect_to @chapter
   end
   
-  # Set or unset this chapter as a prerequisite to send submissions
-  def switch_submission_prerequisite
-    if !@chapter.submission_prerequisite
-      flash[:success] = "Ce chapitre est maintenant prérequis pour écrire une soumission."
-    else
-      flash[:success] = "Ce chapitre n'est plus prérequis pour écrire une soumission."
-    end
-    @chapter.toggle!(:submission_prerequisite)
+  # Set this chapter as a prerequisite to send submissions
+  def mark_submission_prerequisite
+    flash[:success] = "Ce chapitre est maintenant prérequis pour écrire une soumission."
+    @chapter.update_attribute(:submission_prerequisite, true)
+    redirect_to @chapter
+  end
+  
+  # Unset this chapter as a prerequisite to send submissions
+  def unmark_submission_prerequisite
+    flash[:success] = "Ce chapitre n'est plus prérequis pour écrire une soumission."
+    @chapter.update_attribute(:submission_prerequisite, false)
     redirect_to @chapter
   end
 

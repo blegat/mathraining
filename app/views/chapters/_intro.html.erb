@@ -64,7 +64,9 @@
     <% end %>
     
     <% if @section.fondation? && current_user.sk.root? %>
-      | <%= link_to "Marquer comme #{'non' if @chapter.submission_prerequisite?} prérequis aux soumissions", chapter_switch_submission_prerequisite_path(@chapter), :method => :put %>
+      |
+      <%= link_to "Marquer comme prérequis aux soumissions", chapter_mark_submission_prerequisite_path(@chapter), :method => :put unless @chapter.submission_prerequisite? %>
+      <%= link_to "Marquer comme non prérequis aux soumissions", chapter_unmark_submission_prerequisite_path(@chapter), :method => :put if @chapter.submission_prerequisite? %>
     <% end %>
     </p>
   <% end %>

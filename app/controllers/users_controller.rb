@@ -1,14 +1,14 @@
 #encoding: utf-8
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :notifs_show, :groups, :read_legal, :followed_users, :remove_followingmessage]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :create_administrator, :take_skin, :leave_skin, :switch_wepion, :switch_corrector, :change_group, :add_followed_user, :remove_followed_user, :add_followingmessage, :switch_can_change_name, :ban_temporarily]
-  before_action :admin_user, only: [:switch_wepion, :change_group]
-  before_action :root_user, only: [:take_skin, :create_administrator, :destroy, :destroydata, :switch_corrector, :validate_names, :validate_name, :change_name, :switch_can_change_name, :ban_temporarily]
+  before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed_users, :remove_followingmessage]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :add_followed_user, :remove_followed_user, :add_followingmessage, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
+  before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
+  before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :group_user, only: [:groups]
   
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
-  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :create_administrator, :switch_wepion, :switch_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :change_name, :switch_can_change_name, :ban_temporarily]
+  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
   
   before_action :correct_user, only: [:edit, :update]
   before_action :target_not_root, only: [:destroy, :destroydata]
@@ -208,50 +208,60 @@ class UsersController < ApplicationController
   end
 
   # Mark user as administrator
-  def create_administrator
-    @user.admin = true
-    @user.save
+  def set_administrator
+    @user.update_attribute(:admin, true)
     remove_skins(@user)
     flash[:success] = "Utilisateur promu au rang d'administrateur !"
     redirect_to @user
   end
 
-  # Add or remove a user from Wépion group
-  def switch_wepion
+  # Add a user to Wépion group
+  def set_wepion
     if !@user.admin?
-      if @user.wepion
-        flash[:success] = "Utilisateur retiré du groupe Wépion."
-        @user.group = ""
-        @user.save
-      else
-        flash[:success] = "Utilisateur ajouté au groupe Wépion."
-      end
-      @user.toggle!(:wepion)
-    end
-    redirect_to @user
-  end
-
-  # Add or remove a user from correctors
-  def switch_corrector
-    if !@user.admin?
-      if !@user.corrector
-        flash[:success] = "Utilisateur ajouté aux correcteurs."
-      else
-        flash[:success] = "Utilisateur retiré des correcteurs."
-      end
-      @user.toggle!(:corrector)
+      flash[:success] = "Utilisateur ajouté au groupe Wépion."
+      @user.update_attribute(:wepion, true)
     end
     redirect_to @user
   end
   
-  # Forbid or allow a user to change his name
-  def switch_can_change_name
-    if @user.can_change_name
-      flash[:success] = "Cet utilisateur ne peut maintenant plus changer son nom."
-    else
-      flash[:success] = "Cet utilisateur peut à nouveau changer son nom."
+  # Remove a user from Wépion group
+  def unset_wepion
+    if !@user.admin?
+      flash[:success] = "Utilisateur retiré du groupe Wépion."
+      @user.update(:wepion => false, :group => "")
     end
-    @user.toggle!(:can_change_name)
+    redirect_to @user
+  end
+
+  # Add a user to correctors
+  def set_corrector
+    if !@user.admin?
+      flash[:success] = "Utilisateur ajouté aux correcteurs."
+      @user.update_attribute(:corrector, true)
+    end
+    redirect_to @user
+  end
+  
+  # Remove a user from correctors
+  def unset_corrector
+    if !@user.admin?
+      flash[:success] = "Utilisateur retiré des correcteurs."
+      @user.update_attribute(:corrector, false)
+    end
+    redirect_to @user
+  end
+  
+  # Allow a user to change his name
+  def set_can_change_name
+    flash[:success] = "Cet utilisateur peut à nouveau changer son nom."
+    @user.update_attribute(:can_change_name, true)
+    redirect_to @user
+  end
+  
+  # Forbid a user to change his name
+  def unset_can_change_name
+    flash[:success] = "Cet utilisateur ne peut maintenant plus changer son nom."
+    @user.update_attribute(:can_change_name, false)
     redirect_to @user
   end
   
@@ -362,7 +372,7 @@ class UsersController < ApplicationController
   end
 
   # Show notifications of new corrections (for a student)
-  def notifs_show
+  def notifs
     @notifs = current_user.sk.notifs.order("created_at")
     render :notifs
   end
@@ -432,16 +442,13 @@ class UsersController < ApplicationController
   
   # Validate one name (through js)
   def validate_name
-    u = User.find(params[:userid].to_i)
     suggestion = params[:suggestion].to_i
-    if !u.nil?
-      u.valid_name = true
-      if suggestion == 1
-        u.first_name = u.first_name.my_titleize
-        u.last_name = u.last_name.my_titleize
-      end
-      u.save
+    @user.valid_name = true
+    if suggestion == 1
+      @user.first_name = @user.first_name.my_titleize
+      @user.last_name = @user.last_name.my_titleize
     end
+    @user.save
     
     respond_to do |format|
       format.js

@@ -3,8 +3,8 @@ function hideUser(user_id) {
   document.getElementById('user'+user_id).style.display = 'none';
 }
 function nameIsOk(user_id, suggestion) {
-  validate_name_url = "<%= validate_name_url %>";
-  $.getScript(validate_name_url + "?userid=" + user_id + "&suggestion=" + suggestion);
+  validate_name_url = "/users/" + user_id + "/validate_name?suggestion=" + suggestion
+  $.getScript(validate_name_url);
   hideUser(user_id)
   document.getElementById('num_remaining').innerHTML = (parseInt(document.getElementById('num_remaining').innerHTML) - 1).toString()
 }

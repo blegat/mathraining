@@ -62,9 +62,9 @@
 <% if current_user.sk.root? %>
   <center>
     <% if @submission.star %>
-      <%= button_to 'Ne plus étoiler cette solution', problem_submission_unstar_path(@problem, @submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %>
+      <%= button_to 'Ne plus étoiler cette solution', submission_unstar_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %>
     <% else %>
-      <%= button_to 'Étoiler cette solution', problem_submission_star_path(@problem, @submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %>
+      <%= button_to 'Étoiler cette solution', submission_star_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %>
     <% end %>
   </center>
 <% end %>

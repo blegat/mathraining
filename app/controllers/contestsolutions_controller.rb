@@ -1,17 +1,18 @@
 #encoding: utf-8
 class ContestsolutionsController < ApplicationController
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :reserve_sol, :unreserve_sol]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :reserve, :unreserve]
   
   before_action :check_contests, only: [:create, :update, :destroy] # Defined in application_controller.rb
   
-  before_action :get_contestsolution, only: [:update, :destroy, :reserve_sol, :unreserve_sol]
+  before_action :get_contestsolution, only: [:update, :destroy]
+  before_action :get_contestsolution2, only: [:reserve, :unreserve]
   before_action :get_contestproblem, only: [:create]
   
   before_action :can_send_solution, only: [:create, :update]
   before_action :user_that_can_write_submission, only: [:create]
   before_action :can_delete_solution, only: [:destroy]
-  before_action :organizer_of_contest, only: [:reserve_sol, :unreserve_sol]
-  before_action :can_reserve, only: [:reserve_sol, :unreserve_sol]
+  before_action :organizer_of_contest, only: [:reserve, :unreserve]
+  before_action :can_reserve, only: [:reserve, :unreserve]
 
   # Create a solution (send the form)
   def create
@@ -78,7 +79,7 @@ class ContestsolutionsController < ApplicationController
   end
   
   # Reserve a solution
-  def reserve_sol
+  def reserve
     if @contestsolution.reservation > 0 and @contestsolution.reservation != current_user.sk.id
       @correct_name = User.find(@contestsolution.reservation).name
       @ok = 0
@@ -90,7 +91,7 @@ class ContestsolutionsController < ApplicationController
   end
 
   # Un-reserve a solution
-  def unreserve_sol
+  def unreserve
     @contestsolution.reservation = 0
     @contestsolution.save
   end
@@ -102,6 +103,14 @@ class ContestsolutionsController < ApplicationController
   # Get the solution
   def get_contestsolution
     @contestsolution = Contestsolution.find_by_id(params[:id])
+    return if check_nil_object(@contestsolution)
+    @contestproblem = @contestsolution.contestproblem
+    @contest = @contestproblem.contest
+  end
+  
+  # Get the solution (v2)
+  def get_contestsolution2
+    @contestsolution = Contestsolution.find_by_id(params[:contestsolution_id])
     return if check_nil_object(@contestsolution)
     @contestproblem = @contestsolution.contestproblem
     @contest = @contestproblem.contest

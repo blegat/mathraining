@@ -195,6 +195,10 @@ class SubmissionsController < ApplicationController
       Following.delete(f.id)
       @what = 1
     end
+    
+    respond_to do |format|
+      format.js
+    end
   end
 
   # Delete a submission
