@@ -16,7 +16,7 @@
 <% items = @question.items.order(:position).to_a %>
 <% nb_item = items.size %>
 <% items.each do |f| %>
-  <%= form_for(f, url: question_update_item_path(@question, f)) do |g| %>
+  <%= form_for(f) do |g| %>
     <tr>
       <td style="width:15px;">
         -
@@ -38,22 +38,22 @@
       </td>
       <td class="p-2">
         <%= "Déplacer vers le : " if nb_item > 1 %>
-        <%= link_to "haut", question_order_item_path(@question, f, :new_position => items[i-1].position), :method => :put, :id => ("update_item_up_" + f.id.to_s) if i > 0 %>
+        <%= link_to "haut", item_order_path(f, :new_position => items[i-1].position), :method => :put, :id => ("update_item_up_" + f.id.to_s) if i > 0 %>
         <%= "-" if i > 0 && i < nb_item-1 %>
-        <%= link_to "bas", question_order_item_path(@question, f, :new_position => items[i+1].position), :method => :put, :id => ("update_item_down_" + f.id.to_s) if i < nb_item-1 %>
+        <%= link_to "bas", item_order_path(f, :new_position => items[i+1].position), :method => :put, :id => ("update_item_down_" + f.id.to_s) if i < nb_item-1 %>
       </td>
       <% unless @question.online %>
         <td class="p-2">
           <% if f.ok %>
             <% if @question.many_answers %>
-              <%= link_to "Rendre ce choix erroné", question_switch_item_path(@question, f), :method => :put, :id => ("update_item_incorrect_" + f.id.to_s) %>
+              <%= link_to "Rendre ce choix erroné", item_uncorrect_path(f), :method => :put, :id => ("update_item_incorrect_" + f.id.to_s) %>
             <% end %>
           <% else %>
-            <%= link_to "Rendre ce choix correct", question_switch_item_path(@question, f), :method => :put, :id => ("update_item_correct_" + f.id.to_s) %>
+            <%= link_to "Rendre ce choix correct", item_correct_path(f), :method => :put, :id => ("update_item_correct_" + f.id.to_s) %>
           <% end %>
         </td>
         <td class="p-2">
-          <%= link_to "Supprimer ce choix", question_remove_item_path(@question, f), :method => :put, :id => ("update_item_delete_" + f.id.to_s) %>
+          <%= link_to "Supprimer ce choix", f, :method => :delete, :id => ("update_item_delete_" + f.id.to_s) %>
         </td>
       <% end %>
     </tr>
@@ -65,7 +65,7 @@
 <% unless @question.online %>
 
   <tr>
-  <%= form_for(:item, url: question_add_item_path(@question)) do |f| %>
+  <%= form_for(:item, url: question_items_path(@question)) do |f| %>
     <td>
     </td>
     <td class="p-1">

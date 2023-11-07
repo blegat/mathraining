@@ -1,15 +1,14 @@
 #encoding: utf-8
 class QuestionsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :explanation]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_item, :add_item, :switch_item, :update_item, :order, :put_online, :update_explanation, :order_item]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation]
   
   before_action :get_question, only: [:edit, :update, :destroy]
-  before_action :get_question2, only: [:manage_items, :remove_item, :add_item, :switch_item, :order_item, :update_item, :order, :put_online, :explanation, :update_explanation]
+  before_action :get_question2, only: [:manage_items, :order, :put_online, :explanation, :update_explanation]
   before_action :get_chapter, only: [:new, :create]
-  before_action :get_item, only: [:remove_item, :switch_item, :order_item, :update_item]
   
   before_action :user_that_can_update_chapter
-  before_action :offline_question, only: [:add_item, :remove_item, :destroy]
+  before_action :offline_question, only: [:destroy]
 
   # Create a question (show the form)
   def new
@@ -126,93 +125,6 @@ class QuestionsController < ApplicationController
   def manage_items
   end
 
-  # Delete an item of a qcm
-  def remove_item
-    if !@question.many_answers && @item.ok && @question.items.count > 1
-      # No more good answer
-      # We put one in random to true
-      @item.destroy
-      @item2 = @question.items.last
-      @item2.ok = true
-      @item2.save
-      flash[:info] = "Vous avez supprimé une réponse correcte : une autre a été mise correcte à la place par défaut."
-    else
-      @item.destroy
-    end
-    redirect_to question_manage_items_path(params[:question_id])
-  end
-
-  # Add an item to a qcm
-  def add_item
-    @item = Item.new(:question_id => params[:question_id],
-                     :ok          => params[:item][:ok],
-                     :ans         => params[:item][:ans])
-    last_pos = 0
-    last_item = @question.items.order(:position).last
-    if !last_item.nil?
-      last_pos = last_item.position
-    end
-    @item.position = last_pos+1
-    if !@question.many_answers && @item.ok && @question.items.count > 0
-      flash[:info] = "La réponse correcte a maintenant changé (une seule réponse est possible pour cet exercice)."
-      # Two good answer
-      # We put the other one to false
-      @question.items.each do |f|
-        if f.ok
-          f.ok = false
-          f.save
-        end
-      end
-    end
-    if !@question.many_answers && !@item.ok && @question.items.count == 0
-      flash[:info] = "Cette réponse est mise correcte par défaut. Celle-ci redeviendra erronée lorsque vous rajouterez la réponse correcte."
-      @item.ok = true
-    end
-    unless @item.save
-      flash.clear # Remove other flash info
-      flash[:danger] = error_list_for(@item)
-    end
-    redirect_to question_manage_items_path(@question)
-  end
-
-  # Toggle the truth of an item
-  def switch_item
-    if !@question.many_answers
-      @question.items.each do |f|
-        if f.ok
-          f.ok = false
-          f.save
-        end
-      end
-      @item.ok = true
-    else
-      @item.ok = !@item.ok
-    end
-    @item.save
-    redirect_to question_manage_items_path(@question)
-  end
-  
-  # Move an item to a new position
-  def order_item
-    item2 = @question.items.where("position = ?", params[:new_position]).first
-    if !item2.nil? and item2 != @item
-      res = swap_position(@item, item2)
-      flash[:success] = "Choix déplacé#{res}." 
-    end
-    redirect_to question_manage_items_path(@question)
-  end
-
-  # Update an item
-  def update_item
-    @item.ans = params[:item][:ans]
-    if @item.save
-      flash[:success] = "Réponse modifiée."
-    else
-      flash[:danger] = error_list_for(@item)
-    end
-    redirect_to question_manage_items_path(@question)
-  end
-
   # Move a question to a new position
   def order
     question2 = @chapter.questions.where("position = ?", params[:new_position]).first
@@ -272,40 +184,11 @@ class QuestionsController < ApplicationController
     return if check_nil_object(@chapter)
   end
   
-  # Get the item
-  def get_item
-    @item = Item.find_by_id(params[:id])
-    return if check_nil_object(@item)
-  end
-  
   ########## CHECK METHODS ##########
 
   # Check that the question is offline
   def offline_question
     return if check_online_object(@question)
-  end
-  
-  ########## HELPER METHODS ##########
-  
-  # Helper method to move one item up or down
-  def order_op2(haut, item)
-    if haut
-      sign = '<'
-      name = 'haut'
-    else
-      sign = '>'
-      name = 'bas'
-    end
-    if item.question.items.exists?(["position #{sign} ?", item.position])
-      if haut
-        item2 = item.question.items.where("position #{sign} ?", item.position).order('position').last
-      else
-        item2 = item.question.items.where("position #{sign} ?", item.position).order('position').first
-      end
-      swap_position(item, item2)
-      flash[:success] = "Choix déplacé vers le #{name}."
-    end
-    redirect_to question_manage_items_path(params[:question_id])
   end
   
 end

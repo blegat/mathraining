@@ -41,11 +41,16 @@ Rails.application.routes.draw do
     match '/explanation', to: "questions#explanation", :via => [:get]
     match '/update_explanation', to: "questions#update_explanation", :via => [:patch], as: :update_explanation
     match '/manage_items', to: "questions#manage_items", :via => [:get]
-    match '/add_item', to: "questions#add_item", :via => [:post]
-    match '/update_item/:id', to: "questions#update_item", :via => [:patch], as: :update_item
-    match '/remove_item/:id', to: "questions#remove_item", :via => [:put], as: :remove_item
-    match '/switch_item/:id', to: "questions#switch_item", :via => [:put], as: :switch_item
-    match '/order_item/:id', to: "questions#order_item", :via => [:put], as: :order_item
+    
+    # Items
+    resources :items, only: [:create]
+  end
+  
+  # Items
+  resources :items, only: [:update, :destroy] do
+    match '/correct', to: "items#correct", :via => [:put], as: :correct
+    match '/uncorrect', to: "items#uncorrect", :via => [:put], as: :uncorrect
+    match '/order', to: "items#order", :via => [:put], as: :order
   end
 
   resources :solvedquestions, only: [:create, :update]
