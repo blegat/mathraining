@@ -26,30 +26,15 @@
 </p>
   
 <!-- Déplacer -->
-<% if number2 > 1 %>
-  <% up = true %>
-<% else %>
-  <% up = false %>
-<% end %>
+<% question_before = @chapter.questions.where("position < ?", question.position).order("position").last %>
+<% question_after = @chapter.questions.where("position > ?", question.position).order("position").first %>
 
-<% if number2 < number_tot %>
-  <% down = true %>
-<% else %>
-  <% down = false %>
-<% end %>
-
-<% if (up || down) %>
+<% if (!question_before.nil? || !question_after.nil?) %>
 <p class="text-center">
   Déplacer cet exercice vers le
-  <% if up %>
-    <%= link_to "haut", question_order_minus_path(question), :method => :put %>
-  <% end %>
-  <% if up && down %>
-    |
-  <% end %>
-  <% if down %>
-    <%= link_to "bas", question_order_plus_path(question), :method => :put %>
-  <% end %>
+  <%= link_to "haut", question_order_path(question, :new_position => question_before.position), :method => :put if !question_before.nil? %>
+  <%= '-' if !question_before.nil? && !question_after.nil? %>
+  <%= link_to "bas", question_order_path(question, :new_position => question_after.position), :method => :put if !question_after.nil? %>
 </p>
 <% end %>
 

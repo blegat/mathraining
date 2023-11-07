@@ -1,12 +1,12 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :destroy, :read, :order_minus, :order_plus, :put_online, :switch_submission_prerequisite]
-  before_action :admin_user, only: [:new, :create, :destroy, :order_minus, :order_plus]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :destroy, :read, :order, :put_online, :switch_submission_prerequisite]
+  before_action :admin_user, only: [:new, :create, :destroy, :order]
   before_action :root_user, only: [:put_online, :switch_submission_prerequisite]
   
   before_action :get_chapter, only: [:show, :edit, :update, :destroy]
-  before_action :get_chapter2, only: [:read, :order_minus, :order_plus, :put_online, :switch_submission_prerequisite]
+  before_action :get_chapter2, only: [:read, :order, :put_online, :switch_submission_prerequisite]
   before_action :get_section, only: [:new, :create]
   
   before_action :offline_chapter, only: [:destroy, :put_online]
@@ -107,22 +107,12 @@ class ChaptersController < ApplicationController
     redirect_to @chapter
   end
   
-  # Move the chapter up (in his level)
-  def order_minus
-    chapter2 = @section.chapters.where("level = ? AND position < ?", @chapter.level, @chapter.position).order('position').last
-    unless chapter2.nil?
-      swap_position(@chapter, chapter2)
-      flash[:success] = "Chapitre déplacé vers le haut."
-    end
-    redirect_to @chapter
-  end
-
-  # Move the chapter down (in his level)
-  def order_plus
-    chapter2 = @section.chapters.where("level = ? AND position > ?", @chapter.level, @chapter.position).order('position').first
-    unless chapter2.nil?
-      swap_position(@chapter, chapter2)
-      flash[:success] = "Chapitre déplacé vers le bas."
+  # Move the chapter to another position
+  def order
+    chapter2 = @section.chapters.where("level = ? AND position = ?", @chapter.level, params[:new_position]).first
+    if !chapter2.nil? and chapter2 != @chapter
+      res = swap_position(@chapter, chapter2)
+      flash[:success] = "Chapitre déplacé#{res}." 
     end
     redirect_to @chapter
   end

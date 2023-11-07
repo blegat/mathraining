@@ -13,8 +13,9 @@
 <table cellpadding="5">
 <tr><th></th><th></th><th class="p-1 text-center">Rép ?</th><th></th><th></th><th></th><th></th></tr>
 <% i = 0 %>
-<% nb_item = @question.items.count %>
-<% @question.items.order(:position).each do |f| %>
+<% items = @question.items.order(:position).to_a %>
+<% nb_item = items.size %>
+<% items.each do |f| %>
   <%= form_for(f, url: question_update_item_path(@question, f)) do |g| %>
     <tr>
       <td style="width:15px;">
@@ -37,9 +38,9 @@
       </td>
       <td class="p-2">
         <%= "Déplacer vers le : " if nb_item > 1 %>
-        <%= link_to "haut", question_up_item_path(@question, f), :method => :put, :id => ("update_item_up_" + f.id.to_s) if i > 0 %>
-        <%= " - " if i > 0 && i < nb_item-1 %>
-        <%= link_to "bas", question_down_item_path(@question, f), :method => :put, :id => ("update_item_down_" + f.id.to_s) if i < nb_item-1 %>
+        <%= link_to "haut", question_order_item_path(@question, f, :new_position => items[i-1].position), :method => :put, :id => ("update_item_up_" + f.id.to_s) if i > 0 %>
+        <%= "-" if i > 0 && i < nb_item-1 %>
+        <%= link_to "bas", question_order_item_path(@question, f, :new_position => items[i+1].position), :method => :put, :id => ("update_item_down_" + f.id.to_s) if i < nb_item-1 %>
       </td>
       <% unless @question.online %>
         <td class="p-2">

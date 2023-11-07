@@ -202,13 +202,19 @@ class ApplicationController < ActionController::Base
   
   # Swap the positions of two objects
   def swap_position(a, b)
-    unless a.nil? || b.nil?
+    if !a.nil? && !b.nil? && a != b
       x = a.position
       a.position = b.position
       b.position = x
       a.save
       b.save
+      if a.position < b.position
+        return " vers le haut"
+      else
+        return " vers le bas"
+      end
     end
+    return ""
   end
 
   # Method called from several locations to create files from a form

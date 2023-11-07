@@ -1,15 +1,15 @@
 #encoding: utf-8
 class FaqsController < ApplicationController
   before_action :signed_in_user, only: [:edit, :new]
-  before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order_minus, :order_plus]
-  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus]
+  before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order]
+  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order]
   
   before_action :get_faq, only: [:edit, :update, :destroy]
-  before_action :get_faq2, only: [:order_minus, :order_plus]
+  before_action :get_faq2, only: [:order]
   
   # Show all frequently asked questions
   def index
-    @faqs = Faq.order(:position)
+    @faqs = Faq.order(:position).to_a
   end
 
   # Create a frequently asked question (show the form)
@@ -53,20 +53,14 @@ class FaqsController < ApplicationController
     flash[:success] = "Question supprimée."
     redirect_to faqs_path
   end
-  
-  # Move the question up
-  def order_minus
-    faq2 = Faq.where("position < ?", @faq.position).order('position').last
-    swap_position(@faq, faq2)
-    flash[:success] = "Question déplacée vers le haut."
-    redirect_to faqs_path
-  end
 
-  # Move the question down
-  def order_plus
-    faq2 = Faq.where("position > ?", @faq.position).order('position').first
-    swap_position(@faq, faq2)
-    flash[:success] = "Question déplacée vers le bas."
+  # Move the question to another position
+  def order
+    faq2 = Faq.where("position = ?", params[:new_position]).first
+    if !faq2.nil? && faq2 != @faq
+      res = swap_position(@faq, faq2)
+      flash[:success] = "Question déplacée#{res}."
+    end
     redirect_to faqs_path
   end
   

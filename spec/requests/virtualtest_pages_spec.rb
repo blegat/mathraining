@@ -318,12 +318,10 @@ describe "Virtualtest pages" do
       specify do
         expect(page).to have_button("Mettre en ligne")
         expect(page).to have_link("Supprimer ce test")
-        expect(page).to have_link("bas", href: problem_order_plus_path(problem))
-        expect(page).to have_no_link("haut", href: problem_order_minus_path(problem))
-        expect(page).to have_no_link("bas", href: problem_order_plus_path(problem_with_prerequisite))
-        expect(page).to have_link("haut", href: problem_order_minus_path(problem_with_prerequisite))
-        expect { click_link("bas", href: problem_order_plus_path(problem)) and problem.reload and problem_with_prerequisite.reload }.to change{problem.position}.from(1).to(2) .and change{problem_with_prerequisite.position}.from(2).to(1)
-        expect { click_link("haut", href: problem_order_minus_path(problem)) and problem.reload and problem_with_prerequisite.reload }.to change{problem.position}.from(2).to(1) .and change{problem_with_prerequisite.position}.from(1).to(2)
+        expect(page).to have_link("bas", href: problem_order_path(problem, :new_position => 2))
+        expect(page).to have_link("haut", href: problem_order_path(problem_with_prerequisite, :new_position => 1))
+        expect { click_link("bas", href: problem_order_path(problem, :new_position => 2)) and problem.reload and problem_with_prerequisite.reload }.to change{problem.position}.from(1).to(2) .and change{problem_with_prerequisite.position}.from(2).to(1)
+        expect { click_link("haut", href: problem_order_path(problem, :new_position => 1)) and problem.reload and problem_with_prerequisite.reload }.to change{problem.position}.from(2).to(1) .and change{problem_with_prerequisite.position}.from(1).to(2)
         expect { click_link "Supprimer ce test" }.to change(Virtualtest, :count).by(-1)
       end
       

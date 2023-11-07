@@ -11,9 +11,7 @@ Rails.application.routes.draw do
   resources :chapters, only: [:show, :update, :edit, :destroy] do
     match '/put_online', to: 'chapters#put_online', :via => [:put]
     match '/switch_submission_prerequisite', to: 'chapters#switch_submission_prerequisite', :via => [:put]
-    match '/order_plus', to: 'chapters#order_plus', :via => [:put], as: :order_plus
-    match '/order_minus', to: 'chapters#order_minus', :via => [:put], as: :order_minus
-
+    match '/order', to: 'chapters#order', :via => [:put], as: :order
     match '/read', to: 'chapters#read', :via => [:put]
 
     resources :theories, only: [:new, :create]
@@ -30,8 +28,7 @@ Rails.application.routes.draw do
 
   # Theories
   resources :theories, only: [:update, :edit, :destroy] do
-    match '/order_plus', to: 'theories#order_plus', :via => [:put], as: :order_plus
-    match '/order_minus', to: 'theories#order_minus', :via => [:put], as: :order_minus
+    match '/order', to: 'theories#order', :via => [:put], as: :order
     match '/put_online', to: 'theories#put_online', :via => [:put], as: :put_online
     match '/read', to: 'theories#read', :via => [:put], as: :read
     match '/unread', to: 'theories#unread', :via => [:put], as: :unread
@@ -39,8 +36,7 @@ Rails.application.routes.draw do
 
   # Questions
   resources :questions, only: [:update, :edit, :destroy] do
-    match '/order_plus', to: 'questions#order_plus', :via => [:put], as: :order_plus
-    match '/order_minus', to: 'questions#order_minus', :via => [:put], as: :order_minus
+    match '/order', to: 'questions#order', :via => [:put], as: :order
     match '/put_online', to: 'questions#put_online', :via => [:put], as: :put_online
     match '/explanation', to: "questions#explanation", :via => [:get]
     match '/update_explanation', to: "questions#update_explanation", :via => [:patch], as: :update_explanation
@@ -49,8 +45,7 @@ Rails.application.routes.draw do
     match '/update_item/:id', to: "questions#update_item", :via => [:patch], as: :update_item
     match '/remove_item/:id', to: "questions#remove_item", :via => [:put], as: :remove_item
     match '/switch_item/:id', to: "questions#switch_item", :via => [:put], as: :switch_item
-    match '/up_item/:id', to: "questions#up_item", :via => [:put], as: :up_item
-    match '/down_item/:id', to: "questions#down_item", :via => [:put], as: :down_item
+    match '/order_item/:id', to: "questions#order_item", :via => [:put], as: :order_item
   end
 
   resources :solvedquestions, only: [:create, :update]
@@ -59,8 +54,7 @@ Rails.application.routes.draw do
   resources :problems, only: [:update, :edit, :destroy, :show] do
     match '/delete_prerequsite', to: 'problems#delete_prerequisite', :via => [:put], as: :delete_prerequisite
     match '/add_prerequsite', to: 'problems#add_prerequisite', :via => [:post], as: :add_prerequisite
-    match '/order_plus', to: 'problems#order_plus', :via => [:put], as: :order_plus
-    match '/order_minus', to: 'problems#order_minus', :via => [:put], as: :order_minus
+    match '/order', to: 'problems#order', :via => [:put], as: :order
     match '/put_online', to: 'problems#put_online', :via => [:put], as: :put_online
     match '/explanation', to: "problems#explanation", :via => [:get]
     match '/markscheme', to: "problems#markscheme", :via => [:get]
@@ -222,8 +216,7 @@ Rails.application.routes.draw do
   
   # Faqs
   resources :faqs, only: [:index, :new, :create, :edit, :update, :destroy] do
-    match '/order_plus', to: 'faqs#order_plus', :via => [:put], as: :order_plus
-    match '/order_minus', to: 'faqs#order_minus', :via => [:put], as: :order_minus
+    match '/order', to: 'faqs#order', :via => [:put], as: :order
   end
   
   # Sessions

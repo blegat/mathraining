@@ -18,7 +18,6 @@
   <!-- MENU -->
   <div class="g-col-12 g-col-md-3 g-col-xl-2 noprint list-group">
     <% number = 0 %>
-    <% number2 = 0 %>
     <% i = 1 %>
     <h5>Général</h5>
     <%= link_to "Résumé", chapter_path(@chapter), :class => "list-group-item list-group-item-action #{ 'active' if type == 0}" %>
@@ -44,7 +43,6 @@
         
         <% actif = "" %>
         <% if type == 1 && f.id == id %>
-          <% number = i %>
           <% actif = "active" %>
         <% end %>
         
@@ -88,7 +86,6 @@
           <% if f.id == id && type == 5 %>
             <% actif = "active" %>
             <% number = j %>
-            <% number2 = i %>
           <% end %>
             
           <% kind = "" %>
@@ -159,14 +156,14 @@
 
     <% if type == 1 && @chapter.theories.exists?(id) %>
       <% theory = Theory.find(id) %>
-      <%= render 'theories/show', theory: theory, number: number, id: id %>
+      <%= render 'theories/show', theory: theory, id: id %>
     <% end %>
 
     <!-- QUESTIONS -->
 
     <% if type == 5 && @chapter.questions.exists?(id) && exovisibles %>
       <% question = Question.find(id) %>
-      <%= render 'questions/show', question: question, number: number, number2: number2, number_tot: @chapter.questions.count, id: id %>
+      <%= render 'questions/show', question: question, number: number, id: id %>
     <% end %>
 
   </div>

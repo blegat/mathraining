@@ -59,10 +59,8 @@ describe "Faq pages" do
       let!(:faq2) { FactoryGirl.create(:faq, question: "Ma question", answer: "Ma réponse", position: 2) }
       before { visit faqs_path }
       specify do
-        expect(page).to have_no_link("haut", href: faq_order_minus_path(faq))
-        expect(page).to have_link("bas", href: faq_order_plus_path(faq))
-        expect(page).to have_link("haut", href: faq_order_minus_path(faq2))
-        expect(page).to have_no_link("bas", href: faq_order_plus_path(faq2))
+        expect(page).to have_link("bas", href: faq_order_path(faq, :new_position => 2))
+        expect(page).to have_link("haut", href: faq_order_path(faq2, :new_position => 1))
       end
       
       describe "and move first question down" do

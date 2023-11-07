@@ -26,7 +26,8 @@
     <% pre = Array.new %>
     <% niveaumoyen = 0.0 %>
 
-    <% t.problems.each do |p| %>
+    <% problems = t.problems.order(:position).to_a %>
+    <% problems.each do |p| %>
       <% nb_prob += 1 %>
       <% niveaumoyen += p.level %>
       <% p.chapters.each do |c| %>
@@ -98,8 +99,7 @@
         <% moy = 0 %>
         <% arr = Array.new %>
         <% h = 0 %>
-        <% t.problems.order(:position).each do |p| %>
-          <% h = h+1 %>
+        <% problems.each do |p| %>
           <% nb_u_real = nb_u %>
           <% sc = 0 %>
           <% p.submissions.where(intest: true).each do |s| %>
@@ -113,6 +113,7 @@
           <% arr[h] = -1 if nb_u_real <= 0 %>
           <% moy = moy + arr[h] if arr[h] >= 0 %>
           <% moy = -1000 if arr[h] < 0 %>
+          <% h = h+1 %>
         <% end %>
         
         <div class="g-col-12 g-col-md-12 module right-info pb-2">
@@ -129,9 +130,8 @@
         <!-- Si admin ou étudiant ayant commencé : on affiche les problèmes -->
         <% if current_user.sk.admin || status != "not_started" %>
           <% h = 0 %>
-          <% t.problems.order(:position).each do |p| %>
+          <% problems.each do |p| %>
             <% can_online = false if !p.online? %>
-            <% h = h+1 %>
             
             <% sc_show = "" %>
             <% sub_id = -1 %>
@@ -154,19 +154,19 @@
             <div class="g-col-12 g-col-md-18 g-col-lg-19 module left-part">
               <center><h5>
               <% if !current_user.sk.admin && status == "in_progress" %>
-                <%= link_to "Problème #{h}", virtualtest_path(t, :p => p.id) %>
+                <%= link_to "Problème #{h+1}", virtualtest_path(t, :p => p.id) %>
               <% elsif sub_id < 0 %>
-                <%= link_to "Problème #{h}", problem_path(p) %>
+                <%= link_to "Problème #{h+1}", problem_path(p) %>
               <% else %>
-                <%= link_to "Problème #{h}", problem_path(p, :sub => sub_id) %>
+                <%= link_to "Problème #{h+1}", problem_path(p, :sub => sub_id) %>
               <% end %>
               </h5></center>
               <!-- Déplacer -->
               <% if current_user.sk.admin? && !t.online? && nb_prob > 1 %>
                 <p class="text-center">Déplacer ce problème vers le
-                <%= link_to "haut", problem_order_minus_path(p), :method => :put if h > 1 %>
-                <%= "|" if h > 1 && h < nb_prob %>
-                <%= link_to "bas", problem_order_plus_path(p), :method => :put if h < nb_prob %>
+                <%= link_to "haut", problem_order_path(p, :new_position => problems[h-1].position), :method => :put if h > 0 %>
+                <%= "-" if h > 0 && h < nb_prob-1 %>
+                <%= link_to "bas", problem_order_path(p, :new_position => problems[h+1].position), :method => :put if h < nb_prob-1 %>
                 </p>
               <% end %>
               <%= raw(htmlise(p.statement)) %>
@@ -184,6 +184,8 @@
               <% end %>
                / 7
             </div>
+            
+            <% h = h+1 %>
           <% end %>
         <% end %>
         

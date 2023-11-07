@@ -49,22 +49,14 @@
     <p class="text-center">
     <%= link_to "Modifier ce chapitre", edit_chapter_path(@chapter) %>
     
-    <% total = @section.chapters.where(:level => @chapter.level).count %>
-    <% total_before = @section.chapters.where("level = ? AND position < ?", @chapter.level, @chapter.position).count %>
-    <% bas = false %>
-    <% haut = false %>
-    <% if total_before >= 1 %>
-      <% haut = true %>
-    <% end %>
-    <% if total_before < total - 1 %>
-      <% bas = true %>
-    <% end %>
+    <% chapter_before = @section.chapters.where("level = ? AND position < ?", @chapter.level, @chapter.position).order("position").last %>
+    <% chapter_after = @section.chapters.where("level = ? AND position > ?", @chapter.level, @chapter.position).order("position").first %>
     
-    <% if haut || bas %>
+    <% if !chapter_before.nil? || !chapter_after.nil? %>
       | Déplacer vers le
-      <%= link_to "haut", chapter_order_minus_path(@chapter), :method => :put if haut %>
-      <%= '-' if haut && bas %>
-      <%= link_to "bas", chapter_order_plus_path(@chapter), :method => :put if bas %>
+      <%= link_to "haut", chapter_order_path(@chapter, :new_position => chapter_before.position), :method => :put if !chapter_before.nil? %>
+      <%= '-' if !chapter_before.nil? && !chapter_after.nil? %>
+      <%= link_to "bas", chapter_order_path(@chapter, :new_position => chapter_after.position), :method => :put if !chapter_after.nil? %>
     <% end %>
     
     <% if !@chapter.online && current_user.sk.admin? %>

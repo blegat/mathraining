@@ -1,12 +1,12 @@
 #encoding: utf-8
 class QuestionsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :explanation]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_item, :add_item, :switch_item, :update_item, :order_minus, :order_plus, :put_online, :update_explanation, :up_item, :down_item]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :remove_item, :add_item, :switch_item, :update_item, :order, :put_online, :update_explanation, :order_item]
   
   before_action :get_question, only: [:edit, :update, :destroy]
-  before_action :get_question2, only: [:manage_items, :remove_item, :add_item, :switch_item, :up_item, :down_item, :update_item, :order_minus, :order_plus, :put_online, :explanation, :update_explanation]
+  before_action :get_question2, only: [:manage_items, :remove_item, :add_item, :switch_item, :order_item, :update_item, :order, :put_online, :explanation, :update_explanation]
   before_action :get_chapter, only: [:new, :create]
-  before_action :get_item, only: [:remove_item, :switch_item, :up_item, :down_item, :update_item]
+  before_action :get_item, only: [:remove_item, :switch_item, :order_item, :update_item]
   
   before_action :user_that_can_update_chapter
   before_action :offline_question, only: [:add_item, :remove_item, :destroy]
@@ -192,14 +192,14 @@ class QuestionsController < ApplicationController
     redirect_to question_manage_items_path(@question)
   end
   
-  # Move an item up
-  def up_item 
-    order_op2(true, @item)
-  end
-  
-  # Move an item down
-  def down_item
-    order_op2(false, @item)
+  # Move an item to a new position
+  def order_item
+    item2 = @question.items.where("position = ?", params[:new_position]).first
+    if !item2.nil? and item2 != @item
+      res = swap_position(@item, item2)
+      flash[:success] = "Choix déplacé#{res}." 
+    end
+    redirect_to question_manage_items_path(@question)
   end
 
   # Update an item
@@ -213,14 +213,14 @@ class QuestionsController < ApplicationController
     redirect_to question_manage_items_path(@question)
   end
 
-  # Move a question up
-  def order_minus
-    order_op(true, @question)
-  end
-
-  # Move a question down
-  def order_plus
-    order_op(false, @question)
+  # Move a question to a new position
+  def order
+    question2 = @chapter.questions.where("position = ?", params[:new_position]).first
+    if !question2.nil? and question2 != @question
+      res = swap_position(@question, question2)
+      flash[:success] = "Exercice déplacé#{res}." 
+    end
+    redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
   end
 
   # Put a question online
@@ -286,27 +286,6 @@ class QuestionsController < ApplicationController
   end
   
   ########## HELPER METHODS ##########
-  
-  # Helper method to move one question up or down
-  def order_op(haut, question)
-    if haut
-      sign = '<'
-      name = 'haut'
-    else
-      sign = '>'
-      name = 'bas'
-    end
-    if question.chapter.questions.exists?(["position #{sign} ?", question.position])
-      if haut
-        question2 = question.chapter.questions.where("position #{sign} ?", question.position).order('position').last
-      else
-        question2 = question.chapter.questions.where("position #{sign} ?", question.position).order('position').first
-      end
-      swap_position(question, question2)
-      flash[:success] = "Exercice déplacé vers le #{name}."
-    end
-    redirect_to chapter_path(question.chapter, :type => 5, :which => question.id)
-  end
   
   # Helper method to move one item up or down
   def order_op2(haut, item)

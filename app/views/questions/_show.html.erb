@@ -17,7 +17,7 @@
   <%= render 'questions/answer', question: question %>
   
   <!-- Pour les admins (dont l'explication) -->
-  <%= render 'questions/admin', question: question, number2: number2, number_tot: number_tot %>
+  <%= render 'questions/admin', question: question %>
 
 <!-- Si étudiant inscrit -->
 <% elsif @signed_in %>

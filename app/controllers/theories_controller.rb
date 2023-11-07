@@ -1,14 +1,14 @@
 #encoding: utf-8
 class TheoriesController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order_minus, :order_plus, :put_online, :read, :unread]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :read, :unread]
   before_action :admin_user, only: [:put_online]
   
   before_action :get_theory, only: [:edit, :update, :destroy]
-  before_action :get_theory2, only: [:order_minus, :order_plus, :read, :unread, :put_online]
+  before_action :get_theory2, only: [:order, :read, :unread, :put_online]
   before_action :get_chapter, only: [:new, :create]
   
-  before_action :user_that_can_update_chapter, only: [:new, :edit, :create, :update, :destroy, :order_minus, :order_plus]
+  before_action :user_that_can_update_chapter, only: [:new, :edit, :create, :update, :destroy, :order]
 
   # Create a theory (show the form)
   def new
@@ -61,20 +61,14 @@ class TheoriesController < ApplicationController
     @theory.save
     redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
-
-  # Move a theory up
-  def order_minus
-    @theory2 = @chapter.theories.where("position < ?", @theory.position).order('position').last
-    swap_position(@theory, @theory2)
-    flash[:success] = "Point théorique déplacé vers le haut."
-    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
-  end
-
-  # Move a theory down
-  def order_plus
-    @theory2 = @chapter.theories.where("position > ?", @theory.position).order('position').first
-    swap_position(@theory, @theory2)
-    flash[:success] = "Point théorique déplacé vers le bas."
+  
+  # Move a theory to another position
+  def order
+    theory2 = @chapter.theories.where("position = ?", params[:new_position]).first
+    if !theory2.nil? and theory2 != @theory
+      res = swap_position(@theory, theory2)
+      flash[:success] = "Point théorique déplacé#{res}." 
+    end
     redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
   end
 

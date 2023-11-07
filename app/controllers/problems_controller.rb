@@ -1,11 +1,11 @@
 #encoding: utf-8
 class ProblemsController < ApplicationController
   before_action :signed_in_user, only: [:show, :edit, :new, :explanation, :markscheme]
-  before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order_minus, :order_plus, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order_minus, :order_plus, :put_online, :explanation, :update_explanation, :markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order, :put_online, :explanation, :update_explanation, :markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   
   before_action :get_problem, only: [:edit, :update, :show, :destroy]
-  before_action :get_problem2, only: [:explanation, :update_explanation, :markscheme, :update_markscheme, :order_minus, :order_plus, :delete_prerequisite, :add_prerequisite, :add_virtualtest, :put_online]
+  before_action :get_problem2, only: [:explanation, :update_explanation, :markscheme, :update_markscheme, :order, :delete_prerequisite, :add_prerequisite, :add_virtualtest, :put_online]
   before_action :get_section, only: [:new, :create]
   
   before_action :offline_problem, only: [:destroy, :put_online]
@@ -171,21 +171,14 @@ class ProblemsController < ApplicationController
     redirect_to @problem
   end
 
-  # Move the problem up in its virtualtest
-  def order_minus
+  # Move a problem to a new position in its virtualtest
+  def order
     t = @problem.virtualtest
-    problem2 = t.problems.where("position < ?", @problem.position).order('position').last
-    swap_position(@problem, problem2)
-    flash[:success] = "Problème déplacé vers le haut."
-    redirect_to virtualtests_path
-  end
-
-  # Move a problem down in its virtualtest
-  def order_plus
-    t = @problem.virtualtest
-    problem2 = t.problems.where("position > ?", @problem.position).order('position').first
-    swap_position(@problem, problem2)
-    flash[:success] = "Problème déplacé vers le bas."
+    problem2 = t.problems.where("position = ?", params[:new_position]).first
+    if !problem2.nil? and problem2 != @problem
+      res = swap_position(@problem, problem2)
+      flash[:success] = "Problème déplacé#{res}." 
+    end
     redirect_to virtualtests_path
   end
 
