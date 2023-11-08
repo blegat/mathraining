@@ -16,7 +16,7 @@
   <% if !lastmessage.nil? %>
     <% lastid = lastmessage.id %>
   <% end %>
-  <input type="hidden" name="lastmessage" value="<%= lastid %>">
+  <%= hidden_field_tag "lastmessage", lastid %>
 
   <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
   <button class="btn btn-lg btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>

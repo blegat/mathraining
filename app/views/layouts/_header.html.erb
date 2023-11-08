@@ -27,22 +27,13 @@
         <% num_notifications_new12 = current_user.sk.num_notifications_new([1, 2]) %>
         <% num_notifications_new345 = current_user.sk.num_notifications_new([3, 4, 5]) %>
         <% num_notifications_update = current_user.sk.num_notifications_update %>
-        <% if num_notifications_new12 > 0 %>
-          <%= link_to "#{num_notifications_new12}", allnewsub_path(:levels => 3), class: "btn btn-success" %>
-        <% else %>
-          <%= link_to "0", allnewsub_path(:levels => 3), class: "btn btn-ld-light-dark-er" %>
-        <% end %>
-        <% if num_notifications_new345 > 0 %>
-          <%= link_to "#{num_notifications_new345}", allnewsub_path(:levels => 28), class: "btn btn-danger" %>
-        <% else %>
-          <%= link_to "0", allnewsub_path(:levels => 28), class: "btn btn-ld-light-dark-er" %>
-        <% end %>
-        <% if num_notifications_update > 0 %>
-          <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-warning" %>
-        <% else %>
-          <%= link_to "0", allmynewsub_path, class: "btn btn-ld-light-dark-er" %>
-        <% end %>
-
+        <% classe = (num_notifications_new12 > 0 ? "success" : "ld-light-dark-er") %>
+        <%= link_to "#{num_notifications_new12}", allnewsub_path(:levels => 3), class: "btn btn-#{classe}" %>
+        <% classe = (num_notifications_new345 > 0 ? "danger" : "ld-light-dark-er") %>
+        <%= link_to "#{num_notifications_new345}", allnewsub_path(:levels => 28), class: "btn btn-#{classe}" %>
+        <% classe = (num_notifications_update > 0 ? "warning" : "ld-light-dark-er") %>
+        <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-#{classe}" %>
+        
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
         <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
           <%= link_to "#{num_waiting_starproposals}", starproposals_path, class: "btn btn-yellow" %>

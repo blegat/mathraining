@@ -259,7 +259,7 @@ function checkProblem() {
   <div class="mb-2">
     <%= f.label :title, :class => "form-label", :disabled => current_user.other %>
     <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled", :value => forced_title %>
-    <input type="hidden" id="hidden_title" name="subject[title]" value="<%= forced_title %>" />
+    <%= hidden_field_tag "subject[title]", forced_title, :id => "hidden_title" %>
   </div>
 <% else %>
   <% tit = "" %>
@@ -271,7 +271,7 @@ function checkProblem() {
   <div class="mb-2">
     <%= f.label :title, :class => "form-label", :disabled => current_user.other %>
     <%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :value => tit %>
-    <input type="hidden" id="hidden_title" name="" value="" />
+    <%= hidden_field_tag "", "", :id => "hidden_title" %>
   </div>
 <% end %>
 
@@ -350,13 +350,13 @@ function checkProblem() {
 <% if current_user.sk.root && !is_edit %>
   <div class="form-check mb-1">
   <label class="form-check-label">
-    <input class="form-check-input" type="checkbox" id="groupeA" name="groupeA" value="A" <%= 'disabled="true"' if current_user.other %> >
+    <%= check_box_tag "groupeA", "A", false, :class => "form-check-input", :disabled => current_user.other %>
     Prévenir tout le groupe A de ce nouveau message par e-mail.
   </label>
   </div>
   <div class="form-check mb-1">
   <label class="form-check-label">
-    <input class="form-check-input" type="checkbox" id="groupeB" name="groupeB" value="B" <%= 'disabled="true"' if current_user.other %> >
+    <%= check_box_tag "groupeB", "B", false, :class => "form-check-input", :disabled => current_user.other %>
     Prévenir tout le groupe B de ce nouveau message par e-mail.
   </label>
   </div>

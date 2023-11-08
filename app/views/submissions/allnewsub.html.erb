@@ -39,7 +39,7 @@
   <% levels_choices.push(["Niveau #{x}", 1 << (x-1)]) %>
 <% end %>
 
-<form action="" method="get" name="search_section_and_levels">
+<%= form_tag "", :method => "get", :name => "search_section_and_levels" do %>
   <div class="grid mb-1" style="--bs-columns:12; --bs-gap:10px;">
   <div class="g-col-12 g-start-md-6 g-col-md-4 g-start-lg-8 g-col-lg-3">
   <%= select_tag :section, options_for_select(section_choices, section).html_safe, :class =>"form-select", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
@@ -48,7 +48,7 @@
   <%= select_tag :levels, options_for_select(levels_choices, levels_int).html_safe, :class =>"form-select", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
   </div>
   </div>
-</form>
+<% end %>
 
 <!-- Graphique du nombre de soumissions en attente -->
 <% date_end = Time.now %>

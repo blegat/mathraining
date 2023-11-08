@@ -16,7 +16,7 @@
   
   <%= render 'shared/edit_files', disable: (@unactivate > 0) %>
 
-  <input type="hidden" name="last_comment_id" value="<%= @lastid %>">
+  <%= hidden_field_tag "last_comment_id", @lastid %>
 
   <!-- Si administrateur : tous les boutons différents -->
   <% if current_user.sk != @submission.user %>
@@ -36,8 +36,8 @@
     <% else ## Pas encore corrigé %>
       <% if @submission.intest && @submission.score == -1 %>
         <div class="mb-2">
-        <label class="form-label">Score attribué (sur 7)</label>
-        <input type="number" name="score" class="form-control" style="width:70px;" min="0" max="7" />
+        <label for="score" class="form-label">Score attribué (sur 7)</label>
+        <%= number_field_tag "score", nil, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;" %>
         </div>
         
         <div class="p-3 mt-3 grey-box">

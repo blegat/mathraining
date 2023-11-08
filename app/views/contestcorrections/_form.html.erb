@@ -11,11 +11,8 @@
 
 <% if !@contestsolution.official? %>
   <div class="mb-2">
-  <label class="form-label">Score attribué (sur 7)</label>
-  <% if @ancientexte.nil? %>
-    <input type="number" name="score" class="form-control" style="width:70px;" min="0" max="7" id="score" value="<%= @contestsolution.score if @contestsolution.score >= 0 %>" <%= 'disabled="disabled"' if (!@signed_in || current_user.other || @was_reserved) %> />
-  <% else %>
-    <input type="number" name="score" class="form-control" style="width:70px;" min="0" max="7" id="score" value="<%= @ancienscore %>" <%= 'disabled="disabled"' if (!@signed_in || current_user.other || @was_reserved) %> />
-  <% end %>
+  <label for="score" class="form-label">Score attribué (sur 7)</label>
+  <%= val = (@ancienscore.nil? ? (@contestsolution.score >= 0 ? @contestsolution.score : nil) : @ancienscore) %>
+  <%= number_field_tag "score", val, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;", :disabled => (!@signed_in || current_user.other || @was_reserved) %>
   </div>
 <% end %>

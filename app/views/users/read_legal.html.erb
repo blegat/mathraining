@@ -53,14 +53,14 @@ function checkChecked() {
   <!-- Lire et accepter la politique de confidentialité -->
   <div class="form-check mb-1">
   <label class="form-check-label">
-    <input class="form-check-input" type="checkbox" id="consent1" name="consent1" value="1" onchange="javascript:checkChecked();">
+    <%= check_box_tag "consent1", "1", false, :class => "form-check-input", :onchange => "javascript:checkChecked();" %>
     J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> de Mathraining.
   </label>
   </div>
   
   <div class="form-check mb-2">
   <label class="form-check-label">
-   <input class="form-check-input" type="checkbox" id="consent2" name="consent2" value="2" onchange="javascript:checkChecked();">
+    <%= check_box_tag "consent2", "2", false, :class => "form-check-input", :onchange => "javascript:checkChecked();" %>
     J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> avec mon tuteur légal.
   </label>
   </div>

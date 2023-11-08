@@ -17,7 +17,7 @@
   <% end %>
 
   <%= form_for(solvedquestion) do |g| %>
-    <input type="hidden" name="question_id" value="<%= question.id %>" />
+    <%= hidden_field_tag "question_id", question.id %>
     <div class="mb-2">
     <%= g.label :guess, :class => "form-label to-enable", :disabled => !@signed_in || current_user.other || needtowait %>
     <%= g.text_field :guess, class: "form-control to-enable ms-1", style: "width:70px;", value: val, :disabled => !@signed_in || current_user.other || needtowait %>
@@ -31,11 +31,11 @@
   <% if question.many_answers %>
     <%= form_for solvedquestion do |x| %>
       <p class="mt-3 mb-3 fw-bold">Cochez chaque proposition correcte.</p>
-      <input type="hidden" name="question_id" value="<%= question.id %>" />
+      <%= hidden_field_tag "question_id", question.id %>
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
-            <input class="form-check-input to-enable" type="checkbox" id="ans[<%= c.id %>]" name="ans[<%= c.id %>]" value="ok" <%= "checked" if anciens.exists?(:id => c.id) %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
+            <%= check_box_tag "ans[#{ c.id }]", "ok", anciens.exists?(:id => c.id), :disabled => !@signed_in || current_user.other || needtowait, :class => "form-check-input to-enable" %>
             <%= raw(c.ans) %>
           </label>
         </div>
@@ -46,11 +46,11 @@
     <% item = solvedquestion.items.first %>
     <div class="mb-3"></div>
     <%= form_for solvedquestion do |x| %>
-      <input type="hidden" name="question_id" value="<%= question.id %>" />
+      <%= hidden_field_tag "question_id", question.id %>
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
-            <input class="form-check-input to-enable" type="radio" id="ans[<%= c.id %>]" name="ans" value="<%= c.id %>" <%= "checked" if !item.nil? && c.id == item.id %> <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>
+            <%= radio_button_tag "ans", c.id, (!item.nil? && c.id == item.id), :id => "ans[#{ c.id }]", :disabled => !@signed_in || current_user.other || needtowait, :class => "form-check-input to-enable" %>
             <%= raw(c.ans) %>
           </label>
         </div>

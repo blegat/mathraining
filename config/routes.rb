@@ -112,7 +112,7 @@ Rails.application.routes.draw do
   resources :contests do
     match '/put_online', to: 'contests#put_online', :via => [:put]
     match '/cutoffs', to: "contests#cutoffs", :via => [:get]
-    match '/define_cutoffs', to: 'contests#define_cutoffs', :via => [:get]
+    match '/define_cutoffs', to: 'contests#define_cutoffs', :via => [:post]
     
     resources :contestproblems, only: [:new, :create]
   end

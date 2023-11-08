@@ -69,7 +69,8 @@
 <% end %>
 
 <center>
-<form action="" method="get" class="form-inline" name="research">
+
+<%= form_tag "", :method => "get", :name => "research" do %>
 <div class="row g-2 align-items-center justify-content-center justify-content-sm-end mb-2">
   <div class="col-auto">
     <%= select_tag :title, options_for_select(title_list, @title).html_safe, :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
@@ -78,7 +79,7 @@
     <%= select_tag :country, options_for_select(country_list, @country).html_safe, :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
   </div>
 </div>
-</form>
+<% end %>
 </center>
 
 <% if @real_users %>

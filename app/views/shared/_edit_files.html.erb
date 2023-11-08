@@ -18,7 +18,7 @@
   <% s.myfiles.order(:id).each do |f| %>
     <div class="form-check mb-1">
     <label class="form-check-label">
-      <input class="form-check-input" type="checkbox" name="prevFile<%= postfix %>_<%= f.id %>" value="1" checked="checked" />
+      <%= check_box_tag "prevFile#{ postfix }_#{ f.id }", 1, true, :class => "form-check-input" %>
       <%= link_to f.file.filename, rails_blob_path(f.file, disposition: 'attachment') %>
     </label>
     </div>
@@ -26,7 +26,7 @@
   <% s.fakefiles.order(:id).each do |f| %>
     <div class="form-check mb-1">
     <label class="form-check-label">
-      <input class="form-check-input" type="checkbox" name="prevFakeFile<%= postfix %>_<%= f.id %>" value="1" checked="checked" />
+      <%= check_box_tag "prevFakeFile#{ postfix }_#{ f.id }", 1, true, :class => "form-check-input" %>
       <span class="text-color-dark-light-blue"><%= f.filename %> (désactivée)</span>
     </label>
     </div>
@@ -43,7 +43,7 @@
 </p>
 
 <% if postfix != "" %>
-  <input type="hidden" name="postfix" value="<%= postfix %>">
+  <%= hidden_field_tag "postfix", postfix %>
 <% end %>
 
 <input type="button" value="Ajouter une pièce jointe" id="addFile<%= postfix %>" onclick="Joint.add('<%= postfix %>')" class="btn btn-sm btn-ld-light-dark mb-2" <%= 'disabled="disabled"'.html_safe if current_user.sk.other or disable %> />

@@ -15,18 +15,18 @@
 <h3>Chercher une chaîne de caractères</h3>
 <p id="btn_search_string"><%= link_to "Effectuer une recherche dans toutes les soumissions", "javascript:showForm()" %></p>
 
-<form id="search_string_form" style="display:none;" method="post" data-remote="true" action="/submissions/<%= @submission.id %>/search_script">
+<%= form_tag submission_search_script_path(@submission), :method => :post, :remote => true, :id => "search_string_form", :style => "display:none;" do %>
 <div class="mb-2">
-  <input class="form-control" style="width:300px;", type="text", name="string_to_search" id="string_to_search" />
+  <%= text_field_tag "string_to_search", "", :class => "form-control", :style => "width:300px;" %>
 </div>
 <div class="form-check mb-2">
   <label class="form-check-label" for="search_in_comments">
-    <input class="form-check-input" type="checkbox" value="1" name="search_in_comments" id="search_in_comments" />
+    <%= check_box_tag "search_in_comments", 1, false, :class => "form-check-input" %>
     Chercher également dans les commentaires.
   </label>
 </div>
-<input type="submit" name="commit" value="Chercher" class="btn btn-primary" onclick="javascript:showSearch()" />
-</form>
+<%= submit_tag "Chercher", :class => "btn btn-primary", :onclick => "javascript:showSearch()" %>
+<% end %>
 
 <p class="mt-3" id="loading_results" style="display:none;">Recherche...</p>
 <p class="mt-3" id="none_results" style="display:none;">Aucun résultat.</p>

@@ -20,6 +20,7 @@ class ContestcorrectionsController < ApplicationController
       if !@error_message.empty?
         flash[:danger] = @error_message
         session[:ancientexte] = params[:contestcorrection][:content]
+        session[:ancienscore] = params[:score]
         redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution) and return
       end
       
@@ -78,6 +79,7 @@ class ContestcorrectionsController < ApplicationController
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     else
       session[:ancientexte] = params[:contestcorrection][:content]
+      session[:ancienscore] = params[:score]
       flash[:danger] = error_list_for(@contestcorrection)
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     end

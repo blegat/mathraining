@@ -30,7 +30,10 @@
 
 <div class="smiley">
 <div class="form-check">
-<label class="form-check-label ms-2 me-2 align-middle"><input class="form-check-input" type="checkbox" id="stop<%= postfix %>" name="stop" onclick="PreviewSafe.MyUpdate()" checked="checked" />Prévisualisation</label>
+<label class="form-check-label ms-2 me-2 align-middle">
+  <%= check_box_tag "stop", nil, true, :class => "form-check-input", :id => "stop#{ postfix }", :onclick => "PreviewSafe.MyUpdate()" %>
+Prévisualisation
+</label>
 </div>
 </div>
 

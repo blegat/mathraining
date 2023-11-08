@@ -52,7 +52,7 @@ Votre navigateur ne supporte pas les canvas.
 
 
 <center>
-<form id="cutoff_form" action="/contests/<%= @contest.id %>/define_cutoffs" class="mt-3">
+<%= form_tag contest_define_cutoffs_path(@contest), :method => :post, :id => "cutoff_form", :class => "mt-3" do %>
 <table style="width:440px;">
 <tr>
 <td style="width:200px;"></td>
@@ -65,17 +65,17 @@ Votre navigateur ne supporte pas les canvas.
 <th class="p-2">Seuil choisi</th>
 <td class="px-1 text-center">
 <div class="form-group">
-  <input class="form-control" style="width:70px;" type="number" name="bronze_cutoff" id="bronze_cutoff" value="<%= min_bronze %>" min="0" onchange="respondCanvas()" />
+  <%= number_field_tag "bronze_cutoff", min_bronze, :min => 0, :class => "form-control", :style => "width:70px;", :onchange => "respondCanvas()" %>
 </div>
 </td>
 <td class="px-1 text-center">
 <div class="form-group">
-  <input class="form-control" style="width:70px;" type="number" name="silver_cutoff" id="silver_cutoff" value="<%= min_silver %>" min="0" onchange="respondCanvas()" />
+  <%= number_field_tag "silver_cutoff", min_silver, :min => 0, :class => "form-control", :style => "width:70px;", :onchange => "respondCanvas()" %>
 </div>
 </td>
 <td class="px-1 text-center">
 <div class="form-group">
-  <input class="form-control" style="width:70px;" type="number" name="gold_cutoff" id="gold_cutoff" value="<%= min_gold %>" min="0" onchange="respondCanvas()" />
+  <%= number_field_tag "gold_cutoff", min_gold, :min => 0, :class => "form-control", :style => "width:70px;", :onchange => "respondCanvas()" %>
 </div>
 </td>
 </tr>
@@ -102,8 +102,9 @@ Votre navigateur ne supporte pas les canvas.
 </tr>
 </table>
 
-<input type="submit" name="commit" value="Distribuer les médailles" class="btn btn-primary mt-2" onclick="return confirm('Êtes vous sûr de vouloir choisir ces seuils ? Les médailles vont être publiées.')" />
-</form>
+<%= submit_tag "Distribuer les médailles", :class => "btn btn-primary mt-2", :onclick => "return confirm('Êtes vous sûr de vouloir choisir ces seuils ? Les médailles vont être publiées.')" %>
+
+<% end %>
 </center>
 
 

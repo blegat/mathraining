@@ -19,7 +19,7 @@
   
   <div class="form-check mb-2">
   <label class="form-check-label">
-    <input class="form-check-input" type="checkbox" id="consent" name="consent" value="1" <%= 'disabled="disabled"' if @no_new_submission %> onchange="javascript:checkChecked();">
+    <%= check_box_tag "consent", "1", false, :class => "form-check-input", :disabled => @no_new_submission, :onchange => "javascript:checkChecked();" %>
     Je comprends que les correcteurs sont bénévoles et vont corriger cette solution pendant leur temps libre pour me faire progresser.
     Je certifie donc que cette solution est le fruit de mon travail et qu'elle ne provient pas d'une source extérieure.
     Je garantis également que cette solution n'a pas déjà été soumise via un autre compte Mathraining.<sup>1</sup>
