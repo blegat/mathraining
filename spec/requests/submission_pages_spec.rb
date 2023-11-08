@@ -162,7 +162,7 @@ describe "Submission pages" do
     end
       
     describe "visits problem with a draft" do
-      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, content: newsubmission) }
+      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, visible: false, content: newsubmission) }
       before { visit problem_path(problem) }
       it do
         should have_selector("h1", text: "Problème ##{problem.number}")
@@ -386,6 +386,20 @@ describe "Submission pages" do
         end
       end
       
+      describe "and accepts it while his own submission was marked incorrect" do
+        before do
+          good_corrector_submission.wrong!
+          good_corrector_solvedproblem.destroy
+          fill_in "MathInput", with: newcorrection
+          click_button "Poster et accepter la soumission"
+          waiting_submission.reload
+        end
+        specify do
+          expect(waiting_submission.waiting?).to eq(true)
+          expect(waiting_submission.corrections.count).to eq(0)
+        end
+      end
+      
       describe "and tries to accept it without any comment" do
         before do
           fill_in "MathInput", with: ""
@@ -422,9 +436,29 @@ describe "Submission pages" do
         specify do
           expect(waiting_submission.wrong?).to eq(true)
           expect(waiting_submission.corrections.last.content).to eq(newcorrection)
+          expect(Notif.where(:user => user, :submission => waiting_submission).count).to eq(1)
           expect(page).to have_selector("h3", text: "Soumission (erronée)")
           expect(page).to have_selector("div", text: newcorrection)
           expect(page).to have_link("0", href: allnewsub_path(:levels => 3)) # no more waiting submission
+        end
+        
+        describe "and admin accepts it" do
+          before do
+            sign_out
+            sign_in admin
+            visit problem_path(problem_with_submissions, :sub => waiting_submission)
+            fill_in "MathInput", with: newcorrection2
+            click_button "Poster et accepter la soumission"
+            waiting_submission.reload
+          end
+          specify do
+            expect(page).to have_selector("h3", text: "Soumission (correcte)")
+            expect(page).to have_selector("div", text: newcorrection2)
+            expect(Following.where(:user => good_corrector, :submission => waiting_submission).first.kind).to eq(1)
+            expect(Following.where(:user => good_corrector, :submission => waiting_submission).first.read).to eq(false)
+            expect(Following.where(:user => admin, :submission => waiting_submission).first.kind).to eq(2)
+            expect(Following.where(:user => admin, :submission => waiting_submission).first.read).to eq(true)
+          end
         end
         
         describe "and user" do
@@ -452,11 +486,25 @@ describe "Submission pages" do
               should have_no_link(href: notifs_path) # no more notification
             end
             
-            describe "visits answers page" do
+            describe "and revisits answers page" do
               before { visit notifs_path }
               it do
                 should have_selector("h1", text: "Nouvelles réponses")
                 should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
+              end
+            end
+            
+            describe "and answers while submission has been marked as plagiarized" do
+              before do
+                waiting_submission.plagiarized!
+                fill_in "MathInput", with: newanswer
+                click_button "Poster"
+                waiting_submission.reload
+              end
+              specify do
+                expect(waiting_submission.plagiarized?).to eq(true)
+                expect(waiting_submission.corrections.last.content).not_to eq(newanswer)
+                expect(page).to have_selector("h3", text: "Soumission (plagiée)")
               end
             end
             
@@ -521,6 +569,7 @@ describe "Submission pages" do
                   
                   describe "and accepts it" do
                     before do
+                      Submission.create(user: user, problem: problem_with_submissions, status: :draft, visible: false, content: "brouillon")
                       fill_in "MathInput", with: newcorrection2
                       click_button "Poster et accepter la soumission"
                       waiting_submission.reload
@@ -528,6 +577,7 @@ describe "Submission pages" do
                     specify do
                       expect(waiting_submission.correct?).to eq(true)
                       expect(waiting_submission.corrections.last.content).to eq(newcorrection2)
+                      expect(problem_with_submissions.submissions.where(:user => user, :status => :draft).count).to eq(0)
                       expect(page).to have_selector("h3", text: "Soumission (correcte)")
                       expect(page).to have_selector("div", text: newcorrection2)
                     end

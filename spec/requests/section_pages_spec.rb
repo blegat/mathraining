@@ -71,5 +71,26 @@ describe "Section pages" do
         expect(section.description).to eq(newdescription)
       end
     end
+    
+    describe "edits a section with wrong input" do
+      before do
+        visit edit_section_path(section)
+        fill_in "Nom", with: ""
+        fill_in "Abréviation", with: newabbreviation
+        fill_in "Abréviation courte", with: newshortabbreviation
+        fill_in "Initiales", with: newinitials
+        fill_in "MathInput", with: newdescription
+        click_button "Modifier"
+        section.reload
+      end
+      specify do
+        expect(page).to have_error_message("Nom doit être rempli")
+        expect(section.name).not_to eq("")
+        expect(section.abbreviation).not_to eq(newabbreviation)
+        expect(section.short_abbreviation).not_to eq(newshortabbreviation)
+        expect(section.initials).not_to eq(newinitials)
+        expect(section.description).not_to eq(newdescription)
+      end
+    end
   end
 end
