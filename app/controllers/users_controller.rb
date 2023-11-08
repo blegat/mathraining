@@ -372,7 +372,6 @@ class UsersController < ApplicationController
   # Show notifications of new corrections (for a student)
   def notifs
     @notifs = current_user.sk.notifs.order("created_at")
-    render :notifs
   end
 
   # Take the skin of a user

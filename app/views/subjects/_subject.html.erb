@@ -5,11 +5,11 @@
 <div id="the<%= postfix %>" class="myoverflow">
 
 <% if !@subject.question.nil? %>
-  <%= render 'subjects/show_exo', q: @subject.question %>
+  <%= render 'subjects/question', q: @subject.question %>
 <% elsif !@subject.problem.nil? %>
-  <%= render 'subjects/show_prob', p: @subject.problem %>
+  <%= render 'subjects/problem', p: @subject.problem %>
 <% elsif !@subject.contest.nil? %>
-  <%= render 'subjects/show_contest', contest: @subject.contest %>
+  <%= render 'subjects/contest', contest: @subject.contest %>
 <% end %>
 
 <%= render 'shared/post', ms: s, kind: "subject", can_edit: can_edit, postfix: postfix %>

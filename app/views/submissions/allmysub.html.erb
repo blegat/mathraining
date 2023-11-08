@@ -11,7 +11,7 @@
 <table class="table table-bordered">
 <tr class="table-ld-header"><th class="text-center">Statut</th><th class="d-none d-lg-table-cell">Date de la soumission</th><th class="d-none d-lg-table-cell">Dernière activité</th><th>Qui</th><th class="text-center">Type</th><th></th></tr>
 <% @submissions.each do |n| %>
-  <%= render 'submissions/showline', s: n, show_section_and_level: true, highlight_this_sub: submissions_to_highlight.include?(n.id) %>
+  <%= render 'submissions/line', s: n, show_section_and_level: true, highlight_this_sub: submissions_to_highlight.include?(n.id) %>
 <% end %>
 </table>
 

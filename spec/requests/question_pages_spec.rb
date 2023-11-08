@@ -124,8 +124,8 @@ describe "Question pages" do
       end
     end
     
-    describe "visits explanation page" do
-      before { visit question_explanation_path(online_exercise) }
+    describe "visits edit explanation page" do
+      before { visit question_edit_explanation_path(online_exercise) }
       it { should have_selector("h1", text: "Explication") }
       
       describe "and modifies it" do

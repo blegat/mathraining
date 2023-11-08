@@ -24,7 +24,7 @@ var showFalse = function () {
       <% if sol.star %>
         <% mine_is_star = true %>
       <% end %>
-      <%= render 'contestsolutions/showsmall', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol %>
     </table>
   <% end %>
 <% end %>
@@ -42,7 +42,7 @@ var showFalse = function () {
   <% if starred.count > 0 %>
     <table class="table table-bordered" style="width:auto;">
     <% starred.each do |sol| %>
-      <%= render 'contestsolutions/showsmall', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol %>
     <% end %>
     </table>
   <% else %>
@@ -60,7 +60,7 @@ var showFalse = function () {
     <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_correct">
     <tbody>
     <% good.each do |sol| %>
-      <%= render 'contestsolutions/showsmall', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol %>
     <% end %>
     </tbody>
     </table>
@@ -78,7 +78,7 @@ var showFalse = function () {
     <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_false">
     <tbody>
     <% bad.each do |sol| %>
-      <%= render 'contestsolutions/showsmall', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol %>
     <% end %>
     </tbody>
     </table>
@@ -95,7 +95,7 @@ var showFalse = function () {
     <table class="table table-bordered fixed-scroll" style="width:auto;">
     <tbody>
     <% tocorrect.each do |sol| %>
-      <%= render 'contestsolutions/showsmall', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol %>
     <% end %>
     </tbody>
     </table>

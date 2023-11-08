@@ -1,11 +1,11 @@
 #encoding: utf-8
 class ProblemsController < ApplicationController
-  before_action :signed_in_user, only: [:show, :edit, :new, :explanation, :markscheme]
+  before_action :signed_in_user, only: [:show, :edit, :new, :edit_explanation, :edit_markscheme]
   before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order, :put_online, :explanation, :update_explanation, :markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
+  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order, :put_online, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   
   before_action :get_problem, only: [:edit, :update, :show, :destroy]
-  before_action :get_problem2, only: [:explanation, :update_explanation, :markscheme, :update_markscheme, :order, :delete_prerequisite, :add_prerequisite, :add_virtualtest, :put_online]
+  before_action :get_problem2, only: [:edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :order, :delete_prerequisite, :add_prerequisite, :add_virtualtest, :put_online]
   before_action :get_section, only: [:new, :create]
   
   before_action :offline_problem, only: [:destroy, :put_online]
@@ -100,11 +100,11 @@ class ProblemsController < ApplicationController
   end
 
   # Update the explanation of a problem (show the form)
-  def explanation
+  def edit_explanation
   end
   
   # Update the marking scheme of a problem (show the form)
-  def markscheme
+  def edit_markscheme
   end
 
   # Update the explanation of a problem (send the form)
@@ -113,7 +113,7 @@ class ProblemsController < ApplicationController
       flash[:success] = "Élements de solution modifiés."
       redirect_to problem_path(@problem)
     else
-      render 'explanation'
+      render 'edit_explanation'
     end
   end
   
@@ -123,7 +123,7 @@ class ProblemsController < ApplicationController
       flash[:success] = "Marking scheme modifié."
       redirect_to problem_path(@problem)
     else
-      render 'markscheme'
+      render 'edit_markscheme'
     end
   end
 

@@ -1,10 +1,10 @@
 #encoding: utf-8
 class QuestionsController < ApplicationController
-  before_action :signed_in_user, only: [:new, :edit, :manage_items, :explanation]
+  before_action :signed_in_user, only: [:new, :edit, :manage_items, :edit_explanation]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation]
   
   before_action :get_question, only: [:edit, :update, :destroy]
-  before_action :get_question2, only: [:manage_items, :order, :put_online, :explanation, :update_explanation]
+  before_action :get_question2, only: [:manage_items, :order, :put_online, :edit_explanation, :update_explanation]
   before_action :get_chapter, only: [:new, :create]
   
   before_action :user_that_can_update_chapter
@@ -142,7 +142,7 @@ class QuestionsController < ApplicationController
   end
 
   # Update the explanation of a question (show the form)
-  def explanation
+  def edit_explanation
   end
 
   # Update the explanation of a question (send the form)
@@ -151,7 +151,7 @@ class QuestionsController < ApplicationController
       flash[:success] = "Explication modifiée."
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     else
-      render 'explanation'
+      render 'edit_explanation'
     end
   end
 

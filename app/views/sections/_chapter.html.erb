@@ -1,0 +1,84 @@
+<table class="table table-bordered chapter <%= classe %>" id="chapter<%= chapter.id %>">
+<tr><td class="title">
+<center><h4><%= link_to chapter.name, chapter %><%= " (en construction)" if classe == "orangey" %></h4></center>
+</td></tr>
+
+<tr><td class="real-content">    
+<div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
+
+  <div class="g-col-12 g-col-md-24 intro">
+    <%= raw(htmlise(chapter.description)) %>
+    <% if classe == "greyy" %>
+      <p class="mt-3 mb-0 fw-bold">Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
+      <% prems = true %>
+      <% chapter.prerequisites.order(:level, :position).each do |p| %>
+        <% if (!@signed_in || !current_user.sk.chapters.exists?(p.id)) %>
+          <%= " - " if !prems %>
+          <i><%= p.name %></i>
+          <% prems = false %>
+        <% end %>
+      <% end %>
+      </p>
+    <% end %>
+  </div>
+
+  <% if !@section.fondation %>
+    <% col_class = "g-col-12 g-col-md-24 g-col-lg-9 g-col-xl-8" %>
+  <% else %>
+    <% col_class = "g-col-12 g-col-md-12" %>
+  <% end %>
+  
+  <div class="<%= col_class %> module">
+    <center><h5>Théorie</h5></center>
+    <!-- Théorie -->
+    <% compteur = 0 %>
+    <% if !@theories_by_chapter[chapter.id].nil? %>
+      <% @theories_by_chapter[chapter.id].each do |t| %>
+        <% if t.online || !chapter.online %>
+          <% if compteur == 0 %>
+            <ul class="mb-2">
+          <% end %>
+          <% compteur = compteur + 1 %>
+          <li><%= link_to t.title, chapter_path(chapter, :type => 1, :which => t.id) %>
+          <%= image_tag v_icon, :class => "ms-2 svg-black-white", :style => "margin-top:-3px;", :id => "V-#{t.id}" if @signed_in && !current_user.sk.admin && @theory_status[t.id] == "read" %></li>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% if compteur == 0 %>
+      <p class="ms-3"><i>Aucun point théorique.</i></p>
+    <% else %>
+      </ul>
+    <% end %>    
+  </div>
+  
+  <% if !@section.fondation %>
+    <% col_class = "g-col-12 g-col-md-14 g-col-lg-8 g-col-xl-8" %>
+  <% else %>
+    <% col_class = "g-col-12 g-col-md-12" %>
+  <% end %>
+    
+  <div class="<%= col_class %> module pb-2">
+    <center><h5>Exercices</h5></center>
+    <!-- Exercices -->
+    <%= render 'questions', chapter: chapter, acces: (classe != "greyy") %>
+  </div>
+  
+  <% if !@section.fondation %>
+    <div class="g-col-12 g-col-md-10 g-col-lg-7 g-col-xl-8 module pb-2">
+      <center><h5>Statistiques</h5></center>
+      <!-- Statistiques -->
+      <center>
+      Complété par <b><%= chapter.nb_completions %></b> personne<%= "s" if chapter.nb_completions > 1 %><br/>
+      <% unless chapter.publication_date.nil? %>
+        depuis le <b><%= write_date_only(chapter.publication_date) %></b><br/>
+      <% end %>
+      <% if chapter.nb_tries > 0 %>
+        Taux de réussite : <b><%= (chapter.nb_completions*100)/chapter.nb_tries %></b>%
+      <% end %>
+      </center>
+    </div>
+  <% end %>
+</div>
+</td></tr>
+</table>

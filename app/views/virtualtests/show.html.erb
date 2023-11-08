@@ -36,6 +36,6 @@
   
 <!-- Si on doit afficher un problème -->
 <% if !@problem.nil? %>
-  <%= render 'problems/showintest', problem: @problem, virtualtest: @virtualtest %>
+  <%= render 'problems/show_in_test', problem: @problem, virtualtest: @virtualtest %>
 <% end %>
 

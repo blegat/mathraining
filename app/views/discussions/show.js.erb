@@ -1,4 +1,6 @@
-$('#all-messages').append('<%= j render @tchatmessages %>');
+<% @tchatmessages.each do |m| %>
+  $('#all-messages').append('<%= j render 'tchatmessages/show', m: m %>');
+<% end %>
 <% if @tchatmessages.next_page %>
   $('#infinite-scrolling').html('<div style="display:none;"><%= j will_paginate @tchatmessages %></div>');
 <% else %>

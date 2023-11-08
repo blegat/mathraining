@@ -9,7 +9,7 @@ var tab = document.getElementById("all_<%= str %>");
 var tbody = tab.getElementsByTagName("tbody")[0];
 
 <% @submissions.each do |s| %>
-  tbody.insertAdjacentHTML('beforeend', '<%= escape_javascript(render 'submissions/showline', s: s) %>');
+  tbody.insertAdjacentHTML('beforeend', '<%= escape_javascript(render 'submissions/line', s: s) %>');
 <% end %>
 
 loading.style.display = 'none';

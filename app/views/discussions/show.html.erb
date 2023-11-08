@@ -96,7 +96,9 @@ window.addEventListener("load", () => {
       <% end %>
 
       <div id="all-messages">
-        <%= render @tchatmessages %>
+        <% @tchatmessages.each do |m| %>
+          <%= render 'tchatmessages/show', m: m %>
+        <% end %>
       </div>
 
       <div id="infinite-scrolling" class="text-center">

@@ -127,19 +127,14 @@
 
   <div class="noprint">
     <p class="text-center">
-      <% if @problem.online %>
-        <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } %> |
-        <%= link_to "Modifier la solution", problem_explanation_path(@problem) %>
-        <% if !@problem.virtualtest.nil? %>
-          | <%= link_to "Modifier le marking scheme", problem_markscheme_path(@problem) %>
-        <% end %>
-      <% else %>
-        <%= link_to "Modifier ce problème", edit_problem_path(@problem) %> |
-        <%= link_to "Modifier la solution", problem_explanation_path(@problem) %> |
-        <% if !@problem.virtualtest.nil? %>
-          <%= link_to "Modifier le marking scheme", problem_markscheme_path(@problem) %> |
-        <% end %>
-        <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
+      <% warning = (@problem.online ? { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } : {}) %>
+      <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: warning %>
+      | <%= link_to "Modifier la solution", problem_edit_explanation_path(@problem) %>
+      <% if !@problem.virtualtest.nil? %>
+        | <%= link_to "Modifier le marking scheme", problem_edit_markscheme_path(@problem) %>
+      <% end %>
+      <% unless @problem.online %>
+        | <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
       <% end %>
     </p>
 
@@ -215,7 +210,7 @@
       <% if !@draft %>
         <%= render 'submissions/new', problem: @problem %>
       <% else %>
-        <%= render 'submissions/newdraft', problem: @problem %>
+        <%= render 'submissions/edit_draft', problem: @problem %>
       <% end %>
     <% else %>
       Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :

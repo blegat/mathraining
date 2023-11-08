@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     resources :chapters, only: [:new, :create]
     resources :problems, only: [:new, :create]
   end
-  get 'pb_sections/:id', to: 'sections#showpb', as: :pb_sections
+  get 'pb_sections/:id', to: 'sections#show_problems', as: :pb_sections
 
   # Chapters
   resources :chapters, only: [:show, :update, :edit, :destroy] do
@@ -38,7 +38,7 @@ Rails.application.routes.draw do
   resources :questions, only: [:update, :edit, :destroy] do
     match '/order', to: 'questions#order', :via => [:put]
     match '/put_online', to: 'questions#put_online', :via => [:put]
-    match '/explanation', to: "questions#explanation", :via => [:get]
+    match '/edit_explanation', to: "questions#edit_explanation", :via => [:get]
     match '/update_explanation', to: "questions#update_explanation", :via => [:patch]
     match '/manage_items', to: "questions#manage_items", :via => [:get]
     
@@ -60,8 +60,8 @@ Rails.application.routes.draw do
     match '/add_prerequisite', to: 'problems#add_prerequisite', :via => [:post]
     match '/order', to: 'problems#order', :via => [:put]
     match '/put_online', to: 'problems#put_online', :via => [:put]
-    match '/explanation', to: "problems#explanation", :via => [:get]
-    match '/markscheme', to: "problems#markscheme", :via => [:get]
+    match '/edit_explanation', to: "problems#edit_explanation", :via => [:get]
+    match '/edit_markscheme', to: "problems#edit_markscheme", :via => [:get]
     match '/update_explanation', to: "problems#update_explanation", :via => [:patch]
     match '/update_markscheme', to: "problems#update_markscheme", :via => [:patch]
     match '/add_virtualtest', to: 'problems#add_virtualtest', :via => [:post]

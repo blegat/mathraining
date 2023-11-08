@@ -1,13 +1,5 @@
 <%= render 'shared/error_messages', object: f.object %>
 
-<% def convert_date(date) %>
-  <% if date.nil? %>
-    <% return "" %>
-  <% else %>
-    <% return date.to_time.strftime('%d/%m/%Y %H:%M') %>
-  <% end %>
-<% end %>
-
 <% if @contestproblem.not_started_yet? %>
   <p class="fw-bold">Attention : les dates pour ce problème ont déjà été publiées ! Merci de ne pas les modifier sauf nécessité absolue.</p>
 <% elsif @contestproblem.at_least(:in_progress) %>
