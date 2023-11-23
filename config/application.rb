@@ -88,9 +88,8 @@ module Mathraining
     # Remove some of the many ActiveStorage logs
     config.lograge.ignore_actions = [
       "ActiveStorage::DiskController#show",
-      "ActiveStorage::BlobsController#show",
-      "ActiveStorage::RepresentationsController#show",
-      "ActiveStorage::Representations::RedirectController#show"
+      "ActiveStorage::Blobs::RedirectController#show",
+      "PicturesController#image"
     ]
     
     I18n.config.enforce_available_locales = true
