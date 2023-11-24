@@ -71,11 +71,11 @@
 <center>
 
 <%= form_tag "", :method => "get", :name => "research" do %>
-<div class="row g-2 align-items-center justify-content-center justify-content-sm-end mb-2">
-  <div class="col-auto">
+<div class="grid mb-2" style="--bs-columns:12; --bs-gap:10px;">
+  <div class="g-col-12 g-start-md-5 g-col-md-4 g-start-lg-7 g-col-lg-3">
     <%= select_tag :title, options_for_select(title_list, @title).html_safe, :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
   </div>
-  <div class="col-auto">
+  <div class="g-col-12 g-col-md-4 g-col-lg-3">
     <%= select_tag :country, options_for_select(country_list, @country).html_safe, :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
   </div>
 </div>
