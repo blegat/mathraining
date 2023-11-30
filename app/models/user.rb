@@ -39,20 +39,23 @@
 #
 include ERB::Util
 
-class NoNumberValidator < ActiveModel::Validator
+class CharacterValidator < ActiveModel::Validator
   def validate(record)
-    [record.first_name, record.last_name].each do |r|
-      ok = false
-      (0..(r.size-1)).each do |i|
-        if(r[i] =~ /[[:digit:]]/)
-          record.errors.add(:base, "Prénom et Nom ne peuvent pas contenir de chiffres")
-        end
-        if(r[i] =~/[[:alpha:]]/)
-          ok = true
+    allowed_characters = Set["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "É", "Ö", "à", "á", "â", "ã", "ä", "ç", "è", "é", "ê", "ë", "î", "ï", "ñ", "ò", "ó", "ô", "ö", "ù", "ü", "š"]
+    allowed_special_characters = Set[" ", "'", "-", "."]
+    a = [record.first_name, record.last_name]
+    b = ["Prénom", "Nom"]
+    (0..1).each do |j|
+      one_letter = false
+      (0..(a[j].size-1)).each do |i|
+        if (allowed_characters.include?(a[j][i]))
+          one_letter = true
+        elsif (!allowed_special_characters.include?(a[j][i]))
+          record.errors.add(:base, "#{b[j]} ne peut pas contenir le caractère #{a[j][i]}")
         end
       end
-      if(not ok)
-        record.errors.add(:base, "Prénom et Nom doivent contenir au moins une lettre")
+      if(not one_letter)
+        record.errors.add(:base, "#{b[j]} doit contenir au moins une lettre")
       end
     end
   end
@@ -112,7 +115,7 @@ class User < ActiveRecord::Base
 
   validates :first_name, presence: true, length: { maximum: 32 }
   validates :last_name, presence: true, length: { maximum: 32 }
-  validates_with NoNumberValidator
+  validates_with CharacterValidator
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }, on: :create
   validates :email_confirmation, presence: true, on: :create
