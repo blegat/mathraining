@@ -5,12 +5,12 @@ def export_rating_history
   x = 0
   last_user_id = User.ids.max
   f = File.open("./rating_history.csv", "w")
-  f.write("user id ; user name ; gender ; registered")
+  f.write("user id;user name;gender;registered")
   
   date_start = Date.new(2014, 12, 1)
   date_end = date_start + 1.month
   while date_start <= Date.today
-    f.write(" ; #{date_start.month}/#{date_start.year}")
+    f.write(";#{date_start.month}/#{date_start.year}")
     if x == 0
       $history[x] = Array.new(last_user_id, 0)
     else
@@ -32,9 +32,9 @@ def export_rating_history
   
   f.write("\n")
   User.select("id, sex, first_name, last_name, see_name, created_at").where("admin = ? AND active = ? AND rating > ?", false, true, 0).order(:id).each do |u|
-    f.write("#{u.id} ; #{u.name} ; #{u.sex == 0 ? 'M' : 'F'} ; #{u.created_at.day}/#{u.created_at.month}/#{u.created_at.year}")
+    f.write("#{u.id};#{u.name};#{u.sex == 0 ? 'M' : 'F'};#{u.created_at.day}/#{u.created_at.month}/#{u.created_at.year}")
     for i in 0..(x-1) do
-      f.write("; #{$history[i][u.id]}")
+      f.write(";#{$history[i][u.id]}")
     end
     f.write("\n")
   end
