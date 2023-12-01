@@ -2,12 +2,12 @@
 
 # == Schema Information
 #
-# Table name: actualities
+# Table name: faqs
 #
-#  id         :integer          not null, primary key
-#  title      :string
-#  content    :text
-#  created_at :datetime         not null
+#  id       :integer          not null, primary key
+#  question :text
+#  answer   :text
+#  position :integer
 #
 class Faq < ActiveRecord::Base
 

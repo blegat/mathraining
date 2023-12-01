@@ -2,9 +2,10 @@
 #
 # Table name: countries
 #
-#  id   :integer          not null, primary key
-#  name :string
-#  code :string
+#  id                  :integer          not null, primary key
+#  name                :string
+#  code                :string
+#  name_without_accent :string
 #
 class Country < ActiveRecord::Base
 

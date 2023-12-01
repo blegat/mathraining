@@ -117,7 +117,7 @@ class VirtualtestsController < ApplicationController
 
   # Check that current user has access to the virtualtest
   def has_access
-    if !has_enough_points
+    if !has_enough_points(current_user.sk)
       render 'errors/access_refused' and return
     end
     visible = true

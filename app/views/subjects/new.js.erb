@@ -91,11 +91,11 @@
   opt.value = 0
   oldSel2.add(opt, null);
     
-  <% probvisibles = has_enough_points() %>
+  <% probvisibles = has_enough_points(current_user.sk) %>
     
   <% if probvisibles %>
     <% some_prob_hidden = false %>
-    <% access_prob = accessible_problems_from_section(section, ["id", "number"]).to_a %>
+    <% access_prob = accessible_problems_from_section(current_user.sk, section, ["id", "number"]).to_a %>
     <% prob_with_subject = Subject.select(:problem_id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
     
     <% access_prob.each do |p| %>

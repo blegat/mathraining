@@ -1,31 +1,31 @@
 <% can_see_correction = false %>
 
 <h3>
-<% if @contestsolution.official? %>
+<% if contestsolution.official? %>
   Solution officielle
   <% can_see_correction = true %>
-<% elsif @contestsolution.user == current_user.sk %>
+<% elsif contestsolution.user == current_user.sk %>
   Votre solution
   <% if @contestproblem.in_progress? %>
     (modifiable)
   <% elsif @contestproblem.in_correction? %>
     (en attente de correction)
   <% elsif @contestproblem.at_least(:corrected) %>
-    <% if @contestsolution.star %>
-      <%= image_tag @contestsolution.icon, :class => "svg-black-white" %>
+    <% if contestsolution.star %>
+      <%= image_tag contestsolution.icon, :class => "svg-black-white" %>
     <% end %>
     <% can_see_correction = true %>
   <% end %>
 <% else %>
-  Solution de <%= raw @contestsolution.user.linked_name %>
+  Solution de <%= raw contestsolution.user.linked_name %>
   <% can_see_correction = true %>
 <% end %>
 
 <% if @contest.is_organized_by_or_root(current_user.sk) %>
-  <% if !@contestsolution.corrected %>
+  <% if !contestsolution.corrected %>
     (à corriger)
-  <% elsif @contestsolution.official? %>
-    <% if @contestsolution.score == 7 %>
+  <% elsif contestsolution.official? %>
+    <% if contestsolution.score == 7 %>
       (publique)
     <% else %>
       (non-publique)
@@ -34,27 +34,27 @@
 <% end %>
 </h3>
 
-<% if (@contestsolution.official? || @contestproblem.in_correction? || @contestproblem.in_recorrection?) && @contest.is_organized_by(current_user.sk) %>
+<% if (contestsolution.official? || @contestproblem.in_correction? || @contestproblem.in_recorrection?) && @contest.is_organized_by(current_user.sk) %>
 
-  <% @was_reserved = false %>
+  <% can_edit_correction = true %>
 
   <script type="text/javascript">
   var reserve = function () {
-    $.getScript("<%= contestsolution_reserve_url(@contestsolution) %>");
+    $.getScript("<%= contestsolution_reserve_url(contestsolution) %>");
   }
   var unreserve = function () {
-    $.getScript("<%= contestsolution_unreserve_url(@contestsolution) %>");
+    $.getScript("<%= contestsolution_unreserve_url(contestsolution) %>");
   }
   </script>
 
-  <% res = @contestsolution.reservation %>
+  <% res = contestsolution.reservation %>
   <% if res == 0 %>
-    <% @was_reserved = true %>
+    <% can_edit_correction = false %>
     <% reservation_case = 1 %>
   <% elsif res == current_user.sk.id %>
     <% reservation_case = 3 %>
   <% else %>
-    <% @was_reserved = true %>
+    <% can_edit_correction = false %>
     <% reservation_case = 2 %>
     <% other_name = User.find(res).name %>
   <% end %>
@@ -75,18 +75,18 @@
 <% end %>
 
 <!-- Affichage de la soumission (on ajoute 'fake' à l'id si on ne peut pas modifier la solution) -->
-<% if !@contestsolution.official %>
-  <% can_edit = (@contestsolution.user == current_user.sk && @contestproblem.in_progress?) %>
+<% if !contestsolution.official %>
+  <% can_edit = (contestsolution.user == current_user.sk && @contestproblem.in_progress?) %>
 
-  <div id="the<%= 'fake' if @contestsolution.user != current_user.sk %>" class="myoverflow">
-    <%= render 'shared/post', ms: @contestsolution, kind: "contestsolution", can_edit: can_edit, reduce_margin_top: true %>
+  <div id="the<%= 'fake' if contestsolution.user != current_user.sk %>" class="myoverflow">
+    <%= render 'shared/post', ms: contestsolution, kind: "contestsolution", can_edit: can_edit, reduce_margin_top: true %>
   </div>
 
   <% if can_edit %>
     <% @ancientexte = session[:ancientexte] %>
     
     <div id="form" class="myoverflow mt-1 px-1" style="height:0px;">
-    <%= render 'contestsolutions/edit' %>
+    <%= render 'contestsolutions/edit', contestsolution: contestsolution %>
     </div>
     
     <% if !session["ancientexte"].nil? %>
@@ -97,6 +97,5 @@
 <% end %>
 
 <% if can_see_correction %>
-  <% @contestcorrection = @contestsolution.contestcorrection %>
-  <%= render 'contestcorrections/show' %>
+  <%= render 'contestcorrections/show', contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection, can_edit_correction: can_edit_correction %>
 <% end %>

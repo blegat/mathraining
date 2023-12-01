@@ -1,0 +1,108 @@
+<% if !@signed_in %>
+  <p class="text-center">Le classement n'est visible que par les utilisateurs connectés.</p>
+<% else %>
+  <% organizer = @contest.is_organized_by_or_admin(current_user.sk) %>
+  <% if @contest.contestscores.count == 0 %>
+    <p class="text-center">Personne n'a résolu de problème.</p>
+  <% else %>
+    
+    <% show_medals = (@contest.medal && @contest.gold_cutoff > 0) %>
+    <% nb_prob = @contest.contestproblems.count %>
+    <% allprobs = @contest.contestproblems.order(:number) %>
+    
+    <% allsols = [] %>
+    <% allprobs.each do |p| %>
+      <% allsols[p.number] = {} %>
+      <% p.contestsolutions.each do |s| %>
+        <% allsols[p.number][s.user_id] = [s.score, s.id] %>
+      <% end %>
+    <% end %>
+    
+    <div style="width:100%; overflow-x:auto;">
+    
+    <center>
+    <% width_rank = 40 %>
+    <% width_medal = 35 %>
+    <% width_name = 230 %>
+    <% width_prob = 40 %>
+    <% width_total = 60 %>
+    <% width_table = width_rank + (show_medals ? width_medal : 0) + width_name + nb_prob*width_prob + width_total %>
+    <table id="results-table" class="table table-bordered my-0" style="min-width:<%= width_table %>px; width:<%= width_table %>px;">
+    <tr class="table-ld-header">
+    <th style="width:<%= width_rank %>px;"></th>
+    <% if show_medals %>
+      <th style="width:<% width_medal %>px;"></th>
+    <% end %>
+    <th style="width:<%= width_name %>px;">Nom</th>
+    <% (1..nb_prob).each do |i| %>
+      <th class="text-center" style="width:<%= width_prob %>px;">P<%= i %></th>
+    <% end %>
+    <th class="text-center" style="width:<%= width_total %>px;">Total</th>
+    </tr>
+    
+    <% prevrank = 0 %>
+    <% @contest.contestscores.order(:rank, :user_id).includes(:user).each do |line| %>
+    <tr id="line-<%= line.user_id %>">
+    <td id="rank-<%= line.user_id %>" class="text-center">
+    <% if prevrank != line.rank %>
+      <%= line.rank %>.
+      <% prevrank = line.rank %>
+    <% end %>
+    </td>
+    <% if show_medals %>
+      <td id="medal-<%= line.user_id %>" class="text-center">
+      <% if line.medal == 4 %><%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") %>
+      <% elsif line.medal == 3 %><%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") %>
+      <% elsif line.medal == 2 %><%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") %>
+      <% elsif line.medal == 1 %><%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") %>
+      <% end %>
+      </td>
+    <% end %>
+    <td id="name-<%= line.user_id %>"><%= raw(line.user.linked_name) %></td>
+    <% allprobs.each do |p| %>
+      <% if p.at_least(:corrected) %>
+        <% x = allsols[p.number][line.user.id] %>
+      <% else %>
+        <% x = nil %>
+      <% end %>
+      <% if !x.nil? %>
+        <% score = x[0] %>
+        <% id = x[1] %>
+      <% else %>
+        <% score = 0 %>
+        <% id = nil %>
+      <% end %>
+      <% td_id = "score-#{ line.user_id }-#{ p.id }" %> 
+      <% if p.at_least(:corrected) && score > 0 %>
+        <% if score == 7 %>
+          <td id="<%= td_id %>" class="text-center contest-score-green">
+          <%= link_to "7", contestproblem_path(p, :sol => id) %>
+          </td>
+        <% else %>
+          <td id="<%= td_id %>" class="text-center contest-score-orange">
+          <% if organizer %>
+            <%= link_to score, contestproblem_path(p, :sol => id) %>
+          <% else %>
+            <%= score %>
+          <% end %>
+          </td>
+        <% end %>
+      <% elsif p.at_least(:corrected) %>
+        <td id="<%= td_id %>" class="text-center contest-score-red">
+          <% if !id.nil? and organizer %>
+            <%= link_to "0", contestproblem_path(p, :sol => id) %>
+          <% end %>
+        </td>
+      <% else %>
+        <td></td>
+      <% end %>
+    <% end %>
+    <td id="total-score-<%= line.user_id %>" class="text-center"><%= line.score %></td>
+    </tr>
+    <% end %>
+    </table>
+    </center>
+    
+    </div>
+  <% end %>
+<% end %>

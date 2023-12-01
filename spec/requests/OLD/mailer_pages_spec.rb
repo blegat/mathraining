@@ -161,7 +161,7 @@ feature 'Emailer' do
     before do
       Followingcontest.create(:contest => running_contest, :user => user_following_contest)
       Followingsubject.create(:subject => running_contestsubject, :user => user_following_subject)
-      Contestorganization.create(:contest => running_contest, :user => root)
+      running_contest.organizers << root
     end
     
     describe "publication of results" do

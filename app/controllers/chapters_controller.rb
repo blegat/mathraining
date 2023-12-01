@@ -1,7 +1,8 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :destroy, :read, :order, :put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :read, :order, :put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
+  before_action :non_admin_user, only: [:read]
   before_action :admin_user, only: [:new, :create, :destroy, :order]
   before_action :root_user, only: [:put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
   
@@ -10,7 +11,8 @@ class ChaptersController < ApplicationController
   before_action :get_section, only: [:new, :create]
   
   before_action :offline_chapter, only: [:destroy, :put_online]
-  before_action :online_chapter_or_creating_user, only: [:show, :read]
+  before_action :online_chapter, only: [:read]
+  before_action :online_chapter_or_creating_user, only: [:show]
   before_action :prerequisites_online, only: [:put_online]
   before_action :user_that_can_update_chapter, only: [:edit, :update]
 
@@ -56,11 +58,7 @@ class ChaptersController < ApplicationController
     if @chapter.update(params.require(:chapter).permit(:name, :description, :level, :author))
       if old_level != @chapter.level
         last_chapter = @section.chapters.where(:level => params[:chapter][:level]).order(:position).last
-        if last_chapter.nil?
-          position = 1
-        else
-          position = last_chapter.position + 1
-        end
+        position = (last_chapter.nil? ? 1 : last_chapter.position + 1)
         @chapter.update_attribute(:position, position)
       end
       flash[:success] = "Chapitre modifié."
@@ -158,6 +156,11 @@ class ChaptersController < ApplicationController
     unless @chapter.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id)))
       render 'errors/access_refused' and return
     end
+  end
+  
+  # Check that the chapter is online
+  def online_chapter
+    return if check_offline_object(@chapter)
   end
 
   # Check that the chapter is offline

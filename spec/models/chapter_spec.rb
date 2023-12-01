@@ -2,117 +2,106 @@
 #
 # Table name: chapters
 #
-#  id               :integer          not null, primary key
-#  name             :string
-#  description      :text
-#  level            :integer
-#  online           :boolean          default(FALSE)
-#  section_id       :integer
-#  nb_tries         :integer          default(0)
-#  nb_completions   :integer          default(0)
-#  position         :integer          default(0)
-#  author           :string
-#  publication_date :date
+#  id                      :integer          not null, primary key
+#  name                    :string
+#  description             :text
+#  level                   :integer
+#  online                  :boolean          default(FALSE)
+#  section_id              :integer
+#  nb_tries                :integer          default(0)
+#  nb_completions          :integer          default(0)
+#  position                :integer          default(0)
+#  author                  :string
+#  publication_date        :date
+#  submission_prerequisite :boolean          default(FALSE)
 #
 require "spec_helper"
 
-describe Chapter do
+describe Chapter, chapter: true do
+  let!(:sec) { FactoryGirl.build(:section) }
+  let!(:chap) { FactoryGirl.build(:chapter, section: sec) }
 
-  before { @sec = FactoryGirl.build(:section) }
-  before { @chap = Chapter.new(name: "Example",
-                               description: "Nice example",
-                               level: 1,
-                               section: @sec) }
-
-  subject { @chap }
-
-  it { should respond_to(:name) }
-  it { should respond_to(:description) }
-  it { should respond_to(:level) }
-  it { should respond_to(:theories) }
-  it { should respond_to(:questions) }
-  it { should respond_to(:prerequisites) }
-  it { should respond_to(:backwards) }
-  it { should respond_to(:recursive_prerequisites) }
+  subject { chap }
 
   it { should be_valid }
 
   # Name
   describe "when name is not present" do
-    before { @chap.name = nil }
+    before { chap.name = nil }
     it { should_not be_valid }
   end
-  describe "when name is present" do
-    before { @chap.name = "coucou" }
-    it { should be_valid }
-  end
+  
   describe "when name is too long" do
-    before { @chap.name = "a" * 256 }
+    before { chap.name = "a" * 256 }
     it { should_not be_valid }
   end
+  
   describe "when name is already taken" do
     before do
-      other_chap = Chapter.new(name: @chap.name, description: "Other description", level: 2, section: @sec)
-      other_chap.save
+      FactoryGirl.create(:chapter, section: sec, name: chap.name)
     end
     it { should_not be_valid }
   end
 
   # Description
   describe "when description is not present" do
-    before { @chap.description = nil }
+    before { chap.description = nil }
     it { should be_valid }
   end
+  
   describe "when description is too long" do
-    before { @chap.description = "a" * 16001 }
+    before { chap.description = "a" * 16001 }
     it { should_not be_valid }
   end
 
   # Level
   describe "when level is 1" do
-    before { @chap.level = 1 }
+    before { chap.level = 1 }
     it { should be_valid }
   end
   
   describe "when level is 3" do
-    before { @chap.level = 3 }
+    before { chap.level = 3 }
     it { should be_valid }
   end
   
   describe "when level is not present" do
-    before { @chap.level = nil }
+    before { chap.level = nil }
     it { should_not be_valid }
   end
 
   describe "when level is zero" do
-    before { @chap.level = 0 }
+    before { chap.level = 0 }
     it { should_not be_valid }
   end
 
   describe "when level is greater than 3" do
-    before { @chap.level = 4 }
+    before { chap.level = 4 }
     it { should_not be_valid }
   end
 
-  # Prerequisite
-  describe "when there is a prerequisite" do
+  # Prerequisites
+  describe "when there are some prerequisites" do
     let!(:chap1) { FactoryGirl.create(:chapter) }
     let!(:chap2) { FactoryGirl.create(:chapter) }
     let!(:chap3) { FactoryGirl.create(:chapter) }
     let!(:chap4) { FactoryGirl.create(:chapter) }
     before do
       chap1.prerequisites << chap3
-      @chap.save
-      @chap.prerequisites << chap1
+      chap.save
+      chap.prerequisites << chap1
       chap1.prerequisites << chap2
-      # chap < chap1 < (chap2 & chap3)
+      chap4.prerequisites << chap
+      # chap4 < chap < chap1 < (chap2 & chap3)
     end
     describe "recursive_prerequisites should be correct" do
-      specify { expect(@chap.recursive_prerequisites).to include(chap1.id) }
-      specify { expect(@chap.recursive_prerequisites).to include(chap2.id) }
-      specify { expect(@chap.recursive_prerequisites).to include(chap3.id) }
-      specify { expect(@chap.recursive_prerequisites).not_to include(chap4.id) }
+      specify do
+        expect(chap.number_prerequisites).to eq(3)
+        expect(chap.recursive_prerequisites).to include(chap1.id)
+        expect(chap.recursive_prerequisites).to include(chap2.id)
+        expect(chap.recursive_prerequisites).to include(chap3.id)
+        expect(chap.recursive_prerequisites).not_to include(chap4.id)
+      end
     end
   end
-
 end

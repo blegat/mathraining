@@ -1,35 +1,19 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Category pages" do
+describe "Category pages", category: true do
 
   subject { page }
 
   let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:user) }
   let!(:category) { FactoryGirl.create(:category) }
   let(:newname) { "Nouveau nom" }
-
-  describe "user" do
-    before do
-      sign_in user
-      visit subjects_path
-    end
-    it { should have_no_link("Modifier les catégories") }
-    
-    describe "tries to create a category" do
-      before { visit categories_path }
-      it { should have_no_selector("h1", text: "Modifier les catégories") }
-    end
-  end
 
   describe "root" do
     before do
       sign_in root
       visit subjects_path
     end
-    
-    it { should have_link("Modifier les catégories") }
     
     describe "view categories" do
       before { visit categories_path }

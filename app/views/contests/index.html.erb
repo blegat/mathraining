@@ -6,7 +6,7 @@
 
 <%= render 'info' %>
 
-<% if !has_enough_points %>
+<% if !has_enough_points(@signed_in ? current_user.sk : nil) %>
 <div class="mb-3 fw-bold">
 Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.
 </div>

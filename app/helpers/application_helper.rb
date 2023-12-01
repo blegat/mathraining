@@ -180,14 +180,14 @@ module ApplicationHelper
     return newlevel
   end
   
-  # Tells if current user has enough points for problems
-  def has_enough_points
-    if !@signed_in
+  # Tells if user has enough points for problems
+  def has_enough_points(user) # user = nil for a non-signed-in user
+    if user.nil?
       return false
-    elsif current_user.sk.admin?
+    elsif user.admin?
       return true
     else
-      return (current_user.sk.rating >= 200)
+      return (user.rating >= 200)
     end
   end
   

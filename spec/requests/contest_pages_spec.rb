@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Contest pages" do
+describe "Contest pages", contest: true do
 
   subject { page }
 
@@ -50,45 +50,8 @@ describe "Contest pages" do
   let(:gold_cutoff) { 14 }
   
   before do
-    Contestorganization.create(:contest => contest, :user => user_organizer)
-    Contestorganization.create(:contest => offline_contest, :user => user_organizer)
-  end
-  
-  describe "visitor" do
-    describe "visits contests page" do
-      before { visit contests_path }
-      it do
-        should have_selector("h1", text: "Concours")
-        should have_selector("h4", text: "Concours ##{contest.number}")
-        should have_no_selector("h4", text: "Concours ##{offline_contest.number}")
-        should have_selector("div", text: "Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.")
-      end
-    end
-    
-    describe "visits one contest page" do
-      before { visit contest_path(contest) }
-      it do
-        should have_content("Concours ##{contest.number}") # Not h1: not correctly detected because of "Suivre ce concours"
-        should have_selector("h4", text: "Problème ##{contestproblem1.number}")
-        should have_content(contestproblem1.statement)
-        should have_content(contestproblem1.origin)
-        should have_selector("h4", text: "Problème ##{contestproblem2.number}")
-        should have_content(contestproblem2.statement)
-        should have_content(contestproblem2.origin)
-        should have_link("Classement final", href: contest_path(contest, :tab => 1))
-        should have_link("Statistiques", href: contest_path(contest, :tab => 2))
-      end
-      
-      describe "and visits the rankings" do
-        before { click_link "Classement final" }
-        it { should have_content("Le classement n'est visible que par les utilisateurs connectés.") }
-      end
-      
-      describe "and visits the statistics" do
-        before { click_link("Statistiques", href: contest_path(contest, :tab => 2)) }
-        it { should have_selector("h3", text: "Distribution des scores") }
-      end
-    end
+    contest.organizers << user_organizer
+    offline_contest.organizers << user_organizer
   end
   
   describe "user with rating 199" do
@@ -96,20 +59,6 @@ describe "Contest pages" do
     
     describe "visits finished contest page" do    
       before { visit contest_path(contest) }
-      it do
-        should have_content("Concours ##{contest.number}") # Not h1: not correctly detected because of "Suivre ce concours"
-        should have_link("link_follow")
-      end
-        
-      describe "and visits the rankings" do
-        before { click_link "Classement final" }
-        it { should have_no_content("Le classement n'est visible que par les utilisateurs connectés.") }
-      end
-      
-      describe "and visits the statistics" do
-        before { click_link("Statistiques", href: contest_path(contest, :tab => 2)) }
-        it { should have_selector("h3", text: "Distribution des scores") }
-      end
       
       describe "and follows the contest" do
         before { click_link("link_follow") }
@@ -128,54 +77,11 @@ describe "Contest pages" do
           end
         end
       end
-      
-      describe "try to unfollow a non-existing contest" do
-        before { visit remove_followingcontest_path(:contest_id => 6543) }
-        it { should have_content(error_access_refused) }
-      end
-    end
-    
-    describe "tries to visit an offline contest page" do
-      before { visit contest_path(offline_contest) }
-      it { should have_content(error_access_refused) }
-    end
-  end
-  
-  describe "user with rating 200" do # NB: This test should probably be moved to "views" tests
-    before { sign_in user_with_rating_200 }
-    
-    describe "visits running contest page" do    
-      before { visit contest_path(contest_in_progress) }
-      it do
-        should have_content("Concours ##{contest_in_progress.number}") # Not h1: not correctly detected because of "Suivre ce concours"
-        should have_content(contestproblem1_corrected.statement)
-        should have_content(contestproblem1_corrected.origin)
-        should have_content(contestproblem2_in_correction.statement)
-        should have_content(contestproblem2_in_correction.origin)
-        should have_content(contestproblem3_in_progress.statement)
-        should have_no_content(contestproblem3_in_progress.origin)
-        should have_no_content(contestproblem4_not_started_yet.statement)
-        should have_no_content(contestproblem4_not_started_yet.origin)
-      end
     end
   end
   
   describe "organizer" do
     before { sign_in user_organizer }
-    
-    describe "visits contest page" do
-      before { visit contest_path(contest) }
-      it { should have_link("Définir les médailles", href: contest_cutoffs_path(contest)) }
-    end
-    
-    describe "visits offline contest page" do
-      before { visit contest_path(offline_contest) }
-      it do
-        should have_link("Modifier ce concours")
-        should have_no_link("Mettre ce concours en ligne")
-        should have_no_link("Supprimer ce concours")
-      end
-    end
     
     describe "visits contest edit page" do
       before { visit edit_contest_path(offline_contest) }
@@ -274,24 +180,10 @@ describe "Contest pages" do
         end
       end
     end
-    
-    describe "tries to define cutoffs while there are no medals" do
-      before do
-        contest.medal = false
-        contest.save
-        visit contest_cutoffs_path(contest)
-      end
-      it { should have_content(error_access_refused) }
-    end
   end
   
   describe "admin" do
     before { sign_in admin }
-
-    describe "visits contests page" do
-      before { visit contests_path }
-      it { should have_button("Ajouter un concours") }
-    end
      
     describe "visits contest creation page" do
       before { visit new_contest_path }
@@ -319,7 +211,7 @@ describe "Contest pages" do
         end
       end
       
-      describe "and creates a new contest without numbe" do
+      describe "and creates a new contest without number" do
         before do
           fill_in "MathInput", with: newdescription
           click_button "Créer"
@@ -327,15 +219,6 @@ describe "Contest pages" do
         it { should have_error_message("Numéro doit être rempli") }
       end
     end  
-    
-    describe "visits online contest page" do
-      before { visit contest_path(contest) }
-      it do
-        should have_link("Modifier ce concours")
-        should have_no_link("Mettre ce concours en ligne")
-        should have_no_link("Supprimer ce concours")
-      end
-    end
     
     describe "visits offline contest page" do
       before { visit contest_path(offline_contest) }
@@ -345,14 +228,6 @@ describe "Contest pages" do
         expect(page).to have_link("Supprimer ce concours")
         expect(page).to have_button("Ajouter") # To add an organizer
         expect { click_link "Supprimer ce concours" }.to change(Contest, :count).by(-1)
-      end
-      
-      describe "and deletes the contest while it was put online" do
-        before do
-          offline_contest.in_progress!
-          click_link "Supprimer ce concours"
-        end
-        it { should have_content(error_access_refused) }
       end
 
       describe "and puts it online" do

@@ -102,10 +102,10 @@
         <% end %>
       <% elsif kind == "contestsolution" %>
         <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>
-        | <%= link_to "Supprimer la solution", contestsolution_path(@contestsolution), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette solution ?" }  %>
+        | <%= link_to "Supprimer la solution", contestsolution_path(ms), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette solution ?" }  %>
       <% elsif kind == "contestcorrection" %>
         <a href='#' onclick='return Rolling.develop("")'>
-        <% if !@contestsolution.official? %>
+        <% if !ms.contestsolution.official? %>
           Modifier la correction
         <% else %>
           Modifier la solution

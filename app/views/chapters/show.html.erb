@@ -26,8 +26,7 @@
 
     <!-- Points théoriques -->
     <% compteur = 0 %>
-    <% listex = @chapter.theories.order(:position) %>
-    <% listex.each do |f| %>
+    <% @chapter.theories.order(:position).each do |f| %>
       <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
         <% if compteur == 0 %>
           <h5 class="mt-3">Points théoriques</h5>
@@ -90,13 +89,13 @@
             
           <% kind = "" %>
           <% if f.online %>
-            <% if @signed_in %>
+            <% if @signed_in && !current_user.sk.admin? %>
               <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id) %>
               <% if exo.size > 0 %>
                 <% exo = exo.first %>
-                <% if exo.correct && !current_user.sk.admin? %>
+                <% if exo.correct %>
                   <% kind = "list-group-item-success" %>
-                <% elsif !current_user.sk.admin? %>
+                <% else %>
                   <% pasfait = pasfait + 1 %>
                   <% kind = "list-group-item-danger" %>
                 <% end %>
@@ -156,14 +155,18 @@
 
     <% if type == 1 && @chapter.theories.exists?(id) %>
       <% theory = Theory.find(id) %>
-      <%= render 'theories/show', theory: theory, id: id %>
+      <% if theory.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+        <%= render 'theories/show', theory: theory %>
+      <% end %>
     <% end %>
 
     <!-- QUESTIONS -->
 
     <% if type == 5 && @chapter.questions.exists?(id) && exovisibles %>
       <% question = Question.find(id) %>
-      <%= render 'questions/show', question: question, number: number, id: id %>
+      <% if question.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+        <%= render 'questions/show', question: question, number: number %>
+      <% end %>
     <% end %>
 
   </div>

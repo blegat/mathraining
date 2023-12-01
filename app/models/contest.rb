@@ -51,17 +51,37 @@ class Contest < ActiveRecord::Base
   
   # Tells if given user is an organizer of the contest
   def is_organized_by(user)
-    return organizers.include?(user)
+    return self.organizers.include?(user)
   end
   
   # Tells if given user is a root or an organizer of the contest
   def is_organized_by_or_root(user)
-    return user.root? || is_organized_by(user)
+    return user.root? || self.is_organized_by(user)
   end
   
   # Tells if given user if an admin or an organizer of the contest
   def is_organized_by_or_admin(user)
-    return user.admin? || is_organized_by(user)
+    return user.admin? || self.is_organized_by(user)
+  end
+  
+  # Helper method to update problem numbers
+  def update_problem_numbers
+    x = 1
+    self.contestproblems.order(:start_time, :end_time, :id).each do |p|
+      p.update_attribute(:number, x)
+      x = x+1
+    end
+  end
+  
+  # Helper method to update contest details (number of problems, start time, end time...)
+  def update_details
+    self.update_attribute(:num_problems, contestproblems.count)
+    if self.num_problems > 0
+      self.update(start_time: contestproblems.order(:start_time).first.start_time, 
+                  end_time:   contestproblems.order(:end_time).last.end_time)
+    else
+      self.update(start_time: nil, end_time: nil)
+    end
   end
   
   # Method called every exact hour (see schedule.rb)

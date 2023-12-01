@@ -15,6 +15,7 @@ FactoryGirl.define do
     association :section
     sequence(:description) { |n| "Une description #{n}" }
     sequence(:name) { |n| "Chapitre #{n}" }
+    sequence(:author) { |n| "Auteur #{n}" }
     level 1
   end
   
@@ -34,6 +35,12 @@ FactoryGirl.define do
     end_time DateTime.new(2020, 3, 5)
     medal true
     status :completed
+  end
+  
+  # Contestorganization
+  factory :contestorganization do
+    association :contest
+    association :user
   end
   
   # Contestproblem
@@ -60,6 +67,12 @@ FactoryGirl.define do
     association :user
     content "Voici ma solution."
     # NB: The associated contestcorrection is created automatically
+  end
+  
+  # Contestcorrection: Avoid creating it directly! Create Contestsolution instead!
+  factory :contestcorrection do
+    association :contestsolution
+    content "Voici ma correction"
   end
   
   # Contestscore
@@ -270,7 +283,7 @@ FactoryGirl.define do
   # Theory
   factory :theory do
     association :chapter
-    sequence(:title) { |n| "Mon titre #{n}" }
+    sequence(:title) { |n| "Mon titre #{n} saugrenu" }
     sequence(:content) { |n| "Contenu #{n}" }
     sequence(:position) { |n| n }
   end

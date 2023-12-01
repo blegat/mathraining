@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe ContestsHelper do
+describe ContestsHelper, type: :helper, contest: true do
 
   include ContestsHelper
 
@@ -17,7 +17,7 @@ describe ContestsHelper do
       describe "with one organizer and one problem" do
         before do
           contest.update_attribute(:medal, true)
-          Contestorganization.create(:contest => contest, :user => user1)
+          contest.organizers << user1
           contestproblem1.update_attribute(:contest, contest)
           contestproblem1.update_attribute(:start_time, Time.zone.parse('27-11-2021 13:00:00'))
         end
@@ -33,9 +33,9 @@ describe ContestsHelper do
       describe "with three organizers and two problems" do
         before do
           contest.update_attribute(:medal, false)
-          Contestorganization.create(:contest => contest, :user => user1)
-          Contestorganization.create(:contest => contest, :user => user2)
-          Contestorganization.create(:contest => contest, :user => user3)
+          contest.organizers << user1
+          contest.organizers << user2
+          contest.organizers << user3
           contestproblem1.update_attribute(:contest, contest)
           contestproblem2.update_attribute(:contest, contest)
           contestproblem1.update_attribute(:start_time, Time.zone.parse('27-11-2021 11:00:00'))

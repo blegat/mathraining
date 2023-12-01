@@ -1,11 +1,11 @@
-<% can_edit = (@contestsolution.official? || @contestproblem.in_correction? || @contestproblem.in_recorrection?) && @contest.is_organized_by(current_user.sk) %>
+<% can_edit = (contestsolution.official? || @contestproblem.in_correction? || @contestproblem.in_recorrection?) && @contest.is_organized_by(current_user.sk) %>
 
 <div id="the" class="myoverflow">
-  <% if !@contestsolution.official? %>
+  <% if !contestsolution.official? %>
     <h4 class="mt-3">Score obtenu</h4>
-    <center><div class="bg-as-table-ld-warning p-1 border border-warning" style="font-size:24px;"><%= @contestsolution.score if @contestsolution.score >= 0 %><%= '-' if @contestsolution.score < 0 %> / 7</span></center>
+    <center><div class="bg-as-table-ld-warning p-1 border border-warning" style="font-size:24px;"><%= contestsolution.score if contestsolution.score >= 0 %><%= '-' if contestsolution.score < 0 %> / 7</span></center>
   <% end %>
-  <%= render 'shared/post', ms: @contestcorrection, kind: "contestcorrection", can_edit: can_edit, reduce_margin_top: @contestsolution.official? %>
+  <%= render 'shared/post', ms: contestcorrection, kind: "contestcorrection", can_edit: can_edit, reduce_margin_top: contestsolution.official? %>
 </div>
 
 <% if can_edit %>
@@ -13,7 +13,7 @@
   <% @ancienscore = session[:ancienscore] %>
   
   <div id="form" class="myoverflow px-1" style="height:0px;">
-  <%= render 'contestcorrections/edit' %>
+  <%= render 'contestcorrections/edit', contestsolution: contestsolution, contestcorrection: contestcorrection, can_edit_correction: can_edit_correction %>
   </div>
   
   <% if !session["ancientexte"].nil? %>

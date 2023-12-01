@@ -351,7 +351,7 @@ describe "Submission pages" do
           expect(page).to have_selector("div", text: newcorrection)
           expect(page).to have_link("0", href: allnewsub_path(:levels => 3)) # no more waiting submission
           expect(page).to have_link("Marquer comme erronée")
-          expect(page).not_to have_link("Étoiler cette solution") # only for roots
+          expect(page).to have_no_link("Étoiler cette solution") # only for roots
           expect(user.rating).to eq(rating_before + waiting_submission.problem.value)
         end
         
@@ -364,7 +364,7 @@ describe "Submission pages" do
           specify do
             expect(waiting_submission.wrong?).to eq(true)
             expect(page).to have_selector("h3", text: "Soumission (erronée)")
-            expect(page).not_to have_link("Marquer comme erronée")
+            expect(page).to have_no_link("Marquer comme erronée")
             expect(user.rating).to eq(rating_before)
           end
         end
@@ -380,7 +380,7 @@ describe "Submission pages" do
             expect(waiting_submission.correct?).to eq(true)
             expect(page).to have_error_message("Vous ne pouvez plus marquer cette solution comme erronée")
             expect(page).to have_selector("h3", text: "Soumission (correcte)")
-            expect(page).not_to have_link("Marquer comme erronée") # Because too late
+            expect(page).to have_no_link("Marquer comme erronée") # Because too late
             expect(user.rating).to eq(rating_before + waiting_submission.problem.value)
           end
         end

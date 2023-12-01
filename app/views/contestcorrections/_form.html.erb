@@ -1,18 +1,18 @@
-<div class="<%= "mt-1" if @contestsolution.official? %><%= "mt-3" unless @contestsolution.official? %> mb-2">
+<div class="<%= "mt-1" if contestsolution.official? %><%= "mt-3" unless contestsolution.official? %> mb-2">
 <%= render 'shared/preview' %>
 <%= render 'shared/smiley' %>
 <% if @ancientexte.nil? %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (!@signed_in || current_user.other || @was_reserved) %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || !can_edit_correction) %>
 <% else %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :value => @ancientexte, :id => "MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (!@signed_in || current_user.other || @was_reserved) %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :value => @ancientexte, :id => "MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || !can_edit_correction) %>
 <% end %>
 <script>initAndUpdatePreviewSafeWhenPossible()</script>
 </div>
 
-<% if !@contestsolution.official? %>
+<% if !contestsolution.official? %>
   <div class="mb-2">
   <label for="score" class="form-label">Score attribué (sur 7)</label>
-  <%= val = (@ancienscore.nil? ? (@contestsolution.score >= 0 ? @contestsolution.score : nil) : @ancienscore) %>
-  <%= number_field_tag "score", val, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;", :disabled => (!@signed_in || current_user.other || @was_reserved) %>
+  <%= val = (@ancienscore.nil? ? (contestsolution.score >= 0 ? contestsolution.score : nil) : @ancienscore) %>
+  <%= number_field_tag "score", val, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;", :disabled => (current_user.other || !can_edit_correction) %>
   </div>
 <% end %>

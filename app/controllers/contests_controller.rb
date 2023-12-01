@@ -11,8 +11,8 @@ class ContestsController < ApplicationController
   
   before_action :organizer_of_contest_or_admin, only: [:edit, :update, :cutoffs, :define_cutoffs]
   before_action :can_see_contest, only: [:show]
+  before_action :offline_contest, only: [:put_online, :destroy]
   before_action :can_be_online, only: [:put_online]
-  before_action :offline_contest, only: [:destroy]
   before_action :can_define_cutoffs, only: [:cutoffs, :define_cutoffs]
 
   # Show all the contests

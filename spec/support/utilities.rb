@@ -9,7 +9,7 @@ def sign_in(user)
 end
 
 def sign_in_controller(user)
-  cookies[:remember_token] = user.remember_token
+  request.cookies[:remember_token] = user.remember_token
 end
 
 def sign_out

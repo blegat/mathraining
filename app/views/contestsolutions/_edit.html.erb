@@ -1,7 +1,7 @@
-<%= form_for @contestsolution, :html => { :multipart => true } do |f| %>
+<%= form_for contestsolution, :html => { :multipart => true } do |f| %>
 
   <%= render 'submissions/form', f: f %>
-  <%= render 'shared/edit_files', s: @contestsolution %>
+  <%= render 'shared/edit_files', s: contestsolution %>
 
   <%= f.submit "Enregistrer", class: "btn btn-primary mb-2", :disabled => current_user.other %>
   <button class="btn btn-ld-light-dark mb-2" onclick="return Rolling.hideActual();">Annuler</button>

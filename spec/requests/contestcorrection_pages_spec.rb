@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Contestcorrection pages" do
+describe "Contestcorrection pages", contestcorrection: true do
 
   subject { page }
   
@@ -33,7 +33,7 @@ describe "Contestcorrection pages" do
   let(:exe_attachment) { "hack.exe" }
   
   before do
-    Contestorganization.create(:contest => contest, :user => user_organizer)
+    contest.organizers << user_organizer
   end
   
   describe "organizer" do

@@ -51,12 +51,12 @@
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
   <% if !@signed_in || !current_user.sk.admin %>
     <% cansee_chap = Array.new %>
-    <% access_chap = accessible_chapters(["id"]) %>
+    <% access_chap = accessible_chapters((@signed_in ? current_user.sk : nil), ["id"]) %>
     <% access_chap.each do |a| %>
       <% cansee_chap[a.id] = true %>
     <% end %>
     <% cansee_prob = Array.new %>
-    <% access_prob = accessible_problems(["id"]) %>
+    <% access_prob = accessible_problems((@signed_in ? current_user.sk : nil), ["id"]) %>
     <% access_prob.each do |a| %>
       <% cansee_prob[a.id] = true %>
     <% end %>

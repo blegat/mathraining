@@ -43,8 +43,8 @@ class ContestproblemsController < ApplicationController
     else
       flash[:success] = "Problème ajouté."
       
-      update_contest_details
-      update_problem_numbers
+      @contest.update_details
+      @contest.update_problem_numbers
       redirect_to @contestproblem
     end
   end
@@ -64,8 +64,8 @@ class ContestproblemsController < ApplicationController
     end
     if @contestproblem.save
       flash[:success] = "Problème modifié."
-      update_contest_details
-      update_problem_numbers
+      @contest.update_details
+      @contest.update_problem_numbers
       redirect_to @contestproblem
     else
       render 'edit'
@@ -76,8 +76,8 @@ class ContestproblemsController < ApplicationController
   def destroy
     @contestproblem.destroy
     flash[:success] = "Problème supprimé."
-    update_contest_details
-    update_problem_numbers
+    @contest.update_details
+    @contest.update_problem_numbers
     redirect_to @contest
   end
   
@@ -202,28 +202,6 @@ class ContestproblemsController < ApplicationController
   end
   
   ########## HELPER METHODS ##########
-  
-  # Helper method to update problem numbers
-  def update_problem_numbers
-    x = 1
-    @contest.contestproblems.order(:start_time, :end_time, :id).each do |p|
-      p.update_attribute(:number, x)
-      x = x+1
-    end
-  end
-  
-  # Helper method to update contest details (number of problems, start time, end time...)
-  def update_contest_details
-    @contest.num_problems = @contest.contestproblems.count
-    if @contest.num_problems > 0
-      @contest.start_time = @contest.contestproblems.order(:start_time).first.start_time
-      @contest.end_time = @contest.contestproblems.order(:end_time).last.end_time
-    else
-      @contest.start_time = nil
-      @contest.end_time = nil
-    end
-    @contest.save
-  end
   
   # Helper method to create automatic message on forum to say that results have been published
   def automatic_results_published_post(contestproblem)

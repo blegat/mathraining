@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Contestproblemcheck pages" do
+describe "Contestproblemcheck pages", contestproblem: true do
 
   subject { page }
 

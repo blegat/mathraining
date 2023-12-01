@@ -4,17 +4,18 @@
 #
 # Table name: chapters
 #
-#  id               :integer          not null, primary key
-#  name             :string
-#  description      :text
-#  level            :integer
-#  online           :boolean          default(FALSE)
-#  section_id       :integer
-#  nb_tries         :integer          default(0)
-#  nb_completions   :integer          default(0)
-#  position         :integer          default(0)
-#  author           :string
-#  publication_date :date
+#  id                      :integer          not null, primary key
+#  name                    :string
+#  description             :text
+#  level                   :integer
+#  online                  :boolean          default(FALSE)
+#  section_id              :integer
+#  nb_tries                :integer          default(0)
+#  nb_completions          :integer          default(0)
+#  position                :integer          default(0)
+#  author                  :string
+#  publication_date        :date
+#  submission_prerequisite :boolean          default(FALSE)
 #
 class Chapter < ActiveRecord::Base
 
@@ -76,9 +77,7 @@ class Chapter < ActiveRecord::Base
       nb_tries = Solvedquestion.where(:question => c.questions).distinct.count(:user_id)
       nb_completions = c.users.count
       if c.nb_tries != nb_tries || c.nb_completions != nb_completions
-        c.nb_tries = nb_tries
-        c.nb_completions = nb_completions
-        c.save
+        c.update(:nb_tries => nb_tries, :nb_completions => nb_completions)
       end
     end
   end

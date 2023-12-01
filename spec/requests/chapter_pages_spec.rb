@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Chapter pages" do
+describe "Chapter pages", chapter: true do
 
   subject { page }
 
@@ -27,35 +27,14 @@ describe "Chapter pages" do
   let(:newtitle) { "Mon nouveau titre de chapitre" }
   let(:newdescription) { "Ma nouvelle description de chapitre" }
   let(:newlevel) { 2 }
-  
-  describe "visitor" do
-    describe "visits an online chapter" do
-      before { visit chapter_path(online_chapter) }
-      it { should have_selector("h1", text: online_chapter.name) }
-    end
-    
-    describe "visits an offline chapter" do
-      before { visit chapter_path(offline_chapter) }
-      it { should have_content(error_access_refused) }
-    end
-  end
 
   describe "user" do
     before { sign_in user }
-    
-    describe "visits an offline chapter" do
-      before { visit chapter_path(offline_chapter) }
-      it { should have_content(error_access_refused) }
-    end
     
     describe "visits an online chapter" do
       before { visit chapter_path(online_chapter) }
       it do
         should have_selector("h1", text: online_chapter.name)
-        should have_no_link("Modifier les prérequis")
-        should have_no_link("Modifier ce chapitre")
-        should have_no_link("point théorique")
-        should have_no_link("QCM")
       end
     end 
     
@@ -78,16 +57,6 @@ describe "Chapter pages" do
           expect(user.theories.exists?(online_theory.id)).to eq(true)
         end
       end
-    end
-    
-    describe "tries to create a chapter" do
-      before { visit new_section_chapter_path(section) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to edit a chapter" do
-      before { visit edit_chapter_path(offline_chapter) }
-      it { should have_content(error_access_refused) }
     end
   end
 
@@ -164,7 +133,22 @@ describe "Chapter pages" do
       end
     end
     
-    describe "edits a chapter" do
+    describe "creates a chapter with empty title" do
+      before do
+        visit new_section_chapter_path(section)
+        fill_in "Titre", with: ""
+        fill_in "MathInput", with: description
+        fill_in "Niveau", with: level
+        click_button "Ajouter"
+      end
+      specify do
+        expect(page).to have_error_message("Titre doit être rempli")
+        expect(Chapter.order(:id).last.name).not_to eq("")
+        expect(Chapter.order(:id).last.description).not_to eq(description)
+      end
+    end
+    
+    describe "updates a chapter" do
       before do
         visit edit_chapter_path(offline_chapter)
         fill_in "Titre", with: newtitle
@@ -178,6 +162,23 @@ describe "Chapter pages" do
         expect(offline_chapter.description).to eq(newdescription)
         expect(offline_chapter.level).to eq(newlevel)
         expect(offline_chapter.position).to eq(section.chapters.where(:level => newlevel).order(:position).last.position)
+      end
+    end
+    
+    describe "updates a chapter with negative level" do
+      before do
+        visit edit_chapter_path(offline_chapter)
+        fill_in "Titre", with: newtitle
+        fill_in "MathInput", with: newdescription
+        fill_in "Niveau", with: -1
+        click_button "Modifier"
+        offline_chapter.reload
+      end
+      specify do
+        expect(page).to have_error_message("Niveau doit être supérieur ou égal à 1")
+        expect(offline_chapter.name).not_to eq(newtitle)
+        expect(offline_chapter.description).not_to eq(newdescription)
+        expect(offline_chapter.level).not_to eq(-1)
       end
     end
   end

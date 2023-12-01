@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Color pages" do
+describe "Color pages", color: true do
 
   subject { page }
 
@@ -10,14 +10,6 @@ describe "Color pages" do
   let!(:color) { FactoryGirl.create(:color) }
   let(:newtitle) { "Nouveau titre" }
   let(:newcontent) { "Nouveau contenu" }
-
-  describe "admin" do
-    before do
-      sign_in admin
-      visit colors_path
-    end
-    it { should have_no_selector("h1", text: "Niveaux et couleurs") }
-  end
 
   describe "root" do
     before do

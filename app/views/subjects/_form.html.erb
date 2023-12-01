@@ -224,12 +224,12 @@ function checkProblem() {
 <% listeprob = Array.new %>
 
 <% if seeprob %>
-  <% probvisibles = has_enough_points() %>
+  <% probvisibles = has_enough_points(current_user.sk) %>
 
   <% listeprob.push(["Choisissez un problème...", 0]) %>
 
   <% if probvisibles %>
-    <% access_prob = accessible_problems_from_section(sect, ["id", "number"]).to_a %>
+    <% access_prob = accessible_problems_from_section(current_user.sk, sect, ["id", "number"]).to_a %>
     <% prob_with_subject = Subject.select(:problem_id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
   
     <% access_prob.each do |p| %>

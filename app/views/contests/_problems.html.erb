@@ -1,0 +1,89 @@
+<% organizer = @signed_in && @contest.is_organized_by_or_admin(current_user.sk) %>
+
+<% @contest.contestproblems.order(:number).each do |p| %>
+  <% can_see_statement = (organizer || p.at_least(:in_progress)) %>
+  <% can_see_origin = (organizer || p.at_least(:in_correction)) %>
+  <% if p.at_most(:not_started_yet) %>
+    <% classe = "greyy" %>
+  <% elsif p.in_progress? %>
+    <% classe = "orangey" %>
+  <% else %>
+    <% classe = "yellowy" %>
+  <% end %>
+  
+  <table class="table table-bordered problem <%= classe %>">
+  <tr><td class="title">
+  <center><h4>
+  <% if can_see_statement && @signed_in %>
+    <%= link_to "Problème ##{p.number}", p %>
+    <% if current_user.sk.root? && p.in_recorrection? %>
+      (corrections modifiables)
+    <% end %>
+  <% else %>
+     Problème #<%= p.number %>
+  <% end %>
+  </h4></center>
+  </td></tr>
+  
+  <tr><td class="real-content">
+  
+  <div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
+  
+    <div class="g-col-12 g-col-md-24 intro">
+      <i>Solutions acceptées du <%= write_date_with_link(p.start_time, @contest, p) %> au <%= write_date_with_link(p.end_time, @contest, p) %> (heures belges).</i>
+    </div>
+    
+    <% if can_see_statement %>        
+      <div class="g-col-12 g-col-md-14 g-col-lg-16 g-col-xl-17 module left-part">
+        <center><h5>Énoncé</h5></center>
+        <%= raw(htmlise(p.statement)) %>
+      </div>
+      
+      <div class="g-col-12 g-col-md-10 g-col-lg-8 g-col-xl-7 module right-part">
+        <center><h5>Statistiques</h5></center>
+        <center>
+        <% if p.at_least(:in_progress) %>
+          <% nb_sol = p.contestsolutions.count - 1 %>
+          Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
+          <% if p.at_least(:corrected) %>
+            <% nb_perfect = p.contestsolutions.where(:score => 7, :official => false).count %>
+            Scores parfaits : <b><%= nb_perfect %></b>
+          <% elsif p.in_correction? %>
+            En cours de correction
+            <% if organizer %>
+              <% nb_not_corrected = p.contestsolutions.where(:score => -1, :official => false).count %>
+              (<%= nb_not_corrected %> restante<%= "s" if nb_not_corrected > 1 %>)
+            <% end %>
+          <% end %>
+        <% end %>
+        </center>   
+      </div>
+    <% end %>
+    
+    <% if p.at_most(:in_progress) && !@contest.in_construction? %>
+      <% if p.at_most(:not_started_yet) %>
+        <% date_limit = p.start_time.to_i %>
+        <% message_before = "Publication dans : " %>
+        <% message_zero = "En ligne" %>
+      <% else %>
+        <% date_limit = p.end_time.to_i %>
+        <% message_before = "Temps restant : " %>
+        <% message_zero = "Temps écoulé" %>
+      <% end %>
+
+      <div class="g-col-12 g-col-md-24 module bottom-part">
+        <center><span class="fs-4"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
+        <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
+      </div>
+    <% end %>
+    
+    <% if can_see_origin && !p.origin.nil? && p.origin != "" %>
+      <div class="g-col-12 g-col-md-24 module bottom-part">
+        Origine du problème : <b><%= p.origin %></b>
+      </div>
+    <% end %>
+    
+  </div>    
+  </td></tr>
+  </table>
+<% end %>

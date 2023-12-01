@@ -1,6 +1,3 @@
-<!-- On vérifie que cet exercice peut bien être vu -->
-<% if question.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
-
 <!-- Titre -->
 <%= render 'questions/title', question: question, number: number %>
 
@@ -22,7 +19,7 @@
 <!-- Si étudiant inscrit -->
 <% elsif @signed_in %>
 
-  <% solvedquestion = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => id) %>
+  <% solvedquestion = Solvedquestion.where(:user => current_user.sk, :question => question) %>
   
   <!-- Si il y a déjà eu au moins un essai -->
   <% if solvedquestion.size > 0 %>
@@ -72,6 +69,4 @@
   
   <hr class="bottom-help" />
   <p class="text-center">Pour pouvoir répondre aux exercices, vous devez être connecté.</p>
-<% end %>
-
 <% end %>

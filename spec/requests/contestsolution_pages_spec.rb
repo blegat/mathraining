@@ -33,7 +33,7 @@ describe "Contestsolution pages" do
   let(:exe_attachment) { "hack.exe" }
   
   before do
-    Contestorganization.create(:contest => contest, :user => user_organizer)
+    contest.organizers << user_organizer
   end
   
   describe "user with rating 199" do

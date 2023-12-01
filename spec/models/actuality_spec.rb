@@ -9,34 +9,33 @@
 #
 require "spec_helper"
 
-describe Actuality do
-  before { @actuality = FactoryGirl.build(:actuality) }
+describe Actuality, actuality: true do
+  let!(:actuality) { FactoryGirl.create(:actuality) }
 
-  subject { @actuality }
-
-  it { should respond_to(:title) }
-  it { should respond_to(:content) }
+  subject { actuality }
   
   it { should be_valid }
 
   # Title
   describe "when title is not present" do
-    before { @actuality.title = nil }
+    before { actuality.title = "" }
     it { should_not be_valid }
   end
+  
   describe "when title is too long" do
-    before { @actuality.title = "a" * 256 }
+    before { actuality.title = "a" * 256 }
     it { should_not be_valid }
   end
 
   # Content
   describe "when content is not present" do
-    before { @actuality.content = nil }
+    before { actuality.content = "" }
     it { should_not be_valid }
   end
-  describe "when content is ok" do
-    before { @actuality.content = "Coucou" }
-    it { should be_valid }
+  
+  describe "when content is too long" do
+    before { actuality.content = "HelloWorld" * 2000 }
+    it { should_not be_valid }
   end
 
 end

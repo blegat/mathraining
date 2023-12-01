@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Contestproblem pages" do
+describe "Contestproblem pages", contestproblem: true do
 
   subject { page }
   
@@ -42,15 +42,8 @@ describe "Contestproblem pages" do
   let(:neworigin) { "Nouvelle origine de problème" }
   
   before do
-    Contestorganization.create(:contest => contest, :user => user_organizer)
-    Contestorganization.create(:contest => offline_contest, :user => user_organizer)
-  end
-  
-  describe "visitor" do    
-    describe "tries to visit one contestproblem page" do
-      before { visit contestproblem_path(contestproblem.id) }
-      it { should have_content(error_must_be_connected) }
-    end
+    contest.organizers << user_organizer
+    offline_contest.organizers << user_organizer
   end
   
   describe "user with rating 199" do
@@ -59,11 +52,6 @@ describe "Contestproblem pages" do
     describe "visits one contestproblem page" do
       before { visit contestproblem_path(contestproblem) }
       it { should have_selector("h1", text: "Problème ##{contestproblem.number}") }
-    end
-    
-    describe "tries to visit an offline contestproblem page" do
-      before { visit contestproblem_path(offline_contestproblem) }
-      it { should have_content(error_access_refused) }
     end
   end
   
@@ -193,6 +181,19 @@ describe "Contestproblem pages" do
           expect(offline_contest.contestproblems.count).to eq(1)
         end
       end
+      
+      describe "and creates a problem without second date" do
+        before do
+          fill_in "MathInput", with: newstatement
+          fill_in "Origine", with: neworigin
+          fill_in "Parution du problème", with: stringtime3
+          click_button "Ajouter"
+        end
+        specify do
+          expect(page).to have_error_message("Les deux dates doivent être définies.")
+          expect(offline_contest.contestproblems.count).to eq(1)
+        end
+      end
     end
     
     describe "visits contestproblem edit page" do
@@ -310,11 +311,6 @@ describe "Contestproblem pages" do
           expect(offline_contestproblem.end_time).to eq(datetime4)
         end
       end
-    end
-    
-    describe "tries to visit contestproblem creation page for an offline contest" do
-      before { visit new_contest_contestproblem_path(contest) }
-      it { should have_content(error_access_refused) }
     end
   end
   

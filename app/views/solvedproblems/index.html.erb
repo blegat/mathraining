@@ -8,7 +8,7 @@
 
 <% if !@signed_in || !current_user.sk.admin? %>
   <% problem_status = Array.new %>
-  <% accessible_problems(["id"]).each do |a| %>
+  <% accessible_problems((@signed_in ? current_user.sk : nil), ["id"]).each do |a| %>
     <% problem_status[a.id] = 1 %>
   <% end %>
 <% end %>
