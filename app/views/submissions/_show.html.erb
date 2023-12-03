@@ -56,7 +56,7 @@ var hideStatement = function () {
 <% end %>
 
 <!-- Si administrateur ou correcteur, on propose de réserver la soumission -->
-<% @unactivate = 0 %>
+<% disable_correction = false %>
 <% reservation_case = 0 %>
 <% corrector_name = "" %>
 <% if current_user.sk != @submission.user && @submission.waiting? && @submission.visible %>
@@ -72,12 +72,12 @@ var hideStatement = function () {
   <% f = @submission.followings.first %>
   <% if f.nil? %>
     <% reservation_case = 1 %>
-    <% @unactivate = 1 %>
+    <% disable_correction = true %>
   <% elsif f.user == current_user.sk %>
     <% reservation_case = 3 %>
   <% else %>
     <% reservation_case = 2 %>
-    <% @unactivate = 2 %>
+    <% disable_correction = true %>
     <% corrector_name = f.user.name %>
   <% end %>
   
@@ -187,7 +187,7 @@ var hideStatement = function () {
   <% elsif (current_user.sk.admin? || (current_user.sk.corrector && @resolu)) && @submission.plagiarized? %>
     <p class="text-color-red">Cette solution a été plagiée et n'est plus visible par l'étudiant.</p>
   <% elsif (current_user.sk.admin? || (current_user.sk == @submission.user && @cansendnewcomment) || (current_user.sk.corrector && @resolu)) && !@submission.draft? %>
-    <%= render 'corrections/new' %>
+    <%= render 'corrections/new', disable_correction: disable_correction %>
   <% end %>
 
 <% end %>

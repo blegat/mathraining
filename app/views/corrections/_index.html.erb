@@ -5,11 +5,13 @@
 <% end %>
 
 <% @lastid = -1 %>
+<% last_correction_user = nil %>
 <% first_comment = true %>
 
 <% @submission.corrections.order(:created_at).each do |correction| %>
 
   <% @lastid = correction.id %>
+  <% last_correction_user = correction.user %>
   
   <div class="myoverflow">
   <%= render 'shared/post', ms: correction, kind: "correction", reduce_margin_top: first_comment %>
@@ -21,10 +23,8 @@
 
 <div class="mb-3"></div>
 
-<% if @submission.user == current_user.sk && @submission.wrong? %>
-  <% last_correction = @submission.corrections.order(:created_at).last %>
-  <% if !last_correction.nil? && last_correction.user != current_user.sk %>
-  
+<% if @submission.user == current_user.sk && @submission.wrong? && !last_correction_user.nil? && last_correction_user != current_user.sk %>
+
   <div class="p-3 mb-3 grey-box">
   Votre solution est erronée. Deux options s'offrent à vous :
   <ul>
@@ -36,5 +36,4 @@
   <i>Merci de respecter cette règle pour éviter aux correcteurs de corriger deux solutions quasi identiques !</i>
   </div>
   
-  <% end %>
 <% end %>

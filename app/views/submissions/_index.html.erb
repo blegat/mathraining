@@ -74,7 +74,7 @@ var showFalse = function() {
       <% if s.waiting? %>
         <% @cansendnewsub = false %>
       <% elsif s.plagiarized? %>
-        <% one_date_submission_allowed = s.last_comment_time.to_date + 6.months %>
+        <% one_date_submission_allowed = s.date_new_submission_allowed %>
         <% if date_submission_allowed.nil? or date_submission_allowed < one_date_submission_allowed %>
           <% date_submission_allowed = one_date_submission_allowed %>
         <% end %>

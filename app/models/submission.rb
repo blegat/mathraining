@@ -48,19 +48,25 @@ class Submission < ActiveRecord::Base
 
   # Give the icon for the submission
   def icon
-    if star
+    if self.star
       return star_icon
     else
-      if correct?
+      if self.correct?
         return v_icon
-      elsif draft? or waiting?
+      elsif self.draft? or self.waiting?
         return dash_icon
-      elsif wrong? or wrong_to_read?
+      elsif self.wrong? or self.wrong_to_read?
         return x_icon
-      elsif plagiarized?
+      elsif self.plagiarized?
         return warning_icon
       end
     end
+  end
+  
+  # For a plagiarized submission: when can we submit a new submission?
+  def date_new_submission_allowed
+    return Date.today - 1.day if !self.plagiarized?
+    return self.last_comment_time.in_time_zone.to_date + 6.months
   end
   
   # Mark the submission as wrong

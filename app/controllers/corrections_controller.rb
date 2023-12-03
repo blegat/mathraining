@@ -5,6 +5,8 @@ class CorrectionsController < ApplicationController
   before_action :get_submission, only: [:create]
   
   before_action :correct_user, only: [:create]
+  before_action :is_visible, only: [:create]
+  before_action :not_plagiarized, only: [:create]
   before_action :no_recent_plagiarism, only: [:create]
   before_action :notskin_user, only: [:create]
 
@@ -178,13 +180,27 @@ class CorrectionsController < ApplicationController
     if @submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@problem))
       render 'errors/access_refused' and return
     end
+  end  
+  
+  # Check that the submission is visible (not a draft and not in a running test)
+  def is_visible
+    if !@submission.visible?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Check that the submission is not plagiarized (nobody can comment in that case)
+  def not_plagiarized
+    if @submission.plagiarized?
+      redirect_to problem_path(@problem, :sub => @submission) and return
+    end
   end
   
   # Check that the student has no (recent) plagiarized solution to the problem
   def no_recent_plagiarism
     if @submission.user == current_user.sk
       s = current_user.sk.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
-      if !s.nil? && s.last_comment_time.to_date + 6.months > Date.today
+      if !s.nil? && s.date_new_submission_allowed > Date.today
         redirect_to problem_path(@problem, :sub => @submission) and return
       end
     end

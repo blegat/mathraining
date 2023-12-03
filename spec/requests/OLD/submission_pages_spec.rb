@@ -427,6 +427,20 @@ describe "Submission pages" do
         end
       end
       
+      describe "and accepts it while submission was marked as plagiarized" do
+        before do
+          waiting_submission.plagiarized!
+          fill_in "MathInput", with: newcorrection
+          click_button "Poster et accepter la soumission"
+          waiting_submission.reload
+        end
+        specify do
+          expect(waiting_submission.plagiarized?).to eq(true)
+          expect(waiting_submission.corrections.count).to eq(0)
+          expect(page).to have_selector("h3", text: "Soumission (plagiée)")
+        end
+      end
+      
       describe "and rejects it" do
         before do
           fill_in "MathInput", with: newcorrection
@@ -494,17 +508,16 @@ describe "Submission pages" do
               end
             end
             
-            describe "and answers while submission has been marked as plagiarized" do
+            describe "and answers while another submission of same user was marked as plagiarized" do
               before do
-                waiting_submission.plagiarized!
+                FactoryGirl.create(:submission, user: waiting_submission.user, problem: waiting_submission.problem, status: :plagiarized, last_comment_time: DateTime.now - 2.months)
                 fill_in "MathInput", with: newanswer
                 click_button "Poster"
                 waiting_submission.reload
               end
               specify do
-                expect(waiting_submission.plagiarized?).to eq(true)
                 expect(waiting_submission.corrections.last.content).not_to eq(newanswer)
-                expect(page).to have_selector("h3", text: "Soumission (plagiée)")
+                expect(page).to have_content("Vous avez soumis une solution plagiée à ce problème.")
               end
             end
             
