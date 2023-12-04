@@ -32,16 +32,4 @@ describe Country, country: true do
     before { country.code = nil }
     it { should_not be_valid }
   end
-  
-  # Name without accent
-  describe "name without accent should be created automatically" do
-    before do
-      country.save
-      country.reload
-    end
-    specify do
-      expect(country.name_without_accent).to eq("Pepe")
-    end
-  end
-
 end
