@@ -17,5 +17,14 @@ class Country < ActiveRecord::Base
 
   validates :name, presence: true
   validates :code, presence: true
+  
+  # BEFORE, AFTER
+
+  before_save { self.name_without_accent = I18n.transliterate(self.name) }
+  
+  # VALIDATIONS
+
+  # validates_uniqueness_of :code # Test database is broken if we uncomment this line
+  validates_uniqueness_of :name
 
 end
