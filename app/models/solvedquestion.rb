@@ -7,8 +7,6 @@
 #  id              :integer          not null, primary key
 #  user_id         :integer
 #  question_id     :integer
-#  guess           :float
-#  correct         :boolean
 #  nb_guess        :integer
 #  resolution_time :datetime
 #
@@ -20,16 +18,10 @@ class Solvedquestion < ActiveRecord::Base
 
   belongs_to :question
   belongs_to :user
-  has_and_belongs_to_many :items
-  
-  # BEFORE, AFTER
-  
-  before_destroy { items.clear }
 
   # VALIDATIONS
 
   validates :question_id, uniqueness: { scope: :user_id }
-  validates :guess, presence: true
   validates :nb_guess, presence: true, numericality: { greater_than_or_equal_to: 1 }
   
   # Find users having solved many questions in a very short amount of time

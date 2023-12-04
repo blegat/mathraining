@@ -223,8 +223,6 @@ FactoryGirl.define do
   factory :solvedquestion do
     association :question, :factory => :exercise
     association :user
-    correct true
-    guess 42
     nb_guess 1
     resolution_time DateTime.now
   end

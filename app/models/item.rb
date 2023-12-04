@@ -13,7 +13,7 @@ class Item < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   belongs_to :question
-  has_and_belongs_to_many :solvedquestion
+  has_and_belongs_to_many :unsolvedquestion
 
   # VALIDATIONS
 

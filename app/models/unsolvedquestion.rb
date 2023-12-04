@@ -1,5 +1,16 @@
 #encoding: utf-8
 
+# == Schema Information
+#
+# Table name: unsolvedquestions
+#
+#  id              :integer          not null, primary key
+#  user_id         :integer
+#  question_id     :integer
+#  guess           :float
+#  nb_guess        :integer
+#  last_guess_time :datetime
+#
 include ApplicationHelper
 
 class Unsolvedquestion < ActiveRecord::Base

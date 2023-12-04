@@ -214,9 +214,7 @@ class UnsolvedquestionsController < ApplicationController
   def create_solvedquestion_from_unsolvedquestion
     Solvedquestion.create(:user            => @unsolvedquestion.user,
                           :question        => @unsolvedquestion.question,
-                          :guess           => @unsolvedquestion.guess, # to be removed
                           :nb_guess        => @unsolvedquestion.nb_guess,
-                          :correct         => true, # to be removed
                           :resolution_time => @unsolvedquestion.last_guess_time)
     
     unless @unsolvedquestion.id.nil?

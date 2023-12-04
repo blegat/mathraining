@@ -5,8 +5,6 @@
 #  id              :integer          not null, primary key
 #  user_id         :integer
 #  question_id     :integer
-#  guess           :float
-#  correct         :boolean
 #  nb_guess        :integer
 #  resolution_time :datetime
 #
@@ -20,8 +18,6 @@ describe Solvedquestion do
 
   it { should respond_to(:question) }
   it { should respond_to(:user) }
-  it { should respond_to(:correct) }
-  it { should respond_to(:guess) }
   it { should respond_to(:nb_guess) }
 
   it { should be_valid }
@@ -35,12 +31,6 @@ describe Solvedquestion do
   # User
   describe "when user is not present" do
     before { @se.user = nil }
-    it { should_not be_valid }
-  end
-  
-  # Guess
-  describe "when guess is not present" do
-    before { @se.guess = nil }
     it { should_not be_valid }
   end
 
