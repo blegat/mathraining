@@ -48,6 +48,7 @@ class DiscussionsController < ApplicationController
 
       @destinataire = User.find_by_id(params[:destinataire])
       return if check_nil_object(@destinataire)
+      return if @destinataire == current_user.sk # Hack
       
       @discussion = get_discussion_between(current_user.sk, @destinataire)
 
