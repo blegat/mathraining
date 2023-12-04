@@ -1,5 +1,5 @@
 #encoding: utf-8
-class SolvedquestionsController < ApplicationController
+class UnsolvedquestionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update]
   before_action :non_admin_user, only: [:create, :update]
   
@@ -13,23 +13,17 @@ class SolvedquestionsController < ApplicationController
 
   # Try to solve a question (first time)
   def create
-    @solvedquestion = Solvedquestion.new
-    @solvedquestion.user = current_user.sk
-    @solvedquestion.question = @question
-    
-    if check_answer(true)
+    @unsolvedquestion = Unsolvedquestion.new(:user => current_user.sk, :question => @question)
+    res = check_answer(true)
+    if res != "skip"
       @question.update_attribute(:nb_tries, @question.nb_tries+1)
-      if @solvedquestion.correct
+      if res == "correct"
         @question.update_attribute(:nb_first_guesses, @question.nb_first_guesses+1)
       end
       
       # We update chapter.nb_tries if it is the first question that this user tries
-      already = false
-      @chapter.questions.where("id != ?", @question.id).each do |q|
-        already = true if(Solvedquestion.where(:user => current_user.sk, :question => q).count > 0)
-      end
-      
-      unless already
+      other_questions = @chapter.questions.where("id != ?", @question.id).select("id")
+      if Solvedquestion.where(:user => current_user.sk, :question => other_questions).count + Unsolvedquestion.where(:user => current_user.sk, :question => other_questions).count == 0
         @chapter.update_attribute(:nb_tries, @chapter.nb_tries+1)
       end
 
@@ -39,7 +33,8 @@ class SolvedquestionsController < ApplicationController
 
   # Try to solve a question (next times)
   def update    
-    if check_answer(false)
+    res = check_answer(false)
+    if res != "skip"
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     end
   end
@@ -59,23 +54,23 @@ class SolvedquestionsController < ApplicationController
 
   # Check that this is the first try of current user
   def first_try
-    previous = Solvedquestion.where(:question_id => @question, :user_id => current_user.sk).count
-    if previous > 0
+    if Solvedquestion.where(:user => current_user.sk, :question => @question).count + Unsolvedquestion.where(:user => current_user.sk, :question => @question).count > 0
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     end
   end
   
   # Check that this is not the first try of current user and that he did not solve the question already
   def not_first_try_not_solved
-    @solvedquestion = Solvedquestion.where(:user => current_user.sk, :question => @question).first
-    if @solvedquestion.nil? || @solvedquestion.correct
+    if Solvedquestion.where(:user => current_user.sk, :question => @question).count > 0 # already solved
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     end
+    @unsolvedquestion = Unsolvedquestion.where(:user => current_user.sk, :question => @question).first
+    return if check_nil_object(@unsolvedquestion)
   end
   
   # Check that current user waited enough (if needed) before trying again
   def waited_enough_time
-    if @solvedquestion.nb_guess >= 3 && DateTime.now < @solvedquestion.resolution_time + 175
+    if @unsolvedquestion.nb_guess >= 3 && DateTime.now < @unsolvedquestion.last_guess_time + 175
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     end
   end
@@ -100,12 +95,13 @@ class SolvedquestionsController < ApplicationController
   
   # Helper method to check if the given answer is correct
   def check_answer(first_sub)
+    correct = nil
     if @question.is_qcm # QCM
-      @solvedquestion.guess = 0.0
-      @solvedquestion.nb_guess = (first_sub ? 1 : @solvedquestion.nb_guess + 1)
+      @unsolvedquestion.guess = 0.0
+      @unsolvedquestion.nb_guess = (first_sub ? 1 : @unsolvedquestion.nb_guess + 1)
       good_guess = true
       diff_sub = first_sub
-      @solvedquestion.resolution_time = DateTime.now
+      @unsolvedquestion.last_guess_time = DateTime.now
       if @question.many_answers # Many answers possible
         if params[:ans]
           answer = params[:ans]
@@ -118,14 +114,14 @@ class SolvedquestionsController < ApplicationController
             if !c.ok
               good_guess = false
             end
-            if !diff_sub && !@solvedquestion.items.exists?(c.id)
+            if !diff_sub && !@unsolvedquestion.items.exists?(c.id)
               diff_sub = true
             end
           else # Answered "false"
             if c.ok
               good_guess = false
             end
-            if !diff_sub && @solvedquestion.items.exists?(c.id)
+            if !diff_sub && @unsolvedquestion.items.exists?(c.id)
               diff_sub = true
             end
           end
@@ -134,20 +130,19 @@ class SolvedquestionsController < ApplicationController
         # If the same answer as the previous one: we don't count it
         if !diff_sub
           redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
-          return false
+          return "skip"
         end
 
-        if good_guess # Correct
-          @solvedquestion.correct = true
-          @solvedquestion.save
-          @solvedquestion.items.clear
-        else # Incorrect
-          @solvedquestion.correct = false
-          @solvedquestion.save
-          @solvedquestion.items.clear
+        if good_guess
+          correct = true
+          create_solvedquestion_from_unsolvedquestion
+        else
+          correct = false
+          @unsolvedquestion.save
+          @unsolvedquestion.items.clear
           @question.items.each do |c|
             if answer[c.id.to_s]
-              @solvedquestion.items << c
+              @unsolvedquestion.items << c
             end
           end
         end
@@ -156,55 +151,77 @@ class SolvedquestionsController < ApplicationController
         if !params[:ans]
           flash[:danger] = "Veuillez cocher une réponse."
           redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
-          return false
+          return "skip"
         end
         
         # If the same answer as the previous one: we don't count it
-        if !first_sub && params[:ans].to_i == @solvedquestion.items.first.id
+        if !first_sub && params[:ans].to_i == @unsolvedquestion.items.first.id
           redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
-          return false
+          return "skip"
         end
         
         rep = @question.items.where(:ok => true).first
 
         if rep.id == params[:ans].to_i
-          @solvedquestion.correct = true
-          @solvedquestion.save
-          @solvedquestion.items.clear
+          correct = true
+          create_solvedquestion_from_unsolvedquestion
         else
-          @solvedquestion.correct = false
-          @solvedquestion.save
+          correct = false
+          @unsolvedquestion.save
             
           item = Item.find_by_id(params[:ans])
-          @solvedquestion.items.clear
-          @solvedquestion.items << item
+          @unsolvedquestion.items.clear
+          @unsolvedquestion.items << item
         end
       end
     else # EXERCISE
       if @question.decimal
-        guess = params[:solvedquestion][:guess].gsub(",",".").gsub(" ","").to_f # Replace ',' by '.' and remove white spaces (possible after comma)
+        guess = params[:unsolvedquestion][:guess].gsub(",",".").gsub(" ","").to_f # Replace ',' by '.' and remove white spaces (possible after comma)
       else
-        guess = params[:solvedquestion][:guess].gsub(" ","").to_i # Remove ',', '.' and ' ' in case of "12 345" instead of "12345"
+        guess = params[:unsolvedquestion][:guess].gsub(" ","").to_i # Remove ',', '.' and ' ' in case of "12 345" instead of "12345"
       end
-      if first_sub || @solvedquestion.guess != guess
-        @solvedquestion.nb_guess = (first_sub ? 1 : @solvedquestion.nb_guess + 1)
-        @solvedquestion.guess = guess
-        @solvedquestion.resolution_time = DateTime.now
+      
+      if !first_sub && @unsolvedquestion.guess == guess
+        redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+        return "skip"
+      end
+      
+      @unsolvedquestion.nb_guess = (first_sub ? 1 : @unsolvedquestion.nb_guess + 1)
+      @unsolvedquestion.guess = guess
+      @unsolvedquestion.last_guess_time = DateTime.now
 
-        if @question.decimal
-          @solvedquestion.correct = ((@question.answer - guess).abs < 0.001)
-        else
-          @solvedquestion.correct = (@question.answer.to_i == guess)
-        end
-        @solvedquestion.save
+      if @question.decimal
+        correct = ((@question.answer - guess).abs < 0.001)
+      else
+        correct = (@question.answer.to_i == guess)
+      end
+      
+      if correct
+        create_solvedquestion_from_unsolvedquestion
+      else
+        @unsolvedquestion.save
       end
     end
 
-    if @solvedquestion.correct
+    if correct
       point_attribution(current_user.sk, @question)
     end
     
-    return true
+    return (correct ? "correct" : "wrong")
+  end
+  
+  # Helper method to create Solvedquestion from Unsolvedquestion
+  def create_solvedquestion_from_unsolvedquestion
+    Solvedquestion.create(:user            => @unsolvedquestion.user,
+                          :question        => @unsolvedquestion.question,
+                          :guess           => @unsolvedquestion.guess, # to be removed
+                          :nb_guess        => @unsolvedquestion.nb_guess,
+                          :correct         => true, # to be removed
+                          :resolution_time => @unsolvedquestion.last_guess_time)
+    
+    unless @unsolvedquestion.id.nil?
+      @unsolvedquestion.destroy
+    end
   end
 
   # Helper method to give points of a question to a user

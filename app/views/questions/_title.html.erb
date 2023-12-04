@@ -1,6 +1,6 @@
 <% pt = question.value %>
 
-<% nb = question.solvedquestions.where(:correct => true).count %>
+<% nb = question.solvedquestions.count %>
 <% pct = 0 %>
 <% pct = question.nb_first_guesses.to_f / question.nb_tries.to_f if question.nb_tries > 0 %>
 <% pct2 = [1.4*pct,1].min %>

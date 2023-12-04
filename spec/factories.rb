@@ -223,7 +223,7 @@ FactoryGirl.define do
   factory :solvedquestion do
     association :question, :factory => :exercise
     association :user
-    correct false
+    correct true
     guess 42
     nb_guess 1
     resolution_time DateTime.now
@@ -287,6 +287,15 @@ FactoryGirl.define do
     sequence(:title) { |n| "Mon titre #{n} saugrenu" }
     sequence(:content) { |n| "Contenu #{n}" }
     sequence(:position) { |n| n }
+  end
+  
+  # Unsolved question
+  factory :unsolvedquestion do
+    association :question, :factory => :exercise
+    association :user
+    guess 42
+    nb_guess 1
+    last_guess_time DateTime.now
   end
   
   # User

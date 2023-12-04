@@ -52,7 +52,7 @@ Rails.application.routes.draw do
     match '/order', to: "items#order", :via => [:put]
   end
 
-  resources :solvedquestions, only: [:create, :update]
+  resources :unsolvedquestions, only: [:create, :update]
   
   # Problems
   resources :problems, only: [:update, :edit, :destroy, :show] do

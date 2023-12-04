@@ -1,4 +1,4 @@
-<% waiting = (solvedquestion.resolution_time.to_f + total_waiting - DateTime.now.to_i).floor %>
+<% waiting = (unsolvedquestion.last_guess_time.to_f + total_waiting - DateTime.now.to_i).floor %>
 <% waiting_m = waiting / 60 %>
 <% waiting_s = waiting % 60 %>
 <p id="waitbox" class="text-color-red">Vous devez encore patienter <span id="clockbox" class="fw-bold">0<%= waiting_m %>:<%= "0" if waiting_s < 10 %><%= waiting_s %></span>.</p>

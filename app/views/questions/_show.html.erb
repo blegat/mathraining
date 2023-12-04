@@ -19,42 +19,39 @@
 <!-- Si étudiant inscrit -->
 <% elsif @signed_in %>
 
-  <% solvedquestion = Solvedquestion.where(:user => current_user.sk, :question => question) %>
+  <% solvedquestion = Solvedquestion.where(:user => current_user.sk, :question => question).first %>
   
-  <!-- Si il y a déjà eu au moins un essai -->
-  <% if solvedquestion.size > 0 %>
-    <% solvedquestion = solvedquestion.first %>
-    
-    <!-- Si l'exercice est déjà résolu -->
-    <% if solvedquestion.correct? %>
-      <p class="mt-3 fw-bold text-color-green">
-      <% if solvedquestion.nb_guess-1 > 0 %>
-        Vous avez résolu cet exercice après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
-      <% else %>
-        Vous avez résolu cet exercice du premier coup !
-      <% end %>
-      </p>
-      
-      <!-- Réponse -->
-      <h4 class="mt-4">Réponse</h4>
-      <%= render 'questions/answer', question: question %>
-      
-      <!-- Explication -->
-      <% if question.explanation.size > 0 %>
-        <h4 class="mt-4">Explication</h4>
-        <%= raw(htmlise(question.explanation)) %>
-      <% end %>
-      
-    <!-- Si l'étudiant s'est déjà trompé -->
+  <!-- Si l'exercice est déjà résolu -->
+  <% if !solvedquestion.nil? %>    
+    <p class="mt-3 fw-bold text-color-green">
+    <% if solvedquestion.nb_guess-1 > 0 %>
+      Vous avez résolu cet exercice après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
     <% else %>
-      <%= render 'questions/question', question: question, solvedquestion: solvedquestion %>
+      Vous avez résolu cet exercice du premier coup !
     <% end %>
-
-  <!-- Si l'étudiant n'a pas encore essayé l'exercice -->
+    </p>
+    
+    <!-- Réponse -->
+    <h4 class="mt-4">Réponse</h4>
+    <%= render 'questions/answer', question: question %>
+    
+    <!-- Explication -->
+    <% if question.explanation.size > 0 %>
+      <h4 class="mt-4">Explication</h4>
+      <%= raw(htmlise(question.explanation)) %>
+    <% end %>
   <% else %>
-  
-    <% solvedquestion = Solvedquestion.new %>
-    <%= render 'questions/question', question: question, solvedquestion: solvedquestion %>
+    <% unsolvedquestion = Unsolvedquestion.where(:user => current_user.sk, :question => question).first %>
+    
+    <!-- Si l'étudiant s'est déjà trompé -->
+    <% if !unsolvedquestion.nil? %>
+      <%= render 'questions/question', question: question, unsolvedquestion: unsolvedquestion %>
+    
+    <!-- Si l'étudiant n'a pas encore essayé l'exercice -->
+    <% else %>
+      <% unsolvedquestion = Unsolvedquestion.new %>
+      <%= render 'questions/question', question: question, unsolvedquestion: unsolvedquestion %>
+    <% end %>
   <% end %>
 
   <hr class="bottom-help" />
@@ -64,8 +61,8 @@
 <!-- Si étudiant non inscrit -->
 <% else %>
 
-  <% solvedquestion = Solvedquestion.new %>
-  <%= render 'questions/question', question: question, solvedquestion: solvedquestion %>
+  <% unsolvedquestion = Unsolvedquestion.new %>
+  <%= render 'questions/question', question: question, unsolvedquestion: unsolvedquestion %>
   
   <hr class="bottom-help" />
   <p class="text-center">Pour pouvoir répondre aux exercices, vous devez être connecté.</p>

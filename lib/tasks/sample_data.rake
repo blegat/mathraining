@@ -272,17 +272,15 @@ def create_solvedquestions
                                 correct:         true,
                                 guess:           q.answer,
                                 nb_guess:        Random.rand(4)+1,
-                                resolution_time: t,
-                                updated_at:      t)
+                                resolution_time: t)
         else
           all_correct = false
           if Random.rand(2) == 0 # Incorrect
-            sq = Solvedquestion.create(question:    q,
-                                       user:        user,
-                                       correct:     false,
-                                       guess:       (q.is_qcm ? 0.0 : q.answer + 1),
-                                       nb_guess:    Random.rand(4)+1,
-                                       updated_at:  t)
+            sq = Unsolvedquestion.create(question:        q,
+                                         user:            user,
+                                         guess:           (q.is_qcm ? 0.0 : q.answer + 1),
+                                         nb_guess:        Random.rand(4)+1,
+                                         last_guess_time: t)
             if q.is_qcm
               if q.many_answers # We say that user took all wrong choices
                 q.items.each do |i|
@@ -316,7 +314,7 @@ def update_users_ratings
       rating_by_section[sec.id] = 0
     end
     
-    user.solvedquestions.where(:correct => true).each do |q|
+    user.solvedquestions.each do |q|
       unless q.question.chapter.section.fondation
         rating += q.question.value
         rating_by_section[q.question.chapter.section_id] += q.question.value
@@ -343,7 +341,7 @@ def create_submissions
       next
     end
     user_level = 100*(user.rating-200)/(max_rating-200).to_f # Between 0 and 100
-    last_question_solved_time = user.solvedquestions.where(:correct => true).order(:resolution_time).last.resolution_time
+    last_question_solved_time = user.solvedquestions.order(:resolution_time).last.resolution_time
     
     completed_chapters = user.chapters.ids
     Problem.all.each do |problem|

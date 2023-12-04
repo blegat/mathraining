@@ -64,7 +64,7 @@
   
   <!-- On va parcourir tous les exercices et problèmes -->
   
-  <% questions = @user.solvedquestions.joins(question: :chapter).select("solvedquestions.question_id AS id, solvedquestions.resolution_time AS time, questions.level AS level, questions.chapter_id AS chapter_id, chapters.name AS chapter_name").where(:correct => true).order("resolution_time DESC").to_a %>
+  <% questions = @user.solvedquestions.joins(question: :chapter).select("solvedquestions.question_id AS id, solvedquestions.resolution_time AS time, questions.level AS level, questions.chapter_id AS chapter_id, chapters.name AS chapter_name").order("resolution_time DESC").to_a %>
 
   <% problems = @user.solvedproblems.joins(:problem).select("solvedproblems.problem_id AS id, solvedproblems.resolution_time AS time, solvedproblems.submission_id AS submission_id, problems.level AS level, problems.number AS number, problems.virtualtest_id AS virtualtest_id, problems.section_id AS section_id").order("resolution_time DESC").to_a %>
 

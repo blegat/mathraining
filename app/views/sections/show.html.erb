@@ -41,12 +41,11 @@
     <% current_user.sk.creating_chapters.each do |c| %>
       <% @chapter_status[c.id] = "creator" %>
     <% end %>
-    <% current_user.sk.solvedquestions.joins(:question).where("questions.chapter_id IN (?)", access_chap).select("questions.id, correct").each do |sq| %>
-      <% if sq.correct %>
-        <% @question_status[sq.id] = "correct" %>
-      <% else %>
-        <% @question_status[sq.id] = "incorrect" %>
-      <% end %>
+    <% current_user.sk.unsolvedquestions.joins(:question).where("questions.chapter_id IN (?)", access_chap).select("questions.id").each do |sq| %>
+      <% @question_status[sq.id] = "incorrect" %>
+    <% end %>
+    <% current_user.sk.solvedquestions.joins(:question).where("questions.chapter_id IN (?)", access_chap).select("questions.id").each do |sq| %>
+      <% @question_status[sq.id] = "correct" %>
     <% end %>
     <% current_user.sk.theories.where(:chapter_id => access_chap).each do |t| %>
       <% @theory_status[t.id] = "read" %>

@@ -90,15 +90,11 @@
           <% kind = "" %>
           <% if f.online %>
             <% if @signed_in && !current_user.sk.admin? %>
-              <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id) %>
-              <% if exo.size > 0 %>
-                <% exo = exo.first %>
-                <% if exo.correct %>
-                  <% kind = "list-group-item-success" %>
-                <% else %>
-                  <% pasfait = pasfait + 1 %>
-                  <% kind = "list-group-item-danger" %>
-                <% end %>
+              <% if Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id).count > 0 %>
+                <% kind = "list-group-item-success" %>
+              <% elsif Unsolvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id).count > 0 %>
+                <% pasfait = pasfait + 1 %>
+                <% kind = "list-group-item-danger" %>
               <% else %>
                 <% pasfait = pasfait + 1 %>
               <% end %>

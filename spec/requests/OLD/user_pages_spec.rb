@@ -680,9 +680,9 @@ describe "User pages" do
     let!(:problem) { FactoryGirl.create(:problem, :section => section2, :level => 4) }
     let!(:submission) { FactoryGirl.create(:submission, :problem => problem, :user => user, :status => "correct") }
     let!(:solvedproblem) { FactoryGirl.create(:solvedproblem, :problem => problem, :user => user, :submission => submission) }
-    let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, :question => question, :user => user, :correct => true) }
-    let!(:solvedquestion_wrong) { FactoryGirl.create(:solvedquestion, :question => question2, :user => user, :correct => false) }
-    let!(:solvedquestion_fondation) { FactoryGirl.create(:solvedquestion, :question => question_fondation, :user => user, :correct => true) }
+    let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, :question => question, :user => user) }
+    let!(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, :question => question2, :user => user) }
+    let!(:solvedquestion_fondation) { FactoryGirl.create(:solvedquestion, :question => question_fondation, :user => user) }
     let!(:pointspersection) { Pointspersection.create(:user => user, :section => section, :points => 0) }
     let!(:pointspersection2) { Pointspersection.create(:user => user, :section => section2, :points => 0) }
     

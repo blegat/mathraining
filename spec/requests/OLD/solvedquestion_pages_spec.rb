@@ -27,7 +27,7 @@ describe "Solvedquestion pages" do
     
       describe "and correctly solves it" do
         before do
-          fill_in "solvedquestion[guess]", with: exercise.answer
+          fill_in "unsolvedquestion[guess]", with: exercise.answer
           click_button "Soumettre"
           user.reload
         end
@@ -41,7 +41,7 @@ describe "Solvedquestion pages" do
       
       describe "and makes a mistake" do
         before do
-          fill_in "solvedquestion[guess]", with: exercise.answer + 1
+          fill_in "unsolvedquestion[guess]", with: exercise.answer + 1
           click_button "Soumettre"
           user.reload
         end
@@ -54,7 +54,7 @@ describe "Solvedquestion pages" do
         
         describe "and then solves it" do
           before do
-            fill_in "solvedquestion[guess]", with: exercise.answer
+            fill_in "unsolvedquestion[guess]", with: exercise.answer
             click_button "Soumettre"
             user.reload
           end
@@ -68,9 +68,9 @@ describe "Solvedquestion pages" do
         
         describe "and makes two other mistakes" do
           before do
-            fill_in "solvedquestion[guess]", with: exercise.answer + 2
+            fill_in "unsolvedquestion[guess]", with: exercise.answer + 2
             click_button "Soumettre"
-            fill_in "solvedquestion[guess]", with: exercise.answer + 3
+            fill_in "unsolvedquestion[guess]", with: exercise.answer + 3
             click_button "Soumettre"
           end
           it do
@@ -79,10 +79,9 @@ describe "Solvedquestion pages" do
           end
           
           describe "and waits for 3 minutes" do
-            let(:solvedquestion) { Solvedquestion.where(:user => user, :question => exercise).first }
+            let(:unsolvedquestion) { Unsolvedquestion.where(:user => user, :question => exercise).first }
             before do
-              solvedquestion.resolution_time = DateTime.now - 190
-              solvedquestion.save
+              unsolvedquestion.update_attribute(:last_guess_time, DateTime.now - 190)
               visit chapter_path(chapter, :type => 5, :which => exercise)
             end
             it do
@@ -92,7 +91,7 @@ describe "Solvedquestion pages" do
             
             describe "and makes a new guess" do
               before do
-                fill_in "solvedquestion[guess]", with: exercise.answer
+                fill_in "unsolvedquestion[guess]", with: exercise.answer
                 click_button "Soumettre"
                 user.reload
               end
@@ -113,7 +112,7 @@ describe "Solvedquestion pages" do
     
       describe "and correctly solves it" do
         before do
-          fill_in "solvedquestion[guess]", with: exercise_decimal.answer + 0.0005
+          fill_in "unsolvedquestion[guess]", with: exercise_decimal.answer + 0.0005
           click_button "Soumettre"
           user.reload
         end
@@ -127,7 +126,7 @@ describe "Solvedquestion pages" do
       
       describe "and makes a mistake (too large)" do
         before do
-          fill_in "solvedquestion[guess]", with: exercise_decimal.answer + 0.002
+          fill_in "unsolvedquestion[guess]", with: exercise_decimal.answer + 0.002
           click_button "Soumettre"
           user.reload
         end
@@ -140,7 +139,7 @@ describe "Solvedquestion pages" do
       
         describe "and makes another mistake (too small)" do
           before do
-            fill_in "solvedquestion[guess]", with: exercise_decimal.answer - 0.002
+            fill_in "unsolvedquestion[guess]", with: exercise_decimal.answer - 0.002
             click_button "Soumettre"
             user.reload
           end
@@ -284,20 +283,20 @@ describe "Solvedquestion pages" do
   describe "cron job" do
     let!(:yesterday) { Date.today.in_time_zone - 1.day + 10.hours }
     let!(:cheater) { FactoryGirl.create(:user) }
-    let!(:sq1)  { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday) }
-    let!(:sq2)  { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 15.seconds) }
-    let!(:sq3)  { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 40.seconds) }
-    let!(:sq4)  { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 45.seconds) }
-    let!(:sq5)  { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 1.minute) }
-    let!(:sq6)  { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 2.minutes + 4.seconds) }
-    let!(:sq7)  { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 5.minutes) }
-    let!(:sq8)  { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 5.minutes + 10.seconds) }
-    let!(:sq9)  { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 11.minutes) }
-    let!(:sq10) { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 11.minutes + 40.seconds) }
-    let!(:sq11) { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 12.minutes + 20.seconds) }
-    let!(:sq12) { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 12.minutes + 30.seconds) }
-    let!(:sq13) { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 12.minutes + 40.seconds) }
-    let!(:sq14) { FactoryGirl.create(:solvedquestion, user: cheater, correct: true, resolution_time: yesterday + 12.minutes + 50.seconds) }
+    let!(:sq1)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday) }
+    let!(:sq2)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 15.seconds) }
+    let!(:sq3)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 40.seconds) }
+    let!(:sq4)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 45.seconds) }
+    let!(:sq5)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 1.minute) }
+    let!(:sq6)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 2.minutes + 4.seconds) }
+    let!(:sq7)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 5.minutes) }
+    let!(:sq8)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 5.minutes + 10.seconds) }
+    let!(:sq9)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 11.minutes) }
+    let!(:sq10) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 11.minutes + 40.seconds) }
+    let!(:sq11) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 20.seconds) }
+    let!(:sq12) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 30.seconds) }
+    let!(:sq13) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 40.seconds) }
+    let!(:sq14) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 50.seconds) }
     
     describe "searches for suspicious users for the first time" do
       before do

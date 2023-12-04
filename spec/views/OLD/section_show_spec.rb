@@ -124,8 +124,8 @@ describe "Page section/showpb" do
     
     describe "having completed no chapter" do
       before do
-        FactoryGirl.create(:solvedquestion, user: user, question: question11, correct: true)
-        FactoryGirl.create(:solvedquestion, user: user, question: question12, correct: false)
+        FactoryGirl.create(:solvedquestion, user: user, question: question11)
+        FactoryGirl.create(:unsolvedquestion, user: user, question: question12)
         user.theories << theory11
         visit section_path(section)
       end
@@ -167,10 +167,10 @@ describe "Page section/showpb" do
     
     describe "having completed two chapters" do
       before do
-        FactoryGirl.create(:solvedquestion, user: user, question: question11, correct: true)
-        FactoryGirl.create(:solvedquestion, user: user, question: question12, correct: true)
-        FactoryGirl.create(:solvedquestion, user: user, question: question14, correct: true)
-        FactoryGirl.create(:solvedquestion, user: user, question: question21, correct: true)
+        FactoryGirl.create(:solvedquestion, user: user, question: question11)
+        FactoryGirl.create(:solvedquestion, user: user, question: question12)
+        FactoryGirl.create(:solvedquestion, user: user, question: question14)
+        FactoryGirl.create(:solvedquestion, user: user, question: question21)
         user.theories << theory11
         user.theories << theory12
         user.chapters << chapter1
@@ -214,9 +214,9 @@ describe "Page section/showpb" do
       before do
         section.fondation = true
         section.save
-        FactoryGirl.create(:solvedquestion, user: user, question: question11, correct: true)
-        FactoryGirl.create(:solvedquestion, user: user, question: question12, correct: true)
-        FactoryGirl.create(:solvedquestion, user: user, question: question14, correct: true)
+        FactoryGirl.create(:solvedquestion, user: user, question: question11)
+        FactoryGirl.create(:solvedquestion, user: user, question: question12)
+        FactoryGirl.create(:solvedquestion, user: user, question: question14)
         user.theories << theory11
         user.theories << theory12
         #user.chapters << chapter1 # We don't remember completed chapters for fondation section

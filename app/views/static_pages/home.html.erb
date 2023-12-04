@@ -35,7 +35,7 @@
     <table class="home-stats">
     <tr><td class="left top text-color-mt-blue"><%= raw(readable_number(number)) %></td><td class="right top">utilisateurs classés</td></tr>
     <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
-    <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedquestion.where("correct = ?", true).count)) %></td><td class="right">exercices résolus</td></tr>
+    <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedquestion.count)) %></td><td class="right">exercices résolus</td></tr>
     <tr><td class="left bottom text-color-mt-blue"><%= raw(readable_number(tot)) %></td><td class="right bottom">points distribués</td></tr>
     </table>
     </center>

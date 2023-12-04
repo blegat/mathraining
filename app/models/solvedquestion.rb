@@ -21,11 +21,14 @@ class Solvedquestion < ActiveRecord::Base
   belongs_to :question
   belongs_to :user
   has_and_belongs_to_many :items
+  
+  # BEFORE, AFTER
+  
+  before_destroy { items.clear }
 
   # VALIDATIONS
 
-  validates :question_id, presence: true, uniqueness: { scope: :user_id }
-  validates :user_id, presence: true
+  validates :question_id, uniqueness: { scope: :user_id }
   validates :guess, presence: true
   validates :nb_guess, presence: true, numericality: { greater_than_or_equal_to: 1 }
   
@@ -40,7 +43,7 @@ class Solvedquestion < ActiveRecord::Base
     end_of_period = Date.today.in_time_zone
     start_of_period = end_of_period - 1.day
     resolution_times_by_user = {}
-    Solvedquestion.joins(question: [{chapter: :section}]).where("resolution_time > ? AND resolution_time <= ? AND correct = ? AND sections.fondation = ?", start_of_period, end_of_period, true, false).order(:resolution_time).each do |sq|
+    Solvedquestion.joins(question: [{chapter: :section}]).where("resolution_time > ? AND resolution_time <= ? AND sections.fondation = ?", start_of_period, end_of_period, false).order(:resolution_time).each do |sq|
       if resolution_times_by_user[sq.user_id].nil?
         resolution_times_by_user[sq.user_id] = [sq.resolution_time]
       else

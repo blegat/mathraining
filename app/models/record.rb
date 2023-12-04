@@ -26,7 +26,7 @@ class Record < ActiveRecord::Base
     while(curmonday <= mondaybeforelastmonday)
       nextmonday = curmonday+7
       nb_submissions = Submission.where("status != ? AND created_at >= ? AND created_at < ?", Submission.statuses[:draft], curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
-      nb_questions_solved = Solvedquestion.where("correct = ? AND resolution_time >= ? AND resolution_time < ?", true, curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
+      nb_questions_solved = Solvedquestion.where("resolution_time >= ? AND resolution_time < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
       r = Record.create(:date                => curmonday,
                         :nb_submissions      => nb_submissions,
                         :nb_questions_solved => nb_questions_solved,

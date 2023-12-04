@@ -72,7 +72,11 @@ describe "Page user/index" do
         if r.rand() < 0.5 # Tried to solved the exercise
           correct = r.rand() < 0.5 # Correct solution or not
           time = DateTime.now - ((rand() * 28).to_i).days # Date of resolution in the last 4 weeks
-          FactoryGirl.create(:solvedquestion, question: q, user: u, correct: correct, resolution_time: (correct ? time : nil))
+          if correct
+            FactoryGirl.create(:solvedquestion, question: q, user: u, resolution_time: time)
+          else
+            FactoryGirl.create(:unsolvedquestion, question: q, user: u, last_guess_time: time)
+          end
         end
       end
     end
@@ -247,8 +251,8 @@ describe "Page user/index" do
         should have_select("title", :options => options_for_user_titles(0, false))
         should have_select("country", :options => ["Tous les pays (2)", "#{country1.name} (1)", "#{country2.name} (1)"])
         
-        should have_user_line(1,  "1.",  user2) # The current user should always appear first
-        should have_user_line(2,  "",  user1)
+        should have_user_line(1, "1.", user2) # The current user should always appear first
+        should have_user_line(2, "", user1)
         should have_no_selector("#rank_3")
       end
     end

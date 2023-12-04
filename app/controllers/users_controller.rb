@@ -623,7 +623,7 @@ class UsersController < ApplicationController
       recent[global_user_id_to_local_id[s.user_id]] += s.problem.value
     end
 
-    Solvedquestion.where(:user_id => ids).includes(:question).where("resolution_time > ? AND correct = ?", twoweeksago, true).find_each do |s|
+    Solvedquestion.where(:user_id => ids).includes(:question).where("resolution_time > ?", twoweeksago).find_each do |s|
       recent[global_user_id_to_local_id[s.user_id]] += s.question.value
     end
 

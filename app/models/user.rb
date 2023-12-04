@@ -69,6 +69,7 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :theories, -> { distinct }
   has_and_belongs_to_many :chapters, -> { distinct }
   has_many :solvedquestions, dependent: :destroy
+  has_many :unsolvedquestions, dependent: :destroy
   has_many :solvedproblems, dependent: :destroy
   has_many :pictures
   has_many :pointspersections, dependent: :destroy
@@ -418,7 +419,7 @@ class User < ActiveRecord::Base
       problem_scores[u.id] += u.x
     end
     
-    User.joins(solvedquestions: [{question: [{chapter: :section}]}]).where("solvedquestions.correct = ? AND sections.fondation = ?", true, false).select("users.id, chapters.section_id, 3*sum(questions.level) AS x").group("users.id, chapters.section_id").each do |u|
+    User.joins(solvedquestions: [{question: [{chapter: :section}]}]).where("sections.fondation = ?", false).select("users.id, chapters.section_id, 3*sum(questions.level) AS x").group("users.id, chapters.section_id").each do |u|
       question_scores_by_section[u.section_id][u.id] = u.x
       question_scores[u.id] = 0 if question_scores[u.id].nil?
       question_scores[u.id] += u.x

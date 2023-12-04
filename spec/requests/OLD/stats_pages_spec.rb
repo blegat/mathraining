@@ -28,7 +28,7 @@ describe "Stats pages" do
     describe "tries the first exercise of a chapter" do
       before do
         visit chapter_path(chapter1, :type => 5, :which => exercise11)
-        fill_in "solvedquestion[guess]", with: exercise11.answer + 12
+        fill_in "unsolvedquestion[guess]", with: exercise11.answer + 12
         click_button "Soumettre"
         chapter1.reload
         exercise11.reload
@@ -43,7 +43,7 @@ describe "Stats pages" do
       describe "and then solves it correctly" do
         before do
           visit chapter_path(chapter1, :type => 5, :which => exercise11)
-          fill_in "solvedquestion[guess]", with: exercise11.answer
+          fill_in "unsolvedquestion[guess]", with: exercise11.answer
           click_button "Soumettre"
           chapter1.reload
           exercise11.reload
@@ -60,7 +60,7 @@ describe "Stats pages" do
     describe "solves the first exercise of a chapter" do
       before do
         visit chapter_path(chapter1, :type => 5, :which => exercise11)
-        fill_in "solvedquestion[guess]", with: exercise11.answer
+        fill_in "unsolvedquestion[guess]", with: exercise11.answer
         click_button "Soumettre"
         chapter1.reload
         exercise11.reload
@@ -75,7 +75,7 @@ describe "Stats pages" do
       describe "and solves the second exercise of the chapter" do
         before do
           visit chapter_path(chapter1, :type => 5, :which => exercise12)
-          fill_in "solvedquestion[guess]", with: exercise12.answer
+          fill_in "unsolvedquestion[guess]", with: exercise12.answer
           click_button "Soumettre"
           chapter1.reload
           exercise12.reload
@@ -224,10 +224,10 @@ describe "Stats pages" do
       let!(:now) { Time.zone.local(2015, 1, 14, 5, 0, 0) } # Wednesday 14/01/2015 at 5 am
       let!(:today) { now.in_time_zone.to_date }
       let!(:mondaybeforelastmonday) { today - 9 } # 05/01/2015
-      let!(:solvedq11) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise11, correct: true,  guess: exercise11.answer, resolution_time: now-28.days) }
-      let!(:solvedq12) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise12, correct: true,  guess: exercise12.answer, resolution_time: now-28.days) }
-      let!(:solvedq21) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise21, correct: false, guess: exercise21.answer + 1, resolution_time: now-21.days) }
-      let!(:solvedq22) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise22, correct: true,  guess: exercise22.answer, resolution_time: now-14.days) }
+      let!(:solvedq11) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise11, resolution_time: now-28.days) }
+      let!(:solvedq12) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise12, resolution_time: now-28.days) }
+      let!(:solvedq21) { FactoryGirl.create(:unsolvedquestion, user: user1, question: exercise21, guess: exercise21.answer + 1, last_guess_time: now-21.days) }
+      let!(:solvedq22) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise22, resolution_time: now-14.days) }
       
       before do
         travel_to now

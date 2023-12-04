@@ -1,5 +1,5 @@
 <% total_waiting = 180 %>
-<% if !solvedquestion.nb_guess.nil? && solvedquestion.nb_guess >= 3 && DateTime.now < solvedquestion.resolution_time + total_waiting %>
+<% if !unsolvedquestion.nb_guess.nil? && unsolvedquestion.nb_guess >= 3 && DateTime.now < unsolvedquestion.last_guess_time + total_waiting %>
   <% needtowait = true %>
 <% else %>
   <% needtowait = false %>
@@ -10,13 +10,13 @@
   <% val = nil %>
   <% if question.decimal %>
     <p class="mt-3">On demande une réponse <b>décimale</b>, arrondie au millième près.</p>
-    <% val = solvedquestion.guess %>
+    <% val = unsolvedquestion.guess %>
   <% else %>
     <p class="mt-3">On demande une réponse <b>entière</b>.</p>
-    <% val = solvedquestion.guess.to_i if !solvedquestion.guess.nil? %>
+    <% val = unsolvedquestion.guess.to_i if !unsolvedquestion.guess.nil? %>
   <% end %>
 
-  <%= form_for(solvedquestion) do |g| %>
+  <%= form_for(unsolvedquestion) do |g| %>
     <%= hidden_field_tag "question_id", question.id %>
     <div class="mb-2">
     <%= g.label :guess, :class => "form-label to-enable", :disabled => !@signed_in || current_user.other || needtowait %>
@@ -27,9 +27,9 @@
   
 <% else %>
   <!-- QCM -->
-  <% anciens = solvedquestion.items %>
+  <% anciens = unsolvedquestion.items %>
   <% if question.many_answers %>
-    <%= form_for solvedquestion do |x| %>
+    <%= form_for unsolvedquestion do |x| %>
       <p class="mt-3 mb-3 fw-bold">Cochez chaque proposition correcte.</p>
       <%= hidden_field_tag "question_id", question.id %>
       <% question.items.order(:position).each do |c| %>
@@ -43,9 +43,9 @@
       <button class="btn btn-primary to-enable mt-3" type="submit" <%= "disabled=\"true\"" if !@signed_in || current_user.other || needtowait %>>Soumettre</button>
     <% end %>
   <% else %>
-    <% item = solvedquestion.items.first %>
+    <% item = unsolvedquestion.items.first %>
     <div class="mb-3"></div>
-    <%= form_for solvedquestion do |x| %>
+    <%= form_for unsolvedquestion do |x| %>
       <%= hidden_field_tag "question_id", question.id %>
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
@@ -61,13 +61,13 @@
   <% end %>
 <% end %>
 
-<% if !solvedquestion.nb_guess.nil? %>
-  <p class="mt-3 text-color-red">Votre réponse <%= ("(<b>" + val.to_s + "</b>)").html_safe if !question.is_qcm %> est erronée. Vous avez déjà commis <b><%= solvedquestion.nb_guess %></b> erreur<%= "s" if solvedquestion.nb_guess > 1 %>.</p>
+<% if !unsolvedquestion.nb_guess.nil? %>
+  <p class="mt-3 text-color-red">Votre réponse <%= ("(<b>" + val.to_s + "</b>)").html_safe if !question.is_qcm %> est erronée. Vous avez déjà commis <b><%= unsolvedquestion.nb_guess %></b> erreur<%= "s" if unsolvedquestion.nb_guess > 1 %>.</p>
   
   <p class="text-color-red">À partir de la troisième erreur, vous devez attendre trois minutes avant chaque nouvelle tentative.</p>
   
   <% if needtowait %>
-    <%= render 'questions/waiting', solvedquestion: solvedquestion, total_waiting: total_waiting %>
+    <%= render 'questions/waiting', unsolvedquestion: unsolvedquestion, total_waiting: total_waiting %>
   <% end %>
   
 <% end %>

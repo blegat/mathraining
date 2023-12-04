@@ -15,8 +15,8 @@ describe "chapters/show.html.erb", type: :view, chapter: true do
   let!(:question2) { FactoryGirl.create(:exercise_decimal, chapter: chapter, online: true, position: 2) }
   let!(:question3) { FactoryGirl.create(:qcm, chapter: chapter, online: true, position: 4) }
   let!(:question4) { FactoryGirl.create(:qcm_multiple, chapter: chapter, online: true, position: 5) }
-  let!(:sq3) { FactoryGirl.create(:solvedquestion, user: user, question: question3, correct: true) }
-  let!(:sq4) { FactoryGirl.create(:solvedquestion, user: user, question: question4, correct: false) }
+  let!(:sq3) { FactoryGirl.create(:solvedquestion, user: user, question: question3) }
+  let!(:sq4) { FactoryGirl.create(:unsolvedquestion, user: user, question: question4) }
   
   before do
     user.theories << theory3
