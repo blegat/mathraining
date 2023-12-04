@@ -409,18 +409,18 @@ class ApplicationController < ActionController::Base
       cs.score = score
       if give_medals
         if score >= contest.gold_cutoff
-          cs.medal = 4 # Gold
+          cs.medal = :gold_medal
         elsif score >= contest.silver_cutoff
-          cs.medal = 3 # Silver
+          cs.medal = :silver_medal
         elsif score >= contest.bronze_cutoff
-          cs.medal = 2 # Bronze
+          cs.medal = :bronze_medal
         elsif hm
-          cs.medal = 1 # Honourable mention
+          cs.medal = :honourable_mention
         else
-          cs.medal = 0 # No medal
+          cs.medal = :no_medal
         end
       else
-        cs.medal = -1 # Not applicable
+        cs.medal = :undefined_medal
       end
       cs.save
       i = i+1

@@ -46,8 +46,8 @@ describe "contests/_results.html.erb", type: :view, contest: true do
   end
   
   context "if some contestproblems are corrected" do
-    let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user1, rank: 2, score: 7, medal: -1) }
-    let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 1, score: 11, medal: -1) }
+    let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user1, rank: 2, score: 7) }
+    let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 1, score: 11) }
       
     before do
       contest.in_correction!

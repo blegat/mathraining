@@ -11,9 +11,9 @@
 
 <% @contest.contestscores.order(:rank).each do |line| %>
   <% num_ranked = num_ranked + 1 %>
-  <% medal = line.medal %>
-  <% if medal < 1 %>
-    <% medal = 1 %>
+  <% medal = Contestscore.medals[line.medal] %>
+  <% if medal < 0 %>
+    <% medal = 0 %>
   <% end %>
   <% num_by_medal[medal][line.score] = num_by_medal[medal][line.score] + 1 %>
   <% num_all[line.score] = num_all[line.score] + 1 %>
@@ -62,10 +62,10 @@ Votre navigateur ne supporte pas les canvas.
     
     // Entre 50 et 856 --> largeur totale 806, à diviser en num_points
     
-    <% medal_color = ["", "#9999FF", "#DF7F32", "#C4C4C4", "#FFD700"] %>
+    <% medal_color = ["#9999FF", "#FF70B7", "#DF7F32", "#C4C4C4", "#FFD700"] %>
     <% (1..num_points).each do |i| %>
       <% before = 0 %>
-      <% (0..3).each do |j| %>
+      <% (0..4).each do |j| %>
         <% k = 4-j %>
         ctx.fillStyle = '<%= medal_color[k] %>';
         <% if num_by_medal[k][i] > 0 %>

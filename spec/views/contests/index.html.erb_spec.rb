@@ -134,8 +134,8 @@ describe "contests/index.html.erb", type: :view, contest: true do
   context "if the contest is finished" do
     let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user, score: 5, corrected: true) }
     let!(:contestsolution2) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user2, score: 3, corrected: true) }
-    let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user, rank: 1, score: 5, medal: -1) }
-    let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 2, score: 3, medal: -1) }
+    let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user, rank: 1, score: 5) }
+    let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 2, score: 3) }
     before do
       contest.completed!
       contest.update_attribute(:num_participants, 2)

@@ -33,7 +33,7 @@ describe "Contestproblem pages", contestproblem: true do
   let!(:contest) { FactoryGirl.create(:contest) }
   let!(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest, number: 1) }
   let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user_participating, score: 7) }
-  let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating, rank: 1, score: 7, medal: -1) }
+  let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating, rank: 1, score: 7) }
   
   let!(:offline_contest) { FactoryGirl.create(:contest, status: :in_construction) }
   let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, number: 1, status: :in_construction, start_time: datetime2, end_time: datetime4) }

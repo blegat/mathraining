@@ -14,7 +14,7 @@ require "spec_helper"
 describe Contestscore, contest: true do
   let!(:contest) { FactoryGirl.create(:contest) }
   let!(:user) { FactoryGirl.create(:user) }
-  let!(:contestscore) { FactoryGirl.build(:contestscore, contest: contest, user: user, rank: 1, score: 7, medal: -1) }
+  let!(:contestscore) { FactoryGirl.build(:contestscore, contest: contest, user: user, rank: 1, score: 7) }
 
   subject { contestscore }
 
@@ -22,7 +22,7 @@ describe Contestscore, contest: true do
   
   # Uniqueness
   describe "when already present" do
-    before { FactoryGirl.create(:contestscore, contest: contest, user: user, rank: 2, score: 3, medal: -1) }
+    before { FactoryGirl.create(:contestscore, contest: contest, user: user, rank: 2, score: 3) }
     it { should_not be_valid }
   end
   

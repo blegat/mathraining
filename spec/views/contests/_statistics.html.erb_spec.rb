@@ -13,8 +13,8 @@ describe "contests/_statistics.html.erb", type: :view, contest: true do
   let!(:contestsolution12) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user2, corrected: true, score: 4) }
   let!(:contestsolution13) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user3, corrected: true, score: 0) }
   let!(:contestsolution21) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user1, corrected: true, score: 0) }
-  let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user1, rank: 1, score: 7, medal: -1) }
-  let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 2, score: 4, medal: -1) }
+  let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user1, rank: 1, score: 7) }
+  let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 2, score: 4) }
   
   before do
     assign(:contest, contest)

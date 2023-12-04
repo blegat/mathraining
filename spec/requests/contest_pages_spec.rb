@@ -28,11 +28,11 @@ describe "Contest pages", contest: true do
   let!(:contestsolution23) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating3, score: 6) }
   let!(:contestsolution24) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating4, score: 2) }
   let!(:contestsolution25) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating5, score: 0) }
-  let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating1, rank: 1, score: 14, medal: -1) }
-  let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating2, rank: 2, score: 13, medal: -1) }
-  let!(:contestscore3) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating3, rank: 3, score: 11, medal: -1) }
-  let!(:contestscore4) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating4, rank: 4, score: 7,  medal: -1) }
-  let!(:contestscore5) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating5, rank: 4, score: 7,  medal: -1) }
+  let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating1, rank: 1, score: 14) }
+  let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating2, rank: 2, score: 13) }
+  let!(:contestscore3) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating3, rank: 3, score: 11) }
+  let!(:contestscore4) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating4, rank: 4, score: 7) }
+  let!(:contestscore5) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating5, rank: 4, score: 7) }
   
   let!(:contest_in_progress) { FactoryGirl.create(:contest, status: :in_progress) }
   let!(:contestproblem1_corrected) { FactoryGirl.create(:contestproblem, contest: contest_in_progress, status: :corrected) }
@@ -123,12 +123,12 @@ describe "Contest pages", contest: true do
       describe "and define cutoffs" do
         before do
           # Put wrong scores (to check they are re-computed correctly), as well as a fake score that should not exist
-          contestscore1.update(score: 23, rank: 7, medal: -1)
-          contestscore2.update(score: 23, rank: 7, medal: -1)
-          contestscore3.update(score: 23, rank: 7, medal: -1)
-          contestscore4.update(score: 23, rank: 7, medal: -1)
+          contestscore1.update(score: 23, rank: 7)
+          contestscore2.update(score: 23, rank: 7)
+          contestscore3.update(score: 23, rank: 7)
+          contestscore4.update(score: 23, rank: 7)
           contestscore5.destroy
-          FactoryGirl.create(:contestscore, contest: contest, score: 23, rank: 7, medal: -1)
+          FactoryGirl.create(:contestscore, contest: contest, score: 23, rank: 7)
           fill_in "bronze_cutoff", with: bronze_cutoff
           fill_in "silver_cutoff", with: silver_cutoff
           fill_in "gold_cutoff", with: gold_cutoff
@@ -155,11 +155,11 @@ describe "Contest pages", contest: true do
           expect(contestscore3.rank).to eq(3)
           expect(contestscore4.rank).to eq(4)
           expect(contestscore5_new.rank).to eq(4)
-          expect(contestscore1.medal).to eq(4)     # Gold medal for 14
-          expect(contestscore2.medal).to eq(3)     # Silver medal for 13
-          expect(contestscore3.medal).to eq(2)     # Bronze medal for 11
-          expect(contestscore4.medal).to eq(0)     # No medal (7 = 5+2)
-          expect(contestscore5_new.medal).to eq(1) # Honourable mention (7 = 7+0)
+          expect(contestscore1.gold_medal?).to eq(true)             # Gold medal for 14
+          expect(contestscore2.silver_medal?).to eq(true)           # Silver medal for 13
+          expect(contestscore3.bronze_medal?).to eq(true)           # Bronze medal for 11
+          expect(contestscore4.no_medal?).to eq(true)               # No medal (7 = 5+2)
+          expect(contestscore5_new.honourable_mention?).to eq(true) # Honourable mention (7 = 7+0)
           expect(page).to have_success_message("Les médailles ont été distribuées !")
         end
       end

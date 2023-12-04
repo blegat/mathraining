@@ -79,7 +79,8 @@ FactoryGirl.define do
   factory :contestscore do
     association :contest
     association :user
-    # rank, score, medal should be done manually
+    medal :undefined_medal
+    # rank and score should be done manually
   end
   
   # Correction

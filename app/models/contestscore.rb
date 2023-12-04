@@ -15,12 +15,12 @@ include ApplicationHelper
 
 class Contestscore < ActiveRecord::Base
 
-  # medal = -1 ==> not applicable (contest not yet finished or without medals)
-  # medal =  0 ==> no medal
-  # medal =  1 ==> honourable mention
-  # medal =  2 ==> bronze medal
-  # medal =  3 ==> silver medal
-  # medal =  4 ==> gold medal
+  enum medal: {:undefined_medal    => -1, # contest not yet finished or without medals
+               :no_medal           =>  0,
+               :honourable_mention =>  1,
+               :bronze_medal       =>  2,
+               :silver_medal       =>  3,
+               :gold_medal         =>  4}
 
   # BELONGS_TO, HAS_MANY
 

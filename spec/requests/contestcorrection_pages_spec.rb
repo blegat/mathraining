@@ -256,11 +256,11 @@ describe "Contestcorrection pages", contestcorrection: true do
           expect(contest.contestscores.first.user).to eq(user_participating)
           expect(contest.contestscores.first.score).to eq(7)
           expect(contest.contestscores.first.rank).to eq(1)
-          expect(contest.contestscores.first.medal).to eq(-1)
+          expect(contest.contestscores.first.undefined_medal?).to eq(true)
           expect(contest.contestscores.second.user).to eq(user2_participating)
           expect(contest.contestscores.second.score).to eq(3)
           expect(contest.contestscores.second.rank).to eq(2)
-          expect(contest.contestscores.second.medal).to eq(-1)
+          expect(contest.contestscores.second.undefined_medal?).to eq(true)
           expect(contestsubject.messages.count).to eq(1)
           expect(contestsubject.messages.first.user_id).to eq(0)
         end
@@ -300,11 +300,11 @@ describe "Contestcorrection pages", contestcorrection: true do
               expect(contest.contestscores.first.user).to eq(user_participating)
               expect(contest.contestscores.first.score).to eq(7)
               expect(contest.contestscores.first.rank).to eq(1)
-              expect(contest.contestscores.first.medal).to eq(-1)
+              expect(contest.contestscores.first.undefined_medal?).to eq(true)
               expect(contest.contestscores.second.user).to eq(user2_participating)
               expect(contest.contestscores.second.score).to eq(7)
               expect(contest.contestscores.second.rank).to eq(1)
-              expect(contest.contestscores.second.medal).to eq(-1)
+              expect(contest.contestscores.second.undefined_medal?).to eq(true)
             end
           end
         end

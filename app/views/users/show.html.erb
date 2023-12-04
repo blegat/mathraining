@@ -198,7 +198,7 @@
     </tr>
     <tr>
     <% num_medals = @user.contestscores.group(:medal).count %>
-    <% [4, 3, 2, 1].each do |m| %>
+    <% ["gold_medal", "silver_medal", "bronze_medal", "honourable_mention"].each do |m| %>
       <td class="text-center pt-1 fw-bold user_color" style="font-size:22px;">
       <%= num_medals.key?(m) ? num_medals[m] : "-" %>
       </td>
@@ -502,7 +502,7 @@
       <% start_time = contest.start_time %>
       <% end_time = contest.end_time %>
       <% num_participants = contest.num_participants %>
-      <% actcontest.push({:number => contest.number, :id => contest.id, :start_time => start_time, :end_time => end_time, :num_participants => num_participants, :ranking => -1, :medal => -1, :score => -1, :max_score => -1}) %>
+      <% actcontest.push({:number => contest.number, :id => contest.id, :start_time => start_time, :end_time => end_time, :num_participants => num_participants, :ranking => -1, :medal => "undefined_medal", :score => -1, :max_score => -1}) %>
     <% end %>
     
     <% actcontest.sort_by! { |ac| -ac[:number] } %>
@@ -533,11 +533,11 @@
         
           <!-- Médaille -->
           <td class="p-0 text-center" style="width:35px; <%= remove_border %>">
-          <%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == 4 %>
-          <%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") if ac[:medal] == 3 %>
-          <%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") if ac[:medal] == 2 %>
-          <%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") if ac[:medal] == 1 %>
-          <%= "-" if ac[:medal] <= 0 %>
+          <%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == "gold_medal" %>
+          <%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") if ac[:medal] == "silver_medal" %>
+          <%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") if ac[:medal] == "bronze_medal" %>
+          <%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") if ac[:medal] == "honourable_mention" %>
+          <%= "-" if ac[:medal] == "no_medal" || ac[:medal] == "undefined_medal" %>
           </td>
         
           <!-- Rang (si pas xs) -->
