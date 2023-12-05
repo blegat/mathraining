@@ -9,7 +9,7 @@ var showAllDiscussions = function () {
 
 <div class="list-group mb-0">
   <h5 class="mt-1">Nouveau message</h5>
-  <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item list-group-item-action #{"active" if @nouveau}" %>
+  <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item list-group-item-action #{"active" if @discussion.id.nil?}" %>
 
   <h4 class="mt-3">Discussions</h4>
   

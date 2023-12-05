@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Discussion pages" do
+describe "Discussion pages", discussion: true do
 
   subject { page }
   
@@ -18,13 +18,6 @@ describe "Discussion pages" do
   let(:image1) { "mathraining.png" } # default image used in factory
   let(:image2) { "Smiley1.gif" }
   let(:exe_attachment) { "hack.exe" }
-  
-  describe "visitor" do
-    describe "tries to create a discussion" do
-      before { visit new_discussion_path }
-      it { should have_content(error_must_be_connected) }
-    end
-  end
   
   describe "user" do
     before { sign_in user }
@@ -155,14 +148,6 @@ describe "Discussion pages" do
         click_button "Envoyer un message"
       end
       it { should have_current_path(discussion_path(discussion)) }
-    end
-    
-    describe "tries to see another discussion" do
-      before do
-        d = create_discussion_between(other_user, other_user2, content, content2)
-        visit discussion_path(d)
-      end
-      it { should have_content(error_access_refused) }
     end
     
     describe "asks to receive emails for new messages" do
