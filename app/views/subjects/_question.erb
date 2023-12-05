@@ -15,16 +15,14 @@
     <tr><td class="title">Ce sujet fait référence à un exercice auquel vous n'avez pas accès.</td></tr>
     </table>
 	
-  <% else %>
-    <% exo = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => q.id) %>
-	  
+  <% else %>	  
     <% if current_user.sk.admin? %>
       <table class="table table-bordered reference yellowy">
       <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => q.id), :target => "_blank" %> :</td></tr>
-    <% elsif exo.size > 0 && exo.first.correct? %>
+    <% elsif Solvedquestion.where(:user_id => current_user.sk.id, :question_id => q.id).count > 0 %>
       <table class="table table-bordered reference greeny">
       <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => q.id), :target => "_blank" %>, que vous avez résolu :</td></tr>
-    <% elsif exo.size > 0 %>
+    <% elsif Unsolvedquestion.where(:user_id => current_user.sk.id, :question_id => q.id).count > 0 %>
       <table class="table table-bordered reference redy">
       <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_path(c, :type => 5, :which => q.id), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
     <% else %>
