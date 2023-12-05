@@ -672,12 +672,13 @@ describe "User pages" do
     let!(:section) { FactoryGirl.create(:section, :fondation => false) }
     let!(:section2) { FactoryGirl.create(:section, :fondation => false) }
     let!(:section_fondation) { FactoryGirl.create(:section, :fondation => true) }
-    let!(:chapter) { FactoryGirl.create(:chapter, :section => section) }
-    let!(:chapter_fondation) { FactoryGirl.create(:chapter, :section => section_fondation) }
-    let!(:question) { FactoryGirl.create(:exercise, :chapter => chapter, :level => 2) }
-    let!(:question2) { FactoryGirl.create(:exercise, :chapter => chapter, :level => 3) }
-    let!(:question_fondation) { FactoryGirl.create(:exercise, :chapter => chapter_fondation, :level => 4) }
-    let!(:problem) { FactoryGirl.create(:problem, :section => section2, :level => 4) }
+    let!(:chapter) { FactoryGirl.create(:chapter, :section => section, :online => true) }
+    let!(:chapter_fondation) { FactoryGirl.create(:chapter, :section => section_fondation, :online => true) }
+    let!(:question) { FactoryGirl.create(:exercise, :chapter => chapter, :level => 2, :online => true) }
+    let!(:question2) { FactoryGirl.create(:exercise, :chapter => chapter, :level => 3, :online => true) }
+    let!(:question_fondation) { FactoryGirl.create(:exercise, :chapter => chapter_fondation, :level => 4, :online => true) }
+    let!(:problem) { FactoryGirl.create(:problem, :section => section2, :level => 4, :online => true) }
+    let!(:problem_offline) { FactoryGirl.create(:problem, :section => section, :level => 5, :online => false) }
     let!(:submission) { FactoryGirl.create(:submission, :problem => problem, :user => user, :status => "correct") }
     let!(:solvedproblem) { FactoryGirl.create(:solvedproblem, :problem => problem, :user => user, :submission => submission) }
     let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, :question => question, :user => user) }
@@ -690,9 +691,13 @@ describe "User pages" do
       before do
         User.recompute_scores(false)
         user.reload
+        section.reload
+        section2.reload
       end
       specify do
         expect(user.rating).to eq(problem.value + question.value)
+        expect(section.max_score).to eq(question.value + question2.value)
+        expect(section2.max_score).to eq(problem.value)
         expect(user.pointspersections.where(:section => section).first.points).to eq(question.value)
         expect(user.pointspersections.where(:section => section2).first.points).to eq(problem.value)
       end

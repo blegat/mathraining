@@ -189,24 +189,21 @@ class User < ActiveRecord::Base
 
   # Gives the "level" of the user
   def level
-    if admin
-      return {color:"#000000"} # Should not be used anymore with light/dark theme!
-    elsif !active
-      return {color:"#BBBB00"}
-    else
-      actuallevel = nil
-      if $allcolors.nil?
-        $allcolors = Color.order(:pt).to_a
-      end
-      $allcolors.each do |c|
-        if c.pt <= rating
-          actuallevel = c
-        else
-          return actuallevel
-        end
-      end
-      return actuallevel
+    return {color:"#000000"} if admin # Should not be used anymore with light/dark theme!
+    return {color:"#BBBB00"} if !active 
+
+    actuallevel = nil
+    if $allcolors.nil?
+      $allcolors = Color.order(:pt).to_a
     end
+    $allcolors.each do |c|
+      if c.pt <= rating
+        actuallevel = c
+      else
+        return actuallevel
+      end
+    end
+    return actuallevel
   end
 
   # Gives the number of unseen subjects on the forum
