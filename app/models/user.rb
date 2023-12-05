@@ -92,8 +92,8 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :chapters, -> { distinct }
   has_and_belongs_to_many :followed_subjects, -> { distinct }, class_name: "Subject", join_table: :followingsubjects
   has_and_belongs_to_many :followed_contests, -> { distinct }, class_name: "Contest", join_table: :followingcontests
-  has_and_belongs_to_many :followed_users, -> { distinct }, class_name: "User", join_table: :followingusers, foreign_key: :followed_user_id
-  has_and_belongs_to_many :following_users, -> { distinct }, class_name: "User", join_table: :followingusers, association_foreign_key: :followed_user_id
+  has_and_belongs_to_many :followed_users, -> { distinct }, class_name: "User", join_table: :followingusers, association_foreign_key: :followed_user_id
+  has_and_belongs_to_many :following_users, -> { distinct }, class_name: "User", join_table: :followingusers, foreign_key: :followed_user_id
   has_and_belongs_to_many :creating_chapters, -> { distinct }, class_name: "Chapter", join_table: :chaptercreations
   has_and_belongs_to_many :organized_contests, -> { distinct }, class_name: "Contest", join_table: :contestorganizations
   has_and_belongs_to_many :notified_submissions, -> { distinct }, class_name: "Submission", join_table: :notifs
