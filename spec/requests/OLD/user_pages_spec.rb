@@ -495,7 +495,7 @@ describe "User pages" do
         expect(zero_user.active).to eq(false)
         expect(other_root.skin).to eq(0)
         expect(zero_user.followed_users.count).to eq(0)
-        expect(zero_user.backwardfollowingusers.count).to eq(0)
+        expect(zero_user.following_users.count).to eq(0)
         expect(zero_user.followed_subjects.count).to eq(0)
         expect(zero_user.followed_contests.count).to eq(0)
         expect(zero_user.remember_token).not_to eq(old_remember_token) # should be disconnected

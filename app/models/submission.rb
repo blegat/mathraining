@@ -32,11 +32,16 @@ class Submission < ActiveRecord::Base
   has_many :corrections, dependent: :destroy
   has_many :followings, dependent: :destroy
   has_many :followers, through: :followings, source: :user
-  has_many :notifs, dependent: :destroy
   has_many :suspicions, dependent: :destroy
   has_many :starproposals, dependent: :destroy
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
+  
+  has_and_belongs_to_many :notified_users, -> { distinct }, class_name: "User", join_table: :notifs
+  
+  # BEFORE, AFTER
+  
+  before_destroy { self.notified_users.clear }
 
   # VALIDATIONS
 

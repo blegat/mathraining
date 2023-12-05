@@ -10,9 +10,9 @@
 <% if @signed_in %>
   <td class="d-none d-md-table-cell ps-3 text-end">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+    <%= link_to "Suivre ce concours", contest_follow_path(@contest), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
-    <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: current_user.other %>
+    <%= link_to "Ne plus suivre ce concours", contest_unfollow_path(@contest), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: current_user.other %>
   <% end %>
   </td>
 <% end %>
@@ -24,9 +24,9 @@
 <% if @signed_in %>
   <div class="d-block d-md-none pt-2 text-center">
   <% if !current_user.sk.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", add_followingcontest_path(:contest_id => @contest.id), :method => :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
+    <%= link_to "Suivre ce concours", contest_follow_path(@contest), :method => :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: current_user.other %>
   <% else %>
-    <%= link_to "Ne plus suivre ce concours", remove_followingcontest_path(:contest_id => @contest.id), class: 'btn btn-ld-light-dark', disabled: current_user.other %>
+    <%= link_to "Ne plus suivre ce concours", contest_unfollow_path(@contest), class: 'btn btn-ld-light-dark', disabled: current_user.other %>
   <% end %>
   </div>
 <% end %>
@@ -40,19 +40,17 @@
 <p class="mt-3"><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
   <% c = c+1 %>
-  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.in_construction? %> (<%= link_to "supprimer", contestorganization_path(Contestorganization.where(:contest_id => @contest, :user_id => o.id).first), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
+  <%= raw(o.linked_name) %><% if (@signed_in && current_user.sk.admin?) && @contest.in_construction? %> (<%= link_to "supprimer", contest_remove_organizer_path(@contest, :user_id => o.id), method: :put, data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
 <% end %>
 </p>
 
 <% if @signed_in && current_user.sk.admin? && @contest.in_construction? %>
 
-  <% contestorganization = Contestorganization.new %>
-  <%= form_for contestorganization, :html => {:class => "form-inline mt-2"} do |f| %>
+  <%= form_for @contest, :url => contest_add_organizer_path(@contest), :html => {:class => "form-inline mt-2"} do |f| %>
     <% mtn = DateTime.now.to_date - 14 %>
     <div class="row g-2 align-items-center">
       <div class="col-auto">
-        <%= f.hidden_field :contest_id, :value => @contest.id %>
-        <%= f.select :user_id, options_for_select(User.where("last_connexion_date >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, ""), -1), {}, {:class => "form-select select2 p-1 ps-2", :style => "width:300px;"} %>
+        <%= select_tag :user_id, options_for_select(User.where("last_connexion_date >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, ""), -1), :class => "form-select select2 p-1 ps-2", :style => "width:300px;" %>
       </div>
       <div class="col-auto">
         <%= f.submit "Ajouter", class: "btn btn-primary" %>

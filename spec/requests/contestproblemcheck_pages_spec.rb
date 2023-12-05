@@ -14,8 +14,8 @@ describe "Contestproblemcheck pages", contestproblem: true do
   let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: Category.where(:name => "Mathraining").first, last_comment_time: DateTime.now - 2.days) }
   
   before do
-    Followingsubject.create(:subject => running_contestsubject, :user => user_following_subject)
-    Followingcontest.create(:contest => running_contest, :user => user_following_contest)
+    user_following_subject.followed_subjects << running_contestsubject
+    user_following_contest.followed_contests << running_contest
   end
   
   describe "anyone" do

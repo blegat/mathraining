@@ -22,14 +22,13 @@ class Chapter < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   belongs_to :section
-  has_and_belongs_to_many :users, -> { distinct } # To remember which user has completed which chapter
-  has_and_belongs_to_many :problems, -> { distinct } # To remember which problem has which chapter as prerequisite
-  
-  has_many :chaptercreations, dependent: :destroy # For a non-admin user to create a chapter
-  has_many :creating_users, through: :chaptercreations, source: :user
 
   has_many :theories, dependent: :destroy
   has_many :questions, dependent: :destroy
+  
+  has_and_belongs_to_many :users, -> { distinct } # To remember which user has completed which chapter
+  has_and_belongs_to_many :problems, -> { distinct } # To remember which problem has which chapter as prerequisite
+  has_and_belongs_to_many :creating_users, -> { distinct }, class_name: "User", join_table: :chaptercreations # For a non-admin user to create a chapter
 
   has_many :prerequisites_associations, class_name: "Prerequisite", dependent: :destroy
   has_many :prerequisites, through: :prerequisites_associations

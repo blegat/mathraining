@@ -57,7 +57,7 @@ class SuspicionsController < ApplicationController
         # Mark submission as plagiarized
         @submission.update(:status            => :plagiarized,
                            :last_comment_time => DateTime.now) # Because the new date for submission is 6 months after that date
-        Notif.create(:user => @submission.user, :submission => @submission) # (will not be created if already exists)
+        @submission.notified_users << @submission.user unless @submission.notified_users.exists?(@submission.user_id)
       elsif old_status == "confirmed" && @suspicion.status != "confirmed"
         # Mark submission as wrong or waiting instead of plagiarized (if no other suspicion is confirmed)
         if @submission.suspicions.where(:status => :confirmed).count == 0
@@ -68,7 +68,7 @@ class SuspicionsController < ApplicationController
             # Delete the 'following' that was added automatically when submission was marked as plagiarized
             @submission.followings.destroy_all
           end
-          Notif.create(:user => @submission.user, :submission => @submission) # (will not be created if already exists)
+          @submission.notified_users << @submission.user unless @submission.notified_users.exists?(@submission.user_id)
         end
       end
       if @submission.plagiarized? && @submission.followings.count == 0

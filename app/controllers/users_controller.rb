@@ -1,7 +1,7 @@
 #encoding: utf-8
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed_users, :remove_followingmessage]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :add_followed_user, :remove_followed_user, :add_followingmessage, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
+  before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed_users, :unset_follow_message]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :add_followed_user, :remove_followed_user, :set_follow_message, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
   before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
   before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
@@ -371,7 +371,7 @@ class UsersController < ApplicationController
 
   # Show notifications of new corrections (for a student)
   def notifs
-    @notifs = current_user.sk.notifs.order("created_at")
+    @notified_submissions = current_user.sk.notified_submissions.order("last_comment_time")
   end
 
   # Take the skin of a user
@@ -405,18 +405,11 @@ class UsersController < ApplicationController
                    :valid_name     => true,
                    :follow_message => false,
                    :rating         => 0)
-      @user.followingsubjects.each do |f|
-        f.destroy
-      end
-      @user.followingcontests.each do |f|
-        f.destroy
-      end
-      @user.followingusers.each do |f|
-        f.destroy
-      end
-      @user.backwardfollowingusers.each do |f|
-        f.destroy
-      end
+      @user.followed_subjects.clear
+      @user.followed_contests.clear
+      @user.followed_users.clear
+      @user.following_users.clear
+      @user.notified_submissions.clear
       remove_skins(@user)
       @user.update_remember_token # sign out the user
     end
@@ -496,7 +489,7 @@ class UsersController < ApplicationController
   end
 
   # Start receiving emails for new tchatmessages
-  def add_followingmessage
+  def set_follow_message
     current_user.sk.update_attribute(:follow_message, true)
     
     flash[:success] = "Vous recevrez dorénavant un e-mail à chaque nouveau message privé."
@@ -504,7 +497,7 @@ class UsersController < ApplicationController
   end
 
   # Stop receiving emails for new tchatmessages
-  def remove_followingmessage
+  def unset_follow_message
     current_user.sk.update_attribute(:follow_message, false)
     
     flash[:success] = "Vous ne recevrez maintenant plus d'e-mail lors d'un nouveau message privé."

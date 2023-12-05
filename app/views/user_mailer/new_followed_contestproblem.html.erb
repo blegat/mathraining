@@ -2,6 +2,6 @@ Bonjour <%= @user.first_name %>,<br/><br/>
 
 Pour rappel, <%= @plural ? "les" : "le" %> <%= @debut %> du <%= link_to "Concours ##{@contest.number}", contest_url(@contest, :host => "www.mathraining.be") %> <%= @plural ? "seront" : "sera" %> publié<%= @plural ? "s" : "" %> le <%= write_date(@contestproblem.start_time) %> (heure belge).<br/><br/>
 
-Si vous ne désirez plus suivre ce concours, cliquez <%= link_to "ici", remove_followingcontest_url(:contest_id => @contest, :host => "www.mathraining.be") %>.<br/><br/>
+Si vous ne désirez plus suivre ce concours, cliquez <%= link_to "ici", contest_unfollow_url(@contest, :host => "www.mathraining.be") %>.<br/><br/>
 
 L'équipe Mathraining.

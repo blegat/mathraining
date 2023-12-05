@@ -1,9 +1,6 @@
 <!-- Enlève la notification de l'étudiant s'il faut -->
-<% if @submission.user == current_user.sk %>
-	<% notif = current_user.sk.notifs.where(submission_id: @submission.id) %>
-	<% if notif.size > 0 && !current_user.other %>
-  	<% notif.first.delete %>
-	<% end %>
+<% if @submission.user == current_user.sk && !current_user.other && current_user.sk.notified_submissions.exists?(@submission.id) %>
+  <% current_user.sk.notified_submissions.destroy(@submission) %>
 <% end %>
 
 <script type="text/javascript">

@@ -267,29 +267,18 @@ describe "Contest pages", contest: true do
           user_with_rating_200.last_connexion_date = DateTime.now.to_date
           user_with_rating_200.save
           visit contest_path(offline_contest)
-          select "#{user_with_rating_200.name} (200)", from: "contestorganization_user_id"
+          select "#{user_with_rating_200.name} (200)", from: "user_id"
           click_button "Ajouter"
         end
         specify do
           expect(offline_contest.organizers.count).to eq(2)
-          expect(Contestorganization.order(:id).last.contest).to eq(offline_contest)
-          expect(Contestorganization.order(:id).last.user).to eq(user_with_rating_200)
+          expect(offline_contest.organizers.exists?(user_with_rating_200.id)).to eq(true)
           expect(page).to have_link(user_with_rating_200.name, href: user_path(user_with_rating_200))
-          expect(page).to have_link("supprimer", href: contestorganization_path(Contestorganization.last))
+          expect(page).to have_link("supprimer", href: contest_remove_organizer_path(offline_contest, :user_id => user_organizer))
         end
       end
       
-      let!(:organization_to_delete) { Contestorganization.where(:contest => offline_contest, :user => user_organizer).first }
-      specify { expect { click_link("supprimer", href: contestorganization_path(organization_to_delete)) }.to change(Contestorganization, :count).by(-1) }
-      
-      describe "deletes an organizer that was deleted by someone else" do
-        before do
-          id = organization_to_delete.id
-          organization_to_delete.destroy
-          click_link("supprimer", href: contestorganization_path(id))
-        end
-        it { should have_content(error_access_refused) }
-      end
+      specify { expect { click_link("supprimer", href: contest_remove_organizer_path(offline_contest, :user_id => user_organizer)) }.to change(offline_contest.organizers, :count).by(-1) }
     end
   end
 end

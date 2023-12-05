@@ -71,7 +71,7 @@ feature 'Emailer' do
       expect(current_email.subject).to eq("Mathraining - Nouveau message de #{user.name}")
       expect(current_email).to have_content "#{user.name} vous a envoyé un message sur Mathraining"
       expect(current_email).to have_link("ici", href: discussion_url(Discussion.order(:id).last, :host => "www.mathraining.be"))
-      expect(current_email).to have_link("ici", href: remove_followingmessage_url(:host => "www.mathraining.be"))
+      expect(current_email).to have_link("ici", href: unset_follow_message_url(:host => "www.mathraining.be"))
     end
   end
   
@@ -82,7 +82,7 @@ feature 'Emailer' do
     
     before do
       clear_emails
-      Followingsubject.create(:subject => sub, :user => other_user)
+      other_user.followed_subjects << sub
       sign_in user
       visit subject_path(sub)
       fill_in "MathInputNewMessage", with: "Voici un nouveau message"
@@ -95,7 +95,7 @@ feature 'Emailer' do
       expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ sub.title }'")
       expect(current_email).to have_content("#{user.name} a posté un message sur le sujet '#{ sub.title }' que vous suivez")
       expect(current_email).to have_link("ici", href: subject_url(sub, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
-      expect(current_email).to have_link("ici", href: remove_followingsubject_url(:subject_id => sub, :host => "www.mathraining.be"))
+      expect(current_email).to have_link("ici", href: subject_unfollow_url(sub, :host => "www.mathraining.be"))
     end
   end
   
@@ -159,8 +159,8 @@ feature 'Emailer' do
     
   
     before do
-      Followingcontest.create(:contest => running_contest, :user => user_following_contest)
-      Followingsubject.create(:subject => running_contestsubject, :user => user_following_subject)
+      user_following_contest.followed_contests << running_contest
+      user_following_subject.followed_subjects << running_contestsubject
       running_contest.organizers << root
     end
     
@@ -178,7 +178,7 @@ feature 'Emailer' do
         expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ running_contestsubject.title }'")
         expect(current_email).to have_content("Un message automatique a été posté sur le sujet '#{ running_contestsubject.title }' que vous suivez")
         expect(current_email).to have_link("ici", href: subject_url(running_contestsubject, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
-        expect(current_email).to have_link("ici", href: remove_followingsubject_url(:subject_id => running_contestsubject, :host => "www.mathraining.be"))
+        expect(current_email).to have_link("ici", href: subject_unfollow_url(running_contestsubject, :host => "www.mathraining.be"))
       end
     end
   
@@ -193,7 +193,7 @@ feature 'Emailer' do
         expect(current_email.subject).to eq("Mathraining - Concours \##{ running_contest.number } - Problème \##{ running_contestproblem.number }")
         expect(current_email).to have_content("Pour rappel, le Problème \##{ running_contestproblem.number } du Concours \##{ running_contest.number } sera publié")
         expect(current_email).to have_link("Concours \##{ running_contest.number }", href: contest_url(running_contest, :host => "www.mathraining.be"))
-        expect(current_email).to have_link("ici", href: remove_followingcontest_url(:contest_id => running_contest, :host => "www.mathraining.be"))
+        expect(current_email).to have_link("ici", href: contest_unfollow_url(running_contest, :host => "www.mathraining.be"))
       end
       
       specify do
@@ -201,7 +201,7 @@ feature 'Emailer' do
         expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ running_contestsubject.title }'")
         expect(current_email).to have_content("Un message automatique a été posté sur le sujet '#{ running_contestsubject.title }' que vous suivez")
         expect(current_email).to have_link("ici", href: subject_url(running_contestsubject, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
-        expect(current_email).to have_link("ici", href: remove_followingsubject_url(:subject_id => running_contestsubject, :host => "www.mathraining.be"))
+        expect(current_email).to have_link("ici", href: subject_unfollow_url(running_contestsubject, :host => "www.mathraining.be"))
       end
     end
     
@@ -221,7 +221,7 @@ feature 'Emailer' do
         expect(current_email.subject).to eq("Mathraining - Concours \##{ running_contest.number } - Problèmes \##{ running_contestproblem.number }, \##{ running_contestproblem2.number } et \##{ running_contestproblem3.number }")
         expect(current_email).to have_content("Pour rappel, les Problèmes \##{ running_contestproblem.number }, \##{ running_contestproblem2.number } et \##{ running_contestproblem3.number } du Concours \##{ running_contest.number } seront publiés")
         expect(current_email).to have_link("Concours \##{ running_contest.number }", href: contest_url(running_contest, :host => "www.mathraining.be"))
-        expect(current_email).to have_link("ici", href: remove_followingcontest_url(:contest_id => running_contest, :host => "www.mathraining.be"))
+        expect(current_email).to have_link("ici", href: contest_unfollow_url(running_contest, :host => "www.mathraining.be"))
       end
     end
   end

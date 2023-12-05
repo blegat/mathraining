@@ -113,10 +113,13 @@ Rails.application.routes.draw do
     match '/put_online', to: 'contests#put_online', :via => [:put]
     match '/cutoffs', to: "contests#cutoffs", :via => [:get]
     match '/define_cutoffs', to: 'contests#define_cutoffs', :via => [:post]
+    match '/follow', to: "contests#follow", :via => [:put]
+    match '/unfollow', to: "contests#unfollow", :via => [:get] # Get because it should be doable via email link
+    match '/add_organizer', to: "contests#add_organizer", :via => [:patch]
+    match '/remove_organizer', to: "contests#remove_organizer", :via => [:put]
     
     resources :contestproblems, only: [:new, :create]
   end
-  resources :contestorganizations, only: [:create, :destroy]
   
   # Contest problems
   resources :contestproblems, only: [:show, :edit, :update, :destroy] do
@@ -139,6 +142,8 @@ Rails.application.routes.draw do
   # Subjects
   resources :subjects, only: [:index, :show, :new, :create, :update, :destroy] do
     match '/migrate', to: 'subjects#migrate', :via => [:put]
+    match '/follow', to: "subjects#follow", :via => [:put]
+    match '/unfollow', to: "subjects#unfollow", :via => [:get] # Get because it should be doable via email link
   
     resources :messages, only: [:create, :update, :destroy]
   end
@@ -179,12 +184,8 @@ Rails.application.routes.draw do
   match '/validate_names', to: 'users#validate_names', :via => [:get]
   
   # Email subscriptions (subjects, discussions and contests)
-  match '/add_followingsubject', to: "followingsubjects#add_followingsubject", :via => [:put]
-  match '/remove_followingsubject', to: "followingsubjects#remove_followingsubject", :via => [:get] # Get because it should be doable via email link
-  match '/add_followingmessage', to: "users#add_followingmessage", :via => [:put]
-  match '/remove_followingmessage', to: "users#remove_followingmessage", :via => [:get] # Get because it should be doable via email link
-  match '/add_followingcontest', to: "followingcontests#add_followingcontest", :via => [:put]
-  match '/remove_followingcontest', to: "followingcontests#remove_followingcontest", :via => [:get] # Get because it should be doable via email link
+  match '/set_follow_message', to: "users#set_follow_message", :via => [:put]
+  match '/unset_follow_message', to: "users#unset_follow_message", :via => [:get] # Get because it should be doable via email link
   
   # Privacy policies
   resources :privacypolicies, only: [:index, :show, :new, :edit, :update, :destroy] do
@@ -232,7 +233,12 @@ Rails.application.routes.draw do
   match '/about', to: 'static_pages#about', :via => [:get]
   match '/contact', to: 'static_pages#contact', :via => [:get]
   match '/stats', to: 'static_pages#stats', :via => [:get]
-  match '/frequentation', to: 'static_pages#stats', :via => [:get] # For backward (old link, sometimes mentioned in the Forum)
+
+  # Redirections for important old page names
+  get '/frequentation', to: redirect('/stats') # sometimes used in forum
+  get '/remove_followingmessage', to: redirect('/unset_follow_message') # in old emails
+  get '/remove_followingsubject', to: redirect { |params, request| "/subjects/#{request.params[:subject_id]}/unfollow" } # in old emails
+  get '/remove_followingcontest', to: redirect { |params, request| "/contests/#{request.params[:contest_id]}/unfollow" } # in old emails
 
   # Error pages
   get '/404', to: 'errors#not_found'

@@ -37,12 +37,6 @@ FactoryGirl.define do
     status :completed
   end
   
-  # Contestorganization
-  factory :contestorganization do
-    association :contest
-    association :user
-  end
-  
   # Contestproblem
   factory :contestproblem do
     association :contest

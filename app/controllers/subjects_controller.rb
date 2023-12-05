@@ -1,14 +1,14 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
-  before_action :signed_in_user, only: [:index, :show, :new]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate]
+  before_action :signed_in_user, only: [:index, :show, :new, :unfollow]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate, :follow]
   before_action :admin_user, only: [:destroy, :migrate]
   before_action :notskin_user, only: [:create, :update]
   
   before_action :get_subject, only: [:show, :update, :destroy]
-  before_action :get_subject2, only: [:migrate]
+  before_action :get_subject2, only: [:migrate, :follow, :unfollow]
   
-  before_action :user_that_can_see_subject, only: [:show]
+  before_action :user_that_can_see_subject, only: [:show, :follow]
   before_action :author, only: [:update, :destroy]
   
   
@@ -227,6 +227,22 @@ class SubjectsController < ApplicationController
     @subject.destroy
 
     redirect_to subject_path(@migreur, :q => @q)
+  end
+  
+  # Follow the subject (to receive emails)
+  def follow
+    current_user.sk.followed_subjects << @subject unless current_user.sk.followed_subjects.exists?(@subject.id)
+    
+    flash[:success] = "Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."
+    redirect_back(fallback_location: subject_path(@subject))
+  end
+  
+  # Unfollow the subject (to stop receiving emails)
+  def unfollow
+    current_user.sk.followed_subjects.destroy(@subject)
+    
+    flash[:success] = "Vous ne recevrez maintenant plus d'e-mail concernant ce sujet."
+    redirect_back(fallback_location: subject_path(@subject))
   end
 
   private

@@ -450,7 +450,7 @@ describe "Submission pages" do
         specify do
           expect(waiting_submission.wrong?).to eq(true)
           expect(waiting_submission.corrections.last.content).to eq(newcorrection)
-          expect(Notif.where(:user => user, :submission => waiting_submission).count).to eq(1)
+          expect(waiting_submission.notified_users.exists?(user.id)).to eq(true)
           expect(page).to have_selector("h3", text: "Soumission (erronée)")
           expect(page).to have_selector("div", text: newcorrection)
           expect(page).to have_link("0", href: allnewsub_path(:levels => 3)) # no more waiting submission

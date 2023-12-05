@@ -237,7 +237,7 @@ describe "Subject pages" do
       end
       
       describe "try to unfollow a non-existing subject" do
-        before { visit remove_followingsubject_path(:subject_id => 6543) }
+        before { visit subject_unfollow_path(6543) }
         it { should have_content(error_access_refused) }
       end
     end

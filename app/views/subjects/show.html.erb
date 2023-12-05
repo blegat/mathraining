@@ -24,10 +24,10 @@
 </td>
 
 <td class="d-none d-md-table-cell ps-3 text-end">
-<% if !current_user.followed_subjects.exists?(@subject.id) %>
-  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
+<% if !current_user.sk.followed_subjects.exists?(@subject.id) %>
+  <%= link_to "Suivre ce sujet", subject_follow_path(@subject), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
-  <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: current_user.other %>
+  <%= link_to "Ne plus suivre ce sujet", subject_unfollow_path(@subject), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: current_user.other %>
 <% end %>
 </td>
 
@@ -35,10 +35,10 @@
 </table>
 
 <div class="d-block d-md-none pt-2 text-center">
-<% if !current_user.followed_subjects.exists?(@subject.id) %>
-  <%= link_to "Suivre ce sujet", add_followingsubject_path(:subject_id => @subject.id), :method => :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
+<% if !current_user.sk.followed_subjects.exists?(@subject.id) %>
+  <%= link_to "Suivre ce sujet", subject_follow_path(@subject), :method => :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: current_user.other %>
 <% else %>
-  <%= link_to "Ne plus suivre ce sujet", remove_followingsubject_path(:subject_id => @subject.id), class: 'btn btn-ld-light-dark', disabled: current_user.other %>
+  <%= link_to "Ne plus suivre ce sujet", subject_unfollow_path(@subject), class: 'btn btn-ld-light-dark', disabled: current_user.other %>
 <% end %>
 </div>
 

@@ -66,7 +66,7 @@ class PicturesController < ApplicationController
 
   # Check that current user is admin or is creating a chapter
   def admin_user_or_chapter_creator
-    if !@signed_in || (!current_user.sk.admin && current_user.sk.chaptercreations.count == 0)
+    if !@signed_in || (!current_user.sk.admin && current_user.sk.creating_chapters.count == 0)
       render 'errors/access_refused' and return
     end
   end

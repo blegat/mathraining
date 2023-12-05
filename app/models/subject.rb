@@ -38,10 +38,13 @@ class Subject < ActiveRecord::Base
   belongs_to :contest, optional: true
   belongs_to :problem, optional: true
   belongs_to :last_comment_user, class_name: "User", optional: true # For automatic messages
-  has_many :followingsubjects, dependent: :destroy
-  has_many :following_users, through: :followingsubjects, source: :user
+  has_and_belongs_to_many :following_users, -> { distinct }, class_name: "User", join_table: :followingsubjects
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
+
+  # BEFORE, AFTER
+  
+  before_destroy { self.following_users.clear }
 
   # VALIDATIONS
 

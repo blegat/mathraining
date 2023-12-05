@@ -12,6 +12,24 @@ describe ContestsController, type: :controller, contest: true do
     contest.organizers << user_organizer
   end
   
+  context "if the user is not signed in" do
+    context "and contest is online" do
+      before do
+        contest.in_progress!
+      end
+      
+      it "renders the error page for follow" do
+        put :follow, params: {contest_id: contest.id}
+        expect(response).to render_template 'errors/access_refused'
+      end
+      
+      it "renders the error page for unfollow" do
+        get :unfollow, params: {contest_id: contest.id}
+        expect(response).to redirect_to signin_path
+      end
+    end
+  end
+  
   context "if the user is not an organizer" do
     before do
       sign_in_controller(user)
@@ -24,6 +42,16 @@ describe ContestsController, type: :controller, contest: true do
       
       it "renders the error page for show" do
         get :show, params: {id: contest.id}
+        expect(response).to render_template 'errors/access_refused'
+      end
+      
+      it "renders the error page for follow" do
+        put :follow, params: {contest_id: contest.id}
+        expect(response).to render_template 'errors/access_refused'
+      end
+      
+      it "renders the error page for unfollow" do
+        get :unfollow, params: {contest_id: contest.id}
         expect(response).to render_template 'errors/access_refused'
       end
     end
@@ -73,6 +101,16 @@ describe ContestsController, type: :controller, contest: true do
     
     it "renders the error page for destroy" do
       delete :destroy, params: {id: contest.id}
+      expect(response).to render_template 'errors/access_refused'
+    end
+    
+    it "renders the error page for add_organizer" do
+      patch :add_organizer, params: {contest_id: contest.id, user_id: admin.id}
+      expect(response).to render_template 'errors/access_refused'
+    end
+    
+    it "renders the error page for destroy" do
+      put :remove_organizer, params: {contest_id: contest.id, user_id: user_organizer.id}
       expect(response).to render_template 'errors/access_refused'
     end
     

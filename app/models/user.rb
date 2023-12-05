@@ -66,8 +66,7 @@ class User < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   has_secure_password
-  has_and_belongs_to_many :theories, -> { distinct }
-  has_and_belongs_to_many :chapters, -> { distinct }
+  
   has_many :solvedquestions, dependent: :destroy
   has_many :unsolvedquestions, dependent: :destroy
   has_many :solvedproblems, dependent: :destroy
@@ -78,7 +77,6 @@ class User < ActiveRecord::Base
   has_many :starproposals, dependent: :destroy
   has_many :followings, dependent: :destroy
   has_many :followed_submissions, through: :followings, source: :submission
-  has_many :notifs, dependent: :destroy
   has_many :subjects, dependent: :destroy
   has_many :messages, dependent: :destroy
   has_many :takentests, dependent: :destroy
@@ -86,24 +84,19 @@ class User < ActiveRecord::Base
   has_many :links
   has_many :discussions, through: :links # dependent: :destroy does NOT destroy the associated discussions, but only the link!
   belongs_to :country
-
-  has_many :followingsubjects, dependent: :destroy
-  has_many :followed_subjects, through: :followingsubjects, source: :subject
-
-  has_many :followingusers, dependent: :destroy
-  has_many :followed_users, :class_name => "User", through: :followingusers, foreign_key: "followed_user_id"
-  has_many :backwardfollowingusers, class_name: "Followinguser", dependent: :destroy, foreign_key: "followed_user_id"
-  
-  has_many :chaptercreations, dependent: :destroy
-  has_many :creating_chapters, through: :chaptercreations, source: :chapter
-  
-  has_many :contestorganizations, dependent: :destroy
-  has_many :organized_contests, through: :contestorganizations, source: :contest
-  has_many :followingcontests, dependent: :destroy
-  has_many :followed_contests, through: :followingcontests, source: :contest
   
   has_many :contestsolutions, dependent: :destroy
   has_many :contestscores, dependent: :destroy
+  
+  has_and_belongs_to_many :theories, -> { distinct }
+  has_and_belongs_to_many :chapters, -> { distinct }
+  has_and_belongs_to_many :followed_subjects, -> { distinct }, class_name: "Subject", join_table: :followingsubjects
+  has_and_belongs_to_many :followed_contests, -> { distinct }, class_name: "Contest", join_table: :followingcontests
+  has_and_belongs_to_many :followed_users, -> { distinct }, class_name: "User", join_table: :followingusers, foreign_key: :followed_user_id
+  has_and_belongs_to_many :following_users, -> { distinct }, class_name: "User", join_table: :followingusers, association_foreign_key: :followed_user_id
+  has_and_belongs_to_many :creating_chapters, -> { distinct }, class_name: "Chapter", join_table: :chaptercreations
+  has_and_belongs_to_many :organized_contests, -> { distinct }, class_name: "Contest", join_table: :contestorganizations
+  has_and_belongs_to_many :notified_submissions, -> { distinct }, class_name: "Submission", join_table: :notifs
   
   # BEFORE, AFTER
 
@@ -111,6 +104,13 @@ class User < ActiveRecord::Base
   before_create :create_remember_token
   after_create :create_points
   before_destroy :destroy_discussions
+  before_destroy { self.theories.clear }
+  before_destroy { self.chapters.clear }
+  before_destroy { self.followed_subjects.clear }
+  before_destroy { self.followed_contests.clear }
+  before_destroy { self.followed_users.clear }
+  before_destroy { self.following_users.clear }
+  before_destroy { self.notified_submissions.clear }
 
   # VALIDATIONS
 

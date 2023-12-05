@@ -7,9 +7,9 @@
 
 <td class="d-none d-md-table-cell ps-3 text-end">
 <% if !current_user.sk.follow_message %>
-  <%= button_to "M'avertir des nouveaux messages par e-mail", add_followingmessage_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => current_user.other %>
+  <%= button_to "M'avertir des nouveaux messages par e-mail", set_follow_message_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => current_user.other %>
 <% else %>
-  <%= button_to "Ne plus m'avertir par e-mail", remove_followingmessage_path, :method => :get, :class => 'btn btn-ld-light-dark mt-2 ms-2', :disabled => current_user.other %>
+  <%= button_to "Ne plus m'avertir par e-mail", unset_follow_message_path, :method => :get, :class => 'btn btn-ld-light-dark mt-2 ms-2', :disabled => current_user.other %>
 <% end %>
 </td>
 
@@ -18,9 +18,9 @@
 
 <div class="d-block d-md-none pt-2 text-center">
 <% if !current_user.sk.follow_message %>
-  <%= button_to "M'avertir des nouveaux messages par e-mail", add_followingmessage_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => current_user.other %>
+  <%= button_to "M'avertir des nouveaux messages par e-mail", set_follow_message_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => current_user.other %>
 <% else %>
-  <%= button_to "Ne plus m'avertir par e-mail", remove_followingmessage_path, :method => :get, :class => 'btn btn-ld-light-dark mt-2 ms-2', :disabled => current_user.other %>
+  <%= button_to "Ne plus m'avertir par e-mail", unset_follow_message_path, :method => :get, :class => 'btn btn-ld-light-dark mt-2 ms-2', :disabled => current_user.other %>
 <% end %>
 </div>
 

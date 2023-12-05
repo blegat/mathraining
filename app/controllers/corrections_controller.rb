@@ -142,7 +142,7 @@ class CorrectionsController < ApplicationController
           end
         end
 
-        Notif.create(:user => @submission.user, :submission => @submission) # (will not be created if already exists)
+        @submission.notified_users << @submission.user unless @submission.notified_users.exists?(@submission.user_id)
       else
         @submission.followings.update_all(:read => false)
       end

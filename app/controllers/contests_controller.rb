@@ -1,16 +1,16 @@
 #encoding: utf-8
 class ContestsController < ApplicationController
-  before_action :signed_in_user, only: [:new, :edit]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online]
-  before_action :admin_user, only: [:new, :create, :destroy, :put_online]
+  before_action :signed_in_user, only: [:new, :edit, :unfollow]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :follow, :add_organizer, :remove_organizer]
+  before_action :admin_user, only: [:new, :create, :destroy, :put_online, :add_organizer, :remove_organizer]
   
   before_action :check_contests, only: [:index, :show] # Defined in application_controller.rb
   
   before_action :get_contest, only: [:show, :edit, :update, :destroy]
-  before_action :get_contest2, only: [:put_online, :cutoffs, :define_cutoffs]
+  before_action :get_contest2, only: [:put_online, :cutoffs, :define_cutoffs, :follow, :unfollow, :add_organizer, :remove_organizer]
   
   before_action :organizer_of_contest_or_admin, only: [:edit, :update, :cutoffs, :define_cutoffs]
-  before_action :can_see_contest, only: [:show]
+  before_action :can_see_contest, only: [:show, :follow, :unfollow]
   before_action :offline_contest, only: [:put_online, :destroy]
   before_action :can_be_online, only: [:put_online]
   before_action :can_define_cutoffs, only: [:cutoffs, :define_cutoffs]
@@ -96,6 +96,40 @@ class ContestsController < ApplicationController
 
     flash[:success] = "Concours mis en ligne."
     redirect_to contests_path
+  end
+  
+  # Follow the contest (to receive emails)
+  def follow
+    current_user.sk.followed_contests << @contest unless current_user.sk.followed_contests.exists?(@contest.id)
+    
+    flash[:success] = "Vous recevrez dorénavant un e-mail de rappel un jour avant la publication de chaque problème de ce concours."
+    redirect_to @contest
+  end
+  
+  # Unfollow the contest (to stop receiving emails)
+  def unfollow
+    current_user.sk.followed_contests.destroy(@contest)
+    
+    flash[:success] = "Vous ne recevrez maintenant plus d'e-mail concernant ce concours."
+    redirect_to @contest
+  end
+  
+  # Add an organizer to the contest
+  def add_organizer
+    organizer = User.find_by_id(params[:user_id])
+    unless organizer.nil?
+      @contest.organizers << organizer unless @contest.organizers.exists?(organizer.id)
+    end
+    redirect_to @contest
+  end
+  
+  # Remove an organizer of the contest
+  def remove_organizer
+    organizer = User.find_by_id(params[:user_id])
+    unless organizer.nil?
+      @contest.organizers.destroy(organizer)
+    end
+    redirect_to @contest
   end
 
   private

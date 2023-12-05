@@ -2,6 +2,6 @@ Bonjour <%= @user.first_name %>,<br/><br/>
 
 <%= @debut %> sur le sujet '<%= @subject.title %>' que vous suivez. Vous pouvez lire ce message dans son contexte <%= link_to "ici", subject_url(@subject, :host => "www.mathraining.be", :page => @page, :anchor => "bottom") %>.<br/><br/>
 
-Si vous ne désirez plus suivre ce sujet, cliquez <%= link_to "ici", remove_followingsubject_url(:subject_id => @subject, :host => "www.mathraining.be") %>.<br/><br/>
+Si vous ne désirez plus suivre ce sujet, cliquez <%= link_to "ici", subject_unfollow_url(@subject, :host => "www.mathraining.be") %>.<br/><br/>
 
 L'équipe Mathraining.

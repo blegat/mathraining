@@ -4,7 +4,7 @@
 
 <table class="table table-bordered" style="width:auto;">
 <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th style="width:250px;">Date de la soumission</th><th class="d-none d-sm-table-cell" style="width:250px;">Dernière activité</th><th></th></tr>
-<% @notifs.each do |n| %>
-  <%= render 'submissions/line', s: n.submission, hide_user: true %>
+<% @notified_submissions.each do |s| %>
+  <%= render 'submissions/line', s: s, hide_user: true %>
 <% end %>
 </table>
