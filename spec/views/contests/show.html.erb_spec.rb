@@ -5,7 +5,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
 
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user_bad) { FactoryGirl.create(:user, rating: 0) }
-  let(:user) { FactoryGirl.create(:user, rating: 200) }
+  let(:user) { FactoryGirl.create(:advanced_user) }
   let(:user_organizer) { FactoryGirl.create(:user) }
   let(:contest) { FactoryGirl.create(:contest, medal: true) }
   let(:contestproblem1) { FactoryGirl.create(:contestproblem, contest: contest) }

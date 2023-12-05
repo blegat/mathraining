@@ -169,8 +169,7 @@ describe "Virtualtest pages" do
             describe "and the time stops" do
               let!(:takentest) { Takentest.where(:user => user_with_rating_200, :virtualtest => virtualtest).first }
               before do
-                takentest.taken_time = DateTime.now - virtualtest.duration - 1
-                takentest.save
+                takentest.update_attribute(:taken_time, DateTime.now - virtualtest.duration - 1)
                 visit virtualtest_path(virtualtest, :p => problem) # Should redirect to virtualtests page
               end
               it do
@@ -338,8 +337,7 @@ describe "Virtualtest pages" do
       
       describe "and puts it online while an offline problem was added" do
         before do
-          offline_problem.virtualtest = virtualtest
-          offline_problem.save
+          offline_problem.update_attribute(:virtualtest, virtualtest)
           click_button "Mettre en ligne"
           virtualtest.reload
         end
@@ -352,10 +350,8 @@ describe "Virtualtest pages" do
     
     describe "visits an offline test with an offline problem" do
       before do
-        virtualtest.online = false
-        virtualtest.save
-        problem.online = false
-        problem.save
+        virtualtest.update_attribute(:online, false)
+        problem.update_attribute(:online, false)
         visit virtualtests_path
       end
       it do

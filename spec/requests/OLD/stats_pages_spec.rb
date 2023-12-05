@@ -90,12 +90,10 @@ describe "Stats pages" do
         describe "and recomputes the chapter stats" do
           before do
             # Change nb_tries and nb_completions in a wrong way
-            chapter1.nb_tries = 42
-            chapter1.nb_completions = 42
-            chapter1.save
-            chapter2.nb_tries = 42
-            chapter2.nb_completions = 42
-            chapter2.save
+            chapter1.update(:nb_tries => 42,
+                            :nb_completions => 42)
+            chapter2.update(:nb_tries => 42,
+                            :nb_completions => 42)
             Chapter.update_stats
             chapter1.reload
             chapter2.reload
@@ -111,15 +109,12 @@ describe "Stats pages" do
         describe "and recomputes the question stats" do
           before do
             # Change nb_tries and nb_first_guesses in a wrong way
-            exercise11.nb_tries = 42
-            exercise11.nb_first_guesses = 42
-            exercise11.save
-            exercise12.nb_tries = 42
-            exercise12.nb_first_guesses = 42
-            exercise12.save
-            exercise21.nb_tries = 42
-            exercise21.nb_first_guesses = 42
-            exercise21.save
+            exercise11.update(:nb_tries => 42,
+                              :nb_first_guesses => 42)
+            exercise12.update(:nb_tries => 42,
+                              :nb_first_guesses => 42)
+            exercise21.update(:nb_tries => 42,
+                              :nb_first_guesses => 42)
             Question.update_stats
             exercise11.reload
             exercise12.reload
@@ -192,14 +187,12 @@ describe "Stats pages" do
           describe "and recomputes the problem stats" do
             before do
               # Change nb_solves, first_solve_time and last_solve_time in a wrong way
-              problem.nb_solves = 42
-              problem.first_solve_time = now
-              problem.last_solve_time = now
-              problem.save
-              problem2.nb_solves = 42
-              problem2.first_solve_time = now
-              problem2.last_solve_time = now
-              problem2.save
+              problem.update(:nb_solves => 42,
+                             :first_solve_time => now,
+                             :last_solve_time => now)
+              problem2.update(:nb_solves => 42,
+                              :first_solve_time => now,
+                              :last_solve_time => now)
               Problem.update_stats
               problem.reload
               problem2.reload

@@ -4,8 +4,8 @@ require "spec_helper"
 describe ContestproblemsController, type: :controller, contestproblem: true do
 
   let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_organizer) { FactoryGirl.create(:user, rating: 200) }
-  let(:user) { FactoryGirl.create(:user, rating: 200) }
+  let(:user_organizer) { FactoryGirl.create(:advanced_user) }
+  let(:user) { FactoryGirl.create(:advanced_user) }
   let(:contest) { FactoryGirl.create(:contest) }
   let(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest) }
   

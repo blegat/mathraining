@@ -9,7 +9,7 @@ describe "Subject pages" do
   let(:other_root) { FactoryGirl.create(:root) }
   let(:admin) { FactoryGirl.create(:admin) }
   let(:other_admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user, rating: 200) } # Rating 200 is needed to have access to problems
+  let(:user) { FactoryGirl.create(:advanced_user) } # Rating 200 is needed to have access to problems
   let(:other_user) { FactoryGirl.create(:user) }
   
   let!(:category) { FactoryGirl.create(:category) }
@@ -388,12 +388,10 @@ describe "Subject pages" do
       let!(:mes) { FactoryGirl.create(:message, subject: sub_other_user) }
       before do
         # Set last_comment_time and last_comment_user_id correctly for sub_user and sub_other_user
-        sub_user.last_comment_time = sub_user.created_at
-        sub_user.last_comment_user_id = sub_user.user_id
-        sub_user.save
-        sub_other_user.last_comment_time = mes.created_at
-        sub_other_user.last_comment_user_id = mes.user_id
-        sub_other_user.save
+        sub_user.update(:last_comment_time => sub_user.created_at,
+                        :last_comment_user_id => sub_user.user_id)
+        sub_other_user.update(:last_comment_time => mes.created_at,
+                              :last_comment_user_id => mes.user_id)
         visit subject_path(sub_other_user)
       end
       it { should have_link("Migrer ce sujet") }
@@ -434,8 +432,7 @@ describe "Subject pages" do
       
       describe "and migrates it to an older subject" do
         before do
-          sub_user.created_at = sub_other_user.created_at + 1.day
-          sub_user.save
+          sub_user.update_attribute(:created_at, sub_other_user.created_at + 1.day)
           fill_in "migreur", with: sub_user.id
           click_button "Migrer"
         end

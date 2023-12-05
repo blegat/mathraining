@@ -207,10 +207,9 @@ describe "Contestsolution pages" do
     describe "visits a finished contestproblem page" do
       before do
         # Make sure that the official solution is starred so we can see it without javascript
-        officialsol_finished.score = 7
-        officialsol_finished.corrected = true
-        officialsol_finished.star = true
-        officialsol_finished.save
+        officialsol_finished.update(:score => 7,
+                                    :corrected => true,
+                                    :star => true)
         visit contestproblem_path(contestproblem_finished)
       end
       it do

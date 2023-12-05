@@ -313,10 +313,10 @@ FactoryGirl.define do
     end
     factory :corrector do
       corrector true
-      rating 200
+      sequence(:rating) { |n| 200+n }
     end
     factory :advanced_user do
-      rating 200
+      sequence(:rating) { |n| 200+n }
     end
   end
   

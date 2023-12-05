@@ -248,8 +248,7 @@ describe "Contest pages", contest: true do
       
       describe "and tries to put it online too late" do
         before do
-          offline_contestproblem.start_time = DateTime.now - 20.minutes
-          offline_contestproblem.save
+          offline_contestproblem.update_attribute(:start_time, DateTime.now - 20.minutes)
           click_link "Mettre ce concours en ligne"
           offline_contest.reload
           offline_contestproblem.reload
@@ -264,8 +263,7 @@ describe "Contest pages", contest: true do
       describe "and adds an organizer" do
         before do
           # Ensure that user_with_rating_200 appears in the list of possible organizers:
-          user_with_rating_200.last_connexion_date = DateTime.now.to_date
-          user_with_rating_200.save
+          user_with_rating_200.update_attribute(:last_connexion_date, DateTime.now.to_date)
           visit contest_path(offline_contest)
           select "#{user_with_rating_200.name} (200)", from: "user_id"
           click_button "Ajouter"

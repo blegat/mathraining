@@ -45,12 +45,10 @@ describe "Page user/index" do
     
     # Initialize Pointspersection randomly
     Section.where(:fondation => false).each do |s|
-      s.max_score = (r.rand() * 1000).to_i
-      s.save
+      s.update_attribute(:max_score, (r.rand() * 1000).to_i)
       User.where(:admin => false).each do |u|
         pps = Pointspersection.where(:user => u, :section => s).first
-        pps.points = [[(r.rand() * (s.max_score+100)).to_i - 50, 0].max, s.max_score].min
-        pps.save
+        pps.update_attribute(:points, [[(r.rand() * (s.max_score+100)).to_i - 50, 0].max, s.max_score].min)
       end
     end
     

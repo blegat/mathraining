@@ -7,7 +7,7 @@ describe "Page section/showpb" do
 
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user_with_rating_199) { FactoryGirl.create(:user, rating: 199) }
-  let(:user) { FactoryGirl.create(:user, rating: 200) }
+  let(:user) { FactoryGirl.create(:advanced_user) }
   let!(:section) { FactoryGirl.create(:section) }
   let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true, name: "Mon chapitre prérequis") }
   let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true, name: "Mon autre chapitre prérequis") }

@@ -83,8 +83,7 @@ describe "Page section/showpb" do
     
     describe "for a fondation section" do
       before do
-        section.fondation = true
-        section.save
+        section.update_attribute(:fondation, true)
         visit section_path(section)
       end
       it do
@@ -212,8 +211,7 @@ describe "Page section/showpb" do
     
     describe "having completed one chapter for a fondation section" do
       before do
-        section.fondation = true
-        section.save
+        section.update_attribute(:fondation, true)
         FactoryGirl.create(:solvedquestion, user: user, question: question11)
         FactoryGirl.create(:solvedquestion, user: user, question: question12)
         FactoryGirl.create(:solvedquestion, user: user, question: question14)
@@ -294,8 +292,7 @@ describe "Page section/showpb" do
     
     describe "for a fondation section" do
       before do
-        section.fondation = true
-        section.save
+        section.update_attribute(:fondation, true)
         visit section_path(section)
       end
       it do

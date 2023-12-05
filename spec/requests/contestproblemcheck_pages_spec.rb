@@ -23,8 +23,7 @@ describe "Contestproblemcheck pages", contestproblem: true do
   
     describe "visits a contest just before problem publication" do
       before do
-        running_contestproblem.start_time = DateTime.now + 5.minutes
-        running_contestproblem.save
+        running_contestproblem.update_attribute(:start_time, DateTime.now + 5.minutes)
         visit contest_path(running_contest)
         running_contestproblem.reload
       end
@@ -36,8 +35,7 @@ describe "Contestproblemcheck pages", contestproblem: true do
   
     describe "visits a contest just after problem publication" do
       before do
-        running_contestproblem.start_time = DateTime.now - 1.minute
-        running_contestproblem.save
+        running_contestproblem.update_attribute(:start_time, DateTime.now - 1.minute)
         visit contest_path(running_contest)
         running_contestproblem.reload
       end
@@ -50,9 +48,8 @@ describe "Contestproblemcheck pages", contestproblem: true do
     describe "visits a contest just after problem ends" do
       before do
         running_contestproblem.in_progress!
-        running_contestproblem.start_time = DateTime.now - 120.minutes
-        running_contestproblem.end_time = DateTime.now - 1.minute
-        running_contestproblem.save
+        running_contestproblem.update(:start_time => DateTime.now - 120.minutes,
+                                      :end_time   => DateTime.now - 1.minute)
         visit contest_path(running_contest)
         running_contestproblem.reload
       end
@@ -68,9 +65,9 @@ describe "Contestproblemcheck pages", contestproblem: true do
       let!(:num_messages_before) { running_contestsubject.messages.count }
       before do
         running_contestproblem.no_reminder_sent!
-        running_contestproblem.start_time = DateTime.now + 1.day - 2.minutes
-        running_contestproblem.end_time = running_contestproblem.start_time + 1.hour
-        running_contestproblem.save
+        s = DateTime.now + 1.day - 2.minutes
+        running_contestproblem.update(:start_time => s,
+                                      :end_time   => s + 1.hour)
         Contest.check_contests_starts
         running_contestproblem.reload
         running_contestsubject.reload
@@ -87,9 +84,9 @@ describe "Contestproblemcheck pages", contestproblem: true do
       let!(:num_messages_before) { running_contestsubject.messages.count }
       before do
         running_contestproblem.early_reminder_sent!
-        running_contestproblem.start_time = DateTime.now - 2.minutes
-        running_contestproblem.end_time = running_contestproblem.start_time + 1.hour
-        running_contestproblem.save
+        s = DateTime.now - 2.minutes
+        running_contestproblem.update(:start_time => s,
+                                      :end_time   => s + 1.hour)
         Contest.check_contests_starts
         running_contestproblem.reload
         running_contestsubject.reload

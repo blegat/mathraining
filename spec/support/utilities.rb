@@ -26,29 +26,11 @@ def error_must_be_connected
 end
 
 def create_discussion_between(user1, user2, content1, content2)
-  d = Discussion.new
-  d.last_message_time = DateTime.now
-  d.save
-  link = Link.new
-  link.user_id = user1.id
-  link.discussion_id = d.id
-  link.nonread = 0
-  link.save
-  link2 = Link.new
-  link2.user_id = user2.id
-  link2.discussion_id = d.id
-  link2.nonread = 0
-  link2.save
-  m = Tchatmessage.new
-  m.user_id = user1.id
-  m.content = content1
-  m.discussion_id = d.id
-  m.save
-  m2 = Tchatmessage.new
-  m2.user_id = user2.id
-  m2.content = content2
-  m2.discussion_id = d.id
-  m2.save
+  d = Discussion.create(:last_message_time => DateTime.now)
+  Link.create(:user => user1, :discussion => d, :nonread => 0)
+  Link.create(:user => user2, :discussion => d, :nonread => 0)
+  Tchatmessage.create(:user => user1, :discussion => d, :content => content1)
+  Tchatmessage.create(:user => user2, :discussion => d, :content => content2)
   return d
 end
 

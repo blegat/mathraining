@@ -57,8 +57,7 @@ feature 'Emailer' do
   
     before do
       clear_emails
-      other_user.follow_message = true
-      other_user.save
+      other_user.update_attribute(:follow_message, true)
       sign_in user
       visit new_discussion_path
       select other_user.name, from: "destinataire"

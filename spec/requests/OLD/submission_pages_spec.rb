@@ -7,9 +7,9 @@ describe "Submission pages" do
 
   let(:root) { FactoryGirl.create(:root) }
   let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user, rating: 200) }
-  let(:other_user) { FactoryGirl.create(:user, rating: 200) }
-  let(:other_user2) { FactoryGirl.create(:user, rating: 200) }
+  let(:user) { FactoryGirl.create(:advanced_user) }
+  let(:other_user) { FactoryGirl.create(:advanced_user) }
+  let(:other_user2) { FactoryGirl.create(:advanced_user) }
   let(:good_corrector) { FactoryGirl.create(:corrector) }
   let(:bad_corrector) { FactoryGirl.create(:corrector) }
   
@@ -619,8 +619,7 @@ describe "Submission pages" do
         before do
           f = Following.create(:user => good_corrector, :submission => waiting_submission, :read => true, :kind => 0)
           visit problem_path(problem_with_submissions, :sub => waiting_submission)
-          f.user = admin
-          f.save
+          f.update_attribute(:user, admin)
           click_button "Annuler ma réservation"
           wait_for_ajax
           waiting_submission.reload

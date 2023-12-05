@@ -68,8 +68,7 @@ describe "User pages" do
     
     describe "activates his account" do
       before do
-        zero_user.email_confirm = false
-        zero_user.save
+        zero_user.update_attribute(:email_confirm, false)
       end
       
       describe "with correct key" do
@@ -112,8 +111,7 @@ describe "User pages" do
       
       describe "and enters unconfirmed email" do
         before do
-          other_zero_user.email_confirm = false
-          other_zero_user.save
+          other_zero_user.update_attribute(:email_confirm, false)
           fill_in "Email", with: other_zero_user.email
           click_button "Envoyer l'e-mail"
         end
@@ -145,8 +143,7 @@ describe "User pages" do
         describe "and visits the reset page too late" do
           before do
             zero_user.reload
-            zero_user.recup_password_date_limit = DateTime.now - 5000
-            zero_user.save
+            zero_user.update_attribute(:recup_password_date_limit, DateTime.now - 5000)
             visit user_recup_password_path(zero_user, :key => zero_user.key)
           end
           it { should have_error_message("Ce lien n'est plus valide (il expirait après une heure)") }
@@ -558,8 +555,7 @@ describe "User pages" do
       
       describe "and remove from group A" do
         before do
-          zero_user.group = "A"
-          zero_user.save
+          zero_user.update_attribute(:group, "A")
           visit user_path(zero_user)
         end
         specify { expect { click_link "aucun" and zero_user.reload }.to change{zero_user.group}.to("") }
@@ -640,12 +636,10 @@ describe "User pages" do
   describe "cron job" do
     describe "deletes user with unconfirmed email for a long time" do
       before do
-        zero_user.email_confirm = false
-        zero_user.created_at = DateTime.now - 8.days
-        zero_user.save
-        other_zero_user.email_confirm = false
-        other_zero_user.created_at = DateTime.now - 6.days
-        other_zero_user.save
+        zero_user.update(:email_confirm => false,
+                         :created_at => DateTime.now - 8.days)
+        other_zero_user.update(:email_confirm => false,
+                               :created_at => DateTime.now - 6.days)
       end
       specify { expect { User.delete_unconfirmed }.to change(User, :count).by(-1) } # Only zero_user should be deleted
     end
@@ -653,15 +647,12 @@ describe "User pages" do
     describe "deletes user that never came for one month" do
       let!(:other_zero_user2) { FactoryGirl.create(:user, country: other_country, rating: 0) }
       before do
-        zero_user.created_at = DateTime.now - 40.days
-        zero_user.last_connexion_date = "2009-01-01"
-        zero_user.save
-        other_zero_user.created_at = DateTime.now - 20.days
-        other_zero_user.last_connexion_date = "2009-01-01"
-        other_zero_user.save
-        other_zero_user2.created_at = DateTime.now - 40.days
-        other_zero_user2.last_connexion_date = "2020-01-01"
-        other_zero_user2.save
+        zero_user.update(:created_at => DateTime.now - 40.days,
+                         :last_connexion_date => "2009-01-01")
+        other_zero_user.update(:created_at => DateTime.now - 20.days,
+                               :last_connexion_date => "2009-01-01")
+        other_zero_user2.update(:created_at => DateTime.now - 40.days,
+                                :last_connexion_date => "2020-01-01")
       end
       specify { expect { User.delete_unconfirmed }.to change(User, :count).by(-1) } # Only zero_user should be deleted
     end

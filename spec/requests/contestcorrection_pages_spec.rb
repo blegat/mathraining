@@ -11,9 +11,9 @@ describe "Contestcorrection pages", contestcorrection: true do
   let(:datetime_after2) { DateTime.now + 2.hours }
 
   let(:root) { FactoryGirl.create(:root) }
-  let(:user_participating) { FactoryGirl.create(:user, rating: 200) }
-  let(:user2_participating) { FactoryGirl.create(:user, rating: 200) }
-  let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
+  let(:user_participating) { FactoryGirl.create(:advanced_user) }
+  let(:user2_participating) { FactoryGirl.create(:advanced_user) }
+  let!(:user_organizer) { FactoryGirl.create(:advanced_user) }
   
   let!(:contest) { FactoryGirl.create(:contest, status: :in_progress) }
   let!(:contestsubject) { FactoryGirl.create(:subject, contest: contest, user_id: 0) }
@@ -62,8 +62,7 @@ describe "Contestcorrection pages", contestcorrection: true do
     
     describe "visits an official solution after having reserved" do
       before do
-        officialsol_finished.reservation = user_organizer.id
-        officialsol_finished.save
+        officialsol_finished.update_attribute(:reservation, user_organizer.id)
         visit contestproblem_path(contestproblem_finished, :sol => officialsol_finished)
       end
       it do
@@ -121,8 +120,7 @@ describe "Contestcorrection pages", contestcorrection: true do
     
     describe "visits a user solution after having reserved" do
       before do
-        usersol_finished.reservation = user_organizer.id
-        usersol_finished.save
+        usersol_finished.update_attribute(:reservation, user_organizer.id)
         visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
       end
       it do
@@ -220,8 +218,7 @@ describe "Contestcorrection pages", contestcorrection: true do
 
       describe "and hacked the system (he did not reserve)" do
         before do
-          usersol_finished.reservation = 0
-          usersol_finished.save
+          usersol_finished.update_attribute(:reservation, 0)
           fill_in "MathInput", with: newcorrection
           fill_in "score", with: 4
           click_button "Enregistrer"
@@ -238,10 +235,9 @@ describe "Contestcorrection pages", contestcorrection: true do
         
     describe "after corrections" do
       before do
-        usersol_finished.score = 7
-        usersol_finished.star = true
-        usersol_finished.corrected = true
-        usersol_finished.save
+        usersol_finished.update(:score => 7,
+                                :star => true,
+                                :corrected => true)
         visit contestproblem_path(contestproblem_finished)
       end
       
@@ -268,8 +264,7 @@ describe "Contestcorrection pages", contestcorrection: true do
         describe "and visits a solution when recorrections are allowed" do
           before do
             contestproblem_finished.in_recorrection!
-            usersol2_finished.reservation = user_organizer.id
-            usersol2_finished.save
+            usersol2_finished.update_attribute(:reservation, user_organizer.id)
             visit contestproblem_path(contestproblem_finished, :sol => usersol2_finished)
           end
           it do
@@ -352,8 +347,7 @@ describe "Contestcorrection pages", contestcorrection: true do
       describe "tries to modify it after results were published" do
         before do
           # Need to reserve again:
-          usersol_finished.reservation = user_organizer.id
-          usersol_finished.save
+          usersol_finished.update_attribute(:reservation, user_organizer.id)
           visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
           # Simulate publication of corrections by somebody else in the meanwhile:
           contestproblem_finished.corrected!

@@ -6,7 +6,7 @@ describe "Myfile pages" do
   subject { page }
 
   let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:user, rating: 200) }
+  let(:user) { FactoryGirl.create(:advanced_user) }
   
   let(:sub) { FactoryGirl.create(:subject) } # Don't use name "subject" because it is used for the page
   let(:message) { FactoryGirl.create(:message, subject: sub) }
