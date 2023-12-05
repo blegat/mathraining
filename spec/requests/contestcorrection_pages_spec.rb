@@ -400,8 +400,7 @@ describe "Contestcorrection pages", contestcorrection: true do
       
       describe "and reserves it while somebody else reserved it" do
         before do
-          usersol_finished.reservation = root.id
-          usersol_finished.save
+          usersol_finished.update_attribute(:reservation, root.id)
           wait_for_js_imports
           click_button "button-reserve"
           wait_for_ajax
@@ -410,6 +409,20 @@ describe "Contestcorrection pages", contestcorrection: true do
         specify do
           expect(page).to have_content("Réservé par #{root.name}.")
           expect(usersol_finished.reservation).to eq(root.id)
+        end
+      end
+      
+      describe "and reserves it while corrections were published" do
+        before do
+          usersol_finished.update(:reservation => 0, :corrected => true, :score => 5)     
+          contestproblem_finished.corrected!     
+          wait_for_js_imports
+          click_button "button-reserve"
+          wait_for_ajax
+          usersol_finished.reload
+        end
+        specify do
+          expect(usersol_finished.reservation).to eq(0)
         end
       end
       
