@@ -92,9 +92,9 @@ FactoryGirl.define do
   
   # Faq
   factory :faq do
-    question "C'est quoi Mathraining ?"
-    answer "Un merveilleux site."
-    position 1
+    sequence(:question) { |n| "C'est quoi #{n} Mathraining ?" }
+    sequence(:answer) { |n| "Un merveilleux #{n} site." }
+    sequence(:position) { |n| n }
   end
   
   # Following

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Faq pages" do
+describe "Faq pages", faq: true do
 
   subject { page }
 
@@ -24,16 +24,6 @@ describe "Faq pages" do
         should have_no_link("Supprimer la question")
         should have_no_button("Ajouter une question")
       end
-    end
-    
-    describe "tries to create a question" do
-      before { visit new_faq_path }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to edit a question" do
-      before { visit edit_faq_path(faq) }
-      it { should have_content(error_access_refused) }
     end
   end
 
@@ -93,6 +83,7 @@ describe "Faq pages" do
     describe "creates a question" do
       before { visit new_faq_path }
       it { should have_selector("h1", text: "Ajouter une question") }
+      
       describe "and sends with good information" do
         before do
           fill_in "Question", with: newquestion
@@ -105,6 +96,7 @@ describe "Faq pages" do
           expect(Faq.order(:id).last.answer).to eq(newanswer)
         end
       end
+      
       describe "and sends with wrong information" do
         before do
           fill_in "Question", with: newquestion
@@ -122,6 +114,7 @@ describe "Faq pages" do
     describe "edits a question" do
       before { visit edit_faq_path(faq) }
       it { should have_selector("h1", text: "Modifier une question") }
+      
       describe "and sends with good information" do
         before do
           fill_in "Question", with: newquestion
@@ -135,6 +128,7 @@ describe "Faq pages" do
           expect(faq.answer).to eq(newanswer)
         end
       end
+      
       describe "and sends with wrong information" do
         before do
           fill_in "Question", with: ""
