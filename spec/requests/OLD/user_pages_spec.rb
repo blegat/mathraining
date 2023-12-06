@@ -344,6 +344,105 @@ describe "User pages" do
       it { should have_no_link(admin.name, href: user_path(admin)) }
     end
     
+    describe "wants to search for a user" do
+      let!(:marcel_proust) { FactoryGirl.create(:admin, first_name: "Marcel", last_name: "Proust") }
+      let!(:marcel_pinot) { FactoryGirl.create(:user, first_name: "Marcel", last_name: "Pinot", rating: 200) }
+      let!(:lionel_p) { FactoryGirl.create(:user, first_name: "L'ionel", last_name: "Proust", see_name: 0, rating: 100) }
+      let!(:lionel_pinot) { FactoryGirl.create(:user, first_name: "L'ionel", last_name: "Pinot", rating: 0) }
+      let!(:diesel_proust_inactive) { FactoryGirl.create(:user, first_name: "Diesel", last_name: "Proust", active: false) }
+      
+      before { visit search_user_path }
+      it do
+        should have_field "search"
+        should have_button "Chercher"
+      end
+      
+      describe "and search for 'EL  PROUST'" do
+        before do
+          fill_in "search", with: "EL  PROUST"
+          click_button "Chercher"
+        end
+        it do
+          should have_selector("h4", text: "Administrateurs")
+          should have_link(marcel_proust.name, href: user_path(marcel_proust))
+          should have_no_selector("h4", text: "Étudiants")
+          should have_no_link(marcel_pinot.name, href: user_path(marcel_pinot))
+          should have_no_link(lionel_p.name, href: user_path(lionel_p))
+          should have_no_link(lionel_pinot.name, href: user_path(lionel_pinot))
+          should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
+        end
+      end
+      
+      describe "and search for ' el p   '" do
+        before do
+          fill_in "search", with: " el p   "
+          click_button "Chercher"
+        end
+        it do
+          should have_selector("h4", text: "Administrateurs")
+          should have_link(marcel_proust.name, href: user_path(marcel_proust))
+          should have_selector("h4", text: "Étudiants")
+          should have_link(marcel_pinot.name, href: user_path(marcel_pinot))
+          should have_link(lionel_p.name, href: user_path(lionel_p))
+          should have_no_link(lionel_pinot.name, href: user_path(lionel_pinot)) # on page 2
+          should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
+          should have_link(href: search_user_path(:search => " el p   ", :page => 2))
+        end
+        
+        describe "and visits page 2" do
+          before { visit search_user_path(:search => " el p   ", :page => 2) }
+          it do
+            should have_no_selector("h4", text: "Administrateurs") # only on page 1
+            should have_no_link(marcel_proust.name, href: user_path(marcel_proust))
+            should have_no_selector("h4", text: "Étudiants")
+            should have_no_link(marcel_pinot.name, href: user_path(marcel_pinot)) # on page 1
+            should have_no_link(lionel_p.name, href: user_path(lionel_p)) # on page 1
+            should have_link(lionel_pinot.name, href: user_path(lionel_pinot))
+            should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
+            should have_link(href: search_user_path(:search => " el p   ", :page => 1))
+          end          
+        end
+      end
+      
+      describe "and search for L'ionel P." do
+        before do
+          fill_in "search", with: "L'ionel P."
+          click_button "Chercher"
+        end
+        it do
+          should have_no_selector("h4", text: "Administrateurs")
+          should have_no_link(marcel_proust.name, href: user_path(marcel_proust))
+          should have_no_selector("h4", text: "Étudiants")
+          should have_no_link(marcel_pinot.name, href: user_path(marcel_pinot))
+          should have_link(lionel_p.name, href: user_path(lionel_p))
+          should have_no_link(lionel_pinot.name, href: user_path(lionel_pinot))
+          should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
+        end
+      end
+      
+      describe "and search for ' el '" do
+        before do
+          fill_in "search", with: " el "
+          click_button "Chercher"
+        end
+        it do
+          should have_content("Au moins 3 caractères sont nécessaires")
+          should have_no_link(marcel_proust.name, href: user_path(marcel_proust))
+        end
+      end
+      
+      describe "and search for 'marcel*'" do
+        before do
+          fill_in "search", with: "marcel*"
+          click_button "Chercher"
+        end
+        it do
+          should have_content("Le caractère * n'est pas autorisé")
+          should have_no_link(marcel_proust.name, href: user_path(marcel_proust))
+        end
+      end
+    end
+    
     describe "visits followed users" do
       before do
         zero_user.followed_users.append(ranked_user)

@@ -176,6 +176,7 @@ Rails.application.routes.draw do
   match '/groups', to: 'users#groups', :via => [:get]
   match '/correctors', to: 'users#correctors', :via => [:get]
   match '/followed_users', to: 'users#followed_users', :via => [:get]
+  match '/search_user', to: 'users#search_user', :via => [:get]
   match '/notifs', to: 'users#notifs', :via => [:get]
   match '/signup', to: 'users#new', :via => [:get]
   match '/activate', to: 'users#activate', :via => [:get]

@@ -60,13 +60,8 @@
 
 <h1><%= title_1("Scores") %></h1>
 
-<% if @signed_in %>
-  <!-- Tabs -->
-  <ul class="nav nav-tabs nav-justified flex-column flex-sm-row mt-3 mb-3">
-    <li class="nav-item"><%= link_to "Tous les utilisateurs", users_path, :class => "nav-link active" %></li>
-    <li class="nav-item"><%= link_to "Utilisateurs suivis", followed_users_path, :class => "nav-link" %></li>
-  </ul>
-<% end %>
+<!-- Tabs -->
+<%= render "tabs", t: 1 %>
 
 <center>
 
@@ -87,33 +82,7 @@
     <p class="mt-2 text-center">Aucun utilisateur.</p>
   <% else %>
     <center>
-      <table id="users_table" class="table table-bordered mt-1" style="max-width:800px;">
-        <tr class="table-ld-header">
-          <th style="width:20px;"></th>
-          <th style="width:230px;">Nom</th>
-          <th class="text-center" style="width:50px;">Pays</th>
-          <th class="text-center" style="width:90px;">Score</th>
-          <% @allsec.each do |s| %>
-            <th class="d-none d-md-table-cell" style="width:60px;"><center><%= s.initials %></center></th>
-          <% end %>
-          <th class="d-none d-lg-table-cell" style="width:100px;"><center>&le; 2 sem.</center></th>
-        </tr>
-
-        <% local_id = 0 %>
-        <% previous_rank = 0 %>
-        <!-- Warning: @all_users cannot be directly used because users with global rank 1 are reordered in the controller! -->
-        <% @all_users.each do |u| %>
-          <%= render "line", global_rank: @x_globalrank[local_id], previous_rank: previous_rank, recent: @x_recent[local_id], persection: @x_persection[local_id], rating: @x_rating[local_id], country: @x_country[local_id], linked_name: @x_linked_name[local_id], line_id: local_id+1 %>
-          <% previous_rank = @x_globalrank[local_id] %>
-          <% local_id = local_id + 1 %>
-        <% end %>
-      
-      </table>
-    </center>
-    
-    <center>
-      <%= will_paginate @all_users, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
-      <%= will_paginate @all_users, :class => "d-block d-sm-none mb-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+      <%= render "users_table", with_pagination: true %>
     </center>
   <% end %>
 

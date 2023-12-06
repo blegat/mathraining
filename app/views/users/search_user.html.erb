@@ -1,0 +1,52 @@
+<% provide(:title, 'Scores') %>
+
+<!-- Pays (pour les drapeaux) -->
+
+<% @allcountries = Array.new %>
+<% Country.all.each do |c| %>
+  <% @allcountries[c.id] = [c.name, c.code] %>
+<% end %>
+
+<h1><%= title_1("Scores") %></h1>
+
+<!-- Tabs -->
+<%= render "tabs", t: 3 %>
+
+<%= form_tag search_user_path, :method => "get", :name => "research", :class => "mb-3" do %>
+  <div class="row g-2 align-items-center">
+    <div class="col-auto">
+      Prénom et/ou nom :
+    </div>
+    <div class="col-auto">
+      <%= text_field_tag :search, params[:search], :maxlength => 50, :class => "form-control", :style => "width:200px;" %>
+    </div>
+    <div class="col-auto">
+      <%= submit_tag "Chercher", class: "btn btn-primary", name: nil %>
+    </div>
+  </div>
+<% end %>
+
+  <% if !@error_message.nil? %>
+    <center><p><%= @error_message %></p></center>
+  <% elsif !@all_users.nil? %>
+    <% if @all_users.size == 0 && @admin_users.size == 0 %>
+      <center><p>Aucun utilisateur trouvé.</p></center>
+    <% end %>
+    <% if @admin_users.size > 0 %>
+      <h4>Administrateurs</h4>
+      <ul>
+      <% @admin_users.each do |u| %>
+        <li><%= raw(u.linked_name) %></li>
+      <% end %>
+      </ul>
+    <% end %>
+    <% if @all_users.size > 0 %>
+      <% if @admin_users.size > 0 %>
+        <h4>Étudiants</h4>
+      <% end %>
+      <center>
+      <%= render "users_table", with_pagination: true %>
+      </center>
+    <% end %>
+  <% end %>
+</center>

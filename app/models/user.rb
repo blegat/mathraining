@@ -41,16 +41,14 @@ include ERB::Util
 
 class CharacterValidator < ActiveModel::Validator
   def validate(record)
-    allowed_characters = Set["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "É", "Ö", "à", "á", "â", "ã", "ä", "ç", "è", "é", "ê", "ë", "î", "ï", "ñ", "ò", "ó", "ô", "ö", "ù", "ü", "š"]
-    allowed_special_characters = Set[" ", "'", "-", "."]
     a = [record.first_name, record.last_name]
     b = ["Prénom", "Nom"]
     (0..1).each do |j|
       one_letter = false
       (0..(a[j].size-1)).each do |i|
-        if (allowed_characters.include?(a[j][i]))
+        if (User.allowed_characters.include?(a[j][i]))
           one_letter = true
-        elsif (!allowed_special_characters.include?(a[j][i]))
+        elsif (!User.allowed_special_characters.include?(a[j][i]))
           record.errors.add(:base, "#{b[j]} ne peut pas contenir le caractère #{a[j][i]}")
         end
       end
@@ -128,6 +126,14 @@ class User < ActiveRecord::Base
   validates :country, presence: true
   
   # OTHER METHODS
+  
+  def self.allowed_characters
+    Set["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "É", "Ö", "à", "á", "â", "ã", "ä", "ç", "è", "é", "ê", "ë", "î", "ï", "ñ", "ò", "ó", "ô", "ö", "ù", "ü", "š"]
+  end
+  
+  def self.allowed_special_characters
+    Set[" ", "'", "-", "."]
+  end
 
   # Complete name (with only initial of last name if the user asked to)
   def name
@@ -270,15 +276,15 @@ class User < ActiveRecord::Base
         end
       end
       
-      while(r[0] == ' ')
+      while r[0] == ' '
         r = r.slice(1..-1)
       end
       
-      while(r[r.size-1] == ' ')
+      while r[r.size-1] == ' '
         r = r.slice(0..-2)
       end
       
-      if(r.size == 1)
+      if r.size == 1
         r = r + "."
       end
       

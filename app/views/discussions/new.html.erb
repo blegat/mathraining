@@ -2,9 +2,16 @@
 
 <%= render 'title' %>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 var showAllUsers = function () {
   $.getScript("<%= new_discussion_url %>");
+}
+</script> -->
+
+<script type="text/javascript">
+var UserNotFound = function () {
+  document.getElementById("user-not-found-link").style.display = "none"
+  document.getElementById("user-not-found-note").style.display = "block"
 }
 </script>
 
@@ -28,13 +35,19 @@ var showAllUsers = function () {
       
       <div class="mb-2" id="destinataire-div">
         <%= f.label :destinataire, :for => "destinataire", :class => "form-label" %>
-        - <%= link_to "Afficher les utilisateurs inactifs", "javascript:showAllUsers()", id: "show_all" %>
-        <span style="display:none;" id="thanks">À votre service !</span>
+        <!-- - <%= link_to "Afficher les utilisateurs inactifs", "javascript:showAllUsers()", id: "show_all" %> -->
+        <!-- <span style="display:none;" id="thanks">À votre service !</span> -->
         
         <% mtn = DateTime.now.to_date - 14 %>
         <% users = User.select(:id, :rating, :first_name, :last_name, :see_name, :admin).where("id != ? AND (last_connexion_date >= ? OR id = ?) AND active = ?", current_user.sk.id, mtn, params[:qui].to_i, true).order("first_name, last_name, rating") %>
         <%= select_tag :destinataire, options_for_select(users.collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, ""), params[:qui].to_i), :class => "form-select select2", :style => "width:300px;" %>
       </div>
+      
+      <div class="mb-2" id="user-not-found-link">
+      <%= link_to "Destinataire introuvable ?", "javascript:UserNotFound()" %>
+      </div>
+      
+      <div class="mb-2 text-color-orange" id="user-not-found-note" style="display:none;">Seuls les utilisateurs actifs récemment sont listés ci-dessus. Pour envoyer un message à un autre utilisateur, <%= link_to "cherchez-le", search_user_path %>, consultez son profil et cliquez sur "Envoyer un message".</div>
       
       <script>initializeSelect2WhenPossible("Choisir un destinataire")</script>
 

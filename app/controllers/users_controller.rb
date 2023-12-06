@@ -15,11 +15,16 @@ class UsersController < ApplicationController
 
   # Show all users with their scores
   def index
-    @number_by_page = (Rails.env.test? ? 10 : 50) # For tests we put only 10 by page
+    number_by_page = (Rails.env.test? ? 10 : 50) # For tests we put only 10 by page
 
     @country = 0
-    if(params.has_key?:country)
+    if params.has_key?:country
       @country = params[:country].to_i
+    end
+    
+    page = 1
+    if params.has_key?:page
+      page = params[:page].to_i
     end
     
     @real_users = true
@@ -65,59 +70,76 @@ class UsersController < ApplicationController
       end
       return
     end
-
-    @page = 1
-    if(params.has_key?:page)
-      @page = params[:page].to_i
-    end
     
-    @allsec = Section.order(:id).where(:fondation => false).to_a
-
-    @maxscore = Array.new
-
-    Section.all.each do |s|
-      @maxscore[s.id] = s.max_score
-    end
+    fill_sections_max_score
 
     if @country == 0
-      @all_users = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ?", @max_rating, @min_rating, false, true).order("rating DESC, id ASC").paginate(:page => @page, :per_page => @number_by_page)
+      @all_users = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ?", @max_rating, @min_rating, false, true).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page)
     else
-      @all_users = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ? AND country_id = ?", @max_rating, @min_rating, false, true, @country).order("rating DESC, id ASC").paginate(:page => @page, :per_page => @number_by_page)
+      @all_users = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ? AND country_id = ?", @max_rating, @min_rating, false, true, @country).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page)
     end
 
-    num = @all_users.size
-    @x_recent = Array.new(num)
-    @x_persection = Array.new(num)
-    @x_globalrank = Array.new(num)
-    @x_country = Array.new(num)
-    @x_rating = Array.new(num)
-    @x_linked_name = Array.new(num)
-    fill_user_info(@all_users, @x_recent, @x_persection, @x_globalrank, @x_rating, @x_country, @x_linked_name)
+    fill_user_info(@all_users)
   end
 
   # Show all followed users
   def followed_users
-    @allsec = Section.order(:id).where(:fondation => false).to_a
-
-    @maxscore = Array.new
-
-    Section.all.each do |s|
-      @maxscore[s.id] = s.max_score
-    end
-
+    fill_sections_max_score
+    
     @all_users = current_user.sk.followed_users.where(:admin => false).to_a
     if !current_user.sk.admin?
       @all_users.append(current_user.sk)
     end
     @all_users.sort_by! { |u| [-u.rating, u.id] }
-    num = @all_users.size
-    @x_recent = Array.new(num)
-    @x_persection = Array.new(num)
-    @x_globalrank = Array.new(num)
-    @x_country = Array.new(num)
-    @x_rating = Array.new(num)
-    @x_linked_name = Array.new(num)
-    fill_user_info(@all_users, @x_recent, @x_persection, @x_globalrank, @x_rating, @x_country, @x_linked_name)
+    
+    fill_user_info(@all_users)
+  end
+  
+  def search_user
+    return unless params.has_key?:search
+    
+    search = params[:search].dup # real copy
+    
+    (0..(search.size-1)).each do |i|
+      if !User.allowed_characters.include?(search[i]) && !User.allowed_special_characters.include?(search[i])
+        @error_message = "Le caractère #{search[i]} n'est pas autorisé dans le nom des utilisateurs."
+        return
+      end
+    end
+    
+    # Remove leading and trailing white spaces
+    while search[0] == ' '
+      search = search.slice(1..-1)
+    end
+    
+    while search[search.size-1] == ' '
+      search = search.slice(0..-2)
+    end
+    
+    # Remove wrong double spaces
+    search = search.gsub("  ", " ") while search != search.gsub("  ", " ")
+    
+    number_by_page = (Rails.env.test? ? 2 : 50)
+    page = 1
+    if params.has_key?:page
+      page = params[:page].to_i
+    end
+    
+    if search.size < 3
+      @error_message = "Au moins 3 caractères sont nécessaires."
+      return
+    end
+    
+    # Replace ' by '' for SQL query to work
+    search.gsub!(/[']/, "''")
+    
+    fill_sections_max_score
+    
+    name_condition = "(see_name = 1 AND LOWER(first_name || ' ' || last_name) LIKE LOWER('%#{search}%')) OR (see_name = 0 AND LOWER(first_name || ' ' || SUBSTR(last_name, 1, 1) || '.') LIKE LOWER('%#{search}%'))"
+    @all_users = User.where(:admin => false, :active => true).where(name_condition).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page)
+    @admin_users = (page == 1 ? User.where(:admin => true, :active => true).where(name_condition).order("first_name, last_name").to_a : [])
+    
+    fill_user_info(@all_users)
   end
   
   # Show one user
@@ -556,8 +578,25 @@ class UsersController < ApplicationController
     end
   end
   
+  # Helper method to fill @allsec and @maxscore
+  def fill_sections_max_score
+    @allsec = Section.order(:id).where(:fondation => false).to_a
+    @maxscore = Array.new
+    @allsec.each do |s|
+      @maxscore[s.id] = s.max_score
+    end
+  end
+  
   # Helper method to fill informations for a set of users (for ranking page)
-  def fill_user_info(users, recent, persection, globalrank, rating, country, linked_name)
+  def fill_user_info(users)
+    num = users.size
+    @x_recent = Array.new(num)
+    @x_persection = Array.new(num)
+    @x_globalrank = Array.new(num)
+    @x_country = Array.new(num)
+    @x_rating = Array.new(num)
+    @x_linked_name = Array.new(num)
+    
     global_user_id_to_local_id = Array.new((User.last.nil? ? 0 : User.last.id) + 1)
 
     ids = Array.new(users.size)
@@ -568,19 +607,19 @@ class UsersController < ApplicationController
     users.each do |u|
       ids[local_id] = u.id
       global_user_id_to_local_id[u.id] = local_id
-      persection[local_id] = Array.new
-      recent[local_id] = 0
-      rating[local_id] = u.rating
-      globalrank[local_id] = globalrank_here[local_id]
-      country[local_id] = u.country_id
-      linked_name[local_id] = u.linked_name
+      @x_persection[local_id] = Array.new
+      @x_recent[local_id] = 0
+      @x_rating[local_id] = u.rating
+      @x_globalrank[local_id] = globalrank_here[local_id]
+      @x_country[local_id] = u.country_id
+      @x_linked_name[local_id] = u.linked_name
       local_id = local_id + 1
     end
 
     # Sort users with rank 1 in random order (only if at least 2 people with rank 1)
-    if local_id >= 2 and globalrank[1] == 1
+    if local_id >= 2 and @x_globalrank[1] == 1
       s = 2
-      while s < local_id and globalrank[s] == 1
+      while s < local_id and @x_globalrank[s] == 1
         s = s + 1
       end
       r = Random.new(Date.today.in_time_zone.to_time.to_i)
@@ -599,13 +638,13 @@ class UsersController < ApplicationController
       save_linked_name = Array.new(s)
       (0..(s-1)).each do |i|
         save_ids[i] = ids[i]
-        save_country[i] = country[i]
-        save_linked_name[i] = linked_name[i]
+        save_country[i] = @x_country[i]
+        save_linked_name[i] = @x_linked_name[i]
       end
       (0..(s-1)).each do |i|
         ids[i] = save_ids[alea[i][1]]
-        country[i] = save_country[alea[i][1]]
-        linked_name[i] = save_linked_name[alea[i][1]]
+        @x_country[i] = save_country[alea[i][1]]
+        @x_linked_name[i] = save_linked_name[alea[i][1]]
         global_user_id_to_local_id[ids[i]] = i
       end
     end
@@ -613,15 +652,15 @@ class UsersController < ApplicationController
     twoweeksago = Date.today - 14
 
     Solvedproblem.where(:user_id => ids).includes(:problem).where("resolution_time > ?", twoweeksago).find_each do |s|
-      recent[global_user_id_to_local_id[s.user_id]] += s.problem.value
+      @x_recent[global_user_id_to_local_id[s.user_id]] += s.problem.value
     end
 
     Solvedquestion.where(:user_id => ids).includes(:question).where("resolution_time > ?", twoweeksago).find_each do |s|
-      recent[global_user_id_to_local_id[s.user_id]] += s.question.value
+      @x_recent[global_user_id_to_local_id[s.user_id]] += s.question.value
     end
 
     Pointspersection.where(:user_id => ids).all.each do |p|
-	    persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
+	    @x_persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
     end
   end  
 end
