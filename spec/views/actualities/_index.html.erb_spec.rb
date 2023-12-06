@@ -17,9 +17,9 @@ describe "actualities/_index.html.erb", type: :view, actuality: true do
       assign(:current_user, admin)
     end
     
-    it "renders the actuality and the modify button" do
+    it "renders the actuality and the add button" do
       render partial: "actualities/index"
-      expect(rendered).to have_content(actuality.content)
+      expect(response).to render_template(:partial => "actualities/_show", :locals => {actuality: actuality})
       expect(rendered).to have_button("Ajouter une actualité")
     end
   end
@@ -30,9 +30,9 @@ describe "actualities/_index.html.erb", type: :view, actuality: true do
       assign(:current_user, user)
     end
     
-    it "renders the actuality and not the modify button" do
+    it "renders the actuality and not the add button" do
       render partial: "actualities/index"
-      expect(rendered).to have_content(actuality.content)
+      expect(response).to render_template(:partial => "actualities/_show", :locals => {actuality: actuality})
       expect(rendered).to have_no_button("Ajouter une actualité")
     end
   end
@@ -42,9 +42,9 @@ describe "actualities/_index.html.erb", type: :view, actuality: true do
       assign(:signed_in, false)
     end
     
-    it "renders the actuality and not the modify button" do
+    it "renders the actuality and not the add button" do
       render partial: "actualities/index"
-      expect(rendered).to have_content(actuality.content)
+      expect(response).to render_template(:partial => "actualities/_show", :locals => {actuality: actuality})
       expect(rendered).to have_no_button("Ajouter une actualité")
     end
   end
