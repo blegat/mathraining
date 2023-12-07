@@ -174,7 +174,7 @@ class SubmissionsController < ApplicationController
         f = Following.create(:user       => current_user.sk,
                              :submission => @submission,
                              :read       => true,
-                             :kind       => 0)
+                             :kind       => :reservation)
       end
       @what = 3
     end
@@ -187,7 +187,7 @@ class SubmissionsController < ApplicationController
   # Unreserve a submission (only through js)
   def unreserve
     f = @submission.followings.first
-    if !@submission.waiting? || f.nil? || (f.user != current_user.sk && !current_user.sk.root?) || f.kind != 0 # Not supposed to happen
+    if !@submission.waiting? || f.nil? || (f.user != current_user.sk && !current_user.sk.root?) || !f.reservation? # Not supposed to happen
       @what = 0
     else
       Following.delete(f.id)

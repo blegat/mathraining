@@ -151,7 +151,7 @@ describe "Suspicion pages" do
     
     describe "visits a reserved waiting submission with suspicion" do
       let!(:suspicion) { FactoryGirl.create(:suspicion, :user => corrector, :submission => waiting_submission, :status => :waiting_confirmation) }
-      let!(:reservation) { FactoryGirl.create(:following, :user => corrector, :submission => waiting_submission, :kind => 0) }
+      let!(:reservation) { FactoryGirl.create(:following, :user => corrector, :submission => waiting_submission, :kind => :reservation) }
       before { visit problem_path(problem, :sub => waiting_submission) }
       it do
         should have_selector("div", text: "Cette soumission est en train d'être corrigée par #{corrector.name}")
@@ -170,8 +170,8 @@ describe "Suspicion pages" do
         specify do
           expect(suspicion.confirmed?).to eq(true)
           expect(waiting_submission.plagiarized?).to eq(true)
-          expect(corrector.followings.where(:submission => waiting_submission, :kind => 0).count).to eq(0) # reservation should be deleted
-          expect(corrector.followings.where(:submission => waiting_submission, :kind => 1).count).to eq(1) # corrector "corrected" that submission
+          expect(corrector.followings.where(:submission => waiting_submission, :kind => :reservation).count).to eq(0) # reservation should be deleted
+          expect(corrector.followings.where(:submission => waiting_submission, :kind => :first_corrector).count).to eq(1) # corrector "corrected" that submission
         end
       end
       
@@ -184,8 +184,8 @@ describe "Suspicion pages" do
         specify do
           expect(page).to have_selector("td", text: "Pardonné")
           expect(waiting_submission.plagiarized?).to eq(false)
-          expect(corrector.followings.where(:submission => waiting_submission, :kind => 0).count).to eq(1) # reservation should not be deleted
-          expect(corrector.followings.where(:submission => waiting_submission, :kind => 1).count).to eq(0) # should not be created
+          expect(corrector.followings.where(:submission => waiting_submission, :kind => :reservation).count).to eq(1) # reservation should not be deleted
+          expect(corrector.followings.where(:submission => waiting_submission, :kind => :first_corrector).count).to eq(0) # should not be created
         end
       end
     end
@@ -213,7 +213,7 @@ describe "Suspicion pages" do
     
     describe "unconfirm a suspicion on a plagiarized submission without comment" do
       let!(:suspicion) { FactoryGirl.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
-      let!(:auto_following) { FactoryGirl.create(:following, :user => corrector, :submission => plagiarized_submission, :kind => 1) }
+      let!(:auto_following) { FactoryGirl.create(:following, :user => corrector, :submission => plagiarized_submission, :kind => :first_corrector) }
       before do
         visit problem_path(problem, :sub => plagiarized_submission)
         select "Rejeté", from: "edit_status_field_#{suspicion.id}"

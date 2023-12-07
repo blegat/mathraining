@@ -16,7 +16,7 @@
 <% prev_day = Date.today %>
 
 <table class="table">
-<% Solvedproblem.joins(:problem).joins(problem: :section).joins("LEFT JOIN followings ON followings.submission_id = solvedproblems.submission_id").select("solvedproblems.user_id, solvedproblems.problem_id, solvedproblems.submission_id, problems.number AS problem_number, problems.level, solvedproblems.correction_time, sections.short_abbreviation AS section_short_abbreviation, followings.user_id AS corrector_id").includes(:user, submission: {followings: :user}).where("correction_time > ? AND followings.kind = 1", oneweekago).order("correction_time DESC").each do |s| %>
+<% Solvedproblem.joins(:problem).joins(problem: :section).joins("LEFT JOIN followings ON followings.submission_id = solvedproblems.submission_id").select("solvedproblems.user_id, solvedproblems.problem_id, solvedproblems.submission_id, problems.number AS problem_number, problems.level, solvedproblems.correction_time, sections.short_abbreviation AS section_short_abbreviation, followings.user_id AS corrector_id").includes(:user, submission: {followings: :user}).where(followings: {kind: :first_corrector}).where("correction_time > ?", oneweekago).order("correction_time DESC").each do |s| %>
 
   <% border_style = "" %>
   <% if s.correction_time.in_time_zone.to_date != prev_day %>
@@ -54,7 +54,7 @@
     <!-- Correcteur -->
     <td style="<%= border_style %>" class="d-none d-md-table-cell">
       <% s.submission.followings.each do |f| %>
-        <% if f.kind == 1 %>
+        <% if f.first_corrector? %>
           <%= raw(f.user.linked_name) %>
         <% end %>
       <% end %>

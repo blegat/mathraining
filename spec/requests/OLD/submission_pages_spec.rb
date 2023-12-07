@@ -328,7 +328,7 @@ describe "Submission pages" do
       
     describe "visits reserved waiting submission" do
       before do
-        Following.create(user: good_corrector, submission: waiting_submission, read: true, kind: 0)
+        FactoryGirl.create(:following, user: good_corrector, submission: waiting_submission, read: true, kind: :reservation)
         visit problem_path(problem_with_submissions, :sub => waiting_submission) # Reload
       end
       it do
@@ -468,9 +468,9 @@ describe "Submission pages" do
           specify do
             expect(page).to have_selector("h3", text: "Soumission (correcte)")
             expect(page).to have_selector("div", text: newcorrection2)
-            expect(Following.where(:user => good_corrector, :submission => waiting_submission).first.kind).to eq(1)
+            expect(Following.where(:user => good_corrector, :submission => waiting_submission).first.first_corrector?).to eq(true)
             expect(Following.where(:user => good_corrector, :submission => waiting_submission).first.read).to eq(false)
-            expect(Following.where(:user => admin, :submission => waiting_submission).first.kind).to eq(2)
+            expect(Following.where(:user => admin, :submission => waiting_submission).first.other_corrector?).to eq(true)
             expect(Following.where(:user => admin, :submission => waiting_submission).first.read).to eq(true)
           end
         end
@@ -617,7 +617,7 @@ describe "Submission pages" do
       
       describe "and hacks the system to unreserve a submission we did not reserve" do
         before do
-          f = Following.create(:user => good_corrector, :submission => waiting_submission, :read => true, :kind => 0)
+          f = Following.create(:user => good_corrector, :submission => waiting_submission, :read => true, :kind => :reservation)
           visit problem_path(problem_with_submissions, :sub => waiting_submission)
           f.update_attribute(:user, admin)
           click_button "Annuler ma réservation"
@@ -633,7 +633,7 @@ describe "Submission pages" do
       
       describe "and reserves it while somebody else reserved it" do
         before do
-          Following.create(:user => admin, :submission => waiting_submission, :read => true, :kind => 0)
+          Following.create(:user => admin, :submission => waiting_submission, :read => true, :kind => :reservation)
           click_button "Réserver cette soumission"
           wait_for_ajax
           waiting_submission.reload
@@ -759,8 +759,8 @@ describe "Submission pages" do
       let!(:problem_in_test) { FactoryGirl.create(:problem, virtualtest: virtualtest) }
       let!(:waiting_submission_in_test) { FactoryGirl.create(:submission, problem: problem_in_test, user: user, status: :waiting, intest: true) }
       before do
-        Takentest.create(user: user, virtualtest: virtualtest, taken_time: DateTime.now - 2.weeks)
-        Following.create(user: root, submission: waiting_submission_in_test, read: true, kind: 0)
+        Takentest.create(:user => user, :virtualtest => virtualtest, :taken_time => DateTime.now - 2.weeks)
+        Following.create(:user => root, :submission => waiting_submission_in_test, :read => true, :kind => :reservation)
         visit problem_path(problem_in_test, :sub => waiting_submission_in_test)
       end
       it do
@@ -812,7 +812,7 @@ describe "Submission pages" do
     
     describe "visits a solution reserved by somebody else" do
       before do
-        Following.create(:user => good_corrector, :submission => waiting_submission, :read => true, :kind => 0)
+        Following.create(:user => good_corrector, :submission => waiting_submission, :read => true, :kind => :reservation)
         visit problem_path(problem_with_submissions, :sub => waiting_submission)
       end
       specify do

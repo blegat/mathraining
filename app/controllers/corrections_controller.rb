@@ -121,9 +121,9 @@ class CorrectionsController < ApplicationController
         if following.nil?
           following = Following.new(:user => current_user.sk, :submission => @submission)
           if @submission.followings.where("user_id != ?", current_user.sk.id).count > 0
-            following.kind = 2 # New corrector for this submission (there was already another one)
+            following.kind = :other_corrector
           else
-            following.kind = 1 # First corrector of the submission
+            following.kind = :first_corrector
           end
           need_correction_level_update = true
         end

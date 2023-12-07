@@ -791,7 +791,7 @@
   </div>
 <% end %>
 
-<% nb_corrections = @user.followings.where("kind > 0").count %>
+<% nb_corrections = @user.followings.where(:kind => [:first_corrector, :other_corrector]).count %>
 <% if nb_corrections > 0 %>
   <div class="g-col-12 basic_container p-1">
     <div class="container_title">Corrections</div>
@@ -805,7 +805,7 @@
     </div>    
     <div style="width:100%;">
     <% Groupdate.time_zone = false unless Rails.env.production? %>
-    <% count_by_month_str = @user.followings.where("kind > 0").group_by_month(:created_at).count %>
+    <% count_by_month_str = @user.followings.where(:kind => [:first_corrector, :other_corrector]).group_by_month(:created_at).count %>
     <% if count_by_month_str.size >= 2 %>
       <% count_by_month_int = {} %>
       <% count_by_month_str.each { |k, v| d = k.to_datetime; count_by_month_int[12*d.year + d.mon-1] = v } %>

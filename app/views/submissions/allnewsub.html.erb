@@ -77,7 +77,7 @@
   <% end %>
 <% end %>
 
-<% Following.joins(submission: :problem).select("followings.created_at").where("kind = 1 AND followings.created_at > ?", date_begin).where(section_condition).where("problems.level in (?)", levels).each do |f| %>
+<% Following.joins(submission: :problem).select("followings.created_at").where(:kind => :first_corrector).where("followings.created_at > ?", date_begin).where(section_condition).where("problems.level in (?)", levels).each do |f| %>
   <% interval_id = [((f.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
   <% new_cor[interval_id] = new_cor[interval_id] + 1 %>
 <% end %>

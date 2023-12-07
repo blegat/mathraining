@@ -144,7 +144,7 @@ describe "Stats pages" do
     
     describe "marks a solution as correct" do
       before do
-        Following.create(:user => admin, :submission => submission1, :read => true, :kind => 0)
+        Following.create(:user => admin, :submission => submission1, :read => true, :kind => :reservation)
         visit problem_path(problem, :sub => submission1)
         fill_in "MathInput", with: "C'est correct"
         click_button "Poster et accepter la soumission"
@@ -158,7 +158,7 @@ describe "Stats pages" do
       
       describe "and marks a second solution as wrong" do
         before do
-          Following.create(:user => admin, :submission => submission2, :read => true, :kind => 0)
+          Following.create(:user => admin, :submission => submission2, :read => true, :kind => :reservation)
           visit problem_path(problem, :sub => submission2)
           fill_in "MathInput", with: "C'est incorrect"
           click_button "Poster et refuser la soumission"
@@ -172,7 +172,7 @@ describe "Stats pages" do
         
         describe "and marks a third solution as correct" do
           before do
-            Following.create(:user => admin, :submission => submission3, :read => true, :kind => 0)
+            Following.create(:user => admin, :submission => submission3, :read => true, :kind => :reservation)
             visit problem_path(problem, :sub => submission3)
             fill_in "MathInput", with: "C'est correct"
             click_button "Poster et accepter la soumission"

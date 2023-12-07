@@ -51,7 +51,7 @@ class SuspicionsController < ApplicationController
         @submission.mark_incorrect
       elsif @submission.waiting? and @suspicion.status == "confirmed"
         # Delete the reservation, if any
-        @submission.followings.where(:kind => 0).destroy_all
+        @submission.followings.where(:kind => :reservation).destroy_all
       end
       if old_status != "confirmed" && @suspicion.status == "confirmed" && !@submission.plagiarized?
         # Mark submission as plagiarized
@@ -72,7 +72,7 @@ class SuspicionsController < ApplicationController
         end
       end
       if @submission.plagiarized? && @submission.followings.count == 0
-        Following.create(:user => @suspicion.user, :submission => @submission, :kind => 1, :read => true, :created_at => @suspicion.created_at)
+        Following.create(:user => @suspicion.user, :submission => @submission, :kind => :first_corrector, :read => true, :created_at => @suspicion.created_at)
       end
       flash[:success] = "Suspicion modifiée."
     end

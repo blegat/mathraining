@@ -12,10 +12,10 @@
 #  kind          :integer          default(-1)
 #
 class Following < ActiveRecord::Base
-
-  # kind = 0 if reservation
-  #        1 if first corrector
-  #        2 if other corrector
+  
+  enum kind: {:reservation     =>  0,
+              :first_corrector =>  1,
+              :other_corrector =>  2}
 
   # BELONGS_TO, HAS_MANY
 
@@ -24,7 +24,7 @@ class Following < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :submission_id, presence: true, uniqueness: { scope: :user_id }
-  validates :user_id, presence: true, uniqueness: { scope: :submission_id }
+  validates :user_id, uniqueness: { scope: :submission_id }
+  validates :kind, presence: true
 
 end

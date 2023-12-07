@@ -102,6 +102,7 @@ FactoryGirl.define do
     association :submission
     association :user
     read false
+    kind :first_corrector
   end
   
   # Item

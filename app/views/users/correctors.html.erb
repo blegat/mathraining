@@ -206,7 +206,7 @@ Votre navigateur ne supporte pas les canvas.
   <!-- last_following_user_by_level_and_section[u.problem_level][u.section_id] = u -->
 <!-- end -->
 <% num_preload = 100 %>
-<% recent_followings = Following.joins(submission: :problem).select("followings.user_id, problems.level, problems.section_id").where(:kind => 1).includes(:user).order("followings.created_at DESC").limit(num_preload) %>
+<% recent_followings = Following.joins(submission: :problem).select("followings.user_id, problems.level, problems.section_id").where(:kind => :first_corrector).includes(:user).order("followings.created_at DESC").limit(num_preload) %>
 <% recent_followings.each do |f| %>
   <% if last_following_user_by_level_and_section[f.level][f.section_id].nil? %>
     <% last_following_user_by_level_and_section[f.level][f.section_id] = f.user %>
@@ -223,7 +223,7 @@ Votre navigateur ne supporte pas les canvas.
       <% if !last_following_user_by_level_and_section[lev][sec.id].nil? %>
         <% u = last_following_user_by_level_and_section[lev][sec.id] %>
       <% elsif need_reload %>
-        <% f = Following.joins(submission: :problem).where(problems: {level: lev, section_id: sec.id}, kind: 1).order("created_at").last %>
+        <% f = Following.joins(submission: :problem).where(problems: {level: lev, section_id: sec.id}, kind: :first_corrector).order("created_at").last %>
         <% if !f.nil? %>
           <% u = f.user %>
         <% end %>
@@ -247,10 +247,10 @@ Votre navigateur ne supporte pas les canvas.
 
 <p>Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un grand merci à eux tous !</p>
 
-<% nb_recent_by_user = Following.where("created_at >= '#{twoweeksago}' AND kind > 0").group(:user_id).count %>
+<% nb_recent_by_user = Following.where(:kind => [:first_corrector, :other_corrector]).where("created_at >= ?", twoweeksago).group(:user_id).count %>
 
 <% correctors = [] %>
-<% Following.select("followings.user_id, COUNT(followings.id) AS nb_corrections, MIN(followings.created_at) AS first_correction, MAX(followings.created_at) AS last_correction").where("kind > 0").group(:user_id).includes(:user).each do |f| %>
+<% Following.select("followings.user_id, COUNT(followings.id) AS nb_corrections, MIN(followings.created_at) AS first_correction, MAX(followings.created_at) AS last_correction").where(:kind => [:first_corrector, :other_corrector]).group(:user_id).includes(:user).each do |f| %>
   <% correctors.push({:nb_corrections => f.nb_corrections, :nb_recent => (nb_recent_by_user[f.user_id].nil? ? 0 : nb_recent_by_user[f.user_id]), :first_correction => f.first_correction, :last_correction => f.last_correction, :user => f.user}) %>
 <% end %>
 
