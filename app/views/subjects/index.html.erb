@@ -35,6 +35,12 @@
 
 <h1><%= title_1("Forum#{(' - ' + @title_complement) if !@title_complement.empty?}") %>
 
+<% if @title_complement.empty? %>
+  <span style="font-size:20px;">
+  - <%= link_to "FAQ", faqs_path %>
+  </span>
+<% end %>
+
 <!-- Trier selon section, chapitre, catégorie... -->
 <span class="mb-2 mt-1 ms-3" style="float:right;">
 <%= form_tag "", :method => "get", :name => "research" do %>
