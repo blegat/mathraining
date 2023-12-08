@@ -125,12 +125,12 @@ Votre navigateur ne supporte pas les canvas.
 
 <% def convert_date(courant) %>
   <% d = "" %>
-  <% d = d+"0" if courant.day < 10 %>
-  <% d = d+courant.day.to_s + "/" %>
-  <% d = d + "0" if courant.month < 10 %>
-  <% d = d + courant.month.to_s + "/" %>
-  <% d = d + "0" if (courant.year % 2000) < 10 %>
-  <% d = d + (courant.year % 2000).to_s %>
+  <% d << "0" if courant.day < 10 %>
+  <% d << courant.day.to_s << "/" %>
+  <% d << "0" if courant.month < 10 %>
+  <% d << courant.month.to_s << "/" %>
+  <% d << "0" if (courant.year % 2000) < 10 %>
+  <% d << (courant.year % 2000).to_s %>
   <% return d; %>
 <% end %>
 
@@ -138,11 +138,11 @@ Votre navigateur ne supporte pas les canvas.
   <% t = "[" %>
   <% prems = true %>
   <% arr.each do |a| %>
-    <% t = t + "," if !prems %>
+    <% t << "," if !prems %>
     <% prems = false %>
-    <% t = t + a.to_s %>
+    <% t << a.to_s %>
   <% end %>
-  <% t = t + "]" %>
+  <% t << "]" %>
   <% return t.html_safe %>
 <% end %>
 
@@ -150,11 +150,11 @@ Votre navigateur ne supporte pas les canvas.
   <% t = "[" %>
   <% prems = true %>
   <% arr.each do |a| %>
-    <% t = t + "," if !prems %>
+    <% t << "," if !prems %>
     <% prems = false %>
-    <% t = t + "'" + a + "'" %>
+    <% t << "'" << a << "'" %>
   <% end %>
-  <% t = t + "]" %>
+  <% t << "]" %>
   <% return t.html_safe %>
 <% end %>
 
