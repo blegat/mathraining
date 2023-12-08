@@ -10,36 +10,33 @@
 #
 require "spec_helper"
 
-describe Item do
-  before { @c = FactoryGirl.build(:item) }
+describe Item, item: true do
+  let!(:item) { FactoryGirl.build(:item) }
 
-  subject { @c }
-
-  it { should respond_to(:question) }
-  it { should respond_to(:ans) }
-  it { should respond_to(:ok) }
+  subject { item }
 
   it { should be_valid }
 
-  # Qcm
-  describe "when question is not present" do
-    before { @c.question = nil }
-    it { should_not be_valid }
-  end
-
   # Ans
   describe "when ans is not present" do
-    before { @c.ans = " " }
+    before { item.ans = " " }
     it { should_not be_valid }
   end
+  
   describe "when ans is too long" do
-    before { @c.ans = "a" * 256 }
+    before { item.ans = "a" * 256 }
     it { should_not be_valid }
   end
 
   # Ok
   describe "when ok is not present" do
-    before { @c.ok = nil }
+    before { item.ok = nil }
+    it { should_not be_valid }
+  end
+  
+  # Position
+  describe "when position is not present" do
+    before { item.position = nil }
     it { should_not be_valid }
   end
 

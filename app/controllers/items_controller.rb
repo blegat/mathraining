@@ -106,6 +106,7 @@ class ItemsController < ApplicationController
     @item = Item.find_by_id(params[:id])
     return if check_nil_object(@item)
     @question = @item.question
+    @chapter = @question.chapter # Needed for user_that_can_update_chapter
   end
   
   # Get the item (v2)
@@ -113,12 +114,14 @@ class ItemsController < ApplicationController
     @item = Item.find_by_id(params[:item_id])
     return if check_nil_object(@item)
     @question = @item.question
+    @chapter = @question.chapter # Needed for user_that_can_update_chapter
   end
   
   # Get the question (if possible)
   def get_question
     @question = Question.find_by_id(params[:question_id])
     return if check_nil_object(@question)
+    @chapter = @question.chapter # Needed for user_that_can_update_chapter
   end
   
   ########## CHECK METHODS ##########

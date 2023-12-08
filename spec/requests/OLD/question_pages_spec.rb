@@ -403,7 +403,7 @@ describe "Question pages" do
       end
     end
     
-    describe "visits choices modification page" do
+    describe "visits choices modification page", item: true do
       before { visit question_manage_items_path(offline_qcm) }
       it do
         should have_selector("h1", text: "Choix")
@@ -515,7 +515,7 @@ describe "Question pages" do
       end
     end
     
-    describe "visits choices of empty qcm" do
+    describe "visits choices of empty qcm", item: true do
       before { visit question_manage_items_path(empty_qcm) }
       it { should have_selector("h1", text: "Choix") }
       

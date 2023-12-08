@@ -17,9 +17,8 @@ class Item < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :question_id, presence: true
   validates :ans, presence: true, length: { maximum: 255 }
-  validates :ok, inclusion: { in: [true, false] }
+  validates :ok, inclusion: [true, false]
   validates :position, presence: true
 
 end
