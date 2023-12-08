@@ -167,11 +167,11 @@
       <%= form_for(:prerequisite, url: add_prerequisite_path) do |f| %>
         <h3> Ajouter un lien </h3>
         <div class="mb-2">
-        <%= f.label "Prérequis", :class => "form-label" %>
+        <%= f.label "Prérequis", :for => "add_form_prerequisite", :class => "form-label" %>
         <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "add_form_prerequisite" }) %>
         </div>
         <div class="mb-2">
-        <%= f.label "Chapitre", :class => "form-label" %>
+        <%= f.label "Chapitre", :for => "add_form_chapter", :class => "form-label" %>
         <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "add_form_chapter" }) %>
         </div>
         <%= f.submit "Ajouter ce lien", class: "btn btn-primary" %>
@@ -185,11 +185,11 @@
       <%= form_for(:prerequisite, url: remove_prerequisite_path) do |f| %>
         <h3> Supprimer un lien </h3>
         <div class="mb-2">
-        <%= f.label "Prérequis", :class => "form-label" %>
+        <%= f.label "Prérequis", :for => "delete_form_prerequisite", :class => "form-label" %>
         <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "delete_form_prerequisite" }) %>
         </div>
         <div class="mb-2">
-        <%= f.label "Chapitre", :class => "form-label" %>
+        <%= f.label "Chapitre", :for => "delete_form_chapter", :class => "form-label" %>
         <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "delete_form_chapter" }) %>
         </div>
         <%= f.submit "Supprimer ce lien", class: "btn btn-primary" %>

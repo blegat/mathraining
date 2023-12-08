@@ -73,7 +73,8 @@ fr:
       message:
         content: "Message"
       prerequisite:
-        prerequisite: "Prérequis"
+        prerequisite_id: "Prérequis"
+        chapter_id: "Chapitre"
       privacypolicy:
         content: "Contenu"
         description: "Modifications"
