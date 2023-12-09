@@ -145,8 +145,11 @@ Rails.application.routes.draw do
     match '/follow', to: "subjects#follow", :via => [:put]
     match '/unfollow', to: "subjects#unfollow", :via => [:get] # Get because it should be doable via email link
   
-    resources :messages, only: [:create, :update, :destroy]
+    resources :messages, only: [:create]
   end
+  
+  # Messages
+  resources :messages, only: [:update, :destroy]
   
   # Categories (for subjects)
   resources :categories, only: [:index, :create, :update, :destroy]

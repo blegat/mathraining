@@ -98,7 +98,7 @@
       <% elsif kind == "message" %>
         <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)' id='LinkEdit<%= postfix %>'>Modifier ce message</a>
         <% if current_user.sk.admin? %>
-           | <%= link_to "Supprimer ce message", subject_message_path(@subject, ms), method: :delete, id: "LinkDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>
+           | <%= link_to "Supprimer ce message", message_path(ms), method: :delete, id: "LinkDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>
         <% end %>
       <% elsif kind == "contestsolution" %>
         <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>

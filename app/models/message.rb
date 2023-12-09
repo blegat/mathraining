@@ -23,6 +23,5 @@ class Message < ActiveRecord::Base
 
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :user_id, presence: true
-  validates :subject_id, presence: true
 
 end

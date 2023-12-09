@@ -10,34 +10,34 @@
 #
 require "spec_helper"
 
-describe Message do
+describe Message, message: true do
 
-  before { @m = FactoryGirl.build(:message) }
+  let!(:message) { FactoryGirl.build(:message) }
 
-  subject { @m }
-
-  it { should respond_to(:content) }
-  it { should respond_to(:subject) }
-  it { should respond_to(:user) }
+  subject { message }
 
   it { should be_valid }
 
   # Content
   describe "when content is not present" do
-    before { @m.content = nil }
+    before { message.content = nil }
+    it { should_not be_valid }
+  end
+  
+  describe "when content is too long" do
+    before { message.content = "a" * 16001 }
     it { should_not be_valid }
   end
 
   # User
   describe "when user is not present" do
-    before { @m.user = nil }
+    before { message.user_id = nil }
     it { should_not be_valid }
   end
-
-  # Subject
-  describe "when subject is not present" do
-    before { @m.subject = nil }
-    it { should_not be_valid }
+  
+  describe "when user is zero (automatic message)" do
+    before { message.user_id = 0 }
+    it { should be_valid }
   end
 
 end

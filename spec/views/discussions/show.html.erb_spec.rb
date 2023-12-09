@@ -7,7 +7,7 @@ describe "discussions/show.html.erb", type: :view, discussion: true do
   let(:user2) { FactoryGirl.create(:user) }
   let!(:discussion) { Discussion.create(last_message_time: DateTime.now) }
   let!(:link1) { Link.create(user: user,  discussion: discussion, nonread: 1) }
-  let!(:link2) { Link.create(user: user2, discussion: discussion) }
+  let!(:link2) { Link.create(user: user2, discussion: discussion, nonread: 0) }
   let!(:tchatmessage1) { Tchatmessage.create(user: user, discussion: discussion, content: "Coucou", created_at: DateTime.now - 5.days) }
   let!(:tchatmessage2) { Tchatmessage.create(user: user2, discussion: discussion, content: "Hello", created_at: DateTime.now - 3.days) }
   

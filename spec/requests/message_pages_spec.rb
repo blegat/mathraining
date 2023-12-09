@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Message pages" do
+describe "Message pages", message: true do
 
   subject { page }
 
@@ -27,13 +27,6 @@ describe "Message pages" do
   let(:image1) { "mathraining.png" } # default image used in factory
   let(:image2) { "Smiley1.gif" }
   let(:exe_attachment) { "hack.exe" }
-  
-  describe "visitor" do 
-    describe "tries to create a message" do
-      before { visit subject_path(sub) }
-      it { should have_content(error_must_be_connected) }
-    end
-  end
   
   describe "user" do
     before { sign_in user }

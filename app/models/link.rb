@@ -16,4 +16,5 @@ class Link < ActiveRecord::Base
   belongs_to :user
   belongs_to :discussion
 
+  validates :nonread, presence: true, numericality: { greater_than_or_equal_to: 0 }
 end

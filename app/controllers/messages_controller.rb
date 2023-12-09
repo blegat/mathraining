@@ -8,7 +8,7 @@ class MessagesController < ApplicationController
   before_action :get_q, only: [:create, :update, :destroy]
   
   before_action :user_that_can_see_subject, only: [:create]
-  before_action :author, only: [:update]
+  before_action :author, only: [:update, :destroy]
   before_action :notskin_user, only: [:create, :update]
   
 
