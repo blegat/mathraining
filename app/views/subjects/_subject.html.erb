@@ -1,6 +1,6 @@
 <% postfix = "EditSubject" %>
 
-<% can_edit = current_user.sk.root || (s.user_id > 0 && (s.user == current_user.sk || (current_user.sk.admin && !s.user.admin))) %>
+<% can_edit = s.can_be_updated_by(current_user.sk) %>
 
 <div id="the<%= postfix %>" class="myoverflow">
 

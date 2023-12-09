@@ -9,7 +9,7 @@ class SubjectsController < ApplicationController
   before_action :get_subject2, only: [:migrate, :follow, :unfollow]
   
   before_action :user_that_can_see_subject, only: [:show, :follow]
-  before_action :author, only: [:update, :destroy]
+  before_action :user_that_can_update_subject, only: [:update, :destroy]
   
   
   before_action :get_q, only: [:index, :show, :new, :create, :update, :destroy, :migrate]
@@ -269,16 +269,10 @@ class SubjectsController < ApplicationController
   
   ########## CHECK METHODS ##########
 
-  # Check that current user is the author of the subject (or is admin or root)
-  def author
-    if @subject.user_id > 0
-      unless (current_user.sk == @subject.user || (current_user.sk.admin && !@subject.user.admin) || current_user.sk.root)
-        render 'errors/access_refused' and return
-      end
-    else # Message automatique
-      unless current_user.sk.root
-        render 'errors/access_refused' and return
-      end
+  # Check that current user can update the subject
+  def user_that_can_update_subject
+    unless @subject.can_be_updated_by(current_user.sk)
+      render 'errors/access_refused' and return
     end
   end
   

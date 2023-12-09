@@ -78,6 +78,18 @@ describe "Message pages", message: true do
         end
       end
       
+      describe "and writes a new message while somebody else wrote a message" do
+        before do
+          FactoryGirl.create(:message, user: admin, subject: sub)
+          fill_in "MathInputNewMessage", with: content2
+          click_button "Poster"
+        end
+        specify do
+          expect(page).to have_error_message("Un nouveau message a été posté avant le vôtre")
+          expect(sub.messages.order(:id).last.content).not_to eq(content2)
+        end
+      end
+      
       describe "and writes an empty message" do
         before do
           fill_in "MathInputNewMessage", with: ""

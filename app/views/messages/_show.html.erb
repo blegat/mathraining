@@ -1,6 +1,6 @@
 <% postfix = "Message#{m.id}" %>
 
-<% can_edit = current_user.sk.root || (m.user_id > 0 && (m.user == current_user.sk || (current_user.sk.admin && !m.user.admin))) %>
+<% can_edit = m.can_be_updated_by(current_user.sk) %>
 
 <div id="the<%= postfix %>" class="myoverflow">
 <%= render 'shared/post', ms: m, kind: "message", can_edit: can_edit, postfix: postfix %>

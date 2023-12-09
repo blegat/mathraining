@@ -66,5 +66,9 @@ class Subject < ActiveRecord::Base
       return true
     end
   end
-
+  
+  # Tells if the subject can be updated by the given user
+  def can_be_updated_by(user)
+    return Message.message_can_be_updated_by_user(self, user)
+  end
 end

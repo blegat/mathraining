@@ -8,7 +8,7 @@ class MessagesController < ApplicationController
   before_action :get_q, only: [:create, :update, :destroy]
   
   before_action :user_that_can_see_subject, only: [:create]
-  before_action :author, only: [:update, :destroy]
+  before_action :user_that_can_update_message, only: [:update, :destroy]
   before_action :notskin_user, only: [:create, :update]
   
 
@@ -137,16 +137,10 @@ class MessagesController < ApplicationController
   
   ########## CHECK METHODS ##########
   
-  # Check that current user is the author of the message (or is admin or root)
-  def author
-    if @message.user_id > 0
-      unless (current_user.sk == @message.user || (current_user.sk.admin && !@message.user.admin) || current_user.sk.root)
-        render 'errors/access_refused' and return
-      end
-    else # Automatic message
-      unless current_user.sk.root
-        render 'errors/access_refused' and return
-      end
+  # Check that current user can update the message
+  def user_that_can_update_message
+    unless @message.can_be_updated_by(current_user.sk)
+      render 'errors/access_refused' and return
     end
   end
   
