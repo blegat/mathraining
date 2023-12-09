@@ -78,8 +78,8 @@
               <% end %>
             <% end %>
             <% if @signed_in && current_user.sk.admin? %>
-            <li class="dropdown-divider"></li>
-            <li><%= link_to "Modifier la structure", graph_prerequisites_path, :class => "dropdown-item" %></li>
+              <li class="dropdown-divider"></li>
+              <li><%= link_to "Modifier la structure", graph_prerequisites_path, :class => "dropdown-item" %></li>
             <% end %>
           </ul>
         </li>
@@ -150,7 +150,7 @@
             <% end %>
             <li><%= link_to "Profil", current_user.sk, :class => "dropdown-item" %></li>
             <li><%= link_to "Compte", edit_user_path(current_user.sk), :class => "dropdown-item" %></li>
-            <% if @signed_in && (current_user.sk.admin || current_user.sk.group != "") %>
+            <% if @signed_in && (current_user.sk.admin? || (current_user.sk.wepion? && current_user.sk.group != "")) %>
               <li><%= link_to "Groupes Wépion", groups_path, :class => "dropdown-item" %></li>
             <% end %>
             <li><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "dropdown-item" %></li>

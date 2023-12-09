@@ -214,26 +214,20 @@ class User < ActiveRecord::Base
 
   # Gives the number of unseen subjects on the forum
   def num_unseen_subjects(include_myself)
-    if include_myself
-      if self.admin? or (self.corrector? and self.wepion?)
-        return Subject.where("last_comment_time > ?", self.last_forum_visit_time).count
-      elsif self.corrector?
-        return Subject.where("for_wepion = ? AND last_comment_time > ?", false, self.last_forum_visit_time).count
-      elsif self.wepion?
-        lastsubjects = Subject.where("for_correctors = ? AND last_comment_time > ?", false, self.last_forum_visit_time).count
-      else
-        lastsubjects = Subject.where("for_wepion = ? AND for_correctors = ? AND last_comment_time > ?", false, false, self.last_forum_visit_time).count
-      end
+    if self.admin? or (self.corrector? and self.wepion?)
+      req = Subject.where("last_comment_time > ?", self.last_forum_visit_time)
+    elsif self.corrector?
+      req = Subject.where("for_wepion = ? AND last_comment_time > ?", false, self.last_forum_visit_time)
+    elsif self.wepion?
+      req = Subject.where("for_correctors = ? AND last_comment_time > ?", false, self.last_forum_visit_time)
     else
-      if self.admin? or (self.corrector? and self.wepion?)
-        return Subject.where("last_comment_time > ?", self.last_forum_visit_time).where.not(last_comment_user: self.sk).count
-      elsif self.corrector?
-        return Subject.where("for_wepion = ? AND last_comment_time > ?", false, self.last_forum_visit_time).where.not(last_comment_user: self.sk).count
-      elsif self.wepion?
-        lastsubjects = Subject.where("for_correctors = ? AND last_comment_time > ?", false, self.last_forum_visit_time).where.not(last_comment_user: self.sk).count
-      else
-        lastsubjects = Subject.where("for_wepion = ? AND for_correctors = ? AND last_comment_time > ?", false, false, self.last_forum_visit_time).where.not(last_comment_user: self.sk).count
-      end
+      req = Subject.where("for_wepion = ? AND for_correctors = ? AND last_comment_time > ?", false, false, self.last_forum_visit_time)
+    end
+    
+    if include_myself
+      return req.count
+    else
+      return req.where.not(last_comment_user: self.sk).count
     end
   end
 
