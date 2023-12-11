@@ -177,7 +177,7 @@ var hideStatement = function () {
     <% end %>
     <% if matching_extracts.size > 0 %>
       <% url_shortened = (e.url.size > 40 ? e.url[0,37] + "..." : e.url) %>
-      <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : Certains extraits de cette solution proviennent de <%= link_to url_shortened, e.url %> :
+      <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : Certains extraits de cette solution proviennent de <%= link_to url_shortened, e.url, :target => "_blank" %> :
       <ul class="mb-1">
         <% matching_extracts.each do |m| %>
         <li><%= m.text %></li>
