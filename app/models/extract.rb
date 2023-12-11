@@ -34,8 +34,8 @@ class Extract < ActiveRecord::Base
   
   # Compute [start, end] interval of a string containing a substring
   def self.find_if_included_in(str, substr, get_location = true)
-    str_modified = str.gsub("−", "-") # Should not change the length of the string!
-    substr_modified = substr.gsub("−", "-") # Idem
+    str_modified = str.gsub("−", "-").gsub("’", "'") # Should not change the length of the string!
+    substr_modified = substr.gsub("−", "-").gsub("’", "'") # Idem
     cleaned_substr = substr_modified.gsub(" ", "").gsub("$", "")
     cleaned_str = str_modified.gsub(" ", "").gsub("$", "")
     start = cleaned_str.index(cleaned_substr)
