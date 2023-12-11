@@ -1,14 +1,6 @@
-<script type="text/javascript">
-var fixLastCellWidthOfTableHeader = function(table_id) {
-  var t = document.getElementById(table_id);
-  var h = t.getElementsByTagName("thead")[0];
-  var b = t.getElementsByTagName("tbody")[0];
-  var cells = h.getElementsByTagName("th");
-  if (cells.length == 0) return;
-  var last_cell = cells[cells.length-1];
-  last_cell.style.width = (54+(b.offsetWidth - b.clientWidth)).toString() + "px";
-}
+<%= render 'submissions/fix_header_script' %>
 
+<script type="text/javascript">
 var showCorrect = function() {
   document.getElementById("btn_correct").style.display = 'none';
   document.getElementById("loading_correct").style.display = 'block';

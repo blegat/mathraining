@@ -1,3 +1,5 @@
+<%= render 'submissions/fix_header_script' %>
+
 <% provide(:title, 'Solutions externes') %>
 
 <h1><%= title_4("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), (link_to "Problème ##{ @problem.number }", @problem), "Solutions externes") %></h1>
