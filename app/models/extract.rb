@@ -29,7 +29,7 @@ class Extract < ActiveRecord::Base
   
   # Same as previous one but can be called from somewhere else
   def self.is_included_in(str, substr)
-    return !self.find_if_included_in(str, substr, false).nil?
+    return self.find_if_included_in(str, substr, false)
   end
   
   # Compute [start, end] interval of a string containing a substring
