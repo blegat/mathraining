@@ -24,7 +24,7 @@ class Extract < ActiveRecord::Base
   
   # Method used to check if this extract is included in a submission or correction content
   def is_included_in(content)
-    return content.gsub(" ", "").include?(self.text.gsub(" ", ""))
+    return content.gsub(" ", "").gsub("$", "").include?(self.text.gsub(" ", "").gsub("$", ""))
   end
   
 end
