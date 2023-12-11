@@ -8,7 +8,7 @@
 <h3>Énoncé</h3>
 <%= raw(htmlise(@problem.statement)) %>
 
-<% suspicions = Suspicion.joins(:submission).where("submissions.problem_id = ?", @problem).where(:status => [:confirmed, :forgiven]).to_a %>
+<% suspicions = Suspicion.joins(:submission).where("submissions.problem_id = ?", @problem).where(:status => [:confirmed, :forgiven]).order("submissions.created_at DESC").to_a %>
 <% suspicions_covered = Set.new %>
 <% suspicions.each do |s| %>
   <% if (!s.source.include?("http") && !s.source.include?("www.")) || s.source.include?("mathraining.be") %>
