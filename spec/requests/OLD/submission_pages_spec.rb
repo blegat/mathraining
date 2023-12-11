@@ -969,7 +969,7 @@ describe "Submission pages" do
     
     describe "search for a string in submissions" do
       before do
-        waiting_submission.update_attribute(:content, "Bonjour, voici une solution")
+        waiting_submission.update_attribute(:content, "Bonjour, voici   une solution")
         wrong_submission.update_attribute(:content, "Voici une autre solution")
         Correction.create(user: other_user, submission: wrong_submission, content: "Bonjour, ceci est ma correction")
         good_corrector_submission.update_attribute(:content, "Salut, ceci est ma solution")

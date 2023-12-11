@@ -230,7 +230,7 @@ class SubmissionsController < ApplicationController
 
   # Search for some strings in all submissions to the problem (only through js)
   def search_script
-    @string_to_search = params[:string_to_search]
+    @string_to_search = params[:string_to_search].gsub(" ", "").gsub("$", "")
     @enough_caracters = (@string_to_search.size >= 3)
 
     if @enough_caracters
@@ -239,14 +239,14 @@ class SubmissionsController < ApplicationController
       @all_found = Array.new
 
       @problem.submissions.where(:visible => true).order("created_at DESC").each do |s|
-        pos = s.content.index(@string_to_search)
-        if !pos.nil?
-          @all_found.push([s, strip_content(s.content, @string_to_search, pos)])
+        res = Extract.find_if_included_in(s.content, @string_to_search)
+        if !res.nil?
+          @all_found.push([s, strip_content(s.content, res)])
         elsif search_in_comments
           s.corrections.where(:user => s.user).each do |c|
-            pos = c.content.index(@string_to_search)
-            if !pos.nil?
-              @all_found.push([s, strip_content(c.content, @string_to_search, pos)])
+            res = Extract.find_if_included_in(c.content, @string_to_search)
+            if !res.nil?
+              @all_found.push([s, strip_content(c.content, res)])
             end
           end
         end
@@ -461,18 +461,20 @@ class SubmissionsController < ApplicationController
   end
 
   # Helper method to create a preview of a substring of a string
-  def strip_content(content, string_found, pos)
-    start1 = [pos - 30, 0].max
-    if start1 < 4
+  def strip_content(content, res)
+    start2 = res[0]
+    stop2 = res[1]
+    start1 = [start2 - 30, 0].max
+    if start1 <= 3
       start1 = 0
     end
-    stop1 = pos
-    start2 = pos + string_found.size
-    stop2 = [start2 + 30, content.size].min
-    if stop2 > content.size - 4
-      stop2 = content.size
+    stop1 = start2
+    start3 = stop2
+    stop3 = [start3 + 30, content.size].min
+    if stop3 >= content.size - 3
+      stop3 = content.size
     end
-    return [(start1 > 0 ? "..." : "") + content[start1, stop1-start1], content[start2, stop2-start2] + (stop2 < content.size ? "..." : "")]
+    return [(start1 > 0 ? "..." : "") + content[start1, stop1-start1], content[start2, stop2-start2], content[start3, stop3-start3] + (stop3 < content.size ? "..." : "")]
   end
   
   # Helper method to list columns that are needed to list submissions
