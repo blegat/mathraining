@@ -20,6 +20,7 @@ class Takentest < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :virtualtest
+  has_one :takentestcheck, dependent: :destroy
 
   # VALIDATIONS
 
