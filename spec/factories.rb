@@ -90,6 +90,18 @@ FactoryGirl.define do
     code "be" # Should be a value for which a flag exists!
   end
   
+  # Externalsolution
+  factory :externalsolution do
+    association :problem
+    sequence(:url) { |n| "https://www.source#{n}.com" }
+  end
+  
+  # Extract
+  factory :extract do
+    association :externalsolution
+    sequence(:text) { |n| "Extrait #{n} extérieur" }
+  end
+  
   # Faq
   factory :faq do
     sequence(:question) { |n| "C'est quoi #{n} Mathraining ?" }

@@ -1,0 +1,157 @@
+<% provide(:title, 'Solutions externes') %>
+
+<h1><%= title_4("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), (link_to "Problème ##{ @problem.number }", @problem), "Solutions externes") %></h1>
+
+<!-- Enoncé -->
+<h3>Énoncé</h3>
+<%= raw(htmlise(@problem.statement)) %>
+
+<% suspicions = Suspicion.joins(:submission).where("submissions.problem_id = ?", @problem).where(:status => [:confirmed, :forgiven]).to_a %>
+<% suspicions_covered = Set.new %>
+<% suspicions.each do |s| %>
+  <% if (!s.source.include?("http") && !s.source.include?("www.")) || s.source.include?("mathraining.be") %>
+    <% suspicions_covered.add(s.id) %>
+  <% end %>
+<% end %>
+
+<% i = 1 %>
+<% @problem.externalsolutions.order(:id).each do |e| %>
+  <h4 class="mt-3"><%= link_to "Solution externe #{ i }", e.url, :target => "_blank" %></h4>
+  <% i = i+1 %>
+  
+  <table>
+    <tr>
+    <%= form_for(e) do |f| %>
+      <td>
+        <%= f.text_field :url, :class => "form-control", :style => "width:200px;", :id => "update_externalsolution_field_" + e.id.to_s %>
+      </td>
+      <td>
+        <%= f.submit "Modifier", :class => "btn btn-primary", :id => "update_externalsolution_button_" + e.id.to_s %>
+      </td>
+      <td class="p-2">
+        <%= link_to "Supprimer", e, :method => :delete, :id => ("delete_externalsolution_" + e.id.to_s), :data => { confirm: "Êtes-vous sûr de vouloir supprimer cette solution externe ?" }, :class => "text-color-red" %>
+      </td>
+    <% end %>
+    </tr>
+  </table>
+  
+  <h5 class="mt-3">Plagiats</h5>
+  <% matching_suspicions = Array.new %>
+  <% suspicions.each do |s| %>
+    <% if s.source.include?(e.url) %>
+      <% matching_suspicions.push(s) %>
+      <% suspicions_covered.add(s.id) %>
+    <% end %>
+  <% end %>
+  
+  <% if matching_suspicions.size > 0 %>
+    <table class="table table-bordered fixed-scroll" style="width:auto;" id="matching_<%= e.id %>">
+    <thead>
+    <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    </thead>
+    <tbody>
+      <% matching_suspicions.each do |m| %>
+        <%= render 'submissions/line', s: m.submission %>
+      <% end %>
+    </tbody>
+    </table>
+    <script>
+      fixLastCellWidthOfTableHeader("matching_<%= e.id %>");
+    </script>
+  <% else %>
+    <p>Aucun plagiat enregistré pour cette solution externe.</p>
+  <% end %>
+  
+  <h5 class="mt-3">Extraits</h5>
+  <table>
+  <% e.extracts.order(:id).each do |extract| %>
+    <tr>
+    <%= form_for(extract) do |f| %>
+      <td style="width:15px;">
+        -
+      </td>
+      <td class="p-1">
+        <%= f.text_field :text, :class => "form-control", :style => "width:200px;", :id => "update_extract_field_" + extract.id.to_s %>
+      </td>
+      <td>
+        <%= f.submit "Modifier", :class => "btn btn-primary", :id => "update_extract_button_" + extract.id.to_s %>
+      </td>
+      <td class="p-2">
+        <% score = 0 %>
+        <% matching_suspicions.each do |m| %>
+          <% if extract.is_included_in(m.submission.content) %>
+            <% score = score+1 %>
+          <% else %>
+            <% m.submission.corrections.where(:user => m.submission.user).each do |c| %>
+              <% if extract.is_included_in(c.content) %>
+                <% score = score+1 %>
+                <% break %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+        Score : <%= score %> / <%= matching_suspicions.count %>
+      </td>
+      <td class="p-2">
+        <%= link_to "Supprimer", extract, :method => :delete, :id => ("delete_extract_" + extract.id.to_s), :data => { confirm: "Êtes-vous sûr de vouloir supprimer cet extrait ?" }, :class => "text-color-red" %>
+      </td>
+    <% end %>
+    </tr>
+  <% end %>
+  
+  <tr>
+  <%= form_for(:extract, url: externalsolution_extracts_path(e)) do |f| %>
+    <td>
+    </td>
+    <td class="p-1">
+      <%= f.text_field :text, :class => "form-control", :style => "width:200px;", :id => "create_extract_field_" + e.id.to_s %>
+    </td>
+    <td>
+      <%= f.submit "Ajouter", :class => "btn btn-primary", :id => "create_extract_button_" + e.id.to_s %>
+    </td>
+    <td>
+    </td>
+  <% end %>
+  </tr>
+  
+  </table>
+<% end %>
+
+<h4 class="mt-3">Nouvelle solution externe</h4>
+<table>
+<%= form_for(:externalsolution, url: problem_externalsolutions_path(@problem)) do |f| %>
+  <td>
+  </td>
+  <td class="p-1">
+    <%= f.text_field :url, :class => "form-control", :style => "width:200px;", :id => "create_externalsolution_field" %>
+  </td>
+  <td>
+    <%= f.submit "Ajouter", :class => "btn btn-primary", :id => "create_externalsolution_button" %>
+  </td>
+  <td>
+  </td>
+<% end %>
+</table>
+
+<h5 class="mt-3">Plagiats non couverts</h5>
+
+<% if suspicions_covered.size < suspicions.size %>
+  <table class="table table-bordered fixed-scroll" style="width:auto;" id="nonmatching">
+  <thead>
+  <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+  </thead>
+  <tbody>
+    <% suspicions.each do |s| %>
+      <% unless suspicions_covered.include?(s.id) %>
+        <%= render 'submissions/line', s: s.submission %>
+      <% end %>
+    <% end %>
+  </tbody>
+  </table>
+  <script>
+    fixLastCellWidthOfTableHeader("nonmatching");
+  </script>
+<% else %>
+  <p>Aucun autre plagiat.</p>
+<% end %>
+

@@ -9,7 +9,7 @@
 #  user_id       :integer
 #  read          :boolean
 #  created_at    :datetime         not null
-#  kind          :integer          default(-1)
+#  kind          :integer          default(NULL)
 #
 class Following < ActiveRecord::Base
   

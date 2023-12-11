@@ -65,8 +65,10 @@ Rails.application.routes.draw do
     match '/update_explanation', to: "problems#update_explanation", :via => [:patch]
     match '/update_markscheme', to: "problems#update_markscheme", :via => [:patch]
     match '/add_virtualtest', to: 'problems#add_virtualtest', :via => [:post]
+    match '/manage_externalsolutions', to: 'problems#manage_externalsolutions', :via => [:get]
     
     resources :submissions, only: [:create]
+    resources :externalsolutions, only: [:create]
     match '/create_intest', to: 'submissions#create_intest', :via => [:post]
   end
   
@@ -95,6 +97,14 @@ Rails.application.routes.draw do
   match '/allmysub', to: 'submissions#allmysub', :via => [:get]
   match '/allnewsub', to: 'submissions#allnewsub', :via => [:get]
   match '/allmynewsub', to: 'submissions#allmynewsub', :via => [:get]
+  
+  # External solutions
+  resources :externalsolutions, only: [:update, :destroy] do
+    resources :extracts, only: [:create]
+  end
+  
+  # Extracts
+  resources :extracts, only: [:update, :destroy]
   
   # Suspicions
   resources :suspicions, only: [:index, :destroy, :update]

@@ -7,7 +7,7 @@
 #  id            :integer          not null, primary key
 #  submission_id :integer
 #  user_id       :integer
-#  source        :string
+#  source        :text
 #  status        :integer          default("waiting_confirmation")
 #  created_at    :datetime         not null
 #

@@ -130,6 +130,7 @@
       <% warning = (@problem.online ? { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } : {}) %>
       <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: warning %>
       | <%= link_to "Modifier la solution", problem_edit_explanation_path(@problem) %>
+      | <%= link_to "Modifier les solutions externes", problem_manage_externalsolutions_path(@problem) %>
       <% if !@problem.virtualtest.nil? %>
         | <%= link_to "Modifier le marking scheme", problem_edit_markscheme_path(@problem) %>
       <% end %>

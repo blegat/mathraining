@@ -11,6 +11,8 @@ fr:
       contestsolution: "Solution"
       correction: "Commentaire"
       discussion: "Discussion"
+      externalsoltuion: "Solution externe"
+      extract: "Extrait"
       item: "Choix"
       message: "Message"
       prerequisite: "Prérequis"
@@ -65,6 +67,10 @@ fr:
         score: "Score"
       correction:
         content: "Commentaire"
+      externalsolution:
+        url: "URL"
+      extract:
+        text: "Extrait"
       faq:
         question: "Question"
         answer: "Réponse"
