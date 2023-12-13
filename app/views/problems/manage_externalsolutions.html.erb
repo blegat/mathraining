@@ -16,10 +16,10 @@
   <% end %>
 <% end %>
 
-<% i = 1 %>
+<% sol = 1 %>
 <% @problem.externalsolutions.order(:id).each do |e| %>
-  <h4 class="mt-3"><%= link_to "Solution externe #{ i }", e.url, :target => "_blank" %></h4>
-  <% i = i+1 %>
+  <h4 class="mt-3"><%= link_to "Solution externe #{ sol }", e.url, :target => "_blank" %></h4>
+  <% sol = sol+1 %>
   
   <table>
     <tr>
