@@ -37,40 +37,24 @@
     </tr>
   </table>
   
-  <h5 class="mt-3">Plagiats</h5>
   <% matching_suspicions = Array.new %>
+  <% matching_suspicions_matches = Array.new %>
   <% suspicions.each do |s| %>
     <% if s.source.include?(e.url) %>
       <% matching_suspicions.push(s) %>
+      <% matching_suspicions_matches.push(Array.new) %>
       <% suspicions_covered.add(s.id) %>
     <% end %>
   <% end %>
   
-  <% if matching_suspicions.size > 0 %>
-    <table class="table table-bordered fixed-scroll" style="width:auto;" id="matching_<%= e.id %>">
-    <thead>
-    <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
-    </thead>
-    <tbody>
-      <% matching_suspicions.each do |m| %>
-        <%= render 'submissions/line', s: m.submission %>
-      <% end %>
-    </tbody>
-    </table>
-    <script>
-      fixLastCellWidthOfTableHeader("matching_<%= e.id %>");
-    </script>
-  <% else %>
-    <p>Aucun plagiat enregistré pour cette solution externe.</p>
-  <% end %>
-  
   <h5 class="mt-3">Extraits</h5>
   <table>
+  <% j = 1 %>
   <% e.extracts.order(:id).each do |extract| %>
     <tr>
     <%= form_for(extract) do |f| %>
-      <td style="width:15px;">
-        -
+      <td class="fw-bold pe-1">
+        E<%= j %>
       </td>
       <td class="p-1">
         <%= f.text_field :text, :class => "form-control", :style => "width:200px;", :id => "update_extract_field_" + extract.id.to_s %>
@@ -80,17 +64,23 @@
       </td>
       <td class="p-2">
         <% score = 0 %>
+        <% i = 0 %>
         <% matching_suspicions.each do |m| %>
+          <% extract_found = false %>
           <% if extract.is_included_in(m.submission.content) %>
-            <% score = score+1 %>
+            <% extract_found = true %>
           <% else %>
             <% m.submission.corrections.where(:user => m.submission.user).each do |c| %>
               <% if extract.is_included_in(c.content) %>
-                <% score = score+1 %>
+                <% extract_found = true %>
                 <% break %>
               <% end %>
             <% end %>
           <% end %>
+          
+          <% matching_suspicions_matches[i].push(extract_found) %>
+          <% score = score+1 if extract_found %>
+          <% i = i+1 %>
         <% end %>
         Score : <%= score %> / <%= matching_suspicions.count %>
       </td>
@@ -99,6 +89,7 @@
       </td>
     <% end %>
     </tr>
+    <% j = j+1 %>
   <% end %>
   
   <tr>
@@ -117,6 +108,32 @@
   </tr>
   
   </table>
+  
+  <h5 class="mt-3">Plagiats</h5>
+  
+  <% if matching_suspicions.size > 0 %>
+    <table class="table table-bordered fixed-scroll" style="width:auto;" id="matching_<%= e.id %>">
+    <thead>
+    <tr><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th>
+    <% (1..(e.extracts.count)).each do |i| %>
+      <th class="text-center" style="width:30px;">E<%= i %></th>
+    <% end %>
+    <th style="width:70px;"></th></tr>
+    </thead>
+    <tbody>
+      <% i = 0 %>
+      <% matching_suspicions.each do |m| %>
+        <%= render 'submissions/line', s: m.submission, matches: matching_suspicions_matches[i] %>
+        <% i = i+1 %>
+      <% end %>
+    </tbody>
+    </table>
+    <script>
+      fixLastCellWidthOfTableHeader("matching_<%= e.id %>");
+    </script>
+  <% else %>
+    <p>Aucun plagiat enregistré pour cette solution externe.</p>
+  <% end %>
 <% end %>
 
 <h4 class="mt-3">Nouvelle solution externe</h4>

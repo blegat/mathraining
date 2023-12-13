@@ -24,6 +24,9 @@
 <% if !(defined? show_content_length) %>
   <% show_content_length = false %>
 <% end %>
+<% if !(defined? matches) %>
+  <% matches = nil %>
+<% end %>
 
 <!-- Couleur -->
 <% if hidden_sub %>
@@ -119,6 +122,17 @@
       <%= s.content_length %>
     <% end %>
   </td>
+<% end %>
+
+<% if !matches.nil? %>
+  <!-- Uniquement pour la recherche de plagiats -->
+  <% matches.each do |m| %>
+    <td class="text-center" style="width:30px;">
+      <% if m %>
+        <%= image_tag v_icon, :class => "svg-black-white" %>
+      <% end %>
+    </td>
+  <% end %>
 <% end %>
 
 <!-- Voir -->
