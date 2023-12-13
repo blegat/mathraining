@@ -25,12 +25,21 @@
     Chercher également dans les commentaires.
   </label>
 </div>
+<div class="mb-2">
+NB : Les caractères suivants sont ignorés (dans la chaîne et dans les solutions) lors de la recherche :
+<% Extract.ignored_characters.each do |c| %>
+  <% if c != " " && c != "\n" && c != "\r" %>
+    <b><%= c %></b>,
+  <% end %>
+<% end %>
+<b>(espace)</b>, <b>(retour à la ligne)</b>.
+</div>
 <%= submit_tag "Chercher", :class => "btn btn-primary", :onclick => "javascript:showSearch()" %>
 <% end %>
 
 <p class="mt-3" id="loading_results" style="display:none;">Recherche...</p>
 <p class="mt-3" id="none_results" style="display:none;">Aucun résultat.</p>
-<p class="mt-3" id="error_results" style="display:none;">La chaîne doit contenir au moins 3 caractères.</p>
+<p class="mt-3" id="error_results" style="display:none;">La chaîne doit contenir au moins 3 caractères (non ignorés).</p>
 
 <table class="table table-bordered tex2jax_ignore mt-3 fixed-scroll" style="width:auto; display:none;" id="tab_results">
   <thead>

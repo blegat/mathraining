@@ -230,7 +230,7 @@ class SubmissionsController < ApplicationController
 
   # Search for some strings in all submissions to the problem (only through js)
   def search_script
-    @string_to_search = params[:string_to_search].gsub(" ", "").gsub("$", "")
+    @string_to_search = Extract.get_cleaned_string(params[:string_to_search]) # Need to clean before checking number of characters
     @enough_caracters = (@string_to_search.size >= 3)
 
     if @enough_caracters

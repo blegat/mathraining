@@ -22,6 +22,18 @@ class Extract < ActiveRecord::Base
   
   # OTHER METHODS
   
+  def self.ignored_characters
+    Set[" ", "\n", "\r", "$", "{", "}"]
+  end
+  
+  def self.get_cleaned_string(str)
+    cleaned_str = str.clone
+    self.ignored_characters.each do |c|
+      cleaned_str.gsub!(c, "")
+    end
+    return cleaned_str
+  end
+  
   # Method used to check if this extract is included in a submission or correction content
   def is_included_in(content)
     return Extract.is_included_in(content, self.text)
@@ -36,8 +48,8 @@ class Extract < ActiveRecord::Base
   def self.find_if_included_in(str, substr, get_location = true)
     str_modified = str.gsub("−", "-").gsub("’", "'") # Should not change the length of the string!
     substr_modified = substr.gsub("−", "-").gsub("’", "'") # Idem
-    cleaned_substr = substr_modified.gsub(" ", "").gsub("$", "")
-    cleaned_str = str_modified.gsub(" ", "").gsub("$", "")
+    cleaned_substr = self.get_cleaned_string(substr_modified)
+    cleaned_str = self.get_cleaned_string(str_modified)
     start = cleaned_str.index(cleaned_substr)
     
     unless get_location
