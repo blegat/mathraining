@@ -122,6 +122,8 @@ fr:
       theory:
         title: "Titre"
         content: "Contenu"
+      unsolvedquestion:
+        guess: "Votre réponse"
       user:
         first_name: "Prénom"
         last_name: "Nom"
