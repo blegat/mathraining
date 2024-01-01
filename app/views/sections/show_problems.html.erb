@@ -25,7 +25,7 @@
 <% (1..5).each do |level| %>
   <h3 class="<%= "mt-2" if level == 1 %>">Niveau <%= level %></h3>
   <% if problems_by_level[level].nil? %>
-    <p>Aucun problème de niveau <%= level %> n'est disponible.<</p>
+    <p>Aucun problème de niveau <%= level %> n'est disponible.</p>
   <% else %>
     <p>Chaque problème de niveau <%= level %> vaut <b><%= 15*level %></b> points.</p>
     
