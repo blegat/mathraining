@@ -38,7 +38,7 @@ var Joint = {
 
     var div = document.getElementById("divFiles"+postfix);
     
-    document.getElementById("allowedFiles").style.display = 'block';
+    document.getElementById("allowedFiles"+postfix).style.display = 'block';
     
     //Append the element in page (in div).
     div.appendChild(element2);
