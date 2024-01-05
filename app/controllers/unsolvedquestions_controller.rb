@@ -8,7 +8,8 @@ class UnsolvedquestionsController < ApplicationController
   before_action :online_chapter, only: [:create, :update]
   before_action :unlocked_chapter, only: [:create, :update]
   before_action :first_try, only: [:create]
-  before_action :not_first_try_not_solved, only: [:update]
+  before_action :not_solved, only: [:update]
+  before_action :not_first_try, only: [:update]
   before_action :waited_enough_time, only: [:update]
 
   # Try to solve a question (first time)
@@ -59,11 +60,15 @@ class UnsolvedquestionsController < ApplicationController
     end
   end
   
-  # Check that this is not the first try of current user and that he did not solve the question already
-  def not_first_try_not_solved
+  # Check that the current user did not solve the question already
+  def not_solved
     if Solvedquestion.where(:user => current_user.sk, :question => @question).count > 0 # already solved
       redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
     end
+  end
+  
+  # Check that this is not the first try of current user
+  def not_first_try
     @unsolvedquestion = Unsolvedquestion.where(:user => current_user.sk, :question => @question).first
     return if check_nil_object(@unsolvedquestion)
   end
