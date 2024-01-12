@@ -19,8 +19,6 @@
   <% num_all[line.score] = num_all[line.score] + 1 %>
 <% end %>
 
-<% maxi = num_all.max + 1 %>
-
 <center>
 
 <!-- Endroit pour dessiner le graphique des scores -->
@@ -43,17 +41,31 @@ Votre navigateur ne supporte pas les canvas.
     var ctx = c.getContext('2d');
     var container = c.parentElement;
     
+    var W = 900.0;
+    var H = 280.0;
+    
     c.setAttribute('width', container.offsetWidth); //max width
-    c.setAttribute('height', 280*container.offsetWidth/900.0); //max height
+    c.setAttribute('height', H * container.offsetWidth / W); //max height
 
-    container.style.height = 280*container.offsetWidth/900.0 + "px"
+    container.style.height = H * container.offsetWidth / W + "px"
 
     // Draw content
+    
+    var maxScore = <%= num_points %>;
+    var maxNum = <%= num_all.max %>;
 
-    var pct = c.offsetWidth/900.0;
+    var pct = c.offsetWidth / W;
+    var W_real = pct * W;
+    var H_real = pct * H;
+    var W_offset = 30;
+    var H_offset = 5;
+    var W_size = W_real - W_offset - 30;
+    var H_size = H_real - H_offset - 30;
+    var W_step = W_size / (maxScore + 1);
+    var H_step = (H_size * 0.8) / maxNum;
     
     ctx.beginPath();
-    ctx.rect(pct*50, pct*5, pct*806, pct*250);
+    ctx.rect(W_offset, H_offset, W_size, H_size);
     ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
     ctx.fill();
     ctx.lineWidth = 1;
@@ -62,44 +74,55 @@ Votre navigateur ne supporte pas les canvas.
     
     // Entre 50 et 856 --> largeur totale 806, à diviser en num_points
     
-    <% medal_color = ["#9999FF", "#FF70B7", "#DF7F32", "#C4C4C4", "#FFD700"] %>
-    <% (1..num_points).each do |i| %>
-      <% before = 0 %>
-      <% (0..4).each do |j| %>
-        <% k = 4-j %>
-        ctx.fillStyle = '<%= medal_color[k] %>';
-        <% if num_by_medal[k][i] > 0 %>
-          <% size = (240*num_by_medal[k][i])/maxi.to_f %>
+    var medal_color = ["#9999FF", "#FF70B7", "#DF7F32", "#C4C4C4", "#FFD700"];
+    var num_by_medal = [<%= ruby_to_javascript(num_by_medal[0]) %>, <%= ruby_to_javascript(num_by_medal[1]) %>, <%= ruby_to_javascript(num_by_medal[2]) %>, <%= ruby_to_javascript(num_by_medal[3]) %>, <%= ruby_to_javascript(num_by_medal[4]) %>];
+    for (let score = 1; score <= maxScore; score++) {
+      var start = 0;
+      for (let j = 0; j < 5; j++) {
+        var k = 4-j;
+        ctx.fillStyle = medal_color[k];
+        if (num_by_medal[k][score] > 0) {
+          v = num_by_medal[k][score]
           ctx.beginPath();
-          ctx.rect(pct*<%= 50+((806*(i-1))/num_points.to_f) %>, pct*<%= 255 - before %>, pct*<%= (806/num_points.to_f) %>, -pct*<%= size %>);
+          ctx.rect(W_offset + W_step * score, H_offset + H_size - H_step * start, W_step, - H_step * v);
           ctx.fill();
           ctx.stroke();
-          <% before = before + size %>
-        <% end %>
-      <% end %>
-    <% end %>
+          start = start + v
+        }
+      }
+    }
     
-    ctx.font="12px Arial";
+    ctx.beginPath();
+    
+    ctx.font = "12px Arial";
     ctx.fillStyle = (is_dark ? 'white' : 'black');
     ctx.textAlign = 'center';
     
-    if(pct > 0.6)
-    {
-      <% (1..nb_prob).each do |i| %>
-      ctx.fillText("<%= 7*i %>",pct*<%= 50+((806*(i*7-0.5))/num_points.to_f) %>,pct*265+7);
-      <% end %>
+    var W_last = W_real * 2;
+    for (let i = maxScore; i >= 0; i -= 7) {
+      var W_cur = W_offset + W_step * (i + 0.5);
+      if (W_cur < W_last - 20) {
+        ctx.moveTo(W_cur, H_offset + H_size);
+        ctx.lineTo(W_cur, H_offset + H_size + 2);
+        ctx.fillText(i.toString(), W_cur, H_offset + H_size + 15);
+        W_last = W_cur;
+      }
     }
     
     ctx.textAlign = 'right';
-    <% i = maxi - 1 %>
-    <% step = 1 %>
-    <% while i/step > 12 %>
-      <% step += 1 %>
-    <% end %>
-    <% while(i > 0) %>
-      ctx.fillText("<%= i %>", pct*44 -4,pct*(<%= 255-240*i/maxi %>+4));
-      <% i = i - step %>
-    <% end %>
+    
+    var H_last = -H_real;
+    for (let i = maxNum; i >= 0; i--) {
+      var H_cur = H_offset + H_size - H_step * i;
+      if (H_cur > H_last + 20) {
+        ctx.moveTo(W_offset, H_cur);
+        ctx.lineTo(W_offset - 2, H_cur);
+        ctx.fillText(i.toString(), W_offset - 6, H_cur + 4);
+        H_last = H_cur;
+      }
+    }
+    
+    ctx.stroke();
   }
 
   window.addEventListener("resize", () => {

@@ -234,4 +234,29 @@ module ApplicationHelper
   def warning_icon
     return 'exclamation-triangle.svg' # 'X.gif'
   end
+  
+def ruby_to_javascript(arr)
+  t = "["
+  prems = true
+  arr.each do |a|
+    t << "," if !prems
+    prems = false
+    t << a.to_s
+  end
+  t << "]"
+  return t.html_safe
+end
+
+def ruby_to_javascript_string(arr)
+  t = "["
+  prems = true
+  arr.each do |a|
+    t << "," if !prems
+    prems = false
+    t << "'" << a << "'"
+  end
+  t << "]"
+  return t.html_safe
+end
+
 end

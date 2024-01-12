@@ -134,31 +134,6 @@ Votre navigateur ne supporte pas les canvas.
   <% return d; %>
 <% end %>
 
-<% def ruby_to_javascript(arr) %>
-  <% t = "[" %>
-  <% prems = true %>
-  <% arr.each do |a| %>
-    <% t << "," if !prems %>
-    <% prems = false %>
-    <% t << a.to_s %>
-  <% end %>
-  <% t << "]" %>
-  <% return t.html_safe %>
-<% end %>
-
-<% def ruby_to_javascript_string(arr) %>
-  <% t = "[" %>
-  <% prems = true %>
-  <% arr.each do |a| %>
-    <% t << "," if !prems %>
-    <% prems = false %>
-    <% t << "'" << a << "'" %>
-  <% end %>
-  <% t << "]" %>
-  <% return t.html_safe %>
-<% end %>
-
-
 <script type="text/javascript">
 
   var graphique = [,,,,,];
