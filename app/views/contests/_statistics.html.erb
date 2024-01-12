@@ -62,7 +62,10 @@ Votre navigateur ne supporte pas les canvas.
     var W_size = W_real - W_offset - 30;
     var H_size = H_real - H_offset - 30;
     var W_step = W_size / (maxScore + 1);
-    var H_step = (H_size * 0.8) / maxNum;
+    var H_step = (0.8 * H_size) / maxNum;
+    if (maxNum > 16) {
+      H_step = (0.95 * H_size) / (maxNum + 3);
+    }
     
     ctx.beginPath();
     ctx.rect(W_offset, H_offset, W_size, H_size);
