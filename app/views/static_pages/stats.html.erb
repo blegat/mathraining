@@ -193,17 +193,28 @@ Votre navigateur ne supporte pas les canvas.
     var ctx = c.getContext('2d');
     var container = c.parentElement;
     
+    var W = 900.0;
+    var H = 480.0;
+    
     c.setAttribute('width', container.offsetWidth); //max width
-    c.setAttribute('height', 480*container.offsetWidth/900.0); //max height
+    c.setAttribute('height', H * container.offsetWidth / W); //max height
 
-    container.style.height = 480*container.offsetWidth/900.0 + "px"
+    container.style.height = H * container.offsetWidth / W + "px";
 
     // Draw content
 
-    var pct = c.offsetWidth/900.0;
+    var pct = c.offsetWidth / W;
+    var W_real = pct * W;
+    var H_real = pct * H;
+    var W_offset = 50;
+    var H_offset = 5;
+    var W_size = W_real - W_offset - 50;
+    var H_size = H_real - H_offset - 30;
+    var W_internal_offset = 3;
+    var W_internal_size = W_size - W_internal_offset - 3
 
     ctx.beginPath();
-    ctx.rect(pct*50, pct*5, pct*806, pct*450);
+    ctx.rect(W_offset, H_offset, W_size, H_size);
     ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
     ctx.fill();
     ctx.lineWidth = 1.5;
@@ -214,36 +225,32 @@ Votre navigateur ne supporte pas les canvas.
       
     // Affichage des barres horizontales
 
-    var maxi = 1.1*max_value;
+    var maxi = 1.1 * max_value;
     
-    var tranche = Math.floor(max_value/4);
-    if(tranche == 0){
+    var tranche = Math.ceil(max_value / 4);
+    if (tranche == 0){
       tranche = 1;
     }
       
     ctx.lineWidth = 0.5;
     ctx.strokeStyle = 'grey';
-    ctx.font="14px Arial";
+    ctx.font = "14px Arial";
     ctx.fillStyle = (is_dark ? 'white' : 'black');
     ctx.textAlign = 'right';
 
     ctx.setLineDash([10, 10]);
     ctx.beginPath();
-
-    if (pct < 0.7){
-      ctx.font="9px Arial";
-    }
     
     var encours = Math.floor(max_value);
     
-    while(encours > 0) {
-      var haut = 450 - 450*(encours/maxi);
-      if(haut < 0) {
+    while (encours > 0) {
+      var haut = H_size - H_size * (encours / maxi);
+      if (haut < 0) {
         haut = 0;
       }
-      ctx.moveTo(pct*50, pct*(haut+5));
-      ctx.lineTo(pct*856, pct*(haut+5));
-      ctx.fillText(encours,pct*44,pct*(haut+10));
+      ctx.moveTo(W_offset, H_offset + haut);
+      ctx.lineTo(W_offset + W_size, H_offset + haut);
+      ctx.fillText(encours, W_offset - 6, H_offset + haut + 4);
       encours = encours - tranche;
     }
 
@@ -251,23 +258,23 @@ Votre navigateur ne supporte pas les canvas.
     
     // Affichage des barres verticales et des dates en abscisse
     
-    ctx.font="12px Arial";
+    ctx.font = "12px Arial";
     ctx.textAlign = 'center';
     ctx.beginPath();
     
     encours = end_index;
     var printw = 10000;
     
-    while(encours >= start_index) {
+    while (encours >= start_index) {
       var N = end_index - start_index + (batonnets ? 1 : 0);
-      var w = 3 + 800*(encours - start_index + (batonnets ? 0.5 : 0))/N;
-      if((w < printw - 50 && pct > 0.8) || (w < printw - 70 && pct > 0.7)) {
-        ctx.fillText(abs[encours],pct*(50+w),pct*455+15);
+      var w = W_internal_offset + W_internal_size * (encours - start_index + (batonnets ? 0.5 : 0))/N;
+      if (w < printw - 55) {
+        ctx.fillText(abs[encours], W_offset + w, H_offset + H_size + 15);
         printw = w;
-        ctx.moveTo(pct*(50+w), pct*5);
-        ctx.lineTo(pct*(50+w), pct*455);
+        ctx.moveTo(W_offset + w, H_offset);
+        ctx.lineTo(W_offset + w, H_offset + H_size);
       }
-      encours = encours-1;
+      encours = encours - 1;
     }
     
     ctx.stroke();
@@ -288,38 +295,38 @@ Votre navigateur ne supporte pas les canvas.
     ctx.textAlign = 'center';
     ctx.lineWidth = 2;
 
-    while(encours >= start_index) {
+    while (encours >= start_index) {
       var N = end_index - start_index + (batonnets ? 1 : 0);
-      var w = 3 + 800*(encours - start_index + (batonnets ? 0.5 : 0))/N;
-      var huser = 450 - 450*(val[encours]/maxi);
-      if(val[encours] >= 0) {
-        if(batonnets) {
-          var halfwidth = 400/N;
-          var gg = Math.round(pct*(50+w-halfwidth));
-          var dd = Math.round(pct*(50+w+halfwidth));
-          ctx.fillRect(gg,pct*(huser+5),dd-gg,pct*450*(val[encours]/maxi));
+      var w = W_internal_offset + W_internal_size * (encours - start_index + (batonnets ? 0.5 : 0))/N;
+      var huser = H_size - H_size * (val[encours] / maxi);
+      if (val[encours] >= 0) {
+        if (batonnets) {
+          var halfwidth = W_internal_size/(2*N);
+          var gg = Math.round(W_offset + w - halfwidth);
+          var dd = Math.round(W_offset + w + halfwidth);
+          ctx.fillRect(gg, H_offset + huser, dd - gg, H_size * (val[encours] / maxi));
         }
         else {
-          if(premier) {
+          if (premier) {
             ctx.beginPath();
-            ctx.moveTo(pct*(50+w), pct*(huser+5));
+            ctx.moveTo(W_offset + w, H_offset + huser);
             premier = false;
           }
           else {
-            ctx.lineTo(pct*(50+w), pct*(huser+5));
+            ctx.lineTo(W_offset + w, H_offset + huser);
           }
         }
       }
-      encours = encours-1;
+      encours = encours  -1;
     } 
-    if(!batonnets) { 
+    if (!batonnets) { 
       if (!premier) {
         ctx.stroke();
       }
     }
     else {
       ctx.beginPath();
-      ctx.rect(pct*50, pct*5, pct*806, pct*450);
+      ctx.rect(W_offset, H_offset, W_size, H_size);
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = (is_dark ? 'white' : 'black');
       ctx.stroke();
@@ -341,61 +348,72 @@ Votre navigateur ne supporte pas les canvas.
     var ctx = c.getContext('2d');
     var container = c.parentElement;
     
-    var pct = c.offsetWidth/900.0;
+    var W = 900.0;
+    var H = 480.0;
+    
+    var pct = c.offsetWidth / W;
+    var W_real = pct * W;
+    var H_real = pct * H;
+    var W_offset = 50;
+    var H_offset = 5;
+    var W_size = W_real - W_offset - 50;
+    var H_size = H_real - H_offset - 30;
+    var W_internal_offset = 3;
+    var W_internal_size = W_size - W_internal_offset - 3
     
     computeIndicesAndMaxValue(n);
     
-    var maxi = 1.1*max_value;
+    var maxi = 1.1 * max_value;
     
     var N = end_index - start_index + (batonnets ? 1 : 0);
-    var realx = Math.round((x-53)*N/800.0 + start_index - (batonnets ? 0.5 : 0));
+    var realx = Math.round((x - W_offset - W_internal_offset) * N / W_internal_size + start_index - (batonnets ? 0.5 : 0));
 
-    if(realx < start_index) {
+    if (realx < start_index) {
       realx = start_index;
     }
     else if(realx > end_index) {
       realx = end_index;
     }
     
-    if(val[realx] < 0)
+    if (val[realx] < 0)
     {
       realxleft = realx;
       realxright = realx;
       realx = -1;
-      while(realxleft >= start_index || realxright <= end_index) {
-        if(realxleft >= start_index && val[realxleft] >= 0) {
+      while (realxleft >= start_index || realxright <= end_index) {
+        if (realxleft >= start_index && val[realxleft] >= 0) {
           realx = realxleft;
           break;
         }
-        if(realxright <= end_index && val[realxright] >= 0) {
+        if (realxright <= end_index && val[realxright] >= 0) {
           realx = realxright;
           break;
         }
         realxleft = realxleft-1;
         realxright = realxright+1;
       }
-      if(realx < 0) {
+      if (realx < 0) {
         return;
       }
     }
     
-    var pointx = (53 + 800*(realx - start_index + (batonnets ? 0.5 : 0))/N)*pct;
-    var pointy = (455 - 450*(val[realx]/maxi))*pct;
+    var pointx = (W_offset + W_internal_offset + W_internal_size * (realx - start_index + (batonnets ? 0.5 : 0)) / N);
+    var pointy = (H_offset + H_size - H_size * (val[realx] / maxi));
     
     var h = 30;
     var w = 150;
     
     var cornerx = pointx;
-    var cornery = pointy-h;
+    var cornery = pointy - h;
     
-    if(cornerx + w > 856*pct) {
-      cornerx = cornerx-w;
+    if (cornerx + w > W_offset + W_size) {
+      cornerx = cornerx - w;
     }
     if(cornery < 0) {
-      cornery = cornery+h;
+      cornery = cornery + h;
     }
     
-    if(val[realx] >= 0) {
+    if (val[realx] >= 0) {
       ctx.beginPath();
       ctx.rect(cornerx, cornery, w, h);
       ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
@@ -405,14 +423,14 @@ Votre navigateur ne supporte pas les canvas.
       ctx.strokeStyle = (is_dark ? 'white' : 'black');
       ctx.fillStyle = (is_dark ? 'white' : 'black');
       
-      ctx.moveTo(cornerx+w*0.6, cornery);
-      ctx.lineTo(cornerx+w*0.6, cornery+h);
-      ctx.fillText(abs[realx],cornerx+w*0.3,cornery+h*0.7);
-      ctx.fillText(Math.round(val[realx]*100)/100.0,cornerx+w*0.8,cornery+h*0.7);
+      ctx.moveTo(cornerx + w * 0.6, cornery);
+      ctx.lineTo(cornerx + w * 0.6, cornery + h);
+      ctx.fillText(abs[realx], cornerx + w * 0.3, cornery + h * 0.7);
+      ctx.fillText(Math.round(val[realx]*100)/100.0, cornerx + w * 0.8, cornery + h * 0.7);
       ctx.stroke();
       
       ctx.beginPath();
-      ctx.rect(pointx-2,pointy-2,4,4);
+      ctx.rect(pointx - 2, pointy - 2, 4, 4);
       ctx.strokeStyle = (is_dark ? 'white' : 'black');
       ctx.fillStyle = (is_dark ? 'white' : 'black');
       ctx.fill();
@@ -424,13 +442,23 @@ Votre navigateur ne supporte pas les canvas.
     var c = document.getElementById(graphique[n][3]);
     
     c.addEventListener("mousemove", (evt) => {
-      var pct = c.offsetWidth/900.0;
+      var W = 900.0;
+      var H = 480.0;
+      
+      var pct = c.offsetWidth / W;
+      var W_real = pct * W;
+      var H_real = pct * H;
+      var W_offset = 50;
+      var H_offset = 5;
+      var W_size = W_real - W_offset - 50;
+      var H_size = H_real - H_offset - 30;
+    
       var rect = c.getBoundingClientRect();
       var mouseX = evt.clientX - rect.left;
       var mouseY = evt.clientY - rect.top;
-      if(mouseX >= 50*pct && mouseX <= 856*pct && mouseY >= 5*pct && mouseY <= 455*pct) {
+      if (mouseX >= W_offset && mouseX <= W_offset + W_size && mouseY >= H_offset && mouseY <= H_offset + H_size) {
         drawGraph(n, batonnets);
-        showXY(n, mouseX/pct, mouseY/pct, batonnets)
+        showXY(n, mouseX, mouseY, batonnets)
       }
       else {
         drawGraph(n, batonnets);
