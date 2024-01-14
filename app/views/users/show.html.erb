@@ -620,8 +620,30 @@
     <% end %>
     
     <script type="text/javascript">
-
+    
+      <% graph_int_times = Array.new %>
+      <% graph_times = Array.new %>
+      <% graph_points = Array.new %>
+      <% actperday.each do |a| %>
+        <% graph_int_times.push(a[:time].to_time.to_i) %>
+        <% graph_points.push(a[:pt]) %>
+        <% t = "" %>
+        <% if parquoi == "jour" %>
+          <% t = "#{'0' if a[:time].day < 10 }#{ a[:time].day }/#{ '0' if a[:time].month < 10 }#{ a[:time].month }/#{ '0' if (a[:time].year % 2000) < 10 }#{ (a[:time].year % 2000) }" %>
+        <% elsif parquoi == "heure" %>
+          <% t = write_hour_only(a[:time]) %>
+        <% else %>
+          <% t = write_hour(a[:time]) %>
+        <% end %>
+        <% graph_times.push(t) %>
+      <% end %>
+      
       function respondCanvas(){
+        var graph_int_times = <%= ruby_to_javascript(graph_int_times) %>;
+        var graph_times = <%= ruby_to_javascript_string(graph_times) %>;
+        var graph_points = <%= ruby_to_javascript(graph_points) %>;
+        var maxi = <%= maxi %>;
+      
         // Check light or dark theme
         var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
@@ -630,52 +652,59 @@
         var ctx = c.getContext('2d');
         var container = c.parentElement;
         
+        var W = 900.0;
+        var H = 480.0;
+        
         c.setAttribute('width', container.offsetWidth); //max width
-        c.setAttribute('height', 480*container.offsetWidth/900.0); //max height
+        c.setAttribute('height', H * container.offsetWidth / W); //max height
 
-        container.style.height = 480*container.offsetWidth/900.0 + "px"
+        container.style.height = H * container.offsetWidth / W + "px"
 
         // Draw content
 
-        var pct = c.offsetWidth/900.0;
+        var pct = c.offsetWidth / W;
+        var W_real = pct * W;
+        var H_real = pct * H;
+        var W_offset = 50;
+        var H_offset = 5;
+        var W_size = W_real - W_offset - 50;
+        var H_size = H_real - H_offset - 20;
+        var W_internal_offset = 3;
+        var W_internal_size = W_size - W_internal_offset - 3
 
-        <% i = 1 %>
-
-        var prec = 1000;
 
         // Affichage des niveaux avec couleurs
+        ctx.font = "14px Arial";
+        ctx.textAlign = 'right';
+        <% i = 1 %>
+        var prec = 1000;
         <% @niveaux.each do |n| %>
         
           // Points à gauche du graphique
           <% if i > 1 %>
-            <% haut = [450 - 450*(n.pt/maxi), 0].max %>
+            <% haut = [1 - (n.pt / maxi), 0].max %>
             <% if haut > 0 %>
-              ctx.font="14px Arial";
-              ctx.fillStyle = (is_dark ? 'white' : 'black');
-              ctx.textAlign = 'right';
-
-              if (pct > 0.7){
-                if (pct * <%= haut %> < prec - 13){
-                  ctx.fillText(<%= n.pt %>,pct*44,pct*<%= haut+10 %>);
-                  prec = pct * <%= haut %>;
-                }
+              if (H_size * <%= haut %> < prec - 20){
+                ctx.fillStyle = (is_dark ? 'white' : 'black');
+                ctx.fillText(<%= n.pt %>, W_offset - 6, H_offset + H_size * <%= haut %> + 5);
+                prec = H_size * <%= haut %>;
               }
             <% end %>
           <% end %>
 
           // Calcul du bas et du haut
           <% if i == nombrelevel %>
-            <% bas = [450 - 450*(n.pt/maxi), 0].max %>
+            <% bas = [1 - (n.pt / maxi), 0].max %>
             <% haut = 0 %>
           <% else %>
-            <% bas = [450 - 450*(n.pt/maxi), 0].max %>
-            <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
+            <% bas = [1 - (n.pt / maxi), 0].max %>
+            <% haut = [1 - (@niveaux[i].pt / maxi), 0].max %>
           <% end %>
           
           // Affichage du rectangle
           <% if bas > haut %>
             ctx.beginPath();
-            ctx.rect(pct*50, pct*<%= haut+5 %>, pct*806, pct*<%= bas - haut %>);
+            ctx.rect(W_offset, H_offset + H_size * <%= haut %>, W_size, H_size * <%= bas - haut %>);
             ctx.fillStyle = '<%= n.color %>';
             ctx.fill();
           <% end %>
@@ -685,20 +714,21 @@
 
         // On trace maintenant le graphique
 
-        <% last = actperday.first[:time].to_time.to_i %>
-
+        var last = graph_int_times[0];
+        var first = graph_int_times[graph_int_times.length - 1];
+        
         // Commencement du graphique
         <% if parquoi == "jour" %>
-          <% first = actperday.last[:time].to_time.to_i - 86400 %>
+          first = first - 86400;
         <% elsif parquoi == "heure" %>
-          <% first = actperday.last[:time].to_time.to_i - 3600 %>
+          first = first - 3600;
         <% else %>
-          <% first = actperday.last[:time].to_time.to_i - 60 %>
+          first = first - 60;
         <% end %>
 
-        <% previousw = 2000 %>
+        var previousw = 2 * W_size;
         
-        ctx.font="12px Arial";
+        ctx.font = "12px Arial";
         ctx.fillStyle = (is_dark ? 'white' : 'black');
         ctx.textAlign = 'center';
         ctx.setLineDash([10, 10]);
@@ -707,69 +737,61 @@
         ctx.strokeStyle = (is_dark ? 'white' : 'black');
 
         // De droite vers la gauche : calcul où on met les verticales pointillées
-        <% actperday.each do |a| %>
-          <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
+        for (let j = 0; j < graph_int_times.length; j++) {
+          var w = W_internal_offset + W_internal_size * (graph_int_times[j] - first) / (last - first);
 
-          <% if previousw - w > 50 %>
-            if (pct > 0.7){
-            <% if parquoi == "jour" %>
-              ctx.fillText("<%= "0" if a[:time].day < 10 %><%= a[:time].day %>/<%= "0" if a[:time].month < 10 %><%= a[:time].month %>/<%= "0" if (a[:time].year % 2000) < 10 %><%= (a[:time].year % 2000) %>",pct*<%= 50+w %>,pct*471);
-            <% elsif parquoi == "heure" %>
-              ctx.fillText("<%= write_hour_only(a[:time]) %>",pct*<%= 50+w %>,pct*471);
-            <% else %>
-              ctx.fillText("<%= write_hour(a[:time]) %>",pct*<%= 50+w %>,pct*471);
-            <% end %>
-            }
-            ctx.moveTo(pct*<%= 50+w %>, pct*5);
-            ctx.lineTo(pct*<%= 50+w %>, pct*455);
-            <% previousw = w %>
-          <% end %>
-        <% end %>
+          if (previousw - w > 55) {
+            ctx.fillText(graph_times[j], W_offset + w, H_offset + H_size + 15);
+            ctx.moveTo(W_offset + w, H_offset);
+            ctx.lineTo(W_offset + w, H_offset + H_size);
+            previousw = w;
+          }
+        }
         
         ctx.stroke();
         ctx.setLineDash([]);
-
-        <% w = 3 %>
-        <% r = 0 %>
-        <% previousr = r %>
-        <% h = 450 %>
         
+        var w = W_internal_offset;
+        var r = 0;
+        var previousr = r;
+        var h = H_size;
+
         ctx.beginPath();
         ctx.lineWidth = 2.5;
         ctx.fillStyle = (is_dark ? 'black' : 'white');
         ctx.strokeStyle = (is_dark ? 'black' : 'white');
-        ctx.moveTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
+        ctx.moveTo(W_offset + w, H_offset + h);
 
         // De gauche vers la droite : on trace le graphe
-        <% actperday.reverse.each do |a| %>
-          <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-          <% r = previousr + a[:pt] %>
-          <% previousr = r %>
-          <% h = 450 - 450*(r/maxi) %>
-          ctx.lineTo(pct*<%= 50+w %>, pct*<%= h+5 %>);
-        <% end %>
+        for (let j = graph_int_times.length - 1; j >= 0; j--) {
+          w = W_internal_offset + W_internal_size * (graph_int_times[j] - first) / (last - first);
+          r = previousr + graph_points[j];
+          previousr = r;
+          h = H_size - H_size * (r / maxi);
+          ctx.lineTo(W_offset + w, H_offset + h);
+        }
         
         ctx.stroke();
         
-        <% w = 3 %>
-        <% r = 0 %>
-        <% previousr = r %>
-        <% h = 450 %>
+        w = W_internal_offset;
+        r = 0;
+        previousr = r;
+        h = H_size;
         
         // De gauche vers la droite : on met les points
-        <% actperday.reverse.each do |a| %>
-          <% w = 3 + 800*(a[:time].to_time.to_i - first)/(last-first) %>
-          <% r = previousr + a[:pt] %>
-          <% previousr = r %>
-          <% h = 450 - 450*(r/maxi) %>  
-          ctx.beginPath();      
-          ctx.arc(pct*<%= 50+w %>, pct*<%= h+5 %>, 3, 0, 2 * Math.PI, true);
+        for (let j = graph_int_times.length - 1; j >= 0; j--) {
+          w = W_internal_offset + W_internal_size * (graph_int_times[j] - first) / (last - first);
+          r = previousr + graph_points[j];
+          previousr = r;
+          h = H_size - H_size * (r / maxi);
+          ctx.beginPath(); 
+          ctx.arc(W_offset + w, H_offset + h, 3, 0, 2 * Math.PI, true);
           ctx.fill();
-        <% end %>
+        }
         
         // Contour du canvas
         ctx.beginPath();
-        ctx.rect(pct*50, pct*5, pct*806, pct*450);
+        ctx.rect(W_offset, H_offset, W_size, H_size);
         ctx.lineWidth = 2;
         ctx.strokeStyle = (is_dark ? 'white' : 'black');
         ctx.stroke();
@@ -813,9 +835,15 @@
       <% last_month = count_by_month_int.first[0] %>
       <% max_num_corr = 0 %>
       <% count_by_month_int.each { |k, v| first_month = [first_month, k].min; last_month = [last_month, k].max; max_num_corr = [max_num_corr, v].max} %>
-      <% num_corr_by_month = Array.new(last_month-first_month+1, 0) %>
-      <% count_by_month_int.each { |k, v| num_corr_by_month[k-first_month] = v } %>
       <% num_months = last_month - first_month + 1 %>
+      <% num_corr_by_month = Array.new(num_months, 0) %>
+      <% count_by_month_int.each { |k, v| num_corr_by_month[k-first_month] = v } %>
+      <% months = Array.new(num_months, 0) %>
+      <% for i in (first_month..last_month) do %>
+        <% month = (i % 12 + 1) %>
+        <% year = (i - month + 1)/12 %>
+        <% months[i-first_month] = "#{0 if month < 10}#{month}/#{year-2000}" %>
+      <% end %>
       
       <% maxi = (max_num_corr*1.1).ceil %>
       
@@ -828,9 +856,13 @@
       </div>
       </center>
 
-      <script type="text/javascript">
-      
+      <script type="text/javascript">      
         function respondCanvasCorr(){
+          var months = <%= ruby_to_javascript_string(months) %>;
+          var num_corr_by_month = <%= ruby_to_javascript(num_corr_by_month) %>;
+          var num_months = <%= num_months %>;
+          var maxi = <%= maxi %>;
+        
           // Check light or dark theme
           var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
@@ -839,85 +871,99 @@
           var ctx = c.getContext('2d');
           var container = c.parentElement;
           
+          var W = 900.0;
+          var H = 480.0;
+          
           c.setAttribute('width', container.offsetWidth); //max width
-          c.setAttribute('height', 480*container.offsetWidth/900.0); //max height
+          c.setAttribute('height', H * container.offsetWidth / W); //max height
 
-          container.style.height = 480*container.offsetWidth/900.0 + "px"
+          container.style.height = H * container.offsetWidth / W + "px"
 
           // Draw content
 
-          var pct = c.offsetWidth/900.0;
-          
+          var pct = c.offsetWidth / W;
+          var W_real = pct * W;
+          var H_real = pct * H;
+          var W_offset = 50;
+          var H_offset = 5;
+          var W_size = W_real - W_offset - 50;
+          var H_size = H_real - H_offset - 20;
+
+
           ctx.beginPath();
-          ctx.rect(pct*50, pct*5, pct*806, pct*450);
+          ctx.rect(W_offset, H_offset, W_size, H_size);
           ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
           ctx.fill();
           ctx.lineWidth = 1;
           ctx.strokeStyle = (is_dark ? 'white' : 'black');
           ctx.stroke();
           
-          // Entre 50 et 856 --> largeur totale 806, à diviser en num_months
-          <% rect_width = 806.0/num_months %>
+          var rect_width = W_size / num_months;
           
-          <% for i in (first_month..last_month) do %>
-            <% n = i - first_month %>
-            ctx.beginPath();
-            ctx.rect(pct*<%= 50+n*rect_width %>, pct*455, pct*<%= rect_width %>, -pct*<%= (450.0*num_corr_by_month[n])/maxi %>);
-            ctx.fillStyle = (is_dark ? '<%= user_color_dark %>' : '<%= user_color_light %>');
-            ctx.fill();
-            ctx.stroke();
-          <% end %>
+          ctx.beginPath();
+          ctx.fillStyle = (is_dark ? '<%= user_color_dark %>' : '<%= user_color_light %>');
+          for (let i = 0; i < num_months; i++) {
+            ctx.rect(W_offset + i * rect_width, H_offset + H_size, rect_width, - H_size * num_corr_by_month[i] / maxi);
+          }
+          ctx.fill();
+          ctx.stroke();
           
-          ctx.font="12px Arial";
+          ctx.font = "12px Arial";
           ctx.fillStyle = (is_dark ? 'white' : 'black');
           ctx.textAlign = 'center';
           
-          <% last_date_x = -100 %>
-          if (pct > 0.7){
-            <% for i in (first_month..last_month) do %>
-              <% n = i - first_month %>
-              <% date_x = 50+(n+0.5)*rect_width %>
-              <% if date_x > last_date_x + 50 %>
-                <% month = (i % 12 + 1) %>
-                <% year = (i - month + 1)/12 %>
-                ctx.fillText("<%= "#{0 if month < 10}#{month}/#{year-2000}" %>", pct*<%= date_x %>, pct*471);
-                <% last_date_x = date_x %>
-              <% end %>
-            <% end %>
+          ctx.beginPath();
+          var last_date_x = -100;
+          for (let i = 0; i < num_months; i++) {
+            var date_x = W_offset + (i + 0.5) * rect_width;
+            if (date_x > last_date_x + 55) {
+              ctx.moveTo(date_x, H_offset + H_size);
+              ctx.lineTo(date_x, H_offset + H_size + 2);
+              ctx.fillText(months[i], date_x, H_offset + H_size + 15);
+              last_date_x = date_x;
+            }
           }
+          ctx.stroke();
           
-          if (pct > 0.7){
-            ctx.textAlign = 'right';
-            <% i = max_num_corr %>
-            <% step = max_num_corr / 10 %>
-            <% fac = 1 %>
-            <% while step >= 10 %>
-              <% fac = fac * 10 %>
-              <% step = step / 10 %>
-            <% end %>
-            <% if step < 1 %>
-              <% step = 1 %>
-            <% elsif step < 2 %>
-              <% step = 2 %>
-            <% elsif step < 5 %>
-              <% step = 5 %>
-            <% else %>
-              <% step = 10 %>
-            <% end %>
-            <% step = step * fac %>
-            <% while(i > 0) %>
-              ctx.fillText("<%= i %>", pct*43,pct*(<%= 455-450*i/maxi %>+4));
-              <% i = i - step %>
-              <% mod = i % step %>
-              <% if mod != 0 %>
-                <% i = i + step - mod %>
-                <% if mod < step * 0.2 %> 
-                  <% i = i - step %>
-                <% end %>
-              <% end %>
-            <% end %>
+          ctx.textAlign = 'right';
+          <% step = max_num_corr / 10 %>
+          <% fac = 1 %>
+          <% while step >= 10 %>
+            <% fac = fac * 10 %>
+            <% step = step / 10 %>
+          <% end %>
+          <% if step < 1 %>
+            <% step = 1 %>
+          <% elsif step < 2 %>
+            <% step = 2 %>
+          <% elsif step < 5 %>
+            <% step = 5 %>
+          <% else %>
+            <% step = 10 %>
+          <% end %>
+          <% step = step * fac %>
+          var i = <%= max_num_corr %>;
+          var step = <%= step %>;
+          var lasth = - H_size;
+          ctx.beginPath();
+          while (i > 0) {
+            var h = H_size - H_size * i / maxi;
+            if (h > lasth + 20) {
+              ctx.fillText(i.toString(), W_offset - 7, H_offset + h + 4);
+              ctx.moveTo(W_offset, H_offset + h);
+              ctx.lineTo(W_offset - 2, H_offset + h);
+              lasth = h;
+            }
+            i = i - step;
+            mod = i % step;
+            if (mod != 0) {
+              i = i + step - mod
+              if (mod < step * 0.2) {
+                i = i - step;
+              }
+            }
           }
-          
+          ctx.stroke();       
         }
 
         window.addEventListener("resize", () => {
