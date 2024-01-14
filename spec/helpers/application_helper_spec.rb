@@ -40,4 +40,13 @@ describe ApplicationHelper do
       expect(msg).to include(error2)
     end
   end
+  
+  describe "ruby to javascript" do
+    let!(:array_of_int) { [3, 4, 5, 6, 0] }
+    let!(:array_of_string) { ["Belgique", "France", "Maroc"] }
+    it do
+      expect(ruby_to_javascript(array_of_int)).to eq("[3,4,5,6,0]")
+      expect(ruby_to_javascript_string(array_of_string)).to eq("['Belgique','France','Maroc']")
+    end
+  end
 end
