@@ -24,9 +24,11 @@
     <td>
     <% s.source.split(' ').each do |w| %>
       <% if w.index("http") == 0 %>
-        <%= link_to w, w, target: "_blank" %>
+        <% url_shortened = (w.size > 40 ? w[0,37] + "..." : w) %>
+        <%= link_to url_shortened, w, target: "_blank" %>
       <% elsif w.index("www") == 0 %>
-        <%= link_to w, "http://" + w, target: "_blank" %>
+        <% url_shortened = (w.size > 40 ? w[0,37] + "..." : w) %>
+        <%= link_to url_shortened, "http://" + w, target: "_blank" %>
       <% else %>
         <%= w %>
       <% end %>
