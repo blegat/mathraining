@@ -684,7 +684,7 @@
           <% if i > 1 %>
             <% haut = [1 - (n.pt / maxi), 0].max %>
             <% if haut > 0 %>
-              if (H_size * <%= haut %> < prec - 20){
+              if (H_size * <%= haut %> < prec - 15){
                 ctx.fillStyle = (is_dark ? 'white' : 'black');
                 ctx.fillText(<%= n.pt %>, W_offset - 6, H_offset + H_size * <%= haut %> + 5);
                 prec = H_size * <%= haut %>;
@@ -948,7 +948,7 @@
           ctx.beginPath();
           while (i > 0) {
             var h = H_size - H_size * i / maxi;
-            if (h > lasth + 20) {
+            if (h > lasth + 15) {
               ctx.fillText(i.toString(), W_offset - 7, H_offset + h + 4);
               ctx.moveTo(W_offset, H_offset + h);
               ctx.lineTo(W_offset - 2, H_offset + h);

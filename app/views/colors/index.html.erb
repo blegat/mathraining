@@ -4,7 +4,7 @@
 
 <% i = 1 %>
 
-<table>
+<table class="mb-3">
   <tr><th></th><th class="p-1">Seuil</th><th class="p-1">Nom</th><th class="p-1">Nom féminin</th><th class="p-1">Couleur</th><th></th><th></th></tr>
   <% Color.order(:pt).each do |c| %>
     <tr>
@@ -34,72 +34,109 @@
 
 </table>
 
-<br/><br/>
 
 <!-- Graphique pour visualiser les couleurs -->
-
 <center>
-  <div style="width:850px; height:450px; position:relative;">
-    <canvas id="myCanvas" width="806" height="450" style="position:absolute; left:30px; top: 0px;">
-      Votre navigateur ne supporte pas les canvas.
+  <div style="width:100%; max-width:900px; height:480px; position:relative; display:block;">
+    <canvas id="myCanvas" width="900" height="480" style="position:absolute; left:0px; top:0px;">
+    Votre navigateur ne supporte pas les canvas.
     </canvas>
-
-    <% @niveaux = Color.order(:pt).all %>
-
-    <% nombrelevel = 0 %>
-    <% maxi = 0 %>
-
-    <% @niveaux.each do |n| %>
-      <% maxi = 1 + n.pt * 1.2 %>
-      <% nombrelevel = nombrelevel+1 %>
-    <% end %>
-
-    <% i = 1 %>
-
-    <% prec = 2000 %>
-
-    <% @niveaux.each do |n| %>
-      <% if i > 1 %>
-        <% haut = [450 - 450*(n.pt/maxi), 0].max %>
-        <% if haut > 0 %>
-          <% if haut < prec - 12 %>
-            <div class="text-right" style="position:absolute; top:<%= haut-8 %>px; right:828px; width:30px;"><%= n.pt %></div>
-            <% prec = haut %>
-          <% end %>
-        <% end %>
-      <% end %>
-      <% i = i+1 %>
-    <% end %>
-
   </div>
 </center>
 
-<script>
-var c=document.getElementById("myCanvas");
-var ctx=c.getContext("2d");
+<% @niveaux = Color.order(:pt).all %>
 
-<% i = 1 %>
+<% nombrelevel = 0 %>
+<% maxi = 0 %>
+
 <% @niveaux.each do |n| %>
-  <% if i == nombrelevel %>
-    <% bas = [450 - 450*(n.pt/maxi), 0].max %>
-    <% haut = 0 %>
-  <% else %>
-    <% bas = [450 - 450*(n.pt/maxi), 0].max %>
-    <% haut = [450 - 450*(@niveaux[i].pt/maxi), 0].max %>
-  <% end %>
-  <% if bas > haut %>
-    ctx.beginPath();
-    ctx.rect(0, <%= haut %>, 806, <%= bas - haut %>);
-    ctx.fillStyle = '<%= n.color %>';
-    ctx.fill();
-  <% end %>
-  <% i = i+1 %>
+  <% maxi = 1 + n.pt * 1.2 %>
+  <% nombrelevel = nombrelevel + 1 %>
 <% end %>
 
-// Contour du canvas
-ctx.beginPath();
-ctx.rect(1*0, 1*0, 1*806, 1*450);
-ctx.lineWidth = 2;
-ctx.strokeStyle = 'black';
-ctx.stroke();
+<script type="text/javascript">
+  function respondCanvas(){
+    // Check light or dark theme
+    var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+
+    // Get the canvas & context
+    var c = document.getElementById('myCanvas');
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    var W = 900.0;
+    var H = 480.0;
+    
+    c.setAttribute('width', container.offsetWidth); //max width
+    c.setAttribute('height', H * container.offsetWidth / W); //max height
+
+    container.style.height = H * container.offsetWidth / W + "px"
+
+    // Draw content
+
+    var pct = c.offsetWidth / W;
+    var W_real = pct * W;
+    var H_real = pct * H;
+    var W_offset = 50;
+    var H_offset = 5;
+    var W_size = W_real - W_offset - 50;
+    var H_size = H_real - H_offset - 5;
+
+
+    // Affichage des niveaux avec couleurs
+    ctx.font = "14px Arial";
+    ctx.textAlign = 'right';
+    <% i = 1 %>
+    var prec = 1000;
+    <% @niveaux.each do |n| %>
+    
+      // Points à gauche du graphique
+      <% if i > 1 %>
+        <% haut = [1 - (n.pt / maxi), 0].max %>
+        <% if haut > 0 %>
+          if (H_size * <%= haut %> < prec - 15){
+            ctx.fillStyle = (is_dark ? 'white' : 'black');
+            ctx.fillText(<%= n.pt %>, W_offset - 6, H_offset + H_size * <%= haut %> + 5);
+            prec = H_size * <%= haut %>;
+          }
+        <% end %>
+      <% end %>
+
+      // Calcul du bas et du haut
+      <% if i == nombrelevel %>
+        <% bas = [1 - (n.pt / maxi), 0].max %>
+        <% haut = 0 %>
+      <% else %>
+        <% bas = [1 - (n.pt / maxi), 0].max %>
+        <% haut = [1 - (@niveaux[i].pt / maxi), 0].max %>
+      <% end %>
+      
+      // Affichage du rectangle
+      <% if bas > haut %>
+        ctx.beginPath();
+        ctx.rect(W_offset, H_offset + H_size * <%= haut %>, W_size, H_size * <%= bas - haut %>);
+        ctx.fillStyle = '<%= n.color %>';
+        ctx.fill();
+      <% end %>
+      <% i = i+1 %>
+    <% end %>
+    
+    // Contour du canvas
+    ctx.beginPath();
+    ctx.rect(W_offset, H_offset, W_size, H_size);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = (is_dark ? 'white' : 'black');
+    ctx.stroke();
+  }
+
+  window.addEventListener("resize", () => {
+    respondCanvas();
+  });
+  
+  window.addEventListener("theme-change", () => {
+    respondCanvas();
+  });
+  
+  respondCanvas();
+
 </script>

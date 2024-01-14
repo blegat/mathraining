@@ -60,7 +60,7 @@ Votre navigateur ne supporte pas les canvas.
     var W_offset = 30;
     var H_offset = 5;
     var W_size = W_real - W_offset - 30;
-    var H_size = H_real - H_offset - 30;
+    var H_size = H_real - H_offset - 20;
     var W_step = W_size / (maxScore + 1);
     var H_step = (0.8 * H_size) / maxNum;
     if (maxNum > 16) {
@@ -75,8 +75,6 @@ Votre navigateur ne supporte pas les canvas.
     ctx.strokeStyle = (is_dark ? 'white' : 'black');
     ctx.stroke();
     
-    // Entre 50 et 856 --> largeur totale 806, à diviser en num_points
-    
     var medal_color = ["#9999FF", "#FF70B7", "#DF7F32", "#C4C4C4", "#FFD700"];
     var num_by_medal = [<%= ruby_to_javascript(num_by_medal[0]) %>, <%= ruby_to_javascript(num_by_medal[1]) %>, <%= ruby_to_javascript(num_by_medal[2]) %>, <%= ruby_to_javascript(num_by_medal[3]) %>, <%= ruby_to_javascript(num_by_medal[4]) %>];
     for (let score = 1; score <= maxScore; score++) {
@@ -85,7 +83,7 @@ Votre navigateur ne supporte pas les canvas.
         var k = 4-j;
         ctx.fillStyle = medal_color[k];
         if (num_by_medal[k][score] > 0) {
-          v = num_by_medal[k][score]
+          var v = num_by_medal[k][score]
           ctx.beginPath();
           ctx.rect(W_offset + W_step * score, H_offset + H_size - H_step * start, W_step, - H_step * v);
           ctx.fill();
@@ -102,7 +100,7 @@ Votre navigateur ne supporte pas les canvas.
     ctx.textAlign = 'center';
     
     var W_last = W_real * 2;
-    for (let i = maxScore; i >= 0; i -= 7) {
+    for (let i = maxScore; i > 0; i -= 7) {
       var W_cur = W_offset + W_step * (i + 0.5);
       if (W_cur < W_last - 20) {
         ctx.moveTo(W_cur, H_offset + H_size);

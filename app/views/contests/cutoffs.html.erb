@@ -110,113 +110,138 @@ Votre navigateur ne supporte pas les canvas.
 
 <script type="text/javascript">
   function respondCanvas(){
-  // Check light or dark theme
-  var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
-  
-  // Get the canvas & context
-  var c = document.getElementById('myCanvas');
-  var ctx = c.getContext('2d');
-  var container = c.parentElement;
-  
-  c.setAttribute('width', container.offsetWidth); //max width
-  c.setAttribute('height', 280*container.offsetWidth/900.0); //max height
+    // Check light or dark theme
+    var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+    
+    // Get the canvas & context
+    var c = document.getElementById('myCanvas');
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    var W = 900.0;
+    var H = 280.0;
+    
+    c.setAttribute('width', container.offsetWidth); //max width
+    c.setAttribute('height', H * container.offsetWidth / W); //max height
 
-  container.style.height = 280*container.offsetWidth/900.0 + "px"
+    container.style.height = H * container.offsetWidth / W + "px"
 
-  // Draw content
+    // Draw content
+      
+    var maxScore = <%= num_points %>;
+    var maxNum = <%= num_all.max %>;
 
-  var pct = c.offsetWidth/900.0;
-  
-  ctx.beginPath();
-  ctx.rect(pct*50, pct*5, pct*806, pct*250);
-  ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
-  ctx.fill();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = (is_dark ? 'white' : 'black');
-  ctx.stroke();
-  
-  var gold_cutoff = document.getElementById('gold_cutoff').value;
-  var silver_cutoff = document.getElementById('silver_cutoff').value;
-  var bronze_cutoff = document.getElementById('bronze_cutoff').value;
-  
-  var real_num_gold = 0;
-  var real_num_gold_silver = 0;
-  var real_num_gold_silver_bronze = 0;
-  
-  // Entre 50 et 856 --> largeur totale 806, à diviser en num_points
-  
-  <% medal_color = ["", "#9999FF", "#DF7F32", "#C4C4C4", "#FFD700"] %>
-  <% (1..num_points).each do |i| %>
-    <% if num_all[i] > 0 %>
-      <% size = (240*num_all[i])/maxi.to_f %>
-      ctx.beginPath();
-      ctx.rect(pct*<%= 50+((806*(i-1))/num_points.to_f) %>, pct*255, pct*<%= (806/num_points.to_f) %>, -pct*<%= size %>);
-      if     (<%= i %> >= gold_cutoff)   { ctx.fillStyle = '#FFD700'; }
-      else if(<%= i %> >= silver_cutoff) { ctx.fillStyle = '#C4C4C4'; }
-      else if(<%= i %> >= bronze_cutoff) { ctx.fillStyle = '#DF7F32'; }
-      else                               { ctx.fillStyle = '#9999FF'; }
-      ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'black';
-      ctx.stroke();
-      if (<%= i %> >= gold_cutoff)   { real_num_gold += <%= num_all[i] %>; }
-      if (<%= i %> >= silver_cutoff) { real_num_gold_silver += <%= num_all[i] %>; }
-      if (<%= i %> >= bronze_cutoff) { real_num_gold_silver_bronze += <%= num_all[i] %>; }
-    <% end %>
-  <% end %>
-  
-  document.getElementById('real_num_gold').innerHTML = real_num_gold;
-  document.getElementById('real_num_gold_silver').innerHTML = real_num_gold_silver;
-  document.getElementById('real_num_gold_silver_bronze').innerHTML = real_num_gold_silver_bronze;
-  
-  var percent_gold = Math.round((real_num_gold - <%= ideal_num_gold %>)*100.0 / <%= ideal_num_gold %>)
-  if (percent_gold != 0) {
-    document.getElementById('diff_gold').innerHTML = (percent_gold > 0 ? "+" : "") + percent_gold + "%"
-  }
-  else {
-    document.getElementById('diff_gold').innerHTML = "="
-  }
-  document.getElementById('diff_gold').style.color = (percent_gold >= 0 ? "green" : "red");
-  
-  var percent_gold_silver = Math.round((real_num_gold_silver - <%= ideal_num_gold_silver %>)*100.0 / <%= ideal_num_gold_silver %>)
-  if (percent_gold_silver != 0) {
-    document.getElementById('diff_gold_silver').innerHTML = (percent_gold_silver > 0 ? "+" : "") + percent_gold_silver + "%"
-  }
-  else {
-    document.getElementById('diff_gold_silver').innerHTML = "="
-  }
-  document.getElementById('diff_gold_silver').style.color = (percent_gold_silver >= 0 ? "green" : "red");
-  
-  var percent_gold_silver_bronze = Math.round((real_num_gold_silver_bronze - <%= ideal_num_gold_silver_bronze %>)*100.0 / <%= ideal_num_gold_silver_bronze %>)
-  if (percent_gold_silver_bronze != 0) {
-    document.getElementById('diff_gold_silver_bronze').innerHTML = (percent_gold_silver_bronze > 0 ? "+" : "") + percent_gold_silver_bronze + "%"
-  }
-  else {
-    document.getElementById('diff_gold_silver_bronze').innerHTML = "="
-  }
-  document.getElementById('diff_gold_silver_bronze').style.color = (percent_gold_silver_bronze >= 0 ? "green" : "red");
-  
-  ctx.font="12px Arial";
-  ctx.fillStyle = 'black';
-  ctx.textAlign = 'center';
-  
-  if(pct > 0.6)
-  {
-    <% (1..nb_prob).each do |i| %>
-    ctx.fillText("<%= 7*i %>",pct*<%= 50+((806*(i*7-0.5))/num_points.to_f) %>,pct*265+7);
-    <% end %>
-  }
-  
-  ctx.textAlign = 'right';
-  <% i = maxi - 1 %>
-  <% step = 1 %>
-  <% while i/step > 12 %>
-    <% step += 1 %>
-  <% end %>
-  <% while(i > 0) %>
-    ctx.fillText("<%= i %>", pct*44 -4,pct*(<%= 255-240*i/maxi %>+4));
-    <% i = i - step %>
-  <% end %>
+    var pct = c.offsetWidth / W;
+    var W_real = pct * W;
+    var H_real = pct * H;
+    var W_offset = 30;
+    var H_offset = 5;
+    var W_size = W_real - W_offset - 30;
+    var H_size = H_real - H_offset - 20;
+    var W_step = W_size / (maxScore + 1);
+    var H_step = (0.8 * H_size) / maxNum;
+    if (maxNum > 16) {
+      H_step = (0.95 * H_size) / (maxNum + 3);
+    }
+    
+    ctx.beginPath();
+    ctx.rect(W_offset, H_offset, W_size, H_size);
+    ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = (is_dark ? 'white' : 'black');
+    ctx.stroke();
+    
+    var gold_cutoff = document.getElementById('gold_cutoff').value;
+    var silver_cutoff = document.getElementById('silver_cutoff').value;
+    var bronze_cutoff = document.getElementById('bronze_cutoff').value;
+    
+    var real_num_gold = 0;
+    var real_num_gold_silver = 0;
+    var real_num_gold_silver_bronze = 0;
+    
+    var num_all = <%= ruby_to_javascript(num_all) %>;
+    for (let score = 1; score <= maxScore; score++) {
+      if (num_all[score] > 0) {
+        var v = num_all[score];
+        ctx.beginPath();
+        ctx.rect(W_offset + W_step * score, H_offset + H_size, W_step, - H_step * v);
+        if      (score >= gold_cutoff)   { ctx.fillStyle = '#FFD700'; }
+        else if (score >= silver_cutoff) { ctx.fillStyle = '#C4C4C4'; }
+        else if (score >= bronze_cutoff) { ctx.fillStyle = '#DF7F32'; }
+        else                             { ctx.fillStyle = '#9999FF'; }
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = (is_dark ? 'white' : 'black');
+        ctx.stroke();
+        if (score >= gold_cutoff)   { real_num_gold += num_all[score]; }
+        if (score >= silver_cutoff) { real_num_gold_silver += num_all[score]; }
+        if (score >= bronze_cutoff) { real_num_gold_silver_bronze += num_all[score]; }
+      }
+    }
+    
+    document.getElementById('real_num_gold').innerHTML = real_num_gold;
+    document.getElementById('real_num_gold_silver').innerHTML = real_num_gold_silver;
+    document.getElementById('real_num_gold_silver_bronze').innerHTML = real_num_gold_silver_bronze;
+    
+    var percent_gold = Math.round((real_num_gold - <%= ideal_num_gold %>)*100.0 / <%= ideal_num_gold %>)
+    if (percent_gold != 0) {
+      document.getElementById('diff_gold').innerHTML = (percent_gold > 0 ? "+" : "") + percent_gold + "%"
+    }
+    else {
+      document.getElementById('diff_gold').innerHTML = "="
+    }
+    document.getElementById('diff_gold').style.color = (percent_gold >= 0 ? "green" : "red");
+    
+    var percent_gold_silver = Math.round((real_num_gold_silver - <%= ideal_num_gold_silver %>)*100.0 / <%= ideal_num_gold_silver %>)
+    if (percent_gold_silver != 0) {
+      document.getElementById('diff_gold_silver').innerHTML = (percent_gold_silver > 0 ? "+" : "") + percent_gold_silver + "%"
+    }
+    else {
+      document.getElementById('diff_gold_silver').innerHTML = "="
+    }
+    document.getElementById('diff_gold_silver').style.color = (percent_gold_silver >= 0 ? "green" : "red");
+    
+    var percent_gold_silver_bronze = Math.round((real_num_gold_silver_bronze - <%= ideal_num_gold_silver_bronze %>)*100.0 / <%= ideal_num_gold_silver_bronze %>)
+    if (percent_gold_silver_bronze != 0) {
+      document.getElementById('diff_gold_silver_bronze').innerHTML = (percent_gold_silver_bronze > 0 ? "+" : "") + percent_gold_silver_bronze + "%"
+    }
+    else {
+      document.getElementById('diff_gold_silver_bronze').innerHTML = "="
+    }
+    document.getElementById('diff_gold_silver_bronze').style.color = (percent_gold_silver_bronze >= 0 ? "green" : "red");
+    
+    ctx.beginPath();
+    
+    ctx.font = "12px Arial";
+    ctx.fillStyle = (is_dark ? 'white' : 'black');
+    ctx.textAlign = 'center';
+    
+    var W_last = W_real * 2;
+    for (let i = maxScore; i > 0; i -= 7) {
+      var W_cur = W_offset + W_step * (i + 0.5);
+      if (W_cur < W_last - 20) {
+        ctx.moveTo(W_cur, H_offset + H_size);
+        ctx.lineTo(W_cur, H_offset + H_size + 2);
+        ctx.fillText(i.toString(), W_cur, H_offset + H_size + 15);
+        W_last = W_cur;
+      }
+    }
+    
+    ctx.textAlign = 'right';
+    
+    var H_last = -H_real;
+    for (let i = maxNum; i >= 0; i--) {
+      var H_cur = H_offset + H_size - H_step * i;
+      if (H_cur > H_last + 20) {
+        ctx.moveTo(W_offset, H_cur);
+        ctx.lineTo(W_offset - 2, H_cur);
+        ctx.fillText(i.toString(), W_offset - 6, H_cur + 4);
+        H_last = H_cur;
+      }
+    }
+    
+    ctx.stroke();
   }
 
   window.addEventListener("resize", () => {
