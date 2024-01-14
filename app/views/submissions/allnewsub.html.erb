@@ -113,18 +113,28 @@ Votre navigateur ne supporte pas les canvas.
     var ctx = c.getContext('2d');
     var container = c.parentElement;
     
+    var W = 900.0;
+    var H = 280.0;
+    
     c.setAttribute('width', container.offsetWidth); //max width
-    c.setAttribute('height', 280*container.offsetWidth/900.0); //max height
+    c.setAttribute('height', H * container.offsetWidth / W); //max height
 
-    container.style.height = 280*container.offsetWidth/900.0 + "px"
+    container.style.height = H * container.offsetWidth / W + "px";
 
     // Draw content
 
-    var pct = c.offsetWidth/900.0;
+    var pct = c.offsetWidth / W;
+    var W_real = pct * W;
+    var H_real = pct * H;
+    var W_offset = 50;
+    var H_offset = 5;
+    var W_size = W_real - W_offset - 50;
+    var H_size = H_real - H_offset - 20;
+    var W_internal_size = W_size - 6
     
     // Rectangle et fond blanc
     ctx.beginPath();
-    ctx.rect(pct*50, pct*5, pct*806, pct*250);
+    ctx.rect(W_offset, H_offset, W_size, H_size);
     ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
     ctx.fill(); 
     
@@ -133,55 +143,45 @@ Votre navigateur ne supporte pas les canvas.
     ctx.stroke();  
     
     // Labels axe des X
-    ctx.font="12px Arial";
+    ctx.font = "12px Arial";
     ctx.fillStyle = (is_dark ? 'white' : 'black');
     ctx.textAlign = 'center';
     
     ctx.setLineDash([10, 10]);
     ctx.beginPath();
     
-    if(pct > 0.6)
-    {
-      <% d = date_end %>
-      <% num_days = 0 %>
-      <% while(d > date_begin - 1.minute) %>
-        <% ratio = (d - date_begin)/(date_end - date_begin) %>
-        ctx.fillText("J-<%= num_days %>",pct*<%= 50+(800*ratio) %>,pct*265+7);
-        <% num_days = num_days + 1 %>
-        <% d = date_end - (num_days).days %>
-      <% end %>
-    }
+    <% d = date_end %>
+    <% num_days = 0 %>
+    <% while (d > date_begin - 1.minute) %>
+      <% ratio = (d - date_begin)/(date_end - date_begin) %>
+      ctx.fillText("J-<%= num_days %>", W_offset + W_internal_size * <%= ratio %>, H_offset + H_size + 15);
+      <% num_days = num_days + 1 %>
+      <% d = date_end - (num_days).days %>
+    <% end %>
     
-    // Barres horizontales (et labels axe des Y)
-    if (pct < 0.7)
-    {
-      ctx.font="9px Arial";
-    }
-    
+    // Barres horizontales (et labels axe des Y)    
     ctx.textAlign = 'right';
     ctx.lineWidth = 1;
     ctx.strokeStyle = (is_dark ? '#bbbbbb' : 'grey');
     <% i = graph_maxi - 1 %>
     <% i_step = [(i/5.0).ceil, 1].max %>
-    <% while(i > 0) %>
-      haut = <%= 255-240*i/graph_maxi.to_f %>
-      ctx.moveTo(pct*50, pct*(haut));
-      ctx.lineTo(pct*856, pct*(haut));
-      ctx.fillText("<%= i %>", pct*44-2, pct*(haut+4));
+    <% while (i > 0) %>
+      haut = H_offset + H_size - H_size * <%= i / graph_maxi.to_f %>
+      ctx.moveTo(W_offset, haut);
+      ctx.lineTo(W_offset + W_size, haut);
+      ctx.fillText("<%= i %>", W_offset - 6, haut + 4);
       <% i = i - i_step %>
     <% end %>
     ctx.stroke();
     
-    // Graphique: entre 50 et 850 --> largeur totale 800, à diviser en num_intervals
-    
     ctx.beginPath();
-    ctx.moveTo(pct*850, pct*<%= 255 - 240*graph[num_intervals]/graph_maxi.to_f %>);
+    ctx.moveTo(W_offset + W_internal_size, H_offset + H_size - H_size * <%= graph[num_intervals] / graph_maxi.to_f %>);
     ctx.strokeStyle = 'orange';
     ctx.setLineDash([]);
     ctx.lineWidth = 2;
-    <% width_one_interval = 800.0 / num_intervals %>
+    var width_one_interval = W_internal_size / <%= num_intervals %>
     <% (r.first).downto(r.last).each do |i| %>
-      ctx.lineTo(pct*<%= 50+(i+1)*width_one_interval %>, pct*<%= 255 - 240*graph[i]/graph_maxi.to_f %>);
+      ctx.lineTo(W_offset + <%= (i+1) %> * width_one_interval, H_offset + H_size - H_size * <%= graph[i] / graph_maxi.to_f %>);
     <% end %>
     ctx.stroke() 
   }
