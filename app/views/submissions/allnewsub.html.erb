@@ -130,6 +130,7 @@ Votre navigateur ne supporte pas les canvas.
     var H_offset = 5;
     var W_size = W_real - W_offset - 50;
     var H_size = H_real - H_offset - 20;
+    var H_internal_size = H_size - 20;
     var W_internal_size = W_size - 6
     
     // Rectangle et fond blanc
@@ -166,7 +167,7 @@ Votre navigateur ne supporte pas les canvas.
     <% i = graph_maxi - 1 %>
     <% i_step = [(i/5.0).ceil, 1].max %>
     <% while (i > 0) %>
-      haut = H_offset + H_size - H_size * <%= i / graph_maxi.to_f %>
+      haut = H_offset + H_size - H_internal_size * <%= i / graph_maxi.to_f %>
       ctx.moveTo(W_offset, haut);
       ctx.lineTo(W_offset + W_size, haut);
       ctx.fillText("<%= i %>", W_offset - 6, haut + 4);
@@ -175,13 +176,13 @@ Votre navigateur ne supporte pas les canvas.
     ctx.stroke();
     
     ctx.beginPath();
-    ctx.moveTo(W_offset + W_internal_size, H_offset + H_size - H_size * <%= graph[num_intervals] / graph_maxi.to_f %>);
+    ctx.moveTo(W_offset + W_internal_size, H_offset + H_size - H_internal_size * <%= graph[num_intervals] / graph_maxi.to_f %>);
     ctx.strokeStyle = 'orange';
     ctx.setLineDash([]);
     ctx.lineWidth = 2;
     var width_one_interval = W_internal_size / <%= num_intervals %>
     <% (r.first).downto(r.last).each do |i| %>
-      ctx.lineTo(W_offset + <%= (i+1) %> * width_one_interval, H_offset + H_size - H_size * <%= graph[i] / graph_maxi.to_f %>);
+      ctx.lineTo(W_offset + <%= (i+1) %> * width_one_interval, H_offset + H_size - H_internal_size * <%= graph[i] / graph_maxi.to_f %>);
     <% end %>
     ctx.stroke() 
   }
