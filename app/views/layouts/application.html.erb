@@ -85,6 +85,15 @@
       </script>
     <% end %>
     <title><%= full_title(yield(:title)) %></title>
+    <script type="application/ld+json">
+      {
+        "@context" : "https://schema.org",
+        "@type" : "WebSite",
+        "name" : "Mathraining",
+        "url" : "https://www.mathraining.be/"
+      }
+    </script>
+
     <link rel="apple-touch-icon" sizes="57x57" href="/icon-57.png">
     <link rel="apple-touch-icon" sizes="76x76" href="/icon-76.png">
     <link rel="apple-touch-icon" sizes="120x120" href="/icon-120.png">
@@ -100,6 +109,9 @@
     <%= csrf_meta_tags %>
 
     <% # mathjax_tag %>
+    
+    <!-- For Google Search Console -->
+    <meta name="google-site-verification" content="hxNpvWtQioPx3-dn2C2-oTX1RVEvfkwXZrKrUz5FIIw" />
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%= javascript_importmap_tags %>
