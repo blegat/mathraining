@@ -179,12 +179,16 @@ Votre navigateur ne supporte pas les canvas.
     }
   
     ctx.textAlign = 'right';
+    var lasth = - H_size;
     var i = <%= maxi - 1 %>;
     while (i > 0) {
       var h = H_offset + H_size - H_internal_size * i / <%= maxi.to_f %>;
-      ctx.moveTo(W_offset, h);
-      ctx.lineTo(W_offset - 2, h);
-      ctx.fillText(i.toString(), W_offset - 6, h + 4);
+      if (h > lasth + 20) {
+        ctx.moveTo(W_offset, h);
+        ctx.lineTo(W_offset - 2, h);
+        ctx.fillText(i.toString(), W_offset - 6, h + 4);
+        lasth = h;
+      }
       i = i - 10;
     }
     ctx.stroke();
