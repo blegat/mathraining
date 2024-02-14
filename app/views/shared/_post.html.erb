@@ -22,7 +22,11 @@
       <b>Message automatique</b>
     <% end %>
   <% else %>
-    <b>Organisateurs</b>
+    <% if @contest.organizers.count == 1 %>
+      <%= raw(@contest.organizers.first.linked_name) %>
+    <% else %>
+      <b>Organisateurs</b>
+    <% end %>
   <% end %>
   </td>
 
@@ -41,7 +45,11 @@
       <b>Message automatique</b>
     <% end %>
   <% else %>
-    <b>Organisateurs</b>
+    <% if @contest.organizers.count == 1 %>
+      <%= raw(@contest.organizers.first.linked_name) %>
+    <% else %>
+      <b>Organisateurs</b>
+    <% end %>
   <% end %>
   </td></tr>
 
