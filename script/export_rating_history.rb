@@ -5,7 +5,7 @@ def export_rating_history
   x = 0
   last_user_id = User.ids.max
   f = File.open("./rating_history.csv", "w")
-  f.write("user id;user name;gender;registered")
+  f.write("user id;user name;gender;birth;registered")
   
   date_start = Date.new(2014, 12, 1)
   date_end = date_start + 1.month
@@ -17,7 +17,7 @@ def export_rating_history
       $history[x] = $history[x-1].dup
     end
     
-    Solvedquestion.joins(question: [{ chapter: :section }]).select("questions.level, solvedquestions.user_id").where("resolution_time >= ? AND resolution_time < ? AND sections.fondation = ? AND correct = ?", date_start, date_end, false, true).each do |sq|
+    Solvedquestion.joins(question: [{ chapter: :section }]).select("questions.level, solvedquestions.user_id").where("resolution_time >= ? AND resolution_time < ? AND sections.fondation = ?", date_start, date_end, false).each do |sq|
       $history[x][sq.user_id] = $history[x][sq.user_id] + 3 * sq.level
     end
     
@@ -31,8 +31,8 @@ def export_rating_history
   end
   
   f.write("\n")
-  User.select("id, sex, first_name, last_name, see_name, created_at").where("admin = ? AND active = ? AND rating > ?", false, true, 0).order(:id).each do |u|
-    f.write("#{u.id};#{u.name};#{u.sex == 0 ? 'M' : 'F'};#{u.created_at.day}/#{u.created_at.month}/#{u.created_at.year}")
+  User.select("id, sex, year, first_name, last_name, see_name, created_at").where("admin = ? AND active = ? AND rating > ?", false, true, 0).order(:id).each do |u|
+    f.write("#{u.id};#{u.name};#{u.sex == 0 ? 'M' : 'F'};#{u.year};#{u.created_at.day}/#{u.created_at.month}/#{u.created_at.year}")
     for i in 0..(x-1) do
       f.write(";#{$history[i][u.id]}")
     end
