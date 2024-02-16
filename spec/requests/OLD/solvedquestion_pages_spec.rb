@@ -39,6 +39,20 @@ describe "Solvedquestion pages" do
         end
       end
       
+      describe "and makes a very large guess" do
+        before do
+          fill_in "unsolvedquestion[guess]", with: 1234567890
+          click_button "Soumettre"
+          user.reload
+        end
+        specify do
+          expect(page).to have_error_message("Votre réponse est trop grande (en valeur absolue).")
+          expect(page).to have_no_content(exercise.explanation)
+          expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
+          expect(user.rating).to eq(rating_before)
+        end
+      end
+      
       describe "and makes a mistake" do
         before do
           fill_in "unsolvedquestion[guess]", with: exercise.answer + 1

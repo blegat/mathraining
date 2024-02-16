@@ -191,6 +191,12 @@ class UnsolvedquestionsController < ApplicationController
         return "skip"
       end
       
+      if guess.abs() > 1000000000
+        flash[:danger] = "Votre réponse est trop grande (en valeur absolue)."
+        redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+        return "skip"
+      end
+      
       @unsolvedquestion.nb_guess = (first_sub ? 1 : @unsolvedquestion.nb_guess + 1)
       @unsolvedquestion.guess = guess
       @unsolvedquestion.last_guess_time = DateTime.now
