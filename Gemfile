@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.0.0'
 
-gem 'rails', '= 7.0.7.1'
+gem 'rails', '7.0.8.1'
 
 #gem 'bootstrap-sass', '~> 3.4.1'
 gem 'bootstrap', '5.3'
