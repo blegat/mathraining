@@ -60,11 +60,20 @@
 <% end %>
 <% date_begin_for_test = date_begin - 2.days %>
 <% num_intervals = ((date_end - date_begin) / time_interval).ceil %>
-<% new_sub = Array.new(num_intervals, 0) %>
-<% new_cor = Array.new(num_intervals, 0) %>
+
+<% shifts = [0, 4, 8] %>
+
+<% new_sub = Array.new(3) %>
+<% new_cor = Array.new(3) %>
+
+<% (0..2).each do |i| %>
+  <% new_sub[i] = Array.new(num_intervals, 0) %>
+  <% new_cor[i] = Array.new(num_intervals, 0) %>
+<% end %>
 
 <% Submission.joins(:problem).select(:created_at, :intest, :problem_id, :user_id).where("visible = ? AND created_at > ? AND (intest = ? OR created_at > ?)", true, date_begin_for_test, true, date_begin).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
-  <% date_sub = s.created_at %>
+  <% date_created = s.created_at %>
+  <% date_sub = date_created %>
   <% if s.intest? %>
     <% p = s.problem %>
     <% t = p.virtualtest %>
@@ -73,23 +82,61 @@
   <% end %>
   <% if date_sub >= date_begin %>
     <% interval_id = [((date_sub - date_begin) / time_interval).floor, num_intervals-1].min %>
-    <% new_sub[interval_id] = new_sub[interval_id] + 1 %>
+    <% new_sub[0][interval_id] = new_sub[0][interval_id] + 1 %>
   <% end %>
 <% end %>
 
-<% Following.joins(submission: :problem).select("followings.created_at").where(:kind => :first_corrector).where("followings.created_at > ?", date_begin).where(section_condition).where("problems.level in (?)", levels).each do |f| %>
-  <% interval_id = [((f.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
-  <% new_cor[interval_id] = new_cor[interval_id] + 1 %>
+<% Submission.joins(:problem).select(:created_at, :problem_id).where("visible = ? AND created_at > ?", true, date_begin - (shifts.max).days).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
+  <% (1..2).each do |i| %>
+    <% threshold_date = s.created_at.in_time_zone.to_date + shifts[i] %>
+    <% threshold_time = threshold_date.in_time_zone.to_time + 1.second %>
+    <% if threshold_time >= date_begin %>
+      <% interval_id = ((threshold_time - date_begin) / time_interval).floor %>
+      <% if interval_id <= num_intervals-1 %>
+        <% new_sub[i][interval_id] = new_sub[i][interval_id] + 1 %>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>
 
-<% num_waiting_now = Submission.joins(:problem).where(:status => :waiting, :visible => true).where(section_condition).where("problems.level in (?)", levels).count %>
-<% graph = Array.new(num_intervals+1, 0) %>
-<% graph[num_intervals] = num_waiting_now %>
-<% r = (num_intervals-1)..0 %>
-<% (r.first).downto(r.last).each do |i| %>
-  <% graph[i] = graph[i+1] + new_cor[i] - new_sub[i] %>
+<% Following.joins(submission: :problem).select("followings.created_at, submissions.created_at AS sub_created_at").where(:kind => :first_corrector).where("followings.created_at > ?", date_begin).where(section_condition).where("problems.level in (?)", levels).each do |f| %>
+  <% interval_id = [((f.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
+  <% (0..2).each do |i| %>
+    <% threshold_date = f.sub_created_at.in_time_zone.to_date + shifts[i] %>
+    <% if threshold_date <= f.created_at.in_time_zone.to_date %>
+      <% new_cor[i][interval_id] = new_cor[i][interval_id] + 1 %>
+      <% threshold_time = threshold_date.in_time_zone.to_time + 1.second %>
+      <% if threshold_time >= date_begin %>
+        <% second_interval_id = [((threshold_time - date_begin) / time_interval).floor, num_intervals-1].min %>
+        <% new_sub[i][second_interval_id] = new_sub[i][second_interval_id] + 1 %>
+      <% end %>
+    <% else %>
+      <% break %>
+    <% end %>
+  <% end %>
 <% end %>
-<% graph_maxi = graph.max+1 %>
+
+<% num_waiting_now_by_date = Submission.joins(:problem).where(:status => :waiting, :visible => true).where(section_condition).where("problems.level in (?)", levels).group_by_day(:created_at).count %>
+
+<% r = (num_intervals-1)..0 %>
+
+<% graphs = Array.new(3) %>
+<% (0..2).each do |i| %>
+  <% date_limit = date_end.in_time_zone.to_date - shifts[i] %>
+  <% num_waiting_now = 0 %>
+  <% num_waiting_now_by_date.each do |date, n| %>
+    <% num_waiting_now += n if date <= date_limit %>
+  <% end %>
+
+  <% graphs[i] = Array.new(num_intervals+1, 0) %>
+  <% graphs[i][num_intervals] = num_waiting_now %>
+  <% (r.first).downto(r.last).each do |j| %>
+    <% graphs[i][j] = graphs[i][j+1] + new_cor[i][j] - new_sub[i][j] %>
+  <% end %>
+<% end %>
+<% graph_maxi = graphs[0].max+1 %>
+
+<% colors = ['green', 'orange', 'red'] %>
 
 <center>
 
@@ -175,16 +222,18 @@ Votre navigateur ne supporte pas les canvas.
     <% end %>
     ctx.stroke();
     
-    ctx.beginPath();
-    ctx.moveTo(W_offset + W_internal_size, H_offset + H_size - H_internal_size * <%= graph[num_intervals] / graph_maxi.to_f %>);
-    ctx.strokeStyle = 'orange';
-    ctx.setLineDash([]);
-    ctx.lineWidth = 2;
-    var width_one_interval = W_internal_size / <%= num_intervals %>
-    <% (r.first).downto(r.last).each do |i| %>
-      ctx.lineTo(W_offset + <%= (i+1) %> * width_one_interval, H_offset + H_size - H_internal_size * <%= graph[i] / graph_maxi.to_f %>);
+    <% (0..2).each do |i| %>
+      ctx.beginPath();
+      ctx.moveTo(W_offset + W_internal_size, H_offset + H_size - H_internal_size * <%= graphs[i][num_intervals] / graph_maxi.to_f %>);
+      ctx.strokeStyle = '<%= colors[i] %>';
+      ctx.setLineDash([]);
+      ctx.lineWidth = 2;
+      var width_one_interval = W_internal_size / <%= num_intervals %>
+      <% (r.first).downto(r.last).each do |j| %>
+        ctx.lineTo(W_offset + <%= (j+1) %> * width_one_interval, H_offset + H_size - H_internal_size * <%= graphs[i][j] / graph_maxi.to_f %>);
+      <% end %>
+      ctx.stroke()
     <% end %>
-    ctx.stroke() 
   }
 
   window.addEventListener("resize", () => {

@@ -58,7 +58,7 @@
 <td class="text-center" style="width:70px;">
 	<% if !show_num_waiting_days_from.empty? %>
 	  <% x = (today - s[show_num_waiting_days_from].in_time_zone.to_date).to_i %>
-	  <span class="<%= "fw-bold" if x >= 3 %> <%= "text-color-orange" if (x >= 5 and x < 7) %> <%= "text-color-red" if x >= 7 %>">J-<%= x %></span>
+	  <span class="<%= "fw-bold" if x >= 4 %> <%= "text-color-orange" if (x >= 4 and x <= 7) %> <%= "text-color-red" if x >= 8 %>">J-<%= x %></span>
 	<% else %>
 	  <%= image_tag s.icon, :class => "svg-black-white" %>
 	<% end %>
