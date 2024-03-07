@@ -134,6 +134,10 @@ class User < ActiveRecord::Base
   def self.allowed_special_characters
     Set[" ", "'", "-", "."]
   end
+  
+  def self.limit_waiting_submissions
+    return (Rails.env.production? ? 50 : 2)
+  end
 
   # Complete name (with only initial of last name if the user asked to)
   def name
@@ -179,13 +183,24 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Gives the number of submissions that the user can correct
+  # Returns [n, d], saying there are n submissions that the user can correct + all submissions of last d days
   def num_notifications_new(levels)
+    Groupdate.time_zone = false unless Rails.env.production?
+    x = {}
     if sk.admin
-      return Submission.joins(:problem).where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).count
+      x = Submission.joins(:problem).where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).group_by_day(:created_at).count
     elsif sk.corrector
-      return Submission.joins(:problem).where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id})").where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).count
+      x = Submission.joins(:problem).where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id})").where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).group_by_day(:created_at).count
     end
+    y = x.sort_by(&:first)
+    n = 0
+    y.each do |a|
+      n = n + a[1]
+      if n >= User.limit_waiting_submissions
+        return [n, (Date.today - a[0]).to_i]
+      end
+    end
+    return [n, 0]
   end
 
   # Gives the number of submissions with a new comment to read
