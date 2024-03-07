@@ -117,6 +117,7 @@
   <% end %>
 <% end %>
 
+<% Groupdate.time_zone = false unless Rails.env.production? %>
 <% num_waiting_now_by_date = Submission.joins(:problem).where(:status => :waiting, :visible => true).where(section_condition).where("problems.level in (?)", levels).group_by_day(:created_at).count %>
 
 <% r = (num_intervals-1)..0 %>

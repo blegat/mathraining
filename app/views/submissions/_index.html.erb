@@ -142,7 +142,7 @@ var showFalse = function() {
     </thead>
     <tbody>
       <% submissions.each do |s| %>
-        <%= render 'submissions/line', s: s %>
+        <%= render 'submissions/line', s: s, show_num_waiting_days_from: "created_at" %>
       <% end %>
     </tbody>
     </table>
