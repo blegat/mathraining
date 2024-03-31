@@ -4,7 +4,7 @@
 <h1>
 <table style="width:100%;">
 <tr><td>
-<%= title_2((link_to "Concours", contests_path), "Concours ##{@contest.number}") %>
+<%= title_2((link_to "Concours", contests_path), "Concours ##{@contest.number}#{dl_icon}") %>
 </td>
 
 <% if @signed_in %>
