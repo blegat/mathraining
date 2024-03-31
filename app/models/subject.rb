@@ -75,7 +75,7 @@ class Subject < ActiveRecord::Base
   validates :last_comment_time, presence: true
   validates :last_comment_user_id, presence: true
   
-  validates_with SponsorValidatorSub
+  validates_with SponsorValidatorSub, on: :create
   after_save :save_used_words
   
   # OTHER METHODS
