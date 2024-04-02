@@ -23,9 +23,6 @@
 <% end %>
 
 <% (1..5).each do |level| %>
-  <% if level > 1 %>
-    <%= render 'shared/sauces' %>
-  <% end %>
   <h3 class="<%= "mt-2" if level == 1 %>">Niveau <%= level %></h3>
   <% if problems_by_level[level].nil? %>
     <p>Aucun problème de niveau <%= level %> n'est disponible.</p>
@@ -84,7 +81,7 @@
       <% if p.virtualtest_id > 0 %>
         - Test #<%= p.virtualtest.number %>
       <% end %>
-      <%= "(en construction)" if !p.online %><%= dl_icon %></h4></center>
+      <%= "(en construction)" if !p.online %></h4></center>
       </td></tr>
       
       <tr><td class="real-content">

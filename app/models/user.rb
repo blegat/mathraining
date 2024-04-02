@@ -340,40 +340,14 @@ class User < ActiveRecord::Base
     goodname = self.name      if name_type == 0
     goodname = self.fullname  if name_type == 1
     goodname = self.shortname if name_type == 2
-    
-    img = ""
-    unless self.admin? or !self.active?
-      if self.level[:name] == "Tartare"
-        img = ActionController::Base.helpers.image_tag("sauce1.png", :height => "22px", :class => "ms-2", :title => "Tartare")
-      elsif self.level[:name] == "Samouraï"
-        img = ActionController::Base.helpers.image_tag("sauce2.png", :height => "22px", :class => "ms-2", :title => "Samouraï")
-        elsif self.level[:name] == "Piccalilli"
-        img = ActionController::Base.helpers.image_tag("sauce4.png", :height => "22px", :class => "ms-2", :title => "Piccalilli")
-        elsif self.level[:name] == "Moutarde"
-        img = ActionController::Base.helpers.image_tag("sauce5.png", :height => "22px", :class => "ms-2", :title => "Moutarde")
-        elsif self.level[:name] == "Mayonnaise"
-        img = ActionController::Base.helpers.image_tag("sauce6.png", :height => "22px", :class => "ms-2", :title => "Mayonnaise")
-        elsif self.level[:name] == "Curry"
-        img = ActionController::Base.helpers.image_tag("sauce7.png", :height => "22px", :class => "ms-2", :title => "Curry")
-        elsif self.level[:name] == "Cocktail"
-        img = ActionController::Base.helpers.image_tag("sauce8.png", :height => "22px", :class => "ms-2", :title => "Cocktail")
-        elsif self.level[:name] == "Béarnaise"
-        img = ActionController::Base.helpers.image_tag("sauce9.png", :height => "22px", :class => "ms-2", :title => "Béarnaise")
-        elsif self.level[:name] == "Andalouse"
-        img = ActionController::Base.helpers.image_tag("sauce10.png", :height => "22px", :class => "ms-2", :title => "Andalouse")
-        elsif self.level[:name] == "Aïoli"
-        img = ActionController::Base.helpers.image_tag("sauce11.png", :height => "22px", :class => "ms-2", :title => "Aïoli")
-      end
-    end
-    
     if self.admin?
       return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{html_escape(goodname)}</span>"
     elsif !self.corrector?
-      return "<span class='fw-bold' style='color:#{self.level[:color]};'>#{html_escape(goodname)}</span>" + img
+      return "<span class='fw-bold' style='color:#{self.level[:color]};'>#{html_escape(goodname)}</span>"
     else
       debut = goodname[0]
       fin = goodname[1..-1]
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{debut}</span><span class='fw-bold' style='color:#{self.level[:color]};'>#{html_escape(fin)}</span>" + img
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{debut}</span><span class='fw-bold' style='color:#{self.level[:color]};'>#{html_escape(fin)}</span>"
     end
   end
 

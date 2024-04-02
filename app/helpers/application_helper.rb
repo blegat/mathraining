@@ -37,8 +37,8 @@ module ApplicationHelper
 
   # To read bbcode on user side
   def bbcode(m)
-    Sponsorword.replaceSponsorInWords((h m.gsub(/\\\][ \r]*\n/,'\] ').
-    gsub(/\$\$[ \r]*\n/,'$$ '))).
+    (h m.gsub(/\\\][ \r]*\n/,'\] ').
+    gsub(/\$\$[ \r]*\n/,'$$ ')).
     gsub(/\[b\](.*?)\[\/b\]/mi, '<b>\1</b>').
     gsub(/\[u\](.*?)\[\/u\]/mi, '<u>\1</u>').
     gsub(/\[i\](.*?)\[\/i\]/mi, '<i>\1</i>').
@@ -81,13 +81,13 @@ module ApplicationHelper
     gsub(/<\/remark>[ \r]*\n/, '</remark>').
     gsub(/<statement>[ \r]*\n/, '<statement>')
     
-    while m2.sub!(/<result>(.*?)<statement>(.*?)<\/result>/mi) {"<div class='result-title'>#{$1}#{dl_icon}</div><div class='result-content'>#{$2}</div>"}
+    while m2.sub!(/<result>(.*?)<statement>(.*?)<\/result>/mi) {"<div class='result-title'>#{$1}</div><div class='result-content'>#{$2}</div>"}
     end
     
-    while m2.sub!(/<proof>(.*?)<statement>(.*?)<\/proof>/mi) {"<div class='proof-title'>#{$1}#{dl_icon}</div><div class='proof-content'>#{$2}</div>"}
+    while m2.sub!(/<proof>(.*?)<statement>(.*?)<\/proof>/mi) {"<div class='proof-title'>#{$1}</div><div class='proof-content'>#{$2}</div>"}
     end
     
-    while m2.sub!(/<remark>(.*?)<statement>(.*?)<\/remark>/mi) {"<div class='remark-title'>#{$1}#{dl_icon}</div><div class='remark-content'>#{$2}</div>"}
+    while m2.sub!(/<remark>(.*?)<statement>(.*?)<\/remark>/mi) {"<div class='remark-title'>#{$1}</div><div class='remark-content'>#{$2}</div>"}
     end
     
     return m2.gsub(/\n/, '<br/>')
@@ -97,7 +97,7 @@ module ApplicationHelper
   def replace_indice(m)
     m2 = m.gsub(/<\/indice>[ \r]*<br\/>/, "</indice>")
     
-    while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><button onclick='return Clue.toggle(0);' class='btn btn-ld-light-dark'>Indice#{dl_icon}</button></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
+    while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><button onclick='return Clue.toggle(0);' class='btn btn-ld-light-dark'>Indice</button></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
     end
     
     return m2
@@ -216,50 +216,47 @@ module ApplicationHelper
   end
   
   def x_icon
-    return 'x-mid.svg'
+    return 'x-mid.svg' # 'X.gif'
   end
   
   def v_icon
-    return 'check-lg.svg'
+    return 'check-lg.svg' # 'V.gif'
   end
   
   def dash_icon
-    return 'dash-mid.svg'
+    return 'dash-mid.svg' # 'tiret.gif'
   end
   
   def star_icon
-    return 'star-fill-small.svg'
+    return 'star-fill-small.svg' # 'star1.png'
   end
   
   def warning_icon
-    return 'exclamation-triangle.svg'
+    return 'exclamation-triangle.svg' # 'X.gif'
   end
   
-  def ruby_to_javascript(arr)
-    t = "["
-    prems = true
-    arr.each do |a|
-      t << "," if !prems
-      prems = false
-      t << a.to_s
-    end
-    t << "]"
-    return t.html_safe
+def ruby_to_javascript(arr)
+  t = "["
+  prems = true
+  arr.each do |a|
+    t << "," if !prems
+    prems = false
+    t << a.to_s
   end
+  t << "]"
+  return t.html_safe
+end
 
-  def ruby_to_javascript_string(arr)
-    t = "["
-    prems = true
-    arr.each do |a|
-      t << "," if !prems
-      prems = false
-      t << "'" << a << "'"
-    end
-    t << "]"
-    return t.html_safe
+def ruby_to_javascript_string(arr)
+  t = "["
+  prems = true
+  arr.each do |a|
+    t << "," if !prems
+    prems = false
+    t << "'" << a << "'"
   end
-  
-  def dl_icon
-    return " - par ".html_safe + image_tag('dl.svg', :height => "25px", :style => "margin-top: -5px; margin-left: 4px;").html_safe
-  end
+  t << "]"
+  return t.html_safe
+end
+
 end
