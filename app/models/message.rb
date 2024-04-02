@@ -13,21 +13,19 @@
 
 class SponsorValidator < ActiveModel::Validator
   def validate(record)
-    unless record.user.nil?
-      w = Sponsorword.words(record.content)
-      if w.size > 10
-        record.errors.add(:base, "Message ne peut pas contenir plus de 10 mots contenant les lettres de notre sponsor.")
-      else
-        some_unused_word = false
-        w.each do |x|
-          if !x.used?
-            some_unused_word = true
-            break
-          end
+    w = Sponsorword.words(record.content)
+    if w.size > 10
+      record.errors.add(:base, "Message ne peut pas contenir plus de 10 mots contenant les lettres de notre sponsor.")
+    else
+      some_unused_word = false
+      w.each do |x|
+        if !x.used?
+          some_unused_word = true
+          break
         end
-        if !some_unused_word
-          record.errors.add(:base, "Message doit contenir un mot français inédit contenant les initiales de notre sponsor, dans le bon ordre.")
-        end
+      end
+      if !some_unused_word
+        record.errors.add(:base, "Message doit contenir un mot français inédit contenant les initiales de notre sponsor, dans le bon ordre.")
       end
     end
   end
