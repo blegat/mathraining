@@ -196,7 +196,7 @@ var hideStatement = function () {
 
   <!-- Warning quand l'utilisateur a soumis une solution ultérieurement -->
   <% if can_current_user_correct && (@submission.wrong? || @submission.wrong_to_read?) %>
-    <% later_submission = @problem.submissions.where("user_id = ? AND created_at > ? AND id != ? AND visible = ?", @submission.user, @submission.created_at, @submission.id, true).order("created_at DESC").first %>
+    <% later_submission = @problem.submissions.where("user_id = ? AND created_at > ? AND id != ? AND visible = ?", @submission.user, @submission.created_at, @submission.id, true).order("created_at").last %>
     <% if !later_submission.nil? %>
       <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "nouvelle soumission", problem_path(@problem, :sub => later_submission) %> à ce problème le <%= write_date(later_submission.created_at) %>.</div>
     <% end %>
@@ -204,9 +204,17 @@ var hideStatement = function () {
   
   <!-- Warning quand l'utilisateur a déjà soumis une solution plagiée -->
   <% if can_current_user_correct && !@submission.correct? && !@submission.plagiarized? %>
-    <% plagiarized_submission = @problem.submissions.where(:user => @submission.user, :status => :plagiarized).first %>
+    <% plagiarized_submission = @problem.submissions.where(:user => @submission.user, :status => :plagiarized).order(:created_at).last %>
     <% if !plagiarized_submission.nil? %>
       <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "solution plagiée", problem_path(@problem, :sub => plagiarized_submission) %> à ce problème le <%= write_date(plagiarized_submission.created_at) %>.</div>
+    <% end %>
+  <% end %>
+  
+  <!-- Warning quand l'utilisateur a déjà soumis une solution clôturée -->
+  <% if can_current_user_correct && !@submission.correct? && !@submission.closed? %>
+    <% closed_submission = @problem.submissions.where(:user => @submission.user, :status => :closed).order(:created_at).last %>
+    <% if !closed_submission.nil? %>
+      <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : <%= @submission.user.name %> a posté une <%= link_to "solution clôturée", problem_path(@problem, :sub => closed_submission) %> à ce problème le <%= write_date(closed_submission.created_at) %>. Vérifiez qu'un effort a été fait depuis cette soumission !</div>
     <% end %>
   <% end %>
 
