@@ -23,7 +23,8 @@ class Submission < ActiveRecord::Base
                 :wrong         =>  1, # wrong (and last comment was marked as read)
                 :correct       =>  2, # correct
                 :wrong_to_read =>  3, # wrong, but last comment was not read yet
-                :plagiarized   =>  4} # plagiarized
+                :plagiarized   =>  4, # plagiarized (cannot submit for 6 months)
+                :closed        =>  5} # closed by the corrector (cannot submit for 1 week) 
 
   # BELONGS_TO, HAS_MANY
 
@@ -64,14 +65,21 @@ class Submission < ActiveRecord::Base
         return x_icon
       elsif self.plagiarized?
         return warning_icon
+      elsif self.closed?
+        return blocked_icon
       end
     end
   end
   
-  # For a plagiarized submission: when can we submit a new submission?
+  # For a plagiarized or closed submission: when can we submit a new submission?
   def date_new_submission_allowed
-    return Date.today - 1.day if !self.plagiarized?
-    return self.last_comment_time.in_time_zone.to_date + 6.months
+    if self.plagiarized?
+      return self.last_comment_time.in_time_zone.to_date + 6.months
+    elsif self.closed?
+      return self.last_comment_time.in_time_zone.to_date + 1.week
+    else
+      return Date.today - 1.day
+    end
   end
   
   # Mark the submission as wrong

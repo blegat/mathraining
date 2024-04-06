@@ -15,7 +15,7 @@ class SubmissionsController < ApplicationController
   before_action :online_problem, only: [:create, :create_intest]
   before_action :not_solved, only: [:create]
   before_action :can_submit, only: [:create]
-  before_action :no_recent_plagiarism, only: [:create, :update_draft]
+  before_action :no_recent_plagiarism_or_closure, only: [:create, :update_draft]
   before_action :user_that_can_see_problem, only: [:create]
   before_action :user_that_can_write_submission, only: [:create, :update_draft]
   before_action :author, only: [:update_intest, :update_draft]
@@ -339,11 +339,15 @@ class SubmissionsController < ApplicationController
     redirect_to problem_path(@problem) if @no_new_submission
   end
   
-  # Check that current user has no (recent) plagiarized solution to the problem
-  def no_recent_plagiarism
+  # Check that the student has no (recent) plagiarized or closed solution to the problem
+  def no_recent_plagiarism_or_closure
     s = current_user.sk.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
     if !s.nil? && s.date_new_submission_allowed > Date.today
-      redirect_to problem_path(@problem) and return
+      redirect_to problem_path(@problem, :sub => @submission) and return
+    end
+    s = current_user.sk.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last
+    if !s.nil? && s.date_new_submission_allowed > Date.today
+      redirect_to problem_path(@problem, :sub => @submission) and return
     end
   end
 

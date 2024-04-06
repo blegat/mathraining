@@ -35,8 +35,8 @@
   <% color_class = "table-ld-warning" %> <!-- Si cette soumission doit être highlightée : toujours jaune -->
 <% elsif s.correct? %>
   <% color_class = "table-ld-success" %> <!-- Si correct : toujours vert -->
-<% elsif s.wrong? or s.plagiarized? %>
-  <% color_class = "table-ld-danger" %> <!-- Si incorrect ou plagiat : toujours rouge -->
+<% elsif s.wrong? or s.plagiarized? or s.closed? %>
+  <% color_class = "table-ld-danger" %> <!-- Si incorrect ou plagiat ou clôturé : toujours rouge -->
 <% elsif s.waiting? %>
   <% if !(current_user.sk.admin? or (current_user.sk.corrector and current_user.sk != s.user)) || s.followings.first.nil? %>
     <% color_class = "table-ld-warning" %> <!-- Si en attente (pas encore corrigé) : toujours jaune, sauf si... -->

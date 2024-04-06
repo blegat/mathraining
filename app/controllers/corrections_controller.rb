@@ -6,8 +6,8 @@ class CorrectionsController < ApplicationController
   
   before_action :correct_user, only: [:create]
   before_action :is_visible, only: [:create]
-  before_action :not_plagiarized, only: [:create]
-  before_action :no_recent_plagiarism, only: [:create]
+  before_action :not_plagiarized_or_closed, only: [:create]
+  before_action :no_recent_plagiarism_or_closure, only: [:create]
   before_action :notskin_user, only: [:create]
 
   # Create a correction (send the form)
@@ -78,6 +78,13 @@ class CorrectionsController < ApplicationController
         @submission.status = :wrong
         @submission.save
         m = ' et soumission marquée comme incorrecte'
+        
+      # If wrong, current user is corrector and he wants to keep it wrong: new status is wrong
+      elsif (current_user.sk != @submission.user) and (@submission.wrong? or @submission.wrong_to_read?) and
+        params[:commit] == "Poster et clôturer la soumission"
+        @submission.status = :closed
+        @submission.save
+        m = ' et soumission clôturée'
 
       # If current user is corrector and he wants to accept it: new status is correct
       elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
@@ -189,17 +196,21 @@ class CorrectionsController < ApplicationController
     end
   end
   
-  # Check that the submission is not plagiarized (nobody can comment in that case)
-  def not_plagiarized
-    if @submission.plagiarized?
+  # Check that the submission is not plagiarized or closed (nobody can comment in that case)
+  def not_plagiarized_or_closed
+    if @submission.plagiarized? || @submission.closed?
       redirect_to problem_path(@problem, :sub => @submission) and return
     end
   end
   
-  # Check that the student has no (recent) plagiarized solution to the problem
-  def no_recent_plagiarism
+  # Check that the student has no (recent) plagiarized or closed solution to the problem
+  def no_recent_plagiarism_or_closure
     if @submission.user == current_user.sk
       s = current_user.sk.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
+      if !s.nil? && s.date_new_submission_allowed > Date.today
+        redirect_to problem_path(@problem, :sub => @submission) and return
+      end
+      s = current_user.sk.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last
       if !s.nil? && s.date_new_submission_allowed > Date.today
         redirect_to problem_path(@problem, :sub => @submission) and return
       end

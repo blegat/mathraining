@@ -130,6 +130,36 @@ describe "Submission pages" do
           end
         end
         
+        describe "and sends new submission while another one was recently closed" do # Can only be done with several tabs
+          before do
+            FactoryGirl.create(:submission, problem: problem, user: user, status: :closed, last_comment_time: DateTime.now - 3.days)
+            fill_in "MathInput", with: newsubmission
+            click_button "Soumettre cette solution"
+          end
+          specify do
+            expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
+            expect(page).to have_no_link("Nouvelle soumission")
+            expect(page).to have_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.")
+            expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
+            expect(problem.submissions.where(:user => user).count).to eq(1) # Only the closed one created by FactoryGirl 
+          end
+        end
+        
+        describe "and sends new submission while another one was closed long ago" do
+          before do
+            FactoryGirl.create(:submission, problem: problem, user: user, status: :closed, last_comment_time: DateTime.now - 2.weeks)
+            fill_in "MathInput", with: newsubmission
+            click_button "Soumettre cette solution"
+          end
+          specify do
+            expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
+            expect(page).to have_no_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.") # not shown for old closed submission
+            expect(page).to have_success_message("Votre solution a bien été soumise.")
+            expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
+            expect(page).to have_selector("div", text: newsubmission)
+          end
+        end
+        
         describe "and sends new submission while he did not solve chapters to write a submission" do # Hack
           before do
             FactoryGirl.create(:chapter, online: true, submission_prerequisite: true)
@@ -521,6 +551,19 @@ describe "Submission pages" do
               end
             end
             
+            describe "and answers while another submission of same user was closed" do
+              before do
+                FactoryGirl.create(:submission, user: waiting_submission.user, problem: waiting_submission.problem, status: :closed, last_comment_time: DateTime.now - 2.days)
+                fill_in "MathInput", with: newanswer
+                click_button "Poster"
+                waiting_submission.reload
+              end
+              specify do
+                expect(waiting_submission.corrections.last.content).not_to eq(newanswer)
+                expect(page).to have_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.")
+              end
+            end
+            
             describe "and answers" do
               before do
                 fill_in "MathInput", with: newanswer
@@ -592,6 +635,20 @@ describe "Submission pages" do
                       expect(waiting_submission.corrections.last.content).to eq(newcorrection2)
                       expect(problem_with_submissions.submissions.where(:user => user, :status => :draft).count).to eq(0)
                       expect(page).to have_selector("h3", text: "Soumission (correcte)")
+                      expect(page).to have_selector("div", text: newcorrection2)
+                    end
+                  end
+                  
+                  describe "and closes it" do
+                    before do
+                      fill_in "MathInput", with: newcorrection2
+                      click_button "Poster et clôturer la soumission"
+                      waiting_submission.reload
+                    end
+                    specify do
+                      expect(waiting_submission.closed?).to eq(true)
+                      expect(waiting_submission.corrections.last.content).to eq(newcorrection2)
+                      expect(page).to have_selector("h3", text: "Soumission (clôturée)")
                       expect(page).to have_selector("div", text: newcorrection2)
                     end
                   end

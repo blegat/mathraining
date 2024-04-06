@@ -235,6 +235,10 @@ module ApplicationHelper
     return 'exclamation-triangle.svg' # 'X.gif'
   end
   
+  def blocked_icon
+    return 'x-circle.svg'
+  end
+  
 def ruby_to_javascript(arr)
   t = "["
   prems = true

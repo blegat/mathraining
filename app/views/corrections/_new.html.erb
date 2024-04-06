@@ -29,6 +29,7 @@
       <div class="mb-3">
       <%= f.submit "Poster", class: "btn btn-primary mb-1", :disabled => (disable_correction || current_user.other) %>
       <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || current_user.other) %>
+      <%= f.submit "Poster et clôturer la soumission", class: "btn btn-dark mb-1", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || current_user.other) %>
       </div>
     <% elsif @submission.correct? %>
       <%= f.submit "Poster", class: "btn btn-primary mb-3", :disabled => (disable_correction || current_user.other) %>
@@ -36,6 +37,7 @@
       <div class="mb-3">
       <%= f.submit "Poster et laisser la soumission comme erronée", class: "btn btn-danger mb-1", :disabled => (disable_correction || current_user.other) %>
       <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || current_user.other) %>
+      <%= f.submit "Poster et clôturer la soumission", class: "btn btn-dark mb-1", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || current_user.other) %>
       </div>
     <% else ## Pas encore corrigé %>
       <% if @submission.intest && @submission.score == -1 %>
