@@ -1,30 +1,15 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Actuality pages" do
+describe "Picture pages", picture: true do
 
   subject { page }
 
-  let(:user) { FactoryGirl.create(:user) }
   let(:admin) { FactoryGirl.create(:admin) }
   let(:admin2) { FactoryGirl.create(:admin) }
   
   let(:image_folder) { "./spec/attachments/" }
   let(:good_image) { "mathraining.png" }
-  
-  describe "user" do
-    before { sign_in user }
-    
-    describe "tries to visit pictures page" do
-      before { visit pictures_path }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to upload a new picture" do
-      before { visit new_picture_path }
-      it { should have_content(error_access_refused) }
-    end
-  end
 
   describe "admin" do
     before { sign_in admin }
@@ -35,11 +20,6 @@ describe "Actuality pages" do
         should have_selector("h1", text: "Vos images")
         should have_button("Uploader une nouvelle image")
       end
-    end
-    
-    describe "visits a non-existent picture" do
-      before { visit picture_path(1) }
-      it { should have_content(error_access_refused) }
     end
     
     describe "visits new picture page" do
@@ -87,15 +67,6 @@ describe "Actuality pages" do
         
         describe "and visitor tries to see the picture with incorrect access key" do
           before { visit picture_image_path(picture, :key => picture.access_key + "WRONG") }
-          it { should have_content(error_access_refused) }
-        end
-        
-        describe "and another admin tries to see it" do
-          before do
-            sign_out
-            sign_in admin2
-            visit picture_path(picture)
-          end
           it { should have_content(error_access_refused) }
         end
       end

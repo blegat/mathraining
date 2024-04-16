@@ -162,6 +162,14 @@ FactoryGirl.define do
     end
   end
   
+  # Picture
+  factory :picture do
+    association :user
+    before(:create) do |picture|
+      picture.image.attach(io: File.open(Rails.root.join('spec', 'attachments', 'mathraining.png')), filename: 'mathraining.png', content_type: 'image/png')
+    end
+  end
+  
   # Prerequisite
   factory :prerequisite do
     association :chapter
