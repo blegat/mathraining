@@ -18,6 +18,7 @@ jobs:
     - name: Build and test with Rake
       env:
         RAILS_ENV: test
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: |
         bundle install
         #bundle update rake
