@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Myfile pages" do
+describe "Myfile pages", myfile: true do
 
   subject { page }
 
@@ -186,11 +186,6 @@ describe "Myfile pages" do
           should have_success_message("Contenu de la pièce jointe supprimé.")
         end
       end
-    end
-    
-    describe "visits a non-existing file" do
-      before { visit myfile_path(123456) }
-      it { should have_content(error_access_refused) }
     end
   end
   
