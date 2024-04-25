@@ -269,8 +269,6 @@ def create_solvedquestions
         if completed or Random.rand(130) < user_level # Correct
           Solvedquestion.create(question:        q,
                                 user:            user,
-                                correct:         true,
-                                guess:           q.answer,
                                 nb_guess:        Random.rand(4)+1,
                                 resolution_time: t)
         else
@@ -469,7 +467,7 @@ def create_subjects
                            user:       User.where(:admin => true).first,
                            content:    "Relis le chapitre, tout simplement...",
                            created_at: time + 2.minutes)
-  subject.update_attributes(last_comment_time: message.created_at, last_comment_user: message.user)
+  subject.update(last_comment_time: message.created_at, last_comment_user: message.user)
   
   # One subject about a question
   user = User.where(:admin => false).second
@@ -489,7 +487,7 @@ def create_subjects
                            user:       User.where(:admin => false).third,
                            content:    "J'en pense que tu dis des sottises !",
                            created_at: time + 7.hours)
-  subject.update_attributes(last_comment_time: message.created_at, last_comment_user: message.user)
+  subject.update(last_comment_time: message.created_at, last_comment_user: message.user)
 end
 
 # Update some statistics
