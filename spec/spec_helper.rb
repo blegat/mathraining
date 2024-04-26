@@ -23,6 +23,7 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 Capybara.server = :puma, { Silent: true }
 
 # /!\ Locally I need to run 'export TMPDIR="$HOME/tmp"' before calling 'rspec .', for javascript tests to run! /!\
+# /!\ You need to create the folder $HOME/tmp for that command to work! /!\
 Capybara.register_driver :selenium_firefox_headless do |app|
   options = Selenium::WebDriver::Firefox::Options.new
   options.args << '--headless'
