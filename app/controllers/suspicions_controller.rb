@@ -57,6 +57,9 @@ class SuspicionsController < ApplicationController
         # Mark submission as plagiarized
         @submission.update(:status            => :plagiarized,
                            :last_comment_time => DateTime.now) # Because the new date for submission is 6 months after that date
+        if @submission.intest? && @submission.score == -1
+          @submission.update_attribute(:score, 0)
+        end
         @submission.notified_users << @submission.user unless @submission.notified_users.exists?(@submission.user_id)
       elsif old_status == "confirmed" && @suspicion.status != "confirmed"
         # Mark submission as wrong or waiting instead of plagiarized (if no other suspicion is confirmed)
