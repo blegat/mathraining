@@ -45,7 +45,7 @@ gem 'uglifier', '>= 1.2.3'
 gem 'sassc', '= 2.2.0' # Otherwise it tries to install 2.4.0 and it fails for some reason
 gem 'sassc-rails'
 
-gem 'jquery-rails'
+# gem 'jquery-rails'
 
 gem 'select2-rails'
 
