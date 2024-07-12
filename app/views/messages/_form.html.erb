@@ -32,17 +32,11 @@
 </div>
 
 <!-- Case e-mails aux groupes A et/ou B -->
-<% if current_user.sk.root && show_mail_checkboxes && !@subject.for_correctors %>
-	<div class="form-check">
+<% if current_user.sk.root && show_mail_checkboxes && @subject.for_wepion %>
+  <div class="form-check">
   <label class="form-check-label">
-    <%= check_box_tag "groupeA", "A", false, :class => "form-check-input", :disabled => current_user.other %>
-    Prévenir tout le groupe A de ce nouveau message par e-mail.
-  </label>
-  </div>
-  <div class="form-check mb-2">
-  <label class="form-check-label">
-    <%= check_box_tag "groupeB", "B", false, :class => "form-check-input", :disabled => current_user.other %>
-    Prévenir tout le groupe B de ce nouveau message par e-mail.
+    <%= check_box_tag "emailWepion", "A", false, :class => "form-check-input", :disabled => current_user.other %>
+    Prévenir tous les élèves de Wépion de ce nouveau message par e-mail.
   </label>
   </div>
 <% end %>

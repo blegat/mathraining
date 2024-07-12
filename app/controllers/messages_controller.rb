@@ -53,11 +53,9 @@ class MessagesController < ApplicationController
                       :last_comment_user => current_user.sk)
 
       if current_user.sk.root?
-        for g in ["A", "B"] do
-          if params.has_key?("groupe" + g)
-            User.where(:group => g).each do |u|
-              UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver
-            end
+        if params.has_key?("emailWepion")
+          User.where(:group => ["A", "B"]).each do |u|
+            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver
           end
         end
       end

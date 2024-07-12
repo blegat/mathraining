@@ -109,7 +109,8 @@ feature 'Emailer' do
         visit new_subject_path
         fill_in "Titre", with: "Sujet pour Wépion"
         fill_in "MathInput", with: "Message important pour Wépion"
-        check "groupeA"
+        check "subject[for_wepion]"
+        check "emailWepion"
         click_button "Créer"
       end
       
@@ -122,14 +123,13 @@ feature 'Emailer' do
     end
     
     describe "new message" do
-      let!(:sub) { FactoryGirl.create(:subject) }
+      let!(:sub) { FactoryGirl.create(:subject, :for_wepion => true) }
       before do
         clear_emails
         sign_in root
         visit subject_path(sub)
         fill_in "MathInputNewMessage", with: "Nouveau message pour Wépion"
-        check "subject[for_wepion]"
-        check "groupeA"
+        check "emailWepion"
         click_button "Poster"
       end
       
