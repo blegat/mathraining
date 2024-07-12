@@ -1,6 +1,6 @@
 <% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
 
-<% provide(:title, @user.name) %>
+<% provide(:title, @user.name.html_safe) %>
 
 <% if !@user.admin %>
   <% actualrating = @user.rating %>
