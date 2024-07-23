@@ -15,6 +15,7 @@
       <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :value => @ancientexte, :style => "height:200px;", :id => "MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (disable_correction || current_user.other) %>
     <% end %>
     <script>initAndUpdatePreviewSafeWhenPossible()</script>
+    <script>initLeavingFormWhenPossible()</script>
   <% session.delete(:ancientexte) %>
   </div>
   

@@ -14,6 +14,7 @@ import PreviewSafe from "custom/previewsafe"
 import Rolling from "custom/rolling"
 import ShowHideCode from "custom/showcode"
 import Insert from "custom/tainsert"
+import LeavingForm from "custom/leavingform"
 
 // NB: Import of springy and springyui is done only in graph_prerequisites.html.erb
 
@@ -25,6 +26,7 @@ window.PreviewSafe = PreviewSafe;
 window.Rolling = Rolling;
 window.ShowHideCode = ShowHideCode;
 window.Insert = Insert;
+window.LeavingForm = LeavingForm;
 
 window.dispatchEvent(new CustomEvent("importmap-scripts-loaded"));
 

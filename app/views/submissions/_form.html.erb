@@ -13,4 +13,5 @@
     <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :value => @ancientexte, :id => "MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || form_disabled) %>
   <% end %>
   <script>initAndUpdatePreviewSafeWhenPossible()</script>
+  <script>initLeavingFormWhenPossible()</script>
 </div>

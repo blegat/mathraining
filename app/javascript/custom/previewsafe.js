@@ -142,6 +142,7 @@ var PreviewSafe = {
   },
   
   MyUpdate: function(){
+  LeavingForm.SetChangesDone();
   if (this.stop.checked){
     this.Update();
   }

@@ -198,6 +198,22 @@
         callMethodWhenPossible(() => rollingShowusIfPossible(m));
       }
       
+      // To initialize and update LeavingForm when page is loaded and LeavingForm is defined
+      var initLeavingFormDone = false;
+      
+      function initLeavingFormIfPossible() {
+        if ("LeavingForm" in window) {
+          if (!initLeavingFormDone) {
+            initLeavingFormDone = true;
+            LeavingForm.Init();
+          }
+        }
+      }
+      
+      function initLeavingFormWhenPossible() {
+        callMethodWhenPossible(initLeavingFormIfPossible);
+      }
+      
       // To initialize select2 when page is loaded and $ (jquery) is defined
       var select2Initialized = false;
       
