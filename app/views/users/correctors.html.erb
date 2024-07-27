@@ -302,7 +302,7 @@ var showInactiveCorrectors = function () {
   <% inactive_class = (c[:nb_recent] >= limit ? "" : "inactive-corrector") %>
   <% real_rank = rank if c[:nb_corrections] != prev_nb_corrections %>
   <tr class="<%= green_class %> <%= inactive_class %>">
-  <td><%= real_rank %>.</td>
+  <td class="text-center"><%= real_rank %>.</td>
   <td><%= raw(u.linked_name) %></td>
   <td class="text-center"><%= c[:nb_corrections] %></td>
   <td class="text-center"><%= c[:nb_recent] %></td>
