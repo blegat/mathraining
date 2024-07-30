@@ -1,34 +1,13 @@
 /* USED IN THEORY */
 
-.result-title {
+.result-title .remark-title .proof-title {
   font-weight: bold;
   padding: 7px;
   padding-left: 9px;
 }
 
-.result-content {
+.result-content .remark-content .proof-content {
   padding: 7px;
   padding-left: 9px;
-}
-
-.remark-title {
-  font-weight: bold;
-  padding: 7px;
-  padding-left: 9px;
-}
-
-.remark-content {
-  padding: 7px;
-  padding-left: 9px;
-}
-
-.proof-title {
-  font-weight: bold;
-  padding: 7px;
-  padding-left: 9px;
-}
-
-.proof-content {
-  padding: 7px;
-  padding-left: 9px;
+  overflow-x: auto;
 }
