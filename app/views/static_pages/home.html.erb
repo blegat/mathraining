@@ -17,6 +17,126 @@
   <% return ans %>
 <% end %>
 
+
+<% if signed_in? && current_user.sk.root? %>
+
+  <% corrector_to_points = {} %>
+  
+  <div class="grid" style="--bs-columns:12; --bs-gap:5px;">
+    <div class="g-col-12 g-col-lg-7">
+      <center>
+      <!-- Endroit pour dessiner la cible -->
+      <div id="contenant" class="mt-3 mb-2" style="width:100%; max-width:600px; height:600px; position:relative; display:block;">
+      <canvas id="myCanvas" width="600" height="600" style="position:absolute; left:0px; top:0px;">
+      Votre navigateur ne supporte pas les canvas.
+      </canvas>
+      </div>
+      </center>
+    </div>
+  
+  <script type="text/javascript">
+    function respondCanvas() {
+      // Check light or dark theme
+      var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+    
+      // Get the canvas & context
+      var c = document.getElementById('myCanvas');
+      var ctx = c.getContext('2d');
+      var container = c.parentElement;
+    
+      var W = 600.0;
+      var H = 600.0;
+    
+      c.setAttribute('width', container.offsetWidth); //max width
+      c.setAttribute('height', H * container.offsetWidth / W); //max height
+
+      container.style.height = H * container.offsetWidth / W + "px";
+
+      // Draw content
+
+      var pct = c.offsetWidth / W;
+      var W_real = pct * W;
+      var H_real = pct * H;
+      var W_center = W_real * 0.5;
+      var H_center = H_real * 0.5;
+      var R = pct * 250;
+    
+      // Background
+      ctx.beginPath();
+      ctx.rect(0, 0, W_real, H_real);
+      ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
+      ctx.fill(); 
+      
+      // Circles
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = (is_dark ? 'white' : 'black');
+      ctx.fillStyle = (is_dark ? 'white' : 'black');
+      ctx.font = "14px Arial";
+      ctx.textAlign = "center";
+      
+      for (var i = 1; i <= 5; i++) {
+        ctx.beginPath();
+        ctx.arc(W_center, H_center, R * i * 0.2, 0, 2 * Math.PI);    
+        ctx.stroke();
+        ctx.fillText((6-i).toString(), W_center + R * (i * 0.2 - 0.05), H_center - 6);
+      }
+      
+      // Radii
+      ctx.beginPath();
+      ctx.moveTo(W_center - R, H_center);
+      ctx.lineTo(W_center + R, H_center);
+      ctx.moveTo(W_center - R * 0.5, H_center + R * Math.sqrt(3) * 0.5);
+      ctx.lineTo(W_center + R * 0.5, H_center - R * Math.sqrt(3) * 0.5);
+      ctx.moveTo(W_center - R * 0.5, H_center - R * Math.sqrt(3) * 0.5);
+      ctx.lineTo(W_center + R * 0.5, H_center + R * Math.sqrt(3) * 0.5);
+      ctx.stroke();
+      
+      // Initials of sections
+      ctx.font = "16px Arial";
+      <% Section.where(:fondation => false).order(:id).each do |s| %>
+        ctx.fillText("<%= s.initials %>", W_center + R * Math.cos(<%= s.id %> * Math.PI/3 - Math.PI/6) * 0.9, H_center - R * Math.sin(<%= s.id %> * Math.PI/3 - Math.PI/6) * 0.9 + 6);
+      <% end %>
+      
+      // Point for each correction
+      <% Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, followings.created_at, followings.user_id AS user_id").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone).each do |f| %>
+        <% r = f.created_at.to_i %>
+        <% radius_pct = (0.2 * (5 - f.level + 0.01 * (((r * 37) % 99) + 1))).round(4) %>
+        <% angle = (60 * (f.section_id - 1) + 60 * 0.01 * (((r * 73) % 99) + 1)).round(4) %>
+        ctx.beginPath();
+        ctx.arc(W_center + R * <%= radius_pct %> * Math.cos(Math.PI / 180 * <%= angle %>), H_center - R * <%= radius_pct %> * Math.sin(Math.PI / 180 * <%= angle %>), 5 * pct, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.fill();
+        <% if corrector_to_points.key?(f.user_id) %>
+          <% corrector_to_points[f.user_id] += f.level %>
+        <% else %>
+          <% corrector_to_points[f.user_id] = f.level %>
+        <% end %>
+      <% end %>
+    }
+
+    window.addEventListener("resize", () => {
+      respondCanvas();
+    });
+  
+    window.addEventListener("theme-change", () => {
+      respondCanvas();
+    });
+  
+    respondCanvas();
+  </script>
+  
+    <div class="g-col-12 g-col-lg-5">
+      <table class="table table-bordered" style="width:auto;">
+      <% corrector_to_points.sort_by{|_key, value| -value}.each do |user_id, num_points| %>
+        <tr><td><%= raw(User.find(user_id).linked_name) %></td><td><%= num_points %></td></tr>
+      <% end %>
+      </table>
+    </div>
+  </div>
+
+<% end %>
+
+
 <!-- Gros titre Mathraining -->
 
 <% user_with_recent_corrections = User.left_joins(:followings).where(followings: {:kind => :first_corrector}).where("followings.created_at > ?", Date.today.in_time_zone).group(:id).select("users.*, count(followings.id) AS num_corrections").order("num_corrections DESC").to_a %>
@@ -46,8 +166,7 @@
 
 
 <div class="home">
-
-	<div class="grid" style="--bs-columns:12; --bs-gap:5px;">
+  <div class="grid" style="--bs-columns:12; --bs-gap:5px;">
     <div class="g-col-12 g-col-md-6 g-col-lg-7">
     <center>
     <%= image_tag "mathraining.png", :class => "light-theme-only", :style => "width:100%; max-width:334px;" %>
