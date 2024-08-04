@@ -35,7 +35,43 @@
     </div>
   
   <script type="text/javascript">
-    function respondCanvas() {
+  
+    <% followings = Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, problems.number AS pb_number, followings.created_at, followings.user_id AS user_id, users.first_name, users.last_name, users.see_name").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone).to_a %>
+    
+    <% def get_radius_pct(f) %>
+      <% return (0.2 * (5 - f.level + 0.01 * (((f.created_at.to_i * 37) % 99) + 1))).round(4) %>
+    <% end %>
+    
+    <% def get_angle(f) %>
+      <% return (Math::PI / 3 * (f.section_id - 1) + Math::PI / 3 * 0.01 * (((f.created_at.to_i * 73) % 99) + 1)).round(6) %>
+    <% end %>
+    
+    var grid = new Array(32);
+    for (var i = 0; i < grid.length; i++)
+      grid[i] = new Array(32);
+      
+    function addGridPoint(x, y, radius_pct, angle, user_name, pb_number) {
+      if (grid[x][y] == undefined) {
+        grid[x][y] = new Array
+      }
+      var i = grid[x][y].length
+      grid[x][y].push(new Map());
+      grid[x][y][i].set("radius_pct", radius_pct);
+      grid[x][y][i].set("angle", angle);
+      grid[x][y][i].set("user_name", user_name);
+      grid[x][y][i].set("pb_number", pb_number);
+    }
+    
+    <% followings.each do |f| %>
+      <% radius_pct = get_radius_pct(f) %>
+      <% angle = get_angle(f) %>
+      <% x = [(16 + 16 * radius_pct * Math.cos(angle)).floor(), 31].min %>
+      <% y = [(16 + 16 * radius_pct * Math.sin(angle)).floor(), 31].min %>
+      addGridPoint(<%= x %>, <%= y %>, <%= radius_pct %>, <%= angle %>, "<%= f.user.name %>", <%= f.pb_number %>);
+      
+    <% end %>
+  
+    function drawTarget(highlighted_level = -1, highlighted_section_id = -1) {
       // Check light or dark theme
       var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
     
@@ -66,6 +102,28 @@
       ctx.rect(0, 0, W_real, H_real);
       ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
       ctx.fill(); 
+      
+      // Highlighted part
+      if (highlighted_level >= 1 && highlighted_section_id >= 1) {
+        var r_min = R * (5-highlighted_level) * 0.2;
+        var r_max = r_min + 0.2 * R;
+        var angle_min = Math.PI / 3 * (highlighted_section_id - 1);
+        var angle_max = angle_min + Math.PI / 3;
+        var angle_for_arc = (angle_min + Math.PI / 6);
+        var r_for_arc_min = r_min * 2 / Math.sqrt(3);
+        var r_for_arc_max = r_max * 2 / Math.sqrt(3);
+        ctx.beginPath();
+        ctx.moveTo(W_center + r_min * Math.cos(angle_min), H_center - r_min * Math.sin(angle_min));
+        if (highlighted_level < 5) {
+          
+          ctx.arcTo(W_center + r_for_arc_min * Math.cos(angle_for_arc), H_center - r_for_arc_min * Math.sin(angle_for_arc), W_center + r_min * Math.cos(angle_max), H_center - r_min * Math.sin(angle_max), r_min);
+        }
+        ctx.lineTo(W_center + r_max * Math.cos(angle_max), H_center - r_max * Math.sin(angle_max));
+        ctx.arcTo(W_center + r_for_arc_max * Math.cos(angle_for_arc), H_center - r_for_arc_max * Math.sin(angle_for_arc), W_center + r_max * Math.cos(angle_min), H_center - r_max * Math.sin(angle_min), r_max);
+        ctx.closePath();
+        ctx.fillStyle = "yellow";
+        ctx.fill();
+      }
       
       // Circles
       ctx.lineWidth = 1;
@@ -98,12 +156,11 @@
       <% end %>
       
       // Point for each correction
-      <% Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, followings.created_at, followings.user_id AS user_id").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone).each do |f| %>
-        <% r = f.created_at.to_i %>
-        <% radius_pct = (0.2 * (5 - f.level + 0.01 * (((r * 37) % 99) + 1))).round(4) %>
-        <% angle = (60 * (f.section_id - 1) + 60 * 0.01 * (((r * 73) % 99) + 1)).round(4) %>
+      <% followings.each do |f| %>
+        <% radius_pct = get_radius_pct(f) %>
+        <% angle = get_angle(f) %>
         ctx.beginPath();
-        ctx.arc(W_center + R * <%= radius_pct %> * Math.cos(Math.PI / 180 * <%= angle %>), H_center - R * <%= radius_pct %> * Math.sin(Math.PI / 180 * <%= angle %>), 5 * pct, 0, 2 * Math.PI);
+        ctx.arc(W_center + R * <%= radius_pct %> * Math.cos(<%= angle %>), H_center - R * <%= radius_pct %> * Math.sin(<%= angle %>), 5 * pct, 0, 2 * Math.PI);
         ctx.fillStyle = "red";
         ctx.fill();
         <% if corrector_to_points.key?(f.user_id) %>
@@ -113,16 +170,150 @@
         <% end %>
       <% end %>
     }
+    
+    function drawCorrectionInfo(mouse_radius_pct, mouse_angle)
+    {
+      // Check light or dark theme
+      var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+      
+      var c = document.getElementById("myCanvas");
+      var W = 600.0;
+      var H = 600.0;
+        
+      var pct = c.offsetWidth / W;
+      var W_real = pct * W;
+      var H_real = pct * H;
+      var W_center = W_real * 0.5;
+      var H_center = H_real * 0.5;
+      var R = pct * 250;
+      
+      var gridX = 16 + Math.floor(16 * mouse_radius_pct * Math.cos(mouse_angle));
+      var gridY = 16 + Math.floor(16 * mouse_radius_pct * Math.sin(mouse_angle));
+      if (gridX > 31) { gridX = 31 }
+      if (gridY > 31) { gridY = 31 }
+      
+      var mouseX = W_center + R * mouse_radius_pct * Math.cos(mouse_angle);
+      var mouseY = H_center - R * mouse_radius_pct * Math.sin(mouse_angle);
+      
+      var found = -1;
+      var minDist = 1000;
+      for (var i = gridX - 1; i <= gridX + 1; i++) {
+        if (i < 0 || i > 31)
+          continue;
+        for (var j = gridY - 1; j <= gridY + 1; j++) {
+          if (j < 0 || j > 31)
+            continue;
+          if (grid[i][j] == undefined)
+            continue;
+          for (var k = 0; k < grid[i][j].length; k++) {
+            var radius_pct = grid[i][j][k].get("radius_pct")
+            var angle = grid[i][j][k].get("angle")
+            var X = W_center + R * radius_pct * Math.cos(angle);
+            var Y = H_center - R * radius_pct * Math.sin(angle);
+            var dist = Math.sqrt((mouseX-X)*(mouseX-X) + (mouseY-Y)*(mouseY-Y));
+            if (dist < minDist) {
+              minDist = dist;
+              found = grid[i][j][k];
+            }
+          }
+        }
+      }
+      
+      if (minDist > 8 * pct)
+        return;
+        
+      var radius_pct = found.get("radius_pct")
+      var angle = found.get("angle")
+      var X = W_center + R * radius_pct * Math.cos(angle);
+      var Y = H_center - R * radius_pct * Math.sin(angle);
+      
+      var ctx = c.getContext('2d');
+      ctx.beginPath();
+      ctx.moveTo(X - 10, Y);
+      ctx.lineTo(X + 10, Y);
+      ctx.moveTo(X, Y - 10);
+      ctx.lineTo(X, Y + 10);
+      ctx.stroke();
+      
+      var textMargin = 7;
+      ctx.font = "14px Arial";      
+      ctx.textAlign = (X > W_center ? "right" : "left");
+      var textX = (X > W_center ? X - textMargin : X + textMargin);
+      var textY = (Y < H_center ? Y - 20 - textMargin : Y + textMargin + 9);
+      var text1 = found.get("user_name");
+      var text2 = "Problème #" + found.get("pb_number");
+      
+      var textWidth = Math.max(ctx.measureText(text1).width, ctx.measureText(text2).width);
+      var rectWidth = textWidth + 2 * textMargin;
+      var rectHeight = 43;
+      
+      ctx.beginPath();
+      ctx.rect(X, Y, (X > W_center ? -rectWidth : rectWidth), (Y < H_center ? -rectHeight : rectHeight));
+      ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
+      ctx.strokeStyle = (is_dark ? 'white' : 'black');
+      ctx.fill();
+      ctx.stroke();
+      
+      ctx.fillStyle = (is_dark ? 'white' : 'black');
+      ctx.fillText(text1, textX, textY);
+      ctx.fillText(text2, textX, textY + 20);
+    }
+       
+    function listenMouse() {
+      var c = document.getElementById("myCanvas");
+    
+      c.addEventListener("mousemove", (evt) => {
+        var W = 600.0;
+        var H = 600.0;
+        
+        var pct = c.offsetWidth / W;
+        var W_real = pct * W;
+        var H_real = pct * H;
+        var W_center = W_real * 0.5;
+        var H_center = H_real * 0.5;
+        var R = pct * 250;
+    
+        var rect = c.getBoundingClientRect();
+        var mouseX = evt.clientX - rect.left;
+        var mouseY = evt.clientY - rect.top;
+        var relX = mouseX - W_center;
+        var relY = H_center - mouseY;
+        
+        var radius = Math.sqrt(relX * relX + relY * relY)
+        var angle = Math.atan2(relY, relX);
+        if (angle < 0) {
+          angle += 2*Math.PI;
+        }
+        
+        if (radius < R) {
+          var level = 5 - Math.floor((5.0 * radius) / R)
+          var section_id = Math.floor(angle / (Math.PI/3)) + 1;
+          if (section_id > 6) { section_id = 6; }
+          
+          
+          drawTarget(level, section_id);
+          drawCorrectionInfo(radius / R, angle);
+        }
+        else {
+          drawTarget();
+        }
+      });
+    
+      c.addEventListener("mouseleave", () => {
+        drawTarget();
+      });
+    }
 
     window.addEventListener("resize", () => {
-      respondCanvas();
+      drawTarget();
     });
   
     window.addEventListener("theme-change", () => {
-      respondCanvas();
+      drawTarget();
     });
   
-    respondCanvas();
+    listenMouse();
+    drawTarget();
   </script>
   
     <div class="g-col-12 g-col-lg-5">
