@@ -39,11 +39,11 @@
     <% followings = Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, problems.number AS pb_number, followings.created_at, followings.user_id AS user_id, users.first_name, users.last_name, users.see_name, users.corrector_color AS color").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone).to_a %>
     
     <% def get_radius_pct(f) %>
-      <% return (0.2 * (5 - f.level + 0.001 * (((f.created_at.to_i * 373) % 999) + 1))).round(4) %>
+      <% return (0.2 * (5 - f.level + 0.001 * (((f.created_at.to_i * 373) % 981) + 10))).round(4) %>
     <% end %>
     
     <% def get_angle(f) %>
-      <% return (Math::PI / 3 * (f.section_id - 1) + Math::PI / 3 * 0.001 * (((f.created_at.to_i * 727) % 999) + 1)).round(6) %>
+      <% return (Math::PI / 3 * (f.section_id - 1) + Math::PI / 3 * 0.001 * (((f.created_at.to_i * 727) % 981) + 10)).round(6) %>
     <% end %>
     
     var grid = new Array(32);
