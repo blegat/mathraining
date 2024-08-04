@@ -20,7 +20,7 @@
 #  wepion                    :boolean          default(FALSE)
 #  year                      :integer          default(0)
 #  rating                    :integer          default(0)
-#  last_forum_visit_time     :datetime         default(Thu, 01 Jan 2009 01:00:00 CET +01:00)
+#  last_forum_visit_time     :datetime         default(Thu, 01 Jan 2009 01:00:00.000000000 CET +01:00)
 #  last_connexion_date       :date             default(Thu, 01 Jan 2009)
 #  follow_message            :boolean          default(FALSE)
 #  corrector                 :boolean          default(FALSE)
@@ -34,6 +34,7 @@
 #  can_change_name           :boolean          default(TRUE)
 #  last_ban_date             :datetime
 #  correction_level          :integer          default(0)
+#  corrector_color           :string
 #
 require "spec_helper"
 

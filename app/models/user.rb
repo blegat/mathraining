@@ -36,6 +36,7 @@
 #  can_change_name           :boolean          default(TRUE)
 #  last_ban_date             :datetime
 #  correction_level          :integer          default(0)
+#  corrector_color           :string
 #
 include ERB::Util
 
@@ -401,6 +402,17 @@ class User < ActiveRecord::Base
     begin
       self.remember_token = SecureRandom.urlsafe_base64
     end while User.exists?(:remember_token => self.remember_token)
+  end
+  
+  # Generate random color (for correctors)
+  def generate_corrector_color
+    self.corrector_color = "#"
+    (0..5).each do |i|
+      r = (i % 2 == 1 ? rand(0..15) : rand(5..12));
+      x = (r < 10 ? ("0".ord + r).chr : ("A".ord + r-10).chr)
+      self.corrector_color = self.corrector_color + x
+    end
+    self.save
   end
   
   # Recompute all scores

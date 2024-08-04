@@ -26,8 +26,8 @@
     <div class="g-col-12 g-col-lg-7">
       <center>
       <!-- Endroit pour dessiner la cible -->
-      <div id="contenant" class="mt-3 mb-2" style="width:100%; max-width:600px; height:600px; position:relative; display:block;">
-      <canvas id="myCanvas" width="600" height="600" style="position:absolute; left:0px; top:0px;">
+      <div id="contenant" class="mt-3 mb-2" style="width:100%; max-width:520px; height:520px; position:relative; display:block;">
+      <canvas id="myCanvas" width="520" height="520" style="position:absolute; left:0px; top:0px;">
       Votre navigateur ne supporte pas les canvas.
       </canvas>
       </div>
@@ -36,7 +36,7 @@
   
   <script type="text/javascript">
   
-    <% followings = Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, problems.number AS pb_number, followings.created_at, followings.user_id AS user_id, users.first_name, users.last_name, users.see_name").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone).to_a %>
+    <% followings = Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, problems.number AS pb_number, followings.created_at, followings.user_id AS user_id, users.first_name, users.last_name, users.see_name, users.corrector_color AS color").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone).to_a %>
     
     <% def get_radius_pct(f) %>
       <% return (0.2 * (5 - f.level + 0.01 * (((f.created_at.to_i * 37) % 99) + 1))).round(4) %>
@@ -50,7 +50,7 @@
     for (var i = 0; i < grid.length; i++)
       grid[i] = new Array(32);
       
-    function addGridPoint(x, y, radius_pct, angle, user_name, pb_number) {
+    function addGridPoint(x, y, radius_pct, angle, user_name, pb_number, hour, color) {
       if (grid[x][y] == undefined) {
         grid[x][y] = new Array
       }
@@ -60,6 +60,8 @@
       grid[x][y][i].set("angle", angle);
       grid[x][y][i].set("user_name", user_name);
       grid[x][y][i].set("pb_number", pb_number);
+      grid[x][y][i].set("hour", hour);
+      grid[x][y][i].set("color", color);
     }
     
     <% followings.each do |f| %>
@@ -67,7 +69,7 @@
       <% angle = get_angle(f) %>
       <% x = [(16 + 16 * radius_pct * Math.cos(angle)).floor(), 31].min %>
       <% y = [(16 + 16 * radius_pct * Math.sin(angle)).floor(), 31].min %>
-      addGridPoint(<%= x %>, <%= y %>, <%= radius_pct %>, <%= angle %>, "<%= f.user.name %>", <%= f.pb_number %>);
+      addGridPoint(<%= x %>, <%= y %>, <%= radius_pct %>, <%= angle %>, "<%= f.user.name %>", <%= f.pb_number %>, "<%= write_hour(f.created_at) %>", "<%= f.color %>");
       
     <% end %>
   
@@ -80,8 +82,8 @@
       var ctx = c.getContext('2d');
       var container = c.parentElement;
     
-      var W = 600.0;
-      var H = 600.0;
+      var W = 520.0;
+      var H = 520.0;
     
       c.setAttribute('width', container.offsetWidth); //max width
       c.setAttribute('height', H * container.offsetWidth / W); //max height
@@ -89,7 +91,6 @@
       container.style.height = H * container.offsetWidth / W + "px";
 
       // Draw content
-
       var pct = c.offsetWidth / W;
       var W_real = pct * W;
       var H_real = pct * H;
@@ -161,7 +162,7 @@
         <% angle = get_angle(f) %>
         ctx.beginPath();
         ctx.arc(W_center + R * <%= radius_pct %> * Math.cos(<%= angle %>), H_center - R * <%= radius_pct %> * Math.sin(<%= angle %>), 5 * pct, 0, 2 * Math.PI);
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "<%= f.color %>";
         ctx.fill();
         <% if corrector_to_points.key?(f.user_id) %>
           <% corrector_to_points[f.user_id] += f.level %>
@@ -177,8 +178,8 @@
       var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
       
       var c = document.getElementById("myCanvas");
-      var W = 600.0;
-      var H = 600.0;
+      var W = 520.0;
+      var H = 520.0;
         
       var pct = c.offsetWidth / W;
       var W_real = pct * W;
@@ -229,6 +230,7 @@
       
       var ctx = c.getContext('2d');
       ctx.beginPath();
+      ctx.strokeStyle = found.get("color")
       ctx.moveTo(X - 10, Y);
       ctx.lineTo(X + 10, Y);
       ctx.moveTo(X, Y - 10);
@@ -239,16 +241,16 @@
       ctx.font = "14px Arial";      
       ctx.textAlign = (X > W_center ? "right" : "left");
       var textX = (X > W_center ? X - textMargin : X + textMargin);
-      var textY = (Y < H_center ? Y - 20 - textMargin : Y + textMargin + 9);
+      var textY = (Y > H_center ? Y - 19 - textMargin : Y + textMargin + 9.5);
       var text1 = found.get("user_name");
-      var text2 = "Problème #" + found.get("pb_number");
+      var text2 = found.get("hour") + " - #" + found.get("pb_number");
       
       var textWidth = Math.max(ctx.measureText(text1).width, ctx.measureText(text2).width);
       var rectWidth = textWidth + 2 * textMargin;
       var rectHeight = 43;
       
       ctx.beginPath();
-      ctx.rect(X, Y, (X > W_center ? -rectWidth : rectWidth), (Y < H_center ? -rectHeight : rectHeight));
+      ctx.rect(X, Y, (X > W_center ? -rectWidth : rectWidth), (Y > H_center ? -rectHeight : rectHeight));
       ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
       ctx.strokeStyle = (is_dark ? 'white' : 'black');
       ctx.fill();
@@ -263,8 +265,8 @@
       var c = document.getElementById("myCanvas");
     
       c.addEventListener("mousemove", (evt) => {
-        var W = 600.0;
-        var H = 600.0;
+        var W = 520.0;
+        var H = 520.0;
         
         var pct = c.offsetWidth / W;
         var W_real = pct * W;
