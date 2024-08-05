@@ -38,7 +38,7 @@
     <% end %>
     
     <% def get_angle(f) %>
-      <% return (Math::PI / 3 * (f.section_id - 1) + Math::PI / 3 * 0.001 * (((f.created_at.to_i * 727) % 981) + 10)).round(6) %>
+      <% return (Math::PI / 3 * (f.section_id - 1) + Math::PI / 3 * 0.001 * (((f.created_at.to_i * 727) % 983) + 9)).round(6) %>
     <% end %>
     
     var grid = new Array(32);
