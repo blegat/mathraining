@@ -4,7 +4,7 @@ class AddCorrectorColorToUser < ActiveRecord::Migration[7.0]
     
     up_only do
       User.where("admin = ? OR corrector = ?", true, true).each do |u|
-        u.generate_corrector_color()
+        u.update_attribute(:corrector_color, User.generate_corrector_color)
       end
     end
   end

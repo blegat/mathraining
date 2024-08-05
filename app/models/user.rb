@@ -60,6 +60,30 @@ class CharacterValidator < ActiveModel::Validator
   end
 end
 
+class ColorValidator < ActiveModel::Validator
+  def validate(record)
+    return if !record.admin? && !record.corrector?
+    return if record.corrector_color.nil? && Rails.env.test?
+    
+    good_format = true
+    record.corrector_color.upcase!
+    c = record.corrector_color
+    if c.size != 7
+      good_format = false
+    elsif c[0] != '#'
+      good_format = false
+    else
+      (1..6).each do |i|
+        good_format = false if !((c[i].ord >= '0'.ord && c[i].ord <= '9'.ord) || (c[i].ord >= 'A'.ord && c[i].ord <= 'F'.ord))
+      end
+    end
+    
+    if !good_format
+      record.errors.add(:base, "La couleur pour les corrections doit être au format #RRGGBB avec chaque lettre entre '0' et 'F' (en hexadécimal).")
+    end
+  end
+end
+
 class User < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY
@@ -125,6 +149,7 @@ class User < ActiveRecord::Base
   validates_confirmation_of :email, case_sensitive: false
   validates :year, presence: true
   validates :country, presence: true
+  validates_with ColorValidator
   
   # OTHER METHODS
   
@@ -404,15 +429,15 @@ class User < ActiveRecord::Base
     end while User.exists?(:remember_token => self.remember_token)
   end
   
-  # Generate random color (for correctors)
-  def generate_corrector_color
-    self.corrector_color = "#"
+  # Generate a random color (for correctors)
+  def self.generate_corrector_color
+    color = "#"
     (0..5).each do |i|
       r = (i % 2 == 1 ? rand(0..15) : rand(5..12));
       x = (r < 10 ? ("0".ord + r).chr : ("A".ord + r-10).chr)
-      self.corrector_color = self.corrector_color + x
+      color = color + x
     end
-    self.save
+    return color
   end
   
   # Recompute all scores
