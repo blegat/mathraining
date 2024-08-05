@@ -19,24 +19,19 @@
 
 
 <% if signed_in? && current_user.sk.root? %>
+  
+  <center>
+  <!-- Endroit pour dessiner la cible -->
+  <div id="contenant" class="mt-3 mb-2" style="width:100%; max-width:520px; height:520px; position:relative; display:block;">
+  <canvas id="myCanvas" width="520" height="520" style="position:absolute; left:0px; top:0px;">
+  Votre navigateur ne supporte pas les canvas.
+  </canvas>
+  </div>
+  </center>
 
-  <% corrector_to_points = {} %>
-  
-  <div class="grid" style="--bs-columns:12; --bs-gap:5px;">
-    <div class="g-col-12 g-col-lg-7">
-      <center>
-      <!-- Endroit pour dessiner la cible -->
-      <div id="contenant" class="mt-3 mb-2" style="width:100%; max-width:520px; height:520px; position:relative; display:block;">
-      <canvas id="myCanvas" width="520" height="520" style="position:absolute; left:0px; top:0px;">
-      Votre navigateur ne supporte pas les canvas.
-      </canvas>
-      </div>
-      </center>
-    </div>
-  
   <script type="text/javascript">
   
-    <% followings = Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, problems.number AS pb_number, followings.created_at, followings.user_id AS user_id, users.first_name, users.last_name, users.see_name, users.corrector_color AS color").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone).to_a %>
+    <% followings = Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, problems.number AS pb_number, followings.created_at, followings.user_id AS user_id, users.first_name, users.last_name, users.see_name, users.corrector_color AS color").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone - 2000.days).to_a %>
     
     <% def get_radius_pct(f) %>
       <% return (0.2 * (5 - f.level + 0.001 * (((f.created_at.to_i * 373) % 981) + 10))).round(4) %>
@@ -64,6 +59,8 @@
       grid[x][y][i].set("color", color);
     }
     
+    <% corrector_to_points = {} %>
+    
     <% followings.each do |f| %>
       <% radius_pct = get_radius_pct(f) %>
       <% angle = get_angle(f) %>
@@ -71,6 +68,12 @@
       <% y = [(16 + 16 * radius_pct * Math.sin(angle)).floor(), 31].min %>
       addGridPoint(<%= x %>, <%= y %>, <%= radius_pct %>, <%= angle %>, "<%= f.user.name %>", <%= f.pb_number %>, "<%= write_hour(f.created_at) %>", "<%= f.color %>");
       
+      <% if !corrector_to_points.key?(f.user_id) %>
+        <% corrector_to_points[f.user_id] = {:name => f.user.name, :nb_points => f.level, :nb_corrections => 1, :color => f.color} %>
+      <% else %>
+        <% corrector_to_points[f.user_id][:nb_points] += f.level %>
+        <% corrector_to_points[f.user_id][:nb_corrections] += 1 %>
+      <% end %>
     <% end %>
   
     function drawTarget(highlighted_level = -1, highlighted_section_id = -1) {
@@ -164,12 +167,22 @@
         ctx.arc(W_center + R * <%= radius_pct %> * Math.cos(<%= angle %>), H_center - R * <%= radius_pct %> * Math.sin(<%= angle %>), 5 * pct, 0, 2 * Math.PI);
         ctx.fillStyle = "<%= f.color %>";
         ctx.fill();
-        <% if corrector_to_points.key?(f.user_id) %>
-          <% corrector_to_points[f.user_id] += f.level %>
-        <% else %>
-          <% corrector_to_points[f.user_id] = f.level %>
-        <% end %>
       <% end %>
+      
+      // Ranking button
+      var text = "Points"
+      ctx.font = "14px Arial";      
+      ctx.textAlign = "center";
+      var textWidth = ctx.measureText(text).width;
+      ctx.beginPath();
+      ctx.rect(1, 1, textWidth + 20, 24);
+      ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
+      ctx.strokeStyle = (is_dark ? 'white' : 'black');
+      ctx.fill();
+      ctx.stroke();
+      
+      ctx.fillStyle = (is_dark ? 'white' : 'black');
+      ctx.fillText(text, 1 + textWidth / 2 + 10, 1 + 18);
     }
     
     function drawCorrectionInfo(mouse_radius_pct, mouse_angle)
@@ -260,6 +273,93 @@
       ctx.fillText(text1, textX, textY);
       ctx.fillText(text2, textX, textY + 20);
     }
+    
+    function drawRanking() {
+      // Check light or dark theme
+      var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+      
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext('2d');
+      
+      var W = 520.0;
+      var H = 520.0;
+        
+      var pct = c.offsetWidth / W;
+      var W_real = pct * W;
+      var H_real = pct * H;
+      
+      <% correctors_sorted = corrector_to_points.sort_by{|_key, value| -value[:nb_points] - 0.00001 * value[:nb_corrections]} %>
+      
+      var numCorrectors = <%= correctors_sorted.size %>;
+      var startX = 10;
+      var startY = 34;
+      var lineHeight = 25;
+      var boxHeight = 35; // To be defined
+      
+      for (var i = 0; i < numCorrectors; i++) {
+        if (startY + boxHeight + lineHeight < H_real) {
+          boxHeight += lineHeight;
+        }
+        else {
+          numCorrectors = i;
+        }
+      }
+      
+      var colorLength = 15;
+      var nameLength = 50;
+      var corrLength = 45;
+      var pointsLength = 45;
+      
+      ctx.font = "14px Arial";
+      
+      var i = 0;
+      <% correctors_sorted.each do |user_id, infos| %>
+        if (i < numCorrectors) {
+          nameLength = Math.max(nameLength, ctx.measureText("<%= infos[:name] %>").width + 10);
+        }
+        i = i + 1
+      <% end %>
+      
+      
+      ctx.beginPath();
+      ctx.rect(startX, startY, 20 + colorLength + nameLength + corrLength + pointsLength, boxHeight);
+      ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
+      ctx.strokeStyle = (is_dark ? 'white' : 'black');
+      ctx.fill();
+      ctx.stroke();
+      
+      
+      ctx.fillStyle = (is_dark ? 'white' : 'black');
+      
+      ctx.textAlign = "left";
+      ctx.fillText("Tireur", startX + 10 + 2, startY + 20);
+      ctx.textAlign = "center";
+      ctx.fillText("Tirs", startX + 10 + colorLength + nameLength + corrLength / 2, startY + 20);
+      ctx.fillText("Points", startX + 10 + colorLength + nameLength + corrLength + pointsLength / 2, startY + 20);
+      ctx.beginPath()
+      ctx.moveTo(startX + 10 - 3, startY + 30);
+      ctx.lineTo(startX + 10 + 3 + colorLength + nameLength + corrLength + pointsLength, startY + 30);
+      ctx.stroke();
+      
+      i = 0;
+      <% correctors_sorted.each do |user_id, infos| %>
+        if (i < numCorrectors) {
+          ctx.beginPath();
+          ctx.arc(startX + 10 + 5, startY + 50 + lineHeight * i - 5.5, 5, 0, 2 * Math.PI);
+          ctx.fillStyle = "<%= infos[:color] %>"
+          ctx.fill();
+          ctx.stroke();
+          
+          ctx.fillStyle = (is_dark ? 'white' : 'black');
+          ctx.textAlign = "left";
+          ctx.fillText("<%= infos[:name] %>", startX + 10 + colorLength, startY + 50 + lineHeight * i);
+          ctx.textAlign = "center";
+          ctx.fillText("<%= infos[:nb_corrections] %>", startX + 10 + colorLength + nameLength + corrLength / 2, startY + 50 + lineHeight * i);
+          ctx.fillText("<%= infos[:nb_points] %>", startX + 10 + colorLength + nameLength + corrLength + pointsLength / 2, startY + 50 + lineHeight * i);
+        }
+        i = i + 1
+      <% end %>
+    }
        
     function listenMouse() {
       var c = document.getElementById("myCanvas");
@@ -281,6 +381,17 @@
         var relX = mouseX - W_center;
         var relY = H_center - mouseY;
         
+        var ctx = c.getContext('2d');
+        var text = "Points"
+        ctx.font = "14px Arial";
+        ctx.textAlign = "center";
+        var textWidth = ctx.measureText(text).width;
+        if (mouseX >= 1 && mouseY >= 1 && mouseX <= 1 + textWidth + 20 && mouseY <= 1 + 24) {
+          drawTarget();
+          drawRanking();
+          return;
+        }
+        
         var radius = Math.sqrt(relX * relX + relY * relY)
         var angle = Math.atan2(relY, relX);
         if (angle < 0) {
@@ -288,12 +399,10 @@
         }
         
         if (radius < R) {
-          var level = 5 - Math.floor((5.0 * radius) / R)
-          var section_id = Math.floor(angle / (Math.PI/3)) + 1;
-          if (section_id > 6) { section_id = 6; }
-          
-          
-          drawTarget(level, section_id);
+          // var level = 5 - Math.floor((5.0 * radius) / R)
+          // var section_id = Math.floor(angle / (Math.PI/3)) + 1;
+          // if (section_id > 6) { section_id = 6; }
+          drawTarget();
           drawCorrectionInfo(radius / R, angle);
         }
         else {
@@ -318,15 +427,6 @@
     drawTarget();
   </script>
   
-    <div class="g-col-12 g-col-lg-5">
-      <table class="table table-bordered" style="width:auto;">
-      <% corrector_to_points.sort_by{|_key, value| -value}.each do |user_id, num_points| %>
-        <tr><td><%= raw(User.find(user_id).linked_name) %></td><td><%= num_points %></td></tr>
-      <% end %>
-      </table>
-    </div>
-  </div>
-
 <% end %>
 
 
