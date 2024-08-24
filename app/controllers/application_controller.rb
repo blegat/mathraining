@@ -38,6 +38,7 @@ class ApplicationController < ActionController::Base
     
     @under_maintenance = false
     @no_new_submission = false
+    @limited_new_submissions = false
     Globalvariable.all.each do |g|
       if g.key == "under_maintenance"
         @under_maintenance = g.value
@@ -45,6 +46,8 @@ class ApplicationController < ActionController::Base
       elsif g.key == "no_new_submission"
         @no_new_submission = g.value
         @no_new_submission_message = g.message
+      elsif g.key == "limited_new_submissions"
+        @limited_new_submissions = g.value
       end
     end
   end

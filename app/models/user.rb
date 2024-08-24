@@ -198,6 +198,11 @@ class User < ActiveRecord::Base
   def can_write_submission?
     return (self.chapters.where(:online => true, :submission_prerequisite => true).count == Chapter.where(:online => true, :submission_prerequisite => true).count)
   end
+  
+  # Tells if the user has already sent a new submission (not in a test) today
+  def has_already_submitted_today?
+    return self.submissions.where("visible = ? AND intest = ? AND created_at >= ?", true, false, Date.today.in_time_zone.to_datetime).count >= 1
+  end
 
   # Gives the status for the given virtual test ("not_started", "in_progress", "finished")
   def test_status(virtualtest)

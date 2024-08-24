@@ -1,6 +1,8 @@
 <% @ancientexte = session[:ancientexte] %>
 <% session[:ancientexte] = nil %>
 
+<% limit_reached = @limited_new_submissions && current_user.sk.has_already_submitted_today? %>
+
 <%= form_for :submission, url: problem_submissions_path(problem), :html => { :multipart => true } do |f| %>
 
   <!-- Nouvelle soumission -->
@@ -13,21 +15,25 @@
   function checkChecked() {
       var c = document.getElementById("consent").checked;
       var bt = document.getElementById("send-button");
-      if(c && <%= !current_user.other && !@no_new_submission %>) { bt.disabled = false; }
+      if(c && <%= !current_user.other && !@no_new_submission && !limit_reached %>) { bt.disabled = false; }
       else { bt.disabled = true; }
   }
   </script>
   
-  <div class="form-check mb-2">
-  <label class="form-check-label">
-    <%= check_box_tag "consent", 1, false, :class => "form-check-input", :disabled => @no_new_submission, :onchange => "javascript:checkChecked();" %>
-    Je comprends que les correcteurs sont bénévoles et vont corriger cette solution pendant leur temps libre pour me faire progresser.
-    Je certifie donc que cette solution est le fruit de mon travail et qu'elle ne provient pas d'une source extérieure.
-    Je garantis également que cette solution n'a pas déjà été soumise via un autre compte Mathraining.<sup>1</sup>
-  </label>
-  </div>
+  <% if limit_reached %>
+    <p class="mt-2 text-color-red">Vous avez déjà soumis une nouvelle solution aujourd'hui. Afin de limiter la charge de travail des correcteurs, les nouvelles soumissions sont actuellement limitées à une par jour.</p>
+  <% else %>
+    <div class="form-check mb-2">
+    <label class="form-check-label">
+      <%= check_box_tag "consent", 1, false, :class => "form-check-input", :disabled => @no_new_submission, :onchange => "javascript:checkChecked();" %>
+      Je comprends que les correcteurs sont bénévoles et vont corriger cette solution pendant leur temps libre pour me faire progresser.
+      Je certifie donc que cette solution est le fruit de mon travail et qu'elle ne provient pas d'une source extérieure.
+      Je garantis également que cette solution n'a pas déjà été soumise via un autre compte Mathraining.<sup>1</sup>
+    </label>
+    </div>
+  <% end %>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir soumettre cette solution ?" }) %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Attention ! Votre solution va être lue par un correcteur bénévole.\n\nVeillez à ce que celle-ci soit suffisamment claire et bien rédigée. Avant de l'envoyer, nous vous encourageons à la relire entièrement, si possible plusieurs heures après l'avoir rédigée, pour vous assurer qu'elle est facilement compréhensible.\n\nÊtes-vous sûr de vouloir soumettre cette solution ?" }) %>
   <%= f.submit "Enregistrer comme brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (current_user.other || @no_new_submission) %>
 <% end %>
 

@@ -55,7 +55,7 @@ class SubmissionsController < ApplicationController
     submission.user = current_user.sk
     submission.last_comment_time = DateTime.now
 
-    if params[:commit] == "Enregistrer comme brouillon"
+    if params[:commit] == "Enregistrer comme brouillon" || (@limited_new_submissions && current_user.sk.has_already_submitted_today?)
       submission.visible = false
       submission.status = :draft
     end
@@ -118,13 +118,13 @@ class SubmissionsController < ApplicationController
 
   # Update a draft and maybe send it (send the form)
   def update_draft
-    if params[:commit] == "Enregistrer le brouillon"
-      @context = 2
-      update_submission
-    elsif params[:commit] == "Supprimer ce brouillon"
+    if params[:commit] == "Supprimer ce brouillon"
       @submission.destroy
       flash[:success] = "Brouillon supprimé."
       redirect_to @problem
+    elsif params[:commit] == "Enregistrer le brouillon" || (@limited_new_submissions && current_user.sk.has_already_submitted_today?)
+      @context = 2
+      update_submission
     else
       @context = 3
       update_submission
