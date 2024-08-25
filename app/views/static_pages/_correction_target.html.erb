@@ -265,18 +265,25 @@ Votre navigateur ne supporte pas les canvas.
     <% correctors_sorted = corrector_to_points.sort_by{|_key, value| -value[:nb_points] - 0.00001 * value[:nb_corrections]} %>
      
     var numCorrectors = <%= correctors_sorted.size %>;
+    var numShownCorrectors = numCorrectors;
     var startX = 10;
     var startY = 34;
     var lineHeight = 25;
-    var boxHeight = 35; // To be defined
+    var boxHeight = 63; // Will increase with the loop below
       
     for (var i = 0; i < numCorrectors; i++) {
       if (startY + boxHeight + lineHeight < H_real) {
         boxHeight += lineHeight;
       }
       else {
-        numCorrectors = i;
+        numShownCorrectors = i;
+        break;
       }
+    }
+    
+    if (numShownCorrectors < numCorrectors) {
+      // Keep one line for "Autres correcteurs"
+      numShownCorrectors = numShownCorrectors - 1;
     }
       
     var colorLength = 15;
@@ -288,13 +295,17 @@ Votre navigateur ne supporte pas les canvas.
     
     var i = 0;
     <% correctors_sorted.each do |user_id, infos| %>
-      if (i < numCorrectors) {
+      if (i < numShownCorrectors) {
         nameLength = Math.max(nameLength, ctx.measureText("<%= infos[:name] %>").width + 10);
       }
       i = i + 1
     <% end %>
-      
-      
+    
+    if (numShownCorrectors < numCorrectors) {
+      nameLength = Math.max(nameLength, ctx.measureText("Autres correcteurs").width + 10);
+    }
+    
+    // Box
     ctx.beginPath();
     ctx.rect(startX, startY, 20 + colorLength + nameLength + corrLength + pointsLength, boxHeight);
     ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
@@ -302,36 +313,77 @@ Votre navigateur ne supporte pas les canvas.
     ctx.fill();
     ctx.stroke();
             
+    // Header of table
     ctx.fillStyle = (is_dark ? 'white' : 'black');
-      
     ctx.textAlign = "left";
     ctx.fillText("Tireur", startX + 10 + 2, startY + 20);
     ctx.textAlign = "center";
     ctx.fillText("Tirs", startX + 10 + colorLength + nameLength + corrLength / 2, startY + 20);
     ctx.fillText("Points", startX + 10 + colorLength + nameLength + corrLength + pointsLength / 2, startY + 20);
+    
+    // Line below header
     ctx.beginPath()
     ctx.moveTo(startX + 10 - 3, startY + 30);
     ctx.lineTo(startX + 10 + 3 + colorLength + nameLength + corrLength + pointsLength, startY + 30);
     ctx.stroke();
-      
+    
+    // Correctors
     i = 0;
+    <% totNumCorrections = 0 %>
+    <% totNumPoints = 0 %>
+    var numShownCorrections = 0;
+    var numShownPoints = 0;
     <% correctors_sorted.each do |user_id, infos| %>
-      if (i < numCorrectors) {
+      if (i < numShownCorrectors) {
+        // Colored dot
         ctx.beginPath();
         ctx.arc(startX + 10 + 5, startY + 50 + lineHeight * i - 5.5, 5, 0, 2 * Math.PI);
         ctx.fillStyle = "<%= infos[:color] %>"
         ctx.fill();
         ctx.stroke();
         
+        // Rest of the line
         ctx.fillStyle = (is_dark ? 'white' : 'black');
         ctx.textAlign = "left";
         ctx.fillText("<%= infos[:name] %>", startX + 10 + colorLength, startY + 50 + lineHeight * i);
         ctx.textAlign = "center";
         ctx.fillText("<%= infos[:nb_corrections] %>", startX + 10 + colorLength + nameLength + corrLength / 2, startY + 50 + lineHeight * i);
         ctx.fillText("<%= infos[:nb_points] %>", startX + 10 + colorLength + nameLength + corrLength + pointsLength / 2, startY + 50 + lineHeight * i);
+        
+        numShownCorrections = numShownCorrections + <%= infos[:nb_corrections] %>
+        numShownPoints = numShownPoints + <%= infos[:nb_points] %>
       }
       i = i + 1
+     <% totNumCorrections += infos[:nb_corrections] %>
+     <% totNumPoints += infos[:nb_points] %>
     <% end %>
+    
+    ctx.fillStyle = (is_dark ? 'white' : 'black');
+    
+    if (numShownCorrectors < numCorrectors) {
+      // Other correctors
+      ctx.font = "italic 14px Arial";
+      ctx.textAlign = "left";
+      ctx.fillText("Autres correcteurs", startX + 10 + 2, startY + 50 + lineHeight * numShownCorrectors);
+      ctx.textAlign = "center";
+      ctx.fillText((<%= totNumCorrections %> - numShownCorrections).toString(), startX + 10 + colorLength + nameLength + corrLength / 2, startY + 50 + lineHeight * numShownCorrectors);
+      ctx.fillText((<%= totNumPoints %> - numShownPoints).toString(), startX + 10 + colorLength + nameLength + corrLength + pointsLength / 2, startY + 50 + lineHeight * numShownCorrectors);
+    }
+    
+    ctx.font = "14px Arial";
+    
+    // Line above total
+    ctx.beginPath()
+    ctx.moveTo(startX + 10 - 3, startY + boxHeight - 30);
+    ctx.lineTo(startX + 10 + 3 + colorLength + nameLength + corrLength + pointsLength, startY + boxHeight - 28);
+    ctx.stroke();
+    
+    // Total
+    ctx.textAlign = "left";
+    ctx.fillText("Total", startX + 10 + 2, startY + boxHeight - 10);
+    ctx.textAlign = "center";
+    ctx.fillText("<%= totNumCorrections %>", startX + 10 + colorLength + nameLength + corrLength / 2, startY + boxHeight - 10);
+    ctx.fillText("<%= totNumPoints %>", startX + 10 + colorLength + nameLength + corrLength + pointsLength / 2, startY + boxHeight - 10);
   }
   
   function listenMouse() {
@@ -368,7 +420,8 @@ Votre navigateur ne supporte pas les canvas.
         angle += 2*Math.PI;
       }
         
-      if (radius < R) {
+      if (radius < R + 8 * pct) {
+        // only for radius < R, to highlight the portion one day:
         // var level = 5 - Math.floor((5.0 * radius) / R)
         // var section_id = Math.floor(angle / (Math.PI/3)) + 1;
         // if (section_id > 6) { section_id = 6; }
