@@ -37,4 +37,6 @@
   <%= f.submit "Enregistrer comme brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (current_user.other || @no_new_submission) %>
 <% end %>
 
-<p class="mt-2" style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui renvoient une solution déjà envoyée sur un précédent compte.</p>
+<% unless limit_reached %>
+  <p class="mt-2" style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui renvoient une solution déjà envoyée sur un précédent compte.</p>
+<% end %>
