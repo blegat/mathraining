@@ -148,20 +148,22 @@ Votre navigateur ne supporte pas les canvas.
       ctx.fill();
     <% end %>
       
-    // Ranking button
-    var text = "Points"
-    ctx.font = "14px Arial";      
-    ctx.textAlign = "center";
-    var textWidth = ctx.measureText(text).width;
-    ctx.beginPath();
-    ctx.rect(1, 1, textWidth + 20, 24);
-    ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
-    ctx.strokeStyle = (is_dark ? 'white' : 'black');
-    ctx.fill();
-    ctx.stroke();
+    <% if corrector_to_points.size > 0 %>
+      // Ranking button
+      var text = "Points"
+      ctx.font = "14px Arial";      
+      ctx.textAlign = "center";
+      var textWidth = ctx.measureText(text).width;
+      ctx.beginPath();
+      ctx.rect(1, 1, textWidth + 20, 24);
+      ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
+      ctx.strokeStyle = (is_dark ? 'white' : 'black');
+      ctx.fill();
+      ctx.stroke();
       
-    ctx.fillStyle = (is_dark ? 'white' : 'black');
-    ctx.fillText(text, 1 + textWidth / 2 + 10, 1 + 18);
+      ctx.fillStyle = (is_dark ? 'white' : 'black');
+      ctx.fillText(text, 1 + textWidth / 2 + 10, 1 + 18);
+    <% end %>
   }
     
   function drawCorrectionInfo(mouse_radius_pct, mouse_angle)
@@ -374,7 +376,7 @@ Votre navigateur ne supporte pas les canvas.
     
     // Line above total
     ctx.beginPath()
-    ctx.moveTo(startX + 10 - 3, startY + boxHeight - 30);
+    ctx.moveTo(startX + 10 - 3, startY + boxHeight - 28);
     ctx.lineTo(startX + 10 + 3 + colorLength + nameLength + corrLength + pointsLength, startY + boxHeight - 28);
     ctx.stroke();
     
@@ -403,16 +405,18 @@ Votre navigateur ne supporte pas les canvas.
       var relX = mouseX - W_center;
       var relY = H_center - mouseY;
       
-      var ctx = c.getContext('2d');
-      var text = "Points"
-      ctx.font = "14px Arial";
-      ctx.textAlign = "center";
-      var textWidth = ctx.measureText(text).width;
-      if (mouseX >= 1 && mouseY >= 1 && mouseX <= 1 + textWidth + 20 && mouseY <= 1 + 24) {
-        drawTarget();
-        drawRanking();
-        return;
-      }
+      <% if corrector_to_points.size > 0 %>
+        var ctx = c.getContext('2d');
+        var text = "Points"
+        ctx.font = "14px Arial";
+        ctx.textAlign = "center";
+        var textWidth = ctx.measureText(text).width;
+        if (mouseX >= 1 && mouseY >= 1 && mouseX <= 1 + textWidth + 20 && mouseY <= 1 + 24) {
+          drawTarget();
+          drawRanking();
+          return;
+        }
+      <% end %>
         
       var radius = Math.sqrt(relX * relX + relY * relY)
       var angle = Math.atan2(relY, relX);
