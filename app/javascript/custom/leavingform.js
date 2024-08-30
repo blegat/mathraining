@@ -31,7 +31,9 @@ var LeavingForm = {
   // Specify that changes were done in the text
   //
   SetChangesDone: function() {
-    window.changesDone = (window.originalText != this.input.value);
+    if (this.input != undefined) {
+      window.changesDone = (window.originalText != this.input.value);
+    }
   },
   
   //

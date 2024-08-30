@@ -36,6 +36,7 @@
 #  can_change_name           :boolean          default(TRUE)
 #  last_ban_date             :datetime
 #  correction_level          :integer          default(0)
+#  corrector_color           :string
 #
 include ERB::Util
 
@@ -55,6 +56,30 @@ class CharacterValidator < ActiveModel::Validator
       if(not one_letter)
         record.errors.add(:base, "#{b[j]} doit contenir au moins une lettre")
       end
+    end
+  end
+end
+
+class ColorValidator < ActiveModel::Validator
+  def validate(record)
+    return if !record.admin? && !record.corrector?
+    return if record.corrector_color.nil? && Rails.env.test?
+    
+    good_format = true
+    record.corrector_color.upcase!
+    c = record.corrector_color
+    if c.size != 7
+      good_format = false
+    elsif c[0] != '#'
+      good_format = false
+    else
+      (1..6).each do |i|
+        good_format = false if !((c[i].ord >= '0'.ord && c[i].ord <= '9'.ord) || (c[i].ord >= 'A'.ord && c[i].ord <= 'F'.ord))
+      end
+    end
+    
+    if !good_format
+      record.errors.add(:base, "La couleur pour les corrections doit être au format #RRGGBB avec chaque lettre entre '0' et 'F' (en hexadécimal).")
     end
   end
 end
@@ -124,6 +149,7 @@ class User < ActiveRecord::Base
   validates_confirmation_of :email, case_sensitive: false
   validates :year, presence: true
   validates :country, presence: true
+  validates_with ColorValidator
   
   # OTHER METHODS
   
@@ -171,6 +197,11 @@ class User < ActiveRecord::Base
   # Tells if the user completed all chapters which are prerequisite to write a submission
   def can_write_submission?
     return (self.chapters.where(:online => true, :submission_prerequisite => true).count == Chapter.where(:online => true, :submission_prerequisite => true).count)
+  end
+  
+  # Tells if the user has already sent a new submission (not in a test) today
+  def has_already_submitted_today?
+    return self.submissions.where("visible = ? AND intest = ? AND created_at >= ?", true, false, Date.today.in_time_zone.to_datetime).count >= 1
   end
 
   # Gives the status for the given virtual test ("not_started", "in_progress", "finished")
@@ -401,6 +432,17 @@ class User < ActiveRecord::Base
     begin
       self.remember_token = SecureRandom.urlsafe_base64
     end while User.exists?(:remember_token => self.remember_token)
+  end
+  
+  # Generate a random color (for correctors)
+  def self.generate_corrector_color
+    color = "#"
+    (0..5).each do |i|
+      r = (i % 2 == 1 ? rand(0..15) : rand(5..12));
+      x = (r < 10 ? ("0".ord + r).chr : ("A".ord + r-10).chr)
+      color = color + x
+    end
+    return color
   end
   
   # Recompute all scores

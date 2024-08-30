@@ -125,6 +125,7 @@ fr:
       unsolvedquestion:
         guess: "Votre réponse"
       user:
+        corrector_color: "Couleur pour les corrections"
         first_name: "Prénom"
         last_name: "Nom"
         sex: "Genre"

@@ -374,11 +374,6 @@ def create_submissions
                                      last_comment_time: submission_time)
       if corrected # Corrected
         correction_time = [submission_time + (300 + Random.rand(24*60*60)).seconds, DateTime.now].min
-        Solvedproblem.create(user:            user,
-                             problem:         problem,
-                             submission:      submission,
-                             resolution_time: submission_time,
-                             correction_time: correction_time)
         corrector = (Random.rand(2) == 0 ? User.where(:admin => true).first : User.where(:admin => true).last)
         Correction.create(user:       corrector,
                           submission: submission,
@@ -390,6 +385,13 @@ def create_submissions
                          read:       true,
                          kind:       1,
                          created_at: correction_time)
+        if is_correct
+          Solvedproblem.create(user:            user,
+                               problem:         problem,
+                               submission:      submission,
+                               resolution_time: submission_time,
+                               correction_time: correction_time)
+        end
       end
     end
   end

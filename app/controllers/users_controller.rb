@@ -196,6 +196,7 @@ class UsersController < ApplicationController
 
     allowed_params = [:first_name, :last_name, :see_name, :sex, :year, :password, :password_confirmation, :accept_analytics]
     allowed_params << :email if current_user.root? # not .sk because root can change email of someone else
+    allowed_params << :corrector_color if (current_user.sk.admin? || current_user.sk.corrector?)
     if @user.update(params.require(:user).permit(allowed_params))
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
@@ -259,7 +260,7 @@ class UsersController < ApplicationController
   def set_corrector
     if !@user.admin?
       flash[:success] = "Utilisateur ajouté aux correcteurs."
-      @user.update_attribute(:corrector, true)
+      @user.update(:corrector => true, :corrector_color => User.generate_corrector_color)
     end
     redirect_to @user
   end
@@ -268,7 +269,7 @@ class UsersController < ApplicationController
   def unset_corrector
     if !@user.admin?
       flash[:success] = "Utilisateur retiré des correcteurs."
-      @user.update_attribute(:corrector, false)
+      @user.update(:corrector => false, :corrector_color => "")
     end
     redirect_to @user
   end

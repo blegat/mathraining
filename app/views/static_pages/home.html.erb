@@ -1,4 +1,5 @@
 <% def readable_number(n) %>
+  <% n = n * 1000 if Rails.env.development? %>
   <% if n == 0 %>
     <% return "0" %>
   <% end %>
@@ -17,9 +18,10 @@
   <% return ans %>
 <% end %>
 
-<!-- Gros titre Mathraining -->
 
 <% user_with_recent_corrections = User.left_joins(:followings).where(followings: {:kind => :first_corrector}).where("followings.created_at > ?", Date.today.in_time_zone).group(:id).select("users.*, count(followings.id) AS num_corrections").order("num_corrections DESC").to_a %>
+
+<!-- Barre de progrès pour les correcteurs -->
 
 <% if signed_in? && (current_user.sk.admin? || current_user.sk.corrector?) %>
   <% num_my_corrections = 0 %>
@@ -44,29 +46,51 @@
   </div>
 <% end %>
 
+<!-- Gros titre Mathraining -->
 
 <div class="home">
-
-	<div class="grid" style="--bs-columns:12; --bs-gap:5px;">
+  <div class="grid" style="--bs-columns:12; --bs-gap:5px;">
+  <% show_correction_target = signed_in? && (current_user.sk.admin? || current_user.corrector?) %>
+  <% if show_correction_target %>
+    <div class="g-col-12 g-col-lg-7 g-col-xl-6 mt-n2">
+    <%= render 'correction_target' %>
+    </div>
+    <div class="g-col-12 g-col-lg-5 g-col-xl-6">
+      <div class="d-none d-lg-block" style="width:100%; height:40px;"></div>
+      <div class="d-none d-lg-block d-xl-none" style="width:100%; height:20px;"></div>
+      <center>
+      <div class="d-block d-xl-none">
+      <%= image_tag "mathraining.png", :class => "light-theme-only", :style => "width:100%; max-width:334px;" %>
+      <%= image_tag "mathraining-dark.png", :class => "dark-theme-only", :style => "width:100%; max-width:334px;" %>
+      </div>
+      <div class="d-none d-xl-block">
+      <%= image_tag "mathraining.png", :class => "light-theme-only", :style => "width:440px;" %>
+      <%= image_tag "mathraining-dark.png", :class => "dark-theme-only", :style => "width:440px;" %>
+      </div>
+      </center>
+      <div class="d-none d-lg-block" style="width:100%; height:30px;"></div>
+      <div class="d-none d-lg-block d-xl-none" style="width:100%; height:20px;"></div>
+      <div class="d-block d-lg-none" style="width:100%; height:12px;"></div>
+  <% else %>
     <div class="g-col-12 g-col-md-6 g-col-lg-7">
-    <center>
-    <%= image_tag "mathraining.png", :class => "light-theme-only", :style => "width:100%; max-width:334px;" %>
-    <%= image_tag "mathraining-dark.png", :class => "dark-theme-only", :style => "width:100%; max-width:334px;" %>
-    </center>
+      <center>
+      <%= image_tag "mathraining.png", :class => "light-theme-only", :style => "width:100%; max-width:334px;" %>
+      <%= image_tag "mathraining-dark.png", :class => "dark-theme-only", :style => "width:100%; max-width:334px;" %>
+      </center>
     </div>
     <div class="g-col-12 g-col-md-6 g-col-lg-5 pt-2">
+  <% end %>
     <% tot = User.where("admin = ?", false).sum(:rating) %>
     <% number = User.where("admin = ? AND rating > 0 AND active = ?", false, true).count %>
-    <center>
-    <table class="home-stats">
-    <tr><td class="left top text-color-mt-blue"><%= raw(readable_number(number)) %></td><td class="right top">utilisateurs classés</td></tr>
-    <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
-    <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedquestion.count)) %></td><td class="right">exercices résolus</td></tr>
-    <tr><td class="left bottom text-color-mt-blue"><%= raw(readable_number(tot)) %></td><td class="right bottom">points distribués</td></tr>
-    </table>
-    </center>
+      <center>
+      <table class="home-stats">
+      <tr><td class="left top text-color-mt-blue"><%= raw(readable_number(number)) %></td><td class="right top">utilisateurs classés</td></tr>
+      <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedproblem.count)) %></td><td class="right">problèmes résolus</td></tr>
+      <tr><td class="left text-color-mt-blue"><%= raw(readable_number(Solvedquestion.count)) %></td><td class="right">exercices résolus</td></tr>
+      <tr><td class="left bottom text-color-mt-blue"><%= raw(readable_number(tot)) %></td><td class="right bottom">points distribués</td></tr>
+      </table>
+      </center>
     </div>
-  
     <div class="g-col-12">
       <h3 class="mt-3">
       Le site interactif d'entraînement aux Olympiades Internationales de Mathématiques

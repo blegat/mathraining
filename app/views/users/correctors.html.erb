@@ -268,9 +268,18 @@ Votre navigateur ne supporte pas les canvas.
 </div>
 
 
+<script type="text/javascript">
+var showInactiveCorrectors = function () {
+  if ("$" in window) {
+    $('.inactive-corrector').removeClass('inactive-corrector');
+    document.getElementById("link_show_inactive").style.display = 'none';
+  }
+}
+</script>
+
 <h3>Correcteurs</h3>
 
-<p>Le tableau suivant reprend la liste de tous les correcteurs de Mathraining. Un grand merci à eux tous !</p>
+<p>Le tableau suivant reprend la liste des correcteurs de Mathraining. Un grand merci à eux tous !</p>
 
 <% nb_recent_by_user = Following.where(:kind => [:first_corrector, :other_corrector]).where("created_at >= ?", twoweeksago).group(:user_id).count %>
 
@@ -280,19 +289,30 @@ Votre navigateur ne supporte pas les canvas.
 <% end %>
 
 <center>
+<% rank = 1 %>
+<% real_rank = 1 %>
+<% prev_nb_corrections = -1 %>
 <table class="table table-bordered" style="width:auto;">
-<tr class="table-ld-header"><th>Nom</th><th class="text-center">Corrections</th><th class="text-center">&le; 2 sem.</th><th class="d-none d-md-table-cell">Première</th><th class="d-none d-md-table-cell">Dernière</th></tr>
+<tr class="table-ld-header"><th></th><th>Nom</th><th class="text-center">Corrections</th><th class="text-center">&le; 2 sem.</th><th class="d-none d-md-table-cell">Première</th><th class="d-none d-md-table-cell">Dernière</th></tr>
 
 <% correctors.sort_by{|e| -e[:nb_corrections]}.each do |c| %>
   <% u = c[:user] %>
   <% green_class = "line-green-#{([c[:nb_recent], 200].min/2).to_i}" %>
-  <tr class="<%= green_class %>">
+  <% limit = Rails.env.production? ? 30 : 1 %>
+  <% inactive_class = (c[:nb_recent] >= limit ? "" : "inactive-corrector") %>
+  <% real_rank = rank if c[:nb_corrections] != prev_nb_corrections %>
+  <tr class="<%= green_class %> <%= inactive_class %>">
+  <td class="text-center"><%= real_rank %>.</td>
   <td><%= raw(u.linked_name) %></td>
   <td class="text-center"><%= c[:nb_corrections] %></td>
   <td class="text-center"><%= c[:nb_recent] %></td>
   <td class="d-none d-md-table-cell"><%= write_date_only(c[:first_correction].in_time_zone) %></td>
   <td class="d-none d-md-table-cell"><%= write_date_only(c[:last_correction].in_time_zone) %></td>
   </tr>
+  <% prev_nb_corrections = c[:nb_corrections] %>
+  <% rank = rank+1 %>
 <% end %>
 </table>
+
+<a id="link_show_inactive" href="javascript:showInactiveCorrectors()">Montrer les correcteurs moins actifs récemment</a>
 </center>

@@ -103,6 +103,14 @@
   <%= render 'users/captcha' %>
 <% end %>
 
+<!-- Couleur de correcteur -->
+<% if modif && (current_user.sk.admin? || current_user.sk.corrector?) %>
+  <div class="mb-2">
+    <%= f.label :corrector_color, :class => "form-label" %>
+    <%= f.text_field :corrector_color, :class => "form-control", :style => "width:200px;" %>
+  </div>
+<% end %>
+
 <!-- Accepter Google Analytics -->
 <div class="form-check">
 <%= f.label :accept_analytics, :class => "form-check-label mb-1" do %>
