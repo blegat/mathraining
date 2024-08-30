@@ -194,7 +194,8 @@ def create_users
                      admin:                 true,
                      year:                  1990,
                      country:               country[0],
-                     created_at:            DateTime.now - 100.days)
+                     created_at:            DateTime.now - 100.days,
+                     corrector_color:       User.generate_corrector_color)
   
   # Admin
   admin = User.create(first_name:            "Admin",
@@ -207,7 +208,8 @@ def create_users
                       admin:                 true,
                       year:                  1993,
                       country:               country[1],
-                      created_at:            DateTime.now - 90.days)
+                      created_at:            DateTime.now - 90.days,
+                      corrector_color:       User.generate_corrector_color)
                       
   # Students
   for i in 1..20
