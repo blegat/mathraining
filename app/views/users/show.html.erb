@@ -129,8 +129,8 @@
     <% end %>
   <% end %>
   
-  <% pct_exo = numberexo == 0 ? 0 : 100*nb_q/numberexo.to_f %>
-  <% pct_pb = numberpb == 0 ? 0 : 100*nb_p/numberpb.to_f %>
+  <% ratio_solved_exo = numberexo == 0 ? 0 : nb_q / numberexo.to_f %>
+  <% ratio_solved_pb = numberpb == 0 ? 0 : nb_p / numberpb.to_f %>
   
 <% end %>
 
@@ -252,12 +252,12 @@
     }
 
     .circle.exo {
-      stroke-dasharray: <%= pct_exo / 100.0 * circumference %>% <%= circumference - pct_exo / 100.0 * circumference %>%;
+      stroke-dasharray: <%= ratio_solved_exo * circumference %>% <%= circumference * (1 - ratio_solved_exo) %>%;
       stroke-dashoffset: <%= circumference / 4 %>%;
     }
 
     .circle.pb {
-      stroke-dasharray: <%= pct_pb / 100.0 * circumference %>% <%= circumference - pct_pb / 100.0 * circumference %>%;
+      stroke-dasharray: <%= ratio_solved_pb * circumference %>% <%= circumference * (1 - ratio_solved_pb) %>%;
       stroke-dashoffset: <%= circumference / 4 %>%;
     }
 
