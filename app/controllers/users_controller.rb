@@ -10,6 +10,8 @@ class UsersController < ApplicationController
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
   before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
   
+  before_action :avoid_strange_scraping, only: [:index]
+  
   before_action :correct_user, only: [:edit, :update]
   before_action :target_not_root, only: [:destroy, :destroydata]
 
@@ -566,6 +568,13 @@ class UsersController < ApplicationController
   # Check that the target user is not a root
   def target_not_root
     if @user.root?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Some scrapers require 'index' every second with random parameters 'page', 'from' and 'rank' (???)
+  def avoid_strange_scraping
+    if params.has_key?(:from) || params.has_key?(:rank)
       render 'errors/access_refused' and return
     end
   end

@@ -232,6 +232,11 @@ describe "User pages" do
       end
     end
     
+    describe "scraps scores page" do
+      before { visit users_path(:page => 3, :rank => 5) }
+      it { should have_content(error_access_refused) }
+    end
+    
     describe "visits country scores page" do
       before { visit users_path(:country => country) }
       it do
