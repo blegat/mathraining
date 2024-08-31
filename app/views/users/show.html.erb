@@ -245,20 +245,20 @@
 
     .circle {
       fill: none;
-      stroke-width: <%= stroke_width %>;
-      cx: 50;
-      cy: 50;
-      r: <%= radius %>;
+      stroke-width: <%= stroke_width %>px;
+      cx: 50%;
+      cy: 50%;
+      r: <%= radius %>%;
     }
 
     .circle.exo {
-      stroke-dasharray: <%= pct_exo / 100.0 * circumference %> <%= circumference - pct_exo / 100.0 * circumference %>;
-      stroke-dashoffset: <%= circumference / 4 %>;
+      stroke-dasharray: <%= pct_exo / 100.0 * circumference %>% <%= circumference - pct_exo / 100.0 * circumference %>%;
+      stroke-dashoffset: <%= circumference / 4 %>%;
     }
 
     .circle.pb {
-      stroke-dasharray: <%= pct_pb / 100.0 * circumference %> <%= circumference - pct_pb / 100.0 * circumference %>;
-      stroke-dashoffset: <%= circumference / 4 %>;
+      stroke-dasharray: <%= pct_pb / 100.0 * circumference %>% <%= circumference - pct_pb / 100.0 * circumference %>%;
+      stroke-dashoffset: <%= circumference / 4 %>%;
     }
 
     .circle_light.progress {
