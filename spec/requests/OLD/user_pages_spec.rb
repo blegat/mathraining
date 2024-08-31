@@ -640,7 +640,8 @@ describe "User pages" do
       end
       specify do
         expect(zero_user.corrector).to eq(true)
-        expect { click_link "Retirer des correcteurs" and zero_user.reload }.to change{zero_user.corrector}.to(false)
+        expect(zero_user.corrector_color.nil?).to eq(false)
+        expect { click_link "Retirer des correcteurs" and zero_user.reload }.to change{zero_user.corrector}.to(false) .and change{zero_user.corrector_color}.to(nil)
       end
     end
     

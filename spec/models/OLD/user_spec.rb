@@ -213,6 +213,40 @@ describe User do
     end
   end
   
+  describe "corrector color" do
+    before { @user.corrector = true }
+    
+    describe "when color does not start with #" do
+      before { @user.corrector_color = "22EE33" }
+      it { should_not be_valid }
+    end
+    
+    describe "when color is too short" do
+      before { @user.corrector_color = "#013F5" }
+      it { should_not be_valid }
+    end
+     
+    describe "when color is too long" do
+      before { @user.corrector_color = "#AABBCCD" }
+      it { should_not be_valid }
+    end
+     
+    describe "when color contains unwanted letter" do
+      before { @user.corrector_color = "#BCDEFG" }
+      it { should_not be_valid }
+    end
+    
+    describe "when color is correct" do
+      before { @user.corrector_color = "#789DEF" }
+      it { should be_valid }
+    end
+    
+    describe "when color contains lower case letters" do
+      before { @user.corrector_color = "#abcde8" }
+      it { should be_valid }
+    end
+  end
+  
   describe "colored names" do
     before do
       @user.first_name = "Jean"

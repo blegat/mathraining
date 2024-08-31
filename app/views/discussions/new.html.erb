@@ -55,7 +55,7 @@ var UserNotFound = function () {
         <%= f.label :message, :for => "MathInput", :class => "form-label" %>
         <%= render 'shared/preview' %>
         <%= render 'shared/smiley' %>
-        <textarea name="content" maxlength="8000" class="form-control" style="height:120px;" id="MathInput" onkeyup="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+        <textarea name="content" maxlength="8000" class="form-control" style="height:120px;" id="MathInput" oninput="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
         <script>initAndUpdatePreviewSafeWhenPossible()</script>
       </div>
       
