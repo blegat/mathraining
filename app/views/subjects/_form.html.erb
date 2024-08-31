@@ -293,7 +293,7 @@ function checkWepion() {
   <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label", :disabled => current_user.other %>
   <%= render 'shared/preview', postfix: postfix %>
   <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
   <% if is_edit %>
     <!-- Do not call initAndUpdatePreviewSafeWhenPossible(): it will be done only after rolling to show the form -->
   <% else %>

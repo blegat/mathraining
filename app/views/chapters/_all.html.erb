@@ -10,7 +10,7 @@
     <div>
       <% numLatexTest += 1 if t.content.include? "latextest" %>
       <% if numLatexTest <= 1 %>
-        <%= raw(htmlise(t.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control mt-2" style="height:120px;" onkeyup="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(true)</script>')) %>
+        <%= raw(htmlise(t.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control mt-2" style="height:120px;" oninput="PreviewSafe.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(true)</script>')) %>
       <% else %>
         <%= raw(htmlise(t.content).gsub(/\/latextest\//, '<center><i>Voir plus haut.</i></center>')) %>
       <% end %>
