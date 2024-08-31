@@ -40,6 +40,7 @@ var Insert = {
       if (instances%2 != 0 && text2 != ""){ sel.value = sel.value + text2; }
       else{ sel.value = sel.value + text1; }
     }
+    ta.dispatchEvent(new Event('input')); // To trigger the update of Preview or PreviewSafe
   }
 }
 
@@ -58,18 +59,10 @@ class InsertClass extends HTMLAnchorElement {
         r = this.dataset.insertRight.replaceAll('\\n', '\n');
       }
       var f = "MathInput";
-      var safepreview = false; // Preview is used when there is no postfix (_font.html.erb)
       if (this.hasAttribute("data-postfix")) {
         f = "MathInput" + this.dataset.postfix;
-        safepreview = true; // PreviewSafe is used when there is a postfix (_smiley.html.erb)
       }
       Insert.insert(l, r, f);
-      if (safepreview) {
-        PreviewSafe.MyUpdate();
-      }
-      else {
-        Preview.MyUpdate();
-      }
       return false;
     });
   }

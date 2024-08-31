@@ -9,13 +9,13 @@
 <% end %>
 
 <div class="smiley">
-<a href="#!" onclick="Insert.insert('[b]', '[/b]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();"><%= image_tag "bold.svg", :class => "svg-black-white", :title => "Gras" %></a>
-<a href="#!" onclick="Insert.insert('[i]', '[/i]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();" class='ms-1'><%= image_tag "italic.svg", :class => "svg-black-white", :title => "Italique" %></a>
-<a href="#!" onclick="Insert.insert('[u]', '[/u]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();" class='ms-1'><%= image_tag "underlined.svg", :class => "svg-black-white", :title => "Souligné" %></a>
-<a href="#!" onclick="Insert.insert('[url=https://www.mathraining.be]', '[/url]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();" class='ms-3'><%= image_tag "link.svg", :class => "svg-black-white", :title => "Lien" %></a>
+<a href="javascript:Insert.insert('[b]', '[/b]', 'MathInput<%= postfix %>');"><%= image_tag "bold.svg", :class => "svg-black-white", :title => "Gras" %></a>
+<a href="javascript:Insert.insert('[i]', '[/i]', 'MathInput<%= postfix %>');" class='ms-1'><%= image_tag "italic.svg", :class => "svg-black-white", :title => "Italique" %></a>
+<a href="javascript:Insert.insert('[u]', '[/u]', 'MathInput<%= postfix %>');" class='ms-1'><%= image_tag "underlined.svg", :class => "svg-black-white", :title => "Souligné" %></a>
+<a href="javascript:Insert.insert('[url=https://www.mathraining.be]', '[/url]', 'MathInput<%= postfix %>');" class='ms-3'><%= image_tag "link.svg", :class => "svg-black-white", :title => "Lien" %></a>
 
 <% if hiddentext %>
-<a href="#!" onclick="Insert.insert('[hide=Texte caché]\n', '\n[/hide]', 'MathInput<%= postfix %>'); return PreviewSafe.MyUpdate();" class="ms-3 align-middle" >Texte caché</a>
+<a href="javascript:Insert.insert('[hide=Texte caché]\n', '\n[/hide]', 'MathInput<%= postfix %>');" class="ms-3 align-middle" >Texte caché</a>
 <% end %>
 </div>
 
@@ -24,7 +24,7 @@
 
 <div class="smiley">
 <% (0..8).each do |s| %>
-  <a href="#!" onclick='Insert.insert(" <%= smileys[s] %>", "", "MathInput<%= postfix %>"); return PreviewSafe.MyUpdate();'><%= image_tag "Smiley#{ids[s]}.gif", :title => ":-)", :id => "smiley#{ids[s]}-img" %></a>
+  <a href='javascript:Insert.insert(" <%= smileys[s] %>", "", "MathInput<%= postfix %>");'><%= image_tag "Smiley#{ids[s]}.gif", :title => ":-)", :id => "smiley#{ids[s]}-img" %></a>
 <% end %>
 </div>
 

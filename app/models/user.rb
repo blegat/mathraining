@@ -63,7 +63,6 @@ end
 class ColorValidator < ActiveModel::Validator
   def validate(record)
     return if !record.admin? && !record.corrector?
-    return if record.corrector_color.nil? && Rails.env.test?
     
     good_format = true
     record.corrector_color.upcase!
@@ -123,6 +122,7 @@ class User < ActiveRecord::Base
   
   # BEFORE, AFTER
 
+  before_validation :create_corrector_color
   before_save { self.email.downcase! }
   before_create :create_remember_token
   after_create :create_points
@@ -434,15 +434,20 @@ class User < ActiveRecord::Base
     end while User.exists?(:remember_token => self.remember_token)
   end
   
-  # Generate a random color (for correctors)
-  def self.generate_corrector_color
-    color = "#"
-    (0..5).each do |i|
-      r = (i % 2 == 1 ? rand(0..15) : rand(5..12));
-      x = (r < 10 ? ("0".ord + r).chr : ("A".ord + r-10).chr)
-      color = color + x
+  # Create a random color (for correctors) or remove it (for non-correctors)
+  def create_corrector_color
+    if self.admin? || self.corrector?
+      if self.corrector_color.nil?
+        self.corrector_color = "#"
+        (0..5).each do |i|
+          r = (i % 2 == 1 ? rand(0..15) : rand(5..12));
+          x = (r < 10 ? ("0".ord + r).chr : ("A".ord + r-10).chr)
+          self.corrector_color = self.corrector_color + x
+        end
+      end
+    elsif !self.corrector_color.nil?
+      self.corrector_color = nil
     end
-    return color
   end
   
   # Recompute all scores
