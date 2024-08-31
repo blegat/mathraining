@@ -2,9 +2,9 @@
 <%= render 'shared/preview' %>
 <%= render 'shared/smiley' %>
 <% if @ancientexte.nil? %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || !can_edit_correction) %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || !can_edit_correction) %>
 <% else %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :value => @ancientexte, :id => "MathInput", :onkeyup => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || !can_edit_correction) %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :value => @ancientexte, :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || !can_edit_correction) %>
 <% end %>
 <script>initAndUpdatePreviewSafeWhenPossible()</script>
 <script>initLeavingFormWhenPossible()</script>
