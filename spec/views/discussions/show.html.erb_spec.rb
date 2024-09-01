@@ -15,7 +15,7 @@ describe "discussions/show.html.erb", type: :view, discussion: true do
     assign(:signed_in, true)
     assign(:current_user, user)
     assign(:discussion, discussion)
-    assign(:tchatmessages, discussion.tchatmessages.order("created_at DESC").paginate(page: 1, per_page: 10))
+    assign(:tchatmessage, Tchatmessage.new)
     assign(:compteur, 1) # defined by controller
   end
   

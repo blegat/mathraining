@@ -8,17 +8,12 @@
   <%= render 'shared/post', ms: contestcorrection, kind: "contestcorrection", can_edit: can_edit, reduce_margin_top: contestsolution.official? %>
 </div>
 
-<% if can_edit %>
-  <% @ancientexte = session[:ancientexte] %>
-  <% @ancienscore = session[:ancienscore] %>
-  
+<% if can_edit %>  
   <div id="form" class="myoverflow px-1" style="height:0px;">
   <%= render 'contestcorrections/edit', contestsolution: contestsolution, contestcorrection: contestcorrection, can_edit_correction: can_edit_correction %>
   </div>
   
-  <% if !session["ancientexte"].nil? %>
+  <% if contestcorrection.errors.any? %>
     <script>rollingDevelopQuickWhenPossible("")</script>
-    <% session.delete("ancientexte") %>
-    <% session.delete("ancienscore") %>
   <% end %>
 <% end %>

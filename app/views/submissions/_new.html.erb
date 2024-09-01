@@ -1,9 +1,6 @@
-<% @ancientexte = session[:ancientexte] %>
-<% session[:ancientexte] = nil %>
-
 <% limit_reached = @limited_new_submissions && current_user.sk.has_already_submitted_today? %>
 
-<%= form_for :submission, url: problem_submissions_path(problem), :html => { :multipart => true } do |f| %>
+<%= form_for @submission, url: problem_submissions_path(problem), :html => { :multipart => true } do |f| %>
 
   <!-- Nouvelle soumission -->
   <h3>Nouvelle soumission</h3>

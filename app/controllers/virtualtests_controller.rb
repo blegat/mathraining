@@ -23,6 +23,15 @@ class VirtualtestsController < ApplicationController
 
   # Show one virtualtest
   def show
+    if params.has_key?(:p)
+      @problem = Problem.find_by_id(params[:p].to_i)
+      if @problem.virtualtest_id != @virtualtest.id
+        @problem = nil
+      else
+        @submission = Submission.where(user_id: current_user.sk.id, problem_id: @problem.id, intest: true).first
+        @submission = Submission.new if @submission.nil?
+      end 
+    end
   end
 
   # Create a virtualtest (show the form)

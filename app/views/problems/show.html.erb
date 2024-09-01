@@ -1,10 +1,5 @@
 <% provide(:title, "Problème ##{ @problem.number }") %>
 
-<% soumission = -1 %>
-<% if(params.has_key?:sub) %>
-  <% soumission = params[:sub].to_i %>
-<% end %>
-
 <% pt = @problem.value %>
 
 <% @resolu = current_user.sk.pb_solved?(@problem) %>
@@ -172,11 +167,9 @@
     <%= render 'submissions/index', problem: @problem %>
 
     <!-- Si pas encore résolu le problème -->
-    <% @draft = false %>
     <% unless (@resolu || !@cansendnewsub) %>
-      <% @draft = true if @problem.submissions.where(:user => current_user.sk, :status => :draft).count > 0 %>
-      <% if soumission != 0 %>
-        <% if !@draft %>
+      <% if @submission.nil? || (!@submission.new_record? && !@submission.draft?) %>
+        <% if @problem.submissions.where(:user => current_user.sk, :status => :draft).count == 0 %>
           <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
         <% else %>
           <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
@@ -200,32 +193,31 @@
   <% end %>
 <% end %>
 
+<% if !@submission.nil? %>
+  <!-- Si on veut écrire une nouvelle soumission ou reprendre un brouillon -->
+  <% if @submission.new_record? || @submission.draft? %>
 
-<!-- Si on veut écrire une nouvelle soumission -->
-<% if soumission == 0 %>
-
-  <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
-  <% unless (@resolu || !@cansendnewsub) %>
-    <hr>
-    <% if current_user.sk.can_write_submission? %>
-      <% if !@draft %>
-        <%= render 'submissions/new', problem: @problem %>
+    <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
+    <% unless (@resolu || !@cansendnewsub) %>
+      <hr>
+      <% if current_user.sk.can_write_submission? %>
+        <% if @submission.new_record? %>
+          <%= render 'submissions/new', problem: @problem, submission: @submission %>
+        <% else %>
+          <%= render 'submissions/edit_draft', problem: @problem, submission: @submission %>
+        <% end %>
       <% else %>
-        <%= render 'submissions/edit_draft', problem: @problem %>
+        Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :
+        <%= render 'submissions/chapters_to_write_submission' %>
       <% end %>
-    <% else %>
-      Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :
-      <%= render 'submissions/chapters_to_write_submission' %>
     <% end %>
-  <% end %>
 
-<!-- Si on veut regarder une soumission -->
-<% elsif soumission > 0 %>
-  <% @submission = Submission.find_by_id(soumission) %>
-
-  <!-- On vérifie que l'on peut la regarder -->
-  <% if @submission.problem == @problem && (!@submission.draft? || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.correct?) || current_user.sk.admin || (current_user.sk.corrector && @resolu && @submission.visible)) %>
-    <hr>
-    <%= render 'submissions/show' %>
+  <!-- Si on veut regarder une soumission -->
+  <% else %>
+    <!-- On vérifie que l'on peut la regarder -->
+    <% if @submission.problem == @problem && (!@submission.draft? || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.correct?) || current_user.sk.admin || (current_user.sk.corrector && @resolu && @submission.visible)) %>
+      <hr>
+      <%= render 'submissions/show' %>
+    <% end %>
   <% end %>
 <% end %>

@@ -21,54 +21,47 @@ class ContestsolutionsController < ApplicationController
     end
   
     params[:contestsolution][:content].strip! if !params[:contestsolution][:content].nil?
+
+    @contestsolution = @contestproblem.contestsolutions.build(content: params[:contestsolution][:content],
+                                                              user:    current_user.sk)
     
     # Attached files
     @error_message = ""
     attach = create_files
     if !@error_message.empty?
-      flash[:danger] = @error_message
-      session[:ancientexte] = params[:contestsolution][:content]
-      redirect_to contestproblem_path(@contestproblem) and return
+      @contestsolution.errors.add(:base, @error_message)
+      render 'contestproblems/show' and return
     end
 
-    solution = @contestproblem.contestsolutions.build(content: params[:contestsolution][:content])
-    solution.user = current_user.sk
-
-    if solution.save
-      attach_files(attach, solution)
-      flash[:success] = "Solution enregistrée."
-      redirect_to contestproblem_path(@contestproblem, :sol => solution)
-    else
+    if !@contestsolution.save
       destroy_files(attach)
-      session[:ancientexte] = params[:contestsolution][:content]
-      flash[:danger] = error_list_for(solution)
-      redirect_to contestproblem_path(@contestproblem)
+      render 'contestproblems/show' and return
     end
+
+    attach_files(attach, @contestsolution)
+    flash[:success] = "Solution enregistrée."
+    redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
   end
 
   # Update a solution (send the form)
   def update
     params[:contestsolution][:content].strip! if !params[:contestsolution][:content].nil?
     @contestsolution.content = params[:contestsolution][:content]
-    if @contestsolution.valid?
-    
-      # Attached files
-      @error_message = ""
-      update_files(@contestsolution)
-      if !@error_message.empty?
-        flash[:danger] = @error_message
-        session[:ancientexte] = params[:contestsolution][:content]
-        redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution) and return
-      end
-      
-      @contestsolution.save
-      flash[:success] = "Solution enregistrée."
-      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
-    else
-      session[:ancientexte] = params[:contestsolution][:content]
-      flash[:danger] = error_list_for(@contestsolution)
-      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
+    if !@contestsolution.valid?
+      render 'contestproblems/show' and return
     end
+
+    # Attached files
+    @error_message = ""
+    update_files(@contestsolution)
+    if !@error_message.empty?
+      @contestsolution.errors.add(:base, @error_message)
+      render 'contestproblems/show' and return
+    end
+    
+    @contestsolution.save
+    flash[:success] = "Solution enregistrée."
+    redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
   end
 
   # Delete a solution

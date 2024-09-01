@@ -153,7 +153,6 @@ var hideStatement = function () {
 
   <!-- Marquer comme lu ou non lu -->
   <% if can_current_user_correct && !@submission.draft? && !@submission.waiting? %>
-    <!-- <% following = Following.find_by_user_id_and_submission_id(current_user.sk, @submission) %> NE MARCHE PLUS -->
     <% following = @submission.followings.where(:user_id => current_user.sk).first %>
     <% if !following.nil? %>
       <% if following.read %>

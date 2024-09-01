@@ -27,7 +27,7 @@
   
 <% else %>
   <!-- QCM -->
-  <% anciens = unsolvedquestion.items %>
+  <% prev_answers = unsolvedquestion.items %>
   <% if question.many_answers %>
     <%= form_for unsolvedquestion do |g| %>
       <p class="mt-3 mb-3 fw-bold">Cochez chaque proposition correcte.</p>
@@ -35,7 +35,7 @@
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
-            <%= check_box_tag "ans[#{ c.id }]", "ok", anciens.exists?(:id => c.id), :disabled => !@signed_in || current_user.other || needtowait, :class => "form-check-input to-enable" %>
+            <%= check_box_tag "ans[#{ c.id }]", "ok", prev_answers.exists?(:id => c.id), :disabled => !@signed_in || current_user.other || needtowait, :class => "form-check-input to-enable" %>
             <%= raw(c.ans) %>
           </label>
         </div>
@@ -43,7 +43,7 @@
       <%= g.submit "Soumettre", class: "btn btn-primary to-enable mt-3", :disabled => (!@signed_in || current_user.other || needtowait) %>
     <% end %>
   <% else %>
-    <% item = unsolvedquestion.items.first %>
+    <% item = prev_answers.first %>
     <div class="mb-3"></div>
     <%= form_for unsolvedquestion do |g| %>
       <%= hidden_field_tag "question_id", question.id %>

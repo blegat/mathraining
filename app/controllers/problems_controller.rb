@@ -19,9 +19,19 @@ class ProblemsController < ApplicationController
     if params.has_key?("auto") # Automatically show the correct submission of current user, if any
       s = current_user.sk.solvedproblems.where(:problem_id => @problem).first
       if s.nil?
-        redirect_to problem_path(@problem)
+        redirect_to problem_path(@problem) and return
       else
-        redirect_to problem_path(@problem, :sub => s.submission_id)
+        redirect_to problem_path(@problem, :sub => s.submission_id) and return
+      end
+    end
+    
+    if params.has_key?("sub")
+      if params[:sub].to_i == 0 # New submission
+        @submission = @problem.submissions.where(:user => current_user.sk, :status => :draft).first # In case there is a draft
+        @submission = Submission.new if @submission.nil? # In case there is no draft
+      else
+        @submission = Submission.find_by_id(params[:sub].to_i)
+        @correction = Correction.new if @submission.visible?
       end
     end
   end

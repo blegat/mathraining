@@ -41,40 +41,37 @@ class SubmissionsController < ApplicationController
   # Create a submission (send the form)
   def create
     params[:submission][:content].strip! if !params[:submission][:content].nil?
+
+    @submission = @problem.submissions.build(content: params[:submission][:content],
+                                             user:    current_user.sk,
+                                             last_comment_time: DateTime.now)
     
     # Attached files
     @error_message = ""
     attach = create_files
     if !@error_message.empty?
-      flash[:danger] = @error_message
-      session[:ancientexte] = params[:submission][:content]
-      redirect_to problem_path(@problem, :sub => 0) and return
+      @submission.errors.add(:base, @error_message) 
+      render 'problems/show' and return
     end
-
-    submission = @problem.submissions.build(content: params[:submission][:content])
-    submission.user = current_user.sk
-    submission.last_comment_time = DateTime.now
 
     if params[:commit] == "Enregistrer comme brouillon" || (@limited_new_submissions && current_user.sk.has_already_submitted_today?)
-      submission.visible = false
-      submission.status = :draft
+      @submission.visible = false
+      @submission.status = :draft
     end
 
-    if submission.save
-      attach_files(attach, submission)
-
-      if submission.draft?
-        flash[:success] = "Votre brouillon a bien été enregistré."
-        redirect_to problem_path(@problem, :sub => 0)
-      else
-        flash[:success] = "Votre solution a bien été soumise."
-        redirect_to problem_path(@problem, :sub => submission.id)
-      end
-    else
+    if !@submission.save
       destroy_files(attach)
-      session[:ancientexte] = params[:submission][:content]
-      flash[:danger] = error_list_for(submission)
+      render 'problems/show' and return
+    end
+
+    attach_files(attach, @submission)
+
+    if @submission.draft?
+      flash[:success] = "Votre brouillon a bien été enregistré."
       redirect_to problem_path(@problem, :sub => 0)
+    else
+      flash[:success] = "Votre solution a bien été soumise."
+      redirect_to problem_path(@problem, :sub => @submission.id)
     end
   end
 
@@ -88,32 +85,29 @@ class SubmissionsController < ApplicationController
       return
     end
     params[:submission][:content].strip! if !params[:submission][:content].nil?
+
+    @submission = @problem.submissions.build(content: params[:submission][:content],
+                                             user:    current_user.sk,
+                                             intest:  true,
+                                             visible: false,
+                                             last_comment_time: DateTime.now)
     
     # Attached files
     @error_message = ""
     attach = create_files
     if !@error_message.empty?
-      flash[:danger] = @error_message
-      session[:ancientexte] = params[:submission][:content]
-      redirect_to virtualtest_path(@t, :p => @problem.id) and return
+      @submission.errors.add(:base, @error_message) 
+      render 'virtualtests/show' and return
     end
 
-    submission = @problem.submissions.build(content: params[:submission][:content])
-    submission.user = current_user.sk
-    submission.intest = true
-    submission.visible = false
-    submission.last_comment_time = DateTime.now
-
-    if submission.save
-      attach_files(attach, submission)
-      flash[:success] = "Votre solution a bien été enregistrée."
-      redirect_to virtualtest_path(@t, :p => @problem.id)
-    else
+    if !@submission.save
       destroy_files(attach)
-      session[:ancientexte] = params[:submission][:content]
-      flash[:danger] = error_list_for(submission)
-      redirect_to virtualtest_path(@t, :p => @problem.id)
+      render 'virtualtests/show' and return
     end
+
+    attach_files(attach, @submission)
+    flash[:success] = "Votre solution a bien été enregistrée."
+    redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
   end
 
   # Update a draft and maybe send it (send the form)
@@ -208,7 +202,7 @@ class SubmissionsController < ApplicationController
     else
       # Student in a test
       flash[:success] = "Solution supprimée."
-      redirect_to virtualtest_path(@t, :p => @problem.id)
+      redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
     end
   end
   
@@ -353,9 +347,9 @@ class SubmissionsController < ApplicationController
 
   # Check that current user is doing a test with this problem
   def in_test
-    @t = @problem.virtualtest
-    return if check_nil_object(@t)
-    redirect_to virtualtests_path if current_user.sk.test_status(@t) != "in_progress"
+    @virtualtest = @problem.virtualtest
+    return if check_nil_object(@virtualtest)
+    redirect_to virtualtests_path if current_user.sk.test_status(@virtualtest) != "in_progress"
   end
   
   # Check that current user is doing a test with this problem, or is a root
@@ -410,47 +404,43 @@ class SubmissionsController < ApplicationController
   # Helper method to update the submission
   def update_submission
     if @context == 1
-      lepath = virtualtest_path(@t, :p => @problem.id) # Update in test
+      rendered_page_in_case_of_error = 'virtualtests/show' # Update a submission during a test
     elsif @context == 2
-      lepath = problem_path(@problem, :sub => 0) # Update a draft
+      rendered_page_in_case_of_error = 'problems/show' # Update a draft
     else
-      lepath = problem_path(@problem, :sub => 0) # Update and send a draft
+      rendered_page_in_case_of_error = 'problems/show' # Update and send a draft
     end
     
     params[:submission][:content].strip! if !params[:submission][:content].nil?
     @submission.content = params[:submission][:content]
-    if @submission.valid?
+    if !@submission.valid?
+      render rendered_page_in_case_of_error and return
+    end
 
-      # Attached files
-      @error_message = ""
-      update_files(@submission)
-      if !@error_message.empty?
-        flash[:danger] = @error_message
-        session[:ancientexte] = params[:submission][:content]
-        redirect_to lepath and return
-      end
-      
-      @submission.save
+    # Attached files
+    @error_message = ""
+    update_files(@submission)
+    if !@error_message.empty?
+      @submission.errors.add(:base, @error_message)
+      render rendered_page_in_case_of_error and return
+    end
+    
+    @submission.save
 
-      if @context == 1
-        flash[:success] = "Votre solution a bien été modifiée."
-        redirect_to virtualtest_path(@t, :p => @problem.id)
-      elsif @context == 2
-        flash[:success] = "Votre brouillon a bien été enregistré."
-        redirect_to lepath
-      else
-        @submission.status = :waiting
-        @submission.created_at = DateTime.now
-        @submission.last_comment_time = @submission.created_at
-        @submission.visible = true
-        @submission.save
-        flash[:success] = "Votre solution a bien été soumise."
-        redirect_to problem_path(@problem, :sub => @submission.id)
-      end
+    if @context == 1
+      flash[:success] = "Votre solution a bien été modifiée."
+      redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
+    elsif @context == 2
+      flash[:success] = "Votre brouillon a bien été enregistré."
+      redirect_to problem_path(@problem, :sub => 0)
     else
-      session[:ancientexte] = params[:submission][:content]
-      flash[:danger] = error_list_for(@submission)
-      redirect_to lepath
+      @submission.status = :waiting
+      @submission.created_at = DateTime.now
+      @submission.last_comment_time = @submission.created_at
+      @submission.visible = true
+      @submission.save
+      flash[:success] = "Votre solution a bien été soumise."
+      redirect_to problem_path(@problem, :sub => @submission.id)
     end
   end
 
