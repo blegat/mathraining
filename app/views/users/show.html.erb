@@ -129,8 +129,8 @@
     <% end %>
   <% end %>
   
-  <% pct_exo = numberexo == 0 ? 0 : 100*nb_q/numberexo.to_f %>
-  <% pct_pb = numberpb == 0 ? 0 : 100*nb_p/numberpb.to_f %>
+  <% ratio_solved_exo = numberexo == 0 ? 0 : nb_q / numberexo.to_f %>
+  <% ratio_solved_pb = numberpb == 0 ? 0 : nb_p / numberpb.to_f %>
   
 <% end %>
 
@@ -233,87 +233,51 @@
 <% end %>
 
 <% if !@user.admin? %>
-  
   <!-- Style pour les progress bar circulaires -->
   <style type="text/css">
 
-    /* First arc will be behind and has one half grey, one half coloured */
     <% arcgrey_light = "#e9ecef" %>
     <% arcgrey_dark = "#343a40" %>
 
-    .arc_first {
-      -webkit-transform: rotate(45deg);
-      -moz-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
-      -o-transform: rotate(45deg);
-      transform: rotate(45deg);
+    <% stroke_width = 8 %>
+    <% radius = 50 - stroke_width / 2 %>
+    <% circumference = Math::PI * radius * 2 %>
+
+    .circle {
+      fill: none;
+      stroke-width: <%= stroke_width %>px;
+      cx: 50%;
+      cy: 50%;
+      r: <%= radius %>%;
+    }
+
+    .circle.exo {
+      stroke-dasharray: <%= ratio_solved_exo * circumference %>% <%= circumference * (1 - ratio_solved_exo) %>%;
+      stroke-dashoffset: <%= circumference / 4 %>%;
+    }
+
+    .circle.pb {
+      stroke-dasharray: <%= ratio_solved_pb * circumference %>% <%= circumference * (1 - ratio_solved_pb) %>%;
+      stroke-dashoffset: <%= circumference / 4 %>%;
+    }
+
+    .circle_light.progress {
+      stroke: <%= user_color_light %>;
     }
     
-    .arc_first_light {
-      border-color: <%= user_color_light %> <%= user_color_light %> <%= arcgrey_light %> <%= arcgrey_light %>;
+    .circle_dark.progress {
+      stroke: <%= user_color_dark %>;
     }
-    .arc_first_dark {
-      border-color: <%= user_color_dark %> <%= user_color_dark %> <%= arcgrey_dark %> <%= arcgrey_dark %>;
+
+    .circle_light.bg {
+      stroke: <%= arcgrey_light %>;
     }
-    <% toSwap.push("arc_first") %>
 
-    <% ["exo", "pb"].each do |i| %>
-    
-      <% if i == "exo" %>
-        <% pct = pct_exo %>
-      <% else %>
-        <% pct = pct_pb %>
-      <% end %>
+    .circle_dark.bg {
+      stroke: <%= arcgrey_dark %>;
+    }
 
-      /* Second arc will be on top and has one half transparent, one half grey (if <= 50%) or coloured (if > 50%) */
-      <% if pct <= 50 %>
-        <% arccol_light = arcgrey_light %>
-        <% arccol_dark = arcgrey_dark %>
-        <% rotation = 45 + 180.0 * pct / 50.0 %> /* 0% should be 45 deg, while 50% should be 45+180 deg **/
-      <% else %>
-        <% arccol_light = user_color_light %>
-        <% arccol_dark = user_color_dark %> 
-        <% rotation = 45 + 180.0 * (pct - 50) / 50.0 %> /* 50% should be 45 deg, while 100% should be 45+100 deg **/
-      <% end %>
-
-      .arc_hide_<%= i %> {
-        top: 0;
-        left: 0;
-        width: 102px;
-        height: 102px;
-        border: 9px solid;
-        border-color: white white transparent transparent;
-        -webkit-transform: rotate(<%= rotation %>deg);
-        -moz-transform: rotate(<%= rotation %>deg);
-        -ms-transform: rotate(<%= rotation %>deg);
-        -o-transform: rotate(<%= rotation %>deg);
-        transform: rotate(<%= rotation %>deg);
-      }
-      
-      .arc_second_<%= i %> {
-        -webkit-transform: rotate(<%= rotation %>deg);
-        -moz-transform: rotate(<%= rotation %>deg);
-        -ms-transform: rotate(<%= rotation %>deg);
-        -o-transform: rotate(<%= rotation %>deg);
-        transform: rotate(<%= rotation %>deg);
-      }
-      
-      .arc_hide_<%= i %>_light {
-        border-color: white white transparent transparent;
-      }
-      .arc_hide_<%= i %>_dark {
-        border-color: rgb(33, 37, 41) rgb(33, 37, 41) transparent transparent;
-      }
-      <% toSwap.push("arc_hide_#{i}") %>
-      
-      .arc_second_<%= i %>_light {
-        border-color: <%= arccol_light %> <%= arccol_light %> transparent transparent;
-      }
-      .arc_second_<%= i %>_dark {
-        border-color: <%= arccol_dark %> <%= arccol_dark %> transparent transparent;
-      }
-      <% toSwap.push("arc_second_#{i}") %>
-    <% end %>
+    <% toSwap.push("circle") %>
   </style>
 
   <!-- Exercices -->
@@ -322,9 +286,10 @@
     <tr><td class="progress_title">Exercices</td></tr>
     <tr><td class="progress_circle">
     <div class="wrapper">
-      <div class="arc arc_first arc_first_<%= mt_theme %>"></div>
-      <div class="arc arc_hide_exo arc_hide_exo_<%= mt_theme %>"></div>
-      <div class="arc arc_second_exo arc_second_exo_<%= mt_theme %>"></div>
+      <svg width="100" height="100">
+        <circle class="circle <%= "circle_#{mt_theme}" %> bg"/>
+        <circle class="circle <%= "circle_#{mt_theme}" %> progress exo"/>
+      </svg>
       <div class="progress_nb"><%= nb_q %></div>
       <div class="progress_pct">/ <%= numberexo %></div>
     </div>
@@ -338,9 +303,10 @@
     <tr><td class="progress_title">Problèmes</td></tr>
     <tr><td class="progress_circle">
     <div class="wrapper">
-      <div class="arc arc_first arc_first_<%= mt_theme %>"></div>
-      <div class="arc arc_hide_pb arc_hide_pb_<%= mt_theme %>"></div>
-      <div class="arc arc_second_pb arc_second_pb_<%= mt_theme %>"></div>
+      <svg width="100" height="100">
+        <circle class="circle <%= "circle_#{mt_theme}" %> bg"/>
+        <circle class="circle <%= "circle_#{mt_theme}" %> progress pb"/>
+      </svg>
       <div class="progress_nb"><%= nb_p %></div>
       <div class="progress_pct">/ <%= numberpb %></div>
     </div>
