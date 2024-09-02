@@ -93,7 +93,7 @@
 
 <!-- Créer un sujet -->
 <center>
-  <%= button_to "Créer un sujet", new_subject_path, params: { q: @q }, method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
+  <%= button_to "Créer un sujet", new_subject_path, params: (@q.nil? ? nil : { q: @q }), method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
 </center>
 
 <!-- Modifier les catégories -->
