@@ -175,7 +175,7 @@ class UsersController < ApplicationController
     if !params.has_key?("consent1") || !params.has_key?("consent2")
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir créer un compte."
       render 'new'
-    elsif (Rails.env.test? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
+    elsif (Rails.env.test? or Rails.env.development? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       UserMailer.registration_confirmation(@user.id).deliver
       
       user_reload = User.find(@user.id) # Reload because email and email_confirmation can be different after downcaise otherwise!
@@ -327,7 +327,7 @@ class UsersController < ApplicationController
   # Password forgotten: check captcha and send email
   def password_forgotten
     @user = User.new
-    render 'forgot_password' and return if (!Rails.env.test? and !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
+    render 'forgot_password' and return if (!Rails.env.test? and !Rails.env.development? && !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
 
     @user = User.where(:email => params[:user][:email]).first
     if @user
@@ -380,16 +380,15 @@ class UsersController < ApplicationController
       redirect_to root_path
     else
       if (params[:user][:password].nil? or params[:user][:password].length == 0)
-        session["errorChange"] = ["Mot de passe est vide"]
-        redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
+        @user.errors.add(:base, "Mot de passe est vide")
+        render 'recup_password'
       elsif @user.update(params.require(:user).permit(:password, :password_confirmation))
         @user.update_attribute(:key, SecureRandom.urlsafe_base64)
         @user.update_attribute(:recup_password_date_limit, nil)
         flash[:success] = "Votre mot de passe vient d'être modifié. Vous pouvez maintenant vous connecter à votre compte."
         redirect_to root_path
       else
-        session["errorChange"] = @user.errors.full_messages
-        redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
+        render 'recup_password'
       end
     end
   end

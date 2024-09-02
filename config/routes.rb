@@ -176,7 +176,7 @@ Rails.application.routes.draw do
     match '/leave_skin', to: 'users#leave_skin', :via => [:put]
     match '/change_group', to: 'users#change_group', :via => [:put]
     match '/recup_password', to: 'users#recup_password', :via => [:get]
-    match '/change_password', to: 'users#change_password', :via => [:post]
+    match '/change_password', to: 'users#change_password', :via => [:patch]
     match '/add_followed_user', to: 'users#add_followed_user', :via => [:put]
     match '/remove_followed_user', to: 'users#remove_followed_user', :via => [:put]
     match '/change_name', to: 'users#change_name', :via => [:put]
