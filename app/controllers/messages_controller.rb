@@ -1,5 +1,7 @@
 #encoding: utf-8
 class MessagesController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
+  
   before_action :signed_in_user_danger, only: [:create, :update, :destroy]
   before_action :admin_user, only: [:destroy]
   
@@ -29,65 +31,69 @@ class MessagesController < ApplicationController
     if lastid != params[:lastmessage].to_i
       error_create(["Un nouveau message a été posté avant le vôtre ! Veuillez en prendre connaissance avant de poster votre message."]) and return
     end
+    
+    # Invalid CSRF token
+    error_create([get_csrf_error_message]) and return if @invalid_csrf_token
+    
+    # Invalid message
+    error_create(@message.errors.full_messages) and return if !@message.valid?
 
     # Attached files
-    @error_message = ""
     attach = create_files
-    error_create([@error_message]) and return if !@error_message.empty?
+    error_create([@file_error]) and return if !@file_error.nil?
 
-    if @message.save
-      attach_files(attach, @message)
+    @message.save
+    
+    attach_files(attach, @message)
 
-      # Send an email to users following the subject
-      @subject.following_users.each do |u|
-        if u != current_user.sk
-          if (@subject.for_correctors && !u.corrector && !u.admin) || (@subject.for_wepion && !u.wepion && !u.admin)
-            # Not really normal that this user follows this subject
-          else
-            UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.id).deliver
-          end
+    # Send an email to users following the subject
+    @subject.following_users.each do |u|
+      if u != current_user.sk
+        if (@subject.for_correctors && !u.corrector && !u.admin) || (@subject.for_wepion && !u.wepion && !u.admin)
+          # Not really normal that this user follows this subject
+        else
+          UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.id).deliver
         end
       end
-
-      @subject.update(:last_comment_time => DateTime.now,
-                      :last_comment_user => current_user.sk)
-
-      if current_user.sk.root?
-        if params.has_key?("emailWepion")
-          User.where(:group => ["A", "B"]).each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver
-          end
-        end
-      end
-      
-      page = get_last_page(@subject)
-      flash[:success] = "Votre message a bien été posté."
-      redirect_to subject_path(@message.subject, :page => page, :q => @q, :msg => @message.id)
-    else # The message could not be saved correctly
-      destroy_files(attach)
-      error_create(@message.errors.full_messages)
     end
+
+    @subject.update(:last_comment_time => DateTime.now,
+                    :last_comment_user => current_user.sk)
+
+    if current_user.sk.root?
+      if params.has_key?("emailWepion")
+        User.where(:group => ["A", "B"]).each do |u|
+          UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver
+        end
+      end
+    end
+      
+    page = get_last_page(@subject)
+    flash[:success] = "Votre message a bien été posté."
+    redirect_to subject_path(@message.subject, :page => page, :q => @q, :msg => @message.id)
   end
 
   # Update a message (send the form)
   def update
     params[:message][:content].strip! if !params[:message][:content].nil?
     @message.content = params[:message][:content]
-    if @message.valid?
-
-      # Attached files
-      @error_message = ""
-      update_files(@message)
-      error_update([@error_message]) and return if !@error_message.empty?
-      
-      @message.save
-      @message.reload
-      flash[:success] = "Votre message a bien été modifié."
-      page = get_page(@message)
-      redirect_to subject_path(@message.subject, :page => page, :q => @q, :msg => @message.id)
-    else
-      error_update(@message.errors.full_messages) and return
-    end
+    
+    # Invalid CSRF token
+    error_update([get_csrf_error_message]) and return if @invalid_csrf_token
+    
+    # Invalid message
+    error_update(@message.errors.full_messages) and return if !@message.valid?
+    
+    # Attached files
+    update_files(@message)
+    error_update([@file_error]) and return if !@file_error.nil?
+    
+    @message.save
+    
+    flash[:success] = "Votre message a bien été modifié."
+    @message.reload
+    page = get_page(@message)
+    redirect_to subject_path(@message.subject, :page => page, :q => @q, :msg => @message.id)
   end
 
   # Delete a message

@@ -1,5 +1,7 @@
 #encoding: utf-8
 class ContestcorrectionsController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create] # Do not forget to check @invalid_csrf_token instead!
+  
   before_action :signed_in_user_danger, only: [:update]
   
   before_action :get_contestcorrection, only: [:update]
@@ -12,17 +14,16 @@ class ContestcorrectionsController < ApplicationController
   def update    
     params[:contestcorrection][:content].strip! if !params[:contestcorrection][:content].nil?
     @contestcorrection.content = params[:contestcorrection][:content]
-    if !@contestcorrection.valid?
-      render 'contestproblems/show' and return
-    end
+    
+    # Invalid CSRF token
+    render_with_error('contestproblems/show', @contestcorrection, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid contestcorrection
+    render_with_error('contestproblems/show') and return if !@contestcorrection.valid?
     
     # Attached files
-    @error_message = ""
     update_files(@contestcorrection)
-    if !@error_message.empty?
-      @contestcorrection.errors.add(:base, @error_message)
-      render 'contestproblems/show' and return
-    end
+    render_with_error('contestproblems/show', @contestcorrection, @file_error) and return if !@file_error.nil?
     
     @contestcorrection.save
     

@@ -1,5 +1,7 @@
 #encoding: utf-8
 class ContestproblemsController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
+
   before_action :signed_in_user, only: [:new, :edit, :show]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :publish_results, :authorize_corrections, :unauthorize_corrections]
   before_action :root_user, only: [:authorize_corrections, :unauthorize_corrections]
@@ -39,20 +41,23 @@ class ContestproblemsController < ApplicationController
   # Create a problem (send the form)
   def create
     @contestproblem = Contestproblem.new(params.require(:contestproblem).permit(:statement, :origin, :start_time, :end_time))
-    if @date_problem
-      render 'new' and return
-    end
     @contestproblem.contest = @contest
     @contestproblem.number = 1
-    if !@contestproblem.save
-      render 'new'
-    else
-      flash[:success] = "Problème ajouté."
+    
+    # Invalid CSRF token
+    render_with_error('contestproblems/new', @contestproblem, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid dates
+    render_with_error('contestproblems/new', @contestproblem, @date_error) and return if !@date_error.nil?
+
+    # Invalid contestproblem
+    render_with_error('contestproblems/new') and return if !@contestproblem.save
+    
+    flash[:success] = "Problème ajouté."
       
-      @contest.update_details
-      @contest.update_problem_numbers
-      redirect_to @contestproblem
-    end
+    @contest.update_details
+    @contest.update_problem_numbers
+    redirect_to @contestproblem
   end
   
   # Update a problem (send the form)
@@ -65,17 +70,21 @@ class ContestproblemsController < ApplicationController
     if @contestproblem.at_most(:in_progress)
       @contestproblem.end_time = params[:contestproblem][:end_time]
     end
-    if @date_problem
-      render 'edit' and return
-    end
-    if @contestproblem.save
-      flash[:success] = "Problème modifié."
-      @contest.update_details
-      @contest.update_problem_numbers
-      redirect_to @contestproblem
-    else
-      render 'edit'
-    end
+    
+    # Invalid CSRF token
+    render_with_error('contestproblems/edit', @contestproblem, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid dates
+    render_with_error('contestproblems/edit', @contestproblem, @date_error) and return if !@date_error.nil?
+    
+    # Invalid contestproblem
+    render_with_error('contestproblems/edit') and return if !@contestproblem.save
+    
+    flash[:success] = "Problème modifié."
+    
+    @contest.update_details
+    @contest.update_problem_numbers
+    redirect_to @contestproblem
   end
   
   # Delete a problem
@@ -174,20 +183,21 @@ class ContestproblemsController < ApplicationController
     @date_problem = false
     
     if (start_date.nil? or end_date.nil?)
-      flash.now[:danger] = "Les deux dates doivent être définies."
+      @date_error = "Les deux dates doivent être définies."
       @date_problem = true
     elsif (@contestproblem.nil? || @contestproblem.at_most(:in_progress)) && !end_date.nil? && date_now >= end_date
-      flash.now[:danger] = "La deuxième date ne peut pas être dans le passé."
+      @date_error = "La deuxième date ne peut pas être dans le passé."
       @date_problem = true
     elsif (@contestproblem.nil? || @contestproblem.at_most(:not_started_yet)) && !start_date.nil? && date_now >= start_date
-      flash.now[:danger] = "La première date ne peut pas être dans le passé."
+      @date_error = "La première date ne peut pas être dans le passé."
       @date_problem = true
     elsif !start_date.nil? && !end_date.nil? && start_date >= end_date
-      flash.now[:danger] = "La deuxième date doit être strictement après la première date."
+      @date_error = "La deuxième date doit être strictement après la première date."
       @date_problem = true
     elsif start_date.min != 0
-      flash.now[:danger] = "La première date doit être à une heure pile#{ '(en production)' if Rails.env.development?}."
-      @date_problem = true if !Rails.env.development?
+      @date_error = "La première date doit être à une heure pile#{ '(en production)' if Rails.env.development?}."
+      @date_problem = true unless Rails.env.development?
+      flash.now[:danger] = @date_error if Rails.env.development?
     end
   end
   
@@ -221,5 +231,4 @@ class ContestproblemsController < ApplicationController
       UserMailer.new_followed_message(u.id, sub.id, -1).deliver
     end
   end
-
 end

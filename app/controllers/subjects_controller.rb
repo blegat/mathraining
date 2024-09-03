@@ -1,5 +1,7 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
+  
   before_action :signed_in_user, only: [:index, :show, :new, :unfollow]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate, :follow]
   before_action :admin_user, only: [:destroy, :migrate]
@@ -115,33 +117,35 @@ class SubjectsController < ApplicationController
     if @subject.title.size > 0
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
     end
+    
+    # Invalid CSRF token
+    error_create([get_csrf_error_message]) and return if @invalid_csrf_token
 
     # Set associated object (category, section, chapter, exercise, problem)
     err = set_associated_object
     error_create([err]) and return if !err.empty?
+    
+    # Invalid subject
+    error_create(@subject.errors.full_messages) and return if !@subject.valid?
 
     # Attached files
-    @error_message = ""
     attach = create_files
-    error_create([@error_message]) and return if !@error_message.empty?
+    error_create([@file_error]) and return if !@file_error.nil?
 
-    if @subject.save
-      attach_files(attach, @subject)
+    @subject.save
+    
+    attach_files(attach, @subject)
 
-      if current_user.sk.root?
-        if params.has_key?("emailWepion")
-          User.where(:group => ["A", "B"]).each do |u|
-            UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver
-          end
+    if current_user.sk.root?
+      if params.has_key?("emailWepion")
+        User.where(:group => ["A", "B"]).each do |u|
+          UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver
         end
       end
-
-      flash[:success] = "Votre sujet a bien été posté."
-      redirect_to subject_path(@subject, :q => @q)
-    else
-      destroy_files(attach)
-      error_create(@subject.errors.full_messages) and return
     end
+
+    flash[:success] = "Votre sujet a bien été posté."
+    redirect_to subject_path(@subject, :q => @q)
   end
 
   # Update a subject (send the form)
@@ -149,6 +153,7 @@ class SubjectsController < ApplicationController
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
     @subject.title = params[:subject][:title]
+    @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
     @subject.content = params[:subject][:content]
     @subject.for_correctors = params[:subject][:for_correctors] if !params[:subject][:for_correctors].nil? && (current_user.sk.corrector? || current_user.sk.admin?)
     @subject.important = params[:subject][:important] if !params[:subject][:important].nil? && current_user.sk.admin?
@@ -156,25 +161,24 @@ class SubjectsController < ApplicationController
     
     @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
     
-    if @subject.valid?
+    # Invalid CSRF token
+    error_update([get_csrf_error_message]) and return if @invalid_csrf_token
+    
+    # Invalid subject
+    error_update(@subject.errors.full_messages) and return if !@subject.valid?
+    
+    # Set associated object (category, section, chapter, exercise, problem)
+    err = set_associated_object
+    error_update([err]) and return if !err.empty?
 
-      @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
-
-      # Set associated object (category, section, chapter, exercise, problem)
-      err = set_associated_object
-      error_update([err]) and return if !err.empty?
-
-      # Attached files
-      @error_message = ""
-      update_files(@subject)
-      error_update([@error_message]) and return if !@error_message.empty?
+    # Attached files
+    update_files(@subject)
+    error_update([@file_error]) and return if !@file_error.nil?
       
-      @subject.save
-      flash[:success] = "Votre sujet a bien été modifié."
-      redirect_to subject_path(@subject, :q => @q, :msg => 0)
-    else
-      error_update(@subject.errors.full_messages) and return
-    end
+    @subject.save
+    
+    flash[:success] = "Votre sujet a bien été modifié."
+    redirect_to subject_path(@subject, :q => @q, :msg => 0)
   end
 
   # Delete a subject

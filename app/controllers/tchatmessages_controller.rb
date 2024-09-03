@@ -1,5 +1,7 @@
 #encoding: utf-8
 class TchatmessagesController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create] # Do not forget to check @invalid_csrf_token instead!
+  
   before_action :signed_in_user_danger, only: [:create]
   before_action :notskin_user, only: [:create]
   
@@ -16,11 +18,10 @@ class TchatmessagesController < ApplicationController
     new_discussion = false
     if @discussion.nil?
       if !params.has_key?(:qui) || params[:qui].to_i == 0
-        @tchatmessage.errors.add(:base, "Veuillez choisir un destinataire.")
-        render 'discussions/new' and return
+        error_in_create("Veuillez choisir un destinataire.", true) and return
       else
         other_user = User.find_by_id(params[:qui].to_i)
-        render 'discussions/new' and return if (other_user.nil? || other_user == current_user.sk)
+        error_in_create("Veuillez choisir un destinataire.", true) and return if (other_user.nil? || other_user == current_user.sk)
         @discussion = Discussion.get_discussion_between(current_user.sk, other_user)
         if @discussion.nil?
           @discussion = Discussion.create(:last_message_time => DateTime.now)
@@ -28,12 +29,15 @@ class TchatmessagesController < ApplicationController
         end
       end
     end
+
+    # Invalid CSRF token
+    error_in_create(get_csrf_error_message, new_discussion) and return if @invalid_csrf_token
     
+    # Check that no new message was posted
     unless new_discussion                             
       link = current_user.sk.links.where(:discussion_id => @discussion.id).first
       if link.nonread > 0
-        @tchatmessage.errors.add(:base, "Un message a été envoyé avant le vôtre.")
-        render 'discussions/show' and return
+        error_in_create("Un message a été envoyé avant le vôtre.", new_discussion) and return
       end
     end
 
@@ -44,20 +48,17 @@ class TchatmessagesController < ApplicationController
         end
       end
     end
-    
-    # Attached files
-    @error_message = ""
-    attach = create_files
-    if !@error_message.empty?
-      @tchatmessage.errors.add(:base, @error_message)
-      return error_in_create(new_discussion)
-    end
 
     @tchatmessage.discussion = @discussion
-    if !@tchatmessage.save
-      destroy_files(attach)
-      return error_in_create(new_discussion)
-    end
+    
+    # Invalid tchatmessage
+    error_in_create(nil, new_discussion) and return if !@tchatmessage.valid?
+    
+    # Attached files
+    attach = create_files
+    error_in_create(@file_error, new_discussion) and return if !@file_error.nil?
+
+    @tchatmessage.save
 
     attach_files(attach, @tchatmessage)
     
@@ -67,7 +68,7 @@ class TchatmessagesController < ApplicationController
     
     if new_discussion
       Link.create(:user => current_user.sk, :discussion => @discussion, :nonread => 0)
-      Link.create(:user => other_user, :discussion => @discussion, :nonread => 1)
+      Link.create(:user => other_user,      :discussion => @discussion, :nonread => 1)
     else    
       @discussion.links.each do |l|
         if l.user_id != current_user.sk.id
@@ -102,13 +103,15 @@ class TchatmessagesController < ApplicationController
   
   ########## HELPER METHODS ##########
   
-  def error_in_create(new_discussion)
+  def error_in_create(err, new_discussion)
     if new_discussion
-      @discussion.destroy
-      @discussion = nil
-      render 'discussions/new' and return
+      if !@discussion.nil?
+        @discussion.destroy
+        @discussion = nil
+      end
+      render_with_error('discussions/new', @tchatmessage, err)
     else
-      render 'discussions/show' and return
+      render_with_error('discussions/show', @tchatmessage, err)
     end
   end
 end

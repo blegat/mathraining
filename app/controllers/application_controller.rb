@@ -1,15 +1,47 @@
 #encoding: utf-8
+
+class CustomCSRFStrategy
+  def initialize(controller)
+    @controller = controller
+  end
+
+  def handle_unverified_request
+    @controller.set_invalid_csrf_token
+  end
+end
+
 class ApplicationController < ActionController::Base
-  protect_from_forgery
   include SessionsHelper
   include ApplicationHelper
-
+  
+  protect_from_forgery with: CustomCSRFStrategy
+  before_action :error_if_invalid_csrf_token
   before_action :load_global_variables
   before_action :check_under_maintenance
   before_action :has_consent
   before_action :check_takentests
-
+  
+  # Called from CustomCSRFStrategy when an invalid token is detected
+  def set_invalid_csrf_token
+    @invalid_csrf_token = true
+  end
+  
   private
+  
+  # Error in case of invalid CSRF token: this method is sometimes skipped with skip_before_action
+  # and replaced by something else so that users don't lose what they wrote
+  def error_if_invalid_csrf_token
+    if @invalid_csrf_token
+      flash[:danger] = get_csrf_error_message
+      referrer_url = URI.parse(request.referrer) rescue URI.parse(root_url)
+      redirect_to referrer_url.to_s
+    end
+  end
+  
+  # Message to show when an invalid CSRF token is detected
+  def get_csrf_error_message
+    return "Votre session a expiré pour une raison inconnue et vos données n'ont pas pu être enregistrées. Merci de réessayer."
+  end
 
   # When doing big changes on the server
   def check_under_maintenance
@@ -62,6 +94,12 @@ class ApplicationController < ActionController::Base
         current_user.update_attribute(:last_policy_read, true)
       end
     end
+  end
+  
+  # Render a view after having added an error to an object if needed
+  def render_with_error(view, obj = nil, error = nil)
+    obj.errors.add(:base, error) unless obj.nil? || error.nil?
+    render view
   end
   
   # Check that the user is signed in, and if not then redirect to the page "Please sign in to see this page"
@@ -223,9 +261,9 @@ class ApplicationController < ActionController::Base
   def create_files
     attach = Array.new
     totalsize = add_new_files(attach)
-    return [] if !@error_message.empty?
+    return [] if !@file_error.nil?
     check_files_total_size(totalsize)
-    destroy_files(attach) and return [] if !@error_message.empty?
+    destroy_files(attach) and return [] if !@file_error.nil?
     return attach
   end
 
@@ -249,10 +287,9 @@ class ApplicationController < ActionController::Base
     
     attach = Array.new
     totalsize += add_new_files(attach)
-    return [] if !@error_message.empty?
+    return if !@file_error.nil?
     check_files_total_size(totalsize)
-    destroy_files(attach) and return [] if !@error_message.empty?
-    
+    destroy_files(attach) and return if !@file_error.nil?
     attach_files(attach, object)
   end
   
@@ -268,7 +305,7 @@ class ApplicationController < ActionController::Base
           attach.pop()
           destroy_files(attach)
           nom = params["file#{postfix}_#{k}".to_sym].original_filename
-          @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          @file_error = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           return 0;
         end
         totalsize = totalsize + attach.last.file.blob.byte_size
@@ -284,7 +321,7 @@ class ApplicationController < ActionController::Base
     limit = (Rails.env.test? ? 15.kilobytes : 5.megabytes) # In test mode we put a very small limit
     limit_str = (Rails.env.test? ? "15 ko" : "5 Mo")
     if totalsize > limit
-      @error_message = "Vos pièces jointes font plus de #{limit_str} au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)"
+      @file_error = "Vos pièces jointes font plus de #{limit_str} au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)"
     end
   end
   

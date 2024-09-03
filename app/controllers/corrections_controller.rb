@@ -1,5 +1,7 @@
 #encoding: utf-8
 class CorrectionsController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create] # Do not forget to check @invalid_csrf_token instead!
+  
   before_action :signed_in_user_danger, only: [:create]
   
   before_action :get_submission, only: [:create]
@@ -18,11 +20,13 @@ class CorrectionsController < ApplicationController
     
     @correction = @submission.corrections.build(params.require(:correction).permit(:content))
     @correction.user = current_user.sk
+    
+    # Invalid CSRF token
+    render_with_error('problems/show', @correction, get_csrf_error_message) and return if @invalid_csrf_token
 
     # If a score is needed, we check that the score is set
     if @submission.waiting? && @submission.intest && @submission.score == -1 && (params["score".to_sym].nil? || params["score".to_sym].blank?)
-      @correction.errors.add(:base, "Veuillez donner un score à cette solution.")
-      render 'problems/show' and return
+      render_with_error('problems/show', @correction, "Veuillez donner un score à cette solution.") and return
     end
 
     # We check that no new message was posted
@@ -31,23 +35,19 @@ class CorrectionsController < ApplicationController
       lastid = c.id
     end
 
+    # New comment meanwhile
     if lastid != params[:last_comment_id].to_i
-      @correction.errors.add(:base, "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire.")
-      render 'problems/show' and return
+      render_with_error('problems/show', @correction, "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire.") and return
     end
+    
+    # Invalid correction
+    render_with_error('problems/show') and return if !@correction.valid?
 
     # Attached files
-    @error_message = ""
     attach = create_files
-    if !@error_message.empty?
-      @correction.errors.add(:base, @error_message)
-      render 'problems/show' and return
-    end
-
-    if !@correction.save
-      destroy_files(attach)
-      render 'problems/show' and return
-    end
+    render_with_error('problems/show', @correction, @file_error) and return if !@file_error.nil?
+    
+    @correction.save
     
     attach_files(attach, @correction)
 

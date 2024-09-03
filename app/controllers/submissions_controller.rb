@@ -1,5 +1,7 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create, :create_intest, :update_draft, :update_intest] # Do not forget to check @invalid_csrf_token instead!
+
   before_action :signed_in_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :search_script]
   before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
@@ -46,24 +48,23 @@ class SubmissionsController < ApplicationController
                                              user:    current_user.sk,
                                              last_comment_time: DateTime.now)
     
+    # Invalid CSRF token
+    render_with_error('problems/show', @submission, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid submission
+    render_with_error('problems/show') and return if !@submission.valid?
+    
     # Attached files
-    @error_message = ""
     attach = create_files
-    if !@error_message.empty?
-      @submission.errors.add(:base, @error_message) 
-      render 'problems/show' and return
-    end
+    render_with_error('problems/show', @submission, @file_error) and return if !@file_error.nil?
 
     if params[:commit] == "Enregistrer comme brouillon" || (@limited_new_submissions && current_user.sk.has_already_submitted_today?)
       @submission.visible = false
       @submission.status = :draft
     end
 
-    if !@submission.save
-      destroy_files(attach)
-      render 'problems/show' and return
-    end
-
+    @submission.save
+    
     attach_files(attach, @submission)
 
     if @submission.draft?
@@ -92,18 +93,17 @@ class SubmissionsController < ApplicationController
                                              visible: false,
                                              last_comment_time: DateTime.now)
     
+    # Invalid CSRF token
+    render_with_error('virtualtests/show', @submission, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid submission
+    render_with_error('virtualtests/show') and return if !@submission.valid?
+    
     # Attached files
-    @error_message = ""
     attach = create_files
-    if !@error_message.empty?
-      @submission.errors.add(:base, @error_message) 
-      render 'virtualtests/show' and return
-    end
+    render_with_error('virtualtests/show', @submission, @file_error) and return if !@file_error.nil?
 
-    if !@submission.save
-      destroy_files(attach)
-      render 'virtualtests/show' and return
-    end
+    @submission.save
 
     attach_files(attach, @submission)
     flash[:success] = "Votre solution a bien été enregistrée."
@@ -413,17 +413,16 @@ class SubmissionsController < ApplicationController
     
     params[:submission][:content].strip! if !params[:submission][:content].nil?
     @submission.content = params[:submission][:content]
-    if !@submission.valid?
-      render rendered_page_in_case_of_error and return
-    end
+    
+    # Invalid CSRF token
+    render_with_error(rendered_page_in_case_of_error, @submission, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid submission
+    render_with_error(rendered_page_in_case_of_error) and return if !@submission.valid?
 
     # Attached files
-    @error_message = ""
     update_files(@submission)
-    if !@error_message.empty?
-      @submission.errors.add(:base, @error_message)
-      render rendered_page_in_case_of_error and return
-    end
+    render_with_error(rendered_page_in_case_of_error, @submission, @file_error) and return if !@file_error.nil?
     
     @submission.save
 

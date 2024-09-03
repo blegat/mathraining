@@ -104,7 +104,7 @@ class UsersController < ApplicationController
     
     (0..(search.size-1)).each do |i|
       if !User.allowed_characters.include?(search[i]) && !User.allowed_special_characters.include?(search[i])
-        @error_message = "Le caractère #{search[i]} n'est pas autorisé dans le nom des utilisateurs."
+        @search_error = "Le caractère #{search[i]} n'est pas autorisé dans le nom des utilisateurs."
         return
       end
     end
@@ -128,7 +128,7 @@ class UsersController < ApplicationController
     end
     
     if search.size < 3
-      @error_message = "Au moins 3 caractères sont nécessaires."
+      @search_error = "Au moins 3 caractères sont nécessaires."
       return
     end
     

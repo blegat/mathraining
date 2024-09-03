@@ -1,5 +1,7 @@
 #encoding: utf-8
 class ContestsController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
+
   before_action :signed_in_user, only: [:new, :edit, :unfollow]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :follow, :add_organizer, :remove_organizer]
   before_action :admin_user, only: [:new, :create, :destroy, :put_online, :add_organizer, :remove_organizer]
@@ -53,23 +55,29 @@ class ContestsController < ApplicationController
   # Create a contest (send the form)
   def create
     @contest = Contest.new(params.require(:contest).permit(:number, :description, :medal))
+    
+    # Invalid CSRF token
+    render_with_error('contests/new', @contest, get_csrf_error_message) and return if @invalid_csrf_token
 
-    if @contest.save
-      flash[:success] = "Concours ajouté."
-      redirect_to @contest
-    else
-      render 'new'
-    end
+    # Invalid contest
+    render_with_error('contests/new') and return if !@contest.save
+    
+    flash[:success] = "Concours ajouté."
+    redirect_to @contest
   end
 
   # Update a contest (send the form)
   def update
-    if @contest.update(params.require(:contest).permit(:number, :description, :medal))
-      flash[:success] = "Concours modifié."
-      redirect_to contest_path
-    else
-      render 'edit'
-    end
+    @contest.assign_attributes(params.require(:contest).permit(:number, :description, :medal))
+    
+    # Invalid CSRF token
+    render_with_error('contests/edit', @contest, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid contest
+    render_with_error('contests/edit') and return if !@contest.save
+
+    flash[:success] = "Concours modifié."
+    redirect_to contest_path
   end
 
   # Delete a contest
