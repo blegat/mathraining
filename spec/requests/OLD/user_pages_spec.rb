@@ -620,6 +620,20 @@ describe "User pages" do
       specify { expect { click_link "Supprimer" and other_root.reload }.to change(User, :count).by(-1) .and change{other_root.skin}.to(0) }
     end
     
+    describe "deletes a student with expired session (or invalid CSRF token)" do
+      before do
+        ActionController::Base.allow_forgery_protection = true # Don't know why but this is enough to have an invalid CSRF in testing
+        visit user_path(zero_user)
+        #Capybara.current_session.driver.browser.set_cookie("_mathraining_session=wrongValue")
+        click_link "Supprimer"
+      end
+      it do
+        should have_error_message("Votre session a expiré pour une raison inconnue")
+        should have_content(zero_user.name) # zero_user should not be deleted
+      end
+      after { ActionController::Base.allow_forgery_protection = false }
+    end
+    
     describe "transforms user in admin" do
       before do
         visit user_path(zero_user)

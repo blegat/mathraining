@@ -77,6 +77,20 @@ describe "Submission pages" do
           end
         end
         
+        describe "and sends new submission with expired session (or invalid CSRF token)" do
+          before do
+            ActionController::Base.allow_forgery_protection = true # Don't know why but this is enough to have an invalid CSRF in testing
+            #Capybara.current_session.driver.browser.set_cookie("_mathraining_session=wrongValue")
+            fill_in "MathInput", with: newsubmission
+            click_button "Soumettre cette solution"
+          end
+          it do
+            should have_error_message("Votre session a expiré pour une raison inconnue")
+            should have_selector("textarea", text: newsubmission) # The submission should not be lost!
+          end
+          after { ActionController::Base.allow_forgery_protection = false }
+        end
+        
         describe "and sends new submission while they are forbidden" do
           before do
             Globalvariable.create(:key => "no_new_submission", :value => 1, :message => "On ne soumet plus pour l'instant !")
