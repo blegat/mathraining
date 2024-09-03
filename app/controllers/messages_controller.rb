@@ -62,8 +62,7 @@ class MessagesController < ApplicationController
       
       page = get_last_page(@subject)
       flash[:success] = "Votre message a bien été posté."
-      session["successNewMessage"] = "ok"
-      redirect_to subject_path(@message.subject, :page => page, :q => @q)
+      redirect_to subject_path(@message.subject, :page => page, :q => @q, :msg => @message.id)
     else # The message could not be saved correctly
       destroy_files(attach)
       error_create(@message.errors.full_messages)
@@ -84,9 +83,8 @@ class MessagesController < ApplicationController
       @message.save
       @message.reload
       flash[:success] = "Votre message a bien été modifié."
-      session["successMessage#{@message.id}"] = "ok"
       page = get_page(@message)
-      redirect_to subject_path(@message.subject, :page => page, :q => @q)
+      redirect_to subject_path(@message.subject, :page => page, :q => @q, :msg => @message.id)
     else
       error_update(@message.errors.full_messages) and return
     end
@@ -119,6 +117,7 @@ class MessagesController < ApplicationController
   def get_message
     @message = Message.find_by_id(params[:id])
     return if check_nil_object(@message)
+    @subject = @message.subject
   end
   
   # Get the subject
@@ -146,19 +145,23 @@ class MessagesController < ApplicationController
   
   # Helper method when an error occurred during create
   def error_create(err)
-    session["errorNewMessage"] = err
-    session[:oldContent] = params[:message][:content]
-    page = get_last_page(@subject)
-    redirect_to subject_path(@subject, :page => page, :q => @q)
+    @error_case = "errorNewMessage"
+    @error_msgs = err
+    @error_params = params[:message]
+    
+    @page = get_last_page(@subject)
+    render 'subjects/show'
   end
   
   # Helper method when an error occurred during update
   def error_update(err)
-    session["errorMessage#{@message.id}"] = err
+    @error_case = "errorMessage#{@message.id}"
+    @error_msgs = err
+    @error_params = params[:message]
+    
     @message.reload
-    session[:oldContent] = params[:message][:content]
-    page = get_page(@message)
-    redirect_to subject_path(@message.subject, :page => page, :q => @q)
+    @page = get_page(@message)
+    render 'subjects/show'
   end
   
   # Helper method to get the last page of a subject

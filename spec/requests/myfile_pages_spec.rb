@@ -79,7 +79,7 @@ describe "Myfile pages", myfile: true do
     describe "visits one message file" do
       before { visit myfile_path(messagemyfile) }
       it do
-        should have_current_path(subject_path(sub, :page => 1, :message => message))
+        should have_current_path(subject_path(sub, :page => 1, :msg => message))
         should have_link(messagemyfile.file.filename.to_s, href: rails_blob_url(messagemyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: myfile_fake_delete_path(messagemyfile))
       end
@@ -87,7 +87,7 @@ describe "Myfile pages", myfile: true do
       describe "and fake deletes it" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(messagemyfile)) }
         it do
-          should have_current_path(subject_path(sub, :page => 1, :message => message, :q => 0))
+          should have_current_path(subject_path(sub, :page => 1, :msg => message, :q => 0))
           should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end

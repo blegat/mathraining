@@ -13,16 +13,16 @@
 
 <% erreur = false %>
 
-<% if !session["error#{postfix}"].nil? %>
+<% if @error_case == "error#{postfix}" %>
   <% erreur = true %>
-  <%= render 'shared/error_messages', errors: session["error#{postfix}"] %>
+  <%= render 'shared/error_messages', errors: @error_msgs %>
 <% end %>
 
 
 <div class="mb-2">
   <% cont = m.content %>
-  <% if erreur && !session[:oldContent].nil? %>
-    <% cont = session[:oldContent] %>
+  <% if erreur %>
+    <% cont = @error_params[:content] if @error_params.has_key?(:content) %>
   <% end %>
   <%= f.label :content, :for => "MathInput#{postfix}", :disabled => current_user.other, :class => "form-label" %>
   <%= render 'shared/preview', postfix: postfix %>
@@ -41,13 +41,6 @@
   </div>
 <% end %>
 
-<% if !session["error#{postfix}"].nil? %>
+<% if erreur %>
   <script>rollingDevelopQuickWhenPossible("<%= postfix %>", true)</script>
-  <% session.delete("error#{postfix}") %>
-  <% session.delete("oldContent") %>
-<% end %>
-
-<% if !session["success#{postfix}"].nil? %>
-  <script>rollingShowusWhenPossible("<%= postfix %>")</script>
-  <% session.delete("success#{postfix}") %>
 <% end %>

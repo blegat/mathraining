@@ -88,7 +88,8 @@ class SubjectsController < ApplicationController
 
   # Show one subject
   def show
-    @messages = @subject.messages.order(:created_at).paginate(:page => params[:page], :per_page => 10)
+    @page = params[:page].to_i if params.has_key?(:page)
+    # @messages is computed in the view to be able to render subjects/show in case of error
   end
 
   # Create a subject (show form)
@@ -170,8 +171,7 @@ class SubjectsController < ApplicationController
       
       @subject.save
       flash[:success] = "Votre sujet a bien été modifié."
-      session["successSubject"] = "ok"
-      redirect_to subject_path(@subject, :q => @q)
+      redirect_to subject_path(@subject, :q => @q, :msg => 0)
     else
       error_update(@subject.errors.full_messages) and return
     end
@@ -329,15 +329,17 @@ class SubjectsController < ApplicationController
   
   # Helper method when an error occurred during create
   def error_create(err)
-    session[:errorSubject] = err
-    session[:oldAll] = params[:subject].to_unsafe_h
-    redirect_to new_subject_path(:q => @q)
+    @error_case = "errorSubject"
+    @error_msgs = err
+    @error_params = params[:subject]
+    render 'new'
   end
   
   # Helper method when an error occurred during update
   def error_update(err)
-    session[:errorSubject] = err
-    session[:oldAll] = params[:subject].to_unsafe_h
-    redirect_to subject_path(@subject, :q => @q)
+    @error_case = "errorSubject"
+    @error_msgs = err
+    @error_params = params[:subject]
+    render 'show'
   end
 end
