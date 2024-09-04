@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
   
   # Message to show when an invalid CSRF token is detected
   def get_csrf_error_message
-    return "Votre session a expiré pour une raison inconnue et vos données n'ont pas pu être enregistrées. Merci de réessayer."
+    return "Votre session a expiré et vos données n'ont pas pu être enregistrées. Merci de réessayer."
   end
 
   # When doing big changes on the server

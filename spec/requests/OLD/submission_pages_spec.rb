@@ -85,7 +85,7 @@ describe "Submission pages" do
             click_button "Soumettre cette solution"
           end
           it do
-            should have_error_message("Votre session a expiré pour une raison inconnue")
+            should have_error_message("Votre session a expiré")
             should have_selector("textarea", text: newsubmission) # The submission should not be lost!
           end
           after { ActionController::Base.allow_forgery_protection = false }

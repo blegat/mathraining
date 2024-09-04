@@ -628,7 +628,7 @@ describe "User pages" do
         click_link "Supprimer"
       end
       it do
-        should have_error_message("Votre session a expiré pour une raison inconnue")
+        should have_error_message("Votre session a expiré")
         should have_content(zero_user.name) # zero_user should not be deleted
       end
       after { ActionController::Base.allow_forgery_protection = false }
