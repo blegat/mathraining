@@ -59,12 +59,6 @@ GEM
     activerecord (7.0.8.4)
       activemodel (= 7.0.8.4)
       activesupport (= 7.0.8.4)
-    activerecord-session_store (2.0.0)
-      actionpack (>= 5.2.4.1)
-      activerecord (>= 5.2.4.1)
-      multi_json (~> 1.11, >= 1.11.2)
-      rack (>= 2.0.8, < 3)
-      railties (>= 5.2.4.1)
     activestorage (7.0.8.4)
       actionpack (= 7.0.8.4)
       activejob (= 7.0.8.4)
@@ -392,7 +386,6 @@ PLATFORMS
 
 DEPENDENCIES
   active_storage_validations
-  activerecord-session_store (= 2.0.0)
   annotate (~> 3.2)
   bcrypt (= 3.1.16)
   bootstrap (= 5.3)

@@ -624,7 +624,7 @@ describe "User pages" do
       before do
         ActionController::Base.allow_forgery_protection = true # Don't know why but this is enough to have an invalid CSRF in testing
         visit user_path(zero_user)
-        #Capybara.current_session.driver.browser.set_cookie("_mathraining_session=wrongValue")
+        #Capybara.current_session.driver.browser.set_cookie("_session_id=wrongValue")
         click_link "Supprimer"
       end
       it do

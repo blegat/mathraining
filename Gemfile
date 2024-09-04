@@ -49,7 +49,7 @@ gem 'jquery-rails'
 
 gem 'select2-rails'
 
-gem 'activerecord-session_store', '= 2.0.0'
+# gem 'activerecord-session_store', '= 2.0.0'
 
 group :test do
   gem 'capybara', '3.39.2'
