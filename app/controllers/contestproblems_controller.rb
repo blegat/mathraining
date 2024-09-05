@@ -100,7 +100,7 @@ class ContestproblemsController < ApplicationController
   def publish_results
     @contestproblem.corrected!
     
-    compute_new_contest_rankings(@contest)
+    @contest.compute_new_contest_rankings
     
     automatic_results_published_post(@contestproblem)
     

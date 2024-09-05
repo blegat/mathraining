@@ -68,7 +68,7 @@ class ContestcorrectionsController < ApplicationController
     @contestsolution.save
     
     if @contestproblem.in_recorrection? && @contestsolution.score != old_score
-      compute_new_contest_rankings(@contest)
+      @contest.compute_new_contest_rankings
     end
     
     if @contestsolution.official?

@@ -35,7 +35,7 @@ class ContestsController < ApplicationController
     @contest.silver_cutoff = params[:silver_cutoff].to_i
     @contest.gold_cutoff = params[:gold_cutoff].to_i
     if @contest.save
-      compute_new_contest_rankings(@contest)
+      @contest.compute_new_contest_rankings
       flash[:success] = "Les médailles ont été distribuées !"
     else
       flash[:danger] = error_list_for(@contest)

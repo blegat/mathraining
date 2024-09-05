@@ -12,10 +12,10 @@ end
 
 class ApplicationController < ActionController::Base
   include SessionsHelper
-  include ApplicationHelper
   
   protect_from_forgery with: CustomCSRFStrategy
   before_action :error_if_invalid_csrf_token
+  before_action :start_or_stop_benchmark
   before_action :load_global_variables
   before_action :check_under_maintenance
   before_action :has_consent
@@ -38,25 +38,8 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  # Message to show when an invalid CSRF token is detected
-  def get_csrf_error_message
-    return "Votre session a expiré et vos données n'ont pas pu être enregistrées. Merci de réessayer."
-  end
-
-  # When doing big changes on the server
-  def check_under_maintenance
-    if @under_maintenance
-      flash[:info] = @under_maintenance_message.html_safe
-      if !@signed_in || !current_user.root?
-        redirect_to root_path if request.path != "/"
-      end
-    end
-  end
-  
-  # Create some global variables that are always needed
-  def load_global_variables
-    @signed_in = signed_in?
-    
+  # Deal with start_benchmark and stop_benchmark, to benchmark the loading time of a page
+  def start_or_stop_benchmark
     if params.has_key?(:start_benchmark)
       cookies[:benchmark] = 1
     end
@@ -67,6 +50,11 @@ class ApplicationController < ActionController::Base
         @benchmark_start_time = Time.now
       end
     end
+  end
+  
+  # Create some global variables that are always needed
+  def load_global_variables
+    @signed_in = signed_in?
     
     @under_maintenance = false
     @no_new_submission = false
@@ -84,6 +72,16 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # When doing big changes on the server
+  def check_under_maintenance
+    if @under_maintenance
+      flash[:info] = @under_maintenance_message.html_safe
+      if !@signed_in || !current_user.root?
+        redirect_to root_path if request.path != "/"
+      end
+    end
+  end
+  
   # Check that the user consented to the last policy
   def has_consent
     pp = request.fullpath.to_s
@@ -96,11 +94,36 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  ########## HELPER METHODS ##########
+  
+  # Message to show when an invalid CSRF token is detected
+  def get_csrf_error_message
+    return "Votre session a expiré et vos données n'ont pas pu être enregistrées. Merci de réessayer."
+  end
+  
+  # Swap the positions of two objects
+  def swap_position(a, b)
+    if !a.nil? && !b.nil? && a != b
+      x = a.position
+      y = b.position
+      a.update_attribute(:position, y)
+      b.update_attribute(:position, x)
+      if x > y
+        return " vers le haut"
+      else
+        return " vers le bas"
+      end
+    end
+    return ""
+  end
+  
   # Render a view after having added an error to an object if needed
   def render_with_error(view, obj = nil, error = nil)
     obj.errors.add(:base, error) unless obj.nil? || error.nil?
     render view
   end
+  
+  ########## CHECK METHODS ##########
   
   # Check that the user is signed in, and if not then redirect to the page "Please sign in to see this page"
   def signed_in_user
@@ -241,22 +264,61 @@ class ApplicationController < ActionController::Base
     return false
   end
   
-  # Swap the positions of two objects
-  def swap_position(a, b)
-    if !a.nil? && !b.nil? && a != b
-      x = a.position
-      y = b.position
-      a.update_attribute(:position, y)
-      b.update_attribute(:position, x)
-      if x > y
-        return " vers le haut"
+  ########## GENERAL TEST & CONTEST STATUS CHECKS METHODS ##########
+  
+  # Check if some test just got finished
+  def check_takentests
+    time_now = DateTime.now.to_i
+    Takentestcheck.all.each do |c|
+      t = c.takentest
+      if t.finished?
+        c.destroy # Should not happen in theory
       else
-        return " vers le bas"
+        debut = t.taken_time.to_i
+        fin = debut + t.virtualtest.duration*60
+        if fin < time_now
+          c.destroy
+          t.finished!
+          u = t.user
+          v = t.virtualtest
+          v.problems.each do |p|
+            p.submissions.where(user_id: u.id, intest: true).each do |s|
+              s.update_attribute(:visible, true)
+            end
+          end
+        end
       end
     end
-    return ""
   end
-
+  
+  # Check if a contest problem just started or ended (done only when charging a contest related page)
+  def check_contests
+    date_now = DateTime.now
+    # Note: Problems in Contestproblemcheck are also used in contest.rb to check problems for which an email or forum subject must be created
+    Contestproblemcheck.all.order(:id).each do |c|
+      p = c.contestproblem
+      if p.not_started_yet? # Contest is online but problem is not published yet
+        if p.start_time <= date_now
+          p.in_progress!
+        end
+      end
+      if p.in_progress? # Problem has started but not ended
+        if p.end_time <= date_now
+          p.in_correction!
+          contest = p.contest
+          if contest.contestproblems.where(:status => [:not_started_yet, :in_progress]).count == 0 # All problems of the contest are finished: mark the contest as finished
+            contest.in_correction!
+          end
+        end
+      end
+      if p.at_least(:in_correction) && p.all_reminders_sent? # Avoid to delete if reminders were not sent yet
+        c.destroy
+      end
+    end
+  end
+  
+  ########## FILES METHODS ##########
+  
   # Method called from several locations to create files from a form
   def create_files
     attach = Array.new
@@ -337,141 +399,5 @@ class ApplicationController < ActionController::Base
     attach.each do |a|
       a.destroy # Should automatically purge the file
     end
-  end
-  
-  # Check if some test just got finished
-  def check_takentests
-    time_now = DateTime.now.to_i
-    Takentestcheck.all.each do |c|
-      t = c.takentest
-      if t.finished?
-        c.destroy # Should not happen in theory
-      else
-        debut = t.taken_time.to_i
-        fin = debut + t.virtualtest.duration*60
-        if fin < time_now
-          c.destroy
-          t.finished!
-          u = t.user
-          v = t.virtualtest
-          v.problems.each do |p|
-            p.submissions.where(user_id: u.id, intest: true).each do |s|
-              s.update_attribute(:visible, true)
-            end
-          end
-        end
-      end
-    end
-  end
-  
-  # Check if a contest problem just started or ended (done only when charging a contest related page)
-  def check_contests
-    date_now = DateTime.now
-    # Note: Problems in Contestproblemcheck are also used in contest.rb to check problems for which an email or forum subject must be created
-    Contestproblemcheck.all.order(:id).each do |c|
-      p = c.contestproblem
-      if p.not_started_yet? # Contest is online but problem is not published yet
-        if p.start_time <= date_now
-          p.in_progress!
-        end
-      end
-      if p.in_progress? # Problem has started but not ended
-        if p.end_time <= date_now
-          p.in_correction!
-          contest = p.contest
-          if contest.contestproblems.where(:status => [:not_started_yet, :in_progress]).count == 0 # All problems of the contest are finished: mark the contest as finished
-            contest.in_correction!
-          end
-        end
-      end
-      if p.at_least(:in_correction) && p.all_reminders_sent? # Avoid to delete if reminders were not sent yet
-        c.destroy
-      end
-    end
-  end
-  
-  # Method called from different locations to recompute all the contest scores
-  def compute_new_contest_rankings(contest)
-    # Find all users with a score > 0 in the contest
-    userset = Set.new
-    probs = contest.contestproblems.where(:status => [:corrected, :in_recorrection])
-    probs.each do |p|
-      p.contestsolutions.where("score > 0 AND official = ?", false).each do |s|
-        userset.add(s.user_id)
-      end
-    end
-    
-    # Delete from Contestscore the users who don't have a score (can happen if we modify a score to 0)
-    @contest.contestscores.each do |s|
-      if !userset.include?(s.user_id)
-        s.destroy
-      end
-    end
-    
-    # Compute the scores of all users
-    scores = Array.new
-    userset.each do |u|
-      score = 0
-      hm = false
-      probs.each do |p|
-        sol = p.contestsolutions.where(:user_id => u).first
-        if !sol.nil?
-          score = score + sol.score
-          if sol.score == 7
-            hm = true
-          end
-        end
-      end
-      scores.push([-score, u, hm])
-    end
-    
-    # Sort the scores
-    scores.sort!    
-    
-    # Compute the ranking (and maybe medal) of each user
-    give_medals = (contest.medal && contest.gold_cutoff > 0)
-    prevscore = -1
-    i = 1
-    rank = 0
-    scores.each do |a|
-      score = -a[0]
-      u = a[1]
-      hm = a[2]
-      if score != prevscore
-        rank = i
-        prevscore = score
-      end
-      cs = Contestscore.where(:contest => @contest, :user_id => u).first
-      if cs.nil?
-        cs = Contestscore.new(:contest => contest, :user_id => u)
-      end
-      cs.rank = rank
-      cs.score = score
-      if give_medals
-        if score >= contest.gold_cutoff
-          cs.medal = :gold_medal
-        elsif score >= contest.silver_cutoff
-          cs.medal = :silver_medal
-        elsif score >= contest.bronze_cutoff
-          cs.medal = :bronze_medal
-        elsif hm
-          cs.medal = :honourable_mention
-        else
-          cs.medal = :no_medal
-        end
-      else
-        cs.medal = :undefined_medal
-      end
-      cs.save
-      i = i+1
-    end
-    
-    # Change some details of the contest
-    contest.update_attribute(:num_participants, scores.size)
-    contest_fully_corrected = (contest.contestproblems.where(:status => [:not_started_yet, :in_progress, :in_correction]).count == 0)
-    if contest_fully_corrected
-      contest.completed!
-    end
-  end
-  
+  end  
 end
