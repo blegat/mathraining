@@ -8,8 +8,10 @@ describe "Solvedquestion pages" do
   let(:user) { FactoryGirl.create(:user) }
   let!(:section) { FactoryGirl.create(:section) }
   let!(:chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:exercise) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 1, level: 1) }
-  let!(:exercise_decimal) { FactoryGirl.create(:exercise_decimal, chapter: chapter, online: true, position: 2, level: 2) }
+  let!(:exercise_answer) { 63 }
+  let!(:exercise) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 1, level: 1, answer: exercise_answer) }
+  let!(:exercise_decimal_answer) { -15.4 }
+  let!(:exercise_decimal) { FactoryGirl.create(:exercise_decimal, chapter: chapter, online: true, position: 2, level: 2, answer: exercise_decimal_answer) }
   let!(:qcm) { FactoryGirl.create(:qcm, chapter: chapter, online: true, position: 3, level: 3) }
   let!(:item_correct) { FactoryGirl.create(:item_correct, question: qcm, position: 1) }
   let!(:item_incorrect) { FactoryGirl.create(:item, question: qcm, position: 2) }
@@ -27,7 +29,7 @@ describe "Solvedquestion pages" do
     
       describe "and correctly solves it" do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise.answer
+          fill_in "unsolvedquestion[guess]", with: exercise_answer
           click_button "Soumettre"
           user.reload
         end
@@ -36,6 +38,34 @@ describe "Solvedquestion pages" do
           expect(page).to have_content(exercise.explanation)
           expect(user.rating).to eq(rating_before + exercise.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
+        end
+      end
+      
+      describe "and makes an empty guess" do
+        before do
+          fill_in "unsolvedquestion[guess]", with: ""
+          click_button "Soumettre"
+          user.reload
+        end
+        specify do
+          expect(page).to have_error_message("Votre réponse est vide.")
+          expect(page).to have_no_content(exercise.explanation)
+          expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
+          expect(user.rating).to eq(rating_before)
+        end
+      end
+      
+      describe "and writes a decimal number" do
+        before do
+          fill_in "unsolvedquestion[guess]", with: "4.6"
+          click_button "Soumettre"
+          user.reload
+        end
+        specify do
+          expect(page).to have_error_message("La réponse attendue est un nombre entier.")
+          expect(page).to have_no_content(exercise.explanation)
+          expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
+          expect(user.rating).to eq(rating_before)
         end
       end
       
@@ -55,12 +85,12 @@ describe "Solvedquestion pages" do
       
       describe "and makes a mistake" do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise.answer + 1
+          fill_in "unsolvedquestion[guess]", with: exercise_answer + 1
           click_button "Soumettre"
           user.reload
         end
         specify do
-          expect(page).to have_content("Votre réponse (#{(exercise.answer+1).to_i}) est erronée. Vous avez déjà commis 1 erreur.")
+          expect(page).to have_content("Votre réponse (#{exercise_answer+1}) est erronée. Vous avez déjà commis 1 erreur.")
           expect(page).to have_no_content(exercise.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
@@ -68,7 +98,7 @@ describe "Solvedquestion pages" do
         
         describe "and then solves it" do
           before do
-            fill_in "unsolvedquestion[guess]", with: exercise.answer
+            fill_in "unsolvedquestion[guess]", with: exercise_answer
             click_button "Soumettre"
             user.reload
           end
@@ -80,11 +110,23 @@ describe "Solvedquestion pages" do
           end
         end
         
+        describe "and makes the same mistake" do
+          before do
+            click_button "Soumettre"
+            user.reload
+          end
+          specify do
+            expect(page).to have_error_message("Votre réponse est la même")
+            expect(page).to have_content("Vous avez déjà commis 1 erreur.")
+            expect(user.rating).to eq(rating_before)
+          end
+        end
+        
         describe "and makes two other mistakes" do
           before do
-            fill_in "unsolvedquestion[guess]", with: exercise.answer + 2
+            fill_in "unsolvedquestion[guess]", with: exercise_answer + 2
             click_button "Soumettre"
-            fill_in "unsolvedquestion[guess]", with: exercise.answer + 3
+            fill_in "unsolvedquestion[guess]", with: exercise_answer + 3
             click_button "Soumettre"
           end
           it do
@@ -105,7 +147,7 @@ describe "Solvedquestion pages" do
             
             describe "and makes a new guess" do
               before do
-                fill_in "unsolvedquestion[guess]", with: exercise.answer
+                fill_in "unsolvedquestion[guess]", with: exercise_answer
                 click_button "Soumettre"
                 user.reload
               end
@@ -126,7 +168,7 @@ describe "Solvedquestion pages" do
     
       describe "and correctly solves it" do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise_decimal.answer + 0.0005
+          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer + 0.0005
           click_button "Soumettre"
           user.reload
         end
@@ -138,30 +180,53 @@ describe "Solvedquestion pages" do
         end
       end
       
-      describe "and makes a mistake (too large)" do
+      describe "and correctly solves it but with a comma and white spaces" do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise_decimal.answer + 0.002
+          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer.to_s.gsub('.', ',') + " "
           click_button "Soumettre"
           user.reload
         end
         specify do
-          expect(page).to have_content("Votre réponse (#{(exercise_decimal.answer+0.002).to_s}) est erronée. Vous avez déjà commis 1 erreur.")
+          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+        end
+      end
+      
+      describe "and writes a text instead of a decimal number" do
+        before do
+          fill_in "unsolvedquestion[guess]", with: "zero"
+          click_button "Soumettre"
+          user.reload
+        end
+        specify do
+          expect(page).to have_error_message("La réponse attendue est un nombre décimal.")
+          expect(page).to have_no_content(exercise_decimal.explanation)
+          expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
+          expect(user.rating).to eq(rating_before)
+        end
+      end
+      
+      describe "and makes a mistake (too large)" do
+        before do
+          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer + 0.002
+          click_button "Soumettre"
+          user.reload
+        end
+        specify do
+          expect(page).to have_content("Votre réponse (#{(exercise_decimal_answer+0.002).to_s}) est erronée. Vous avez déjà commis 1 erreur.")
           expect(page).to have_no_content(exercise_decimal.explanation)
           expect(user.rating).to eq(rating_before)
-          expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
         end
       
         describe "and makes another mistake (too small)" do
           before do
-            fill_in "unsolvedquestion[guess]", with: exercise_decimal.answer - 0.002
+            fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer - 0.002
             click_button "Soumettre"
             user.reload
           end
           specify do
-            expect(page).to have_content("Votre réponse (#{(exercise_decimal.answer-0.002).to_s}) est erronée. Vous avez déjà commis 2 erreurs.")
+            expect(page).to have_content("Votre réponse (#{(exercise_decimal_answer-0.002).to_s}) est erronée. Vous avez déjà commis 2 erreurs.")
             expect(page).to have_no_content(exercise_decimal.explanation)
             expect(user.rating).to eq(rating_before)
-            expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
           end
         end
       end
@@ -202,7 +267,11 @@ describe "Solvedquestion pages" do
             click_button "Soumettre"
             user.reload
           end
-          it { should have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.") }
+          specify do
+            expect(page).to have_error_message("Votre réponse est la même")
+            expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
+            expect(user.rating).to eq(rating_before)
+          end
         end
       end
       
@@ -211,9 +280,10 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it do
-          should have_error_message("Veuillez cocher une réponse")
-          should have_no_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
+        specify do
+          expect(page).to have_error_message("Veuillez cocher une réponse.")
+          expect(page).to have_no_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
+          expect(user.rating).to eq(rating_before)
         end
       end
     end
@@ -280,7 +350,11 @@ describe "Solvedquestion pages" do
             click_button "Soumettre"
             user.reload
           end
-          it { should have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.") }
+          specify do
+            expect(page).to have_error_message("Votre réponse est la même")
+            expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
+            expect(user.rating).to eq(rating_before)
+          end
         end
       end
       
@@ -289,7 +363,10 @@ describe "Solvedquestion pages" do
           click_button "Soumettre"
           user.reload
         end
-        it { should have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.") }
+        specify do
+          expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
+          expect(user.rating).to eq(rating_before)
+        end
       end
     end
   end

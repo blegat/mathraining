@@ -8,7 +8,7 @@ describe UnsolvedquestionsController, :type => :controller do
 
   let!(:chapter) { FactoryGirl.create(:chapter, online: true, name: "Mon chapitre") }
   let!(:prerequisite) { FactoryGirl.create(:chapter, online: true, name: "Mon chapitre prérequis") }
-  let!(:question) { FactoryGirl.create(:exercise, chapter: chapter, online: true) }
+  let!(:question) { FactoryGirl.create(:exercise_decimal, chapter: chapter, online: true) }
   
   before { chapter.prerequisites << prerequisite }
 

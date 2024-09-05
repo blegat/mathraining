@@ -16,11 +16,11 @@ describe "Stats pages" do
   let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true) }
   let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
   
-  let!(:exercise11) { FactoryGirl.create(:exercise, chapter: chapter1, online: true, position: 1, level: 1) }
-  let!(:exercise12) { FactoryGirl.create(:exercise, chapter: chapter1, online: true, position: 2, level: 2) }
-  let!(:exercise13_offline) { FactoryGirl.create(:exercise, chapter: chapter1, online: false, position: 3, level: 3) }
-  let!(:exercise21) { FactoryGirl.create(:exercise, chapter: chapter2, online: true, position: 1, level: 1) }
-  let!(:exercise22) { FactoryGirl.create(:exercise, chapter: chapter2, online: true, position: 2, level: 2) }
+  let!(:exercise11) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: true, position: 1, level: 1) }
+  let!(:exercise12) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: true, position: 2, level: 2) }
+  let!(:exercise13_offline) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: false, position: 3, level: 3) }
+  let!(:exercise21) { FactoryGirl.create(:exercise_decimal, chapter: chapter2, online: true, position: 1, level: 1) }
+  let!(:exercise22) { FactoryGirl.create(:exercise_decimal, chapter: chapter2, online: true, position: 2, level: 2) }
   
   describe "user" do
     before { sign_in user1 }
