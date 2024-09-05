@@ -7,3 +7,4 @@ Disallow: /
 
 User-Agent: *
 Disallow: /users/
+Disallow: /users
