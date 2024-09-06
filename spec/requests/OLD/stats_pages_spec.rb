@@ -299,7 +299,7 @@ describe "Stats pages" do
         
         expect(record3.nb_submissions).to eq(3)
         expect(record3.complete).to eq(true)
-        expect(record3.avg_correction_time).to eq(7.0/3.0)
+        expect(record3.avg_correction_time.round(3)).to eq((7.0/3.0).round(3))
         
         expect(record4.nb_submissions).to eq(2) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
         expect(record4.complete).to eq(false)

@@ -207,24 +207,24 @@ describe "Solvedquestion pages" do
       
       describe "and makes a mistake (too large)" do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer + 0.002
+          fill_in "unsolvedquestion[guess]", with: (exercise_decimal_answer + 0.002).round(3)
           click_button "Soumettre"
           user.reload
         end
         specify do
-          expect(page).to have_content("Votre réponse (#{(exercise_decimal_answer+0.002).to_s}) est erronée. Vous avez déjà commis 1 erreur.")
+          expect(page).to have_content("Votre réponse (#{((exercise_decimal_answer+0.002).round(3)).to_s}) est erronée. Vous avez déjà commis 1 erreur.")
           expect(page).to have_no_content(exercise_decimal.explanation)
           expect(user.rating).to eq(rating_before)
         end
       
         describe "and makes another mistake (too small)" do
           before do
-            fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer - 0.002
+            fill_in "unsolvedquestion[guess]", with: (exercise_decimal_answer - 0.002).round(3)
             click_button "Soumettre"
             user.reload
           end
           specify do
-            expect(page).to have_content("Votre réponse (#{(exercise_decimal_answer-0.002).to_s}) est erronée. Vous avez déjà commis 2 erreurs.")
+            expect(page).to have_content("Votre réponse (#{((exercise_decimal_answer-0.002).round(3)).to_s}) est erronée. Vous avez déjà commis 2 erreurs.")
             expect(page).to have_no_content(exercise_decimal.explanation)
             expect(user.rating).to eq(rating_before)
           end
