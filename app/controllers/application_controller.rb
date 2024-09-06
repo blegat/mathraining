@@ -11,6 +11,7 @@ class CustomCSRFStrategy
 end
 
 class ApplicationController < ActionController::Base
+  include ApplicationHelper
   include SessionsHelper
   
   protect_from_forgery with: CustomCSRFStrategy

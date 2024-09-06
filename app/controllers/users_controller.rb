@@ -611,7 +611,7 @@ class UsersController < ApplicationController
     ids = Array.new(users.size)
     local_id = 0
     
-    globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.admin = #{false_value_sql} AND u.active = #{true_value_sql}) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
+    globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.admin = false AND u.active = true) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
 
     users.each do |u|
       ids[local_id] = u.id

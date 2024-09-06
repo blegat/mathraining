@@ -207,14 +207,6 @@ module ApplicationHelper
     return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-second #{'noprint' if not print}'>#{ y } ></span> <span class='title-third #{'noprint' if not print}'>#{ z } ></span> <span class='title-true'>#{ t }</span>".html_safe
   end
   
-  def true_value_sql
-    return  "true" # was "1" for sqlite
-  end
-  
-  def false_value_sql
-    return "false" # was "0" for sqlite
-  end
-  
   def x_icon
     return 'x-mid.svg' # 'X.gif'
   end

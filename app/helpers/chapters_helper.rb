@@ -8,7 +8,7 @@ module ChaptersHelper
     
     return Chapter.find_by_sql("SELECT #{get_chapter_columns_string(columns)}
                                 FROM chapters
-                                WHERE chapters.online = #{true_value_sql}
+                                WHERE chapters.online = true
                                 AND (chapters.section_id IN #{fondations_sections_request}
                                      OR #{num_chapter_unsolved_prerequisites_request(user)} = 0
                                     )")
@@ -24,7 +24,7 @@ module ChaptersHelper
       return Chapter.find_by_sql("SELECT #{get_chapter_columns_string(columns)}
                                   FROM chapters
                                   WHERE chapters.section_id = #{section.id}
-                                  AND chapters.online = #{true_value_sql}
+                                  AND chapters.online = true
                                   AND #{num_chapter_unsolved_prerequisites_request(user)} = 0")
     end
   end
