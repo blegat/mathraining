@@ -492,7 +492,7 @@ describe "Subject pages" do
         click_link("Modifier ce sujet")
         wait_for_ajax
         fill_in "MathInputEditSubject", with: newcontent
-        uncheck "prevFakeFileEditSubject_1"
+        uncheck "prevFakeFileEditSubject_#{Fakefile.order(:id).last.id}"
         click_button "addFileEditSubject" # Ajouter une pièce jointe
         wait_for_ajax
         attach_file("fileEditSubject_1", File.absolute_path(attachments_folder + image2))
