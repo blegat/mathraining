@@ -611,7 +611,17 @@ class UsersController < ApplicationController
     ids = Array.new(users.size)
     local_id = 0
     
-    globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.admin = false AND u.active = true) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
+    num_users_by_rating = User.where("admin = false AND active = true AND rating > 0").group(:rating).order("rating DESC").count
+    rank_by_rating = {}
+    
+    i = 1
+    num_users_by_rating.each do |rating, num|
+      rank_by_rating[rating] = i
+      i = i + num
+    end
+    
+    # Old way of computing the rank, but was not very efficient:
+    # globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.admin = false AND u.active = true) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
 
     users.each do |u|
       ids[local_id] = u.id
@@ -619,7 +629,7 @@ class UsersController < ApplicationController
       @x_persection[local_id] = Array.new
       @x_recent[local_id] = 0
       @x_rating[local_id] = u.rating
-      @x_globalrank[local_id] = globalrank_here[local_id]
+      @x_globalrank[local_id] = rank_by_rating[u.rating]
       @x_country[local_id] = u.country_id
       @x_linked_name[local_id] = u.linked_name
       local_id = local_id + 1
