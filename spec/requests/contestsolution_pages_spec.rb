@@ -270,7 +270,7 @@ describe "Contestsolution pages" do
         wait_for_js_imports
         click_link("Modifier la solution")
         wait_for_ajax
-        uncheck "prevFile_1"
+        uncheck "prevFile_#{usercontestsolution.myfiles.first.id}"
         fill_in "MathInput", with: newsolution2
         click_button "Ajouter une pièce jointe"
         wait_for_ajax

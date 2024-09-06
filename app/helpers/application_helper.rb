@@ -208,11 +208,11 @@ module ApplicationHelper
   end
   
   def true_value_sql
-    return (Rails.env.production? ? "true" : "1")
+    return  "true" # was "1" for sqlite
   end
   
   def false_value_sql
-    return (Rails.env.production? ? "false" : "0")
+    return "false" # was "0" for sqlite
   end
   
   def x_icon

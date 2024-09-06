@@ -399,7 +399,7 @@ describe "Virtualtest pages" do
           click_link "Modifier la solution"
           wait_for_ajax
           fill_in "MathInput", with: newsolution2
-          uncheck "prevFile_1"
+          uncheck "prevFile_#{newsub.myfiles.first.id}"
           click_button "Ajouter une pièce jointe"
           wait_for_ajax
           attach_file("file_1", File.absolute_path(attachments_folder + image2))

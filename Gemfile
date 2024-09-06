@@ -24,7 +24,6 @@ gem 'resque_mailer'
 gem 'resque_action_mailer_backend'
 
 group :development, :test do
-  gem 'sqlite3', '~> 1.4'
   gem 'rspec-rails', '~> 5.0'
   gem 'random_record'
   gem 'bullet'
@@ -68,11 +67,9 @@ group :test do
   gem 'codecov', :require => false
 end
 
-group :production do
-  gem 'pg', '~> 1.1'
-  # http://stackoverflow.com/questions/9392939/pg-gem-fails-to-install
-  # Centos 5 has a too old version of pg
-end
+gem 'pg', '~> 1.1'
+# http://stackoverflow.com/questions/9392939/pg-gem-fails-to-install
+# Centos 5 has a too old version of pg
 
 gem 'therubyracer'
 gem 'less-rails'

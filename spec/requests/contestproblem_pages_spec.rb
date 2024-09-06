@@ -62,7 +62,7 @@ describe "Contestproblem pages", contestproblem: true do
       before { visit contestproblem_path(offline_contestproblem) }
       specify do
         expect(page).to have_selector("h1", text: "Problème ##{offline_contestproblem.number}")
-        expect(page).to have_link("Modifier ce problème", href: edit_contestproblem_path(offline_contest))
+        expect(page).to have_link("Modifier ce problème", href: edit_contestproblem_path(offline_contestproblem))
         expect(page).to have_link("Supprimer ce problème")
         expect { click_link "Supprimer ce problème" }.to change(Contestproblem, :count).by(-1)
       end
