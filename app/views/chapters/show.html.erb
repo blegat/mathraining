@@ -71,7 +71,11 @@
     <% j = 1 %>
     <% i = 1 %>
     <% pasfait = 0 %>
-    <% @chapter.questions.order(:position).each do |f| %>
+    <% questions = @chapter.questions.order(:position).to_a %>
+    <% questions_ids = questions.map { |q| q.id } %>
+    <% solvedquestions = nil %>
+    <% unsolvedquestions = nil %>
+    <% questions.each do |f| %>
       <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
 
         <% if compteur == 0 %>
@@ -90,13 +94,19 @@
           <% kind = "" %>
           <% if f.online %>
             <% if @signed_in && !current_user.sk.admin? %>
-              <% if Solvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id).count > 0 %>
+              <% if solvedquestions.nil? %> 
+                <% solvedquestions = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
+              <% end %>
+              <% if solvedquestions.include?(f.id) %>
                 <% kind = "list-group-item-success" %>
-              <% elsif Unsolvedquestion.where(:user_id => current_user.sk.id, :question_id => f.id).count > 0 %>
-                <% pasfait = pasfait + 1 %>
-                <% kind = "list-group-item-danger" %>
               <% else %>
                 <% pasfait = pasfait + 1 %>
+                <% if unsolvedquestions.nil? %>
+                  <% unsolvedquestions = Unsolvedquestion.where(:user_id => current_user.sk.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
+                <% end %>
+                <% if unsolvedquestions.include?(f.id) %>
+                  <% kind = "list-group-item-danger" %>
+                <% end %>
               <% end %>
             <% end %>
           <% else %>

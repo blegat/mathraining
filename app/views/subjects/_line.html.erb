@@ -30,13 +30,12 @@
 
   <!-- Nombre de messages -->
   <td class="d-none d-md-table-cell align-middle text-center">
-    <%= x = s.messages.count %>
+    <%= num_messages %>
   </td>
 
   <% qui = s.last_comment_user %>
   <% date = s.last_comment_time %>
   <% datenow = DateTime.now %>
-  <% num_messages = s.messages.count %>
 
   <!-- Cas normal -->
 
