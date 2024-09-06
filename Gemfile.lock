@@ -346,7 +346,6 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    sqlite3 (1.6.3-x86_64-linux)
     strscan (3.1.0)
     therubyracer (0.12.3)
       libv8 (~> 3.16.14.15)
@@ -426,7 +425,6 @@ DEPENDENCIES
   select2-rails
   selenium-webdriver
   simplecov
-  sqlite3 (~> 1.4)
   therubyracer
   thin
   uglifier (>= 1.2.3)
