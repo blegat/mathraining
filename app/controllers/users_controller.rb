@@ -614,11 +614,12 @@ class UsersController < ApplicationController
     num_users_by_rating = User.where("admin = false AND active = true AND rating > 0").group(:rating).order("rating DESC").count
     rank_by_rating = {}
     
-    i = 1
+    r = 1
     num_users_by_rating.each do |rating, num|
-      rank_by_rating[rating] = i
-      i = i + num
+      rank_by_rating[rating] = r
+      r = r + num
     end
+    rank_by_rating[0] = r
     
     # Old way of computing the rank, but was not very efficient:
     # globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.admin = false AND u.active = true) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
