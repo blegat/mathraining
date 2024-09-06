@@ -12,6 +12,7 @@ namespace :db do
     update_users_ratings # To know if the user can create submissions
     create_submissions
     update_users_ratings
+    create_virtualtests
     create_subjects
     update_statistics
     create_visitor_statistics
@@ -144,9 +145,10 @@ def create_problems
                        
         # Prerequisites
         already = 0
-        section.chapters.each do |c|
-          if Random.rand(15-2*lev) < 2-already
+        section.chapters.order(:level, :id).each do |c|
+          if Random.rand(5+2*lev) < 2-already
             problem.chapters << c
+            already = already + 1
           end
         end
       end
@@ -391,6 +393,40 @@ def create_submissions
                                submission:      submission,
                                resolution_time: submission_time,
                                correction_time: correction_time)
+        end
+      end
+    end
+  end
+end
+
+def create_virtualtests
+  section = Section.where(:fondation => false).first
+  
+  (1..2).each do |i|
+    duration = (i == 1 ? 5 : 60*24*365*10) # very short and very long, useful for testing
+    virtualtest = Virtualtest.create(number: 10*i+1,
+                                     online: true,
+                                     duration: duration)
+    
+    (1..2).each do |j|
+      pb_number = 0
+      loop do
+        pb_number = 1000 * section.id + 100 * j + Random.rand(100)
+        break if Problem.where(:number => pb_number).count == 0
+      end
+      problem = Problem.create(section:     section,
+                               virtualtest: virtualtest,
+                               statement:   "Trouver le plus petit nombre premier supérieur ou égal à #{pb_number}.",
+                               online:      true,
+                               level:       j,
+                               number:      pb_number,
+                               position:    j,
+                               origin:      "IMO #{pb_number}")
+      # Prerequisites
+      section.chapters.order(:level, :id).each do |c|
+        if Random.rand(5) == 0
+          problem.chapters << c
+          break;
         end
       end
     end
