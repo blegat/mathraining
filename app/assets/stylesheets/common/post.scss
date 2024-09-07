@@ -1,27 +1,48 @@
 /* POST */
+$sm-breakpoint: map-get($grid-breakpoints, 'sm');
 
-table.post {
+.post {
   margin-top:20px;
 }
 
-table.post td.author {
+.post .author {
   font-size:20px;
   font-weight:bold;
   padding:10px;
   padding-left:15px;
 }
 
-table.post td.date {
+.post .date {
   vertical-align:middle;
   text-align:right;
   font-size:18px;
   padding-right:15px;
 }
 
-table.post td.content {
+.post .content {
   padding:15px;
 }
 
-table.post td.modify {
+.post .modify {
   text-align:center;
+}
+
+.post .header-mobile {
+  display: flex;
+  background-color: var(--bs-table-bg);
+  justify-content: space-between;
+
+  @media (min-width: $sm-breakpoint){
+    display: none;
+  }
+}
+
+.post .header-dekstop {
+  display: flex;
+  background-color: var(--bs-table-bg);
+  justify-content: space-between;
+
+  @media (max-width: $sm-breakpoint){
+    display: none;
+  }
 }

@@ -11,7 +11,7 @@
   <!-- Cas normal -->
   <% coul = "table-ld-primary" %>
   <% coul = "table-ld-danger" if (kind == "correction" && ms.user != @submission.user) || kind == "contestcorrection" %>
-  <div class="header d-none d-sm-table-row <%= coul %>">
+  <div class="header-dekstop <%= coul %>">
 
   <!-- Nom -->
   <div class="author border-end-0">
@@ -37,7 +37,7 @@
   <!-- Cas gsm -->
 
   <!-- Nom -->
-  <div class="d-table-line d-sm-none <%= coul %>"><div class="author">
+  <div class="header-mobile d-table-line <%= coul %>"><div class="author">
   <% if kind != "contestcorrection" %>
     <% if !ms.user.nil? %>
       <%= raw(ms.user.linked_name) %>
@@ -51,12 +51,11 @@
       <b>Organisateurs</b>
     <% end %>
   <% end %>
-  </div></div>
 
-  <!-- Date -->
   <% if kind != "contestsolution" && kind != "contestcorrection" %>
-  <div class="d-table-line d-sm-none <%= coul %>"><div class="date"><%= write_date(ms.created_at) %></div></div>
+    <div class="d-table-line d-sm-none <%= coul %>"><div class="date"><%= write_date(ms.created_at) %></div></div>
   <% end %>
+  </div></div>
 
   <!-- Contenu du message -->
   <div><div colspan="2" class="content">
