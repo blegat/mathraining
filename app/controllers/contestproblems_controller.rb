@@ -180,24 +180,19 @@ class ContestproblemsController < ApplicationController
     elsif !params[:contestproblem][:end_time].nil?
       end_date = Time.zone.parse(params[:contestproblem][:end_time])
     end
-    @date_problem = false
     
     if (start_date.nil? or end_date.nil?)
       @date_error = "Les deux dates doivent être définies."
-      @date_problem = true
     elsif (@contestproblem.nil? || @contestproblem.at_most(:in_progress)) && !end_date.nil? && date_now >= end_date
       @date_error = "La deuxième date ne peut pas être dans le passé."
-      @date_problem = true
     elsif (@contestproblem.nil? || @contestproblem.at_most(:not_started_yet)) && !start_date.nil? && date_now >= start_date
       @date_error = "La première date ne peut pas être dans le passé."
-      @date_problem = true
     elsif !start_date.nil? && !end_date.nil? && start_date >= end_date
       @date_error = "La deuxième date doit être strictement après la première date."
-      @date_problem = true
     elsif start_date.min != 0
-      @date_error = "La première date doit être à une heure pile#{ '(en production)' if Rails.env.development?}."
-      @date_problem = true unless Rails.env.development?
-      flash.now[:danger] = @date_error if Rails.env.development?
+      date_error = "La première date doit être à une heure pile#{ ' (en production)' if Rails.env.development?}."
+      @date_error = date_error unless Rails.env.development?
+      flash[:info] = date_error if Rails.env.development?
     end
   end
   
