@@ -876,6 +876,21 @@ describe "User pages" do
         end
       end
       
+      describe "and use initials for one name" do
+        before do
+          wait_for_js_imports
+          click_link "initials-#{user2.id}"
+          wait_for_ajax
+          user2.reload
+        end
+        specify do
+          expect(user2.first_name).to eq("J.")
+          expect(user2.last_name).to eq("B.")
+          expect(user2.valid_name).to eq(true)
+          expect(page).to have_no_link(user2.name, href: user_path(user2)) # Should disappear
+        end
+      end
+      
       describe "and passes one name" do
         before do
           wait_for_js_imports

@@ -454,6 +454,9 @@ class UsersController < ApplicationController
       if suggestion == 1
         @user.first_name = @user.first_name.my_titleize
         @user.last_name = @user.last_name.my_titleize
+      elsif suggestion == 2
+        @user.first_name = @user.first_name[0].upcase + "."
+        @user.last_name = @user.last_name[0].upcase + "."
       end
       @user.adapt_name
       @user.valid_name = true
