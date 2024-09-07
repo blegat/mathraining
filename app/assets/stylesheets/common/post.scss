@@ -1,48 +1,38 @@
 /* POST */
-$sm-breakpoint: map-get($grid-breakpoints, 'sm');
 
 .post {
-  margin-top:20px;
-}
-
-.post .author {
-  font-size:20px;
-  font-weight:bold;
-  padding:10px;
-  padding-left:15px;
-}
-
-.post .date {
-  vertical-align:middle;
-  text-align:right;
-  font-size:18px;
-  padding-right:15px;
+  margin-top: 20px;
 }
 
 .post .content {
-  padding:15px;
+  padding: 15px;
 }
 
 .post .modify {
-  text-align:center;
+  text-align: center;
 }
 
-.post .header-mobile {
-  display: flex;
-  background-color: var(--bs-table-bg);
-  justify-content: space-between;
-
-  @media (min-width: $sm-breakpoint){
-    display: none;
-  }
+.post > .header .author {
+  font-size: 20px;
+  font-weight: bold;
 }
 
-.post .header-dekstop {
-  display: flex;
-  background-color: var(--bs-table-bg);
-  justify-content: space-between;
+.post > .header .date {
+  vertical-align: middle;
+  text-align: right;
+  font-size: 18px;
+}
 
-  @media (max-width: $sm-breakpoint){
-    display: none;
+.post > .header {
+  display: flex;
+  flex-direction: column;  
+  justify-content: space-between;
+  padding: 10px 15px;
+
+  background-color: var(--bs-table-bg);
+
+  @media (min-width: map-get($grid-breakpoints, 'sm')) {
+    flex-direction: row;
+    align-items: center;
   }
 }
