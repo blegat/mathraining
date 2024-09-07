@@ -33,28 +33,6 @@
   <div class="date"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at) %><% end %></div>
   </div>
 
-  <!-- Cas gsm -->
-
-  <!-- Nom -->
-  <div class="author mobile">
-  <% if kind != "contestcorrection" %>
-    <% if !ms.user.nil? %>
-      <%= raw(ms.user.linked_name) %>
-    <% else %>
-      <b>Message automatique</b>
-    <% end %>
-  <% else %>
-    <% if @contest.organizers.count == 1 %>
-      <%= raw(@contest.organizers.first.linked_name) %>
-    <% else %>
-      <b>Organisateurs</b>
-    <% end %>
-  <% end %>
-  </div>
-
-  <!-- Date -->
-  <div class="date mobile"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at) %><% end %></div>
-
   <!-- Contenu du message -->
   <div><div colspan="2" class="content">
     
