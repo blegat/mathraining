@@ -34,7 +34,7 @@
   </div>
 
   <!-- Contenu du message -->
-  <div><div colspan="2" class="content">
+  <div class="content">
     
   <% bb = bbcode(ms.content) %>
   <% if kind == "subject" || kind == "message" %>
@@ -60,10 +60,10 @@
 
   <!-- Pièces jointes -->
   <%= render 'shared/show_files', s: ms %>  
-  </div></div>
+  </div>
   
   <% if can_edit %>
-    <div><div colspan="2" class="modify">
+    <div class="modify">
       <% if kind == "subject" %>
         <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)'>Modifier ce sujet</a>
         <% if current_user.sk.admin? %>
@@ -98,6 +98,6 @@
         <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>
         | <%= link_to "Supprimer la solution", submission_path(@submission), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette solution ?" } %>
       <% end %>
-    </div></div>
+    </div>
   <% end %>
 </div>
