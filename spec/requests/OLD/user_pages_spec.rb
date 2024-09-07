@@ -895,29 +895,28 @@ describe "User pages" do
         before do
           wait_for_js_imports
           click_link "change-#{user3.id}"
-          root.reload
+          wait_for_ajax
+          user3.reload
         end
         specify do
-          expect(root.skin).to eq(user3.id)
-          expect(page).to have_selector("h1", text: "Votre compte")
-          expect(page).to have_button("Mettre à jour")
+          expect(page).to have_field("first-name-#{user3.id}", with: user3.first_name)
+          expect(page).to have_field("last-name-#{user3.id}", with: user3.last_name)
+          expect(page).to have_link("confirm-#{user3.id}")
         end
         
         describe "and fixes the name" do
           before do
-            fill_in "Prénom", with: "Victor"
-            fill_in "Nom", with: "de la Terre"
-            click_button "Mettre à jour"
+            fill_in "first-name-#{user3.id}", with: "Victor"
+            fill_in "last-name-#{user3.id}", with: "de la Terre"
+            click_link "confirm-#{user3.id}"
+            wait_for_ajax
             user3.reload
-            root.reload
           end
           specify do
             expect(user3.first_name).to eq("Victor")
             expect(user3.last_name).to eq("de la Terre")
             expect(user3.valid_name).to eq(true)
-            expect(root.skin).to eq(0)
-            expect(page).to have_selector("h1", text: "Valider")
-            expect(page).to have_no_link(user3.name, href: user_path(user3))
+            expect(page).to have_no_link(user3.name, href: user_path(user3)) # Should disappear
           end
         end
       end

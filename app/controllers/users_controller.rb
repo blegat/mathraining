@@ -209,16 +209,10 @@ class UsersController < ApplicationController
       @user.adapt_name
       @user.save
       flash[:success] = "Votre profil a bien été mis à jour."
-      if(current_user.root? and current_user.other)
-        @user.update_attribute(:valid_name, true)
-        current_user.update_attribute(:skin, 0)
-        redirect_to validate_names_path
-      else
-        if((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.sk.admin)
-          @user.update_attribute(:valid_name, false)
-        end
-        redirect_to root_path
+      if ((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.sk.root)
+        @user.update_attribute(:valid_name, false)
       end
+      redirect_to root_path
     else
       render 'edit'
     end
@@ -450,19 +444,27 @@ class UsersController < ApplicationController
   
   # Show all names to validate
   def validate_names
-    @users_to_validate = User.where(:valid_name => false, :email_confirm => true, :admin => false).order("id DESC").all
+    @users_to_validate = User.where(:valid_name => false, :email_confirm => true).order("id DESC").all
   end
   
   # Validate one name (through js)
   def validate_name
-    suggestion = params[:suggestion].to_i
-    @user.valid_name = true
-    if suggestion == 1
-      @user.first_name = @user.first_name.my_titleize
-      @user.last_name = @user.last_name.my_titleize
+    if params.has_key?(:suggestion)
+      suggestion = params[:suggestion].to_i
+      if suggestion == 1
+        @user.first_name = @user.first_name.my_titleize
+        @user.last_name = @user.last_name.my_titleize
+      end
+      @user.adapt_name
+      @user.valid_name = true
+      @user.save
+    elsif params.has_key?(:first_name) && params.has_key?(:last_name)
+      @user.first_name = params[:first_name]
+      @user.last_name = params[:last_name]
+      @user.adapt_name
+      @user.valid_name = true
+      @user.save
     end
-    @user.save
-    
     respond_to do |format|
       format.js
     end
