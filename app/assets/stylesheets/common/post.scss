@@ -1,38 +1,55 @@
 /* POST */
 
-.post {
-  margin-top: 20px;
+.post > div {
+  overflow-x: auto;
+  border: 1px solid var(--bs-table-border-color);
+  
+  &:not(:last-child) {
+    border-bottom: none;
+  }
 }
 
 .post .content {
   padding: 15px;
+  overflow-x: auto;
 }
 
 .post .modify {
   text-align: center;
+  padding: 0.5rem;
 }
 
-.post > .header .author {
+.post .author {
   font-size: 20px;
   font-weight: bold;
 }
 
-.post > .header .date {
+.post .date {
   vertical-align: middle;
   text-align: right;
   font-size: 18px;
 }
 
-.post > .header {
-  display: flex;
-  flex-direction: column;  
-  justify-content: space-between;
+.post .mobile {
+  display: block;
   padding: 10px 15px;
-
+  border-bottom: 1px solid var(--bs-table-border-color);
   background-color: var(--bs-table-bg);
 
   @media (min-width: map-get($grid-breakpoints, 'sm')) {
-    flex-direction: row;
+    display: none;
+  }
+}
+
+.post > .header {
+  display: none;
+  
+  @media (min-width: map-get($grid-breakpoints, 'sm')) {
+    display: flex;  
+    justify-content: space-between;
     align-items: center;
+    padding: 10px 15px;
+  
+    background-color: var(--bs-table-bg);  
   }
 }
