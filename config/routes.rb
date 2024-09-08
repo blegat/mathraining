@@ -205,7 +205,6 @@ Rails.application.routes.draw do
   resources :privacypolicies, only: [:index, :show, :new, :edit, :update, :destroy] do
     match '/put_online', to: 'privacypolicies#put_online', :via => [:put]
     match '/edit_description', to: 'privacypolicies#edit_description', :via => [:get]
-    match '/update_description', to: 'privacypolicies#update_description', :via => [:patch]
   end
   match '/last_policy', to: 'privacypolicies#last_policy', :via => [:get]
   
