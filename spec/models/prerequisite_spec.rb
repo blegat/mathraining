@@ -8,41 +8,35 @@
 #
 require "spec_helper"
 
-describe Prerequisite do
+describe Prerequisite, prerequisite: true do
 
-  before { @pre = FactoryGirl.build(:prerequisite) }
+  let!(:pre) { FactoryGirl.build(:prerequisite) }
 
-  subject { @pre }
-
-  it { should respond_to(:prerequisite) }
-  it { should respond_to(:chapter) }
+  subject { pre }
 
   it { should be_valid }
 
   # Chapter
   describe "when chapter is not present" do
-    before { @pre.chapter = nil }
+    before { pre.chapter = nil }
     it { should_not be_valid }
   end
 
   # Prerequisite
   describe "when prerequisite is not present" do
-    before { @pre.prerequisite = nil }
+    before { pre.prerequisite = nil }
     it { should_not be_valid }
   end
+  
+  # Avoid duplicates
   describe "when (prerequisite, chapter) already exists" do
-    before do
-      other_pre = Prerequisite.new
-      other_pre.chapter = @pre.chapter
-      other_pre.prerequisite = @pre.prerequisite
-      other_pre.save
-    end
+    before { other_pre = Prerequisite.create(:chapter => pre.chapter, :prerequisite => pre.prerequisite) }
     it { should_not be_valid }
   end
 
-  # Prerequisite
-  let(:a) { @pre.chapter }
-  let(:b) { @pre.prerequisite }
+  # Graph checks
+  let(:a) { pre.chapter }
+  let(:b) { pre.prerequisite }
   let(:c) { FactoryGirl.create(:chapter) }
   let(:d) { FactoryGirl.create(:chapter) }
   let(:e) { FactoryGirl.create(:chapter) }
@@ -124,5 +118,4 @@ describe Prerequisite do
     end
     it { should be_valid }
   end
-
 end

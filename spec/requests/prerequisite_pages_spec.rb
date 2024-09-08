@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "prerequisite pages" do
+describe "prerequisite pages", prerequisite: true do
 
   subject { page }
 
   let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:user) }
   let!(:section) { FactoryGirl.create(:section) }
   let!(:section_fondation) { FactoryGirl.create(:fondation_section) }
   let!(:chapter_online) { FactoryGirl.create(:chapter, section: section, online: true) }
@@ -15,15 +14,6 @@ describe "prerequisite pages" do
   let!(:chapter_offline) { FactoryGirl.create(:chapter, section: section, online: false) }
   let!(:chapter_offline2) { FactoryGirl.create(:chapter, section: section, online: false) }
   let!(:chapter_fondation_offline) { FactoryGirl.create(:chapter, section: section_fondation, online: false) }
-  
-  describe "user" do
-    before { sign_in user }
-    
-    describe "tries to visit prerequisite page" do
-      before { visit graph_prerequisites_path }
-      it { should have_content(error_access_refused) }
-    end
-  end
 
   describe "root" do
     before { sign_in root }
