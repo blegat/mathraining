@@ -34,7 +34,10 @@
   </div>
 
   <!-- Date -->
-  <div class="date"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at) %><% end %></div>
+  <% if kind != "contestsolution" && kind != "contestcorrection" %>
+    <div class="date"><%= write_date(ms.created_at) %></div>
+  <% end %>
+
   </div>
 
   <!-- Contenu du message -->
