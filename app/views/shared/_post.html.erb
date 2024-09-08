@@ -8,7 +8,6 @@
 
 <div class="post mb-0 <%= "mt-3" unless reduce_margin_top %><%= "mt-1" if reduce_margin_top %>">
 
-  <!-- Cas normal -->
   <% coul = "table-ld-danger" if (kind == "correction" && ms.user != @submission.user) || kind == "contestcorrection" %>
   <div class="header table-ld-primary <%= coul %>">
 
