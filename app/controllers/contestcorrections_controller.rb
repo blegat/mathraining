@@ -1,5 +1,7 @@
 #encoding: utf-8
 class ContestcorrectionsController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create] # Do not forget to check @invalid_csrf_token instead!
+  
   before_action :signed_in_user_danger, only: [:update]
   
   before_action :get_contestcorrection, only: [:update]
@@ -12,77 +14,70 @@ class ContestcorrectionsController < ApplicationController
   def update    
     params[:contestcorrection][:content].strip! if !params[:contestcorrection][:content].nil?
     @contestcorrection.content = params[:contestcorrection][:content]
-    if @contestcorrection.valid?
     
-      # Attached files
-      @error_message = ""
-      update_files(@contestcorrection)
-      if !@error_message.empty?
-        flash[:danger] = @error_message
-        session[:ancientexte] = params[:contestcorrection][:content]
-        session[:ancienscore] = params[:score]
-        redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution) and return
-      end
-      
-      @contestcorrection.save
-      
-      old_score = @contestsolution.score
-      
-      if !@contestsolution.official?
-        @contestsolution.score = params["score".to_sym].to_i
-      end
-      
-      @contestsolution.reservation = 0
-      
-      if params[:status] == "bad"
-        if @contestsolution.official?
-          @contestsolution.corrected = true
-          @contestsolution.star = false
-          @contestsolution.score = 0
-        end
-      elsif params[:status] == "good"
+    # Invalid CSRF token
+    render_with_error('contestproblems/show', @contestcorrection, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid contestcorrection
+    render_with_error('contestproblems/show') and return if !@contestcorrection.valid?
+    
+    # Attached files
+    update_files(@contestcorrection)
+    render_with_error('contestproblems/show', @contestcorrection, @file_error) and return if !@file_error.nil?
+    
+    @contestcorrection.save
+    
+    old_score = @contestsolution.score
+    
+    if !@contestsolution.official?
+      @contestsolution.score = params["score".to_sym].to_i
+    end
+    
+    @contestsolution.reservation = 0
+    
+    if params[:status] == "bad"
+      if @contestsolution.official?
         @contestsolution.corrected = true
         @contestsolution.star = false
-        if @contestsolution.official?
-          @contestsolution.score = 7
-        end
-      elsif params[:status] == "star"
-        @contestsolution.corrected = true
-        @contestsolution.star = true
-        if @contestsolution.official?
-          @contestsolution.score = 7
-        else
-          if @contestsolution.score < 7
-            @contestsolution.score = 7
-            flash[:info] = "Le score a été mis automatiquement à 7/7 (car solution étoilée)."
-          end
-        end
-      elsif params[:status] == "unknown"
-        if !@contestsolution.official?
-          @contestsolution.corrected = false
-          @contestsolution.star = false
-        end
+        @contestsolution.score = 0
       end
-      
-      @contestsolution.save
-      
-      if @contestproblem.in_recorrection? && @contestsolution.score != old_score
-        compute_new_contest_rankings(@contest)
-      end
-      
+    elsif params[:status] == "good"
+      @contestsolution.corrected = true
+      @contestsolution.star = false
       if @contestsolution.official?
-        flash[:success] = "Solution enregistrée."
-      else
-        flash[:success] = "Correction enregistrée."
+        @contestsolution.score = 7
       end
-      
-      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
-    else
-      session[:ancientexte] = params[:contestcorrection][:content]
-      session[:ancienscore] = params[:score]
-      flash[:danger] = error_list_for(@contestcorrection)
-      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
+    elsif params[:status] == "star"
+      @contestsolution.corrected = true
+      @contestsolution.star = true
+      if @contestsolution.official?
+        @contestsolution.score = 7
+      else
+        if @contestsolution.score < 7
+          @contestsolution.score = 7
+          flash[:info] = "Le score a été mis automatiquement à 7/7 (car solution étoilée)."
+        end
+      end
+    elsif params[:status] == "unknown"
+      if !@contestsolution.official?
+        @contestsolution.corrected = false
+        @contestsolution.star = false
+      end
     end
+    
+    @contestsolution.save
+    
+    if @contestproblem.in_recorrection? && @contestsolution.score != old_score
+      @contest.compute_new_contest_rankings
+    end
+    
+    if @contestsolution.official?
+      flash[:success] = "Solution enregistrée."
+    else
+      flash[:success] = "Correction enregistrée."
+    end
+    
+    redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
   end
 
   private

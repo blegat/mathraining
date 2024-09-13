@@ -50,6 +50,8 @@
 
 </h1>
 
+<% num_messages_by_subject = Message.where(:subject_id => @importants.ids + @subjects.ids).group(:subject_id).count %>
+
 <!-- Affichage des sujets importants -->
 <% if @importants.size > 0 %>
   <table class="table table-bordered">
@@ -60,7 +62,7 @@
       <th class="d-table-cell d-lg-none text-center">Dernière contribution</th>
     </tr>
     <% @importants.each do |s| %>
-      <%= render 'line', s: s %>
+      <%= render 'line', s: s, num_messages: (num_messages_by_subject.has_key?(s.id) ? num_messages_by_subject[s.id] : 0) %>
     <% end %>
   </table>
 <% end %>
@@ -75,7 +77,7 @@
       <th class="d-table-cell d-lg-none text-center">Dernière contribution</th>
     </tr>
     <% @subjects.each do |s| %>
-      <%= render 'line', s: s %>
+      <%= render 'line', s: s, num_messages: (num_messages_by_subject.has_key?(s.id) ? num_messages_by_subject[s.id] : 0) %>
     <% end %>
   </table>
 <% end %>
@@ -93,7 +95,7 @@
 
 <!-- Créer un sujet -->
 <center>
-  <%= button_to "Créer un sujet", new_subject_path(:q => @q), method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
+  <%= button_to "Créer un sujet", new_subject_path, params: (@q.nil? ? nil : { q: @q }), method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
 </center>
 
 <!-- Modifier les catégories -->

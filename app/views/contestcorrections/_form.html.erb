@@ -1,11 +1,8 @@
 <div class="<%= "mt-1" if contestsolution.official? %><%= "mt-3" unless contestsolution.official? %> mb-2">
+<%= render 'shared/error_messages', object: f.object %>
 <%= render 'shared/preview' %>
 <%= render 'shared/smiley' %>
-<% if @ancientexte.nil? %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || !can_edit_correction) %>
-<% else %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :value => @ancientexte, :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || !can_edit_correction) %>
-<% end %>
+<%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || !can_edit_correction) %>
 <script>initAndUpdatePreviewSafeWhenPossible()</script>
 <script>initLeavingFormWhenPossible()</script>
 </div>
@@ -13,7 +10,7 @@
 <% if !contestsolution.official? %>
   <div class="mb-2">
   <label for="score" class="form-label">Score attribué (sur 7)</label>
-  <%= val = (@ancienscore.nil? ? (contestsolution.score >= 0 ? contestsolution.score : nil) : @ancienscore) %>
+  <%= val = (!params.has_key?(:score) ? (contestsolution.score >= 0 ? contestsolution.score : nil) : params[:score]) %>
   <%= number_field_tag "score", val, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;", :disabled => (current_user.other || !can_edit_correction) %>
   </div>
 <% end %>

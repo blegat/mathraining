@@ -60,7 +60,7 @@ feature 'Emailer' do
       other_user.update_attribute(:follow_message, true)
       sign_in user
       visit new_discussion_path
-      select other_user.name, from: "destinataire"
+      select other_user.name, from: "qui"
       fill_in "MathInput", with: "Salut !"
       click_button "Envoyer"
     end

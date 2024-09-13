@@ -4,14 +4,12 @@
 
 <p>Merci d'écrire votre solution directement sur le site, en français, et en utilisant le $\LaTeX$ pour les formules mathématiques. <%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous donne toutes les bases pour l'utiliser. Les solutions écrites à la main et scannées ne sont pas acceptées, les pièces jointes n'étant à utiliser que pour les figures ou schémas.</p>
 
+<%= render 'shared/error_messages', object: f.object %>
+
 <div class="mb-2">
   <%= render 'shared/preview' %>
   <%= render 'shared/smiley' %>
-  <% if @ancientexte.nil? %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || form_disabled) %>
-  <% else %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :value => @ancientexte, :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || form_disabled) %>
-  <% end %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (current_user.other || form_disabled) %>
   <script>initAndUpdatePreviewSafeWhenPossible()</script>
   <script>initLeavingFormWhenPossible()</script>
 </div>

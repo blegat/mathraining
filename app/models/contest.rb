@@ -88,6 +88,90 @@ class Contest < ActiveRecord::Base
     end
   end
   
+  #  Helper method called from different locations to recompute all the contest scores
+  def compute_new_contest_rankings
+    # Find all users with a score > 0 in the contest
+    userset = Set.new
+    probs = self.contestproblems.where(:status => [:corrected, :in_recorrection])
+    probs.each do |p|
+      p.contestsolutions.where("score > 0 AND official = ?", false).each do |s|
+        userset.add(s.user_id)
+      end
+    end
+    
+    # Delete from Contestscore the users who don't have a score (can happen if we modify a score to 0)
+    self.contestscores.each do |s|
+      if !userset.include?(s.user_id)
+        s.destroy
+      end
+    end
+    
+    # Compute the scores of all users
+    scores = Array.new
+    userset.each do |u|
+      score = 0
+      hm = false
+      probs.each do |p|
+        sol = p.contestsolutions.where(:user_id => u).first
+        if !sol.nil?
+          score = score + sol.score
+          if sol.score == 7
+            hm = true
+          end
+        end
+      end
+      scores.push([-score, u, hm])
+    end
+    
+    # Sort the scores
+    scores.sort!    
+    
+    # Compute the ranking (and maybe medal) of each user
+    give_medals = (self.medal && self.gold_cutoff > 0)
+    prevscore = -1
+    i = 1
+    rank = 0
+    scores.each do |a|
+      score = -a[0]
+      u = a[1]
+      hm = a[2]
+      if score != prevscore
+        rank = i
+        prevscore = score
+      end
+      cs = Contestscore.where(:contest => self, :user_id => u).first
+      if cs.nil?
+        cs = Contestscore.new(:contest => self, :user_id => u)
+      end
+      cs.rank = rank
+      cs.score = score
+      if give_medals
+        if score >= self.gold_cutoff
+          cs.medal = :gold_medal
+        elsif score >= self.silver_cutoff
+          cs.medal = :silver_medal
+        elsif score >= self.bronze_cutoff
+          cs.medal = :bronze_medal
+        elsif hm
+          cs.medal = :honourable_mention
+        else
+          cs.medal = :no_medal
+        end
+      else
+        cs.medal = :undefined_medal
+      end
+      cs.save
+      i = i+1
+    end
+    
+    # Change some details of the contest
+    self.update_attribute(:num_participants, scores.size)
+    contest_fully_corrected = (self.contestproblems.where(:status => [:not_started_yet, :in_progress, :in_correction]).count == 0)
+    if contest_fully_corrected
+      self.completed!
+    end
+  end
+  
   # Method called every exact hour (see schedule.rb)
   def self.check_contests_starts
     date_now_plus_1_min = DateTime.now + 1.minute # Security of 1 min in case cron job is earlier (should not happen...)

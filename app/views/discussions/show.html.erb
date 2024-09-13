@@ -39,16 +39,13 @@ window.addEventListener("load", () => {
 
 <% provide(:title, 'Messages') %>
 
-<%= render 'title' %>
-
-<% show = 20 %>
-<% if(params.has_key?:show) %>
-  <% show = params[:show].to_i %>
-<% end %>
+<!-- Keep 'discussions/' because this page can be rendered from tchatmessages in case of failure! -->
+<%= render 'discussions/title' %>
 
 <div class="grid" style="--bs-columns: 12; height:80%;" id="main-div">
   <div class="g-col-12 g-col-md-4 g-col-lg-3 noprint">
-    <%= render 'menu' %>
+    <!-- Keep 'discussions/' because this page can be rendered from tchatmessages in case of failure! -->
+    <%= render 'discussions/menu' %>
   </div>
 
   <div class="g-col-12 g-col-md-8 g-col-lg-9">
@@ -65,19 +62,15 @@ window.addEventListener("load", () => {
       
       <% if other.active %>
       
-        <% @tchatmessage = Tchatmessage.new %>
-
-        <% @ancientexte = session[:ancientexte] %>
-        <% session[:ancientexte] = nil %>
-
-        <%= form_for [@discussion, @tchatmessage], :html => { :multipart => true } do |f| %>
-
+        <%= form_for @tchatmessage, :html => { :multipart => true } do |f| %>
+          <%= f.hidden_field :discussion_id, :value => @discussion.id %>
+          
           <%= render 'shared/error_messages', object: f.object %>
 
           <div class="mb-2">
             <%= render 'shared/preview' %>
             <%= render 'shared/smiley' %>
-            <textarea name="content" maxlength="8000" class="form-control" style="height:120px;" id="MathInput" oninput="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+            <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:120px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
             <script>initAndUpdatePreviewSafeWhenPossible()</script>
           </div>
 
@@ -93,6 +86,8 @@ window.addEventListener("load", () => {
       
       <% end %>
 
+      <% @tchatmessages = @discussion.get_some_messages(1, 10) if @tchatmessages.nil? %>
+      <% @compteur = 1 %>
       <div id="all-messages">
         <% @tchatmessages.each do |m| %>
           <%= render 'tchatmessages/show', m: m %>

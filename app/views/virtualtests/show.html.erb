@@ -14,22 +14,15 @@
 
 <% x = 1 %>
 <% numero = 0 %>
-
-<% prob = -1 %>
-<% @problem = nil %>
-<% if(params.has_key?:p) %>
-  <% prob = params[:p].to_i %>
-<% end %>
   
 <!-- Affichage des problèmes -->
 <ul class="nav nav-tabs nav-justified flex-column flex-md-row mt-4 mb-3">
 <% @virtualtest.problems.order(:position).all.each do |p| %>
   <li class="nav-item">
-  <% if p.id == prob %>
+  <% if p == @problem %>
     <% numero = x %>
-    <% @problem = p %>
   <% end %>
-  <%= link_to "Problème #{ x }", virtualtest_path(@virtualtest, :p => p.id), :class => "nav-link #{'active' if p.id == prob}" %></li>
+  <%= link_to "Problème #{ x }", virtualtest_path(@virtualtest, :p => p.id), :class => "nav-link #{'active' if p == @problem}" %></li>
   <% x = x+1 %>
 <% end %> 
 </ul>

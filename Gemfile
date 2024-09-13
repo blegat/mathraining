@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.0.0'
 
-gem 'rails', '7.0.8.1'
+gem 'rails', '7.0.8.4'
 
 #gem 'bootstrap-sass', '~> 3.4.1'
 gem 'bootstrap', '5.3'
@@ -24,7 +24,6 @@ gem 'resque_mailer'
 gem 'resque_action_mailer_backend'
 
 group :development, :test do
-  gem 'sqlite3', '~> 1.4'
   gem 'rspec-rails', '~> 5.0'
   gem 'random_record'
   gem 'bullet'
@@ -49,7 +48,7 @@ gem 'jquery-rails'
 
 gem 'select2-rails'
 
-gem 'activerecord-session_store', '= 2.0.0'
+# gem 'activerecord-session_store', '= 2.0.0'
 
 group :test do
   gem 'capybara', '3.39.2'
@@ -68,11 +67,9 @@ group :test do
   gem 'codecov', :require => false
 end
 
-group :production do
-  gem 'pg', '~> 1.1'
-  # http://stackoverflow.com/questions/9392939/pg-gem-fails-to-install
-  # Centos 5 has a too old version of pg
-end
+gem 'pg', '~> 1.1'
+# http://stackoverflow.com/questions/9392939/pg-gem-fails-to-install
+# Centos 5 has a too old version of pg
 
 gem 'therubyracer'
 gem 'less-rails'

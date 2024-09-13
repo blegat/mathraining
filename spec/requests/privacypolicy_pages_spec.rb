@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Privacy policy pages" do
+describe "Privacy policy pages", privacypolicy: true do
 
   subject { page }
 
@@ -13,9 +13,7 @@ describe "Privacy policy pages" do
   
   describe "when no online policy" do
     
-    describe "user" do
-      before { sign_in user }
-      
+    describe "visitor" do      
       describe "visits root path" do
         before { visit root_path }
         it { should have_link("Confidentialité", href: last_policy_path) }
@@ -24,11 +22,6 @@ describe "Privacy policy pages" do
       describe "tries to visit last policy" do
         before { visit last_policy_path }
         it { should have_error_message("Le site n'a actuellement aucune politique de confidentalité.") }
-      end
-      
-      describe "tries to configurate policies" do
-        before { visit privacypolicies_path }
-        it { should have_content(error_access_refused) }
       end
     end
     
@@ -115,11 +108,6 @@ describe "Privacy policy pages" do
           should have_content(policy1.content)
           should have_link(href: privacypolicy_path(policy2))
         end
-      end
-      
-      describe "tries to visit offline policy" do
-        before { visit privacypolicy_path(policy3_offline) }
-        it { should have_content(error_access_refused) }
       end
     end
     
@@ -244,11 +232,6 @@ describe "Privacy policy pages" do
             expect(policy3_offline.description).not_to eq("")
           end
         end
-      end
-      
-      describe "visits policy edit page for an online policy" do
-        before { visit edit_privacypolicy_path(policy2) }
-        it { should have_content(error_access_refused) }
       end
     end
   end

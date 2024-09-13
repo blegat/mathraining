@@ -10,7 +10,7 @@ module ProblemsHelper
     
     return Problem.find_by_sql("SELECT #{get_problem_columns_string(columns)}
                                 FROM problems
-                                WHERE problems.online = #{true_value_sql}
+                                WHERE problems.online = true
                                 AND (problems.virtualtest_id IN #{virtualtests_done_request(user)}
                                      OR (problems.virtualtest_id = 0
                                          AND #{num_problem_unsolved_prerequisites_request(user)} = 0
@@ -28,7 +28,7 @@ module ProblemsHelper
     return Problem.find_by_sql("SELECT #{get_problem_columns_string(columns)}
                                 FROM problems
                                 WHERE problems.section_id = #{section.id}
-                                AND problems.online = #{true_value_sql}
+                                AND problems.online = true
                                 AND (problems.virtualtest_id IN #{virtualtests_done_request(user)}
                                      OR (problems.virtualtest_id = 0
                                          AND #{num_problem_unsolved_prerequisites_request(user)} = 0

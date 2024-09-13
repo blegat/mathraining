@@ -14,7 +14,7 @@ Votre navigateur ne supporte pas les canvas.
   var W = <%= target_max_size %>;
   var H = <%= target_max_size %>;
   
-  <% followings = Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, problems.number AS pb_number, followings.created_at, followings.user_id AS user_id, users.first_name, users.last_name, users.see_name, users.corrector_color AS color").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone - (Rails.env.development? ? 10.years : 0.days)).to_a %>
+  <% followings = Following.joins(submission: :problem).joins(:user).select("problems.level AS level, problems.section_id AS section_id, problems.number AS pb_number, followings.created_at, followings.user_id AS user_id, users.first_name AS first_name, users.last_name AS last_name, users.see_name AS see_name, users.corrector_color AS color").where(:kind => :first_corrector).where("followings.created_at > ?", Date.today.in_time_zone - (Rails.env.development? ? 10.years : 0.days)).to_a %>
     
   <% def get_radius_pct(f) %>
     <% return (0.2 * (5 - f.level + 0.001 * (((f.created_at.to_i * 373) % 981) + 10))).round(4) %>
@@ -49,10 +49,11 @@ Votre navigateur ne supporte pas les canvas.
     <% angle = get_angle(f) %>
     <% x = [(16 + 16 * radius_pct * Math.cos(angle)).floor(), 31].min %>
     <% y = [(16 + 16 * radius_pct * Math.sin(angle)).floor(), 31].min %>
-    addGridPoint(<%= x %>, <%= y %>, <%= radius_pct %>, <%= angle %>, "<%= f.user.name %>", <%= f.pb_number %>, "<%= write_hour(f.created_at) %>", "<%= f.color %>");
+    <% user_name = User.new(:first_name => f.first_name, :last_name => f.last_name, :see_name => f.see_name).name %>
+    addGridPoint(<%= x %>, <%= y %>, <%= radius_pct %>, <%= angle %>, "<%= user_name %>", <%= f.pb_number %>, "<%= write_hour(f.created_at) %>", "<%= f.color %>");
       
     <% if !corrector_to_points.key?(f.user_id) %>
-      <% corrector_to_points[f.user_id] = {:name => f.user.name, :nb_points => f.level, :nb_corrections => 1, :color => f.color} %>
+      <% corrector_to_points[f.user_id] = {:name => user_name, :nb_points => f.level, :nb_corrections => 1, :color => f.color} %>
     <% else %>
       <% corrector_to_points[f.user_id][:nb_points] += f.level %>
       <% corrector_to_points[f.user_id][:nb_corrections] += 1 %>

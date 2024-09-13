@@ -37,9 +37,9 @@
 
 <% prev_num = 0 %>
 <% if @country == 0 %>
-  <% colors_with_num = Color.select("colors.id, colors.name, colors.pt, (SELECT COUNT(users.id) FROM users WHERE users.rating >= colors.pt AND users.rating > 0 AND users.admin = #{false_value_sql} AND users.active = #{true_value_sql}) AS num").order("pt DESC") %>
+  <% colors_with_num = Color.select("colors.id, colors.name, colors.pt, (SELECT COUNT(users.id) FROM users WHERE users.rating >= colors.pt AND users.rating > 0 AND users.admin = false AND users.active = true) AS num").order("pt DESC") %>
 <% else %>
-  <% colors_with_num = Color.select("colors.id, colors.name, colors.pt, (SELECT COUNT(users.id) FROM users WHERE users.rating >= colors.pt AND users.rating > 0 AND users.admin = #{false_value_sql} AND users.active = #{true_value_sql} AND users.country_id = #{@country}) AS num").order("pt DESC") %>
+  <% colors_with_num = Color.select("colors.id, colors.name, colors.pt, (SELECT COUNT(users.id) FROM users WHERE users.rating >= colors.pt AND users.rating > 0 AND users.admin = false AND users.active = true AND users.country_id = #{@country}) AS num").order("pt DESC") %>
 <% end %>
 <% colors_with_num.each do |c| %>
   <% title_list.push(["#{pluriel(c.name)} (#{c.num-prev_num})", c.id]) %>

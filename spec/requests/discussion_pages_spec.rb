@@ -28,7 +28,7 @@ describe "Discussion pages", discussion: true do
     
       describe "and creates a discussion" do
         before do
-          select other_user.name, from: "destinataire"
+          select other_user.name, from: "qui"
           fill_in "MathInput", with: content
           click_button "Envoyer"
         end
@@ -40,7 +40,7 @@ describe "Discussion pages", discussion: true do
         describe "and creates again the same discussion" do
           before do
             visit new_discussion_path
-            select other_user.name, from: "destinataire"
+            select other_user.name, from: "qui"
             fill_in "MathInput", with: content2
             click_button "Envoyer"
           end
@@ -56,7 +56,7 @@ describe "Discussion pages", discussion: true do
             d = Discussion.order(:id).last
             Tchatmessage.create(:discussion => d, :user => other_user, :content => content3)
             Link.where(:discussion => d, :user => user).first.update_attribute(:nonread, 1)
-            select other_user.name, from: "destinataire"
+            select other_user.name, from: "qui"
             fill_in "MathInput", with: content2
             click_button "Envoyer"
           end
@@ -137,7 +137,7 @@ describe "Discussion pages", discussion: true do
       end
       it do
         should have_current_path(new_discussion_path(:qui => other_user))
-        should have_select("destinataire", selected: other_user.name)
+        should have_select("qui", selected: other_user.name)
       end
     end
     

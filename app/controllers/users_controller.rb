@@ -104,7 +104,7 @@ class UsersController < ApplicationController
     
     (0..(search.size-1)).each do |i|
       if !User.allowed_characters.include?(search[i]) && !User.allowed_special_characters.include?(search[i])
-        @error_message = "Le caractère #{search[i]} n'est pas autorisé dans le nom des utilisateurs."
+        @search_error = "Le caractère #{search[i]} n'est pas autorisé dans le nom des utilisateurs."
         return
       end
     end
@@ -128,7 +128,7 @@ class UsersController < ApplicationController
     end
     
     if search.size < 3
-      @error_message = "Au moins 3 caractères sont nécessaires."
+      @search_error = "Au moins 3 caractères sont nécessaires."
       return
     end
     
@@ -175,7 +175,7 @@ class UsersController < ApplicationController
     if !params.has_key?("consent1") || !params.has_key?("consent2")
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir créer un compte."
       render 'new'
-    elsif (Rails.env.test? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
+    elsif (Rails.env.test? or Rails.env.development? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       UserMailer.registration_confirmation(@user.id).deliver
       
       user_reload = User.find(@user.id) # Reload because email and email_confirmation can be different after downcaise otherwise!
@@ -209,16 +209,10 @@ class UsersController < ApplicationController
       @user.adapt_name
       @user.save
       flash[:success] = "Votre profil a bien été mis à jour."
-      if(current_user.root? and current_user.other)
-        @user.update_attribute(:valid_name, true)
-        current_user.update_attribute(:skin, 0)
-        redirect_to validate_names_path
-      else
-        if((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.sk.admin)
-          @user.update_attribute(:valid_name, false)
-        end
-        redirect_to root_path
+      if ((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.sk.root)
+        @user.update_attribute(:valid_name, false)
       end
+      redirect_to root_path
     else
       render 'edit'
     end
@@ -327,7 +321,7 @@ class UsersController < ApplicationController
   # Password forgotten: check captcha and send email
   def password_forgotten
     @user = User.new
-    render 'forgot_password' and return if (!Rails.env.test? and !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
+    render 'forgot_password' and return if (!Rails.env.test? and !Rails.env.development? && !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
 
     @user = User.where(:email => params[:user][:email]).first
     if @user
@@ -380,16 +374,15 @@ class UsersController < ApplicationController
       redirect_to root_path
     else
       if (params[:user][:password].nil? or params[:user][:password].length == 0)
-        session["errorChange"] = ["Mot de passe est vide"]
-        redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
+        @user.errors.add(:base, "Mot de passe est vide")
+        render 'recup_password'
       elsif @user.update(params.require(:user).permit(:password, :password_confirmation))
         @user.update_attribute(:key, SecureRandom.urlsafe_base64)
         @user.update_attribute(:recup_password_date_limit, nil)
         flash[:success] = "Votre mot de passe vient d'être modifié. Vous pouvez maintenant vous connecter à votre compte."
         redirect_to root_path
       else
-        session["errorChange"] = @user.errors.full_messages
-        redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
+        render 'recup_password'
       end
     end
   end
@@ -451,19 +444,30 @@ class UsersController < ApplicationController
   
   # Show all names to validate
   def validate_names
-    @users_to_validate = User.where(:valid_name => false, :email_confirm => true, :admin => false).order("id DESC").all
+    @users_to_validate = User.where(:valid_name => false, :email_confirm => true).order("id DESC").all
   end
   
   # Validate one name (through js)
   def validate_name
-    suggestion = params[:suggestion].to_i
-    @user.valid_name = true
-    if suggestion == 1
-      @user.first_name = @user.first_name.my_titleize
-      @user.last_name = @user.last_name.my_titleize
+    if params.has_key?(:suggestion)
+      suggestion = params[:suggestion].to_i
+      if suggestion == 1
+        @user.first_name = @user.first_name.my_titleize
+        @user.last_name = @user.last_name.my_titleize
+      elsif suggestion == 2
+        @user.first_name = @user.first_name[0].upcase + "."
+        @user.last_name = @user.last_name[0].upcase + "."
+      end
+      @user.adapt_name
+      @user.valid_name = true
+      @user.save
+    elsif params.has_key?(:first_name) && params.has_key?(:last_name)
+      @user.first_name = params[:first_name]
+      @user.last_name = params[:last_name]
+      @user.adapt_name
+      @user.valid_name = true
+      @user.save
     end
-    @user.save
-    
     respond_to do |format|
       format.js
     end
@@ -612,7 +616,18 @@ class UsersController < ApplicationController
     ids = Array.new(users.size)
     local_id = 0
     
-    globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.admin = #{false_value_sql} AND u.active = #{true_value_sql}) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
+    num_users_by_rating = User.where("admin = false AND active = true AND rating > 0").group(:rating).order("rating DESC").count
+    rank_by_rating = {}
+    
+    r = 1
+    num_users_by_rating.each do |rating, num|
+      rank_by_rating[rating] = r
+      r = r + num
+    end
+    rank_by_rating[0] = r
+    
+    # Old way of computing the rank, but was not very efficient:
+    # globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.admin = false AND u.active = true) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
 
     users.each do |u|
       ids[local_id] = u.id
@@ -620,7 +635,7 @@ class UsersController < ApplicationController
       @x_persection[local_id] = Array.new
       @x_recent[local_id] = 0
       @x_rating[local_id] = u.rating
-      @x_globalrank[local_id] = globalrank_here[local_id]
+      @x_globalrank[local_id] = rank_by_rating[u.rating]
       @x_country[local_id] = u.country_id
       @x_linked_name[local_id] = u.linked_name
       local_id = local_id + 1

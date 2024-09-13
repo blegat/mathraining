@@ -21,9 +21,9 @@
       <% if question.answer - question.answer.to_i <= 0.00001 && question.answer.to_i - question.answer <= 0.00001 %>
         <% vraidecimal = false %>
       <% end %>
-      <span style="font-size:16px;"><%= question.answer if vraidecimal %><%= question.answer.to_i if !vraidecimal %></span> (réponse <b>décimale</b>, arrondie au millième près)
+      <span style="font-size:16px;"><%= question.answer if vraidecimal %><%= question.answer.to_i if !vraidecimal %></span> (nombre <b>décimal</b>, arrondi au millième près)
     <% else %>
-      <span style="font-size:16px;"><%= question.answer.to_i %></span> (réponse <b>entière</b>)
+      <span style="font-size:16px;"><%= question.answer.to_i %></span> (nombre <b>entier</b>)
     <% end %>
     </p>
   <% else %>

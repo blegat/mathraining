@@ -16,6 +16,7 @@ describe "corrections/_new.html.erb", type: :view, correction: true do
     before do
       assign(:signed_in, true)
       assign(:current_user, user)
+      assign(:correction, Correction.new)
     end
       
     it "renders only one button" do
@@ -28,6 +29,7 @@ describe "corrections/_new.html.erb", type: :view, correction: true do
     before do
       assign(:signed_in, true)
       assign(:current_user, admin)
+      assign(:correction, Correction.new)
     end
     
     context "and the submission is waiting" do

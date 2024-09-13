@@ -7,10 +7,9 @@
 
 <!-- Solution de l'étudiant -->
 <h3 class="mt-4">Votre solution</h3>
-<% @submission = Submission.where(user_id: current_user.sk.id, problem_id: @problem.id, intest: true).first %>
 
 <!-- Si une soumission a déjà été faite -->
-<% if !@submission.nil? %>
+<% if !@submission.new_record? %>
   <div id="the" class="myoverflow">
   <%= render 'shared/post', ms: @submission, kind: "submission_in_test", can_edit: true, reduce_margin_top: true %>
   </div>
@@ -25,18 +24,14 @@
   </div>
 <% end %>
 
-
-<% @ancientexte = session[:ancientexte] %>
-
 <div id="form" class="myoverflow px-1" style="height:0px;">
-<% if !@submission.nil? %>
-  <%= render 'submissions/edit_in_test' %>
-<% else %>
+<% if @submission.new_record? %>
   <%= render 'submissions/new_in_test' %>
+<% else %>
+  <%= render 'submissions/edit_in_test' %>
 <% end %>
 </div>
 
-<% if !session["ancientexte"].nil? %>
+<% if @submission.errors.any? %>
   <script>rollingDevelopQuickWhenPossible("")</script>
-  <% session.delete("ancientexte") %>
 <% end %>

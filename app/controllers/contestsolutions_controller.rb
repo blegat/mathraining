@@ -1,5 +1,7 @@
 #encoding: utf-8
 class ContestsolutionsController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
+  
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :reserve, :unreserve]
   
   before_action :check_contests, only: [:create, :update, :destroy] # Defined in application_controller.rb
@@ -21,54 +23,46 @@ class ContestsolutionsController < ApplicationController
     end
   
     params[:contestsolution][:content].strip! if !params[:contestsolution][:content].nil?
+
+    @contestsolution = @contestproblem.contestsolutions.build(content: params[:contestsolution][:content],
+                                                              user:    current_user.sk)
+    
+    # Invalid CSRF token
+    render_with_error('contestproblems/show', @contestsolution, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid contestsolution
+    render_with_error('contestproblems/show') and return if !@contestsolution.valid? 
     
     # Attached files
-    @error_message = ""
     attach = create_files
-    if !@error_message.empty?
-      flash[:danger] = @error_message
-      session[:ancientexte] = params[:contestsolution][:content]
-      redirect_to contestproblem_path(@contestproblem) and return
-    end
+    render_with_error('contestproblems/show', @contestsolution, @file_error) and return if !@file_error.nil?
 
-    solution = @contestproblem.contestsolutions.build(content: params[:contestsolution][:content])
-    solution.user = current_user.sk
+    @contestsolution.save
 
-    if solution.save
-      attach_files(attach, solution)
-      flash[:success] = "Solution enregistrée."
-      redirect_to contestproblem_path(@contestproblem, :sol => solution)
-    else
-      destroy_files(attach)
-      session[:ancientexte] = params[:contestsolution][:content]
-      flash[:danger] = error_list_for(solution)
-      redirect_to contestproblem_path(@contestproblem)
-    end
+    attach_files(attach, @contestsolution)
+    flash[:success] = "Solution enregistrée."
+    redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
   end
 
   # Update a solution (send the form)
   def update
     params[:contestsolution][:content].strip! if !params[:contestsolution][:content].nil?
     @contestsolution.content = params[:contestsolution][:content]
-    if @contestsolution.valid?
     
-      # Attached files
-      @error_message = ""
-      update_files(@contestsolution)
-      if !@error_message.empty?
-        flash[:danger] = @error_message
-        session[:ancientexte] = params[:contestsolution][:content]
-        redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution) and return
-      end
-      
-      @contestsolution.save
-      flash[:success] = "Solution enregistrée."
-      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
-    else
-      session[:ancientexte] = params[:contestsolution][:content]
-      flash[:danger] = error_list_for(@contestsolution)
-      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
-    end
+    # Invalid CSRF token
+    render_with_error('contestproblems/show', @contestsolution, get_csrf_error_message) and return if @invalid_csrf_token
+
+    # Invalid contestsolution
+    render_with_error('contestproblems/show') and return if !@contestsolution.valid? 
+
+    # Attached files
+    update_files(@contestsolution)
+    render_with_error('contestproblems/show', @contestsolution, @file_error) and return if !@file_error.nil?
+    
+    @contestsolution.save
+    
+    flash[:success] = "Solution enregistrée."
+    redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
   end
 
   # Delete a solution
