@@ -8,6 +8,18 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: mathraining
+          POSTGRES_PASSWORD: password1
+          POSTGRES_DB: pg_test
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+          
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby 3.0.0
@@ -15,15 +27,22 @@ jobs:
       with:
         ruby-version: 3.0.0 # Not needed with a .ruby-version file
 #       bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - name: Build and test with Rake
+    - name: Bundle install
       env:
         RAILS_ENV: test
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: |
         bundle install
         #bundle update rake
         #gem update --system 3.0.0
         #gem install bundler --version 2.2.27
+    - name: Test with Rake
+      env:
+        PGHOST: postgres
+        PGUSER: mathraining
+        PGPORT: ${{ job.services.postgres.ports[5432] }}
+        RAILS_ENV: test
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
         export SECRET_KEY_BASE=$(bundle exec rake secret)
         RAILS_ENV=test bundle exec rake db:migrate --trace
         bundle exec rake db:test:prepare

@@ -1,30 +1,46 @@
 #encoding: utf-8
-class ApplicationController < ActionController::Base
-  protect_from_forgery
-  include SessionsHelper
-  include ApplicationHelper
 
+class CustomCSRFStrategy
+  def initialize(controller)
+    @controller = controller
+  end
+
+  def handle_unverified_request
+    @controller.set_invalid_csrf_token
+  end
+end
+
+class ApplicationController < ActionController::Base
+  include ApplicationHelper
+  include SessionsHelper
+  
+  protect_from_forgery with: CustomCSRFStrategy
+  before_action :error_if_invalid_csrf_token
+  before_action :start_or_stop_benchmark
   before_action :load_global_variables
   before_action :check_under_maintenance
   before_action :has_consent
   before_action :check_takentests
-
+  
+  # Called from CustomCSRFStrategy when an invalid token is detected
+  def set_invalid_csrf_token
+    @invalid_csrf_token = true
+  end
+  
   private
-
-  # When doing big changes on the server
-  def check_under_maintenance
-    if @under_maintenance
-      flash[:info] = @under_maintenance_message.html_safe
-      if !@signed_in || !current_user.root?
-        redirect_to root_path if request.path != "/"
-      end
+  
+  # Error in case of invalid CSRF token: this method is sometimes skipped with skip_before_action
+  # and replaced by something else so that users don't lose what they wrote
+  def error_if_invalid_csrf_token
+    if @invalid_csrf_token
+      flash[:danger] = get_csrf_error_message
+      referrer_url = URI.parse(request.referrer) rescue URI.parse(root_url)
+      redirect_to referrer_url.to_s
     end
   end
   
-  # Create some global variables that are always needed
-  def load_global_variables
-    @signed_in = signed_in?
-    
+  # Deal with start_benchmark and stop_benchmark, to benchmark the loading time of a page
+  def start_or_stop_benchmark
     if params.has_key?(:start_benchmark)
       cookies[:benchmark] = 1
     end
@@ -35,6 +51,11 @@ class ApplicationController < ActionController::Base
         @benchmark_start_time = Time.now
       end
     end
+  end
+  
+  # Create some global variables that are always needed
+  def load_global_variables
+    @signed_in = signed_in?
     
     @under_maintenance = false
     @no_new_submission = false
@@ -52,6 +73,16 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # When doing big changes on the server
+  def check_under_maintenance
+    if @under_maintenance
+      flash[:info] = @under_maintenance_message.html_safe
+      if !@signed_in || !current_user.root?
+        redirect_to root_path if request.path != "/"
+      end
+    end
+  end
+  
   # Check that the user consented to the last policy
   def has_consent
     pp = request.fullpath.to_s
@@ -63,6 +94,37 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+  
+  ########## HELPER METHODS ##########
+  
+  # Message to show when an invalid CSRF token is detected
+  def get_csrf_error_message
+    return "Votre session a expiré et vos données n'ont pas pu être enregistrées. Merci de réessayer."
+  end
+  
+  # Swap the positions of two objects
+  def swap_position(a, b)
+    if !a.nil? && !b.nil? && a != b
+      x = a.position
+      y = b.position
+      a.update_attribute(:position, y)
+      b.update_attribute(:position, x)
+      if x > y
+        return " vers le haut"
+      else
+        return " vers le bas"
+      end
+    end
+    return ""
+  end
+  
+  # Render a view after having added an error to an object if needed
+  def render_with_error(view, obj = nil, error = nil)
+    obj.errors.add(:base, error) unless obj.nil? || error.nil?
+    render view
+  end
+  
+  ########## CHECK METHODS ##########
   
   # Check that the user is signed in, and if not then redirect to the page "Please sign in to see this page"
   def signed_in_user
@@ -203,104 +265,7 @@ class ApplicationController < ActionController::Base
     return false
   end
   
-  # Swap the positions of two objects
-  def swap_position(a, b)
-    if !a.nil? && !b.nil? && a != b
-      x = a.position
-      y = b.position
-      a.update_attribute(:position, y)
-      b.update_attribute(:position, x)
-      if x > y
-        return " vers le haut"
-      else
-        return " vers le bas"
-      end
-    end
-    return ""
-  end
-
-  # Method called from several locations to create files from a form
-  def create_files
-    attach = Array.new
-    totalsize = add_new_files(attach)
-    return [] if !@error_message.empty?
-    check_files_total_size(totalsize)
-    destroy_files(attach) and return [] if !@error_message.empty?
-    return attach
-  end
-
-  # Method called from several locations to update files from a form: we should be sure that the object is valid
-  def update_files(object)
-    totalsize = 0
-    postfix = (params["postfix"].nil? ? "" : params["postfix"]);
-    object.myfiles.each do |f|
-      if params["prevFile#{postfix}_#{f.id}".to_sym].nil?
-        f.destroy # Should automatically purge the file
-      else
-        totalsize = totalsize + f.file.blob.byte_size
-      end
-    end
-
-    object.fakefiles.each do |f|
-      if params["prevFakeFile#{postfix}_#{f.id}".to_sym].nil?
-        f.destroy
-      end
-    end
-    
-    attach = Array.new
-    totalsize += add_new_files(attach)
-    return [] if !@error_message.empty?
-    check_files_total_size(totalsize)
-    destroy_files(attach) and return [] if !@error_message.empty?
-    
-    attach_files(attach, object)
-  end
-  
-  # Helper method called by create_files and update_files to create all new files
-  def add_new_files(attach)
-    totalsize = 0
-    k = 1
-    postfix = (params["postfix"].nil? ? "" : params["postfix"]);
-    while !params["hidden#{postfix}_#{k}".to_sym].nil? do
-      if !params["file#{postfix}_#{k}".to_sym].nil?
-        attach.push(Myfile.new(:file => params["file#{postfix}_#{k}".to_sym]))
-        if !attach.last.save
-          attach.pop()
-          destroy_files(attach)
-          nom = params["file#{postfix}_#{k}".to_sym].original_filename
-          @error_message = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
-          return 0;
-        end
-        totalsize = totalsize + attach.last.file.blob.byte_size
-      end
-      k = k+1
-    end
-    
-    return totalsize
-  end
-  
-  # Helper method called by create_files and update_files to check maximum total size of files
-  def check_files_total_size(totalsize)
-    limit = (Rails.env.test? ? 15.kilobytes : 5.megabytes) # In test mode we put a very small limit
-    limit_str = (Rails.env.test? ? "15 ko" : "5 Mo")
-    if totalsize > limit
-      @error_message = "Vos pièces jointes font plus de #{limit_str} au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)"
-    end
-  end
-  
-  # Method called from several locations to attach the uploaded files to an object
-  def attach_files(attach, object)
-    attach.each do |a|
-      a.update_attribute(:myfiletable, object)
-    end
-  end
-
-  # Method called from several locations to delete some temporarily uploaded files (because of another error)
-  def destroy_files(attach)
-    attach.each do |a|
-      a.destroy # Should automatically purge the file
-    end
-  end
+  ########## GENERAL TEST & CONTEST STATUS CHECKS METHODS ##########
   
   # Check if some test just got finished
   def check_takentests
@@ -353,88 +318,87 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  # Method called from different locations to recompute all the contest scores
-  def compute_new_contest_rankings(contest)
-    # Find all users with a score > 0 in the contest
-    userset = Set.new
-    probs = contest.contestproblems.where(:status => [:corrected, :in_recorrection])
-    probs.each do |p|
-      p.contestsolutions.where("score > 0 AND official = ?", false).each do |s|
-        userset.add(s.user_id)
-      end
-    end
-    
-    # Delete from Contestscore the users who don't have a score (can happen if we modify a score to 0)
-    @contest.contestscores.each do |s|
-      if !userset.include?(s.user_id)
-        s.destroy
-      end
-    end
-    
-    # Compute the scores of all users
-    scores = Array.new
-    userset.each do |u|
-      score = 0
-      hm = false
-      probs.each do |p|
-        sol = p.contestsolutions.where(:user_id => u).first
-        if !sol.nil?
-          score = score + sol.score
-          if sol.score == 7
-            hm = true
-          end
-        end
-      end
-      scores.push([-score, u, hm])
-    end
-    
-    # Sort the scores
-    scores.sort!    
-    
-    # Compute the ranking (and maybe medal) of each user
-    give_medals = (contest.medal && contest.gold_cutoff > 0)
-    prevscore = -1
-    i = 1
-    rank = 0
-    scores.each do |a|
-      score = -a[0]
-      u = a[1]
-      hm = a[2]
-      if score != prevscore
-        rank = i
-        prevscore = score
-      end
-      cs = Contestscore.where(:contest => @contest, :user_id => u).first
-      if cs.nil?
-        cs = Contestscore.new(:contest => contest, :user_id => u)
-      end
-      cs.rank = rank
-      cs.score = score
-      if give_medals
-        if score >= contest.gold_cutoff
-          cs.medal = :gold_medal
-        elsif score >= contest.silver_cutoff
-          cs.medal = :silver_medal
-        elsif score >= contest.bronze_cutoff
-          cs.medal = :bronze_medal
-        elsif hm
-          cs.medal = :honourable_mention
-        else
-          cs.medal = :no_medal
-        end
+  ########## FILES METHODS ##########
+  
+  # Method called from several locations to create files from a form
+  def create_files
+    attach = Array.new
+    totalsize = add_new_files(attach)
+    return [] if !@file_error.nil?
+    check_files_total_size(totalsize)
+    destroy_files(attach) and return [] if !@file_error.nil?
+    return attach
+  end
+
+  # Method called from several locations to update files from a form: we should be sure that the object is valid
+  def update_files(object)
+    totalsize = 0
+    postfix = (params["postfix"].nil? ? "" : params["postfix"]);
+    object.myfiles.each do |f|
+      if params["prevFile#{postfix}_#{f.id}".to_sym].nil?
+        f.destroy # Should automatically purge the file
       else
-        cs.medal = :undefined_medal
+        totalsize = totalsize + f.file.blob.byte_size
       end
-      cs.save
-      i = i+1
+    end
+
+    object.fakefiles.each do |f|
+      if params["prevFakeFile#{postfix}_#{f.id}".to_sym].nil?
+        f.destroy
+      end
     end
     
-    # Change some details of the contest
-    contest.update_attribute(:num_participants, scores.size)
-    contest_fully_corrected = (contest.contestproblems.where(:status => [:not_started_yet, :in_progress, :in_correction]).count == 0)
-    if contest_fully_corrected
-      contest.completed!
+    attach = Array.new
+    totalsize += add_new_files(attach)
+    return if !@file_error.nil?
+    check_files_total_size(totalsize)
+    destroy_files(attach) and return if !@file_error.nil?
+    attach_files(attach, object)
+  end
+  
+  # Helper method called by create_files and update_files to create all new files
+  def add_new_files(attach)
+    totalsize = 0
+    k = 1
+    postfix = (params["postfix"].nil? ? "" : params["postfix"]);
+    while !params["hidden#{postfix}_#{k}".to_sym].nil? do
+      if !params["file#{postfix}_#{k}".to_sym].nil?
+        attach.push(Myfile.new(:file => params["file#{postfix}_#{k}".to_sym]))
+        if !attach.last.save
+          attach.pop()
+          destroy_files(attach)
+          nom = params["file#{postfix}_#{k}".to_sym].original_filename
+          @file_error = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
+          return 0;
+        end
+        totalsize = totalsize + attach.last.file.blob.byte_size
+      end
+      k = k+1
+    end
+    
+    return totalsize
+  end
+  
+  # Helper method called by create_files and update_files to check maximum total size of files
+  def check_files_total_size(totalsize)
+    limit = (Rails.env.test? ? 15.kilobytes : 5.megabytes) # In test mode we put a very small limit
+    limit_str = (Rails.env.test? ? "15 ko" : "5 Mo")
+    if totalsize > limit
+      @file_error = "Vos pièces jointes font plus de #{limit_str} au total (#{(totalsize.to_f/1.megabyte).round(3)} Mo)"
     end
   end
   
+  # Method called from several locations to attach the uploaded files to an object
+  def attach_files(attach, object)
+    attach.each do |a|
+      a.update_attribute(:myfiletable, object)
+    end
+  end
+
+  # Method called from several locations to delete some temporarily uploaded files (because of another error)
+  def destroy_files(attach)
+    attach.each do |a|
+      a.destroy # Should automatically purge the file
+    end
+  end  
 end

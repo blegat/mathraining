@@ -15,11 +15,6 @@ describe DiscussionsController, type: :controller, discussion: true do
       get :new
       expect(response).to redirect_to signin_path
     end
-    
-    it "renders the error page for create" do
-      post :create
-      expect(response).to render_template 'errors/access_refused'
-    end
   end
   
   context "if the user is not involved in the discussion" do

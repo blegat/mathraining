@@ -1,5 +1,7 @@
 <% provide(:title, @subject.title.html_safe) %>
 
+<% @messages = @subject.messages.order(:created_at).paginate(:page => @page, :per_page => 10) %>
+
 <% @nb_indice = 1 %>
 
 <% if !@subject.category.nil? %>
@@ -50,7 +52,7 @@
 </center>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->
-<% if ((!params.has_key?:page) || (params[:page] == '1')) %>
+<% if @page.nil? || @page == 1 %>
   <%= render 'subjects/subject', s: @subject %>
 <% else %>
   <% if !@subject.question.nil? %>

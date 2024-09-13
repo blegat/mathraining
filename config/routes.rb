@@ -76,8 +76,8 @@ Rails.application.routes.draw do
 
   # Submissions
   resources :submissions, only: [:index, :destroy] do # 'index' only via JS
-    match '/update_intest', to: 'submissions#update_intest', :via => [:post]
-    match '/update_draft', to: 'submissions#update_draft', :via => [:post]
+    match '/update_intest', to: 'submissions#update_intest', :via => [:patch]
+    match '/update_draft', to: 'submissions#update_draft', :via => [:patch]
     match '/read', to: 'submissions#read', :via => [:put]
     match '/unread', to: 'submissions#unread', :via => [:put]
     match '/star', to: 'submissions#star', :via => [:put]
@@ -176,7 +176,7 @@ Rails.application.routes.draw do
     match '/leave_skin', to: 'users#leave_skin', :via => [:put]
     match '/change_group', to: 'users#change_group', :via => [:put]
     match '/recup_password', to: 'users#recup_password', :via => [:get]
-    match '/change_password', to: 'users#change_password', :via => [:post]
+    match '/change_password', to: 'users#change_password', :via => [:patch]
     match '/add_followed_user', to: 'users#add_followed_user', :via => [:put]
     match '/remove_followed_user', to: 'users#remove_followed_user', :via => [:put]
     match '/change_name', to: 'users#change_name', :via => [:put]
@@ -205,7 +205,6 @@ Rails.application.routes.draw do
   resources :privacypolicies, only: [:index, :show, :new, :edit, :update, :destroy] do
     match '/put_online', to: 'privacypolicies#put_online', :via => [:put]
     match '/edit_description', to: 'privacypolicies#edit_description', :via => [:get]
-    match '/update_description', to: 'privacypolicies#update_description', :via => [:patch]
   end
   match '/last_policy', to: 'privacypolicies#last_policy', :via => [:get]
   
@@ -219,15 +218,16 @@ Rails.application.routes.draw do
   
   # Attached files
   resources :myfiles, only: [:show, :index] do
-  	match '/fake_delete', to: 'myfiles#fake_delete', :via => [:put]
+    match '/fake_delete', to: 'myfiles#fake_delete', :via => [:put]
   end
   
   # Discussions
-  resources :discussions, only: [:new, :create, :show] do # 'show' via HTML or JS 
+  resources :discussions, only: [:new, :show] do # 'show' via HTML or JS 
     match '/unread', to: 'discussions#unread', :via => [:put]
-    
-    resources :tchatmessages, only: [:create]
   end
+  
+  # Tchatmessages
+  resources :tchatmessages, only: [:create]
   
   # Colors
   resources :colors, only: [:index, :create, :update, :destroy]

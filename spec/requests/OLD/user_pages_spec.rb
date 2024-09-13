@@ -247,7 +247,7 @@ describe "User pages" do
     end
     
     describe "visits title scores page" do
-      before { visit users_path(:title => Color.where("pt == 200").first) }
+      before { visit users_path(:title => Color.where(:pt => 200).first) }
       it do
         should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points
         should have_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points
@@ -256,7 +256,7 @@ describe "User pages" do
     end
     
     describe "visits country and title scores page" do
-      before { visit users_path(:title => Color.where("pt == 200").first, :country => country) }
+      before { visit users_path(:title => Color.where(:pt => 200).first, :country => country) }
       it do
         should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points and in country
         should have_no_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points but not in country
@@ -620,6 +620,20 @@ describe "User pages" do
       specify { expect { click_link "Supprimer" and other_root.reload }.to change(User, :count).by(-1) .and change{other_root.skin}.to(0) }
     end
     
+    describe "deletes a student with expired session (or invalid CSRF token)" do
+      before do
+        ActionController::Base.allow_forgery_protection = true # Don't know why but this is enough to have an invalid CSRF in testing
+        visit user_path(zero_user)
+        #Capybara.current_session.driver.browser.set_cookie("_session_id=wrongValue")
+        click_link "Supprimer"
+      end
+      it do
+        should have_error_message("Votre session a expiré")
+        should have_content(zero_user.name) # zero_user should not be deleted
+      end
+      after { ActionController::Base.allow_forgery_protection = false }
+    end
+    
     describe "transforms user in admin" do
       before do
         visit user_path(zero_user)
@@ -862,6 +876,21 @@ describe "User pages" do
         end
       end
       
+      describe "and use initials for one name" do
+        before do
+          wait_for_js_imports
+          click_link "initials-#{user2.id}"
+          wait_for_ajax
+          user2.reload
+        end
+        specify do
+          expect(user2.first_name).to eq("J.")
+          expect(user2.last_name).to eq("B.")
+          expect(user2.valid_name).to eq(true)
+          expect(page).to have_no_link(user2.name, href: user_path(user2)) # Should disappear
+        end
+      end
+      
       describe "and passes one name" do
         before do
           wait_for_js_imports
@@ -881,29 +910,28 @@ describe "User pages" do
         before do
           wait_for_js_imports
           click_link "change-#{user3.id}"
-          root.reload
+          wait_for_ajax
+          user3.reload
         end
         specify do
-          expect(root.skin).to eq(user3.id)
-          expect(page).to have_selector("h1", text: "Votre compte")
-          expect(page).to have_button("Mettre à jour")
+          expect(page).to have_field("first-name-#{user3.id}", with: user3.first_name)
+          expect(page).to have_field("last-name-#{user3.id}", with: user3.last_name)
+          expect(page).to have_link("confirm-#{user3.id}")
         end
         
         describe "and fixes the name" do
           before do
-            fill_in "Prénom", with: "Victor"
-            fill_in "Nom", with: "de la Terre"
-            click_button "Mettre à jour"
+            fill_in "first-name-#{user3.id}", with: "Victor"
+            fill_in "last-name-#{user3.id}", with: "de la Terre"
+            click_link "confirm-#{user3.id}"
+            wait_for_ajax
             user3.reload
-            root.reload
           end
           specify do
             expect(user3.first_name).to eq("Victor")
             expect(user3.last_name).to eq("de la Terre")
             expect(user3.valid_name).to eq(true)
-            expect(root.skin).to eq(0)
-            expect(page).to have_selector("h1", text: "Valider")
-            expect(page).to have_no_link(user3.name, href: user_path(user3))
+            expect(page).to have_no_link(user3.name, href: user_path(user3)) # Should disappear
           end
         end
       end

@@ -1,12 +1,7 @@
 <% provide(:title, 'Messages') %>
 
-<%= render 'title' %>
-
-<!-- <script type="text/javascript">
-var showAllUsers = function () {
-  $.getScript("<%= new_discussion_url %>");
-}
-</script> -->
+<!-- Keep 'discussions/' because this page can be rendered from tchatmessages in case of failure! -->
+<%= render 'discussions/title' %>
 
 <script type="text/javascript">
 var UserNotFound = function () {
@@ -17,7 +12,8 @@ var UserNotFound = function () {
 
 <div class="grid" style="--bs-columns: 12;">
   <div class="g-col-12 g-col-md-4 g-col-lg-3 noprint">
-    <%= render 'menu' %>
+    <!-- Keep 'discussions/' because this page can be rendered from tchatmessages in case of failure! -->
+    <%= render 'discussions/menu' %>
   </div>
 
   <div class="g-col-12 g-col-md-8 g-col-lg-9">
@@ -26,21 +22,16 @@ var UserNotFound = function () {
 
     <h3>Nouvelle discussion</h3>
 
-    <% @ancientexte = session[:ancientexte] %>
-    <% session[:ancientexte] = nil %>
-
-    <%= form_for @discussion, :html => { :multipart => true } do |f| %>
+    <%= form_for @tchatmessage, :html => { :multipart => true } do |f| %>
 
       <%= render 'shared/error_messages', object: f.object %>
       
       <div class="mb-2" id="destinataire-div">
         <%= f.label :destinataire, :for => "destinataire", :class => "form-label" %>
-        <!-- - <%= link_to "Afficher les utilisateurs inactifs", "javascript:showAllUsers()", id: "show_all" %> -->
-        <!-- <span style="display:none;" id="thanks">À votre service !</span> -->
         
         <% mtn = DateTime.now.to_date - 14 %>
         <% users = User.select(:id, :rating, :first_name, :last_name, :see_name, :admin).where("id != ? AND (last_connexion_date >= ? OR id = ?) AND active = ?", current_user.sk.id, mtn, params[:qui].to_i, true).order("first_name, last_name, rating") %>
-        <%= select_tag :destinataire, options_for_select(users.collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, ""), params[:qui].to_i), :class => "form-select select2", :style => "width:300px;" %>
+        <%= select_tag :qui, options_for_select(users.collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, ""), params[:qui].to_i), :class => "form-select select2", :style => "width:300px;" %>
       </div>
       
       <div class="mb-2" id="user-not-found-link">
@@ -52,10 +43,10 @@ var UserNotFound = function () {
       <script>initializeSelect2WhenPossible("Choisir un destinataire")</script>
 
       <div class="mb-2">
-        <%= f.label :message, :for => "MathInput", :class => "form-label" %>
+        <%= f.label :content, :for => "MathInput", :class => "form-label" %>
         <%= render 'shared/preview' %>
         <%= render 'shared/smiley' %>
-        <textarea name="content" maxlength="8000" class="form-control" style="height:120px;" id="MathInput" oninput="PreviewSafe.MyUpdate()" <%= 'disabled="disabled"' if current_user.other %> ><%= @ancientexte if !@ancientexte.nil? %></textarea>
+        <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:120px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
         <script>initAndUpdatePreviewSafeWhenPossible()</script>
       </div>
       

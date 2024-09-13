@@ -48,9 +48,9 @@ function checkWepion() {
 
 <% erreur = false %>
 
-<% if !session[:errorSubject].nil? %>
+<% if @error_case == "errorSubject" %>
   <% erreur = true %>
-  <%= render 'shared/error_messages', errors: session[:errorSubject] %>
+  <%= render 'shared/error_messages', errors: @error_msgs %>
 <% end %>
 
 <!-- Calcul de la liste des sections et chapitres -->
@@ -70,7 +70,7 @@ function checkWepion() {
 <% selected_category = 0 %>
 
 <% if erreur %>
-  <% selected_category = session[:oldAll][:category_id].to_i %>
+  <% selected_category = @error_params[:category_id].to_i if @error_params.has_key?(:category_id) %>
 <% elsif is_edit %>
   <% if !@subject.section_id.nil? %>
     <% selected_category = 1000*@subject.section_id %>
@@ -107,9 +107,7 @@ function checkWepion() {
 <% if erreur && selected_category > 999 %>
   <% sect = Section.find(selected_category/1000) %>
   <% seechap = true %>
-  <% if !session[:oldAll][:chapter_id].nil? %>
-    <% selected_chapter = session[:oldAll][:chapter_id].to_i %>
-  <% end %>
+  <% selected_chapter = @error_params[:chapter_id].to_i if @error_params.has_key?(:chapter_id) %>
 <% elsif is_edit && selected_category > 999 %>
   <% sect = @subject.section %>
   <% seechap = true %>
@@ -153,7 +151,7 @@ function checkWepion() {
 <% if erreur && selected_chapter > 0 %>
   <% seeexo = true %>
   <% chap = Chapter.find(selected_chapter) %>
-  <% selected_exercise = session[:oldAll][:question_id].to_i %>
+  <% selected_exercise = @error_params[:question_id].to_i if @error_params.has_key?(:question_id) %>
 <% elsif is_edit && selected_chapter > 0 %>
   <% seeexo = true %>
   <% chap = @subject.chapter %>
@@ -216,7 +214,7 @@ function checkWepion() {
 <!-- Problème (visible lorsque chapitre choisi est 'Problèmes de ...') -->
 <% if erreur && selected_chapter == -1 %>
   <% seeprob = true %>
-  <% selected_problem = session[:oldAll][:problem_id].to_i %>
+  <% selected_problem = @error_params[:problem_id].to_i if @error_params.has_key?(:problem_id) %>
 <% elsif is_edit && selected_chapter == -1 %>
   <% seeprob = true %>
   <% if !@subject.problem_id.nil? %>
@@ -271,7 +269,7 @@ function checkWepion() {
 <% else %>
   <% tit = "" %>
   <% if erreur %>
-    <% tit = session[:oldAll][:title] %>
+    <% tit = @error_params[:title] if @error_params.has_key?(:title) %>
   <% elsif is_edit %>
     <% tit = @subject.title %>
   <% end %>
@@ -286,7 +284,7 @@ function checkWepion() {
 <div class="mb-2">
   <% cont = "" %>
   <% if erreur %>
-    <% cont = session[:oldAll][:content] %>
+    <% cont = @error_params[:content] if @error_params.has_key?(:content) %>
   <% elsif is_edit %>
     <% cont = @subject.content %>
   <% end %>
@@ -305,7 +303,7 @@ function checkWepion() {
 <% if current_user.sk.admin || current_user.sk.corrector %>
   <% checked = "" %>
   <% if erreur %>
-    <% checked = "checked" if session[:oldAll][:for_correctors].to_i == 1 %>
+    <% checked = "checked" if @error_params.has_key?(:for_correctors) && @error_params[:for_correctors].to_i == 1 %>
   <% elsif is_edit %>
     <% checked = "checked" if @subject.for_correctors %>
   <% end %>
@@ -323,7 +321,7 @@ function checkWepion() {
 <% if current_user.sk.admin? %>
   <% checked = "" %>
   <% if erreur %>
-    <% checked = "checked" if session[:oldAll][:important].to_i == 1 %>
+    <% checked = "checked" if @error_params.has_key?(:important) && @error_params[:important].to_i == 1 %>
   <% elsif is_edit %>
     <% checked = "checked" if @subject.important %>
   <% end %>
@@ -340,7 +338,7 @@ function checkWepion() {
 <% wepion_checked = "" %>
 <% if current_user.sk.wepion || current_user.sk.admin? %>
   <% if erreur %>
-    <% wepion_checked = "checked" if session[:oldAll][:for_wepion].to_i == 1 %>
+    <% wepion_checked = "checked" if @error_params.has_key?(:for_wepion) && @error_params[:for_wepion].to_i == 1 %>
   <% elsif is_edit %>
     <% wepion_checked = "checked" if @subject.for_wepion %>
   <% end %>
@@ -368,17 +366,6 @@ function checkWepion() {
   <div class="mb-2"></div>
 <% end %>
 
-<% if !session[:errorSubject].nil? %>
-  <% if is_edit %>
-    <script>rollingDevelopQuickWhenPossible("<%= postfix %>", true)</script>
-  <% end %>
-  <% session.delete(:errorSubject) %>
-  <% session.delete(:oldAll) %>
-<% end %>
-
-<% if !session[:successSubject].nil? %>
-  <% if is_edit %>
-    <script>rollingShowusWhenPossible("<%= postfix %>")</script>
-  <% end %>
-  <% session.delete(:successSubject) %>
+<% if is_edit && erreur %>
+  <script>rollingDevelopQuickWhenPossible("<%= postfix %>", true)</script>
 <% end %>

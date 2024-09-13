@@ -134,6 +134,7 @@ class UnsolvedquestionsController < ApplicationController
 
         # If the same answer as the previous one: we don't count it
         if !diff_sub
+          flash[:danger] = "Votre réponse est la même que votre réponse précédente."
           redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
           return "skip"
         end
@@ -161,6 +162,7 @@ class UnsolvedquestionsController < ApplicationController
         
         # If the same answer as the previous one: we don't count it
         if !first_sub && params[:ans].to_i == @unsolvedquestion.items.first.id
+          flash[:danger] = "Votre réponse est la même que votre réponse précédente."
           redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
           return "skip"
         end
@@ -180,13 +182,37 @@ class UnsolvedquestionsController < ApplicationController
         end
       end
     else # EXERCISE
+      guess_str = params[:unsolvedquestion][:guess]
+      guess_str.gsub!(" ", "") # Remove white spaces (possible after comma for decimal numbers, and possible with "12 345" instead of "12345")
+      
+      allowed_characters = Set['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-']
       if @question.decimal
-        guess = params[:unsolvedquestion][:guess].gsub(",",".").gsub(" ","").to_f # Replace ',' by '.' and remove white spaces (possible after comma)
+        allowed_characters.add('.') 
+        allowed_characters.add(',')
+      end
+      
+      if guess_str.size() == 0
+        flash[:danger] = "Votre réponse est vide."
+        redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+        return "skip"
+      end
+      
+      (0..guess_str.size()-1).each do |i|
+        if !allowed_characters.include?(guess_str[i])
+          flash[:danger] = "La réponse attendue est un nombre #{@question.decimal ? 'décimal' : 'entier'}."
+          redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+          return "skip"
+        end
+      end
+      
+      if @question.decimal
+        guess = guess_str.gsub(",",".").to_f # Replace ',' by '.'
       else
-        guess = params[:unsolvedquestion][:guess].gsub(" ","").to_i # Remove ',', '.' and ' ' in case of "12 345" instead of "12345"
+        guess = guess_str.to_i
       end
       
       if !first_sub && @unsolvedquestion.guess == guess
+        flash[:danger] = "Votre réponse est la même que votre réponse précédente."
         redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
         return "skip"
       end

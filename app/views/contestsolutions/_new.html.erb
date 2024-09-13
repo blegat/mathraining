@@ -1,7 +1,4 @@
-<% @ancientexte = session[:ancientexte] %>
-<% session[:ancientexte] = nil %>
-
-<%= form_for :contestsolution, url: contestproblem_contestsolutions_path(@contestproblem), :html => { :multipart => true } do |f| %>
+<%= form_for @contestsolution, url: contestproblem_contestsolutions_path(@contestproblem), :html => { :multipart => true } do |f| %>
   <h3>Votre solution</h3>
   <%= render 'submissions/form', f: f %>
   <%= render 'shared/edit_files' %>

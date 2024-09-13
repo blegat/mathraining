@@ -1,10 +1,5 @@
 <% provide(:title, "Problème ##{ @contestproblem.number }") %>
 
-<% solution = -1 %>
-<% if(params.has_key?:sol) %>
-  <% solution = params[:sol].to_i %>
-<% end %>
-
 <h1><%= title_3((link_to "Concours", contests_path), (link_to "Concours ##{@contest.number}", @contest), "Problème ##{@contestproblem.number}") %></h1>
 
 <center><i>Solutions acceptées du <%= write_date_with_link(@contestproblem.start_time, @contest, @contestproblem) %> au <%= write_date_with_link(@contestproblem.end_time, @contest, @contestproblem) %> (heures belges)</i></center>
@@ -53,20 +48,8 @@
 <!-- Les solutions -->
 <%= render 'contestsolutions/index' %>
 
-<% send_solution = false %> 
-<% @existing = nil %>
-<% if @contest.is_organized_by_or_root(current_user.sk) %>
-  <!-- Organisateurs -->
-<% elsif @signed_in && !current_user.sk.admin? && @contestproblem.in_progress? %>
-  <% @existing = @contestproblem.contestsolutions.where(:user => current_user.sk).first %>
-  <% if @existing.nil? && has_enough_points(current_user.sk) %>
-    <% send_solution = true %>
-  <% end %>    
-<% end %>
-
 <!-- Nouvelle solution -->
-<% if send_solution %>
-  <% solution = 0 %>
+<% if !@contestsolution.nil? && @contestsolution.new_record? %>
   <hr>
   <% if current_user.sk.can_write_submission? %>
     <%= render 'contestsolutions/new' %>
@@ -74,8 +57,6 @@
     Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :
     <%= render 'submissions/chapters_to_write_submission' %>
   <% end %>
-<% elsif !@existing.nil? %>
-  <% solution = @existing.id %>
 <% end %>
 
 <% if @contestproblem.in_correction? && !@contest.is_organized_by_or_root(current_user.sk) %>
@@ -92,12 +73,11 @@
 <% end %>
 
 <!-- Si on veut voir une solution -->
-<% if solution > 0 %>
-  <% contestsolution = Contestsolution.find(solution) %>
-  <% if @signed_in && !contestsolution.nil? && contestsolution.contestproblem == @contestproblem %>
-    <% if contestsolution.user == current_user.sk || current_user.sk.root? || (@contestproblem.at_least(:corrected) && contestsolution.score == 7) || ((@contestproblem.at_least(:in_correction) || contestsolution.official?) && @contest.is_organized_by(current_user.sk)) %>
+<% if !@contestsolution.nil? && !@contestsolution.new_record? %>
+  <% if @signed_in && @contestsolution.contestproblem == @contestproblem %>
+    <% if @contestsolution.user == current_user.sk || current_user.sk.root? || (@contestproblem.at_least(:corrected) && @contestsolution.score == 7) || ((@contestproblem.at_least(:in_correction) || @contestsolution.official?) && @contest.is_organized_by(current_user.sk)) %>
       <hr>
-      <%= render 'contestsolutions/show', contestsolution: contestsolution %>
+      <%= render 'contestsolutions/show', contestsolution: @contestsolution %>
     <% end %>
   <% end %>
 <% end %>

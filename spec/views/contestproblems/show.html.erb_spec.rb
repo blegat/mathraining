@@ -28,7 +28,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
         assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
-        
+      
       it "renders the page correctly" do
         render template: "contestproblems/show"
         expect(rendered).to have_content("Origine du problème :")
@@ -41,9 +41,12 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
       end
       
-      it "shows the official solution if asked" do
-        render template: "contestproblems/show", locals: {params: {sol: contestsolution_official.id}}
-        expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution_official})
+      context "if the official solution is asked" do
+        before { assign(:contestsolution, contestsolution_official) }
+        it "renders the page correctly" do
+          render template: "contestproblems/show"
+          expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution_official})
+        end
       end
     end
   end
@@ -109,6 +112,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       end
       
       context "and has not sent a solution yet" do
+        before { assign(:contestsolution, Contestsolution.new) }
         it "renders the page correctly" do
           render template: "contestproblems/show"
           expect(rendered).to have_no_content("Origine du problème :")
@@ -125,6 +129,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       context "and already sent a solution" do
         let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user) }
         
+        before {assign(:contestsolution, contestsolution) }
         it "renders the page correctly" do
           render template: "contestproblems/show"
           expect(response).not_to render_template(:partial => "contestsolutions/_new")
@@ -194,19 +199,28 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
       end
       
-      it "shows his solution if asked" do
-        render template: "contestproblems/show", locals: {params: {sol: contestsolution.id}}
-        expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution})
+      context "if his solution is asked" do
+        before { assign(:contestsolution, contestsolution) }
+        it "shows the solution" do
+          render template: "contestproblems/show"
+          expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution})
+        end
       end
       
-      it "does not show another solution if asked" do
-        render template: "contestproblems/show", locals: {params: {sol: contestsolution_other.id}}
-        expect(response).not_to render_template(:partial => "contestsolutions/_show")
+      context "if another solution is asked" do
+        before { assign(:contestsolution, contestsolution_other) }
+        it "does not show the solution" do
+          render template: "contestproblems/show"
+          expect(response).not_to render_template(:partial => "contestsolutions/_show")
+        end
       end
       
-      it "does not show official solution if asked" do
-        render template: "contestproblems/show", locals: {params: {sol: contestsolution_official.id}}
-        expect(response).not_to render_template(:partial => "contestsolutions/_show")
+      context "if the official solution is asked" do
+        before { assign(:contestsolution, contestsolution_official) }
+        it "does not show the solution" do
+          render template: "contestproblems/show"
+          expect(response).not_to render_template(:partial => "contestsolutions/_show")
+        end
       end
     end
   end
@@ -235,19 +249,28 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
       end
       
-      it "shows his solution if asked" do
-        render template: "contestproblems/show", locals: {params: {sol: contestsolution.id}}
-        expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution})
+      context "if his solution is asked" do
+        before { assign(:contestsolution, contestsolution) }
+        it "shows the solution" do
+          render template: "contestproblems/show"
+          expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution})
+        end
       end
       
-      it "shows another good solution if asked" do
-        render template: "contestproblems/show", locals: {params: {sol: contestsolution_other_good.id}}
-        expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution_other_good})
+      context "if another good solution if asked" do
+        before { assign(:contestsolution, contestsolution_other_good) }
+        it "shows the solution" do
+          render template: "contestproblems/show"
+          expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution_other_good})
+        end
       end
       
-      it "does not show another bad solution if asked" do
-        render template: "contestproblems/show", locals: {params: {sol: contestsolution_other_bad.id}}
-        expect(response).not_to render_template(:partial => "contestsolutions/_show")
+      context "does not show another bad solution if asked" do
+        before { assign(:contestsolution, contestsolution_other_bad) }
+        it "does not show the solution" do
+          render template: "contestproblems/show"
+          expect(response).not_to render_template(:partial => "contestsolutions/_show")
+        end
       end
       
       context "if official solution is public" do
@@ -255,9 +278,12 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
           contestsolution_official.update_attribute(:score, 7)
         end
         
-        it "shows official solution if asked" do
-          render template: "contestproblems/show", locals: {params: {sol: contestsolution_official.id}}
-          expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution_official})
+        context "if official solution if asked" do
+          before { assign(:contestsolution, contestsolution_official) }
+          it "shows the solution" do
+            render template: "contestproblems/show"
+            expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution_official})
+          end
         end
       end
       
@@ -266,9 +292,12 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
           contestsolution_official.update_attribute(:score, 0)
         end
         
-        it "does not show official solution if asked" do
-          render template: "contestproblems/show", locals: {params: {sol: contestsolution_official.id}}
-          expect(response).not_to render_template(:partial => "contestsolutions/_show")
+        context "if official solution if asked" do
+          before { assign(:contestsolution, contestsolution_official) }
+          it "does not show the solution" do
+            render template: "contestproblems/show"
+            expect(response).not_to render_template(:partial => "contestsolutions/_show")
+          end
         end
       end
     end

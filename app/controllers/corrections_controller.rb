@@ -1,5 +1,7 @@
 #encoding: utf-8
 class CorrectionsController < ApplicationController
+  skip_before_action :error_if_invalid_csrf_token, only: [:create] # Do not forget to check @invalid_csrf_token instead!
+  
   before_action :signed_in_user_danger, only: [:create]
   
   before_action :get_submission, only: [:create]
@@ -15,158 +17,150 @@ class CorrectionsController < ApplicationController
     params[:correction][:content].strip! if !params[:correction][:content].nil?
     attach = Array.new
     totalsize = 0
+    
+    @correction = @submission.corrections.build(params.require(:correction).permit(:content))
+    @correction.user = current_user.sk
+    
+    # Invalid CSRF token
+    render_with_error('problems/show', @correction, get_csrf_error_message) and return if @invalid_csrf_token
 
     # If a score is needed, we check that the score is set
     if @submission.waiting? && @submission.intest && @submission.score == -1 && (params["score".to_sym].nil? || params["score".to_sym].blank?)
-      flash[:danger] = "Veuillez donner un score à cette solution."
-      session[:ancientexte] = params[:correction][:content]
-      redirect_to problem_path(@problem, :sub => @submission) and return
+      render_with_error('problems/show', @correction, "Veuillez donner un score à cette solution.") and return
     end
 
     # We check that no new message was posted
     lastid = -1
-    @submission.corrections.order(:created_at).each do |correction|
-      lastid = correction.id
+    @submission.corrections.order(:created_at).each do |c|
+      lastid = c.id
     end
 
+    # New comment meanwhile
     if lastid != params[:last_comment_id].to_i
-      session[:ancientexte] = params[:correction][:content]
-      flash[:danger] = "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire."
-      redirect_to problem_path(@problem, :sub => @submission) and return
+      render_with_error('problems/show', @correction, "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire.") and return
     end
+    
+    # Invalid correction
+    render_with_error('problems/show') and return if !@correction.valid?
 
     # Attached files
-    @error_message = ""
     attach = create_files
-    if !@error_message.empty?
-      flash[:danger] = @error_message
-      session[:ancientexte] = params[:correction][:content]
-      redirect_to problem_path(@problem, :sub => @submission) and return
+    render_with_error('problems/show', @correction, @file_error) and return if !@file_error.nil?
+    
+    @correction.save
+    
+    attach_files(attach, @correction)
+
+    # Give the score to the submission
+    if @submission.waiting? && @submission.intest && @submission.score == -1
+      @submission.score = params["score".to_sym].to_i
     end
 
-    correction = @submission.corrections.build(params.require(:correction).permit(:content))
-    correction.user = current_user.sk
-
-    if correction.save
-      attach_files(attach, correction)
-
-      # Give the score to the submission
-      if @submission.waiting? && @submission.intest && @submission.score == -1
-        @submission.score = params["score".to_sym].to_i
+    # Delete reservations if needed
+    if @submission.waiting? && current_user.sk != @submission.user
+      @submission.followings.each do |f|
+        Following.delete(f.id)
       end
+    end
 
-      # Delete reservations if needed
-      if @submission.waiting? && current_user.sk != @submission.user
-        @submission.followings.each do |f|
-          Following.delete(f.id)
-        end
-      end
+    # Now we change the status of the submission
+    # It does not change if it is already correct
 
-      # Now we change the status of the submission
-      # It does not change if it is already correct
+    # If wrong and current user is the student: new status is wrong_to_read
+    if current_user.sk == @submission.user and @submission.wrong?
+      @submission.status = :wrong_to_read
+      @submission.save
+      m = ''
 
-      # If wrong and current user is the student: new status is wrong_to_read
-      if current_user.sk == @submission.user and @submission.wrong?
-        @submission.status = :wrong_to_read
-        @submission.save
-        m = ''
+    # If new/wrong, current user is corrector and he wants to keep it wrong: new status is wrong
+    elsif (current_user.sk != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
+      (params[:commit] == "Poster et refuser la soumission" or
+      params[:commit] == "Poster et laisser la soumission comme erronée")
+      @submission.status = :wrong
+      @submission.save
+      m = ' et soumission marquée comme incorrecte'
 
-      # If new/wrong, current user is corrector and he wants to keep it wrong: new status is wrong
-      elsif (current_user.sk != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
-        (params[:commit] == "Poster et refuser la soumission" or
-        params[:commit] == "Poster et laisser la soumission comme erronée")
-        @submission.status = :wrong
-        @submission.save
-        m = ' et soumission marquée comme incorrecte'
-        
-      # If wrong, current user is corrector and he wants to keep it wrong: new status is wrong
-      elsif (current_user.sk != @submission.user) and (@submission.wrong? or @submission.wrong_to_read?) and
-        params[:commit] == "Poster et clôturer la soumission"
-        @submission.status = :closed
-        @submission.save
-        m = ' et soumission clôturée'
+    # If wrong, current user is corrector and he wants to keep it wrong: new status is wrong
+    elsif (current_user.sk != @submission.user) and (@submission.wrong? or @submission.wrong_to_read?) and
+      params[:commit] == "Poster et clôturer la soumission"
+      @submission.status = :closed
+      @submission.save
+      m = ' et soumission clôturée'
 
-      # If current user is corrector and he wants to accept it: new status is correct
-      elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
-        @submission.status = :correct
-        @submission.save
-
-        # If this is the first correct submission of the user to this problem, we give the points and mark problem as solved
-        unless @submission.user.pb_solved?(@problem)
-          point_attribution(@submission.user, @problem)
-          last_user_corr = @submission.corrections.where("user_id = ?", @submission.user_id).order(:created_at).last
-          resolution_time = (last_user_corr.nil? ? @submission.created_at : last_user_corr.created_at)
-          Solvedproblem.create(:user            => @submission.user,
-                               :problem         => @problem,
-                               :correction_time => DateTime.now,
-                               :submission      => @submission,
-                               :resolution_time => resolution_time)
-          
-          # Update the statistics of the problem
-          @problem.nb_solves = @problem.nb_solves + 1
-          if @problem.first_solve_time.nil? or @problem.first_solve_time > resolution_time
-            @problem.first_solve_time = resolution_time
-          end
-          if @problem.last_solve_time.nil? or @problem.last_solve_time < resolution_time
-            @problem.last_solve_time = resolution_time
-          end
-          @problem.save
-        end
-        m = ' et soumission marquée comme correcte'
-
-        # Delete the drafts of the user to the problem
-        draft = @problem.submissions.where(:user => @submission.user, :status => :draft).first
-        if !draft.nil?
-          draft.destroy
-        end
-      end
-
-      # Deal with notifications
-      if current_user.sk != @submission.user
-        need_correction_level_update = false
-        following = Following.where(:user => current_user.sk, :submission => @submission).first
-        if following.nil?
-          following = Following.new(:user => current_user.sk, :submission => @submission)
-          if @submission.followings.where("user_id != ?", current_user.sk.id).count > 0
-            following.kind = :other_corrector
-          else
-            following.kind = :first_corrector
-          end
-          need_correction_level_update = true
-        end
-        following.read = true
-        following.save
-        
-        if need_correction_level_update
-          current_user.sk.update_correction_level
-        end
-
-        @submission.followings.each do |f|
-          if f.user == current_user.sk
-            f.touch
-          else
-            f.update_attribute(:read, false)
-          end
-        end
-
-        @submission.notified_users << @submission.user unless @submission.notified_users.exists?(@submission.user_id)
-      else
-        @submission.followings.update_all(:read => false)
-      end
-
-      # Change the value of last_comment_time
-      @submission.last_comment_time = correction.created_at
+    # If current user is corrector and he wants to accept it: new status is correct
+    elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
+      @submission.status = :correct
       @submission.save
 
-      flash[:success] = "Réponse postée#{m}."
-      redirect_to problem_path(@problem, :sub => @submission)
+      # If this is the first correct submission of the user to this problem, we give the points and mark problem as solved
+      unless @submission.user.pb_solved?(@problem)
+        point_attribution(@submission.user, @problem)
+        last_user_corr = @submission.corrections.where("user_id = ?", @submission.user_id).order(:created_at).last
+        resolution_time = (last_user_corr.nil? ? @submission.created_at : last_user_corr.created_at)
+        Solvedproblem.create(:user            => @submission.user,
+                             :problem         => @problem,
+                             :correction_time => DateTime.now,
+                             :submission      => @submission,
+                             :resolution_time => resolution_time)
+        
+        # Update the statistics of the problem
+        @problem.nb_solves = @problem.nb_solves + 1
+        if @problem.first_solve_time.nil? or @problem.first_solve_time > resolution_time
+          @problem.first_solve_time = resolution_time
+        end
+        if @problem.last_solve_time.nil? or @problem.last_solve_time < resolution_time
+          @problem.last_solve_time = resolution_time
+        end
+        @problem.save
+      end
+      m = ' et soumission marquée comme correcte'
 
-    else # If there is an error when saving
-      destroy_files(attach)
-      session[:ancientexte] = params[:correction][:content]
-      flash[:danger] = error_list_for(correction)
-      redirect_to problem_path(@problem, :sub => @submission)
+      # Delete the drafts of the user to the problem
+      draft = @problem.submissions.where(:user => @submission.user, :status => :draft).first
+      if !draft.nil?
+        draft.destroy
+      end
     end
+
+    # Deal with notifications
+    if current_user.sk != @submission.user
+      need_correction_level_update = false
+      following = Following.where(:user => current_user.sk, :submission => @submission).first
+      if following.nil?
+        following = Following.new(:user => current_user.sk, :submission => @submission)
+        if @submission.followings.where("user_id != ?", current_user.sk.id).count > 0
+          following.kind = :other_corrector
+        else
+          following.kind = :first_corrector
+        end
+        need_correction_level_update = true
+      end
+      following.read = true
+      following.save
+      
+      if need_correction_level_update
+        current_user.sk.update_correction_level
+      end
+
+      @submission.followings.each do |f|
+        if f.user == current_user.sk
+          f.touch
+        else
+          f.update_attribute(:read, false)
+        end
+      end
+
+      @submission.notified_users << @submission.user unless @submission.notified_users.exists?(@submission.user_id)
+    else
+      @submission.followings.update_all(:read => false)
+    end
+
+    # Change the value of last_comment_time
+    @submission.last_comment_time = @correction.created_at
+    @submission.save
+
+    flash[:success] = "Réponse postée#{m}."
+    redirect_to problem_path(@problem, :sub => @submission)
   end
 
   private

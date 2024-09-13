@@ -12,6 +12,6 @@
   </div>
 <% end %>
 
-<% if !params[:message].nil? && (params[:message].to_i == m.id) %>
+<% if params.has_key?(:msg) && (params[:msg].to_i == m.id) %>
   <script>rollingShowusWhenPossible("<%= postfix %>")</script>
 <% end %>

@@ -1,7 +1,7 @@
 #encoding: utf-8
 class PrivacypoliciesController < ApplicationController
   before_action :signed_in_user, only: [:index, :edit, :edit_description]
-  before_action :signed_in_user_danger, only: [:new, :update, :update_description, :destroy, :put_online]
+  before_action :signed_in_user_danger, only: [:new, :update, :destroy, :put_online]
   before_action :root_user, only: [:index, :new, :edit, :update, :destroy, :put_online]
   
   before_action :get_policy, only: [:show, :edit, :update, :destroy]

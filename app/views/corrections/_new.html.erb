@@ -2,21 +2,17 @@
   <% disable_correction = false %>
 <% end %>
 
+<div id="theCorrection">
 <h4>Poster un commentaire</h4>
-<%= form_for :correction, url: submission_corrections_path(@submission), :html => { :multipart => true } do |f| %>
+
+<%= form_for @correction, url: submission_corrections_path(@submission), :html => { :multipart => true } do |f| %>
+  <%= render 'shared/error_messages', object: f.object %>
   <div class="mb-2">
     <%= render 'shared/preview' %>
     <%= render 'shared/smiley' %>
-
-    <% @ancientexte = session[:ancientexte] %>
-    <% if @ancientexte.nil? %>
-      <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (disable_correction || current_user.other) %>
-    <% else %>
-      <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :value => @ancientexte, :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (disable_correction || current_user.other) %>
-    <% end %>
+    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => (disable_correction || current_user.other) %>
     <script>initAndUpdatePreviewSafeWhenPossible()</script>
     <script>initLeavingFormWhenPossible()</script>
-  <% session.delete(:ancientexte) %>
   </div>
   
   <%= render 'shared/edit_files', disable: disable_correction %>
@@ -69,3 +65,9 @@
     <%= f.submit "Poster", class: "btn btn-primary", :disabled => (disable_correction || current_user.other) %>
   <% end %>
 <% end %>
+</div>
+
+<% if @correction.errors.any? %>
+  <script>rollingShowusWhenPossible("Correction")</script>
+<% end %>
+

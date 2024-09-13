@@ -16,11 +16,11 @@ describe "Stats pages" do
   let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true) }
   let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
   
-  let!(:exercise11) { FactoryGirl.create(:exercise, chapter: chapter1, online: true, position: 1, level: 1) }
-  let!(:exercise12) { FactoryGirl.create(:exercise, chapter: chapter1, online: true, position: 2, level: 2) }
-  let!(:exercise13_offline) { FactoryGirl.create(:exercise, chapter: chapter1, online: false, position: 3, level: 3) }
-  let!(:exercise21) { FactoryGirl.create(:exercise, chapter: chapter2, online: true, position: 1, level: 1) }
-  let!(:exercise22) { FactoryGirl.create(:exercise, chapter: chapter2, online: true, position: 2, level: 2) }
+  let!(:exercise11) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: true, position: 1, level: 1) }
+  let!(:exercise12) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: true, position: 2, level: 2) }
+  let!(:exercise13_offline) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: false, position: 3, level: 3) }
+  let!(:exercise21) { FactoryGirl.create(:exercise_decimal, chapter: chapter2, online: true, position: 1, level: 1) }
+  let!(:exercise22) { FactoryGirl.create(:exercise_decimal, chapter: chapter2, online: true, position: 2, level: 2) }
   
   describe "user" do
     before { sign_in user1 }
@@ -299,7 +299,7 @@ describe "Stats pages" do
         
         expect(record3.nb_submissions).to eq(3)
         expect(record3.complete).to eq(true)
-        expect(record3.avg_correction_time).to eq(7.0/3.0)
+        expect(record3.avg_correction_time.round(3)).to eq((7.0/3.0).round(3))
         
         expect(record4.nb_submissions).to eq(2) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
         expect(record4.complete).to eq(false)

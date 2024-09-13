@@ -257,7 +257,7 @@
     <%= render 'layouts/header' %>
     <div class="container">
       <% flash.each do |key, value| %>
-        <div class="alert alert-<%= key %> py-2 my-1"><%= value %></div>
+        <div class="alert alert-<%= key %> py-2 my-1"><%= raw(value) %></div>
       <% end %>
       <%= yield %>
       <%= render 'layouts/footer' %>

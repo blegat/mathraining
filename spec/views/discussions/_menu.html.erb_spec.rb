@@ -11,10 +11,6 @@ describe "discussions/_menu.html.erb", type: :view, discussion: true do
   end
   
   context "if the user has no discussion" do   
-    before do
-      assign(:discussion, Discussion.new) # As if we are on discussions/new page
-    end
-      
     it "renders no discussion" do
       render partial: "discussions/menu"
       expect(rendered).to have_link("Nouvelle discussion", href: new_discussion_path, class: "active")

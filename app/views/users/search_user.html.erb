@@ -26,8 +26,8 @@
   </div>
 <% end %>
 
-  <% if !@error_message.nil? %>
-    <center><p><%= @error_message %></p></center>
+  <% if !@search_error.nil? %>
+    <center><p><%= @search_error %></p></center>
   <% elsif !@all_users.nil? %>
     <% if @all_users.size == 0 && @admin_users.size == 0 %>
       <center><p>Aucun utilisateur trouvé.</p></center>

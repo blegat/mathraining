@@ -22,3 +22,6 @@
   </div>
 <% end %>
 
+<% if params.has_key?(:msg) && (params[:msg].to_i == 0) %>
+  <script>rollingShowusWhenPossible("<%= postfix %>")</script>
+<% end %>
