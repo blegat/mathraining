@@ -16,7 +16,7 @@ var hideStatement = function () {
 }
 </script>
 
-<% can_current_user_correct = (current_user.sk.admin? || (current_user.sk.corrector? && @resolu && @submission.user != current_user.sk)) %>
+<% can_current_user_correct = (current_user.sk.admin? || (current_user.sk.corrector? && @submission.user != current_user.sk && current_user.sk.pb_solved?(@problem))) %>
 
 <% show_statement_reminder = false %>
 <% if can_current_user_correct %>

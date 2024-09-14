@@ -2,26 +2,26 @@
 
 <% pt = @problem.value %>
 
-<% @resolu = current_user.sk.pb_solved?(@problem) %>
+<% problem_solved = current_user.sk.pb_solved?(@problem) %>
 
 <h1><%= title_3("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), "Problème ##{ @problem.number }#{ (' - Test #' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online } <span class='ms-3 text-color-grey'>(#{ pt }&nbsp;points)</span>") %></h1>
 
 <!-- Si administrateur -->
 <% if current_user.sk.admin? %>
 
-  <p>
-  <% selectionne = 0 %>
-  <% if @problem.virtualtest_id == 0 %>
-    Ce problème ne fait partie d'aucun test virtuel.
-  <% else %>
-    <% vt = @problem.virtualtest %>
-    Ce problème fait partie du <b>test virtuel #<%= vt.number %></b>.
-    <% selectionne = vt.id %>
-  <% end %>
-  </p>
-
-  <!-- Dans un test virtuel ou non -->
-  <% if !@problem.online? %>
+  <% if !@problem.online %>
+    <!-- Dans un test virtuel ou non -->
+    <p>
+    <% selectionne = 0 %>
+    <% if @problem.virtualtest_id == 0 %>
+      Ce problème ne fait partie d'aucun test virtuel.
+    <% else %>
+      <% vt = @problem.virtualtest %>
+      Ce problème fait partie du <b>test virtuel #<%= vt.number %></b>.
+      <% selectionne = vt.id %>
+    <% end %>
+    </p>
+    
     <%= form_for(:problem, :url => problem_add_virtualtest_path(@problem), :html => { :class => "mb-3"} ) do |f| %>
       <div class="row g-2 align-items-center">
         <div class="col-auto">
@@ -98,7 +98,7 @@
 </div>
 
 <!-- Origine si administrateur ou si résolu -->
-<% if current_user.sk.admin? || @resolu %>
+<% if current_user.sk.admin? || problem_solved %>
   <p>
   <i>Origine du problème :
   <% if @problem.origin.nil? || @problem.origin.size == 0 %>
@@ -167,7 +167,7 @@
     <%= render 'submissions/index', problem: @problem %>
 
     <!-- Si pas encore résolu le problème -->
-    <% unless (@resolu || !@cansendnewsub) %>
+    <% unless (problem_solved || !@cansendnewsub) %>
       <% if @submission.nil? || (!@submission.new_record? && !@submission.draft?) %>
         <% if @problem.submissions.where(:user => current_user.sk, :status => :draft).count == 0 %>
           <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
@@ -182,7 +182,7 @@
 
 <!-- Si administrateur ou correcteur ayant résolu -->
 
-<% if (current_user.sk.admin? || current_user.sk.corrector? && @resolu) %>
+<% if (current_user.sk.admin? || current_user.sk.corrector? && problem_solved) %>
   <!-- Explication -->
   <% if @problem.explanation.size == 0 %>
     <p class="text-center fw-bold text-color-orange">Pas d'éléments de solution disponibles.</p>
@@ -198,7 +198,7 @@
   <% if @submission.new_record? || @submission.draft? %>
 
     <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
-    <% unless (@resolu || !@cansendnewsub) %>
+    <% unless (problem_solved || !@cansendnewsub) %>
       <hr>
       <% if current_user.sk.can_write_submission? %>
         <% if @submission.new_record? %>
@@ -215,7 +215,7 @@
   <!-- Si on veut regarder une soumission -->
   <% else %>
     <!-- On vérifie que l'on peut la regarder -->
-    <% if @submission.problem == @problem && (!@submission.draft? || current_user.sk.admin?) && (@submission.user == current_user.sk || (@resolu && @submission.correct?) || current_user.sk.admin || (current_user.sk.corrector && @resolu && @submission.visible)) %>
+    <% if @submission.problem == @problem && @submission.can_be_seen_by(current_user.sk) %>
       <hr>
       <%= render 'submissions/show' %>
     <% end %>

@@ -1,16 +1,15 @@
 #encoding: utf-8
 class ProblemsController < ApplicationController
-  before_action :signed_in_user, only: [:show, :edit, :new, :edit_explanation, :edit_markscheme, :manage_externalsolutions]
+  before_action :signed_in_user, only: [:show, :new, :edit, :edit_explanation, :edit_markscheme, :manage_externalsolutions]
   before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order, :put_online, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :manage_externalsolutions]
+  before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :order, :put_online, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :manage_externalsolutions]
   
-  before_action :get_problem, only: [:edit, :update, :show, :destroy]
+  before_action :get_problem, only: [:show, :edit, :update, :destroy]
   before_action :get_problem2, only: [:edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :order, :delete_prerequisite, :add_prerequisite, :add_virtualtest, :put_online, :manage_externalsolutions]
   before_action :get_section, only: [:new, :create]
   
   before_action :offline_problem, only: [:destroy, :put_online]
   before_action :user_that_can_see_problem, only: [:show]
-  before_action :online_problem_or_admin, only: [:show]
   before_action :can_be_online, only: [:put_online]
 
   # Show one problem
@@ -221,21 +220,11 @@ class ProblemsController < ApplicationController
     return if check_online_object(@problem)
   end
 
-  # Check that the problem is online or current user is admin
-  def online_problem_or_admin
-    if !@problem.online && !current_user.sk.admin
-      render 'errors/access_refused' and return
-    end
-  end
-
   # Check that the problem can be put online
   def can_be_online
-    ok = true
-    nombre = 0
+    redirect_to @problem if @problem.chapters.count == 0
     @problem.chapters.each do |c|
-      nombre = nombre+1
-      ok = false if !c.online
+      redirect_to @problem if !c.online
     end
-    redirect_to @problem if !ok || nombre == 0
   end
 end

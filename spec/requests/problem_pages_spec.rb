@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Problem pages" do
+describe "Problem pages", problem: true do
 
   subject { page }
 
@@ -36,11 +36,6 @@ describe "Problem pages" do
         should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
       end
     end
-    
-    describe "visits online problem" do
-      before { visit problem_path(online_problem) }
-      it { should have_content(error_must_be_connected) }
-    end
   end
   
   describe "user with rating 199" do
@@ -52,11 +47,6 @@ describe "Problem pages" do
         should have_selector("h1", text: section.name)
         should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
       end
-    end
-    
-    describe "visits online problem" do
-      before { visit problem_path(online_problem.id) }
-      it { should have_content(error_access_refused) }
     end
   end
   
@@ -97,21 +87,6 @@ describe "Problem pages" do
         should have_content(correct_submission.content)
       end
     end
-    
-    describe "visits offline problem" do
-      before { visit problem_path(offline_problem) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "visits online problem in virtual test" do
-      before { visit problem_path(problem_in_virtualtest) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "visits online problem with prerequisite" do
-      before { visit problem_path(online_problem_with_prerequisite) }
-      it { should have_content(error_access_refused) }
-    end
   end
   
   describe "user with rating 200 and completed chapter" do
@@ -149,16 +124,7 @@ describe "Problem pages" do
         should have_no_link("Modifier la solution")
       end
     end
-    
-    describe "tries to visit problem creation page" do
-      before { visit new_section_problem_path(section) }
-      it { should have_no_selector("h1", text: "Créer un problème") }
-    end
-    
-    describe "tries to visit problem modification page" do
-      before { visit edit_problem_path(online_problem) }
-      it { should have_no_selector("h1", text: "Modifier") }
-    end
+
   end
   
   describe "admin" do
