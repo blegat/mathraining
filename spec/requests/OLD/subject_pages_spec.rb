@@ -61,15 +61,16 @@ describe "Subject pages" do
   end
   
   describe "user" do
-    before { sign_in user }
-    
-    # Force the creation of the following subjects:
-    let!(:sub_nothing) { FactoryGirl.create(:subject, user: user) }
-    let!(:sub_category) { FactoryGirl.create(:subject, user: other_user, category: category) }
-    let!(:sub_section) { FactoryGirl.create(:subject, user: admin, section: section) }
-    let!(:sub_chapter) { FactoryGirl.create(:subject, user: other_admin, section: section, chapter: chapter) }
-    let!(:sub_question) { FactoryGirl.create(:subject, user: root, section: section, chapter: chapter, question: question) }
-    let!(:sub_problem) { FactoryGirl.create(:subject, user: other_root, section: section, problem: problem) }
+    before do
+      sign_in user
+      # To force the creation of those subjects and put them on the first page:
+      sub_nothing.update(:last_comment_time => DateTime.now)
+      sub_category.update(:last_comment_time => DateTime.now)
+      sub_section.update(:last_comment_time => DateTime.now)
+      sub_chapter.update(:last_comment_time => DateTime.now)
+      sub_question.update(:last_comment_time => DateTime.now)
+      sub_problem.update(:last_comment_time => DateTime.now)
+    end
     
     describe "visits subjects page" do
       before { visit subjects_path }
@@ -87,7 +88,7 @@ describe "Subject pages" do
     end
     
     describe "visit subjects page for a category" do
-      before { visit subjects_path(:q => category.id * 1000000) }
+      before { visit subjects_path(:q => "cat-" + category.id.to_s) }
       
       it do
         should have_no_link(sub_nothing.title)
@@ -100,7 +101,7 @@ describe "Subject pages" do
     end
     
     describe "visit subjects page for a section" do
-      before { visit subjects_path(:q => section.id * 1000) }
+      before { visit subjects_path(:q => "sec-" + section.id.to_s) }
       
       it do
         should have_no_link(sub_nothing.title)
@@ -113,7 +114,7 @@ describe "Subject pages" do
     end
     
     describe "visit subjects page for a chapter" do
-      before { visit subjects_path(:q => chapter.id) }
+      before { visit subjects_path(:q => "cha-" + chapter.id.to_s) }
       
       it do
         should have_no_link(sub_nothing.title)
@@ -126,7 +127,7 @@ describe "Subject pages" do
     end
     
     describe "visit subjects page for problems of a section" do
-      before { visit subjects_path(:q => section.id * 1000 + 1) }
+      before { visit subjects_path(:q => "pro-" + section.id.to_s) }
       
       it do
         should have_no_link(sub_nothing.title)
@@ -649,7 +650,7 @@ describe "Subject pages" do
     
     describe "creates a subject when category filter is used" do
       before do
-        visit new_subject_path(:q => category2.id * 1000000)
+        visit new_subject_path(:q => "cat-" + category2.id.to_s)
         fill_in "Titre", with: title
         fill_in "MathInput", with: content
         click_button "Créer"
@@ -669,7 +670,7 @@ describe "Subject pages" do
     
     describe "creates a subject when section filter is used" do
       before do
-        visit new_subject_path(:q => section.id * 1000)
+        visit new_subject_path(:q => "sec-" + section.id.to_s)
         wait_for_js_imports
         select chapter.name, from: "Chapitre"
         wait_for_ajax
@@ -693,7 +694,7 @@ describe "Subject pages" do
     describe "creates a subject when problems of a section filter is used" do
     let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true) }
       before do
-        visit new_subject_path(:q => section.id * 1000 + 1)
+        visit new_subject_path(:q => "pro-" + section.id.to_s)
         wait_for_js_imports
         select "Problème \##{problem2.number}", from: "Problème" # NB: problem should not appear because there is already a subject!
         wait_for_ajax # Titre should be automaticaly filled with "Problème #..."
@@ -716,7 +717,7 @@ describe "Subject pages" do
     describe "creates a subject when chapter filter is used" do
     let!(:question2) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 2) }
       before do
-        visit new_subject_path(:q => chapter.id)
+        visit new_subject_path(:q => "cha-" + chapter.id.to_s)
         wait_for_js_imports
         select "Exercice 2", from: "Exercice" # NB: Exercise 1 should not appear because there is already a subject!
         wait_for_ajax # Titre should be automatically filled with "Exercice 2"

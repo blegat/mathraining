@@ -267,9 +267,9 @@ FactoryGirl.define do
     last_comment_time DateTime.now
     association :last_comment_user, :factory => :user
     association :category
-    chapter_id 0
-    section_id 0
-    question_id 0
+    chapter_id nil
+    section_id nil
+    question_id nil
     factory :admin_subject do
       admin true
     end

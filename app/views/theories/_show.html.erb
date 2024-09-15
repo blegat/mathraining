@@ -43,7 +43,7 @@
   </center>
 
   <hr class="bottom-help" />
-  <p>Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => @chapter.id), :target => "_blank" %> !</p>
+  <p>Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => "cha-" + @chapter.id.to_s), :target => "_blank" %> !</p>
 <% end %>
 
 </div>

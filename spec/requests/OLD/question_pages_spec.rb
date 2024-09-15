@@ -62,7 +62,7 @@ describe "Question pages" do
       before { visit chapter_path(chapter, :type => 5, :which => online_exercise) }
       it do
         should have_selector("div", text: online_exercise.statement)
-        should have_link("forum", href: subjects_path(:q => chapter))
+        should have_link("forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
       end
     end
     

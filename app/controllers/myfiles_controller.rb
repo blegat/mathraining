@@ -42,15 +42,15 @@ class MyfilesController < ApplicationController
 
     if @fakething.fakefiletable_type == "Subject"
       @subject = @fakething.fakefiletable
-      @q = 0
-      @q = params[:q].to_i if params.has_key?:q
+      @q = "all"
+      @q = params[:q] if params.has_key?:q
       redirect_to subject_path(@subject, :q => @q)
     elsif @fakething.fakefiletable_type == "Message"
       @message = @fakething.fakefiletable
       tot = @message.subject.messages.where("id <= ?", @message.id).count
       page = [0,((tot-1)/10).floor].max + 1
-      @q = 0
-      @q = params[:q].to_i if params.has_key?:q
+      @q = "all"
+      @q = params[:q] if params.has_key?:q
       redirect_to subject_path(@message.subject, :page => page, :msg => @message.id, :q => @q)
     elsif @fakething.fakefiletable_type == "Tchatmessage"
       redirect_to myfiles_path

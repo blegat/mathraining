@@ -22,7 +22,7 @@ describe "Theory pages" do
       before { visit chapter_path(chapter, :type => 1, :which => online_theory) }
       it do
         should have_selector("h3", text: online_theory.title)
-        should have_no_link("forum", href: subjects_path(:q => chapter))
+        should have_no_link("forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
       end
     end
     
@@ -43,7 +43,7 @@ describe "Theory pages" do
         should have_no_link("haut")
         should have_button("Marquer comme lu")
         should have_no_button("Marquer comme non lu")
-        should have_link("forum", href: subjects_path(:q => chapter))
+        should have_link("forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
       end
       
       describe "and mark it as read" do

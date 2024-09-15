@@ -9,8 +9,7 @@ function checkChapter() {
     var chapter = e.options[e.selectedIndex].value
     if(chapter == -1) {
       var e2 = document.getElementById("subject_category_id");
-      var category = e2.options[e2.selectedIndex].value
-      chapter = -category/1000;
+      chapter = e2.options[e2.selectedIndex].value // chapter = -section.id in that case
     }
 
     <% if is_edit && !@subject.question_id.nil? %>
@@ -53,7 +52,7 @@ function checkWepion() {
   <%= render 'shared/error_messages', errors: @error_msgs %>
 <% end %>
 
-<!-- Calcul de la liste des sections et chapitres -->
+<!-- Calcul de la liste des catégories et sections -->
 <% liste = Array.new %>
 <% liste2 = Array.new %>
 
@@ -64,32 +63,32 @@ function checkWepion() {
 <% end %>
 
 <% Section.select(:id, :name).order("fondation DESC, id").each do |s| %>
-  <% liste2.push([s.name, 1000*s.id]) %>
+  <% liste2.push([s.name, -s.id]) %>
 <% end %>
 
 <% selected_category = 0 %>
+<% q_what = "" %>
+<% q_id = 0 %>
 
 <% if erreur %>
   <% selected_category = @error_params[:category_id].to_i if @error_params.has_key?(:category_id) %>
 <% elsif is_edit %>
   <% if !@subject.section_id.nil? %>
-    <% selected_category = 1000*@subject.section_id %>
+    <% selected_category = -@subject.section_id %>
   <% elsif !@subject.category_id.nil? %>
     <% selected_category = @subject.category_id %>
   <% end %>
-<% elsif !@q.nil? %>
-  <% if @q >= 1000000 %>
-    <% selected_category = @q/1000000 %>
-  <% elsif @q >= 1000 %>
-    <% if @q % 1000 == 0 %>
-      <% selected_category = @q %>
-    <% elsif @q % 1000 == 1 %>
-      <% selected_category = @q-1 %>
-    <% end %>
-  <% else %>
-    <% chap = Chapter.find_by_id(@q) %>
+<% elsif !@q.nil? && @q.size >= 5 %>
+  <% q_what = @q.slice(0..2) %>
+  <% q_id = @q.slice(4..-1).to_i %>
+  <% if q_what == "cat" %>
+    <% selected_category = q_id %>
+  <% elsif q_what == "sec" || q_what == "pro" %>
+    <% selected_category = -q_id %>
+  <% elsif q_what == "cha" %>
+    <% chap = Chapter.find_by_id(q_id) %>
     <% if !chap.nil? %>
-      <% selected_category = 1000*chap.section_id %>
+      <% selected_category = -chap.section_id %>
     <% end %>
   <% end %>
 <% end %>
@@ -104,27 +103,28 @@ function checkWepion() {
 <% seechap = false %>
 
 <!-- Chapitre (visible lorsque catégorie choisie est une section) -->
-<% if erreur && selected_category > 999 %>
-  <% sect = Section.find(selected_category/1000) %>
-  <% seechap = true %>
-  <% selected_chapter = @error_params[:chapter_id].to_i if @error_params.has_key?(:chapter_id) %>
-<% elsif is_edit && selected_category > 999 %>
-  <% sect = @subject.section %>
-  <% seechap = true %>
-  <% if !@subject.chapter_id.nil? %>
-    <% selected_chapter = @subject.chapter_id %>
-  <% elsif !@subject.problem_id.nil? %>
-    <% selected_chapter = -1 %>
-  <% end %>
-<% elsif !@q.nil? && selected_category > 999 %>
-  <% sect = Section.find(selected_category/1000) %>
-  <% seechap = true %>
-  <% if @q >= 1000 %>
-    <% if @q % 1000 == 1 %>
+<% if selected_category < 0 %>
+  <% section_id = -selected_category %>
+  <% if erreur %>
+    <% sect = Section.find(section_id) %>
+    <% seechap = true %>
+    <% selected_chapter = @error_params[:chapter_id].to_i if @error_params.has_key?(:chapter_id) %>
+  <% elsif is_edit %>
+    <% sect = @subject.section %>
+    <% seechap = true %>
+    <% if !@subject.chapter_id.nil? %>
+      <% selected_chapter = @subject.chapter_id %>
+    <% elsif !@subject.problem_id.nil? %>
       <% selected_chapter = -1 %>
     <% end %>
-  <% else %>
-    <% selected_chapter = @q %>
+  <% elsif !@q.nil? %>
+    <% sect = Section.find(section_id) %>
+    <% seechap = true %>
+    <% if q_what == "pro" %>
+      <% selected_chapter = -1 %>
+    <% elsif q_what == "cha" %>
+      <% selected_chapter = q_id %>
+    <% end %>
   <% end %>
 <% end %>
 
@@ -148,19 +148,21 @@ function checkWepion() {
 <% seeexo = false %>
 
 <!-- Exercice (visible lorsque chapitre choisi) -->
-<% if erreur && selected_chapter > 0 %>
-  <% seeexo = true %>
-  <% chap = Chapter.find(selected_chapter) %>
-  <% selected_exercise = @error_params[:question_id].to_i if @error_params.has_key?(:question_id) %>
-<% elsif is_edit && selected_chapter > 0 %>
-  <% seeexo = true %>
-  <% chap = @subject.chapter %>
-  <% if !@subject.question_id.nil? %>
-    <% selected_exercise = @subject.question_id %>
+<% if selected_chapter > 0 %>
+  <% if erreur %>
+    <% seeexo = true %>
+    <% chap = Chapter.find(selected_chapter) %>
+    <% selected_exercise = @error_params[:question_id].to_i if @error_params.has_key?(:question_id) %>
+  <% elsif is_edit %>
+    <% seeexo = true %>
+    <% chap = @subject.chapter %>
+    <% if !@subject.question_id.nil? %>
+      <% selected_exercise = @subject.question_id %>
+    <% end %>
+  <% elsif !@q.nil? %>
+    <% seeexo = true %>
+    <% chap = Chapter.find(selected_chapter) %>
   <% end %>
-<% elsif !@q.nil? && selected_chapter > 0 %>
-  <% seeexo = true %>
-  <% chap = Chapter.find(selected_chapter) %>
 <% end %>
 
 
@@ -212,16 +214,18 @@ function checkWepion() {
 <% seeprob = false %>
 
 <!-- Problème (visible lorsque chapitre choisi est 'Problèmes de ...') -->
-<% if erreur && selected_chapter == -1 %>
-  <% seeprob = true %>
-  <% selected_problem = @error_params[:problem_id].to_i if @error_params.has_key?(:problem_id) %>
-<% elsif is_edit && selected_chapter == -1 %>
-  <% seeprob = true %>
-  <% if !@subject.problem_id.nil? %>
-    <% selected_problem = @subject.problem_id %>
+<% if selected_chapter == -1 %>
+  <% if erreur %>
+    <% seeprob = true %>
+    <% selected_problem = @error_params[:problem_id].to_i if @error_params.has_key?(:problem_id) %>
+  <% elsif is_edit %>
+    <% seeprob = true %>
+    <% if !@subject.problem_id.nil? %>
+      <% selected_problem = @subject.problem_id %>
+    <% end %>
+  <% elsif !@q.nil? %>
+    <% seeprob = true %>
   <% end %>
-<% elsif !@q.nil? && selected_chapter == -1 %>
-  <% seeprob = true %>
 <% end %>
 
 <% probvisibles = true %>

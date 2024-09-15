@@ -3,13 +3,13 @@
 <!-- Calcul de la liste des sections et chapitres -->
 <% liste0 = Array.new %>
 
-<% liste0.push(["Afficher tous les sujets", 0]) %>
+<% liste0.push(["Afficher tous les sujets", "all"]) %>
 
 <% liste = Array.new %>
 
 <% Category.select("id, name").order(:id).each do |c| %>
   <% unless c.name == "Wépion" && !current_user.sk.wepion? && !current_user.sk.admin? %>
-    <% liste.push([c.name, 1000000*c.id]) %>
+    <% liste.push([c.name, "cat-" + c.id.to_s]) %>
   <% end %>
 <% end %>
 
@@ -22,16 +22,16 @@
 <% Chapter.joins(:section).select("chapters.id, chapters.name, chapters.section_id AS section_id, sections.name AS section_name, sections.fondation AS section_fondation").where(:online => true).order("sections.fondation DESC, chapters.section_id, chapters.level, chapters.position").each do |c| %>
   <% if c.section_id != last_section_id %>
     <% if !last_section_fondation %>
-      <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + get_problem_category_name(last_section_name), 1000*last_section_id+1]) %>
+      <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + get_problem_category_name(last_section_name), "pro-" + last_section_id.to_s]) %>
     <% end %>
-    <% liste2.push([c.section_name, 1000*c.section_id]) %>
+    <% liste2.push([c.section_name, "sec-" + c.section_id.to_s]) %>
     <% last_section_id = c.section_id %>
     <% last_section_name = c.section_name %>
     <% last_section_fondation = c.section_fondation? %>
   <% end %>
-  <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, c.id]) %>
+  <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + c.name, "cha-" + c.id.to_s]) %>
 <% end %>
-<% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + get_problem_category_name(last_section_name), 1000*last_section_id+1]) %>
+<% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + get_problem_category_name(last_section_name), "pro-" + last_section_id.to_s]) %>
 
 <h1><%= title_1("Forum#{(' - ' + @title_complement) if !@title_complement.empty?}") %>
 

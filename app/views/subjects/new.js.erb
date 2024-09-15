@@ -141,12 +141,11 @@
   <% remove_question_field() %>
   <% remove_problem_field() %>
   <% normal_title() %>
-  <% if cat < 1000 %>
+  <% if cat >= 0 %>
     <% remove_chapter_field() %>
   <% else %>
     var oldSel = document.getElementById("subject_chapter_id");
-    <% section = cat/1000 %>
-    <% s = Section.find(section) %>
+    <% s = Section.find(-cat) %>
     var opt = document.createElement('option');
     opt.text = "Aucun chapitre en particulier"
     opt.value = 0

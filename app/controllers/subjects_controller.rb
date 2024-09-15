@@ -22,40 +22,40 @@ class SubjectsController < ApplicationController
     search_section = -1
     search_section_problems = -1
     search_chapter = -1
-    search_nothing = false
 
     @category = nil
     @chapter = nil
     @section = nil
     @title_complement = ""
-    if !@q.nil? # NB: @q is never equal to 0, see get_q
-      if @q >= 1000000
-        search_category = @q/1000000
-        @category = Category.find_by_id(search_category)
-        render 'errors/access_refused' and return if @category.name == "Wépion" && !current_user.sk.wepion? && !current_user.sk.admin?
-        @title_complement = @category.name
-        return if check_nil_object(@category)
-      elsif @q >= 1000
-        if @q % 1000 == 0
-          search_section = @q/1000
-          @section = Section.find_by_id(search_section)
+    if !@q.nil? && @q.size >= 5 # NB: @q is never equal to "all", see get_q
+      what = @q.slice(0..2)
+      id = @q.slice(4..-1).to_i
+      if what == "cat"
+        @category = Category.find_by_id(id)
+        if !@category.nil? && (@category.name != "Wépion" || current_user.sk.wepion? || current_user.sk.admin?)
+          search_category = id
+          @title_complement = @category.name
+        end
+      elsif what == "sec"
+        @section = Section.find_by_id(id)
+        if !@section.nil?
+          search_section = id
           @title_complement = @section.name
-        elsif @q % 1000 == 1
-          search_section_problems = (@q-1)/1000
-          @section = Section.find_by_id(search_section_problems)
+        end
+      elsif what == "pro"
+        @section = Section.find_by_id(id)
+        if !@section.nil?
+          search_section_problems = id
           @title_complement = helpers.get_problem_category_name(@section.name)
         end
-        return if check_nil_object(@section)
-      else
-        search_chapter = @q
-        @chapter = Chapter.find_by_id(search_chapter)
-        return if check_nil_object(@chapter)
-        return if check_offline_object(@chapter)
-        @section = @chapter.section
-        @title_complement = @chapter.name
+      elsif what == "cha"
+        @chapter = Chapter.find_by_id(id)
+        if !@chapter.nil? && @chapter.online
+          search_chapter = id
+          @section = @chapter.section
+          @title_complement = @chapter.name
+        end
       end
-    else
-      search_nothing = true
     end
     
     if (current_user.sk.admin? || current_user.sk.corrector?)
@@ -70,10 +70,7 @@ class SubjectsController < ApplicationController
       wepion_allowed_values = false
     end
     
-    if search_nothing
-      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
-    elsif search_category >= 0
+    if search_category >= 0
       @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, category: search_category).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
       @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, category: search_category).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
     elsif search_section >= 0
@@ -82,9 +79,12 @@ class SubjectsController < ApplicationController
     elsif search_section_problems >= 0
       @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
       @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
-    elsif search_chapter
+    elsif search_chapter >= 0
       @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, chapter: search_chapter).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
       @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, chapter: search_chapter).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
+    else # Search nothing
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
     end
   end
 
@@ -265,8 +265,8 @@ class SubjectsController < ApplicationController
   
   # Get the "q" value that is used through the forum
   def get_q
-    @q = params[:q].to_i if params.has_key?:q
-    @q = nil if @q == 0 # avoid q = 0 when there is no filter
+    @q = params[:q] if params.has_key?:q
+    @q = nil if @q == "all" # avoid q = "all" when there is no filter
   end
   
   ########## CHECK METHODS ##########
@@ -282,19 +282,18 @@ class SubjectsController < ApplicationController
   
   # Helper method to set the object associated to a subject
   def set_associated_object
-    category_id = params[:subject][:category_id].to_i
-    if category_id < 1000
-      @subject.category = Category.find_by_id(category_id)
-      return "Une erreur est survenue." if check_nil_object(@subject.category)
+    cat = params[:subject][:category_id].to_i
+    if cat >= 0 # Category
+      @subject.category = Category.find_by_id(cat)
+      return "Une erreur est survenue." if @subject.category.nil?
       @subject.section = nil
       @subject.chapter = nil
       @subject.question = nil
       @subject.problem = nil
-    else
-      section_id = category_id/1000
+    else # Section
       @subject.category = nil
-      @subject.section = Section.find_by_id(section_id)
-      return "Une erreur est survenue." if check_nil_object(@subject.section)
+      @subject.section = Section.find_by_id(-cat)
+      return "Une erreur est survenue." if @subject.section.nil?
       chapter_id = params[:subject][:chapter_id].to_i
       if chapter_id == 0 # No particular chapter
         @subject.chapter = nil
@@ -308,21 +307,18 @@ class SubjectsController < ApplicationController
           return "Un problème doit être sélectionné."
         end
         @subject.problem = Problem.find_by_id(problem_id)
-        return "Une erreur est survenue." if check_nil_object(@subject.problem)
-        return "Une erreur est survenue." if check_offline_object(@subject.problem)
+        return "Une erreur est survenue." if @subject.problem.nil? || !@subject.problem.online?
         # Here we can check that the user has indeed access to the problem but it is annoying to do
       else
         @subject.chapter = Chapter.find_by_id(chapter_id)
-        return "Une erreur est survenue." if check_nil_object(@subject.chapter)
-        return "Une erreur est survenue." if check_offline_object(@subject.chapter)
+        return "Une erreur est survenue." if @subject.chapter.nil? || !@subject.chapter.online?
         @subject.problem = nil
         question_id = params[:subject][:question_id].to_i
         if question_id == 0
           @subject.question = nil
         else
           @subject.question = Question.find_by_id(question_id)
-          return "Une erreur est survenue." if check_nil_object(@subject.question)
-          return "Une erreur est survenue." if check_offline_object(@subject.question)
+          return "Une erreur est survenue." if @subject.question.nil? || !@subject.question.online?
           # Here we can check that the user has indeed access to the question but it is annoying to do
         end
       end

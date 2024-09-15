@@ -60,7 +60,7 @@ describe "Myfile pages", myfile: true do
       describe "and fake deletes it" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(subjectmyfile)) }
         it do
-          should have_current_path(subject_path(sub, :q => 0))
+          should have_current_path(subject_path(sub, :q => "all"))
           should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
@@ -87,7 +87,7 @@ describe "Myfile pages", myfile: true do
       describe "and fake deletes it" do
         before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(messagemyfile)) }
         it do
-          should have_current_path(subject_path(sub, :page => 1, :msg => message, :q => 0))
+          should have_current_path(subject_path(sub, :page => 1, :msg => message, :q => "all"))
           should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
