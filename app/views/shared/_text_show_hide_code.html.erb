@@ -1,0 +1,20 @@
+<% if !defined?(replace_indice) %>
+  <% replace_indice = false %>
+<% end %>
+
+<% bb = bbcode(content) %>
+<% if replace_indice %>
+  <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div class='clue'><div><button onclick='return Clue.toggle(#{@nb_indice})' class='btn btn-ld-light-dark'>#{$1}</button></div><div id='indice#{@nb_indice}' class='clue-hide'><div class='clue-content'>#{$2}</div></div></div>"} %>
+    <% @nb_indice = @nb_indice+1 %>
+  <% end %>
+<% end %>
+
+<div id="normal<%= id %>" style="display:block;">
+<%= raw(bb) %>
+<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.showCode('<%= id %>'); return false;">(Montrer le code)</a></div>
+</div>
+
+<div class="tex2jax_ignore" id="anormal<%= id %>" style="display:none;">
+<%= raw((h content).gsub(/\n/, '<br/>')) %>
+<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.hideCode('<%= id %>'); return false;">(Cacher le code)</a></div>
+</div>

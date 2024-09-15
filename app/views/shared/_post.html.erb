@@ -37,29 +37,12 @@
 
   <!-- Contenu du message -->
   <div class="content">
-    
-  <% bb = bbcode(ms.content) %>
-  <% if kind == "subject" || kind == "message" %>
-    <% while bb.sub!(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/hide\]/mi) {"<div class='clue'><div><button onclick='return Clue.toggle(#{@nb_indice})' class='btn btn-ld-light-dark'>#{$1}</button></div><div id='indice#{@nb_indice}' class='clue-hide'><div class='clue-content'>#{$2}</div></div></div>"} %>
-      <% @nb_indice = @nb_indice+1 %>
-    <% end %>
-  <% end %>
   
   <% theid = -ms.id if kind == "subject" || kind == "submission" || kind == "contestsolution" || kind == "submission_in_test" %>
   <% theid = ms.id if kind == "message" || kind == "correction" || kind == "contestcorrection" %>
   
-  <!-- Version compilée -->
-  <div id="normal<%= theid %>" style="display:block;">
-  <%= raw(bb) %>
-  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.showCode('<%= theid %>'); return false;">(Montrer le code)</a></div>
-  </div>
-
-  <!-- Version non-compilée (code) -->
-  <div class="tex2jax_ignore" id="anormal<%= theid %>" style="display:none;">
-  <%= raw((h ms.content).gsub(/\n/, '<br/>')) %>
-  <div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.hideCode('<%= theid %>'); return false;">(Cacher le code)</a></div>
-  </div>
-
+  <%= render '/shared/text_show_hide_code', content: ms.content, id: theid, replace_indice: (kind == "subject" || kind == "message") %>
+  
   <!-- Pièces jointes -->
   <%= render 'shared/show_files', s: ms %>  
   </div>
