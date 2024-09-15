@@ -6,15 +6,13 @@
   <% reduce_margin_top = false %>
 <% end %>
 
-<table class="table table-bordered post mb-0 <%= "mt-3" unless reduce_margin_top %><%= "mt-1" if reduce_margin_top %>">
+<div class="post mb-0 <%= "mt-3" unless reduce_margin_top %><%= "mt-1" if reduce_margin_top %>">
 
-  <!-- Cas normal -->
-  <% coul = "table-ld-primary" %>
-  <% coul = "table-ld-danger" if (kind == "correction" && ms.user != @submission.user) || kind == "contestcorrection" %>
-  <tr class="d-none d-sm-table-row <%= coul %>">
+  <% coul = ((kind == "correction" && ms.user != @submission.user) || kind == "contestcorrection") ? "table-ld-danger" : "table-ld-primary" %>
+  <div class="header <%= coul %>">
 
   <!-- Nom -->
-  <td class="author border-end-0">
+  <div class="author">
   <% if kind != "contestcorrection" %>
     <% if !ms.user.nil? %>
       <%= raw(ms.user.linked_name) %>
@@ -28,38 +26,17 @@
       <b>Organisateurs</b>
     <% end %>
   <% end %>
-  </td>
-
-  <!-- Date -->
-  <td class="date border-start-0"><% if kind != "contestsolution" && kind != "contestcorrection" %><%= write_date(ms.created_at) %><% end %></td>
-  </tr>
-
-  <!-- Cas gsm -->
-
-  <!-- Nom -->
-  <tr class="d-table-line d-sm-none <%= coul %>"><td class="author">
-  <% if kind != "contestcorrection" %>
-    <% if !ms.user.nil? %>
-      <%= raw(ms.user.linked_name) %>
-    <% else %>
-      <b>Message automatique</b>
-    <% end %>
-  <% else %>
-    <% if @contest.organizers.count == 1 %>
-      <%= raw(@contest.organizers.first.linked_name) %>
-    <% else %>
-      <b>Organisateurs</b>
-    <% end %>
-  <% end %>
-  </td></tr>
+  </div>
 
   <!-- Date -->
   <% if kind != "contestsolution" && kind != "contestcorrection" %>
-  <tr class="d-table-line d-sm-none <%= coul %>"><td class="date"><%= write_date(ms.created_at) %></td></tr>
+    <div class="date"><%= write_date(ms.created_at) %></div>
   <% end %>
 
+  </div>
+
   <!-- Contenu du message -->
-  <tr><td colspan="2" class="content">
+  <div class="content">
     
   <% bb = bbcode(ms.content) %>
   <% if kind == "subject" || kind == "message" %>
@@ -85,10 +62,10 @@
 
   <!-- Pièces jointes -->
   <%= render 'shared/show_files', s: ms %>  
-  </td></tr>
+  </div>
   
   <% if can_edit %>
-    <tr><td colspan="2" class="modify">
+    <div class="modify">
       <% if kind == "subject" %>
         <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)'>Modifier ce sujet</a>
         <% if current_user.sk.admin? %>
@@ -123,6 +100,6 @@
         <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>
         | <%= link_to "Supprimer la solution", submission_path(@submission), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette solution ?" } %>
       <% end %>
-    </td></tr>
+    </div>
   <% end %>
-</table>
+</div>
