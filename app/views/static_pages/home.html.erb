@@ -107,10 +107,7 @@
     <% user_with_recent_corrections.each do |u| %>
       <%= " - " unless first %>
       <% first = false %>
-      <%= raw(u.linked_name) %>
-      <% if @signed_in %>
-        (<%= u.num_corrections %>)
-      <% end %>
+      <%= raw(u.linked_name) %><%= "&nbsp;(#{u.num_corrections})".html_safe if @signed_in %>
     <% end %>
   </div>
 <% end %>
