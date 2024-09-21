@@ -30,7 +30,7 @@
 
     <button class="navbar-toggler burger-menu" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
-      <% if unread_amount != 0 %>
+      <% if @signed_in && unread_amount != 0 %>
         <div class="unread-indicator">
           <%= unread_amount >= 10 ? '9+' : unread_amount %>
         </div>
