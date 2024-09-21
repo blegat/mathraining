@@ -11,19 +11,30 @@
     
     <% 
     if @signed_in
-       forum_num_unseen_subjects = current_user.sk.num_unseen_subjects(false)
-       messages_num_unread = current_user.sk.links.where("nonread != 0").count
-       notifications_num_updates = current_user.sk.num_notifications_update
+      forum_num_unseen_subjects = current_user.sk.num_unseen_subjects(false)
+      messages_num_unread = current_user.sk.links.where("nonread != 0").count
 
-       unread_amount = forum_num_unseen_subjects + messages_num_unread + notifications_num_updates
+      unread_amount = forum_num_unseen_subjects + messages_num_unread
+
+      if (current_user.sk.admin || current_user.sk.corrector)
+        comments_num = current_user.sk.num_notifications_update
+        unread_amount += comments_num
+      end
+
+      if !current_user.sk.admin?
+        submissions_num_notifs = current_user.sk.notified_submissions.count
+        unread_amount += submissions_num_notifs
+      end
     end 
     %>
 
     <button class="navbar-toggler burger-menu" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
-      <div class="unread-indicator">
-        <%= unread_amount >= 10 ? '9+' : unread_amount %>
-      </div>
+      <% if unread_amount != 0 %>
+        <div class="unread-indicator">
+          <%= unread_amount >= 10 ? '9+' : unread_amount %>
+        </div>
+      <% end %>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -53,8 +64,8 @@
             <sup>+ <%= num_notifications_new345[1] %> j</sup>
           <% end %>
         <% end %>
-        <% classe = (notifications_num_updates > 0 ? "warning" : "ld-light-dark-er") %>
-        <%= link_to "#{notifications_num_updates}", allmynewsub_path, class: "btn btn-#{classe}" %>
+        <% classe = (comments_num > 0 ? "warning" : "ld-light-dark-er") %>
+        <%= link_to "#{comments_num}", allmynewsub_path, class: "btn btn-#{classe}" %>
         
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
         <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
@@ -69,9 +80,8 @@
       
       <!-- Corrections (pour les étudiants non-correcteurs) -->
       <% if @signed_in && !current_user.sk.admin? %>
-        <% noti = current_user.sk.notified_submissions.count %>
-        <% if noti != 0 %>
-          <%= link_to "#{noti}", notifs_path, class: "btn btn-info #{ 'ms-2' if current_user.sk.corrector? }" %>
+        <% if submissions_num_notifs != 0 %>
+          <%= link_to "#{submissions_num_notifs}", notifs_path, class: "btn btn-info #{ 'ms-2' if current_user.sk.corrector? }" %>
         <% end %>
       <% end %>
       
