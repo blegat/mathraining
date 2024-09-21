@@ -17,8 +17,11 @@
       unread_amount = forum_num_unseen_subjects + messages_num_unread
 
       if (current_user.sk.admin || current_user.sk.corrector)
-        comments_num = current_user.sk.num_notifications_update
-        unread_amount += comments_num
+        num_comments = current_user.sk.num_notifications_update
+        num_waiting_suspicions = (current_user.sk.root ? Suspicion.where(:status => :waiting_confirmation).count : 0)
+        num_waiting_starproposals = (current_user.sk.root ? Starproposal.where(:status => :waiting_treatment).count : 0)
+
+        unread_amount += num_comments + num_waiting_suspicions + num_waiting_starproposals
       end
 
       if !current_user.sk.admin?
@@ -43,9 +46,6 @@
       <form>
       
       <% if @signed_in and (current_user.sk.admin || current_user.sk.corrector) %>
-        <% num_waiting_suspicions = (current_user.sk.root ? Suspicion.where(:status => :waiting_confirmation).count : 0) %>
-        <% num_waiting_starproposals = (current_user.sk.root ? Starproposal.where(:status => :waiting_treatment).count : 0) %>
-
         <!-- Nouvelles soumissions et nouveaux commentaires -->
 
         <% num_notifications_new12 = current_user.sk.num_notifications_new([1, 2]) %>
@@ -64,8 +64,8 @@
             <sup>+ <%= num_notifications_new345[1] %> j</sup>
           <% end %>
         <% end %>
-        <% classe = (comments_num > 0 ? "warning" : "ld-light-dark-er") %>
-        <%= link_to "#{comments_num}", allmynewsub_path, class: "btn btn-#{classe}" %>
+        <% classe = (num_comments > 0 ? "warning" : "ld-light-dark-er") %>
+        <%= link_to "#{num_comments}", allmynewsub_path, class: "btn btn-#{classe}" %>
         
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
         <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
