@@ -9,8 +9,17 @@
       <span class="text-color-black-white">Math</span><span class="text-color-mt-blue">raining</span>
     <% end %>
     
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <% 
+    if @signed_in
+       forum_num_unseen_subjects = current_user.sk.num_unseen_subjects(false) 
+       messages_num_unread = current_user.sk.links.where("nonread != 0").count 
+       notifications_amount = forum_num_unseen_subjects + messages_num_unread 
+    end 
+    %>
+
+    <button class="navbar-toggler burger-menu" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
+      <div class="notifications-indicator"><%= notifications_amount %></div>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -112,14 +121,12 @@
         </li>
 
         <!-- Forum -->
-        <% if @signed_in %>
-          <% num_unseen_subjects = current_user.sk.num_unseen_subjects(false) %>
-          
+        <% if @signed_in %>          
           <li class="nav-item me-1">
-          <%= link_to subjects_path, :class => "nav-link #{'fw-bold' if num_unseen_subjects > 0 }" do %>
+          <%= link_to subjects_path, :class => "nav-link #{'fw-bold' if forum_num_unseen_subjects > 0 }" do %>
             Forum
-            <% if num_unseen_subjects > 0 %>
-              (<%= num_unseen_subjects %>)
+            <% if forum_num_unseen_subjects > 0 %>
+              (<%= forum_num_unseen_subjects %>)
             <% end %>
           <% end %>
           </li>
@@ -144,14 +151,11 @@
         <!-- Si connecté -->
 
         <% if @signed_in %>
-
-          <% nonlu = current_user.sk.links.where("nonread != 0").count %>
-
           <li class="nav-item dropdown">
 
           <!-- Nom -->
           <a class="nav-link dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-            <%= "[" if current_user.other %><%= raw(current_user.sk.colored_name(1)) %><%= ' (' + nonlu.to_s + ')' if nonlu > 0 %><%= "]" if current_user.other %>
+            <%= "[" if current_user.other %><%= raw(current_user.sk.colored_name(1)) %><%= ' (' + messages_num_unread.to_s + ')' if messages_num_unread > 0 %><%= "]" if current_user.other %>
           </a>
 
           <ul class="dropdown-menu dropdown-menu-end">
@@ -163,7 +167,7 @@
             <% if @signed_in && (current_user.sk.admin? || (current_user.sk.wepion? && current_user.sk.group != "")) %>
               <li><%= link_to "Groupes Wépion", groups_path, :class => "dropdown-item" %></li>
             <% end %>
-            <li><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "dropdown-item" %></li>
+            <li><%= link_to "Messages#{' (' + messages_num_unread.to_s + ')' if messages_num_unread > 0 }", new_discussion_path, :class => "dropdown-item" %></li>
             <% if current_user.sk.root? %>
               <li class="dropdown-divider"></li>
               <li><%= link_to "Pièces jointes", myfiles_path, :class => "dropdown-item" %></li>
