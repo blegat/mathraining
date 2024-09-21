@@ -4,7 +4,11 @@
 
 .unread-indicator {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 2px;
+    right: 3px;
+    font-size: 12px;
+    padding: 2px 5px;
     background-color: red;
+    color: white;
+    border-radius: 10px;
 }
