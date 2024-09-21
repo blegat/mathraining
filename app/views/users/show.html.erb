@@ -547,7 +547,24 @@
   <div class="g-col-12 basic_container p-1">
   <div class="container_title">Évolution</div>
     
-  <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span class="user_color"><%= write_date_only(@user.created_at) %></span>.</div>
+  <div class="pe-2 pb-2" style="padding-left:20px;">
+    <%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span class="user_color"><%= write_date_only(@user.created_at) %></span>.
+    <% if nb_p >= 3 %>
+      <% f = Following.includes(:user).joins(:submission).where("submissions.user_id = ?", @user.id).group("followings.user_id").count %>
+      <% f = f.sort_by{|user_id, num_corr| -num_corr} %>
+      <% if f.size > 0 %>
+        <% tot_num_corr = f.sum{|user_id, num_corr| num_corr} %>
+        <% num_correctors_to_show = [3, f.size].min %>
+        Ses solutions ont <%= "toutes" if f.size == 1 %> été <%= "principalement" if f.size > num_correctors_to_show %> corrigées par
+        <% (0..num_correctors_to_show-1).each do |i| %>
+          <%= raw(User.find(f[i][0]).linked_name) %>
+          <% if num_correctors_to_show > 1 %>
+            (<%= ((f[i][1] * 100.0)/tot_num_corr).round() %>%)<%= ", " if i < num_correctors_to_show-2 %><%= " et " if i == num_correctors_to_show-2 %><%= "." if i == num_correctors_to_show-1 %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
     
   <% if actualrating > 0 %>
     <div style="width:100%;">
