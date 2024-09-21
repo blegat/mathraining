@@ -11,15 +11,19 @@
     
     <% 
     if @signed_in
-       forum_num_unseen_subjects = current_user.sk.num_unseen_subjects(false) 
-       messages_num_unread = current_user.sk.links.where("nonread != 0").count 
-       notifications_amount = forum_num_unseen_subjects + messages_num_unread 
+       forum_num_unseen_subjects = current_user.sk.num_unseen_subjects(false)
+       messages_num_unread = current_user.sk.links.where("nonread != 0").count
+       notifications_num_updates = current_user.sk.num_notifications_update
+
+       unread_amount = forum_num_unseen_subjects + messages_num_unread + notifications_num_updates
     end 
     %>
 
     <button class="navbar-toggler burger-menu" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
-      <div class="notifications-indicator"><%= notifications_amount %></div>
+      <div class="unread-indicator">
+        <%= unread_amount >= 10 ? '9+' : unread_amount %>
+      </div>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -35,7 +39,6 @@
 
         <% num_notifications_new12 = current_user.sk.num_notifications_new([1, 2]) %>
         <% num_notifications_new345 = current_user.sk.num_notifications_new([3, 4, 5]) %>
-        <% num_notifications_update = current_user.sk.num_notifications_update %>
         <% classe = (num_notifications_new12[0] + num_notifications_new12[1] > 0 ? "success" : "ld-light-dark-er") %>
         <%= link_to allnewsub_path(:levels => 3), class: "btn btn-#{classe}" do %>
           <%= num_notifications_new12[0] %>
@@ -50,8 +53,8 @@
             <sup>+ <%= num_notifications_new345[1] %> j</sup>
           <% end %>
         <% end %>
-        <% classe = (num_notifications_update > 0 ? "warning" : "ld-light-dark-er") %>
-        <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-#{classe}" %>
+        <% classe = (notifications_num_updates > 0 ? "warning" : "ld-light-dark-er") %>
+        <%= link_to "#{notifications_num_updates}", allmynewsub_path, class: "btn btn-#{classe}" %>
         
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
         <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
