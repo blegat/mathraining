@@ -56,7 +56,7 @@
 
 <!-- Icone -->
 <td class="text-center" style="width:70px;">
-	<% if !show_num_waiting_days_from.empty? %>
+	<% if !show_num_waiting_days_from.empty? && !s.correct? %>
 	  <% x = (today - s[show_num_waiting_days_from].in_time_zone.to_date).to_i %>
 	  <span class="<%= "fw-bold" if x >= 4 %> <%= "text-color-orange" if (x >= 4 and x <= 7) %> <%= "text-color-red" if x >= 8 %>">J-<%= x %></span>
 	<% else %>
