@@ -252,6 +252,9 @@ Rails.application.routes.draw do
   get '/remove_followingmessage', to: redirect('/unset_follow_message') # in old emails
   get '/remove_followingsubject', to: redirect { |params, request| "/subjects/#{request.params[:subject_id]}/unfollow" } # in old emails
   get '/remove_followingcontest', to: redirect { |params, request| "/contests/#{request.params[:contest_id]}/unfollow" } # in old emails
+  
+  # Redirect all kinds of apple-touch-icon...png requests to the same icon
+  get '/:apple_touch_icon' => redirect('/icon-120.png'), constraints: { apple_touch_icon: /apple-touch-icon(-\d+x\d+)?(-precomposed)?\.png/ }
 
   # Error pages
   get '/404', to: 'errors#not_found'
