@@ -550,7 +550,7 @@
   <div class="pe-2 pb-2" style="padding-left:20px;">
     <%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span class="user_color"><%= write_date_only(@user.created_at) %></span>.
     <% if nb_p >= 3 %>
-      <% f = Following.includes(:user).joins(:submission).where("submissions.user_id = ?", @user.id).group("followings.user_id").count %>
+      <% f = Following.joins(:submission).where("submissions.user_id = ?", @user.id).group("followings.user_id").count %>
       <% f = f.sort_by{|user_id, num_corr| [-num_corr, user_id]} %>
       <% if f.size > 0 %>
         <% tot_num_corr = f.sum{|user_id, num_corr| num_corr} %>
