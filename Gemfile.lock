@@ -207,7 +207,7 @@ GEM
     pg (1.5.3)
     popper_js (2.11.8)
     public_suffix (5.0.3)
-    puma (6.4.2)
+    puma (6.4.3)
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (2.2.9)
