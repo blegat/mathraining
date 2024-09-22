@@ -104,18 +104,12 @@ class ApplicationController < ActionController::Base
   
   # Swap the positions of two objects
   def swap_position(a, b)
-    if !a.nil? && !b.nil? && a != b
-      x = a.position
-      y = b.position
-      a.update_attribute(:position, y)
-      b.update_attribute(:position, x)
-      if x > y
-        return " vers le haut"
-      else
-        return " vers le bas"
-      end
-    end
-    return ""
+    return "" if a.nil? || b.nil? || a == b
+    x = a.position
+    y = b.position
+    a.update_attribute(:position, y)
+    b.update_attribute(:position, x)
+    return (x > y ? " vers le haut" : " vers le bas")
   end
   
   # Render a view after having added an error to an object if needed

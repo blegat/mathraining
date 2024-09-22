@@ -179,7 +179,6 @@ Rails.application.routes.draw do
     match '/change_password', to: 'users#change_password', :via => [:patch]
     match '/add_followed_user', to: 'users#add_followed_user', :via => [:put]
     match '/remove_followed_user', to: 'users#remove_followed_user', :via => [:put]
-    match '/change_name', to: 'users#change_name', :via => [:put]
     match '/set_can_change_name', to: 'users#set_can_change_name', :via => [:put]
     match '/unset_can_change_name', to: 'users#unset_can_change_name', :via => [:put]
     match '/ban_temporarily', to: 'users#ban_temporarily', :via => [:put]
