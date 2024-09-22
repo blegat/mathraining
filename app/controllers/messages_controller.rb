@@ -67,10 +67,9 @@ class MessagesController < ApplicationController
         end
       end
     end
-      
-    page = get_last_page(@subject)
+    
     flash[:success] = "Votre message a bien été posté."
-    redirect_to subject_path(@message.subject, :page => page, :q => @q, :msg => @message.id)
+    redirect_to subject_path(@message.subject, :page => @subject.last_page, :q => @q, :msg => @message.id)
   end
 
   # Update a message (send the form)
@@ -92,27 +91,26 @@ class MessagesController < ApplicationController
     
     flash[:success] = "Votre message a bien été modifié."
     @message.reload
-    page = get_page(@message)
-    redirect_to subject_path(@message.subject, :page => page, :q => @q, :msg => @message.id)
+    redirect_to subject_path(@message.subject, :page => @message.page, :q => @q, :msg => @message.id)
   end
 
   # Delete a message
   def destroy
-    @subject = @message.subject
-    page = get_page(@message)
+    subject = @message.subject
+    page = @message.page
     @message.destroy
 
-    if @subject.messages.size > 0
-      last = @subject.messages.order("created_at").last
-      @subject.update(:last_comment_time    => last.created_at,
-                      :last_comment_user_id => last.user_id)
+    if subject.messages.count > 0
+      last = subject.messages.order("created_at").last
+      subject.update(:last_comment_time    => last.created_at,
+                     :last_comment_user_id => last.user_id)
     else
-      @subject.update(:last_comment_time    => @subject.created_at,
-                      :last_comment_user_id => @subject.user_id)
+      subject.update(:last_comment_time    => subject.created_at,
+                     :last_comment_user_id => subject.user_id)
     end
     
-    page = [1,page-1].max if (@subject.messages.count <= (page-1) * 10) # if last message is destroyed and it was alone on its page
-    redirect_to subject_path(@subject, :page => page, :q => @q)
+    page = [1,page-1].max if (subject.messages.count <= (page-1) * 10) # if last message is destroyed and it was alone on its page
+    redirect_to subject_path(subject, :page => page, :q => @q)
   end
 
   private
@@ -155,7 +153,7 @@ class MessagesController < ApplicationController
     @error_msgs = err
     @error_params = params[:message]
     
-    @page = get_last_page(@subject)
+    @page = @subject.last_page
     render 'subjects/show'
   end
   
@@ -166,19 +164,7 @@ class MessagesController < ApplicationController
     @error_params = params[:message]
     
     @message.reload
-    @page = get_page(@message)
+    @page = @message.page
     render 'subjects/show'
-  end
-  
-  # Helper method to get the last page of a subject
-  def get_last_page(s)
-    tot = s.messages.count
-    return [0,((tot-1)/10).floor].max + 1
-  end
-  
-  # Helper method to get the page of a subject containing a message
-  def get_page(m)
-    tot = m.subject.messages.where("id <= ?", m.id).count
-    return [0,((tot-1)/10).floor].max + 1
   end
 end

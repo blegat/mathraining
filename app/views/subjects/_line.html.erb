@@ -50,9 +50,7 @@
 
   <!-- Date du dernier message -->
   <td class="d-none d-lg-table-cell align-middle text-center" style="width:220px;">
-    <% page = [0,((num_messages-1)/10).floor].max + 1 %>
-
-    <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => @q) do %>
+    <%= link_to subject_path(s, :page => "last", :q => @q) do %>
       <%= write_date_from_now(date, datenow) %>
     <% end %>
   </td>
@@ -76,9 +74,7 @@
     <!-- Date du dernier message -->
     <tr>
     <td class="align-middle text-center pt-1" style="width:220px;">
-      <% page = [0,((num_messages-1)/10).floor].max + 1 %>
-
-      <%= link_to subject_path(s, :page => page, :anchor => "bottom", :q => @q) do %>
+      <%= link_to subject_path(s, :page => "last", :q => @q) do %>
         <%= write_date_from_now(date, datenow) %>
       <% end %>
     </td>

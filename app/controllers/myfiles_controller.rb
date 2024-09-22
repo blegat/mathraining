@@ -23,9 +23,7 @@ class MyfilesController < ApplicationController
     elsif type == "Subject"
       redirect_to about
     elsif type == "Message"
-      tot = about.subject.messages.where("id <= ?", about.id).count
-      page = [0,((tot-1)/10).floor].max + 1
-      redirect_to subject_path(about.subject, :page => page, :msg => about.id)
+      redirect_to subject_path(about.subject, :page => about.page, :msg => about.id)
     elsif type == "Contestsolution"
       redirect_to contestproblem_path(about.contestproblem, :sol => about)
     elsif type == "Contestcorrection"
@@ -47,11 +45,9 @@ class MyfilesController < ApplicationController
       redirect_to subject_path(@subject, :q => @q)
     elsif @fakething.fakefiletable_type == "Message"
       @message = @fakething.fakefiletable
-      tot = @message.subject.messages.where("id <= ?", @message.id).count
-      page = [0,((tot-1)/10).floor].max + 1
       @q = "all"
       @q = params[:q] if params.has_key?:q
-      redirect_to subject_path(@message.subject, :page => page, :msg => @message.id, :q => @q)
+      redirect_to subject_path(@message.subject, :page => @message.page, :msg => @message.id, :q => @q)
     elsif @fakething.fakefiletable_type == "Tchatmessage"
       redirect_to myfiles_path
     elsif @fakething.fakefiletable_type == "Submission"

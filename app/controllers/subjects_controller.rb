@@ -90,7 +90,12 @@ class SubjectsController < ApplicationController
 
   # Show one subject
   def show
-    @page = params[:page].to_i if params.has_key?(:page)
+    @page = params[:page] if params.has_key?(:page)
+    if @page == "last"
+      redirect_to subject_path(@subject, :page => @subject.last_page, :anchor => "bottom", :q => @q)
+    elsif !@page.nil?
+      @page = @page.to_i
+    end
     # @messages is computed in the view to be able to render subjects/show in case of error
   end
 
