@@ -41,9 +41,15 @@ jobs:
         PGUSER: mathraining
         PGPORT: ${{ job.services.postgres.ports[5432] }}
         RAILS_ENV: test
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: |
         export SECRET_KEY_BASE=$(bundle exec rake secret)
         RAILS_ENV=test bundle exec rake db:migrate --trace
         bundle exec rake db:test:prepare
-        bundle exec rake
+        bundle exec rspec
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      with:
+        file: ./coverage/.resultset.json
+        fail_ci_if_error: false # For PR from forks that don't have CODECOV_TOKEN

@@ -4,7 +4,7 @@
 #
 # Table name: faqs
 #
-#  id       :integer          not null, primary key
+#  id       :bigint           not null, primary key
 #  question :text
 #  answer   :text
 #  position :integer

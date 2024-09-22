@@ -1,31 +1,26 @@
-<table class="table table-bordered actuality">
-
-  <!-- Cas normal -->
-  <tr class="table-ld-primary d-none d-md-table-row">
+<div class="post mb-3">
+  <div class="header table-ld-primary">
     <!-- Titre -->
-    <td class="title border-end-0"><h3><%= actuality.title %></h3></td>
+    <div class="title">
+      <%= actuality.title %>
+    </div>
 
     <!-- Date -->
-    <td class="date border-start-0"><%= write_date_only(actuality.created_at) %></td>
-  </tr>
-
-  <!-- Cas gsm : titre et date sur des lignes différentes -->
-  <!-- Titre -->
-  <tr class="table-ld-primary d-table-row d-md-none"><td class="title"><h3><%= actuality.title %></h3></td></tr>
-
-  <!-- Date -->
-  <tr class="table-ld-primary d-table-row d-md-none"><td class="date"><%= write_date_only(actuality.created_at) %></td></tr>
+    <div class="date">
+      <%= write_date_only(actuality.created_at) %>
+    </div>
+  </div>
 
   <!-- Contenu -->
-  <tr><td class="content" colspan="2"><div><%= raw(htmlise(actuality.content)) %></div></td></tr>
+  <div class="content">
+    <%= raw(htmlise(actuality.content)) %>
+  </div>
 
   <!-- Modifier / Supprimer -->
   <% if @signed_in && current_user.sk.admin? %>
-    <tr>
-      <td class="modify" colspan="2">
-        <%= link_to "Modifier l'actualité", edit_actuality_path(actuality) %> |
-        <%= link_to "Supprimer l'actualité", actuality, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette actualité ?" } %>
-      </td>
-    </tr>
+    <div class="modify">
+      <%= link_to "Modifier l'actualité", edit_actuality_path(actuality) %> |
+      <%= link_to "Supprimer l'actualité", actuality, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette actualité ?" } %>
+    </div>
   <% end %>
-</table>
+</div>

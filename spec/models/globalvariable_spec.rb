@@ -2,7 +2,7 @@
 #
 # Table name: globalvariables
 #
-#  id      :integer          not null, primary key
+#  id      :bigint           not null, primary key
 #  key     :string
 #  value   :boolean
 #  message :text

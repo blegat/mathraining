@@ -22,6 +22,11 @@
   }
 }
 
+.post .title { // Used for actualities (instead of .author)
+  font-size: 24px;
+  font-weight: 500;
+}
+
 .post .author {
   font-size: 20px;
   font-weight: bold;
@@ -38,6 +43,7 @@
   }
 }
 
+.post .title,
 .post .author,
 .post .date {
   padding: 10px 15px;

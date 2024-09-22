@@ -4,9 +4,9 @@
 #
 # Table name: suspicions
 #
-#  id            :integer          not null, primary key
-#  submission_id :integer
-#  user_id       :integer
+#  id            :bigint           not null, primary key
+#  submission_id :bigint
+#  user_id       :bigint
 #  source        :text
 #  status        :integer          default("waiting_confirmation")
 #  created_at    :datetime         not null

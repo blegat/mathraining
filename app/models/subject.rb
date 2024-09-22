@@ -71,4 +71,14 @@ class Subject < ActiveRecord::Base
   def can_be_updated_by(user)
     return Message.message_can_be_updated_by_user(self, user)
   end
+  
+  # Gives the page containing the n-th message
+  def page_with_message_num(n)
+    return [0, ((n-1)/10).floor].max + 1
+  end
+  
+  # Gives the last page number
+  def last_page
+    return self.page_with_message_num(self.messages.count)
+  end
 end

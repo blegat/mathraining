@@ -473,12 +473,6 @@ class UsersController < ApplicationController
     end
   end
   
-  # Link to change one user name
-  def change_name
-    current_user.update_attribute(:skin, @user.id)
-    redirect_to edit_user_path(@user)
-  end
-  
   # Page to read last privacy policy
   def read_legal
   end

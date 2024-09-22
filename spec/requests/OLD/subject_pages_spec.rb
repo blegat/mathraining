@@ -174,7 +174,7 @@ describe "Subject pages" do
     end
     
     describe "visits his subject page" do
-      before { visit subject_path(sub_user) }
+      before { visit subject_path(sub_user, :page => "last") }
       it do
         should have_content(sub_user.title)
         should have_link("Modifier ce sujet")
@@ -385,7 +385,7 @@ describe "Subject pages" do
       end
     end
     
-    describe "visits the subject of an user" do
+    describe "visits the subject of a user" do
       let!(:mes) { FactoryGirl.create(:message, subject: sub_other_user) }
       before do
         # Set last_comment_time and last_comment_user_id correctly for sub_user and sub_other_user

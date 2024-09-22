@@ -57,7 +57,6 @@ class ProblemsController < ApplicationController
     end
     @problem.number = nombre
 
-    @problem.explanation = ""
     if @problem.save
       flash[:success] = "Problème ajouté."
       redirect_to problem_path(@problem)
@@ -163,12 +162,8 @@ class ProblemsController < ApplicationController
         @problem.virtualtest_id = 0
       else
         t = Virtualtest.find(params[:problem][:virtualtest_id].to_i)
-        lastnumero = t.problems.order(:position).last
-        if lastnumero.nil?
-          @problem.position = 1
-        else
-          @problem.position = lastnumero.position+1
-        end
+        last_problem = t.problems.order(:position).last
+        @problem.position = (last_problem.nil? ? 1 : last_problem.position + 1)
         @problem.virtualtest = t
       end
       @problem.save

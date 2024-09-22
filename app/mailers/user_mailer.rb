@@ -21,8 +21,7 @@ class UserMailer < AsyncMailer
     else
       @debut = User.find(authorid).name + " a posté un message"
     end
-    @tot = @subject.messages.count
-    @page = [0,((@tot-1)/10).floor].max + 1
+    @page = @subject.last_page
     mail(to: @user.email, subject: "Mathraining - Nouveau message sur le sujet '" + @subject.title + "'", from: "no-reply@mathraining.be")
   end
 
@@ -37,8 +36,7 @@ class UserMailer < AsyncMailer
     @user = User.find(userid)
     @subject = Subject.find(subjectid)
     @qui = User.find(authorid).name
-    @tot = @subject.messages.count
-    @page = [0,((@tot-1)/10).floor].max + 1
+    @page = @subject.last_page
     mail(to: @user.email, subject: "Mathraining - Message à l'attention des élèves de Wépion", from: "no-reply@mathraining.be")
   end
   
