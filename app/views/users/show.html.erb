@@ -550,19 +550,18 @@
   <div class="pe-2 pb-2" style="padding-left:20px;">
     <%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span class="user_color"><%= write_date_only(@user.created_at) %></span>.
     <% if nb_p >= 3 %>
-      <% f = Following.joins(:submission).where("submissions.user_id = ?", @user.id).group("followings.user_id").count %>
-      <% f = f.sort_by{|user_id, num_corr| [-num_corr, user_id]} %>
-      <% if f.size > 0 %>
-        <% tot_num_corr = f.sum{|user_id, num_corr| num_corr} %>
-        <% num_correctors_to_show = [3, f.size].min %>
-        <% while num_correctors_to_show < f.size && f[num_correctors_to_show-1][1] == f[num_correctors_to_show][1] %>
-          <% num_correctors_to_show = num_correctors_to_show+1 %>
+      <% followings = Following.joins(:submission).includes(:user).where("submissions.user_id = ?", @user.id).group("followings.user_id").select("count(followings.id) AS num_corrections, followings.user_id").order("num_corrections DESC, followings.user_id ASC").to_a %>
+      <% if followings.size > 0 %>
+        <% tot_num_corr = followings.sum{|f| f.num_corrections} %>
+        <% num_correctors_to_show = [3, followings.size].min %>
+        <% while num_correctors_to_show < followings.size && followings[num_correctors_to_show-1].num_corrections == followings[num_correctors_to_show].num_corrections %>
+          <% num_correctors_to_show += 1 %>
         <% end %>
-        Ses solutions ont <%= "toutes" if f.size == 1 %> été <%= "principalement" if f.size > num_correctors_to_show %> corrigées par
+        Ses solutions ont <%= "toutes" if followings.size == 1 %> été <%= "principalement" if followings.size > num_correctors_to_show %> corrigées par
         <% (0..num_correctors_to_show-1).each do |i| %>
-          <%= raw(User.find(f[i][0]).linked_name) %>
+          <%= raw(followings[i].user.linked_name) %>
           <% if num_correctors_to_show > 1 %>
-            (<%= ((f[i][1] * 100.0)/tot_num_corr).round() %>%)<%= ", " if i < num_correctors_to_show-2 %><%= " et " if i == num_correctors_to_show-2 %><%= "." if i == num_correctors_to_show-1 %>
+            (<%= ((followings[i].num_corrections * 100.0)/tot_num_corr).round() %>%)<%= ", " if i < num_correctors_to_show-2 %><%= " et " if i == num_correctors_to_show-2 %><%= "." if i == num_correctors_to_show-1 %>
           <% end %>
         <% end %>
       <% end %>

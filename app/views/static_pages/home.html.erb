@@ -18,15 +18,14 @@
   <% return ans %>
 <% end %>
 
-
-<% user_with_recent_corrections = User.left_joins(:followings).where(followings: {:kind => :first_corrector}).where("followings.created_at > ?", Date.today.in_time_zone).group(:id).select("users.*, count(followings.id) AS num_corrections").order("num_corrections DESC").to_a %>
+<% recent_corrections = Following.includes(:user).where(:kind => :first_corrector).where("created_at > ?", Date.today.in_time_zone).group(:user_id).select("count(followings.id) AS num_corrections, user_id").order("num_corrections DESC").to_a %>
 
 <!-- Barre de progrès pour les correcteurs -->
 
 <% if signed_in? && (current_user.sk.admin? || current_user.sk.corrector?) %>
   <% num_my_corrections = 0 %>
-  <% user_with_recent_corrections.each do |u| %>
-    <% num_my_corrections = u.num_corrections if u.id == current_user.sk.id %>
+  <% recent_corrections.each do |f| %>
+    <% num_my_corrections = f.num_corrections if f.user_id == current_user.sk.id %>
   <% end %>
   <% pct = [20*num_my_corrections, 100].min %>
   <div class="progress" style="margin-top:3px;">
@@ -99,15 +98,15 @@
   </div>
 </div>
 
-<% num_users_to_display = user_with_recent_corrections.size %>
+<% num_users_to_display = recent_corrections.size %>
 <% if num_users_to_display > 0 %>
   <div class="bg-as-table-ld-primary p-2 text-center mb-2">
     Merci au<%= 'x' if num_users_to_display > 1 %> correcteur<%= 's' if num_users_to_display > 1 %> du jour :
     <% first = true %>
-    <% user_with_recent_corrections.each do |u| %>
+    <% recent_corrections.each do |f| %>
       <%= " - " unless first %>
       <% first = false %>
-      <%= raw(u.linked_name) %><%= "&nbsp;(#{u.num_corrections})".html_safe if @signed_in %>
+      <%= raw(f.user.linked_name) %><%= "&nbsp;(#{f.num_corrections})".html_safe if @signed_in %>
     <% end %>
   </div>
 <% end %>
