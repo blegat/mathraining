@@ -51,4 +51,5 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
+        file: ./coverage/.resultset.json
         fail_ci_if_error: false # For PR from forks that don't have CODECOV_TOKEN
