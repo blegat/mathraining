@@ -4,9 +4,9 @@
 #
 # Table name: starproposals
 #
-#  id            :integer          not null, primary key
-#  submission_id :integer
-#  user_id       :integer
+#  id            :bigint           not null, primary key
+#  submission_id :bigint
+#  user_id       :bigint
 #  reason        :string
 #  answer        :string
 #  status        :integer          default("waiting_treatment")

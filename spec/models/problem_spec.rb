@@ -6,13 +6,13 @@
 #  statement        :text
 #  online           :boolean          default(FALSE)
 #  level            :integer
-#  explanation      :text             default("")
+#  explanation      :text             default("-")
 #  section_id       :integer
 #  number           :integer          default(1)
 #  virtualtest_id   :integer          default(0)
 #  position         :integer          default(0)
 #  origin           :string
-#  markscheme       :text             default("")
+#  markscheme       :text             default("-")
 #  nb_solves        :integer          default(0)
 #  first_solve_time :datetime
 #  last_solve_time  :datetime

@@ -87,6 +87,15 @@ describe "Problem pages", problem: true do
         should have_content(correct_submission.content)
       end
     end
+    
+    describe "visits online problem with auto param when not solved" do
+      let!(:incorrect_submission) { FactoryGirl.create(:submission, :user => user_with_rating_200, :problem => online_problem, :status => :wrong) }
+      before { visit problem_path(online_problem, :auto => 1) }
+      it do
+        should have_current_path(problem_path(online_problem))
+        should have_no_content(incorrect_submission.content)
+      end
+    end
   end
   
   describe "user with rating 200 and completed chapter" do
@@ -238,6 +247,18 @@ describe "Problem pages", problem: true do
         end
         specify { expect(online_problem.explanation).to eq(newexplanation) }
       end
+      
+      describe "and modifies it with empty string" do
+        before do
+          fill_in "MathInput", with: ""
+          click_button "Modifier"
+          online_problem.reload
+        end
+        specify do
+          expect(online_problem.explanation).not_to eq("")
+          expect(page).to have_error_message("Éléments de solution doit être rempli")
+        end
+      end
     end
     
     describe "visits edit markscheme page" do
@@ -251,6 +272,18 @@ describe "Problem pages", problem: true do
           problem_in_virtualtest.reload
         end
         specify { expect(problem_in_virtualtest.markscheme).to eq(newmarkscheme) }
+      end
+      
+      describe "and modifies it with empty string" do
+        before do
+          fill_in "MathInput", with: ""
+          click_button "Modifier"
+          problem_in_virtualtest.reload
+        end
+        specify do
+          expect(problem_in_virtualtest.markscheme).not_to eq("")
+          expect(page).to have_error_message("Marking scheme doit être rempli")
+        end
       end
     end
     

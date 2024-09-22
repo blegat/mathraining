@@ -4,8 +4,8 @@
 #
 # Table name: extracts
 #
-#  id                  :integer          not null, primary key
-#  externalsolution_id :integer
+#  id                  :bigint           not null, primary key
+#  externalsolution_id :bigint
 #  text                :string
 #
 include ApplicationHelper

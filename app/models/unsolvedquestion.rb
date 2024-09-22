@@ -4,9 +4,9 @@
 #
 # Table name: unsolvedquestions
 #
-#  id              :integer          not null, primary key
-#  user_id         :integer
-#  question_id     :integer
+#  id              :bigint           not null, primary key
+#  user_id         :bigint
+#  question_id     :bigint
 #  guess           :float
 #  nb_guess        :integer
 #  last_guess_time :datetime

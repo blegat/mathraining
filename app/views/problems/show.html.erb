@@ -184,13 +184,9 @@
 
 <% if (current_user.sk.admin? || current_user.sk.corrector? && problem_solved) %>
   <!-- Explication -->
-  <% if @problem.explanation.size == 0 %>
-    <p class="text-center fw-bold text-color-orange">Pas d'éléments de solution disponibles.</p>
-  <% else %>
-    <div class='clue-bis'><div><center><button onclick='return Clue.toggle(0)' class='btn btn-ld-light-dark'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
-    <%= raw(htmlise(@problem.explanation)) %>
-    </div></div></div>
-  <% end %>
+  <div class='clue-bis'><div><center><button onclick='return Clue.toggle(0)' class='btn btn-ld-light-dark'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
+  <%= raw(htmlise(@problem.explanation)) %>
+  </div></div></div>
 <% end %>
 
 <% if !@submission.nil? %>

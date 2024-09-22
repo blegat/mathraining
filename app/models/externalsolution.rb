@@ -4,8 +4,8 @@
 #
 # Table name: externalsolutions
 #
-#  id         :integer          not null, primary key
-#  problem_id :integer
+#  id         :bigint           not null, primary key
+#  problem_id :bigint
 #  url        :text
 #
 include ApplicationHelper

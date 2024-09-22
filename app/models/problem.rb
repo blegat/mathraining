@@ -8,13 +8,13 @@
 #  statement        :text
 #  online           :boolean          default(FALSE)
 #  level            :integer
-#  explanation      :text             default("")
+#  explanation      :text             default("-")
 #  section_id       :integer
 #  number           :integer          default(1)
 #  virtualtest_id   :integer          default(0)
 #  position         :integer          default(0)
 #  origin           :string
-#  markscheme       :text             default("")
+#  markscheme       :text             default("-")
 #  nb_solves        :integer          default(0)
 #  first_solve_time :datetime
 #  last_solve_time  :datetime
@@ -39,7 +39,8 @@ class Problem < ActiveRecord::Base
 
   validates :number, presence: true
   validates :statement, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
-  validates :explanation, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
+  validates :explanation, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
+  validates :markscheme, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :origin, length: { maximum: 255 }
   validates :level, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 5 }
   validates :nb_solves, presence: true, numericality: { greater_or_equal_to: 0 }
