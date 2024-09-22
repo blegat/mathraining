@@ -45,7 +45,7 @@ jobs:
         export SECRET_KEY_BASE=$(bundle exec rake secret)
         RAILS_ENV=test bundle exec rake db:migrate --trace
         bundle exec rake db:test:prepare
-        bundle exec rake
+        bundle exec rspec
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       env:
