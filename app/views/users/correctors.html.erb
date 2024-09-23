@@ -271,7 +271,7 @@ Votre navigateur ne supporte pas les canvas.
 <script type="text/javascript">
 const showInactiveCorrectors = () => {
   if ("$" in window) {
-    $('.inactive-corrector').removeClass('inactive-corrector');
+    $('[data-active-corrector="false"]').removeClass('d-none');
     document.getElementById("link_show_inactive").style.display = 'none';
     document.getElementById("link_hide_inactive").style.display = 'block';
   }
