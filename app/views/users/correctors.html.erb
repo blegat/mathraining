@@ -307,11 +307,11 @@ const hideInactiveCorrectors = () => {
 <% correctors.sort_by{|e| -e[:nb_corrections]}.each do |c| %>
   <% u = c[:user] %>
   <% green_class = "line-green-#{([c[:nb_recent], 200].min/2).to_i}" %>
-  <% limit = Rails.env.production? ? 30 : 8 %>
-  <% is_active = c[:nb_recent] >= limit ? true : false %>
+  <% limit = Rails.env.production? ? 30 : 1 %>
+  <% is_active = (c[:nb_recent] >= limit) %>
   <% real_rank = rank if c[:nb_corrections] != prev_nb_corrections %>
 
-  <tr class="<%= green_class %> <%= is_active ? "" : "inactive-corrector" %>" data-active-corrector="<%= is_active %>">
+  <tr class="<%= green_class %> <%= is_active ? "" : "d-none" %>" data-active-corrector="<%= is_active %>">
   <td class="text-center"><%= real_rank %>.</td>
   <td><%= raw(u.linked_name) %></td>
   <td class="text-center"><%= c[:nb_corrections] %></td>
