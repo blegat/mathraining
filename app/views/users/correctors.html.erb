@@ -279,7 +279,7 @@ const showInactiveCorrectors = () => {
 
 const hideInactiveCorrectors = () => {
   if ("$" in window) {
-    $('[data-active-corrector="false"]').addClass('inactive-corrector');
+    $('[data-active-corrector="false"]').addClass('d-none');
     document.getElementById("link_show_inactive").style.display = 'block';
     document.getElementById("link_hide_inactive").style.display = 'none';
   }
