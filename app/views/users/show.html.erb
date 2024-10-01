@@ -186,14 +186,14 @@
 <% if !@user.admin %>
   <div class="g-col-12 g-col-sm-6 g-col-lg-4 basic_container text-center p-1">
     
-    <% espace = (can_send_message ? "34px" : "10px") %>
+    <% espace = (can_send_message ? "32px" : "8px") %>
     <div style="width:100%; height:<%= espace %>" class="d-none d-sm-block"></div>
     <table class="my-2" style="width:90%; margin-left:5%; margin-right:5%;">
     <tr>
-    <td class="text-center" style="width:25%;"><%= image_tag("Gold.svg", height: 40, alt: "Médailles d'or", title: "Médailles d'or") %></td>
-    <td class="text-center" style="width:25%;"><%= image_tag("Silver.svg", height: 40, alt: "Médailles d'argent", title: "Médailles d'argent") %></td>
-    <td class="text-center" style="width:25%;"><%= image_tag("Bronze.svg", height: 40, alt: "Médailles de bronze", title: "Médailles de bronze") %></td>
-    <td class="text-center" style="width:25%;"><%= image_tag("MH.svg", height: 34, alt: "Mentions honorables", title: "Mentions honorables", style: "margin-top:5px;") %></td>
+    <td class="text-center pt-1" style="width:25%;"><%= image_tag("Gold.svg", height: 40, alt: "Médailles d'or", title: "Médailles d'or") %></td>
+    <td class="text-center pt-1" style="width:25%;"><%= image_tag("Silver.svg", height: 40, alt: "Médailles d'argent", title: "Médailles d'argent") %></td>
+    <td class="text-center pt-1" style="width:25%;"><%= image_tag("Bronze.svg", height: 40, alt: "Médailles de bronze", title: "Médailles de bronze") %></td>
+    <td class="text-center pt-1" style="width:25%;"><%= image_tag("MH.svg", height: 34, alt: "Mentions honorables", title: "Mentions honorables", style: "margin-top:5px;") %></td>
     </tr>
     <tr>
     <% num_medals = @user.contestscores.group(:medal).count %>
