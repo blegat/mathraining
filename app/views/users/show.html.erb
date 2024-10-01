@@ -143,20 +143,20 @@
   <% can_send_message = false %>
 <% end %>
 <div class="g-col-12 g-col-lg-<%= largeur %> basic_container text-center p-1">
-  <table class="m-0 mt-2 mb-2 p-0" style="width:100%; height:90px;">
+  <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
   <tr><td class="px-2" style="font-size:20px;"><%= raw(@user.colored_name) %></td></tr>
   <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %> <%= "<span class='text-color-red'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if @signed_in && current_user.sk.root? && @user.is_banned %></td></tr>
   <tr><td class="pt-2"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
   </table>
   <% if @signed_in && current_user.sk != @user %>
-    <%= button_to "Envoyer un message", new_discussion_path, :method => :get, :params => { qui: @user }, :class => "btn btn-ld-light-dark mb-2", :style => "width:170px; margin-top:4px;", :disabled => !@signed_in %>
+    <%= button_to "Envoyer un message", new_discussion_path, :method => :get, :params => { qui: @user }, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:170px;", :disabled => !@signed_in %>
   <% end %> 
 </div>
   
 <% if !@user.admin %>
   <div class="g-col-12 g-col-sm-6 g-col-lg-3 basic_container text-center p-1">
-    <table class="m-0 mt-2 p-0" style="width:100%; height:90px;">
+    <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
       <tr>
       <td class="mytitle">Score</td>
       <td class="myvalue user_color"><%= actualrating %></td>
@@ -175,9 +175,9 @@
     
     <% if @signed_in && @user != current_user.sk %>
       <% if !current_user.sk.followed_users.exists?(@user.id) %>
-        <%= button_to "Suivre", user_add_followed_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mb-2 mt-2", :style => "width:140px;" %>
+        <%= button_to "Suivre", user_add_followed_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:140px;" %>
       <% else %>
-        <%= button_to "Ne plus suivre", user_remove_followed_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mb-2 mt-2", :style => "width:140px;" %>
+        <%= button_to "Ne plus suivre", user_remove_followed_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:140px;" %>
       <% end %>
     <% end %>
   </div>
