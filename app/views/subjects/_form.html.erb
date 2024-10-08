@@ -95,8 +95,8 @@ function checkWepion() {
 
 <!-- Catégorie -->
 <div class="mb-2">
-  <%= f.label :category_id, :class => "form-label", :disabled => current_user.other %>
-  <%= f.select(:category_id, grouped_options_for_select([['En dehors des cours', liste], ['En lien avec les cours', liste2]], selected_category), {}, { :class => "form-select", :style => "width:100%; max-width:400px;", :disabled => current_user.other, :onchange => ("javascript: checkCategory();") }) %>
+  <%= f.label :category_id, :class => "form-label" %>
+  <%= f.select(:category_id, grouped_options_for_select([['En dehors des cours', liste], ['En lien avec les cours', liste2]], selected_category), {}, { :class => "form-select", :style => "width:100%; max-width:400px;", :onchange => ("javascript: checkCategory();") }) %>
 </div>
 
 <% selected_chapter = 0 %>
@@ -140,8 +140,8 @@ function checkWepion() {
 <% end %>
 
 <div class="mb-2">
-  <%= f.label :chapter_id, :class => "form-label", :disabled => current_user.other, :style => "#{'display:none;' if !seechap}", :id => "label_chap" %>
-  <%= f.select(:chapter_id, options_for_select(listechap, selected_chapter).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{'display:none;' if !seechap}", :disabled => current_user.other, :onchange => ("javascript: checkChapter();")}) %>
+  <%= f.label :chapter_id, :class => "form-label", :style => "#{'display:none;' if !seechap}", :id => "label_chap" %>
+  <%= f.select(:chapter_id, options_for_select(listechap, selected_chapter).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{'display:none;' if !seechap}", :onchange => ("javascript: checkChapter();")}) %>
 </div>
 
 <% selected_exercise = 0 %>
@@ -203,10 +203,10 @@ function checkWepion() {
 <% end %>
 
 <div class="mb-2">
-  <%= f.label :question_id, :class => "form-label", :disabled => current_user.other, :style => "#{ 'display:none;' if !seeexo }", :id => "label_exo" %>
+  <%= f.label :question_id, :class => "form-label", :style => "#{ 'display:none;' if !seeexo }", :id => "label_exo" %>
   <p id="alert-no-exercise-access" style="<%= 'display:none;' if exovisibles %>" class="mb-2 text-color-red">Vous n'avez pas accès aux exercices de ce chapitre.</p>
   <p id="alert-some-exercise-hidden" style="<%= 'display:none;' if !some_exo_hidden %>" class="mb-2 text-color-orange">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
-  <%= f.select(:question_id, options_for_select(listeexo, selected_exercise).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :disabled => current_user.other, :onchange => ("javascript: checkQuestion();")}) %>
+  <%= f.select(:question_id, options_for_select(listeexo, selected_exercise).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :onchange => ("javascript: checkQuestion();")}) %>
 </div>
 
 
@@ -256,17 +256,17 @@ function checkWepion() {
 
 
 <div class="mb-2">
-  <%= f.label :problem_id, :class => "form-label", :disabled => current_user.other, :style => "#{ 'display:none;' if !seeprob }", :id => "label_prob" %>
+  <%= f.label :problem_id, :class => "form-label", :style => "#{ 'display:none;' if !seeprob }", :id => "label_prob" %>
   <p id="alert-no-problem-access" class="text-color-red" style="<%= 'display:none;' if probvisibles %>">Vous n'avez pas accès aux problèmes.</p>
   <p id="alert-some-problem-hidden" class="text-color-orange" style="<%= 'display:none;' if !some_prob_hidden %>">Certains problèmes n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
-  <%= f.select(:problem_id, options_for_select(listeprob, selected_problem).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeprob }", :disabled => current_user.other, :onchange => ("javascript: checkProblem();")}) %>
+  <%= f.select(:problem_id, options_for_select(listeprob, selected_problem).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeprob }", :onchange => ("javascript: checkProblem();")}) %>
 </div>
 
 
 <!-- Titre -->
 <% if selected_exercise > 0 || selected_problem > 0 %>
   <div class="mb-2">
-    <%= f.label :title, :class => "form-label", :disabled => current_user.other %>
+    <%= f.label :title, :class => "form-label" %>
     <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled", :value => forced_title %>
     <%= hidden_field_tag "subject[title]", forced_title, :id => "hidden_title" %>
   </div>
@@ -278,8 +278,8 @@ function checkWepion() {
     <% tit = @subject.title %>
   <% end %>
   <div class="mb-2">
-    <%= f.label :title, :class => "form-label", :disabled => current_user.other %>
-    <%= f.text_field :title, :disabled => current_user.other, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :value => tit %>
+    <%= f.label :title, :class => "form-label" %>
+    <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :value => tit %>
     <%= hidden_field_tag "", "", :id => "hidden_title" %>
   </div>
 <% end %>
@@ -291,10 +291,10 @@ function checkWepion() {
     <% if erreur %>
       <% cont = @error_params[:content] if @error_params.has_key?(:content) %>
     <% end %>
-    <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label", :disabled => current_user.other %>
+    <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label" %>
     <%= render 'shared/preview', postfix: postfix %>
     <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
+    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()", :value => cont %>
     <script>initAndUpdatePreviewSafeWhenPossible(false, true)</script>
   </div>
 <% end %>
@@ -309,7 +309,7 @@ function checkWepion() {
   <% end %>
   <div class="form-check mb-1">
   <label class="form-check-label">
-    <%= f.check_box :for_correctors, :class => "form-check-input", :disabled => current_user.other, :checked => checked %>
+    <%= f.check_box :for_correctors, :class => "form-check-input", :checked => checked %>
     Cochez si ce sujet est réservé aux correcteurs.
   </label>
   </div>
@@ -327,7 +327,7 @@ function checkWepion() {
   <% end %>
   <div class="form-check mb-1">
    <label class="form-check-label">
-    <%= f.check_box :important, :class => "form-check-input", :disabled => current_user.other, :checked => checked %>
+    <%= f.check_box :important, :class => "form-check-input", :checked => checked %>
     Cochez si ce sujet doit toujours apparaître en premier lieu.
   </label>
   </div>
@@ -344,7 +344,7 @@ function checkWepion() {
   <% end %>
   <div class="form-check mb-1">
   <label class="form-check-label">
-    <%= f.check_box :for_wepion, :class => "form-check-input", :disabled => current_user.other, :checked => wepion_checked, :onchange => ("javascript: checkWepion();") %>
+    <%= f.check_box :for_wepion, :class => "form-check-input", :checked => wepion_checked, :onchange => ("javascript: checkWepion();") %>
     Cochez si ce sujet est destiné aux étudiants de Wépion.
   </label>
   </div>
@@ -355,7 +355,7 @@ function checkWepion() {
 <% if current_user.sk.root && !is_edit %>
   <div class="form-check mb-1" style="<%= "display:none;" unless wepion_checked == "checked" or Rails.env.test? %>" id="emailWepionDiv">
   <label class="form-check-label">
-    <%= check_box_tag "emailWepion", "A", false, :class => "form-check-input", :disabled => current_user.other %>
+    <%= check_box_tag "emailWepion", "A", false, :class => "form-check-input" %>
     Prévenir tous les élèves de Wépion de ce nouveau message par e-mail.
   </label>
   </div>
