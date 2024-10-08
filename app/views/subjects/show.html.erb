@@ -1,6 +1,6 @@
 <% provide(:title, @subject.title.html_safe) %>
 
-<% @messages = @subject.messages.order(:created_at).paginate(:page => @page, :per_page => 10) %>
+<% @messages = @subject.messages.order(:created_at).paginate(:page => @page, :per_page => 3) %>
 
 <% @nb_indice = 1 %>
 
@@ -47,8 +47,8 @@
 </h1>
 
 <center>
-  <%= will_paginate @messages, list_classes: %w(pagination justify-content-center d-none d-sm-flex mt-3 mb-n1), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
-  <%= will_paginate @messages, :class => "d-block d-sm-none mt-3 mb-n1", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+  <%= will_paginate @messages, list_classes: %w(pagination justify-content-center d-none d-sm-flex mt-3 mb-1), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+  <%= will_paginate @messages, :class => "d-block d-sm-none mt-3 mb-0", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->
