@@ -1,6 +1,6 @@
 <% provide(:title, @subject.title.html_safe) %>
 
-<% @messages = @subject.messages.order(:created_at).paginate(:page => @page, :per_page => 3) %>
+<% @messages = @subject.messages.order(:created_at).paginate(:page => @page, :per_page => 10) %>
 
 <% @nb_indice = 1 %>
 
