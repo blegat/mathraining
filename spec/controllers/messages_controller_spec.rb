@@ -31,6 +31,11 @@ describe MessagesController, type: :controller, message: true do
         expect(response).to render_template 'errors/access_refused'
       end
       
+      it "renders the error page for soft_destroy" do
+        put :soft_destroy, params: {message_id: message.id}
+        expect(response).to render_template 'errors/access_refused'
+      end
+      
       it "renders the error page for destroy" do
         delete :destroy, params: {id: message.id}
         expect(response).to render_template 'errors/access_refused'
@@ -61,6 +66,11 @@ describe MessagesController, type: :controller, message: true do
       
       it "renders the error page for update" do
         patch :update, params: {id: message.id, message: FactoryGirl.attributes_for(:message)}
+        expect(response).to render_template 'errors/access_refused'
+      end
+      
+      it "renders the error page for soft_destroy" do
+        put :soft_destroy, params: {message_id: message.id}
         expect(response).to render_template 'errors/access_refused'
       end
       

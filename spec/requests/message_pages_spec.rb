@@ -67,6 +67,18 @@ describe "Message pages", message: true do
         end
       end
       
+      describe "and soft deletes his message" do
+        before do
+          click_link "LinkSoftDeleteMessage#{mes_user.id}"
+          mes_user.reload
+        end
+        specify do
+          expect(page).to have_success_message("Votre message a bien été supprimé.")
+          expect(page).to have_content("Ce message a été supprimé.")
+          expect(mes_user.erased).to eq(true)
+        end
+      end
+      
       describe "and writes a new message" do
         before do
           fill_in "MathInputNewMessage", with: content2
@@ -120,8 +132,8 @@ describe "Message pages", message: true do
         should have_no_button("SubmitMessage#{mes_other_admin.id}")
       end
       
-      specify { expect { click_link("LinkDeleteMessage#{mes.id}") }.to change(Message, :count).by(-1) }
-      specify {	expect { click_link("LinkDeleteMessage#{mes_admin.id}") }.to change(Message, :count).by(-1) }
+      specify { expect { click_link("LinkDeleteMessage#{mes.id}") }.to change(Message, :count).by(-1).and change(Subject, :count).by(0) }
+      specify {	expect { click_link("LinkDeleteMessage#{mes_admin.id}") }.to change(Message, :count).by(-1).and change(Subject, :count).by(0) }
       
       describe "and edits the message of a student" do
         before do
@@ -146,6 +158,21 @@ describe "Message pages", message: true do
           expect(mes_admin.content).to eq(content)
         end
       end
+      
+      describe "and soft deletes the message of a student" do
+        let!(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: mes) }
+        before do
+          click_link "LinkSoftDeleteMessage#{mes.id}"
+          mes.reload
+        end
+        specify do
+          expect(page).to have_success_message("Votre message a bien été supprimé.")
+          expect(page).to have_content("Ce message a été supprimé.")
+          expect(mes.erased).to eq(true)
+          expect(mes.myfiles.count).to eq(0)
+          expect(mes.fakefiles.count).to eq(1) # Files are automatically fake deleted
+        end
+      end
     end
   end
 
@@ -160,7 +187,7 @@ describe "Message pages", message: true do
         should have_button("SubmitMessage#{mes_other_root.id}")
       end
       
-      specify { expect { click_link("LinkDeleteMessage#{mes_other_root.id}") }.to change(Message, :count).by(-1) }
+      specify { expect { click_link("LinkDeleteMessage#{mes_other_root.id}") }.to change(Message, :count).by(-1).and change(Subject, :count).by(-1) } # because we delete the only message
       
       describe "and edits the message of another root" do
         before do

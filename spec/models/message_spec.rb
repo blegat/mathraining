@@ -7,6 +7,7 @@
 #  subject_id :integer
 #  user_id    :integer
 #  created_at :datetime         not null
+#  erased     :boolean          default(FALSE)
 #
 require "spec_helper"
 
@@ -47,6 +48,7 @@ describe Message, message: true do
     let!(:admin) { FactoryGirl.create(:admin) }
     let!(:root) { FactoryGirl.create(:root) }
     let!(:message_user) { FactoryGirl.create(:message, user: user) }
+    let!(:message_user_erased) { FactoryGirl.create(:message, user: user, erased: true) }
     let!(:message_admin) { FactoryGirl.create(:message, user: admin) }
     let!(:message_root) { FactoryGirl.create(:message, user: root) }
     let!(:message_auto) { FactoryGirl.create(:message, user_id: 0) }
@@ -56,6 +58,11 @@ describe Message, message: true do
       expect(message_user.can_be_updated_by(user2)).to eq(false)
       expect(message_user.can_be_updated_by(admin)).to eq(true)
       expect(message_user.can_be_updated_by(root)).to eq(true)
+      
+      expect(message_user_erased.can_be_updated_by(user)).to eq(false)
+      expect(message_user_erased.can_be_updated_by(user2)).to eq(false)
+      expect(message_user_erased.can_be_updated_by(admin)).to eq(true)
+      expect(message_user_erased.can_be_updated_by(root)).to eq(true)
       
       expect(message_admin.can_be_updated_by(user)).to eq(false)
       expect(message_admin.can_be_updated_by(admin)).to eq(true)

@@ -9,6 +9,7 @@
 #  subject_id :integer
 #  user_id    :integer
 #  created_at :datetime         not null
+#  erased     :boolean          default(FALSE)
 #
 class Message < ActiveRecord::Base
 
@@ -36,7 +37,7 @@ class Message < ActiveRecord::Base
     if user.root? # Roots can update everything
       return true
     elsif self.user_id > 0 # Not an automatic message
-      if self.user == user # One can always update his own message
+      if self.user == user && !self.erased? # One can always update his own message (unless it is erased)
         return true
       elsif user.admin? && !self.user.admin? # Admins can only update messages from non-admins
         return true

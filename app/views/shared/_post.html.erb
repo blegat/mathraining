@@ -37,22 +37,28 @@
 
   <!-- Contenu du message -->
   <div class="content">
+  <% if kind == "message" && ms.erased? %>
+    <i>Ce message a été supprimé.</i>
+  <% else %>
+    <% theid = -ms.id if kind == "submission" || kind == "contestsolution" || kind == "submission_in_test" %>
+    <% theid = ms.id if kind == "message" || kind == "correction" || kind == "contestcorrection" %>
   
-  <% theid = -ms.id if kind == "submission" || kind == "contestsolution" || kind == "submission_in_test" %>
-  <% theid = ms.id if kind == "message" || kind == "correction" || kind == "contestcorrection" %>
+    <%= render '/shared/text_show_hide_code', content: ms.content, id: theid, replace_indice: (kind == "message") %>
   
-  <%= render '/shared/text_show_hide_code', content: ms.content, id: theid, replace_indice: (kind == "message") %>
-  
-  <!-- Pièces jointes -->
-  <%= render 'shared/show_files', s: ms %>  
+    <!-- Pièces jointes -->
+    <%= render 'shared/show_files', s: ms %>
+  <% end %>
   </div>
   
   <% if can_edit %>
     <div class="modify">
       <% if kind == "message" %>
         <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)' id='LinkEdit<%= postfix %>'>Modifier ce message</a>
+        <% unless ms.erased? %>
+          | <%= link_to "Supprimer ce message", message_soft_destroy_path(ms), method: :put, id: "LinkSoftDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" } %>
+        <% end %>
         <% if current_user.sk.admin? %>
-           | <%= link_to "Supprimer ce message", message_path(ms), method: :delete, id: "LinkDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>
+           | <%= link_to "Supprimer totalement ce message", message_path(ms), method: :delete, id: "LinkDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>
         <% end %>
       <% elsif kind == "contestsolution" %>
         <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>

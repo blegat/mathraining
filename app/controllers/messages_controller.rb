@@ -2,15 +2,16 @@
 class MessagesController < ApplicationController
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
   
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy]
+  before_action :signed_in_user_danger, only: [:create, :update, :soft_destroy, :destroy]
   before_action :admin_user, only: [:destroy]
   
   before_action :get_message, only: [:update, :destroy]
+  before_action :get_message2, only: [:soft_destroy]
   before_action :get_subject, only: [:create]
-  before_action :get_q, only: [:create, :update, :destroy]
+  before_action :get_q, only: [:create, :update, :soft_destroy, :destroy]
   
   before_action :user_that_can_see_subject, only: [:create]
-  before_action :user_that_can_update_message, only: [:update, :destroy]
+  before_action :user_that_can_update_message, only: [:update, :soft_destroy, :destroy]
   before_action :notskin_user, only: [:create, :update]
   
 
@@ -88,17 +89,34 @@ class MessagesController < ApplicationController
     
     flash[:success] = "Votre message a bien été modifié."
     @message.reload
-    redirect_to subject_path(@message.subject, :page => @message.page, :q => @q, :msg => @message.id)
+    redirect_to subject_path(@subject, :page => @message.page, :q => @q, :msg => @message.id)
+  end
+  
+  # Erase a message without really deleting it (will still appear but shown as deleted)
+  def soft_destroy
+    @message.update_attribute(:erased, true)
+    
+    @message.myfiles.each do |f|
+      f.fake_del
+    end
+    
+    flash[:success] = "Votre message a bien été supprimé."
+    redirect_to subject_path(@subject, :page => @message.page, :q => @q, :msg => @message.id)
   end
 
   # Delete a message
   def destroy
-    subject = @message.subject
     page = @message.page
     @message.destroy
     
-    page = [1,page-1].max if (subject.messages.count <= (page-1) * 10) # if last message is destroyed and it was alone on its page
-    redirect_to subject_path(subject, :page => page, :q => @q)
+    @subject.reload
+    if @subject.messages.count == 0
+      @subject.destroy
+      redirect_to subjects_path(:q => @q)
+    else
+      page = [1,page-1].max if (@subject.messages.count <= (page-1) * 10) # if last message is destroyed and it was alone on its page
+      redirect_to subject_path(@subject, :page => page, :q => @q)
+    end
   end
 
   private
@@ -108,6 +126,13 @@ class MessagesController < ApplicationController
   # Get the message
   def get_message
     @message = Message.find_by_id(params[:id])
+    return if check_nil_object(@message)
+    @subject = @message.subject
+  end
+  
+  # Get the message (v2)
+  def get_message2
+    @message = Message.find_by_id(params[:message_id])
     return if check_nil_object(@message)
     @subject = @message.subject
   end

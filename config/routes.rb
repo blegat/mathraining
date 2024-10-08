@@ -159,7 +159,9 @@ Rails.application.routes.draw do
   end
   
   # Messages
-  resources :messages, only: [:update, :destroy]
+  resources :messages, only: [:update, :destroy] do
+    match '/soft_destroy', to: 'messages#soft_destroy', :via => [:put]
+  end
   
   # Categories (for subjects)
   resources :categories, only: [:index, :create, :update, :destroy]
