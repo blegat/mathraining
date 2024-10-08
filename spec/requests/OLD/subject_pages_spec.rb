@@ -253,7 +253,7 @@ describe "Subject pages" do
         specify do
           expect(sub.title).to eq(newtitle)
           expect(sub.category).to eq(category2)
-          expect(page).to have_success_message("Votre sujet a bien été modifié.")
+          expect(page).to have_success_message("Le sujet a bien été modifié.")
           expect(page).to have_content("#{newtitle} - #{category2.name}")
         end
       end
@@ -600,7 +600,7 @@ describe "Subject pages" do
         sub_question.reload
       end
       specify do
-        expect(page).to have_success_message("Votre sujet a bien été modifié.")
+        expect(page).to have_success_message("Le sujet a bien été modifié.")
         expect(sub_question.title).to eq(newtitle)
         expect(sub_question.section).to eq(other_section)
         expect(sub_question.chapter).to eq(nil)
@@ -623,7 +623,7 @@ describe "Subject pages" do
         sub_category.reload
       end
       specify do
-        expect(page).to have_success_message("Votre sujet a bien été modifié.")
+        expect(page).to have_success_message("Le sujet a bien été modifié.")
         expect(sub_category.title).to eq(newtitle)
         expect(sub_category.section).to eq(section)
         expect(sub_category.chapter).to eq(other_chapter)
@@ -646,7 +646,7 @@ describe "Subject pages" do
         sub_chapter.reload
       end
       specify do
-        expect(page).to have_success_message("Votre sujet a bien été modifié.")
+        expect(page).to have_success_message("Le sujet a bien été modifié.")
         expect(sub_chapter.title).to eq("Exercice 1")
         expect(sub_chapter.section).to eq(section)
         expect(sub_chapter.chapter).to eq(other_chapter)
@@ -669,7 +669,7 @@ describe "Subject pages" do
         sub_chapter.reload
       end
       specify do
-        expect(page).to have_success_message("Votre sujet a bien été modifié.")
+        expect(page).to have_success_message("Le sujet a bien été modifié.")
         expect(sub_chapter.title).to eq("Problème \##{other_problem.number}")
         expect(sub_chapter.section).to eq(section)
         expect(sub_chapter.chapter).to eq(nil)

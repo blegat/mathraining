@@ -181,7 +181,7 @@ class SubjectsController < ApplicationController
       
     @subject.save
     
-    flash[:success] = "Votre sujet a bien été modifié."
+    flash[:success] = "Le sujet a bien été modifié."
     redirect_to subject_path(@subject, :q => @q, :msg => 0)
   end
 
