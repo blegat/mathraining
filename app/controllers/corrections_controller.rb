@@ -155,10 +155,6 @@ class CorrectionsController < ApplicationController
       @submission.followings.update_all(:read => false)
     end
 
-    # Change the value of last_comment_time
-    @submission.last_comment_time = @correction.created_at
-    @submission.save
-
     flash[:success] = "Réponse postée#{m}."
     redirect_to problem_path(@problem, :sub => @submission)
   end

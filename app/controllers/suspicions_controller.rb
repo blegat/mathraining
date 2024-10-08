@@ -66,7 +66,7 @@ class SuspicionsController < ApplicationController
         if @submission.suspicions.where(:status => :confirmed).count == 0
           @submission.status = (@submission.corrections.where("user_id != ?", @submission.user).count == 0 ? :waiting : :wrong)
           last_comment = @submission.corrections.order(:id).last
-          @submission.update_attribute(:last_comment_time, (last_comment.nil? ? @submission.created_at : last_comment.created_at))
+          @submission.update_last_comment
           if @submission.waiting?
             # Delete the 'following' that was added automatically when submission was marked as plagiarized
             @submission.followings.destroy_all

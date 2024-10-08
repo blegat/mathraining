@@ -25,11 +25,13 @@ var Rolling = {
       var body = $('body,html');
       var yyy = document.getElementById("form" + m).offsetTop - 60;
       body.animate({scrollTop:yyy}, this.rollingTime/2);
-      PreviewSafe.Init(m);
-      if (!enableHiddenText) {
-        PreviewSafe.SetHiddenText(false);
+      if (document.getElementById("MathInput" + m)) {
+        PreviewSafe.Init(m);
+        if (!enableHiddenText) {
+          PreviewSafe.SetHiddenText(false);
+        }
+        PreviewSafe.Update();
       }
-      PreviewSafe.Update();
     });
     return false;
   },
@@ -42,11 +44,13 @@ var Rolling = {
     MathJax.Hub.Queue(function () {
       var yyy = document.getElementById("form" + m).offsetTop - 60;
       body.scrollTop(yyy);
-      PreviewSafe.Init(m);
-      if (!enableHiddenText) {
-        PreviewSafe.SetHiddenText(false);
+      if (document.getElementById("MathInput" + m)) {
+        PreviewSafe.Init(m);
+        if (!enableHiddenText) {
+          PreviewSafe.SetHiddenText(false);
+        }
+        PreviewSafe.Update();
       }
-      PreviewSafe.Update();
     });
   },
 

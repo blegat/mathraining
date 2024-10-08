@@ -57,9 +57,6 @@ class MessagesController < ApplicationController
       end
     end
 
-    @subject.update(:last_comment_time => DateTime.now,
-                    :last_comment_user => current_user.sk)
-
     if current_user.sk.root?
       if params.has_key?("emailWepion")
         User.where(:group => ["A", "B"]).each do |u|
@@ -99,15 +96,6 @@ class MessagesController < ApplicationController
     subject = @message.subject
     page = @message.page
     @message.destroy
-
-    if subject.messages.count > 0
-      last = subject.messages.order("created_at").last
-      subject.update(:last_comment_time    => last.created_at,
-                     :last_comment_user_id => last.user_id)
-    else
-      subject.update(:last_comment_time    => subject.created_at,
-                     :last_comment_user_id => subject.user_id)
-    end
     
     page = [1,page-1].max if (subject.messages.count <= (page-1) * 10) # if last message is destroyed and it was alone on its page
     redirect_to subject_path(subject, :page => page, :q => @q)

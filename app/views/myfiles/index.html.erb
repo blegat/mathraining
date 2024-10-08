@@ -62,7 +62,7 @@
   <td class="d-none d-lg-table-cell">
   <% if about.nil? %>
     <span class="text-color-red;">Erreur</span>
-  <% elsif type == "Subject" || type == "Message" %>
+  <% elsif type == "Message" %>
     Forum
   <% elsif type == "Submission" && about.draft? %>
     Brouillon

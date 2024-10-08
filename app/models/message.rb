@@ -14,7 +14,7 @@ class Message < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY
 
-  belongs_to :subject
+  belongs_to :subject, optional: true # For creation of first message before subject is created
   belongs_to :user, optional: true # For automatic messages
   has_many :myfiles, as: :myfiletable, dependent: :destroy
   has_many :fakefiles, as: :fakefiletable, dependent: :destroy
@@ -24,21 +24,21 @@ class Message < ActiveRecord::Base
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :user_id, presence: true
   
+  # BEFORE, AFTER
+  
+  after_create { self.subject.update_last_comment }
+  before_destroy { self.subject.update_last_comment }
+  
   # OTHER METHODS
   
   # Tells if the message can be updated by the given user
   def can_be_updated_by(user)
-    return Message.message_can_be_updated_by_user(self, user)
-  end
-  
-  # Implementation of can_be_updated_by, also used by Subject class
-  def self.message_can_be_updated_by_user(message, user)
     if user.root? # Roots can update everything
       return true
-    elsif message.user_id > 0 # Not an automatic message
-      if message.user == user # One can always update his own message
+    elsif self.user_id > 0 # Not an automatic message
+      if self.user == user # One can always update his own message
         return true
-      elsif user.admin? && !message.user.admin? # Admins can only update messages from non-admins
+      elsif user.admin? && !self.user.admin? # Admins can only update messages from non-admins
         return true
       end
     end

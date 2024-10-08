@@ -1,7 +1,5 @@
 <% postfix = "EditSubject" %>
 
-<% can_edit = s.can_be_updated_by(current_user.sk) %>
-
 <div id="the<%= postfix %>" class="myoverflow">
 
 <% if !@subject.question.nil? %>
@@ -12,11 +10,25 @@
   <%= render 'subjects/contest', contest: @subject.contest %>
 <% end %>
 
-<%= render 'shared/post', ms: s, kind: "subject", can_edit: can_edit, postfix: postfix %>
+<% if current_user.sk.admin? %>
+  <div class="mt-2 text-center">
+    <a href="#" onclick='return Rolling.develop("<%= postfix %>", true)'>Modifier ce sujet</a>
+    | <%= link_to "Supprimer ce sujet", subject_path(@subject), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce sujet et tous les messages associés ?" }  %>
+    | <a href='#' id='showform' onclick='document.getElementById("migration_form").style.display="inline"; return false;' style='display:inline;'>Migrer ce sujet</a>
+      <span id='migration_form' style="<%= 'display:none;' if !Rails.env.test? %>">
+      <%= form_tag subject_migrate_path(@subject), :method => :put, :class => "mt-1" do %>
+        Migrer ce sujet vers le sujet numéro
+        <%= hidden_field_tag "q", @q %>
+        <%= number_field_tag "migreur", nil, min: 1, max: 10000, style: "width:80px;" %>
+        <%= submit_tag "Migrer", data: { confirm: "Êtes-vous sûr de vouloir migrer ce sujet ? Êtes-vous sûr de l'id du sujet receveur ?"} %>
+      <% end %>
+      </span>
+  </div>
+<% end %>
 
 </div>
 
-<% if can_edit %>
+<% if current_user.sk.admin? %>
   <div id="form<%= postfix %>" class="myoverflow px-1" style="height:0px;">
   <%= render 'subjects/edit', s: s, postfix: postfix %>
   </div>

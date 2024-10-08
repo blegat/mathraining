@@ -116,7 +116,8 @@ describe "Submission pages" do
         
         describe "and sends new submission while another one was recently plagiarized" do # Can only be done with several tabs
           before do
-            FactoryGirl.create(:submission, problem: problem, user: user, status: :plagiarized, last_comment_time: DateTime.now - 3.months)
+            plagiarism = FactoryGirl.create(:submission, problem: problem, user: user, status: :plagiarized)
+            plagiarism.update_attribute(:last_comment_time, DateTime.now - 3.months)
             fill_in "MathInput", with: newsubmission
             click_button "Soumettre cette solution"
           end
@@ -131,7 +132,8 @@ describe "Submission pages" do
         
         describe "and sends new submission while another one was plagiarized long ago" do
           before do
-            FactoryGirl.create(:submission, problem: problem, user: user, status: :plagiarized, last_comment_time: DateTime.now - 2.years)
+            plagiarism = FactoryGirl.create(:submission, problem: problem, user: user, status: :plagiarized)
+            plagiarism.update_attribute(:last_comment_time, DateTime.now - 2.years)
             fill_in "MathInput", with: newsubmission
             click_button "Soumettre cette solution"
           end
@@ -146,7 +148,8 @@ describe "Submission pages" do
         
         describe "and sends new submission while another one was recently closed" do # Can only be done with several tabs
           before do
-            FactoryGirl.create(:submission, problem: problem, user: user, status: :closed, last_comment_time: DateTime.now - 3.days)
+            closed = FactoryGirl.create(:submission, problem: problem, user: user, status: :closed)
+            closed.update_attribute(:last_comment_time, DateTime.now - 3.days)
             fill_in "MathInput", with: newsubmission
             click_button "Soumettre cette solution"
           end
@@ -161,7 +164,8 @@ describe "Submission pages" do
         
         describe "and sends new submission while another one was closed long ago" do
           before do
-            FactoryGirl.create(:submission, problem: problem, user: user, status: :closed, last_comment_time: DateTime.now - 2.weeks)
+            closed = FactoryGirl.create(:submission, problem: problem, user: user, status: :closed)
+            closed.update_attribute(:last_comment_time, DateTime.now - 2.weeks)
             fill_in "MathInput", with: newsubmission
             click_button "Soumettre cette solution"
           end

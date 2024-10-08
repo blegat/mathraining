@@ -604,12 +604,10 @@ describe "User pages" do
     end
     
     describe "deletes a student with some created stuffs" do
-      let!(:sub) { FactoryGirl.create(:subject, user: zero_user) }
-      let!(:mes) { FactoryGirl.create(:message, subject: sub, user: other_zero_user) }
-      let!(:mes2) { FactoryGirl.create(:message, user: zero_user) }
+      let!(:mes) { FactoryGirl.create(:message, user: zero_user) }
       let!(:disc) { create_discussion_between(zero_user, other_zero_user, "Coucou mon ami", "Salut mon poto") }
       before { visit user_path(zero_user) }
-      specify { expect { click_link "Supprimer" }.to change(User, :count).by(-1) .and change(Subject, :count).by(-1) .and change(Message, :count).by(-2) .and change(Discussion, :count).by(-1) .and change(Link, :count).by(-2) .and change(Tchatmessage, :count).by(-2) }
+      specify { expect { click_link "Supprimer" }.to change(User, :count).by(-1) .and change(Subject, :count).by(0) .and change(Message, :count).by(-1) .and change(Discussion, :count).by(-1) .and change(Link, :count).by(-2) .and change(Tchatmessage, :count).by(-2) }
     end
 
     describe "deletes a student while a root has his skin" do

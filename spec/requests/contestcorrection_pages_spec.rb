@@ -16,7 +16,7 @@ describe "Contestcorrection pages", contestcorrection: true do
   let!(:user_organizer) { FactoryGirl.create(:advanced_user) }
   
   let!(:contest) { FactoryGirl.create(:contest, status: :in_progress) }
-  let!(:contestsubject) { FactoryGirl.create(:subject, contest: contest, user_id: 0) }
+  let!(:contestsubject) { FactoryGirl.create(:subject, contest: contest) }
   
   let!(:contestproblem_finished) { FactoryGirl.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: :in_correction) }
   

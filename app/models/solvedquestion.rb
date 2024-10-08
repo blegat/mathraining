@@ -94,21 +94,14 @@ class Solvedquestion < ActiveRecord::Base
       
       subject = Subject.where(:subject_type => :corrector_alerts).first
       if subject.nil?
-        Subject.create(:user_id              => 0,
-                       :title                => "Comptes suspects",
-                       :content              => forum_message,
-                       :for_correctors       => true,
-                       :subject_type         => :corrector_alerts,
-                       :last_comment_time    => DateTime.now,
-                       :last_comment_user_id => 0,
-                       :category             => Category.where(:name => "Mathraining").first)
-      else
-        m = Message.create(:user_id    => 0,
-                           :subject_id => subject.id,
-                           :content    => forum_message)
-        subject.update(:last_comment_time => m.created_at,
-                       :last_comment_user_id => 0)
+        subject = Subject.create(:title          => "Comptes suspects",
+                                 :for_correctors => true,
+                                 :subject_type   => :corrector_alerts,
+                                 :category       => Category.where(:name => "Mathraining").first)
       end
+      Message.create(:user_id    => 0,
+                     :subject_id => subject.id,
+                     :content    => forum_message)
     end
   end
 

@@ -976,7 +976,7 @@
       <%= link_to "Supprimer les données personnelles", user_destroydata_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :method => :put, :class => "text-color-red" %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
-      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a ouvert #{@user.subjects.count} sujet(s) et a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :class => "text-color-red" %>
+      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :class => "text-color-red" %>
     <% end %>
     <% if current_user.sk.root? && @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>

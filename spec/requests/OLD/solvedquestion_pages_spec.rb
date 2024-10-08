@@ -396,18 +396,18 @@ describe "Solvedquestion pages" do
       end
       specify do
         expect(Subject.where(:subject_type => :corrector_alerts).count).to eq(1)
-        expect(Subject.last.user_id).to eq(0)
-        expect(Subject.last.content).to include(cheater.name)
-        expect(Subject.last.content).to include("a résolu 6 exercices en 3 minutes et 8 exercices en 10 minutes")
-        expect(Subject.last.content).to include("Il a résolu 10 exercices après moins d'une minute de réflexion, dont un en 5 secondes")
-        expect(Subject.last.messages.count).to eq(0) # No message for the moment
+        expect(Subject.last.messages.count).to eq(1)
+        expect(Subject.last.messages.last.user_id).to eq(0)
+        expect(Subject.last.messages.last.content).to include(cheater.name)
+        expect(Subject.last.messages.last.content).to include("a résolu 6 exercices en 3 minutes et 8 exercices en 10 minutes")
+        expect(Subject.last.messages.last.content).to include("Il a résolu 10 exercices après moins d'une minute de réflexion, dont un en 5 secondes")
       end
       
       describe "and searches a second time" do
         before { Solvedquestion.detect_suspicious_users }
         specify do
           expect(Subject.where(:subject_type => :corrector_alerts).count).to eq(1)
-          expect(Subject.last.messages.count).to eq(1)
+          expect(Subject.last.messages.count).to eq(2)
           expect(Message.last.user_id).to eq (0)
           expect(Message.last.content).to include(cheater.name)
           expect(Message.last.content).to include("a résolu 6 exercices en 3 minutes et 8 exercices en 10 minutes")

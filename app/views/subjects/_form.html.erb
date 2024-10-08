@@ -285,23 +285,19 @@ function checkWepion() {
 <% end %>
 
 <!-- Message -->
-<div class="mb-2">
-  <% cont = "" %>
-  <% if erreur %>
-    <% cont = @error_params[:content] if @error_params.has_key?(:content) %>
-  <% elsif is_edit %>
-    <% cont = @subject.content %>
-  <% end %>
-  <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label", :disabled => current_user.other %>
-  <%= render 'shared/preview', postfix: postfix %>
-  <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
-  <% if is_edit %>
-    <!-- Do not call initAndUpdatePreviewSafeWhenPossible(): it will be done only after rolling to show the form -->
-  <% else %>
+<% unless is_edit %>
+  <div class="mb-2">
+    <% cont = "" %>
+    <% if erreur %>
+      <% cont = @error_params[:content] if @error_params.has_key?(:content) %>
+    <% end %>
+    <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label", :disabled => current_user.other %>
+    <%= render 'shared/preview', postfix: postfix %>
+    <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
+    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()", :disabled => current_user.other, :value => cont %>
     <script>initAndUpdatePreviewSafeWhenPossible(false, true)</script>
-  <% end %>
-</div>
+  </div>
+<% end %>
 
 <!-- Case correcteurs -->
 <% if current_user.sk.admin || current_user.sk.corrector %>

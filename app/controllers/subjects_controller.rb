@@ -4,15 +4,13 @@ class SubjectsController < ApplicationController
   
   before_action :signed_in_user, only: [:index, :show, :new, :unfollow]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate, :follow]
-  before_action :admin_user, only: [:destroy, :migrate]
+  before_action :admin_user, only: [:destroy, :update, :migrate]
   before_action :notskin_user, only: [:create, :update]
   
   before_action :get_subject, only: [:show, :update, :destroy]
   before_action :get_subject2, only: [:migrate, :follow, :unfollow]
   
   before_action :user_that_can_see_subject, only: [:show, :follow]
-  before_action :user_that_can_update_subject, only: [:update, :destroy]
-  
   
   before_action :get_q, only: [:index, :show, :new, :create, :update, :destroy, :migrate]
   
@@ -71,20 +69,20 @@ class SubjectsController < ApplicationController
     end
     
     if search_category >= 0
-      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, category: search_category).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, category: search_category).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, category: search_category).order("last_comment_time DESC").includes(:last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, category: search_category).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:last_comment_user, :category, :section, :chapter)
     elsif search_section >= 0
-      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section).order("last_comment_time DESC").includes(:last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:last_comment_user, :category, :section, :chapter)
     elsif search_section_problems >= 0
-      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("last_comment_time DESC").includes(:last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, section: search_section_problems).where.not(problem_id: nil).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:last_comment_user, :category, :section, :chapter)
     elsif search_chapter >= 0
-      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, chapter: search_chapter).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, chapter: search_chapter).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, chapter: search_chapter).order("last_comment_time DESC").includes(:last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values, chapter: search_chapter).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:last_comment_user, :category, :section, :chapter)
     else # Search nothing
-      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").includes(:user, :last_comment_user, :category, :section, :chapter)
-      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:user, :last_comment_user, :category, :section, :chapter)
+      @importants = Subject.where(important: true,  for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").includes(:last_comment_user, :category, :section, :chapter)
+      @subjects   = Subject.where(important: false, for_correctors: correctors_allowed_values, for_wepion: wepion_allowed_values).order("last_comment_time DESC").paginate(:page => params[:page], :per_page => 15).includes(:last_comment_user, :category, :section, :chapter)
     end
   end
 
@@ -108,14 +106,13 @@ class SubjectsController < ApplicationController
   def create    
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
-    allowed_params = [:title, :content]
+    allowed_params = [:title]
     allowed_params << :for_correctors if (current_user.sk.corrector? || current_user.sk.admin?)
     allowed_params << :important if current_user.sk.admin?
     allowed_params << :for_wepion if (current_user.sk.wepion? || current_user.sk.admin?)
     @subject = Subject.new(params.require(:subject).permit(allowed_params))
-    @subject.user = current_user.sk
-    @subject.last_comment_time = DateTime.now
-    @subject.last_comment_user = current_user.sk
+    @message = Message.new(content: params[:subject][:content])
+    @message.user = current_user.sk
     
     @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
 
@@ -132,14 +129,19 @@ class SubjectsController < ApplicationController
     
     # Invalid subject
     error_create(@subject.errors.full_messages) and return if !@subject.valid?
+    
+    # Invalid message
+    error_create(@message.errors.full_messages) and return if !@message.valid?
 
     # Attached files
     attach = create_files
     error_create([@file_error]) and return if !@file_error.nil?
 
     @subject.save
+    @message.subject_id = @subject.id
+    @message.save
     
-    attach_files(attach, @subject)
+    attach_files(attach, @message)
 
     if current_user.sk.root?
       if params.has_key?("emailWepion")
@@ -156,15 +158,16 @@ class SubjectsController < ApplicationController
   # Update a subject (send the form)
   def update    
     params[:subject][:title].strip! if !params[:subject][:title].nil?
-    params[:subject][:content].strip! if !params[:subject][:content].nil?
     @subject.title = params[:subject][:title]
-    @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
-    @subject.content = params[:subject][:content]
     @subject.for_correctors = params[:subject][:for_correctors] if !params[:subject][:for_correctors].nil? && (current_user.sk.corrector? || current_user.sk.admin?)
     @subject.important = params[:subject][:important] if !params[:subject][:important].nil? && current_user.sk.admin?
     @subject.for_wepion = params[:subject][:for_wepion] if !params[:subject][:for_wepion].nil? && (current_user.sk.wepion? || current_user.sk.admin?)
     
     @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
+    
+    if @subject.title.size > 0
+      @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
+    end
     
     # Invalid CSRF token
     error_update([get_csrf_error_message]) and return if @invalid_csrf_token
@@ -175,14 +178,10 @@ class SubjectsController < ApplicationController
     # Set associated object (category, section, chapter, exercise, problem)
     err = set_associated_object
     error_update([err]) and return if !err.empty?
-
-    # Attached files
-    update_files(@subject)
-    error_update([@file_error]) and return if !@file_error.nil?
       
     @subject.save
     
-    flash[:success] = "Votre sujet a bien été modifié."
+    flash[:success] = "Le sujet a bien été modifié."
     redirect_to subject_path(@subject, :q => @q, :msg => 0)
   end
 
@@ -203,34 +202,18 @@ class SubjectsController < ApplicationController
       redirect_to @subject and return
     end
 
-    if @migreur.created_at > @subject.created_at
-      flash[:danger] = "Le sujet le plus récent doit être migré vers le sujet le moins récent."
-      redirect_to @subject and return
-    end
-    
-    premier_message = Message.create(:content    => @subject.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]",
-                                     :created_at => @subject.created_at,
-                                     :user       => @subject.user,
-                                     :subject    => @migreur)
-
-    @subject.myfiles.each do |f|
-      f.update_attribute(:myfiletable, premier_message)
-    end
-
-    @subject.fakefiles.each do |f|
-      f.update_attribute(:fakefiletable, premier_message)
-    end
-
-    @subject.messages.each do |m|
+    first_message = true
+    @subject.messages.order(:created_at).each do |m|
+      if first_message
+        m.update_attribute(:content, m.content + "\n\n[i][u]Remarque[/u] : Ce message faisait partie d'un autre sujet appelé '#{@subject.title}' et a été migré ici par un administrateur.[/i]")
+        first_message = false
+      end
       m.update_attribute(:subject, @migreur)
     end
+    
+    @migreur.update_last_comment
 
-    if @subject.last_comment_time > @migreur.last_comment_time
-      @migreur.update(:last_comment_time    => @subject.last_comment_time,
-                      :last_comment_user_id => @subject.last_comment_user_id)
-    end
-
-    @subject.reload # Important because otherwise the "destroy" below also destroys the old messages and files of the subject
+    @subject.reload # Important because otherwise the "destroy" below also destroys the old messages of the subject
     @subject.destroy
 
     redirect_to subject_path(@migreur, :q => @q)
@@ -273,16 +256,7 @@ class SubjectsController < ApplicationController
     @q = params[:q] if params.has_key?:q
     @q = nil if @q == "all" # avoid q = "all" when there is no filter
   end
-  
-  ########## CHECK METHODS ##########
 
-  # Check that current user can update the subject
-  def user_that_can_update_subject
-    unless @subject.can_be_updated_by(current_user.sk)
-      render 'errors/access_refused' and return
-    end
-  end
-  
   ########## HELPER METHODS ##########
   
   # Helper method to set the object associated to a subject

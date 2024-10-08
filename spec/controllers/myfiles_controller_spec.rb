@@ -4,7 +4,7 @@ require "spec_helper"
 describe MyfilesController, type: :controller, myfile: true do
 
   let(:admin) { FactoryGirl.create(:admin) }
-  let(:myfile) { FactoryGirl.create(:subjectmyfile) }
+  let(:myfile) { FactoryGirl.create(:messagemyfile) }
   
   context "if the user is not a root" do
     before do

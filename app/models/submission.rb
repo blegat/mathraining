@@ -42,6 +42,7 @@ class Submission < ActiveRecord::Base
   
   # BEFORE, AFTER
   
+  after_create :update_last_comment
   before_destroy { self.notified_users.clear }
 
   # VALIDATIONS
@@ -91,6 +92,16 @@ class Submission < ActiveRecord::Base
     return true  if self.correct?                    # One can see all other correct submissions (if he solved the problem)
     return true  if user.corrector? && self.visible? # Corrector can see all visible submissions (if he solved the problem)
     return false
+  end
+  
+  # Update last_comment_time and last_comment_user
+  def update_last_comment
+    last_correction = self.corrections.order(:created_at).last
+    if last_correction.nil?
+      self.update(:last_comment_time => self.created_at)
+    else
+      self.update(:last_comment_time => last_correction.created_at)
+    end
   end
   
   # Mark the submission as wrong
