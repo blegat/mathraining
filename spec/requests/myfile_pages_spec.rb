@@ -23,7 +23,6 @@ describe "Myfile pages", myfile: true do
   let(:discussion) { create_discussion_between(root, user, "Bonjour", "Salut") }
   let(:tchatmessage) { discussion.tchatmessages.first }
   
-  let(:subjectmyfile) { FactoryGirl.create(:subjectmyfile, myfiletable: sub) }
   let(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: message) }
   let(:submissionmyfile) { FactoryGirl.create(:submissionmyfile, myfiletable: submission) }
   let(:correctionmyfile) { FactoryGirl.create(:correctionmyfile, myfiletable: correction) }
@@ -40,39 +39,12 @@ describe "Myfile pages", myfile: true do
     before { sign_in root }
     
     describe "visits all files page" do
-      let!(:subjectmyfile) { FactoryGirl.create(:subjectmyfile, myfiletable: sub) } # Force its creation
+      let!(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: message) } # Force its creation
       before { visit myfiles_path }
       it do
         should have_selector("h1", text: "Pièces jointes")
-        should have_link("Voir", href: myfile_path(subjectmyfile))
-        should have_link(href: rails_blob_url(subjectmyfile.file, :only_path => true, :disposition => 'attachment'))
-      end
-    end
-    
-    describe "visits one subject file" do
-      before { visit myfile_path(subjectmyfile) }
-      it do
-        should have_current_path(subject_path(sub))
-        should have_link(subjectmyfile.file.filename.to_s, href: rails_blob_url(subjectmyfile.file, :only_path => true, :disposition => 'attachment'))
-        should have_link("Supprimer le contenu", href: myfile_fake_delete_path(subjectmyfile))
-      end
-      
-      describe "and fake deletes it" do
-        before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(subjectmyfile)) }
-        it do
-          should have_current_path(subject_path(sub, :q => "all"))
-          should have_success_message("Contenu de la pièce jointe supprimé.")
-          should have_content("désactivée")
-        end
-      end
-      
-      describe "and fake deletes it while it was deleted by someone else" do
-        before do
-          id = subjectmyfile.id
-          subjectmyfile.destroy
-          click_link("Supprimer le contenu", href: myfile_fake_delete_path(id))
-        end
-        it { should have_content(error_access_refused) }
+        should have_link("Voir", href: myfile_path(messagemyfile))
+        should have_link(href: rails_blob_url(messagemyfile.file, :only_path => true, :disposition => 'attachment'))
       end
     end
     

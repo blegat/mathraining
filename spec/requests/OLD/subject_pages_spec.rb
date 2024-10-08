@@ -6,11 +6,8 @@ describe "Subject pages" do
   subject { page }
 
   let(:root) { FactoryGirl.create(:root) }
-  let(:other_root) { FactoryGirl.create(:root) }
   let(:admin) { FactoryGirl.create(:admin) }
-  let(:other_admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:advanced_user) } # Rating 200 is needed to have access to problems
-  let(:other_user) { FactoryGirl.create(:user) }
   
   let!(:category) { FactoryGirl.create(:category) }
   let!(:category2) { FactoryGirl.create(:category) }
@@ -20,18 +17,14 @@ describe "Subject pages" do
   let!(:question) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 1) }
   let!(:problem) { FactoryGirl.create(:problem, section: section, online: true) }
   
-  let(:sub_user) { FactoryGirl.create(:subject, user: user) }
-  let(:sub_other_user) { FactoryGirl.create(:subject, user: other_user) }
-  let(:sub_admin) { FactoryGirl.create(:subject, user: admin) }
-  let(:sub_other_admin) { FactoryGirl.create(:subject, user: other_admin) }
-  let(:sub_other_root) { FactoryGirl.create(:subject, user: other_root) }
+  let(:sub) { FactoryGirl.create(:subject) }
   
-  let(:sub_nothing) { FactoryGirl.create(:subject, user: user) }
-  let(:sub_category) { FactoryGirl.create(:subject, user: other_user, category: category) }
-  let(:sub_section) { FactoryGirl.create(:subject, user: admin, section: section) }
-  let(:sub_chapter) { FactoryGirl.create(:subject, user: other_admin, section: section, chapter: chapter) }
-  let(:sub_question) { FactoryGirl.create(:subject, user: root, section: section, chapter: chapter, question: question) }
-  let(:sub_problem) { FactoryGirl.create(:subject, user: other_root, section: section, problem: problem) }
+  let(:sub_nothing) { FactoryGirl.create(:subject) }
+  let(:sub_category) { FactoryGirl.create(:subject, category: category) }
+  let(:sub_section) { FactoryGirl.create(:subject, section: section) }
+  let(:sub_chapter) { FactoryGirl.create(:subject, section: section, chapter: chapter) }
+  let(:sub_question) { FactoryGirl.create(:subject, section: section, chapter: chapter, question: question) }
+  let(:sub_problem) { FactoryGirl.create(:subject, section: section, problem: problem) }
   
   let(:title) { "Mon titre" }
   let(:content) { "Mon message" }
@@ -55,7 +48,7 @@ describe "Subject pages" do
     end
     
     describe "tries to visit a subject" do
-      before { visit subject_path(sub_user) }
+      before { visit subject_path(sub) }
       it { should have_content(error_must_be_connected) }
     end
   end
@@ -173,49 +166,11 @@ describe "Subject pages" do
       end
     end
     
-    describe "visits his subject page" do
-      before { visit subject_path(sub_user, :page => "last") }
+    describe "visits a subject page" do
+      before { visit subject_path(sub, :page => "last") }
       it do
-        should have_content(sub_user.title)
-        should have_link("Modifier ce sujet")
-        should have_button("Répondre")
-      end
-      
-      describe "and edits it" do
-        before do
-          select category2.name, from: "Catégorie"
-          fill_in "Titre", with: newtitle
-          fill_in "MathInputEditSubject", with: newcontent
-          click_button "Modifier"
-        end
-        it do
-          should have_success_message("Votre sujet a bien été modifié.")
-          should have_content("#{newtitle} - #{category2.name}")
-          should have_selector("div", text: newcontent)
-        end
-      end
-      
-      describe "and tries to edit it with empty content" do
-        before do
-          select category2.name, from: "Catégorie"
-          fill_in "Titre", with: newtitle
-          fill_in "MathInputEditSubject", with: ""
-          click_button "Modifier"
-          sub_user.reload
-        end
-        specify do
-          expect(page).to have_error_message("Message doit être rempli")
-          expect(sub_user.title).not_to eq(newtitle)
-        end
-      end
-    end
-    
-    describe "visits the subject of another user" do
-      before { visit subject_path(sub_other_user) }
-      it do
-        should have_content(sub_other_user.title)
+        should have_content(sub.title)
         should have_no_link("Modifier ce sujet")
-        should have_no_button("Modifier")
         should have_button("Répondre")
       end
       
@@ -224,7 +179,7 @@ describe "Subject pages" do
         specify do
           expect(page).to have_success_message("Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet.")
           expect(page).to have_link("link_unfollow")
-          expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(true)
+          expect(user.followed_subjects.exists?(sub.id)).to eq(true)
         end
         
         describe "and unfollows the subject" do
@@ -232,53 +187,46 @@ describe "Subject pages" do
           specify do
             expect(page).to have_success_message("Vous ne recevrez maintenant plus d'e-mail concernant ce sujet.")
             expect(page).to have_link("link_follow")
-            expect(user.followed_subjects.exists?(sub_other_user.id)).to eq(false)
+            expect(user.followed_subjects.exists?(sub.id)).to eq(false)
           end
         end
-      end
-      
-      describe "try to unfollow a non-existing subject" do
-        before { visit subject_unfollow_path(6543) }
-        it { should have_content(error_access_refused) }
       end
     end
     
     describe "tries to visit a wepion subject" do
-      before { sub_other_user.update_attribute(:for_wepion, true) }
+      before { sub.update_attribute(:for_wepion, true) }
       
       describe "while not in wepion" do
-        before { visit subject_path(sub_other_user) }
+        before { visit subject_path(sub) }
         it { should have_content(error_access_refused) }
       end
       
       describe "while in wepion" do
         before do
           user.update_attribute(:wepion, true)
-          visit subject_path(sub_other_user)
+          visit subject_path(sub)
         end
         it do
-          should have_content(sub_other_user.title)
-          should have_content(sub_other_user.content)
+          should have_content(sub.title)
         end
       end
     end
     
     describe "tries to visit a corrector subject" do
-      before { sub_other_user.update_attribute(:for_correctors, true) }
+      before { sub.update_attribute(:for_correctors, true) }
       
       describe "while not coorrector" do
-        before { visit subject_path(sub_other_user) }
+        before { visit subject_path(sub) }
         it { should have_content(error_access_refused) }
       end
       
       describe "while corrector" do
         before do
           user.update_attribute(:corrector, true)
-          visit subject_path(sub_other_user)
+          visit subject_path(sub)
         end
         it do
-          should have_content(sub_other_user.title)
-          should have_content(sub_other_user.content)
+          should have_content(sub.title)
         end
       end
     end
@@ -287,8 +235,8 @@ describe "Subject pages" do
   describe "admin" do
     before { sign_in admin }
 
-    describe "visits the subject of a student" do
-      before { visit subject_path(sub_user) }
+    describe "visits a subject" do
+      before { visit subject_path(sub) }
       specify do
         expect(page).to have_link("Modifier ce sujet")
         expect(page).to have_link("Supprimer ce sujet")
@@ -299,127 +247,78 @@ describe "Subject pages" do
         before do
           select category2.name, from: "Catégorie"
           fill_in "Titre", with: newtitle
-          fill_in "MathInputEditSubject", with: newcontent
           click_button "Modifier"
-          sub_user.reload
+          sub.reload
         end
         specify do
-          expect(sub_user.title).to eq(newtitle)
-          expect(sub_user.content).to eq(newcontent)
-          expect(sub_user.category).to eq(category2)
+          expect(sub.title).to eq(newtitle)
+          expect(sub.category).to eq(category2)
           expect(page).to have_success_message("Votre sujet a bien été modifié.")
           expect(page).to have_content("#{newtitle} - #{category2.name}")
-          expect(page).to have_selector("div", text: newcontent)
         end
-      end
-    end
-
-    describe "visits his subject" do
-      before { visit subject_path(sub_admin) }
-      specify do
-        expect(page).to have_link("Supprimer ce sujet")
-        expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1)
-      end
-    end
-    
-    describe "tries to edit the subject of another admin" do
-      before { visit subject_path(sub_other_admin) }
-      it do
-        should have_no_link("Modifier ce sujet")
-        should have_no_button("Modifier")
       end
     end
 
     describe "deletes a subject with a message (DEPENDENCY)" do
-      let!(:mes) { FactoryGirl.create(:message, subject: sub_user) }
-      before { visit subject_path(sub_user) }
+      let!(:mes) { FactoryGirl.create(:message, subject: sub) }
+      before { visit subject_path(sub) }
       specify {	expect { click_link("Supprimer ce sujet") }.to change(Message, :count).by(-1) }
     end
     
     describe "visits a wepion subject" do
       before do
-        sub_other_user.update_attribute(:for_wepion, true)
-        visit subject_path(sub_other_user)
+        sub.update_attribute(:for_wepion, true)
+        visit subject_path(sub)
       end
       it do
-        should have_content(sub_other_user.title)
-        should have_content(sub_other_user.content)
+        should have_content(sub.title)
       end
     end
     
     describe "visits a corrector subject" do
       before do
-        sub_other_user.update_attribute(:for_correctors, true)
-        visit subject_path(sub_other_user)
+        sub.update_attribute(:for_correctors, true)
+        visit subject_path(sub)
       end
       it do
-        should have_content(sub_other_user.title)
-        should have_content(sub_other_user.content)
+        should have_content(sub.title)
       end
     end
   end
 
   describe "root" do
     before { sign_in root }
-
-    describe "visits the subject of another root" do
-      before { visit subject_path(sub_other_root) }
-      specify do
-        expect(page).to have_link("Modifier ce sujet")
-        expect(page).to have_link("Supprimer ce sujet")
-        expect { click_link("Supprimer ce sujet") }.to change(Subject, :count).by(-1)
-      end
-      
-      describe "and edits it" do
-        before do
-          select category2.name, from: "Catégorie"
-          fill_in "Titre", with: newtitle
-          fill_in "MathInputEditSubject", with: newcontent
-          click_button "Modifier"
-        end
-        it do
-          should have_success_message("Votre sujet a bien été modifié.")
-          should have_content("#{newtitle} - #{category2.name}")
-          should have_selector("div", text: newcontent)
-        end
-      end
-    end
     
-    describe "visits the subject of a user" do
-      let!(:mes) { FactoryGirl.create(:message, subject: sub_other_user) }
+    describe "visits a subject" do
+      let!(:sub1) { FactoryGirl.create(:subject) }
+      let!(:mes1) { FactoryGirl.create(:message, subject: sub1) }
+      let!(:sub2) { FactoryGirl.create(:subject) }
+      let!(:mes2) { FactoryGirl.create(:message, subject: sub2) }
       before do
-        # Set last_comment_time and last_comment_user_id correctly for sub_user and sub_other_user
-        sub_user.update(:last_comment_time => sub_user.created_at,
-                        :last_comment_user_id => sub_user.user_id)
-        sub_other_user.update(:last_comment_time => mes.created_at,
-                              :last_comment_user_id => mes.user_id)
-        visit subject_path(sub_other_user)
+        visit subject_path(sub2)
       end
       it { should have_link("Migrer ce sujet") }
       
       describe "and migrates it" do
-        let!(:sub_user) { FactoryGirl.create(:subject, user: user, created_at: sub_other_user.created_at - 1.day) } # Force the creation
-        let!(:old_title) { sub_other_user.title }
-        let!(:old_content) { sub_other_user.content }
+        let!(:old_title) { sub2.title }
         let!(:old_num_subjects) { Subject.count }
         let!(:old_num_messages) { Message.count }
         before do
-          fill_in "migreur", with: sub_user.id
+          fill_in "migreur", with: sub1.id
           click_button "Migrer"
-          sub_user.reload
-          mes.reload
+          sub1.reload
+          mes1.reload
+          mes2.reload
         end
         specify do
-          expect(page).to have_content(sub_user.title)
-          expect(page).to have_content(old_content)
-          expect(page).to have_content(mes.content)
+          expect(page).to have_content(sub1.title)
+          expect(page).to have_content(mes1.content)
           expect(Subject.count).to eq(old_num_subjects - 1)
-          expect(Message.count).to eq(old_num_messages + 1)
-          expect(Message.order(:id).last.content).to include(old_content)
-          expect(Message.order(:id).last.content).to include(old_title) # In the remark saying that the message was migrated
-          expect(Message.order(:id).last.subject).to eq(sub_user)
-          expect(mes.subject).to eq(sub_user)
-          expect(sub_user.last_comment_user_id).to eq(mes.user_id)
+          expect(Message.count).to eq(old_num_messages)
+          expect(mes2.content).to include(old_title) # In the remark saying that the message was migrated
+          expect(mes2.subject).to eq(sub1)
+          expect(mes1.subject).to eq(sub1)
+          expect(sub1.last_comment_user_id).to eq(mes2.user_id)
         end
       end
       
@@ -429,15 +328,6 @@ describe "Subject pages" do
           click_button "Migrer"
         end
         it { should have_error_message("Ce sujet n'existe pas.") }
-      end
-      
-      describe "and migrates it to an older subject" do
-        before do
-          sub_user.update_attribute(:created_at, sub_other_user.created_at + 1.day)
-          fill_in "migreur", with: sub_user.id
-          click_button "Migrer"
-        end
-        it { should have_error_message("Le sujet le plus récent doit être migré vers le sujet le moins récent.") }
       end
     end
   end
@@ -461,9 +351,9 @@ describe "Subject pages" do
       let(:newsubject) { Subject.order(:id).last }
       specify do
         expect(newsubject.title).to eq(title)
-        expect(newsubject.content).to eq(content)
-        expect(newsubject.myfiles.count).to eq(1)
-        expect(newsubject.myfiles.first.file.filename.to_s).to eq(image1)
+        expect(newsubject.messages.first.content).to eq(content)
+        expect(newsubject.messages.first.myfiles.count).to eq(1)
+        expect(newsubject.messages.first.myfiles.first.file.filename.to_s).to eq(image1)
       end
     end
     
@@ -484,55 +374,6 @@ describe "Subject pages" do
       end
     end
     
-    describe "modifies a subject with a fake file" do
-      let!(:subjectmyfile) { FactoryGirl.create(:subjectmyfile, myfiletable: sub_user) }
-      before do
-        subjectmyfile.fake_del
-        visit subject_path(sub_user)
-        wait_for_js_imports
-        click_link("Modifier ce sujet")
-        wait_for_ajax
-        fill_in "MathInputEditSubject", with: newcontent
-        uncheck "prevFakeFileEditSubject_#{Fakefile.order(:id).last.id}"
-        click_button "addFileEditSubject" # Ajouter une pièce jointe
-        wait_for_ajax
-        attach_file("fileEditSubject_1", File.absolute_path(attachments_folder + image2))
-        click_button "Modifier"
-        sub_user.reload
-      end
-      specify do
-        expect(sub_user.content).to eq(newcontent)
-        expect(sub_user.fakefiles.count).to eq(0)
-        expect(sub_user.myfiles.count).to eq(1)
-        expect(sub_user.myfiles.first.file.filename.to_s).to eq(image2)
-      end
-    end
-    
-    describe "modifies a subject with too many files" do # 3 x image1 should do > 15 ko, which is the limit in test mode
-      let!(:subjectmyfile) { FactoryGirl.create(:subjectmyfile, myfiletable: sub_user) }
-      before do
-        visit subject_path(sub_user)
-        wait_for_js_imports
-        click_link("Modifier ce sujet")
-        wait_for_ajax
-        fill_in "MathInputEditSubject", with: newcontent
-        click_button "addFileEditSubject" # Ajouter une pièce jointe
-        wait_for_ajax
-        attach_file("fileEditSubject_1", File.absolute_path(attachments_folder + image1))
-        click_button "addFileEditSubject" # Ajouter une pièce jointe
-        wait_for_ajax
-        attach_file("fileEditSubject_2", File.absolute_path(attachments_folder + image1))
-        click_button "Modifier"
-        sub_user.reload
-      end
-      specify do
-        expect(page).to have_error_message("Vos pièces jointes font plus de 15 ko au total")
-        expect(sub_user.content).not_to eq(newcontent)
-        expect(sub_user.myfiles.count).to eq(1)
-        expect(sub_user.myfiles.first.file.filename.to_s).to eq(image1)
-      end
-    end
-    
     describe "creates a subject in relation with a section" do
       before do
         visit new_subject_path
@@ -546,7 +387,7 @@ describe "Subject pages" do
       specify do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq(title)
-        expect(newsubject.content).to eq(content)
+        expect(newsubject.messages.first.content).to eq(content)
         expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(nil)
@@ -570,7 +411,7 @@ describe "Subject pages" do
       specify do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq(title)
-        expect(newsubject.content).to eq(content)
+        expect(newsubject.messages.first.content).to eq(content)
         expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(chapter)
@@ -597,7 +438,7 @@ describe "Subject pages" do
       specify do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq("Exercice 2")
-        expect(newsubject.content).to eq(content)
+        expect(newsubject.messages.first.content).to eq(content)
         expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(chapter)
@@ -624,7 +465,7 @@ describe "Subject pages" do
       specify do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq("Problème \##{problem2.number}")
-        expect(newsubject.content).to eq(content)
+        expect(newsubject.messages.first.content).to eq(content)
         expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(nil)
@@ -659,7 +500,7 @@ describe "Subject pages" do
       specify do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq(title)
-        expect(newsubject.content).to eq(content)
+        expect(newsubject.messages.first.content).to eq(content)
         expect(newsubject.category).to eq(category2)
         expect(newsubject.section).to eq(nil)
         expect(newsubject.chapter).to eq(nil)
@@ -682,7 +523,7 @@ describe "Subject pages" do
       specify do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq(title)
-        expect(newsubject.content).to eq(content)
+        expect(newsubject.messages.first.content).to eq(content)
         expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(chapter)
@@ -705,7 +546,7 @@ describe "Subject pages" do
       specify do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq("Problème \##{problem2.number}")
-        expect(newsubject.content).to eq(content)
+        expect(newsubject.messages.first.content).to eq(content)
         expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(nil)
@@ -728,7 +569,7 @@ describe "Subject pages" do
       specify do
         expect(page).to have_success_message("Votre sujet a bien été posté.")
         expect(newsubject.title).to eq("Exercice 2")
-        expect(newsubject.content).to eq(content)
+        expect(newsubject.messages.first.content).to eq(content)
         expect(newsubject.category).to eq(nil)
         expect(newsubject.section).to eq(section)
         expect(newsubject.chapter).to eq(chapter)
@@ -755,14 +596,12 @@ describe "Subject pages" do
         select other_section.name, from: "Catégorie"
         wait_for_ajax
         fill_in "Titre", with: newtitle
-        fill_in "MathInputEditSubject", with: newcontent
         click_button "Modifier"
         sub_question.reload
       end
       specify do
         expect(page).to have_success_message("Votre sujet a bien été modifié.")
         expect(sub_question.title).to eq(newtitle)
-        expect(sub_question.content).to eq(newcontent)
         expect(sub_question.section).to eq(other_section)
         expect(sub_question.chapter).to eq(nil)
         expect(sub_question.question).to eq(nil)
@@ -780,14 +619,12 @@ describe "Subject pages" do
         wait_for_ajax
         select other_chapter.name, from: "Chapitre"
         fill_in "Titre", with: newtitle
-        fill_in "MathInputEditSubject", with: newcontent
         click_button "Modifier"
         sub_category.reload
       end
       specify do
         expect(page).to have_success_message("Votre sujet a bien été modifié.")
         expect(sub_category.title).to eq(newtitle)
-        expect(sub_category.content).to eq(newcontent)
         expect(sub_category.section).to eq(section)
         expect(sub_category.chapter).to eq(other_chapter)
         expect(sub_category.question).to eq(nil)
@@ -805,14 +642,12 @@ describe "Subject pages" do
         wait_for_ajax
         select "Exercice 1", from: "Exercice"
         wait_for_ajax # Titre should be automatically filled with "Exercice 1"
-        fill_in "MathInputEditSubject", with: newcontent
         click_button "Modifier"
         sub_chapter.reload
       end
       specify do
         expect(page).to have_success_message("Votre sujet a bien été modifié.")
         expect(sub_chapter.title).to eq("Exercice 1")
-        expect(sub_chapter.content).to eq(newcontent)
         expect(sub_chapter.section).to eq(section)
         expect(sub_chapter.chapter).to eq(other_chapter)
         expect(sub_chapter.question).to eq(other_question)
@@ -830,14 +665,12 @@ describe "Subject pages" do
         wait_for_ajax
         select "Problème \##{other_problem.number}", from: "Problème"
         wait_for_ajax # Titre should be automatically filled with "Problème #..."
-        fill_in "MathInputEditSubject", with: newcontent
         click_button "Modifier"
         sub_chapter.reload
       end
       specify do
         expect(page).to have_success_message("Votre sujet a bien été modifié.")
         expect(sub_chapter.title).to eq("Problème \##{other_problem.number}")
-        expect(sub_chapter.content).to eq(newcontent)
         expect(sub_chapter.section).to eq(section)
         expect(sub_chapter.chapter).to eq(nil)
         expect(sub_chapter.question).to eq(nil)
@@ -853,7 +686,6 @@ describe "Subject pages" do
         wait_for_ajax
         select "Problèmes de #{section.name.downcase}", from: "Chapitre"
         fill_in "Titre", with: newtitle
-        fill_in "MathInputEditSubject", with: newcontent
         click_button "Modifier"
         sub_question.reload
       end

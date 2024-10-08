@@ -20,8 +20,6 @@ class MyfilesController < ApplicationController
       redirect_to problem_path(about.problem, :sub => about)
     elsif type == "Correction"
       redirect_to problem_path(about.submission.problem, :sub => about.submission)
-    elsif type == "Subject"
-      redirect_to about
     elsif type == "Message"
       redirect_to subject_path(about.subject, :page => about.page, :msg => about.id)
     elsif type == "Contestsolution"
@@ -38,12 +36,7 @@ class MyfilesController < ApplicationController
     @fakething = @myfile.fake_del
     flash[:success] = "Contenu de la pièce jointe supprimé."
 
-    if @fakething.fakefiletable_type == "Subject"
-      @subject = @fakething.fakefiletable
-      @q = "all"
-      @q = params[:q] if params.has_key?:q
-      redirect_to subject_path(@subject, :q => @q)
-    elsif @fakething.fakefiletable_type == "Message"
+    if @fakething.fakefiletable_type == "Message"
       @message = @fakething.fakefiletable
       @q = "all"
       @q = params[:q] if params.has_key?:q
@@ -80,34 +73,5 @@ class MyfilesController < ApplicationController
     @myfile = Myfile.find_by_id(params[:myfile_id])
     return if check_nil_object(@myfile)
   end
-  
-  ########## CHECK METHODS ##########
-
-  # Check we have access to the file
-  # Not used anymore with ActiveStorage, but maybe we should still use it in some way?
-  #def have_access
-  #  type = @myfile.myfiletable_type
-  #  if type == "Subject" || type == "Message"
-  #    # Only admins and correctors can see corrector subjects - Only admins and wepion students can see wepion subjects
-  #    subject = (type == "Subject" ? @myfile.myfiletable : @myfile.myfiletable.subject)
-  #    redirect_to root_path if ((!current_user.sk.admin? && !current_user.sk.corrector?) && subject.for_correctors) || ((!current_user.sk.admin? && !current_user.sk.wepion?) && subject.for_wepion)
-  #  elsif type == "Tchatmessage"
-  #    # Only roots and participants to the discussion
-  #    tchatmessage = @myfile.myfiletable
-  #    redirect_to root_path if (!current_user.sk.root? && !current_user.sk.discussions.include?(tchatmessage.discussion))
-  #  elsif type == "Submission" || type == "Correction"
-  #    # Only admins, submission user, correctors having solved the problem, and users having solved the problem (if submission is correct)
-  #    submission = (type == "Submission" ? @myfile.myfiletable : @myfile.myfiletable.submission)
-  #    redirect_to root_path unless (current_user.sk.admin? || current_user.sk == submission.user || current_user.sk.pb_solved?(submission.problem) && (current_user.sk.corrector? || submission.correct?))
-  #  elsif type == "Contestsolution" || type == "Contestcorrection"
-  #    # Only organizers and solution user, or anybody if corrections are finished (status >= :corrected) and solution has 7
-  #    # Only exception is that the solution user cannot see the correction if it is not published yet (status <= :in_correction)
-  #    contestsolution = (type == "Contestsolution" ? @myfile.myfiletable : @myfile.myfiletable.contestsolution)
-  #    contestproblem = contestsolution.contestproblem
-  #    contest = contestproblem.contest
-  #    redirect_to root_path unless (contest.is_organized_by_or_root(current_user.sk) || contestsolution.user == current_user.sk || (contestproblem.at_least(:corrected) && contestsolution.score == 7))
-  #    redirect_to root_path if (type == "Contestcorrection" && contestsolution.user == current_user.sk && contestproblem.at_most(:in_correction))
-  #  end
-  #end
 
 end

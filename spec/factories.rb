@@ -136,9 +136,6 @@ FactoryGirl.define do
   
   # Myfile
   factory :myfile do
-    factory :subjectmyfile do
-      association :myfiletable, factory: :subject
-    end
     factory :messagemyfile do
       association :myfiletable, factory: :message
     end
@@ -262,10 +259,6 @@ FactoryGirl.define do
   # Subject
   factory :subject do
     sequence(:title) { |n| "Titre #{n}" }
-    sequence(:content) { |n| "Contenu #{n}" }
-    association :user
-    last_comment_time DateTime.now
-    association :last_comment_user, :factory => :user
     association :category
     chapter_id nil
     section_id nil
@@ -283,7 +276,6 @@ FactoryGirl.define do
     association :problem
     association :user
     sequence(:content) { |n| "Interesting submission #{n}" }
-    last_comment_time DateTime.now
   end
   
   # Suspicion

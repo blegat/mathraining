@@ -239,5 +239,29 @@ describe "Message pages", message: true do
         expect(mes_user.myfiles.second.file.filename.to_s).to eq(image2)
       end
     end
+    
+    describe "modifies a message with a fake file" do
+      let!(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: mes_user) }
+      before do
+        messagemyfile.fake_del
+        visit subject_path(sub)
+        wait_for_js_imports
+        click_link("LinkEditMessage#{mes_user.id}")
+        wait_for_ajax
+        fill_in "MathInputMessage#{mes_user.id}", with: content2
+        uncheck "prevFakeFileMessage#{mes_user.id}_#{Fakefile.order(:id).last.id}"
+        click_button "addFileMessage#{mes_user.id}" # Ajouter une pièce jointe
+        wait_for_ajax
+        attach_file("fileMessage#{mes_user.id}_1", File.absolute_path(attachments_folder + image2))
+        click_button "Modifier"
+        mes_user.reload
+      end
+      specify do
+        expect(mes_user.content).to eq(content2)
+        expect(mes_user.fakefiles.count).to eq(0)
+        expect(mes_user.myfiles.count).to eq(1)
+        expect(mes_user.myfiles.first.file.filename.to_s).to eq(image2)
+      end
+    end
   end
 end

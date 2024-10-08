@@ -1,7 +1,6 @@
 <!-- Formulaire -->
 <%= form_for @subject, :url => subject_path(@subject, :action => :update, :q => @q), :html => { :multipart => true, :class => "mt-2" } do |f| %>
   <%= render 'subjects/form', f: f, postfix: postfix, is_edit: true %>
-  <%= render 'shared/edit_files', s: @subject, postfix: postfix %>
   <%= f.submit "Modifier", id: "Submit#{ postfix }", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
   <button class="btn btn-lg btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>

@@ -212,10 +212,6 @@ class Contest < ActiveRecord::Base
     sub = contest.subject
     mes = Message.create(:subject => sub, :user_id => 0, :content => get_problems_in_one_day_forum_message(contest, contestproblems), :created_at => contestproblems[0].start_time - 1.day + (contestproblems[0].number).seconds)
     
-    if mes.created_at > sub.last_comment_time # Security: should always be true
-      sub.update(last_comment_time: mes.created_at, last_comment_user_id: 0)
-    end
-    
     sub.following_users.each do |u|
       if !contest.following_users.include?(u) # Avoid to send again an email to people already following the contest
         UserMailer.new_followed_message(u.id, sub.id, -1).deliver
@@ -228,10 +224,6 @@ class Contest < ActiveRecord::Base
     contest = contestproblems[0].contest
     sub = contest.subject
     mes = Message.create(:subject => sub, :user_id => 0, :content => get_problems_now_forum_message(contest, contestproblems), :created_at => contestproblems[0].start_time + (contestproblems[0].number).seconds)
-    
-    if mes.created_at > sub.last_comment_time # Security: should always be true
-      sub.update(last_comment_time: mes.created_at, last_comment_user_id: 0)
-    end
     
     sub.following_users.each do |u|
       UserMailer.new_followed_message(u.id, sub.id, -1).deliver

@@ -45,8 +45,7 @@ class SubmissionsController < ApplicationController
     params[:submission][:content].strip! if !params[:submission][:content].nil?
 
     @submission = @problem.submissions.build(content: params[:submission][:content],
-                                             user:    current_user.sk,
-                                             last_comment_time: DateTime.now)
+                                             user:    current_user.sk)
     
     # Invalid CSRF token
     render_with_error('problems/show', @submission, get_csrf_error_message) and return if @invalid_csrf_token
@@ -90,8 +89,7 @@ class SubmissionsController < ApplicationController
     @submission = @problem.submissions.build(content: params[:submission][:content],
                                              user:    current_user.sk,
                                              intest:  true,
-                                             visible: false,
-                                             last_comment_time: DateTime.now)
+                                             visible: false)
     
     # Invalid CSRF token
     render_with_error('virtualtests/show', @submission, get_csrf_error_message) and return if @invalid_csrf_token

@@ -38,10 +38,10 @@
   <!-- Contenu du message -->
   <div class="content">
   
-  <% theid = -ms.id if kind == "subject" || kind == "submission" || kind == "contestsolution" || kind == "submission_in_test" %>
+  <% theid = -ms.id if kind == "submission" || kind == "contestsolution" || kind == "submission_in_test" %>
   <% theid = ms.id if kind == "message" || kind == "correction" || kind == "contestcorrection" %>
   
-  <%= render '/shared/text_show_hide_code', content: ms.content, id: theid, replace_indice: (kind == "subject" || kind == "message") %>
+  <%= render '/shared/text_show_hide_code', content: ms.content, id: theid, replace_indice: (kind == "message") %>
   
   <!-- Pièces jointes -->
   <%= render 'shared/show_files', s: ms %>  
@@ -49,21 +49,7 @@
   
   <% if can_edit %>
     <div class="modify">
-      <% if kind == "subject" %>
-        <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)'>Modifier ce sujet</a>
-        <% if current_user.sk.admin? %>
-          | <%= link_to "Supprimer ce sujet", subject_path(ms), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce sujet et tous les messages associés ?" }  %>
-          | <a href='#' id='showform' onclick='document.getElementById("migration_form").style.display="inline"; return false;' style='display:inline;'>Migrer ce sujet</a>
-          <span id='migration_form' style="<%= 'display:none;' if !Rails.env.test? %>">
-          <%= form_tag subject_migrate_path(ms), :method => :put, :class => "mt-1" do %>
-            Migrer ce sujet vers le sujet numéro
-            <%= hidden_field_tag "q", @q %>
-            <%= number_field_tag "migreur", nil, min: 1, max: 10000, style: "width:80px;" %>
-            <%= submit_tag "Migrer", data: { confirm: "Êtes-vous sûr de vouloir migrer ce sujet ? Êtes-vous sûr de l'id du sujet receveur ?"} %>
-          <% end %>
-          </span>
-        <% end %>
-      <% elsif kind == "message" %>
+      <% if kind == "message" %>
         <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)' id='LinkEdit<%= postfix %>'>Modifier ce message</a>
         <% if current_user.sk.admin? %>
            | <%= link_to "Supprimer ce message", message_path(ms), method: :delete, id: "LinkDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>

@@ -4,10 +4,7 @@
 #
 #  id                   :integer          not null, primary key
 #  title                :string
-#  content              :text
-#  user_id              :integer
 #  chapter_id           :integer
-#  created_at           :datetime         not null
 #  last_comment_time    :datetime
 #  for_correctors       :boolean          default(FALSE)
 #  important            :boolean          default(FALSE)
@@ -29,8 +26,6 @@ describe Subject do
   subject { @s }
 
   it { should respond_to(:title) }
-  it { should respond_to(:content) }
-  it { should respond_to(:user) }
   it { should respond_to(:last_comment_time) }
   it { should respond_to(:for_correctors) }
   it { should respond_to(:important) }
@@ -43,18 +38,4 @@ describe Subject do
     before { @s.title = nil }
     it { should_not be_valid }
   end
-  
-  # Content
-  describe "when content is not present" do
-    before { @s.content = nil }
-    it { should_not be_valid }
-  end
-
-  # User
-  describe "when user is not present" do
-    before { @s.user = nil }
-    it { should_not be_valid }
-  end
-
-
 end

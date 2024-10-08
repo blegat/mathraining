@@ -218,10 +218,7 @@ class ContestproblemsController < ApplicationController
   def automatic_results_published_post(contestproblem)
     contest = contestproblem.contest
     sub = contest.subject
-    mes = Message.create(:subject => sub, :user_id => 0, :content => helpers.get_new_correction_forum_message(contest, contestproblem))
-    sub.update(:last_comment_time    => mes.created_at,
-               :last_comment_user_id => 0) # Automatic message
-    
+    Message.create(:subject => sub, :user_id => 0, :content => helpers.get_new_correction_forum_message(contest, contestproblem))    
     sub.following_users.each do |u|
       UserMailer.new_followed_message(u.id, sub.id, -1).deliver
     end

@@ -6,10 +6,7 @@
 #
 #  id                   :integer          not null, primary key
 #  title                :string
-#  content              :text
-#  user_id              :integer
 #  chapter_id           :integer
-#  created_at           :datetime         not null
 #  last_comment_time    :datetime
 #  for_correctors       :boolean          default(FALSE)
 #  important            :boolean          default(FALSE)
@@ -30,7 +27,6 @@ class Subject < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
 
   has_many :messages, dependent: :destroy
-  belongs_to :user, optional: true # For automatic messages
   belongs_to :chapter, optional: true
   belongs_to :section, optional: true
   belongs_to :category, optional: true
@@ -39,8 +35,6 @@ class Subject < ActiveRecord::Base
   belongs_to :problem, optional: true
   belongs_to :last_comment_user, class_name: "User", optional: true # For automatic messages
   has_and_belongs_to_many :following_users, -> { distinct }, class_name: "User", join_table: :followingsubjects
-  has_many :myfiles, as: :myfiletable, dependent: :destroy
-  has_many :fakefiles, as: :fakefiletable, dependent: :destroy
 
   # BEFORE, AFTER
   
@@ -49,10 +43,6 @@ class Subject < ActiveRecord::Base
   # VALIDATIONS
 
   validates :title, presence: true, length: { maximum: 255 }
-  validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
-  validates :user_id, presence: true
-  validates :last_comment_time, presence: true
-  validates :last_comment_user_id, presence: true
   
   # OTHER METHODS
   
@@ -67,11 +57,6 @@ class Subject < ActiveRecord::Base
     end
   end
   
-  # Tells if the subject can be updated by the given user
-  def can_be_updated_by(user)
-    return Message.message_can_be_updated_by_user(self, user)
-  end
-  
   # Gives the page containing the n-th message
   def page_with_message_num(n)
     return [0, ((n-1)/10).floor].max + 1
@@ -80,5 +65,14 @@ class Subject < ActiveRecord::Base
   # Gives the last page number
   def last_page
     return self.page_with_message_num(self.messages.count)
+  end
+  
+  # Update last_comment_time and last_comment_user_id
+  def update_last_comment
+    last_message = self.messages.order(:created_at).last
+    unless last_message.nil?
+      self.update(:last_comment_time    => last_message.created_at,
+                  :last_comment_user_id => last_message.user_id)
+    end
   end
 end

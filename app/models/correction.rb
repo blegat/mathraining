@@ -22,5 +22,9 @@ class Correction < ActiveRecord::Base
   # VALIDATIONS
 
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
+  
+  # BEFORE, AFTER
+  
+  after_create { self.submission.update_last_comment }
 
 end

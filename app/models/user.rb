@@ -99,7 +99,6 @@ class User < ActiveRecord::Base
   has_many :starproposals, dependent: :destroy
   has_many :followings, dependent: :destroy
   has_many :followed_submissions, through: :followings, source: :submission
-  has_many :subjects, dependent: :destroy
   has_many :messages, dependent: :destroy
   has_many :takentests, dependent: :destroy
   

@@ -51,7 +51,11 @@
   <!-- Date du dernier message -->
   <td class="d-none d-lg-table-cell align-middle text-center" style="width:220px;">
     <%= link_to subject_path(s, :page => "last", :q => @q) do %>
-      <%= write_date_from_now(date, datenow) %>
+      <% if date.nil? %>
+        ---
+      <% else %>   
+        <%= write_date_from_now(date, datenow) %>
+      <% end %> 
     <% end %>
   </td>
 

@@ -132,7 +132,12 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
     
     context "and has some forum messages to read" do
       let!(:subject) { FactoryGirl.create(:subject) }
-      let!(:old_subject) { FactoryGirl.create(:subject, last_comment_time: DateTime.now - 3.days) }
+      let!(:message) { FactoryGirl.create(:message, subject: subject) }
+      let!(:old_subject) { FactoryGirl.create(:subject) }
+      let!(:old_message) { FactoryGirl.create(:message, subject: old_subject, created_at: DateTime.now - 3.days) }
+      before do
+        user.update_attribute(:last_forum_visit_time, DateTime.now - 1.day)
+      end
       
       it "renders the number of unread forum messages correctly" do
         render partial: "layouts/header"
