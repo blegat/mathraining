@@ -24,10 +24,10 @@
   <% if erreur %>
     <% cont = @error_params[:content] if @error_params.has_key?(:content) %>
   <% end %>
-  <%= f.label :content, :for => "MathInput#{postfix}", :disabled => current_user.other, :class => "form-label" %>
+  <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label" %>
   <%= render 'shared/preview', postfix: postfix %>
   <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id => "MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id => "MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()" %>
   <!-- Do not call initAndUpdatePreviewSafeWhenPossible: it will be done only after rolling to show the form -->
 </div>
 
@@ -35,7 +35,7 @@
 <% if current_user.sk.root && show_mail_checkboxes && @subject.for_wepion %>
   <div class="form-check">
   <label class="form-check-label">
-    <%= check_box_tag "emailWepion", "A", false, :class => "form-check-input", :disabled => current_user.other %>
+    <%= check_box_tag "emailWepion", "A", false, :class => "form-check-input" %>
     Prévenir tous les élèves de Wépion de ce nouveau message par e-mail.
   </label>
   </div>

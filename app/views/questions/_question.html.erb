@@ -19,8 +19,8 @@
   <%= form_for(unsolvedquestion) do |g| %>
     <%= hidden_field_tag "question_id", question.id %>
     <div class="mb-2">
-    <%= g.label :guess, :class => "form-label to-enable", :disabled => !@signed_in || current_user.other || needtowait %>
-    <%= g.text_field :guess, class: "form-control to-enable ms-1", style: "width:70px;", value: val, :disabled => !@signed_in || current_user.other || needtowait %>
+    <%= g.label :guess, :class => "form-label to-enable", :disabled => !@signed_in || needtowait %>
+    <%= g.text_field :guess, class: "form-control to-enable ms-1", style: "width:70px;", value: val, :disabled => !@signed_in || needtowait %>
     </div>
     <%= g.submit "Soumettre", class: "btn btn-primary to-enable", :disabled => !@signed_in || current_user.other || needtowait %>
   <% end %>
@@ -35,7 +35,7 @@
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
-            <%= check_box_tag "ans[#{ c.id }]", "ok", prev_answers.exists?(:id => c.id), :disabled => !@signed_in || current_user.other || needtowait, :class => "form-check-input to-enable" %>
+            <%= check_box_tag "ans[#{ c.id }]", "ok", prev_answers.exists?(:id => c.id), :disabled => !@signed_in || needtowait, :class => "form-check-input to-enable" %>
             <%= raw(c.ans) %>
           </label>
         </div>
@@ -50,7 +50,7 @@
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
-            <%= radio_button_tag "ans", c.id, (!item.nil? && c.id == item.id), :id => "ans[#{ c.id }]", :disabled => !@signed_in || current_user.other || needtowait, :class => "form-check-input to-enable" %>
+            <%= radio_button_tag "ans", c.id, (!item.nil? && c.id == item.id), :id => "ans[#{ c.id }]", :disabled => !@signed_in || needtowait, :class => "form-check-input to-enable" %>
             <%= raw(c.ans) %>
           </label>
         </div>

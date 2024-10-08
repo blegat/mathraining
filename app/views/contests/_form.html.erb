@@ -2,20 +2,20 @@
 
 <div class="mb-2">
   <%= f.label :number, :class => "form-label" %>
-  <%= f.number_field :number, :class => "form-control", :style => "width:70px;", :min => 1, :disabled => (!@contest.in_construction? || current_user.other) %>
+  <%= f.number_field :number, :class => "form-control", :style => "width:70px;", :min => 1, :disabled => !@contest.in_construction? %>
 </div>
 
 <div class="mb-2">
   <%= f.label :description, :for => "MathInput", :class => "form-label" %>
   <%= render 'shared/preview' %>
   <%= render 'shared/smiley' %>
-  <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+  <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()" %>
   <script>initAndUpdatePreviewSafeWhenPossible()</script>
 </div>
 
 <div class="form-check mb-2">
 <label class="form-check-label">
-<%= f.check_box :medal, :class => "form-check-input", :disabled => (!@contest.in_construction? || current_user.other) %>
+<%= f.check_box :medal, :class => "form-check-input", :disabled => !@contest.in_construction? %>
 Attribuer des médailles au terme de ce concours
 </label>
 </div>
