@@ -12,7 +12,7 @@ def export_rating_history
   while date_start <= Date.today
     f.write(";#{date_start.month}/#{date_start.year}")
     if x == 0
-      $history[x] = Array.new(last_user_id, 0)
+      $history[x] = Array.new(last_user_id+1, 0)
     else
       $history[x] = $history[x-1].dup
     end

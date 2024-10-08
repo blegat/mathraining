@@ -3,13 +3,21 @@ class DecoupleSubjectAndFirstMessage < ActiveRecord::Migration[7.0]
     execute("INSERT INTO messages (content, subject_id, user_id, created_at) SELECT content, id, user_id, created_at FROM subjects;")
     
     Myfile.where(:myfiletable_type => "Subject").each do |f|
-      s = Subject.find(f.myfiletable_id)
-      f.update_attribute(:myfiletable, s.messages.order(:created_at).first)
+      s = Subject.find_by_id(f.myfiletable_id)
+      if s.nil?
+        f.destroy
+      else
+        f.update_attribute(:myfiletable, s.messages.order(:created_at).first)
+      end
     end
     
     Fakefile.where(:fakefiletable_type => "Subject").each do |f|
-      s = Subject.find(f.fakefiletable_id)
-      f.update_attribute(:fakefiletable, s.messages.order(:created_at).first)
+      s = Subject.find_by_id(f.fakefiletable_id)
+      if s.nil?
+        f.destroy
+      else
+        f.update_attribute(:fakefiletable, s.messages.order(:created_at).first)
+      end
     end
   
     remove_column :subjects, :content, :text
@@ -23,18 +31,22 @@ class DecoupleSubjectAndFirstMessage < ActiveRecord::Migration[7.0]
     add_column :subjects, :created_at, :datetime, precision: nil
     
     Myfile.where(:myfiletable_type => "Message").each do |f|
-      m = Message.find(f.myfiletable_id)
-      s = m.subject
-      if s.messages.order(:created_at).first == m
-        f.update(:myfiletable_type => "Subject", :myfiletable_id => s.id)
+      m = Message.find_by_id(f.myfiletable_id)
+      unless m.nil?
+        s = m.subject
+        if s.messages.order(:created_at).first == m
+          f.update(:myfiletable_type => "Subject", :myfiletable_id => s.id)
+        end
       end
     end
     
     Fakefile.where(:fakefiletable_type => "Message").each do |f|
       m = Message.find(f.fakefiletable_id)
-      s = m.subject
-      if s.messages.order(:created_at).first == m
-        f.update(:fakefiletable_type => "Subject", :fakefiletable_id => s.id)
+      unless m.nil?
+        s = m.subject
+        if s.messages.order(:created_at).first == m
+          f.update(:fakefiletable_type => "Subject", :fakefiletable_id => s.id)
+        end
       end
     end
     
