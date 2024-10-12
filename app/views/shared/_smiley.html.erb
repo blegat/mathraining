@@ -24,7 +24,7 @@
 
 <div class="smiley">
 <% (0..8).each do |s| %>
-  <a href='javascript:Insert.insert(" <%= smileys[s] %>", "", "MathInput<%= postfix %>");'><%= image_tag "Smiley#{ids[s]}.gif", :title => ":-)", :id => "smiley#{ids[s]}-img" %></a>
+  <a href='javascript:Insert.insert(" <%= smileys[s] %>", "", "MathInput<%= postfix %>");'><%= image_tag "Smiley#{ids[s]}.gif", :title => "#{smileys[s]}", :id => "smiley#{ids[s]}-img" %></a>
 <% end %>
 </div>
 
