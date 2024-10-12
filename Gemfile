@@ -41,7 +41,7 @@ gem 'coffee-rails', '~> 5.0.0'
 gem 'uglifier', '>= 1.2.3'
 #end
 
-gem 'sassc', '= 2.2.0' # Otherwise it tries to install 2.4.0 and it fails for some reason
+gem 'sassc' # Before we were forcing '= 2.2.0' to avoid 2.4.0 that was failing, but now 2.2.0 is failing on Github Actions...
 gem 'sassc-rails'
 
 gem 'jquery-rails'
