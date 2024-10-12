@@ -28,7 +28,7 @@ class Message < ActiveRecord::Base
   # BEFORE, AFTER
   
   after_create { self.subject.update_last_comment }
-  before_destroy { self.subject.update_last_comment }
+  after_destroy { self.subject.update_last_comment }
   
   # OTHER METHODS
   
