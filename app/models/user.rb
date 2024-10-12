@@ -498,7 +498,7 @@ class User < ActiveRecord::Base
       end
     end
     
-    Pointspersection.joins(:section).where("sections.fondation = ?", false).each do |pps|
+    Pointspersection.joins(:section).each do |pps|
       current_score = pps.points
       problem_score = problem_scores_by_section[pps.section_id][pps.user_id]
       problem_score = 0 if problem_score.nil?
@@ -520,12 +520,8 @@ class User < ActiveRecord::Base
 
   # Create the points per section associated to the user
   def create_points
-    Section.all.to_a.each do |s|
-      newpoint = Pointspersection.new
-      newpoint.points = 0
-      newpoint.section_id = s.id
-      self.pointspersections << newpoint
-    end
+    # We can probably do that with ruby? (We want only one request because it is done very often during testing)
+    ActiveRecord::Base.connection.execute("INSERT INTO pointspersections (user_id, section_id, points) SELECT '#{self.id}', id, '0' FROM sections WHERE fondation = 'false';")
   end
 
   # Delete all discussions of the user

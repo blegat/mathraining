@@ -61,4 +61,8 @@ Rails.application.configure do
   # ===== Not part from the default test.rb =====
   
   config.whiny_nils = true
+  
+  config.to_prepare do
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.create_unlogged_tables = true
+  end
 end
