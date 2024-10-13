@@ -39,7 +39,7 @@ describe "Chapter pages", chapter: true do
     end 
     
     describe "visits a full online chapter" do
-      before { visit chapter_path(online_chapter, :type => 10) }
+      before { visit chapter_all_path(online_chapter) }
       it do
         should have_selector("h3", text: online_theory.title)
         should have_button("Marquer toute la théorie comme lue")
@@ -49,7 +49,7 @@ describe "Chapter pages", chapter: true do
       describe "and mark it as read" do
         before do
           click_button "Marquer toute la théorie comme lue"
-          visit chapter_path(online_chapter, :type => 1, :which => online_theory)
+          visit chapter_theory_path(online_chapter, online_theory)
           user.reload
         end
         specify do

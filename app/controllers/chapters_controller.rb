@@ -7,17 +7,34 @@ class ChaptersController < ApplicationController
   before_action :root_user, only: [:put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
   
   before_action :get_chapter, only: [:show, :edit, :update, :destroy]
-  before_action :get_chapter2, only: [:read, :order, :put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
+  before_action :get_chapter2, only: [:all, :read, :order, :put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
   before_action :get_section, only: [:new, :create]
   
   before_action :offline_chapter, only: [:destroy, :put_online]
   before_action :online_chapter, only: [:read]
-  before_action :online_chapter_or_creating_user, only: [:show]
+  before_action :online_chapter_or_creating_user, only: [:show, :all]
   before_action :prerequisites_online, only: [:put_online]
   before_action :user_that_can_update_chapter, only: [:edit, :update]
 
-  # Show one chapter
+  # Show one chapter (summary only)
   def show
+    if(params.has_key?:type)
+      # Before, we were using chapters/show to see full chapter, one theory or one question
+      # We redirect such old paths to the new paths here, in case such links are used somewhere
+      type = params[:type].to_i
+      which = 0
+      if(params.has_key?:which)
+        which = params[:which].to_i
+      end
+      redirect_to chapter_path(@chapter) and return if type == 0
+      redirect_to chapter_all_path(@chapter) and return if type == 10
+      redirect_to chapter_theory_path(@chapter, which) and return if type == 1
+      redirect_to chapter_question_path(@chapter, which) and return if type == 5
+    end
+  end
+  
+  # Show the full chapter
+  def all
   end
   
   # Show statistics of all chapters
@@ -150,13 +167,6 @@ class ChaptersController < ApplicationController
   end
   
   ########## CHECK METHODS ##########
-
-  # Check that the chapter is online or that current user can see it (creator or admin)
-  def online_chapter_or_creating_user
-    unless @chapter.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id)))
-      render 'errors/access_refused' and return
-    end
-  end
   
   # Check that the chapter is online
   def online_chapter

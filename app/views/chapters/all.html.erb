@@ -1,3 +1,5 @@
+<%= render 'chapters/before', active: 'all' %>
+
 <!-- Prérequis, résumé, auteurs -->
 <%= render 'intro' %>
 
@@ -26,3 +28,5 @@
   <hr class="bottom-help" />
   <p>Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => "cha-" + @chapter.id.to_s) %> !</p>
 <% end %>
+
+<%= render 'chapters/after' %>

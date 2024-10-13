@@ -9,6 +9,8 @@ describe ChaptersController, type: :controller, chapter: true do
   let(:section) { FactoryGirl.create(:section) }
   let(:online_chapter) { FactoryGirl.create(:chapter, online: true) }
   let(:offline_chapter) { FactoryGirl.create(:chapter, online: false) }
+  let(:theory) { FactoryGirl.create(:theory, chapter: online_chapter, online: true) }
+  let(:question) { FactoryGirl.create(:exercise, chapter: online_chapter, online: true) }
   
   context "if the user is not an admin" do
     before do
@@ -95,6 +97,26 @@ describe ChaptersController, type: :controller, chapter: true do
     it "renders the error page for destroy of online chapter" do
       delete :destroy, params: {id: online_chapter.id}
       expect(response).to render_template 'errors/access_refused'
+    end
+    
+    it "redirects to new format for chapter type 0" do
+      get :show, params: {id: online_chapter.id, type: 0}
+      expect(response).to redirect_to chapter_path(online_chapter)
+    end
+    
+    it "redirects to new format for chapter type 10" do
+      get :show, params: {id: online_chapter.id, type: 10}
+      expect(response).to redirect_to chapter_all_path(online_chapter)
+    end
+    
+    it "redirects to new format for chapter type 1" do
+      get :show, params: {id: online_chapter.id, type: 1, which: theory.id}
+      expect(response).to redirect_to chapter_theory_path(online_chapter, theory)
+    end
+    
+    it "redirects to new format for chapter type 5" do
+      get :show, params: {id: online_chapter.id, type: 5, which: question.id}
+      expect(response).to redirect_to chapter_question_path(online_chapter, question)
     end
   end
 end

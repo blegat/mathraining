@@ -28,7 +28,7 @@ class UnsolvedquestionsController < ApplicationController
         @chapter.update_attribute(:nb_tries, @chapter.nb_tries+1)
       end
 
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_question_path(@chapter, @question)
     end
   end
 
@@ -36,7 +36,7 @@ class UnsolvedquestionsController < ApplicationController
   def update    
     res = check_answer(false)
     if res != "skip"
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_question_path(@chapter, @question)
     end
   end
 
@@ -56,14 +56,14 @@ class UnsolvedquestionsController < ApplicationController
   # Check that this is the first try of current user
   def first_try
     if Solvedquestion.where(:user => current_user.sk, :question => @question).count + Unsolvedquestion.where(:user => current_user.sk, :question => @question).count > 0
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_question_path(@chapter, @question)
     end
   end
   
   # Check that the current user did not solve the question already
   def not_solved
     if Solvedquestion.where(:user => current_user.sk, :question => @question).count > 0 # already solved
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_question_path(@chapter, @question)
     end
   end
   
@@ -76,7 +76,7 @@ class UnsolvedquestionsController < ApplicationController
   # Check that current user waited enough (if needed) before trying again
   def waited_enough_time
     if @unsolvedquestion.nb_guess >= 3 && DateTime.now < @unsolvedquestion.last_guess_time + 175
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_question_path(@chapter, @question)
     end
   end
 
@@ -135,7 +135,7 @@ class UnsolvedquestionsController < ApplicationController
         # If the same answer as the previous one: we don't count it
         if !diff_sub
           flash[:danger] = "Votre réponse est la même que votre réponse précédente."
-          redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+          redirect_to chapter_question_path(@chapter, @question)
           return "skip"
         end
 
@@ -156,14 +156,14 @@ class UnsolvedquestionsController < ApplicationController
       else # Unique answer
         if !params[:ans]
           flash[:danger] = "Veuillez cocher une réponse."
-          redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+          redirect_to chapter_question_path(@chapter, @question)
           return "skip"
         end
         
         # If the same answer as the previous one: we don't count it
         if !first_sub && params[:ans].to_i == @unsolvedquestion.items.first.id
           flash[:danger] = "Votre réponse est la même que votre réponse précédente."
-          redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+          redirect_to chapter_question_path(@chapter, @question)
           return "skip"
         end
         
@@ -193,14 +193,14 @@ class UnsolvedquestionsController < ApplicationController
       
       if guess_str.size() == 0
         flash[:danger] = "Votre réponse est vide."
-        redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+        redirect_to chapter_question_path(@chapter, @question)
         return "skip"
       end
       
       (0..guess_str.size()-1).each do |i|
         if !allowed_characters.include?(guess_str[i])
           flash[:danger] = "La réponse attendue est un nombre #{@question.decimal ? 'décimal' : 'entier'}."
-          redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+          redirect_to chapter_question_path(@chapter, @question)
           return "skip"
         end
       end
@@ -213,13 +213,13 @@ class UnsolvedquestionsController < ApplicationController
       
       if !first_sub && @unsolvedquestion.guess == guess
         flash[:danger] = "Votre réponse est la même que votre réponse précédente."
-        redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+        redirect_to chapter_question_path(@chapter, @question)
         return "skip"
       end
       
       if guess.abs() > 1000000000
         flash[:danger] = "Votre réponse est trop grande (en valeur absolue)."
-        redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+        redirect_to chapter_question_path(@chapter, @question)
         return "skip"
       end
       

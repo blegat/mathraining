@@ -25,7 +25,7 @@ describe "Solvedquestion pages" do
     before { sign_in user }
     
     describe "visits an integer exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => exercise) }
+      before { visit chapter_question_path(chapter, exercise) }
     
       describe "and correctly solves it" do
         before do
@@ -138,7 +138,7 @@ describe "Solvedquestion pages" do
             let(:unsolvedquestion) { Unsolvedquestion.where(:user => user, :question => exercise).first }
             before do
               unsolvedquestion.update_attribute(:last_guess_time, DateTime.now - 190)
-              visit chapter_path(chapter, :type => 5, :which => exercise)
+              visit chapter_question_path(chapter, exercise)
             end
             it do
               should have_button("Soumettre")
@@ -164,7 +164,7 @@ describe "Solvedquestion pages" do
     end
     
     describe "visits a decimal exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => exercise_decimal) }
+      before { visit chapter_question_path(chapter, exercise_decimal) }
     
       describe "and correctly solves it" do
         before do
@@ -233,7 +233,7 @@ describe "Solvedquestion pages" do
     end
     
     describe "visits a single answer qcm" do
-      before { visit chapter_path(chapter, :type => 5, :which => qcm) }
+      before { visit chapter_question_path(chapter, qcm) }
     
       describe "and correctly solves it" do
         before do
@@ -289,7 +289,7 @@ describe "Solvedquestion pages" do
     end
     
     describe "visits a multiple answer qcm" do
-      before { visit chapter_path(chapter, :type => 5, :which => qcm_multiple) }
+      before { visit chapter_question_path(chapter, qcm_multiple) }
     
       describe "and correctly solves it" do
         before do

@@ -56,7 +56,7 @@ Les tableaux suivants donnent :
         <% pct2 = [1.4*pct,1].min %>
         <td class="text-center gradient-green-red-<%= ((1-pct2)*20).to_i %>">
         <% if can_see_exercises %>
-          <%= link_to "#{(100*pct).round(0)}%", chapter_path(chapter, :type => 5, :which => e.id), :class => "text-color-dark-light-blue" %>
+          <%= link_to "#{(100*pct).round(0)}%", chapter_question_path(chapter, e), :class => "text-color-dark-light-blue" %>
         <% else %>
           <%= (100*pct).round(0) %>%
         <% end %>

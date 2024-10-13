@@ -14,9 +14,10 @@ Rails.application.routes.draw do
     match '/unmark_submission_prerequisite', to: 'chapters#unmark_submission_prerequisite', :via => [:put]
     match '/order', to: 'chapters#order', :via => [:put]
     match '/read', to: 'chapters#read', :via => [:put]
+    match '/all', to: 'chapters#all', :via => [:get]
 
-    resources :theories, only: [:new, :create]
-    resources :questions, only: [:new, :create]
+    resources :theories, only: [:show, :new, :create]
+    resources :questions, only: [:show, :new, :create]
   end
   match '/chapterstats', to: 'chapters#chapterstats', :via => [:get]
   resources :chaptercreations, only: [] # Must be added manually in the database!

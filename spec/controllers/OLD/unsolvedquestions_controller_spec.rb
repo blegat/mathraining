@@ -31,7 +31,7 @@ describe UnsolvedquestionsController, :type => :controller do
           user.chapters << prerequisite
           post :create, :params => { :question_id => question.id, :unsolvedquestion => {:guess => question.answer} }
         end
-        specify { expect(response).to redirect_to(chapter_path(chapter, :type => 5, :which => question.id)) }
+        specify { expect(response).to redirect_to(chapter_question_path(chapter, question)) }
       end
       
       describe "if not the first try" do
@@ -43,7 +43,7 @@ describe UnsolvedquestionsController, :type => :controller do
         end
         specify do
           # Should redirect without doing anything
-          expect(response).to redirect_to(chapter_path(chapter, :type => 5, :which => question.id))
+          expect(response).to redirect_to(chapter_question_path(chapter, question))
           expect(previous_unsolvedquestion.nb_guess).to eq(1)
           expect(Solvedquestion.where(:user => user, :question => question).count).to eq(0)
           expect(Unsolvedquestion.where(:user => user, :question => question).count).to eq(1)
@@ -81,7 +81,7 @@ describe UnsolvedquestionsController, :type => :controller do
           patch :update, :params => { :id => previous_unsolvedquestion.id, :question_id => question.id, :unsolvedquestion => {:guess => question.answer} }
         end
         specify do
-          expect(response).to redirect_to(chapter_path(chapter, :type => 5, :which => question.id))
+          expect(response).to redirect_to(chapter_question_path(chapter, question))
           expect(Solvedquestion.where(:user => user, :question => question).count).to eq(1)
           expect(Unsolvedquestion.where(:user => user, :question => question).count).to eq(0)
         end
@@ -103,7 +103,7 @@ describe UnsolvedquestionsController, :type => :controller do
         end
         specify do
           # Should redirect without doing anything
-          expect(response).to redirect_to(chapter_path(chapter, :type => 5, :which => question.id))
+          expect(response).to redirect_to(chapter_question_path(chapter, question))
           expect(Solvedquestion.where(:user => user, :question => question).count).to eq(0)
           expect(Unsolvedquestion.where(:user => user, :question => question).count).to eq(1)
         end
@@ -118,7 +118,7 @@ describe UnsolvedquestionsController, :type => :controller do
         end
         specify do
           # Should redirect without doing anything
-          expect(response).to redirect_to(chapter_path(chapter, :type => 5, :which => question.id))
+          expect(response).to redirect_to(chapter_question_path(chapter, question))
           expect(previous_unsolvedquestion.nb_guess).to eq(4)
           expect(Solvedquestion.where(:user => user, :question => question).count).to eq(0)
           expect(Unsolvedquestion.where(:user => user, :question => question).count).to eq(1)

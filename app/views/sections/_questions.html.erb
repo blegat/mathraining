@@ -31,7 +31,7 @@
           <% classe = "btn btn-ld-light-dark" %>
         <% end %>
         
-        <%= link_to "#{j if q.online}#{'!' if !q.online}", chapter_path(chapter, :type => 5, :which => q.id), :class => classe %>
+        <%= link_to "#{j if q.online}#{'!' if !q.online}", chapter_question_path(chapter, q), :class => classe %>
       <% else %>
         <button class="btn btn-ld-light-dark disabled" id="disabled-question-<%= q.id %>"><%= j %></button>
       <% end %>

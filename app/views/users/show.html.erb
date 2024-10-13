@@ -417,7 +417,7 @@
         <td style="<%= remove_border %>">
         <% if a[:type] == "Q" %>
           <% if a[:peutvoir] %>
-            <%= link_to "Exercice", chapter_path(a[:chapter_id], :type => 5, :which => a[:id]) %>
+            <%= link_to "Exercice", chapter_question_path(a[:chapter_id], a[:id]) %>
           <% else %>
             Exercice
           <% end %>

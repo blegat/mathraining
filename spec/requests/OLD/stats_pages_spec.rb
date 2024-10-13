@@ -27,7 +27,7 @@ describe "Stats pages" do
     
     describe "tries the first exercise of a chapter" do
       before do
-        visit chapter_path(chapter1, :type => 5, :which => exercise11)
+        visit chapter_question_path(chapter1, exercise11)
         fill_in "unsolvedquestion[guess]", with: exercise11.answer + 12
         click_button "Soumettre"
         chapter1.reload
@@ -42,7 +42,7 @@ describe "Stats pages" do
       
       describe "and then solves it correctly" do
         before do
-          visit chapter_path(chapter1, :type => 5, :which => exercise11)
+          visit chapter_question_path(chapter1, exercise11)
           fill_in "unsolvedquestion[guess]", with: exercise11.answer
           click_button "Soumettre"
           chapter1.reload
@@ -59,7 +59,7 @@ describe "Stats pages" do
     
     describe "solves the first exercise of a chapter" do
       before do
-        visit chapter_path(chapter1, :type => 5, :which => exercise11)
+        visit chapter_question_path(chapter1, exercise11)
         fill_in "unsolvedquestion[guess]", with: exercise11.answer
         click_button "Soumettre"
         chapter1.reload
@@ -74,7 +74,7 @@ describe "Stats pages" do
       
       describe "and solves the second exercise of the chapter" do
         before do
-          visit chapter_path(chapter1, :type => 5, :which => exercise12)
+          visit chapter_question_path(chapter1, exercise12)
           fill_in "unsolvedquestion[guess]", with: exercise12.answer
           click_button "Soumettre"
           chapter1.reload

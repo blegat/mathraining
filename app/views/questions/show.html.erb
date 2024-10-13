@@ -1,9 +1,13 @@
+<%= render 'chapters/before', active: 'question-' + @question.id.to_s %>
+
+<% if @exovisibles %>
+
 <!-- Titre -->
-<%= render 'questions/title', question: question, number: number %>
+<%= render 'questions/title', question: @question, number: @number %>
 
 <!-- Enoncé -->
 <div>
-  <%= raw(replace_indice(htmlise(question.statement))) %>
+  <%= raw(replace_indice(htmlise(@question.statement))) %>
 </div>
 
 <!-- Si administrateur -->
@@ -11,15 +15,15 @@
 
   <!-- Réponse -->
   <h4 class="mt-4">Réponse</h4>
-  <%= render 'questions/answer', question: question %>
+  <%= render 'questions/answer', question: @question %>
   
   <!-- Pour les admins (dont l'explication) -->
-  <%= render 'questions/admin', question: question %>
+  <%= render 'questions/admin', question: @question %>
 
 <!-- Si étudiant inscrit -->
 <% elsif @signed_in %>
 
-  <% solvedquestion = Solvedquestion.where(:user => current_user.sk, :question => question).first %>
+  <% solvedquestion = Solvedquestion.where(:user => current_user.sk, :question => @question).first %>
   
   <!-- Si l'exercice est déjà résolu -->
   <% if !solvedquestion.nil? %>    
@@ -33,37 +37,42 @@
     
     <!-- Réponse -->
     <h4 class="mt-4">Réponse</h4>
-    <%= render 'questions/answer', question: question %>
+    <%= render 'questions/answer', question: @question %>
     
     <!-- Explication -->
-    <% if question.explanation.size > 0 %>
+    <% if @question.explanation.size > 0 %>
       <h4 class="mt-4">Explication</h4>
-      <%= raw(htmlise(question.explanation)) %>
+      <%= raw(htmlise(@question.explanation)) %>
     <% end %>
   <% else %>
-    <% unsolvedquestion = Unsolvedquestion.where(:user => current_user.sk, :question => question).first %>
+    <% unsolvedquestion = Unsolvedquestion.where(:user => current_user.sk, :question => @question).first %>
     
     <!-- Si l'étudiant s'est déjà trompé -->
     <% if !unsolvedquestion.nil? %>
-      <%= render 'questions/question', question: question, unsolvedquestion: unsolvedquestion %>
+      <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
     
     <!-- Si l'étudiant n'a pas encore essayé l'exercice -->
     <% else %>
       <% unsolvedquestion = Unsolvedquestion.new %>
-      <%= render 'questions/question', question: question, unsolvedquestion: unsolvedquestion %>
+      <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
     <% end %>
   <% end %>
 
   <hr class="bottom-help" />
-  <% subject = question.subject %>
+  <% subject = @question.subject %>
   <p>Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path(subject) : subjects_path(:q => "cha-" + @chapter.id.to_s)), :target => "_blank" %> !</p>
 
 <!-- Si étudiant non inscrit -->
 <% else %>
 
   <% unsolvedquestion = Unsolvedquestion.new %>
-  <%= render 'questions/question', question: question, unsolvedquestion: unsolvedquestion %>
+  <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
   
   <hr class="bottom-help" />
   <p class="text-center">Pour pouvoir répondre aux exercices, vous devez être connecté.</p>
 <% end %>
+
+<% end %>
+
+
+<%= render 'chapters/after' %>

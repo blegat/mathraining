@@ -19,7 +19,7 @@ describe "Theory pages" do
   
   describe "visitor" do
     describe "visits online theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => online_theory) }
+      before { visit chapter_theory_path(chapter, online_theory) }
       it do
         should have_selector("h3", text: online_theory.title)
         should have_no_link("forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
@@ -27,7 +27,7 @@ describe "Theory pages" do
     end
     
     describe "visits offline theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => offline_theory) }
+      before { visit chapter_theory_path(chapter, offline_theory) }
       it { should have_no_selector("h3", text: offline_theory.title) }
     end
   end
@@ -36,7 +36,7 @@ describe "Theory pages" do
     before { sign_in user }
     
     describe "visits online theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => online_theory2) }
+      before { visit chapter_theory_path(chapter, online_theory2) }
       it do
         should have_selector("h3", text: online_theory2.title)
         should have_no_link("bas")
@@ -74,7 +74,7 @@ describe "Theory pages" do
     end
     
     describe "visits offline theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => offline_theory) }
+      before { visit chapter_theory_path(chapter, offline_theory) }
       it { should have_no_selector("h3", text: offline_theory.title) }
     end
     
@@ -93,7 +93,7 @@ describe "Theory pages" do
     before { sign_in admin }
     
     describe "visits online theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => online_theory) }
+      before { visit chapter_theory_path(chapter, online_theory) }
       specify do
         expect(page).to have_selector("h3", text: online_theory.title)
         expect(page).to have_selector("a", text: "Modifier ce point théorique")
@@ -104,7 +104,7 @@ describe "Theory pages" do
     end
     
     describe "visits offline theory" do
-      before { visit chapter_path(chapter, :type => 1, :which => offline_theory) }
+      before { visit chapter_theory_path(chapter, offline_theory) }
       it do
         should have_selector("h3", text: offline_theory.title)
         should have_button("Mettre en ligne")
@@ -120,7 +120,7 @@ describe "Theory pages" do
     end
     
     describe "checks theory order" do
-      before { visit chapter_path(chapter, :type => 1, :which => online_theory) }
+      before { visit chapter_theory_path(chapter, online_theory) }
       it do
         should have_link("bas")
         should have_no_link("haut") # Because position 1 out of >= 3

@@ -193,6 +193,13 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Check that the chapter is online or that current user can see it (creator or admin)
+  def online_chapter_or_creating_user
+    unless @chapter.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id)))
+      render 'errors/access_refused' and return
+    end
+  end
+  
   # Check that current user can see @problem (that must be defined)
   def user_that_can_see_problem
     if !@problem.can_be_seen_by(current_user.sk, @no_new_submission)

@@ -42,7 +42,7 @@ describe "Question pages" do
   
   describe "visitor" do
     describe "visits online exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => online_exercise) }
+      before { visit chapter_question_path(chapter, online_exercise) }
       it do
         should have_selector("div", text: online_exercise.statement)
         should have_no_link("forum")
@@ -50,7 +50,7 @@ describe "Question pages" do
     end
     
     describe "visits offline exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => offline_exercise) }
+      before { visit chapter_question_path(chapter, offline_exercise) }
       it { should have_no_selector("div", text: offline_exercise.statement) }
     end
   end
@@ -59,7 +59,7 @@ describe "Question pages" do
     before { sign_in user }
     
     describe "visits online exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => online_exercise) }
+      before { visit chapter_question_path(chapter, online_exercise) }
       it do
         should have_selector("div", text: online_exercise.statement)
         should have_link("forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
@@ -68,7 +68,7 @@ describe "Question pages" do
     
     describe "visits online exercise with subject" do
       let!(:sub) { FactoryGirl.create(:subject, section: chapter.section, chapter: chapter, question: online_exercise) }
-      before { visit chapter_path(chapter, :type => 5, :which => online_exercise) }
+      before { visit chapter_question_path(chapter, online_exercise) }
       it do
         should have_selector("div", text: online_exercise.statement)
         should have_link("forum", href: subject_path(sub))
@@ -76,7 +76,7 @@ describe "Question pages" do
     end
     
     describe "visits offline exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => offline_exercise) }
+      before { visit chapter_question_path(chapter, offline_exercise) }
       it { should have_no_selector("div", text: offline_exercise.statement) }
     end
     
@@ -95,7 +95,7 @@ describe "Question pages" do
     before { sign_in admin }
     
     describe "visits online exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => online_exercise) }
+      before { visit chapter_question_path(chapter, online_exercise) }
       it do
         should have_selector("div", text: online_exercise.statement)
         should have_no_selector("a", text: "Supprimer cet exercice")
@@ -104,7 +104,7 @@ describe "Question pages" do
     end
     
     describe "visits offline exercise" do
-      before { visit chapter_path(chapter, :type => 5, :which => offline_exercise) }
+      before { visit chapter_question_path(chapter, offline_exercise) }
       it do
         should have_selector("div", text: offline_exercise.statement)
         should have_selector("a", text: "Modifier cet exercice")
@@ -151,7 +151,7 @@ describe "Question pages" do
     end
     
     describe "checks question order" do
-      before { visit chapter_path(chapter, :type => 5, :which => online_exercise) }
+      before { visit chapter_question_path(chapter, online_exercise) }
       it do
         should have_link "bas"
         should have_no_link "haut" # Because position 1 out of >= 4

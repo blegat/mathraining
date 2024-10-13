@@ -3,12 +3,19 @@ class QuestionsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :edit_explanation]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation]
   
-  before_action :get_question, only: [:edit, :update, :destroy]
+  before_action :get_question, only: [:show, :edit, :update, :destroy]
   before_action :get_question2, only: [:manage_items, :order, :put_online, :edit_explanation, :update_explanation]
-  before_action :get_chapter, only: [:new, :create]
+  before_action :get_chapter, only: [:show, :new, :create]
   
-  before_action :user_that_can_update_chapter
+  before_action :online_chapter_or_creating_user, only: [:show]
+  before_action :question_of_chapter, only: [:show]
+  before_action :user_that_can_see_question, only: [:show]
+  before_action :user_that_can_update_chapter, only: [:new, :edit, :create, :update, :destroy, :manage_items, :edit_explanation, :order, :put_online, :update_explanation]
   before_action :offline_question, only: [:destroy]
+
+  # Show a question (inside a chapter)
+  def show
+  end
 
   # Create a question (show the form)
   def new
@@ -57,7 +64,7 @@ class QuestionsController < ApplicationController
       if @question.is_qcm
         redirect_to question_manage_items_path(@question)
       else
-        redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+        redirect_to chapter_question_path(@chapter, @question)
       end
     else
       render 'new'
@@ -106,7 +113,7 @@ class QuestionsController < ApplicationController
     end
     
     if @question.save
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_question_path(@chapter, @question)
     else
       render 'edit'
     end
@@ -130,7 +137,7 @@ class QuestionsController < ApplicationController
       res = swap_position(@question, question2)
       flash[:success] = "Exercice déplacé#{res}." 
     end
-    redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+    redirect_to chapter_question_path(@chapter, @question)
   end
 
   # Put a question online
@@ -138,7 +145,7 @@ class QuestionsController < ApplicationController
     @question.update_attribute(:online, true)
     @section = @question.chapter.section
     @section.update_attribute(:max_score, @section.max_score + @question.value)
-    redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+    redirect_to chapter_question_path(@chapter, @question)
   end
 
   # Update the explanation of a question (show the form)
@@ -149,7 +156,7 @@ class QuestionsController < ApplicationController
   def update_explanation
     if @question.update(:explanation => params[:question][:explanation]) # Do not use update_attribute because it does not trigger validations
       flash[:success] = "Explication modifiée."
-      redirect_to chapter_path(@chapter, :type => 5, :which => @question.id)
+      redirect_to chapter_question_path(@chapter, @question)
     else
       render 'edit_explanation'
     end
@@ -177,6 +184,7 @@ class QuestionsController < ApplicationController
   def get_chapter
     @chapter = Chapter.find_by_id(params[:chapter_id])
     return if check_nil_object(@chapter)
+    @section = @chapter.section
   end
   
   ########## CHECK METHODS ##########
@@ -184,6 +192,19 @@ class QuestionsController < ApplicationController
   # Check that the question is offline
   def offline_question
     return if check_online_object(@question)
+  end
+  
+  # Check that question belongs to chapter
+  def question_of_chapter
+    redirect_to @chapter if @question.chapter != @chapter
+  end
+  
+  # Check that user can see the question
+  def user_that_can_see_question
+    if !@question.online && (!@signed_in || (!current_user.sk.admin? && !current_user.sk.creating_chapters.exists?(@chapter.id)))
+      render 'errors/access_refused'
+    end
+    # We don't actually check here if the user can see that question. This is currently checked in the view. (To be refactored)
   end
   
 end

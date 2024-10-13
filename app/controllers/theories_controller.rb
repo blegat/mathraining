@@ -4,11 +4,18 @@ class TheoriesController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :read, :unread]
   before_action :admin_user, only: [:put_online]
   
-  before_action :get_theory, only: [:edit, :update, :destroy]
+  before_action :get_theory, only: [:show, :edit, :update, :destroy]
   before_action :get_theory2, only: [:order, :read, :unread, :put_online]
-  before_action :get_chapter, only: [:new, :create]
+  before_action :get_chapter, only: [:show, :new, :create]
   
+  before_action :online_chapter_or_creating_user, only: [:show]
+  before_action :theory_of_chapter, only: [:show]
+  before_action :user_that_can_see_theory, only: [:show]
   before_action :user_that_can_update_chapter, only: [:new, :edit, :create, :update, :destroy, :order]
+  
+  # Show a theory (inside the chapter)
+  def show
+  end
 
   # Create a theory (show the form)
   def new
@@ -30,7 +37,7 @@ class TheoriesController < ApplicationController
     end
     if @theory.save
       flash[:success] = "Point théorique ajouté."
-      redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
+      redirect_to chapter_theory_path(@chapter, @theory)
     else
       render 'new'
     end
@@ -42,7 +49,7 @@ class TheoriesController < ApplicationController
     @theory.content = params[:theory][:content]
     if @theory.save
       flash[:success] = "Point théorique modifié."
-      redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
+      redirect_to chapter_theory_path(@chapter, @theory)
     else
       render 'edit'
     end
@@ -58,7 +65,7 @@ class TheoriesController < ApplicationController
   # Put a theory online
   def put_online
     @theory.update_attribute(:online, true)
-    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
+    redirect_to chapter_theory_path(@chapter, @theory)
   end
   
   # Move a theory to another position
@@ -68,19 +75,19 @@ class TheoriesController < ApplicationController
       res = swap_position(@theory, theory2)
       flash[:success] = "Point théorique déplacé#{res}." 
     end
-    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
+    redirect_to chapter_theory_path(@chapter, @theory)
   end
 
   # Mark a theory as read
   def read
     current_user.sk.theories << @theory
-    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
+    redirect_to chapter_theory_path(@chapter, @theory)
   end
 
   # Mark a theory as unread
   def unread
     current_user.sk.theories.delete(@theory)
-    redirect_to chapter_path(@chapter, :type => 1, :which => @theory.id)
+    redirect_to chapter_theory_path(@chapter, @theory)
   end
 
   private
@@ -105,5 +112,20 @@ class TheoriesController < ApplicationController
   def get_chapter
     @chapter = Chapter.find_by_id(params[:chapter_id])
     return if check_nil_object(@chapter)
+    @section = @chapter.section
+  end
+  
+  ########## CHECK METHODS ##########
+  
+  # Check that theory belongs to chapter
+  def theory_of_chapter
+    redirect_to @chapter if @theory.chapter != @chapter
+  end
+  
+  # Check that user can see the theory
+  def user_that_can_see_theory
+    if !@theory.online && (!@signed_in || (!current_user.sk.admin? && !current_user.sk.creating_chapters.exists?(@chapter.id)))
+      render 'errors/access_refused'
+    end
   end
 end

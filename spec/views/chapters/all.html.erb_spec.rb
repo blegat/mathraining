@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "chapters/_all.html.erb", type: :view, chapter: true do
+describe "chapters/all.html.erb", type: :view, chapter: true do
 
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
@@ -32,6 +32,7 @@ describe "chapters/_all.html.erb", type: :view, chapter: true do
   
   before do
     assign(:chapter, chapter)
+    assign(:section, chapter.section)
   end
   
   context "if the user is an admin" do
@@ -41,10 +42,12 @@ describe "chapters/_all.html.erb", type: :view, chapter: true do
     end
     
     it "renders the online theory and nothing else" do
-      render partial: "chapters/all"
+      render template: "chapters/all"
       expect(rendered).to have_chapter_all_content
       expect(rendered).to have_no_button("Marquer toute la théorie comme lue")
       expect(rendered).to have_no_content("Des questions ? N'hésitez pas à demander de l'aide")
+      expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'all'})
+      expect(response).to render_template(:partial => "chapters/_intro")
     end
   end
   
@@ -55,10 +58,12 @@ describe "chapters/_all.html.erb", type: :view, chapter: true do
     end
     
     it "renders the online theory and other stuff" do
-      render partial: "chapters/all"
+      render template: "chapters/all"
       expect(rendered).to have_chapter_all_content
       expect(rendered).to have_button("Marquer toute la théorie comme lue")
       expect(rendered).to have_content("Des questions ? N'hésitez pas à demander de l'aide")
+      expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'all'})
+      expect(response).to render_template(:partial => "chapters/_intro")
     end
   end
   
@@ -68,10 +73,12 @@ describe "chapters/_all.html.erb", type: :view, chapter: true do
     end
     
     it "renders the online theory and nothing else" do
-      render partial: "chapters/all"
+      render template: "chapters/all"
       expect(rendered).to have_chapter_all_content
       expect(rendered).to have_no_button("Marquer toute la théorie comme lue")
       expect(rendered).to have_no_content("Des questions ? N'hésitez pas à demander de l'aide")
+      expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'all'})
+      expect(response).to render_template(:partial => "chapters/_intro")
     end
   end
 end

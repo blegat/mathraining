@@ -1,0 +1,126 @@
+<% provide(:title, @chapter.name.html_safe) %>
+
+<% if !(defined? active) %>
+  <% active = "" %>
+<% end %>
+
+<h1><%= title_3("Théorie", (link_to @section.name, @section), "#{@chapter.name}#{' (en construction)' unless @chapter.online}", false) %></h1>
+
+<div class="grid mt-3 mx-0" style="--bs-columns: 12;">
+
+  <!-- MENU -->
+  <div class="g-col-12 g-col-md-3 g-col-xl-2 noprint list-group">
+    <% number = 0 %>
+    <% i = 1 %>
+    <h5>Général</h5>
+    <%= link_to "Résumé", chapter_path(@chapter), :class => "list-group-item list-group-item-action #{ 'active' if active == 'show'}" %>
+    <%= link_to "Chapitre entier", chapter_all_path(@chapter), :class => "list-group-item list-group-item-action #{ 'active' if active == 'all'}" %>
+    <%= link_to "Forum", subjects_path(:q => "cha-" + @chapter.id.to_s), :class => "list-group-item list-group-item-action", :target => "_blank" if @signed_in and @chapter.online %>
+
+    <!-- Points théoriques -->
+    <% compteur = 0 %>
+    <% @chapter.theories.order(:position).each do |f| %>
+      <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+        <% if compteur == 0 %>
+          <h5 class="mt-3">Points théoriques</h5>
+        <% end %>
+        <% compteur = compteur + 1 %>
+        
+        <% lu = false %>
+        <% if @signed_in && !current_user.sk.admin? %>
+          <% if current_user.sk.theories.exists?(f.id) %>
+            <% lu = true %>
+          <% end %>
+        <% end %>
+        
+        <% actif = "" %>
+        <% if active == 'theory-' + f.id.to_s %>
+          <% actif = "active" %>
+        <% end %>
+        
+        <% kind = "" %>
+        <% if !f.online %>
+          <% kind = "list-group-item-warning" %>
+        <% elsif @signed_in && !current_user.sk.admin? && lu %>
+          <% kind = "list-group-item-success" %>
+        <% end %>
+          
+        <%= link_to f.title, chapter_theory_path(@chapter, f), :class => "list-group-item list-group-item-action #{kind} #{actif}" %>
+
+        <% i = i + 1 %>
+      <% end %>
+    <% end %>
+
+    <!-- Peut-on voir les exercices? -->
+    <% @exovisibles = true %>
+    <% if !@signed_in || !(current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id)) %>
+      <% @chapter.prerequisites.each do |p| %>
+        <% @exovisibles = false if !p.section.fondation && (!@signed_in || !current_user.sk.chapters.exists?(p.id)) %>
+      <% end %>
+    <% end %>
+
+    <!-- Exercices -->
+    <% compteur = 0 %>
+    <% j = 1 %>
+    <% i = 1 %>
+    <% pasfait = 0 %>
+    <% questions = @chapter.questions.order(:position).to_a %>
+    <% questions_ids = questions.map { |q| q.id } %>
+    <% solvedquestions = nil %>
+    <% unsolvedquestions = nil %>
+    <% questions.each do |f| %>
+      <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+
+        <% if compteur == 0 %>
+          <h5 class="mt-3">Exercices</h5>
+        <% end %>
+
+        <% compteur = compteur + 1 %>
+
+        <% if @exovisibles %>
+          <% actif = "" %>
+          <% if active == 'question-' + f.id.to_s %>
+            <% actif = "active" %>
+            <% @number = j %>
+          <% end %>
+            
+          <% kind = "" %>
+          <% if f.online %>
+            <% if @signed_in && !current_user.sk.admin? %>
+              <% if solvedquestions.nil? %> 
+                <% solvedquestions = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
+              <% end %>
+              <% if solvedquestions.include?(f.id) %>
+                <% kind = "list-group-item-success" %>
+              <% else %>
+                <% pasfait = pasfait + 1 %>
+                <% if unsolvedquestions.nil? %>
+                  <% unsolvedquestions = Unsolvedquestion.where(:user_id => current_user.sk.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
+                <% end %>
+                <% if unsolvedquestions.include?(f.id) %>
+                  <% kind = "list-group-item-danger" %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% else %>
+            <% kind = "list-group-item-warning" %>
+          <% end %>
+          <%= link_to "Exercice #{j if f.online}", chapter_question_path(@chapter, f), :class => "list-group-item list-group-item-action #{kind} #{actif}" %>
+        <% else %>
+          <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true"><%= "Exercice #{j}" %></a>
+        <% end %> 
+        <% j = j+1 if f.online %>
+        <% i = i+1 %>
+      <% end %>
+    <% end %>
+      
+    <% if @chapter.online? && @exovisibles && pasfait == 0 && @signed_in && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
+      <% current_user.sk.chapters << @chapter %>
+      <% @chapter.nb_completions = @chapter.nb_completions + 1 %>
+      <% @chapter.save %>
+    <% end %>
+  </div>
+    
+  <div class="g-col-12 g-col-md-9 g-col-xl-10">
+  
+    <div class="mt-3 d-md-none"></div>
