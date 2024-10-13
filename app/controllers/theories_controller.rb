@@ -8,8 +8,8 @@ class TheoriesController < ApplicationController
   before_action :get_theory2, only: [:order, :read, :unread, :put_online]
   before_action :get_chapter, only: [:show, :new, :create]
   
-  before_action :online_chapter_or_creating_user, only: [:show]
   before_action :theory_of_chapter, only: [:show]
+  before_action :user_that_can_see_chapter, only: [:show]
   before_action :user_that_can_see_theory, only: [:show]
   before_action :user_that_can_update_chapter, only: [:new, :edit, :create, :update, :destroy, :order]
   
@@ -124,7 +124,7 @@ class TheoriesController < ApplicationController
   
   # Check that user can see the theory
   def user_that_can_see_theory
-    if !@theory.online && (!@signed_in || (!current_user.sk.admin? && !current_user.sk.creating_chapters.exists?(@chapter.id)))
+    if !@theory.online && !@admin_or_user_writing_chapter
       render 'errors/access_refused'
     end
   end

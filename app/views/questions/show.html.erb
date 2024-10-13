@@ -1,7 +1,5 @@
 <%= render 'chapters/before', active: 'question-' + @question.id.to_s %>
 
-<% if @exovisibles %>
-
 <!-- Titre -->
 <%= render 'questions/title', question: @question, number: @number %>
 
@@ -71,8 +69,5 @@
   <hr class="bottom-help" />
   <p class="text-center">Pour pouvoir répondre aux exercices, vous devez être connecté.</p>
 <% end %>
-
-<% end %>
-
 
 <%= render 'chapters/after' %>

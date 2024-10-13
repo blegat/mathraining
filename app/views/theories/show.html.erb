@@ -37,7 +37,7 @@
 <!-- Si étudiant (connecté) -->
 <% elsif @signed_in %>
   <center>
-    <% if current_user.sk.theories.exists?(@theory.id) %>
+    <% if !@read_theories.nil? && @read_theories.include?(@theory.id) %>
       <%= button_to "Marquer comme non lu", theory_unread_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>
     <% else %>
       <%= button_to "Marquer comme lu", theory_read_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>

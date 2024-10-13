@@ -12,8 +12,8 @@ class ChaptersController < ApplicationController
   
   before_action :offline_chapter, only: [:destroy, :put_online]
   before_action :online_chapter, only: [:read]
-  before_action :online_chapter_or_creating_user, only: [:show, :all]
   before_action :prerequisites_online, only: [:put_online]
+  before_action :user_that_can_see_chapter, only: [:show, :all]
   before_action :user_that_can_update_chapter, only: [:edit, :update]
 
   # Show one chapter (summary only)

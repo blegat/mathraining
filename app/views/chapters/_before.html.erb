@@ -19,19 +19,20 @@
 
     <!-- Points théoriques -->
     <% compteur = 0 %>
-    <% @chapter.theories.order(:position).each do |f| %>
-      <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+    <% theories = @chapter.theories.order(:position).to_a %>
+    <% theories_ids = theories.map { |t| t.id } %>
+    
+    <% @read_theories = Set.new %>
+    <% if @signed_in && !current_user.sk.admin? %>
+      <% @read_theories = current_user.sk.theories.where(:id => theories_ids).ids.to_set %>
+    <% end %>
+    
+    <% theories.each do |f| %>
+      <% if f.online || @admin_or_user_writing_chapter %>
         <% if compteur == 0 %>
           <h5 class="mt-3">Points théoriques</h5>
         <% end %>
         <% compteur = compteur + 1 %>
-        
-        <% lu = false %>
-        <% if @signed_in && !current_user.sk.admin? %>
-          <% if current_user.sk.theories.exists?(f.id) %>
-            <% lu = true %>
-          <% end %>
-        <% end %>
         
         <% actif = "" %>
         <% if active == 'theory-' + f.id.to_s %>
@@ -41,7 +42,7 @@
         <% kind = "" %>
         <% if !f.online %>
           <% kind = "list-group-item-warning" %>
-        <% elsif @signed_in && !current_user.sk.admin? && lu %>
+        <% elsif @read_theories.include?(f.id) %>
           <% kind = "list-group-item-success" %>
         <% end %>
           
@@ -51,25 +52,17 @@
       <% end %>
     <% end %>
 
-    <!-- Peut-on voir les exercices? -->
-    <% @exovisibles = true %>
-    <% if !@signed_in || !(current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id)) %>
-      <% @chapter.prerequisites.each do |p| %>
-        <% @exovisibles = false if !p.section.fondation && (!@signed_in || !current_user.sk.chapters.exists?(p.id)) %>
-      <% end %>
-    <% end %>
-
     <!-- Exercices -->
     <% compteur = 0 %>
     <% j = 1 %>
     <% i = 1 %>
-    <% pasfait = 0 %>
+    <% num_unsolved_questions = 0 %>
     <% questions = @chapter.questions.order(:position).to_a %>
     <% questions_ids = questions.map { |q| q.id } %>
     <% solvedquestions = nil %>
     <% unsolvedquestions = nil %>
     <% questions.each do |f| %>
-      <% if f.online || (@signed_in && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+      <% if f.online || @admin_or_user_writing_chapter %>
 
         <% if compteur == 0 %>
           <h5 class="mt-3">Exercices</h5>
@@ -77,7 +70,7 @@
 
         <% compteur = compteur + 1 %>
 
-        <% if @exovisibles %>
+        <% if @user_can_see_exercises %>
           <% actif = "" %>
           <% if active == 'question-' + f.id.to_s %>
             <% actif = "active" %>
@@ -93,7 +86,7 @@
               <% if solvedquestions.include?(f.id) %>
                 <% kind = "list-group-item-success" %>
               <% else %>
-                <% pasfait = pasfait + 1 %>
+                <% num_unsolved_questions += 1 %>
                 <% if unsolvedquestions.nil? %>
                   <% unsolvedquestions = Unsolvedquestion.where(:user_id => current_user.sk.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
                 <% end %>
@@ -114,7 +107,7 @@
       <% end %>
     <% end %>
       
-    <% if @chapter.online? && @exovisibles && pasfait == 0 && @signed_in && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
+    <% if @chapter.online? && @user_can_see_exercises && num_unsolved_questions == 0 && @signed_in && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
       <% current_user.sk.chapters << @chapter %>
       <% @chapter.nb_completions = @chapter.nb_completions + 1 %>
       <% @chapter.save %>

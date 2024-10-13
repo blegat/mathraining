@@ -2,7 +2,7 @@
 
 <%= render 'intro', allow_edit: true %>
 
-<% if !@exovisibles %>
+<% if !@user_can_see_exercises %>
   <p class="text-color-red">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
   <% prems = true %>
   <% @chapter.prerequisites.each do |p| %>

@@ -7,8 +7,8 @@ class QuestionsController < ApplicationController
   before_action :get_question2, only: [:manage_items, :order, :put_online, :edit_explanation, :update_explanation]
   before_action :get_chapter, only: [:show, :new, :create]
   
-  before_action :online_chapter_or_creating_user, only: [:show]
   before_action :question_of_chapter, only: [:show]
+  before_action :user_that_can_see_chapter, only: [:show]
   before_action :user_that_can_see_question, only: [:show]
   before_action :user_that_can_update_chapter, only: [:new, :edit, :create, :update, :destroy, :manage_items, :edit_explanation, :order, :put_online, :update_explanation]
   before_action :offline_question, only: [:destroy]
@@ -201,10 +201,8 @@ class QuestionsController < ApplicationController
   
   # Check that user can see the question
   def user_that_can_see_question
-    if !@question.online && (!@signed_in || (!current_user.sk.admin? && !current_user.sk.creating_chapters.exists?(@chapter.id)))
+    if !@user_can_see_exercises || (!@question.online && !@admin_or_user_writing_chapter)
       render 'errors/access_refused'
     end
-    # We don't actually check here if the user can see that question. This is currently checked in the view. (To be refactored)
   end
-  
 end
