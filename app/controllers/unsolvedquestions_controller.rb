@@ -17,9 +17,11 @@ class UnsolvedquestionsController < ApplicationController
     @unsolvedquestion = Unsolvedquestion.new(:user => current_user.sk, :question => @question)
     res = check_answer(true)
     if res != "skip"
-      @question.update_attribute(:nb_tries, @question.nb_tries+1)
       if res == "correct"
-        @question.update_attribute(:nb_first_guesses, @question.nb_first_guesses+1)
+        @question.update(:nb_first_guesses => @question.nb_first_guesses+1,
+                         :nb_correct       => @question.nb_correct+1)
+      else
+        @question.update(:nb_wrong         => @question.nb_wrong+1)
       end
       
       # We update chapter.nb_tries if it is the first question that this user tries
@@ -35,6 +37,10 @@ class UnsolvedquestionsController < ApplicationController
   # Try to solve a question (next times)
   def update    
     res = check_answer(false)
+    if res == "correct"
+      @question.update(:nb_correct => @question.nb_correct+1,
+                       :nb_wrong   => @question.nb_wrong-1)
+    end
     if res != "skip"
       redirect_to chapter_question_path(@chapter, @question)
     end

@@ -13,8 +13,9 @@
 #  online           :boolean          default(FALSE)
 #  explanation      :text
 #  level            :integer          default(1)
-#  nb_tries         :integer          default(0)
 #  nb_first_guesses :integer          default(0)
+#  nb_correct       :integer          default(0)
+#  nb_wrong         :integer          default(0)
 #
 class Question < ActiveRecord::Base
 
@@ -42,7 +43,7 @@ class Question < ActiveRecord::Base
     return 3*level
   end
   
-  # Update the nb_tries and nb_first_guesses of each question (done every tuesday at 3 am (see schedule.rb))
+  # Update the nb_correct, nb_wrong and nb_first_guesses of each question (done every tuesday at 3 am (see schedule.rb))
   # NB: They are more or less maintained correct, but not when a user is deleted for instance
   def self.update_stats
     nb_correct_by_question = Solvedquestion.group(:question_id).count
@@ -53,11 +54,11 @@ class Question < ActiveRecord::Base
       nb_correct = 0 if nb_correct.nil?
       nb_wrong = nb_wrong_by_question[q.id]
       nb_wrong = 0 if nb_wrong.nil?
-      nb_tries = nb_correct + nb_wrong
       nb_first_guesses = nb_first_guesses_by_question[q.id]
       nb_first_guesses = 0 if nb_first_guesses.nil?
-      if q.nb_tries != nb_tries || q.nb_first_guesses != nb_first_guesses
-        q.nb_tries = nb_tries
+      if q.nb_correct != nb_correct || q.nb_wrong != nb_wrong || q.nb_first_guesses != nb_first_guesses
+        q.nb_correct = nb_correct
+        q.nb_wrong = nb_wrong
         q.nb_first_guesses = nb_first_guesses
         q.save
       end

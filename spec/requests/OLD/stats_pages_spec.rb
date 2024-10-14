@@ -36,7 +36,8 @@ describe "Stats pages" do
       specify do
         expect(chapter1.nb_tries).to eq(1)
         expect(chapter1.nb_completions).to eq(0)
-        expect(exercise11.nb_tries).to eq(1)
+        expect(exercise11.nb_wrong).to eq(1)
+        expect(exercise11.nb_correct).to eq(0)
         expect(exercise11.nb_first_guesses).to eq(0)
       end
       
@@ -51,7 +52,8 @@ describe "Stats pages" do
         specify do
           expect(chapter1.nb_tries).to eq(1)
           expect(chapter1.nb_completions).to eq(0)
-          expect(exercise11.nb_tries).to eq(1)
+          expect(exercise11.nb_wrong).to eq(0)
+          expect(exercise11.nb_correct).to eq(1)
           expect(exercise11.nb_first_guesses).to eq(0)
         end
       end
@@ -68,7 +70,8 @@ describe "Stats pages" do
       specify do
         expect(chapter1.nb_tries).to eq(1)
         expect(chapter1.nb_completions).to eq(0)
-        expect(exercise11.nb_tries).to eq(1)
+        expect(exercise11.nb_wrong).to eq(0)
+        expect(exercise11.nb_correct).to eq(1)
         expect(exercise11.nb_first_guesses).to eq(1)
       end
       
@@ -83,7 +86,8 @@ describe "Stats pages" do
         specify do
           expect(chapter1.nb_tries).to eq(1)
           expect(chapter1.nb_completions).to eq(1)
-          expect(exercise12.nb_tries).to eq(1)
+          expect(exercise12.nb_wrong).to eq(0)
+          expect(exercise12.nb_correct).to eq(1)
           expect(exercise12.nb_first_guesses).to eq(1)
         end
         
@@ -108,12 +112,15 @@ describe "Stats pages" do
         
         describe "and recomputes the question stats" do
           before do
-            # Change nb_tries and nb_first_guesses in a wrong way
-            exercise11.update(:nb_tries => 42,
+            # Change nb_wrong, nb_correct and nb_first_guesses in a wrong way
+            exercise11.update(:nb_wrong => 42,
+                              :nb_correct => 42,
                               :nb_first_guesses => 42)
-            exercise12.update(:nb_tries => 42,
+            exercise12.update(:nb_wrong => 42,
+                              :nb_correct => 42,
                               :nb_first_guesses => 42)
-            exercise21.update(:nb_tries => 42,
+            exercise21.update(:nb_wrong => 42,
+                              :nb_correct => 42,
                               :nb_first_guesses => 42)
             Question.update_stats
             exercise11.reload
@@ -121,11 +128,14 @@ describe "Stats pages" do
             exercise21.reload
           end
           specify do
-            expect(exercise11.nb_tries).to eq(1)
+            expect(exercise11.nb_wrong).to eq(0)
+            expect(exercise11.nb_correct).to eq(1)
             expect(exercise11.nb_first_guesses).to eq(1)
-            expect(exercise12.nb_tries).to eq(1)
+            expect(exercise12.nb_wrong).to eq(0)
+            expect(exercise12.nb_correct).to eq(1)
             expect(exercise12.nb_first_guesses).to eq(1)
-            expect(exercise21.nb_tries).to eq(0)
+            expect(exercise12.nb_wrong).to eq(0)
+            expect(exercise21.nb_correct).to eq(0)
             expect(exercise21.nb_first_guesses).to eq(0)
           end
         end

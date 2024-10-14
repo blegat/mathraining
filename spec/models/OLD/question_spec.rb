@@ -13,8 +13,9 @@
 #  online           :boolean          default(FALSE)
 #  explanation      :text
 #  level            :integer          default(1)
-#  nb_tries         :integer          default(0)
 #  nb_first_guesses :integer          default(0)
+#  nb_correct       :integer          default(0)
+#  nb_wrong         :integer          default(0)
 #
 require "spec_helper"
 

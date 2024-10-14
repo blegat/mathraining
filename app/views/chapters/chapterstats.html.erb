@@ -11,7 +11,7 @@ Les tableaux suivants donnent :
 <% access_chapters = accessible_chapters((@signed_in ? current_user.sk : nil), ["id"]).map(&:id) %>
 <% chapters = Chapter.select(:id, :section_id, :name, :nb_tries, :nb_completions).where(:online => true).order(:level, :position) %>
 <% chapters_by_section = chapters.group_by{|c| c.section_id} %>
-<% questions_by_chapter = Question.select(:id, :chapter_id, :nb_tries, :nb_first_guesses).where(:online => true).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
+<% questions_by_chapter = Question.select(:id, :chapter_id, :nb_correct, :nb_wrong, :nb_first_guesses).where(:online => true).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
 
 <% Section.where(:fondation => false).order(:id).each do |section| %>
   <% if chapters_by_section[section.id].nil? %>
@@ -52,7 +52,7 @@ Les tableaux suivants donnent :
       <% numexo = questions_by_chapter[chapter.id].size %>
       <% questions_by_chapter[chapter.id].each do |e| %>
         <% pct = 0 %>
-        <% pct = e.nb_first_guesses.to_f/e.nb_tries.to_f if e.nb_tries > 0 %>
+        <% pct = e.nb_first_guesses.to_f/(e.nb_correct + e.nb_wrong).to_f if e.nb_correct + e.nb_wrong > 0 %>
         <% pct2 = [1.4*pct,1].min %>
         <td class="text-center gradient-green-red-<%= ((1-pct2)*20).to_i %>">
         <% if can_see_exercises %>
