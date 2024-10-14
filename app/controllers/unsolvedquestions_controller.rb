@@ -262,15 +262,11 @@ class UnsolvedquestionsController < ApplicationController
   # Helper method to give points of a question to a user
   def point_attribution(user, question)
     pt = question.value
-
-    partials = user.pointspersections
-
-    if !question.chapter.section.fondation
+    
+    if !question.chapter.section.fondation && pt > 0
       user.update_attribute(:rating, user.rating + pt)
+      partial = user.pointspersections.where(:section_id => question.chapter.section_id).first
+      partial.update_attribute(:points, partial.points + pt)
     end
-
-    partial = partials.where(:section_id => question.chapter.section.id).first
-    partial.update_attribute(:points, partial.points + pt)
   end
-
 end
