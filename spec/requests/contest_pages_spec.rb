@@ -232,6 +232,7 @@ describe "Contest pages", contest: true do
 
       describe "and puts it online" do
         before do
+          Category.create(:name => "Mathraining") # Will be used for the new subject
           click_link "Mettre ce concours en ligne"
           offline_contest.reload
           offline_contestproblem.reload

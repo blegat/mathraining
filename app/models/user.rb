@@ -244,7 +244,7 @@ class User < ActiveRecord::Base
     return {color:"#BBBB00"} if !active 
 
     actuallevel = nil
-    if $allcolors.nil?
+    if $allcolors.nil? || Rails.env.test? # Need to reload in tests because Colors can change
       $allcolors = Color.order(:pt).to_a
     end
     $allcolors.each do |c|
@@ -254,6 +254,7 @@ class User < ActiveRecord::Base
         return actuallevel
       end
     end
+    return {pt: 0, color: "#FF0000", name: "Undefined", feminine_name: "Undefined"} if actuallevel.nil? # For tests, when no color exists
     return actuallevel
   end
 

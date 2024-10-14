@@ -9,8 +9,8 @@ describe "Page user/index" do
   let!(:country2) { FactoryGirl.create(:country) }
   let!(:country3) { FactoryGirl.create(:country) }
   
-  let!(:section) { Section.where(:fondation => false).first }
-  let!(:section_fondation) { Section.where(:fondation => true).first }
+  let!(:section) { FactoryGirl.create(:section, fondation: false) }
+  let!(:section_fondation) { FactoryGirl.create(:section, fondation: true) }
   let!(:chapter)  { FactoryGirl.create(:chapter, section: section, online: true) }
   let!(:chapter_fondation) { FactoryGirl.create(:chapter, section: section_fondation, online: true) }
   let!(:problem1) { FactoryGirl.create(:problem, section: section, level: 1, online: true) }
@@ -39,6 +39,14 @@ describe "Page user/index" do
   let!(:user15) { FactoryGirl.create(:user, country: country1, rating: 0) }
   let!(:user16) { FactoryGirl.create(:user, country: country2, rating: 0) }
   let!(:user17) { FactoryGirl.create(:user, country: country2, rating: 0, email_confirm: false) }
+  
+  before(:all) do
+    Color.create_defaults
+  end
+  
+  after(:all) do
+    Color.delete_all
+  end
   
   before(:each) do
     r = Random.new(Date.today.in_time_zone.to_time.to_i)

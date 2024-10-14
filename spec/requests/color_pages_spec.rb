@@ -13,6 +13,7 @@ describe "Color pages", color: true do
 
   describe "root" do
     before do
+      Color.create_defaults
       sign_in root
       visit colors_path
     end

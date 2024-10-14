@@ -5,7 +5,7 @@
 <% if !@user_can_see_exercises %>
   <p class="text-color-red">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
   <% prems = true %>
-  <% @chapter.prerequisites.each do |p| %>
+  <% @chapter.prerequisites.order(:level, :position).each do |p| %>
     <% if (!p.section.fondation && (!@signed_in || !current_user.sk.chapters.exists?(p.id))) %>
       <%= " - " if !prems %>
       <%= p.name %>

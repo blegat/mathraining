@@ -262,25 +262,19 @@ class SubjectsController < ApplicationController
   # Helper method to set the object associated to a subject
   def set_associated_object
     cat = params[:subject][:category_id].to_i
-    if cat >= 0 # Category
+    @subject.category = nil
+    @subject.section = nil
+    @subject.chapter = nil
+    @subject.question = nil
+    @subject.problem = nil
+    if cat > 0 # Category
       @subject.category = Category.find_by_id(cat)
       return "Une erreur est survenue." if @subject.category.nil?
-      @subject.section = nil
-      @subject.chapter = nil
-      @subject.question = nil
-      @subject.problem = nil
-    else # Section
-      @subject.category = nil
+    elsif cat < 0 # Section
       @subject.section = Section.find_by_id(-cat)
       return "Une erreur est survenue." if @subject.section.nil?
       chapter_id = params[:subject][:chapter_id].to_i
-      if chapter_id == 0 # No particular chapter
-        @subject.chapter = nil
-        @subject.question = nil
-        @subject.problem = nil
-      elsif chapter_id == -1 # Problems of this section
-        @subject.chapter = nil
-        @subject.question = nil
+      if chapter_id == -1 # Problems of this section
         problem_id = params[:subject][:problem_id].to_i
         if problem_id == 0
           return "Un problème doit être sélectionné."
@@ -288,14 +282,11 @@ class SubjectsController < ApplicationController
         @subject.problem = Problem.find_by_id(problem_id)
         return "Une erreur est survenue." if @subject.problem.nil? || !@subject.problem.online?
         # Here we can check that the user has indeed access to the problem but it is annoying to do
-      else
+      elsif chapter_id > 0
         @subject.chapter = Chapter.find_by_id(chapter_id)
         return "Une erreur est survenue." if @subject.chapter.nil? || !@subject.chapter.online?
-        @subject.problem = nil
         question_id = params[:subject][:question_id].to_i
-        if question_id == 0
-          @subject.question = nil
-        else
+        if question_id > 0
           @subject.question = Question.find_by_id(question_id)
           return "Une erreur est survenue." if @subject.question.nil? || !@subject.question.online?
           # Here we can check that the user has indeed access to the question but it is annoying to do

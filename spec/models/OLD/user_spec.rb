@@ -278,6 +278,7 @@ describe User do
     end
     
     describe "for a student with some rating" do
+      before { Color.create_defaults }
       it "should have correct color" do
         ratings_to_test = [0, 100, 200, 400, 800, 1600, 3200, 6400, 12800]
         ratings_to_test.each do |rating|
@@ -291,7 +292,10 @@ describe User do
     end
     
     describe "for a student with some rating and see_name = 0" do
-      before { @user.update_attribute(:see_name, 0) }
+      before do
+        Color.create_defaults
+        @user.update_attribute(:see_name, 0)
+      end
       it "should have correct color" do
         ratings_to_test = [0, 100, 200, 400, 800, 1600, 3200, 6400, 12800]
         ratings_to_test.each do |rating|
@@ -305,7 +309,10 @@ describe User do
     end
     
     describe "for a corrector with some rating" do
-      before { @user.update_attribute(:corrector, true) }
+      before do
+        Color.create_defaults
+        @user.update_attribute(:corrector, true)
+      end
       it "should have correct color" do
         ratings_to_test = [0, 100, 200, 400, 800, 1600, 3200, 6400, 12800]
         ratings_to_test.each do |rating|

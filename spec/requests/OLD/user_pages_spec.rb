@@ -16,6 +16,7 @@ describe "User pages" do
   let!(:root) { FactoryGirl.create(:root, country: country) }
   let!(:other_root) { FactoryGirl.create(:root, country: other_country) }
   let!(:admin) { FactoryGirl.create(:admin, country: country) }
+  let(:color) { FactoryGirl.create(:color, pt: 200) }
   let(:new_first_name)  { "New First Name" }
   let(:new_last_name)  { "New Last Name" }
   let(:new_name)  { "#{new_first_name} #{new_last_name}" }
@@ -247,7 +248,7 @@ describe "User pages" do
     end
     
     describe "visits title scores page" do
-      before { visit users_path(:title => Color.where(:pt => 200).first) }
+      before { visit users_path(:title => color) }
       it do
         should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points
         should have_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points
@@ -256,7 +257,7 @@ describe "User pages" do
     end
     
     describe "visits country and title scores page" do
-      before { visit users_path(:title => Color.where(:pt => 200).first, :country => country) }
+      before { visit users_path(:title => color, :country => country) }
       it do
         should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points and in country
         should have_no_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points but not in country

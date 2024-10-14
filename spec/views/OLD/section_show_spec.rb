@@ -10,7 +10,7 @@ describe "Page section/showpb" do
   
   let!(:section) { FactoryGirl.create(:section) }
   
-  let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true) }
+  let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 1) }
   let!(:theory11) { FactoryGirl.create(:theory, chapter: chapter1, online: true, position: 1) }
   let!(:theory12) { FactoryGirl.create(:theory, chapter: chapter1, online: true, position: 2) }
   let!(:theory13_offline) { FactoryGirl.create(:theory, chapter: chapter1, online: false, position: 3) }
@@ -19,20 +19,20 @@ describe "Page section/showpb" do
   let!(:question13_offline) { FactoryGirl.create(:exercise, chapter: chapter1, online: false, position: 3) }
   let!(:question14) { FactoryGirl.create(:exercise, chapter: chapter1, online: true, position: 4) }
   
-  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
+  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 2) }
   let!(:theory21) { FactoryGirl.create(:theory, chapter: chapter2, online: true, position: 1) }
   let!(:theory22_offline) { FactoryGirl.create(:theory, chapter: chapter2, online: false, position: 2) }
   let!(:question21) { FactoryGirl.create(:exercise, chapter: chapter2, online: true, position: 1) }
   let!(:question22_offline) { FactoryGirl.create(:exercise, chapter: chapter2, online: false, position: 2) }
   
-  let!(:chapter3) { FactoryGirl.create(:chapter, section: section, online: true) }
+  let!(:chapter3) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 3) }
   let!(:theory31) { FactoryGirl.create(:theory, chapter: chapter3, online: true, position: 1) }
   let!(:question31) { FactoryGirl.create(:exercise, chapter: chapter3, online: true, position: 1) }
   
-  let!(:chapter4) { FactoryGirl.create(:chapter, section: section, online: true) }
+  let!(:chapter4) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 4) }
   let!(:question41) { FactoryGirl.create(:exercise, chapter: chapter4, online: true, position: 1) }
   
-  let!(:chapter5_offline) { FactoryGirl.create(:chapter, section: section, online: false) }
+  let!(:chapter5_offline) { FactoryGirl.create(:chapter, section: section, online: false, level: 1, position: 5) }
   let!(:theory51_offline) { FactoryGirl.create(:theory, chapter: chapter5_offline, online: false) }
   let!(:question51_offline) { FactoryGirl.create(:question, chapter: chapter5_offline, online: false) }
   
