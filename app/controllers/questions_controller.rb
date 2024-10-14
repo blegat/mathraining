@@ -196,7 +196,9 @@ class QuestionsController < ApplicationController
   
   # Check that question belongs to chapter
   def question_of_chapter
-    redirect_to @chapter if @question.chapter != @chapter
+    if @question.chapter != @chapter
+      render 'errors/access_refused'
+    end
   end
   
   # Check that user can see the question

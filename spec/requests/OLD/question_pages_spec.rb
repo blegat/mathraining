@@ -51,7 +51,7 @@ describe "Question pages" do
     
     describe "visits offline exercise" do
       before { visit chapter_question_path(chapter, offline_exercise) }
-      it { should have_no_selector("div", text: offline_exercise.statement) }
+      it { should have_content(error_access_refused) }
     end
   end
   
@@ -75,19 +75,24 @@ describe "Question pages" do
       end
     end
     
+    describe "visits online exercise with wrong url" do
+      before { visit chapter_question_path(empty_chapter, online_exercise) }
+      it { should have_content(error_access_refused) }
+    end
+    
     describe "visits offline exercise" do
       before { visit chapter_question_path(chapter, offline_exercise) }
-      it { should have_no_selector("div", text: offline_exercise.statement) }
+      it { should have_content(error_access_refused) }
     end
     
     describe "tries to visit exercise creation page" do
       before { visit new_chapter_question_path(chapter) }
-      it { should have_no_selector("h1", text: "Créer un exercice") }
+      it { should have_content(error_access_refused) }
     end
     
     describe "tries to visit exercise modification page" do
       before { visit edit_question_path(online_exercise) }
-      it { should have_no_selector("h1", text: "Modifier un exercice") }
+      it { should have_content(error_access_refused) }
     end
   end
   

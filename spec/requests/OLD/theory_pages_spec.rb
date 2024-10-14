@@ -28,7 +28,7 @@ describe "Theory pages" do
     
     describe "visits offline theory" do
       before { visit chapter_theory_path(chapter, offline_theory) }
-      it { should have_no_selector("h3", text: offline_theory.title) }
+      it { should have_content(error_access_refused) }
     end
   end
   
@@ -73,19 +73,24 @@ describe "Theory pages" do
       end
     end
     
+    describe "visits online theory with wrong url" do
+      before { visit chapter_theory_path(empty_chapter, online_theory) }
+      it { should have_content(error_access_refused) }
+    end
+    
     describe "visits offline theory" do
       before { visit chapter_theory_path(chapter, offline_theory) }
-      it { should have_no_selector("h3", text: offline_theory.title) }
+      it { should have_content(error_access_refused) }
     end
     
     describe "tries to visit theory creation page" do
       before { visit new_chapter_theory_path(chapter) }
-      it { should have_no_selector("h1", text: "Créer un point théorique") }
+      it { should have_content(error_access_refused) }
     end
     
     describe "tries to visit theory modification page" do
       before { visit edit_theory_path(online_theory) }
-      it { should have_no_selector("h1", text: "Modifier un point théorique") }
+      it { should have_content(error_access_refused) }
     end
   end
   

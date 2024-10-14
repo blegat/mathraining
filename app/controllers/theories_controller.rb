@@ -119,7 +119,9 @@ class TheoriesController < ApplicationController
   
   # Check that theory belongs to chapter
   def theory_of_chapter
-    redirect_to @chapter if @theory.chapter != @chapter
+    if @theory.chapter != @chapter
+      render 'errors/access_refused'
+    end
   end
   
   # Check that user can see the theory
