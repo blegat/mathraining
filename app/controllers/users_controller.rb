@@ -222,6 +222,7 @@ class UsersController < ApplicationController
   def destroy
     remove_skins(@user)
     @user.destroy
+    Globalstatistic.get.update_all
     flash[:success] = "Utilisateur supprimé."
     redirect_to @user
   end
@@ -430,6 +431,7 @@ class UsersController < ApplicationController
       @user.notified_submissions.clear
       remove_skins(@user)
       @user.update_remember_token # sign out the user
+      Globalstatistic.get.update_all
     end
     redirect_to root_path
   end

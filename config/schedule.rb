@@ -24,9 +24,10 @@ every :hour, at: 0  do
 end
 
 every :day, :at => '2am' do
-  runner "Record.update"           # Update statistics for problems and questions
-  runner "Myfile.fake_dels"        # Delete old files
-  runner "User.delete_unconfirmed" # Delete users with unconfirmed email
+  runner "Record.update"                  # Update statistics for problems and questions
+  runner "Globalstatistic.get.update_all" # Update global statistics on front page (just in case)
+  runner "Myfile.fake_dels"               # Delete old files
+  runner "User.delete_unconfirmed"        # Delete users with unconfirmed email
 end
 
 every :monday, :at => '3am' do

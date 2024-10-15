@@ -124,6 +124,7 @@ class Submission < ActiveRecord::Base
         pps = Pointspersection.where(:user => u, :section_id => pb.section).first
         pps.points = pps.points - pb.value
         pps.save
+        Globalstatistic.get.update_after_problem_unsolved(pb.value)
       else
         # Si il y a d'autres soumissions il faut peut-être modifier le submission_id du Solvedproblem correspondant
         sp = Solvedproblem.where(:problem => pb, :user => u).first

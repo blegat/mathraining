@@ -214,11 +214,9 @@ class CorrectionsController < ApplicationController
     if !user.pb_solved?(problem) # Avoid giving two times the points to a same problem
       pt = problem.value
 
-      partials = user.pointspersections
-
+      Globalstatistic.get.update_after_problem_solved(pt)
       user.update_attribute(:rating, user.rating + pt)
-
-      partial = partials.where(:section_id => problem.section.id).first
+      partial = user.pointspersections.where(:section_id => problem.section.id).first
       partial.update_attribute(:points, partial.points + pt)
     end
   end

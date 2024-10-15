@@ -270,6 +270,7 @@ class UnsolvedquestionsController < ApplicationController
     pt = question.value
     
     if !question.chapter.section.fondation && pt > 0
+      Globalstatistic.get.update_after_question_solved(user.rating, pt)
       user.update_attribute(:rating, user.rating + pt)
       partial = user.pointspersections.where(:section_id => question.chapter.section_id).first
       partial.update_attribute(:points, partial.points + pt)
