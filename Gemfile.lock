@@ -86,7 +86,7 @@ GEM
       rake (>= 10.4, < 14.0)
     autoprefixer-rails (10.4.13.0)
       execjs (~> 2)
-    base64 (0.1.1)
+    base64 (0.1.0)
     bcrypt (3.1.16)
     bigdecimal (3.1.8)
     bootstrap (5.3.0)
@@ -348,7 +348,7 @@ PLATFORMS
 DEPENDENCIES
   active_storage_validations
   annotate (~> 3.2)
-  base64 (= 0.1.1)
+  base64 (= 0.1.0)
   bcrypt (= 3.1.16)
   bootstrap (= 5.3)
   bootstrap3-datetimepicker-rails (~> 4.14.30)
