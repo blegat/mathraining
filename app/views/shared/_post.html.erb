@@ -58,9 +58,7 @@
           | <%= link_to "Supprimer ce message", message_soft_destroy_path(ms), method: :put, id: "LinkSoftDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" } %>
         <% end %>
         <% if current_user.sk.admin? %>
-          <% unless ms.erased? %>
-            |
-          <% end %>
+          <%= "|" unless ms.erased? %>
           <%= link_to "Supprimer totalement ce message", message_path(ms), method: :delete, id: "LinkDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>
         <% end %>
       <% elsif kind == "contestsolution" %>
