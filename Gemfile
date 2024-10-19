@@ -64,6 +64,3 @@ gem 'groupdate'                        # SQL requests grouped by dates
 gem 'active_storage_validations'       # Validate attachments
 
 gem "importmap-rails", "~> 1.2"        # For javascript
-
-gem "base64", "0.1.0"                  # Fix error in production after upgrade to Rails 7.1
-gem "stringio", "3.0.1.1"              # Fix error in production after upgrade to Rails 7.1

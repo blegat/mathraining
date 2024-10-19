@@ -349,7 +349,6 @@ PLATFORMS
 DEPENDENCIES
   active_storage_validations
   annotate (~> 3.2)
-  base64 (= 0.1.0)
   bcrypt (= 3.1.16)
   bootstrap (= 5.3)
   bootstrap3-datetimepicker-rails (~> 4.14.30)
@@ -379,7 +378,6 @@ DEPENDENCIES
   select2-rails
   selenium-webdriver
   simplecov
-  stringio (= 3.0.1.1)
   whenever
   will_paginate (= 3.3.0)
   will_paginate-bootstrap-style
