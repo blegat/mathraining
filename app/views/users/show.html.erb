@@ -6,7 +6,7 @@
   <% actualrating = @user.rating %>
   <% if actualrating > 0 %>
     <% rank = User.where("rating > ? AND admin = ? AND active = ?", actualrating, false, true).count + 1 %>
-    <% num_users = User.where("rating > 0 AND admin = ? AND active = ?", false, true).count %>
+    <% num_users = Globalstatistic.get.nb_ranked_users %>
     <% rank_centile = (rank == 1 ? 100 : (100.0 * (num_users - rank + 1) / num_users).round(1)) %>
   <% end %>
   <% niveau = @user.level %>
@@ -548,7 +548,7 @@
   <div class="pe-2 pb-2" style="padding-left:20px;">
     <%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span class="user_color"><%= write_date_only(@user.created_at) %></span>.
     <% if nb_p >= 3 %>
-      <% followings = Following.joins(:submission).includes(:user).where("submissions.user_id = ?", @user.id).group("followings.user_id").select("count(followings.id) AS num_corrections, followings.user_id").order("num_corrections DESC, followings.user_id ASC").to_a %>
+      <% followings = Following.includes(:user).where(:submission_user => @user, :kind => [:first_corrector, :other_corrector]).group(:user_id).select("count(id) AS num_corrections, user_id").order("num_corrections DESC, user_id ASC").to_a %>
       <% if followings.size > 0 %>
         <% tot_num_corr = followings.sum{|f| f.num_corrections} %>
         <% num_correctors_to_show = [3, followings.size].min %>

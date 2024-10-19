@@ -24,8 +24,11 @@ class Globalstatistic < ActiveRecord::Base
   # Get the only one row of this table
   def self.get
     statistic = Globalstatistic.first
-    return statistic unless statistic.nil?
-    return Globalstatistic.create
+    if statistic.nil?
+      statistic = Globalstatistic.create
+      statistic.update_all
+    end
+    return statistic
   end
   
   # Recompute all statistics from scratch

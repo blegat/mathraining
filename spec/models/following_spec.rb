@@ -2,12 +2,13 @@
 #
 # Table name: followings
 #
-#  id            :integer          not null, primary key
-#  submission_id :integer
-#  user_id       :integer
-#  read          :boolean
-#  created_at    :datetime         not null
-#  kind          :integer          default(NULL)
+#  id                 :integer          not null, primary key
+#  submission_id      :integer
+#  user_id            :integer
+#  read               :boolean
+#  created_at         :datetime         not null
+#  kind               :integer          default(NULL)
+#  submission_user_id :integer
 #
 require "spec_helper"
 

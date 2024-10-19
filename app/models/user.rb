@@ -235,7 +235,7 @@ class User < ActiveRecord::Base
 
   # Gives the number of submissions with a new comment to read
   def num_notifications_update
-    return followed_submissions.where(followings: { read: false }).count
+    return followings.where(:read => false).count
   end
 
   # Gives the "level" of the user
