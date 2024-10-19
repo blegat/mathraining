@@ -11,10 +11,6 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
   let!(:section) { FactoryGirl.create(:section) }
   
   context "if the user is not signed in" do
-    before do
-      assign(:signed_in, false)
-    end
-    
     it "renders the header correctly" do
       render partial: "layouts/header"
       expect(rendered).to have_link("Mathraining", href: root_path)
@@ -50,7 +46,6 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
   
   context "if the user is signed in" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, user)
     end
     
@@ -170,7 +165,6 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
   
   context "if the user is an admin" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, admin)
     end
     
@@ -214,7 +208,6 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
   
   context "if the user is a root" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, root)
     end
     

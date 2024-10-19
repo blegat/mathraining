@@ -22,7 +22,6 @@ describe "chapters/chapterstats.html.erb", type: :view, chapter: true do
     
   context "if the user is an admin" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, admin)
     end
       
@@ -46,7 +45,6 @@ describe "chapters/chapterstats.html.erb", type: :view, chapter: true do
     
   context "if the user has solved prerequisites" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, user)
     end
     
@@ -70,7 +68,6 @@ describe "chapters/chapterstats.html.erb", type: :view, chapter: true do
   
   context "if the user has not solved prerequisites" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, user_bad)
     end
     
@@ -94,11 +91,7 @@ describe "chapters/chapterstats.html.erb", type: :view, chapter: true do
     end
   end
   
-  context "if the user is not signed in" do
-    before do
-      assign(:signed_in, false)
-    end
-    
+  context "if the user is not signed in" do    
     it "renders the menu correctly" do
       render template: "chapters/chapterstats"
       expect(rendered).to have_selector("h3", text: section.name)

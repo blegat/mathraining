@@ -12,7 +12,6 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
   
   context "if the user is a root" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, root)
     end
     
@@ -79,7 +78,6 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
   
   context "if the user is not an admin" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, user)
     end
     

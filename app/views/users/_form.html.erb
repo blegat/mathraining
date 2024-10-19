@@ -90,13 +90,13 @@
 <!-- Mot de passe -->
 <div class="mb-2">
   <%= f.label :password, :class => "form-label" %>
-  <%= f.password_field :password, :class => "form-control", :style => "width:250px;", :disabled => (@signed_in && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
+  <%= f.password_field :password, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
 <!-- Confirmation mot de passe -->
 <div class="mb-2">
   <%= f.label :password_confirmation, :class => "form-label" %>
-  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (@signed_in && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
+  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
 <% if !modif && !Rails.env.test? %>

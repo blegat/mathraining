@@ -25,7 +25,6 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     
     context "if the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
       
@@ -59,7 +58,6 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     
     context "if the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
         
@@ -86,7 +84,6 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     
     context "if the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
         
@@ -107,7 +104,6 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     
     context "if the user can participate" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
       end
       
@@ -140,7 +136,6 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     
     context "if the user cannot participate" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_bad)
       end
       
@@ -165,7 +160,6 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     
     context "if the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
         
@@ -186,7 +180,6 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user) }
       let!(:contestsolution_other) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem) }
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
       end       
         
@@ -236,7 +229,6 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       let!(:contestsolution_other_good) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, score: 7) }
       let!(:contestsolution_other_bad) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, score: 6) }
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
       end       
         

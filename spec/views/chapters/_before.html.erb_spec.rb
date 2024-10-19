@@ -32,7 +32,6 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
     
     context "if the user is an admin" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, admin)
         assign(:admin_or_user_writing_chapter, true)
         assign(:user_can_see_exercises, true)
@@ -83,7 +82,6 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
     
     context "if the user has solved prerequisites" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
         assign(:admin_or_user_writing_chapter, false)
         assign(:user_can_see_exercises, true)
@@ -109,7 +107,6 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
     
     context "if the user has not solved prerequisites" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_bad)
         assign(:admin_or_user_writing_chapter, false)
         assign(:user_can_see_exercises, false)
@@ -134,7 +131,6 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
     
     context "if the user is not signed in" do
       before do
-        assign(:signed_in, false)
         assign(:admin_or_user_writing_chapter, false)
         assign(:user_can_see_exercises, false)
       end
@@ -160,7 +156,6 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
   context "if the chapter has no prerequisite" do
     context "if the user is not signed in" do
       before do
-        assign(:signed_in, false)
         assign(:admin_or_user_writing_chapter, false)
         assign(:user_can_see_exercises, true)
       end

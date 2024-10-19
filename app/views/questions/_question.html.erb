@@ -19,10 +19,10 @@
   <%= form_for(unsolvedquestion) do |g| %>
     <%= hidden_field_tag "question_id", question.id %>
     <div class="mb-2">
-    <%= g.label :guess, :class => "form-label to-enable", :disabled => !@signed_in || needtowait %>
-    <%= g.text_field :guess, class: "form-control to-enable ms-1", style: "width:70px;", value: val, :disabled => !@signed_in || needtowait %>
+    <%= g.label :guess, :class => "form-label to-enable", :disabled => !signed_in? || needtowait %>
+    <%= g.text_field :guess, class: "form-control to-enable ms-1", style: "width:70px;", value: val, :disabled => !signed_in? || needtowait %>
     </div>
-    <%= g.submit "Soumettre", class: "btn btn-primary to-enable", :disabled => !@signed_in || current_user.other || needtowait %>
+    <%= g.submit "Soumettre", class: "btn btn-primary to-enable", :disabled => !signed_in? || current_user.other || needtowait %>
   <% end %>
   
 <% else %>
@@ -35,12 +35,12 @@
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
-            <%= check_box_tag "ans[#{ c.id }]", "ok", prev_answers.include?(c.id), :disabled => !@signed_in || needtowait, :class => "form-check-input to-enable" %>
+            <%= check_box_tag "ans[#{ c.id }]", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || needtowait, :class => "form-check-input to-enable" %>
             <%= raw(c.ans) %>
           </label>
         </div>
       <% end %>
-      <%= g.submit "Soumettre", class: "btn btn-primary to-enable mt-3", :disabled => (!@signed_in || current_user.other || needtowait) %>
+      <%= g.submit "Soumettre", class: "btn btn-primary to-enable mt-3", :disabled => (!signed_in? || current_user.other || needtowait) %>
     <% end %>
   <% else %>
     <div class="mb-3"></div>
@@ -49,12 +49,12 @@
       <% question.items.order(:position).each do |c| %>
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
-            <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans[#{ c.id }]", :disabled => !@signed_in || needtowait, :class => "form-check-input to-enable" %>
+            <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans[#{ c.id }]", :disabled => !signed_in? || needtowait, :class => "form-check-input to-enable" %>
             <%= raw(c.ans) %>
           </label>
         </div>
       <% end %>
-      <%= g.submit "Soumettre", class: "btn btn-primary to-enable mt-3", :disabled => (!@signed_in || current_user.other || needtowait) %>
+      <%= g.submit "Soumettre", class: "btn btn-primary to-enable mt-3", :disabled => (!signed_in? || current_user.other || needtowait) %>
     <% end %>
 
   <% end %>

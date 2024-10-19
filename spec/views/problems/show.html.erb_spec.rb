@@ -23,7 +23,6 @@ describe "problems/show.html.erb", type: :view, problem: true do
   
   context "if the user is an admin" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, admin)
     end
     
@@ -74,7 +73,6 @@ describe "problems/show.html.erb", type: :view, problem: true do
   
   context "if the user didn't solve the problem" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, bad_user)
     end
         
@@ -147,7 +145,6 @@ describe "problems/show.html.erb", type: :view, problem: true do
   
   context "if the user solved the problem" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, good_user)
     end
         
@@ -207,7 +204,6 @@ describe "problems/show.html.erb", type: :view, problem: true do
   
   context "if the user is a corrector having solved the problem" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, good_corrector)
     end
      
@@ -232,7 +228,6 @@ describe "problems/show.html.erb", type: :view, problem: true do
   
   context "if the user is a corrector not having solved the problem" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, bad_corrector)
     end
      

@@ -175,7 +175,7 @@ Votre navigateur ne supporte pas les canvas.
 <% allprobs.each do |p| %>
   <tr>
   <td>
-    <% if @signed_in %>
+    <% if signed_in? %>
       <%= link_to "Problème ##{ p.number }", contestproblem_path(p) %>
     <% else %>
       <%= "Problème ##{ p.number }" %>

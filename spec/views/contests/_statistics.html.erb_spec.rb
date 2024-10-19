@@ -22,7 +22,6 @@ describe "contests/_statistics.html.erb", type: :view, contest: true do
     
   context "and the user is connected" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, user1)
     end
   

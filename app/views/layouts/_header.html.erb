@@ -18,7 +18,7 @@
       <!-- Boutons en haut à gauche -->
       <form>
       
-      <% if @signed_in and (current_user.sk.admin || current_user.sk.corrector) %>
+      <% if signed_in? and (current_user.sk.admin || current_user.sk.corrector) %>
         <% num_waiting_suspicions = (current_user.sk.root ? Suspicion.where(:status => :waiting_confirmation).count : 0) %>
         <% num_waiting_starproposals = (current_user.sk.root ? Starproposal.where(:status => :waiting_treatment).count : 0) %>
 
@@ -56,7 +56,7 @@
       <% end %>
       
       <!-- Corrections (pour les étudiants non-correcteurs) -->
-      <% if @signed_in && !current_user.sk.admin? %>
+      <% if signed_in? && !current_user.sk.admin? %>
         <% noti = current_user.sk.notified_submissions.count %>
         <% if noti != 0 %>
           <%= link_to "#{noti}", notifs_path, class: "btn btn-info #{ 'ms-2' if current_user.sk.corrector? }" %>
@@ -87,7 +87,7 @@
                 <li><%= link_to f.name, f, :class => "dropdown-item" %></li>
               <% end %>
             <% end %>
-            <% if @signed_in && current_user.sk.admin? %>
+            <% if signed_in? && current_user.sk.admin? %>
               <li class="dropdown-divider"></li>
               <li><%= link_to "Modifier la structure", graph_prerequisites_path, :class => "dropdown-item" %></li>
             <% end %>
@@ -112,7 +112,7 @@
         </li>
 
         <!-- Forum -->
-        <% if @signed_in %>
+        <% if signed_in? %>
           <% num_unseen_subjects = current_user.sk.num_unseen_subjects(false) %>
           
           <li class="nav-item me-1">
@@ -143,7 +143,7 @@
 
         <!-- Si connecté -->
 
-        <% if @signed_in %>
+        <% if signed_in? %>
 
           <% nonlu = current_user.sk.links.where("nonread != 0").count %>
 
@@ -160,7 +160,7 @@
             <% end %>
             <li><%= link_to "Profil", current_user.sk, :class => "dropdown-item" %></li>
             <li><%= link_to "Compte", edit_user_path(current_user.sk), :class => "dropdown-item" %></li>
-            <% if @signed_in && (current_user.sk.admin? || (current_user.sk.wepion? && current_user.sk.group != "")) %>
+            <% if signed_in? && (current_user.sk.admin? || (current_user.sk.wepion? && current_user.sk.group != "")) %>
               <li><%= link_to "Groupes Wépion", groups_path, :class => "dropdown-item" %></li>
             <% end %>
             <li><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "dropdown-item" %></li>

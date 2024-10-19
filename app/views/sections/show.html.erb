@@ -11,7 +11,7 @@
 <h3 class="mt-2">Introduction</h3>
 <p><%= raw(htmlise(@section.description)) %></p>
 
-<% if @signed_in && current_user.sk.admin? %>
+<% if signed_in? && current_user.sk.admin? %>
 <p><%= link_to "Modifier l'introduction", edit_section_path(@section) %></p>
 <% end %>
 
@@ -26,15 +26,15 @@
 <% end %>
 </p>
 
-<% unless @signed_in and current_user.sk.admin? %>
+<% unless signed_in? and current_user.sk.admin? %>
   <% @chapter_status = [] %>
   <% @question_status = [] %>
   <% @theory_status = [] %>
-  <% access_chap = accessible_chapters_from_section((@signed_in ? current_user.sk : nil), @section, ["id"]).to_a %>
+  <% access_chap = accessible_chapters_from_section((signed_in? ? current_user.sk : nil), @section, ["id"]).to_a %>
   <% access_chap.each do |c| %>
     <% @chapter_status[c.id] = "access" %>
   <% end %>
-  <% if @signed_in %>
+  <% if signed_in? %>
     <% current_user.sk.chapters.each do |c| %>
       <% @chapter_status[c.id] = "solved" %>
     <% end %>
@@ -64,7 +64,7 @@
   <% premier = true %>
   <% if !chapters_by_level[level].nil? %>
     <% chapters_by_level[level].each do |c| %>
-      <% if (c.online || (@signed_in && (current_user.sk.admin || @chapter_status[c.id] == "creator"))) %>
+      <% if (c.online || (signed_in? && (current_user.sk.admin || @chapter_status[c.id] == "creator"))) %>
         <% if premier %>
           <% if @section.fondation %>
           
@@ -83,7 +83,7 @@
         
         <% if !c.online? %>
           <% classe = "orangey" %>
-        <% elsif @signed_in && current_user.sk.admin %>
+        <% elsif signed_in? && current_user.sk.admin %>
           <% classe = "yellowy" %>
         <% elsif @chapter_status[c.id] == "solved" %>
           <% classe = "greeny" %>
@@ -102,7 +102,7 @@
 
 
 <!-- Si administrateur -->
-<% if @signed_in && current_user.sk.admin? %>
+<% if signed_in? && current_user.sk.admin? %>
 
 <!-- Ajouter un chapitre -->
 <center>

@@ -14,7 +14,6 @@ describe "faqs/index.html.erb", type: :view, faq: true do
   
   context "if the user is an admin" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, admin)
     end
     
@@ -34,7 +33,6 @@ describe "faqs/index.html.erb", type: :view, faq: true do
   
   context "if the user is not an admin" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, user)
     end
     
@@ -52,11 +50,7 @@ describe "faqs/index.html.erb", type: :view, faq: true do
     end
   end
   
-  context "if the user is not signed in" do
-    before do
-      assign(:signed_in, false)
-    end
-    
+  context "if the user is not signed in" do    
     it "renders the faq and not the modify buttons" do
       render template: "faqs/index"
       expect(rendered).to have_content(faq.question)

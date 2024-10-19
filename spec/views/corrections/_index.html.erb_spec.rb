@@ -13,7 +13,6 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
   
   context "if the user is the submission owner" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, user)
     end
     
@@ -60,7 +59,6 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
   
   context "if the user is not the submission owner" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, admin)
     end
     

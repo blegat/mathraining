@@ -15,7 +15,7 @@
     <h5>Général</h5>
     <%= link_to "Résumé", chapter_path(@chapter), :class => "list-group-item list-group-item-action #{ 'active' if active == 'show'}" %>
     <%= link_to "Chapitre entier", chapter_all_path(@chapter), :class => "list-group-item list-group-item-action #{ 'active' if active == 'all'}" %>
-    <%= link_to "Forum", subjects_path(:q => "cha-" + @chapter.id.to_s), :class => "list-group-item list-group-item-action", :target => "_blank" if @signed_in and @chapter.online %>
+    <%= link_to "Forum", subjects_path(:q => "cha-" + @chapter.id.to_s), :class => "list-group-item list-group-item-action", :target => "_blank" if signed_in? and @chapter.online %>
 
     <!-- Points théoriques -->
     <% compteur = 0 %>
@@ -23,7 +23,7 @@
     <% theories_ids = theories.map { |t| t.id } %>
     
     <% @read_theories = Set.new %>
-    <% if @signed_in && !current_user.sk.admin? %>
+    <% if signed_in? && !current_user.sk.admin? %>
       <% @read_theories = current_user.sk.theories.where(:id => theories_ids).ids.to_set %>
     <% end %>
     
@@ -79,7 +79,7 @@
             
           <% kind = "" %>
           <% if f.online %>
-            <% if @signed_in && !current_user.sk.admin? %>
+            <% if signed_in? && !current_user.sk.admin? %>
               <% if solvedquestions.nil? %> 
                 <% solvedquestions = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
               <% end %>
@@ -107,7 +107,7 @@
       <% end %>
     <% end %>
       
-    <% if @chapter.online? && @user_can_see_exercises && num_unsolved_questions == 0 && @signed_in && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
+    <% if @chapter.online? && @user_can_see_exercises && num_unsolved_questions == 0 && signed_in? && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
       <% current_user.sk.chapters << @chapter %>
       <% @chapter.nb_completions = @chapter.nb_completions + 1 %>
       <% @chapter.save %>

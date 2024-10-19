@@ -5,7 +5,7 @@
 
 <% if !@questions_by_chapter[chapter.id].nil? %>
   <% @questions_by_chapter[chapter.id].each do |q| %>
-    <% if (q.online || (@signed_in && (current_user.sk.admin? || @chapter_status[chapter.id] == "creator"))) %>
+    <% if (q.online || (signed_in? && (current_user.sk.admin? || @chapter_status[chapter.id] == "creator"))) %>
       <% compteur = compteur + 1 %>
       <% if k % 8 == 1 && k > 1 %>
         </div>
@@ -17,7 +17,7 @@
       <% end %>
       <% if acces %>
         <% classe = "" %>  
-        <% if !@signed_in %>
+        <% if !signed_in? %>
           <% classe = "btn btn-ld-light-dark" %>  
         <% elsif !q.online? %>
           <% classe = "btn btn-warning" %>

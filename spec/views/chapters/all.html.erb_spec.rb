@@ -37,7 +37,6 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
   
   context "if the user is an admin" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, admin)
     end
     
@@ -53,7 +52,6 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
   
   context "if the user is not an admin" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, user)
     end
     
@@ -67,11 +65,7 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
     end
   end
   
-  context "if the user is not signed in" do
-    before do
-      assign(:signed_in, false)
-    end
-    
+  context "if the user is not signed in" do    
     it "renders the online theory and nothing else" do
       render template: "chapters/all"
       expect(rendered).to have_chapter_all_content

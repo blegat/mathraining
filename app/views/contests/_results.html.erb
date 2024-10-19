@@ -1,4 +1,4 @@
-<% if !@signed_in %>
+<% if !signed_in? %>
   <p class="text-center">Le classement n'est visible que par les utilisateurs connectés.</p>
 <% else %>
   <% organizer = @contest.is_organized_by_or_admin(current_user.sk) %>

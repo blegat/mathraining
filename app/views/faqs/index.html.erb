@@ -9,7 +9,7 @@
   <%= raw(htmlise(f.answer)) %>
   </div>
 
-  <% if @signed_in && current_user.sk.admin? %>
+  <% if signed_in? && current_user.sk.admin? %>
     <p class="text-center">
     <%= link_to "Modifier la question", edit_faq_path(f) %> |
     <%= link_to "Supprimer la question", f, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette question ?" } %>
@@ -27,6 +27,6 @@
 <% end %>
 
 <!-- Ajouter une question -->
-<% if @signed_in && current_user.sk.admin? %>
+<% if signed_in? && current_user.sk.admin? %>
 <center><%= button_to "Ajouter une question", new_faq_path, :class => "btn btn-lg btn-ld-light-dark", :method => "get" %></center>
 <% end %>	

@@ -49,14 +49,14 @@
 <% if !@user.admin %>
 
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
-  <% if !@signed_in || !current_user.sk.admin %>
+  <% if !signed_in? || !current_user.sk.admin %>
     <% cansee_chap = Array.new %>
-    <% access_chap = accessible_chapters((@signed_in ? current_user.sk : nil), ["id"]) %>
+    <% access_chap = accessible_chapters((signed_in? ? current_user.sk : nil), ["id"]) %>
     <% access_chap.each do |a| %>
       <% cansee_chap[a.id] = true %>
     <% end %>
     <% cansee_prob = Array.new %>
-    <% access_prob = accessible_problems((@signed_in ? current_user.sk : nil), ["id"]) %>
+    <% access_prob = accessible_problems((signed_in? ? current_user.sk : nil), ["id"]) %>
     <% access_prob.each do |a| %>
       <% cansee_prob[a.id] = true %>
     <% end %>
@@ -104,7 +104,7 @@
           <% premier = q.time.in_time_zone %>
         <% end %>
       <% end %>
-      <% peutvoir = (@signed_in && current_user.sk.admin?) || cansee_chap[q.chapter_id] == true %>
+      <% peutvoir = (signed_in? && current_user.sk.admin?) || cansee_chap[q.chapter_id] == true %>
       <% q_encours = q_encours + 1 %>
       <% act.push({:time => q.time, :type => "Q", :id => q.id, :peutvoir => peutvoir, :pt => 3 * q.level, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
     <% elsif bestqui == "P" %>
@@ -114,14 +114,14 @@
       <% if premier.nil? %>
         <% premier = p.time.in_time_zone %>
       <% end %>
-      <% if @signed_in && current_user.sk.admin? %>
+      <% if signed_in? && current_user.sk.admin? %>
         <% peutvoir = true %>
       <% else %>
         <% t = p.virtualtest_id %>
         <% if t == 0 %>
           <% peutvoir = (cansee_prob[p.id] == true) %>
         <% else %>
-          <% peutvoir = (@signed_in && current_user.sk.test_status(t) == "finished") %>
+          <% peutvoir = (signed_in? && current_user.sk.test_status(t) == "finished") %>
         <% end %>
       <% end %>
       <% p_encours = p_encours + 1 %>
@@ -139,18 +139,18 @@
 
 <% largeur = (@user.admin ? 12 : 5) %>
 <% can_send_message = true %>
-<% if !@signed_in || @user == current_user.sk %>
+<% if !signed_in? || @user == current_user.sk %>
   <% can_send_message = false %>
 <% end %>
 <div class="g-col-12 g-col-lg-<%= largeur %> basic_container text-center p-1">
   <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
   <tr><td class="px-2" style="font-size:20px;"><%= raw(@user.colored_name) %></td></tr>
-  <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %> <%= "<span class='text-color-red'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if @signed_in && current_user.sk.root? && @user.is_banned %></td></tr>
+  <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %> <%= "<span class='text-color-red'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if signed_in? && current_user.sk.root? && @user.is_banned %></td></tr>
   <tr><td class="pt-2"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
   </table>
-  <% if @signed_in && current_user.sk != @user %>
-    <%= button_to "Envoyer un message", new_discussion_path, :method => :get, :params => { qui: @user }, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:170px;", :disabled => !@signed_in %>
+  <% if signed_in? && current_user.sk != @user %>
+    <%= button_to "Envoyer un message", new_discussion_path, :method => :get, :params => { qui: @user }, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:170px;", :disabled => !signed_in? %>
   <% end %> 
 </div>
   
@@ -173,7 +173,7 @@
       </tr>
     </table>
     
-    <% if @signed_in && @user != current_user.sk %>
+    <% if signed_in? && @user != current_user.sk %>
       <% if !current_user.sk.followed_users.exists?(@user.id) %>
         <%= button_to "Suivre", user_add_followed_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:140px;" %>
       <% else %>
@@ -208,7 +208,7 @@
   </div>
 <% end %> 
   
-<% if @signed_in && current_user.sk.root? %>
+<% if signed_in? && current_user.sk.root? %>
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
     Connecté le <span class="user_color_<%= mt_theme %>"><%= write_date_only_small(@user.last_connexion_date) %></span>
   </div>
@@ -967,7 +967,7 @@
 
 
 <!-- Si administrateur, différentes options -->
-<% if @signed_in && current_user.sk.admin? && !@user.root? && (current_user.sk.root? || !@user.admin) %>
+<% if signed_in? && current_user.sk.admin? && !@user.root? && (current_user.sk.root? || !@user.admin) %>
   <div class="g-col-12 basic_container text-center p-2">
   <% i = 0 %>
     <% if current_user.sk.root? && !@user.root? %>

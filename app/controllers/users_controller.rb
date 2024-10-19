@@ -354,11 +354,11 @@ class UsersController < ApplicationController
       # This is to avoid the problem that occurs when somebody tries to connect from this page
       # Indeed when we connect, we are redirected to the previous page, and this page automatically disconnects the user
       if(params[:signed_out].nil?)
-        if @signed_in
+        if signed_in?
           sign_out
         end
         redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
-      elsif @signed_in
+      elsif signed_in?
         # If the "signed_out" is present and we are connected, it means that we just connected
         redirect_to root_path
       end
@@ -404,8 +404,10 @@ class UsersController < ApplicationController
 
   # Leave the skin of a user
   def leave_skin
-    current_user.update_attribute(:skin, 0)
-    flash[:success] = "Vous êtes à nouveau dans votre peau."
+    if current_user.skin != 0
+      current_user.update_attribute(:skin, 0)
+      flash[:success] = "Vous êtes à nouveau dans votre peau."
+    end
     redirect_back(fallback_location: root_path)
   end
 
@@ -645,7 +647,7 @@ class UsersController < ApplicationController
       alea = Array.new(s)
       (0..(s-1)).each do |i|
         x = r.rand()
-        if @signed_in and ids[i] == current_user.sk.id
+        if signed_in? and ids[i] == current_user.sk.id
           alea[i] = [0, i]
         else
           alea[i] = [x, i]

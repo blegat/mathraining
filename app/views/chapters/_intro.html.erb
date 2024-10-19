@@ -16,7 +16,7 @@
 
 <% if allow_edit %>
   <!-- Modifier les prérequis -->
-  <% if @signed_in && current_user.sk.admin? && !@chapter.online %>
+  <% if signed_in? && current_user.sk.admin? && !@chapter.online %>
     <center><%= link_to "Modifier les prérequis", graph_prerequisites_path %></center>
   <% end %>
 <% end %>
@@ -41,7 +41,7 @@
 
 <% if allow_edit %>  
   <!-- Modifier / Supprimer -->
-  <% if @signed_in && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+  <% if signed_in? && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
     <% if @chapter.submission_prerequisite? %>
       <p class="fw-bold">Ce chapitre est un prérequis pour écrire une soumission à un problème.</p>
     <% end %>

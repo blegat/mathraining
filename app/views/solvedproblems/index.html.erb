@@ -6,9 +6,9 @@
 
 <% oneweekago = Date.today - 7 %>
 
-<% if !@signed_in || !current_user.sk.admin? %>
+<% if !signed_in? || !current_user.sk.admin? %>
   <% problem_status = Array.new %>
-  <% accessible_problems((@signed_in ? current_user.sk : nil), ["id"]).each do |a| %>
+  <% accessible_problems((signed_in? ? current_user.sk : nil), ["id"]).each do |a| %>
     <% problem_status[a.id] = 1 %>
   <% end %>
 <% end %>
@@ -42,7 +42,7 @@
   
   <!-- Problème -->
   <td>
-  <% if (@signed_in && current_user.sk.admin?) || problem_status[s.problem_id] == 1 %>
+  <% if (signed_in? && current_user.sk.admin?) || problem_status[s.problem_id] == 1 %>
     <span class="d-none d-lg-inline"><%= link_to "Problème ##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
     <span class="d-inline d-lg-none"><%= link_to "##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
   <% else %>
@@ -50,7 +50,7 @@
   <% end %>
   </td>
   
-  <% if @signed_in %>
+  <% if signed_in? %>
     <!-- Correcteur -->
     <td class="d-none d-md-table-cell">
       <% s.submission.followings.each do |f| %>

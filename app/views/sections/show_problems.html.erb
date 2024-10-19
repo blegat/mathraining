@@ -6,7 +6,7 @@
 
 <%= render 'info_problems' %>
 
-<% if !has_enough_points(@signed_in ? current_user.sk : nil) %>
+<% if !has_enough_points(signed_in? ? current_user.sk : nil) %>
 
   <!-- Si moins de 200 points, on ne peut rien voir -->
   <p class="mt-3 fw-bold">
@@ -128,7 +128,7 @@
 
 
 <!-- Ajouter un problème -->
-<% if @signed_in && current_user.sk.admin? %>
+<% if signed_in? && current_user.sk.admin? %>
   <center>
   <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
   </center>

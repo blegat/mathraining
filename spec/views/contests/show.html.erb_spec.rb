@@ -25,7 +25,6 @@ describe "contests/show.html.erb", type: :view, contest: true do
     
     context "if the user is an admin" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, admin)
       end
         
@@ -48,7 +47,6 @@ describe "contests/show.html.erb", type: :view, contest: true do
     
     context "if the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
         
@@ -79,7 +77,6 @@ describe "contests/show.html.erb", type: :view, contest: true do
     
     context "if the user is an admin" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, admin)
       end
         
@@ -100,7 +97,6 @@ describe "contests/show.html.erb", type: :view, contest: true do
     
     context "if the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
         
@@ -117,7 +113,6 @@ describe "contests/show.html.erb", type: :view, contest: true do
     
     context "if the user can participate" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
       end
         
@@ -150,7 +145,6 @@ describe "contests/show.html.erb", type: :view, contest: true do
     
     context "if the user can participate" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
       end
         
@@ -186,7 +180,6 @@ describe "contests/show.html.erb", type: :view, contest: true do
     
     context "if the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
         

@@ -21,7 +21,6 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     
     context "and the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
     
@@ -46,7 +45,6 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     
     context "and the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
     
@@ -64,7 +62,6 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     
     context "and the user is a participant" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
       end
     
@@ -87,7 +84,6 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     
     context "and the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
     
@@ -105,7 +101,6 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     
     context "and the user is a participant" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
       end
     
@@ -128,7 +123,6 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     
     context "and the user is a participant" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
       end
     
@@ -155,7 +149,6 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     
     context "and the user is a participant" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user)
       end
     

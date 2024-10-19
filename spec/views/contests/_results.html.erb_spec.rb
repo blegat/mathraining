@@ -33,7 +33,6 @@ describe "contests/_results.html.erb", type: :view, contest: true do
     
     context "and the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
     
@@ -56,11 +55,7 @@ describe "contests/_results.html.erb", type: :view, contest: true do
       contestproblem3.in_correction!
     end
     
-    context "and the user is not signed in" do
-      before do
-        assign(:signed_in, false)
-      end
-      
+    context "and the user is not signed in" do      
       it "does not render the results" do
         render partial: "contests/results"
         expect(rendered).to have_content("Le classement n'est visible que par les utilisateurs connectés")
@@ -70,7 +65,6 @@ describe "contests/_results.html.erb", type: :view, contest: true do
     
     context "and the user is an organizer" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user_organizer)
       end
     
@@ -105,7 +99,6 @@ describe "contests/_results.html.erb", type: :view, contest: true do
     
     context "and the user is a participant" do
       before do
-        assign(:signed_in, true)
         assign(:current_user, user1)
       end
     

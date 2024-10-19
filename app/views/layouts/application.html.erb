@@ -73,7 +73,7 @@
     
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
-    <% if @signed_in && current_user.accept_analytics && Rails.env.production? %>
+    <% if signed_in? && current_user.accept_analytics && Rails.env.production? %>
       <!-- Google tag (gtag.js) -->
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-FZ7Q2MRZ89"></script>
       <script>

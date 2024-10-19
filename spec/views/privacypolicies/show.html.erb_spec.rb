@@ -12,7 +12,6 @@ describe "privacypolicies/show.html.erb", type: :view, privacypolicy: true do
   
   context "if the user is a root" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, root)
       assign(:privacypolicy, privacypolicy3)
     end
@@ -25,7 +24,6 @@ describe "privacypolicies/show.html.erb", type: :view, privacypolicy: true do
   
   context "if the user is not an admin" do
     before do
-      assign(:signed_in, true)
       assign(:current_user, user)
     end
     

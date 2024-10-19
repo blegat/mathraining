@@ -12,7 +12,6 @@ describe "contestcorrections/_show.html.erb", type: :view, contestcorrection: tr
     contestproblem.contest.organizers << user
     assign(:contestproblem, contestproblem)
     assign(:contest, contestproblem.contest)
-    assign(:signed_in, true)
     assign(:current_user, user)
   end
   
