@@ -42,7 +42,7 @@ jobs:
         PGPORT: ${{ job.services.postgres.ports[5432] }}
         RAILS_ENV: test
       run: |
-        export SECRET_KEY_BASE=$(bundle exec rake secret)
+        export SECRET_KEY_BASE=$(rails secret)
         RAILS_ENV=test bundle exec rake db:migrate --trace
         bundle exec rake db:test:prepare
         bundle exec rspec
