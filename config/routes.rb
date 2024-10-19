@@ -176,7 +176,6 @@ Rails.application.routes.draw do
     match '/unset_corrector', to: 'users#unset_corrector', :via => [:put]
     match '/destroydata', to: 'users#destroydata', :via => [:put]
     match '/take_skin', to: 'users#take_skin', :via => [:put]
-    match '/leave_skin', to: 'users#leave_skin', :via => [:put]
     match '/change_group', to: 'users#change_group', :via => [:put]
     match '/recup_password', to: 'users#recup_password', :via => [:get]
     match '/change_password', to: 'users#change_password', :via => [:patch]
@@ -187,6 +186,7 @@ Rails.application.routes.draw do
     match '/ban_temporarily', to: 'users#ban_temporarily', :via => [:put]
     match '/validate_name', to: 'users#validate_name', :via => [:get] # only via JS
   end
+  match '/leave_skin', to: 'users#leave_skin', :via => [:put]
   match '/accept_legal', to: 'users#accept_legal', :via => [:patch]
   match '/groups', to: 'users#groups', :via => [:get]
   match '/correctors', to: 'users#correctors', :via => [:get]

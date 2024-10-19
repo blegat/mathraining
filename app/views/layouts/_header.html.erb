@@ -156,7 +156,7 @@
 
           <ul class="dropdown-menu dropdown-menu-end">
             <% if current_user.other %>
-              <li><%= link_to "Sortir de ce corps", user_leave_skin_path(current_user), :method => :put, :class => "dropdown-item" %></li>
+              <li><%= link_to "Sortir de ce corps", leave_skin_path, :method => :put, :class => "dropdown-item" %></li>
             <% end %>
             <li><%= link_to "Profil", current_user.sk, :class => "dropdown-item" %></li>
             <li><%= link_to "Compte", edit_user_path(current_user.sk), :class => "dropdown-item" %></li>

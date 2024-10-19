@@ -132,6 +132,8 @@ class User < ActiveRecord::Base
   before_destroy { self.followed_contests.clear }
   before_destroy { self.followed_users.clear }
   before_destroy { self.following_users.clear }
+  before_destroy { self.creating_chapters.clear }
+  before_destroy { self.organized_contests.clear }
   before_destroy { self.notified_submissions.clear }
 
   # VALIDATIONS
@@ -279,11 +281,10 @@ class User < ActiveRecord::Base
 
   # Gives the skin of the user: current_user.sk must be used almost everywhere
   def sk
-    if self.admin? && self.skin != 0
-      return User.find(self.skin)
-    else
-      return self
-    end
+    return self if !self.root? || self.skin == 0
+    return @current_user_sk if !@current_user_sk.nil?
+    @current_user_sk = User.find_by_id(self.skin) if @current_user_sk.nil?
+    return @current_user_sk
   end
 
   # Tells if the user is not in his own skin

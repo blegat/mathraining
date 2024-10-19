@@ -404,10 +404,8 @@ class UsersController < ApplicationController
 
   # Leave the skin of a user
   def leave_skin
-    if current_user.id == params[:user_id].to_i
-      current_user.update_attribute(:skin, 0)
-      flash[:success] = "Vous êtes à nouveau dans votre peau."
-    end
+    current_user.update_attribute(:skin, 0)
+    flash[:success] = "Vous êtes à nouveau dans votre peau."
     redirect_back(fallback_location: root_path)
   end
 
