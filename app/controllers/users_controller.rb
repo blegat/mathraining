@@ -17,7 +17,7 @@ class UsersController < ApplicationController
 
   # Show all users with their scores
   def index
-    number_by_page = (Rails.env.test? ? 10 : 50) # For tests we put only 10 by page
+    number_by_page = (Rails.env.production? ? 50 : 10) # For tests and development we put only 10 by page
 
     @country = 0
     if params.has_key?:country
@@ -31,13 +31,19 @@ class UsersController < ApplicationController
     
     @real_users = true
     @title = 0
-    @admin_users = false
     @min_rating = 1
     @max_rating = 1000000
+    @admin = false
     if(params.has_key?:title)
       @title = params[:title].to_i
-      if @title >= 100
+      if @title == 100
         @real_users = false
+        @min_rating = 0
+        @max_rating = 0
+      elsif @title == 101
+        @real_users = false
+        @min_rating = 0
+        @admin = true
       elsif @title > 0
         cur_color = Color.find_by_id(@title)
         if cur_color.nil?
@@ -51,35 +57,26 @@ class UsersController < ApplicationController
         end
       end
     end
+    
+    rating_condition = (@min_rating == 0 && @max_rating == 1000000 ? "" : " AND rating <= #{@max_rating} AND rating >= #{@min_rating}")
+    @num_users_in_rating_range_by_country = User.where("admin = ? AND active = ? #{rating_condition}", @admin, true).group(:country_id).count
+    
+    country_condition = (@country == 0 ? "" : " AND country_id = #{@country}")
+    @num_users_in_country_by_rating =  User.where("admin = ? AND active = ? AND rating > 0 #{country_condition}", false, true).group(:rating).order("rating DESC").count
 
     if !@real_users
       if @title == 100
-        @min_rating = 0
-        @max_rating = 0
-        if @country == 0
-          @all_users = User.where("rating = ? AND admin = ? AND active = ?", 0, false, true).order("id ASC")
-        else
-          @all_users = User.where("rating = ? AND admin = ? AND active = ? AND country_id = ?", 0, false, true, @country).order("id ASC")
-        end
+        @all_users = User.where("rating = ? AND admin = ? AND active = ? #{country_condition}", 0, false, true).order("id ASC")
       elsif @title == 101
-        @admin_users = true
-        @min_rating = 0
-        if @country == 0
-          @all_users = User.where("admin = ? AND active = ?", true, true).order("id ASC")
-        else
-          @all_users = User.where("admin = ? AND active = ? AND country_id = ?", true, true, @country).order("id ASC")
-        end
+        @all_users = User.where("admin = ? AND active = ? #{country_condition}", true, true).order("id ASC")
       end
       return
     end
     
     fill_sections_max_score
-
-    if @country == 0
-      @all_users = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ?", @max_rating, @min_rating, false, true).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page)
-    else
-      @all_users = User.where("rating <= ? AND rating >= ? AND admin = ? AND active = ? AND country_id = ?", @max_rating, @min_rating, false, true, @country).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page)
-    end
+    
+    all_users_count = (@country == 0 ? @num_users_in_rating_range_by_country.sum{|x| x.second} : @num_users_in_rating_range_by_country[@country])
+    @all_users = User.where("admin = ? AND active = ? #{rating_condition} #{country_condition}", false, true).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page, :total_entries => all_users_count)
 
     fill_user_info(@all_users)
   end
@@ -612,7 +609,13 @@ class UsersController < ApplicationController
     ids = Array.new(users.size)
     local_id = 0
     
-    num_users_by_rating = User.where("admin = false AND active = true AND rating > 0").group(:rating).order("rating DESC").count
+    num_user_by_rating = nil
+    if !@num_users_in_country_by_rating.nil? && !@country.nil? && @country == 0
+      num_users_by_rating = @num_users_in_country_by_rating # Avoid recomputing it
+    else
+      num_users_by_rating = User.where("admin = ? AND active = ? AND rating > 0", false, true).group(:rating).order("rating DESC").count
+    end
+    
     rank_by_rating = {}
     
     r = 1

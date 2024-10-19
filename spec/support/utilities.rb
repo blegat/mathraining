@@ -53,15 +53,8 @@ def options_for_user_titles(country_id, for_root)
   end
   
   if for_root
-    if country_id == 0
-      num_zero = User.where(:admin => false, :active => true, :rating => 0).count
-      num_admin = User.where(:admin => true, :active => true).count
-    else
-      num_zero = User.where(:admin => false, :active => true, :country_id => country_id, :rating => 0).count
-      num_admin = User.where(:admin => true, :active => true, :country_id => country_id).count
-    end
-    options.push("Non classés (#{num_zero})")
-    options.push("Administrateurs (#{num_admin})")
+    options.push("Non classés")
+    options.push("Administrateurs")
   end
   
   return options

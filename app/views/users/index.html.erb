@@ -3,14 +3,14 @@
 <!-- Liste des pays -->
 
 <% country_list = Array.new %>
-<% tot_num = User.where("rating >= ? AND rating <= ? AND active = ? AND admin = ?", @min_rating, @max_rating, true, @admin_users).count %>
+
+<% tot_num = @num_users_in_rating_range_by_country.sum{|x| x.second} %>
 <% country_list.push(["Tous les pays (" + tot_num.to_s + ")", 0]) %>
 
 <% by_countries = Array.new %>
-<% num_by_country = User.where("rating >= ? AND rating <= ? AND active = ? AND admin = ?", @min_rating, @max_rating, true, @admin_users).group(:country_id).count %>
 <% @allcountries = Array.new %>
 <% Country.all.order(:id).each do |c| %>
-  <% num = num_by_country[c.id] %>
+  <% num = @num_users_in_rating_range_by_country[c.id] %>
   <% if !num.nil? and num > 0 %>
     <% by_countries.push([-num, c.name_without_accent, c.name, c.id]) %>
     <% @allcountries[c.id] = [c.name, c.code] %>
@@ -28,34 +28,24 @@
 <!-- Liste des titres -->
 
 <% title_list = Array.new %>
-<% if @country == 0 %>
-  <% tot_num = User.where("rating >= 1 AND admin = ? AND active = ?", false, true).count %>
-<% else %>
-  <% tot_num = User.where("rating >= 1 AND admin = ? AND active = ? AND country_id = ?", false, true, @country).count %>
-<% end %>
+
+<% tot_num = @num_users_in_country_by_rating.sum{|x| x.second} %>
 <% title_list.push(["Tous les titres (" + tot_num.to_s + ")", 0]) %>
 
-<% prev_num = 0 %>
-<% if @country == 0 %>
-  <% colors_with_num = Color.select("colors.id, colors.name, colors.pt, (SELECT COUNT(users.id) FROM users WHERE users.rating >= colors.pt AND users.rating > 0 AND users.admin = false AND users.active = true) AS num").order("pt DESC") %>
-<% else %>
-  <% colors_with_num = Color.select("colors.id, colors.name, colors.pt, (SELECT COUNT(users.id) FROM users WHERE users.rating >= colors.pt AND users.rating > 0 AND users.admin = false AND users.active = true AND users.country_id = #{@country}) AS num").order("pt DESC") %>
-<% end %>
-<% colors_with_num.each do |c| %>
-  <% title_list.push(["#{pluriel(c.name)} (#{c.num-prev_num})", c.id]) %>
-  <% prev_num = c.num %>
+<% num_users_in_country_by_rating_arr = @num_users_in_country_by_rating.to_a %>
+<% i = 0 %>
+<% Color.order("pt DESC").each do |c| %>
+  <% num = 0 %>
+  <% while i < num_users_in_country_by_rating_arr.size && num_users_in_country_by_rating_arr[i][0] >= c.pt %>
+    <% num += num_users_in_country_by_rating_arr[i][1] %>
+    <% i += 1 %>
+  <% end %>
+  <% title_list.push(["#{pluriel(c.name)} (#{num})", c.id]) %>
 <% end %>
 
 <% if signed_in? && current_user.sk.root %>
-  <% if @country == 0 %>
-    <% num = User.where(:admin => false, :active => true).count %>
-    <% num_admin = User.where(:admin => true, :active => true).count %>
-  <% else %>
-    <% num = User.where(:admin => false, :active => true, :country => @country).count %>
-    <% num_admin = User.where(:admin => true, :active => true, :country => @country).count %>
-  <% end %>
-  <% title_list.push(["Non classés (#{num-prev_num})", 100]) %>
-  <% title_list.push(["Administrateurs (#{num_admin})", 101]) %>
+  <% title_list.push(["Non classés", 100]) %>
+  <% title_list.push(["Administrateurs", 101]) %>
 <% end %>
 
 <h1><%= title_1("Scores") %></h1>
