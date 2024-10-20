@@ -159,12 +159,12 @@
     <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
       <tr>
       <td class="mytitle">Score</td>
-      <td class="myvalue user_color"><%= actualrating %></td>
+      <td class="myvalue user_color"><%= raw(write_readable_big_number(actualrating)) %></td>
       </tr>
       
       <tr>
       <td class="mytitle">Rang</td>
-      <td class="myvalue user_color"><%= rank if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
+      <td class="myvalue user_color"><%= raw(write_readable_big_number(rank)) if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
       </tr>
         
       <tr>
@@ -800,7 +800,7 @@
 <% if nb_corrections > 0 %>
   <div class="g-col-12 basic_container p-1">
     <div class="container_title">Corrections</div>
-    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold user_color_<%= mt_theme %>"><%= nb_corrections %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
+    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold user_color_<%= mt_theme %>"><%= raw(write_readable_big_number(nb_corrections)) %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
     
     <% if @user.correction_level > 0 %>
       <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span class="fw-bold user_color_<%= mt_theme %>"><%= @user.correction_level %></span> de l'Ordre de Mathraining.

@@ -191,6 +191,24 @@ module ApplicationHelper
     end
   end
   
+  # Write 1234567 as 1 234 567 (with thin spaces)
+  def write_readable_big_number(n)
+    return "0" if n == 0
+    m = n
+    num_digits = 0
+    n_string = ""
+    while(m > 0)
+      if num_digits % 3 == 0 && num_digits > 0
+        n_string = "&thinsp;" + n_string
+      end
+      d = m % 10
+      n_string = d.to_s + n_string
+      m = m/10
+      num_digits += 1
+    end
+    return n_string
+  end
+  
   def title_1(x)
     return "<span class='title-true'>#{ x }</span>".html_safe
   end
