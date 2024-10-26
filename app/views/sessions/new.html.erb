@@ -3,7 +3,7 @@
 <!-- On est redirigé ici si on essaye d'accéder à une page qui nécessite d'être connecté -->
 <h1><%= title_1("Connexion") %></h1>
 
-<%= form_for(:session, url: sessions_path(redirection: request.original_fullpath)) do |f| %>
+<%= form_for(:session, url: sessions_path) do |f| %>
   <div class="mb-2">
     <%= f.label :email, :class => "form-label" %>
     <%= f.email_field :email, :class => "form-control", :style => "width:200px;", :id => "connect_email" %>

@@ -121,9 +121,8 @@ class ApplicationController < ActionController::Base
   # Check that the user is signed in, and if not then redirect to the page "Please sign in to see this page"
   def signed_in_user
     unless signed_in?
-      store_location
-      flash[:danger] = "Vous devez être connecté pour accéder à cette page."
-      redirect_to signin_path
+      flash.now[:danger] = "Vous devez être connecté pour accéder à cette page."
+      render 'sessions/new' and return
     end
   end
   

@@ -185,7 +185,7 @@
             <!-- Formulaire pour se connecter -->
             <ul class="dropdown-menu dropdown-menu-end">
               <li class="p-3 pb-1">
-              <%= form_for(:session, url: sessions_path(redirection: request.original_fullpath)) do |f| %>
+              <%= form_for(:session, url: sessions_path) do |f| %>
                 <%= f.email_field :email, :placeholder => "Adresse e-mail", :class => "form-control", :style => "width:210px;", :id => "header_connect_email" %>
 
                 <%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control mt-2 mb-1", :style => " width:210px;", :id => "header_connect_password" %>

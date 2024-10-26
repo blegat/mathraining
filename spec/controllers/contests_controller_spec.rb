@@ -25,7 +25,7 @@ describe ContestsController, type: :controller, contest: true do
       
       it "renders the error page for unfollow" do
         get :unfollow, params: {contest_id: contest.id}
-        expect(response).to redirect_to signin_path
+        expect(response).to render_template 'sessions/new'
       end
     end
   end

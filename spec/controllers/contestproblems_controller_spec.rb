@@ -22,7 +22,7 @@ describe ContestproblemsController, type: :controller, contestproblem: true do
       
       it "renders the sign in page for show" do
         get :show, params: {id: contestproblem.id}
-        expect(response).to redirect_to signin_path
+        expect(response).to render_template 'sessions/new'
       end
     end
   end

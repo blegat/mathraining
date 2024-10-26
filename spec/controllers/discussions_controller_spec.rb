@@ -13,7 +13,7 @@ describe DiscussionsController, type: :controller, discussion: true do
   context "if the user is not signed in" do
     it "renders the error page for new" do
       get :new
-      expect(response).to redirect_to signin_path
+      expect(response).to render_template 'sessions/new'
     end
   end
   

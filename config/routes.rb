@@ -240,8 +240,7 @@ Rails.application.routes.draw do
   end
   
   # Sessions
-  resources :sessions, only: [:new, :create, :destroy]
-  match '/signin', to: 'sessions#new', :via => [:get]
+  resources :sessions, only: [:create, :destroy]
   match '/signout', to: 'sessions#destroy', via: :delete
   
   # Static pages

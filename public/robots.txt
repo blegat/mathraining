@@ -1,10 +1,10 @@
-# See http://www.robotstxt.org/wc/norobots.html for documentation on how to use the robots.txt file
-#
-# To ban all spiders from the entire site uncomment the next two lines:
-
+# GPTBot makes too many requests.
 User-Agent: GPTBot
 Disallow: /
 
+# A lot of /users/ and /users pages, so too many requests.
+# The /sessions page does not exist but is often wrongly
+# visited because of the form to connect on each page.
 User-Agent: *
 Disallow: /users/
 Disallow: /users
