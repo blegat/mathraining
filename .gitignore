@@ -7,35 +7,29 @@
 # Ignore bundler config
 /.bundle
 
-# Ignore the default SQLite database.
-/db/*.sqlite3
-
 # Ignore all logfiles and tempfiles.
 /log/*.log
 /tmp
 
 # Ignore other unneeded files
-doc/
 *.tmp
 *.swp
 
 # Variables
 /config/app_environment_variables.rb
-/config/initializers/secret_token.rb
 
 # Assets
 /public/assets/
 
 # Files
-/non-public/
 /public/system/
-storage/
+/storage/
 
 # Schema
 /db/schema.rb
 
 # SimpleCov
-coverage
+/coverage
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
