@@ -370,11 +370,10 @@
       <!-- Début du tableau des résolutions -->
       <table class="table middle_aligned my-0" style="width:100%;">
 
-      <!-- On parcourt les actes un par un (cas normal) -->
+      <!-- On parcourt les actes un par un -->
       <% numact = 0 %>
       <% act.each do |a| %>
         <% numact += 1 %>
-        <!-- Rassemblement par date des actes -->
         <% date = a[:time].in_time_zone %>
         <% if parquoi == "jour" %>
           <% dateday = Time.zone.local(date.year, date.month, date.day, 0, 0, 0) %>
@@ -392,10 +391,7 @@
           <% end %>
           <% previousdate = dateday %>
         <% end %>
-
-        <!-- Affichage de la ligne -->
         <tr>
-          
         <% remove_border = "" %>
         <% if numact == 1 %>
           <% remove_border = "border-top:0px;" %>
@@ -403,17 +399,9 @@
         <% if numact == act.size %>
           <% remove_border += "border-bottom:0px;" %>
         <% end %>
-        
-        <!-- Points -->
         <td class="text-center fw-bold user_color" style="width:50px; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
-        
-        <!-- Date (& Heure si xs) -->
         <td class="text-center" style="width:75px; <%= remove_border %>"><%= write_date_only_small(date) %><span class="d-inline d-md-none"><br/><%= write_hour(date) %></span></td>
-        
-        <!-- Heure (sauf si xs) -->
         <td class="d-none d-md-table-cell text-center" style="width:60px; <%= remove_border %>"><%= write_hour(date) %></td>
-
-        <!-- Quoi -->
         <td style="<%= remove_border %>">
         <% if a[:type] == "Q" %>
           <% if a[:peutvoir] %>
@@ -431,7 +419,6 @@
            - <%= allsec_name[a[:section_id]] %>
         <% end %>
         </td>
-
         </tr>
       <% end %>
       
@@ -479,7 +466,6 @@
       <% actcontest.each do |ac| %>
         <% numact += 1 %>
         <tr>
-        
         <% remove_border = "" %>
         <% if numact == 1 %>
           <% remove_border = "border-top:0px;" %>
@@ -487,14 +473,10 @@
         <% if numact == actcontest.size %>
           <% remove_border += "border-bottom:0px;" %>
         <% end %>
-        
         <% if ac[:max_score] < 0 %>
-        
           <!-- Concours organisé -->
           <td class="text-center" style="width:190px; <%= remove_border %>" colspan="3"><span class="fw-bold user_color">Organisateur</span></td>
-          
         <% else %>
-        
           <!-- Médaille -->
           <td class="p-0 text-center" style="width:35px; <%= remove_border %>">
           <%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == "gold_medal" %>
@@ -503,34 +485,20 @@
           <%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") if ac[:medal] == "honourable_mention" %>
           <%= "-" if ac[:medal] == "no_medal" || ac[:medal] == "undefined_medal" %>
           </td>
-        
-          <!-- Rang (si pas xs) -->
           <td class="d-none d-sm-table-cell text-center" style="width:90px; <%= remove_border %>">
           <span class="fw-bold user_color"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
           </td>
-          
-          <!-- Points (si pas xs) -->
           <td class="d-none d-sm-table-cell text-center" style="width:100px; <%= remove_border %>">
           <span class="fw-bold user_color"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
           </td>
-          
-          <!-- Rang et points (si xs) -->
           <td class="d-table-cell d-sm-none text-center" style="width:100px; <%= remove_border %>">
           <span class="fw-bold user_color"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
           <span class="fw-bold user_color"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
           </td>
-          
-          <!-- Case vide (si xs), pour que le colspan="3" reste correct -->
           <td class="d-table-cell d-sm-none" style="width:0px;"></td>
-          
         <% end %>
-        
-        <!-- Date -->
         <td class="d-none d-sm-table-cell text-center" style="width:150px; <%= remove_border %>"><%= write_date_only_small(ac[:start_time]) %> - <%= write_date_only_small(ac[:end_time]) %></td>
-        
-        <!-- Lien du Concours -->
         <td class="text-start" style="<%= remove_border %>;"><%= link_to "Concours ##{ac[:number]}", contest_path(ac[:id], :tab => 1) %></td>
-        
         </tr>
       <% end %>
       </table>
