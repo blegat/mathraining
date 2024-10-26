@@ -4,14 +4,9 @@
 
 <p>Le tableau suivant reprend toutes les solutions ayant été <b>corrigées</b> les sept derniers jours. Elles sont classées selon leur date de correction, indiquée au début de chaque ligne.</p>
 
-<% oneweekago = Date.today - 7 %>
+<% oneweekago = Date.today - 7.days %>
 
-<% if !signed_in? || !current_user.sk.admin? %>
-  <% problem_status = Array.new %>
-  <% accessible_problems((signed_in? ? current_user.sk : nil), ["id"]).each do |a| %>
-    <% problem_status[a.id] = 1 %>
-  <% end %>
-<% end %>
+<% non_accessible_problems_set = non_accessible_problems_ids(signed_in? ? current_user.sk : nil) %>
 
 <% prev_day = Date.today %>
 
@@ -29,7 +24,7 @@
   <td class="d-none d-md-table-cell"><%= s.section_short_abbreviation %></td>
   <td class="d-none d-md-table-cell">Niv. <%= s.level %></td>
   <td>
-  <% if (signed_in? && current_user.sk.admin?) || problem_status[s.problem_id] == 1 %>
+  <% if non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(s.problem_id) %>
     <span class="d-none d-lg-inline"><%= link_to "Problème ##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
     <span class="d-inline d-lg-none"><%= link_to "##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
   <% else %>

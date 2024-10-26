@@ -49,18 +49,9 @@
 <% if !@user.admin %>
 
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
-  <% if !signed_in? || !current_user.sk.admin %>
-    <% cansee_chap = Array.new %>
-    <% access_chap = accessible_chapters((signed_in? ? current_user.sk : nil), ["id"]) %>
-    <% access_chap.each do |a| %>
-      <% cansee_chap[a.id] = true %>
-    <% end %>
-    <% cansee_prob = Array.new %>
-    <% access_prob = accessible_problems((signed_in? ? current_user.sk : nil), ["id"]) %>
-    <% access_prob.each do |a| %>
-      <% cansee_prob[a.id] = true %>
-    <% end %>
-  <% end %>
+  
+  <% non_accessible_chapters_set = non_accessible_chapters_ids(signed_in? ? current_user.sk : nil) %>
+  <% non_accessible_problems_set = non_accessible_problems_ids(signed_in? ? current_user.sk : nil) %>
   
   <!-- On va parcourir tous les exercices et problèmes -->
   
@@ -104,7 +95,7 @@
           <% premier = q.time.in_time_zone %>
         <% end %>
       <% end %>
-      <% peutvoir = (signed_in? && current_user.sk.admin?) || cansee_chap[q.chapter_id] == true %>
+      <% peutvoir = !non_accessible_chapters_set.include?(q.chapter_id) %>
       <% q_encours = q_encours + 1 %>
       <% act.push({:time => q.time, :type => "Q", :id => q.id, :peutvoir => peutvoir, :pt => 3 * q.level, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
     <% elsif bestqui == "P" %>
@@ -114,16 +105,7 @@
       <% if premier.nil? %>
         <% premier = p.time.in_time_zone %>
       <% end %>
-      <% if signed_in? && current_user.sk.admin? %>
-        <% peutvoir = true %>
-      <% else %>
-        <% t = p.virtualtest_id %>
-        <% if t == 0 %>
-          <% peutvoir = (cansee_prob[p.id] == true) %>
-        <% else %>
-          <% peutvoir = (signed_in? && current_user.sk.test_status(t) == "finished") %>
-        <% end %>
-      <% end %>
+      <% peutvoir = non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(p.id) %>
       <% p_encours = p_encours + 1 %>
       <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => 15 * p.level, :number => p.number, :section_id => p.section_id}) %>
     <% end %>
