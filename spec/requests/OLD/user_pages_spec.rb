@@ -215,7 +215,7 @@ describe "User pages" do
                 fill_in "header_connect_password", with: new_password
                 click_button "header_connect_button"
               end
-              it { should have_link("Déconnexion", href: signout_path) }
+              it { should have_link("Déconnexion", href: sessions_path) }
             end
           end
         end
@@ -288,7 +288,7 @@ describe "User pages" do
       specify do
         expect(page).to have_selector("h1", text: "Actualités")
         expect(page).to have_selector("div.alert.alert-success")
-        expect(page).to have_link("Déconnexion", href: signout_path)
+        expect(page).to have_link("Déconnexion", href: sessions_path)
         expect(zero_user.first_name).to eq(new_first_name)
         expect(zero_user.last_name).to eq(new_last_name)
         expect(zero_user.name).to eq(new_name)
@@ -357,7 +357,7 @@ describe "User pages" do
       let!(:lionel_pinot) { FactoryGirl.create(:user, first_name: "L'ionel", last_name: "Pinot", rating: 0) }
       let!(:diesel_proust_inactive) { FactoryGirl.create(:user, first_name: "Diesel", last_name: "Proust", active: false) }
       
-      before { visit search_user_path }
+      before { visit search_users_path }
       it do
         should have_field "search"
         should have_button "Chercher"
@@ -392,11 +392,11 @@ describe "User pages" do
           should have_link(lionel_p.name, href: user_path(lionel_p))
           should have_no_link(lionel_pinot.name, href: user_path(lionel_pinot)) # on page 2
           should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
-          should have_link(href: search_user_path(:search => " el p   ", :page => 2))
+          should have_link(href: search_users_path(:search => " el p   ", :page => 2))
         end
         
         describe "and visits page 2" do
-          before { visit search_user_path(:search => " el p   ", :page => 2) }
+          before { visit search_users_path(:search => " el p   ", :page => 2) }
           it do
             should have_no_selector("h4", text: "Administrateurs") # only on page 1
             should have_no_link(marcel_proust.name, href: user_path(marcel_proust))
@@ -405,7 +405,7 @@ describe "User pages" do
             should have_no_link(lionel_p.name, href: user_path(lionel_p)) # on page 1
             should have_link(lionel_pinot.name, href: user_path(lionel_pinot))
             should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
-            should have_link(href: search_user_path(:search => " el p   ", :page => 1))
+            should have_link(href: search_users_path(:search => " el p   ", :page => 1))
           end          
         end
       end
@@ -514,7 +514,7 @@ describe "User pages" do
     describe "tries to visit wepion groups while not being in it" do
       before do
         zero_user.update(:wepion => false, :group => "")
-        visit groups_path
+        visit groups_users_path
       end
       it { should have_content(error_access_refused) }
     end
@@ -537,7 +537,7 @@ describe "User pages" do
       before do
         zero_user.update(:wepion => true, :group => "A")
         other_zero_user.update(:wepion => false, :group => "")
-        visit groups_path
+        visit groups_users_path
       end
       it do
         should have_selector("h1", text: "Groupes Wépion")
@@ -824,7 +824,7 @@ describe "User pages" do
       let!(:user2) { FactoryGirl.create(:user, first_name: "jeaN",    last_name: "boulanger",   valid_name: false) }
       let!(:user3) { FactoryGirl.create(:user, first_name: "vIcToR",  last_name: "de la Terre", valid_name: false) }
       
-      before { visit validate_names_path }
+      before { visit validate_names_users_path }
       it do
         should have_selector("h1", text: "Valider")
         should have_no_link(user0.name, href: user_path(user0))

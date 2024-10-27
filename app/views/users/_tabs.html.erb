@@ -3,5 +3,5 @@
   <% if signed_in? %>
     <li class="nav-item"><%= link_to "Utilisateurs suivis", followed_users_path, :class => "nav-link #{ 'active' if t == 2 }" %></li>
   <% end %>
-  <li class="nav-item"><%= link_to "Chercher un utilisateur", search_user_path, :class => "nav-link #{ 'active' if t == 3 }" %></li>
+  <li class="nav-item"><%= link_to "Chercher un utilisateur", search_users_path, :class => "nav-link #{ 'active' if t == 3 }" %></li>
 </ul>

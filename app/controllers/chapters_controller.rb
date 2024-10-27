@@ -37,7 +37,7 @@ class ChaptersController < ApplicationController
   end
   
   # Show statistics of all chapters
-  def chapterstats
+  def stats
   end
 
   # Create a chapter (show the form)

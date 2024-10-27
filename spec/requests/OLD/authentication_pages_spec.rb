@@ -27,7 +27,7 @@ describe "Authentication" do
         expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(user.remember_token)
         expect(page).to have_link("Scores", href: users_path)
         expect(page).to have_link("Compte", href: edit_user_path(user))
-        expect(page).to have_link("Déconnexion", href: signout_path)
+        expect(page).to have_link("Déconnexion", href: sessions_path)
         expect(page).to have_no_link("Connexion")
       end
       

@@ -28,21 +28,21 @@
         <% num_notifications_new345 = current_user.sk.num_notifications_new([3, 4, 5]) %>
         <% num_notifications_update = current_user.sk.num_notifications_update %>
         <% classe = (num_notifications_new12[0] + num_notifications_new12[1] > 0 ? "success" : "ld-light-dark-er") %>
-        <%= link_to allnewsub_path(:levels => 3), class: "btn btn-#{classe}" do %>
+        <%= link_to allnew_submissions_path(:levels => 3), class: "btn btn-#{classe}" do %>
           <%= num_notifications_new12[0] %>
           <% if num_notifications_new12[1] > 0 %>
             <sup>+ <%= num_notifications_new12[1] %> j</sup>
           <% end %>
         <% end %>
         <% classe = (num_notifications_new345[0] + num_notifications_new345[1] > 0 ? "danger" : "ld-light-dark-er") %>
-        <%= link_to allnewsub_path(:levels => 28), class: "btn btn-#{classe}" do %>
+        <%= link_to allnew_submissions_path(:levels => 28), class: "btn btn-#{classe}" do %>
           <%= num_notifications_new345[0] %>
           <% if num_notifications_new345[1] > 0 %>
             <sup>+ <%= num_notifications_new345[1] %> j</sup>
           <% end %>
         <% end %>
         <% classe = (num_notifications_update > 0 ? "warning" : "ld-light-dark-er") %>
-        <%= link_to "#{num_notifications_update}", allmynewsub_path, class: "btn btn-#{classe}" %>
+        <%= link_to "#{num_notifications_update}", allmynew_submissions_path, class: "btn btn-#{classe}" %>
         
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
         <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
@@ -100,9 +100,9 @@
             Problèmes
           </a>
           <ul class="dropdown-menu">
-            <% sections.each do |f| %>
-              <% if !f.fondation %>
-                <li><%= link_to f.name, pb_sections_path(f), :class => "dropdown-item" %></li>
+            <% sections.each do |s| %>
+              <% if !s.fondation %>
+                <li><%= link_to s.name, section_problems_path(s), :class => "dropdown-item" %></li>
               <% end %>
             <% end %>
             <li class="dropdown-divider"></li>
@@ -133,8 +133,8 @@
         <ul class="dropdown-menu">
           <li><%= link_to "Scores", users_path, :class => "dropdown-item" %></li>
           <li><%= link_to "Résolutions récentes", solvedproblems_path, :class => "dropdown-item" %></li>
-          <li><%= link_to "Corrections", correctors_path, :class => "dropdown-item" %></li>
-          <li><%= link_to "Difficulté des chapitres", chapterstats_path, :class => "dropdown-item" %></li>
+          <li><%= link_to "Corrections", correctors_users_path, :class => "dropdown-item" %></li>
+          <li><%= link_to "Difficulté des chapitres", stats_chapters_path, :class => "dropdown-item" %></li>
           <li><%= link_to "Statistiques diverses", stats_path, :class => "dropdown-item" %></li>
         </ul>
         </li>
@@ -161,18 +161,18 @@
             <li><%= link_to "Profil", current_user.sk, :class => "dropdown-item" %></li>
             <li><%= link_to "Compte", edit_user_path(current_user.sk), :class => "dropdown-item" %></li>
             <% if signed_in? && (current_user.sk.admin? || (current_user.sk.wepion? && current_user.sk.group != "")) %>
-              <li><%= link_to "Groupes Wépion", groups_path, :class => "dropdown-item" %></li>
+              <li><%= link_to "Groupes Wépion", groups_users_path, :class => "dropdown-item" %></li>
             <% end %>
             <li><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "dropdown-item" %></li>
             <% if current_user.sk.root? %>
               <li class="dropdown-divider"></li>
               <li><%= link_to "Pièces jointes", myfiles_path, :class => "dropdown-item" %></li>
               <% num_users_to_validate = User.where(:valid_name => false, :email_confirm => true, :admin => false).count %>
-              <li><%= link_to "Valider #{num_users_to_validate} noms", validate_names_path, :class => "dropdown-item" %></li>
+              <li><%= link_to "Valider #{num_users_to_validate} noms", validate_names_users_path, :class => "dropdown-item" %></li>
             <% end %>
             <li class="dropdown-divider"></li>
             <li>
-            <%= link_to "Déconnexion", signout_path, method: "delete", :class => "dropdown-item" %>
+            <%= link_to "Déconnexion", sessions_path, method: "delete", :class => "dropdown-item" %>
             </li>
           </ul>
           </li>

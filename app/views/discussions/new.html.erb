@@ -38,7 +38,7 @@ var UserNotFound = function () {
       <%= link_to "Destinataire introuvable ?", "javascript:UserNotFound()" %>
       </div>
       
-      <div class="mb-2 text-color-orange" id="user-not-found-note" style="display:none;">Seuls les utilisateurs actifs récemment sont listés ci-dessus. Pour envoyer un message à un autre utilisateur, <%= link_to "cherchez-le", search_user_path %>, consultez son profil et cliquez sur "Envoyer un message".</div>
+      <div class="mb-2 text-color-orange" id="user-not-found-note" style="display:none;">Seuls les utilisateurs actifs récemment sont listés ci-dessus. Pour envoyer un message à un autre utilisateur, <%= link_to "cherchez-le", search_users_path %>, consultez son profil et cliquez sur "Envoyer un message".</div>
       
       <script>initializeSelect2WhenPossible("Choisir un destinataire")</script>
 

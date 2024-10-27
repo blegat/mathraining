@@ -9,9 +9,9 @@
 <% if current_user.sk.admin? %>
   <p class="text-center">
   <% if (!params.has_key?:details) %>
-    <%= link_to "Afficher les détails", groups_path(:details => 1) %>
+    <%= link_to "Afficher les détails", groups_users_path(:details => 1) %>
   <% else %>
-    <%= link_to "Masquer les détails", groups_path %>
+    <%= link_to "Masquer les détails", groups_users_path %>
   <% end %>
   </p>
 <% end %>

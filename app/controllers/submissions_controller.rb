@@ -2,11 +2,11 @@
 class SubmissionsController < ApplicationController
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :create_intest, :update_draft, :update_intest] # Do not forget to check @invalid_csrf_token instead!
 
-  before_action :signed_in_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
+  before_action :signed_in_user, only: [:all, :allmy, :allnew, :allmynew]
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :search_script]
   before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
   before_action :root_user, only: [:update_score, :star, :unstar]
-  before_action :corrector_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
+  before_action :corrector_user, only: [:all, :allmy, :allnew, :allmynew]
   
   before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script]
   before_action :get_problem, only: [:create, :create_intest, :index]
@@ -250,17 +250,17 @@ class SubmissionsController < ApplicationController
   end
   
   # Show all submissions
-  def allsub
+  def all
     @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:visible => true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
 
   # Show all submissions in which we took part
-  def allmysub
+  def allmy
     @submissions = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where("status != ? AND status != ?", Submission.statuses[:draft], Submission.statuses[:waiting]).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
   
   # Show all new submissions
-  def allnewsub
+  def allnew
     levels = [1, 2, 3, 4, 5]
     if (params.has_key?:levels)
       levels = []
@@ -276,7 +276,7 @@ class SubmissionsController < ApplicationController
   end
 
   # Show all new comments to submissions in which we took part
-  def allmynewsub
+  def allmynew
     @submissions = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
     @submissions_other = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:status => :wrong_to_read).order("submissions.last_comment_time").to_a
   end

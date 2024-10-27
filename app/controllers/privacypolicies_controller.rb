@@ -14,7 +14,7 @@ class PrivacypoliciesController < ApplicationController
   end
 
   # Show the last privacy policy
-  def last_policy
+  def last
     @last_policy = Privacypolicy.where(:online => true).order(:publication_time).last
     if @last_policy.nil?
       flash[:danger] = "Le site n'a actuellement aucune politique de confidentalité."

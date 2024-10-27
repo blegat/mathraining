@@ -16,11 +16,11 @@ describe "Privacy policy pages", privacypolicy: true do
     describe "visitor" do      
       describe "visits root path" do
         before { visit root_path }
-        it { should have_link("Confidentialité", href: last_policy_path) }
+        it { should have_link("Confidentialité", href: last_privacypolicies_path) }
       end
       
       describe "tries to visit last policy" do
-        before { visit last_policy_path }
+        before { visit last_privacypolicies_path }
         it { should have_error_message("Le site n'a actuellement aucune politique de confidentalité.") }
       end
     end
@@ -92,7 +92,7 @@ describe "Privacy policy pages", privacypolicy: true do
       end
       
       describe "visits last policy" do
-        before { visit last_policy_path }
+        before { visit last_privacypolicies_path }
         it do
           should have_selector("h1", text: "Politique de confidentialité")
           should have_content(policy2.content)
@@ -115,7 +115,7 @@ describe "Privacy policy pages", privacypolicy: true do
       before { sign_in root }
       
       describe "visits last policy" do
-        before { visit last_policy_path }
+        before { visit last_privacypolicies_path }
         it do
           should have_selector("h1", text: "Politique de confidentialité")
           should have_content(policy2.content)

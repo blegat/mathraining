@@ -324,10 +324,10 @@ describe "Submission pages" do
   
   describe "bad corrector" do
     before { sign_in bad_corrector }
-    it { should have_link("0", href: allnewsub_path(:levels => 3)) } # 0 waiting submission of level 1, 2 (because cannot see it)
+    it { should have_link("0", href: allnew_submissions_path(:levels => 3)) } # 0 waiting submission of level 1, 2 (because cannot see it)
     
     describe "visits submissions page" do
-      before { visit allnewsub_path(:levels => 3) }
+      before { visit allnew_submissions_path(:levels => 3) }
       it do
         should have_selector("h1", text: "Soumissions")
         should have_no_link(user.name, href: user_path(user))
@@ -345,10 +345,10 @@ describe "Submission pages" do
     
   describe "good corrector" do
     before { sign_in good_corrector }
-    it { should have_link("1", href: allnewsub_path(:levels => 3)) } # 1 waiting submission
+    it { should have_link("1", href: allnew_submissions_path(:levels => 3)) } # 1 waiting submission
     
     describe "visits submissions page" do
-      before { visit allnewsub_path(:levels => 3) }
+      before { visit allnew_submissions_path(:levels => 3) }
       it do
         should have_selector("h1", text: "Soumissions")
         should have_link(user.name, href: user_path(user))
@@ -397,7 +397,7 @@ describe "Submission pages" do
           expect(waiting_submission.corrections.last.content).to eq(newcorrection)
           expect(page).to have_selector("h3", text: "Soumission (correcte)")
           expect(page).to have_selector("div", text: newcorrection)
-          expect(page).to have_link("0", href: allnewsub_path(:levels => 3)) # no more waiting submission
+          expect(page).to have_link("0", href: allnew_submissions_path(:levels => 3)) # no more waiting submission
           expect(page).to have_link("Marquer comme erronée")
           expect(page).to have_no_link("Étoiler cette solution") # only for roots
           expect(user.rating).to eq(rating_before + waiting_submission.problem.value)
@@ -501,7 +501,7 @@ describe "Submission pages" do
           expect(waiting_submission.notified_users.exists?(user.id)).to eq(true)
           expect(page).to have_selector("h3", text: "Soumission (erronée)")
           expect(page).to have_selector("div", text: newcorrection)
-          expect(page).to have_link("0", href: allnewsub_path(:levels => 3)) # no more waiting submission
+          expect(page).to have_link("0", href: allnew_submissions_path(:levels => 3)) # no more waiting submission
         end
         
         describe "and admin accepts it" do
@@ -601,13 +601,13 @@ describe "Submission pages" do
                   sign_in good_corrector
                 end
                 it do
-                  should have_link("0", href: allnewsub_path(:levels => 3))
-                  should have_link("0", href: allnewsub_path(:levels => 28))
-                  should have_link("1", href: allmynewsub_path)
+                  should have_link("0", href: allnew_submissions_path(:levels => 3))
+                  should have_link("0", href: allnew_submissions_path(:levels => 28))
+                  should have_link("1", href: allmynew_submissions_path)
                 end
                 
                 describe "visits comments page" do
-                  before { visit allmynewsub_path }
+                  before { visit allmynew_submissions_path }
                   it do
                     should have_selector("h1", text: "Commentaires")
                     should have_link(user.name, href: user_path(user))

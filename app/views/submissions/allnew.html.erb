@@ -2,7 +2,7 @@
 
 <h1>
 <%= title_1("Soumissions") %>
-<span style="font-size:20px;"> - <%= link_to "Tout voir", allsub_path %>
+<span style="font-size:20px;"> - <%= link_to "Tout voir", all_submissions_path %>
 <% if current_user.sk.root? || current_user.sk.suspicions.count > 0 %>
  - <%= link_to "Plagiats", suspicions_path %>
 <% end %>

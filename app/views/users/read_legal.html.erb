@@ -16,7 +16,7 @@ function checkChecked() {
 
 <h1><%= title_1("Nouvelle politique de confidentialité") %></h1>
 
-<p>Depuis votre dernière visite, notre <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> a été mise à jour.</p>
+<p>Depuis votre dernière visite, notre <%= link_to "politique de confidentialité", last_privacypolicies_path, :target => "_blank" %> a été mise à jour.</p>
 
 <p>Vous pouvez trouver ci-dessous un résumé des modifications apportées au texte depuis la dernière version que vous avez acceptée.</p>
 
@@ -54,14 +54,14 @@ function checkChecked() {
   <div class="form-check mb-1">
   <label class="form-check-label">
     <%= check_box_tag "consent1", "1", false, :class => "form-check-input", :onchange => "javascript:checkChecked();" %>
-    J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> de Mathraining.
+    J'ai lu et j'accepte la <%= link_to "politique de confidentialité", last_privacypolicies_path, :target => "_blank" %> de Mathraining.
   </label>
   </div>
   
   <div class="form-check mb-2">
   <label class="form-check-label">
     <%= check_box_tag "consent2", "2", false, :class => "form-check-input", :onchange => "javascript:checkChecked();" %>
-    J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_policy_path, :target => "_blank" %> avec mon tuteur légal.
+    J'ai au moins 16 ans, ou j'ai lu et accepté la <%= link_to "politique de confidentialité", last_privacypolicies_path, :target => "_blank" %> avec mon tuteur légal.
   </label>
   </div>
   

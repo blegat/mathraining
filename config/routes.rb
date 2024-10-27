@@ -3,9 +3,8 @@ Rails.application.routes.draw do
   # Sections
   resources :sections, only: [:show, :edit, :update] do
     resources :chapters, only: [:new, :create]
-    resources :problems, only: [:new, :create]
+    resources :problems, only: [:index, :new, :create]
   end
-  get 'pb_sections/:id', to: 'sections#show_problems', as: :pb_sections
 
   # Chapters
   resources :chapters, only: [:show, :update, :edit, :destroy] do
@@ -17,11 +16,12 @@ Rails.application.routes.draw do
       put :order
       put :read
     end
+    collection do
+      get :stats
+    end
     resources :theories, only: [:show, :new, :create]
     resources :questions, only: [:show, :new, :create]
   end
-  match '/chapterstats', to: 'chapters#chapterstats', :via => [:get]
-  resources :chaptercreations, only: [] # Must be added manually in the database!
 
   # Prerequisites
   resources :prerequisites, only: [:index, :create, :destroy]
@@ -45,7 +45,6 @@ Rails.application.routes.draw do
       patch :update_explanation
       get :manage_items
     end
-    
     resources :items, only: [:create]
   end
   
@@ -74,10 +73,12 @@ Rails.application.routes.draw do
       post :add_virtualtest
       get :manage_externalsolutions
     end
-    
-    resources :submissions, only: [:create]
+    resources :submissions, only: [:create] do
+      collection do
+        post :create_intest
+      end
+    end
     resources :externalsolutions, only: [:create]
-    match '/create_intest', to: 'submissions#create_intest', :via => [:post]
   end
   
   resources :solvedproblems, only: [:index]
@@ -97,16 +98,16 @@ Rails.application.routes.draw do
       get :unreserve # only via JS
       post :search_script # only via JS
     end
-   
+    collection do
+      get :all
+      get :allmy
+      get :allnew
+      get :allmynew
+    end
     resources :corrections, only: [:create]
     resources :suspicions, only: [:create]
     resources :starproposals, only: [:create]
   end
-
-  match '/allsub', to: 'submissions#allsub', :via => [:get]
-  match '/allmysub', to: 'submissions#allmysub', :via => [:get]
-  match '/allnewsub', to: 'submissions#allnewsub', :via => [:get]
-  match '/allmynewsub', to: 'submissions#allmynewsub', :via => [:get]
   
   # External solutions
   resources :externalsolutions, only: [:update, :destroy] do
@@ -141,7 +142,6 @@ Rails.application.routes.draw do
       patch :add_organizer
       put :remove_organizer
     end
-    
     resources :contestproblems, only: [:new, :create]
   end
   
@@ -152,7 +152,6 @@ Rails.application.routes.draw do
       put :authorize_corrections
       put :unauthorize_corrections
     end
-    
     resources :contestsolutions, only: [:create]
   end
   
@@ -174,7 +173,6 @@ Rails.application.routes.draw do
       put :follow
       get :unfollow # Get because it should be doable via email link
     end
-  
     resources :messages, only: [:create]
   end
   
@@ -208,23 +206,25 @@ Rails.application.routes.draw do
       put :ban_temporarily
       get :validate_name # only via JS
     end
+    collection do
+      get :groups
+      get :correctors
+      get :followed
+      get :search
+      get :validate_names
+    end
   end
-  match '/leave_skin', to: 'users#leave_skin', :via => [:put]
-  match '/accept_legal', to: 'users#accept_legal', :via => [:patch]
-  match '/groups', to: 'users#groups', :via => [:get]
-  match '/correctors', to: 'users#correctors', :via => [:get]
-  match '/followed_users', to: 'users#followed_users', :via => [:get]
-  match '/search_user', to: 'users#search_user', :via => [:get]
-  match '/notifs', to: 'users#notifs', :via => [:get]
-  match '/signup', to: 'users#new', :via => [:get]
-  match '/activate', to: 'users#activate', :via => [:get]
-  match '/forgot_password', to: 'users#forgot_password', :via => [:get]
-  match '/password_forgotten', to: 'users#password_forgotten', :via => [:post]
-  match '/validate_names', to: 'users#validate_names', :via => [:get]
   
-  # Email subscriptions (subjects, discussions and contests)
-  match '/set_follow_message', to: "users#set_follow_message", :via => [:put]
-  match '/unset_follow_message', to: "users#unset_follow_message", :via => [:get] # Get because it should be doable via email link
+  # Paths relative to current user
+  put '/leave_skin', to: 'users#leave_skin'
+  patch '/accept_legal', to: 'users#accept_legal'
+  get '/notifs', to: 'users#notifs'
+  get '/signup', to: 'users#new'
+  get '/activate', to: 'users#activate'
+  get '/forgot_password', to: 'users#forgot_password'
+  post '/password_forgotten', to: 'users#password_forgotten'
+  put '/set_follow_message', to: "users#set_follow_message"
+  get '/unset_follow_message', to: "users#unset_follow_message" # Get because it should be doable via email link
   
   # Privacy policies
   resources :privacypolicies, only: [:index, :show, :new, :edit, :update, :destroy] do
@@ -233,8 +233,10 @@ Rails.application.routes.draw do
       get :edit_description
       patch :update_description
     end
+    collection do
+      get :last
+    end
   end
-  match '/last_policy', to: 'privacypolicies#last_policy', :via => [:get]
   
   # Pictures
   resources :pictures, only: [:index, :show, :new, :create, :destroy] do
@@ -273,15 +275,14 @@ Rails.application.routes.draw do
     end
   end
   
-  # Sessions
-  resources :sessions, only: [:create, :destroy]
-  match '/signout', to: 'sessions#destroy', via: :delete
+  # Sessions (singular resource, to call destroy without an id!)
+  resource :sessions, only: [:create, :destroy]
   
   # Static pages
   root to: 'static_pages#home'
-  match '/about', to: 'static_pages#about', :via => [:get]
-  match '/contact', to: 'static_pages#contact', :via => [:get]
-  match '/stats', to: 'static_pages#stats', :via => [:get]
+  get '/about', to: 'static_pages#about'
+  get '/contact', to: 'static_pages#contact'
+  get '/stats', to: 'static_pages#stats'
 
   # Redirections for important old page names
   get '/frequentation', to: redirect('/stats') # sometimes used in forum

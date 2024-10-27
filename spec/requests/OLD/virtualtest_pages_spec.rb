@@ -206,7 +206,7 @@ describe "Virtualtest pages" do
         end
         
         describe "and tries to visit the problem section page" do
-          before { visit pb_sections_path(section) }
+          before { visit section_problems_path(section) }
           it { should have_no_link("Problème \##{problem.id}", href: problem_path(problem)) }
         end
         

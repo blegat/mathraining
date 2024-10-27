@@ -15,9 +15,9 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       render partial: "layouts/header"
       expect(rendered).to have_link("Mathraining", href: root_path)
       
-      expect(rendered).to have_no_link(href: allnewsub_path(:levels => 3))
-      expect(rendered).to have_no_link(href: allnewsub_path(:levels => 28))
-      expect(rendered).to have_no_link(href: allmynewsub_path)
+      expect(rendered).to have_no_link(href: allnew_submissions_path(:levels => 3))
+      expect(rendered).to have_no_link(href: allnew_submissions_path(:levels => 28))
+      expect(rendered).to have_no_link(href: allmynew_submissions_path)
       expect(rendered).to have_no_link(href: starproposals_path)
       expect(rendered).to have_no_link(href: suspicions_path)
       expect(rendered).to have_no_link(href: notifs_path)
@@ -28,8 +28,8 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       expect(rendered).to have_no_link("Modifier la structure")
       
       expect(rendered).to have_link("Problèmes")
-      expect(rendered).to have_no_link(section_fondation.name, href: pb_sections_path(section_fondation))
-      expect(rendered).to have_link(section.name, href: pb_sections_path(section))
+      expect(rendered).to have_no_link(section_fondation.name, href: section_problems_path(section_fondation))
+      expect(rendered).to have_link(section.name, href: section_problems_path(section))
       expect(rendered).to have_link("Tests virtuels", href: virtualtests_path)
       expect(rendered).to have_link("Concours", href: contests_path)
       
@@ -53,9 +53,9 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       render partial: "layouts/header"
       expect(rendered).to have_link("Mathraining", href: root_path)
       
-      expect(rendered).to have_no_link(href: allnewsub_path(:levels => 3))
-      expect(rendered).to have_no_link(href: allnewsub_path(:levels => 28))
-      expect(rendered).to have_no_link(href: allmynewsub_path)
+      expect(rendered).to have_no_link(href: allnew_submissions_path(:levels => 3))
+      expect(rendered).to have_no_link(href: allnew_submissions_path(:levels => 28))
+      expect(rendered).to have_no_link(href: allmynew_submissions_path)
       expect(rendered).to have_no_link(href: starproposals_path)
       expect(rendered).to have_no_link(href: suspicions_path)
       expect(rendered).to have_no_link(href: notifs_path)
@@ -66,8 +66,8 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       expect(rendered).to have_no_link("Modifier la structure")
       
       expect(rendered).to have_link("Problèmes")
-      expect(rendered).to have_no_link(section_fondation.name, href: pb_sections_path(section_fondation))
-      expect(rendered).to have_link(section.name, href: pb_sections_path(section))
+      expect(rendered).to have_no_link(section_fondation.name, href: section_problems_path(section_fondation))
+      expect(rendered).to have_link(section.name, href: section_problems_path(section))
       expect(rendered).to have_link("Tests virtuels", href: virtualtests_path)
       expect(rendered).to have_link("Concours", href: contests_path)
       
@@ -79,11 +79,11 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       expect(rendered).to have_link(user.fullname)
       expect(rendered).to have_link("Profil", href: user_path(user))
       expect(rendered).to have_link("Compte", href: edit_user_path(user))
-      expect(rendered).to have_no_link("Groupes Wépion", href: groups_path)
+      expect(rendered).to have_no_link("Groupes Wépion", href: groups_users_path)
       expect(rendered).to have_link("Messages", href: new_discussion_path)
       expect(rendered).to have_no_link("Pièces jointes", href: myfiles_path)
-      expect(rendered).to have_no_link(href: validate_names_path)
-      expect(rendered).to have_link("Déconnexion", href: signout_path)
+      expect(rendered).to have_no_link(href: validate_names_users_path)
+      expect(rendered).to have_link("Déconnexion", href: sessions_path)
     end
     
     context "and has some notifications" do
@@ -108,7 +108,7 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       
       it "renders the link to Wépion groups" do
         render partial: "layouts/header"
-        expect(rendered).to have_link("Groupes Wépion", href: groups_path)
+        expect(rendered).to have_link("Groupes Wépion", href: groups_users_path)
       end
     end
     
@@ -147,9 +147,9 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       
       it "renders the buttons for correctors" do
         render partial: "layouts/header"
-        expect(rendered).to have_link(href: allnewsub_path(:levels => 3))
-        expect(rendered).to have_link(href: allnewsub_path(:levels => 28))
-        expect(rendered).to have_link("0", href: allmynewsub_path)
+        expect(rendered).to have_link(href: allnew_submissions_path(:levels => 3))
+        expect(rendered).to have_link(href: allnew_submissions_path(:levels => 28))
+        expect(rendered).to have_link("0", href: allmynew_submissions_path)
       end
       
       context "and has new comments to read" do
@@ -157,7 +157,7 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
         
         it "renders the number of comments to read correctly" do
           render partial: "layouts/header"
-          expect(rendered).to have_link("1", href: allmynewsub_path)
+          expect(rendered).to have_link("1", href: allmynew_submissions_path)
         end
       end
     end
@@ -172,9 +172,9 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       render partial: "layouts/header"
       expect(rendered).to have_link("Mathraining", href: root_path)
       
-      expect(rendered).to have_link(href: allnewsub_path(:levels => 3))
-      expect(rendered).to have_link(href: allnewsub_path(:levels => 28))
-      expect(rendered).to have_link("0", href: allmynewsub_path)
+      expect(rendered).to have_link(href: allnew_submissions_path(:levels => 3))
+      expect(rendered).to have_link(href: allnew_submissions_path(:levels => 28))
+      expect(rendered).to have_link("0", href: allmynew_submissions_path)
       expect(rendered).to have_no_link(href: starproposals_path)
       expect(rendered).to have_no_link(href: suspicions_path)
       expect(rendered).to have_no_link(href: notifs_path)
@@ -185,8 +185,8 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       expect(rendered).to have_link("Modifier la structure")
       
       expect(rendered).to have_link("Problèmes")
-      expect(rendered).to have_no_link(section_fondation.name, href: pb_sections_path(section_fondation))
-      expect(rendered).to have_link(section.name, href: pb_sections_path(section))
+      expect(rendered).to have_no_link(section_fondation.name, href: section_problems_path(section_fondation))
+      expect(rendered).to have_link(section.name, href: section_problems_path(section))
       expect(rendered).to have_link("Tests virtuels", href: virtualtests_path)
       expect(rendered).to have_link("Concours", href: contests_path)
       
@@ -198,11 +198,11 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       expect(rendered).to have_link(admin.fullname)
       expect(rendered).to have_link("Profil", href: user_path(admin))
       expect(rendered).to have_link("Compte", href: edit_user_path(admin))
-      expect(rendered).to have_link("Groupes Wépion", href: groups_path)
+      expect(rendered).to have_link("Groupes Wépion", href: groups_users_path)
       expect(rendered).to have_link("Messages", href: new_discussion_path)
       expect(rendered).to have_no_link("Pièces jointes", href: myfiles_path)
-      expect(rendered).to have_no_link(href: validate_names_path)
-      expect(rendered).to have_link("Déconnexion", href: signout_path)
+      expect(rendered).to have_no_link(href: validate_names_users_path)
+      expect(rendered).to have_link("Déconnexion", href: sessions_path)
     end
   end
   
@@ -215,9 +215,9 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       render partial: "layouts/header"
       expect(rendered).to have_link("Mathraining", href: root_path)
       
-      expect(rendered).to have_link(href: allnewsub_path(:levels => 3))
-      expect(rendered).to have_link(href: allnewsub_path(:levels => 28))
-      expect(rendered).to have_link("0", href: allmynewsub_path)
+      expect(rendered).to have_link(href: allnew_submissions_path(:levels => 3))
+      expect(rendered).to have_link(href: allnew_submissions_path(:levels => 28))
+      expect(rendered).to have_link("0", href: allmynew_submissions_path)
       expect(rendered).to have_no_link(href: starproposals_path)
       expect(rendered).to have_no_link(href: suspicions_path)
       expect(rendered).to have_no_link(href: notifs_path)
@@ -228,8 +228,8 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       expect(rendered).to have_link("Modifier la structure")
       
       expect(rendered).to have_link("Problèmes")
-      expect(rendered).to have_no_link(section_fondation.name, href: pb_sections_path(section_fondation))
-      expect(rendered).to have_link(section.name, href: pb_sections_path(section))
+      expect(rendered).to have_no_link(section_fondation.name, href: section_problems_path(section_fondation))
+      expect(rendered).to have_link(section.name, href: section_problems_path(section))
       expect(rendered).to have_link("Tests virtuels", href: virtualtests_path)
       expect(rendered).to have_link("Concours", href: contests_path)
       
@@ -241,11 +241,11 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       expect(rendered).to have_link(root.fullname)
       expect(rendered).to have_link("Profil", href: user_path(root))
       expect(rendered).to have_link("Compte", href: edit_user_path(root))
-      expect(rendered).to have_link("Groupes Wépion", href: groups_path)
+      expect(rendered).to have_link("Groupes Wépion", href: groups_users_path)
       expect(rendered).to have_link("Messages", href: new_discussion_path)
       expect(rendered).to have_link("Pièces jointes", href: myfiles_path)
-      expect(rendered).to have_link("Valider 0 noms", href: validate_names_path)
-      expect(rendered).to have_link("Déconnexion", href: signout_path)
+      expect(rendered).to have_link("Valider 0 noms", href: validate_names_users_path)
+      expect(rendered).to have_link("Déconnexion", href: sessions_path)
     end
     
     context "and there is a suspicion" do
@@ -271,7 +271,7 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       
       it "renders the number of user names to validate" do
         render partial: "layouts/header"
-        expect(rendered).to have_link("Valider 1 noms", href: validate_names_path)
+        expect(rendered).to have_link("Valider 1 noms", href: validate_names_users_path)
       end
     end
   end

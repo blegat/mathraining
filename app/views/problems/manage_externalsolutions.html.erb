@@ -2,7 +2,7 @@
 
 <% provide(:title, 'Solutions externes') %>
 
-<h1><%= title_4("Problèmes", (link_to @problem.section.name, pb_sections_path(@problem.section)), (link_to "Problème ##{ @problem.number }", @problem), "Solutions externes") %></h1>
+<h1><%= title_4("Problèmes", (link_to @problem.section.name, section_problems_path(@problem.section)), (link_to "Problème ##{ @problem.number }", @problem), "Solutions externes") %></h1>
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>

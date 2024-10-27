@@ -1,6 +1,6 @@
 #encoding: utf-8
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed_users, :unset_follow_message]
+  before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed, :unset_follow_message]
   before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :follow, :unfollow, :set_follow_message, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
   before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
   before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
@@ -81,7 +81,7 @@ class UsersController < ApplicationController
   end
 
   # Show all followed users
-  def followed_users
+  def followed
     fill_sections_max_score
     
     @all_users = current_user.sk.followed_users.where(:admin => false).to_a
@@ -93,7 +93,8 @@ class UsersController < ApplicationController
     fill_user_info(@all_users)
   end
   
-  def search_user
+  # Search for users by name
+  def search
     return unless params.has_key?:search
     
     search = params[:search].dup # real copy

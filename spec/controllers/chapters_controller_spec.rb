@@ -27,7 +27,7 @@ describe ChaptersController, type: :controller, chapter: true do
     it { expect(response).to have_controller_put_path_behavior('unmark_submission_prerequisite', online_chapter, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('order', online_chapter, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('read', online_chapter, :access_refused) }
-    it { expect(response).to have_controller_get_static_path_behavior('chapterstats', :ok) }
+    it { expect(response).to have_controller_get_static_path_behavior('stats', :ok) }
     
     it "redirects to new format for chapter type 0" do
       get :show, params: {id: online_chapter.id, type: 0}
@@ -68,7 +68,7 @@ describe ChaptersController, type: :controller, chapter: true do
     it { expect(response).to have_controller_put_path_behavior('order', online_chapter, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('read', online_chapter, :ok) }
     it { expect(response).to have_controller_put_path_behavior('read', offline_chapter, :access_refused) }
-    it { expect(response).to have_controller_get_static_path_behavior('chapterstats', :ok) }
+    it { expect(response).to have_controller_get_static_path_behavior('stats', :ok) }
   end
   
   context "if the user is an admin (not a root)" do
@@ -87,7 +87,7 @@ describe ChaptersController, type: :controller, chapter: true do
     it { expect(response).to have_controller_put_path_behavior('unmark_submission_prerequisite', online_chapter, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('order', online_chapter, :ok) }
     it { expect(response).to have_controller_put_path_behavior('read', online_chapter, :access_refused) }
-    it { expect(response).to have_controller_get_static_path_behavior('chapterstats', :ok) }
+    it { expect(response).to have_controller_get_static_path_behavior('stats', :ok) }
   end
   
   context "if the user is a root" do

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Page section/showpb" do
+describe "Page problems/index" do
 
   subject { page }
 
@@ -29,7 +29,7 @@ describe "Page section/showpb" do
   end
   
   describe "visitor" do
-    before { visit pb_sections_path(section) }
+    before { visit section_problems_path(section) }
     it do
       should have_selector("h1", text: section.name)
       should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
@@ -39,7 +39,7 @@ describe "Page section/showpb" do
   describe "user with rating 199" do
     before do
       sign_in user_with_rating_199
-      visit pb_sections_path(section)
+      visit section_problems_path(section)
     end
     it do
       should have_selector("h1", text: section.name)
@@ -51,7 +51,7 @@ describe "Page section/showpb" do
     before { sign_in user }
 
     describe "having completed no chapter" do
-      before { visit pb_sections_path(section) }
+      before { visit section_problems_path(section) }
       it do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
@@ -87,7 +87,7 @@ describe "Page section/showpb" do
     describe "having completed first chapter" do
       before do
         user.chapters << chapter1
-        visit pb_sections_path(section)
+        visit section_problems_path(section)
       end
       it do
         should have_selector("h1", text: section.name)
@@ -124,7 +124,7 @@ describe "Page section/showpb" do
     describe "having completed second chapter" do
       before do
         user.chapters << chapter2
-        visit pb_sections_path(section)
+        visit section_problems_path(section)
       end
       it do
         should have_selector("h1", text: section.name)
@@ -162,7 +162,7 @@ describe "Page section/showpb" do
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        visit pb_sections_path(section)
+        visit section_problems_path(section)
       end
       it do
         should have_selector("h1", text: section.name)
@@ -201,7 +201,7 @@ describe "Page section/showpb" do
         user.chapters << chapter1
         user.chapters << chapter2
         Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :in_progress)
-        visit pb_sections_path(section)
+        visit section_problems_path(section)
       end
       it do
         should have_selector("h1", text: section.name)
@@ -240,7 +240,7 @@ describe "Page section/showpb" do
         user.chapters << chapter1
         user.chapters << chapter2
         Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
-        visit pb_sections_path(section)
+        visit section_problems_path(section)
       end
       it do
         should have_selector("h1", text: section.name)
@@ -290,7 +290,7 @@ describe "Page section/showpb" do
         user.chapters << chapter1
         user.chapters << chapter2
         Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
-        visit pb_sections_path(section)
+        visit section_problems_path(section)
       end
       it do
         should have_selector("h1", text: section.name)
@@ -346,7 +346,7 @@ describe "Page section/showpb" do
         user.chapters << chapter1
         user.chapters << chapter2
         Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
-        visit pb_sections_path(section)
+        visit section_problems_path(section)
       end
       it do
         should have_selector("h1", text: section.name)
@@ -390,7 +390,7 @@ describe "Page section/showpb" do
   describe "admin" do
     before do
       sign_in admin
-      visit pb_sections_path(section)
+      visit section_problems_path(section)
     end
 
     it do

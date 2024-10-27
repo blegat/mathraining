@@ -30,7 +30,7 @@ describe "Problem pages", problem: true do
   
   describe "visitor" do
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section) }
+      before { visit section_problems_path(section) }
       it do
         should have_selector("h1", text: section.name)
         should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
@@ -42,7 +42,7 @@ describe "Problem pages", problem: true do
     before { sign_in user_with_rating_199 }
 
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section) }
+      before { visit section_problems_path(section) }
       it do
         should have_selector("h1", text: section.name)
         should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
@@ -54,7 +54,7 @@ describe "Problem pages", problem: true do
     before { sign_in user_with_rating_200 }
 
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section) }
+      before { visit section_problems_path(section) }
       it do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
@@ -105,7 +105,7 @@ describe "Problem pages", problem: true do
     end
 
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section) }
+      before { visit section_problems_path(section) }
       it do
         should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite, :auto => 1))
         should have_selector("div", text: online_problem_with_prerequisite.statement)
@@ -116,7 +116,7 @@ describe "Problem pages", problem: true do
     describe "visits problems of a section while no new submissions are allowed" do
       before do
         Globalvariable.create(:key => "no_new_submission", :value => 1, :message => no_new_sub_message)
-        visit pb_sections_path(section)
+        visit section_problems_path(section)
       end
       it do
         should have_info_message(no_new_sub_message)
@@ -140,7 +140,7 @@ describe "Problem pages", problem: true do
     before { sign_in admin }
     
     describe "visits problems of a section" do
-      before { visit pb_sections_path(section) }
+      before { visit section_problems_path(section) }
       it do
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")

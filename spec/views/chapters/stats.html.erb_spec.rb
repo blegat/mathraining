@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "chapters/chapterstats.html.erb", type: :view, chapter: true do
+describe "chapters/stats.html.erb", type: :view, chapter: true do
 
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
@@ -26,7 +26,7 @@ describe "chapters/chapterstats.html.erb", type: :view, chapter: true do
     end
       
     it "renders the statistics correctly" do
-      render template: "chapters/chapterstats"
+      render template: "chapters/stats"
       expect(rendered).to have_selector("h3", text: section.name)
       expect(rendered).to have_selector("th", text: "Ex. 1")
       expect(rendered).to have_selector("th", text: "Ex. 2")
@@ -49,7 +49,7 @@ describe "chapters/chapterstats.html.erb", type: :view, chapter: true do
     end
     
     it "renders the statistics correctly" do
-      render template: "chapters/chapterstats"
+      render template: "chapters/stats"
       expect(rendered).to have_selector("h3", text: section.name)
       expect(rendered).to have_selector("th", text: "Ex. 1")
       expect(rendered).to have_selector("th", text: "Ex. 2")
@@ -72,7 +72,7 @@ describe "chapters/chapterstats.html.erb", type: :view, chapter: true do
     end
     
     it "renders the statistics correctly" do
-      render template: "chapters/chapterstats"
+      render template: "chapters/stats"
       expect(rendered).to have_selector("h3", text: section.name)
       expect(rendered).to have_selector("th", text: "Ex. 1")
       expect(rendered).to have_selector("th", text: "Ex. 2")
@@ -93,7 +93,7 @@ describe "chapters/chapterstats.html.erb", type: :view, chapter: true do
   
   context "if the user is not signed in" do    
     it "renders the menu correctly" do
-      render template: "chapters/chapterstats"
+      render template: "chapters/stats"
       expect(rendered).to have_selector("h3", text: section.name)
       expect(rendered).to have_selector("th", text: "Ex. 1")
       expect(rendered).to have_selector("th", text: "Ex. 2")
