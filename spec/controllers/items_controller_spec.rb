@@ -9,70 +9,28 @@ describe ItemsController, type: :controller, item: true do
   let(:item) { FactoryGirl.create(:item, question: question) }
   
   context "if the user is not an admin" do
-    before do
-      sign_in_controller(user)
-    end
+    before { sign_in_controller(user) }
     
-    it "renders the error page for create" do
-      post :create, params: {question_id: question.id, item: FactoryGirl.attributes_for(:item)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update" do
-      post :update, params: {id: item.id, faq: FactoryGirl.attributes_for(:item)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy" do
-      delete :destroy, params: {id: item.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for correct" do
-      put :correct, params: {item_id: item.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for uncorrect" do
-      put :uncorrect, params: {item_id: item.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for order" do
-      put :order, params: {item_id: item.id, new_position: 3}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_create_behavior('item', :access_refused, {:question_id => question.id}) }
+    it { expect(response).to have_controller_update_behavior(item, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(item, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('correct', item, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('uncorrect', item, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('order', item, :access_refused, {:new_position => 3}) }
   end
   
   context "if the user is an admin" do
-    before do
-      sign_in_controller(admin)
-    end
+    before { sign_in_controller(admin) }
     
     context "and the question is online" do
-      before do
-        question.update_attribute(:online, true)
-      end
+      before { question.update_attribute(:online, true) }
       
-      it "renders the error page for create" do
-        post :create, params: {question_id: question.id, item: FactoryGirl.attributes_for(:item)}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for destroy" do
-        delete :destroy, params: {id: item.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for correct" do
-        put :correct, params: {item_id: item.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for uncorrect" do
-        put :uncorrect, params: {item_id: item.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_create_behavior('item', :access_refused, {:question_id => question.id}) }
+      it { expect(response).to have_controller_update_behavior(item, :ok) }
+      it { expect(response).to have_controller_destroy_behavior(item, :access_refused) }
+      it { expect(response).to have_controller_put_path_behavior('correct', item, :access_refused) }
+      it { expect(response).to have_controller_put_path_behavior('uncorrect', item, :access_refused) }
+      it { expect(response).to have_controller_put_path_behavior('order', item, :ok, {:new_position => 3}) }
     end
   end
 end

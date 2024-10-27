@@ -13,57 +13,48 @@ describe ContestsController, type: :controller, contest: true do
   end
   
   context "if the user is not signed in" do
+    it { expect(response).to have_controller_index_behavior(:ok) }
+    
+    context "and contest is offline" do
+      before { contest.in_construction! }
+      
+      it { expect(response).to have_controller_show_behavior(contest, :access_refused) }
+      it { expect(response).to have_controller_new_behavior(:must_be_connected) }
+      it { expect(response).to have_controller_create_behavior('contest', :access_refused) }
+      it { expect(response).to have_controller_edit_behavior(contest, :must_be_connected) }
+      it { expect(response).to have_controller_update_behavior(contest, :access_refused) }
+      it { expect(response).to have_controller_destroy_behavior(contest, :access_refused) }
+      it { expect(response).to have_controller_put_path_behavior('follow', contest, :access_refused) }
+      it { expect(response).to have_controller_get_path_behavior('unfollow', contest, :must_be_connected) }
+    end
+    
     context "and contest is online" do
-      before do
-        contest.in_progress!
-      end
+      before { contest.in_progress! }
       
-      it "renders the error page for follow" do
-        put :follow, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for unfollow" do
-        get :unfollow, params: {contest_id: contest.id}
-        expect(response).to render_template 'sessions/new'
-      end
+      it { expect(response).to have_controller_show_behavior(contest, :ok) }
     end
   end
   
   context "if the user is not an organizer" do
-    before do
-      sign_in_controller(user)
-    end
+    before { sign_in_controller(user) }
+    
+    it { expect(response).to have_controller_edit_behavior(contest, :access_refused) }
+    it { expect(response).to have_controller_update_behavior(contest, :access_refused) }
     
     context "and contest is offline" do
-      before do
-        contest.in_construction!
-      end
+      before { contest.in_construction! }
       
-      it "renders the error page for show" do
-        get :show, params: {id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for follow" do
-        put :follow, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for unfollow" do
-        get :unfollow, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_show_behavior(contest, :access_refused) }
+      it { expect(response).to have_controller_put_path_behavior('follow', contest, :access_refused) }
+      it { expect(response).to have_controller_get_path_behavior('unfollow', contest, :access_refused) }
     end
     
-    it "renders the error page for edit" do
-      get :edit, params: {id: contest.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update" do
-      post :update, params: {id: contest.id, contest: FactoryGirl.attributes_for(:contest)}
-      expect(response).to render_template 'errors/access_refused'
+    context "and contest is online" do
+      before { contest.in_progress! }
+      
+      it { expect(response).to have_controller_show_behavior(contest, :ok) }
+      it { expect(response).to have_controller_put_path_behavior('follow', contest, :ok) }
+      it { expect(response).to have_controller_get_path_behavior('unfollow', contest, :ok) }
     end
     
     context "and cutoffs can be defined by organizers" do
@@ -72,57 +63,26 @@ describe ContestsController, type: :controller, contest: true do
         contest.completed!
       end
       
-      it "renders the error page for cutoffs" do
-        get :cutoffs, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for define_cutoffs" do
-        post :define_cutoffs, params: {contest_id: contest.id, bronze_cutoff: 1, silver_cutoff: 2, gold_cutoff: 3}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_get_path_behavior('cutoffs', contest, :access_refused) }
+      it { expect(response).to have_controller_post_path_behavior('define_cutoffs', contest, :access_refused, {:bronze_cutoff => 1, :silver_cutoff => 2, :gold_cutoff => 3}) }
     end
   end
   
   context "if the user is an organizer" do
-    before do
-      sign_in_controller(user_organizer)
-    end
+    before { sign_in_controller(user_organizer) }
     
-    it "renders the error page for new" do
-      get :new
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for create" do
-      post :create, params: {contest: FactoryGirl.attributes_for(:contest)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy" do
-      delete :destroy, params: {id: contest.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for add_organizer" do
-      patch :add_organizer, params: {contest_id: contest.id, user_id: admin.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy" do
-      put :remove_organizer, params: {contest_id: contest.id, user_id: user_organizer.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_new_behavior(:access_refused) }
+    it { expect(response).to have_controller_create_behavior('contest', :access_refused) }
+    it { expect(response).to have_controller_edit_behavior(contest, :ok) }
+    it { expect(response).to have_controller_update_behavior(contest, :ok) }
+    it { expect(response).to have_controller_destroy_behavior(contest, :access_refused) }
+    it { expect(response).to have_controller_patch_path_behavior('add_organizer', contest, :access_refused, {:user_id => admin.id}) }
+    it { expect(response).to have_controller_put_path_behavior('remove_organizer', contest, :access_refused, {:user_id => user_organizer.id}) }
     
     context "and contest is offline" do
-      before do
-        contest.in_construction!
-      end
+      before { contest.in_construction! }
       
-      it "renders the error page for put_online" do
-        put :put_online, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_put_path_behavior('put_online', contest, :access_refused) }
     end
     
     context "and medals are already distributed" do
@@ -131,15 +91,8 @@ describe ContestsController, type: :controller, contest: true do
         contest.completed!
       end
       
-      it "renders the error page for cutoffs" do
-        get :cutoffs, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for define_cutoffs" do
-        post :define_cutoffs, params: {contest_id: contest.id, bronze_cutoff: 2, silver_cutoff: 3, gold_cutoff: 4}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_get_path_behavior('cutoffs', contest, :access_refused) }
+      it { expect(response).to have_controller_post_path_behavior('define_cutoffs', contest, :access_refused, {:bronze_cutoff => 1, :silver_cutoff => 2, :gold_cutoff => 3}) }
     end
     
     context "and no medals can be given" do
@@ -148,15 +101,8 @@ describe ContestsController, type: :controller, contest: true do
         contest.completed!
       end
       
-      it "renders the error page for cutoffs" do
-        get :cutoffs, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for define_cutoffs" do
-        post :define_cutoffs, params: {contest_id: contest.id, bronze_cutoff: 2, silver_cutoff: 3, gold_cutoff: 4}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_get_path_behavior('cutoffs', contest, :access_refused) }
+      it { expect(response).to have_controller_post_path_behavior('define_cutoffs', contest, :access_refused, {:bronze_cutoff => 1, :silver_cutoff => 2, :gold_cutoff => 3}) }
     end
     
     context "and contest is not completed" do
@@ -165,37 +111,29 @@ describe ContestsController, type: :controller, contest: true do
         contest.in_correction!
       end
       
-      it "renders the error page for cutoffs" do
-        get :cutoffs, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
+      it { expect(response).to have_controller_get_path_behavior('cutoffs', contest, :access_refused) }
+      it { expect(response).to have_controller_post_path_behavior('define_cutoffs', contest, :access_refused, {:bronze_cutoff => 1, :silver_cutoff => 2, :gold_cutoff => 3}) }
+    end
+    
+    context "and medals can be distributed" do
+      before do
+        contest.update(medal: true)
+        contest.completed!
       end
       
-      it "renders the error page for define_cutoffs" do
-        post :define_cutoffs, params: {contest_id: contest.id, bronze_cutoff: 2, silver_cutoff: 3, gold_cutoff: 4}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_get_path_behavior('cutoffs', contest, :ok) }
+      it { expect(response).to have_controller_post_path_behavior('define_cutoffs', contest, :ok, {:bronze_cutoff => 1, :silver_cutoff => 2, :gold_cutoff => 3}) }
     end
   end
   
   context "if the user is an admin" do
-    before do
-      sign_in_controller(admin)
-    end
+    before { sign_in_controller(admin) }
     
     context "and contest is online" do
-      before do
-        contest.in_progress!
-      end
+      before { contest.in_progress! }
       
-      it "renders the error page for destroy" do
-        delete :destroy, params: {id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for put_online" do
-        put :put_online, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_destroy_behavior(contest, :access_refused) }
+      it { expect(response).to have_controller_put_path_behavior('put_online', contest, :access_refused) }
     end
   end
 end

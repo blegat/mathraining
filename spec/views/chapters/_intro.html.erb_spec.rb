@@ -24,7 +24,7 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
       it "renders correctly when allow_edit = false" do
         render partial: "chapters/intro"
         expect(rendered).to have_content("Aucun prérequis.")
-        expect(rendered).to have_no_link("Modifier les prérequis")
+        expect(rendered).to have_no_link("Ajouter un prérequis")
         expect(rendered).to have_content(chapter1.description)
         expect(rendered).to have_no_content("Ce chapitre a été créé")
         expect(rendered).to have_no_link("Modifier ce chapitre")
@@ -33,7 +33,7 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
       it "renders correctly when allow_edit = true" do
         render partial: "chapters/intro", locals: {allow_edit: true}
         expect(rendered).to have_content("Aucun prérequis.")
-        expect(rendered).to have_link("Modifier les prérequis")
+        expect(rendered).to have_link("Ajouter un prérequis")
         expect(rendered).to have_link("Modifier ce chapitre")
         expect(rendered).to have_no_content("Déplacer vers le")
         expect(rendered).to have_link("Supprimer ce chapitre")
@@ -54,7 +54,7 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
       it "renders correctly when allow_edit = false" do
         render partial: "chapters/intro"
         expect(rendered).to have_link(chapter_prerequisite.name, href: chapter_path(chapter_prerequisite))
-        expect(rendered).to have_no_link("Modifier les prérequis")
+        expect(rendered).to have_no_link("Ajouter un prérequis")
         expect(rendered).to have_content(chapter2.description)
         expect(rendered).to have_content("écrit par #{chapter2.author} et")
         expect(rendered).to have_content("mis en ligne le #{ write_date_only(chapter2.publication_date) }.")
@@ -63,7 +63,7 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
       
       it "renders correctly when allow_edit = true" do
         render partial: "chapters/intro", locals: {allow_edit: true}
-        expect(rendered).to have_no_link("Modifier les prérequis") # because online
+        expect(rendered).to have_no_link("Ajouter un prérequis") # because online
         expect(rendered).to have_link("Modifier ce chapitre")
         expect(rendered).to have_content("Déplacer vers le")
         expect(rendered).to have_link("haut", href: chapter_order_path(chapter2, :new_position => chapter_prerequisite.position))
@@ -89,7 +89,7 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
       it "renders correctly when allow_edit = true" do
         render partial: "chapters/intro", locals: {allow_edit: true} # should still not be able to edit
         expect(rendered).to have_content("Aucun prérequis.")
-        expect(rendered).to have_no_link("Modifier les prérequis")
+        expect(rendered).to have_no_link("Ajouter un prérequis")
         expect(rendered).to have_content("écrit par #{chapter3.author}.")
         expect(rendered).to have_no_content("mis en ligne")
         expect(rendered).to have_content(chapter3.description)

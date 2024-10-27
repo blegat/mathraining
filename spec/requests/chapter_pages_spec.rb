@@ -19,7 +19,8 @@ describe "Chapter pages", chapter: true do
   let!(:offline_item) { FactoryGirl.create(:item, question: offline_qcm) }
   let!(:offline_theory) { FactoryGirl.create(:theory, chapter: offline_chapter, online: false) }
   let!(:offline_chapter_2) { FactoryGirl.create(:chapter, section: section, online: false, name: "Autre chapitre hors-ligne", level: 3) }
-  let!(:prerequisite_link) { FactoryGirl.create(:prerequisite, chapter: offline_chapter_2, prerequisite: offline_chapter) }
+  let!(:prerequisite_link_1) { FactoryGirl.create(:prerequisite, chapter: offline_chapter, prerequisite: online_chapter) }
+  let!(:prerequisite_link_2) { FactoryGirl.create(:prerequisite, chapter: offline_chapter_2, prerequisite: offline_chapter) }
   let(:chapter_fondation) { FactoryGirl.create(:chapter, section: section_fondation, online: true, name: "Chapitre fondamental en ligne") }
   let(:title) { "Mon titre de chapitre" }
   let(:description) { "Ma description de chapitre" }
@@ -69,10 +70,12 @@ describe "Chapter pages", chapter: true do
         expect(page).to have_selector("h1", text: offline_chapter.name + " (en construction)")
         expect(page).to have_link("Modifier ce chapitre")
         expect(page).to have_link("Supprimer ce chapitre")
-        expect(page).to have_link("Modifier les prérequis")
+        expect(page).to have_link("Ajouter un prérequis")
+        expect(page).to have_link("Supprimer", href: prerequisite_path(prerequisite_link_1))
         expect(page).to have_link("point théorique")
         expect(page).to have_link("QCM")
         expect(page).to have_no_button("Mettre ce chapitre en ligne") # Only for root
+        expect { click_link("Supprimer", href: prerequisite_path(prerequisite_link_1)) }.to change(Prerequisite, :count).by(-1)
         expect { click_link("Supprimer ce chapitre") }.to change(Chapter, :count).by(-1) .and change(Question, :count).by(-2) .and change(Theory, :count).by(-1) .and change(Item, :count).by(-1)
       end
     end

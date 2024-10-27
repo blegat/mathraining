@@ -1,13 +1,13 @@
 #encoding: utf-8
 class PrivacypoliciesController < ApplicationController
   before_action :signed_in_user, only: [:index, :edit, :edit_description]
-  before_action :signed_in_user_danger, only: [:new, :update, :destroy, :put_online]
-  before_action :root_user, only: [:index, :new, :edit, :update, :destroy, :put_online]
+  before_action :signed_in_user_danger, only: [:new, :update, :update_description, :destroy, :put_online]
+  before_action :root_user, only: [:index, :new, :edit, :update, :edit_description, :update_description, :destroy, :put_online]
   
   before_action :get_policy, only: [:show, :edit, :update, :destroy]
-  before_action :get_policy2, only: [:edit_description, :put_online]
+  before_action :get_policy2, only: [:edit_description, :update_description, :put_online]
   
-  before_action :is_offline, only: [:edit, :destroy, :put_online]
+  before_action :is_offline, only: [:edit, :update, :destroy, :put_online]
   before_action :is_online, only: [:show]
   
   # Show all privacy policies
@@ -44,17 +44,23 @@ class PrivacypoliciesController < ApplicationController
   def edit_description
   end
 
-  # Update a privacy policy or its description (send the form)
+  # Update a privacy policy (send the form)
   def update
-    if @privacypolicy.update(params.require(:privacypolicy).permit(:description, :content))
+    if @privacypolicy.update(params.require(:privacypolicy).permit(:content))
       flash[:success] = "Modification enregistrée."
       redirect_to privacypolicies_path
     else
-      if params[:privacypolicy][:description].nil?
-        render 'edit'
-      else
-        render 'edit_description'
-      end
+      render 'edit'
+    end
+  end
+  
+  # Update the description of a privacy policy (send the form)
+  def update_description
+    if @privacypolicy.update(params.require(:privacypolicy).permit(:description))
+      flash[:success] = "Modification enregistrée."
+      redirect_to privacypolicies_path
+    else
+      render 'edit_description'
     end
   end
   

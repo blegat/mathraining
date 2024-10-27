@@ -9,12 +9,12 @@ Rails.application.routes.draw do
 
   # Chapters
   resources :chapters, only: [:show, :update, :edit, :destroy] do
+    match '/all', to: 'chapters#all', :via => [:get]
     match '/put_online', to: 'chapters#put_online', :via => [:put]
     match '/mark_submission_prerequisite', to: 'chapters#mark_submission_prerequisite', :via => [:put]
     match '/unmark_submission_prerequisite', to: 'chapters#unmark_submission_prerequisite', :via => [:put]
     match '/order', to: 'chapters#order', :via => [:put]
     match '/read', to: 'chapters#read', :via => [:put]
-    match '/all', to: 'chapters#all', :via => [:get]
 
     resources :theories, only: [:show, :new, :create]
     resources :questions, only: [:show, :new, :create]
@@ -23,9 +23,7 @@ Rails.application.routes.draw do
   resources :chaptercreations, only: [] # Must be added manually in the database!
 
   # Prerequisites
-  match '/graph_prerequisites', to: "prerequisites#graph_prerequisites", :via => [:get]
-  match '/add_prerequisite', to: "prerequisites#add_prerequisite", :via => [:post]
-  match '/remove_prerequisite', to: "prerequisites#remove_prerequisite", :via => [:post]
+  resources :prerequisites, only: [:index, :create, :destroy]
 
   # Theories
   resources :theories, only: [:update, :edit, :destroy] do
@@ -207,6 +205,7 @@ Rails.application.routes.draw do
   resources :privacypolicies, only: [:index, :show, :new, :edit, :update, :destroy] do
     match '/put_online', to: 'privacypolicies#put_online', :via => [:put]
     match '/edit_description', to: 'privacypolicies#edit_description', :via => [:get]
+    match '/update_description', to: 'privacypolicies#update_description', :via => [:patch]
   end
   match '/last_policy', to: 'privacypolicies#last_policy', :via => [:get]
   

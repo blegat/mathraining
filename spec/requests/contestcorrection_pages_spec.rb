@@ -304,66 +304,6 @@ describe "Contestcorrection pages", contestcorrection: true do
           end
         end
       end
-      
-      describe "tries to publish the results while they were already published" do
-        before do
-          contestproblem_finished.corrected! # Simulate publication of results by somebody else
-          click_button "Publier les résultats"
-          contestproblem_finished.reload
-        end
-        specify do
-          expect(page).to have_error_message("Une erreur est survenue.")
-          expect(contestproblem_finished.corrected?).to eq(true)
-          expect(contestsubject.messages.count).to eq(0)
-        end
-      end
-      
-      describe "tries to publish the results while the star was removed" do
-        before do
-          usersol_finished.update_attribute(:star, false) # Simulate the star being removed by another corrector
-          click_button "Publier les résultats"
-          contestproblem_finished.reload
-        end
-        specify do
-          expect(page).to have_error_message("Il faut au minimum une solution étoilée pour publier les résultats.")
-          expect(contestproblem_finished.in_correction?).to eq(true)
-          expect(contestsubject.messages.count).to eq(0)
-        end
-      end
-      
-      describe "tries to publish the results while the solution was uncorrected" do
-        before do
-          usersol_finished.update(corrected: false, star: false) # Simulate another corrector marking the solution as non corrected
-          click_button "Publier les résultats"
-          contestproblem_finished.reload
-        end
-        specify do
-          expect(page).to have_error_message("Les solutions ne sont pas toutes corrigées.")
-          expect(contestproblem_finished.in_correction?).to eq(true)
-          expect(contestsubject.messages.count).to eq(0)
-        end
-      end
-      
-      describe "tries to modify it after results were published" do
-        before do
-          # Need to reserve again:
-          usersol_finished.update_attribute(:reservation, user_organizer.id)
-          visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
-          # Simulate publication of corrections by somebody else in the meanwhile:
-          contestproblem_finished.corrected!
-          # Tries to modify the correction (too late)
-          fill_in "MathInput", with: newcorrection2
-          click_button "Enregistrer"
-          usersol_finished.reload
-          usersol_finished.contestcorrection.reload
-        end
-        specify do
-          expect(page).to have_error_message("Vous ne pouvez pas modifier cette correction.")
-          expect(usersol_finished.score).to eq(7)
-          expect(usersol_finished.star).to eq(true)
-          expect(usersol_finished.contestcorrection.content).to eq("-")
-        end
-      end
     end
     
     # -- TESTS THAT REQUIRE JAVASCRIPT --

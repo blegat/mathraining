@@ -11,25 +11,13 @@ describe DiscussionsController, type: :controller, discussion: true do
   let!(:link2) { Link.create(discussion: discussion, user: user2) }
   
   context "if the user is not signed in" do
-    it "renders the error page for new" do
-      get :new
-      expect(response).to render_template 'sessions/new'
-    end
+    it { expect(response).to have_controller_new_behavior(:must_be_connected) }
   end
   
   context "if the user is not involved in the discussion" do
-    before do
-      sign_in_controller(user_other)
-    end
+    before { sign_in_controller(user_other) }
     
-    it "renders the error page for show" do
-      get :show, params: {id: discussion.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for unread" do
-      put :unread, params: {discussion_id: discussion.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_show_behavior(discussion, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('unread', discussion, :access_refused) }
   end
 end

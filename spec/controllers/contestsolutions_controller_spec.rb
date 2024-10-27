@@ -14,20 +14,9 @@ describe ContestsolutionsController, type: :controller, contestsolution: true do
   end
   
   context "if the user is not signed in" do
-    it "renders the error page for create" do
-      post :create, params: {contestproblem_id: contestproblem.id, contestsolution: FactoryGirl.attributes_for(:contestsolution)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update" do
-      patch :update, params: {id: contestsolution.id, contestsolution: FactoryGirl.attributes_for(:contestsolution)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy" do
-      delete :destroy, params: {id: contestsolution.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_create_behavior('contestsolution', :access_refused, {:contestproblem_id => contestproblem.id}) }
+    it { expect(response).to have_controller_update_behavior(contestsolution, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(contestsolution, :access_refused) }
   end
   
   context "if the user is an admin, not organizer" do
@@ -36,15 +25,8 @@ describe ContestsolutionsController, type: :controller, contestsolution: true do
       contestproblem.in_correction!
     end
     
-    it "renders the error page for reserve" do
-      put :reserve, params: {contestsolution_id: contestsolution.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for unreserve" do
-      put :unreserve, params: {contestsolution_id: contestsolution.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_put_path_behavior('reserve', contestsolution, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('unreserve', contestsolution, :access_refused) }
   end
   
   context "if the user is a participant with a solution" do
@@ -55,10 +37,7 @@ describe ContestsolutionsController, type: :controller, contestsolution: true do
       contestproblem.in_progress!
     end
     
-    it "renders the error page when trying to update the solution of someone else" do
-      patch :update, params: {id: contestsolution.id, contestsolution: FactoryGirl.attributes_for(:contestsolution)}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_update_behavior(contestsolution, :access_refused) }
   end
 end
 

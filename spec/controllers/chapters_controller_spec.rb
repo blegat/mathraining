@@ -12,92 +12,22 @@ describe ChaptersController, type: :controller, chapter: true do
   let(:theory) { FactoryGirl.create(:theory, chapter: online_chapter, online: true) }
   let(:question) { FactoryGirl.create(:exercise, chapter: online_chapter, online: true) }
   
-  context "if the user is not an admin" do
-    before do
-      sign_in_controller(user)
-    end
-    
-    it "renders the error page for show of offline chapter" do
-      get :show, params: {id: offline_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for new" do
-      get :new, params: {section_id: section.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for create" do
-      post :create, params: {section_id: section.id, chapter: FactoryGirl.attributes_for(:chapter)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for edit" do
-      get :edit, params: {id: online_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update" do
-      post :update, params: {id: offline_chapter.id, chapter: FactoryGirl.attributes_for(:chapter)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy" do
-      delete :destroy, params: {id: offline_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for order" do
-      put :order, params: {chapter_id: offline_chapter.id, new_position: 3}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for read of offline chapter" do
-      put :read, params: {chapter_id: offline_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-  end
-  
-  context "if the user is an admin (not a root)" do
-    before do
-      sign_in_controller(admin)
-    end
-    
-    it "renders the error page for put_online" do
-      put :put_online, params: {chapter_id: offline_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for mark_submission_prerequisite" do
-      put :mark_submission_prerequisite, params: {chapter_id: offline_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for unmark_submission_prerequisite" do
-      put :unmark_submission_prerequisite, params: {chapter_id: offline_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for read" do
-      put :read, params: {chapter_id: online_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-  end
-  
-  context "if the user is a root" do
-    before do
-      sign_in_controller(root)
-    end
-    
-    it "renders the error page for put_online of online chapter" do
-      put :put_online, params: {chapter_id: online_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy of online chapter" do
-      delete :destroy, params: {id: online_chapter.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
+  context "if the user is not signed in" do
+    it { expect(response).to have_controller_show_behavior(online_chapter, :ok) }
+    it { expect(response).to have_controller_show_behavior(offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_new_behavior(:must_be_connected, {:section_id => section.id}) }
+    it { expect(response).to have_controller_create_behavior('chapter', :access_refused, {:section_id => section.id}) }
+    it { expect(response).to have_controller_edit_behavior(online_chapter, :must_be_connected) }
+    it { expect(response).to have_controller_update_behavior(online_chapter, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_get_path_behavior('all', online_chapter, :ok) }
+    it { expect(response).to have_controller_get_path_behavior('all', offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('put_online', offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('mark_submission_prerequisite', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('unmark_submission_prerequisite', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('order', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('read', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_get_static_path_behavior('chapterstats', :ok) }
     
     it "redirects to new format for chapter type 0" do
       get :show, params: {id: online_chapter.id, type: 0}
@@ -118,5 +48,55 @@ describe ChaptersController, type: :controller, chapter: true do
       get :show, params: {id: online_chapter.id, type: 5, which: question.id}
       expect(response).to redirect_to chapter_question_path(online_chapter, question)
     end
+  end
+  
+  context "if the user is not an admin" do
+    before { sign_in_controller(user) }
+    
+    it { expect(response).to have_controller_show_behavior(online_chapter, :ok) }
+    it { expect(response).to have_controller_show_behavior(offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_new_behavior(:access_refused, {:section_id => section.id}) }
+    it { expect(response).to have_controller_create_behavior('chapter', :access_refused, {:section_id => section.id}) }
+    it { expect(response).to have_controller_edit_behavior(online_chapter, :access_refused) }
+    it { expect(response).to have_controller_update_behavior(online_chapter, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_get_path_behavior('all', online_chapter, :ok) }
+    it { expect(response).to have_controller_get_path_behavior('all', offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('put_online', offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('mark_submission_prerequisite', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('unmark_submission_prerequisite', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('order', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('read', online_chapter, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('read', offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_get_static_path_behavior('chapterstats', :ok) }
+  end
+  
+  context "if the user is an admin (not a root)" do
+    before { sign_in_controller(admin) }
+    
+    it { expect(response).to have_controller_show_behavior(offline_chapter, :ok) }
+    it { expect(response).to have_controller_new_behavior(:ok, {:section_id => section.id}) }
+    it { expect(response).to have_controller_create_behavior('chapter', :ok, {:section_id => section.id}) }
+    it { expect(response).to have_controller_edit_behavior(online_chapter, :ok) }
+    it { expect(response).to have_controller_update_behavior(online_chapter, :ok) }
+    it { expect(response).to have_controller_destroy_behavior(offline_chapter, :ok) }
+    it { expect(response).to have_controller_destroy_behavior(online_chapter, :access_refused) }
+    it { expect(response).to have_controller_get_path_behavior('all', offline_chapter, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('put_online', offline_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('mark_submission_prerequisite', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('unmark_submission_prerequisite', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('order', online_chapter, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('read', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_get_static_path_behavior('chapterstats', :ok) }
+  end
+  
+  context "if the user is a root" do
+    before { sign_in_controller(root) }
+    
+    it { expect(response).to have_controller_put_path_behavior('put_online', offline_chapter, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('put_online', online_chapter, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('mark_submission_prerequisite', online_chapter, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('unmark_submission_prerequisite', online_chapter, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('read', online_chapter, :access_refused) }
   end
 end

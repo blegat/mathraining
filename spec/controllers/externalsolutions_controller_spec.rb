@@ -7,24 +7,17 @@ describe ExternalsolutionsController, type: :controller, externalsolution: true 
   let(:problem) { FactoryGirl.create(:problem) }
   let(:externalsolution) { FactoryGirl.create(:externalsolution) }
   
+  context "if the user is not an signed in" do 
+    it { expect(response).to have_controller_create_behavior('externalsolution', :access_refused, {:problem_id => problem.id}) }
+    it { expect(response).to have_controller_update_behavior(externalsolution, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(externalsolution, :access_refused) }
+  end
+  
   context "if the user is not an admin" do
-    before do
-      sign_in_controller(user)
-    end
+    before { sign_in_controller(user) }
     
-    it "renders the error page for create" do
-      post :create, params: {problem_id: problem.id, externalsolution: FactoryGirl.attributes_for(:externalsolution)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update" do
-      patch :update, params: {id: externalsolution.id, externalsolution: FactoryGirl.attributes_for(:externalsolution)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy" do
-      delete :destroy, params: {id: externalsolution.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_create_behavior('externalsolution', :access_refused, {:problem_id => problem.id}) }
+    it { expect(response).to have_controller_update_behavior(externalsolution, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(externalsolution, :access_refused) }
   end
 end

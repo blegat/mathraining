@@ -10,74 +10,36 @@ describe MessagesController, type: :controller, message: true do
   let(:message) { FactoryGirl.create(:message, subject: subject) }
   
   context "if the user is not an admin" do
-    before do
-      sign_in_controller(user)
-    end
+    before { sign_in_controller(user) }
     
     context "and the message is his message" do
-      before do
-        message.update_attribute(:user, user)
-      end
+      before { message.update_attribute(:user, user) }
     
-      it "renders the error page for destroy" do
-        delete :destroy, params: {id: message.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_destroy_behavior(message, :access_refused) }
     end
     
     context "and the message is not his message" do
-      it "renders the error page for update" do
-        patch :update, params: {id: message.id, message: FactoryGirl.attributes_for(:message)}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for soft_destroy" do
-        put :soft_destroy, params: {message_id: message.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for destroy" do
-        delete :destroy, params: {id: message.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_update_behavior(message, :access_refused) }
+      it { expect(response).to have_controller_destroy_behavior(message, :access_refused) }
+      it { expect(response).to have_controller_put_path_behavior('soft_destroy', message, :access_refused) }
     end
     
     context "and he cannot see the subject" do
-      before do
-        subject.update_attribute(:for_wepion, true)
-      end
+      before { subject.update_attribute(:for_wepion, true) }
       
-      it "renders the error page for create" do
-        post :create, params: {subject_id: subject.id, message: FactoryGirl.attributes_for(:message)}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_create_behavior('message', :access_refused, {:subject_id => subject.id}) }
     end
   end
   
   context "if the user is an admin" do
-    before do
-      sign_in_controller(admin)
-    end
+    before { sign_in_controller(admin) }
     
     context "and the message is from another admin" do
-      before do
-        message.user.update_attribute(:admin, true)
-      end
+      before { message.user.update_attribute(:admin, true) }
       
-      it "renders the error page for update" do
-        patch :update, params: {id: message.id, message: FactoryGirl.attributes_for(:message)}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for soft_destroy" do
-        put :soft_destroy, params: {message_id: message.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for destroy" do
-        delete :destroy, params: {id: message.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_update_behavior(message, :access_refused) }
+      it { expect(response).to have_controller_destroy_behavior(message, :access_refused) }
+      it { expect(response).to have_controller_put_path_behavior('soft_destroy', message, :access_refused) }
     end
   end
 end

@@ -6,29 +6,19 @@ describe CategoriesController, type: :controller, category: true do
   let(:admin) { FactoryGirl.create(:admin) }
   let(:category) { FactoryGirl.create(:category) }
   
-  context "if the user is not a root" do
-    before do
-      sign_in_controller(admin)
-    end
+  context "if the user is not signed in" do
+    it { expect(response).to have_controller_index_behavior(:must_be_connected) }
+    it { expect(response).to have_controller_create_behavior('category', :access_refused) }
+    it { expect(response).to have_controller_update_behavior(category, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(category, :access_refused) }
+  end
+  
+  context "if the user is an admin but not a root" do
+    before { sign_in_controller(admin) }
     
-    it "renders the error page for index" do
-      get :index
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for create" do
-      post :create, params: {category: FactoryGirl.attributes_for(:category)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update" do
-      post :update, params: {id: category.id, category: FactoryGirl.attributes_for(:category)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy" do
-      delete :destroy, params: {id: category.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_index_behavior(:access_refused) }
+    it { expect(response).to have_controller_create_behavior('category', :access_refused) }
+    it { expect(response).to have_controller_update_behavior(category, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(category, :access_refused) }
   end
 end

@@ -6,6 +6,7 @@ describe ContestproblemsController, type: :controller, contestproblem: true do
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user_organizer) { FactoryGirl.create(:advanced_user) }
   let(:user) { FactoryGirl.create(:advanced_user) }
+  let(:root) { FactoryGirl.create(:root) }
   let(:contest) { FactoryGirl.create(:contest) }
   let(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest) }
   
@@ -13,24 +14,17 @@ describe ContestproblemsController, type: :controller, contestproblem: true do
     contest.organizers << user_organizer
   end
   
-  context "if the user is not connected" do
-    context "and contestproblem is corrected" do
-      before do
-        contest.in_progress!
-        contestproblem.corrected!
-      end
-      
-      it "renders the sign in page for show" do
-        get :show, params: {id: contestproblem.id}
-        expect(response).to render_template 'sessions/new'
-      end
-    end
+  context "if the user is not signed in" do
+    it { expect(response).to have_controller_show_behavior(contestproblem, :must_be_connected) }
+    it { expect(response).to have_controller_new_behavior(:must_be_connected, {:contest_id => contest.id}) }
+    it { expect(response).to have_controller_create_behavior('contestproblem', :access_refused, {:contest_id => contest.id}) }
+    it { expect(response).to have_controller_edit_behavior(contestproblem, :must_be_connected) }
+    it { expect(response).to have_controller_update_behavior(contestproblem, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(contestproblem, :access_refused) }
   end
   
   context "if the user is not an organizer" do
-    before do
-      sign_in_controller(user)
-    end
+    before { sign_in_controller(user) }
     
     context "and contest is offline" do
       before do
@@ -38,35 +32,12 @@ describe ContestproblemsController, type: :controller, contestproblem: true do
         contestproblem.in_construction!
       end
       
-      it "renders the error page for show" do
-        get :show, params: {id: contestproblem.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-    
-      it "renders the error page for new" do
-        get :new, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for create" do
-        post :create, params: {contest_id: contest.id, contestproblem: FactoryGirl.attributes_for(:contestproblem)}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for edit" do
-        get :edit, params: {id: contestproblem.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for update" do
-        post :update, params: {id: contestproblem.id, contestproblem: FactoryGirl.attributes_for(:contestproblem)}
-        expect(response).to render_template 'errors/access_refused'
-      end
-      
-      it "renders the error page for destroy" do
-        delete :destroy, params: {id: contestproblem.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_show_behavior(contestproblem, :access_refused) }
+      it { expect(response).to have_controller_new_behavior(:access_refused, {:contest_id => contest.id}) }
+      it { expect(response).to have_controller_create_behavior('contestproblem', :access_refused, {:contest_id => contest.id}) }
+      it { expect(response).to have_controller_edit_behavior(contestproblem, :access_refused) }
+      it { expect(response).to have_controller_update_behavior(contestproblem, :access_refused) }
+      it { expect(response).to have_controller_destroy_behavior(contestproblem, :access_refused) }
     end
     
     context "and contest is online but not problem" do
@@ -75,37 +46,67 @@ describe ContestproblemsController, type: :controller, contestproblem: true do
         contestproblem.not_started_yet!
       end
       
-      it "renders the error page for show" do
-        get :show, params: {id: contestproblem.id}
-        expect(response).to render_template 'errors/access_refused'
+      it { expect(response).to have_controller_show_behavior(contestproblem, :access_refused) } # Other check in that case
+    end
+    
+    context "and contestproblem is online" do
+      before do
+        contest.in_progress!
+        contestproblem.in_progress!
       end
+      
+      it { expect(response).to have_controller_show_behavior(contestproblem, :ok) }
     end
   end
   
   context "if the user is an organizer" do
-    before do
-      sign_in_controller(user_organizer)
+    before { sign_in_controller(user_organizer) }
+    
+    context "and contest is offline" do
+      before do
+        contest.in_construction!
+        contestproblem.in_construction!
+      end
+      
+      it { expect(response).to have_controller_show_behavior(contestproblem, :ok) }
+      it { expect(response).to have_controller_new_behavior(:ok, {:contest_id => contest.id}) }
+      it { expect(response).to have_controller_create_behavior('contestproblem', :ok, {:contest_id => contest.id}) }
+      it { expect(response).to have_controller_edit_behavior(contestproblem, :ok) }
+      it { expect(response).to have_controller_update_behavior(contestproblem, :ok) }
+      it { expect(response).to have_controller_destroy_behavior(contestproblem, :ok) }
     end
     
-    context "and contest is online" do
+    context "and contest is online but not problem" do
       before do
         contest.in_progress!
         contestproblem.not_started_yet!
       end
       
-      it "renders the error page for new" do
-        get :new, params: {contest_id: contest.id}
-        expect(response).to render_template 'errors/access_refused'
+      it { expect(response).to have_controller_show_behavior(contestproblem, :ok) }
+      it { expect(response).to have_controller_new_behavior(:access_refused, {:contest_id => contest.id}) }
+      it { expect(response).to have_controller_create_behavior('contestproblem', :access_refused, {:contest_id => contest.id}) }
+      it { expect(response).to have_controller_edit_behavior(contestproblem, :ok) }
+      it { expect(response).to have_controller_update_behavior(contestproblem, :ok) }
+      it { expect(response).to have_controller_destroy_behavior(contestproblem, :access_refused) }
+    end
+    
+    context "and contest problem is in correction" do
+      before do
+        contest.in_progress!
+        contestproblem.in_correction!
       end
       
-      it "renders the error page for create" do
-        post :create, params: {contest_id: contest.id, contestproblem: FactoryGirl.attributes_for(:contestproblem)}
-        expect(response).to render_template 'errors/access_refused'
+      it { expect(response).to have_controller_put_path_behavior('publish_results', contestproblem, :danger) } # Because no star solution
+      
+      context "and there is a star solution" do
+        let!(:star_contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, corrected: true, star: true) }
+        let!(:subject_contest) { FactoryGirl.create(:subject, contest: contest) }
+        it { expect(response).to have_controller_put_path_behavior('publish_results', contestproblem, :ok) }
       end
       
-      it "renders the error page for destroy" do
-        delete :destroy, params: {id: contestproblem.id}
-        expect(response).to render_template 'errors/access_refused'
+      context "and there is a non-corrected solution" do
+        let!(:non_corrected_contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, corrected: false) }
+        it { expect(response).to have_controller_put_path_behavior('publish_results', contestproblem, :danger) }
       end
     end
     
@@ -115,15 +116,23 @@ describe ContestproblemsController, type: :controller, contestproblem: true do
         contestproblem.corrected!
       end
       
-      it "renders the error page for authorize_corrections" do
-        put :authorize_corrections, params: {contestproblem_id: contestproblem.id}
-        expect(response).to render_template 'errors/access_refused'
+      it { expect(response).to have_controller_put_path_behavior('publish_results', contestproblem, :danger) } # Because already corrected
+      it { expect(response).to have_controller_put_path_behavior('authorize_corrections', contestproblem, :access_refused) }
+      it { expect(response).to have_controller_put_path_behavior('unauthorize_corrections', contestproblem, :access_refused) }
+    end
+  end
+  
+  context "if the user is a root" do
+    before { sign_in_controller(root) }
+    
+    context "and contest problem is corrected" do
+      before do
+        contest.in_progress!
+        contestproblem.corrected!
       end
       
-      it "renders the error page for unauthorize_corrections" do
-        put :unauthorize_corrections, params: {contestproblem_id: contestproblem.id}
-        expect(response).to render_template 'errors/access_refused'
-      end
+      it { expect(response).to have_controller_put_path_behavior('authorize_corrections', contestproblem, :ok) }
+      it { expect(response).to have_controller_put_path_behavior('unauthorize_corrections', contestproblem, :ok) }
     end
   end
 end

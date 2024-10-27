@@ -7,23 +7,10 @@ describe MyfilesController, type: :controller, myfile: true do
   let(:myfile) { FactoryGirl.create(:messagemyfile) }
   
   context "if the user is not a root" do
-    before do
-      sign_in_controller(admin)
-    end
+    before { sign_in_controller(admin) }
     
-    it "renders the error page for show" do
-      get :show, params: {id: myfile.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for fake_delete" do
-      get :fake_delete, params: {myfile_id: myfile.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for index" do
-      get :index
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_index_behavior(:access_refused) }
+    it { expect(response).to have_controller_show_behavior(myfile, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('fake_delete', myfile, :access_refused) }
   end
 end

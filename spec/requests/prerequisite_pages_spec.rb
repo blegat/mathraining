@@ -19,11 +19,10 @@ describe "prerequisite pages", prerequisite: true do
     before { sign_in root }
     
     describe "visits prerequisite graph" do
-      before { visit graph_prerequisites_path }
+      before { visit prerequisites_path }
       it do
         should have_selector("h1", text: "Modifier la structure des sections")
         should have_button("Ajouter ce lien")
-        should have_button("Supprimer ce lien")
       end
       
       describe "and tries to add a prerequisite to an online chapter" do
@@ -79,35 +78,6 @@ describe "prerequisite pages", prerequisite: true do
           click_button "Ajouter ce lien"
         end
         it { should have_error_message("forme la boucle") }
-      end
-      
-      describe "tries to delete a link that does not exist" do
-        before do
-          select chapter_fondation_online.name, from: "delete_form_prerequisite"
-          select chapter_fondation_offline.name, from: "delete_form_chapter"
-          click_button "Supprimer ce lien"
-        end
-        it { should have_error_message("Ce lien n'existe pas") }
-      end
-      
-      describe "tries to delete a prerequisite of an online chapter" do
-        before do
-          chapter_online2.prerequisites << chapter_online
-          select chapter_online.name, from: "delete_form_prerequisite"
-          select chapter_online2.name, from: "delete_form_chapter"
-          click_button "Supprimer ce lien"
-        end
-        it { should have_error_message("Vous ne pouvez pas supprimer un prérequis à un chapitre en ligne.") }
-      end
-      
-      describe "deletes a prerequisite of an offline chapter" do
-        before do
-          chapter_offline.prerequisites << chapter_online
-          select chapter_online.name, from: "delete_form_prerequisite"
-          select chapter_offline.name, from: "delete_form_chapter"
-          click_button "Supprimer ce lien"
-        end
-        specify { expect(chapter_offline.prerequisites.count).to equal(0) }
       end
     end
   end

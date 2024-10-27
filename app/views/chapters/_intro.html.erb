@@ -8,8 +8,12 @@
   <p>Aucun prérequis.</p>
 <% else %>
   <ul>
-    <% @chapter.prerequisites.order(:level).each do |prerequisite| %>
-      <li><%= link_to prerequisite.name, prerequisite %></li>
+    <% @chapter.prerequisites_associations.joins(:prerequisite).includes(:prerequisite).select("prerequisites.*, chapters.name").order("chapters.level").each do |p| %>
+      <li><%= link_to p.name, p.prerequisite %>
+      <% if signed_in? && current_user.sk.admin? && !@chapter.online %>
+        - <%= link_to "Supprimer", p, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?" }, :class => "text-color-red" %>
+      <% end %>
+      </li>
     <% end %>
   </ul>
 <% end %>
@@ -17,7 +21,7 @@
 <% if allow_edit %>
   <!-- Modifier les prérequis -->
   <% if signed_in? && current_user.sk.admin? && !@chapter.online %>
-    <center><%= link_to "Modifier les prérequis", graph_prerequisites_path %></center>
+    <center><%= link_to "Ajouter un prérequis", prerequisites_path %></center>
   <% end %>
 <% end %>
 

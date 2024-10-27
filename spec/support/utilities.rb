@@ -144,3 +144,112 @@ RSpec::Matchers.define :have_success_message do |message|
     expect(page).to have_selector("div.alert.alert-success", text: message)
   end
 end
+
+RSpec::Matchers.define :have_behavior do |behavior|
+  allowed_behaviors = Set[:access_refused, :must_be_connected, :ok, :danger]
+  match do |response|
+    expect(allowed_behaviors).to include(behavior)
+    if behavior == :access_refused
+      expect(response).to render_template 'errors/access_refused'
+    elsif behavior == :must_be_connected
+      expect(response).to render_template 'sessions/new'
+    elsif behavior == :ok || behavior == :danger
+      expect(response).not_to render_template 'errors/access_refused'
+      expect(response).not_to render_template 'sessions/new'
+      if behavior == :danger
+        expect(flash[:danger]).to be_present
+      else
+        expect(flash[:danger]).not_to be_present
+      end
+    end
+  end
+end
+
+RSpec::Matchers.define :have_controller_index_behavior do |behavior|
+  match do |response|
+    get :index
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_show_behavior do |obj, behavior|
+  match do |response|
+    get :show, params: {:id => obj.id}
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_new_behavior do |behavior, other_params = {}|
+  match do |response|
+    get :new, params: other_params
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_create_behavior do |name, behavior, other_params = {}|
+  match do |response|
+    post :create, params: {name => FactoryGirl.attributes_for(name)}.merge(other_params)
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_edit_behavior do |obj, behavior|
+  match do |response|
+    get :edit, params: {:id => obj.id}
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_update_behavior do |obj, behavior|
+  name = obj.class.name.downcase
+  match do |response|
+    patch :update, params: {:id => obj.id, name => FactoryGirl.attributes_for(name)}
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_destroy_behavior do |obj, behavior|
+  match do |response|
+    delete :destroy, params: {:id => obj.id}
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_get_path_behavior do |path, obj, behavior, other_params = {}|
+  name = obj.class.name.downcase
+  match do |response|
+    get path, params: {name + "_id" => obj.id}.merge(other_params)
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_put_path_behavior do |path, obj, behavior, other_params = {}|
+  name = obj.class.name.downcase
+  match do |response|
+    put path, params: {name + "_id" => obj.id}.merge(other_params)
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_post_path_behavior do |path, obj, behavior, other_params = {}|
+  name = obj.class.name.downcase
+  match do |response|
+    post path, params: {name + "_id" => obj.id}.merge(other_params)
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_patch_path_behavior do |path, obj, behavior, other_params = {}|
+  name = obj.class.name.downcase
+  match do |response|
+    patch path, params: {name + "_id" => obj.id}.merge(other_params)
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_get_static_path_behavior do |path, behavior|
+  match do |response|
+    get path
+    expect(response).to have_behavior(behavior)
+  end
+end

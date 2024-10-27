@@ -12,110 +12,52 @@ describe ProblemsController, type: :controller, problem: true do
   
   before { online_problem.chapters << chapter }
   
+  context "if the user is not signed in" do
+    it { expect(response).to have_controller_show_behavior(online_problem, :must_be_connected) }
+    it { expect(response).to have_controller_new_behavior(:must_be_connected, {:section_id => section.id}) }
+    it { expect(response).to have_controller_create_behavior('problem', :access_refused, {:section_id => section.id}) }
+    it { expect(response).to have_controller_edit_behavior(offline_problem, :must_be_connected) }
+    it { expect(response).to have_controller_update_behavior(offline_problem, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(offline_problem, :access_refused) }
+    it { expect(response).to have_controller_get_path_behavior('edit_explanation', offline_problem, :must_be_connected) }
+    it { expect(response).to have_controller_patch_path_behavior('update_explanation', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_get_path_behavior('edit_markscheme', offline_problem, :must_be_connected) }
+    it { expect(response).to have_controller_patch_path_behavior('update_markscheme', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_post_path_behavior('add_prerequisite', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('delete_prerequisite', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_post_path_behavior('add_virtualtest', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_get_path_behavior('manage_externalsolutions', offline_problem, :must_be_connected) }
+  end
+  
   context "if the user is not an admin" do
-    before do
-      sign_in_controller(user)
-    end
+    before { sign_in_controller(user) }
     
-    it "renders the error page for show of offline problem" do
-      get :show, params: {id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for show of online problem that he can't see" do
-      get :show, params: {id: online_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for new" do
-      get :new, params: {section_id: section.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for create" do
-      post :create, params: {section_id: section.id, problem: FactoryGirl.attributes_for(:problem)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for edit" do
-      get :edit, params: {id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update" do
-      post :update, params: {id: offline_problem.id, chapter: FactoryGirl.attributes_for(:problem)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy" do
-      delete :destroy, params: {id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for order" do
-      put :order, params: {problem_id: offline_problem.id, new_position: 3}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for put_online" do
-      put :put_online, params: {problem_id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for edit_explanation" do
-      get :edit_explanation, params: {problem_id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update_explanation" do
-      patch :update_explanation, params: {problem_id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for edit_markscheme" do
-      get :edit_markscheme, params: {problem_id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update_markscheme" do
-      patch :update_markscheme, params: {problem_id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for add_prerequisite" do
-      post :add_prerequisite, params: {problem_id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for delete_prerequisite" do
-      put :delete_prerequisite, params: {problem_id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for add_virtualtest" do
-      post :add_virtualtest, params: {problem_id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for manage_externalsolutions" do
-      get :manage_externalsolutions, params: {problem_id: offline_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_show_behavior(offline_problem, :access_refused) }
+    it { expect(response).to have_controller_show_behavior(online_problem, :access_refused) } # No access to it
+    it { expect(response).to have_controller_new_behavior(:access_refused, {:section_id => section.id}) }
+    it { expect(response).to have_controller_create_behavior('problem', :access_refused, {:section_id => section.id}) }
+    it { expect(response).to have_controller_edit_behavior(offline_problem, :access_refused) }
+    it { expect(response).to have_controller_update_behavior(offline_problem, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(offline_problem, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('order', offline_problem, :access_refused, {:new_position => 3}) }
+    it { expect(response).to have_controller_put_path_behavior('put_online', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_get_path_behavior('edit_explanation', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_patch_path_behavior('update_explanation', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_get_path_behavior('edit_markscheme', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_patch_path_behavior('update_markscheme', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_post_path_behavior('add_prerequisite', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('delete_prerequisite', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_post_path_behavior('add_virtualtest', offline_problem, :access_refused) }
+    it { expect(response).to have_controller_get_path_behavior('manage_externalsolutions', online_problem, :access_refused) }
   end
   
   context "if the user is an admin" do
-    before do
-      sign_in_controller(admin)
-    end
+    before { sign_in_controller(admin) }
     
-    it "renders the error page for destroy of online problem" do
-      delete :destroy, params: {id: online_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for put_online of online problem" do
-      put :put_online, params: {problem_id: online_problem.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_destroy_behavior(online_problem, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('put_online', online_problem, :access_refused) }
+    it { expect(response).to have_controller_post_path_behavior('add_prerequisite', online_problem, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('delete_prerequisite', online_problem, :access_refused) }
+    it { expect(response).to have_controller_post_path_behavior('add_virtualtest', online_problem, :access_refused) }
   end
 end

@@ -7,38 +7,14 @@ describe FaqsController, type: :controller, faq: true do
   let(:faq) { FactoryGirl.create(:faq) }
   
   context "if the user is not an admin" do
-    before do
-      sign_in_controller(user)
-    end
+    before { sign_in_controller(user) }
     
-    it "renders the error page for new" do
-      get :new
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for create" do
-      post :create, params: {faq: FactoryGirl.attributes_for(:faq)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for edit" do
-      get :edit, params: {id: faq.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for update" do
-      post :update, params: {id: faq.id, faq: FactoryGirl.attributes_for(:faq)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for destroy" do
-      delete :destroy, params: {id: faq.id}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for order" do
-      put :order, params: {faq_id: faq.id, new_position: 3}
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_index_behavior(:ok) }
+    it { expect(response).to have_controller_new_behavior(:access_refused) }
+    it { expect(response).to have_controller_create_behavior('faq', :access_refused) }
+    it { expect(response).to have_controller_edit_behavior(faq, :access_refused) }
+    it { expect(response).to have_controller_update_behavior(faq, :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(faq, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('order', faq, :access_refused, {:new_position => 1}) }
   end
 end

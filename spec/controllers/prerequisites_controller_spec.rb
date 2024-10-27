@@ -4,25 +4,24 @@ require "spec_helper"
 describe PrerequisitesController, type: :controller, prerequisite: true do
 
   let(:user) { FactoryGirl.create(:user) }
+  let(:admin) { FactoryGirl.create(:admin) }
+  let(:prerequisite) { FactoryGirl.create(:prerequisite) }
   
   context "if the user is not an admin" do
-    before do
-      sign_in_controller(user)
-    end
+    before { sign_in_controller(user) }
     
-    it "renders the error page for graph_prerequisites" do
-      get :graph_prerequisites
-      expect(response).to render_template 'errors/access_refused'
-    end
+    it { expect(response).to have_controller_index_behavior(:access_refused) }
+    it { expect(response).to have_controller_create_behavior('prerequisite', :access_refused) }
+    it { expect(response).to have_controller_destroy_behavior(prerequisite, :access_refused) }
+  end
+  
+  context "if the user is an admin" do
+    before { sign_in_controller(user) }
     
-    it "renders the error page for add_prerequisite" do
-      post :add_prerequisite, params: {prerequisite: FactoryGirl.attributes_for(:prerequisite)}
-      expect(response).to render_template 'errors/access_refused'
-    end
-    
-    it "renders the error page for remove_prerequisite" do
-      post :remove_prerequisite, params: {prerequisite: FactoryGirl.attributes_for(:prerequisite)}
-      expect(response).to render_template 'errors/access_refused'
+    context "but the chapter is online" do
+      before { prerequisite.chapter.update_attribute(:online, true) }
+      
+      it { expect(response).to have_controller_destroy_behavior(prerequisite, :access_refused) }
     end
   end
 end

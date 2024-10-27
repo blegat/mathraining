@@ -5,10 +5,10 @@ class ProblemsController < ApplicationController
   before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :order, :put_online, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :manage_externalsolutions]
   
   before_action :get_problem, only: [:show, :edit, :update, :destroy]
-  before_action :get_problem2, only: [:edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :order, :delete_prerequisite, :add_prerequisite, :add_virtualtest, :put_online, :manage_externalsolutions]
+  before_action :get_problem2, only: [:edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :order, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :put_online, :manage_externalsolutions]
   before_action :get_section, only: [:new, :create]
   
-  before_action :offline_problem, only: [:destroy, :put_online]
+  before_action :offline_problem, only: [:destroy, :put_online, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_action :user_that_can_see_problem, only: [:show]
   before_action :can_be_online, only: [:put_online]
 

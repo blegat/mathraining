@@ -89,7 +89,7 @@
             <% end %>
             <% if signed_in? && current_user.sk.admin? %>
               <li class="dropdown-divider"></li>
-              <li><%= link_to "Modifier la structure", graph_prerequisites_path, :class => "dropdown-item" %></li>
+              <li><%= link_to "Modifier la structure", prerequisites_path, :class => "dropdown-item" %></li>
             <% end %>
           </ul>
         </li>
