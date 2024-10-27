@@ -7,8 +7,7 @@ class SubjectsController < ApplicationController
   before_action :admin_user, only: [:destroy, :update, :migrate]
   before_action :notskin_user, only: [:create, :update]
   
-  before_action :get_subject, only: [:show, :update, :destroy]
-  before_action :get_subject2, only: [:migrate, :follow, :unfollow]
+  before_action :get_subject, only: [:show, :update, :destroy, :migrate, :follow, :unfollow]
   
   before_action :user_that_can_see_subject, only: [:show, :follow]
   
@@ -242,12 +241,6 @@ class SubjectsController < ApplicationController
   # Get the subject
   def get_subject
     @subject = Subject.find_by_id(params[:id])
-    return if check_nil_object(@subject)
-  end
-  
-  # Get the subject (v2)
-  def get_subject2
-    @subject = Subject.find_by_id(params[:subject_id])
     return if check_nil_object(@subject)
   end
   

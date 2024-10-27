@@ -164,9 +164,9 @@
               <!-- Déplacer -->
               <% if current_user.sk.admin? && !t.online? && nb_prob > 1 %>
                 <p class="text-center">Déplacer ce problème vers le
-                <%= link_to "haut", problem_order_path(p, :new_position => problems[h-1].position), :method => :put if h > 0 %>
+                <%= link_to "haut", order_problem_path(p, :new_position => problems[h-1].position), :method => :put if h > 0 %>
                 <%= "-" if h > 0 && h < nb_prob-1 %>
-                <%= link_to "bas", problem_order_path(p, :new_position => problems[h+1].position), :method => :put if h < nb_prob-1 %>
+                <%= link_to "bas", order_problem_path(p, :new_position => problems[h+1].position), :method => :put if h < nb_prob-1 %>
                 </p>
               <% end %>
               <%= raw(htmlise(p.statement)) %>
@@ -193,7 +193,7 @@
         <% if !current_user.sk.admin? && status == "not_started" %>
           <% if current_user.sk.can_write_submission? %>
             <div class="g-col-12 g-col-md-24">
-              <center><%= button_to "Commencer ce test", virtualtest_begin_test_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.other), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
+              <center><%= button_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.other), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
             </div>
           <% else %>
             <div class="g-col-12 g-col-md-24 module bottom-part text-start">
@@ -238,11 +238,11 @@
             </p>
             <% if nb_prob > 0 && can_online %>
               <center>
-              <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
+              <%= button_to "Mettre en ligne", put_online_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
               </center>
             <% else %>
               <center>
-              <%= button_to "Mettre en ligne", virtualtest_put_online_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', disabled: true %>
+              <%= button_to "Mettre en ligne", put_online_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', disabled: true %>
               </center>
               <p class="text-center mt-2 mb-0">
               <%= "(Au moins un problème nécessaire)" if nb_prob == 0 %>

@@ -3,8 +3,7 @@ class DiscussionsController < ApplicationController
   before_action :signed_in_user, only: [:show, :new]
   before_action :signed_in_user_danger, only: [:unread]
   
-  before_action :get_discussion, only: [:show]
-  before_action :get_discussion2, only: [:unread]
+  before_action :get_discussion, only: [:show, :unread]
   
   before_action :is_involved, only: [:show, :unread]
 
@@ -53,12 +52,6 @@ class DiscussionsController < ApplicationController
   # Get the discussion
   def get_discussion
     @discussion = Discussion.find_by_id(params[:id])
-    return if check_nil_object(@discussion)
-  end
-  
-  # Get the discussion (v2)
-  def get_discussion2
-    @discussion = Discussion.find_by_id(params[:discussion_id])
     return if check_nil_object(@discussion)
   end
   

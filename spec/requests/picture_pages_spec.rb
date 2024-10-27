@@ -45,7 +45,7 @@ describe "Picture pages", picture: true do
           expect(page).to have_success_message("Image ajoutée.")
           expect(page).to have_selector("h1", text: "Récupérer un url")
           expect(page).to have_xpath("//img[contains(@src, '#{good_image}')]")
-          expect(page).to have_content(picture_image_url(Picture.last, :only_path => true, :key => Picture.last.access_key))
+          expect(page).to have_content(image_picture_url(Picture.last, :only_path => true, :key => Picture.last.access_key))
           expect(page).to have_link("Supprimer cette image", href: picture_path(Picture.last))
           expect { click_link("Supprimer cette image", href: picture_path(Picture.last)) }.to change(Picture, :count).by(-1)
         end
@@ -61,12 +61,12 @@ describe "Picture pages", picture: true do
         end
         
         describe "and visitor tries to see the picture with correct access key" do
-          before { visit picture_image_path(picture, :key => picture.access_key) }
+          before { visit image_picture_path(picture, :key => picture.access_key) }
           it { should have_no_content(error_access_refused) }
         end
         
         describe "and visitor tries to see the picture with incorrect access key" do
-          before { visit picture_image_path(picture, :key => picture.access_key + "WRONG") }
+          before { visit image_picture_path(picture, :key => picture.access_key + "WRONG") }
           it { should have_content(error_access_refused) }
         end
       end

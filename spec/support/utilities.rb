@@ -216,33 +216,29 @@ RSpec::Matchers.define :have_controller_destroy_behavior do |obj, behavior|
 end
 
 RSpec::Matchers.define :have_controller_get_path_behavior do |path, obj, behavior, other_params = {}|
-  name = obj.class.name.downcase
   match do |response|
-    get path, params: {name + "_id" => obj.id}.merge(other_params)
+    get path, params: {:id => obj.id}.merge(other_params)
     expect(response).to have_behavior(behavior)
   end
 end
 
 RSpec::Matchers.define :have_controller_put_path_behavior do |path, obj, behavior, other_params = {}|
-  name = obj.class.name.downcase
   match do |response|
-    put path, params: {name + "_id" => obj.id}.merge(other_params)
+    put path, params: {:id => obj.id}.merge(other_params)
     expect(response).to have_behavior(behavior)
   end
 end
 
 RSpec::Matchers.define :have_controller_post_path_behavior do |path, obj, behavior, other_params = {}|
-  name = obj.class.name.downcase
   match do |response|
-    post path, params: {name + "_id" => obj.id}.merge(other_params)
+    post path, params: {:id => obj.id}.merge(other_params)
     expect(response).to have_behavior(behavior)
   end
 end
 
 RSpec::Matchers.define :have_controller_patch_path_behavior do |path, obj, behavior, other_params = {}|
-  name = obj.class.name.downcase
   match do |response|
-    patch path, params: {name + "_id" => obj.id}.merge(other_params)
+    patch path, params: {:id => obj.id}.merge(other_params)
     expect(response).to have_behavior(behavior)
   end
 end

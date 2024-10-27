@@ -4,8 +4,7 @@ class PrivacypoliciesController < ApplicationController
   before_action :signed_in_user_danger, only: [:new, :update, :update_description, :destroy, :put_online]
   before_action :root_user, only: [:index, :new, :edit, :update, :edit_description, :update_description, :destroy, :put_online]
   
-  before_action :get_policy, only: [:show, :edit, :update, :destroy]
-  before_action :get_policy2, only: [:edit_description, :update_description, :put_online]
+  before_action :get_policy, only: [:show, :edit, :update, :destroy, :edit_description, :update_description, :put_online]
   
   before_action :is_offline, only: [:edit, :update, :destroy, :put_online]
   before_action :is_online, only: [:show]
@@ -86,12 +85,6 @@ class PrivacypoliciesController < ApplicationController
   # Get the privacy policy
   def get_policy
     @privacypolicy = Privacypolicy.find_by_id(params[:id])
-    return if check_nil_object(@privacypolicy)
-  end
-  
-  # Get the privacy policy (v2)
-  def get_policy2
-    @privacypolicy = Privacypolicy.find_by_id(params[:privacypolicy_id])
     return if check_nil_object(@privacypolicy)
   end
   

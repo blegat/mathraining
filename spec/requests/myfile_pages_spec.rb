@@ -53,11 +53,11 @@ describe "Myfile pages", myfile: true do
       it do
         should have_current_path(subject_path(sub, :page => 1, :msg => message))
         should have_link(messagemyfile.file.filename.to_s, href: rails_blob_url(messagemyfile.file, :only_path => true, :disposition => 'attachment'))
-        should have_link("Supprimer le contenu", href: myfile_fake_delete_path(messagemyfile))
+        should have_link("Supprimer le contenu", href: fake_delete_myfile_path(messagemyfile))
       end
       
       describe "and fake deletes it" do
-        before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(messagemyfile)) }
+        before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(messagemyfile)) }
         it do
           should have_current_path(subject_path(sub, :page => 1, :msg => message, :q => "all"))
           should have_success_message("Contenu de la pièce jointe supprimé.")
@@ -71,11 +71,11 @@ describe "Myfile pages", myfile: true do
       it do
         should have_current_path(problem_path(problem, :sub => submission))
         should have_link(submissionmyfile.file.filename.to_s, href: rails_blob_url(submissionmyfile.file, :only_path => true, :disposition => 'attachment'))
-        should have_link("Supprimer le contenu", href: myfile_fake_delete_path(submissionmyfile))
+        should have_link("Supprimer le contenu", href: fake_delete_myfile_path(submissionmyfile))
       end
       
       describe "and fake deletes it" do
-        before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(submissionmyfile)) }
+        before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(submissionmyfile)) }
         it do
           should have_current_path(problem_path(problem, :sub => submission))
           should have_success_message("Contenu de la pièce jointe supprimé.")
@@ -89,11 +89,11 @@ describe "Myfile pages", myfile: true do
       it do
         should have_current_path(problem_path(problem, :sub => submission))
         should have_link(correctionmyfile.file.filename.to_s, href: rails_blob_url(correctionmyfile.file, :only_path => true, :disposition => 'attachment'))
-        should have_link("Supprimer le contenu", href: myfile_fake_delete_path(correctionmyfile))
+        should have_link("Supprimer le contenu", href: fake_delete_myfile_path(correctionmyfile))
       end
       
       describe "and fake deletes it" do
-        before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(correctionmyfile)) }
+        before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(correctionmyfile)) }
         it do
           should have_current_path(problem_path(problem, :sub => submission))
           should have_success_message("Contenu de la pièce jointe supprimé.")
@@ -107,11 +107,11 @@ describe "Myfile pages", myfile: true do
       it do
         should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
         should have_link(contestsolutionmyfile.file.filename.to_s, href: rails_blob_url(contestsolutionmyfile.file, :only_path => true, :disposition => 'attachment'))
-        should have_link("Supprimer le contenu", href: myfile_fake_delete_path(contestsolutionmyfile))
+        should have_link("Supprimer le contenu", href: fake_delete_myfile_path(contestsolutionmyfile))
       end
       
       describe "and fake deletes it" do
-        before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(contestsolutionmyfile)) }
+        before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(contestsolutionmyfile)) }
         it do
           should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
           should have_success_message("Contenu de la pièce jointe supprimé.")
@@ -125,11 +125,11 @@ describe "Myfile pages", myfile: true do
       it do
         should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
         should have_link(contestcorrectionmyfile.file.filename.to_s, href: rails_blob_url(contestcorrectionmyfile.file, :only_path => true, :disposition => 'attachment'))
-        should have_link("Supprimer le contenu", href: myfile_fake_delete_path(contestcorrectionmyfile))
+        should have_link("Supprimer le contenu", href: fake_delete_myfile_path(contestcorrectionmyfile))
       end
       
       describe "and fake deletes it" do
-        before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(contestcorrectionmyfile)) }
+        before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(contestcorrectionmyfile)) }
         it do
           should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
           should have_success_message("Contenu de la pièce jointe supprimé.")
@@ -148,11 +148,11 @@ describe "Myfile pages", myfile: true do
       before { visit discussion_path(discussion) }
       it do
         should have_link(tchatmessagemyfile.file.filename.to_s, href: rails_blob_url(tchatmessagemyfile.file, :only_path => true, :disposition => 'attachment'))
-        should have_link("Supprimer le contenu", href: myfile_fake_delete_path(tchatmessagemyfile))
+        should have_link("Supprimer le contenu", href: fake_delete_myfile_path(tchatmessagemyfile))
       end
       
       describe "and fake deletes it" do
-        before { click_link("Supprimer le contenu", href: myfile_fake_delete_path(tchatmessagemyfile)) }
+        before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(tchatmessagemyfile)) }
         it do
           should have_current_path(myfiles_path)
           should have_success_message("Contenu de la pièce jointe supprimé.")

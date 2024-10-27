@@ -6,8 +6,7 @@ class ChaptersController < ApplicationController
   before_action :admin_user, only: [:new, :create, :destroy, :order]
   before_action :root_user, only: [:put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
   
-  before_action :get_chapter, only: [:show, :edit, :update, :destroy]
-  before_action :get_chapter2, only: [:all, :read, :order, :put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
+  before_action :get_chapter, only: [:show, :edit, :update, :destroy, :all, :read, :order, :put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
   before_action :get_section, only: [:new, :create]
   
   before_action :offline_chapter, only: [:destroy, :put_online]
@@ -27,7 +26,7 @@ class ChaptersController < ApplicationController
         which = params[:which].to_i
       end
       redirect_to chapter_path(@chapter) and return if type == 0
-      redirect_to chapter_all_path(@chapter) and return if type == 10
+      redirect_to all_chapter_path(@chapter) and return if type == 10
       redirect_to chapter_theory_path(@chapter, which) and return if type == 1
       redirect_to chapter_question_path(@chapter, which) and return if type == 5
     end
@@ -149,13 +148,6 @@ class ChaptersController < ApplicationController
   # Get the chapter
   def get_chapter
     @chapter = Chapter.find_by_id(params[:id])
-    return if check_nil_object(@chapter)
-    @section = @chapter.section
-  end
-  
-  # Get the chapter (v2)
-  def get_chapter2
-    @chapter = Chapter.find_by_id(params[:chapter_id])
     return if check_nil_object(@chapter)
     @section = @chapter.section
   end

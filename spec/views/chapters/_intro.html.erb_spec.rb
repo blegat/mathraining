@@ -66,7 +66,7 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
         expect(rendered).to have_no_link("Ajouter un prérequis") # because online
         expect(rendered).to have_link("Modifier ce chapitre")
         expect(rendered).to have_content("Déplacer vers le")
-        expect(rendered).to have_link("haut", href: chapter_order_path(chapter2, :new_position => chapter_prerequisite.position))
+        expect(rendered).to have_link("haut", href: order_chapter_path(chapter2, :new_position => chapter_prerequisite.position))
         expect(rendered).to have_no_link("bas")
         expect(rendered).to have_no_link("Supprimer ce chapitre") # because online
         expect(rendered).to have_content("Ce chapitre est un prérequis pour écrire une soumission à un problème")

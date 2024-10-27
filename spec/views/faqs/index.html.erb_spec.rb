@@ -25,8 +25,8 @@ describe "faqs/index.html.erb", type: :view, faq: true do
       expect(rendered).to have_content(faq2.answer)
       expect(rendered).to have_link("Modifier la question")
       expect(rendered).to have_link("Supprimer la question")
-      expect(rendered).to have_link("bas", href: faq_order_path(faq, :new_position => 3))
-      expect(rendered).to have_link("haut", href: faq_order_path(faq2, :new_position => 1))
+      expect(rendered).to have_link("bas", href: order_faq_path(faq, :new_position => 3))
+      expect(rendered).to have_link("haut", href: order_faq_path(faq2, :new_position => 1))
       expect(rendered).to have_button("Ajouter une question")
     end
   end

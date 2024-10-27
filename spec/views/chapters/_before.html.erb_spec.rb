@@ -41,7 +41,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
         render partial: "chapters/before"
         expect(rendered).to have_selector("h5", text: "Général")
         expect(rendered).to have_link("Résumé", href: chapter_path(chapter))
-        expect(rendered).to have_link("Chapitre entier", href: chapter_all_path(chapter))
+        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter))
         expect(rendered).to have_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
         expect(rendered).to have_selector("h5", text: "Points théoriques")
         expect(rendered).to have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
@@ -56,7 +56,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
       
       it "renders the menu for full chapter correctly" do
         render partial: "chapters/before", locals: {active: 'all'}
-        expect(rendered).to have_link("Chapitre entier", href: chapter_all_path(chapter), class: "active")
+        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter), class: "active")
       end
       
       it "renders an online theory correctly" do
@@ -91,7 +91,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
         render partial: "chapters/before"
         expect(rendered).to have_selector("h5", text: "Général")
         expect(rendered).to have_link("Résumé", href: chapter_path(chapter))
-        expect(rendered).to have_link("Chapitre entier", href: chapter_all_path(chapter))
+        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter))
         expect(rendered).to have_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
         expect(rendered).to have_selector("h5", text: "Points théoriques")
         expect(rendered).to have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
@@ -116,7 +116,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
         render partial: "chapters/before"
         expect(rendered).to have_selector("h5", text: "Général")
         expect(rendered).to have_link("Résumé", href: chapter_path(chapter))
-        expect(rendered).to have_link("Chapitre entier", href: chapter_all_path(chapter))
+        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter))
         expect(rendered).to have_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
         expect(rendered).to have_selector("h5", text: "Points théoriques")
         expect(rendered).to have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
@@ -139,7 +139,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
         render partial: "chapters/before"
         expect(rendered).to have_selector("h5", text: "Général")
         expect(rendered).to have_link("Résumé", href: chapter_path(chapter))
-        expect(rendered).to have_link("Chapitre entier", href: chapter_all_path(chapter))
+        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter))
         expect(rendered).to have_no_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
         expect(rendered).to have_selector("h5", text: "Points théoriques")
         expect(rendered).to have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))

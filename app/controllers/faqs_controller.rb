@@ -4,8 +4,7 @@ class FaqsController < ApplicationController
   before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order]
   before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order]
   
-  before_action :get_faq, only: [:edit, :update, :destroy]
-  before_action :get_faq2, only: [:order]
+  before_action :get_faq, only: [:edit, :update, :destroy, :order]
   
   # Show all frequently asked questions
   def index
@@ -71,12 +70,6 @@ class FaqsController < ApplicationController
   # Get the frequently asked question
   def get_faq
     @faq = Faq.find_by_id(params[:id])
-    return if check_nil_object(@faq)
-  end
-  
-  # Get the frequently asked question
-  def get_faq2
-    @faq = Faq.find_by_id(params[:faq_id])
     return if check_nil_object(@faq)
   end
 end

@@ -12,9 +12,9 @@
   <% warning = (question.online ? { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } : {}) %>
   <%= link_to "Modifier cet exercice", edit_question_path(question), data: warning %>
   <% if question.is_qcm %>
-    | <%= link_to "Modifier les réponses", question_manage_items_path(question), data: warning %>
+    | <%= link_to "Modifier les réponses", manage_items_question_path(question), data: warning %>
   <% end %>
-  | <%= link_to "Modifier l'explication", question_edit_explanation_path(question) %>
+  | <%= link_to "Modifier l'explication", edit_explanation_question_path(question) %>
   <% unless question.online %>
     | <%= link_to "Supprimer cet exercice", question, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet exercice ?" } %>
   <% end %>
@@ -27,16 +27,16 @@
 <% if (!question_before.nil? || !question_after.nil?) %>
 <p class="text-center">
   Déplacer cet exercice vers le
-  <%= link_to "haut", question_order_path(question, :new_position => question_before.position), :method => :put if !question_before.nil? %>
+  <%= link_to "haut", order_question_path(question, :new_position => question_before.position), :method => :put if !question_before.nil? %>
   <%= '-' if !question_before.nil? && !question_after.nil? %>
-  <%= link_to "bas", question_order_path(question, :new_position => question_after.position), :method => :put if !question_after.nil? %>
+  <%= link_to "bas", order_question_path(question, :new_position => question_after.position), :method => :put if !question_after.nil? %>
 </p>
 <% end %>
 
 <!-- Mettre en ligne -->
 <center>
 <% if !question.online && @chapter.online %>
-  <%= button_to "Mettre en ligne", question_put_online_path(question), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
+  <%= button_to "Mettre en ligne", put_online_question_path(question), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
 <% end %>
 </center>
 </div>

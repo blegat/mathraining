@@ -1,6 +1,6 @@
 <% limit_reached = @limited_new_submissions && current_user.sk.has_already_submitted_today? %>
 
-<%= form_for @submission, url: submission_update_draft_path(@submission), :html => { :multipart => true } do |f| %>
+<%= form_for @submission, url: update_draft_submission_path(@submission), :html => { :multipart => true } do |f| %>
 
   <!-- Nouvelle soumission -->
   <h3>Nouvelle soumission</h3>

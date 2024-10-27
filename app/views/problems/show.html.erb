@@ -22,7 +22,7 @@
     <% end %>
     </p>
     
-    <%= form_for(:problem, :url => problem_add_virtualtest_path(@problem), :html => { :class => "mb-3"} ) do |f| %>
+    <%= form_for(:problem, :url => add_virtualtest_problem_path(@problem), :html => { :class => "mb-3"} ) do |f| %>
       <div class="row g-2 align-items-center">
         <div class="col-auto">
           Faire appartenir ce problème à :
@@ -51,7 +51,7 @@
   <ul>
   <% @problem.chapters.each do |c| %>
     <% has_pre = true %>
-    <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span class='text-color-orange'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', problem_delete_prerequisite_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"}, :method => :put if !@problem.online %></li>
+    <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span class='text-color-orange'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', delete_prerequisite_problem_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"}, :method => :put if !@problem.online %></li>
     <% enligne_ok = false if !c.online %>
   <% end %>
   </ul>
@@ -73,7 +73,7 @@
       <% end %>
     <% end %>
 
-    <%= form_for("chapter_problem", :url => problem_add_prerequisite_path(@problem), :html => { :class => "mb-3"} ) do |f| %>
+    <%= form_for("chapter_problem", :url => add_prerequisite_problem_path(@problem), :html => { :class => "mb-3"} ) do |f| %>
       <div class="row g-2 align-items-center">
         <div class="col-auto">
           Ajouter le prérequis :
@@ -124,10 +124,10 @@
     <p class="text-center">
       <% warning = (@problem.online ? { confirm: "Attention, ce problème étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } : {}) %>
       <%= link_to "Modifier ce problème", edit_problem_path(@problem), data: warning %>
-      | <%= link_to "Modifier la solution", problem_edit_explanation_path(@problem) %>
-      | <%= link_to "Modifier les solutions externes", problem_manage_externalsolutions_path(@problem) %>
+      | <%= link_to "Modifier la solution", edit_explanation_problem_path(@problem) %>
+      | <%= link_to "Modifier les solutions externes", manage_externalsolutions_problem_path(@problem) %>
       <% if !@problem.virtualtest.nil? %>
-        | <%= link_to "Modifier le marking scheme", problem_edit_markscheme_path(@problem) %>
+        | <%= link_to "Modifier le marking scheme", edit_markscheme_problem_path(@problem) %>
       <% end %>
       <% unless @problem.online %>
         | <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
@@ -137,11 +137,11 @@
     <% if !@problem.online %>
       <% if has_pre && enligne_ok %>
         <center>
-        <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-3', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
+        <%= button_to "Mettre en ligne", put_online_problem_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-3', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
         </center>
       <% else %>
         <center>
-        <%= button_to "Mettre en ligne", problem_put_online_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: true %>
+        <%= button_to "Mettre en ligne", put_online_problem_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: true %>
         </center>
         <p class="mb-3 text-center">
         <% if !has_pre %>

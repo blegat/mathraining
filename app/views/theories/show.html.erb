@@ -21,16 +21,16 @@
   <% if !theory_before.nil? || !theory_after.nil? %>
     <p class="text-center">
     Déplacer ce point théorique vers le
-    <%= link_to "haut", theory_order_path(@theory, :new_position => theory_before.position), :method => :put if !theory_before.nil? %>
+    <%= link_to "haut", order_theory_path(@theory, :new_position => theory_before.position), :method => :put if !theory_before.nil? %>
     <%= '-' if !theory_before.nil? && !theory_after.nil? %>
-    <%= link_to "bas", theory_order_path(@theory, :new_position => theory_after.position), :method => :put if !theory_after.nil? %>
+    <%= link_to "bas", order_theory_path(@theory, :new_position => theory_after.position), :method => :put if !theory_after.nil? %>
     </p>
   <% end %>
   
   <!-- Mettre en ligne -->
   <% if !@theory.online && @chapter.online %>
     <center>
-    <%= button_to "Mettre en ligne", theory_put_online_path(@theory), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
+    <%= button_to "Mettre en ligne", put_online_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
     </center>
   <% end %>
 
@@ -38,9 +38,9 @@
 <% elsif signed_in? %>
   <center>
     <% if !@read_theories.nil? && @read_theories.include?(@theory.id) %>
-      <%= button_to "Marquer comme non lu", theory_unread_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>
+      <%= button_to "Marquer comme non lu", unread_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>
     <% else %>
-      <%= button_to "Marquer comme lu", theory_read_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>
+      <%= button_to "Marquer comme lu", read_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>
     <% end %>
   </center>
 

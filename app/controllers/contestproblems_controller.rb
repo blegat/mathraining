@@ -9,8 +9,7 @@ class ContestproblemsController < ApplicationController
   before_action :check_contests, only: [:show] # Defined in application_controller.rb
   
   before_action :get_contest, only: [:new, :create]
-  before_action :get_contestproblem, only: [:show, :edit, :update, :destroy]
-  before_action :get_contestproblem2, only: [:publish_results, :authorize_corrections, :unauthorize_corrections]
+  before_action :get_contestproblem, only: [:show, :edit, :update, :destroy, :publish_results, :authorize_corrections, :unauthorize_corrections]
   
   before_action :organizer_of_contest, only: [:new, :create, :publish_results]
   before_action :organizer_of_contest_or_root, only: [:edit, :update, :destroy]
@@ -132,13 +131,6 @@ class ContestproblemsController < ApplicationController
   # Get the problem
   def get_contestproblem
     @contestproblem = Contestproblem.find_by_id(params[:id])
-    return if check_nil_object(@contestproblem)
-    @contest = @contestproblem.contest
-  end
-  
-  # Get the problem (v2)
-  def get_contestproblem2
-    @contestproblem = Contestproblem.find_by_id(params[:contestproblem_id])
     return if check_nil_object(@contestproblem)
     @contest = @contestproblem.contest
   end

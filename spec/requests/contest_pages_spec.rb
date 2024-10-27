@@ -117,7 +117,7 @@ describe "Contest pages", contest: true do
     end
     
     describe "visit cutoffs page" do
-      before { visit contest_cutoffs_path(contest) }
+      before { visit cutoffs_contest_path(contest) }
       it { should have_selector("h1", text: "Seuils des médailles") }
       
       describe "and define cutoffs" do
@@ -273,11 +273,11 @@ describe "Contest pages", contest: true do
           expect(offline_contest.organizers.count).to eq(2)
           expect(offline_contest.organizers.exists?(user_with_rating_200.id)).to eq(true)
           expect(page).to have_link(user_with_rating_200.name, href: user_path(user_with_rating_200))
-          expect(page).to have_link("supprimer", href: contest_remove_organizer_path(offline_contest, :user_id => user_organizer))
+          expect(page).to have_link("supprimer", href: remove_organizer_contest_path(offline_contest, :user_id => user_organizer))
         end
       end
       
-      specify { expect { click_link("supprimer", href: contest_remove_organizer_path(offline_contest, :user_id => user_organizer)) }.to change(offline_contest.organizers, :count).by(-1) }
+      specify { expect { click_link("supprimer", href: remove_organizer_contest_path(offline_contest, :user_id => user_organizer)) }.to change(offline_contest.organizers, :count).by(-1) }
     end
   end
 end

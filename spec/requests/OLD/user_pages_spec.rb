@@ -136,7 +136,7 @@ describe "User pages" do
         
         describe "and visits the reset page with wrong key" do
           before do
-            visit user_recup_password_path(zero_user, :key => "HackingMathrainingAgain")
+            visit recup_password_user_path(zero_user, :key => "HackingMathrainingAgain")
           end
           it { should have_error_message("Ce lien n'est pas valide") }
         end
@@ -145,7 +145,7 @@ describe "User pages" do
           before do
             zero_user.reload
             zero_user.update_attribute(:recup_password_date_limit, DateTime.now - 5000)
-            visit user_recup_password_path(zero_user, :key => zero_user.key)
+            visit recup_password_user_path(zero_user, :key => zero_user.key)
           end
           it { should have_error_message("Ce lien n'est plus valide (il expirait après une heure)") }
         end
@@ -154,7 +154,7 @@ describe "User pages" do
           before do
             zero_user.reload
             sign_in zero_user
-            visit user_recup_password_path(zero_user, :key => zero_user.key)
+            visit recup_password_user_path(zero_user, :key => zero_user.key)
           end
           it { should have_selector("h1", text: "Modifier votre mot de passe") }
         end
@@ -162,7 +162,7 @@ describe "User pages" do
         describe "and visits the reset page" do
           before do
             zero_user.reload
-            visit user_recup_password_path(zero_user, :key => zero_user.key)
+            visit recup_password_user_path(zero_user, :key => zero_user.key)
           end
           it { should have_selector("h1", text: "Modifier votre mot de passe") }
           

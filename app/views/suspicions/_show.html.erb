@@ -77,7 +77,7 @@
   <% unless @submission.user.is_banned %>
     <% end_of_ban = DateTime.now + 2.weeks %>
     <p class="text-center">
-    <%= link_to "Bannir #{@submission.user.name} pour deux semaines", user_ban_temporarily_path(@submission.user), :method => :put, class: "text-color-red", data: { confirm: "Êtes-vous sûr de vouloir bannir #{@submission.user.name} jusqu'au #{write_date_only(end_of_ban)} ?" } %>
+    <%= link_to "Bannir #{@submission.user.name} pour deux semaines", ban_temporarily_user_path(@submission.user), :method => :put, class: "text-color-red", data: { confirm: "Êtes-vous sûr de vouloir bannir #{@submission.user.name} jusqu'au #{write_date_only(end_of_ban)} ?" } %>
     </p>
   <% end %>
 <% end %>

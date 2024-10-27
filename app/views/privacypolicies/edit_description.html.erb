@@ -2,7 +2,7 @@
 
 <h1><%= title_2((link_to "Politique de confidentialité", privacypolicies_path), "Modifier la description") %></h1>
 
-<%= form_for(@privacypolicy, url: privacypolicy_update_description_path) do |f| %>
+<%= form_for(@privacypolicy, url: update_description_privacypolicy_path) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>
 
   <!-- Description de la politique de confidentialité -->

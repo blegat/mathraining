@@ -16,9 +16,9 @@
     
     <% if num_faqs > 1 %>
       | Déplacer vers le
-      <%= link_to "haut", faq_order_path(f, :new_position => @faqs[i-1].position), :method => :put if i > 0 %>
+      <%= link_to "haut", order_faq_path(f, :new_position => @faqs[i-1].position), :method => :put if i > 0 %>
       <%= "-" if i > 0 && i < num_faqs-1 %>
-      <%= link_to "bas", faq_order_path(f, :new_position => @faqs[i+1].position), :method => :put if i < num_faqs-1 %>
+      <%= link_to "bas", order_faq_path(f, :new_position => @faqs[i+1].position), :method => :put if i < num_faqs-1 %>
     <% end %>
     </p>
   <% end %>

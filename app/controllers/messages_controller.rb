@@ -5,8 +5,7 @@ class MessagesController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :soft_destroy, :destroy]
   before_action :admin_user, only: [:destroy]
   
-  before_action :get_message, only: [:update, :destroy]
-  before_action :get_message2, only: [:soft_destroy]
+  before_action :get_message, only: [:update, :destroy, :soft_destroy]
   before_action :get_subject, only: [:create]
   before_action :get_q, only: [:create, :update, :soft_destroy, :destroy]
   
@@ -126,13 +125,6 @@ class MessagesController < ApplicationController
   # Get the message
   def get_message
     @message = Message.find_by_id(params[:id])
-    return if check_nil_object(@message)
-    @subject = @message.subject
-  end
-  
-  # Get the message (v2)
-  def get_message2
-    @message = Message.find_by_id(params[:message_id])
     return if check_nil_object(@message)
     @subject = @message.subject
   end

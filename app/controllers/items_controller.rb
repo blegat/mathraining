@@ -2,8 +2,7 @@
 class ItemsController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :correct, :uncorrect, :order]
   
-  before_action :get_item, only: [:update, :destroy]
-  before_action :get_item2, only: [:correct, :uncorrect, :order]
+  before_action :get_item, only: [:update, :destroy, :correct, :uncorrect, :order]
   before_action :get_question, only: [:create]
   
   before_action :user_that_can_update_chapter
@@ -38,7 +37,7 @@ class ItemsController < ApplicationController
       flash.clear # Remove other flash info
       flash[:danger] = error_list_for(@item)
     end
-    redirect_to question_manage_items_path(@question)
+    redirect_to manage_items_question_path(@question)
   end
   
   # Update an item
@@ -49,7 +48,7 @@ class ItemsController < ApplicationController
     else
       flash[:danger] = error_list_for(@item)
     end
-    redirect_to question_manage_items_path(@question)
+    redirect_to manage_items_question_path(@question)
   end
   
   # Delete an item of a qcm
@@ -64,7 +63,7 @@ class ItemsController < ApplicationController
     else
       @item.destroy
     end
-    redirect_to question_manage_items_path(@question)
+    redirect_to manage_items_question_path(@question)
   end
 
   # Mark item as correct
@@ -78,13 +77,13 @@ class ItemsController < ApplicationController
       end
     end
     @item.update_attribute(:ok, true)
-    redirect_to question_manage_items_path(@question)
+    redirect_to manage_items_question_path(@question)
   end
   
   # Mark item as not correct
   def uncorrect
     @item.update_attribute(:ok, false)
-    redirect_to question_manage_items_path(@question)
+    redirect_to manage_items_question_path(@question)
   end
   
   # Move an item to a new position
@@ -94,7 +93,7 @@ class ItemsController < ApplicationController
       res = swap_position(@item, item2)
       flash[:success] = "Choix déplacé#{res}." 
     end
-    redirect_to question_manage_items_path(@question)
+    redirect_to manage_items_question_path(@question)
   end
 
   private
@@ -104,14 +103,6 @@ class ItemsController < ApplicationController
   # Get the item
   def get_item
     @item = Item.find_by_id(params[:id])
-    return if check_nil_object(@item)
-    @question = @item.question
-    @chapter = @question.chapter # Needed for user_that_can_update_chapter
-  end
-  
-  # Get the item (v2)
-  def get_item2
-    @item = Item.find_by_id(params[:item_id])
     return if check_nil_object(@item)
     @question = @item.question
     @chapter = @question.chapter # Needed for user_that_can_update_chapter

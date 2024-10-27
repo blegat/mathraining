@@ -13,7 +13,7 @@
 
     <% if !@chapter.online && current_user.sk.root? %>
       <center>
-      <%= button_to "Mettre ce chapitre en ligne", chapter_put_online_path(@chapter), :method => :put, class: 'btn btn-danger', data: {confirm: "Êtes-vous sûr de vouloir mettre ce chapitre en ligne ?"} %>
+      <%= button_to "Mettre ce chapitre en ligne", put_online_chapter_path(@chapter), :method => :put, class: 'btn btn-danger', data: {confirm: "Êtes-vous sûr de vouloir mettre ce chapitre en ligne ?"} %>
       </center>
     <% end %>
   </div>

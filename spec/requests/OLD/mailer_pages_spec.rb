@@ -94,7 +94,7 @@ feature 'Emailer' do
       expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ sub.title }'")
       expect(current_email).to have_content("#{user.name} a posté un message sur le sujet '#{ sub.title }' que vous suivez")
       expect(current_email).to have_link("ici", href: subject_url(sub, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
-      expect(current_email).to have_link("ici", href: subject_unfollow_url(sub, :host => "www.mathraining.be"))
+      expect(current_email).to have_link("ici", href: unfollow_subject_url(sub, :host => "www.mathraining.be"))
     end
   end
   
@@ -177,7 +177,7 @@ feature 'Emailer' do
         expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ running_contestsubject.title }'")
         expect(current_email).to have_content("Un message automatique a été posté sur le sujet '#{ running_contestsubject.title }' que vous suivez")
         expect(current_email).to have_link("ici", href: subject_url(running_contestsubject, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
-        expect(current_email).to have_link("ici", href: subject_unfollow_url(running_contestsubject, :host => "www.mathraining.be"))
+        expect(current_email).to have_link("ici", href: unfollow_subject_url(running_contestsubject, :host => "www.mathraining.be"))
       end
     end
   
@@ -192,7 +192,7 @@ feature 'Emailer' do
         expect(current_email.subject).to eq("Mathraining - Concours \##{ running_contest.number } - Problème \##{ running_contestproblem.number }")
         expect(current_email).to have_content("Pour rappel, le Problème \##{ running_contestproblem.number } du Concours \##{ running_contest.number } sera publié")
         expect(current_email).to have_link("Concours \##{ running_contest.number }", href: contest_url(running_contest, :host => "www.mathraining.be"))
-        expect(current_email).to have_link("ici", href: contest_unfollow_url(running_contest, :host => "www.mathraining.be"))
+        expect(current_email).to have_link("ici", href: unfollow_contest_url(running_contest, :host => "www.mathraining.be"))
       end
       
       specify do
@@ -200,7 +200,7 @@ feature 'Emailer' do
         expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ running_contestsubject.title }'")
         expect(current_email).to have_content("Un message automatique a été posté sur le sujet '#{ running_contestsubject.title }' que vous suivez")
         expect(current_email).to have_link("ici", href: subject_url(running_contestsubject, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
-        expect(current_email).to have_link("ici", href: subject_unfollow_url(running_contestsubject, :host => "www.mathraining.be"))
+        expect(current_email).to have_link("ici", href: unfollow_subject_url(running_contestsubject, :host => "www.mathraining.be"))
       end
     end
     
@@ -220,7 +220,7 @@ feature 'Emailer' do
         expect(current_email.subject).to eq("Mathraining - Concours \##{ running_contest.number } - Problèmes \##{ running_contestproblem.number }, \##{ running_contestproblem2.number } et \##{ running_contestproblem3.number }")
         expect(current_email).to have_content("Pour rappel, les Problèmes \##{ running_contestproblem.number }, \##{ running_contestproblem2.number } et \##{ running_contestproblem3.number } du Concours \##{ running_contest.number } seront publiés")
         expect(current_email).to have_link("Concours \##{ running_contest.number }", href: contest_url(running_contest, :host => "www.mathraining.be"))
-        expect(current_email).to have_link("ici", href: contest_unfollow_url(running_contest, :host => "www.mathraining.be"))
+        expect(current_email).to have_link("ici", href: unfollow_contest_url(running_contest, :host => "www.mathraining.be"))
       end
     end
   end

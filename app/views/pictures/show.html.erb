@@ -6,5 +6,5 @@
 <%= image_tag @picture.image, :class => "mt-3", :style => "max-width:800px;" %>
 </center>
 
-<p class="mt-3 text-center"><%= picture_image_url(@picture, :only_path => true, :key => @picture.access_key) %></p>
+<p class="mt-3 text-center"><%= image_picture_url(@picture, :only_path => true, :key => @picture.access_key) %></p>
 <p class="text-center"><%= link_to "Supprimer cette image", @picture, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous) ! Êtes-vous sûr de vouloir supprimer cette image ?" } %></p>

@@ -36,7 +36,7 @@ describe ChaptersController, type: :controller, chapter: true do
     
     it "redirects to new format for chapter type 10" do
       get :show, params: {id: online_chapter.id, type: 10}
-      expect(response).to redirect_to chapter_all_path(online_chapter)
+      expect(response).to redirect_to all_chapter_path(online_chapter)
     end
     
     it "redirects to new format for chapter type 1" do

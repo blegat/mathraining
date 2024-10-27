@@ -8,8 +8,7 @@ class SubmissionsController < ApplicationController
   before_action :root_user, only: [:update_score, :star, :unstar]
   before_action :corrector_user, only: [:allsub, :allmysub, :allnewsub, :allmynewsub]
   
-  before_action :get_submission, only: [:destroy]
-  before_action :get_submission2, only: [:read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script]
+  before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script]
   before_action :get_problem, only: [:create, :create_intest, :index]
   
   before_action :in_test_or_root_user, only: [:destroy]
@@ -289,13 +288,6 @@ class SubmissionsController < ApplicationController
   # Get the submission
   def get_submission
     @submission = Submission.find_by_id(params[:id])
-    return if check_nil_object(@submission)
-    @problem = @submission.problem
-  end
-  
-  # Get the submission (v2)
-  def get_submission2
-    @submission = Submission.find_by_id(params[:submission_id])
     return if check_nil_object(@submission)
     @problem = @submission.problem
   end

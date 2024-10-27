@@ -37,9 +37,9 @@
   <% end %>
   <% if current_user.sk.root? %>
     <% if @contestproblem.corrected? %>
-      | <%= link_to "Autoriser nouvelles corrections", contestproblem_authorize_corrections_path(@contestproblem), :method => :put %>
+      | <%= link_to "Autoriser nouvelles corrections", authorize_corrections_contestproblem_path(@contestproblem), :method => :put %>
     <% elsif @contestproblem.in_recorrection? %>
-      | <%= link_to "Stopper nouvelles corrections", contestproblem_unauthorize_corrections_path(@contestproblem), :method => :put %>
+      | <%= link_to "Stopper nouvelles corrections", unauthorize_corrections_contestproblem_path(@contestproblem), :method => :put %>
     <% end %>
   <% end %>
   </p>

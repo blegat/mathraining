@@ -15,7 +15,7 @@ describe "External solution pages", externalsolution: true do
   describe "admin" do
     before do
       sign_in admin
-      visit problem_manage_externalsolutions_path(problem)
+      visit manage_externalsolutions_problem_path(problem)
     end
     
     it { should have_selector("h1", text: "Solutions externes") }

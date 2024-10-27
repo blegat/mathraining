@@ -8,8 +8,7 @@ class ContestsController < ApplicationController
   
   before_action :check_contests, only: [:index, :show] # Defined in application_controller.rb
   
-  before_action :get_contest, only: [:show, :edit, :update, :destroy]
-  before_action :get_contest2, only: [:put_online, :cutoffs, :define_cutoffs, :follow, :unfollow, :add_organizer, :remove_organizer]
+  before_action :get_contest, only: [:show, :edit, :update, :destroy, :put_online, :cutoffs, :define_cutoffs, :follow, :unfollow, :add_organizer, :remove_organizer]
   
   before_action :organizer_of_contest_or_admin, only: [:edit, :update, :cutoffs, :define_cutoffs]
   before_action :can_see_contest, only: [:show, :follow, :unfollow]
@@ -147,12 +146,6 @@ class ContestsController < ApplicationController
   # Get the contest
   def get_contest
     @contest = Contest.find_by_id(params[:id])
-    return if check_nil_object(@contest)
-  end
-  
-  # Get the contest (v2)
-  def get_contest2
-    @contest = Contest.find_by_id(params[:contest_id])
     return if check_nil_object(@contest)
   end
   

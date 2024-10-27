@@ -4,8 +4,7 @@ class MyfilesController < ApplicationController
   before_action :signed_in_user_danger, only: [:fake_delete]
   before_action :root_user, only: [:fake_delete, :show, :index]
   
-  before_action :get_myfile, only: [:show]
-  before_action :get_myfile2, only: [:fake_delete]
+  before_action :get_myfile, only: [:show, :fake_delete]
   
   # Show all the files
   def index
@@ -67,11 +66,4 @@ class MyfilesController < ApplicationController
     @myfile = Myfile.find_by_id(params[:id])
     return if check_nil_object(@myfile)
   end
-  
-  # Get the file (v2)
-  def get_myfile2
-    @myfile = Myfile.find_by_id(params[:myfile_id])
-    return if check_nil_object(@myfile)
-  end
-
 end

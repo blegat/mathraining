@@ -3,8 +3,7 @@ class PicturesController < ApplicationController
   before_action :signed_in_user, only: [:index, :show, :new]
   before_action :signed_in_user_danger, only: [:create, :destroy]
   
-  before_action :get_picture, only: [:show, :destroy]
-  before_action :get_picture2, only: [:image]
+  before_action :get_picture, only: [:show, :destroy, :image]
   
   before_action :admin_user_or_chapter_creator, only: [:index, :show, :new, :create, :destroy]
   before_action :author_or_root, only: [:show, :destroy]
@@ -53,12 +52,6 @@ class PicturesController < ApplicationController
   # Get the picture
   def get_picture
     @picture = Picture.find_by_id(params[:id])
-    return if check_nil_object(@picture)
-  end
-  
-  # Get the picture
-  def get_picture2
-    @picture = Picture.find_by_id(params[:picture_id])
     return if check_nil_object(@picture)
   end
   

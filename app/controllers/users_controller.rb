@@ -1,14 +1,13 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed_users, :unset_follow_message]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :add_followed_user, :remove_followed_user, :set_follow_message, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :follow, :unfollow, :set_follow_message, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
   before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
   before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :group_user, only: [:groups]
   
-  before_action :get_user, only: [:edit, :update, :show, :destroy, :activate]
-  before_action :get_user2, only: [:destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :add_followed_user, :remove_followed_user, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
+  before_action :get_user, only: [:edit, :update, :show, :destroy, :activate, :destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :follow, :unfollow, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
   
   before_action :avoid_strange_scraping, only: [:index]
   
@@ -354,7 +353,7 @@ class UsersController < ApplicationController
         if signed_in?
           sign_out
         end
-        redirect_to user_recup_password_path(@user, :key => @user.key, :signed_out => 1)
+        redirect_to recup_password_user_path(@user, :key => @user.key, :signed_out => 1)
       elsif signed_in?
         # If the "signed_out" is present and we are connected, it means that we just connected
         redirect_to root_path
@@ -491,7 +490,7 @@ class UsersController < ApplicationController
   end
 
   # Start following a user
-  def add_followed_user
+  def follow
     unless current_user.sk == @user or current_user.sk.followed_users.exists?(@user.id) or @user.admin?
       if current_user.sk.followed_users.size >= 30
         flash[:danger] = "Vous ne pouvez pas suivre plus de 30 utilisateurs."
@@ -504,7 +503,7 @@ class UsersController < ApplicationController
   end
 
   # Stop following a user
-  def remove_followed_user
+  def unfollow
     current_user.sk.followed_users.destroy(@user)
     flash[:success] = "Vous ne suivez plus #{ @user.name }."
     redirect_to @user
@@ -533,14 +532,6 @@ class UsersController < ApplicationController
   # Get the user
   def get_user
     @user = User.find_by_id(params[:id])
-    if @user.nil? || !@user.active?
-      render 'errors/access_refused' and return
-    end
-  end
-  
-  # Get the user 2
-  def get_user2
-    @user = User.find_by_id(params[:user_id])
     if @user.nil? || !@user.active?
       render 'errors/access_refused' and return
     end

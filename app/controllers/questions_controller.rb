@@ -3,8 +3,7 @@ class QuestionsController < ApplicationController
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :edit_explanation]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation]
   
-  before_action :get_question, only: [:show, :edit, :update, :destroy]
-  before_action :get_question2, only: [:manage_items, :order, :put_online, :edit_explanation, :update_explanation]
+  before_action :get_question, only: [:show, :edit, :update, :destroy, :manage_items, :order, :put_online, :edit_explanation, :update_explanation]
   before_action :get_chapter, only: [:show, :new, :create]
   
   before_action :question_of_chapter, only: [:show]
@@ -62,7 +61,7 @@ class QuestionsController < ApplicationController
     if @question.save
       flash[:success] = "Exercice ajouté."
       if @question.is_qcm
-        redirect_to question_manage_items_path(@question)
+        redirect_to manage_items_question_path(@question)
       else
         redirect_to chapter_question_path(@chapter, @question)
       end
@@ -169,13 +168,6 @@ class QuestionsController < ApplicationController
   # Get the question
   def get_question
     @question = Question.find_by_id(params[:id])
-    return if check_nil_object(@question)
-    @chapter = @question.chapter
-  end
-  
-  # Get the question (v2)
-  def get_question2
-    @question = Question.find_by_id(params[:question_id])
     return if check_nil_object(@question)
     @chapter = @question.chapter
   end

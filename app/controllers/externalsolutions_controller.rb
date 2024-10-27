@@ -13,7 +13,7 @@ class ExternalsolutionsController < ApplicationController
     else
       flash[:danger] = error_list_for(externalsolution)
     end
-    redirect_to problem_manage_externalsolutions_path(@problem)
+    redirect_to manage_externalsolutions_problem_path(@problem)
   end
   
   # Update an external solution
@@ -23,14 +23,14 @@ class ExternalsolutionsController < ApplicationController
     else
       flash[:danger] = error_list_for(@externalsolution)
     end
-    redirect_to problem_manage_externalsolutions_path(@problem)
+    redirect_to manage_externalsolutions_problem_path(@problem)
   end
   
   # Delete an external solution
   def destroy
     @externalsolution.destroy
     flash[:success] = "Solution externe supprimée."
-    redirect_to problem_manage_externalsolutions_path(@problem)
+    redirect_to manage_externalsolutions_problem_path(@problem)
   end
 
   private

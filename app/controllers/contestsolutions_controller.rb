@@ -6,8 +6,7 @@ class ContestsolutionsController < ApplicationController
   
   before_action :check_contests, only: [:create, :update, :destroy] # Defined in application_controller.rb
   
-  before_action :get_contestsolution, only: [:update, :destroy]
-  before_action :get_contestsolution2, only: [:reserve, :unreserve]
+  before_action :get_contestsolution, only: [:update, :destroy, :reserve, :unreserve]
   before_action :get_contestproblem, only: [:create]
   
   before_action :can_send_solution, only: [:create, :update]
@@ -95,14 +94,6 @@ class ContestsolutionsController < ApplicationController
   # Get the solution
   def get_contestsolution
     @contestsolution = Contestsolution.find_by_id(params[:id])
-    return if check_nil_object(@contestsolution)
-    @contestproblem = @contestsolution.contestproblem
-    @contest = @contestproblem.contest
-  end
-  
-  # Get the solution (v2)
-  def get_contestsolution2
-    @contestsolution = Contestsolution.find_by_id(params[:contestsolution_id])
     return if check_nil_object(@contestsolution)
     @contestproblem = @contestsolution.contestproblem
     @contest = @contestproblem.contest

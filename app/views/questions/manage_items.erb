@@ -38,18 +38,18 @@
       </td>
       <td class="p-2">
         <%= "Déplacer vers le : " if nb_item > 1 %>
-        <%= link_to "haut", item_order_path(item, :new_position => items[i-1].position), :method => :put, :id => ("update_item_up_" + item.id.to_s) if i > 0 %>
+        <%= link_to "haut", order_item_path(item, :new_position => items[i-1].position), :method => :put, :id => ("update_item_up_" + item.id.to_s) if i > 0 %>
         <%= "-" if i > 0 && i < nb_item-1 %>
-        <%= link_to "bas", item_order_path(item, :new_position => items[i+1].position), :method => :put, :id => ("update_item_down_" + item.id.to_s) if i < nb_item-1 %>
+        <%= link_to "bas", order_item_path(item, :new_position => items[i+1].position), :method => :put, :id => ("update_item_down_" + item.id.to_s) if i < nb_item-1 %>
       </td>
       <% unless @question.online %>
         <td class="p-2">
           <% if item.ok %>
             <% if @question.many_answers %>
-              <%= link_to "Rendre ce choix erroné", item_uncorrect_path(item), :method => :put, :id => ("update_item_incorrect_" + item.id.to_s) %>
+              <%= link_to "Rendre ce choix erroné", uncorrect_item_path(item), :method => :put, :id => ("update_item_incorrect_" + item.id.to_s) %>
             <% end %>
           <% else %>
-            <%= link_to "Rendre ce choix correct", item_correct_path(item), :method => :put, :id => ("update_item_correct_" + item.id.to_s) %>
+            <%= link_to "Rendre ce choix correct", correct_item_path(item), :method => :put, :id => ("update_item_correct_" + item.id.to_s) %>
           <% end %>
         </td>
         <td class="p-2">

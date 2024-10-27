@@ -40,7 +40,7 @@ describe "Chapter pages", chapter: true do
     end 
     
     describe "visits a full online chapter" do
-      before { visit chapter_all_path(online_chapter) }
+      before { visit all_chapter_path(online_chapter) }
       it do
         should have_selector("h3", text: online_theory.title)
         should have_button("Marquer toute la théorie comme lue")

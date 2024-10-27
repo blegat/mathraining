@@ -4,8 +4,7 @@ class TheoriesController < ApplicationController
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :read, :unread]
   before_action :admin_user, only: [:put_online]
   
-  before_action :get_theory, only: [:show, :edit, :update, :destroy]
-  before_action :get_theory2, only: [:order, :read, :unread, :put_online]
+  before_action :get_theory, only: [:show, :edit, :update, :destroy, :order, :read, :unread, :put_online]
   before_action :get_chapter, only: [:show, :new, :create]
   
   before_action :theory_of_chapter, only: [:show]
@@ -97,13 +96,6 @@ class TheoriesController < ApplicationController
   # Get the theory
   def get_theory
     @theory = Theory.find_by_id(params[:id])
-    return if check_nil_object(@theory)
-    @chapter = @theory.chapter
-  end
-  
-  # Get the theory (v2)
-  def get_theory2
-    @theory = Theory.find_by_id(params[:theory_id])
     return if check_nil_object(@theory)
     @chapter = @theory.chapter
   end

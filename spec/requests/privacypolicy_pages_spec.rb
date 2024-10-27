@@ -132,17 +132,17 @@ describe "Privacy policy pages", privacypolicy: true do
           
           should have_link("Voir", href: privacypolicy_path(policy1))
           should have_content(policy1.description)
-          should have_link("Modifier", href: privacypolicy_edit_description_path(policy1))
+          should have_link("Modifier", href: edit_description_privacypolicy_path(policy1))
           
           should have_link("Voir", href: privacypolicy_path(policy2))
           should have_content(policy2.description)
-          should have_link("Modifier", href: privacypolicy_edit_description_path(policy2))
+          should have_link("Modifier", href: edit_description_privacypolicy_path(policy2))
           
           should have_link("Modifier", href: edit_privacypolicy_path(policy3_offline))
           should have_content(policy3_offline.description)
-          should have_link("Modifier", href: privacypolicy_edit_description_path(policy3_offline))
+          should have_link("Modifier", href: edit_description_privacypolicy_path(policy3_offline))
           should have_link("Supprimer", href: privacypolicy_path(policy3_offline))
-          should have_link("Publier", href: privacypolicy_put_online_path(policy3_offline))
+          should have_link("Publier", href: put_online_privacypolicy_path(policy3_offline))
           
           should have_no_button("Créer une nouvelle version") # Because there is already an offline one
         end
@@ -205,7 +205,7 @@ describe "Privacy policy pages", privacypolicy: true do
       end
       
       describe "visits policy edit description page" do
-        before { visit privacypolicy_edit_description_path(policy3_offline) }
+        before { visit edit_description_privacypolicy_path(policy3_offline) }
         it { should have_selector("h1", text: "Politique de confidentialité > Modifier la description") }
         
         describe "and edits it" do

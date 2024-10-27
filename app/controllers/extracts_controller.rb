@@ -13,7 +13,7 @@ class ExtractsController < ApplicationController
     else
       flash[:danger] = error_list_for(extract)
     end
-    redirect_to problem_manage_externalsolutions_path(@problem)
+    redirect_to manage_externalsolutions_problem_path(@problem)
   end
   
   # Update an extract
@@ -23,14 +23,14 @@ class ExtractsController < ApplicationController
     else
       flash[:danger] = error_list_for(@extract)
     end
-    redirect_to problem_manage_externalsolutions_path(@problem)
+    redirect_to manage_externalsolutions_problem_path(@problem)
   end
   
   # Delete an extract
   def destroy
     @extract.destroy
     flash[:success] = "Extrait supprimé."
-    redirect_to problem_manage_externalsolutions_path(@problem)
+    redirect_to manage_externalsolutions_problem_path(@problem)
   end
 
   private

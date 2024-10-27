@@ -162,7 +162,7 @@ describe "Problem pages", problem: true do
         should have_selector("h1", text: "Problème ##{online_problem.number}")
         should have_selector("div", text: online_problem.statement)
         should have_link("Modifier ce problème", href: edit_problem_path(online_problem))
-        should have_link("Modifier la solution", href: problem_edit_explanation_path(online_problem))
+        should have_link("Modifier la solution", href: edit_explanation_problem_path(online_problem))
         should have_no_link("Supprimer ce problème")
       end
     end
@@ -171,7 +171,7 @@ describe "Problem pages", problem: true do
       before { visit problem_path(problem_in_virtualtest) }
       it do
         should have_selector("h1", text: "Problème ##{problem_in_virtualtest.number} - Test ##{online_virtualtest.number}")
-        should have_link("Modifier le marking scheme", href: problem_edit_markscheme_path(problem_in_virtualtest))
+        should have_link("Modifier le marking scheme", href: edit_markscheme_problem_path(problem_in_virtualtest))
       end
     end
     
@@ -194,7 +194,7 @@ describe "Problem pages", problem: true do
         it do
           should have_selector("h1", text: "Problème ##{offline_problem.number}")
           should have_link(chapter.name, href: chapter_path(chapter))
-          should have_link("Supprimer ce prérequis", href: problem_delete_prerequisite_path(offline_problem, :chapter_id => chapter))
+          should have_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(offline_problem, :chapter_id => chapter))
           should have_button("Mettre en ligne")
         end
         
@@ -236,7 +236,7 @@ describe "Problem pages", problem: true do
     end
     
     describe "visits edit explanation page" do
-      before { visit problem_edit_explanation_path(online_problem) }
+      before { visit edit_explanation_problem_path(online_problem) }
       it { should have_selector("h1", text: "Modifier la solution") }
       
       describe "and modifies it" do
@@ -262,7 +262,7 @@ describe "Problem pages", problem: true do
     end
     
     describe "visits edit markscheme page" do
-      before { visit problem_edit_markscheme_path(problem_in_virtualtest) }
+      before { visit edit_markscheme_problem_path(problem_in_virtualtest) }
       it { should have_selector("h1", text: "Modifier le marking scheme") }
       
       describe "and modifies it" do

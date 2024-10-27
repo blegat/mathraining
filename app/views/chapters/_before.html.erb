@@ -14,7 +14,7 @@
     <% i = 1 %>
     <h5>Général</h5>
     <%= link_to "Résumé", chapter_path(@chapter), :class => "list-group-item list-group-item-action #{ 'active' if active == 'show'}" %>
-    <%= link_to "Chapitre entier", chapter_all_path(@chapter), :class => "list-group-item list-group-item-action #{ 'active' if active == 'all'}" %>
+    <%= link_to "Chapitre entier", all_chapter_path(@chapter), :class => "list-group-item list-group-item-action #{ 'active' if active == 'all'}" %>
     <%= link_to "Forum", subjects_path(:q => "cha-" + @chapter.id.to_s), :class => "list-group-item list-group-item-action", :target => "_blank" if signed_in? and @chapter.online %>
 
     <!-- Points théoriques -->

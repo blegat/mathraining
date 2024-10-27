@@ -15,14 +15,14 @@ describe VirtualtestsController, :type => :controller do
 
   describe "begin_test" do
     describe "for visitor" do
-      before { put :begin_test, :params => { :virtualtest_id => virtualtest.id } }
+      before { put :begin_test, :params => { :id => virtualtest.id } }
       specify { expect(response).to render_template("errors/access_refused") }
     end
     
     describe "for user with rating 199" do
       before do
         sign_in_controller user_with_rating_199
-        put :begin_test, :params => { :virtualtest_id => virtualtest.id }
+        put :begin_test, :params => { :id => virtualtest.id }
       end
       specify { expect(response).to render_template("errors/access_refused") }
     end
@@ -31,14 +31,14 @@ describe VirtualtestsController, :type => :controller do
       before { sign_in_controller user_with_rating_200 }
       
       describe "without completed prerequisite" do
-        before { put :begin_test, :params => { :virtualtest_id => virtualtest.id } }
+        before { put :begin_test, :params => { :id => virtualtest.id } }
         specify { expect(response).to render_template("errors/access_refused") }
       end
       
       describe "with completed prerequisite" do
         before do
           user_with_rating_200.chapters << chapter
-          put :begin_test, :params => { :virtualtest_id => virtualtest.id }
+          put :begin_test, :params => { :id => virtualtest.id }
         end
         specify { expect(response).to redirect_to(virtualtest_path(virtualtest)) }
       end
@@ -47,7 +47,7 @@ describe VirtualtestsController, :type => :controller do
         before do
           user_with_rating_200.chapters << chapter
           Takentest.create(virtualtest: virtualtest, user: user_with_rating_200, taken_time: DateTime.now - 2.days, status: :finished)
-          put :begin_test, :params => { :virtualtest_id => virtualtest.id }
+          put :begin_test, :params => { :id => virtualtest.id }
         end
         specify { expect(response).to redirect_to(virtualtests_path) }
       end
@@ -56,7 +56,7 @@ describe VirtualtestsController, :type => :controller do
     describe "for admin" do
       before do
         sign_in_controller admin
-        put :begin_test, :params => { :virtualtest_id => virtualtest.id }
+        put :begin_test, :params => { :id => virtualtest.id }
       end
       specify { expect(response).to render_template("errors/access_refused") }
     end

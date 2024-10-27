@@ -15,7 +15,7 @@
 <h3>Chercher une chaîne de caractères</h3>
 <p id="btn_search_string"><%= link_to "Effectuer une recherche dans toutes les soumissions", "javascript:showForm()" %></p>
 
-<%= form_tag submission_search_script_path(@submission), :method => :post, :remote => true, :id => "search_string_form", :style => "display:none;" do %>
+<%= form_tag search_script_submission_path(@submission), :method => :post, :remote => true, :id => "search_string_form", :style => "display:none;" do %>
 <div class="mb-2">
   <%= text_field_tag "string_to_search", "", :class => "form-control", :style => "width:300px;" %>
 </div>

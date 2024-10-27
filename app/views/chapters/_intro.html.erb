@@ -58,9 +58,9 @@
     
     <% if !chapter_before.nil? || !chapter_after.nil? %>
       | Déplacer vers le
-      <%= link_to "haut", chapter_order_path(@chapter, :new_position => chapter_before.position), :method => :put if !chapter_before.nil? %>
+      <%= link_to "haut", order_chapter_path(@chapter, :new_position => chapter_before.position), :method => :put if !chapter_before.nil? %>
       <%= '-' if !chapter_before.nil? && !chapter_after.nil? %>
-      <%= link_to "bas", chapter_order_path(@chapter, :new_position => chapter_after.position), :method => :put if !chapter_after.nil? %>
+      <%= link_to "bas", order_chapter_path(@chapter, :new_position => chapter_after.position), :method => :put if !chapter_after.nil? %>
     <% end %>
     
     <% if !@chapter.online && current_user.sk.admin? %>
@@ -69,8 +69,8 @@
     
     <% if @section.fondation? && current_user.sk.root? %>
       |
-      <%= link_to "Marquer comme prérequis aux soumissions", chapter_mark_submission_prerequisite_path(@chapter), :method => :put unless @chapter.submission_prerequisite? %>
-      <%= link_to "Marquer comme non prérequis aux soumissions", chapter_unmark_submission_prerequisite_path(@chapter), :method => :put if @chapter.submission_prerequisite? %>
+      <%= link_to "Marquer comme prérequis aux soumissions", mark_submission_prerequisite_chapter_path(@chapter), :method => :put unless @chapter.submission_prerequisite? %>
+      <%= link_to "Marquer comme non prérequis aux soumissions", unmark_submission_prerequisite_chapter_path(@chapter), :method => :put if @chapter.submission_prerequisite? %>
     <% end %>
     </p>
   <% end %>

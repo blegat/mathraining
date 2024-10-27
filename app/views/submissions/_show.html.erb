@@ -63,10 +63,10 @@ var hideStatement = function () {
 <% if current_user.sk != @submission.user && @submission.waiting? && @submission.visible %>
   <script type="text/javascript">
   var reserve = function () {
-    $.getScript("<%= submission_reserve_url(@submission) %>");
+    $.getScript("<%= reserve_submission_url(@submission) %>");
   }
   var unreserve = function () {
-    $.getScript("<%= submission_unreserve_url(@submission) %>");
+    $.getScript("<%= unreserve_submission_url(@submission) %>");
   }
   </script>
   
@@ -136,7 +136,7 @@ var hideStatement = function () {
       <div class="text-center mt-2 mb-n2">
       <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Modifier ce score</a>
       <span id='formulaire' style="display:none;">
-      <%= form_tag submission_update_score_path(@submission), :method => :put, :class => "mt-1" do %>
+      <%= form_tag update_score_submission_path(@submission), :method => :put, :class => "mt-1" do %>
         Nouveau score :
         <%= number_field_tag "new_score", @submission.score, :min => 0, :max => 7, :style => "width:50px;" %>
         <%= submit_tag "Modifier", data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir modifier le score obtenu ?"}) %>
@@ -156,9 +156,9 @@ var hideStatement = function () {
     <% following = @submission.followings.where(:user_id => current_user.sk).first %>
     <% if !following.nil? %>
       <% if following.read %>
-        <center><%= link_to 'Marquer comme non lu', submission_unread_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %></center>
+        <center><%= link_to 'Marquer comme non lu', unread_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %></center>
       <% else %>
-        <center><%= link_to 'Marquer comme lu', submission_read_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %></center>
+        <center><%= link_to 'Marquer comme lu', read_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %></center>
       <% end %>
     <% end %>
   <% end %>
@@ -249,7 +249,7 @@ var hideStatement = function () {
     <!-- NB: sp.nil? can happen in test environment only -->
     <% if current_user.sk.root? || (!sp.nil? && sp.correction_time > ten_minutes_ago) %>
       <p class="text-center">
-      <%= link_to 'Marquer comme erronée', submission_uncorrect_path(@submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?#{ " Les propositions d'étoiles seront automatiquement supprimées !" if @submission.starproposals.count > 0 }" }), :method => :put, :class => "text-color-red" %>
+      <%= link_to 'Marquer comme erronée', uncorrect_submission_path(@submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?#{ " Les propositions d'étoiles seront automatiquement supprimées !" if @submission.starproposals.count > 0 }" }), :method => :put, :class => "text-color-red" %>
       </p>
     <% end %>
   <% end %>

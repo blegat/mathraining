@@ -5,8 +5,7 @@ class VirtualtestsController < ApplicationController
   before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :put_online, :destroy]
   before_action :non_admin_user, only: [:begin_test]
   
-  before_action :get_virtualtest, only: [:show, :edit, :update, :destroy]
-  before_action :get_virtualtest2, only: [:begin_test, :put_online]
+  before_action :get_virtualtest, only: [:show, :edit, :update, :destroy, :begin_test, :put_online]
   
   before_action :has_access, only: [:begin_test]
   before_action :online_test, only: [:begin_test]
@@ -106,12 +105,6 @@ class VirtualtestsController < ApplicationController
   # Get the virtualtest
   def get_virtualtest
     @virtualtest = Virtualtest.find_by_id(params[:id])
-    return if check_nil_object(@virtualtest)
-  end
-
-  # Get the virtualtest (v2)
-  def get_virtualtest2
-    @virtualtest = Virtualtest.find_by_id(params[:virtualtest_id])
     return if check_nil_object(@virtualtest)
   end
   

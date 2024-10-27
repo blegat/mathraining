@@ -130,7 +130,7 @@ describe "Question pages" do
     end
     
     describe "visits edit explanation page" do
-      before { visit question_edit_explanation_path(online_exercise) }
+      before { visit edit_explanation_question_path(online_exercise) }
       it { should have_selector("h1", text: "Explication") }
       
       describe "and modifies it" do
@@ -409,7 +409,7 @@ describe "Question pages" do
     end
     
     describe "visits choices modification page", item: true do
-      before { visit question_manage_items_path(offline_qcm) }
+      before { visit manage_items_question_path(offline_qcm) }
       it do
         should have_selector("h1", text: "Choix")
       
@@ -521,7 +521,7 @@ describe "Question pages" do
     end
     
     describe "visits choices of empty qcm", item: true do
-      before { visit question_manage_items_path(empty_qcm) }
+      before { visit manage_items_question_path(empty_qcm) }
       it { should have_selector("h1", text: "Choix") }
       
       describe "and adds an incorrect choice" do
