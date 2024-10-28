@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Page problems/index" do
+describe "problems/index.html.erb", type: :view, problem: true do
 
-  subject { page }
+  subject { rendered }
 
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user_with_rating_199) { FactoryGirl.create(:user, rating: 199) }
@@ -22,6 +22,7 @@ describe "Page problems/index" do
   let!(:problem_in_offline_virtualtest) { FactoryGirl.create(:problem, section: section, online: true, level: 3, number: 1341, position: 1, virtualtest: offline_virtualtest) }
   
   before do
+    assign(:section, section)
     online_problem_with_one_prerequisite.chapters << chapter1
     online_problem_with_two_prerequisites.chapters << chapter1
     online_problem_with_two_prerequisites.chapters << chapter2
@@ -29,30 +30,29 @@ describe "Page problems/index" do
   end
   
   describe "visitor" do
-    before { visit section_problems_path(section) }
-    it do
+    it "renders the message about needed rating" do
+      render template: "problems/index"
       should have_selector("h1", text: section.name)
-      should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
+      should have_selector("p", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
     end
   end
   
   describe "user with rating 199" do
-    before do
-      sign_in user_with_rating_199
-      visit section_problems_path(section)
-    end
-    it do
+    before { assign(:current_user, user_with_rating_199) }
+    
+    it "renders the message about needed rating" do
+      render template: "problems/index"
       should have_selector("h1", text: section.name)
-      should have_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
+      should have_selector("p", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
     end
   end
   
   describe "user with rating 200" do
-    before { sign_in user }
+    before { assign(:current_user, user) }
 
     describe "having completed no chapter" do
-      before { visit section_problems_path(section) }
-      it do
+      it "renders the expected problems" do
+        render template: "problems/index"
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
@@ -85,11 +85,10 @@ describe "Page problems/index" do
     end
     
     describe "having completed first chapter" do
-      before do
-        user.chapters << chapter1
-        visit section_problems_path(section)
-      end
-      it do
+      before { user.chapters << chapter1 }
+      
+      it "renders the expected problems" do
+        render template: "problems/index"
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
@@ -122,11 +121,10 @@ describe "Page problems/index" do
     end
     
     describe "having completed second chapter" do
-      before do
-        user.chapters << chapter2
-        visit section_problems_path(section)
-      end
-      it do
+      before { user.chapters << chapter2 }
+      
+      it "renders the expected problems" do
+        render template: "problems/index"
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
@@ -162,9 +160,10 @@ describe "Page problems/index" do
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        visit section_problems_path(section)
       end
-      it do
+      
+      it "renders the expected problems" do
+        render template: "problems/index"
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
@@ -201,9 +200,10 @@ describe "Page problems/index" do
         user.chapters << chapter1
         user.chapters << chapter2
         Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :in_progress)
-        visit section_problems_path(section)
       end
-      it do
+      
+      it "renders the expected problems" do
+        render template: "problems/index"
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
@@ -240,9 +240,10 @@ describe "Page problems/index" do
         user.chapters << chapter1
         user.chapters << chapter2
         Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
-        visit section_problems_path(section)
       end
-      it do
+      
+      it "renders the expected problems" do
+        render template: "problems/index"
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
@@ -286,13 +287,15 @@ describe "Page problems/index" do
       let!(:sub8) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :waiting) }
       let!(:sub9) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :correct) }
       let!(:sp9) { FactoryGirl.create(:solvedproblem, problem: problem_with_prerequisite_in_online_virtualtest, user: user, submission: sub9) }
+      
       before do
         user.chapters << chapter1
         user.chapters << chapter2
         Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
-        visit section_problems_path(section)
       end
-      it do
+      
+      it "renders the expected problems" do
+        render template: "problems/index"
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
@@ -342,13 +345,15 @@ describe "Page problems/index" do
       let!(:sub7) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
       let!(:sub8) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
       let!(:sub9) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :plagiarized) }
+      
       before do
         user.chapters << chapter1
         user.chapters << chapter2
         Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
-        visit section_problems_path(section)
       end
-      it do
+      
+      it "renders the expected problems" do
+        render template: "problems/index"
         should have_selector("h1", text: section.name)
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         
@@ -388,12 +393,10 @@ describe "Page problems/index" do
   end
   
   describe "admin" do
-    before do
-      sign_in admin
-      visit section_problems_path(section)
-    end
+    before { assign(:current_user, admin) }
 
-    it do
+    it "renders the expected problems" do
+      render template: "problems/index"
       should have_selector("h1", text: section.name)
       should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
       

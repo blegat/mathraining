@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "contests/_statistics.html.erb", type: :view, contest: true do
 
+  subject { rendered }
+
   let!(:user1) { FactoryGirl.create(:advanced_user) }
   let!(:user2) { FactoryGirl.create(:advanced_user) }
   let!(:user3) { FactoryGirl.create(:advanced_user) }
@@ -16,39 +18,35 @@ describe "contests/_statistics.html.erb", type: :view, contest: true do
   let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user1, rank: 1, score: 7) }
   let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 2, score: 4) }
   
-  before do
-    assign(:contest, contest)
-  end
+  before { assign(:contest, contest) }
     
   context "and the user is connected" do
-    before do
-      assign(:current_user, user1)
-    end
+    before { assign(:current_user, user1) }
   
     it "renders the statistics correctly" do
       render partial: "contests/statistics"
       
-      expect(rendered).to have_link("Problème ##{contestproblem1.number}", href: contestproblem_path(contestproblem1))
-      expect(rendered).to have_selector("td", id: "num-0-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-1-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-2-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-3-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-4-#{contestproblem1.id}", text: "1")
-      expect(rendered).to have_selector("td", id: "num-5-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-6-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-7-#{contestproblem1.id}", text: "1")
-      expect(rendered).to have_selector("td", id: "average-#{contestproblem1.id}", text: "5.50")
+      should have_link("Problème ##{contestproblem1.number}", href: contestproblem_path(contestproblem1))
+      should have_selector("td", id: "num-0-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-1-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-2-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-3-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-4-#{contestproblem1.id}", text: "1")
+      should have_selector("td", id: "num-5-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-6-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-7-#{contestproblem1.id}", text: "1")
+      should have_selector("td", id: "average-#{contestproblem1.id}", text: "5.50")
       
-      expect(rendered).to have_link("Problème ##{contestproblem2.number}", href: contestproblem_path(contestproblem2))
-      expect(rendered).to have_selector("td", id: "num-0-#{contestproblem2.id}", text: "2")
-      expect(rendered).to have_selector("td", id: "num-1-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-2-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-3-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-4-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-5-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-6-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-7-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "average-#{contestproblem2.id}", text: "0.00")
+      should have_link("Problème ##{contestproblem2.number}", href: contestproblem_path(contestproblem2))
+      should have_selector("td", id: "num-0-#{contestproblem2.id}", text: "2")
+      should have_selector("td", id: "num-1-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-2-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-3-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-4-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-5-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-6-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-7-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "average-#{contestproblem2.id}", text: "0.00")
     end
   end
   
@@ -56,29 +54,29 @@ describe "contests/_statistics.html.erb", type: :view, contest: true do
     it "renders the statistics correctly but without links to problems" do
       render partial: "contests/statistics"
       
-      expect(rendered).to have_no_link("Problème ##{contestproblem1.number}", href: contestproblem_path(contestproblem1))
-      expect(rendered).to have_content("Problème ##{contestproblem1.number}")
-      expect(rendered).to have_selector("td", id: "num-0-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-1-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-2-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-3-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-4-#{contestproblem1.id}", text: "1")
-      expect(rendered).to have_selector("td", id: "num-5-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-6-#{contestproblem1.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-7-#{contestproblem1.id}", text: "1")
-      expect(rendered).to have_selector("td", id: "average-#{contestproblem1.id}", text: "5.50")
+      should have_no_link("Problème ##{contestproblem1.number}", href: contestproblem_path(contestproblem1))
+      should have_content("Problème ##{contestproblem1.number}")
+      should have_selector("td", id: "num-0-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-1-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-2-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-3-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-4-#{contestproblem1.id}", text: "1")
+      should have_selector("td", id: "num-5-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-6-#{contestproblem1.id}", text: "-")
+      should have_selector("td", id: "num-7-#{contestproblem1.id}", text: "1")
+      should have_selector("td", id: "average-#{contestproblem1.id}", text: "5.50")
       
-      expect(rendered).to have_no_link("Problème ##{contestproblem2.number}", href: contestproblem_path(contestproblem2))
-      expect(rendered).to have_content("Problème ##{contestproblem2.number}")
-      expect(rendered).to have_selector("td", id: "num-0-#{contestproblem2.id}", text: "2")
-      expect(rendered).to have_selector("td", id: "num-1-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-2-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-3-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-4-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-5-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-6-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "num-7-#{contestproblem2.id}", text: "-")
-      expect(rendered).to have_selector("td", id: "average-#{contestproblem2.id}", text: "0.00")
+      should have_no_link("Problème ##{contestproblem2.number}", href: contestproblem_path(contestproblem2))
+      should have_content("Problème ##{contestproblem2.number}")
+      should have_selector("td", id: "num-0-#{contestproblem2.id}", text: "2")
+      should have_selector("td", id: "num-1-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-2-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-3-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-4-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-5-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-6-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "num-7-#{contestproblem2.id}", text: "-")
+      should have_selector("td", id: "average-#{contestproblem2.id}", text: "0.00")
     end
   end
 end

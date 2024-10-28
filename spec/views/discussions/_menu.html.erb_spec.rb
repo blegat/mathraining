@@ -3,17 +3,17 @@ require "spec_helper"
 
 describe "discussions/_menu.html.erb", type: :view, discussion: true do
 
+  subject { rendered }
+
   let(:user) { FactoryGirl.create(:user) }
   
-  before do
-    assign(:current_user, user)
-  end
+  before { assign(:current_user, user) }
   
   context "if the user has no discussion" do   
     it "renders no discussion" do
       render partial: "discussions/menu"
-      expect(rendered).to have_link("Nouvelle discussion", href: new_discussion_path, class: "active")
-      expect(rendered).to have_content("Aucune discussion")
+      should have_link("Nouvelle discussion", href: new_discussion_path, class: "active")
+      should have_content("Aucune discussion")
     end
   end
   
@@ -30,16 +30,14 @@ describe "discussions/_menu.html.erb", type: :view, discussion: true do
     let!(:link31) { Link.create(user: user3, discussion: discussion31, nonread: 0) }
     let!(:link13) { Link.create(user: user,  discussion: discussion31, nonread: 0) }
     
-    before do
-      assign(:discussion, discussion31)
-    end
+    before { assign(:discussion, discussion31) }
     
     it "only renders these discussions" do
       render partial: "discussions/menu"
-      expect(rendered).to have_link("Nouvelle discussion", href: new_discussion_path)
-      expect(rendered).to have_link(user2.name + " (1)", href: discussion_path(discussion12), class: "list-group-item-warning")
-      expect(rendered).to have_link(user3.name, href: discussion_path(discussion31), class: "active")
-      expect(rendered).to have_no_link(href: discussion_path(discussion23))
+      should have_link("Nouvelle discussion", href: new_discussion_path)
+      should have_link(user2.name + " (1)", href: discussion_path(discussion12), class: "list-group-item-warning")
+      should have_link(user3.name, href: discussion_path(discussion31), class: "active")
+      should have_no_link(href: discussion_path(discussion23))
     end
   end
 end

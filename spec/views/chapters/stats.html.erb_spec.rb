@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "chapters/stats.html.erb", type: :view, chapter: true do
 
+  subject { rendered }
+
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
   let(:user_bad) { FactoryGirl.create(:user) }
@@ -21,94 +23,88 @@ describe "chapters/stats.html.erb", type: :view, chapter: true do
   end
     
   context "if the user is an admin" do
-    before do
-      assign(:current_user, admin)
-    end
+    before { assign(:current_user, admin) }
       
     it "renders the statistics correctly" do
       render template: "chapters/stats"
-      expect(rendered).to have_selector("h3", text: section.name)
-      expect(rendered).to have_selector("th", text: "Ex. 1")
-      expect(rendered).to have_selector("th", text: "Ex. 2")
-      expect(rendered).to have_no_selector("th", text: "Ex. 3")
-      expect(rendered).to have_link(chapter1.name, href: chapter_path(chapter1))
-      expect(rendered).to have_selector("td", text: "22%")
-      expect(rendered).to have_no_link("0%", href: chapter_question_path(chapter1, question11_offline.id))
-      expect(rendered).to have_link("67%", href: chapter_question_path(chapter1, question12.id))
-      expect(rendered).to have_link(chapter2.name, href: chapter_path(chapter2))
-      expect(rendered).to have_selector("td", text: "25%")
-      expect(rendered).to have_link("14%", href: chapter_question_path(chapter2, question21.id))
-      expect(rendered).to have_link("0%", href: chapter_question_path(chapter2, question22.id))
-      expect(rendered).to have_no_link(chapter3.name, href: chapter_path(chapter3))
+      should have_selector("h3", text: section.name)
+      should have_selector("th", text: "Ex. 1")
+      should have_selector("th", text: "Ex. 2")
+      should have_no_selector("th", text: "Ex. 3")
+      should have_link(chapter1.name, href: chapter_path(chapter1))
+      should have_selector("td", text: "22%")
+      should have_no_link("0%", href: chapter_question_path(chapter1, question11_offline.id))
+      should have_link("67%", href: chapter_question_path(chapter1, question12.id))
+      should have_link(chapter2.name, href: chapter_path(chapter2))
+      should have_selector("td", text: "25%")
+      should have_link("14%", href: chapter_question_path(chapter2, question21.id))
+      should have_link("0%", href: chapter_question_path(chapter2, question22.id))
+      should have_no_link(chapter3.name, href: chapter_path(chapter3))
     end
   end
     
   context "if the user has solved prerequisites" do
-    before do
-      assign(:current_user, user)
-    end
+    before { assign(:current_user, user) }
     
     it "renders the statistics correctly" do
       render template: "chapters/stats"
-      expect(rendered).to have_selector("h3", text: section.name)
-      expect(rendered).to have_selector("th", text: "Ex. 1")
-      expect(rendered).to have_selector("th", text: "Ex. 2")
-      expect(rendered).to have_no_selector("th", text: "Ex. 3")
-      expect(rendered).to have_link(chapter1.name, href: chapter_path(chapter1))
-      expect(rendered).to have_selector("td", text: "22%")
-      expect(rendered).to have_no_link("0%", href: chapter_question_path(chapter1, question11_offline.id))
-      expect(rendered).to have_link("67%", href: chapter_question_path(chapter1, question12.id))
-      expect(rendered).to have_link(chapter2.name, href: chapter_path(chapter2))
-      expect(rendered).to have_selector("td", text: "25%")
-      expect(rendered).to have_link("14%", href: chapter_question_path(chapter2, question21.id))
-      expect(rendered).to have_link("0%", href: chapter_question_path(chapter2, question22.id))
-      expect(rendered).to have_no_link(chapter3.name, href: chapter_path(chapter3))
+      should have_selector("h3", text: section.name)
+      should have_selector("th", text: "Ex. 1")
+      should have_selector("th", text: "Ex. 2")
+      should have_no_selector("th", text: "Ex. 3")
+      should have_link(chapter1.name, href: chapter_path(chapter1))
+      should have_selector("td", text: "22%")
+      should have_no_link("0%", href: chapter_question_path(chapter1, question11_offline.id))
+      should have_link("67%", href: chapter_question_path(chapter1, question12.id))
+      should have_link(chapter2.name, href: chapter_path(chapter2))
+      should have_selector("td", text: "25%")
+      should have_link("14%", href: chapter_question_path(chapter2, question21.id))
+      should have_link("0%", href: chapter_question_path(chapter2, question22.id))
+      should have_no_link(chapter3.name, href: chapter_path(chapter3))
     end
   end
   
   context "if the user has not solved prerequisites" do
-    before do
-      assign(:current_user, user_bad)
-    end
+    before { assign(:current_user, user_bad) }
     
     it "renders the statistics correctly" do
       render template: "chapters/stats"
-      expect(rendered).to have_selector("h3", text: section.name)
-      expect(rendered).to have_selector("th", text: "Ex. 1")
-      expect(rendered).to have_selector("th", text: "Ex. 2")
-      expect(rendered).to have_no_selector("th", text: "Ex. 3")
-      expect(rendered).to have_link(chapter1.name, href: chapter_path(chapter1))
-      expect(rendered).to have_selector("td", text: "22%")
-      expect(rendered).to have_no_link("0%", href: chapter_question_path(chapter1, question11_offline.id))
-      expect(rendered).to have_link("67%", href: chapter_question_path(chapter1, question12.id))
-      expect(rendered).to have_link(chapter2.name, href: chapter_path(chapter2))
-      expect(rendered).to have_selector("td", text: "25%")
-      expect(rendered).to have_no_link("14%", href: chapter_question_path(chapter2, question21.id))
-      expect(rendered).to have_selector("td", text: "14%")
-      expect(rendered).to have_no_link("0%", href: chapter_question_path(chapter2, question22.id))
-      expect(rendered).to have_selector("td", text: "0%")
-      expect(rendered).to have_no_link(chapter3.name, href: chapter_path(chapter3))
+      should have_selector("h3", text: section.name)
+      should have_selector("th", text: "Ex. 1")
+      should have_selector("th", text: "Ex. 2")
+      should have_no_selector("th", text: "Ex. 3")
+      should have_link(chapter1.name, href: chapter_path(chapter1))
+      should have_selector("td", text: "22%")
+      should have_no_link("0%", href: chapter_question_path(chapter1, question11_offline.id))
+      should have_link("67%", href: chapter_question_path(chapter1, question12.id))
+      should have_link(chapter2.name, href: chapter_path(chapter2))
+      should have_selector("td", text: "25%")
+      should have_no_link("14%", href: chapter_question_path(chapter2, question21.id))
+      should have_selector("td", text: "14%")
+      should have_no_link("0%", href: chapter_question_path(chapter2, question22.id))
+      should have_selector("td", text: "0%")
+      should have_no_link(chapter3.name, href: chapter_path(chapter3))
     end
   end
   
   context "if the user is not signed in" do    
     it "renders the menu correctly" do
       render template: "chapters/stats"
-      expect(rendered).to have_selector("h3", text: section.name)
-      expect(rendered).to have_selector("th", text: "Ex. 1")
-      expect(rendered).to have_selector("th", text: "Ex. 2")
-      expect(rendered).to have_no_selector("th", text: "Ex. 3")
-      expect(rendered).to have_link(chapter1.name, href: chapter_path(chapter1))
-      expect(rendered).to have_selector("td", text: "22%")
-      expect(rendered).to have_no_link("0%", href: chapter_question_path(chapter1, question11_offline.id))
-      expect(rendered).to have_link("67%", href: chapter_question_path(chapter1, question12.id))
-      expect(rendered).to have_link(chapter2.name, href: chapter_path(chapter2))
-      expect(rendered).to have_selector("td", text: "25%")
-      expect(rendered).to have_no_link("14%", href: chapter_question_path(chapter2, question21.id))
-      expect(rendered).to have_selector("td", text: "14%")
-      expect(rendered).to have_no_link("0%", href: chapter_question_path(chapter2, question22.id))
-      expect(rendered).to have_selector("td", text: "0%")
-      expect(rendered).to have_no_link(chapter3.name, href: chapter_path(chapter3))
+      should have_selector("h3", text: section.name)
+      should have_selector("th", text: "Ex. 1")
+      should have_selector("th", text: "Ex. 2")
+      should have_no_selector("th", text: "Ex. 3")
+      should have_link(chapter1.name, href: chapter_path(chapter1))
+      should have_selector("td", text: "22%")
+      should have_no_link("0%", href: chapter_question_path(chapter1, question11_offline.id))
+      should have_link("67%", href: chapter_question_path(chapter1, question12.id))
+      should have_link(chapter2.name, href: chapter_path(chapter2))
+      should have_selector("td", text: "25%")
+      should have_no_link("14%", href: chapter_question_path(chapter2, question21.id))
+      should have_selector("td", text: "14%")
+      should have_no_link("0%", href: chapter_question_path(chapter2, question22.id))
+      should have_selector("td", text: "0%")
+      should have_no_link(chapter3.name, href: chapter_path(chapter3))
     end
   end
 end

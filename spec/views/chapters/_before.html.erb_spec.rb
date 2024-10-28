@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "chapters/_before.html.erb", type: :view, chapter: true do
 
+  subject { rendered }
+
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
   let(:user_bad) { FactoryGirl.create(:user) }
@@ -39,44 +41,44 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
         
       it "renders the menu correctly" do
         render partial: "chapters/before"
-        expect(rendered).to have_selector("h5", text: "Général")
-        expect(rendered).to have_link("Résumé", href: chapter_path(chapter))
-        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter))
-        expect(rendered).to have_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
-        expect(rendered).to have_selector("h5", text: "Points théoriques")
-        expect(rendered).to have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
-        expect(rendered).to have_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id), class: "list-group-item-warning")
-        expect(rendered).to have_link(theory3.title, href: chapter_theory_path(chapter, theory3.id))
-        expect(rendered).to have_selector("h5", text: "Exercices")
-        expect(rendered).to have_link("Exercice", href: chapter_question_path(chapter, question1_offline.id), class: "list-group-item-warning")
-        expect(rendered).to have_link("Exercice 1", href: chapter_question_path(chapter, question2.id))
-        expect(rendered).to have_link("Exercice 2", href: chapter_question_path(chapter, question3.id))
-        expect(rendered).to have_link("Exercice 3", href: chapter_question_path(chapter, question4.id))
+        should have_selector("h5", text: "Général")
+        should have_link("Résumé", href: chapter_path(chapter))
+        should have_link("Chapitre entier", href: all_chapter_path(chapter))
+        should have_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
+        should have_selector("h5", text: "Points théoriques")
+        should have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
+        should have_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id), class: "list-group-item-warning")
+        should have_link(theory3.title, href: chapter_theory_path(chapter, theory3.id))
+        should have_selector("h5", text: "Exercices")
+        should have_link("Exercice", href: chapter_question_path(chapter, question1_offline.id), class: "list-group-item-warning")
+        should have_link("Exercice 1", href: chapter_question_path(chapter, question2.id))
+        should have_link("Exercice 2", href: chapter_question_path(chapter, question3.id))
+        should have_link("Exercice 3", href: chapter_question_path(chapter, question4.id))
       end
       
       it "renders the menu for full chapter correctly" do
         render partial: "chapters/before", locals: {active: 'all'}
-        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter), class: "active")
+        should have_link("Chapitre entier", href: all_chapter_path(chapter), class: "active")
       end
       
       it "renders an online theory correctly" do
         render partial: "chapters/before", locals: {active: 'theory-' + theory1.id.to_s}
-        expect(rendered).to have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id), class: "active")
+        should have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id), class: "active")
       end
       
       it "renders an offline theory correctly" do
         render partial: "chapters/before", locals: {active: 'theory-' + theory2_offline.id.to_s}
-        expect(rendered).to have_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id), class: "active")
+        should have_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id), class: "active")
       end
       
       it "renders an online question correctly" do
         render partial: "chapters/before", locals: {active: 'question-' + question2.id.to_s}
-        expect(rendered).to have_link("Exercice 1", href: chapter_question_path(chapter, question2.id), class: "active")
+        should have_link("Exercice 1", href: chapter_question_path(chapter, question2.id), class: "active")
       end
       
       it "renders an offline question correctly" do
         render partial: "chapters/before", locals: {active: 'question-' + question1_offline.id.to_s}
-        expect(rendered).to have_link("Exercice", href: chapter_question_path(chapter, question1_offline.id), class: "active")
+        should have_link("Exercice", href: chapter_question_path(chapter, question1_offline.id), class: "active")
       end
     end
     
@@ -89,19 +91,19 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
       
       it "renders the menu correctly" do
         render partial: "chapters/before"
-        expect(rendered).to have_selector("h5", text: "Général")
-        expect(rendered).to have_link("Résumé", href: chapter_path(chapter))
-        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter))
-        expect(rendered).to have_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
-        expect(rendered).to have_selector("h5", text: "Points théoriques")
-        expect(rendered).to have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
-        expect(rendered).to have_no_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id))
-        expect(rendered).to have_link(theory3.title, href: chapter_theory_path(chapter, theory3.id), class: "list-group-item-success")
-        expect(rendered).to have_selector("h5", text: "Exercices")
-        expect(rendered).to have_no_link("Exercice", href: chapter_question_path(chapter, question1_offline.id))
-        expect(rendered).to have_link("Exercice 1", href: chapter_question_path(chapter, question2.id))
-        expect(rendered).to have_link("Exercice 2", href: chapter_question_path(chapter, question3.id), class: "list-group-item-success")
-        expect(rendered).to have_link("Exercice 3", href: chapter_question_path(chapter, question4.id), class: "list-group-item-danger")
+        should have_selector("h5", text: "Général")
+        should have_link("Résumé", href: chapter_path(chapter))
+        should have_link("Chapitre entier", href: all_chapter_path(chapter))
+        should have_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
+        should have_selector("h5", text: "Points théoriques")
+        should have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
+        should have_no_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id))
+        should have_link(theory3.title, href: chapter_theory_path(chapter, theory3.id), class: "list-group-item-success")
+        should have_selector("h5", text: "Exercices")
+        should have_no_link("Exercice", href: chapter_question_path(chapter, question1_offline.id))
+        should have_link("Exercice 1", href: chapter_question_path(chapter, question2.id))
+        should have_link("Exercice 2", href: chapter_question_path(chapter, question3.id), class: "list-group-item-success")
+        should have_link("Exercice 3", href: chapter_question_path(chapter, question4.id), class: "list-group-item-danger")
       end
     end
     
@@ -114,18 +116,18 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
       
       it "renders the menu correctly" do
         render partial: "chapters/before"
-        expect(rendered).to have_selector("h5", text: "Général")
-        expect(rendered).to have_link("Résumé", href: chapter_path(chapter))
-        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter))
-        expect(rendered).to have_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
-        expect(rendered).to have_selector("h5", text: "Points théoriques")
-        expect(rendered).to have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
-        expect(rendered).to have_no_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id))
-        expect(rendered).to have_link(theory3.title, href: chapter_theory_path(chapter, theory3.id))
-        expect(rendered).to have_selector("h5", text: "Exercices")
-        expect(rendered).to have_link("Exercice 1", href: "#", class: "disabled")
-        expect(rendered).to have_link("Exercice 2", href: "#", class: "disabled")
-        expect(rendered).to have_link("Exercice 3", href: "#", class: "disabled")
+        should have_selector("h5", text: "Général")
+        should have_link("Résumé", href: chapter_path(chapter))
+        should have_link("Chapitre entier", href: all_chapter_path(chapter))
+        should have_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
+        should have_selector("h5", text: "Points théoriques")
+        should have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
+        should have_no_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id))
+        should have_link(theory3.title, href: chapter_theory_path(chapter, theory3.id))
+        should have_selector("h5", text: "Exercices")
+        should have_link("Exercice 1", href: "#", class: "disabled")
+        should have_link("Exercice 2", href: "#", class: "disabled")
+        should have_link("Exercice 3", href: "#", class: "disabled")
       end
     end
     
@@ -137,18 +139,18 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
       
       it "renders the menu correctly" do
         render partial: "chapters/before"
-        expect(rendered).to have_selector("h5", text: "Général")
-        expect(rendered).to have_link("Résumé", href: chapter_path(chapter))
-        expect(rendered).to have_link("Chapitre entier", href: all_chapter_path(chapter))
-        expect(rendered).to have_no_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
-        expect(rendered).to have_selector("h5", text: "Points théoriques")
-        expect(rendered).to have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
-        expect(rendered).to have_no_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id))
-        expect(rendered).to have_link(theory3.title, href: chapter_theory_path(chapter, theory3.id))
-        expect(rendered).to have_selector("h5", text: "Exercices")
-        expect(rendered).to have_link("Exercice 1", href: "#", class: "disabled")
-        expect(rendered).to have_link("Exercice 2", href: "#", class: "disabled")
-        expect(rendered).to have_link("Exercice 3", href: "#", class: "disabled")
+        should have_selector("h5", text: "Général")
+        should have_link("Résumé", href: chapter_path(chapter))
+        should have_link("Chapitre entier", href: all_chapter_path(chapter))
+        should have_no_link("Forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
+        should have_selector("h5", text: "Points théoriques")
+        should have_link(theory1.title, href: chapter_theory_path(chapter, theory1.id))
+        should have_no_link(theory2_offline.title, href: chapter_theory_path(chapter, theory2_offline.id))
+        should have_link(theory3.title, href: chapter_theory_path(chapter, theory3.id))
+        should have_selector("h5", text: "Exercices")
+        should have_link("Exercice 1", href: "#", class: "disabled")
+        should have_link("Exercice 2", href: "#", class: "disabled")
+        should have_link("Exercice 3", href: "#", class: "disabled")
       end
     end
   end
@@ -162,10 +164,10 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
       
       it "renders the menu correctly" do
         render partial: "chapters/before"
-        expect(rendered).to have_no_link("Exercice", href: chapter_question_path(chapter, question1_offline.id))
-        expect(rendered).to have_link("Exercice 1", href: chapter_question_path(chapter, question2.id))
-        expect(rendered).to have_link("Exercice 2", href: chapter_question_path(chapter, question3.id))
-        expect(rendered).to have_link("Exercice 3", href: chapter_question_path(chapter, question4.id))
+        should have_no_link("Exercice", href: chapter_question_path(chapter, question1_offline.id))
+        should have_link("Exercice 1", href: chapter_question_path(chapter, question2.id))
+        should have_link("Exercice 2", href: chapter_question_path(chapter, question3.id))
+        should have_link("Exercice 3", href: chapter_question_path(chapter, question4.id))
       end
     end
   end

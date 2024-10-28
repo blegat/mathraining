@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "contestcorrections/_edit.html.erb", type: :view, contestcorrection: true do
 
+  subject { rendered }
+
   let(:user) { FactoryGirl.create(:user) }
   let(:contestproblem) { FactoryGirl.create(:contestproblem) }
   let(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, official: false) }
@@ -18,24 +20,24 @@ describe "contestcorrections/_edit.html.erb", type: :view, contestcorrection: tr
   context "if the solution is official" do      
     it "renders the correct fields and buttons" do
       render partial: "contestcorrections/edit", locals: {contestsolution: contestsolution_official, contestcorrection: contestsolution_official.contestcorrection, can_edit_correction: true}
-      expect(rendered).to have_field("MathInput")
-      expect(rendered).to have_no_field("score")
-      expect(rendered).to have_button("Enregistrer (non-publique)")
-      expect(rendered).to have_button("Enregistrer (publique)")
-      expect(rendered).to have_button("Enregistrer (publique étoilée)")
-      expect(rendered).to have_button("Annuler")
+      should have_field("MathInput")
+      should have_no_field("score")
+      should have_button("Enregistrer (non-publique)")
+      should have_button("Enregistrer (publique)")
+      should have_button("Enregistrer (publique étoilée)")
+      should have_button("Annuler")
     end
   end
   
   context "if the solution is not official" do
     it "renders the correct fields and buttons" do
       render partial: "contestcorrections/edit", locals: {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection, can_edit_correction: true}
-      expect(rendered).to have_field("MathInput")
-      expect(rendered).to have_field("score")
-      expect(rendered).to have_button("Enregistrer provisoirement")
-      expect(rendered).to have_button("Enregistrer")
-      expect(rendered).to have_button("Enregistrer et étoiler")
-      expect(rendered).to have_button("Annuler")
+      should have_field("MathInput")
+      should have_field("score")
+      should have_button("Enregistrer provisoirement")
+      should have_button("Enregistrer")
+      should have_button("Enregistrer et étoiler")
+      should have_button("Annuler")
     end
   end
 end

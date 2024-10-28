@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "contests/index.html.erb", type: :view, contest: true do
 
+  subject { rendered }
+
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user_bad) { FactoryGirl.create(:user) }
   let(:user) { FactoryGirl.create(:advanced_user) }
@@ -25,44 +27,38 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an admin" do
-      before do
-        assign(:current_user, admin)
-      end
+      before { assign(:current_user, admin) }
         
       it "renders the contest correctly" do
         render template: "contests/index"
-        expect(rendered).to have_selector("table", class: "greyy")
-        expect(rendered).to have_link("Concours ##{contest.number}", href: contest_path(contest))
-        expect(rendered).to have_content("(à venir)")
-        expect(rendered).to have_content("Aucun problème corrigé")
-        expect(rendered).to have_button("Ajouter un concours")
+        should have_selector("table", class: "greyy")
+        should have_link("Concours ##{contest.number}", href: contest_path(contest))
+        should have_content("(à venir)")
+        should have_content("Aucun problème corrigé")
+        should have_button("Ajouter un concours")
       end
     end
     
     context "if the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
         
       it "renders the contest correctly" do
         render template: "contests/index"
-        expect(rendered).to have_selector("table", class: "greyy")
-        expect(rendered).to have_link("Concours ##{contest.number}", href: contest_path(contest))
-        expect(rendered).to have_content("(à venir)")
-        expect(rendered).to have_content("Aucun problème corrigé")
-        expect(rendered).to have_no_button("Ajouter un concours")
+        should have_selector("table", class: "greyy")
+        should have_link("Concours ##{contest.number}", href: contest_path(contest))
+        should have_content("(à venir)")
+        should have_content("Aucun problème corrigé")
+        should have_no_button("Ajouter un concours")
       end
     end
     
     context "if the user is not an organizer" do
-      before do
-        assign(:current_user, user_bad)
-      end
+      before { assign(:current_user, user_bad) }
         
       it "does not render the contest" do
         render template: "contests/index"
-        expect(rendered).to have_no_selector("table", class: "greyy")
-        expect(rendered).to have_no_link("Concours ##{contest.number}", href: contest_path(contest))
+        should have_no_selector("table", class: "greyy")
+        should have_no_link("Concours ##{contest.number}", href: contest_path(contest))
       end
     end
   end
@@ -75,29 +71,25 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user can participate" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
         
       it "renders the page correctly" do
         render template: "contests/index"
-        expect(rendered).to have_selector("table", class: "greyy")
-        expect(rendered).to have_link("Concours ##{contest.number}", href: contest_path(contest))
-        expect(rendered).to have_content("(à venir)")
-        expect(rendered).to have_content("Aucun problème corrigé")
+        should have_selector("table", class: "greyy")
+        should have_link("Concours ##{contest.number}", href: contest_path(contest))
+        should have_content("(à venir)")
+        should have_content("Aucun problème corrigé")
       end
     end
     
     context "if the user cannot participate" do
-      before do
-        assign(:current_user, user_bad)
-      end
+      before { assign(:current_user, user_bad) }
         
       it "renders the page correctly" do
         render template: "contests/index"
-        expect(rendered).to have_content("Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.")
-        expect(rendered).to have_selector("table", class: "greyy")
-        expect(rendered).to have_link("Concours ##{contest.number}", href: contest_path(contest))
+        should have_content("Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.")
+        should have_selector("table", class: "greyy")
+        should have_link("Concours ##{contest.number}", href: contest_path(contest))
       end
     end
   end
@@ -110,17 +102,15 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user can participate" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
         
       it "renders the page correctly" do
         render template: "contests/index"
-        expect(rendered).to have_selector("table", class: "orangey")
-        expect(rendered).to have_link("Concours ##{contest.number}", href: contest_path(contest))
-        expect(rendered).to have_content("(en cours)")
-        expect(rendered).to have_content("Après 1 problème :")
-        expect(rendered).to have_content("Personne n'a résolu de problème")
+        should have_selector("table", class: "orangey")
+        should have_link("Concours ##{contest.number}", href: contest_path(contest))
+        should have_content("(en cours)")
+        should have_content("Après 1 problème :")
+        should have_content("Personne n'a résolu de problème")
       end
     end
   end
@@ -138,18 +128,16 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user can participate" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
         
       it "renders the page correctly" do
         render template: "contests/index"
-        expect(rendered).to have_selector("table", class: "yellowy")
-        expect(rendered).to have_link("Concours ##{contest.number}", href: contest_path(contest))
-        expect(rendered).to have_content("(terminé)")
-        expect(rendered).to have_content("À la fin du concours :")
-        expect(rendered).to have_content("2 participants classés")
-        expect(rendered).to have_content("Meilleur score : 5/14 (1 fois)")
+        should have_selector("table", class: "yellowy")
+        should have_link("Concours ##{contest.number}", href: contest_path(contest))
+        should have_content("(terminé)")
+        should have_content("À la fin du concours :")
+        should have_content("2 participants classés")
+        should have_content("Meilleur score : 5/14 (1 fois)")
       end
     end
   end

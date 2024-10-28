@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "discussions/show.html.erb", type: :view, discussion: true do
 
+  subject { rendered }
+
   let(:user) { FactoryGirl.create(:user) }
   let(:user2) { FactoryGirl.create(:user) }
   let!(:discussion) { Discussion.create(last_message_time: DateTime.now) }
@@ -22,27 +24,25 @@ describe "discussions/show.html.erb", type: :view, discussion: true do
     it "renders the discussion page correctly" do
       render template: "discussions/show", locals: {params: {id: discussion.id}}
       expect(response).to render_template(:partial => "discussions/_menu")
-      expect(rendered).to have_selector("h3", text: "Discussion avec #{user2.name}")
-      expect(rendered).to have_field("MathInput")
-      expect(rendered).to have_button("Envoyer")
-      expect(rendered).to have_no_content("Ce compte a été supprimé")
+      should have_selector("h3", text: "Discussion avec #{user2.name}")
+      should have_field("MathInput")
+      should have_button("Envoyer")
+      should have_no_content("Ce compte a été supprimé")
       expect(response).to render_template(:partial => "tchatmessages/_show", :locals => {m: tchatmessage2})
       expect(response).to render_template(:partial => "tchatmessages/_show", :locals => {m: tchatmessage1})
     end
   end
   
   context "if the other user is unactive" do
-    before do
-      user2.update_attribute(:active, false)
-    end
+    before { user2.update_attribute(:active, false) }
     
     it "renders the discussion page correctly" do
       render template: "discussions/show", locals: {params: {id: discussion.id}}
       expect(response).to render_template(:partial => "discussions/_menu")
-      expect(rendered).to have_selector("h3", text: "Discussion avec #{user2.name}")
-      expect(rendered).to have_no_field("MathInput")
-      expect(rendered).to have_no_button("Envoyer")
-      expect(rendered).to have_content("Ce compte a été supprimé")
+      should have_selector("h3", text: "Discussion avec #{user2.name}")
+      should have_no_field("MathInput")
+      should have_no_button("Envoyer")
+      should have_content("Ce compte a été supprimé")
       expect(response).to render_template(:partial => "tchatmessages/_show", :locals => {m: tchatmessage2})
       expect(response).to render_template(:partial => "tchatmessages/_show", :locals => {m: tchatmessage1})
     end

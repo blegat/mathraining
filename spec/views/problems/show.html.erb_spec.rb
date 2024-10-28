@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "problems/show.html.erb", type: :view, problem: true do
 
+  subject { rendered }
+
   let(:admin) { FactoryGirl.create(:admin) }
   let(:bad_user) { FactoryGirl.create(:user, rating: 200) }
   let(:good_user) { FactoryGirl.create(:user, rating: 200) }
@@ -22,70 +24,66 @@ describe "problems/show.html.erb", type: :view, problem: true do
   end
   
   context "if the user is an admin" do
-    before do
-      assign(:current_user, admin)
-    end
+    before { assign(:current_user, admin) }
     
     context "if the problem is offline" do
       before { problem.update(online: false) }
       
       it "renders the page correctly" do
         render template: "problems/show"
-        expect(rendered).to have_text("Ce problème ne fait partie d'aucun test virtuel")
-        expect(rendered).to have_text("Faire appartenir ce problème à")
-        expect(rendered).to have_selector("h3", text: "Prérequis")
-        expect(rendered).to have_link(chapter.name, href: chapter_path(chapter))
-        expect(rendered).to have_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(problem, :chapter_id => chapter.id))
-        expect(rendered).to have_text("Ajouter le prérequis :")
-        expect(rendered).to have_text(problem.statement)
-        expect(rendered).to have_text(problem.origin)
-        expect(rendered).to have_link("Modifier ce problème")
-        expect(rendered).to have_link("Modifier la solution")
-        expect(rendered).to have_link("Modifier les solutions externes")
-        expect(rendered).to have_link("Supprimer ce problème")
-        expect(rendered).to have_button("Mettre en ligne")
+        should have_text("Ce problème ne fait partie d'aucun test virtuel")
+        should have_text("Faire appartenir ce problème à")
+        should have_selector("h3", text: "Prérequis")
+        should have_link(chapter.name, href: chapter_path(chapter))
+        should have_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(problem, :chapter_id => chapter.id))
+        should have_text("Ajouter le prérequis :")
+        should have_text(problem.statement)
+        should have_text(problem.origin)
+        should have_link("Modifier ce problème")
+        should have_link("Modifier la solution")
+        should have_link("Modifier les solutions externes")
+        should have_link("Supprimer ce problème")
+        should have_button("Mettre en ligne")
         expect(response).not_to render_template(:partial => "submissions/_index", :locals => {problem: problem})
-        expect(rendered).to have_button("Éléments de solution")
+        should have_button("Éléments de solution")
       end
     end
     
     context "if the problem is online" do      
       it "renders the page correctly" do
         render template: "problems/show"
-        expect(rendered).not_to have_text("Ce problème ne fait partie d'aucun test virtuel")
-        expect(rendered).not_to have_text("Faire appartenir ce problème à")
-        expect(rendered).to have_selector("h3", text: "Prérequis")
-        expect(rendered).to have_link(chapter.name, href: chapter_path(chapter))
-        expect(rendered).not_to have_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(problem, :chapter_id => chapter.id))
-        expect(rendered).not_to have_text("Ajouter le prérequis :")
-        expect(rendered).to have_text(problem.statement)
-        expect(rendered).to have_text(problem.origin)
-        expect(rendered).to have_link("Modifier ce problème")
-        expect(rendered).to have_link("Modifier la solution")
-        expect(rendered).to have_link("Modifier les solutions externes")
-        expect(rendered).not_to have_link("Supprimer ce problème")
-        expect(rendered).not_to have_button("Mettre en ligne")
+        should have_no_text("Ce problème ne fait partie d'aucun test virtuel")
+        should have_no_text("Faire appartenir ce problème à")
+        should have_selector("h3", text: "Prérequis")
+        should have_link(chapter.name, href: chapter_path(chapter))
+        should have_no_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(problem, :chapter_id => chapter.id))
+        should have_no_text("Ajouter le prérequis :")
+        should have_text(problem.statement)
+        should have_text(problem.origin)
+        should have_link("Modifier ce problème")
+        should have_link("Modifier la solution")
+        should have_link("Modifier les solutions externes")
+        should have_no_link("Supprimer ce problème")
+        should have_no_button("Mettre en ligne")
         expect(response).to render_template(:partial => "submissions/_index", :locals => {problem: problem})
-        expect(rendered).to have_button("Éléments de solution")
+        should have_button("Éléments de solution")
       end
     end
   end
   
   context "if the user didn't solve the problem" do
-    before do
-      assign(:current_user, bad_user)
-    end
+    before { assign(:current_user, bad_user) }
         
     it "renders the page correctly" do
       render template: "problems/show"
-      expect(rendered).not_to have_text("Ce problème ne fait partie d'aucun test virtuel")
-      expect(rendered).not_to have_selector("h3", text: "Prérequis")
-      expect(rendered).to have_text(problem.statement)
-      expect(rendered).not_to have_text(problem.origin)
-      expect(rendered).not_to have_link("Modifier ce problème")
+      should have_no_text("Ce problème ne fait partie d'aucun test virtuel")
+      should have_no_selector("h3", text: "Prérequis")
+      should have_text(problem.statement)
+      should have_no_text(problem.origin)
+      should have_no_link("Modifier ce problème")
       expect(response).to render_template(:partial => "submissions/_index", :locals => {problem: problem})
-      expect(rendered).to have_link("Nouvelle soumission")
-      expect(rendered).not_to have_button("Éléments de solution")
+      should have_link("Nouvelle soumission")
+      should have_no_button("Éléments de solution")
     end
     
     context "and tries to write a new submission" do
@@ -144,20 +142,18 @@ describe "problems/show.html.erb", type: :view, problem: true do
   end
   
   context "if the user solved the problem" do
-    before do
-      assign(:current_user, good_user)
-    end
+    before { assign(:current_user, good_user) }
         
     it "renders the page correctly" do
       render template: "problems/show"
-      expect(rendered).not_to have_text("Ce problème ne fait partie d'aucun test virtuel")
-      expect(rendered).not_to have_selector("h3", text: "Prérequis")
-      expect(rendered).to have_text(problem.statement)
-      expect(rendered).to have_text(problem.origin)
-      expect(rendered).not_to have_link("Modifier ce problème")
+      should have_no_text("Ce problème ne fait partie d'aucun test virtuel")
+      should have_no_selector("h3", text: "Prérequis")
+      should have_text(problem.statement)
+      should have_text(problem.origin)
+      should have_no_link("Modifier ce problème")
       expect(response).to render_template(:partial => "submissions/_index", :locals => {problem: problem})
-      expect(rendered).not_to have_link("Nouvelle soumission")
-      expect(rendered).not_to have_button("Éléments de solution")
+      should have_no_link("Nouvelle soumission")
+      should have_no_button("Éléments de solution")
     end
     
     context "and tries to write a new submission" do
@@ -203,13 +199,11 @@ describe "problems/show.html.erb", type: :view, problem: true do
   end
   
   context "if the user is a corrector having solved the problem" do
-    before do
-      assign(:current_user, good_corrector)
-    end
+    before { assign(:current_user, good_corrector) }
      
     it "shows the explanation" do
       render template: "problems/show"
-      expect(rendered).to have_button("Éléments de solution")
+      should have_button("Éléments de solution")
     end
     
     context "and tries to see a waiting submission" do
@@ -227,13 +221,11 @@ describe "problems/show.html.erb", type: :view, problem: true do
   end
   
   context "if the user is a corrector not having solved the problem" do
-    before do
-      assign(:current_user, bad_corrector)
-    end
+    before { assign(:current_user, bad_corrector) }
      
     it "does not show the explanation" do
       render template: "problems/show"
-      expect(rendered).not_to have_button("Éléments de solution")
+      should have_no_button("Éléments de solution")
     end
     
     context "and tries to see a waiting submission" do

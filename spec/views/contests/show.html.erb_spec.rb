@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "contests/show.html.erb", type: :view, contest: true do
 
+  subject { rendered }
+
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user_bad) { FactoryGirl.create(:user, rating: 0) }
   let(:user) { FactoryGirl.create(:advanced_user) }
@@ -24,46 +26,42 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an admin" do
-      before do
-        assign(:current_user, admin)
-      end
+      before { assign(:current_user, admin) }
         
       it "renders the page correctly" do
         render template: "contests/show"
-        expect(rendered).to have_content("Organisateur du concours :")
-        expect(rendered).to have_link(user_organizer.name, href: user_path(user_organizer))
-        expect(rendered).to have_link("supprimer")
-        expect(rendered).to have_button("Ajouter")
-        expect(rendered).to have_no_link("Définir les médailles")
-        expect(rendered).to have_no_link("Problèmes", href: contest_path(contest))
-        expect(rendered).to have_selector("h3", text: "Problèmes")
+        should have_content("Organisateur du concours :")
+        should have_link(user_organizer.name, href: user_path(user_organizer))
+        should have_link("supprimer")
+        should have_button("Ajouter")
+        should have_no_link("Définir les médailles")
+        should have_no_link("Problèmes", href: contest_path(contest))
+        should have_selector("h3", text: "Problèmes")
         expect(response).to render_template(:partial => "contests/_problems")
-        expect(rendered).to have_link("Modifier ce concours")
-        expect(rendered).to have_no_link("Ajouter un problème")
-        expect(rendered).to have_link("Mettre ce concours en ligne")
-        expect(rendered).to have_link("Supprimer ce concours")
+        should have_link("Modifier ce concours")
+        should have_no_link("Ajouter un problème")
+        should have_link("Mettre ce concours en ligne")
+        should have_link("Supprimer ce concours")
       end
     end
     
     context "if the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
         
       it "renders the page correctly" do
         render template: "contests/show"
-        expect(rendered).to have_content("Organisateur du concours :")
-        expect(rendered).to have_link(user_organizer.name, href: user_path(user_organizer))
-        expect(rendered).to have_no_link("supprimer")
-        expect(rendered).to have_no_button("Ajouter")
-        expect(rendered).to have_no_link("Définir les médailles")
-        expect(rendered).to have_no_link("Problèmes", href: contest_path(contest))
-        expect(rendered).to have_selector("h3", text: "Problèmes")
+        should have_content("Organisateur du concours :")
+        should have_link(user_organizer.name, href: user_path(user_organizer))
+        should have_no_link("supprimer")
+        should have_no_button("Ajouter")
+        should have_no_link("Définir les médailles")
+        should have_no_link("Problèmes", href: contest_path(contest))
+        should have_selector("h3", text: "Problèmes")
         expect(response).to render_template(:partial => "contests/_problems")
-        expect(rendered).to have_link("Modifier ce concours")
-        expect(rendered).to have_link("Ajouter un problème")
-        expect(rendered).to have_no_link("Mettre ce concours en ligne")
-        expect(rendered).to have_no_link("Supprimer ce concours")
+        should have_link("Modifier ce concours")
+        should have_link("Ajouter un problème")
+        should have_no_link("Mettre ce concours en ligne")
+        should have_no_link("Supprimer ce concours")
       end
     end
   end
@@ -76,52 +74,46 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an admin" do
-      before do
-        assign(:current_user, admin)
-      end
+      before { assign(:current_user, admin) }
         
       it "renders the page correctly" do
         render template: "contests/show"
-        expect(rendered).to have_no_link("supprimer")
-        expect(rendered).to have_no_button("Ajouter")
-        expect(rendered).to have_no_link("Définir les médailles")
-        expect(rendered).to have_no_link("Problèmes", href: contest_path(contest))
-        expect(rendered).to have_selector("h3", text: "Problèmes")
+        should have_no_link("supprimer")
+        should have_no_button("Ajouter")
+        should have_no_link("Définir les médailles")
+        should have_no_link("Problèmes", href: contest_path(contest))
+        should have_selector("h3", text: "Problèmes")
         expect(response).to render_template(:partial => "contests/_problems")
-        expect(rendered).to have_link("Modifier ce concours")
-        expect(rendered).to have_no_link("Ajouter un problème")
-        expect(rendered).to have_no_link("Mettre ce concours en ligne")
-        expect(rendered).to have_no_link("Supprimer ce concours")
+        should have_link("Modifier ce concours")
+        should have_no_link("Ajouter un problème")
+        should have_no_link("Mettre ce concours en ligne")
+        should have_no_link("Supprimer ce concours")
       end
     end
     
     context "if the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
         
       it "renders the page correctly" do
         render template: "contests/show"
-        expect(rendered).to have_no_link("Définir les médailles")
-        expect(rendered).to have_no_link("Problèmes", href: contest_path(contest))
-        expect(rendered).to have_selector("h3", text: "Problèmes")
+        should have_no_link("Définir les médailles")
+        should have_no_link("Problèmes", href: contest_path(contest))
+        should have_selector("h3", text: "Problèmes")
         expect(response).to render_template(:partial => "contests/_problems")
-        expect(rendered).to have_link("Modifier ce concours")
-        expect(rendered).to have_no_link("Ajouter un problème")
+        should have_link("Modifier ce concours")
+        should have_no_link("Ajouter un problème")
       end
     end
     
     context "if the user can participate" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
         
       it "renders the page correctly" do
         render template: "contests/show"
-        expect(rendered).to have_no_link("Problèmes", href: contest_path(contest))
-        expect(rendered).to have_selector("h3", text: "Problèmes")
+        should have_no_link("Problèmes", href: contest_path(contest))
+        should have_selector("h3", text: "Problèmes")
         expect(response).to render_template(:partial => "contests/_problems")
-        expect(rendered).to have_no_link("Modifier ce concours")
+        should have_no_link("Modifier ce concours")
       end
       
       it "renders the page correctly with tab = 1" do
@@ -144,28 +136,26 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user can participate" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
         
       it "renders the page correctly" do
         render template: "contests/show"
-        expect(rendered).to have_link("Problèmes", href: contest_path(contest), class: "active")
-        expect(rendered).to have_link("Classement après 1 problème", href: contest_path(contest, :tab => 1))
-        expect(rendered).to have_no_link("Statistiques", href: contest_path(contest, :tab => 2))
-        expect(rendered).to have_no_selector("h3", text: "Problèmes")
+        should have_link("Problèmes", href: contest_path(contest), class: "active")
+        should have_link("Classement après 1 problème", href: contest_path(contest, :tab => 1))
+        should have_no_link("Statistiques", href: contest_path(contest, :tab => 2))
+        should have_no_selector("h3", text: "Problèmes")
         expect(response).to render_template(:partial => "contests/_problems")
       end
       
       it "renders the page correctly with tab = 1" do
         render template: "contests/show", locals: {params: {tab: 1}}
-        expect(rendered).to have_link("Classement après 1 problème", href: contest_path(contest, :tab => 1), class: "active")
+        should have_link("Classement après 1 problème", href: contest_path(contest, :tab => 1), class: "active")
         expect(response).to render_template(:partial => "contests/_results")
       end
       
       it "renders the page correctly with tab = 2" do
         render template: "contests/show", locals: {params: {tab: 2}}
-        expect(rendered).to have_link("Problèmes", href: contest_path(contest), class: "active")
+        should have_link("Problèmes", href: contest_path(contest), class: "active")
         expect(response).to render_template(:partial => "contests/_problems") # Tab 2 not accessible
       end
     end
@@ -179,29 +169,27 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
         
       it "renders the page correctly" do
         render template: "contests/show"
-        expect(rendered).to have_link("Définir les médailles")
-        expect(rendered).to have_link("Problèmes", href: contest_path(contest), class: "active")
-        expect(rendered).to have_link("Classement final", href: contest_path(contest, :tab => 1))
-        expect(rendered).to have_link("Statistiques", href: contest_path(contest, :tab => 2))
-        expect(rendered).to have_no_selector("h3", text: "Problèmes")
+        should have_link("Définir les médailles")
+        should have_link("Problèmes", href: contest_path(contest), class: "active")
+        should have_link("Classement final", href: contest_path(contest, :tab => 1))
+        should have_link("Statistiques", href: contest_path(contest, :tab => 2))
+        should have_no_selector("h3", text: "Problèmes")
         expect(response).to render_template(:partial => "contests/_problems")
       end
       
       it "renders the page correctly with tab = 1" do
         render template: "contests/show", locals: {params: {tab: 1}}
-        expect(rendered).to have_link("Classement final", href: contest_path(contest, :tab => 1), class: "active")
+        should have_link("Classement final", href: contest_path(contest, :tab => 1), class: "active")
         expect(response).to render_template(:partial => "contests/_results")
       end
       
       it "renders the page correctly with tab = 2" do
         render template: "contests/show", locals: {params: {tab: 2}}
-        expect(rendered).to have_link("Statistiques", href: contest_path(contest, :tab => 2), class: "active")
+        should have_link("Statistiques", href: contest_path(contest, :tab => 2), class: "active")
         expect(response).to render_template(:partial => "contests/_statistics")
       end
     end

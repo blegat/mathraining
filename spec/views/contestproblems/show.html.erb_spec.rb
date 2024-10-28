@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
 
+  subject { rendered }
+
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user_bad) { FactoryGirl.create(:user, rating: 0) }
   let(:user) { FactoryGirl.create(:advanced_user) }
@@ -24,24 +26,23 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
       
       it "renders the page correctly" do
         render template: "contestproblems/show"
-        expect(rendered).to have_content("Origine du problème :")
+        should have_content("Origine du problème :")
         expect(response).not_to render_template(:partial => "contests/_clock")
-        expect(rendered).to have_link("Modifier ce problème")
-        expect(rendered).to have_link("Supprimer ce problème")
+        should have_link("Modifier ce problème")
+        should have_link("Supprimer ce problème")
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
-        expect(rendered).to have_content("Ce problème n'est pas encore en ligne. Pour modifier sa solution")
+        should have_content("Ce problème n'est pas encore en ligne. Pour modifier sa solution")
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
       end
       
       context "if the official solution is asked" do
         before { assign(:contestsolution, contestsolution_official) }
+        
         it "renders the page correctly" do
           render template: "contestproblems/show"
           expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution_official})
@@ -57,20 +58,18 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
         
       it "renders the page correctly" do
         render template: "contestproblems/show"
-        expect(rendered).to have_content("Origine du problème :")
-        expect(rendered).to have_content("Temps avant publication :")
+        should have_content("Origine du problème :")
+        should have_content("Temps avant publication :")
         expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.start_time.to_i, message_zero: "En ligne"})
-        expect(rendered).to have_link("Modifier ce problème")
-        expect(rendered).to have_no_link("Supprimer ce problème")
+        should have_link("Modifier ce problème")
+        should have_no_link("Supprimer ce problème")
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
-        expect(rendered).to have_content("Ce problème n'est pas encore en ligne. Pour modifier sa solution")
+        should have_content("Ce problème n'est pas encore en ligne. Pour modifier sa solution")
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
       end
     end
@@ -83,42 +82,39 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
         
       it "renders the page correctly" do
         render template: "contestproblems/show"
-        expect(rendered).to have_content("Origine du problème :")
-        expect(rendered).to have_no_content("Temps avant publication :")
-        expect(rendered).to have_content("Temps restant :")
+        should have_content("Origine du problème :")
+        should have_no_content("Temps avant publication :")
+        should have_content("Temps restant :")
         expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé"})
-        expect(rendered).to have_link("Modifier ce problème")
-        expect(rendered).to have_no_link("Supprimer ce problème")
+        should have_link("Modifier ce problème")
+        should have_no_link("Supprimer ce problème")
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
-        expect(rendered).to have_content("Ce problème est en train d'être résolu par les participants. Pour modifier sa solution")
+        should have_content("Ce problème est en train d'être résolu par les participants. Pour modifier sa solution")
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
       end
     end
     
     context "if the user can participate" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
       
       context "and has not sent a solution yet" do
         before { assign(:contestsolution, Contestsolution.new) }
+        
         it "renders the page correctly" do
           render template: "contestproblems/show"
-          expect(rendered).to have_no_content("Origine du problème :")
-          expect(rendered).to have_content("Temps restant :")
+          should have_no_content("Origine du problème :")
+          should have_content("Temps restant :")
           expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé"})
-          expect(rendered).to have_no_link("Modifier ce problème")
+          should have_no_link("Modifier ce problème")
           expect(response).to render_template(:partial => "contestsolutions/_index")
           expect(response).to render_template(:partial => "contestsolutions/_new")
           expect(response).not_to render_template(:partial => "contestsolutions/_show")
-          expect(rendered).to have_no_content("Pour pouvoir participer aux concours, il faut avoir au moins 200 points.")
+          should have_no_content("Pour pouvoir participer aux concours, il faut avoir au moins 200 points.")
         end
       end
       
@@ -126,6 +122,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
         let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user) }
         
         before {assign(:contestsolution, contestsolution) }
+        
         it "renders the page correctly" do
           render template: "contestproblems/show"
           expect(response).not_to render_template(:partial => "contestsolutions/_new")
@@ -135,18 +132,16 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user cannot participate" do
-      before do
-        assign(:current_user, user_bad)
-      end
+      before { assign(:current_user, user_bad) }
       
       it "renders the page correctly" do
         render template: "contestproblems/show"
-        expect(rendered).to have_content("Temps restant :")
+        should have_content("Temps restant :")
         expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé"})
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
-        expect(rendered).to have_content("Pour pouvoir participer aux concours, il faut avoir au moins 200 points.")
+        should have_content("Pour pouvoir participer aux concours, il faut avoir au moins 200 points.")
       end
     end
   end
@@ -159,19 +154,17 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
         
       it "renders the page correctly" do
         render template: "contestproblems/show"
-        expect(rendered).to have_content("Origine du problème :")
+        should have_content("Origine du problème :")
         expect(response).not_to render_template(:partial => "contests/_clock")
-        expect(rendered).to have_link("Modifier ce problème")
-        expect(rendered).to have_no_link("Supprimer ce problème")
+        should have_link("Modifier ce problème")
+        should have_no_link("Supprimer ce problème")
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
-        expect(rendered).to have_no_content("Ce problème est en train d'être résolu par les participants.")
+        should have_no_content("Ce problème est en train d'être résolu par les participants.")
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
       end
     end
@@ -179,13 +172,12 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     context "if the user participated" do
       let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user) }
       let!(:contestsolution_other) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem) }
-      before do
-        assign(:current_user, user)
-      end       
+      
+      before { assign(:current_user, user) }    
         
       it "renders the page correctly" do
         render template: "contestproblems/show"
-        expect(rendered).to have_content("Origine du problème :")
+        should have_content("Origine du problème :")
         expect(response).not_to render_template(:partial => "contests/_clock")
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
@@ -194,6 +186,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       
       context "if his solution is asked" do
         before { assign(:contestsolution, contestsolution) }
+        
         it "shows the solution" do
           render template: "contestproblems/show"
           expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution})
@@ -202,6 +195,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       
       context "if another solution is asked" do
         before { assign(:contestsolution, contestsolution_other) }
+        
         it "does not show the solution" do
           render template: "contestproblems/show"
           expect(response).not_to render_template(:partial => "contestsolutions/_show")
@@ -210,6 +204,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       
       context "if the official solution is asked" do
         before { assign(:contestsolution, contestsolution_official) }
+        
         it "does not show the solution" do
           render template: "contestproblems/show"
           expect(response).not_to render_template(:partial => "contestsolutions/_show")
@@ -228,13 +223,12 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user, score: 2) }
       let!(:contestsolution_other_good) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, score: 7) }
       let!(:contestsolution_other_bad) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, score: 6) }
-      before do
-        assign(:current_user, user)
-      end       
+      
+      before { assign(:current_user, user) }      
         
       it "renders the page correctly" do
         render template: "contestproblems/show"
-        expect(rendered).to have_content("Origine du problème :")
+        should have_content("Origine du problème :")
         expect(response).not_to render_template(:partial => "contests/_clock")
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
@@ -243,6 +237,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       
       context "if his solution is asked" do
         before { assign(:contestsolution, contestsolution) }
+        
         it "shows the solution" do
           render template: "contestproblems/show"
           expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution})
@@ -251,6 +246,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       
       context "if another good solution if asked" do
         before { assign(:contestsolution, contestsolution_other_good) }
+        
         it "shows the solution" do
           render template: "contestproblems/show"
           expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution_other_good})
@@ -259,6 +255,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       
       context "does not show another bad solution if asked" do
         before { assign(:contestsolution, contestsolution_other_bad) }
+        
         it "does not show the solution" do
           render template: "contestproblems/show"
           expect(response).not_to render_template(:partial => "contestsolutions/_show")
@@ -266,12 +263,11 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       end
       
       context "if official solution is public" do
-        before do
-          contestsolution_official.update_attribute(:score, 7)
-        end
+        before { contestsolution_official.update_attribute(:score, 7) }
         
         context "if official solution if asked" do
           before { assign(:contestsolution, contestsolution_official) }
+          
           it "shows the solution" do
             render template: "contestproblems/show"
             expect(response).to render_template(:partial => "contestsolutions/_show", :locals => {contestsolution: contestsolution_official})
@@ -280,12 +276,11 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       end
       
       context "if official solution is not public" do
-        before do
-          contestsolution_official.update_attribute(:score, 0)
-        end
+        before { contestsolution_official.update_attribute(:score, 0) }
         
         context "if official solution if asked" do
           before { assign(:contestsolution, contestsolution_official) }
+          
           it "does not show the solution" do
             render template: "contestproblems/show"
             expect(response).not_to render_template(:partial => "contestsolutions/_show")

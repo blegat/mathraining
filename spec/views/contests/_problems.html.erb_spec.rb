@@ -3,6 +3,8 @@ require "spec_helper"
 
 describe "contests/_problems.html.erb", type: :view, contest: true do
 
+  subject { rendered }
+
   let(:user) { FactoryGirl.create(:user) }
   let(:user_organizer) { FactoryGirl.create(:user) }
   let!(:contest) { FactoryGirl.create(:contest) }
@@ -20,18 +22,16 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
-        expect(rendered).to have_selector("table", class: "greyy")
-        expect(rendered).to have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
-        expect(rendered).to have_content(contestproblem.statement)
-        expect(rendered).to have_content(contestproblem.origin)
-        expect(rendered).to have_no_content("Tenté par")
-        expect(rendered).to have_no_content("Publication dans :")
+        should have_selector("table", class: "greyy")
+        should have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
+        should have_content(contestproblem.statement)
+        should have_content(contestproblem.origin)
+        should have_no_content("Tenté par")
+        should have_no_content("Publication dans :")
         expect(response).not_to render_template(:partial => "contests/_clock")
       end
     end
@@ -44,34 +44,30 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
-        expect(rendered).to have_selector("table", class: "greyy")
-        expect(rendered).to have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
-        expect(rendered).to have_content(contestproblem.statement)
-        expect(rendered).to have_content(contestproblem.origin)
-        expect(rendered).to have_no_content("Tenté par")
-        expect(rendered).to have_content("Publication dans :")
+        should have_selector("table", class: "greyy")
+        should have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
+        should have_content(contestproblem.statement)
+        should have_content(contestproblem.origin)
+        should have_no_content("Tenté par")
+        should have_content("Publication dans :")
         expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.start_time.to_i, message_zero: "En ligne", p_id: contestproblem.id})
       end
     end
     
     context "and the user is a participant" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
-        expect(rendered).to have_selector("table", class: "greyy")
-        expect(rendered).to have_no_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
-        expect(rendered).to have_selector("h4", text: "Problème ##{contestproblem.number}")
-        expect(rendered).to have_no_content(contestproblem.statement)
-        expect(rendered).to have_no_content(contestproblem.origin)
+        should have_selector("table", class: "greyy")
+        should have_no_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
+        should have_selector("h4", text: "Problème ##{contestproblem.number}")
+        should have_no_content(contestproblem.statement)
+        should have_no_content(contestproblem.origin)
       end
     end
   end
@@ -83,33 +79,29 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is an organizer" do
-      before do
-        assign(:current_user, user_organizer)
-      end
+      before { assign(:current_user, user_organizer) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
-        expect(rendered).to have_selector("table", class: "orangey")
-        expect(rendered).to have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
-        expect(rendered).to have_content(contestproblem.statement)
-        expect(rendered).to have_content(contestproblem.origin)
-        expect(rendered).to have_content("Tenté par 0 personne")
-        expect(rendered).to have_content("Temps restant :")
+        should have_selector("table", class: "orangey")
+        should have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
+        should have_content(contestproblem.statement)
+        should have_content(contestproblem.origin)
+        should have_content("Tenté par 0 personne")
+        should have_content("Temps restant :")
         expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé", p_id: contestproblem.id})
       end
     end
     
     context "and the user is a participant" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
-        expect(rendered).to have_selector("table", class: "orangey")
-        expect(rendered).to have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
-        expect(rendered).to have_content(contestproblem.statement)
-        expect(rendered).to have_no_content(contestproblem.origin)
+        should have_selector("table", class: "orangey")
+        should have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
+        should have_content(contestproblem.statement)
+        should have_no_content(contestproblem.origin)
       end
     end
   end
@@ -122,19 +114,17 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is a participant" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
-        expect(rendered).to have_selector("table", class: "yellowy")
-        expect(rendered).to have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
-        expect(rendered).to have_content(contestproblem.statement)
-        expect(rendered).to have_content(contestproblem.origin)
-        expect(rendered).to have_content("Tenté par 1 personne")
-        expect(rendered).to have_content("En cours de correction")
-        expect(rendered).to have_no_content("Temps restant :")
+        should have_selector("table", class: "yellowy")
+        should have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
+        should have_content(contestproblem.statement)
+        should have_content(contestproblem.origin)
+        should have_content("Tenté par 1 personne")
+        should have_content("En cours de correction")
+        should have_no_content("Temps restant :")
       end
     end
   end
@@ -148,19 +138,17 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is a participant" do
-      before do
-        assign(:current_user, user)
-      end
+      before { assign(:current_user, user) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
-        expect(rendered).to have_selector("table", class: "yellowy")
-        expect(rendered).to have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
-        expect(rendered).to have_content(contestproblem.statement)
-        expect(rendered).to have_content(contestproblem.origin)
-        expect(rendered).to have_content("Tenté par 2 personnes")
-        expect(rendered).to have_content("Scores parfaits : 1")
-        expect(rendered).to have_no_content("Temps restant :")
+        should have_selector("table", class: "yellowy")
+        should have_link("Problème ##{contestproblem.number}", href: contestproblem_path(contestproblem))
+        should have_content(contestproblem.statement)
+        should have_content(contestproblem.origin)
+        should have_content("Tenté par 2 personnes")
+        should have_content("Scores parfaits : 1")
+        should have_no_content("Temps restant :")
       end
     end
   end
