@@ -28,17 +28,17 @@ describe ChaptersHelper, type: :helper, chapter: true do
     end
   end
   
-  describe "accessible chapters from section" do
+  describe "non-accessible chapters from section" do
     it do
-      expect(accessible_chapters_from_section(admin, section_fondation).map(&:id).sort).to eq([chapter_offline.id, chapter_fondation.id].sort)
-      expect(accessible_chapters_from_section(user, section_fondation).map(&:id).sort).to eq([chapter_fondation.id])
-      expect(accessible_chapters_from_section(user_bad, section_fondation).map(&:id).sort).to eq([chapter_fondation.id])
-      expect(accessible_chapters_from_section(nil, section_fondation).map(&:id).sort).to eq([chapter_fondation.id]) # not signed in
+      expect(non_accessible_chapters_ids(admin, section_fondation)).to eq(Set.new)
+      expect(non_accessible_chapters_ids(user, section_fondation)).to eq(Set[chapter_offline.id])
+      expect(non_accessible_chapters_ids(user_bad, section_fondation)).to eq(Set[chapter_offline.id])
+      expect(non_accessible_chapters_ids(nil, section_fondation)).to eq(Set[chapter_offline.id]) # not signed in
       
-      expect(accessible_chapters_from_section(admin, section).map(&:id).sort).to eq([chapter1.id, chapter2.id].sort)
-      expect(accessible_chapters_from_section(user, section).map(&:id).sort).to eq([chapter1.id, chapter2.id].sort)
-      expect(accessible_chapters_from_section(user_bad, section).map(&:id).sort).to eq([chapter1.id])
-      expect(accessible_chapters_from_section(nil, section).map(&:id).sort).to eq([chapter1.id]) # not signed in
+      expect(non_accessible_chapters_ids(admin, section)).to eq(Set.new)
+      expect(non_accessible_chapters_ids(user, section)).to eq(Set.new)
+      expect(non_accessible_chapters_ids(user_bad, section)).to eq(Set[chapter2.id])
+      expect(non_accessible_chapters_ids(nil, section)).to eq(Set[chapter2.id]) # not signed in
     end
   end
 end

@@ -15,8 +15,9 @@ describe ProblemsHelper, type: :helper, problem: true do
   let(:section) { FactoryGirl.create(:section) }
   let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true) }
   let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:problem1) { FactoryGirl.create(:problem, section: section, online: true, level: 1, position: 1) }
-  let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true, level: 1, position: 2) }
+  let!(:problem_no_prerequisite) { FactoryGirl.create(:problem, section: section, online: true, level: 1, position: 1) } # Should not happen in production but we still want to support such problems
+  let!(:problem1) { FactoryGirl.create(:problem, section: section, online: true, level: 1, position: 2) }
+  let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true, level: 1, position: 3) }
   let!(:problem12) { FactoryGirl.create(:problem, section: section, online: true, level: 2, position: 1) }
   let!(:problem_offline) { FactoryGirl.create(:problem, section: section, online: false, level: 2, position: 2) }
   let!(:problem1_other_section) { FactoryGirl.create(:problem, online: true, level: 1, position: 1) }
@@ -52,14 +53,27 @@ describe ProblemsHelper, type: :helper, problem: true do
     end
   end
   
-  describe "accessible problems from section" do
+  describe "non-accessible problems from section" do
     it do      
-      expect(accessible_problems_from_section(admin, section, ["id"]).map(&:id)).to eq([problem1.id, problem2.id, problem12.id, problem_offline.id, problem1_virtualtest.id])
-      expect(accessible_problems_from_section(user12_virtualtest, section, ["id"]).map(&:id)).to eq([problem1.id, problem2.id, problem12.id, problem1_virtualtest.id])
-      expect(accessible_problems_from_section(user12, section, ["id"]).map(&:id)).to eq([problem1.id, problem2.id, problem12.id])
-      expect(accessible_problems_from_section(user1, section, ["id"]).map(&:id)).to eq([problem1.id])
-      expect(accessible_problems_from_section(user2, section, ["id"]).map(&:id)).to eq([problem2.id])
-      expect(accessible_problems_from_section(user, section, ["id"]).map(&:id)).to eq([])
+      expect(non_accessible_problems_ids(admin, section)).to eq(Set.new)
+      expect(non_accessible_problems_ids(user12_virtualtest, section)).to eq(Set[problem_offline.id])
+      expect(non_accessible_problems_ids(user12, section)).to eq(Set[problem_offline.id, problem1_virtualtest.id])
+      expect(non_accessible_problems_ids(user1, section)).to eq(Set[problem_offline.id, problem2.id, problem12.id, problem1_virtualtest.id])
+      expect(non_accessible_problems_ids(user2, section)).to eq(Set[problem_offline.id, problem1.id, problem12.id, problem1_virtualtest.id])
+      expect(non_accessible_problems_ids(user, section)).to eq(Set[problem_offline.id, problem1.id, problem2.id, problem12.id, problem1_virtualtest.id])
+      expect(non_accessible_problems_ids(user_bad, section)).to eq("all")
+      expect(non_accessible_problems_ids(nil, section)).to eq("all") # not signed in
+    end
+  end
+  
+  describe "accessible problems from section" do
+    it do
+      expect(accessible_problems_from_section(admin, section, ["id"]).map(&:id)).to eq([problem_no_prerequisite.id, problem1.id, problem2.id, problem12.id, problem_offline.id, problem1_virtualtest.id])
+      expect(accessible_problems_from_section(user12_virtualtest, section, ["id"]).map(&:id)).to eq([problem_no_prerequisite.id, problem1.id, problem2.id, problem12.id, problem1_virtualtest.id])
+      expect(accessible_problems_from_section(user12, section, ["id"]).map(&:id)).to eq([problem_no_prerequisite.id, problem1.id, problem2.id, problem12.id])
+      expect(accessible_problems_from_section(user1, section, ["id"]).map(&:id)).to eq([problem_no_prerequisite.id, problem1.id])
+      expect(accessible_problems_from_section(user2, section, ["id"]).map(&:id)).to eq([problem_no_prerequisite.id, problem2.id])
+      expect(accessible_problems_from_section(user, section, ["id"]).map(&:id)).to eq([problem_no_prerequisite.id])
       expect(accessible_problems_from_section(user_bad, section, ["id"]).map(&:id)).to eq([])
       expect(accessible_problems_from_section(nil, section, ["id"]).map(&:id)).to eq([]) # not signed in
     end

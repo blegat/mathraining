@@ -26,13 +26,17 @@
 <% end %>
 </p>
 
+<% chapters = @section.chapters.select(:id, :name, :description, :online, :level, :nb_tries, :nb_completions, :publication_date).order(:level, :position) %>
+<% chapters_by_level = chapters.group_by{|c| c.level} %>
+<% chapters_id = chapters.map(&:id) %>
+
 <% unless signed_in? and current_user.sk.admin? %>
   <% @chapter_status = [] %>
   <% @question_status = [] %>
   <% @theory_status = [] %>
-  <% access_chap = accessible_chapters_from_section((signed_in? ? current_user.sk : nil), @section).to_a %>
-  <% access_chap.each do |c| %>
-    <% @chapter_status[c.id] = "access" %>
+  <% non_access_chaps_ids = non_accessible_chapters_ids((signed_in? ? current_user.sk : nil), @section) %>
+  <% chapters_id.each do |id| %>
+    <% @chapter_status[id] = (non_access_chaps_ids.include?(id) ? "no-access" : "access") %>
   <% end %>
   <% if signed_in? %>
     <% current_user.sk.chapters.each do |c| %>
@@ -41,21 +45,18 @@
     <% current_user.sk.creating_chapters.each do |c| %>
       <% @chapter_status[c.id] = "creator" %>
     <% end %>
-    <% current_user.sk.unsolvedquestions.joins(:question).where("questions.chapter_id IN (?)", access_chap).select("questions.id").each do |sq| %>
+    <% current_user.sk.unsolvedquestions.joins(:question).where("questions.chapter_id IN (?)", chapters_id).select("questions.id").each do |sq| %>
       <% @question_status[sq.id] = "incorrect" %>
     <% end %>
-    <% current_user.sk.solvedquestions.joins(:question).where("questions.chapter_id IN (?)", access_chap).select("questions.id").each do |sq| %>
+    <% current_user.sk.solvedquestions.joins(:question).where("questions.chapter_id IN (?)", chapters_id).select("questions.id").each do |sq| %>
       <% @question_status[sq.id] = "correct" %>
     <% end %>
-    <% current_user.sk.theories.where(:chapter_id => access_chap).each do |t| %>
+    <% current_user.sk.theories.where(:chapter_id => chapters_id).each do |t| %>
       <% @theory_status[t.id] = "read" %>
     <% end %>
   <% end %>
 <% end %>
 
-<% chapters = @section.chapters.select(:id, :name, :description, :online, :level, :nb_tries, :nb_completions, :publication_date).order(:level, :position) %>
-<% chapters_by_level = chapters.group_by{|c| c.level} %>
-<% chapters_id = chapters.map(&:id) %>
 <% @questions_by_chapter = Question.select(:id, :online, :chapter_id).where(:chapter_id => chapters_id).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
 <% @theories_by_chapter = Theory.select(:id, :online, :title, :chapter_id).where(:chapter_id => chapters_id).order(:chapter_id, :position).group_by{|t| t.chapter_id} %>
 
