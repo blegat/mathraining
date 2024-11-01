@@ -172,9 +172,9 @@ RSpec::Matchers.define :have_controller_index_behavior do |behavior|
   end
 end
 
-RSpec::Matchers.define :have_controller_show_behavior do |obj, behavior|
+RSpec::Matchers.define :have_controller_show_behavior do |obj, behavior, other_params = {}|
   match do |response|
-    get :show, params: {:id => obj.id}
+    get :show, params: {:id => obj.id}.merge(other_params)
     expect(response).to have_behavior(behavior)
   end
 end

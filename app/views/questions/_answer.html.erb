@@ -1,11 +1,8 @@
 <% if !question.is_qcm %>
   <!-- pas QCM -->
   <% if question.decimal %>
-    <% vraidecimal = true %>
-    <% if question.answer - question.answer.to_i <= 0.00001 && question.answer.to_i - question.answer <= 0.00001 %>
-      <% vraidecimal = false %>
-    <% end %>
-    <p><span style="font-size:16px;"><%= question.answer if vraidecimal %><%= question.answer.to_i if !vraidecimal %></span> (On attend un nombre <b>décimal</b>, arrondi au millième près)</p>
+    <% real_decimal = (question.answer - question.answer.round).abs > 0.00001 %>
+    <p><span style="font-size:16px;"><%= real_decimal ? question.answer : quesiion.answer.to_i %></span> (On attend un nombre <b>décimal</b>, arrondi au millième près)</p>
   <% else %>
     <p><span style="font-size:16px;"><%= question.answer.to_i %></span> (On attend un nombre <b>entier</b>)</p>
   <% end %>
@@ -15,7 +12,6 @@
     <% question.items.order(:position).each do |c| %>
       <li class="p-1">
       <%= raw(c.ans) %>
-
       <% if c.ok %>
         <%= image_tag v_icon, :class => "ms-2 svg-black-white" %>
       <% end %>

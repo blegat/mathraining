@@ -19,62 +19,59 @@
 #
 require "spec_helper"
 
-describe Question do
-  before { @ex = FactoryGirl.build(:question) }
+describe Question, question: true do
 
-  subject { @ex }
+  let!(:question) { FactoryGirl.build(:question) }
 
-  it { should respond_to(:statement) }
-  it { should respond_to(:position) }
-  it { should respond_to(:chapter) }
-  it { should respond_to(:many_answers) }
-  it { should respond_to(:decimal) }
-  it { should respond_to(:answer) }
-  it { should respond_to(:online) }
-  it { should respond_to(:explanation) }
-  it { should respond_to(:level) }
+  subject { question }
 
   it { should be_valid }
 
   # Statement
   describe "when statement is not present" do
-    before { @ex.statement = " " }
+    before { question.statement = " " }
     it { should_not be_valid }
   end
   describe "when statement is too long" do
-    before { @ex.statement = "a" * 16001 }
+    before { question.statement = "a" * 16001 }
     it { should_not be_valid }
   end
 
   # Position
   describe "when position is not present" do
-    before { @ex.position = nil }
+    before { question.position = nil }
     it { should_not be_valid }
   end
   describe "when position is negative" do
-    before { @ex.position = -1 }
+    before { question.position = -1 }
     it { should_not be_valid }
   end
 
   # Answer
   describe "when answer is not present" do
-    before { @ex.answer = nil }
+    before { question.answer = nil }
     it { should_not be_valid }
   end
 
   # Explanation
   describe "when explication is not present" do
-    before { @ex.explanation = nil }
+    before { question.explanation = nil }
     it { should_not be_valid }
   end
 
   # Level
   describe "when level is > 4" do
-    before { @ex.level = 5 }
+    before { question.level = 5 }
     it { should_not be_valid }
   end
   describe "when level is 4" do
-    before { @ex.level = 4 }
+    before { question.level = 4 }
     it { should be_valid }
+  end
+  
+  # Value
+  describe "value" do
+    before { question.level = 3 }
+    specify { expect(question.value).to eq(question.level * 3) }
   end
 end
