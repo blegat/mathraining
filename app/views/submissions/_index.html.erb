@@ -20,7 +20,7 @@ var showFalse = function() {
 <!-- Cette page affiche toutes les soumissions que l'utilisateur peut voir pour le problème problem -->
 
 <!-- Si administrateur : peut voir toutes les soumissions correctes -->
-<% if current_user.sk.admin %>
+<% if current_user.admin %>
   <h3>Soumissions étoilées</h3>
   <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where(:visible => true, :status => :correct, :star => true).order('created_at') %>
   <% if submissions.empty? %>
@@ -55,7 +55,7 @@ var showFalse = function() {
   <% @cansendnewcomment = true %>
   <% date_submission_allowed = nil %>
   <% nonewcomment_reason = nil %>
-  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where('user_id = ? AND status != ?', current_user.sk, Submission.statuses[:draft]).order('created_at DESC') %>
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where('user_id = ? AND status != ?', current_user, Submission.statuses[:draft]).order('created_at DESC') %>
 
   <% if !submissions.empty? %>
     <h3>Vos soumissions</h3>
@@ -78,7 +78,7 @@ var showFalse = function() {
 
   <% end %>
   
-  <% if !date_submission_allowed.nil? and date_submission_allowed > Date.today and !current_user.sk.pb_solved?(problem) %>
+  <% if !date_submission_allowed.nil? and date_submission_allowed > Date.today and !current_user.pb_solved?(problem) %>
     <% @cansendnewsub = false %>
     <% @cansendnewcomment = false %>
     <% if nonewcomment_reason == "plagiarized" %>
@@ -89,10 +89,10 @@ var showFalse = function() {
   <% end %>
 
   <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
-  <% if current_user.sk.pb_solved?(problem) %>
+  <% if current_user.pb_solved?(problem) %>
   
     <h3>Autres soumissions, étoilées</h3>
-    <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND star = ?', current_user.sk, Submission.statuses[:correct], true).order('created_at DESC') %>
+    <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND star = ?', current_user, Submission.statuses[:correct], true).order('created_at DESC') %>
 
     <% if !submissions.empty? %>
       <table class="table table-bordered" style="width:auto;">
@@ -123,7 +123,7 @@ var showFalse = function() {
 <% end %>
 
 <!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées, en attente ou plagiées -->
-<% if current_user.sk.admin || (current_user.sk.corrector && current_user.sk.pb_solved?(problem)) %>
+<% if current_user.admin || (current_user.corrector && current_user.pb_solved?(problem)) %>
 
   <h3>Soumissions erronées</h3>
   <p id="btn_false"><%= link_to "Afficher les soumissions erronées", "javascript:showFalse()" %></p>
@@ -138,7 +138,7 @@ var showFalse = function() {
   </tbody>
   </table>
   
-  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND visible = ?', current_user.sk, Submission.statuses[:waiting], true).order('created_at') %>
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND visible = ?', current_user, Submission.statuses[:waiting], true).order('created_at') %>
   
   <% if !submissions.empty? %>
     <h3>Soumissions en attente</h3>

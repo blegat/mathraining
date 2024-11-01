@@ -29,9 +29,9 @@ class SubmissionsController < ApplicationController
   # Show all submissions to a problem (only through js)
   def index
     if @what == 0
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND star = ? AND visible = ?', current_user.sk, Submission.statuses[:correct], false, true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND star = ? AND visible = ?', current_user, Submission.statuses[:correct], false, true).order('created_at DESC')
     elsif @what == 1
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status != ? AND status != ? AND visible = ?', current_user.sk, Submission.statuses[:correct], Submission.statuses[:waiting], true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status != ? AND status != ? AND visible = ?', current_user, Submission.statuses[:correct], Submission.statuses[:waiting], true).order('created_at DESC')
     end
 
     respond_to do |format|
@@ -44,7 +44,7 @@ class SubmissionsController < ApplicationController
     params[:submission][:content].strip! if !params[:submission][:content].nil?
 
     @submission = @problem.submissions.build(content: params[:submission][:content],
-                                             user:    current_user.sk)
+                                             user:    current_user)
     
     # Invalid CSRF token
     render_with_error('problems/show', @submission, get_csrf_error_message) and return if @invalid_csrf_token
@@ -56,7 +56,7 @@ class SubmissionsController < ApplicationController
     attach = create_files
     render_with_error('problems/show', @submission, @file_error) and return if !@file_error.nil?
 
-    if params[:commit] == "Enregistrer comme brouillon" || (@limited_new_submissions && current_user.sk.has_already_submitted_today?)
+    if params[:commit] == "Enregistrer comme brouillon" || (@limited_new_submissions && current_user.has_already_submitted_today?)
       @submission.visible = false
       @submission.status = :draft
     end
@@ -76,7 +76,7 @@ class SubmissionsController < ApplicationController
 
   # Create a submission during a test
   def create_intest
-    oldsub = @problem.submissions.where(user_id: current_user.sk.id, intest: true).first
+    oldsub = @problem.submissions.where(user_id: current_user.id, intest: true).first
     if !oldsub.nil?
       @submission = oldsub
       @context = 1
@@ -86,7 +86,7 @@ class SubmissionsController < ApplicationController
     params[:submission][:content].strip! if !params[:submission][:content].nil?
 
     @submission = @problem.submissions.build(content: params[:submission][:content],
-                                             user:    current_user.sk,
+                                             user:    current_user,
                                              intest:  true,
                                              visible: false)
     
@@ -113,7 +113,7 @@ class SubmissionsController < ApplicationController
       @submission.destroy
       flash[:success] = "Brouillon supprimé."
       redirect_to @problem
-    elsif params[:commit] == "Enregistrer le brouillon" || (@limited_new_submissions && current_user.sk.has_already_submitted_today?)
+    elsif params[:commit] == "Enregistrer le brouillon" || (@limited_new_submissions && current_user.has_already_submitted_today?)
       @context = 2
       update_submission
     else
@@ -155,14 +155,14 @@ class SubmissionsController < ApplicationController
 
   # Reserve a submission (only through js)
   def reserve
-    if @submission.followings.count > 0 && @submission.followings.first.user != current_user.sk # Already reserved by somebody else
+    if @submission.followings.count > 0 && @submission.followings.first.user != current_user # Already reserved by somebody else
       f = @submission.followings.first
       @correct_name = f.user.name
       @reservation_date = f.created_at
       @what = 2
     else
       if @submission.followings.count == 0 # Avoid adding two times the same Following
-        f = Following.create(:user       => current_user.sk,
+        f = Following.create(:user       => current_user,
                              :submission => @submission,
                              :read       => true,
                              :kind       => :reservation)
@@ -178,7 +178,7 @@ class SubmissionsController < ApplicationController
   # Unreserve a submission (only through js)
   def unreserve
     f = @submission.followings.first
-    if !@submission.waiting? || f.nil? || (f.user != current_user.sk && !current_user.sk.root?) || !f.reservation? # Not supposed to happen
+    if !@submission.waiting? || f.nil? || (f.user != current_user && !current_user.root?) || !f.reservation? # Not supposed to happen
       @what = 0
     else
       Following.delete(f.id)
@@ -193,7 +193,7 @@ class SubmissionsController < ApplicationController
   # Delete a submission
   def destroy
     @submission.destroy
-    if current_user.sk.admin?
+    if current_user.admin?
       flash[:success] = "Soumission supprimée."
       redirect_to problem_path(@problem)
     else
@@ -256,7 +256,7 @@ class SubmissionsController < ApplicationController
 
   # Show all submissions in which we took part
   def allmy
-    @submissions = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where("status != ? AND status != ?", Submission.statuses[:draft], Submission.statuses[:waiting]).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+    @submissions = current_user.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where("status != ? AND status != ?", Submission.statuses[:draft], Submission.statuses[:waiting]).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
   
   # Show all new submissions
@@ -277,7 +277,7 @@ class SubmissionsController < ApplicationController
 
   # Show all new comments to submissions in which we took part
   def allmynew
-    @submissions = current_user.sk.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
+    @submissions = current_user.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
     @submissions_other = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:status => :wrong_to_read).order("submissions.last_comment_time").to_a
   end
 
@@ -307,13 +307,13 @@ class SubmissionsController < ApplicationController
 
   # Check that current user did not already solve the problem
   def not_solved
-    redirect_to root_path if current_user.sk.pb_solved?(@problem)
+    redirect_to root_path if current_user.pb_solved?(@problem)
   end
 
   # Check that current user can create a new submission for the problem
   def can_submit
     redirect_to problem_path(@problem) and return if @no_new_submission
-    if current_user.sk.submissions.where(:problem => @problem, :status => [:draft, :waiting]).count > 0
+    if current_user.submissions.where(:problem => @problem, :status => [:draft, :waiting]).count > 0
       redirect_to problem_path(@problem) and return
     end
   end
@@ -325,11 +325,11 @@ class SubmissionsController < ApplicationController
   
   # Check that the student has no (recent) plagiarized or closed solution to the problem
   def no_recent_plagiarism_or_closure
-    s = current_user.sk.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
+    s = current_user.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
     if !s.nil? && s.date_new_submission_allowed > Date.today
       redirect_to problem_path(@problem, :sub => @submission) and return
     end
-    s = current_user.sk.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last
+    s = current_user.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last
     if !s.nil? && s.date_new_submission_allowed > Date.today
       redirect_to problem_path(@problem, :sub => @submission) and return
     end
@@ -339,19 +339,19 @@ class SubmissionsController < ApplicationController
   def in_test
     @virtualtest = @problem.virtualtest
     return if check_nil_object(@virtualtest)
-    redirect_to virtualtests_path if current_user.sk.test_status(@virtualtest) != "in_progress"
+    redirect_to virtualtests_path if current_user.test_status(@virtualtest) != "in_progress"
   end
   
   # Check that current user is doing a test with this problem, or is a root
   def in_test_or_root_user
-    if !current_user.sk.root?
+    if !current_user.root?
       in_test
     end
   end
   
   # Check that current user is the author of the submission
   def author
-    if @submission.user != current_user.sk
+    if @submission.user != current_user
       render 'errors/access_refused' and return
     end
   end
@@ -369,9 +369,9 @@ class SubmissionsController < ApplicationController
     @what = params[:what].to_i
     redirect_to root_path if (@what != 0 and @what != 1)
     if @what == 0    # See correct submissions (need to have solved problem or to be admin)
-      redirect_to root_path if !current_user.sk.admin? and !current_user.sk.pb_solved?(@problem)
+      redirect_to root_path if !current_user.admin? and !current_user.pb_solved?(@problem)
     else # (@what == 1) # See incorrect submissions (need to be admin or corrector)
-      redirect_to root_path if !current_user.sk.admin? and !current_user.sk.corrector?
+      redirect_to root_path if !current_user.admin? and !current_user.corrector?
     end
   end
   
@@ -379,10 +379,10 @@ class SubmissionsController < ApplicationController
   def can_uncorrect_submission
     # Submission must be correct to be marked as wrong
     redirect_to problem_path(@problem, :sub => @submission) unless @submission.correct?
-    unless current_user.sk.root?
+    unless current_user.root?
       # Corrector should have accepted the solution a few minutes ago
       eleven_minutes_ago = DateTime.now - 11.minutes
-      if Solvedproblem.where(:user => @submission.user, :problem => @problem).first.correction_time < eleven_minutes_ago or @submission.corrections.where(:user => current_user.sk).where("created_at > ?", eleven_minutes_ago).count == 0
+      if Solvedproblem.where(:user => @submission.user, :problem => @problem).first.correction_time < eleven_minutes_ago or @submission.corrections.where(:user => current_user).where("created_at > ?", eleven_minutes_ago).count == 0
         flash[:danger] = "Vous ne pouvez plus marquer cette solution comme erronée."
         redirect_to problem_path(@problem, :sub => @submission)
       end
@@ -435,7 +435,7 @@ class SubmissionsController < ApplicationController
 
   # Helper method to mark as read/unread
   def un_read(read, msg)
-    following = Following.where(:user_id => current_user.sk, :submission_id => @submission).first
+    following = Following.where(:user_id => current_user, :submission_id => @submission).first
     if !following.nil?
       following.update_attribute(:read, read)
       flash[:success] = "Soumission marquée comme #{msg}."

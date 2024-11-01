@@ -15,7 +15,7 @@
   <% correctors = User.select(:id, :first_name, :last_name, :see_name).where("admin = ? OR corrector = ?", true, true).order("first_name, last_name") %>
   
   <table class="table table-bordered">
-  <tr class="table-ld-header"><th class="d-none d-lg-table-cell">Date</th><th>Détecté par</th><th>Source</th><th class="text-center">Statut</th><% if current_user.sk.root? %><th class="text-center">Action</th><% end %>
+  <tr class="table-ld-header"><th class="d-none d-lg-table-cell">Date</th><th>Détecté par</th><th>Source</th><th class="text-center">Statut</th><% if current_user.root? %><th class="text-center">Action</th><% end %>
   </tr>
   <% suspicions.each do |s| %>
     <tr class="table-ld-<%= s.color_class %>">
@@ -35,14 +35,14 @@
     <% end %>
     </td>
     <td class="text-center" style="width:110px;"><%= s.status_string %></td>
-    <% if current_user.sk.root? %>
+    <% if current_user.root? %>
       <td class="text-center" style="width:100px;">
       <%= link_to "Modifier", "javascript:editSuspicion(#{s.id})" %>
       </td>
     <% end %>
     </tr>
     
-    <% if current_user.sk.root? %>
+    <% if current_user.root? %>
       <%= form_for s, :url => suspicion_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ? Si vous confirmez une suspicion, l'étudiant ne pourra plus soumettre de solution à ce problème avant 6 mois." } do |f| %>
         <tr id="line_suspicion_edit_<%= s.id %>" class="table-ld-<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
         <td class="d-none d-lg-table-cell text-center align-middle">
@@ -63,7 +63,7 @@
   </table>
 <% end %>
 
-<% if current_user.sk.root? && @submission.plagiarized? && @submission.user.active? %>
+<% if current_user.root? && @submission.plagiarized? && @submission.user.active? %>
   <% num_plagiarism = @submission.user.submissions.where(:status => :plagiarized).count %>
   <p><%= @submission.user.name %> a envoyé <b><%= num_plagiarism %> soumission<%= 's' if num_plagiarism > 1 %> plagiée<%= 's' if num_plagiarism > 1 %></b> sur Mathraining.</p>
   <% if @submission.user.is_banned %>

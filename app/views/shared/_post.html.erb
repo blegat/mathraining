@@ -57,7 +57,7 @@
           <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)' id='LinkEdit<%= postfix %>'>Modifier ce message</a>
           | <%= link_to "Supprimer ce message", soft_destroy_message_path(ms), method: :put, id: "LinkSoftDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" } %>
         <% end %>
-        <% if current_user.sk.admin? %>
+        <% if current_user.admin? %>
           <%= "|" unless ms.erased? %>
           <%= link_to "Supprimer totalement ce message", message_path(ms), method: :delete, id: "LinkDelete#{ postfix }", data: { confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" }  %>
         <% end %>

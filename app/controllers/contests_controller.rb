@@ -107,7 +107,7 @@ class ContestsController < ApplicationController
   
   # Follow the contest (to receive emails)
   def follow
-    current_user.sk.followed_contests << @contest unless current_user.sk.followed_contests.exists?(@contest.id)
+    current_user.followed_contests << @contest unless current_user.followed_contests.exists?(@contest.id)
     
     flash[:success] = "Vous recevrez dorénavant un e-mail de rappel un jour avant la publication de chaque problème de ce concours."
     redirect_to @contest
@@ -115,7 +115,7 @@ class ContestsController < ApplicationController
   
   # Unfollow the contest (to stop receiving emails)
   def unfollow
-    current_user.sk.followed_contests.destroy(@contest)
+    current_user.followed_contests.destroy(@contest)
     
     flash[:success] = "Vous ne recevrez maintenant plus d'e-mail concernant ce concours."
     redirect_to @contest
@@ -153,7 +153,7 @@ class ContestsController < ApplicationController
   
   # Check if current user can see the contest
   def can_see_contest
-    if (@contest.in_construction? && !(signed_in? && @contest.is_organized_by_or_admin(current_user.sk)))
+    if (@contest.in_construction? && !(signed_in? && @contest.is_organized_by_or_admin(current_user)))
       render 'errors/access_refused' and return
     end
   end
@@ -182,7 +182,7 @@ class ContestsController < ApplicationController
   
   # Check if cutoffs can be defined for this contest
   def can_define_cutoffs
-    if !@contest.completed? || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.sk.root)
+    if !@contest.completed? || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.root)
       render 'errors/access_refused' and return
     end
   end

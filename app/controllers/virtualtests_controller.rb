@@ -27,7 +27,7 @@ class VirtualtestsController < ApplicationController
       if @problem.virtualtest_id != @virtualtest.id
         @problem = nil
       else
-        @submission = Submission.where(user_id: current_user.sk.id, problem_id: @problem.id, intest: true).first
+        @submission = Submission.where(user_id: current_user.id, problem_id: @problem.id, intest: true).first
         @submission = Submission.new if @submission.nil?
       end 
     end
@@ -93,7 +93,7 @@ class VirtualtestsController < ApplicationController
 
   # Begin a virtualtest
   def begin_test
-    t = Takentest.create(:user => current_user.sk, :virtualtest => @virtualtest, :status => :in_progress, :taken_time => DateTime.now)    
+    t = Takentest.create(:user => current_user, :virtualtest => @virtualtest, :status => :in_progress, :taken_time => DateTime.now)    
     Takentestcheck.create(:takentest => t)    
     redirect_to @virtualtest
   end
@@ -112,20 +112,20 @@ class VirtualtestsController < ApplicationController
   
   # Check that current user is currently doing the virtualtest
   def in_test
-    virtualtest_status = current_user.sk.test_status(@virtualtest)
+    virtualtest_status = current_user.test_status(@virtualtest)
     render 'errors/access_refused' and return if virtualtest_status == "not_started"
     redirect_to virtualtests_path and return if virtualtest_status == "finished" # Smoothly redirect because it can happen when timer stops
   end
 
   # Check that current user has access to the virtualtest
   def has_access
-    if !has_enough_points(current_user.sk)
+    if !has_enough_points(current_user)
       render 'errors/access_refused' and return
     end
     visible = true
     @virtualtest.problems.each do |p|
       p.chapters.each do |c|
-        visible = false if !current_user.sk.chap_solved?(c)
+        visible = false if !current_user.chap_solved?(c)
       end
     end
     if !visible
@@ -157,9 +157,9 @@ class VirtualtestsController < ApplicationController
   # Check that current user can start the test
   def can_begin
     redirect_to virtualtests_path if @no_new_submissions
-    if current_user.sk.test_status(@virtualtest) != "not_started"
+    if current_user.test_status(@virtualtest) != "not_started"
       redirect_to virtualtests_path
-    elsif Takentest.where(:user => current_user.sk, :status => :in_progress).count > 0
+    elsif Takentest.where(:user => current_user, :status => :in_progress).count > 0
       flash[:danger] = "Vous avez déjà un test virtuel en cours !"
       redirect_to virtualtests_path
     end

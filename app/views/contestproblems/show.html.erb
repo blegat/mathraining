@@ -11,7 +11,7 @@
 </div>
 
 <!-- Origine si organisateur ou root ou problème terminé -->
-<% if @contest.is_organized_by_or_root(current_user.sk) || @contestproblem.at_least(:in_correction) %>
+<% if @contest.is_organized_by_or_root(current_user) || @contestproblem.at_least(:in_correction) %>
   <p class="fst-italic">Origine du problème :
   <% if @contestproblem.origin.nil? || @contestproblem.origin.size == 0 %>
     Inconnue
@@ -30,12 +30,12 @@
   <%= render 'contests/clock', date_limit: @contestproblem.start_time.to_i, message_zero: "En ligne", p_id: 0 %>
 <% end %>
 
-<% if @contest.is_organized_by_or_root(current_user.sk) %>
+<% if @contest.is_organized_by_or_root(current_user) %>
   <p class="text-center"><%= link_to "Modifier ce problème", edit_contestproblem_path(@contestproblem) %>
   <% if @contest.in_construction? %>
     | <%= link_to "Supprimer ce problème", @contestproblem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
   <% end %>
-  <% if current_user.sk.root? %>
+  <% if current_user.root? %>
     <% if @contestproblem.corrected? %>
       | <%= link_to "Autoriser nouvelles corrections", authorize_corrections_contestproblem_path(@contestproblem), :method => :put %>
     <% elsif @contestproblem.in_recorrection? %>
@@ -51,7 +51,7 @@
 <!-- Nouvelle solution -->
 <% if !@contestsolution.nil? && @contestsolution.new_record? %>
   <hr>
-  <% if current_user.sk.can_write_submission? %>
+  <% if current_user.can_write_submission? %>
     <%= render 'contestsolutions/new' %>
   <% else %>
     Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :
@@ -59,11 +59,11 @@
   <% end %>
 <% end %>
 
-<% if @contestproblem.in_correction? && !@contest.is_organized_by_or_root(current_user.sk) %>
+<% if @contestproblem.in_correction? && !@contest.is_organized_by_or_root(current_user) %>
   <hr><center>Ce problème est en cours de correction.</center>
 <% end %>
 
-<% if @contest.is_organized_by_or_admin(current_user.sk) %>
+<% if @contest.is_organized_by_or_admin(current_user) %>
   <% official_sol = @contestproblem.contestsolutions.where(:official => true).first %>
   <% if @contestproblem.at_most(:not_started_yet) %>
     <hr><center>Ce problème n'est pas encore en ligne. Pour modifier sa solution, <%= link_to "cliquer ici", contestproblem_path(@contestproblem, :sol => official_sol) %>.</center>
@@ -75,7 +75,7 @@
 <!-- Si on veut voir une solution -->
 <% if !@contestsolution.nil? && !@contestsolution.new_record? %>
   <% if signed_in? && @contestsolution.contestproblem == @contestproblem %>
-    <% if @contestsolution.user == current_user.sk || current_user.sk.root? || (@contestproblem.at_least(:corrected) && @contestsolution.score == 7) || ((@contestproblem.at_least(:in_correction) || @contestsolution.official?) && @contest.is_organized_by(current_user.sk)) %>
+    <% if @contestsolution.user == current_user || current_user.root? || (@contestproblem.at_least(:corrected) && @contestsolution.score == 7) || ((@contestproblem.at_least(:in_correction) || @contestsolution.official?) && @contest.is_organized_by(current_user)) %>
       <hr>
       <%= render 'contestsolutions/show', contestsolution: @contestsolution %>
     <% end %>
@@ -83,7 +83,7 @@
 <% end %>
 
 <% if @contestproblem.in_progress? %>
-  <% if !has_enough_points(signed_in? ? current_user.sk : nil) %>
+  <% if !has_enough_points(signed_in? ? current_user : nil) %>
     <hr><center>Pour pouvoir participer aux concours, il faut avoir au moins 200 points.</center>
   <% end %>
 <% end %>

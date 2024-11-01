@@ -1,6 +1,6 @@
 <!-- Enlève la notification de l'étudiant s'il faut -->
-<% if @submission.user == current_user.sk && !current_user.other && current_user.sk.notified_submissions.exists?(@submission.id) %>
-  <% current_user.sk.notified_submissions.destroy(@submission) %>
+<% if @submission.user == current_user && !in_skin? && current_user.notified_submissions.exists?(@submission.id) %>
+  <% current_user.notified_submissions.destroy(@submission) %>
 <% end %>
 
 <script type="text/javascript">
@@ -16,14 +16,14 @@ var hideStatement = function () {
 }
 </script>
 
-<% can_current_user_correct = (current_user.sk.admin? || (current_user.sk.corrector? && @submission.user != current_user.sk && current_user.sk.pb_solved?(@problem))) %>
+<% can_current_user_correct = (current_user.admin? || (current_user.corrector? && @submission.user != current_user && current_user.pb_solved?(@problem))) %>
 
 <% show_statement_reminder = false %>
 <% if can_current_user_correct %>
   <% if @submission.waiting? %>
     <% show_statement_reminder = true %>
   <% else %>
-    <% following = @submission.followings.where(:user_id => current_user.sk).first %>
+    <% following = @submission.followings.where(:user_id => current_user).first %>
     <% if !following.nil? %>
       <% show_statement_reminder = true %>
     <% end %>
@@ -60,7 +60,7 @@ var hideStatement = function () {
 <% disable_correction = false %>
 <% reservation_case = 0 %>
 <% corrector_name = "" %>
-<% if current_user.sk != @submission.user && @submission.waiting? && @submission.visible %>
+<% if current_user != @submission.user && @submission.waiting? && @submission.visible %>
   <script type="text/javascript">
   var reserve = function () {
     $.getScript("<%= reserve_submission_url(@submission) %>");
@@ -74,7 +74,7 @@ var hideStatement = function () {
   <% if f.nil? %>
     <% reservation_case = 1 %>
     <% disable_correction = true %>
-  <% elsif f.user == current_user.sk %>
+  <% elsif f.user == current_user %>
     <% reservation_case = 3 %>
   <% else %>
     <% reservation_case = 2 %>
@@ -85,32 +85,32 @@ var hideStatement = function () {
   <div id="div_reserved_by_nobody" class="mb-2 p-2 ps-3 bg-as-table-ld-warning" style="<%= "display:none;" if reservation_case != 1 %>">
     Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !
     <div class="d-block d-lg-none" style="height:7px;"></div>
-    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver cette soumission</button>
+    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:reserve()" <%= "disabled='disabled'" if in_skin? %>>Réserver cette soumission</button>
   </div>
   
   <div id="div_reserved_by_other" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-reder" style="<%= "display:none;" if reservation_case != 2 %>">
     <span id="text_reserved_by_other">
       <% if reservation_case == 2 %>
         Cette soumission est en train d'être corrigée par <b><%= corrector_name %></b>.
-        <% if current_user.sk.root? %>
+        <% if current_user.root? %>
           Réservée le <%= write_date(f.created_at) %>.
         <% end %>
       <% end %>
     </span>
     <div class="d-block d-lg-none" style="height:7px;"></div>
-    <% if current_user.sk.root? %>
-      <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler la réservation</button>
+    <% if current_user.root? %>
+      <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled='disabled'" if in_skin? %>>Annuler la réservation</button>
     <% end %>
   </div>
   
   <div id="div_reserved_by_me" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-greener" style="<%= "display:none;" if reservation_case != 3 %>">
     Vous avez réservé cette soumission pour la corriger.
     <div class="d-block d-lg-none" style="height:7px;"></div>
-    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler ma réservation</button>
+    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled='disabled'" if in_skin? %>>Annuler ma réservation</button>
   </div>
 <% end %>
 
-<% if @submission.plagiarized? && current_user.sk == @submission.user %>
+<% if @submission.plagiarized? && current_user == @submission.user %>
   Vous ne pouvez plus voir cette solution.
 <% else %>
 
@@ -127,12 +127,12 @@ var hideStatement = function () {
   </div>
 
   <!-- Si soumission en test avec score, on affiche le score -->
-  <% if @submission.intest && @submission.score != -1 && (can_current_user_correct || current_user.sk == @submission.user) %>
+  <% if @submission.intest && @submission.score != -1 && (can_current_user_correct || current_user == @submission.user) %>
 
     <h4 class="mt-3">Score obtenu</h4>
     <center><div class="bg-as-table-ld-warning p-1 fs-3"><%= @submission.score %> / 7</center>
 
-    <% if current_user.sk.root? %>
+    <% if current_user.root? %>
       <div class="text-center mt-2 mb-n2">
       <a href='#' id='showform' onclick='document.getElementById("formulaire").style.display="inline"; return false;' style='display:inline;'>Modifier ce score</a>
       <span id='formulaire' style="display:none;">
@@ -153,12 +153,12 @@ var hideStatement = function () {
 
   <!-- Marquer comme lu ou non lu -->
   <% if can_current_user_correct && !@submission.draft? && !@submission.waiting? %>
-    <% following = @submission.followings.where(:user_id => current_user.sk).first %>
+    <% following = @submission.followings.where(:user_id => current_user).first %>
     <% if !following.nil? %>
       <% if following.read %>
-        <center><%= link_to 'Marquer comme non lu', unread_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %></center>
+        <center><%= link_to 'Marquer comme non lu', unread_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => in_skin? %></center>
       <% else %>
-        <center><%= link_to 'Marquer comme lu', read_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %></center>
+        <center><%= link_to 'Marquer comme lu', read_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => in_skin? %></center>
       <% end %>
     <% end %>
   <% end %>
@@ -220,22 +220,22 @@ var hideStatement = function () {
   <!-- Formulaire pour nouvelle correction -->
   <% if can_current_user_correct && !@submission.visible && @submission.intest %>
     <p>Cette soumission fait partie d'un test virtuel qui n'est pas terminé. Vous ne pourrez la corriger qu'une fois le temps de celui-ci écoulé.</p>
-  <% elsif current_user.sk == @submission.user && @submission.intest && @submission.score == -1 %>
+  <% elsif current_user == @submission.user && @submission.intest && @submission.score == -1 %>
     <p>Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.</p>
   <% elsif can_current_user_correct && @submission.plagiarized? %>
     <p class="text-color-red">Cette solution a été plagiée et n'est plus visible par l'étudiant.</p>
-  <% elsif current_user.sk == @submission.user && @submission.closed? %>
+  <% elsif current_user == @submission.user && @submission.closed? %>
     <p class="text-color-red">Cette solution a été clôturée par un correcteur.</p>
   <% elsif can_current_user_correct && @submission.closed? %>
     <p class="text-color-red">Cette solution a été clôturée.</p>
-  <% elsif (can_current_user_correct || (current_user.sk == @submission.user && @cansendnewcomment)) && !@submission.draft? %>
+  <% elsif (can_current_user_correct || (current_user == @submission.user && @cansendnewcomment)) && !@submission.draft? %>
     <%= render 'corrections/new', disable_correction: disable_correction %>
   <% end %>
 
 <% end %>
 
 <!-- Supprimer la soumission : pas possible si correcte -->
-<% if current_user.sk.root? && !@submission.correct? && !@submission.draft? %>
+<% if current_user.root? && !@submission.correct? && !@submission.draft? %>
   <p class="text-center">
   <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette soumission ? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :class => "text-color-red" %>
   </p>
@@ -244,10 +244,10 @@ var hideStatement = function () {
 <!-- Repasser la soumission comme erronée (root ou correcteur qui vient d'accepter) -->
 <% if @submission.correct? %>
   <% ten_minutes_ago = DateTime.now - 10.minutes %>
-  <% if current_user.sk.root? || (can_current_user_correct && @submission.corrections.where(:user => current_user.sk).where("created_at > ?", ten_minutes_ago).count > 0) %>
+  <% if current_user.root? || (can_current_user_correct && @submission.corrections.where(:user => current_user).where("created_at > ?", ten_minutes_ago).count > 0) %>
     <% sp = Solvedproblem.where(:user => @submission.user, :problem => @problem).first %>
     <!-- NB: sp.nil? can happen in test environment only -->
-    <% if current_user.sk.root? || (!sp.nil? && sp.correction_time > ten_minutes_ago) %>
+    <% if current_user.root? || (!sp.nil? && sp.correction_time > ten_minutes_ago) %>
       <p class="text-center">
       <%= link_to 'Marquer comme erronée', uncorrect_submission_path(@submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous sûr de vouloir marquer cette soumission comme erronée ?#{ " Les propositions d'étoiles seront automatiquement supprimées !" if @submission.starproposals.count > 0 }" }), :method => :put, :class => "text-color-red" %>
       </p>

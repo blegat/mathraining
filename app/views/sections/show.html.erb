@@ -11,7 +11,7 @@
 <h3 class="mt-2">Introduction</h3>
 <p><%= raw(htmlise(@section.description)) %></p>
 
-<% if signed_in? && current_user.sk.admin? %>
+<% if signed_in? && current_user.admin? %>
 <p><%= link_to "Modifier l'introduction", edit_section_path(@section) %></p>
 <% end %>
 
@@ -30,28 +30,28 @@
 <% chapters_by_level = chapters.group_by{|c| c.level} %>
 <% chapters_id = chapters.map(&:id) %>
 
-<% unless signed_in? and current_user.sk.admin? %>
+<% unless signed_in? and current_user.admin? %>
   <% @chapter_status = [] %>
   <% @question_status = [] %>
   <% @theory_status = [] %>
-  <% non_access_chaps_ids = non_accessible_chapters_ids((signed_in? ? current_user.sk : nil), @section) %>
+  <% non_access_chaps_ids = non_accessible_chapters_ids((signed_in? ? current_user : nil), @section) %>
   <% chapters_id.each do |id| %>
     <% @chapter_status[id] = (non_access_chaps_ids.include?(id) ? "no-access" : "access") %>
   <% end %>
   <% if signed_in? %>
-    <% current_user.sk.chapters.each do |c| %>
+    <% current_user.chapters.each do |c| %>
       <% @chapter_status[c.id] = "solved" %>
     <% end %>
-    <% current_user.sk.creating_chapters.each do |c| %>
+    <% current_user.creating_chapters.each do |c| %>
       <% @chapter_status[c.id] = "creator" %>
     <% end %>
-    <% current_user.sk.unsolvedquestions.joins(:question).where("questions.chapter_id IN (?)", chapters_id).select("questions.id").each do |sq| %>
+    <% current_user.unsolvedquestions.joins(:question).where("questions.chapter_id IN (?)", chapters_id).select("questions.id").each do |sq| %>
       <% @question_status[sq.id] = "incorrect" %>
     <% end %>
-    <% current_user.sk.solvedquestions.joins(:question).where("questions.chapter_id IN (?)", chapters_id).select("questions.id").each do |sq| %>
+    <% current_user.solvedquestions.joins(:question).where("questions.chapter_id IN (?)", chapters_id).select("questions.id").each do |sq| %>
       <% @question_status[sq.id] = "correct" %>
     <% end %>
-    <% current_user.sk.theories.where(:chapter_id => chapters_id).each do |t| %>
+    <% current_user.theories.where(:chapter_id => chapters_id).each do |t| %>
       <% @theory_status[t.id] = "read" %>
     <% end %>
   <% end %>
@@ -65,7 +65,7 @@
   <% premier = true %>
   <% if !chapters_by_level[level].nil? %>
     <% chapters_by_level[level].each do |c| %>
-      <% if (c.online || (signed_in? && (current_user.sk.admin || @chapter_status[c.id] == "creator"))) %>
+      <% if (c.online || (signed_in? && (current_user.admin || @chapter_status[c.id] == "creator"))) %>
         <% if premier %>
           <% if @section.fondation %>
           
@@ -84,7 +84,7 @@
         
         <% if !c.online? %>
           <% classe = "orangey" %>
-        <% elsif signed_in? && current_user.sk.admin %>
+        <% elsif signed_in? && current_user.admin %>
           <% classe = "yellowy" %>
         <% elsif @chapter_status[c.id] == "solved" %>
           <% classe = "greeny" %>
@@ -103,7 +103,7 @@
 
 
 <!-- Si administrateur -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if signed_in? && current_user.admin? %>
 
 <!-- Ajouter un chapitre -->
 <center>

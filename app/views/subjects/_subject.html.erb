@@ -10,7 +10,7 @@
   <%= render 'subjects/contest', contest: @subject.contest %>
 <% end %>
 
-<% if current_user.sk.admin? %>
+<% if current_user.admin? %>
   <div class="mt-2 text-center">
     <a href="#" onclick='return Rolling.develop("<%= postfix %>", true)'>Modifier ce sujet</a>
     | <%= link_to "Supprimer ce sujet", subject_path(@subject), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce sujet et tous les messages associés ?" }  %>
@@ -28,7 +28,7 @@
 
 </div>
 
-<% if current_user.sk.admin? %>
+<% if current_user.admin? %>
   <div id="form<%= postfix %>" class="myoverflow px-1" style="height:0px;">
   <%= render 'subjects/edit', s: s, postfix: postfix %>
   </div>

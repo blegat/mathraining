@@ -18,7 +18,7 @@ class MessagesController < ApplicationController
   def create
     params[:message][:content].strip! if !params[:message][:content].nil?
     @message = Message.new(params.require(:message).permit(:content))
-    @message.user = current_user.sk
+    @message.user = current_user
     @message.subject = @subject
 
     # Check that no new message was posted
@@ -48,19 +48,19 @@ class MessagesController < ApplicationController
 
     # Send an email to users following the subject
     @subject.following_users.each do |u|
-      if u != current_user.sk
+      if u != current_user
         if (@subject.for_correctors && !u.corrector && !u.admin) || (@subject.for_wepion && !u.wepion && !u.admin)
           # Not really normal that this user follows this subject
         else
-          UserMailer.new_followed_message(u.id, @subject.id, current_user.sk.id).deliver
+          UserMailer.new_followed_message(u.id, @subject.id, current_user.id).deliver
         end
       end
     end
 
-    if current_user.sk.root?
+    if current_user.root?
       if params.has_key?("emailWepion")
         User.where(:group => ["A", "B"]).each do |u|
-          UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver
+          UserMailer.new_message_group(u.id, @subject.id, current_user.id).deliver
         end
       end
     end
@@ -145,7 +145,7 @@ class MessagesController < ApplicationController
   
   # Check that current user can update the message
   def user_that_can_update_message
-    unless @message.can_be_updated_by(current_user.sk)
+    unless @message.can_be_updated_by(current_user)
       render 'errors/access_refused' and return
     end
   end

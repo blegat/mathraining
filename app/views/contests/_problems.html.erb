@@ -1,4 +1,4 @@
-<% organizer = signed_in? && @contest.is_organized_by_or_admin(current_user.sk) %>
+<% organizer = signed_in? && @contest.is_organized_by_or_admin(current_user) %>
 
 <% @contest.contestproblems.order(:number).each do |p| %>
   <% can_see_statement = (organizer || p.at_least(:in_progress)) %>
@@ -16,7 +16,7 @@
   <center><h4>
   <% if can_see_statement && signed_in? %>
     <%= link_to "Problème ##{p.number}", p %>
-    <% if current_user.sk.root? && p.in_recorrection? %>
+    <% if current_user.root? && p.in_recorrection? %>
       (corrections modifiables)
     <% end %>
   <% else %>

@@ -29,7 +29,7 @@ class SubjectsController < ApplicationController
       id = @q.slice(4..-1).to_i
       if what == "cat"
         @category = Category.find_by_id(id)
-        if !@category.nil? && (@category.name != "Wépion" || current_user.sk.wepion? || current_user.sk.admin?)
+        if !@category.nil? && (@category.name != "Wépion" || current_user.wepion? || current_user.admin?)
           search_category = id
           @title_complement = @category.name
         end
@@ -55,13 +55,13 @@ class SubjectsController < ApplicationController
       end
     end
     
-    if (current_user.sk.admin? || current_user.sk.corrector?)
+    if (current_user.admin? || current_user.corrector?)
       correctors_allowed_values = [false, true]
     else
       correctors_allowed_values = false
     end
     
-    if (current_user.sk.admin? || current_user.sk.wepion?)
+    if (current_user.admin? || current_user.wepion?)
       wepion_allowed_values = [false, true]
     else
       wepion_allowed_values = false
@@ -106,12 +106,12 @@ class SubjectsController < ApplicationController
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     params[:subject][:content].strip! if !params[:subject][:content].nil?
     allowed_params = [:title]
-    allowed_params << :for_correctors if (current_user.sk.corrector? || current_user.sk.admin?)
-    allowed_params << :important if current_user.sk.admin?
-    allowed_params << :for_wepion if (current_user.sk.wepion? || current_user.sk.admin?)
+    allowed_params << :for_correctors if (current_user.corrector? || current_user.admin?)
+    allowed_params << :important if current_user.admin?
+    allowed_params << :for_wepion if (current_user.wepion? || current_user.admin?)
     @subject = Subject.new(params.require(:subject).permit(allowed_params))
     @message = Message.new(content: params[:subject][:content])
-    @message.user = current_user.sk
+    @message.user = current_user
     
     @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
 
@@ -142,10 +142,10 @@ class SubjectsController < ApplicationController
     
     attach_files(attach, @message)
 
-    if current_user.sk.root?
+    if current_user.root?
       if params.has_key?("emailWepion")
         User.where(:group => ["A", "B"]).each do |u|
-          UserMailer.new_message_group(u.id, @subject.id, current_user.sk.id).deliver
+          UserMailer.new_message_group(u.id, @subject.id, current_user.id).deliver
         end
       end
     end
@@ -158,9 +158,9 @@ class SubjectsController < ApplicationController
   def update    
     params[:subject][:title].strip! if !params[:subject][:title].nil?
     @subject.title = params[:subject][:title]
-    @subject.for_correctors = params[:subject][:for_correctors] if !params[:subject][:for_correctors].nil? && (current_user.sk.corrector? || current_user.sk.admin?)
-    @subject.important = params[:subject][:important] if !params[:subject][:important].nil? && current_user.sk.admin?
-    @subject.for_wepion = params[:subject][:for_wepion] if !params[:subject][:for_wepion].nil? && (current_user.sk.wepion? || current_user.sk.admin?)
+    @subject.for_correctors = params[:subject][:for_correctors] if !params[:subject][:for_correctors].nil? && (current_user.corrector? || current_user.admin?)
+    @subject.important = params[:subject][:important] if !params[:subject][:important].nil? && current_user.admin?
+    @subject.for_wepion = params[:subject][:for_wepion] if !params[:subject][:for_wepion].nil? && (current_user.wepion? || current_user.admin?)
     
     @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
     
@@ -220,7 +220,7 @@ class SubjectsController < ApplicationController
   
   # Follow the subject (to receive emails)
   def follow
-    current_user.sk.followed_subjects << @subject unless current_user.sk.followed_subjects.exists?(@subject.id)
+    current_user.followed_subjects << @subject unless current_user.followed_subjects.exists?(@subject.id)
     
     flash[:success] = "Vous recevrez dorénavant un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."
     redirect_back(fallback_location: subject_path(@subject))
@@ -228,7 +228,7 @@ class SubjectsController < ApplicationController
   
   # Unfollow the subject (to stop receiving emails)
   def unfollow
-    current_user.sk.followed_subjects.destroy(@subject)
+    current_user.followed_subjects.destroy(@subject)
     
     flash[:success] = "Vous ne recevrez maintenant plus d'e-mail concernant ce sujet."
     redirect_back(fallback_location: subject_path(@subject))

@@ -75,7 +75,7 @@ class ApplicationController < ActionController::Base
   def check_under_maintenance
     if @under_maintenance
       flash[:info] = @under_maintenance_message.html_safe
-      if !signed_in? || !current_user.root?
+      if !signed_in? || !current_user(false).root?
         redirect_to root_path if request.path != "/"
       end
     end
@@ -84,11 +84,11 @@ class ApplicationController < ActionController::Base
   # Check that the user consented to the last policy
   def has_consent
     pp = request.fullpath.to_s
-    if signed_in? && !current_user.last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
+    if signed_in? && !current_user(false).last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
       if Privacypolicy.where(:online => true).count > 0
         render 'users/read_legal' and return
       else # If no policy at all, we automatically mark it as read
-        current_user.update_attribute(:last_policy_read, true)
+        current_user(false).update_attribute(:last_policy_read, true)
       end
     end
   end
@@ -142,7 +142,7 @@ class ApplicationController < ActionController::Base
 
   # Check that current user is not in the skin of somebody else
   def notskin_user
-    if signed_in? && current_user.other
+    if in_skin?
       flash[:danger] = "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un."
       redirect_back(fallback_location: root_path)
     end
@@ -150,56 +150,56 @@ class ApplicationController < ActionController::Base
 
   # Check that current user is an admin
   def admin_user
-    if !signed_in? || !current_user.sk.admin
+    if !signed_in? || !current_user.admin
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is not an admin (i.e. is a student)
   def non_admin_user
-    if !signed_in? || current_user.sk.admin
+    if !signed_in? || current_user.admin
       render 'errors/access_refused' and return
     end
   end
 
   # Check that current user is a root
   def root_user
-    if !signed_in? || !current_user.sk.root
+    if !signed_in? || !current_user.root
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is an admin or corrector
   def corrector_user
-    if !signed_in? || (!current_user.sk.admin && !current_user.sk.corrector)
+    if !signed_in? || (!current_user.admin && !current_user.corrector)
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is a corrector (or admin) that can correct the submission
   def user_that_can_correct_submission
-    unless signed_in? && (current_user.sk.admin || (current_user.sk.corrector && current_user.sk.pb_solved?(@problem) && current_user.sk != @submission.user))
+    unless signed_in? && (current_user.admin || (current_user.corrector && current_user.pb_solved?(@problem) && current_user != @submission.user))
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user can update @chapter (that must be defined)
   def user_that_can_update_chapter
-    unless (signed_in? && (current_user.sk.admin? || (!@chapter.online? && current_user.sk.creating_chapters.exists?(@chapter.id))))
+    unless (signed_in? && (current_user.admin? || (!@chapter.online? && current_user.creating_chapters.exists?(@chapter.id))))
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user can see @chapter (that must be defined)
   def user_that_can_see_chapter
-    @admin_or_user_writing_chapter = signed_in? && (current_user.sk.admin? || current_user.sk.creating_chapters.exists?(@chapter.id))
+    @admin_or_user_writing_chapter = signed_in? && (current_user.admin? || current_user.creating_chapters.exists?(@chapter.id))
     unless @chapter.online || @admin_or_user_writing_chapter
       render 'errors/access_refused' and return
     end
     @user_can_see_exercises = true
     if !@section.fondation? && !@admin_or_user_writing_chapter 
       @chapter.prerequisites.each do |p|
-        if !signed_in? || !current_user.sk.chapters.exists?(p.id)
+        if !signed_in? || !current_user.chapters.exists?(p.id)
           @user_can_see_exercises = false
           break
         end
@@ -209,42 +209,42 @@ class ApplicationController < ActionController::Base
   
   # Check that current user can see @problem (that must be defined)
   def user_that_can_see_problem
-    if !@problem.can_be_seen_by(current_user.sk, @no_new_submission)
+    if !@problem.can_be_seen_by(current_user, @no_new_submission)
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user can see @subject (that must be defined)
   def user_that_can_see_subject
-    if !@subject.can_be_seen_by(current_user.sk)
+    if !@subject.can_be_seen_by(current_user)
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user can write a submission
   def user_that_can_write_submission
-    if !current_user.sk.can_write_submission?
+    if !current_user.can_write_submission?
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is an organizer of @contest (that must be defined)
   def organizer_of_contest
-    if !(signed_in? && @contest.is_organized_by(current_user.sk))
+    if !(signed_in? && @contest.is_organized_by(current_user))
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is a root or an organizer of @contest (that must be defined)
   def organizer_of_contest_or_root
-    if !(signed_in? && @contest.is_organized_by_or_root(current_user.sk))
+    if !(signed_in? && @contest.is_organized_by_or_root(current_user))
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is an admin or an organizer of @contest (that must be defined)
   def organizer_of_contest_or_admin
-    if !(signed_in? && @contest.is_organized_by_or_admin(current_user.sk))
+    if !(signed_in? && @contest.is_organized_by_or_admin(current_user))
       render 'errors/access_refused' and return
     end
   end

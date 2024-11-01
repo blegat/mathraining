@@ -1,11 +1,11 @@
 <!-- Couleur -->
-<% cansee_score = (sol.contestproblem.at_least(:corrected) || @contest.is_organized_by_or_root(current_user.sk)) %>
+<% cansee_score = (sol.contestproblem.at_least(:corrected) || @contest.is_organized_by_or_root(current_user)) %>
 <% if !sol.corrected || !cansee_score %>
-  <% if @contest.is_organized_by_or_root(current_user.sk) && (sol.contestproblem.in_correction? || sol.contestproblem.in_recorrection?) %>
+  <% if @contest.is_organized_by_or_root(current_user) && (sol.contestproblem.in_correction? || sol.contestproblem.in_recorrection?) %>
     <% res = sol.reservation %>
     <% if res == 0 %>
       <% color_class = "table-ld-warning" %>
-    <% elsif res == current_user.sk.id %>
+    <% elsif res == current_user.id %>
       <% color_class = "table-ld-warning-greener" %>
     <% else %>
       <% color_class = "table-ld-warning-reder" %>

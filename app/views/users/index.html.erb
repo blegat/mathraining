@@ -43,7 +43,7 @@
   <% title_list.push(["#{pluriel(c.name)} (#{num})", c.id]) %>
 <% end %>
 
-<% if signed_in? && current_user.sk.root %>
+<% if signed_in? && current_user.root %>
   <% title_list.push(["Non classés", 100]) %>
   <% title_list.push(["Administrateurs", 101]) %>
 <% end %>
@@ -76,7 +76,7 @@
     </center>
   <% end %>
 
-<% elsif signed_in? && current_user.sk.root %>
+<% elsif signed_in? && current_user.root %>
   <ul>
   <% @all_users.each do |u| %>
     <li><%= raw(u.linked_name) %> (<%= write_date_only(u.created_at) %>)</li>
@@ -86,7 +86,7 @@
 
 <div id="for_admin">
 <!-- Si root : bouton pour modifier les niveaux et couleurs -->
-<% if signed_in? && current_user.sk.root %>
+<% if signed_in? && current_user.root %>
   <p class="text-center">
   <%= link_to "Modifier les niveaux et couleurs", colors_path %>
   </p>

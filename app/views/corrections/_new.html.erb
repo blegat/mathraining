@@ -20,21 +20,21 @@
   <%= hidden_field_tag "last_comment_id", @lastid %>
 
   <!-- Si administrateur ou correcteur : tous les boutons différents -->
-  <% if current_user.sk != @submission.user %>
+  <% if current_user != @submission.user %>
     <p class="mb-2">N'hésitez pas à faire des commentaires, même minimes, pouvant permettre à l'étudiant de progresser. On signalera par exemple une erreur de notation, un oubli de cas particulier, une suggestion d'amélioration... Si une grosse partie est manquante, alors on refusera la solution en demandant de la compléter.</p>
     <% if @submission.wrong? %>
       <div class="mb-3">
-      <%= f.submit "Poster", class: "btn btn-primary mb-1", :disabled => (disable_correction || current_user.other) %>
-      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || current_user.other) %>
-      <%= f.submit "Poster et clôturer la soumission", class: "btn btn-ld-dark-light-er mb-1", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || current_user.other) %>
+      <%= f.submit "Poster", class: "btn btn-primary mb-1", :disabled => (disable_correction || in_skin?) %>
+      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || in_skin?) %>
+      <%= f.submit "Poster et clôturer la soumission", class: "btn btn-ld-dark-light-er mb-1", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || in_skin?) %>
       </div>
     <% elsif @submission.correct? %>
-      <%= f.submit "Poster", class: "btn btn-primary mb-3", :disabled => (disable_correction || current_user.other) %>
+      <%= f.submit "Poster", class: "btn btn-primary mb-3", :disabled => (disable_correction || in_skin?) %>
     <% elsif @submission.wrong_to_read? %>
       <div class="mb-3">
-      <%= f.submit "Poster et laisser la soumission comme erronée", class: "btn btn-danger mb-1", :disabled => (disable_correction || current_user.other) %>
-      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || current_user.other) %>
-      <%= f.submit "Poster et clôturer la soumission", class: "btn btn-ld-dark-light-er mb-1", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || current_user.other) %>
+      <%= f.submit "Poster et laisser la soumission comme erronée", class: "btn btn-danger mb-1", :disabled => (disable_correction || in_skin?) %>
+      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || in_skin?) %>
+      <%= f.submit "Poster et clôturer la soumission", class: "btn btn-ld-dark-light-er mb-1", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || in_skin?) %>
       </div>
     <% else ## Pas encore corrigé %>
       <% if @submission.intest && @submission.score == -1 %>
@@ -51,14 +51,14 @@
         <p class="mt-3 mb-2">Veuillez accepter ou refuser la solution indépendamment du score attribué, comme pour un problème normal. On acceptera donc essentiellement les solutions ayant obtenu un 7, mais des exceptions (dans un sens comme dans l'autre) restent possibles.</p>
       <% end %>
       <div class="mb-3">
-      <%= f.submit "Poster et refuser la soumission", id: "B1", class: "btn btn-danger mb-1", :disabled => (disable_correction || current_user.other) %>
-      <%= f.submit "Poster et accepter la soumission", id: "B2", class: "btn btn-success mb-1", :disabled => (disable_correction || current_user.other), data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."} %>
+      <%= f.submit "Poster et refuser la soumission", id: "B1", class: "btn btn-danger mb-1", :disabled => (disable_correction || in_skin?) %>
+      <%= f.submit "Poster et accepter la soumission", id: "B2", class: "btn btn-success mb-1", :disabled => (disable_correction || in_skin?), data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."} %>
       </div>
     <% end %>
 
   <!-- Si étudiant, simple bouton -->
   <% else %>
-    <%= f.submit "Poster", class: "btn btn-primary", :disabled => (disable_correction || current_user.other) %>
+    <%= f.submit "Poster", class: "btn btn-primary", :disabled => (disable_correction || in_skin?) %>
   <% end %>
 <% end %>
 </div>

@@ -1,6 +1,6 @@
 <!-- S'agit-il d'un nouveau message? On le met dans style -->
 <% highlighting = false %>
-<% if current_user.sk.last_forum_visit_time < s.last_comment_time && s.last_comment_user != current_user.sk %>
+<% if current_user.last_forum_visit_time < s.last_comment_time && s.last_comment_user != current_user %>
   <% highlighting = true %>
 <% end %>
 

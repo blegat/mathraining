@@ -94,8 +94,8 @@ class ChaptersController < ApplicationController
   # Mark the full chapter as read
   def read
     @chapter.theories.each do |t|
-      if t.online && !current_user.sk.theories.exists?(t.id)
-        current_user.sk.theories << t
+      if t.online && !current_user.theories.exists?(t.id)
+        current_user.theories << t
       end
     end
     redirect_to chapter_path(@chapter, :type => 10)

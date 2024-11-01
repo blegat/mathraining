@@ -15,7 +15,7 @@ div_reserved_by_me.style.display = "none"
 
 <% if @what == 2 %>
   txt = "Cette soumission est en train d'être corrigée par <b><%= @correct_name %></b>."
-  <% if current_user.sk.root? %>
+  <% if current_user.root? %>
     txt = txt + " Elle a été réservée le <%= write_date(@reservation_date) %>."
   <% end %>
   var text_reserved_by_other = document.getElementById("text_reserved_by_other");

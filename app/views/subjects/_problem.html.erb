@@ -1,14 +1,14 @@
 <!-- On vérifie que ce problème peut bien être vu -->
 <% if p.online %>
-  <% unless p.can_be_seen_by(current_user.sk, @no_new_submission) %>
+  <% unless p.can_be_seen_by(current_user, @no_new_submission) %>
     <table class="table table-bordered reference greyy">
     <tr><td class="title">Ce sujet fait référence à un problème auquel vous n'avez pas accès.</td></tr>
     </table>
   <% else %>	  
-    <% if current_user.sk.admin? %>
+    <% if current_user.admin? %>
       <table class="table table-bordered reference yellowy">
       <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p), :target => "_blank" %> :</td></tr>
-    <% elsif current_user.sk.pb_solved?(p) %>
+    <% elsif current_user.pb_solved?(p) %>
       <table class="table table-bordered reference greeny">
       <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p, :auto => 1), :target => "_blank" %>, que vous avez résolu :</td></tr>
     <% else %>

@@ -3,7 +3,7 @@
   <%= render 'submissions/form', f: f %>
   <%= render 'shared/edit_files', s: @submission %>
   
-  <%= f.submit "Enregistrer cette solution", class: "btn btn-primary", :disabled => current_user.other %>
+  <%= f.submit "Enregistrer cette solution", class: "btn btn-primary", :disabled => in_skin? %>
   <button class="btn btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>
   
 <% end %>

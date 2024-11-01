@@ -2,6 +2,6 @@
   <%= render 'messages/form', f: f, m: m, postfix: postfix %>
   <%= render 'shared/edit_files', s: m, postfix: postfix %>
 
-  <%= f.submit "Modifier", id: "Submit#{ postfix }", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+  <%= f.submit "Modifier", id: "Submit#{ postfix }", class: "btn btn-lg btn-primary", :disabled => in_skin? %>
   <button class="btn btn-lg btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>

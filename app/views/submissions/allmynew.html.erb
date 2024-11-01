@@ -26,9 +26,9 @@
 
 <% @submissions_other.each do |n| %>
 
-  <% if !current_user.sk.admin? %>
+  <% if !current_user.admin? %>
     <% problem_solved = Array.new %>
-    <% current_user.sk.solvedproblems.select(:problem_id).each do |sp| %>
+    <% current_user.solvedproblems.select(:problem_id).each do |sp| %>
       <% problem_solved[sp.problem_id] = true %>
     <% end %>
   <% end %>
@@ -38,7 +38,7 @@
       <table class="table table-bordered">
       <tr class="table-ld-header"><th class="text-center">Statut</th><th class="d-none d-lg-table-cell">Date de la soumission</th><th class="d-none d-lg-table-cell">Dernière activité</th><th>Qui</th><th class="d-none d-lg-table-cell">Correcteur(s)</th><th class="text-center">Type</th><th></th></tr>
     <% end %>
-    <% hidden_sub = (!current_user.sk.admin? && problem_solved[n.problem_id] != true) %>
+    <% hidden_sub = (!current_user.admin? && problem_solved[n.problem_id] != true) %>
     <%= render 'submissions/line', s: n, show_section_and_level: true, hidden_sub: hidden_sub, show_num_waiting_days_from: "last_comment_time", show_correctors: true %>
     <% first_other = false %>
   <% end %>

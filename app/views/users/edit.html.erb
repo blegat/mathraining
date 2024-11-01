@@ -4,7 +4,7 @@
 
 <%= form_for(@user) do |f| %>
   <%= render 'form', f: f, modif: true %>
-  <%= f.submit "Mettre à jour", class: "btn btn-lg btn-primary", :disabled => (current_user.other && !current_user.root) %>
+  <%= f.submit "Mettre à jour", class: "btn btn-lg btn-primary" %>
 <% end %>
 
 <hr>

@@ -8,7 +8,7 @@
 <% liste = Array.new %>
 
 <% Category.select("id, name").order(:id).each do |c| %>
-  <% unless c.name == "Wépion" && !current_user.sk.wepion? && !current_user.sk.admin? %>
+  <% unless c.name == "Wépion" && !current_user.wepion? && !current_user.admin? %>
     <% liste.push([c.name, "cat-" + c.id.to_s]) %>
   <% end %>
 <% end %>
@@ -99,11 +99,11 @@
 </center>
 
 <!-- Modifier les catégories -->
-<% if current_user.sk.root? %>
+<% if current_user.root? %>
   <p class="mt-3 text-center"><%= link_to "Modifier les catégories", categories_path %></p>
 <% end %>
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->
-<% if !current_user.other && current_user.sk.num_unseen_subjects(true) > 0 %>
-  <% current_user.sk.update_attribute(:last_forum_visit_time, DateTime.now) %>
+<% if !in_skin? && current_user.num_unseen_subjects(true) > 0 %>
+  <% current_user.update_attribute(:last_forum_visit_time, DateTime.now) %>
 <% end %>

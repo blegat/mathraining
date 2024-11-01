@@ -219,10 +219,10 @@ class User < ActiveRecord::Base
   def num_notifications_new(levels)
     Groupdate.time_zone = false unless Rails.env.production?
     x = {}
-    if sk.admin
+    if self.admin?
       x = Submission.joins(:problem).where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).group_by_day(:created_at).count
-    elsif sk.corrector
-      x = Submission.joins(:problem).where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{sk.id})").where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).group_by_day(:created_at).count
+    elsif self.corrector?
+      x = Submission.joins(:problem).where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{self.id})").where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).group_by_day(:created_at).count
     end
     y = x.sort_by(&:first)
     n = 0
@@ -275,24 +275,7 @@ class User < ActiveRecord::Base
     if include_myself
       return req.count
     else
-      return req.where.not(last_comment_user: self.sk).count
-    end
-  end
-
-  # Gives the skin of the user: current_user.sk must be used almost everywhere
-  def sk
-    return self if !self.root? || self.skin == 0
-    return @current_user_sk if !@current_user_sk.nil?
-    @current_user_sk = User.find_by_id(self.skin) if @current_user_sk.nil?
-    return @current_user_sk
-  end
-
-  # Tells if the user is not in his own skin
-  def other
-    if self.admin? && self.skin != 0
-      return true
-    else
-      return false
+      return req.where.not(last_comment_user: self).count
     end
   end
   

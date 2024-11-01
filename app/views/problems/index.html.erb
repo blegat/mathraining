@@ -6,7 +6,7 @@
 
 <%= render 'info' %>
 
-<% if !has_enough_points(signed_in? ? current_user.sk : nil) %>
+<% if !has_enough_points(signed_in? ? current_user : nil) %>
 
   <!-- Si moins de 200 points, on ne peut rien voir -->
   <p class="mt-3 fw-bold">
@@ -15,11 +15,11 @@
 
 <% else %>
 
-<% problems = accessible_problems_from_section(current_user.sk, @section, ["id", "number", "level", "online", "statement", "origin", "virtualtest_id", "nb_solves", "first_solve_time", "last_solve_time"]) %>
+<% problems = accessible_problems_from_section(current_user, @section, ["id", "number", "level", "online", "statement", "origin", "virtualtest_id", "nb_solves", "first_solve_time", "last_solve_time"]) %>
 <% problems_by_level = problems.group_by{|p| p.level} %>
 
-<% if !current_user.sk.admin? %>
-  <% num_sub_by_problem_and_status = current_user.sk.submissions.where("problem_id IN (?)", problems.map(&:id)).group(:problem_id, :status).count %>
+<% if !current_user.admin? %>
+  <% num_sub_by_problem_and_status = current_user.submissions.where("problem_id IN (?)", problems.map(&:id)).group(:problem_id, :status).count %>
 <% end %>
 
 <% (1..5).each do |level| %>
@@ -30,7 +30,7 @@
     <p>Chaque problème de niveau <%= level %> vaut <b><%= 15*level %></b> points.</p>
     
     <% problems_by_level[level].each do |p| %>
-      <% num_correct_sub = num_sub_by_problem_and_status[[p.id, "correct"]] unless current_user.sk.admin? %>
+      <% num_correct_sub = num_sub_by_problem_and_status[[p.id, "correct"]] unless current_user.admin? %>
       <% num_correct_sub = 0 if num_correct_sub.nil? %>
 
       <% num_drafts = 0 %>
@@ -46,21 +46,21 @@
 
       <!-- Si connecté -->
       <% else %>    
-        <% num_incorrect_sub = num_sub_by_problem_and_status[[p.id, "wrong"]] unless current_user.sk.admin? %>
+        <% num_incorrect_sub = num_sub_by_problem_and_status[[p.id, "wrong"]] unless current_user.admin? %>
         <% num_incorrect_sub = 0 if num_incorrect_sub.nil? %>
-        <% num_incorrect_sub2 = num_sub_by_problem_and_status[[p.id, "wrong_to_read"]] unless current_user.sk.admin? %>
+        <% num_incorrect_sub2 = num_sub_by_problem_and_status[[p.id, "wrong_to_read"]] unless current_user.admin? %>
         <% num_incorrect_sub2 = 0 if num_incorrect_sub2.nil? %>
-        <% num_incorrect_sub3 = num_sub_by_problem_and_status[[p.id, "plagiarized"]] unless current_user.sk.admin? %>
+        <% num_incorrect_sub3 = num_sub_by_problem_and_status[[p.id, "plagiarized"]] unless current_user.admin? %>
         <% num_incorrect_sub3 = 0 if num_incorrect_sub3.nil? %>
         <% num_incorrect_sub = num_incorrect_sub + num_incorrect_sub2 + num_incorrect_sub3 %>
         
-        <% num_waiting_sub = num_sub_by_problem_and_status[[p.id, "waiting"]] unless current_user.sk.admin? %>
+        <% num_waiting_sub = num_sub_by_problem_and_status[[p.id, "waiting"]] unless current_user.admin? %>
         <% num_waiting_sub = 0 if num_waiting_sub.nil? %>
-        <% num_drafts = num_sub_by_problem_and_status[[p.id, "draft"]] unless current_user.sk.admin? %>
+        <% num_drafts = num_sub_by_problem_and_status[[p.id, "draft"]] unless current_user.admin? %>
         <% num_drafts = 0 if num_drafts.nil? %>
 
         <!-- Si aucune soumission (ou admin) : jaune -->
-        <% if current_user.sk.admin? || num_waiting_sub + num_incorrect_sub == 0 %>
+        <% if current_user.admin? || num_waiting_sub + num_incorrect_sub == 0 %>
           <% classe = "yellowy" %>
         <% else %>
           <!-- Si une soumission pas encore corrigée : orange -->
@@ -113,7 +113,7 @@
         </div>
 
         <!-- Origine si administrateur ou si résolu -->
-        <% if (current_user.sk.admin? || num_correct_sub > 0) && !p.origin.nil? && p.origin.size > 0 %>
+        <% if (current_user.admin? || num_correct_sub > 0) && !p.origin.nil? && p.origin.size > 0 %>
           <div class="g-col-12 g-col-md-24 module bottom-part">
             Origine du problème : <b><%= p.origin %></b>
           </div>
@@ -128,7 +128,7 @@
 
 
 <!-- Ajouter un problème -->
-<% if signed_in? && current_user.sk.admin? %>
+<% if signed_in? && current_user.admin? %>
   <center>
   <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
   </center>

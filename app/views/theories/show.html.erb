@@ -7,7 +7,7 @@
 
 <div class="noprint">
 <!-- Si administrateur ou hors-ligne (pour étudiant créateur) -->
-<% if !@chapter.online? || (signed_in? && current_user.sk.admin?) %>
+<% if !@chapter.online? || (signed_in? && current_user.admin?) %>
   <p class="mt-3 text-center">
   <!-- Modifier/Supprimer -->
     <%= link_to "Modifier ce point théorique", edit_theory_path(@theory) %> |
@@ -38,9 +38,9 @@
 <% elsif signed_in? %>
   <center>
     <% if !@read_theories.nil? && @read_theories.include?(@theory.id) %>
-      <%= button_to "Marquer comme non lu", unread_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>
+      <%= button_to "Marquer comme non lu", unread_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => in_skin? %>
     <% else %>
-      <%= button_to "Marquer comme lu", read_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => current_user.other %>
+      <%= button_to "Marquer comme lu", read_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => in_skin? %>
     <% end %>
   </center>
 

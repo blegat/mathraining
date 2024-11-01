@@ -1,12 +1,12 @@
 <% provide(:title, 'Suspicions de plagiats') %>
 
 <% show_all = false %>
-<% if !current_user.sk.root? || (params.has_key?:show_all) %>
+<% if !current_user.root? || (params.has_key?:show_all) %>
   <% show_all = true %>
 <% end %>
 
 <h1><%= title_1("Suspicions de plagiats") %>
-<% if current_user.sk.root? %>
+<% if current_user.root? %>
   <span style="font-size:20px;"> - 
   <% if show_all %>
     <%= link_to "Nouvelles suspicions uniquement", suspicions_path %></span>
@@ -29,11 +29,11 @@
   <% end %>
 <% else %>
   <table class="table table-bordered">
-  <tr class="table-ld-header"><th class="d-none d-lg-table-cell">Date</th><% if current_user.sk.root? %><th class="d-none d-md-table-cell">Détecté par</th><% end %><th>Auteur</th><th class="text-center">Type</th><% if show_all %><th class="text-center">Statut</th><% end %><th></th></tr>
+  <tr class="table-ld-header"><th class="d-none d-lg-table-cell">Date</th><% if current_user.root? %><th class="d-none d-md-table-cell">Détecté par</th><% end %><th>Auteur</th><th class="text-center">Type</th><% if show_all %><th class="text-center">Statut</th><% end %><th></th></tr>
   <% @suspicions.each do |s| %>
     <tr class="table-ld-<%= s.color_class %>">
     <td class="d-none d-lg-table-cell" style="width:200px;"><%= write_date(s.created_at) %></td>
-    <% if current_user.sk.root? %>
+    <% if current_user.root? %>
       <td class="d-none d-md-table-cell"><%= raw(s.user.linked_name) %></td>
     <% end %>
     <td><%= raw(s.submission.user.linked_name) %></td>

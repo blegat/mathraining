@@ -22,7 +22,7 @@
     <%= g.label :guess, :class => "form-label to-enable", :disabled => !signed_in? || needtowait %>
     <%= g.text_field :guess, class: "form-control to-enable ms-1", style: "width:70px;", value: val, :disabled => !signed_in? || needtowait %>
     </div>
-    <%= g.submit "Soumettre", class: "btn btn-primary to-enable", :disabled => !signed_in? || current_user.other || needtowait %>
+    <%= g.submit "Soumettre", class: "btn btn-primary to-enable", :disabled => !signed_in? || in_skin? || needtowait %>
   <% end %>
   
 <% else %>
@@ -40,7 +40,7 @@
           </label>
         </div>
       <% end %>
-      <%= g.submit "Soumettre", class: "btn btn-primary to-enable mt-3", :disabled => (!signed_in? || current_user.other || needtowait) %>
+      <%= g.submit "Soumettre", class: "btn btn-primary to-enable mt-3", :disabled => (!signed_in? || in_skin? || needtowait) %>
     <% end %>
   <% else %>
     <div class="mb-3"></div>
@@ -54,7 +54,7 @@
           </label>
         </div>
       <% end %>
-      <%= g.submit "Soumettre", class: "btn btn-primary to-enable mt-3", :disabled => (!signed_in? || current_user.other || needtowait) %>
+      <%= g.submit "Soumettre", class: "btn btn-primary to-enable mt-3", :disabled => (!signed_in? || in_skin? || needtowait) %>
     <% end %>
 
   <% end %>

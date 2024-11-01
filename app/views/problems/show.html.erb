@@ -2,12 +2,12 @@
 
 <% pt = @problem.value %>
 
-<% problem_solved = current_user.sk.pb_solved?(@problem) %>
+<% problem_solved = current_user.pb_solved?(@problem) %>
 
 <h1><%= title_problems(@problem.section, "Problème ##{ @problem.number }#{ (' - Test #' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online } <span class='ms-3 text-color-grey'>(#{ pt }&nbsp;points)</span>") %></h1>
 
 <!-- Si administrateur -->
-<% if current_user.sk.admin? %>
+<% if current_user.admin? %>
 
   <% if !@problem.online %>
     <!-- Dans un test virtuel ou non -->
@@ -98,11 +98,11 @@
 </div>
 
 <!-- Origine si administrateur ou si résolu -->
-<% if current_user.sk.admin? || problem_solved %>
+<% if current_user.admin? || problem_solved %>
   <p>
   <i>Origine du problème :
   <% if @problem.origin.nil? || @problem.origin.size == 0 %>
-    <% if current_user.sk.admin? %>
+    <% if current_user.admin? %>
       <span class="text-color-orange">Inconnue</span>
     <% else %>
       Inconnue
@@ -116,7 +116,7 @@
 
 <!-- Si administrateur -->
 
-<% if current_user.sk.admin? %>
+<% if current_user.admin? %>
 
   <!-- Modifier/Supprimer/... -->
 
@@ -169,7 +169,7 @@
     <!-- Si pas encore résolu le problème -->
     <% unless (problem_solved || !@cansendnewsub) %>
       <% if @submission.nil? || (!@submission.new_record? && !@submission.draft?) %>
-        <% if @problem.submissions.where(:user => current_user.sk, :status => :draft).count == 0 %>
+        <% if @problem.submissions.where(:user => current_user, :status => :draft).count == 0 %>
           <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
         <% else %>
           <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
@@ -182,7 +182,7 @@
 
 <!-- Si administrateur ou correcteur ayant résolu -->
 
-<% if (current_user.sk.admin? || current_user.sk.corrector? && problem_solved) %>
+<% if (current_user.admin? || current_user.corrector? && problem_solved) %>
   <!-- Explication -->
   <div class='clue-bis'><div><center><button onclick='return Clue.toggle(0)' class='btn btn-ld-light-dark'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
   <%= raw(htmlise(@problem.explanation)) %>
@@ -196,7 +196,7 @@
     <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
     <% unless (problem_solved || !@cansendnewsub) %>
       <hr>
-      <% if current_user.sk.can_write_submission? %>
+      <% if current_user.can_write_submission? %>
         <% if @submission.new_record? %>
           <%= render 'submissions/new', problem: @problem, submission: @submission %>
         <% else %>
@@ -211,7 +211,7 @@
   <!-- Si on veut regarder une soumission -->
   <% else %>
     <!-- On vérifie que l'on peut la regarder -->
-    <% if @submission.problem == @problem && @submission.can_be_seen_by(current_user.sk) %>
+    <% if @submission.problem == @problem && @submission.can_be_seen_by(current_user) %>
       <hr>
       <%= render 'submissions/show' %>
     <% end %>

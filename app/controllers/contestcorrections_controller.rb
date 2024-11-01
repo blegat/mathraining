@@ -105,7 +105,7 @@ class ContestcorrectionsController < ApplicationController
   
   # Check that current user has reserved the solution
   def has_reserved
-    if @contestsolution.reservation != current_user.sk.id
+    if @contestsolution.reservation != current_user.id
       flash[:danger] = "Vous n'avez pas réservé."
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
     end

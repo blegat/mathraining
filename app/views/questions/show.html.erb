@@ -9,7 +9,7 @@
 </div>
 
 <!-- Si administrateur -->
-<% if !@chapter.online? || (signed_in? && current_user.sk.admin?) %>
+<% if !@chapter.online? || (signed_in? && current_user.admin?) %>
 
   <!-- Réponse -->
   <h4 class="mt-4">Réponse</h4>
@@ -21,7 +21,7 @@
 <!-- Si étudiant inscrit -->
 <% elsif signed_in? %>
 
-  <% solvedquestion = Solvedquestion.where(:user => current_user.sk, :question => @question).first %>
+  <% solvedquestion = Solvedquestion.where(:user => current_user, :question => @question).first %>
   
   <!-- Si l'exercice est déjà résolu -->
   <% if !solvedquestion.nil? %>    
@@ -43,7 +43,7 @@
       <%= raw(htmlise(@question.explanation)) %>
     <% end %>
   <% else %>
-    <% unsolvedquestion = Unsolvedquestion.where(:user => current_user.sk, :question => @question).first %>
+    <% unsolvedquestion = Unsolvedquestion.where(:user => current_user, :question => @question).first %>
     
     <!-- Si l'étudiant s'est déjà trompé -->
     <% if !unsolvedquestion.nil? %>

@@ -26,7 +26,7 @@
       <% else %>
         ko)
       <% end %>
-      <% if current_user.sk.root? %>
+      <% if current_user.root? %>
          - <%= link_to 'Supprimer le contenu', fake_delete_myfile_path(f), data: { confirm: "Vous vous apprêtez à supprimer le contenu de cette pièce jointe. Êtes-vous sûr de vouloir continuer ?"}, :method => :put, :class => "text-color-red" %>
       <% end %>
       </li>

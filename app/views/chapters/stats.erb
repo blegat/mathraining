@@ -8,7 +8,7 @@ Les tableaux suivants donnent :
 <li>pour chaque exercice, le pourcentage d'étudiants l'ayant résolu au premier essai (parmi ceux ayant tenté l'exercice).</li>
 </ul>
 
-<% non_accessible_chapters_set = non_accessible_chapters_ids(signed_in? ? current_user.sk : nil) %>
+<% non_accessible_chapters_set = non_accessible_chapters_ids(signed_in? ? current_user : nil) %>
 <% chapters = Chapter.select(:id, :section_id, :name, :nb_tries, :nb_completions).where(:online => true).order(:level, :position) %>
 <% chapters_by_section = chapters.group_by{|c| c.section_id} %>
 <% questions_by_chapter = Question.select(:id, :chapter_id, :nb_correct, :nb_wrong, :nb_first_guesses).where(:online => true).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>

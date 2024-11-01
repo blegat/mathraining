@@ -9,13 +9,13 @@
 <% end %>
 
 <% if !contestsolution.official? %>
-  <%= f.button "Enregistrer provisoirement", type: "submit", name: "status", value: "unknown", class: "btn btn-primary mb-1", style: "#{'display:none;' if @contestproblem.in_recorrection?}", disabled: (current_user.other || !can_edit_correction), id: "BT1" %>
-  <%= f.button "Enregistrer", type: "submit", name: "status", value: "good", class: "btn btn-success mb-1", disabled: (current_user.other || !can_edit_correction), id: "BT2" %>
-  <%= f.button "Enregistrer et étoiler (si 7/7)", type: "submit", name: "status", value: "star", class: "btn btn-warning mb-1", disabled: (current_user.other || !can_edit_correction), id: "BT3" %>
+  <%= f.button "Enregistrer provisoirement", type: "submit", name: "status", value: "unknown", class: "btn btn-primary mb-1", style: "#{'display:none;' if @contestproblem.in_recorrection?}", disabled: (in_skin? || !can_edit_correction), id: "BT1" %>
+  <%= f.button "Enregistrer", type: "submit", name: "status", value: "good", class: "btn btn-success mb-1", disabled: (in_skin? || !can_edit_correction), id: "BT2" %>
+  <%= f.button "Enregistrer et étoiler (si 7/7)", type: "submit", name: "status", value: "star", class: "btn btn-warning mb-1", disabled: (in_skin? || !can_edit_correction), id: "BT3" %>
 <% else %>
-  <%= f.button "Enregistrer (non-publique)", type: "submit", name: "status", value: "bad", class: "btn btn-danger mb-1", disabled: (current_user.other || !can_edit_correction), id: "BT1" %>
-  <%= f.button "Enregistrer (publique)", type: "submit", name: "status", value: "good", class: "btn btn-success mb-1", disabled: (current_user.other || !can_edit_correction), id: "BT2" %>
-  <%= f.button "Enregistrer (publique étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning mb-1", disabled: (current_user.other || !can_edit_correction), id: "BT3" %>
+  <%= f.button "Enregistrer (non-publique)", type: "submit", name: "status", value: "bad", class: "btn btn-danger mb-1", disabled: (in_skin? || !can_edit_correction), id: "BT1" %>
+  <%= f.button "Enregistrer (publique)", type: "submit", name: "status", value: "good", class: "btn btn-success mb-1", disabled: (in_skin? || !can_edit_correction), id: "BT2" %>
+  <%= f.button "Enregistrer (publique étoilée)", type: "submit", name: "status", value: "star", class: "btn btn-warning mb-1", disabled: (in_skin? || !can_edit_correction), id: "BT3" %>
 <% end %>
 <button class="btn btn-ld-light-dark mb-1" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>

@@ -4,7 +4,7 @@
 <% if contestsolution.official? %>
   Solution officielle
   <% can_see_correction = true %>
-<% elsif contestsolution.user == current_user.sk %>
+<% elsif contestsolution.user == current_user %>
   Votre solution
   <% if @contestproblem.in_progress? %>
     (modifiable)
@@ -21,7 +21,7 @@
   <% can_see_correction = true %>
 <% end %>
 
-<% if @contest.is_organized_by_or_root(current_user.sk) %>
+<% if @contest.is_organized_by_or_root(current_user) %>
   <% if !contestsolution.corrected %>
     (à corriger)
   <% elsif contestsolution.official? %>
@@ -34,7 +34,7 @@
 <% end %>
 </h3>
 
-<% if (contestsolution.official? || @contestproblem.in_correction? || @contestproblem.in_recorrection?) && @contest.is_organized_by(current_user.sk) %>
+<% if (contestsolution.official? || @contestproblem.in_correction? || @contestproblem.in_recorrection?) && @contest.is_organized_by(current_user) %>
 
   <% can_edit_correction = true %>
 
@@ -51,7 +51,7 @@
   <% if res == 0 %>
     <% can_edit_correction = false %>
     <% reservation_case = 1 %>
-  <% elsif res == current_user.sk.id %>
+  <% elsif res == current_user.id %>
     <% reservation_case = 3 %>
   <% else %>
     <% can_edit_correction = false %>
@@ -61,7 +61,7 @@
 
   <div id="div_reserved_by_nobody" class="mb-2 p-2 ps-3 bg-as-table-ld-warning" style="<%= "display:none;" if reservation_case != 1 %>">
     Cliquez ici pour réserver.
-    <button id="button-reserve" class="btn btn-ld-light-dark ms-5" onclick="javascript:reserve()" <%= "disabled='disabled'" if current_user.other %>>Réserver</button>
+    <button id="button-reserve" class="btn btn-ld-light-dark ms-5" onclick="javascript:reserve()" <%= "disabled='disabled'" if in_skin? %>>Réserver</button>
   </div>
 
   <div id="div_reserved_by_other" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-reder" style="<%= "display:none;" if reservation_case != 2 %>">
@@ -70,15 +70,15 @@
 
   <div id="div_reserved_by_me" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-greener" style="<%= "display:none;" if reservation_case != 3 %>">
     Cliquez ici pour annuler votre réservation.
-    <button id="button-unreserve" class="btn btn-ld-light-dark ms-5" onclick="javascript:unreserve()" <%= "disabled='disabled'" if current_user.other %>>Annuler</button>
+    <button id="button-unreserve" class="btn btn-ld-light-dark ms-5" onclick="javascript:unreserve()" <%= "disabled='disabled'" if in_skin? %>>Annuler</button>
   </div>
 <% end %>
 
 <!-- Affichage de la soumission (on ajoute 'fake' à l'id si on ne peut pas modifier la solution) -->
 <% if !contestsolution.official %>
-  <% can_edit = (contestsolution.user == current_user.sk && @contestproblem.in_progress?) %>
+  <% can_edit = (contestsolution.user == current_user && @contestproblem.in_progress?) %>
 
-  <div id="the<%= 'fake' if contestsolution.user != current_user.sk %>" class="myoverflow">
+  <div id="the<%= 'fake' if contestsolution.user != current_user %>" class="myoverflow">
     <%= render 'shared/post', ms: contestsolution, kind: "contestsolution", can_edit: can_edit, reduce_margin_top: true %>
   </div>
 

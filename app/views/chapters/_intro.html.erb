@@ -10,7 +10,7 @@
   <ul>
     <% @chapter.prerequisites_associations.joins(:prerequisite).includes(:prerequisite).select("prerequisites.*, chapters.name").order("chapters.level").each do |p| %>
       <li><%= link_to p.name, p.prerequisite %>
-      <% if signed_in? && current_user.sk.admin? && !@chapter.online %>
+      <% if signed_in? && current_user.admin? && !@chapter.online %>
         - <%= link_to "Supprimer", p, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?" }, :class => "text-color-red" %>
       <% end %>
       </li>
@@ -20,7 +20,7 @@
 
 <% if allow_edit %>
   <!-- Modifier les prérequis -->
-  <% if signed_in? && current_user.sk.admin? && !@chapter.online %>
+  <% if signed_in? && current_user.admin? && !@chapter.online %>
     <center><%= link_to "Ajouter un prérequis", prerequisites_path %></center>
   <% end %>
 <% end %>
@@ -45,7 +45,7 @@
 
 <% if allow_edit %>  
   <!-- Modifier / Supprimer -->
-  <% if signed_in? && (current_user.sk.admin? || (!@chapter.online && current_user.sk.creating_chapters.exists?(@chapter.id))) %>
+  <% if signed_in? && (current_user.admin? || (!@chapter.online && current_user.creating_chapters.exists?(@chapter.id))) %>
     <% if @chapter.submission_prerequisite? %>
       <p class="fw-bold">Ce chapitre est un prérequis pour écrire une soumission à un problème.</p>
     <% end %>
@@ -63,11 +63,11 @@
       <%= link_to "bas", order_chapter_path(@chapter, :new_position => chapter_after.position), :method => :put if !chapter_after.nil? %>
     <% end %>
     
-    <% if !@chapter.online && current_user.sk.admin? %>
+    <% if !@chapter.online && current_user.admin? %>
       | <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce chapitre ?" } %>
     <% end %>
     
-    <% if @section.fondation? && current_user.sk.root? %>
+    <% if @section.fondation? && current_user.root? %>
       |
       <%= link_to "Marquer comme prérequis aux soumissions", mark_submission_prerequisite_chapter_path(@chapter), :method => :put unless @chapter.submission_prerequisite? %>
       <%= link_to "Marquer comme non prérequis aux soumissions", unmark_submission_prerequisite_chapter_path(@chapter), :method => :put if @chapter.submission_prerequisite? %>

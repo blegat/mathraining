@@ -14,7 +14,7 @@ class UnsolvedquestionsController < ApplicationController
 
   # Try to solve a question (first time)
   def create
-    @unsolvedquestion = Unsolvedquestion.new(:user => current_user.sk, :question => @question)
+    @unsolvedquestion = Unsolvedquestion.new(:user => current_user, :question => @question)
     res = check_answer(true)
     if res != "skip"
       if res == "correct"
@@ -26,7 +26,7 @@ class UnsolvedquestionsController < ApplicationController
       
       # We update chapter.nb_tries if it is the first question that this user tries
       other_questions = @chapter.questions.where("id != ?", @question.id).select("id")
-      if Solvedquestion.where(:user => current_user.sk, :question => other_questions).count + Unsolvedquestion.where(:user => current_user.sk, :question => other_questions).count == 0
+      if Solvedquestion.where(:user => current_user, :question => other_questions).count + Unsolvedquestion.where(:user => current_user, :question => other_questions).count == 0
         @chapter.update_attribute(:nb_tries, @chapter.nb_tries+1)
       end
 
@@ -61,21 +61,21 @@ class UnsolvedquestionsController < ApplicationController
 
   # Check that this is the first try of current user
   def first_try
-    if Solvedquestion.where(:user => current_user.sk, :question => @question).count + Unsolvedquestion.where(:user => current_user.sk, :question => @question).count > 0
+    if Solvedquestion.where(:user => current_user, :question => @question).count + Unsolvedquestion.where(:user => current_user, :question => @question).count > 0
       redirect_to chapter_question_path(@chapter, @question)
     end
   end
   
   # Check that the current user did not solve the question already
   def not_solved
-    if Solvedquestion.where(:user => current_user.sk, :question => @question).count > 0 # already solved
+    if Solvedquestion.where(:user => current_user, :question => @question).count > 0 # already solved
       redirect_to chapter_question_path(@chapter, @question)
     end
   end
   
   # Check that this is not the first try of current user
   def not_first_try
-    @unsolvedquestion = Unsolvedquestion.where(:user => current_user.sk, :question => @question).first
+    @unsolvedquestion = Unsolvedquestion.where(:user => current_user, :question => @question).first
     return if check_nil_object(@unsolvedquestion)
   end
   
@@ -95,7 +95,7 @@ class UnsolvedquestionsController < ApplicationController
   def unlocked_chapter
     unless @chapter.section.fondation
       @chapter.prerequisites.each do |p|
-        if (!current_user.sk.chapters.exists?(p.id))
+        if (!current_user.chapters.exists?(p.id))
           render 'errors/access_refused' and return
         end
       end
@@ -247,7 +247,7 @@ class UnsolvedquestionsController < ApplicationController
     end
 
     if correct
-      point_attribution(current_user.sk, @question)
+      point_attribution(current_user, @question)
     end
     
     return (correct ? "correct" : "wrong")

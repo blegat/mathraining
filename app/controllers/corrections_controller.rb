@@ -19,7 +19,7 @@ class CorrectionsController < ApplicationController
     totalsize = 0
     
     @correction = @submission.corrections.build(params.require(:correction).permit(:content))
-    @correction.user = current_user.sk
+    @correction.user = current_user
     
     # Invalid CSRF token
     render_with_error('problems/show', @correction, get_csrf_error_message) and return if @invalid_csrf_token
@@ -57,7 +57,7 @@ class CorrectionsController < ApplicationController
     end
 
     # Delete reservations if needed
-    if @submission.waiting? && current_user.sk != @submission.user
+    if @submission.waiting? && current_user != @submission.user
       @submission.followings.each do |f|
         Following.delete(f.id)
       end
@@ -67,13 +67,13 @@ class CorrectionsController < ApplicationController
     # It does not change if it is already correct
 
     # If wrong and current user is the student: new status is wrong_to_read
-    if current_user.sk == @submission.user and @submission.wrong?
+    if current_user == @submission.user and @submission.wrong?
       @submission.status = :wrong_to_read
       @submission.save
       m = ''
 
     # If new/wrong, current user is corrector and he wants to keep it wrong: new status is wrong
-    elsif (current_user.sk != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
+    elsif (current_user != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
       (params[:commit] == "Poster et refuser la soumission" or
       params[:commit] == "Poster et laisser la soumission comme erronée")
       @submission.status = :wrong
@@ -81,14 +81,14 @@ class CorrectionsController < ApplicationController
       m = ' et soumission marquée comme incorrecte'
 
     # If wrong, current user is corrector and he wants to keep it wrong: new status is wrong
-    elsif (current_user.sk != @submission.user) and (@submission.wrong? or @submission.wrong_to_read?) and
+    elsif (current_user != @submission.user) and (@submission.wrong? or @submission.wrong_to_read?) and
       params[:commit] == "Poster et clôturer la soumission"
       @submission.status = :closed
       @submission.save
       m = ' et soumission clôturée'
 
     # If current user is corrector and he wants to accept it: new status is correct
-    elsif (current_user.sk != @submission.user) and params[:commit] == "Poster et accepter la soumission"
+    elsif (current_user != @submission.user) and params[:commit] == "Poster et accepter la soumission"
       @submission.status = :correct
       @submission.save
 
@@ -123,12 +123,12 @@ class CorrectionsController < ApplicationController
     end
 
     # Deal with notifications
-    if current_user.sk != @submission.user
+    if current_user != @submission.user
       need_correction_level_update = false
-      following = Following.where(:user => current_user.sk, :submission => @submission).first
+      following = Following.where(:user => current_user, :submission => @submission).first
       if following.nil?
-        following = Following.new(:user => current_user.sk, :submission => @submission)
-        if @submission.followings.where("user_id != ?", current_user.sk.id).count > 0
+        following = Following.new(:user => current_user, :submission => @submission)
+        if @submission.followings.where("user_id != ?", current_user.id).count > 0
           following.kind = :other_corrector
         else
           following.kind = :first_corrector
@@ -139,11 +139,11 @@ class CorrectionsController < ApplicationController
       following.save
       
       if need_correction_level_update
-        current_user.sk.update_correction_level
+        current_user.update_correction_level
       end
 
       @submission.followings.each do |f|
-        if f.user == current_user.sk
+        if f.user == current_user
           f.touch
         else
           f.update_attribute(:read, false)
@@ -174,7 +174,7 @@ class CorrectionsController < ApplicationController
 
   # Check that current user is the submission user, or an admin or a corrector having access to the problem
   def correct_user
-    if @submission.user != current_user.sk && !current_user.sk.admin && (!current_user.sk.corrector || !current_user.sk.pb_solved?(@problem))
+    if @submission.user != current_user && !current_user.admin && (!current_user.corrector || !current_user.pb_solved?(@problem))
       render 'errors/access_refused' and return
     end
   end  
@@ -195,12 +195,12 @@ class CorrectionsController < ApplicationController
   
   # Check that the student has no (recent) plagiarized or closed solution to the problem
   def no_recent_plagiarism_or_closure
-    if @submission.user == current_user.sk
-      s = current_user.sk.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
+    if @submission.user == current_user
+      s = current_user.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
       if !s.nil? && s.date_new_submission_allowed > Date.today
         redirect_to problem_path(@problem, :sub => @submission) and return
       end
-      s = current_user.sk.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last
+      s = current_user.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last
       if !s.nil? && s.date_new_submission_allowed > Date.today
         redirect_to problem_path(@problem, :sub => @submission) and return
       end

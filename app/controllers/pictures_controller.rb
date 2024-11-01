@@ -25,7 +25,7 @@ class PicturesController < ApplicationController
   # Create a picture (send the form)
   def create
     @picture = Picture.new(params.require(:picture).permit(:image))
-    @picture.user = current_user.sk
+    @picture.user = current_user
     if @picture.save
       flash[:success] = "Image ajoutée."
       redirect_to @picture
@@ -59,14 +59,14 @@ class PicturesController < ApplicationController
 
   # Check that current user is admin or is creating a chapter
   def admin_user_or_chapter_creator
-    if !signed_in? || (!current_user.sk.admin && current_user.sk.creating_chapters.count == 0)
+    if !signed_in? || (!current_user.admin && current_user.creating_chapters.count == 0)
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is the author of the picture
   def author_or_root
-    if @picture.user.id != current_user.sk.id && !current_user.sk.root?
+    if @picture.user.id != current_user.id && !current_user.root?
       render 'errors/access_refused' and return
     end
   end

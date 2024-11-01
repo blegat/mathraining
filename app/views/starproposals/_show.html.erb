@@ -13,7 +13,7 @@
 
 <% if starproposals.size > 0 %>  
   <table class="table table-bordered">
-  <tr class="table-ld-header"><th class="d-none d-lg-table-cell">Date</th><th>Proposé par</th><th>Raison</th><th class="text-center">Statut</th><% if current_user.sk.root? %><th class="text-center">Action</th><% end %>
+  <tr class="table-ld-header"><th class="d-none d-lg-table-cell">Date</th><th>Proposé par</th><th>Raison</th><th class="text-center">Statut</th><% if current_user.root? %><th class="text-center">Action</th><% end %>
   </tr>
   <% starproposals.each do |s| %>
     <tr class="table-ld-<%= s.color_class %>">
@@ -21,14 +21,14 @@
     <td style="width:200px;"><%= raw(s.user.linked_name) %></td>
     <td><%= raw(bbcode(s.reason)) %><% unless s.waiting_treatment? %><br/><br/><b>Réponse</b> : <%= raw(bbcode(s.answer)) %><% end %></td>
     <td class="text-center" style="width:110px;"><%= s.status_string %></td>
-    <% if current_user.sk.root? %>
+    <% if current_user.root? %>
       <td class="text-center" style="width:100px;">
       <%= link_to "Traîter", "javascript:editStarproposal(#{s.id})" %>
       </td>
     <% end %>
     </tr>
     
-    <% if current_user.sk.root? %>
+    <% if current_user.root? %>
       <%= form_for s, :url => starproposal_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ?" } do |f| %>
         <tr id="line_starproposal_edit_<%= s.id %>" class="table-ld-<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
         <td class="d-none d-lg-table-cell text-center align-middle">
@@ -59,12 +59,12 @@
 <% end %>
 </div>
 
-<% if current_user.sk.root? %>
+<% if current_user.root? %>
   <center>
     <% if @submission.star %>
-      <%= button_to 'Ne plus étoiler cette solution', unstar_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %>
+      <%= button_to 'Ne plus étoiler cette solution', unstar_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => in_skin? %>
     <% else %>
-      <%= button_to 'Étoiler cette solution', star_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => current_user.other %>
+      <%= button_to 'Étoiler cette solution', star_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => in_skin? %>
     <% end %>
   </center>
 <% end %>

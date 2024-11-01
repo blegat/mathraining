@@ -50,8 +50,8 @@
 
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
   
-  <% non_accessible_chapters_set = non_accessible_chapters_ids(signed_in? ? current_user.sk : nil) %>
-  <% non_accessible_problems_set = non_accessible_problems_ids(signed_in? ? current_user.sk : nil) %>
+  <% non_accessible_chapters_set = non_accessible_chapters_ids(signed_in? ? current_user : nil) %>
+  <% non_accessible_problems_set = non_accessible_problems_ids(signed_in? ? current_user : nil) %>
   
   <!-- On va parcourir tous les exercices et problèmes -->
   
@@ -121,17 +121,17 @@
 
 <% largeur = (@user.admin ? 12 : 5) %>
 <% can_send_message = true %>
-<% if !signed_in? || @user == current_user.sk %>
+<% if !signed_in? || @user == current_user %>
   <% can_send_message = false %>
 <% end %>
 <div class="g-col-12 g-col-lg-<%= largeur %> basic_container text-center p-1">
   <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
   <tr><td class="px-2" style="font-size:20px;"><%= raw(@user.colored_name) %></td></tr>
-  <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %> <%= "<span class='text-color-red'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if signed_in? && current_user.sk.root? && @user.is_banned %></td></tr>
+  <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %> <%= "<span class='text-color-red'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if signed_in? && current_user.root? && @user.is_banned %></td></tr>
   <tr><td class="pt-2"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
   </table>
-  <% if signed_in? && current_user.sk != @user %>
+  <% if signed_in? && current_user != @user %>
     <%= button_to "Envoyer un message", new_discussion_path, :method => :get, :params => { qui: @user }, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:170px;", :disabled => !signed_in? %>
   <% end %> 
 </div>
@@ -155,8 +155,8 @@
       </tr>
     </table>
     
-    <% if signed_in? && @user != current_user.sk %>
-      <% if !current_user.sk.followed_users.exists?(@user.id) %>
+    <% if signed_in? && @user != current_user %>
+      <% if !current_user.followed_users.exists?(@user.id) %>
         <%= button_to "Suivre", follow_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:140px;" %>
       <% else %>
         <%= button_to "Ne plus suivre", unfollow_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:140px;" %>
@@ -190,7 +190,7 @@
   </div>
 <% end %> 
   
-<% if signed_in? && current_user.sk.root? %>
+<% if signed_in? && current_user.root? %>
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
     Connecté le <span class="user_color_<%= mt_theme %>"><%= write_date_only_small(@user.last_connexion_date) %></span>
   </div>
@@ -917,10 +917,10 @@
 
 
 <!-- Si administrateur, différentes options -->
-<% if signed_in? && current_user.sk.admin? && !@user.root? && (current_user.sk.root? || !@user.admin) %>
+<% if signed_in? && current_user.admin? && !@user.root? && (current_user.root? || !@user.admin) %>
   <div class="g-col-12 basic_container text-center p-2">
   <% i = 0 %>
-    <% if current_user.sk.root? && !@user.root? %>
+    <% if current_user.root? && !@user.root? %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to "Supprimer les données personnelles", destroydata_user_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :method => :put, :class => "text-color-red" %>
@@ -928,17 +928,17 @@
       <% i = i+1 %>
       <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :class => "text-color-red" %>
     <% end %>
-    <% if current_user.sk.root? && @user.email_confirm && !@user.admin %>
+    <% if current_user.root? && @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to 'Voir le site comme lui', take_skin_user_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." }, :method => :put %>
     <% end %>
-    <% if current_user.sk.root && !@user.admin %>
+    <% if current_user.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <%= link_to 'Rendre administrateur', set_administrator_user_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :method => :put, :class => "text-color-red" %>
     <% end %>
-    <% if current_user.sk.root && !@user.admin %>
+    <% if current_user.root && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if !@user.corrector %>
@@ -947,7 +947,7 @@
         <%= link_to 'Retirer des correcteurs', unset_corrector_user_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :class => "text-color-red" %>
       <% end %>
     <% end %>
-    <% if current_user.sk.root && !@user.root %>
+    <% if current_user.root && !@user.root %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if @user.can_change_name %>
@@ -956,7 +956,7 @@
         <%= link_to "Autoriser le changement de nom", set_can_change_name_user_path(@user), :method => :put %>
       <% end %>
     <% end %>
-    <% if current_user.sk.admin && !@user.admin %>
+    <% if current_user.admin && !@user.admin %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       <% if @user.wepion %>
@@ -965,7 +965,7 @@
         <%= link_to 'Ajouter au groupe Wépion', set_wepion_user_path(@user), :method => :put %>
       <% end %>
     <% end %>
-    <% if current_user.sk.admin && @user.wepion %>
+    <% if current_user.admin && @user.wepion %>
       <%= " | " if i > 0 %>
       <% i = i+1 %>
       Groupe <%= link_to 'A', change_group_user_path(@user, :group => "A"), :method => :put %>, <%= link_to 'B', change_group_user_path(@user, :group => "B"), :method => :put %>, <%= link_to 'aucun', change_group_user_path(@user, :group => ""), :method => :put %>

@@ -22,10 +22,10 @@ function checkChecked() {
 
 <table class="table table-bordered">
 <tr class="table-ld-header"><th class="text-center" style="width:90px;">Date</th><th>Modifications</th></tr>
-<% if current_user.consent_time.nil? %>
+<% if current_user(false).consent_time.nil? %>
   <% thedate = Time.zone.parse('2000-01-01 00:00') %>
 <% else %>
-  <% thedate = current_user.consent_time %>
+  <% thedate = current_user(false).consent_time %>
 <% end %>
 <% Privacypolicy.where("online = ? AND publication_time > ?", true, thedate).order(:publication_time).each do |p| %>
 <tr class="table-ld-warning">
@@ -47,7 +47,7 @@ function checkChecked() {
 
 <hr/>
 
-<% user = current_user %>
+<% user = current_user(false) %>
 
 <%= form_for user, url: accept_legal_path do |f| %>
   <!-- Lire et accepter la politique de confidentialité -->

@@ -20,8 +20,8 @@ class ContestproblemsController < ApplicationController
   
   # Show a problem of a contest
   def show
-    if signed_in? && @contestproblem.in_progress? && has_enough_points(current_user.sk) && !@contest.is_organized_by_or_admin(current_user.sk)
-      @contestsolution = @contestproblem.contestsolutions.where(:user => current_user.sk).first
+    if signed_in? && @contestproblem.in_progress? && has_enough_points(current_user) && !@contest.is_organized_by_or_admin(current_user)
+      @contestsolution = @contestproblem.contestsolutions.where(:user => current_user).first
       @contestsolution = Contestsolution.new if @contestsolution.nil?
     elsif params.has_key?(:sol)
       @contestsolution = Contestsolution.find_by_id(params[:sol].to_i)
@@ -152,7 +152,7 @@ class ContestproblemsController < ApplicationController
   
   # Check that current user has access to the problem
   def has_access
-    if !@contest.is_organized_by_or_admin(current_user.sk) && @contestproblem.at_most(:not_started_yet)
+    if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.at_most(:not_started_yet)
       render 'errors/access_refused' and return
     end
   end

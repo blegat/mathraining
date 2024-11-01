@@ -57,7 +57,7 @@ function checkWepion() {
 <% liste2 = Array.new %>
 
 <% Category.select(:id, :name).order(:id).each do |c| %>
-  <% unless c.name == "Wépion" && !current_user.sk.wepion? && !current_user.sk.admin? %>
+  <% unless c.name == "Wépion" && !current_user.wepion? && !current_user.admin? %>
     <% liste.push([c.name, c.id]) %>
   <% end %>
 <% end %>
@@ -172,9 +172,9 @@ function checkWepion() {
 <% forced_title = "" %>
 
 <% if seeexo %>
-  <% if !current_user.sk.admin? && !sect.fondation %>
+  <% if !current_user.admin? && !sect.fondation %>
     <% chap.prerequisites.select(:id).each do |p| %>
-      <% if !current_user.sk.chapters.exists?(p.id) %>
+      <% if !current_user.chapters.exists?(p.id) %>
         <% exovisibles = false %>
         <% break %>
       <% end %>
@@ -233,12 +233,12 @@ function checkWepion() {
 <% listeprob = Array.new %>
 
 <% if seeprob %>
-  <% probvisibles = has_enough_points(current_user.sk) %>
+  <% probvisibles = has_enough_points(current_user) %>
 
   <% listeprob.push(["Choisissez un problème...", 0]) %>
 
   <% if probvisibles %>
-    <% access_prob = accessible_problems_from_section(current_user.sk, sect, ["id", "number"]).to_a %>
+    <% access_prob = accessible_problems_from_section(current_user, sect, ["id", "number"]).to_a %>
     <% prob_with_subject = Subject.select(:problem_id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
   
     <% access_prob.each do |p| %>
@@ -300,7 +300,7 @@ function checkWepion() {
 <% end %>
 
 <!-- Case correcteurs -->
-<% if current_user.sk.admin || current_user.sk.corrector %>
+<% if current_user.admin || current_user.corrector %>
   <% checked = "" %>
   <% if erreur %>
     <% checked = "checked" if @error_params.has_key?(:for_correctors) && @error_params[:for_correctors].to_i == 1 %>
@@ -318,7 +318,7 @@ function checkWepion() {
 <% someCheckBox = false %>
 
 <!-- Case important -->
-<% if current_user.sk.admin? %>
+<% if current_user.admin? %>
   <% checked = "" %>
   <% if erreur %>
     <% checked = "checked" if @error_params.has_key?(:important) && @error_params[:important].to_i == 1 %>
@@ -336,7 +336,7 @@ function checkWepion() {
 
 <!-- Case wépion -->
 <% wepion_checked = "" %>
-<% if current_user.sk.wepion || current_user.sk.admin? %>
+<% if current_user.wepion || current_user.admin? %>
   <% if erreur %>
     <% wepion_checked = "checked" if @error_params.has_key?(:for_wepion) && @error_params[:for_wepion].to_i == 1 %>
   <% elsif is_edit %>
@@ -352,7 +352,7 @@ function checkWepion() {
 <% end %>
 
 <!-- Case e-mails aux groupes A et/ou B -->
-<% if current_user.sk.root && !is_edit %>
+<% if current_user.root && !is_edit %>
   <div class="form-check mb-1" style="<%= "display:none;" unless wepion_checked == "checked" or Rails.env.test? %>" id="emailWepionDiv">
   <label class="form-check-label">
     <%= check_box_tag "emailWepion", "A", false, :class => "form-check-input" %>

@@ -1,7 +1,7 @@
 <% provide(:title, "Test ##{ @virtualtest.number }") %>
 
 <!-- Script pour chronomètre -->
-<% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => @virtualtest.id).first.taken_time %>
+<% initial = Takentest.where(:user_id => current_user.id, :virtualtest_id => @virtualtest.id).first.taken_time %>
 <% depart = initial.to_i %>
 
 <% compteur = 0 %>

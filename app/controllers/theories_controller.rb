@@ -79,13 +79,13 @@ class TheoriesController < ApplicationController
 
   # Mark a theory as read
   def read
-    current_user.sk.theories << @theory
+    current_user.theories << @theory
     redirect_to chapter_theory_path(@chapter, @theory)
   end
 
   # Mark a theory as unread
   def unread
-    current_user.sk.theories.delete(@theory)
+    current_user.theories.delete(@theory)
     redirect_to chapter_theory_path(@chapter, @theory)
   end
 

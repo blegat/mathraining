@@ -30,7 +30,7 @@ class DiscussionsController < ApplicationController
     if (params.has_key?:qui)
       other = User.find_by_id(params[:qui].to_i)
       return if check_nil_object(other)
-      d = Discussion.get_discussion_between(current_user.sk, other)
+      d = Discussion.get_discussion_between(current_user, other)
       if not d.nil?
         redirect_to d and return
       end
@@ -40,7 +40,7 @@ class DiscussionsController < ApplicationController
   
   # Mark a discussion as unread
   def unread
-    l = current_user.sk.links.where(:discussion_id => @discussion.id).first
+    l = current_user.links.where(:discussion_id => @discussion.id).first
     l.update_attribute(:nonread, l.nonread + 1)
     redirect_to new_discussion_path
   end
@@ -59,10 +59,10 @@ class DiscussionsController < ApplicationController
 
   # Check that current user is involved in the discussion
   def is_involved
-    if !current_user.sk.discussions.include?(@discussion)
+    if !current_user.discussions.include?(@discussion)
       render 'errors/access_refused' and return
-    elsif current_user.other
-      flash[:info] = "Vous ne pouvez pas voir les messages de #{current_user.sk.name}."
+    elsif in_skin?
+      flash[:info] = "Vous ne pouvez pas voir les messages de #{current_user.name}."
       redirect_to new_discussion_path
     end
   end

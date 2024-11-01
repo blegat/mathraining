@@ -23,7 +23,7 @@
 
 <div class="mb-3"></div>
 
-<% if @submission.user == current_user.sk && @submission.wrong? && !last_correction_user.nil? && last_correction_user != current_user.sk %>
+<% if @submission.user == current_user && @submission.wrong? && !last_correction_user.nil? && last_correction_user != current_user %>
 
   <div class="p-3 mb-3 grey-box">
   Votre solution est erronée. Deux options s'offrent à vous :

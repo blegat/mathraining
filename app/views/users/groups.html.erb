@@ -6,7 +6,7 @@
 
 <!-- On parcourt les deux groupes -->
 
-<% if current_user.sk.admin? %>
+<% if current_user.admin? %>
   <p class="text-center">
   <% if (!params.has_key?:details) %>
     <%= link_to "Afficher les détails", groups_users_path(:details => 1) %>
@@ -16,7 +16,7 @@
   </p>
 <% end %>
 
-<% if (params.has_key?:details) && current_user.sk.admin? %>
+<% if (params.has_key?:details) && current_user.admin? %>
 
   <% for g in ["A", "B"] do %>
     <h3>Groupe <%= g %></h3>

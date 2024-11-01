@@ -15,7 +15,7 @@ var showAllDiscussions = function () {
   
   <% num = 0 %>
   <% num_max = 5 %>
-  <% Discussion.find_by_sql("SELECT discussions.id, discussions.last_message_time, a.nonread, users.first_name, users.last_name, users.see_name FROM discussions INNER JOIN links AS a ON discussions.id = a.discussion_id INNER JOIN links AS b ON discussions.id = b.discussion_id INNER JOIN users ON b.user_id = users.id WHERE a.user_id = #{current_user.sk.id} AND b.user_id != #{current_user.sk.id} ORDER BY last_message_time DESC").each do |d| %>
+  <% Discussion.find_by_sql("SELECT discussions.id, discussions.last_message_time, a.nonread, users.first_name, users.last_name, users.see_name FROM discussions INNER JOIN links AS a ON discussions.id = a.discussion_id INNER JOIN links AS b ON discussions.id = b.discussion_id INNER JOIN users ON b.user_id = users.id WHERE a.user_id = #{current_user.id} AND b.user_id != #{current_user.id} ORDER BY last_message_time DESC").each do |d| %>
     <% if num == num_max %>
       <a id="show_all_discussions" class="list-group-item list-group-item-action text-center" onclick="showAllDiscussions();" style="cursor:pointer;">Tout charger</a>
       <div id="remaining_discussions" style="display:none;">

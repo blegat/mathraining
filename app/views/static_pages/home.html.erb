@@ -2,10 +2,10 @@
 
 <!-- Barre de progrès pour les correcteurs -->
 
-<% if signed_in? && (current_user.sk.admin? || current_user.sk.corrector?) %>
+<% if signed_in? && (current_user.admin? || current_user.corrector?) %>
   <% num_my_corrections = 0 %>
   <% recent_corrections.each do |f| %>
-    <% num_my_corrections = f.num_corrections if f.user_id == current_user.sk.id %>
+    <% num_my_corrections = f.num_corrections if f.user_id == current_user.id %>
   <% end %>
   <% pct = [20*num_my_corrections, 100].min %>
   <div class="progress" style="margin-top:3px;">
@@ -29,7 +29,7 @@
 
 <div class="home">
   <div class="grid" style="--bs-columns:12; --bs-gap:5px;">
-  <% show_correction_target = signed_in? && (current_user.sk.admin? || current_user.corrector?) %>
+  <% show_correction_target = signed_in? && (current_user.admin? || current_user.corrector?) %>
   <% if show_correction_target %>
     <div class="g-col-12 g-col-lg-7 g-col-xl-6 mt-n2">
     <%= render 'correction_target' %>

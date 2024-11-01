@@ -1,4 +1,4 @@
-<% link = current_user.sk.links.where(:discussion_id => @discussion.id).first %>
+<% link = current_user.links.where(:discussion_id => @discussion.id).first %>
 <% params[:nonread] = link.nonread %>
 
 <script type="text/javascript">
@@ -52,9 +52,9 @@ window.addEventListener("load", () => {
     <div id="messages">
       <div class="mt-3 d-md-none"></div>
 
-      <% other = current_user.sk %>
+      <% other = current_user %>
       <% @discussion.users.each do |u| %>
-        <% if u != current_user.sk %>
+        <% if u != current_user %>
           <% other = u %>
         <% end %>
       <% end %>
@@ -70,14 +70,14 @@ window.addEventListener("load", () => {
           <div class="mb-2">
             <%= render 'shared/preview' %>
             <%= render 'shared/smiley' %>
-            <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:120px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => current_user.other %>
+            <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:120px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => in_skin? %>
             <script>initAndUpdatePreviewSafeWhenPossible()</script>
           </div>
 
           <%= render 'shared/edit_files' %>
           
-          <%= f.submit "Envoyer", class: "btn btn-lg btn-primary mb-2", :disabled => current_user.other %>
-          <%= link_to 'Marquer comme non lu', unread_discussion_path(@discussion), :method => :put, :class => "btn btn-ld-light-dark", :style => "float:right;", :disabled => current_user.other %>
+          <%= f.submit "Envoyer", class: "btn btn-lg btn-primary mb-2", :disabled => in_skin? %>
+          <%= link_to 'Marquer comme non lu', unread_discussion_path(@discussion), :method => :put, :class => "btn btn-ld-light-dark", :style => "float:right;", :disabled => in_skin? %>
         <% end %>
         
       <% else %>

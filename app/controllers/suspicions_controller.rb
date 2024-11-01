@@ -8,7 +8,7 @@ class SuspicionsController < ApplicationController
 
   # Show all suspicions (or only the ones that are not confirmed yet)
   def index
-    if current_user.sk.root?
+    if current_user.root?
       if params.has_key?:show_all
         # Show all suspicions
         @suspicions = Suspicion.joins(:submission).joins(submission: [{ problem: :section }]).select("suspicions.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).all.order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
@@ -18,7 +18,7 @@ class SuspicionsController < ApplicationController
       end
     else
       # Show all my suspicions
-      @suspicions = current_user.sk.suspicions.joins(:submission).joins(submission: [{ problem: :section }]).select("suspicions.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
+      @suspicions = current_user.suspicions.joins(:submission).joins(submission: [{ problem: :section }]).select("suspicions.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
     end
   end
   
@@ -33,7 +33,7 @@ class SuspicionsController < ApplicationController
   
   # Create a suspicion
   def create
-    suspicion = Suspicion.new(:user => current_user.sk, :submission => @submission, :source => params[:suspicion][:source], :status => :waiting_confirmation)
+    suspicion = Suspicion.new(:user => current_user, :submission => @submission, :source => params[:suspicion][:source], :status => :waiting_confirmation)
     if suspicion.save
       flash[:success] = "Suspicion envoyée pour confirmation."
     else

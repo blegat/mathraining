@@ -1,12 +1,12 @@
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if q.online || (signed_in? && current_user.sk.admin?) %>
+<% if q.online || (signed_in? && current_user.admin?) %>
   
   <% c = q.chapter %>
   <% exovisible = true %>
   
-  <% if !current_user.sk.admin? %>
+  <% if !current_user.admin? %>
     <% c.prerequisites.each do |p| %>
-      <% exovisible = false if !p.section.fondation && !current_user.sk.chapters.exists?(p.id) %>
+      <% exovisible = false if !p.section.fondation && !current_user.chapters.exists?(p.id) %>
     <% end %>
   <% end %>
 
@@ -16,13 +16,13 @@
     </table>
 	
   <% else %>	  
-    <% if current_user.sk.admin? %>
+    <% if current_user.admin? %>
       <table class="table table-bordered reference yellowy">
       <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(c, q), :target => "_blank" %> :</td></tr>
-    <% elsif Solvedquestion.where(:user_id => current_user.sk.id, :question_id => q.id).count > 0 %>
+    <% elsif Solvedquestion.where(:user_id => current_user.id, :question_id => q.id).count > 0 %>
       <table class="table table-bordered reference greeny">
       <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(c, q), :target => "_blank" %>, que vous avez résolu :</td></tr>
-    <% elsif Unsolvedquestion.where(:user_id => current_user.sk.id, :question_id => q.id).count > 0 %>
+    <% elsif Unsolvedquestion.where(:user_id => current_user.id, :question_id => q.id).count > 0 %>
       <table class="table table-bordered reference redy">
       <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(c, q), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
     <% else %>

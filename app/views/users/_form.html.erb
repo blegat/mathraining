@@ -3,13 +3,13 @@
 <!-- Prénom -->
 <div class="mb-2">
   <%= f.label :first_name, :class => "form-label" %>
-  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !current_user.root) %>
+  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !in_skin?) %>
 </div>
 
 <!-- Nom -->
 <div class="mb-2">
   <%= f.label :last_name, :class => "form-label" %>
-  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !current_user.root) %>
+  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !in_skin?) %>
 </div>
 
 <% if(modif && !@user.can_change_name) %>
@@ -72,10 +72,10 @@
 <!-- Email -->
 <div class="mb-2">
   <%= f.label :email, :class => "form-label" %>
-  <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => (modif && !current_user.admin?)  %>
+  <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => (modif && !current_user(false).admin?)  %>
 </div>
 
-<% if modif && !current_user.other && current_user.admin? %>
+<% if modif && !in_skin? && current_user(false).admin? %>
   <p>(Vous pouvez modifier votre adresse e-mail car vous êtes administrateur.)</p>
 <% end %>
 
@@ -90,13 +90,13 @@
 <!-- Mot de passe -->
 <div class="mb-2">
   <%= f.label :password, :class => "form-label" %>
-  <%= f.password_field :password, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
+  <%= f.password_field :password, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && in_skin?), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
 <!-- Confirmation mot de passe -->
 <div class="mb-2">
   <%= f.label :password_confirmation, :class => "form-label" %>
-  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && current_user.other), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
+  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && in_skin?), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
 </div>
 
 <% if !modif && !Rails.env.test? %>
@@ -104,7 +104,7 @@
 <% end %>
 
 <!-- Couleur de correcteur -->
-<% if modif && (current_user.sk.admin? || current_user.sk.corrector?) %>
+<% if modif && (current_user.admin? || current_user.corrector?) %>
   <div class="mb-2">
     <%= f.label :corrector_color, :class => "form-label" %>
     <%= f.text_field :corrector_color, :class => "form-control", :style => "width:200px;" %>

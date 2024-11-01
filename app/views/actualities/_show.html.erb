@@ -17,7 +17,7 @@
   </div>
 
   <!-- Modifier / Supprimer -->
-  <% if signed_in? && current_user.sk.admin? %>
+  <% if signed_in? && current_user.admin? %>
     <div class="modify">
       <%= link_to "Modifier l'actualité", edit_actuality_path(actuality) %> |
       <%= link_to "Supprimer l'actualité", actuality, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette actualité ?" } %>

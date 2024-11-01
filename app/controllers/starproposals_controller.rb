@@ -9,7 +9,7 @@ class StarproposalsController < ApplicationController
 
   # Show all star proposals (or only the ones that are not treated yet)
   def index
-    if current_user.sk.root?
+    if current_user.root?
       if params.has_key?:show_all
         # Show all star proposals
         @starproposals = Starproposal.joins(:submission).joins(submission: [{ problem: :section }]).select("starproposals.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).all.order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
@@ -19,7 +19,7 @@ class StarproposalsController < ApplicationController
       end
     else
       # Show all my star proposals
-      @starproposals = current_user.sk.starproposals.joins(:submission).joins(submission: [{ problem: :section }]).select("starproposals.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
+      @starproposals = current_user.starproposals.joins(:submission).joins(submission: [{ problem: :section }]).select("starproposals.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
     end
   end
   
@@ -33,7 +33,7 @@ class StarproposalsController < ApplicationController
   # Create a star proposal
   def create
     params[:starproposal][:reason].strip! if !params[:starproposal][:reason].nil?
-    starproposal = Starproposal.new(:user => current_user.sk, :submission => @submission, :reason => params[:starproposal][:reason], :answer => "", :status => :waiting_treatment)
+    starproposal = Starproposal.new(:user => current_user, :submission => @submission, :reason => params[:starproposal][:reason], :answer => "", :status => :waiting_treatment)
     if starproposal.save
       flash[:success] = "Proposition d'étoile envoyée."
     else

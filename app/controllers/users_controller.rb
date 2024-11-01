@@ -84,9 +84,9 @@ class UsersController < ApplicationController
   def followed
     fill_sections_max_score
     
-    @all_users = current_user.sk.followed_users.where(:admin => false).to_a
-    if !current_user.sk.admin?
-      @all_users.append(current_user.sk)
+    @all_users = current_user.followed_users.where(:admin => false).to_a
+    if !current_user.admin?
+      @all_users.append(current_user)
     end
     @all_users.sort_by! { |u| [-u.rating, u.id] }
     
@@ -194,19 +194,19 @@ class UsersController < ApplicationController
     old_first_name = @user.first_name
 
     allowed_params = [:first_name, :last_name, :see_name, :sex, :year, :password, :password_confirmation, :accept_analytics]
-    allowed_params << :email if current_user.root? # not .sk because root can change email of someone else
-    allowed_params << :corrector_color if (current_user.sk.admin? || current_user.sk.corrector?)
+    allowed_params << :email if current_user(false).admin? # false because root can change email of someone else
+    allowed_params << :corrector_color if (current_user.admin? || current_user.corrector?)
     if @user.update(params.require(:user).permit(allowed_params))
       c = Country.find(params[:user][:country])
       @user.update_attribute(:country, c)
-      if !@user.can_change_name && !current_user.root?
+      if !@user.can_change_name && !in_skin?
         @user.last_name = old_last_name
         @user.first_name = old_first_name
       end
       @user.adapt_name
       @user.save
       flash[:success] = "Votre profil a bien été mis à jour."
-      if ((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.sk.root)
+      if ((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.root)
         @user.update_attribute(:valid_name, false)
       end
       redirect_to root_path
@@ -387,13 +387,13 @@ class UsersController < ApplicationController
 
   # Show notifications of new corrections (for a student)
   def notifs
-    @notified_submissions = current_user.sk.notified_submissions.order("last_comment_time")
+    @notified_submissions = current_user.notified_submissions.order("last_comment_time")
   end
 
   # Take the skin of a user
   def take_skin
     unless @user.admin || !@user.active # Cannot take the skin of an admin or inactive user
-      current_user.update_attribute(:skin, @user.id)
+      current_user(false).update_attribute(:skin, @user.id)
       flash[:success] = "Vous êtes maintenant dans la peau de #{@user.name}."
     end
     redirect_back(fallback_location: root_path)
@@ -401,8 +401,8 @@ class UsersController < ApplicationController
 
   # Leave the skin of a user
   def leave_skin
-    if current_user.skin != 0
-      current_user.update_attribute(:skin, 0)
+    if current_user(false).skin != 0
+      current_user(false).update_attribute(:skin, 0)
       flash[:success] = "Vous êtes à nouveau dans votre peau."
     end
     redirect_back(fallback_location: root_path)
@@ -482,7 +482,7 @@ class UsersController < ApplicationController
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir continuer sur le site."
       render 'read_legal'
     else
-      user = current_user
+      user = current_user(false)
       user.consent_time = DateTime.now
       user.last_policy_read = true
       user.save
@@ -492,11 +492,11 @@ class UsersController < ApplicationController
 
   # Start following a user
   def follow
-    unless current_user.sk == @user or current_user.sk.followed_users.exists?(@user.id) or @user.admin?
-      if current_user.sk.followed_users.size >= 30
+    unless current_user == @user or current_user.followed_users.exists?(@user.id) or @user.admin?
+      if current_user.followed_users.size >= 30
         flash[:danger] = "Vous ne pouvez pas suivre plus de 30 utilisateurs."
       else
-        current_user.sk.followed_users << @user
+        current_user.followed_users << @user
         flash[:success] = "Vous suivez maintenant #{ @user.name }."
       end
     end
@@ -505,14 +505,14 @@ class UsersController < ApplicationController
 
   # Stop following a user
   def unfollow
-    current_user.sk.followed_users.destroy(@user)
+    current_user.followed_users.destroy(@user)
     flash[:success] = "Vous ne suivez plus #{ @user.name }."
     redirect_to @user
   end
 
   # Start receiving emails for new tchatmessages
   def set_follow_message
-    current_user.sk.update_attribute(:follow_message, true)
+    current_user.update_attribute(:follow_message, true)
     
     flash[:success] = "Vous recevrez dorénavant un e-mail à chaque nouveau message privé."
     redirect_back(fallback_location: new_discussion_path)
@@ -520,7 +520,7 @@ class UsersController < ApplicationController
 
   # Stop receiving emails for new tchatmessages
   def unset_follow_message
-    current_user.sk.update_attribute(:follow_message, false)
+    current_user.update_attribute(:follow_message, false)
     
     flash[:success] = "Vous ne recevrez maintenant plus d'e-mail lors d'un nouveau message privé."
     redirect_back(fallback_location: new_discussion_path)
@@ -542,14 +542,14 @@ class UsersController < ApplicationController
   
   # Check that current user is in some Wépion group
   def group_user
-    if !current_user.sk.admin && current_user.sk.group == ""
+    if !current_user.admin && current_user.group == ""
       render 'errors/access_refused' and return
     end
   end
   
   # Check that the targer user is current user
   def correct_user
-    if current_user.sk.id != @user.id
+    if current_user.id != @user.id
       render 'errors/access_refused' and return
     end
   end
@@ -642,7 +642,7 @@ class UsersController < ApplicationController
       alea = Array.new(s)
       (0..(s-1)).each do |i|
         x = r.rand()
-        if signed_in? and ids[i] == current_user.sk.id
+        if signed_in? and ids[i] == current_user.id
           alea[i] = [0, i]
         else
           alea[i] = [x, i]

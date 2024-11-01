@@ -24,7 +24,7 @@ class ContestsolutionsController < ApplicationController
     params[:contestsolution][:content].strip! if !params[:contestsolution][:content].nil?
 
     @contestsolution = @contestproblem.contestsolutions.build(content: params[:contestsolution][:content],
-                                                              user:    current_user.sk)
+                                                              user:    current_user)
     
     # Invalid CSRF token
     render_with_error('contestproblems/show', @contestsolution, get_csrf_error_message) and return if @invalid_csrf_token
@@ -73,11 +73,11 @@ class ContestsolutionsController < ApplicationController
   
   # Reserve a solution
   def reserve
-    if @contestsolution.reservation > 0 and @contestsolution.reservation != current_user.sk.id
+    if @contestsolution.reservation > 0 and @contestsolution.reservation != current_user.id
       @correct_name = User.find(@contestsolution.reservation).name
       @ok = 0
     else
-      @contestsolution.update_attribute(:reservation, current_user.sk.id)
+      @contestsolution.update_attribute(:reservation, current_user.id)
       @ok = 1
     end
   end
@@ -112,11 +112,11 @@ class ContestsolutionsController < ApplicationController
   def can_send_solution
     @send_solution = 0 # Cannot send a solution
     mycontestsolution = nil
-    if !@contest.is_organized_by_or_admin(current_user.sk) && @contestproblem.in_progress?
-      mycontestsolution = @contestproblem.contestsolutions.where(:user => current_user.sk).first
+    if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.in_progress?
+      mycontestsolution = @contestproblem.contestsolutions.where(:user => current_user).first
       if !mycontestsolution.nil?
         @send_solution = 2 # A solution already exists
-      elsif current_user.sk.rating >= 200
+      elsif current_user.rating >= 200
         @send_solution = 1 # No solution exists and user has >= 200 points
       end
     end
@@ -135,7 +135,7 @@ class ContestsolutionsController < ApplicationController
   
   # Check if current user can delete a solution
   def can_delete_solution
-    unless @contestproblem.in_progress? && !@contestsolution.official && @contestsolution.user == current_user.sk && !current_user.other
+    unless @contestproblem.in_progress? && !@contestsolution.official && @contestsolution.user == current_user && !in_skin?
       flash[:danger] = "Vous ne pouvez pas supprimer cette solution."
       redirect_to @contestproblem
     end

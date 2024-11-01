@@ -6,7 +6,7 @@
 
 <%= render 'info' %>
 
-<% if !has_enough_points(signed_in? ? current_user.sk : nil) %>
+<% if !has_enough_points(signed_in? ? current_user : nil) %>
   
   <!-- Si moins de 200 points, on ne peut rien voir -->
   <p class="mt-3 fw-bold">
@@ -32,7 +32,7 @@
       <% niveaumoyen += p.level %>
       <% p.chapters.each do |c| %>
         <% pre.push(c) %>
-        <% access = false if !current_user.sk.chap_solved?(c) %>
+        <% access = false if !current_user.chap_solved?(c) %>
       <% end %>
     <% end %>
 
@@ -42,20 +42,20 @@
     <% end %>
 
     <% access = false if !t.online? %>
-    <% access = true if current_user.sk.admin? %>
+    <% access = true if current_user.admin? %>
 
     <!-- Si on a accès à ce test virtuel -->
     <% if access %>
       <% compteur = compteur + 1 %>
-      <% status = current_user.sk.test_status(t) %>
+      <% status = current_user.test_status(t) %>
       
       <% classe = "" %>
       <!-- Si (administrateur et en ligne) OU (étudiant et pas encore fait) : jaune -->
-      <% if (current_user.sk.admin? && t.online?) || (!current_user.sk.admin? && status == "not_started") %>
+      <% if (current_user.admin? && t.online?) || (!current_user.admin? && status == "not_started") %>
         <% classe = "yellowy" %>
 
       <!-- Si (administrateur et pas en ligne) OU (étudiant et en cours) : orange -->
-      <% elsif (current_user.sk.admin? && !t.online?) || status == "in_progress" %>
+      <% elsif (current_user.admin? && !t.online?) || status == "in_progress" %>
         <% classe = "orangey" %>
 
       <!-- Sinon : déjà fait donc vert -->
@@ -72,7 +72,7 @@
       <div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
       
         <!-- Prérequis (si admin) -->
-        <% if current_user.sk.admin? %>
+        <% if current_user.admin? %>
           <div class="g-col-12 g-col-md-24 intro">
             <b>Prérequis : </b>
             <% prems = true %>
@@ -119,7 +119,7 @@
         <div class="g-col-12 g-col-md-12 module right-info pb-2">
           <h5>Statistiques</h5>
           Terminé par <b><%= nb_u %></b> personne<%= "s" if nb_u > 1 %><br/>
-          <% if current_user.sk.admin || (nb_u >= 3 && status == "finished") %>
+          <% if current_user.admin || (nb_u >= 3 && status == "finished") %>
             Score moyen : <b><%= moy.round(1) if moy >= 0 %><%= "-" if moy < 0 %> / <%= 7*h %></b>
           <% end %>
         </div>
@@ -128,15 +128,15 @@
         <% can_online = true %>
         <% total = 0 %>
         <!-- Si admin ou étudiant ayant commencé : on affiche les problèmes -->
-        <% if current_user.sk.admin || status != "not_started" %>
+        <% if current_user.admin || status != "not_started" %>
           <% h = 0 %>
           <% problems.each do |p| %>
             <% can_online = false if !p.online? %>
             
             <% sc_show = "" %>
             <% sub_id = -1 %>
-            <% if !current_user.sk.admin? && status == "finished" %>
-              <% s = p.submissions.where(user_id: current_user.sk.id, intest: true).first %>
+            <% if !current_user.admin? && status == "finished" %>
+              <% s = p.submissions.where(user_id: current_user.id, intest: true).first %>
               <% if s.nil? %>
                 <% sc_show = "0" %>
               <% elsif s.score == -1 %>
@@ -153,7 +153,7 @@
             <!-- Enoncé -->
             <div class="g-col-12 g-col-md-18 g-col-lg-19 module left-part">
               <center><h5>
-              <% if !current_user.sk.admin && status == "in_progress" %>
+              <% if !current_user.admin && status == "in_progress" %>
                 <%= link_to "Problème #{h+1}", virtualtest_path(t, :p => p.id) %>
               <% elsif sub_id < 0 %>
                 <%= link_to "Problème #{h+1}", problem_path(p) %>
@@ -162,7 +162,7 @@
               <% end %>
               </h5></center>
               <!-- Déplacer -->
-              <% if current_user.sk.admin? && !t.online? && nb_prob > 1 %>
+              <% if current_user.admin? && !t.online? && nb_prob > 1 %>
                 <p class="text-center">Déplacer ce problème vers le
                 <%= link_to "haut", order_problem_path(p, :new_position => problems[h-1].position), :method => :put if h > 0 %>
                 <%= "-" if h > 0 && h < nb_prob-1 %>
@@ -173,8 +173,8 @@
             </div>
 
             <div class="g-col-12 g-col-md-6 g-col-lg-5 module right-part pb-2">
-              <center><h5>Score<%= " moyen" if current_user.sk.admin? %></h5></center>
-              <% if current_user.sk.admin? %>
+              <center><h5>Score<%= " moyen" if current_user.admin? %></h5></center>
+              <% if current_user.admin? %>
                 <%= arr[h].round(1) if arr[h] >= 0 %>
                 <%= "-" if arr[h] < 0 %>
               <% elsif status == "in_progress" %>
@@ -190,10 +190,10 @@
         <% end %>
         
         <!-- Si l'étudiant n'a pas encore commencé le test -->
-        <% if !current_user.sk.admin? && status == "not_started" %>
-          <% if current_user.sk.can_write_submission? %>
+        <% if !current_user.admin? && status == "not_started" %>
+          <% if current_user.can_write_submission? %>
             <div class="g-col-12 g-col-md-24">
-              <center><%= button_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.other), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
+              <center><%= button_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || in_skin?), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
             </div>
           <% else %>
             <div class="g-col-12 g-col-md-24 module bottom-part text-start">
@@ -204,8 +204,8 @@
         <% end %>
         
         <!-- Si étudiant en test --->
-        <% if !current_user.sk.admin? && status == "in_progress" %>
-          <% initial = Takentest.where(:user_id => current_user.sk.id, :virtualtest_id => t.id).first.taken_time %>
+        <% if !current_user.admin? && status == "in_progress" %>
+          <% initial = Takentest.where(:user_id => current_user.id, :virtualtest_id => t.id).first.taken_time %>
           <% depart = initial.to_i %>
           <% @virtualtest = t %>
           
@@ -216,7 +216,7 @@
         <% end %>
         
         <!-- Si étudiant qui a fini -->
-        <% if !current_user.sk.admin? && status == "finished" %>
+        <% if !current_user.admin? && status == "finished" %>
           <div class="g-col-12 g-col-md-24 module bottom-part">
             <h5>Score</h5>
             <span class="fw-bold" style="font-size:30px;">
@@ -231,7 +231,7 @@
         <% end %>
         
         <!-- Si test en construction -->
-        <% if !t.online? && current_user.sk.admin? %>
+        <% if !t.online? && current_user.admin? %>
           <div class="g-col-12 g-col-md-24">
             <p class="mb-2 text-center">
             <%= link_to "Modifier ce test", edit_virtualtest_path(t) %> - <%= link_to "Supprimer ce test", t, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce test virtuel ? Cela ne supprimera pas les problèmes associés." } %>
@@ -259,7 +259,7 @@
   <% end %>
 
   <!-- Ajouter un test -->
-  <% if current_user.sk.admin? %>
+  <% if current_user.admin? %>
     <center>
     <%= button_to "Ajouter un test virtuel", new_virtualtest_path, method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
     </center>

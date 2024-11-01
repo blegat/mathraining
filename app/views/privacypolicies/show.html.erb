@@ -18,7 +18,7 @@
 
 <%= raw(htmlise(@privacypolicy.content)) %>
 
-<% if signed_in? && current_user.sk.root? %>
+<% if signed_in? && current_user.root? %>
 <p class="mt-3 text-center">
 <%= link_to "Mettre à jour la politique de confidentialité", privacypolicies_path %>
 </p>

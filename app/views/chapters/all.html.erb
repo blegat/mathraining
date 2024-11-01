@@ -21,9 +21,9 @@
   <% end %>
 <% end %>
 
-<% if @chapter.online && signed_in? && !current_user.sk.admin? %>
+<% if @chapter.online && signed_in? && !current_user.admin? %>
   <!-- Marquer comme lu -->
-  <center><%= button_to "Marquer toute la théorie comme lue", read_chapter_path(@chapter), :method => :put, class: 'btn btn-ld-light-dark mt-3', :disabled => (!signed_in? || current_user.other) %></center>
+  <center><%= button_to "Marquer toute la théorie comme lue", read_chapter_path(@chapter), :method => :put, class: 'btn btn-ld-light-dark mt-3', :disabled => (!signed_in? || in_skin?) %></center>
   
   <hr class="bottom-help" />
   <p>Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => "cha-" + @chapter.id.to_s) %> !</p>

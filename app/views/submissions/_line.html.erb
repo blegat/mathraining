@@ -38,15 +38,15 @@
 <% elsif s.wrong? or s.plagiarized? or s.closed? %>
   <% color_class = "table-ld-danger" %> <!-- Si incorrect ou plagiat ou clôturé : toujours rouge -->
 <% elsif s.waiting? %>
-  <% if !(current_user.sk.admin? or (current_user.sk.corrector and current_user.sk != s.user)) || s.followings.first.nil? %>
+  <% if !(current_user.admin? or (current_user.corrector and current_user != s.user)) || s.followings.first.nil? %>
     <% color_class = "table-ld-warning" %> <!-- Si en attente (pas encore corrigé) : toujours jaune, sauf si... -->
-  <% elsif s.followings.first.user == current_user.sk %>
+  <% elsif s.followings.first.user == current_user %>
     <% color_class = "table-ld-warning-greener" %> <!-- si réservé par moi : un peu plus vert -->
   <% else %>
     <% color_class = "table-ld-warning-reder" %> <!-- si réservé par quelqu'un d'autre : un peu plus rouge -->
   <% end %>
 <!-- Si nouveau commentaire jamais lu : bleu si on est correcteur, rouge si on est pas correcteur -->
-<% elsif s.wrong_to_read? && current_user.sk != s.user %>
+<% elsif s.wrong_to_read? && current_user != s.user %>
   <% color_class = "table-ld-info" %>
 <% elsif s.wrong_to_read? %>
   <% color_class = "table-ld-danger" %>
@@ -66,7 +66,7 @@
 
 <!-- Date de soumission -->
 <td class="<%= 'd-none d-lg-table-cell' unless hide_user %>" style="width:250px;">
-<% show_test_tag = (s.intest && (current_user.sk.admin? || current_user.sk.corrector)) %>
+<% show_test_tag = (s.intest && (current_user.admin? || current_user.corrector)) %>
 <% if show_test_tag %>
   <table class="m-0 p-0"><tr><td class="m-0 pe-1 align-middle">
 <% end %>

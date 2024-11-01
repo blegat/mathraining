@@ -33,9 +33,9 @@
     
   <% exovisibles = true %>
 
-  <% if !current_user.sk.admin? && !chapter.section.fondation %>
+  <% if !current_user.admin? && !chapter.section.fondation %>
     <% chapter.prerequisites.each do |p| %>
-      <% if !current_user.sk.chapters.exists?(p.id) %>
+      <% if !current_user.chapters.exists?(p.id) %>
         <% exovisibles = false %>
         <% break %>
       <% end %>
@@ -91,11 +91,11 @@
   opt.value = 0
   oldSel2.add(opt, null);
     
-  <% probvisibles = has_enough_points(current_user.sk) %>
+  <% probvisibles = has_enough_points(current_user) %>
     
   <% if probvisibles %>
     <% some_prob_hidden = false %>
-    <% access_prob = accessible_problems_from_section(current_user.sk, section, ["id", "number"]).to_a %>
+    <% access_prob = accessible_problems_from_section(current_user, section, ["id", "number"]).to_a %>
     <% prob_with_subject = Subject.select(:problem_id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
     
     <% access_prob.each do |p| %>

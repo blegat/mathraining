@@ -18,7 +18,7 @@
   <% end %>
   <%= hidden_field_tag "lastmessage", lastid %>
 
-  <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => current_user.other %>
+  <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => in_skin? %>
   <button class="btn btn-lg btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>
 <% end %>
 

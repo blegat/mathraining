@@ -18,15 +18,15 @@
       <!-- Boutons en haut à gauche -->
       <form>
       
-      <% if signed_in? and (current_user.sk.admin || current_user.sk.corrector) %>
-        <% num_waiting_suspicions = (current_user.sk.root ? Suspicion.where(:status => :waiting_confirmation).count : 0) %>
-        <% num_waiting_starproposals = (current_user.sk.root ? Starproposal.where(:status => :waiting_treatment).count : 0) %>
+      <% if signed_in? and (current_user.admin || current_user.corrector) %>
+        <% num_waiting_suspicions = (current_user.root ? Suspicion.where(:status => :waiting_confirmation).count : 0) %>
+        <% num_waiting_starproposals = (current_user.root ? Starproposal.where(:status => :waiting_treatment).count : 0) %>
 
         <!-- Nouvelles soumissions et nouveaux commentaires -->
 
-        <% num_notifications_new12 = current_user.sk.num_notifications_new([1, 2]) %>
-        <% num_notifications_new345 = current_user.sk.num_notifications_new([3, 4, 5]) %>
-        <% num_notifications_update = current_user.sk.num_notifications_update %>
+        <% num_notifications_new12 = current_user.num_notifications_new([1, 2]) %>
+        <% num_notifications_new345 = current_user.num_notifications_new([3, 4, 5]) %>
+        <% num_notifications_update = current_user.num_notifications_update %>
         <% classe = (num_notifications_new12[0] + num_notifications_new12[1] > 0 ? "success" : "ld-light-dark-er") %>
         <%= link_to allnew_submissions_path(:levels => 3), class: "btn btn-#{classe}" do %>
           <%= num_notifications_new12[0] %>
@@ -45,21 +45,21 @@
         <%= link_to "#{num_notifications_update}", allmynew_submissions_path, class: "btn btn-#{classe}" %>
         
         <!-- Nouvelles propositions d'étoiles (pour les root) -->
-        <% if current_user.sk.root? && num_waiting_starproposals > 0 %>
+        <% if current_user.root? && num_waiting_starproposals > 0 %>
           <%= link_to "#{num_waiting_starproposals}", starproposals_path, class: "btn btn-yellow" %>
         <% end %>
         
         <!-- Nouvelles suspicions de plagiat (pour les root) -->
-        <% if current_user.sk.root? && num_waiting_suspicions > 0 %>
+        <% if current_user.root? && num_waiting_suspicions > 0 %>
           <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
         <% end %>
       <% end %>
       
       <!-- Corrections (pour les étudiants non-correcteurs) -->
-      <% if signed_in? && !current_user.sk.admin? %>
-        <% noti = current_user.sk.notified_submissions.count %>
+      <% if signed_in? && !current_user.admin? %>
+        <% noti = current_user.notified_submissions.count %>
         <% if noti != 0 %>
-          <%= link_to "#{noti}", notifs_path, class: "btn btn-info #{ 'ms-2' if current_user.sk.corrector? }" %>
+          <%= link_to "#{noti}", notifs_path, class: "btn btn-info #{ 'ms-2' if current_user.corrector? }" %>
         <% end %>
       <% end %>
       
@@ -87,7 +87,7 @@
                 <li><%= link_to f.name, f, :class => "dropdown-item" %></li>
               <% end %>
             <% end %>
-            <% if signed_in? && current_user.sk.admin? %>
+            <% if signed_in? && current_user.admin? %>
               <li class="dropdown-divider"></li>
               <li><%= link_to "Modifier la structure", prerequisites_path, :class => "dropdown-item" %></li>
             <% end %>
@@ -113,7 +113,7 @@
 
         <!-- Forum -->
         <% if signed_in? %>
-          <% num_unseen_subjects = current_user.sk.num_unseen_subjects(false) %>
+          <% num_unseen_subjects = current_user.num_unseen_subjects(false) %>
           
           <li class="nav-item me-1">
           <%= link_to subjects_path, :class => "nav-link #{'fw-bold' if num_unseen_subjects > 0 }" do %>
@@ -145,26 +145,26 @@
 
         <% if signed_in? %>
 
-          <% nonlu = current_user.sk.links.where("nonread != 0").count %>
+          <% nonlu = current_user.links.where("nonread != 0").count %>
 
           <li class="nav-item dropdown">
 
           <!-- Nom -->
           <a class="nav-link dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-            <%= "[" if current_user.other %><%= raw(current_user.sk.colored_name(1)) %><%= ' (' + nonlu.to_s + ')' if nonlu > 0 %><%= "]" if current_user.other %>
+            <%= "[" if in_skin? %><%= raw(current_user.colored_name(1)) %><%= ' (' + nonlu.to_s + ')' if nonlu > 0 %><%= "]" if in_skin? %>
           </a>
 
           <ul class="dropdown-menu dropdown-menu-end">
-            <% if current_user.other %>
+            <% if in_skin? %>
               <li><%= link_to "Sortir de ce corps", leave_skin_path, :method => :put, :class => "dropdown-item" %></li>
             <% end %>
-            <li><%= link_to "Profil", current_user.sk, :class => "dropdown-item" %></li>
-            <li><%= link_to "Compte", edit_user_path(current_user.sk), :class => "dropdown-item" %></li>
-            <% if signed_in? && (current_user.sk.admin? || (current_user.sk.wepion? && current_user.sk.group != "")) %>
+            <li><%= link_to "Profil", current_user, :class => "dropdown-item" %></li>
+            <li><%= link_to "Compte", edit_user_path(current_user), :class => "dropdown-item" %></li>
+            <% if signed_in? && (current_user.admin? || (current_user.wepion? && current_user.group != "")) %>
               <li><%= link_to "Groupes Wépion", groups_users_path, :class => "dropdown-item" %></li>
             <% end %>
             <li><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "dropdown-item" %></li>
-            <% if current_user.sk.root? %>
+            <% if current_user.root? %>
               <li class="dropdown-divider"></li>
               <li><%= link_to "Pièces jointes", myfiles_path, :class => "dropdown-item" %></li>
               <% num_users_to_validate = User.where(:valid_name => false, :email_confirm => true, :admin => false).count %>

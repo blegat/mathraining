@@ -23,8 +23,8 @@
     <% theories_ids = theories.map { |t| t.id } %>
     
     <% @read_theories = Set.new %>
-    <% if signed_in? && !current_user.sk.admin? %>
-      <% @read_theories = current_user.sk.theories.where(:id => theories_ids).ids.to_set %>
+    <% if signed_in? && !current_user.admin? %>
+      <% @read_theories = current_user.theories.where(:id => theories_ids).ids.to_set %>
     <% end %>
     
     <% theories.each do |f| %>
@@ -79,16 +79,16 @@
             
           <% kind = "" %>
           <% if f.online %>
-            <% if signed_in? && !current_user.sk.admin? %>
+            <% if signed_in? && !current_user.admin? %>
               <% if solvedquestions.nil? %> 
-                <% solvedquestions = Solvedquestion.where(:user_id => current_user.sk.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
+                <% solvedquestions = Solvedquestion.where(:user_id => current_user.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
               <% end %>
               <% if solvedquestions.include?(f.id) %>
                 <% kind = "list-group-item-success" %>
               <% else %>
                 <% num_unsolved_questions += 1 %>
                 <% if unsolvedquestions.nil? %>
-                  <% unsolvedquestions = Unsolvedquestion.where(:user_id => current_user.sk.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
+                  <% unsolvedquestions = Unsolvedquestion.where(:user_id => current_user.id, :question_id => questions_ids).group(:question_id).count.keys.to_set %>
                 <% end %>
                 <% if unsolvedquestions.include?(f.id) %>
                   <% kind = "list-group-item-danger" %>
@@ -107,8 +107,8 @@
       <% end %>
     <% end %>
       
-    <% if @chapter.online? && @user_can_see_exercises && num_unsolved_questions == 0 && signed_in? && !current_user.sk.admin? && !current_user.sk.chapters.exists?(@chapter.id) %>
-      <% current_user.sk.chapters << @chapter %>
+    <% if @chapter.online? && @user_can_see_exercises && num_unsolved_questions == 0 && signed_in? && !current_user.admin? && !current_user.chapters.exists?(@chapter.id) %>
+      <% current_user.chapters << @chapter %>
       <% @chapter.nb_completions = @chapter.nb_completions + 1 %>
       <% @chapter.save %>
     <% end %>

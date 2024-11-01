@@ -3,10 +3,10 @@
 <h1>
 <%= title_1("Soumissions") %>
 <span style="font-size:20px;"> - <%= link_to "Tout voir", all_submissions_path %>
-<% if current_user.sk.root? || current_user.sk.suspicions.count > 0 %>
+<% if current_user.root? || current_user.suspicions.count > 0 %>
  - <%= link_to "Plagiats", suspicions_path %>
 <% end %>
-<% if current_user.sk.root? || current_user.sk.starproposals.count > 0 %>
+<% if current_user.root? || current_user.starproposals.count > 0 %>
  - <%= link_to "Étoiles", starproposals_path %>
 <% end %>
 </span>
@@ -254,9 +254,9 @@ Votre navigateur ne supporte pas les canvas.
   <p>Il n'y a plus rien à corriger, beau boulot !</p>
 <% else %>
 
-  <% if !current_user.sk.admin? %>
+  <% if !current_user.admin? %>
     <% problem_solved = Array.new %>
-    <% current_user.sk.solvedproblems.select(:problem_id).each do |sp| %>
+    <% current_user.solvedproblems.select(:problem_id).each do |sp| %>
       <% problem_solved[sp.problem_id] = true %>
     <% end %>
   <% end %>
@@ -279,7 +279,7 @@ Votre navigateur ne supporte pas les canvas.
         <% split_done = true %>
       <% end %>
     <% end %>
-    <% hidden_sub = (!current_user.sk.admin? && problem_solved[n.problem_id] != true) %>
+    <% hidden_sub = (!current_user.admin? && problem_solved[n.problem_id] != true) %>
     <% cur = cur + 1 unless hidden_sub %>
     <%= render 'submissions/line', s: n, hide_last_activity: true, show_section_and_level: true, hidden_sub: hidden_sub, show_num_waiting_days_from: "created_at", show_correctors: true, show_content_length: true %>
   <% end %>
