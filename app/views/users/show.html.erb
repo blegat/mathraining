@@ -50,8 +50,8 @@
 
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
   
-  <% non_accessible_chapters_set = non_accessible_chapters_ids(signed_in? ? current_user : nil) %>
-  <% non_accessible_problems_set = non_accessible_problems_ids(signed_in? ? current_user : nil) %>
+  <% non_accessible_chapters_set = non_accessible_chapters_ids(current_user) %>
+  <% non_accessible_problems_set = non_accessible_problems_ids(current_user) %>
   
   <!-- On va parcourir tous les exercices et problèmes -->
   

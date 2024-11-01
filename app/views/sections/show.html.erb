@@ -34,7 +34,7 @@
   <% @chapter_status = [] %>
   <% @question_status = [] %>
   <% @theory_status = [] %>
-  <% non_access_chaps_ids = non_accessible_chapters_ids((signed_in? ? current_user : nil), @section) %>
+  <% non_access_chaps_ids = non_accessible_chapters_ids(current_user, @section) %>
   <% chapters_id.each do |id| %>
     <% @chapter_status[id] = (non_access_chaps_ids.include?(id) ? "no-access" : "access") %>
   <% end %>

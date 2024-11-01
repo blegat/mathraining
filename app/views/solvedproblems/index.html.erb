@@ -6,7 +6,7 @@
 
 <% oneweekago = Date.today - 7.days %>
 
-<% non_accessible_problems_set = non_accessible_problems_ids(signed_in? ? current_user : nil) %>
+<% non_accessible_problems_set = non_accessible_problems_ids(current_user) %>
 
 <% prev_day = Date.today %>
 

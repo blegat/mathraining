@@ -6,7 +6,7 @@
 
 <%= render 'info' %>
 
-<% if !has_enough_points(signed_in? ? current_user : nil) %>
+<% if !has_enough_points(current_user) %>
 
   <!-- Si moins de 200 points, on ne peut rien voir -->
   <p class="mt-3 fw-bold">
