@@ -408,20 +408,6 @@ class User < ActiveRecord::Base
     return self.last_ban_date + 2.weeks
   end
   
-  # Deletes the user that never came on the website (done very day at 2 am (see schedule.rb))
-  def self.delete_unconfirmed
-    # Users that have not confirmed their email after one week
-    oneweekago = Date.today - 7
-    User.where("email_confirm = ? AND created_at < ?", false, oneweekago).each do |u|
-      u.destroy
-    end
-    # Users having confirmed their email but that never came on the website after one month (rating = 0 should be redundant))
-    onemonthago = Date.today - 31
-    User.where("admin = ? AND rating = ? AND created_at < ? AND last_connexion_date < ?", false, 0, onemonthago, "2012-01-01").each do |u|
-      u.destroy
-    end
-  end
-  
   # Create a new random token, to automatically sign out the user from everywhere
   def update_remember_token
     self.create_remember_token
@@ -448,6 +434,20 @@ class User < ActiveRecord::Base
       end
     elsif !self.corrector_color.nil?
       self.corrector_color = nil
+    end
+  end
+  
+  # Deletes the user that never came on the website (done very day at 2 am (see schedule.rb))
+  def self.delete_unconfirmed
+    # Users that have not confirmed their email after one week
+    oneweekago = Date.today - 7
+    User.where("email_confirm = ? AND created_at < ?", false, oneweekago).each do |u|
+      u.destroy
+    end
+    # Users having confirmed their email but that never came on the website after one month (rating = 0 should be redundant))
+    onemonthago = Date.today - 31
+    User.where("admin = ? AND rating = ? AND created_at < ? AND last_connexion_date < ?", false, 0, onemonthago, "2012-01-01").each do |u|
+      u.destroy
     end
   end
   
@@ -513,6 +513,10 @@ class User < ActiveRecord::Base
           pps.update_attribute(:points, real_score)
         end
       end
+    end
+    
+    unless check_only
+      Globalstatistic.get.update_all
     end
     
     return all_warnings
