@@ -1,6 +1,6 @@
-<% provide(:title, 'Politique de confidentialité') %>
+<% provide(:title, 'Politiques de confidentialité') %>
 
-<h1><%= title_2((link_to "Politique de confidentialité", privacypolicies_path), "Modifier") %></h1>
+<h1><%= title_privacypolicies("Modifier") %></h1>
 
 <%= form_for(@privacypolicy) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>

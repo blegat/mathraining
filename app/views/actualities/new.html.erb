@@ -1,6 +1,6 @@
 <% provide(:title, 'Ajouter une actualité') %>
 
-<h1><%= title_2((link_to "Actualités", root_path), "Ajouter une actualité") %></h1>
+<h1><%= title_actualities("Ajouter une actualité") %></h1>
 
 <%= form_for(@actuality) do |f| %>
   <%= render 'form', f: f %>

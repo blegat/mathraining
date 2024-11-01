@@ -1,6 +1,6 @@
 <% provide(:title, "Modifier les choix d'un exercice".html_safe) %>
 
-<h1><%= title_4("Théorie", (link_to @question.chapter.section.name, @question.chapter.section), (link_to @question.chapter.name, chapter_question_path(@question.chapter, @question)), "Choix") %></h1>
+<h1><%= title_question(@question, "Choix") %></h1>
 
 <p>Veuillez, pour chaque choix modifié, cliquer sur le bouton "Modifier ce choix" en vis à vis. Sans cela, votre modification ne sera pas enregistrée.</p>
 

@@ -209,20 +209,90 @@ module ApplicationHelper
     return n_string
   end
   
+  # Methods to write titles
   def title_1(x)
     return "<span class='title-true'>#{ x }</span>".html_safe
   end
   
-  def title_2(x, y, print=true)
-    return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-true'>#{ y }</span>".html_safe
+  def title_2(x, y)
+    return "<span class='title-first'>#{ x } ></span> <span class='title-true'>#{ y }</span>".html_safe
   end
   
-  def title_3(x, y, z, print=true)
-    return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-second #{'noprint' if not print}'>#{ y } ></span> <span class='title-true'>#{ z }</span>".html_safe
+  def title_3(x, y, z)
+    return "<span class='title-first'>#{ x } ></span> <span class='title-second'>#{ y } ></span> <span classs='title-true'>#{ z }</span>".html_safe
   end
   
-  def title_4(x, y, z, t, print=true)
-    return "<span class='title-first #{'noprint' if not print}'>#{ x } ></span> <span class='title-second #{'noprint' if not print}'>#{ y } ></span> <span class='title-third #{'noprint' if not print}'>#{ z } ></span> <span class='title-true'>#{ t }</span>".html_safe
+  def title_4(x, y, z, t)
+    return "<span class='title-first'>#{ x } ></span> <span class='title-second'>#{ y } ></span> <span class='title-third'>#{ z } ></span> <span class='title-true'>#{ t }</span>".html_safe
+  end
+  
+  # Titles concerning actualities
+  def title_actualities(title)
+    return title_2((link_to "Actualités", root_path), title)
+  end
+  
+  # Titles concerning FAQ
+  def title_faqs(title)
+    return title_2((link_to "Questions fréquemment posées", faqs_path), title)
+  end
+  
+  # Titles concerning pictures
+  def title_pictures(title)
+    return title_2((link_to "Vos images", pictures_path), title)
+  end
+  
+  # Titles concerning privacypolicies
+  def title_privacypolicies(title)
+    return title_2((link_to "Politiques de confidentialité", privacypolicies_path), title)
+  end
+  
+  # Titles concerning subjects
+  def title_subjects(title)
+    return title_2((link_to "Forum", subjects_path(:q => @q)), title)
+  end
+  
+  # Titles concerning virtualtests
+  def title_virtualtests(title)
+    return title_2((link_to "Tests virtuels", virtualtests_path), title)
+  end
+  
+  # Titles concerning sections / chapters / questions / theories
+  def title_section(section, title)
+    return title_3("Théorie", (link_to section.name, section), title)
+  end
+  
+  def title_chapter(chapter, title)
+    return title_4("Théorie", (link_to chapter.section.name, chapter.section), (link_to chapter.name, chapter), title)
+  end
+  
+  def title_question(question, title)
+    return title_4("Théorie", (link_to question.chapter.section.name, question.chapter.section), (link_to question.chapter.name, chapter_question_path(question.chapter, question)), title)
+  end
+  
+  def title_theory(theory, title)
+    return title_4("Théorie", (link_to theory.chapter.section.name, theory.chapter.section), (link_to theory.chapter.name, chapter_theory_path(theory.chapter, theory)), title)
+  end
+  
+  # Titles concerning problems
+  def title_problems(section, title)
+    return title_3("Problèmes", (link_to section.name, section_problems_path(section)), title)
+  end
+  
+  def title_problem(problem, title)
+    return title_4("Problèmes", (link_to problem.section.name, section_problems_path(problem.section)), (link_to "Problème ##{ problem.number }", problem), title)
+  end
+  
+  # Titles concerning contests / contestproblems
+  def title_contests(title)
+    return title_2((link_to "Concours", contests_path), title)
+  end  
+  
+  def title_contest(contest, title)
+    return title_3((link_to "Concours", contests_path), (link_to "Concours ##{@contest.number}", @contest), title)
+  end
+  
+  def title_contestproblem(contestproblem, title)
+    return title_4((link_to "Concours", contests_path), (link_to "Concours ##{contestproblem.contest.number}", contestproblem.contest), (link_to "Problème ##{contestproblem.number}", contestproblem), title)
   end
   
   def x_icon

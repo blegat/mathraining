@@ -1,6 +1,6 @@
 <% provide(:title, "Concours ##{ @contest.number }") %>
 
-<h1><%= title_3((link_to "Concours", contests_path), (link_to "Concours ##{@contest.number}", @contest), "Seuils des médailles") %></h1>
+<h1><%= title_contest(@contest, "Seuils des médailles") %></h1>
 
 <% nb_prob = @contest.contestproblems.count %>
 <% num_ranked = @contest.contestscores.count %>

@@ -1,6 +1,6 @@
 <% provide(:title, 'Modifier un chapitre') %>
 
-<h1><%= title_4("Théorie", (link_to @chapter.section.name, @chapter.section), (link_to @chapter.name, @chapter), "Modifier") %></h1>
+<h1><%= title_chapter(@chapter, "Modifier") %></h1>
 
 <%= form_for(@chapter) do |f| %>
   <%= render 'form', f: f %>

@@ -1,6 +1,6 @@
 <% provide(:title, 'Créer un problème') %>
 
-<h1><%= title_3("Problèmes", (link_to @section.name, section_problems_path(@section)), "Créer un problème") %></h1>
+<h1><%= title_problems(@section, "Créer un problème") %></h1>
 
 <%= form_for(@problem, url: section_problems_path) do |f| %>
   <%= render 'form', f: f, problem: nil %>

@@ -31,7 +31,7 @@ describe "Privacy policy pages", privacypolicy: true do
       describe "visits policy configuration page" do
         before { visit privacypolicies_path }
         it do
-          should have_selector("h1", text: "Politique de confidentialité > Mettre à jour")
+          should have_selector("h1", text: "Politiques de confidentialité")
           should have_button("Créer une nouvelle version")
         end
         
@@ -128,7 +128,7 @@ describe "Privacy policy pages", privacypolicy: true do
       describe "visits policy configuration page" do
         before { visit privacypolicies_path }
         it do
-          should have_selector("h1", text: "Politique de confidentialité > Mettre à jour")
+          should have_selector("h1", text: "Politiques de confidentialité")
           
           should have_link("Voir", href: privacypolicy_path(policy1))
           should have_content(policy1.description)
@@ -176,7 +176,7 @@ describe "Privacy policy pages", privacypolicy: true do
       
       describe "visits policy edit page" do
         before { visit edit_privacypolicy_path(policy3_offline) }
-        it { should have_selector("h1", text: "Politique de confidentialité > Modifier") }
+        it { should have_selector("h1", text: "Politiques de confidentialité > Modifier") }
         
         describe "and edits it" do
           before do
@@ -197,7 +197,7 @@ describe "Privacy policy pages", privacypolicy: true do
             policy3_offline.reload
           end
           specify do
-            expect(page).to have_selector("h1", text: "Politique de confidentialité > Modifier")
+            expect(page).to have_selector("h1", text: "Politiques de confidentialité > Modifier")
             expect(page).to have_error_message("Contenu doit être rempli")
             expect(policy3_offline.content).not_to eq("")
           end
@@ -206,7 +206,7 @@ describe "Privacy policy pages", privacypolicy: true do
       
       describe "visits policy edit description page" do
         before { visit edit_description_privacypolicy_path(policy3_offline) }
-        it { should have_selector("h1", text: "Politique de confidentialité > Modifier la description") }
+        it { should have_selector("h1", text: "Politiques de confidentialité > Modifier la description") }
         
         describe "and edits it" do
           before do
@@ -227,7 +227,7 @@ describe "Privacy policy pages", privacypolicy: true do
             policy3_offline.reload
           end
           specify do
-            expect(page).to have_selector("h1", text: "Politique de confidentialité > Modifier")
+            expect(page).to have_selector("h1", text: "Politiques de confidentialité > Modifier")
             expect(page).to have_error_message("Modifications doit être rempli")
             expect(policy3_offline.description).not_to eq("")
           end

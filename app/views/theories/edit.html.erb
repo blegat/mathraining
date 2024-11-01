@@ -1,6 +1,6 @@
 <% provide(:title, 'Modifier un point théorique') %>
 
-<h1><%= title_4("Théorie", (link_to @theory.chapter.section.name, @theory.chapter.section), (link_to @theory.chapter.name, chapter_theory_path(@theory.chapter, @theory)), "Modifier un point théorique") %></h1>
+<h1><%= title_theory(@theory, "Modifier un point théorique") %></h1>
 
 <%= form_for(@theory) do |f| %>
   <%= render 'form', f: f %>

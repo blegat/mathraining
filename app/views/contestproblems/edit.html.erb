@@ -1,6 +1,6 @@
 <% provide(:title, 'Modifier un problème') %>
 
-<h1><%= title_4((link_to "Concours", contests_path), (link_to "Concours ##{@contest.number}", @contest), (link_to "Problème ##{@contestproblem.number}", @contestproblem), "Modifier") %></h1>
+<h1><%= title_contestproblem(@contestproblem, "Modifier") %></h1>
 
 <%= form_for(@contestproblem) do |f| %>
   <%= render 'form', f: f %>

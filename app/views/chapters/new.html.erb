@@ -1,6 +1,6 @@
 <% provide(:title, 'Créer un chapitre') %>
 
-<h1><%= title_3("Théorie", (link_to @section.name, @section), "Créer un chapitre") %></h1>
+<h1><%= title_section(@section, "Créer un chapitre") %></h1>
 
 <%= form_for(@chapter, url: section_chapters_path) do |f| %>
   <%= render 'form', f: f %>

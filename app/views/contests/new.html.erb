@@ -1,6 +1,6 @@
 <% provide(:title, 'Créer un concours') %>
 
-<h1><%= title_2((link_to "Concours", contests_path), "Créer un concours") %></h1>
+<h1><%= title_contests("Créer un concours") %></h1>
 
 <%= form_for @contest do |f| %>
   <%= render 'form', f: f %>

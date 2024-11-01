@@ -1,6 +1,6 @@
 <% provide(:title, 'Créer un exercice') %>
 
-<h1><%= title_4("Théorie", (link_to @chapter.section.name, @chapter.section), (link_to @chapter.name, @chapter), "Créer un exercice") %></h1>
+<h1><%= title_chapter(@chapter, "Créer un exercice") %></h1>
 
 <%= form_for(@question, url: chapter_questions_path) do |f| %>
   <%= render 'form', f: f, question: nil %>
