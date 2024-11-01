@@ -44,8 +44,8 @@
 <% end %>
 
 <% if signed_in? && current_user.root %>
-  <% title_list.push(["Non classés", 100]) %>
-  <% title_list.push(["Administrateurs", 101]) %>
+  <% title_list.push(["Non classés", -1]) %>
+  <% title_list.push(["Administrateurs", -2]) %>
 <% end %>
 
 <h1><%= title_1("Scores") %></h1>
@@ -54,7 +54,6 @@
 <%= render "tabs", t: 1 %>
 
 <center>
-
 <%= form_tag "", :method => "get", :name => "research" do %>
 <div class="grid mb-2" style="--bs-columns:12; --bs-gap:10px;">
   <div class="g-col-12 g-start-md-5 g-col-md-4 g-start-lg-7 g-col-lg-3">

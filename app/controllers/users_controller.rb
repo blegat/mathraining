@@ -35,11 +35,11 @@ class UsersController < ApplicationController
     @admin = false
     if(params.has_key?:title)
       @title = params[:title].to_i
-      if @title == 100
+      if @title == -1
         @real_users = false
         @min_rating = 0
         @max_rating = 0
-      elsif @title == 101
+      elsif @title == -2
         @real_users = false
         @min_rating = 0
         @admin = true
@@ -64,9 +64,9 @@ class UsersController < ApplicationController
     @num_users_in_country_by_rating =  User.where("admin = ? AND active = ? AND rating > 0 #{country_condition}", false, true).group(:rating).order("rating DESC").count
 
     if !@real_users
-      if @title == 100
+      if @title == -1
         @all_users = User.where("rating = ? AND admin = ? AND active = ? #{country_condition}", 0, false, true).order("id ASC")
-      elsif @title == 101
+      elsif @title == -2
         @all_users = User.where("admin = ? AND active = ? #{country_condition}", true, true).order("id ASC")
       end
       return

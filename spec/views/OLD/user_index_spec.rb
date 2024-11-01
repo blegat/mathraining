@@ -330,7 +330,7 @@ describe "Page user/index" do
     end
     
     describe "unranked users and all countries" do
-      before { visit users_path(:title => 100) }
+      before { visit users_path(:title => -1) }
       it do
         should have_selector("h1", text: "Scores")
         
@@ -345,7 +345,7 @@ describe "Page user/index" do
     end
     
     describe "unranked users and one country" do
-      before { visit users_path(:title => 100, :country => country2) }
+      before { visit users_path(:title => -1, :country => country2) }
       it do
         should have_selector("h1", text: "Scores")
         
@@ -360,7 +360,7 @@ describe "Page user/index" do
     end
     
     describe "admin users and all countries" do
-      before { visit users_path(:title => 101) }
+      before { visit users_path(:title => -2) }
       it do
         should have_selector("h1", text: "Scores")
         
@@ -374,7 +374,7 @@ describe "Page user/index" do
     end
     
     describe "admin users and one country" do
-      before { visit users_path(:title => 101, :country => country2) }
+      before { visit users_path(:title => -2, :country => country2) }
       it do
         should have_selector("h1", text: "Scores")
         

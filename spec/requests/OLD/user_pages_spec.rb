@@ -341,12 +341,12 @@ describe "User pages" do
     end
     
     describe "tries to visit unranked scores page" do
-      before { visit users_path(:title => 100) }
+      before { visit users_path(:title => -1) }
       it { should have_no_link(zero_user.name, href: user_path(zero_user)) }
     end
     
     describe "tries to visit admin scores page" do
-      before { visit users_path(:title => 101) }
+      before { visit users_path(:title => -2) }
       it { should have_no_link(admin.name, href: user_path(admin)) }
     end
     
@@ -717,7 +717,7 @@ describe "User pages" do
     end
     
     describe "visits unranked scores page" do
-      before { visit users_path(:title => 100) }
+      before { visit users_path(:title => -1) }
       it do
         should have_link(zero_user.name, href: user_path(zero_user))
         should have_no_link(ranked_user.name, href: user_path(ranked_user))
@@ -726,7 +726,7 @@ describe "User pages" do
     end
     
     describe "visits admin scores page" do
-      before { visit users_path(:title => 101) }
+      before { visit users_path(:title => -2) }
       it do
         should have_link(admin.name, href: user_path(admin))
         should have_link(root.name, href: user_path(root))
@@ -735,7 +735,7 @@ describe "User pages" do
     end
     
     describe "visits unranked scores page from a country" do
-      before { visit users_path(:title => 100, :country => country) }
+      before { visit users_path(:title => -1, :country => country) }
       it do
         should have_link(zero_user.name, href: user_path(zero_user))
         should have_no_link(other_zero_user.name, href: user_path(other_zero_user))
@@ -743,7 +743,7 @@ describe "User pages" do
     end
     
     describe "visits admin scores page" do
-      before { visit users_path(:title => 101, :country => country) }
+      before { visit users_path(:title => -2, :country => country) }
       it do
         should have_link(root.name, href: user_path(root))
         should have_no_link(other_root.name, href: user_path(other_root))
