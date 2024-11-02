@@ -2,7 +2,7 @@
   <!-- pas QCM -->
   <% if question.decimal %>
     <% real_decimal = (question.answer - question.answer.round).abs > 0.00001 %>
-    <p><span style="font-size:16px;"><%= real_decimal ? question.answer : quesiion.answer.to_i %></span> (On attend un nombre <b>décimal</b>, arrondi au millième près)</p>
+    <p><span style="font-size:16px;"><%= real_decimal ? question.answer : question.answer.to_i %></span> (On attend un nombre <b>décimal</b>, arrondi au millième près)</p>
   <% else %>
     <p><span style="font-size:16px;"><%= question.answer.to_i %></span> (On attend un nombre <b>entier</b>)</p>
   <% end %>
