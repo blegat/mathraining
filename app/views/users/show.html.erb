@@ -268,7 +268,9 @@
     <div class="wrapper">
       <svg width="100" height="100">
         <circle class="circle <%= "circle_#{mt_theme}" %> bg"/>
-        <circle class="circle <%= "circle_#{mt_theme}" %> progress exo"/>
+       <% if nb_q > 0 %>
+         <circle class="circle <%= "circle_#{mt_theme}" %> progress exo"/>
+       <% end %>
       </svg>
       <div class="progress_nb"><%= nb_q %></div>
       <div class="progress_pct">/ <%= numberexo %></div>
@@ -285,7 +287,9 @@
     <div class="wrapper">
       <svg width="100" height="100">
         <circle class="circle <%= "circle_#{mt_theme}" %> bg"/>
-        <circle class="circle <%= "circle_#{mt_theme}" %> progress pb"/>
+        <% if nb_p > 0 %> 
+          <circle class="circle <%= "circle_#{mt_theme}" %> progress pb"/>
+        <% end %>
       </svg>
       <div class="progress_nb"><%= nb_p %></div>
       <div class="progress_pct">/ <%= numberpb %></div>
