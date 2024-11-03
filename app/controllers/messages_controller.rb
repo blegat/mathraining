@@ -1,5 +1,7 @@
 #encoding: utf-8
 class MessagesController < ApplicationController
+  include SubjectConcern
+  
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
   
   before_action :signed_in_user_danger, only: [:create, :update, :soft_destroy, :destroy]

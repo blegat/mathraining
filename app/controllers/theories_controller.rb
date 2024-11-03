@@ -1,5 +1,7 @@
 #encoding: utf-8
 class TheoriesController < ApplicationController
+  include ChapterConcern
+  
   before_action :signed_in_user, only: [:new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :read, :unread]
   before_action :admin_user, only: [:put_online]

@@ -1,5 +1,7 @@
 #encoding: utf-8
 class SuspicionsController < ApplicationController
+  include SubmissionConcern
+  
   before_action :corrector_user, only: [:index]
   before_action :root_user, only: [:destroy, :update]
   before_action :get_suspicion, only: [:destroy, :update]

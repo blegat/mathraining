@@ -1,12 +1,14 @@
 #encoding: utf-8
 class ContestsController < ApplicationController
+  include ContestConcern
+  
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
 
   before_action :signed_in_user, only: [:new, :edit, :unfollow]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :follow, :add_organizer, :remove_organizer]
   before_action :admin_user, only: [:new, :create, :destroy, :put_online, :add_organizer, :remove_organizer]
   
-  before_action :check_contests, only: [:index, :show] # Defined in application_controller.rb
+  before_action :check_contests, only: [:index, :show]
   
   before_action :get_contest, only: [:show, :edit, :update, :destroy, :put_online, :cutoffs, :define_cutoffs, :follow, :unfollow, :add_organizer, :remove_organizer]
   

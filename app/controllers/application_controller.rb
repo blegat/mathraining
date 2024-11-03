@@ -13,7 +13,6 @@ end
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   include SessionsHelper
-  include ChaptersHelper
   
   protect_from_forgery with: CustomCSRFStrategy
   before_action :error_if_invalid_csrf_token
@@ -177,65 +176,9 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  # Check that current user is a corrector (or admin) that can correct the submission
-  def user_that_can_correct_submission
-    unless signed_in? && (current_user.admin || (current_user.corrector && current_user.pb_solved?(@problem) && current_user != @submission.user))
-      render 'errors/access_refused' and return
-    end
-  end
-  
-  # Check that current user can update @chapter (that must be defined)
-  def user_that_can_update_chapter
-    unless (signed_in? && (current_user.admin? || (!@chapter.online? && user_can_write_chapter(current_user, @chapter))))
-      render 'errors/access_refused' and return
-    end
-  end
-  
-  # Check that current user can see @chapter (that must be defined)
-  def user_that_can_see_chapter
-    unless @chapter.online || user_can_write_chapter(current_user, @chapter)
-      render 'errors/access_refused' and return
-    end
-  end
-  
-  # Check that current user can see @problem (that must be defined)
-  def user_that_can_see_problem
-    if !@problem.can_be_seen_by(current_user, @no_new_submission)
-      render 'errors/access_refused' and return
-    end
-  end
-  
-  # Check that current user can see @subject (that must be defined)
-  def user_that_can_see_subject
-    if !@subject.can_be_seen_by(current_user)
-      render 'errors/access_refused' and return
-    end
-  end
-  
   # Check that current user can write a submission
   def user_that_can_write_submission
     if !current_user.can_write_submission?
-      render 'errors/access_refused' and return
-    end
-  end
-  
-  # Check that current user is an organizer of @contest (that must be defined)
-  def organizer_of_contest
-    if !(signed_in? && @contest.is_organized_by(current_user))
-      render 'errors/access_refused' and return
-    end
-  end
-  
-  # Check that current user is a root or an organizer of @contest (that must be defined)
-  def organizer_of_contest_or_root
-    if !(signed_in? && @contest.is_organized_by_or_root(current_user))
-      render 'errors/access_refused' and return
-    end
-  end
-  
-  # Check that current user is an admin or an organizer of @contest (that must be defined)
-  def organizer_of_contest_or_admin
-    if !(signed_in? && @contest.is_organized_by_or_admin(current_user))
       render 'errors/access_refused' and return
     end
   end
@@ -264,7 +207,7 @@ class ApplicationController < ActionController::Base
     return false
   end
   
-  ########## GENERAL TEST & CONTEST STATUS CHECKS METHODS ##########
+  ########## GENERAL TEST STATUS CHECK METHOD ##########
   
   # Check if some test just got finished
   def check_takentests
@@ -287,32 +230,6 @@ class ApplicationController < ActionController::Base
             end
           end
         end
-      end
-    end
-  end
-  
-  # Check if a contest problem just started or ended (done only when charging a contest related page)
-  def check_contests
-    date_now = DateTime.now
-    # Note: Problems in Contestproblemcheck are also used in contest.rb to check problems for which an email or forum subject must be created
-    Contestproblemcheck.all.order(:id).each do |c|
-      p = c.contestproblem
-      if p.not_started_yet? # Contest is online but problem is not published yet
-        if p.start_time <= date_now
-          p.in_progress!
-        end
-      end
-      if p.in_progress? # Problem has started but not ended
-        if p.end_time <= date_now
-          p.in_correction!
-          contest = p.contest
-          if contest.contestproblems.where(:status => [:not_started_yet, :in_progress]).count == 0 # All problems of the contest are finished: mark the contest as finished
-            contest.in_correction!
-          end
-        end
-      end
-      if p.at_least(:in_correction) && p.all_reminders_sent? # Avoid to delete if reminders were not sent yet
-        c.destroy
       end
     end
   end

@@ -1,5 +1,7 @@
 #encoding: utf-8
 class ProblemsController < ApplicationController
+  include ProblemConcern
+  
   before_action :signed_in_user, only: [:show, :new, :edit, :edit_explanation, :edit_markscheme, :manage_externalsolutions]
   before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :order, :put_online, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :manage_externalsolutions]

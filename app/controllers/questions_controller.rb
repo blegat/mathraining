@@ -1,5 +1,7 @@
 #encoding: utf-8
 class QuestionsController < ApplicationController
+  include ChapterConcern
+  
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :edit_explanation]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation]
   

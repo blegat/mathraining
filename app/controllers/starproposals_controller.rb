@@ -1,5 +1,7 @@
 #encoding: utf-8
 class StarproposalsController < ApplicationController
+  include SubmissionConcern
+  
   before_action :corrector_user, only: [:index]
   before_action :root_user, only: [:destroy, :update]
   before_action :get_starproposal, only: [:destroy, :update]

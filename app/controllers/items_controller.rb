@@ -1,5 +1,7 @@
 #encoding: utf-8
 class ItemsController < ApplicationController
+  include ChapterConcern
+  
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :correct, :uncorrect, :order]
   
   before_action :get_item, only: [:update, :destroy, :correct, :uncorrect, :order]

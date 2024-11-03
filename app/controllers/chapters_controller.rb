@@ -1,5 +1,7 @@
 #encoding: utf-8
 class ChaptersController < ApplicationController
+  include ChapterConcern
+  
   before_action :signed_in_user, only: [:new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :read, :order, :put_online, :mark_submission_prerequisite, :unmark_submission_prerequisite]
   before_action :non_admin_user, only: [:read]

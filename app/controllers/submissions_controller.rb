@@ -1,5 +1,8 @@
 #encoding: utf-8
 class SubmissionsController < ApplicationController
+  include ProblemConcern
+  include SubmissionConcern
+  
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :create_intest, :update_draft, :update_intest] # Do not forget to check @invalid_csrf_token instead!
 
   before_action :signed_in_user, only: [:all, :allmy, :allnew, :allmynew]

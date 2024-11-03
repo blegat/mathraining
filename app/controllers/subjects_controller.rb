@@ -1,5 +1,7 @@
 #encoding: utf-8
 class SubjectsController < ApplicationController
+  include SubjectConcern
+  
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
   
   before_action :signed_in_user, only: [:index, :show, :new, :unfollow]
