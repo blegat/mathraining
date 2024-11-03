@@ -16,9 +16,10 @@ class ContestproblemsController < ApplicationController
   before_action :organizer_of_contest, only: [:new, :create, :publish_results]
   before_action :organizer_of_contest_or_root, only: [:edit, :update, :destroy]
   before_action :offline_contest, only: [:new, :create, :destroy]
+  before_action :results_can_be_published, only: [:publish_results]
+  before_action :user_has_access_to_problem, only: [:show]
+  
   before_action :check_dates, only: [:create, :update]
-  before_action :can_publish_results, only: [:publish_results]
-  before_action :has_access, only: [:show]
   
   # Show a problem of a contest
   def show
@@ -153,7 +154,7 @@ class ContestproblemsController < ApplicationController
   end
   
   # Check that current user has access to the problem
-  def has_access
+  def user_has_access_to_problem
     if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.at_most(:not_started_yet)
       render 'errors/access_refused' and return
     end
@@ -191,7 +192,7 @@ class ContestproblemsController < ApplicationController
   end
   
   # Check if results of the problem can be published
-  def can_publish_results
+  def results_can_be_published
     if !@contestproblem.in_correction?
       flash[:danger] = "Une erreur est survenue."
       redirect_to @contestproblem and return

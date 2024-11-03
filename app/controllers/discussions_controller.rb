@@ -1,11 +1,14 @@
 #encoding: utf-8
 class DiscussionsController < ApplicationController
+  include DiscussionConcern
+  
   before_action :signed_in_user, only: [:show, :new]
   before_action :signed_in_user_danger, only: [:unread]
   
   before_action :get_discussion, only: [:show, :unread]
   
-  before_action :is_involved, only: [:show, :unread]
+  before_action :user_is_involved_in_discussion, only: [:show, :unread]
+  before_action :user_not_in_skin, only: [:show, :unread]
 
   # Show 10 messages of a discussion (in html or js)
   def show
@@ -53,17 +56,5 @@ class DiscussionsController < ApplicationController
   def get_discussion
     @discussion = Discussion.find_by_id(params[:id])
     return if check_nil_object(@discussion)
-  end
-  
-  ########## CHECK METHODS ##########
-
-  # Check that current user is involved in the discussion
-  def is_involved
-    if !current_user.discussions.include?(@discussion)
-      render 'errors/access_refused' and return
-    elsif in_skin?
-      flash[:info] = "Vous ne pouvez pas voir les messages de #{current_user.name}."
-      redirect_to new_discussion_path
-    end
   end
 end

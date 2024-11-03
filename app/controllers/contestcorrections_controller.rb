@@ -10,8 +10,8 @@ class ContestcorrectionsController < ApplicationController
   before_action :get_contestcorrection, only: [:update]
   
   before_action :organizer_of_contest, only: [:update]
-  before_action :can_update_correction, only: [:update]
-  before_action :has_reserved, only: [:update]
+  before_action :user_can_update_correction, only: [:update]
+  before_action :user_has_reserved_solution, only: [:update]
 
   # Update a correction (send the form)
   def update    
@@ -99,7 +99,7 @@ class ContestcorrectionsController < ApplicationController
   ########## CHECK METHODS ##########
   
   # Check that the correction can be updated
-  def can_update_correction
+  def user_can_update_correction
     if !@contestproblem.in_correction? && !@contestproblem.in_recorrection? && !@contestsolution.official
       flash[:danger] = "Vous ne pouvez pas modifier cette correction."
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
@@ -107,7 +107,7 @@ class ContestcorrectionsController < ApplicationController
   end
   
   # Check that current user has reserved the solution
-  def has_reserved
+  def user_has_reserved_solution
     if @contestsolution.reservation != current_user.id
       flash[:danger] = "Vous n'avez pas réservé."
       redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)

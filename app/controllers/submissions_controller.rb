@@ -15,20 +15,20 @@ class SubmissionsController < ApplicationController
   before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script]
   before_action :get_problem, only: [:create, :create_intest, :index]
   
-  before_action :in_test_or_root_user, only: [:destroy]
-  before_action :user_that_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :search_script, :uncorrect]
+  before_action :user_in_test_or_root, only: [:destroy]
+  before_action :user_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :search_script, :uncorrect]
   before_action :online_problem, only: [:create, :create_intest]
-  before_action :not_solved, only: [:create]
-  before_action :can_submit, only: [:create]
-  before_action :no_recent_plagiarism_or_closure, only: [:create, :update_draft]
-  before_action :user_that_can_see_problem, only: [:create]
-  before_action :user_that_can_write_submission, only: [:create, :update_draft]
-  before_action :author, only: [:update_intest, :update_draft]
-  before_action :in_test, only: [:create_intest, :update_intest]
-  before_action :is_draft, only: [:update_draft]
-  before_action :can_update_draft, only: [:update_draft]
-  before_action :can_see_submissions, only: [:index]
-  before_action :can_uncorrect_submission, only: [:uncorrect]
+  before_action :user_did_not_solve_problem, only: [:create]
+  before_action :new_submissions_allowed, only: [:create, :update_draft]
+  before_action :user_can_write_submission_to_problem, only: [:create]
+  before_action :user_has_no_recent_plagiarism_or_closure, only: [:create, :update_draft]
+  before_action :user_can_see_problem, only: [:create]
+  before_action :user_can_write_submission, only: [:create, :update_draft]
+  before_action :author_of_submission, only: [:update_intest, :update_draft]
+  before_action :user_in_test, only: [:create_intest, :update_intest]
+  before_action :draft_submission, only: [:update_draft]
+  before_action :user_can_see_submissions, only: [:index]
+  before_action :user_can_uncorrect_submission, only: [:uncorrect]
 
   # Show all submissions to a problem (only through js)
   def index
@@ -197,7 +197,7 @@ class SubmissionsController < ApplicationController
   # Delete a submission
   def destroy
     @submission.destroy
-    if current_user.admin?
+    if current_user.root?
       flash[:success] = "Soumission supprimée."
       redirect_to problem_path(@problem)
     else
@@ -310,65 +310,52 @@ class SubmissionsController < ApplicationController
   end
 
   # Check that current user did not already solve the problem
-  def not_solved
+  def user_did_not_solve_problem
     redirect_to root_path if current_user.pb_solved?(@problem)
+  end
+  
+  # Check that new submissions are allowed
+  def new_submissions_allowed
+    redirect_to problem_path(@problem) if @no_new_submission
   end
 
   # Check that current user can create a new submission for the problem
-  def can_submit
-    redirect_to problem_path(@problem) and return if @no_new_submission
+  def user_can_write_submission_to_problem
     if current_user.submissions.where(:problem => @problem, :status => [:draft, :waiting]).count > 0
       redirect_to problem_path(@problem) and return
     end
   end
   
-  # Check that current user can update his draft to a problem
-  def can_update_draft
-    redirect_to problem_path(@problem) if @no_new_submission
-  end
-  
-  # Check that the student has no (recent) plagiarized or closed solution to the problem
-  def no_recent_plagiarism_or_closure
-    s = current_user.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
-    if !s.nil? && s.date_new_submission_allowed > Date.today
-      redirect_to problem_path(@problem, :sub => @submission) and return
-    end
-    s = current_user.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last
-    if !s.nil? && s.date_new_submission_allowed > Date.today
-      redirect_to problem_path(@problem, :sub => @submission) and return
-    end
-  end
-
   # Check that current user is doing a test with this problem
-  def in_test
+  def user_in_test
     @virtualtest = @problem.virtualtest
     return if check_nil_object(@virtualtest)
     redirect_to virtualtests_path if current_user.test_status(@virtualtest) != "in_progress"
   end
   
   # Check that current user is doing a test with this problem, or is a root
-  def in_test_or_root_user
+  def user_in_test_or_root
     if !current_user.root?
-      in_test
+      user_in_test
     end
   end
   
   # Check that current user is the author of the submission
-  def author
+  def author_of_submission
     if @submission.user != current_user
       render 'errors/access_refused' and return
     end
   end
 
   # Check that the submission is a draft
-  def is_draft
+  def draft_submission
     unless @submission.draft?
       redirect_to @problem
     end
   end
   
   # Check that current user can see the correct/incorrect submissions to the problem
-  def can_see_submissions
+  def user_can_see_submissions
     redirect_to root_path if !(params.has_key?:what)
     @what = params[:what].to_i
     redirect_to root_path if (@what != 0 and @what != 1)
@@ -380,7 +367,7 @@ class SubmissionsController < ApplicationController
   end
   
   # Check that current user can uncorrect the current submission
-  def can_uncorrect_submission
+  def user_can_uncorrect_submission
     # Submission must be correct to be marked as wrong
     redirect_to problem_path(@problem, :sub => @submission) unless @submission.correct?
     unless current_user.root?

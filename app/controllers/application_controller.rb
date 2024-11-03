@@ -141,7 +141,7 @@ class ApplicationController < ActionController::Base
   end
 
   # Check that current user is not in the skin of somebody else
-  def notskin_user
+  def user_not_in_skin
     if in_skin?
       flash[:danger] = "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un."
       redirect_back(fallback_location: root_path)
@@ -177,7 +177,7 @@ class ApplicationController < ActionController::Base
   end
   
   # Check that current user can write a submission
-  def user_that_can_write_submission
+  def user_can_write_submission
     if !current_user.can_write_submission?
       render 'errors/access_refused' and return
     end

@@ -13,10 +13,10 @@ class ContestsController < ApplicationController
   before_action :get_contest, only: [:show, :edit, :update, :destroy, :put_online, :cutoffs, :define_cutoffs, :follow, :unfollow, :add_organizer, :remove_organizer]
   
   before_action :organizer_of_contest_or_admin, only: [:edit, :update, :cutoffs, :define_cutoffs]
-  before_action :can_see_contest, only: [:show, :follow, :unfollow]
+  before_action :user_can_see_contest, only: [:show, :follow, :unfollow]
   before_action :offline_contest, only: [:put_online, :destroy]
-  before_action :can_be_online, only: [:put_online]
-  before_action :can_define_cutoffs, only: [:cutoffs, :define_cutoffs]
+  before_action :contest_can_be_online, only: [:put_online]
+  before_action :cutoffs_can_be_defined, only: [:cutoffs, :define_cutoffs]
 
   # Show all the contests
   def index
@@ -154,14 +154,14 @@ class ContestsController < ApplicationController
   ########## CHECK METHODS ##########
   
   # Check if current user can see the contest
-  def can_see_contest
+  def user_can_see_contest
     if (@contest.in_construction? && !(signed_in? && @contest.is_organized_by_or_admin(current_user)))
       render 'errors/access_refused' and return
     end
   end
 
   # Check if the contest can be put online
-  def can_be_online
+  def contest_can_be_online
     date_in_one_hour = 1.hour.from_now
     if @contest.contestproblems.count == 0
       flash[:danger] = "Un concours doit contenir au moins un problème !"
@@ -183,7 +183,7 @@ class ContestsController < ApplicationController
   end
   
   # Check if cutoffs can be defined for this contest
-  def can_define_cutoffs
+  def cutoffs_can_be_defined
     if !@contest.completed? || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.root)
       render 'errors/access_refused' and return
     end

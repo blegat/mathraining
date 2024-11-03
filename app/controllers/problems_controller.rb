@@ -10,8 +10,8 @@ class ProblemsController < ApplicationController
   before_action :get_section, only: [:index, :new, :create]
   
   before_action :offline_problem, only: [:destroy, :put_online, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
-  before_action :user_that_can_see_problem, only: [:show]
-  before_action :can_be_online, only: [:put_online]
+  before_action :user_can_see_problem, only: [:show]
+  before_action :problem_can_be_online, only: [:put_online]
 
   # Show problems of a section
   def index
@@ -216,7 +216,7 @@ class ProblemsController < ApplicationController
   end
 
   # Check that the problem can be put online
-  def can_be_online
+  def problem_can_be_online
     redirect_to @problem if @problem.chapters.count == 0
     @problem.chapters.each do |c|
       redirect_to @problem if !c.online

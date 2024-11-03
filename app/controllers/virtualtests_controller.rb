@@ -7,13 +7,13 @@ class VirtualtestsController < ApplicationController
   
   before_action :get_virtualtest, only: [:show, :edit, :update, :destroy, :begin_test, :put_online]
   
-  before_action :has_access, only: [:begin_test]
-  before_action :online_test, only: [:begin_test]
-  before_action :user_that_can_write_submission, only: [:begin_test]
-  before_action :can_begin, only: [:begin_test]
-  before_action :can_be_online, only: [:put_online]
-  before_action :offline_test, only: [:destroy]
-  before_action :in_test, only: [:show]
+  before_action :online_virtualtest, only: [:begin_test]
+  before_action :user_can_see_virtualtest, only: [:begin_test]
+  before_action :user_can_write_submission, only: [:begin_test]
+  before_action :user_can_begin_virtualtest, only: [:begin_test]
+  before_action :virtualtest_can_be_online, only: [:put_online]
+  before_action :offline_virtualtest, only: [:destroy]
+  before_action :user_in_test, only: [:show]
 
   # Show all virtualtests (that can be seen)
   def index
@@ -111,14 +111,14 @@ class VirtualtestsController < ApplicationController
   ########## CHECK METHODS ##########
   
   # Check that current user is currently doing the virtualtest
-  def in_test
+  def user_in_test
     virtualtest_status = current_user.test_status(@virtualtest)
     render 'errors/access_refused' and return if virtualtest_status == "not_started"
     redirect_to virtualtests_path and return if virtualtest_status == "finished" # Smoothly redirect because it can happen when timer stops
   end
 
   # Check that current user has access to the virtualtest
-  def has_access
+  def user_can_see_virtualtest
     if !has_enough_points(current_user)
       render 'errors/access_refused' and return
     end
@@ -134,17 +134,17 @@ class VirtualtestsController < ApplicationController
   end
 
   # Check that the virtualtest is online
-  def online_test
+  def online_virtualtest
     return if check_offline_object(@virtualtest)
   end
   
   # Check that the vitualtest is offline
-  def offline_test
+  def offline_virtualtest
     return if check_online_object(@virtualtest)
   end
 
   # Check that the virtual test can be put online
-  def can_be_online
+  def virtualtest_can_be_online
     nb_prob = 0
     can_online = true
     @virtualtest.problems.each do |p|
@@ -155,7 +155,7 @@ class VirtualtestsController < ApplicationController
   end
 
   # Check that current user can start the test
-  def can_begin
+  def user_can_begin_virtualtest
     redirect_to virtualtests_path if @no_new_submissions
     if current_user.test_status(@virtualtest) != "not_started"
       redirect_to virtualtests_path

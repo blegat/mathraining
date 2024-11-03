@@ -12,9 +12,9 @@ class MessagesController < ApplicationController
   before_action :get_subject, only: [:create]
   before_action :get_q, only: [:create, :update, :soft_destroy, :destroy]
   
-  before_action :user_that_can_see_subject, only: [:create]
-  before_action :user_that_can_update_message, only: [:update, :soft_destroy, :destroy]
-  before_action :notskin_user, only: [:create, :update]
+  before_action :user_can_see_subject, only: [:create]
+  before_action :user_can_update_message, only: [:update, :soft_destroy, :destroy]
+  before_action :user_not_in_skin, only: [:create, :update]
   
 
   # Create a message (send the form)
@@ -147,7 +147,7 @@ class MessagesController < ApplicationController
   ########## CHECK METHODS ##########
   
   # Check that current user can update the message
-  def user_that_can_update_message
+  def user_can_update_message
     unless @message.can_be_updated_by(current_user)
       render 'errors/access_refused' and return
     end

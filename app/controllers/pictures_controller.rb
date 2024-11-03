@@ -5,8 +5,8 @@ class PicturesController < ApplicationController
   
   before_action :get_picture, only: [:show, :destroy, :image]
   
-  before_action :admin_user_or_chapter_creator, only: [:index, :show, :new, :create, :destroy]
-  before_action :author_or_root, only: [:show, :destroy]
+  before_action :chapter_creator_or_admin, only: [:index, :show, :new, :create, :destroy]
+  before_action :author_of_picture_or_root, only: [:show, :destroy]
   before_action :check_access_key, only: [:image]
   
   # Show all pictures
@@ -58,14 +58,14 @@ class PicturesController < ApplicationController
   ########## CHECK METHODS ##########
 
   # Check that current user is admin or is creating a chapter
-  def admin_user_or_chapter_creator
+  def chapter_creator_or_admin
     if !signed_in? || (!current_user.admin && current_user.creating_chapters.count == 0)
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user is the author of the picture
-  def author_or_root
+  def author_of_picture_or_root
     if @picture.user.id != current_user.id && !current_user.root?
       render 'errors/access_refused' and return
     end
@@ -77,5 +77,4 @@ class PicturesController < ApplicationController
       render 'errors/access_refused' and return
     end
   end
-
 end

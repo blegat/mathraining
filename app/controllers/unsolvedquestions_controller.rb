@@ -1,16 +1,18 @@
 #encoding: utf-8
 class UnsolvedquestionsController < ApplicationController
+  include ChapterConcern
+  
   before_action :signed_in_user_danger, only: [:create, :update]
   before_action :non_admin_user, only: [:create, :update]
   
   before_action :get_question, only: [:create, :update]
   
   before_action :online_chapter, only: [:create, :update]
-  before_action :unlocked_chapter, only: [:create, :update]
-  before_action :first_try, only: [:create]
-  before_action :not_solved, only: [:update]
-  before_action :not_first_try, only: [:update]
-  before_action :waited_enough_time, only: [:update]
+  before_action :user_can_see_chapter_questions, only: [:create, :update]
+  before_action :first_try_of_user, only: [:create]
+  before_action :user_did_not_solve_question, only: [:update]
+  before_action :not_first_try_of_user, only: [:update]
+  before_action :user_waited_enough_time, only: [:update]
 
   # Try to solve a question (first time)
   def create
@@ -60,27 +62,27 @@ class UnsolvedquestionsController < ApplicationController
   ########## CHECK METHODS ##########
 
   # Check that this is the first try of current user
-  def first_try
+  def first_try_of_user
     if Solvedquestion.where(:user => current_user, :question => @question).count + Unsolvedquestion.where(:user => current_user, :question => @question).count > 0
       redirect_to chapter_question_path(@chapter, @question)
     end
   end
   
   # Check that the current user did not solve the question already
-  def not_solved
+  def user_did_not_solve_question
     if Solvedquestion.where(:user => current_user, :question => @question).count > 0 # already solved
       redirect_to chapter_question_path(@chapter, @question)
     end
   end
   
   # Check that this is not the first try of current user
-  def not_first_try
+  def not_first_try_of_user
     @unsolvedquestion = Unsolvedquestion.where(:user => current_user, :question => @question).first
     return if check_nil_object(@unsolvedquestion)
   end
   
   # Check that current user waited enough (if needed) before trying again
-  def waited_enough_time
+  def user_waited_enough_time
     if @unsolvedquestion.nb_guess >= 3 && DateTime.now < @unsolvedquestion.last_guess_time + 175
       redirect_to chapter_question_path(@chapter, @question)
     end
@@ -89,17 +91,6 @@ class UnsolvedquestionsController < ApplicationController
   # Check that the chapter is online
   def online_chapter
     return if check_offline_object(@chapter)
-  end
-
-  # Check that the prerequisites of the chapter have been completed
-  def unlocked_chapter
-    unless @chapter.section.fondation
-      @chapter.prerequisites.each do |p|
-        if (!current_user.chapters.exists?(p.id))
-          render 'errors/access_refused' and return
-        end
-      end
-    end
   end
   
   ########## HELPER METHODS ##########

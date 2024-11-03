@@ -7,7 +7,7 @@ class ItemsController < ApplicationController
   before_action :get_item, only: [:update, :destroy, :correct, :uncorrect, :order]
   before_action :get_question, only: [:create]
   
-  before_action :user_that_can_update_chapter
+  before_action :user_can_update_chapter
   before_action :offline_question, only: [:create, :destroy, :correct, :uncorrect]
 
   # Add an item to a qcm
@@ -107,14 +107,14 @@ class ItemsController < ApplicationController
     @item = Item.find_by_id(params[:id])
     return if check_nil_object(@item)
     @question = @item.question
-    @chapter = @question.chapter # Needed for user_that_can_update_chapter
+    @chapter = @question.chapter # Needed for user_can_update_chapter
   end
   
   # Get the question (if possible)
   def get_question
     @question = Question.find_by_id(params[:question_id])
     return if check_nil_object(@question)
-    @chapter = @question.chapter # Needed for user_that_can_update_chapter
+    @chapter = @question.chapter # Needed for user_can_update_chapter
   end
   
   ########## CHECK METHODS ##########

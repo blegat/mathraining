@@ -187,7 +187,7 @@ describe "Discussion pages", discussion: true do
         visit discussion_path(discussion)
       end
       it do
-        should have_info_message("Vous ne pouvez pas voir les messages de #{user.name}.")
+        should have_error_message("Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un.")
         should have_no_content(discussion.tchatmessages.first.content)
       end
     end

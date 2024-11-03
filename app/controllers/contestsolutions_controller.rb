@@ -12,11 +12,11 @@ class ContestsolutionsController < ApplicationController
   before_action :get_contestsolution, only: [:update, :destroy, :reserve, :unreserve]
   before_action :get_contestproblem, only: [:create]
   
-  before_action :can_send_solution, only: [:create, :update]
-  before_action :user_that_can_write_submission, only: [:create]
-  before_action :can_delete_solution, only: [:destroy]
+  before_action :user_can_send_solution, only: [:create, :update]
+  before_action :user_can_write_submission, only: [:create]
+  before_action :user_can_delete_solution, only: [:destroy]
   before_action :organizer_of_contest, only: [:reserve, :unreserve]
-  before_action :can_reserve, only: [:reserve, :unreserve]
+  before_action :solution_can_be_reserved, only: [:reserve, :unreserve]
 
   # Create a solution (send the form)
   def create
@@ -112,7 +112,7 @@ class ContestsolutionsController < ApplicationController
   ########## CHECK METHODS ##########
   
   # Check if current user can send a solution
-  def can_send_solution
+  def user_can_send_solution
     @send_solution = 0 # Cannot send a solution
     mycontestsolution = nil
     if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.in_progress?
@@ -137,7 +137,7 @@ class ContestsolutionsController < ApplicationController
   end
   
   # Check if current user can delete a solution
-  def can_delete_solution
+  def user_can_delete_solution
     unless @contestproblem.in_progress? && !@contestsolution.official && @contestsolution.user == current_user && !in_skin?
       flash[:danger] = "Vous ne pouvez pas supprimer cette solution."
       redirect_to @contestproblem
@@ -145,7 +145,7 @@ class ContestsolutionsController < ApplicationController
   end
   
   # Check if the solution can be reserved
-  def can_reserve
+  def solution_can_be_reserved
     if !@contestproblem.in_correction? && !@contestproblem.in_recorrection? && !@contestsolution.official?
       redirect_to @contestproblem
     end

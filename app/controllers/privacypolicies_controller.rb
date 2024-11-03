@@ -6,8 +6,8 @@ class PrivacypoliciesController < ApplicationController
   
   before_action :get_policy, only: [:show, :edit, :update, :destroy, :edit_description, :update_description, :put_online]
   
-  before_action :is_offline, only: [:edit, :update, :destroy, :put_online]
-  before_action :is_online, only: [:show]
+  before_action :offline_privacypolicy, only: [:edit, :update, :destroy, :put_online]
+  before_action :online_privacypolicy, only: [:show]
   
   # Show all privacy policies
   def index
@@ -91,12 +91,12 @@ class PrivacypoliciesController < ApplicationController
   ########## CHECK METHODS ##########
   
   # Check that the privacy policy is offline
-  def is_offline
+  def offline_privacypolicy
     return if check_online_object(@privacypolicy)
   end
   
   # Check that the privacy policy is online
-  def is_online
+  def online_privacypolicy
     return if check_offline_object(@privacypolicy)
   end
 end

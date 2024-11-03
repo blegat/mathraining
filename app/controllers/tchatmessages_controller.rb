@@ -1,15 +1,16 @@
 #encoding: utf-8
 class TchatmessagesController < ApplicationController
+  include DiscussionConcern
   include FileConcern
   
   skip_before_action :error_if_invalid_csrf_token, only: [:create] # Do not forget to check @invalid_csrf_token instead!
   
   before_action :signed_in_user_danger, only: [:create]
-  before_action :notskin_user, only: [:create]
+  before_action :user_not_in_skin, only: [:create]
   
   before_action :get_discussion, only: [:create]
   
-  before_action :is_involved, only: [:create]
+  before_action :user_is_involved_in_discussion, only: [:create]
 
   # Create a tchatmessage (send the form)
   def create

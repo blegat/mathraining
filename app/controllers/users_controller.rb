@@ -11,8 +11,8 @@ class UsersController < ApplicationController
   
   before_action :avoid_strange_scraping, only: [:index]
   
-  before_action :correct_user, only: [:edit, :update]
-  before_action :target_not_root, only: [:destroy, :destroydata]
+  before_action :target_user_is_current_user, only: [:edit, :update]
+  before_action :target_user_is_not_root, only: [:destroy, :destroydata]
 
   # Show all users with their scores
   def index
@@ -547,15 +547,15 @@ class UsersController < ApplicationController
     end
   end
   
-  # Check that the targer user is current user
-  def correct_user
+  # Check that the target user is current user
+  def target_user_is_current_user
     if current_user.id != @user.id
       render 'errors/access_refused' and return
     end
   end
   
   # Check that the target user is not a root
-  def target_not_root
+  def target_user_is_not_root
     if @user.root?
       render 'errors/access_refused' and return
     end

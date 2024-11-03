@@ -1,5 +1,6 @@
 #encoding: utf-8
 class CorrectionsController < ApplicationController
+  include SubmissionConcern
   include FileConcern
   
   skip_before_action :error_if_invalid_csrf_token, only: [:create] # Do not forget to check @invalid_csrf_token instead!
@@ -8,11 +9,11 @@ class CorrectionsController < ApplicationController
   
   before_action :get_submission, only: [:create]
   
-  before_action :correct_user, only: [:create]
-  before_action :is_visible, only: [:create]
-  before_action :not_plagiarized_or_closed, only: [:create]
-  before_action :no_recent_plagiarism_or_closure, only: [:create]
-  before_action :notskin_user, only: [:create]
+  before_action :user_can_comment_submission, only: [:create]
+  before_action :submission_is_visible, only: [:create]
+  before_action :submission_not_plagiarized_or_closed, only: [:create]
+  before_action :user_has_no_recent_plagiarism_or_closure, only: [:create]
+  before_action :user_not_in_skin, only: [:create]
 
   # Create a correction (send the form)
   def create
@@ -175,28 +176,28 @@ class CorrectionsController < ApplicationController
   ########## CHECK METHODS ##########
 
   # Check that current user is the submission user, or an admin or a corrector having access to the problem
-  def correct_user
+  def user_can_comment_submission
     if @submission.user != current_user && !current_user.admin && (!current_user.corrector || !current_user.pb_solved?(@problem))
       render 'errors/access_refused' and return
     end
   end  
   
   # Check that the submission is visible (not a draft and not in a running test)
-  def is_visible
+  def submission_is_visible
     if !@submission.visible?
       render 'errors/access_refused' and return
     end
   end
   
   # Check that the submission is not plagiarized or closed (nobody can comment in that case)
-  def not_plagiarized_or_closed
+  def submission_not_plagiarized_or_closed
     if @submission.plagiarized? || @submission.closed?
       redirect_to problem_path(@problem, :sub => @submission) and return
     end
   end
   
   # Check that the student has no (recent) plagiarized or closed solution to the problem
-  def no_recent_plagiarism_or_closure
+  def user_has_no_recent_plagiarism_or_closure
     if @submission.user == current_user
       s = current_user.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
       if !s.nil? && s.date_new_submission_allowed > Date.today

@@ -8,13 +8,12 @@ class SubjectsController < ApplicationController
   before_action :signed_in_user, only: [:index, :show, :new, :unfollow]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate, :follow]
   before_action :admin_user, only: [:destroy, :update, :migrate]
-  before_action :notskin_user, only: [:create, :update]
+  before_action :user_not_in_skin, only: [:create, :update]
   
   before_action :get_subject, only: [:show, :update, :destroy, :migrate, :follow, :unfollow]
-  
-  before_action :user_that_can_see_subject, only: [:show, :follow]
-  
   before_action :get_q, only: [:index, :show, :new, :create, :update, :destroy, :migrate]
+  
+  before_action :user_can_see_subject, only: [:show, :follow]
   
   # Show the list of (recent) subjects
   def index

@@ -4,9 +4,11 @@ class SuspicionsController < ApplicationController
   
   before_action :corrector_user, only: [:index]
   before_action :root_user, only: [:destroy, :update]
+  
   before_action :get_suspicion, only: [:destroy, :update]
   before_action :get_submission, only: [:create]
-  before_action :user_that_can_correct_submission, only: [:create]
+  
+  before_action :user_can_correct_submission, only: [:create]
 
   # Show all suspicions (or only the ones that are not confirmed yet)
   def index

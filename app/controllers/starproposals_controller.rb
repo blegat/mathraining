@@ -4,9 +4,11 @@ class StarproposalsController < ApplicationController
   
   before_action :corrector_user, only: [:index]
   before_action :root_user, only: [:destroy, :update]
+  
   before_action :get_starproposal, only: [:destroy, :update]
   before_action :get_submission, only: [:create]
-  before_action :user_that_can_correct_submission, only: [:create]
+  
+  before_action :user_can_correct_submission, only: [:create]
   before_action :correct_submission, only: [:create, :update]
 
   # Show all star proposals (or only the ones that are not treated yet)
@@ -85,5 +87,4 @@ class StarproposalsController < ApplicationController
       redirect_to problem_path(@submission.problem, :sub => @submission)
     end
   end
-  
 end
