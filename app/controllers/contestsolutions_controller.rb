@@ -1,6 +1,7 @@
 #encoding: utf-8
 class ContestsolutionsController < ApplicationController
   include ContestConcern
+  include FileConcern
   
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
   

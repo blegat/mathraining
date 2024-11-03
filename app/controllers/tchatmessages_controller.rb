@@ -1,5 +1,7 @@
 #encoding: utf-8
 class TchatmessagesController < ApplicationController
+  include FileConcern
+  
   skip_before_action :error_if_invalid_csrf_token, only: [:create] # Do not forget to check @invalid_csrf_token instead!
   
   before_action :signed_in_user_danger, only: [:create]

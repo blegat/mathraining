@@ -2,6 +2,7 @@
 class SubmissionsController < ApplicationController
   include ProblemConcern
   include SubmissionConcern
+  include FileConcern
   
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :create_intest, :update_draft, :update_intest] # Do not forget to check @invalid_csrf_token instead!
 
