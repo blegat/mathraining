@@ -118,7 +118,7 @@ class TheoriesController < ApplicationController
   
   # Check that user can see the theory
   def user_that_can_see_theory
-    if !@theory.online && !@admin_or_user_writing_chapter
+    if !@theory.online && !user_can_write_chapter(current_user, @chapter)
       render 'errors/access_refused'
     end
   end

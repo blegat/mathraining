@@ -33,11 +33,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
     end
     
     context "if the user is an admin" do
-      before do
-        assign(:current_user, admin)
-        assign(:admin_or_user_writing_chapter, true)
-        assign(:user_can_see_exercises, true)
-      end
+      before { assign(:current_user, admin) }
         
       it "renders the menu correctly" do
         render partial: "chapters/before"
@@ -83,11 +79,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
     end
     
     context "if the user has solved prerequisites" do
-      before do
-        assign(:current_user, user)
-        assign(:admin_or_user_writing_chapter, false)
-        assign(:user_can_see_exercises, true)
-      end
+      before { assign(:current_user, user) }
       
       it "renders the menu correctly" do
         render partial: "chapters/before"
@@ -108,11 +100,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
     end
     
     context "if the user has not solved prerequisites" do
-      before do
-        assign(:current_user, user_bad)
-        assign(:admin_or_user_writing_chapter, false)
-        assign(:user_can_see_exercises, false)
-      end
+      before { assign(:current_user, user_bad) }
       
       it "renders the menu correctly" do
         render partial: "chapters/before"
@@ -131,12 +119,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
       end
     end
     
-    context "if the user is not signed in" do
-      before do
-        assign(:admin_or_user_writing_chapter, false)
-        assign(:user_can_see_exercises, false)
-      end
-      
+    context "if the user is not signed in" do      
       it "renders the menu correctly" do
         render partial: "chapters/before"
         should have_selector("h5", text: "Général")
@@ -156,12 +139,7 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
   end
   
   context "if the chapter has no prerequisite" do
-    context "if the user is not signed in" do
-      before do
-        assign(:admin_or_user_writing_chapter, false)
-        assign(:user_can_see_exercises, true)
-      end
-      
+    context "if the user is not signed in" do      
       it "renders the menu correctly" do
         render partial: "chapters/before"
         should have_no_link("Exercice", href: chapter_question_path(chapter, question1_offline.id))

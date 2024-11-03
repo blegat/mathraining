@@ -195,7 +195,7 @@ class QuestionsController < ApplicationController
   
   # Check that user can see the question
   def user_that_can_see_question
-    if !@user_can_see_exercises || (!@question.online && !@admin_or_user_writing_chapter)
+    if !user_can_see_chapter_exercises(current_user, @chapter) || (!@question.online && !user_can_write_chapter(current_user, @chapter))
       render 'errors/access_refused'
     end
   end

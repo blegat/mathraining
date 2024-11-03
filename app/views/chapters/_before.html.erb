@@ -28,7 +28,7 @@
     <% end %>
     
     <% theories.each do |f| %>
-      <% if f.online || @admin_or_user_writing_chapter %>
+      <% if f.online || user_can_write_chapter(current_user, @chapter) %>
         <% if compteur == 0 %>
           <h5 class="mt-3">Points théoriques</h5>
         <% end %>
@@ -62,7 +62,7 @@
     <% solvedquestions = nil %>
     <% unsolvedquestions = nil %>
     <% questions.each do |f| %>
-      <% if f.online || @admin_or_user_writing_chapter %>
+      <% if f.online || user_can_write_chapter(current_user, @chapter) %>
 
         <% if compteur == 0 %>
           <h5 class="mt-3">Exercices</h5>
@@ -70,7 +70,7 @@
 
         <% compteur = compteur + 1 %>
 
-        <% if @user_can_see_exercises %>
+        <% if user_can_see_chapter_exercises(current_user, @chapter)  %>
           <% actif = "" %>
           <% if active == 'question-' + f.id.to_s %>
             <% actif = "active" %>
@@ -107,7 +107,7 @@
       <% end %>
     <% end %>
       
-    <% if @chapter.online? && @user_can_see_exercises && num_unsolved_questions == 0 && signed_in? && !current_user.admin? && !current_user.chapters.exists?(@chapter.id) %>
+    <% if @chapter.online? && user_can_see_chapter_exercises(current_user, @chapter) && num_unsolved_questions == 0 && signed_in? && !current_user.admin? && !current_user.chapters.exists?(@chapter.id) %>
       <% current_user.chapters << @chapter %>
       <% @chapter.nb_completions = @chapter.nb_completions + 1 %>
       <% @chapter.save %>

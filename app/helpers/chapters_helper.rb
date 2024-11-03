@@ -1,5 +1,34 @@
 module ChaptersHelper
 
+  def user_can_write_chapter(user, chapter)
+    return false if user.nil?
+    if @cached_user_1 == user && @cached_chapter_1 == chapter
+      return @cached_user_can_write_chapter
+    end
+    @cached_user_1 = user
+    @cached_chapter_1 = chapter
+    @cached_user_can_write_chapter = (user.admin? || user.creating_chapters.exists?(chapter.id))
+    return @cached_user_can_write_chapter
+  end
+  
+  def user_can_see_chapter_exercises(user, chapter)
+    if @cached_user_2 == user && @cached_chapter_2 == chapter
+      return @cached_user_can_see_chapter_exercises
+    end
+    @cached_user_2 = user
+    @cached_chapter_2 = chapter
+    @cached_user_can_see_chapter_exercises = true
+    if !chapter.section.fondation? && !user_can_write_chapter(user, chapter) 
+      chapter.prerequisites_associations.select(:prerequisite_id).each do |p|
+        if user.nil? || !user.chapters.exists?(p.prerequisite_id)
+          @cached_user_can_see_chapter_exercises = false
+          break
+        end
+      end
+    end
+    return @cached_user_can_see_chapter_exercises
+  end
+
   private
 
   # Returns the chapters ids for which we cannot see/solve the exercises (it's faster to get non-accessible problems than accessible ones!)

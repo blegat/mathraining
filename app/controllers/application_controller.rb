@@ -13,6 +13,7 @@ end
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   include SessionsHelper
+  include ChaptersHelper
   
   protect_from_forgery with: CustomCSRFStrategy
   before_action :error_if_invalid_csrf_token
@@ -185,25 +186,15 @@ class ApplicationController < ActionController::Base
   
   # Check that current user can update @chapter (that must be defined)
   def user_that_can_update_chapter
-    unless (signed_in? && (current_user.admin? || (!@chapter.online? && current_user.creating_chapters.exists?(@chapter.id))))
+    unless (signed_in? && (current_user.admin? || (!@chapter.online? && user_can_write_chapter(current_user, @chapter))))
       render 'errors/access_refused' and return
     end
   end
   
   # Check that current user can see @chapter (that must be defined)
   def user_that_can_see_chapter
-    @admin_or_user_writing_chapter = signed_in? && (current_user.admin? || current_user.creating_chapters.exists?(@chapter.id))
-    unless @chapter.online || @admin_or_user_writing_chapter
+    unless @chapter.online || user_can_write_chapter(current_user, @chapter)
       render 'errors/access_refused' and return
-    end
-    @user_can_see_exercises = true
-    if !@section.fondation? && !@admin_or_user_writing_chapter 
-      @chapter.prerequisites.each do |p|
-        if !signed_in? || !current_user.chapters.exists?(p.id)
-          @user_can_see_exercises = false
-          break
-        end
-      end
     end
   end
   
