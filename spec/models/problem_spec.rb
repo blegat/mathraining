@@ -109,9 +109,9 @@ describe Problem, problem: true do
         expect(problem.can_be_seen_by(admin, true)).to eq(true)
         expect(problem.can_be_seen_by(user1, true)).to eq(false)
         expect(problem.can_be_seen_by(user2, true)).to eq(false)
-        expect(problem.can_be_seen_by(user3, true)).to eq(false)
-        expect(problem.can_be_seen_by(user4, true)).to eq(false)
-        expect(problem.can_be_seen_by(user5, true)).to eq(true)
+        expect(problem.can_be_seen_by(user3, true)).to eq(false) # Not shown because no submission
+        expect(problem.can_be_seen_by(user4, true)).to eq(false) # Not shown because only draft submission
+        expect(problem.can_be_seen_by(user5, true)).to eq(true)  # Shown thanks to the wrong submission
       end
     end
     
@@ -137,11 +137,13 @@ describe Problem, problem: true do
     
     describe "for a problem in a virtualtest" do
       let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true) }
+      let!(:submission_wrong_user5) { FactoryGirl.create(:submission, problem: problem, user: user5, status: :wrong) }
       
       before do
         problem.update(:online => true, :virtualtest => virtualtest)
         Takentest.create(user: user3, virtualtest: virtualtest, status: :in_progress)
         Takentest.create(user: user4, virtualtest: virtualtest, status: :finished)
+        Takentest.create(user: user5, virtualtest: virtualtest, status: :finished)
       end
       
       specify do
@@ -150,12 +152,14 @@ describe Problem, problem: true do
         expect(problem.can_be_seen_by(user1, false)).to eq(false) # Test not started
         expect(problem.can_be_seen_by(user3, false)).to eq(false) # Test in progress: don't show the problem in problem section
         expect(problem.can_be_seen_by(user4, false)).to eq(true)  # Test finished
+        expect(problem.can_be_seen_by(user5, false)).to eq(true)  # Test finished
       
         # When no new submissions
         expect(problem.can_be_seen_by(admin, true)).to eq(true)
         expect(problem.can_be_seen_by(user1, true)).to eq(false)
         expect(problem.can_be_seen_by(user3, true)).to eq(false)
-        expect(problem.can_be_seen_by(user4, true)).to eq(true)  # Keep showing even if no submission
+        expect(problem.can_be_seen_by(user4, true)).to eq(false) # Not shown because no submission
+        expect(problem.can_be_seen_by(user5, true)).to eq(true)  # Shown thanks to the wrong submission
       end
     end
   end

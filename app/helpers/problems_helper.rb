@@ -21,9 +21,9 @@ module ProblemsHelper
                                    OR (problems.virtualtest_id > 0
                                        AND problems.virtualtest_id NOT IN #{virtualtests_done_request(user)})
                                    OR (problems.virtualtest_id = 0
-                                       AND ((chapters_problems.chapter_id IS NOT NULL
-                                             AND chapters_problems.chapter_id NOT IN #{chapters_completed_request(user)})
-                                            #{problems_without_real_submission_condition})))").pluck(:id).to_set
+                                       AND chapters_problems.chapter_id IS NOT NULL
+                                       AND chapters_problems.chapter_id NOT IN #{chapters_completed_request(user)})
+                                   #{problems_without_real_submission_condition})").pluck(:id).to_set
   end
   
   # Get all accessible problems of one section, for the current user
