@@ -216,7 +216,7 @@ class User < ActiveRecord::Base
   end
 
   # Returns [n, d], saying there are n submissions that the user can correct + all submissions of last d days
-  def num_notifications_new(levels)
+  def num_notifications_new(levels, show_all = false)
     Groupdate.time_zone = false unless Rails.env.production?
     x = {}
     if self.admin?
@@ -228,7 +228,7 @@ class User < ActiveRecord::Base
     n = 0
     y.each do |a|
       n = n + a[1]
-      if n >= User.limit_waiting_submissions
+      if !show_all && n >= User.limit_waiting_submissions
         return [n, (Date.today - a[0]).to_i]
       end
     end
