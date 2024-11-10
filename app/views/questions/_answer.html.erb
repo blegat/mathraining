@@ -13,10 +13,10 @@
       <li class="p-1">
       <%= raw(c.ans) %>
       <% if c.ok %>
-        <%= image_tag v_icon, :class => "ms-2 svg-black-white" %>
+        <%= image_tag v_icon, :class => "ms-2 svg-black-white", :id => "v-#{c.id}" %>
       <% end %>
       <% if !c.ok && question.many_answers %>
-        <%= image_tag x_icon, :class => "ms-2 svg-black-white" %>
+        <%= image_tag x_icon, :class => "ms-2 svg-black-white", :id => "x-#{c.id}" %>
       <% end %>
       </li>
     <% end %>

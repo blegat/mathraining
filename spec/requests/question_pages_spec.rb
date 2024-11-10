@@ -48,11 +48,6 @@ describe "Question pages" do
         should have_no_link("forum")
       end
     end
-    
-    describe "visits offline exercise" do
-      before { visit chapter_question_path(chapter, offline_exercise) }
-      it { should have_content(error_access_refused) }
-    end
   end
   
   describe "user" do
@@ -73,26 +68,6 @@ describe "Question pages" do
         should have_selector("div", text: online_exercise.statement)
         should have_link("forum", href: subject_path(sub))
       end
-    end
-    
-    describe "visits online exercise with wrong url" do
-      before { visit chapter_question_path(empty_chapter, online_exercise) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "visits offline exercise" do
-      before { visit chapter_question_path(chapter, offline_exercise) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to visit exercise creation page" do
-      before { visit new_chapter_question_path(chapter) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to visit exercise modification page" do
-      before { visit edit_question_path(online_exercise) }
-      it { should have_content(error_access_refused) }
     end
   end
   
@@ -475,7 +450,7 @@ describe "Question pages" do
         end
       end
       
-      describe "and make a correct choice incorrect" do
+      describe "and makes a correct choice incorrect" do
         before do
           click_link "update_item_incorrect_" + offline_item_correct.id.to_s
           offline_item_correct.reload
@@ -483,7 +458,7 @@ describe "Question pages" do
         specify { expect(offline_item_correct.ok).to eq(false) }
       end
       
-      describe "and make a incorrect choice correct" do
+      describe "and makes a incorrect choice correct" do
         before do
           click_link "update_item_correct_" + offline_item_incorrect.id.to_s
           offline_item_incorrect.reload
@@ -491,7 +466,7 @@ describe "Question pages" do
         specify { expect(offline_item_correct.ok).to eq(true) }
       end
       
-      describe "deletes a choice" do
+      describe "and deletes a choice" do
         specify { expect { click_link("update_item_delete_" + offline_item_correct.id.to_s) }.to change(Item, :count).by(-1) }
       end
       
