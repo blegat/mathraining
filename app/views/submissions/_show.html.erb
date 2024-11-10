@@ -220,7 +220,7 @@ var hideStatement = function () {
   <!-- Formulaire pour nouvelle correction -->
   <% if can_current_user_correct && !@submission.visible && @submission.intest %>
     <p>Cette soumission fait partie d'un test virtuel qui n'est pas terminé. Vous ne pourrez la corriger qu'une fois le temps de celui-ci écoulé.</p>
-  <% elsif current_user == @submission.user && @submission.intest && @submission.score == -1 %>
+  <% elsif current_user == @submission.user && @submission.intest && @submission.waiting? %>
     <p>Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.</p>
   <% elsif can_current_user_correct && @submission.plagiarized? %>
     <p class="text-color-red">Cette solution a été plagiée et n'est plus visible par l'étudiant.</p>
@@ -228,6 +228,8 @@ var hideStatement = function () {
     <p class="text-color-red">Cette solution a été clôturée par un correcteur.</p>
   <% elsif can_current_user_correct && @submission.closed? %>
     <p class="text-color-red">Cette solution a été clôturée.</p>
+  <% elsif current_user == @submission.user && @no_new_submission && !@submission.correct? && @submission.last_comment_time + 2.weeks < DateTime.now %>
+    <p class="text-color-orange">Cette solution n'a plus d'activité depuis plus de deux semaines et ne peut pas être commentée pour le moment./p>
   <% elsif (can_current_user_correct || (current_user == @submission.user && @cansendnewcomment)) && !@submission.draft? %>
     <%= render 'corrections/new', disable_correction: disable_correction %>
   <% end %>

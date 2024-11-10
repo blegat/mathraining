@@ -9,11 +9,13 @@ class CorrectionsController < ApplicationController
   
   before_action :get_submission, only: [:create]
   
+  before_action :user_not_in_skin, only: [:create]
   before_action :user_can_comment_submission, only: [:create]
   before_action :submission_is_visible, only: [:create]
   before_action :submission_not_plagiarized_or_closed, only: [:create]
   before_action :user_has_no_recent_plagiarism_or_closure, only: [:create]
-  before_action :user_not_in_skin, only: [:create]
+  before_action :submission_not_waiting_in_test, only: [:create]
+  before_action :submission_has_recent_activity, only: [:create]
 
   # Create a correction (send the form)
   def create
@@ -207,6 +209,20 @@ class CorrectionsController < ApplicationController
       if !s.nil? && s.date_new_submission_allowed > Date.today
         redirect_to problem_path(@problem, :sub => @submission) and return
       end
+    end
+  end
+  
+  # Check that the student does not try to comment a waiting submission in a test
+  def submission_not_waiting_in_test
+    if @submission.user == current_user && @submission.intest && @submission.waiting?
+      render 'errors/access_refused' and return
+    end
+  end
+  
+  # Check that submission has recent activity (only if no new submission is allowed)
+  def submission_has_recent_activity
+    if @submission.user == current_user && @no_new_submission && !@submission.correct? && @submission.last_comment_time + 2.weeks < DateTime.now
+      redirect_to problem_path(@problem, :sub => @submission) and return
     end
   end
   
