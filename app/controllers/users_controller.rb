@@ -172,7 +172,7 @@ class UsersController < ApplicationController
     if !params.has_key?("consent1") || !params.has_key?("consent2")
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir créer un compte."
       render 'new'
-    elsif (Rails.env.test? or Rails.env.development? or verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
+    elsif (Rails.env.test? || Rails.env.development? || verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       UserMailer.registration_confirmation(@user.id).deliver
       
       user_reload = User.find(@user.id) # Reload because email and email_confirmation can be different after downcaise otherwise!
@@ -319,7 +319,7 @@ class UsersController < ApplicationController
   # Password forgotten: check captcha and send email
   def password_forgotten
     @user = User.new
-    render 'forgot_password' and return if (!Rails.env.test? and !Rails.env.development? && !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
+    render 'forgot_password' and return if (!Rails.env.test? && !Rails.env.development? && !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
 
     @user = User.where(:email => params[:user][:email]).first
     if @user
