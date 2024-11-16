@@ -1,5 +1,17 @@
 <p class="mb-2">Veuillez prouver que vous n'êtes pas un robot.</p>
 <% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
 <%= recaptcha_tags theme: "#{ mt_theme }" %>
-<!-- NB: Maybe possible to dynamically change the theme when event "theme-change" is emitted, but not easy and not important -->
+
+<script>
+  window.addEventListener("theme-change", () => {
+    var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+    var recaptcha_div = document.getElementsByClassName('g-recaptcha')[0];
+    recaptcha_div.setAttribute('data-theme', (is_dark ? 'dark' : 'light'));
+    var recaptcha_iframe = document.querySelector('iframe[title="reCAPTCHA"]');
+    var old_src = recaptcha_iframe.src;
+    var new_src = (is_dark ? old_src.replace("theme=light", "theme=dark") : old_src.replace("theme=dark", "theme=light"));
+    recaptcha_iframe.src = new_src;
+  });
+</script>
+
 <div class="mb-2"></div>
