@@ -1,10 +1,19 @@
+.recaptcha-container {
+  width: 304px;
+  height: 78px;
+  border: 1px solid transparent; // to avoid strange behavior with margins below
+}
+
 .g-recaptcha[data-theme="dark"] {
   overflow: hidden;
   width: 298px;
   height: 73px;
+  margin-top: 1px;
+  margin-left: 1px;
 }
 
 .g-recaptcha[data-theme="dark"] iframe {
-  margin: -1px 0px 0px -1px;
+  margin-top:-1px;
+  margin-left:-1px;
 }
 

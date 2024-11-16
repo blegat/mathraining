@@ -1,6 +1,9 @@
 <p class="mb-2">Veuillez prouver que vous n'êtes pas un robot.</p>
-<% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
-<%= recaptcha_tags theme: "#{ mt_theme }" %>
+
+<div class="mb-2 recaptcha-container">
+  <% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
+  <%= recaptcha_tags theme: "#{ mt_theme }" %>
+</div>
 
 <script>
   window.addEventListener("theme-change", () => {
@@ -13,5 +16,3 @@
     recaptcha_iframe.src = new_src;
   });
 </script>
-
-<div class="mb-2"></div>
