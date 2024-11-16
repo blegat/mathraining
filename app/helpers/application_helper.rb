@@ -45,15 +45,15 @@ module ApplicationHelper
     gsub(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/mi, '<a target=\'blank\' href=\'\1\'>\2</a>').
     gsub(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*(.*?)[ \r\n]*\[\/hide\]/mi, '[hide=\1]\2[/hide]').
     gsub(/\n/, '<br>').
-    gsub(/\:\-\)/, image_tag("Smiley1.gif", alt: ":-)")).
-    gsub(/\:\-\(/, image_tag("Smiley2.gif", alt: ":-(")).
-    gsub(/\:\-[D]/, image_tag("Smiley3.gif", alt: ":-D")).
-    gsub(/\:\-[O]/, image_tag("Smiley4.gif", alt: ":-O")).
-    gsub(/\:\-[P]/, image_tag("Smiley5.gif", alt: ":-P")).
-    gsub(/\:&#39;\(/, image_tag("Smiley6.gif", alt: ":'(")).
-    gsub(/\;\-\)/, image_tag("Smiley7.gif", alt: ";-)")).
-    gsub(/\:\-\|/, image_tag("Smiley8.gif", alt: ":-|")).
-    gsub(/[3]\:\[/, image_tag("Smiley9.gif", alt: "3:["))
+    gsub(/\:\-\)/,    image_tag("Smiley1.png", alt: ":-)", width: "20px")).
+    gsub(/\:\-\(/,    image_tag("Smiley2.png", alt: ":-(", width: "20px")).
+    gsub(/\:\-[D]/,   image_tag("Smiley3.png", alt: ":-D", width: "20px")).
+    gsub(/\:\-[O]/,   image_tag("Smiley4.png", alt: ":-O", width: "20px")).
+    gsub(/\:\-[P]/,   image_tag("Smiley5.png", alt: ":-P", width: "20px")).
+    gsub(/\:&#39;\(/, image_tag("Smiley6.png", alt: ":'(", width: "20px")).
+    gsub(/\;\-\)/,    image_tag("Smiley7.png", alt: ";-)", width: "20px")).
+    gsub(/\:\-\|/,    image_tag("Smiley8.png", alt: ":-|", width: "20px")).
+    gsub(/[3]\:\[/,   image_tag("Smiley9.png", alt: "3:[", width: "20px"))
   end
 
   # To read code on admin side
