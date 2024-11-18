@@ -44,16 +44,10 @@
     <% end %>
   <% else %>
     <% unsolvedquestion = Unsolvedquestion.where(:user => current_user, :question => @question).first %>
-    
-    <!-- Si l'étudiant s'est déjà trompé -->
-    <% if !unsolvedquestion.nil? %>
-      <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
-    
-    <!-- Si l'étudiant n'a pas encore essayé l'exercice -->
-    <% else %>
+    <% if unsolvedquestion.nil? %>
       <% unsolvedquestion = Unsolvedquestion.new %>
-      <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
     <% end %>
+    <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
   <% end %>
 
   <hr class="bottom-help" />
