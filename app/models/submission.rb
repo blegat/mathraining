@@ -86,11 +86,11 @@ class Submission < ActiveRecord::Base
   # Tell if the submission can be seen by the given user
   def can_be_seen_by(user)
     return true  if user.admin?                      # Admins can see all submissions
-    return false if self.draft?                      # Drafts cannot be seen, not even by the user itself
+    return false if !self.visible?                   # Drafts and submissions in virtualtest (in progress) cannot be seen, not even by the user itself
     return true  if self.user == user                # One can always see his own submission
     return false if !user.pb_solved?(self.problem)   # One cannot see other submissions if he didn't solve the problem
     return true  if self.correct?                    # One can see all other correct submissions (if he solved the problem)
-    return true  if user.corrector? && self.visible? # Corrector can see all visible submissions (if he solved the problem)
+    return true  if user.corrector?                  # Corrector can see all (visible) submissions (if he solved the problem)
     return false
   end
   

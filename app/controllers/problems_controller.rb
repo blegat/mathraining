@@ -34,8 +34,11 @@ class ProblemsController < ApplicationController
       if params[:sub].to_i == 0 # New submission
         @submission = @problem.submissions.where(:user => current_user, :status => :draft).first # In case there is a draft
         @submission = Submission.new if @submission.nil? # In case there is no draft
-      else
+      else # See existing submission
         @submission = Submission.find_by_id(params[:sub].to_i)
+        if @submission.nil? || @submission.problem != @problem || !@submission.can_be_seen_by(current_user)
+          redirect_to problem_path(@problem) and return
+        end
         @correction = Correction.new if @submission.visible?
       end
     end
