@@ -93,6 +93,8 @@ describe "problems/show.html.erb", type: :view, problem: true do
       it "renders the form correctly" do
         render template: "problems/show"
         expect(response).to render_template(:partial => "submissions/_new", :locals => {problem: problem, submission: new_submission})
+        expect(response).not_to render_template(:partial => "submissions/_edit_draft")
+        expect(response).not_to render_template(:partial => "submissions/_show")
       end
     end
     
@@ -102,7 +104,9 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "renders the form correctly" do
         render template: "problems/show"
+        expect(response).not_to render_template(:partial => "submissions/_new")
         expect(response).to render_template(:partial => "submissions/_edit_draft", :locals => {problem: problem, submission: draft_submission})
+        expect(response).not_to render_template(:partial => "submissions/_show")
       end
     end
     
@@ -114,20 +118,13 @@ describe "problems/show.html.erb", type: :view, problem: true do
       it "renders the message correctly" do
         render template: "problems/show"
         expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_edit_draft")
         expect(response).to render_template(:partial => "submissions/_chapters_to_write_submission")
-      end
-    end
-    
-    context "and tries to see a submission of someone else" do
-      before { assign(:submission, user_submission) }
-      
-      it "does not show the submission" do
-        render template: "problems/show"
         expect(response).not_to render_template(:partial => "submissions/_show")
       end
     end
     
-    context "and tries to see a his own submission" do
+    context "and tries to see his own submission" do
       let!(:wrong_submission) { FactoryGirl.create(:submission, user: bad_user, problem: problem, status: :wrong) }
       before do
         assign(:submission, wrong_submission)
@@ -136,6 +133,8 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "shows the submission" do
         render template: "problems/show"
+        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_edit_draft")
         expect(response).to render_template(:partial => "submissions/_show")
       end
     end
@@ -163,6 +162,8 @@ describe "problems/show.html.erb", type: :view, problem: true do
       it "does not render the form" do
         render template: "problems/show"
         expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_edit_draft")
+        expect(response).not_to render_template(:partial => "submissions/_show")
       end
     end
     
@@ -174,6 +175,8 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "shows the submission" do
         render template: "problems/show"
+        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_edit_draft")
         expect(response).to render_template(:partial => "submissions/_show")
       end
     end
@@ -183,17 +186,9 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "shows the submission" do
         render template: "problems/show"
+        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_edit_draft")
         expect(response).to render_template(:partial => "submissions/_show")
-      end
-    end
-    
-    context "and tries to see a wrong submission of someone else" do
-      let!(:wrong_submission) { FactoryGirl.create(:submission, user: bad_user, problem: problem, status: :wrong) }
-      before { assign(:submission, wrong_submission) }
-      
-      it "does not show the submission" do
-        render template: "problems/show"
-        expect(response).not_to render_template(:partial => "submissions/_show")
       end
     end
   end
@@ -215,6 +210,8 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "shows the submission" do
         render template: "problems/show"
+        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_edit_draft")
         expect(response).to render_template(:partial => "submissions/_show")
       end
     end
@@ -226,16 +223,6 @@ describe "problems/show.html.erb", type: :view, problem: true do
     it "does not show the explanation" do
       render template: "problems/show"
       should have_no_button("Éléments de solution")
-    end
-    
-    context "and tries to see a waiting submission" do
-      let!(:waiting_submission) { FactoryGirl.create(:submission, user: bad_user, problem: problem, status: :waiting) }
-      before { assign(:submission, waiting_submission) }
-      
-      it "does not show the submission" do
-        render template: "problems/show"
-        expect(response).not_to render_template(:partial => "submissions/_show")
-      end
     end
   end
 end
