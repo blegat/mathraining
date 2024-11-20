@@ -168,7 +168,7 @@
 
     <!-- Si pas encore résolu le problème -->
     <% unless (problem_solved || !@cansendnewsub) %>
-      <% if @submission.nil? || (!@submission.new_record? && !@submission.draft?) %>
+      <% if @submission.nil? %>
         <% if @problem.submissions.where(:user => current_user, :status => :draft).count == 0 %>
           <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
         <% else %>
@@ -191,8 +191,7 @@
 
 <% if !@submission.nil? %>
   <!-- Si on veut écrire une nouvelle soumission ou reprendre un brouillon -->
-  <% if @submission.new_record? || @submission.draft? %>
-
+  <% if @submission.new_record? || (@submission.draft? && !current_user.admin?) %>
     <!-- On vérifie que l'on peut soumettre une nouvelle soumission -->
     <% unless (problem_solved || !@cansendnewsub) %>
       <hr>

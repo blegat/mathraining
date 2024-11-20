@@ -147,9 +147,7 @@ var hideStatement = function () {
   <% end %>
 
   <!-- Affichage des corrections -->
-  <% unless @submission.draft? %>
-    <%= render 'corrections/index' %>
-  <% end %>
+  <%= render 'corrections/index' %>
 
   <!-- Marquer comme lu ou non lu -->
   <% if can_current_user_correct && !@submission.draft? && !@submission.waiting? %>
@@ -218,8 +216,10 @@ var hideStatement = function () {
   <% end %>
 
   <!-- Formulaire pour nouvelle correction -->
-  <% if can_current_user_correct && !@submission.visible && @submission.intest %>
-    <p>Cette soumission fait partie d'un test virtuel qui n'est pas terminé. Vous ne pourrez la corriger qu'une fois le temps de celui-ci écoulé.</p>
+  <% if !@submission.visible && @submission.intest %>
+    <p class="text-color-orange">Cette soumission fait partie d'un test virtuel qui n'est pas terminé. Vous ne pourrez la corriger qu'une fois le temps de celui-ci écoulé.</p>
+  <% elsif !@submission.visible && @submission.draft? %>
+    <p class="text-color-orange">Cette soumission n'est qu'un brouillon qui n'a pas encore été soumis pour correction.</p>
   <% elsif current_user == @submission.user && @submission.intest && @submission.waiting? %>
     <p>Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.</p>
   <% elsif can_current_user_correct && @submission.plagiarized? %>
@@ -257,7 +257,7 @@ var hideStatement = function () {
   <% end %>
 <% end %>
 
-<% if can_current_user_correct %>
+<% if can_current_user_correct && @submission.visible %>
   <% if @submission.correct? %>
     <!-- Propositions d'étoiles + Bouton direct pour étoiler (pour root) -->
     <%= render 'starproposals/show' %>    
