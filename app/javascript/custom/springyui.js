@@ -23,6 +23,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
+
 (function() {
 
 	jQuery.fn.springy = function(params) {
