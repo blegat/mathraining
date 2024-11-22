@@ -1,6 +1,6 @@
 <% provide(:title, 'Prérequis') %>
 
-<h1><%= title_2("Théorie", "Modifier la structure des sections") %></h1>
+<h1><%= title_2("Théorie", "Prérequis") %></h1>
 
 <% section_is_fondation = Array.new %>
 <% Section.all.each do |s| %>
@@ -76,8 +76,8 @@
         couleur = 1+prereq[<%= chapter.id %>];
         couleurmaxi = <%= maximum %>;
         <% nom = chapter.name %>
-        <% if nom.size > 25 %>
-          <% nom = nom.slice(0..22) + "..." %>
+        <% if nom.size > 35 %>
+          <% nom = nom.slice(0..32) + "..." %>
         <% end %>
         <% if section_is_fondation[chapter.section_id] %>
           noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
@@ -130,11 +130,13 @@
 </script>
 
 
-<center>
+<div class="grid" style="--bs-columns: 12">
+  <div class="g-col-12 text-center myoverflow">
   <canvas id="structure" style="border:1px solid #c3c3c3;" width="1000" height="700">
   Votre navigateur ne supporte pas de canvas.
   </canvas>
-</center>
+  </div>
+</div>
 
 <% liste = Array.new %>
 
