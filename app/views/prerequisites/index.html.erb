@@ -2,119 +2,94 @@
 
 <h1><%= title_2("Théorie", "Prérequis") %></h1>
 
-<% section_is_fondation = Array.new %>
-<% Section.all.each do |s| %>
-  <% section_is_fondation[s.id] = s.fondation? %>
-<% end %>
+<% fondations = Section.where(:fondation => true).pluck(:id).to_a %>
 
 <!-- Graphique des prérequis -->
 <script type="module">
   import { Graph } from "custom/springy"
   import "custom/springyui"
 
-  function decitohexa(dose){
-    var deux = dose % 16;
-    var un = Math.floor(dose/16);
-    var x, y;
-    var lettres = new Array("A", "B", "C", "D", "E", "F");
-    if(un <= 9)
-    {
-      x = un.toString();
+  function deci_to_hexa(x){
+    var parts = [Math.floor(x / 16), x % 16];
+    var letters = new Array("A", "B", "C", "D", "E", "F");
+    var result = "";
+    for (var i in parts) {
+      if (parts[i] <= 9) {
+        result = result.concat(parts[i].toString());
+      }
+      else {
+        result = result.concat(letters[parts[i]-10]);
+      }
     }
-    else
-    {
-      x = lettres[un-10];
-    }
-    if(deux <= 9)
-    {
-      y = deux.toString();
-    }
-    else
-    {
-      y = lettres[deux-10];
-    }
-    return x.concat(y);
+    return result;
   }
   
-  var couleurmax = [[0, 0, 200], [0, 200, 200], [0, 100, 230], [200, 0, 200], [150, 0, 0], [150, 150, 0], [100, 100, 100]]
+  var max_colors = [[0, 0, 200], [0, 200, 200], [0, 100, 230], [200, 0, 200], [150, 0, 0], [150, 150, 0], [100, 100, 100]]
   
-  function coucou(a, b, i){
-    var dose1 = 255-Math.floor(couleurmax[i][0]*a/b);
-    var dose2 = 255-Math.floor(couleurmax[i][1]*a/b);
-    var dose3 = 255-Math.floor(couleurmax[i][2]*a/b);
-    return decitohexa(dose1).concat(decitohexa(dose2)).concat(decitohexa(dose3));
+  function get_color(a, b, i){
+    var r = 255-Math.floor(max_colors[i][0] * a / b);
+    var g = 255-Math.floor(max_colors[i][1] * a / b);
+    var b = 255-Math.floor(max_colors[i][2] * a / b);
+    return deci_to_hexa(r).concat(deci_to_hexa(g)).concat(deci_to_hexa(b));
   }
 
   function drawGraph() {
     var graph = new Graph();
-
-    var noeud = new Array();
-    var prereq = new Array();
-    var fond = new Array();
-    var depart = graph.newNode({label: "Départ", color: "#0000FF", text: "#FFFFFF", bold: true});
-    <% existe = Set.new %>
-    <% maximum = 1 %>
-    <% chapters = Array.new %>
-    <% Chapter.includes(:section, :prerequisites).all.each do |chapter| %>
-      <% unless section_is_fondation[chapter.section_id] %>
-        <% chapters.push(chapter) %>
-        prereq[<%= chapter.id %>] = <%= x = chapter.number_prerequisites() %>;
-        <% if x+1 > maximum %>
-          <% maximum = x+1 %>
-        <% end %>
-        <% existe.add(chapter.id) %>
-        fond[<%= chapter.id %>] = <%= section_is_fondation[chapter.section_id] %>
-      <% end %>
+    var nodes = new Array();
+    var start_node = graph.newNode({label: "Départ", color: "#0000FF", text: "#FFFFFF", bold: true});
+    <% chapters_with_node = Set.new %>
+    <% chapter_to_prerequisites = {} %>
+    <% Chapter.where.not(:section_id => fondations).each do |chapter| %>
+      <% chapters_with_node.add(chapter.id) %>
+      <% chapter_to_prerequisites[chapter.id] = [] %>
     <% end %>
-
-    var couleur = 0;
-    var couleurmaxi = 0;   
-    var taille = 0 
-
-    <% Chapter.includes(:section).all.each do |chapter| %>
-      <% unless section_is_fondation[chapter.section_id] %>
-        couleur = 1+prereq[<%= chapter.id %>];
-        couleurmaxi = <%= maximum %>;
-        <% nom = chapter.name %>
-        <% if nom.size > 35 %>
-          <% nom = nom.slice(0..32) + "..." %>
-        <% end %>
-        <% if section_is_fondation[chapter.section_id] %>
-          noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
-        <% else %>
-          noeud[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(coucou(couleur, couleurmaxi, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
-        <% end %>
-        if(prereq[<%= chapter.id %>] == 0){
-          graph.newEdge(depart, noeud[<%= chapter.id %>], {color: "#CCCCCC"});
-        }
-      <% end %>
-    <% end %>
-
+    
     <% Prerequisite.all.each do |p| %>
-      <% if existe.include?(p.prerequisite_id) && existe.include?(p.chapter_id) %>
-        if (fond[<%= p.chapter_id %>] && !fond[<%= p.prerequisite_id %>]){
-          couleur = "FF0000";
-          taille = 5;
-        }
-        else if(fond[<%= p.chapter_id %>] || fond[<%= p.prerequisite_id %>]){
-          couleur = "00BB00";
-          taille = 1;
-        }
-        else{
-          couleur = "000000";
-          taille = 1;
-        }
-        graph.newEdge(noeud[<%= p.prerequisite_id %>], noeud[<%= p.chapter_id %>], {color: couleur, width: taille});
+      <% if chapters_with_node.include?(p.prerequisite_id) && chapters_with_node.include?(p.chapter_id) %>
+        <% chapter_to_prerequisites[p.chapter_id].push(p.prerequisite_id) %>
+      <% end %>
+    <% end %>
+    
+    <% max_difficulty = 0 %>
+    <% chapter_id_to_difficulty = {} %>
+    <% chapters_with_node.each do |chapter_id| %>
+      <% to_visit = chapter_to_prerequisites[chapter_id].clone %>
+      <% recursive_prerequisites = to_visit.to_set %>
+      <% i = 0 %>
+      <% while i < to_visit.size() %>
+        <% id = to_visit[i] %>
+        <% chapter_to_prerequisites[id].each do |other_id| %>
+          <% unless recursive_prerequisites.include?(other_id) %>
+            <% recursive_prerequisites.add(other_id) %>
+            <% to_visit.push(other_id) %>
+          <% end %>
+        <% end %>
+        <% i += 1 %>
+      <% end %> 
+      <% difficulty = recursive_prerequisites.size %>
+      <% chapter_id_to_difficulty[chapter_id] = difficulty %>
+      <% max_difficulty = [max_difficulty, difficulty].max %>
+    <% end %> 
+
+    <% Chapter.where.not(:section_id => fondations).each do |chapter| %>
+      <% difficulty = chapter_id_to_difficulty[chapter.id] %>
+      <% nom = chapter.name %>
+      <% if nom.size > 35 %>
+        <% nom = nom.slice(0..32) + "..." %>
+      <% end %>
+      nodes[<%= chapter.id %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "#".concat(get_color(<%= difficulty + 1 %>, <%= max_difficulty + 1 %>, <%= chapter.section_id - 1 %>)) <%= ", bold: true" if chapter.online %>});
+      <% if difficulty == 0 %>
+        graph.newEdge(start_node, nodes[<%= chapter.id %>], {color: "#CCCCCC"});
       <% end %>
     <% end %>
 
+    <% chapter_to_prerequisites.each do |chapter_id, prerequisites| %>
+      <% prerequisites.each do |prerequisite_id| %>
+        graph.newEdge(nodes[<%= prerequisite_id %>], nodes[<%= chapter_id %>], {color: "#AAAAAA"});
+      <% end %>
+    <% end %>
 
-    var springy = window.springy = jQuery('#structure').springy({
-      graph: graph,
-      nodeSelected: function(node) {
-        console.log('Node selected: ' + JSON.stringify(node.data));
-      }
-    });
+    var springy = window.springy = jQuery('#structure').springy({graph: graph});
   }
   
   var drawGraphDone = false;
