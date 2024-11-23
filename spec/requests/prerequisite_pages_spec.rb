@@ -21,7 +21,7 @@ describe "prerequisite pages", prerequisite: true do
     describe "visits prerequisite graph" do
       before { visit prerequisites_path }
       it do
-        should have_selector("h1", text: "Modifier la structure des sections")
+        should have_selector("h1", text: "Prérequis")
         should have_button("Ajouter ce lien")
       end
       
