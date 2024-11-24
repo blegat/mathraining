@@ -52,7 +52,9 @@
         <% num_incorrect_sub2 = 0 if num_incorrect_sub2.nil? %>
         <% num_incorrect_sub3 = num_sub_by_problem_and_status[[p.id, "plagiarized"]] unless current_user.admin? %>
         <% num_incorrect_sub3 = 0 if num_incorrect_sub3.nil? %>
-        <% num_incorrect_sub = num_incorrect_sub + num_incorrect_sub2 + num_incorrect_sub3 %>
+        <% num_incorrect_sub4 = num_sub_by_problem_and_status[[p.id, "closed"]] unless current_user.admin? %>
+        <% num_incorrect_sub4 = 0 if num_incorrect_sub4.nil? %>
+        <% num_incorrect_sub = num_incorrect_sub + num_incorrect_sub2 + num_incorrect_sub3 + num_incorrect_sub4 %>
         
         <% num_waiting_sub = num_sub_by_problem_and_status[[p.id, "waiting"]] unless current_user.admin? %>
         <% num_waiting_sub = 0 if num_waiting_sub.nil? %>
