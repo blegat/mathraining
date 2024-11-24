@@ -19,7 +19,16 @@
 <% problems_by_level = problems.group_by{|p| p.level} %>
 
 <% if !current_user.admin? %>
-  <% num_sub_by_problem_and_status = current_user.submissions.where("problem_id IN (?)", problems.map(&:id)).group(:problem_id, :status).count %>
+  <% @num_subs_by_problem_and_status = current_user.submissions.where("problem_id IN (?)", problems.map(&:id)).group(:problem_id, :status).count %>
+<% end %>
+
+<% def get_num_subs_for_problem_and_statuses(problem, statuses) %>
+  <% result = 0 %>
+  <% statuses.each do |status| %>
+    <% n = @num_subs_by_problem_and_status[[problem.id, status]] %>
+    <% result += n unless n.nil? %>
+  <% end %>
+  <% return result %>
 <% end %>
 
 <% (1..5).each do |level| %>
@@ -30,48 +39,37 @@
     <p>Chaque problème de niveau <%= level %> vaut <b><%= 15*level %></b> points.</p>
     
     <% problems_by_level[level].each do |p| %>
-      <% num_correct_sub = num_sub_by_problem_and_status[[p.id, "correct"]] unless current_user.admin? %>
-      <% num_correct_sub = 0 if num_correct_sub.nil? %>
-
       <% num_drafts = 0 %>
-
+      <% num_correct_subs = 0 %>
+      
       <% classe = "" %>
-      <!-- Si déjà résolu : vert -->
-      <% if num_correct_sub > 0 %>
-        <% classe = "greeny" %>
-
-      <!-- Si pas en ligne : orange -->
-      <% elsif !p.online %>
+      <% if !p.online? %>
+        <!-- Si pas en ligne : orange -->
         <% classe = "orangey" %>
-
-      <!-- Si connecté -->
-      <% else %>    
-        <% num_incorrect_sub = num_sub_by_problem_and_status[[p.id, "wrong"]] unless current_user.admin? %>
-        <% num_incorrect_sub = 0 if num_incorrect_sub.nil? %>
-        <% num_incorrect_sub2 = num_sub_by_problem_and_status[[p.id, "wrong_to_read"]] unless current_user.admin? %>
-        <% num_incorrect_sub2 = 0 if num_incorrect_sub2.nil? %>
-        <% num_incorrect_sub3 = num_sub_by_problem_and_status[[p.id, "plagiarized"]] unless current_user.admin? %>
-        <% num_incorrect_sub3 = 0 if num_incorrect_sub3.nil? %>
-        <% num_incorrect_sub4 = num_sub_by_problem_and_status[[p.id, "closed"]] unless current_user.admin? %>
-        <% num_incorrect_sub4 = 0 if num_incorrect_sub4.nil? %>
-        <% num_incorrect_sub = num_incorrect_sub + num_incorrect_sub2 + num_incorrect_sub3 + num_incorrect_sub4 %>
+      <% elsif current_user.admin? %>
+        <!-- Si admin : jaune -->
+        <% classe = "yellowy" %> 
+      <% else %>
+        <!-- Si étudiant et problème en ligne --> 
+        <% num_correct_subs = get_num_subs_for_problem_and_statuses(p, ["correct"]) %>
         
-        <% num_waiting_sub = num_sub_by_problem_and_status[[p.id, "waiting"]] unless current_user.admin? %>
-        <% num_waiting_sub = 0 if num_waiting_sub.nil? %>
-        <% num_drafts = num_sub_by_problem_and_status[[p.id, "draft"]] unless current_user.admin? %>
-        <% num_drafts = 0 if num_drafts.nil? %>
-
-        <!-- Si aucune soumission (ou admin) : jaune -->
-        <% if current_user.admin? || num_waiting_sub + num_incorrect_sub == 0 %>
-          <% classe = "yellowy" %>
-        <% else %>
-          <!-- Si une soumission pas encore corrigée : orange -->
-          <% if num_waiting_sub > 0 %>
+        <% if num_correct_subs > 0 %>
+          <!-- Si déjà résolu : vert -->
+          <% classe = "greeny" %>
+        <% else %>  
+          <% num_waiting_subs = get_num_subs_for_problem_and_statuses(p, ["waiting"]) %>  
+          <% num_incorrect_subs = get_num_subs_for_problem_and_statuses(p, ["wrong", "wrong_to_read", "plagiarized", "closed"]) %>
+          <% num_drafts = get_num_subs_for_problem_and_statuses(p, ["draft"]) %>
+          
+          <% if num_waiting_subs > 0 %>
+            <!-- Si une soumission pas encore corrigée : orange -->
             <% classe = "orangey" %>
-
-          <!-- Si une soumission erronée : rouge -->
-          <% else %>
+          <% elsif num_incorrect_subs > 0 %>
+            <!-- Si une soumission erronée : rouge -->
             <% classe = "redy" %>
+          <% else %>
+            <!-- Si aucune soumission (autre qu'un éventuel brouillon) : jaune -->
+            <% classe = "yellowy" %>
           <% end %>
         <% end %>
       <% end %>
@@ -115,7 +113,7 @@
         </div>
 
         <!-- Origine si administrateur ou si résolu -->
-        <% if (current_user.admin? || num_correct_sub > 0) && !p.origin.nil? && p.origin.size > 0 %>
+        <% if (current_user.admin? || num_correct_subs > 0) && !p.origin.nil? && p.origin.size > 0 %>
           <div class="g-col-12 g-col-md-24 module bottom-part">
             Origine du problème : <b><%= p.origin %></b>
           </div>
