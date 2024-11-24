@@ -18,8 +18,13 @@
 <% problems = accessible_problems_from_section(current_user, @section, ["id", "number", "level", "online", "statement", "origin", "virtualtest_id", "nb_solves", "first_solve_time", "last_solve_time"]) %>
 <% problems_by_level = problems.group_by{|p| p.level} %>
 
-<% if !current_user.admin? %>
-  <% num_sub_by_problem_and_status = current_user.submissions.where("problem_id IN (?)", problems.map(&:id)).group(:problem_id, :status).count %>
+<% unless current_user.admin? %>
+  <% @num_sub_by_problem_and_status = current_user.submissions.where("problem_id IN (?)", problems.map(&:id)).group(:problem_id, :status).count %>
+<% end %>
+
+<% def sub_count_by_status(problem_id, status) %>
+  <% return nil if current_user.admin? %>
+  <% return @num_sub_by_problem_and_status[[problem_id, status]] || 0 %>
 <% end %>
 
 <% (1..5).each do |level| %>
@@ -30,7 +35,7 @@
     <p>Chaque problème de niveau <%= level %> vaut <b><%= 15*level %></b> points.</p>
     
     <% problems_by_level[level].each do |p| %>
-      <% num_correct_sub = num_sub_by_problem_and_status[[p.id, "correct"]] unless current_user.admin? %>
+      <% num_correct_sub = sub_count_by_status(p.id, "correct")%>
       <% num_correct_sub = 0 if num_correct_sub.nil? %>
 
       <% num_drafts = 0 %>
@@ -45,21 +50,15 @@
         <% classe = "orangey" %>
 
       <!-- Si connecté -->
-      <% else %>    
-        <% num_incorrect_sub = num_sub_by_problem_and_status[[p.id, "wrong"]] unless current_user.admin? %>
-        <% num_incorrect_sub = 0 if num_incorrect_sub.nil? %>
-        <% num_incorrect_sub2 = num_sub_by_problem_and_status[[p.id, "wrong_to_read"]] unless current_user.admin? %>
-        <% num_incorrect_sub2 = 0 if num_incorrect_sub2.nil? %>
-        <% num_incorrect_sub3 = num_sub_by_problem_and_status[[p.id, "plagiarized"]] unless current_user.admin? %>
-        <% num_incorrect_sub3 = 0 if num_incorrect_sub3.nil? %>
-        <% num_incorrect_sub4 = num_sub_by_problem_and_status[[p.id, "closed"]] unless current_user.admin? %>
-        <% num_incorrect_sub4 = 0 if num_incorrect_sub4.nil? %>
-        <% num_incorrect_sub = num_incorrect_sub + num_incorrect_sub2 + num_incorrect_sub3 + num_incorrect_sub4 %>
+      <% else %>
+        <% wrong = sub_count_by_status(p.id, "wrong")%>
+        <% wrong_to_read = sub_count_by_status(p.id, "wrong_to_read")%>
+        <% plagiarized = sub_count_by_status(p.id, "plagiarized")%>
+        <% closed = sub_count_by_status(p.id, "closed")%>
+        <% num_incorrect_sub = wrong + wrong_to_read + plagiarized + closed %>
         
-        <% num_waiting_sub = num_sub_by_problem_and_status[[p.id, "waiting"]] unless current_user.admin? %>
-        <% num_waiting_sub = 0 if num_waiting_sub.nil? %>
-        <% num_drafts = num_sub_by_problem_and_status[[p.id, "draft"]] unless current_user.admin? %>
-        <% num_drafts = 0 if num_drafts.nil? %>
+        <% num_waiting_sub = sub_count_by_status(p.id, "waiting") %>
+        <% num_drafts = sub_count_by_status(p.id, "draft") %>
 
         <!-- Si aucune soumission (ou admin) : jaune -->
         <% if current_user.admin? || num_waiting_sub + num_incorrect_sub == 0 %>
