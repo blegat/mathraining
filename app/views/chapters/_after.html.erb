@@ -11,7 +11,7 @@
       <%= link_to "QCM", new_chapter_question_path(@chapter, :qcm => 1) %>
     </p>
 
-    <% if !@chapter.online && current_user.root? %>
+    <% if current_user.root? && !@chapter.online %>
       <center>
       <%= button_to "Mettre ce chapitre en ligne", put_online_chapter_path(@chapter), :method => :put, class: 'btn btn-danger', data: {confirm: "Êtes-vous sûr de vouloir mettre ce chapitre en ligne ?"} %>
       </center>

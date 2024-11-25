@@ -14,6 +14,7 @@ class ChaptersController < ApplicationController
   before_action :offline_chapter, only: [:destroy, :put_online]
   before_action :online_chapter, only: [:read]
   before_action :prerequisites_online, only: [:put_online]
+  before_action :chapter_has_some_questions, only: [:put_online]
   before_action :user_can_see_chapter, only: [:show, :all]
   before_action :user_can_update_chapter, only: [:edit, :update]
 
@@ -181,5 +182,12 @@ class ChaptersController < ApplicationController
       end
     end
   end
-
+  
+  # Check that the chapter has at least one question
+  def chapter_has_some_questions
+    if @chapter.questions.count == 0
+      flash[:danger] = "Un chapitre doit avoir au moins un exercice."
+      redirect_to @chapter and return
+    end
+  end
 end

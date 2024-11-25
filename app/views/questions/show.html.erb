@@ -21,7 +21,7 @@
 <!-- Si étudiant inscrit -->
 <% elsif signed_in? %>
 
-  <% solvedquestion = Solvedquestion.where(:user => current_user, :question => @question).first %>
+  <% solvedquestion = current_user.solvedquestions.where(:question => @question).first %>
   
   <!-- Si l'exercice est déjà résolu -->
   <% if !solvedquestion.nil? %>    
@@ -43,7 +43,7 @@
       <%= raw(htmlise(@question.explanation)) %>
     <% end %>
   <% else %>
-    <% unsolvedquestion = Unsolvedquestion.where(:user => current_user, :question => @question).first %>
+    <% unsolvedquestion = current_user.unsolvedquestions.where(:question => @question).first %>
     <% if unsolvedquestion.nil? %>
       <% unsolvedquestion = Unsolvedquestion.new %>
     <% end %>

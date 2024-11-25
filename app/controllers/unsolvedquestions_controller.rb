@@ -18,34 +18,35 @@ class UnsolvedquestionsController < ApplicationController
   def create
     @unsolvedquestion = Unsolvedquestion.new(:user => current_user, :question => @question)
     res = check_answer(true)
-    if res != "skip"
-      if res == "correct"
-        @question.update(:nb_first_guesses => @question.nb_first_guesses+1,
-                         :nb_correct       => @question.nb_correct+1)
-      else
-        @question.update(:nb_wrong         => @question.nb_wrong+1)
-      end
-      
-      # We update chapter.nb_tries if it is the first question that this user tries
-      other_questions = @chapter.questions.where("id != ?", @question.id).select("id")
-      if Solvedquestion.where(:user => current_user, :question => other_questions).count + Unsolvedquestion.where(:user => current_user, :question => other_questions).count == 0
-        @chapter.update_attribute(:nb_tries, @chapter.nb_tries+1)
-      end
+    return if res == "skip"
 
-      redirect_to chapter_question_path(@chapter, @question)
+    if res == "correct"
+      @question.update(:nb_first_guesses => @question.nb_first_guesses + 1,
+                       :nb_correct       => @question.nb_correct + 1)
+      mark_chapter_as_solved_if_needed
+    else
+      @question.update(:nb_wrong         => @question.nb_wrong + 1)
     end
+      
+    # We update chapter.nb_tries if it is the first question that this user tries
+    other_questions = @chapter.questions.where("id != ?", @question.id).select("id")
+    if current_user.solvedquestions.where(:question => other_questions).count + current_user.unsolvedquestions.where(:question => other_questions).count == 0
+      @chapter.update_attribute(:nb_tries, @chapter.nb_tries + 1)
+    end
+    
+    redirect_to chapter_question_path(@chapter, @question)
   end
 
   # Try to solve a question (next times)
   def update    
     res = check_answer(false)
+    return if res == "skip"
     if res == "correct"
-      @question.update(:nb_correct => @question.nb_correct+1,
-                       :nb_wrong   => @question.nb_wrong-1)
+      @question.update(:nb_correct => @question.nb_correct + 1,
+                       :nb_wrong   => @question.nb_wrong - 1)
+      mark_chapter_as_solved_if_needed
     end
-    if res != "skip"
-      redirect_to chapter_question_path(@chapter, @question)
-    end
+    redirect_to chapter_question_path(@chapter, @question)
   end
 
   private
@@ -63,21 +64,21 @@ class UnsolvedquestionsController < ApplicationController
 
   # Check that this is the first try of current user
   def first_try_of_user
-    if Solvedquestion.where(:user => current_user, :question => @question).count + Unsolvedquestion.where(:user => current_user, :question => @question).count > 0
+    if current_user.solvedquestions.where(:question => @question).count + current_user.unsolvedquestions.where(:question => @question).count > 0
       redirect_to chapter_question_path(@chapter, @question)
     end
   end
   
   # Check that the current user did not solve the question already
   def user_did_not_solve_question
-    if Solvedquestion.where(:user => current_user, :question => @question).count > 0 # already solved
+    if current_user.solvedquestions.where(:question => @question).count > 0 # already solved
       redirect_to chapter_question_path(@chapter, @question)
     end
   end
   
   # Check that this is not the first try of current user
   def not_first_try_of_user
-    @unsolvedquestion = Unsolvedquestion.where(:user => current_user, :question => @question).first
+    @unsolvedquestion = current_user.unsolvedquestions.where(:question => @question).first
     return if check_nil_object(@unsolvedquestion)
   end
   
@@ -242,6 +243,16 @@ class UnsolvedquestionsController < ApplicationController
     end
     
     return (correct ? "correct" : "wrong")
+  end
+  
+  # Helper method to mark the chapter as solved if all questions are solved
+  def mark_chapter_as_solved_if_needed
+    questions = @chapter.questions.where(:online => true).group(:id).count.keys
+    solvedquestions = current_user.solvedquestions.where(:question_id => questions).group(:question_id).count.keys
+    if solvedquestions.size == questions.size && !current_user.chapters.exists?(@chapter.id)
+      current_user.chapters << @chapter
+      @chapter.update_attribute(:nb_completions, @chapter.nb_completions + 1)
+    end
   end
   
   # Helper method to create Solvedquestion from Unsolvedquestion

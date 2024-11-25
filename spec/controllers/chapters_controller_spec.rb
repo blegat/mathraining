@@ -11,6 +11,7 @@ describe ChaptersController, type: :controller, chapter: true do
   let(:offline_chapter) { FactoryGirl.create(:chapter, online: false) }
   let(:theory) { FactoryGirl.create(:theory, chapter: online_chapter, online: true) }
   let(:question) { FactoryGirl.create(:exercise, chapter: online_chapter, online: true) }
+  let!(:offline_question) { FactoryGirl.create(:exercise, chapter: offline_chapter, online: false) } # So that offline_chapter can be put online
   
   context "if the user is not signed in" do
     it { expect(response).to have_controller_show_behavior(online_chapter, :ok) }

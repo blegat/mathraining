@@ -8,6 +8,7 @@ describe "Solvedquestion pages" do
   let(:user) { FactoryGirl.create(:user) }
   let!(:section) { FactoryGirl.create(:section) }
   let!(:chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
+  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
   let!(:exercise_answer) { 63 }
   let!(:exercise) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 1, level: 1, answer: exercise_answer) }
   let!(:exercise_decimal_answer) { -15.4 }
@@ -15,7 +16,7 @@ describe "Solvedquestion pages" do
   let!(:qcm) { FactoryGirl.create(:qcm, chapter: chapter, online: true, position: 3, level: 3) }
   let!(:item_correct) { FactoryGirl.create(:item_correct, question: qcm, position: 1) }
   let!(:item_incorrect) { FactoryGirl.create(:item, question: qcm, position: 2) }
-  let!(:qcm_multiple) { FactoryGirl.create(:qcm_multiple, chapter: chapter, online: true, position: 4, level: 4) }
+  let!(:qcm_multiple) { FactoryGirl.create(:qcm_multiple, chapter: chapter2, online: true, position: 4, level: 4) } # Only question of chapter2
   let!(:item_multiple_correct) { FactoryGirl.create(:item_correct, question: qcm_multiple, position: 1) }
   let!(:item_multiple_incorrect) { FactoryGirl.create(:item, question: qcm_multiple, position: 2) }
   
@@ -246,6 +247,7 @@ describe "Solvedquestion pages" do
           expect(page).to have_content(qcm.explanation)
           expect(user.rating).to eq(rating_before + qcm.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm.value)
+          expect(user.chapters.exists?(chapter.id)).to eq(false) # Because it's NOT the only question of chapter
         end
       end
       
@@ -289,7 +291,7 @@ describe "Solvedquestion pages" do
     end
     
     describe "visits a multiple answer qcm" do
-      before { visit chapter_question_path(chapter, qcm_multiple) }
+      before { visit chapter_question_path(chapter2, qcm_multiple) }
     
       describe "and correctly solves it" do
         before do
@@ -303,6 +305,7 @@ describe "Solvedquestion pages" do
           expect(page).to have_content(qcm_multiple.explanation)
           expect(user.rating).to eq(rating_before + qcm_multiple.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm_multiple.value)
+          expect(user.chapters.exists?(chapter2.id)).to eq(true) # Because it's the only question of chapter2
         end
       end
       
@@ -318,6 +321,7 @@ describe "Solvedquestion pages" do
           expect(page).to have_no_content(qcm_multiple.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
+          expect(user.chapters.exists?(chapter2.id)).to eq(false)
         end
         
         describe "and makes another mistake" do
@@ -341,6 +345,7 @@ describe "Solvedquestion pages" do
               expect(page).to have_content(qcm_multiple.explanation)
               expect(user.rating).to eq(rating_before + qcm_multiple.value)
               expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm_multiple.value)
+              expect(user.chapters.exists?(chapter2.id)).to eq(true) # Because it's the only question of chapter2
             end
           end
         end

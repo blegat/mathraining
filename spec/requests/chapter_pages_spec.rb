@@ -18,9 +18,11 @@ describe "Chapter pages", chapter: true do
   let!(:offline_qcm) { FactoryGirl.create(:qcm, chapter: offline_chapter, online: false) }
   let!(:offline_item) { FactoryGirl.create(:item, question: offline_qcm) }
   let!(:offline_theory) { FactoryGirl.create(:theory, chapter: offline_chapter, online: false) }
-  let!(:offline_chapter_2) { FactoryGirl.create(:chapter, section: section, online: false, name: "Autre chapitre hors-ligne", level: 3) }
+  let!(:offline_chapter_2) { FactoryGirl.create(:chapter, section: section, online: false, name: "Autre chapitre hors-ligne", level: 3, position: 1) }
+  let!(:offline_exercise_2) { FactoryGirl.create(:exercise, chapter: offline_chapter_2, online: false) }
   let!(:prerequisite_link_1) { FactoryGirl.create(:prerequisite, chapter: offline_chapter, prerequisite: online_chapter) }
   let!(:prerequisite_link_2) { FactoryGirl.create(:prerequisite, chapter: offline_chapter_2, prerequisite: offline_chapter) }
+  let(:offline_chapter_3) { FactoryGirl.create(:chapter, section: section, online: false, name: "Chapitre sans exercice", level: 3, position: 2) }
   let(:chapter_fondation) { FactoryGirl.create(:chapter, section: section_fondation, online: true, name: "Chapitre fondamental en ligne") }
   let(:title) { "Mon titre de chapitre" }
   let(:description) { "Ma description de chapitre" }
@@ -220,6 +222,18 @@ describe "Chapter pages", chapter: true do
       specify do
         expect(page).to have_error_message("Pour mettre un chapitre en ligne, tous ses prérequis doivent être en ligne.")
         expect(offline_chapter_2.online).to eq(false)
+      end
+    end
+    
+    describe "tries to put online a chapter without any question" do
+      before do
+        visit chapter_path(offline_chapter_3)
+        click_button("Mettre ce chapitre en ligne")
+        offline_chapter_3.reload
+      end
+      specify do
+        expect(page).to have_error_message("Un chapitre doit avoir au moins un exercice.")
+        expect(offline_chapter_3.online).to eq(false)
       end
     end
     
