@@ -527,9 +527,19 @@ def create_subjects
   subject.update(last_comment_time: message.created_at, last_comment_user: message.user)
 end
 
-def create_subject(user:, title:, content:, created_at:, last_comment_time:, last_comment_user:,
-                   category: nil, important: false, for_wepion: false, question: nil, chapter: nil,
-                   section: nil, for_correctors: false)
+def create_subject(user:,
+                   title:,
+                   content:,
+                   created_at:,
+                   last_comment_time:,
+                   last_comment_user:,
+                   category: nil,
+                   important: false,
+                   for_wepion: false,
+                   question: nil,
+                   chapter: nil,
+                   section: nil,
+                   for_correctors: false)
   subject = Subject.create(title:             title,
                            category:          category,
                            last_comment_time: last_comment_time,
