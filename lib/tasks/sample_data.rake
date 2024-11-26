@@ -186,30 +186,30 @@ def create_users
   country[2] = Country.where(:name => "Maroc").first
   
   # Root
-  root = User.create(first_name:            "Root",
-                     last_name:             "Root",
-                     email:                 "root@root.com",
-                     email_confirmation:    "root@root.com",
-                     password:              "foobar",
-                     password_confirmation: "foobar",
-                     root:                  true,
-                     admin:                 true,
-                     year:                  1990,
-                     country:               country[0],
-                     created_at:            DateTime.now - 100.days)
+  User.create(first_name:            "Root",
+              last_name:             "Root",
+              email:                 "root@root.com",
+              email_confirmation:    "root@root.com",
+              password:              "foobar",
+              password_confirmation: "foobar",
+              root:                  true,
+              admin:                 true,
+              year:                  1990,
+              country:               country[0],
+              created_at:            DateTime.now - 100.days)
   
   # Admin
-  admin = User.create(first_name:            "Admin",
-                      last_name:             "Admin",
-                      email:                 "admin@admin.com",
-                      email_confirmation:    "admin@admin.com",
-                      password:              "foobar",
-                      password_confirmation: "foobar",
-                      root:                  false,
-                      admin:                 true,
-                      year:                  1993,
-                      country:               country[1],
-                      created_at:            DateTime.now - 90.days)
+  User.create(first_name:            "Admin",
+              last_name:             "Admin",
+              email:                 "admin@admin.com",
+              email_confirmation:    "admin@admin.com",
+              password:              "foobar",
+              password_confirmation: "foobar",
+              root:                  false,
+              admin:                 true,
+              year:                  1993,
+              country:               country[1],
+              created_at:            DateTime.now - 90.days)
                       
   # Students
   for i in 1..20
@@ -223,20 +223,20 @@ def create_users
       group = "A" if x == 1
       group = "B" if x == 2
     end
-    user = User.create(first_name:           "User",
-                       last_name:            "User-" + letter,
-                       email:                 mail,
-                       email_confirmation:    mail,
-                       password:              "foobar",
-                       password_confirmation: "foobar",
-                       root:                  false,
-                       admin:                 false,
-                       year:                  2000 + Random.rand(5),
-                       country:               country[Random.rand(3)],
-                       wepion:                wepion,
-                       group:                 group,
-                       rating:                user_level,
-                       created_at:            DateTime.now - user_level.days)
+    User.create(first_name:           "User",
+                last_name:            "User-" + letter,
+                email:                 mail,
+                email_confirmation:    mail,
+                password:              "foobar",
+                password_confirmation: "foobar",
+                root:                  false,
+                admin:                 false,
+                year:                  2000 + Random.rand(5),
+                country:               country[Random.rand(num_countries)],
+                wepion:                wepion,
+                group:                 group,
+                rating:                user_level,
+                created_at:            DateTime.now - user_level.days)
   end
 end
 
@@ -360,7 +360,6 @@ def create_submissions
         next
       end
       
-      r2 = Random.rand(3)
       is_correct = (Random.rand(3) <= 1)
       submission_time = last_question_solved_time + Random.rand(DateTime.now.to_i - last_question_solved_time.to_i + 1).seconds
       corrected = Random.rand(30) > 0
@@ -560,7 +559,6 @@ end
 
 # Create visitor statistics
 def create_visitor_statistics
-  cur_day = Date.today - 100
   (0..99).each do |x|
     Visitor.create(date:      Date.today - 100 + x,
                    nb_users:  (x/10).to_i + Random.rand(1+(x/10).to_i),
