@@ -198,7 +198,6 @@ class ContestsController < ApplicationController
       title: "Concours ##{contest.number}",
       content: helpers.get_new_contest_forum_message(contest),
       contest: contest,
-      category: Category.where(name: "Mathraining").first,
-      created_at: Time.now)
+      category: Category.where(name: "Mathraining").first)
   end
 end

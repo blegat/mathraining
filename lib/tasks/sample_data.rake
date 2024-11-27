@@ -438,83 +438,79 @@ def create_subjects
   user = User.where(:root => true).first
   time = DateTime.now - 20.days
   category = Category.where(:name => "Mathraining").first
-  subject = Subject.create_with_first_message(user:              user,
-                           title:             "Questions relatives à Mathraining",
-                           content:           "Si vous avez la moindre question, n'hésitez pas !",
-                           important:         true,
-                           category:          category,
-                           created_at:        time)
-  
-  message = Message.create(subject:    subject,
-                           user:       User.where(:admin => false).order(:created_at).last,
-                           content:    "Je me demandais : comment devient-on correcteur ?",
-                           created_at: DateTime.now - 5.days)
-  subject.update(last_comment_time: message.created_at, last_comment_user: message.user)
+  subject = Subject.create_with_first_message(user_id:    user.id,
+                                              title:      "Questions relatives à Mathraining",
+                                              content:    "Si vous avez la moindre question, n'hésitez pas !",
+                                              important:  true,
+                                              category:   category,
+                                              created_at: time)
+
+  Message.create(subject:    subject,
+                 user:       User.where(:admin => false).order(:created_at).last,
+                 content:    "Je me demandais : comment devient-on correcteur ?",
+                 created_at: DateTime.now - 5.days)
   
   # One important subject for Wépion
   user = User.where(:root => true).first
   time = DateTime.now - 30.days
   category = Category.where(:name => "Wépion").first
-  subject = Subject.create_with_first_message(user_id:           user.id,
-                                              title:             "Cours 2021-2022",
-                                              content:           "Voici l'horaire des cours de Wépion pour cette année.",
-                                              important:         true,
-                                              for_wepion:        true,
-                                              category:          category,
-                                              created_at:        time)
+  subject = Subject.create_with_first_message(user_id:    user.id,
+                                              title:      "Cours 2021-2022",
+                                              content:    "Voici l'horaire des cours de Wépion pour cette année.",
+                                              important:  true,
+                                              for_wepion: true,
+                                              category:   category,
+                                              created_at: time)
   
-  message = Message.create(subject:    subject,
-                           user:       User.where(:wepion => true).first,
-                           content:    "Merci pour cette information précieuse.",
-                           created_at: time + 2.hours)
-  subject.update(last_comment_time: message.created_at, last_comment_user: message.user)
+  Message.create(subject:    subject,
+                 user:       User.where(:wepion => true).first,
+                 content:    "Merci pour cette information précieuse.",
+                 created_at: time + 2.hours)
   
   # One important subject for correctors
   user = User.where(:root => false, :admin => true).first
   time = DateTime.now - 10.days
   category = Category.where(:name => "Mathraining").first
-  subject = Subject.create_with_first_message(user_id:           user.id,
-                                              title:             "Instructions pour les correcteurs",
-                                              content:           "Voici les instructions pour les nouveaux correcteurs :-)",
-                                              important:         true,
-                                              for_correctors:    true,
-                                              category:          category,
-                                              created_at:        time)
+  subject = Subject.create_with_first_message(user_id:        user.id,
+                                              title:          "Instructions pour les correcteurs",
+                                              content:        "Voici les instructions pour les nouveaux correcteurs :-)",
+                                              important:      true,
+                                              for_correctors: true,
+                                              category:       category,
+                                              created_at:     time)
                            
   # One subject about a chapter
   user = User.where(:admin => false).first
   time = user.created_at + 2.hours
   chapter = Chapter.first
-  subject = Subject.create_with_first_message(user_id:              user.id,
-                                              title:             "Hein !?",
-                                              content:           "Je ne comprends rien à ce chapitre, quelqu'un peut me le réexpliquer en entier ?",
-                                              section:           chapter.section,
-                                              chapter:           chapter,
-                                              created_at:        time)
+  subject = Subject.create_with_first_message(user_id:    user.id,
+                                              title:      "Hein !?",
+                                              content:    "Je ne comprends rien à ce chapitre, quelqu'un peut me le réexpliquer en entier ?",
+                                              section:    chapter.section,
+                                              chapter:    chapter,
+                                              created_at: time)
   
-  message = Message.create(subject:    subject,
-                           user:       User.where(:admin => true).first,
-                           content:    "Relis le chapitre, tout simplement...",
-                           created_at: time + 2.minutes)
-  subject.update(last_comment_time: message.created_at, last_comment_user: message.user)
+  Message.create(subject:    subject,
+                 user:       User.where(:admin => true).first,
+                 content:    "Relis le chapitre, tout simplement...",
+                 created_at: time + 2.minutes)
   
   # One subject about a question
   user = User.where(:admin => false).second
   time = user.created_at + 5.hours
   question = Section.where(:fondation => true).first.chapters.first.questions.first
-  subject = Subject.create_with_first_message(user_id:              user.id,
-                                              title:             "Exercice incorrect ?",
-                                              content:           "Cet exercice me semble erroné, qu'en pensez-vous ?",
-                                              section:           question.chapter.section,
-                                              chapter:           question.chapter,
-                                              question:          question,
-                                              created_at:        time)
+  subject = Subject.create_with_first_message(user_id:    user.id,
+                                              title:      "Exercice incorrect ?",
+                                              content:    "Cet exercice me semble erroné, qu'en pensez-vous ?",
+                                              section:    question.chapter.section,
+                                              chapter:    question.chapter,
+                                              question:   question,
+                                              created_at: time)
   
-  message = Message.create(subject:    subject,
-                           user:       User.where(:admin => false).third,
-                           content:    "J'en pense que tu dis des sottises !",
-                           created_at: time + 7.hours)
-  subject.update(last_comment_time: message.created_at, last_comment_user: message.user)
+  Message.create(subject:    subject,
+                 user:       User.where(:admin => false).third,
+                 content:    "J'en pense que tu dis des sottises !",
+                 created_at: time + 7.hours)
 end
 
 # Update some statistics
