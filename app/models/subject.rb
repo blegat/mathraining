@@ -75,4 +75,10 @@ class Subject < ActiveRecord::Base
                   :last_comment_user_id => last_message.user_id)
     end
   end
+
+  def self.create_with_first_message(user_id:, title:, content:, created_at: Time.now, **options)
+    subject = Subject.create(title: title, **options)
+    Message.create(subject: subject, user_id: user_id, content: content, created_at: created_at)
+    return subject
+  end
 end
