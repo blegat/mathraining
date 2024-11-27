@@ -193,11 +193,10 @@ class ContestsController < ApplicationController
 
   # Helper method to create the forum subject for a contest
   def create_forum_subject(contest)
-    Subject.create_with_first_message(
-      user_id: 0,
-      title: "Concours ##{contest.number}",
-      content: helpers.get_new_contest_forum_message(contest),
-      contest: contest,
-      category: Category.where(name: "Mathraining").first)
+    Subject.create_with_first_message(user_id:  0,
+                                      title:    "Concours ##{contest.number}",
+                                      content:  helpers.get_new_contest_forum_message(contest),
+                                      contest:  contest,
+                                      category: Category.where(name: "Mathraining").first)
   end
 end
