@@ -144,7 +144,7 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 		};
 
 		Node.prototype.getHeight = function() {
-			return 18;
+			return 20;
 		};
 
 		var renderer = this.renderer = new Renderer(layout,
@@ -259,7 +259,7 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 				var boxHeight = node.getHeight();
 
 				// clear background
-				ctx.clearRect(s.x - boxWidth/2, s.y - 10, boxWidth, 20);
+				ctx.clearRect(s.x - boxWidth/2, s.y - boxHeight/2, boxWidth, boxHeight);
 
 				// fill background
 				if (selected !== null && nearest.node !== null && selected.node.id === node.id) {
@@ -271,8 +271,7 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 				}
 
 				ctx.fillStyle = (node.data.color !== undefined) ? node.data.color : "#FFFFFF";
-
-				ctx.fillRect(s.x - boxWidth/2, s.y - 10, boxWidth, 20);
+				ctx.fillRect(s.x - boxWidth/2, s.y - boxHeight/2, boxWidth, boxHeight);
 
 				ctx.textAlign = "left";
 				ctx.textBaseline = "top";
@@ -285,7 +284,7 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 				if(node.data.bold !== undefined && node.data.bold == true){
 					ctx.font = "bold 12px Verdana, sans-serif";
 				}
-				ctx.fillText(text, s.x - boxWidth/2 + 5, s.y - 8);
+				ctx.fillText(text, s.x - boxWidth/2 + 5, s.y - 6);
 				ctx.restore();
 			}
 		);
