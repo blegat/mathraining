@@ -9,7 +9,7 @@
   <!-- pas QCM -->
   <% val = nil %>
   <% if question.decimal %>
-    <p class="mt-3">On attend un nombre <b>décimal</b>, arrondi au millième près.</p>
+    <p class="mt-3">On attend un nombre <b>réel</b>, arrondi si nécessaire au millième près.</p>
     <% val = unsolvedquestion.guess %>
   <% else %>
     <p class="mt-3">On attend un nombre <b>entier</b>.</p>

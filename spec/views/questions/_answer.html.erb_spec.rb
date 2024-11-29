@@ -24,7 +24,7 @@ describe "questions/_answer.html.erb", type: :view, question: true do
     it "renders the answer correctly" do
       render partial: "questions/answer", locals: {question: question}
       should have_text("4321.234")
-      should have_text("On attend un nombre décimal")
+      should have_text("On attend un nombre réel")
     end
   end
   
@@ -35,7 +35,7 @@ describe "questions/_answer.html.erb", type: :view, question: true do
       render partial: "questions/answer", locals: {question: question}
       should have_text("4321")
       should have_no_text("4321.0")
-      should have_text("On attend un nombre décimal")
+      should have_text("On attend un nombre réel")
     end
   end
   

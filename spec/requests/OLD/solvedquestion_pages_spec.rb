@@ -199,7 +199,7 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
-          expect(page).to have_error_message("La réponse attendue est un nombre décimal.")
+          expect(page).to have_error_message("La réponse attendue est un nombre réel.")
           expect(page).to have_no_content(exercise_decimal.explanation)
           expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
           expect(user.rating).to eq(rating_before)

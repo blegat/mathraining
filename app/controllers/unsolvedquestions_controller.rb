@@ -197,7 +197,7 @@ class UnsolvedquestionsController < ApplicationController
       
       (0..guess_str.size()-1).each do |i|
         if !allowed_characters.include?(guess_str[i])
-          flash[:danger] = "La réponse attendue est un nombre #{@question.decimal ? 'décimal' : 'entier'}."
+          flash[:danger] = "La réponse attendue est un nombre #{@question.decimal ? 'réel' : 'entier'}."
           redirect_to chapter_question_path(@chapter, @question)
           return "skip"
         end

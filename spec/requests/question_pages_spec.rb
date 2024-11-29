@@ -173,7 +173,7 @@ describe "Question pages" do
           fill_in "MathInput", with: newstatement
           fill_in "Réponse", with: newanswer
           if newdecimal
-            check "Cochez si la réponse est décimale"
+            check "Cochez si la réponse n'est a priori pas entière"
           end
           fill_in "Niveau", with: newlevel
           click_button "Créer"
@@ -196,7 +196,7 @@ describe "Question pages" do
             fill_in "MathInput", with: newstatement2
             fill_in "Réponse", with: newanswer2
             if newdecimal2
-              check "Cochez si la réponse est décimale"
+              check "Cochez si la réponse n'est a priori pas entière "
             end
             fill_in "Niveau", with: newlevel2
             click_button "Créer"
@@ -237,7 +237,7 @@ describe "Question pages" do
         before do
           fill_in "MathInput", with: newstatement
           fill_in "Réponse", with: "4,56" # A comma is also allowed
-          check "Cochez si la réponse est décimale"
+          check "Cochez si la réponse n'est a priori pas entière"
           fill_in "Niveau", with: newlevel
           click_button "Modifier"
           offline_exercise.reload
@@ -255,7 +255,7 @@ describe "Question pages" do
         before do
           fill_in "MathInput", with: newstatement
           fill_in "Réponse", with: "4.2"
-          uncheck "Cochez si la réponse est décimale"
+          uncheck "Cochez si la réponse n'est a priori pas entière"
           fill_in "Niveau", with: newlevel
           click_button "Modifier"
           offline_exercise.reload

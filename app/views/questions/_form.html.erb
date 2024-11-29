@@ -21,7 +21,7 @@
       <% if question.answer - question.answer.to_i <= 0.00001 && question.answer.to_i - question.answer <= 0.00001 %>
         <% vraidecimal = false %>
       <% end %>
-      <span style="font-size:16px;"><%= question.answer if vraidecimal %><%= question.answer.to_i if !vraidecimal %></span> (nombre <b>décimal</b>, arrondi au millième près)
+      <span style="font-size:16px;"><%= question.answer if vraidecimal %><%= question.answer.to_i if !vraidecimal %></span> (nombre <b>réel</b>, arrondi si nécessaire au millième près)
     <% else %>
       <span style="font-size:16px;"><%= question.answer.to_i %></span> (nombre <b>entier</b>)
     <% end %>
@@ -54,7 +54,7 @@
     <div class="form-check mb-2">
     <label class="form-check-label">
       <%= f.check_box :decimal, :class => "form-check-input" %>
-      Cochez si la réponse est décimale
+      Cochez si la réponse n'est a priori pas entière
     </label>
     </div>
   <% else %>
