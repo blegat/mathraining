@@ -6,7 +6,13 @@
 <% very_last_date = Date.today %>
 <% num_days = (very_last_date - very_first_date).to_i %>
 
-<center><span id="interval"></span></center>
+<div class="text-center mb-2">
+  <button class="btn btn-outline-secondary" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .35rem; --bs-btn-font-size: .75rem;" onclick="javascript:changeLow(-7);">-</button>
+  <button class="btn btn-outline-secondary" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;" onclick="javascript:changeLow(7);">+</button>
+  <span id="interval" class="mx-2"></span>
+  <button class="btn btn-outline-secondary" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .35rem; --bs-btn-font-size: .75rem;" onclick="javascript:changeHigh(-7);">-</button>
+  <button class="btn btn-outline-secondary" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;" onclick="javascript:changeHigh(7);">+</button>
+</div>
  
 <div id="slider-range" class="mt-1"></div>
 
@@ -36,32 +42,59 @@ function format_date(days_after_first_date){
   return (day < 10 ? "0" : "") + day + "/" + (month < 10 ? "0" : "") + month + "/" + year;
 }
 
+function updateInterval(){
+  document.getElementById("interval").innerHTML = format_date(start_range) + " - " + format_date(end_range);
+}
+
+updateInterval();
+
 var sliderRangeInitialized = false;
+var slider;
 
 function initSliderRangeIfPossible(){
   if ("$" in window) {
     if (!sliderRangeInitialized) {
       sliderRangeInitialized = true;
-      $( "#slider-range" ).slider({
+      slider = $( "#slider-range" ).slider({
         range: true,
         min: 0,
         max: <%= num_days %>,
         values: [ 0, <%= num_days %>  ],
         slide: function( event, ui ) {
-          $( "#interval" ).html( format_date(ui.values[0]) + " - " + format_date(ui.values[1]) );
           start_range = ui.values[0];
           end_range = ui.values[1];
-          drawGraph(0, false);
-          drawGraph(1, true);
-          drawGraph(2, true);
-          drawGraph(3, false);
+          updateInterval();
+          respondCanvas();
         }
       });
-      
-      $( "#interval" ).html( format_date( $( "#slider-range" ).slider( "values", 0 ) ) +
-        " - " + format_date( $( "#slider-range" ).slider( "values", 1 ) ) );
     }
   }
+}
+
+function changeLow(delta){
+  start_range += delta;
+  if (start_range >= end_range) {
+    start_range = end_range - 1;
+  }
+  if (start_range < 0) {
+    start_range = 0;
+  }
+  slider.slider("values", 0, start_range);
+  updateInterval();
+  respondCanvas();
+}
+
+function changeHigh(delta){
+  end_range += delta;
+  if (end_range <= start_range) {
+    end_range = start_range+1;
+  }
+  if (end_range > <%= num_days %>) {
+    end_range = <%= num_days %>;
+  }
+  slider.slider("values", 1, end_range);
+  updateInterval();
+  respondCanvas();
 }
 
 callMethodWhenPossible(initSliderRangeIfPossible);
@@ -318,7 +351,7 @@ Votre navigateur ne supporte pas les canvas.
         }
       }
       encours = encours  -1;
-    } 
+    }
     if (!batonnets) { 
       if (!premier) {
         ctx.stroke();
