@@ -29,6 +29,11 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 
 	jQuery.fn.springy = function(params) {
 		var graph = this.graph = params.graph || new Graph();
+		
+		var fontSize = params.fontSize || 12;
+		var horizontalPadding = fontSize * 5 / 12.0;
+		var verticalPadding = fontSize * 4 / 12.0;
+		var lineWidth = fontSize / 8.0;
 
 		var stiffness = params.stiffness || 400.0;
 		var repulsion = params.repulsion || 400.0;
@@ -94,7 +99,7 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 			renderer.start();
 		});
 
-		// Basic double click handler
+		// Basic double click handler (not used)
 		jQuery(canvas).dblclick(function(e) {
 			var pos = jQuery(this).offset();
 			var p = fromScreen({x: e.pageX - pos.left, y: e.pageY - pos.top});
@@ -113,9 +118,8 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 			if (dragged !== null && dragged.node !== null) {
 				dragged.point.p.x = p.x;
 				dragged.point.p.y = p.y;
+				renderer.start();
 			}
-
-			renderer.start();
 		});
 
 		jQuery(window).bind('mouseup',function(e) {
@@ -128,13 +132,11 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 			return this._width[text];
 
 			ctx.save();
+			ctx.font = fontSize.toString() + "px Verdana, sans-serif";
 			if(this.data.bold !== undefined && this.data.bold == true){
-				ctx.font = "bold 12px Verdana, sans-serif";
+				ctx.font = "bold " + ctx.font;
 			}
-			else{
-				ctx.font = "12px Verdana, sans-serif";
-			}
-			var width = ctx.measureText(text).width + 10;
+			var width = ctx.measureText(text).width + 2 * horizontalPadding;
 			ctx.restore();
 
 			this._width || (this._width = {});
@@ -144,12 +146,12 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 		};
 
 		Node.prototype.getHeight = function() {
-			return 20;
+			return fontSize + 2 * verticalPadding;
 		};
 
 		var renderer = this.renderer = new Renderer(layout,
 			function clear() {
-				ctx.clearRect(0,0,canvas.width,canvas.height);
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
 			},
 			function drawEdge(edge, p1, p2) {
 				var x1 = toScreen(p1).x;
@@ -167,7 +169,7 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 
 				// Figure out edge's position in relation to other edges between the same nodes
 				var n = 0;
-				for (var i=0; i<from.length; i++) {
+				for (var i = 0; i < from.length; i++) {
 					if (from[i].id === edge.id) {
 						n = i;
 					}
@@ -195,15 +197,9 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 				var arrowWidth;
 				var arrowLength;
 
-				var weight = (edge.data.weight !== undefined) ? edge.data.weight : 1.0;
-
-				ctx.lineWidth = Math.max(weight *  2, 0.1);
-				if(edge.data.width !== undefined && edge.data.width == 5)
-				{
-					ctx.lineWidth *= 2;
-				}
+				ctx.lineWidth = lineWidth;
 				arrowWidth = 1 + ctx.lineWidth;
-				arrowLength = 8;
+				arrowLength = arrowWidth * 3;
 
 				var directional = (edge.data.directional !== undefined) ? edge.data.directional : true;
 
@@ -275,16 +271,16 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 
 				ctx.textAlign = "left";
 				ctx.textBaseline = "top";
-				ctx.font = "12px Verdana, sans-serif";
+				ctx.font = fontSize.toString() + "px Verdana, sans-serif";
 				ctx.fillStyle = "#000000";
 				var text = (node.data.label !== undefined) ? node.data.label : node.id;
 				if(node.data.text !== undefined){
 					ctx.fillStyle = node.data.text;
 				}
 				if(node.data.bold !== undefined && node.data.bold == true){
-					ctx.font = "bold 12px Verdana, sans-serif";
+					ctx.font = "bold " + ctx.font;
 				}
-				ctx.fillText(text, s.x - boxWidth/2 + 5, s.y - 6);
+				ctx.fillText(text, s.x - boxWidth/2 + horizontalPadding, s.y - verticalPadding - 1);
 				ctx.restore();
 			}
 		);

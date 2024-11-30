@@ -32,10 +32,14 @@
     var b = 255-Math.floor(max_colors[i][2] * a / b);
     return deci_to_hexa(r).concat(deci_to_hexa(g)).concat(deci_to_hexa(b));
   }
+  
+  var graph;
+  var nodes;
+  
+  function computeGraph() {
+    graph = new Graph();
+    nodes = new Array();
 
-  function drawGraph() {
-    var graph = new Graph();
-    var nodes = new Array();
     var start_node = graph.newNode({label: "Départ", color: "#0000FF", text: "#FFFFFF", bold: true});
     <% chapters_with_node = Set.new %>
     <% chapter_to_prerequisites = {} %>
@@ -88,8 +92,30 @@
         graph.newEdge(nodes[<%= prerequisite_id %>], nodes[<%= chapter_id %>], {color: "#AAAAAA"});
       <% end %>
     <% end %>
+  }
+    
+  function drawGraph() {
+  
+    // Get the canvas & context
+    var c = document.getElementById("structure");
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    var W = 900.0;
+    var H = 600.0;
+    
+    c.setAttribute('width', container.offsetWidth); //max width
+    c.setAttribute('height', H * container.offsetWidth / W); //max height
 
-    var springy = window.springy = jQuery('#structure').springy({graph: graph});
+    container.style.height = H * container.offsetWidth / W + "px";
+    
+    var fontSize = Math.floor(container.offsetWidth / 70);
+    if (fontSize > 12) {
+      fontSize = 12;
+    }
+    
+    computeGraph();
+    var springy = window.springy = jQuery('#structure').springy({graph: graph, fontSize: fontSize});
   }
   
   var drawGraphDone = false;
@@ -102,14 +128,24 @@
     }
   }
   callMethodWhenPossible(drawGraphIfPossible);
+  
+  // Does not work well to call springy several times:
+  //window.addEventListener("resize", () => {
+  //  if (drawGraphDone) {
+  //    drawGraph();
+  //  }
+  //});
 </script>
-
 
 <div class="grid" style="--bs-columns: 12">
   <div class="g-col-12 text-center myoverflow">
-  <canvas id="structure" style="border:1px solid #c3c3c3;" width="1000" height="700">
-  Votre navigateur ne supporte pas de canvas.
-  </canvas>
+    <center>
+    <div style="width:100%; max-width:900px; height:600px; position:relative; display:block;">
+    <canvas id="structure" width="900" height="600" style="position:absolute; left:0px; top:0px;">
+    Votre navigateur ne supporte pas les canvas.
+    </canvas>
+    </div>
+    </center>
   </div>
 </div>
 
