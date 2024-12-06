@@ -133,6 +133,7 @@ fr:
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
         year: "Année de naissance"
+        country_id: "Pays"
         country: "Pays"
         email: "Adresse e-mail"
       virtualtest:

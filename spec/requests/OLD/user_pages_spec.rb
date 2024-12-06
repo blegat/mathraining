@@ -286,7 +286,7 @@ describe "User pages" do
       end
       
       specify do
-        expect(page).to have_selector("h1", text: "Actualités")
+        expect(page).to have_selector("h1", text: "Votre compte")
         expect(page).to have_selector("div.alert.alert-success")
         expect(page).to have_link("Déconnexion", href: sessions_path)
         expect(zero_user.first_name).to eq(new_first_name)

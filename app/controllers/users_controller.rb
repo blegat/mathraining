@@ -156,29 +156,18 @@ class UsersController < ApplicationController
 
   # Create a user, i.e. register on the website (send the form)
   def create
-    @user = User.new(params.require(:user).permit(:first_name, :last_name, :see_name, :email, :email_confirmation, :sex, :year, :password, :password_confirmation, :accept_analytics))
+    @user = User.new(params.require(:user).permit(:first_name, :last_name, :see_name, :email, :email_confirmation, :sex, :year, :country_id, :password, :password_confirmation, :accept_analytics))
     @user.key = SecureRandom.urlsafe_base64
-    
-    if(!params[:user][:country].nil? && params[:user][:country].to_i > 0)
-      c = Country.find(params[:user][:country])
-      @user.country = c
-    end
-
     @user.email_confirm = false
-    
-    # Remove white spaces at start and end, and add '.' if needed
-    @user.adapt_name
+    @user.adapt_name # Remove white spaces at start and end, and add '.' if needed
     
     if !params.has_key?("consent1") || !params.has_key?("consent2")
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir créer un compte."
       render 'new'
     elsif (Rails.env.test? || Rails.env.development? || verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       UserMailer.registration_confirmation(@user.id).deliver
-      
-      user_reload = User.find(@user.id) # Reload because email and email_confirmation can be different after downcaise otherwise!
-      user_reload.consent_time = DateTime.now
-      user_reload.last_policy_read = true
-      user_reload.save
+
+      @user.update(:consent_time => DateTime.now, :last_policy_read => true)
       
       flash[:info] = "Lien (développement uniquement) : localhost:3000/activate?id=#{@user.id}&key=#{@user.key}" if !Rails.env.production?
       flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas de la page)."
@@ -193,23 +182,18 @@ class UsersController < ApplicationController
     old_last_name = @user.last_name
     old_first_name = @user.first_name
 
-    allowed_params = [:first_name, :last_name, :see_name, :sex, :year, :password, :password_confirmation, :accept_analytics]
+    allowed_params = [:see_name, :sex, :year, :country_id, :password, :password_confirmation, :accept_analytics]
+    allowed_params << [:first_name, :last_name] unless !@user.can_change_name && !in_skin?
     allowed_params << :email if current_user(false).admin? # false because root can change email of someone else
     allowed_params << :corrector_color if (current_user.admin? || current_user.corrector?)
     if @user.update(params.require(:user).permit(allowed_params))
-      c = Country.find(params[:user][:country])
-      @user.update_attribute(:country, c)
-      if !@user.can_change_name && !in_skin?
-        @user.last_name = old_last_name
-        @user.first_name = old_first_name
-      end
       @user.adapt_name
       @user.save
       flash[:success] = "Votre profil a bien été mis à jour."
       if ((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.root)
         @user.update_attribute(:valid_name, false)
       end
-      redirect_to root_path
+      redirect_to edit_user_path(@user)
     else
       render 'edit'
     end

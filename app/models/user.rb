@@ -149,7 +149,6 @@ class User < ActiveRecord::Base
   validates :password_confirmation, presence: true, on: :create
   validates_confirmation_of :email, case_sensitive: false
   validates :year, presence: true
-  validates :country, presence: true
   validates_with ColorValidator
   
   # OTHER METHODS
