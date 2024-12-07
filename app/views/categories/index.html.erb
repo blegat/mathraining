@@ -3,8 +3,6 @@
 <h1><%= title_subjects("Modifier les catégories") %></h1>
 
 <table cellpadding="5">
-  <tr><th></th><th></th><th></th><th></th></tr>
-
   <% Category.order(:id).each do |c| %>
     <%= form_for(c) do |g| %>
       <tr>
