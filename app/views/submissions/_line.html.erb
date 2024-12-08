@@ -65,7 +65,7 @@
 </td>
 
 <!-- Date de soumission -->
-<td class="<%= 'd-none d-lg-table-cell' unless hide_user %>" style="width:250px;">
+<td class="<%= 'd-none d-lg-table-cell' unless hide_user %>" style="width:220px;">
 <% show_test_tag = (s.intest && (current_user.admin? || current_user.corrector)) %>
 <% if show_test_tag %>
   <table class="m-0 p-0"><tr><td class="m-0 pe-1 align-middle">
@@ -81,7 +81,7 @@
 
 <% if !hide_last_activity %>
   <!-- Dernière activité -->
-  <td class="<%= 'd-none d-lg-table-cell' unless hide_user %><%= 'd-none d-sm-table-cell' if hide_user %>" style="width:250px;">
+  <td class="<%= 'd-none d-lg-table-cell' unless hide_user %><%= 'd-none d-sm-table-cell' if hide_user %>" style="width:220px;">
   <%= write_date(s.last_comment_time) %>
   </td>
 <% end %>

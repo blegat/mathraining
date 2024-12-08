@@ -114,7 +114,7 @@
   <% if matching_suspicions.size > 0 %>
     <table class="table table-bordered fixed-scroll" style="width:auto;" id="matching_<%= e.id %>">
     <thead>
-    <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th>
+    <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:220px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:220px;">Dernière activité</th><th style="width:200px;">Qui</th>
     <% (1..(e.extracts.count)).each do |i| %>
       <th class="text-center" style="width:30px;">E<%= i %></th>
     <% end %>
@@ -157,7 +157,7 @@
 <% if suspicions_covered.size < suspicions.size %>
   <table class="table table-bordered fixed-scroll" style="width:auto;" id="nonmatching">
   <thead>
-  <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:250px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:250px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+  <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:220px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:220px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
   </thead>
   <tbody>
     <% suspicions.each do |s| %>
