@@ -95,15 +95,6 @@ class TchatmessagesController < ApplicationController
     end
   end
   
-  ########## CHECK METHODS ##########
-  
-  # Check that current user is involved in the discussion
-  def is_involved
-    if !@discussion.nil? && !current_user.discussions.include?(@discussion)
-      render 'errors/access_refused' and return
-    end
-  end
-  
   ########## HELPER METHODS ##########
   
   def error_in_create(err, new_discussion)
