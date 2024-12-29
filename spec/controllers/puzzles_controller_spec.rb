@@ -15,6 +15,7 @@ describe PuzzlesController, type: :controller, puzzle: true do
     it { expect(response).to have_controller_update_behavior(puzzle, :access_refused) }
     it { expect(response).to have_controller_destroy_behavior(puzzle, :access_refused) }
     it { expect(response).to have_controller_get_static_path_behavior('main', :must_be_connected) }
+    it { expect(response).to have_controller_get_static_path_behavior('graph', :must_be_connected) }
     # it { expect(response).to have_controller_get_js_path_behavior('attempt', puzzle, :must_be_connected, {:attempt => "HELLO"}) } # Doesn't work correctly!
     it { expect(response).to have_controller_put_path_behavior('order', puzzle, :access_refused, {:new_position => 2}) }
   end
@@ -34,6 +35,7 @@ describe PuzzlesController, type: :controller, puzzle: true do
       before { travel_to Puzzle.start_date - 10.minutes }
       
       it { expect(response).to have_controller_get_static_path_behavior('main', :access_refused) }
+      it { expect(response).to have_controller_get_static_path_behavior('graph', :access_refused) }
       # it { expect(response).to have_controller_get_js_path_behavior('attempt', puzzle, :access_refused, {:attempt => "HELLO"}) } # Doesn't work correctly!
     end
     
@@ -41,6 +43,7 @@ describe PuzzlesController, type: :controller, puzzle: true do
       before { travel_to Puzzle.start_date + 10.minutes }
       
       it { expect(response).to have_controller_get_static_path_behavior('main', :ok) }
+      it { expect(response).to have_controller_get_static_path_behavior('graph', :ok) }
       # it { expect(response).to have_controller_get_js_path_behavior('attempt', puzzle, :ok, {:attempt => "HELLO"}) } # Doesn't work correctly!
     end
     
@@ -48,6 +51,7 @@ describe PuzzlesController, type: :controller, puzzle: true do
       before { travel_to Puzzle.end_date + 10.minutes }
       
       it { expect(response).to have_controller_get_static_path_behavior('main', :ok) }
+      it { expect(response).to have_controller_get_static_path_behavior('graph', :ok) }
       # it { expect(response).to have_controller_get_js_path_behavior('attempt', puzzle, :access_refused, {:attempt => "HELLO"}) } # Doesn't work correctly!
     end
   end
@@ -66,6 +70,7 @@ describe PuzzlesController, type: :controller, puzzle: true do
       it { expect(response).to have_controller_create_behavior('puzzle', :ok) }
       it { expect(response).to have_controller_destroy_behavior(puzzle, :ok) }
       it { expect(response).to have_controller_get_static_path_behavior('main', :ok) }
+      it { expect(response).to have_controller_get_static_path_behavior('graph', :ok) }
       # it { expect(response).to have_controller_get_js_path_behavior('attempt', puzzle, :ok, {:attempt => "HELLO"}) } # Doesn't work correctly!
       it { expect(response).to have_controller_put_path_behavior('order', puzzle, :ok, {:new_position => 2}) }
     end
@@ -77,6 +82,7 @@ describe PuzzlesController, type: :controller, puzzle: true do
       it { expect(response).to have_controller_create_behavior('puzzle', :ok) }
       it { expect(response).to have_controller_destroy_behavior(puzzle, :ok) }
       it { expect(response).to have_controller_get_static_path_behavior('main', :ok) }
+      it { expect(response).to have_controller_get_static_path_behavior('graph', :ok) }
       # it { expect(response).to have_controller_get_js_path_behavior('attempt', puzzle, :ok, {:attempt => "HELLO"}) } # Doesn't work correctly!
       it { expect(response).to have_controller_put_path_behavior('order', puzzle, :ok, {:new_position => 2}) }
     end
@@ -88,6 +94,7 @@ describe PuzzlesController, type: :controller, puzzle: true do
       it { expect(response).to have_controller_create_behavior('puzzle', :access_refused) }
       it { expect(response).to have_controller_destroy_behavior(puzzle, :access_refused) }
       it { expect(response).to have_controller_get_static_path_behavior('main', :ok) }
+      it { expect(response).to have_controller_get_static_path_behavior('graph', :ok) }
       # it { expect(response).to have_controller_get_js_path_behavior('attempt', puzzle, :access_refused, {:attempt => "HELLO"}) } # Doesn't work correctly!
       it { expect(response).to have_controller_put_path_behavior('order', puzzle, :access_refused, {:new_position => 2}) }
     end

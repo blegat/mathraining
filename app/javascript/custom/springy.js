@@ -182,68 +182,67 @@ if ('nodes' in json || 'edges' in json) {
 
 // find the edges from node1 to node2
 Graph.prototype.getEdges = function(node1, node2) {
-	if (node1.id in this.adjacency
-		&& node2.id in this.adjacency[node1.id]) {
-			return this.adjacency[node1.id][node2.id];
+	if (node1.id in this.adjacency && node2.id in this.adjacency[node1.id]) {
+		return this.adjacency[node1.id][node2.id];
+	}
+
+	return [];
+};
+
+// remove a node and it's associated edges from the graph
+Graph.prototype.removeNode = function(node) {
+	if (node.id in this.nodeSet) {
+		delete this.nodeSet[node.id];
+	}
+
+	for (var i = this.nodes.length - 1; i >= 0; i--) {
+		if (this.nodes[i].id === node.id) {
+			this.nodes.splice(i, 1);
 		}
+	}
 
-		return [];
-	};
+	this.detachNode(node);
 
-	// remove a node and it's associated edges from the graph
-	Graph.prototype.removeNode = function(node) {
-		if (node.id in this.nodeSet) {
-			delete this.nodeSet[node.id];
+};
+
+// removes edges associated with a given node
+Graph.prototype.detachNode = function(node) {
+	var tmpEdges = this.edges.slice();
+	tmpEdges.forEach(function(e) {
+		if (e.source.id === node.id || e.target.id === node.id) {
+			this.removeEdge(e);
 		}
+	}, this);
 
-		for (var i = this.nodes.length - 1; i >= 0; i--) {
-			if (this.nodes[i].id === node.id) {
-				this.nodes.splice(i, 1);
-			}
+	this.notify();
+};
+
+// remove a node and it's associated edges from the graph
+Graph.prototype.removeEdge = function(edge) {
+	for (var i = this.edges.length - 1; i >= 0; i--) {
+		if (this.edges[i].id === edge.id) {
+			this.edges.splice(i, 1);
 		}
+	}
 
-		this.detachNode(node);
+	for (var x in this.adjacency) {
+		for (var y in this.adjacency[x]) {
+			var edges = this.adjacency[x][y];
 
-	};
-
-	// removes edges associated with a given node
-	Graph.prototype.detachNode = function(node) {
-		var tmpEdges = this.edges.slice();
-		tmpEdges.forEach(function(e) {
-			if (e.source.id === node.id || e.target.id === node.id) {
-				this.removeEdge(e);
-			}
-		}, this);
-
-		this.notify();
-	};
-
-	// remove a node and it's associated edges from the graph
-	Graph.prototype.removeEdge = function(edge) {
-		for (var i = this.edges.length - 1; i >= 0; i--) {
-			if (this.edges[i].id === edge.id) {
-				this.edges.splice(i, 1);
-			}
-		}
-
-		for (var x in this.adjacency) {
-			for (var y in this.adjacency[x]) {
-				var edges = this.adjacency[x][y];
-
-				for (var j=edges.length - 1; j>=0; j--) {
-					if (this.adjacency[x][y][j].id === edge.id) {
-						this.adjacency[x][y].splice(j, 1);
-					}
+			for (var j=edges.length - 1; j>=0; j--) {
+				if (this.adjacency[x][y][j].id === edge.id) {
+					this.adjacency[x][y].splice(j, 1);
 				}
 			}
 		}
+	}
 
-		this.notify();
-	};
+	this.notify();
+};
 
-	/* Merge a list of nodes and edges into the current graph. eg.
-	var o = {
-	nodes: [
+/* Merge a list of nodes and edges into the current graph. eg.
+var o = {
+nodes: [
 	{id: 123, data: {type: 'user', userid: 123, displayname: 'aaa'}},
 	{id: 234, data: {type: 'user', userid: 234, displayname: 'bbb'}}
 ],
@@ -622,7 +621,7 @@ Layout.requestAnimationFrame = __bind(window.requestAnimationFrame ||
 		var t = this;
 		this.layout.start(function render() {
 			t.clear();
-
+			
 			t.layout.eachEdge(function(edge, spring) {
 				t.drawEdge(edge, spring.point1.p, spring.point2.p);
 			});

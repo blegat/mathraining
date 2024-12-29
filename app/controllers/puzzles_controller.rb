@@ -1,12 +1,12 @@
 #encoding: utf-8
 class PuzzlesController < ApplicationController
-  before_action :signed_in_user, only: [:index, :new, :edit, :main]
+  before_action :signed_in_user, only: [:index, :new, :edit, :main, :graph]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :attempt]
   before_action :root_user, only: [:index, :new, :create, :edit, :update, :destroy, :order]
   
   before_action :get_puzzle, only: [:edit, :update, :destroy, :order, :attempt]
   
-  before_action :after_start_date, only: [:main, :attempt]
+  before_action :after_start_date, only: [:main, :graph, :attempt]
   before_action :before_end_date, only: [:new, :create, :destroy, :order, :attempt]
   before_action :user_not_in_skin, only: [:attempt]
   
@@ -18,6 +18,10 @@ class PuzzlesController < ApplicationController
   def main
   end
   
+  # Page with graph puzzle
+  def graph
+  end
+
   # Create a puzzle (show the form)
   def new
     @puzzle = Puzzle.new

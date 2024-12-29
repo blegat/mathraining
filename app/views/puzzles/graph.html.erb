@@ -1,0 +1,165 @@
+<div id="graphDiv">
+  <center>
+  <div class="mb-3" style="width:100%; max-width:1200px; height:800px; position:relative; display:block;">
+  <canvas id="structure" width="1200" height="800" style="position:absolute; left:0px; top:0px;">
+  Votre navigateur ne supporte pas les canvas.
+  </canvas>
+  </div>
+  </center>
+</div>
+
+<p class="mt-3" style="display:none;" id="warningSize">
+  <u>Note</u> : Pour mieux voir le graphe, nous vous conseillons d'utiliser un plus grand écran, ou d'afficher cette page en "version pour ordinateur".
+</p>
+
+<% fondations = Section.where(:fondation => true).pluck(:id).to_a %>
+
+<script type="module">
+  import { Graph } from "custom/springy"
+  import "custom/springyui"
+
+  <% def deci_to_hexa(x) %>
+    <% parts = [x / 16, x % 16] %>
+    <% result = "" %>
+    <% parts.each do |part| %>
+      <% if part <= 9 %>
+        <% result += part.to_s %>
+      <% else %>
+        <% result += ((part-10) + 'A'.ord).chr %>
+      <% end %>
+    <% end %>
+    <% return result %>
+  <% end %>
+  
+  <% def get_color(a, b, i) %>
+    <% max_colors = [[0, 200, 200], [150, 150, 0], [200, 0, 200], [0, 100, 230], [0, 0, 200], [150, 0, 0], [100, 100, 100]] %>
+    <% red   = 255 - ((max_colors[i][0] * a) / b) %>
+    <% green = 255 - ((max_colors[i][1] * a) / b) %>
+    <% blue  = 255 - ((max_colors[i][2] * a) / b) %>
+    <% return deci_to_hexa(red) + deci_to_hexa(green) + deci_to_hexa(blue) %>
+  <% end %>
+  
+  var graph;
+  var nodes;
+  
+  function computeGraph() {
+    graph = new Graph();
+    nodes = new Array();
+  
+    var start_node = graph.newNode({label: "Départ", color: "#0000FF", text: "#FFFFFF", bold: true});
+    <% chapters_with_node = Set.new %>
+    <% chapter_to_prerequisites = {} %>
+    <% Chapter.where.not(:section_id => fondations).where(:online => true).each do |chapter| %>
+      <% chapters_with_node.add(chapter.id) %>
+      <% chapter_to_prerequisites[chapter.id] = [] %>
+    <% end %>
+    
+    <% Prerequisite.all.each do |p| %>
+      <% if chapters_with_node.include?(p.prerequisite_id) && chapters_with_node.include?(p.chapter_id) %>
+        <% chapter_to_prerequisites[p.chapter_id].push(p.prerequisite_id) %>
+      <% end %>
+    <% end %>
+    
+    <% max_difficulty = -1 %>
+    <% chapter_id_to_difficulty = {} %>
+    <% continue_loop = true %>
+    <% while continue_loop %>
+      <% continue_loop = false %>
+      <% chapters_with_node.each do |chapter_id| %>
+        <% next unless chapter_id_to_difficulty[chapter_id].nil? %>
+         <% all_prerequisites_visited = true %> 
+         <% chapter_to_prerequisites[chapter_id].each do |prerequisite_id| %>
+           <% all_prerequisites_visited = false if chapter_id_to_difficulty[prerequisite_id].nil? || chapter_id_to_difficulty[prerequisite_id] == max_difficulty + 1 %>
+         <% end %>
+         <% if all_prerequisites_visited %>
+           <% chapter_id_to_difficulty[chapter_id] = max_difficulty + 1 %>
+           <% continue_loop = true %>
+         <% end %>
+       <% end %>
+       <% max_difficulty += 1 if continue_loop %>
+    <% end %>
+    
+    <% chapters = Chapter.where.not(:section_id => fondations).select(:id, :section_id, :name, :publication_date, :online).where(:online => true).to_a %>
+    <% chapters.shuffle! %>
+    <% chapter_id_to_node_id = {} %>
+
+    <% i = 0 %>
+    <% (0..max_difficulty).each do |difficulty| %>
+      <% chapters.each do |chapter| %>
+        <% if chapter_id_to_difficulty[chapter.id] == difficulty %>
+          <% chapter_id_to_node_id[chapter.id] = i %>
+          <% nom = "Chapitre" %>
+          <% unless chapter.publication_date.nil? %>
+            <% nom += " (" + chapter.publication_date.year.to_s + ")" %>
+          <% end %>
+          <% box = 0 %>
+          <% box = 1 if chapter.id == 23 %>
+          <% box = 2 if chapter.id == 3 %>
+          <% box = 3 if chapter.id == 73 %>
+          <% box = 4 if chapter.id == 20 %>
+          <% box = 5 if chapter.id == 30 %>
+          nodes[<%= i %>] = graph.newNode({label: "<%= nom.html_safe  %>", color: "<%= "#" + get_color(difficulty+1, max_difficulty+1, chapter.section_id-1) %>", box: <%= box %>});
+          <% if difficulty == 0 %>
+            graph.newEdge(start_node, nodes[<%= i %>], {color: "#CCCCCC"});
+          <% end %>
+          <% i += 1 %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% chapter_to_prerequisites.each do |chapter_id, prerequisites| %>
+      <% prerequisites.each do |prerequisite_id| %>
+        graph.newEdge(nodes[<%= chapter_id_to_node_id[prerequisite_id] %>], nodes[<%= chapter_id_to_node_id[chapter_id] %>], {color: "#AAAAAA"});
+      <% end %>
+    <% end %>
+  }
+  
+  var oldOffsetWidth = -1;
+  
+  function resizeCanvas() {
+    var c = document.getElementById("structure");
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    // NB: Without this condition, the canvas is sometimes cleaned without being recomputed!
+    if (container.offsetWidth != oldOffsetWidth) {
+      var W = 1200.0;
+      var H = 800.0;
+      c.setAttribute('width', container.offsetWidth); //max width
+      c.setAttribute('height', H * container.offsetWidth / W); //max height
+      container.style.height = H * container.offsetWidth / W + "px";
+      oldOffsetWidth = container.offsetWidth;
+      
+      var warningSize = document.getElementById('warningSize');
+      if (oldOffsetWidth < 600) {
+        warningSize.style.display = "block";
+      }
+      else {
+        warningSize.style.display = "none";
+      }
+    }
+  }
+  
+  function drawGraph() {
+    resizeCanvas();    
+    computeGraph();
+    var springy = window.springy = jQuery('#structure').springy({graph: graph});
+  }
+
+  var drawGraphDone = false;
+  function drawGraphIfPossible() {
+    if ("$" in window) {
+      if (!drawGraphDone) {
+        drawGraphDone = true;
+        drawGraph();
+      }
+    }
+  }
+  callMethodWhenPossible(drawGraphIfPossible);
+  
+  window.addEventListener("resize", () => {
+    if (drawGraphDone) {
+      resizeCanvas();
+    }
+  });
+</script>

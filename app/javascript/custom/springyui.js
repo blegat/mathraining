@@ -29,11 +29,6 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 
 	jQuery.fn.springy = function(params) {
 		var graph = this.graph = params.graph || new Graph();
-		
-		var fontSize = params.fontSize || 12;
-		var horizontalPadding = fontSize * 5 / 12.0;
-		var verticalPadding = fontSize * 4 / 12.0;
-		var lineWidth = fontSize / 8.0;
 
 		var stiffness = params.stiffness || 400.0;
 		var repulsion = params.repulsion || 400.0;
@@ -42,12 +37,32 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 
 		var canvas = this[0];
 		var ctx = canvas.getContext("2d");
+		
+		var fontSize;
+		var horizontalPadding;
+		var verticalPadding;
+		var lineWidth;
+		var boxFactor;
+		
+		var computeSizes = function() {
+			fontSize = Math.floor(canvas.width / 70);
+			if (fontSize > 14) { fontSize = 14; }
+			horizontalPadding = fontSize * 5 / 12.0;
+			verticalPadding = fontSize * 4 / 12.0;
+			lineWidth = fontSize / 8.0;
+			boxFactor = fontSize / 12.0;
+			if (boxFactor < 0.5) { boxFactor = 0.5; }
+		};
+		computeSizes();
 
 		var layout = this.layout = new Layout.ForceDirected(graph, stiffness, repulsion, damping);
 
 		// calculate bounding box of graph layout.. with ease-in
 		var currentBB = layout.getBoundingBox();
 		var targetBB = {bottomleft: new Vector(-2, -2), topright: new Vector(2, 2)};
+		
+		var curWidth = canvas.width;
+		var curHeight = canvas.height;
 
 		// auto adjusting bounding box
 		Layout.requestAnimationFrame(function adjust() {
@@ -59,6 +74,17 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 				topright: currentBB.topright.add( targetBB.topright.subtract(currentBB.topright)
 				.divide(10))
 			};
+			
+			if (canvas.width != curWidth || canvas.height != curHeight) {
+				// To recompute the node withs from scratch:				
+				graph.nodes.forEach(function(n){
+					n._width = {};
+				});
+				computeSizes();
+				curWidth = canvas.width;
+				curHeight = canvas.height;
+				renderer.start();
+			}
 
 			Layout.requestAnimationFrame(adjust);
 		});
@@ -129,7 +155,7 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 		Node.prototype.getWidth = function() {
 			var text = (this.data.label !== undefined) ? this.data.label : this.id;
 			if (this._width && this._width[text])
-			return this._width[text];
+				return this._width[text];
 
 			ctx.save();
 			ctx.font = fontSize.toString() + "px Verdana, sans-serif";
@@ -268,6 +294,14 @@ import { Graph, Node, Edge, Layout, Vector, Renderer } from "custom/springy"
 
 				ctx.fillStyle = (node.data.color !== undefined) ? node.data.color : "#FFFFFF";
 				ctx.fillRect(s.x - boxWidth/2, s.y - boxHeight/2, boxWidth, boxHeight);
+				
+				if (node.data.box !== undefined && node.data.box != 0) {
+					ctx.beginPath();
+					ctx.rect(s.x - boxWidth/2, s.y - boxHeight/2, boxWidth, boxHeight);
+					ctx.lineWidth = boxFactor * node.data.box;
+					ctx.strokeStyle = "red";
+					ctx.stroke();
+				}
 
 				ctx.textAlign = "left";
 				ctx.textBaseline = "top";

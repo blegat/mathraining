@@ -2,6 +2,18 @@
 
 <h1><%= title_2("Théorie", "Prérequis") %></h1>
 
+<div class="grid" style="--bs-columns: 12">
+  <div class="g-col-12 text-center myoverflow">
+    <center>
+    <div style="width:100%; max-width:1200px; height:800px; position:relative; display:block;">
+    <canvas id="structure" width="1200" height="800" style="position:absolute; left:0px; top:0px;">
+    Votre navigateur ne supporte pas les canvas.
+    </canvas>
+    </div>
+    </center>
+  </div>
+</div>
+
 <% fondations = Section.where(:fondation => true).pluck(:id).to_a %>
 
 <!-- Graphique des prérequis -->
@@ -93,29 +105,29 @@
       <% end %>
     <% end %>
   }
-    
-  function drawGraph() {
   
-    // Get the canvas & context
+  var oldOffsetWidth = -1;
+  
+  function resizeCanvas() {
     var c = document.getElementById("structure");
     var ctx = c.getContext('2d');
     var container = c.parentElement;
     
-    var W = 900.0;
-    var H = 600.0;
-    
-    c.setAttribute('width', container.offsetWidth); //max width
-    c.setAttribute('height', H * container.offsetWidth / W); //max height
-
-    container.style.height = H * container.offsetWidth / W + "px";
-    
-    var fontSize = Math.floor(container.offsetWidth / 70);
-    if (fontSize > 12) {
-      fontSize = 12;
+    // NB: Without this condition, the canvas is sometimes cleaned without being recomputed!
+    if (container.offsetWidth != oldOffsetWidth) {
+      var W = 1200.0;
+      var H = 800.0;
+      c.setAttribute('width', container.offsetWidth); //max width
+      c.setAttribute('height', H * container.offsetWidth / W); //max height
+      container.style.height = H * container.offsetWidth / W + "px";
+      oldOffsetWidth = container.offsetWidth;
     }
+  }
     
+  function drawGraph() {
+    resizeCanvas();
     computeGraph();
-    var springy = window.springy = jQuery('#structure').springy({graph: graph, fontSize: fontSize});
+    var springy = window.springy = jQuery('#structure').springy({graph: graph});
   }
   
   var drawGraphDone = false;
@@ -129,25 +141,12 @@
   }
   callMethodWhenPossible(drawGraphIfPossible);
   
-  // Does not work well to call springy several times:
-  //window.addEventListener("resize", () => {
-  //  if (drawGraphDone) {
-  //    drawGraph();
-  //  }
-  //});
+  window.addEventListener("resize", () => {
+    if (drawGraphDone) {
+      resizeCanvas();
+    }
+  });
 </script>
-
-<div class="grid" style="--bs-columns: 12">
-  <div class="g-col-12 text-center myoverflow">
-    <center>
-    <div style="width:100%; max-width:900px; height:600px; position:relative; display:block;">
-    <canvas id="structure" width="900" height="600" style="position:absolute; left:0px; top:0px;">
-    Votre navigateur ne supporte pas les canvas.
-    </canvas>
-    </div>
-    </center>
-  </div>
-</div>
 
 <% liste = Array.new %>
 

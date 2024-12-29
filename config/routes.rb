@@ -281,6 +281,9 @@ Rails.application.routes.draw do
       put :order
       get :attempt # only via JS
     end
+    collection do
+      get :graph
+    end
   end
   get '/ten_years', to: 'puzzles#main'
   
