@@ -756,8 +756,18 @@
     <div class="container_title">Corrections</div>
     <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold user_color_<%= mt_theme %>"><%= raw(write_readable_big_number(nb_corrections)) %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
     
+    <% show_puzzle = Puzzle.started_or_root(current_user) && (!Rails.env.production? || @user.id == 38) %>
+    
     <% if @user.correction_level > 0 %>
-      <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang <span class="fw-bold user_color_<%= mt_theme %>"><%= @user.correction_level %></span> de l'Ordre de Mathraining.
+      <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang
+      <% if show_puzzle %>
+      <a href="javascript:changeGraph()" class="user_color_<%= mt_theme %>">
+      <% end %>
+      <span class="fw-bold user_color_<%= mt_theme %>"><%= @user.correction_level %></span>
+      <% if show_puzzle %>
+      </a>
+      <% end %>
+      de l'Ordre de Mathraining.
     <% end %>
     
     Merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !
@@ -767,7 +777,11 @@
     <% count_by_month_str = @user.followings.where(:kind => [:first_corrector, :other_corrector]).group_by_month(:created_at).count %>
     <% if count_by_month_str.size >= 2 %>
       <% count_by_month_int = {} %>
-      <% count_by_month_str.each { |k, v| d = k.to_datetime; count_by_month_int[12*d.year + d.mon-1] = v } %>
+      <% num_from_2024 = 0 %>
+      <% count_by_month_str.each { |k, v| d = k.to_datetime; count_by_month_int[12*d.year + d.mon-1] = v; num_from_2024 += v if d.year >= 2024 } %>
+      <% if show_puzzle && Rails.env.development? %>
+        <% count_by_month_int[12*2024+8-1 + 103] = 1 %>
+      <% end %>
       <% first_month = count_by_month_int.first[0] %>
       <% last_month = count_by_month_int.first[0] %>
       <% max_num_corr = 0 %>
@@ -782,7 +796,23 @@
         <% months[i-first_month] = "#{0 if month < 10}#{month}/#{year-2000}" %>
       <% end %>
       
-      <% maxi = (max_num_corr*1.1).ceil %>
+      <% if show_puzzle %>
+        <% text = "COMBIEN CORENTIN A T IL CORRIGE DE SOUMISSIONS DE 2016 A 2023 S IL EN A CORRIGE " + num_from_2024.to_s + " DEPUIS JANVIER 2024" %>
+        <% max_num_corr_fake = 0 %>
+        <% num_corr_by_month_fake = Array.new(num_months, 0) %>
+        <% (0..(text.size-1)).each do |i| %>
+          <% if i > num_months %>
+            <% break %>
+          <% end %>
+          <% c = text[i] %>
+          <% if c.ord >= 'A'.ord && c.ord <= 'Z'.ord %>
+            <% num_corr_by_month_fake[i] = c.ord - 'A'.ord + 1 %>
+          <% elsif c.ord >= '0'.ord && c.ord <= '9'.ord %>
+            <% num_corr_by_month_fake[i] = c.ord - '0'.ord %>
+          <% end %>
+          <% max_num_corr_fake = [max_num_corr_fake, num_corr_by_month_fake[i]].max %>
+        <% end %>
+      <% end %>
       
       <center>
       <!-- Endroit pour dessiner le graphique des corrections -->
@@ -793,12 +823,23 @@
       </div>
       </center>
 
-      <script type="text/javascript">      
+      <script type="text/javascript">   
+        <% if show_puzzle %>
+        var change_graph = false; 
+        <% end %> 
+        
         function respondCanvasCorr(){
           var months = <%= ruby_to_javascript_string(months) %>;
           var num_corr_by_month = <%= ruby_to_javascript(num_corr_by_month) %>;
           var num_months = <%= num_months %>;
-          var maxi = <%= maxi %>;
+          var max_num_corr = <%= max_num_corr %>;
+          <% if show_puzzle %>
+          if (change_graph) {
+            num_corr_by_month = <%= ruby_to_javascript(num_corr_by_month_fake) %>;
+            max_num_corr = <%= max_num_corr_fake %>;
+          }
+          <% end %>
+          var maxi = Math.ceil(max_num_corr * 1.1);
         
           // Check light or dark theme
           var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
@@ -879,8 +920,13 @@
             <% step = 10 %>
           <% end %>
           <% step = step * fac %>
-          var i = <%= max_num_corr %>;
+          var i = max_num_corr;
           var step = <%= step %>;
+          <% if show_puzzle %>
+          if (change_graph) {
+            step = 5;
+          }
+          <% end %>
           var lasth = - H_size;
           ctx.beginPath();
           while (i > 0) {
@@ -912,6 +958,13 @@
         });
         
         respondCanvasCorr();
+        
+        <% if show_puzzle %>
+        function changeGraph() {
+          change_graph = !change_graph;
+          respondCanvasCorr();
+        }
+        <% end %>
       </script>
     <% end %>
     
