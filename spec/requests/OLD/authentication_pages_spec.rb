@@ -105,6 +105,7 @@ describe "Authentication" do
         click_link "Connexion"
         fill_in "header_connect_email", with: user.email
         fill_in "header_connect_password", with: user.password
+        check "header_connect_remember" # To test with "Remember me" too
         click_button "header_connect_button"
       end
       it { should have_selector("h1", text: "Forum") }

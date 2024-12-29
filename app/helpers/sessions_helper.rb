@@ -1,13 +1,11 @@
 #encoding: utf-8
 module SessionsHelper
-  def sign_in(user)
-    if !@remember_me.nil? && @remember_me != 0
+  def sign_in(user, remember_me)
+    if remember_me
       cookies.permanent[:remember_token] = user.remember_token
     else
       cookies[:remember_token] = user.remember_token
     end
-    @current_user = user
-    @current_user = nil # To recompute it
   end
 
   def signed_in?
@@ -15,7 +13,7 @@ module SessionsHelper
   end
 
   def current_user(use_skin = true)
-    if @current_user.nil? && !cookies[:remember_token].nil?
+    if @current_user.nil? && !cookies[:remember_token].nil? # Compute @current_user based on cookie, if not already done
       @current_user = User.find_by_remember_token(cookies[:remember_token])
       if !@current_user.nil?
         mtn = DateTime.now.in_time_zone.to_date
@@ -25,10 +23,10 @@ module SessionsHelper
         end
       end
     end
-    return @current_user if !use_skin
-    return @current_user_sk if !@current_user_sk.nil? # Already computed
+    return @current_user if !use_skin # Do not use skin if not asked to
+    return @current_user_sk if !@current_user_sk.nil? # Skin already computed
     if @current_user.nil? || !@current_user.root? || @current_user.skin == 0
-      @current_user_sk = @current_user
+      @current_user_sk = @current_user # No skin
     else
       @current_user_sk = User.find_by_id(@current_user.skin)
     end
@@ -42,7 +40,7 @@ module SessionsHelper
 
   def sign_out
     @current_user = nil
-    @current_user = nil
+    @current_user_sk = nil
     cookies.delete(:remember_token)
   end
 end

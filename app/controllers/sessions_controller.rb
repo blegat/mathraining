@@ -16,9 +16,8 @@ class SessionsController < ApplicationController
         flash[:danger] = "Ce compte a été temporairement désactivé pour cause de plagiat. Il sera à nouveau accessible le " + write_date(user.end_of_ban) + ". L'équipe des correcteurs bénévoles de Mathraining vous invite à prendre de ce temps libre pour réfléchir à l'intérêt de leur faire corriger des solutions qui ne viennent pas de vous. Notez que la création d'un second compte est formellement interdite et résulterait en une sanction encore plus sévère que celle-ci."
         redirect_back(fallback_location: root_path)
       elsif user.email_confirm
-        @remember_me = params[:session][:remember_me].to_i
-        user.save
-        sign_in user
+        remember_me = (params[:session][:remember_me].to_i == 1)
+        sign_in(user, remember_me)
         redirect_back(fallback_location: root_path)
       else
         flash[:danger] = "Vous devez activer votre compte via l'e-mail qui vous a été envoyé."
