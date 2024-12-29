@@ -297,5 +297,106 @@ describe "Puzzle pages", puzzle: true do
         it { should have_content("Quel est le prénom") }
       end
     end
+    
+    describe "asks for a new password" do # Puzzle 7
+      before do
+        sign_out
+        visit forgot_password_path
+        fill_in "user_email", with: user.email
+        click_button "Envoyer l'e-mail"
+        user.reload
+      end
+      it { should have_success_message("Vous allez recevoir un e-mail") }
+      
+      describe "and comes a bit too late" do
+        before do
+          travel_to user.recup_password_date_limit + 3700.seconds
+          visit recup_password_user_path(user, :key => user.key)
+        end
+        it { should have_selector("h1", text: "Modifier votre mot de passe") }
+        
+        describe "and writes the same password twice" do
+          before do
+            fill_in "user_password", with: "foobar"
+            fill_in "Confirmation du mot de passe", with: "foobar"
+            click_button "Modifier le mot de passe"
+            user.reload
+          end
+          specify do
+            expect(page).to have_success_message("Votre mot de passe vient d'être modifié")
+            expect(user.recup_password_date_limit).to eq(nil)
+          end
+        end
+        
+        describe "and swaps two characters" do
+          before do
+            fill_in "user_password", with: "foobar"
+            fill_in "Confirmation du mot de passe", with: "foobra"
+            click_button "Modifier le mot de passe"
+            user.reload
+          end
+          specify do
+            expect(page).to have_info_message("Je ne vous félicite pas")
+            expect(user.recup_password_date_limit).to eq(nil)
+          end
+        end
+        
+        describe "and replaces a character by another one" do
+          before do
+            fill_in "user_password", with: "foobar"
+            fill_in "Confirmation du mot de passe", with: "foobzr"
+            click_button "Modifier le mot de passe"
+            user.reload
+          end
+          specify do
+            expect(page).to have_info_message("Je ne vous félicite pas")
+            expect(user.recup_password_date_limit).to eq(nil)
+          end
+        end
+        
+        describe "and removes one character" do
+          before do
+            fill_in "user_password", with: "foobar"
+            fill_in "Confirmation du mot de passe", with: "fobar"
+            click_button "Modifier le mot de passe"
+            user.reload
+          end
+          specify do
+            expect(page).to have_info_message("Je ne vous félicite pas")
+            expect(user.recup_password_date_limit).to eq(nil)
+          end
+        end
+        
+        describe "and adds one character" do
+          before do
+            fill_in "user_password", with: "foobar"
+            fill_in "Confirmation du mot de passe", with: "fgoobar"
+            click_button "Modifier le mot de passe"
+            user.reload
+          end
+          specify do
+            expect(page).to have_info_message("Je ne vous félicite pas")
+            expect(user.recup_password_date_limit).to eq(nil)
+          end
+        end
+        
+        describe "and makes too many mistakes" do
+          before do
+            fill_in "user_password", with: "foobar"
+            fill_in "Confirmation du mot de passe", with: "goobra"
+            click_button "Modifier le mot de passe"
+            user.reload
+          end
+          specify do
+            expect(page).to have_error_message("Confirmation du mot de passe ne concorde pas")
+            expect(user.recup_password_date_limit).not_to eq(nil)
+          end
+        end
+        
+        after do
+          travel_back
+        end
+      end
+    end
   end
 end

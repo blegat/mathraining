@@ -166,7 +166,7 @@ class UsersController < ApplicationController
       render 'new'
     elsif (Rails.env.test? || Rails.env.development? || verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       UserMailer.registration_confirmation(@user.id).deliver
-
+      
       @user.update(:consent_time => DateTime.now, :last_policy_read => true)
       
       flash[:info] = "Lien (développement uniquement) : localhost:3000/activate?id=#{@user.id}&key=#{@user.key}" if !Rails.env.production?
@@ -326,10 +326,10 @@ class UsersController < ApplicationController
   def recup_password  
     if @user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?
       flash[:danger] = "Ce lien n'est pas valide (ou a déjà été utilisé)."
-      redirect_to root_path
-    elsif DateTime.now > @user.recup_password_date_limit + 3600
+      redirect_to root_path and return
+    elsif DateTime.now > @user.recup_password_date_limit + (Puzzle.started_or_root(@user) ? 4500.seconds : 3600.seconds)
       flash[:danger] = "Ce lien n'est plus valide (il expirait après une heure). Veuillez en redemander un autre."
-      redirect_to root_path
+      redirect_to root_path and return
     else
       # If the "signed_out" parameter is not there than we add it
       # This is to avoid the problem that occurs when somebody tries to connect from this page
@@ -338,10 +338,10 @@ class UsersController < ApplicationController
         if signed_in?
           sign_out
         end
-        redirect_to recup_password_user_path(@user, :key => @user.key, :signed_out => 1)
+        redirect_to recup_password_user_path(@user, :key => @user.key, :signed_out => 1) and return
       elsif signed_in?
         # If the "signed_out" is present and we are connected, it means that we just connected
-        redirect_to root_path
+        redirect_to root_path and return
       end
     end
   end
@@ -351,16 +351,19 @@ class UsersController < ApplicationController
     if (@user.nil? || @user.key.to_s != params[:key].to_s || @user.recup_password_date_limit.nil?)
       flash[:danger] = "Une erreur est survenue. Il semble que votre lien pour changer de mot de passe ne soit plus valide."
       redirect_to root_path
-    elsif DateTime.now > @user.recup_password_date_limit + 3600
+    elsif DateTime.now > @user.recup_password_date_limit + (Puzzle.started_or_root(@user) ? 4500.seconds : 3600.seconds)
       flash[:danger] = "Vous avez mis trop de temps à modifier votre mot de passe. Veuillez réitérer votre demande de changement de mot de passe."
       redirect_to root_path
     else
-      if (params[:user][:password].nil? or params[:user][:password].length == 0)
+      if DateTime.now > @user.recup_password_date_limit + 3600.seconds && check_typo_error(params[:user][:password], params[:user][:password_confirmation])
+        @user.update(:key => SecureRandom.urlsafe_base64, :recup_password_date_limit => nil)
+        flash[:info] = "Je ne vous félicite pas : vous avez une mauvaise mémoire, vous êtes en retard et vous tapez trop vite ! Quel personnage, ami de Malika, a également l'un ces défauts ?"
+        redirect_to root_path
+      elsif (params[:user][:password].nil? or params[:user][:password].length == 0)
         @user.errors.add(:base, "Mot de passe est vide")
         render 'recup_password'
       elsif @user.update(params.require(:user).permit(:password, :password_confirmation))
-        @user.update_attribute(:key, SecureRandom.urlsafe_base64)
-        @user.update_attribute(:recup_password_date_limit, nil)
+        @user.update(:key => SecureRandom.urlsafe_base64, :recup_password_date_limit => nil)
         flash[:success] = "Votre mot de passe vient d'être modifié. Vous pouvez maintenant vous connecter à votre compte."
         redirect_to root_path
       else
@@ -553,6 +556,41 @@ class UsersController < ApplicationController
   end
   
   ########## HELPER METHODS ##########
+  
+  def check_typo_error(password, password_confirmation)
+    return false if password.nil? || password_confirmation.nil?
+    return false if password.size < 6
+    return false if password == password_confirmation # Important!
+    n = password.size
+    if password_confirmation.size == n
+      # Swap two consecutive characters
+      (0..(n-2)).each do |i|
+        possible_confirmation = password.clone
+        possible_confirmation[i] = password[i+1]
+        possible_confirmation[i+1] = password[i]
+        return true if password_confirmation == possible_confirmation
+      end
+      # Replace a character by another one
+      (0..(n-1)).each do |i|
+        possible_confirmation = password.clone
+        possible_confirmation[i] = password_confirmation[i]
+        return true if password_confirmation == possible_confirmation
+      end
+    elsif password_confirmation.size == n-1
+      # Forget one character
+      (0..(n-1)).each do |i|
+        possible_confirmation = (i > 0 ? password[0..i-1] : "") + (i < n-1 ? password[(i+1)..(n-1)] : "")
+        return true if password_confirmation == possible_confirmation
+      end
+    elsif password_confirmation.size == n+1
+      # Adds one character
+      (0..n).each do |i|
+        possible_confirmation = (i > 0 ? password[0..i-1] : "") + password_confirmation[i] + (i < n ? password[i..(n-1)] : "")
+        return true if password_confirmation == possible_confirmation
+      end
+    end
+    return false
+  end
   
   # Helper method to make everybody with some skin leaves this skin
   def remove_skins(user)

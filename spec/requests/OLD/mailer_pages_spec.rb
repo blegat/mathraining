@@ -37,7 +37,7 @@ feature 'Emailer' do
     before do
       clear_emails
       visit forgot_password_path
-      fill_in "Email", with: user.email
+      fill_in "user_email", with: user.email
       click_button "Envoyer l'e-mail"
       
     end

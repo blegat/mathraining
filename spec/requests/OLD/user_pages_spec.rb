@@ -48,9 +48,9 @@ describe "User pages" do
         select country.name, from: "Pays"
         select "1977", from: "Année de naissance"
         # Il y a deux fois ces champs (pour la connexion et l"inscription)
-        page.all(:fillable_field, "Adresse e-mail").last.set("user@example.com")
+        fill_in "user_email", with: "user@example.com"
         fill_in "Confirmation de l'adresse e-mail", with: "user@example.com"
-        page.all(:fillable_field, "Mot de passe").last.set("foobar")
+        fill_in "user_password", with: "foobar"
         fill_in "Confirmation du mot de passe", with: "foobar"
         check "consent1"
         check "consent2"
@@ -113,7 +113,7 @@ describe "User pages" do
       describe "and enters unconfirmed email" do
         before do
           other_zero_user.update_attribute(:email_confirm, false)
-          fill_in "Email", with: other_zero_user.email
+          fill_in "user_email", with: other_zero_user.email
           click_button "Envoyer l'e-mail"
         end
         it { should have_error_message("Veuillez d'abord confirmer votre adresse e-mail") }
@@ -121,7 +121,7 @@ describe "User pages" do
       
       describe "and enters incorrect email" do
         before do
-          fill_in "Email", with: "nonexistingemail@hello.com"
+          fill_in "user_email", with: "nonexistingemail@hello.com"
           click_button "Envoyer l'e-mail"
         end
         it { should have_error_message("Aucun utilisateur ne possède cette adresse.") }
@@ -129,7 +129,7 @@ describe "User pages" do
       
       describe "and enters his email" do
         before do
-          fill_in "Email", with: zero_user.email
+          fill_in "user_email", with: zero_user.email
           click_button "Envoyer l'e-mail"
         end
         it { should have_success_message("Vous allez recevoir un e-mail") }
@@ -144,7 +144,7 @@ describe "User pages" do
         describe "and visits the reset page too late" do
           before do
             zero_user.reload
-            zero_user.update_attribute(:recup_password_date_limit, DateTime.now - 5000)
+            zero_user.update_attribute(:recup_password_date_limit, DateTime.now - 5000.seconds)
             visit recup_password_user_path(zero_user, :key => zero_user.key)
           end
           it { should have_error_message("Ce lien n'est plus valide (il expirait après une heure)") }
@@ -173,7 +173,7 @@ describe "User pages" do
           
           describe "and sets an incorrect password" do
             before do
-              page.all(:fillable_field, "Mot de passe").last.set(new_password)
+              fill_in "user_password", with: new_password
               fill_in "Confirmation du mot de passe", with: "incorrect"
               click_button "Modifier le mot de passe"
             end
@@ -182,8 +182,8 @@ describe "User pages" do
           
           describe "and takes too much time to set the new password" do
             before do
-              zero_user.update_attribute(:recup_password_date_limit, DateTime.now - 5000)
-              page.all(:fillable_field, "Mot de passe").last.set(new_password)
+              zero_user.update_attribute(:recup_password_date_limit, DateTime.now - 5000.seconds)
+              fill_in "user_password", with: new_password
               fill_in "Confirmation du mot de passe", with: new_password
               click_button "Modifier le mot de passe"
             end
@@ -193,7 +193,7 @@ describe "User pages" do
           describe "and sets a new password while the key has been changed" do
             before do
               zero_user.update_attribute(:key, SecureRandom.urlsafe_base64)
-              page.all(:fillable_field, "Mot de passe").last.set(new_password)
+              fill_in "user_password", with: new_password
               fill_in "Confirmation du mot de passe", with: new_password
               click_button "Modifier le mot de passe"
             end
@@ -202,7 +202,7 @@ describe "User pages" do
           
           describe "and sets a correct password" do
             before do
-              page.all(:fillable_field, "Mot de passe").last.set(new_password)
+              fill_in "user_password", with: new_password
               fill_in "Confirmation du mot de passe", with: new_password
               click_button "Modifier le mot de passe"
             end
