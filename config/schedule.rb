@@ -49,3 +49,11 @@ end
 every :day, :at => '12:03am' do
   runner "Solvedquestion.detect_suspicious_users" # Search for suspicious users and post a message on forum if needed
 end
+
+every 4.minutes do
+  runner "Discussion.answer_puzzle_questions(1)" # Answer to tchatmessages addressed to C.-J. de L. V. P.
+end
+
+every 3.minutes do
+  runner "Discussion.answer_puzzle_questions(2)" # Answer to tchatmessages addressed to J. H.
+end

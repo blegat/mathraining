@@ -398,5 +398,92 @@ describe "Puzzle pages", puzzle: true do
         end
       end
     end
+    
+    describe "sends to Jacques" do # Puzzle 10
+      let!(:user_jh) { FactoryGirl.create(:user, :email => "j@h.fr", :email_confirmation => "j@h.fr") }
+      describe "a message that is not right" do
+        before do
+          visit user_path(user_jh)
+          click_button "Envoyer un message"
+          fill_in "MathInput", with: "Bonjour"
+          click_button "Envoyer"
+          Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 2.minutes)
+          Discussion.answer_puzzle_questions(1) # Done automatically every x minutes
+        end
+        specify do
+          expect(Tchatmessage.order(:id).last.user).to eq(user_jh)
+          expect(Tchatmessage.order(:id).last.content.include?("Je ne comprends pas")).to eq(true)
+          expect(Tchatmessage.order(:id).last.discussion.links.where(:user => user).first.nonread).to eq(1)
+          expect(Tchatmessage.order(:id).last.discussion.links.where(:user => user_jh).first.nonread).to eq(0)
+          expect(Tchatmessage.order(:id).last.discussion.last_message_time).to eq(Tchatmessage.order(:id).last.created_at)
+        end
+        
+        describe "and CDLJVP comes back to check" do
+          let!(:num_tchatmessages) { Tchatmessage.count }
+          before { Discussion.answer_puzzle_questions(1) }
+          specify { expect(Tchatmessage.count).to eq(num_tchatmessages) } # Should not answer a second time if nothing was posted!
+        end
+      end
+    
+      describe "a message that is right" do
+        before do
+          visit user_path(user_jh)
+          click_button "Envoyer un message"
+          fill_in "MathInput", with: "QUEL   EST le code de la dernière énigme?  "
+          click_button "Envoyer"
+          Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 2.minutes)
+          Discussion.answer_puzzle_questions(1) # Done automatically every x minutes
+        end
+        specify do
+          expect(Tchatmessage.order(:id).last.user).to eq(user_jh)
+          expect(Tchatmessage.order(:id).last.content.include?("Le code est simplement")).to eq(true)
+          expect(Tchatmessage.order(:id).last.discussion.links.where(:user => user).first.nonread).to eq(1)
+          expect(Tchatmessage.order(:id).last.discussion.links.where(:user => user_jh).first.nonread).to eq(0)
+          expect(Tchatmessage.order(:id).last.discussion.last_message_time).to eq(Tchatmessage.order(:id).last.created_at)
+        end
+      end
+      
+      describe "two messages, one of them being the right one" do
+        before do
+          visit user_path(user_jh)
+          click_button "Envoyer un message"
+          fill_in "MathInput", with: "Quel est le code de la dernière énigme ?"
+          click_button "Envoyer"
+          Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 3.minutes)
+          fill_in "MathInput", with: "???"
+          click_button "Envoyer"
+          Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 2.minutes)
+          Discussion.answer_puzzle_questions(1) # Done automatically every x minutes
+        end
+        specify do
+          expect(Tchatmessage.order(:id).last.user).to eq(user_jh)
+          expect(Tchatmessage.order(:id).last.content.include?("Le code est simplement")).to eq(true)
+          expect(Tchatmessage.order(:id).last.discussion.links.where(:user => user).first.nonread).to eq(1)
+          expect(Tchatmessage.order(:id).last.discussion.links.where(:user => user_jh).first.nonread).to eq(0)
+          expect(Tchatmessage.order(:id).last.discussion.last_message_time).to eq(Tchatmessage.order(:id).last.created_at)
+        end
+      end
+      
+      describe "two messages, none of them being the right one" do
+        before do
+          visit user_path(user_jh)
+          click_button "Envoyer un message"
+          fill_in "MathInput", with: "Wesh c'est quoi le code ?"
+          click_button "Envoyer"
+          Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 3.minutes)
+          fill_in "MathInput", with: "???"
+          click_button "Envoyer"
+          Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 2.minutes)
+          Discussion.answer_puzzle_questions(1) # Done automatically every x minutes
+        end
+        specify do
+          expect(Tchatmessage.order(:id).last.user).to eq(user_jh)
+          expect(Tchatmessage.order(:id).last.content.include?("Je ne comprends pas")).to eq(true)
+          expect(Tchatmessage.order(:id).last.discussion.links.where(:user => user).first.nonread).to eq(1)
+          expect(Tchatmessage.order(:id).last.discussion.links.where(:user => user_jh).first.nonread).to eq(0)
+          expect(Tchatmessage.order(:id).last.discussion.last_message_time).to eq(Tchatmessage.order(:id).last.created_at)
+        end
+      end
+    end
   end
 end

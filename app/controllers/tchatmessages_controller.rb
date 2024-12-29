@@ -71,7 +71,7 @@ class TchatmessagesController < ApplicationController
     
     if new_discussion
       Link.create(:user => current_user, :discussion => @discussion, :nonread => 0)
-      Link.create(:user => other_user,      :discussion => @discussion, :nonread => 1)
+      Link.create(:user => other_user,   :discussion => @discussion, :nonread => 1)
     else    
       @discussion.links.each do |l|
         if l.user_id != current_user.id
