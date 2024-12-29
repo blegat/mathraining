@@ -217,7 +217,7 @@ describe User do
     before { @user.corrector = true }
     
     describe "when color does not start with #" do
-      before { @user.corrector_color = "22EE33" }
+      before { @user.corrector_color = "022EE33" }
       it { should_not be_valid }
     end
     
