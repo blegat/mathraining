@@ -1,0 +1,54 @@
+<% provide(:title, @subject.title.html_safe) %>
+
+<% @num_pages = (@subject.messages.count / 10.0).ceil %>
+
+<% @nb_indice = 1 %>
+
+<% if !@subject.category.nil? %>
+  <% @category = @subject.category %>
+  <% title_complement = @category.name %>
+<% elsif @subject.section.nil? %>
+  <% title_complement = "" %>
+<% elsif @subject.chapter.nil? %>
+  <% @chapitre = nil %>
+  <% @section = @subject.section %>
+  <% title_complement = (link_to @section.name, @section, target: '_blank') %>
+<% else %>
+  <% @chapitre = @subject.chapter %>
+  <% title_complement = (link_to @chapitre.name, @chapitre, target: '_blank') %>
+<% end %>
+
+<!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
+<h1 class="mb-0">
+<table style="width:100%;">
+<tr><td>
+<%= title_subjects("#{@subject.title}#{('<span style="font-size:20px;"> - ' + title_complement + '</span>') if !title_complement.empty?}") %>
+</td>
+
+<td class="d-none d-md-table-cell ps-3 text-end">
+<% if !current_user.followed_subjects.exists?(@subject.id) %>
+  <%= link_to "Suivre ce sujet", follow_subject_path(@subject), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: in_skin? %>
+<% else %>
+  <%= link_to "Ne plus suivre ce sujet", unfollow_subject_path(@subject), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: in_skin? %>
+<% end %>
+</td>
+
+</tr>
+</table>
+
+<div class="d-block d-md-none pt-2 text-center">
+<% if !current_user.followed_subjects.exists?(@subject.id) %>
+  <%= link_to "Suivre ce sujet", follow_subject_path(@subject), :method => :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: in_skin? %>
+<% else %>
+  <%= link_to "Ne plus suivre ce sujet", unfollow_subject_path(@subject), class: 'btn btn-ld-light-dark', disabled: in_skin? %>
+<% end %>
+</div>
+
+</h1>
+
+<%= render "code_page" %>
+
+<% m = Message.new(:user_id => 0, :subject_id => @subject, :content => @content, :created_at => DateTime.now) %>
+<%= render 'messages/show', m: m %>
+
+<%= render "code_page" %>

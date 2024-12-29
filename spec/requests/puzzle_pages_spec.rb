@@ -269,5 +269,33 @@ describe "Puzzle pages", puzzle: true do
         end
       end
     end
+    
+    describe "visits subject" do # Puzzle 4
+      let!(:sub) { FactoryGirl.create(:subject) }
+      describe "at page 9.75" do
+        before { visit subject_path(sub, :page => "9.75") }
+        it { should have_content("Rendez-vous sur la plus longue") }
+      end
+      
+      describe "at page 3,1" do
+        before { visit subject_path(sub, :page => "3,1") }
+        it { should have_no_content("Il va falloir être plus précis") }
+      end
+      
+      describe "at page 3,14159" do
+        before { visit subject_path(sub, :page => "3,14159") }
+        it { should have_content("Il va falloir être plus précis") }
+      end
+      
+      describe "at page 3.1415926535897932384626433832795" do
+        before { visit subject_path(sub, :page => "3.141592653589793") }
+        it { should have_content("Quel est le prénom") }
+      end
+      
+      describe "at page 3.14159265358979323846264338327950288" do
+        before { visit subject_path(sub, :page => "3.14159265358979323846264338327950288") }
+        it { should have_content("Quel est le prénom") }
+      end
+    end
   end
 end

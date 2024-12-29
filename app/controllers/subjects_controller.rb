@@ -90,10 +90,25 @@ class SubjectsController < ApplicationController
   # Show one subject
   def show
     @page = params[:page] if params.has_key?(:page)
-    if @page == "last"
-      redirect_to subject_path(@subject, :page => @subject.last_page, :anchor => "bottom", :q => @q)
-    elsif !@page.nil?
-      @page = @page.to_i
+    if !@page.nil?
+      @page.sub!(",", ".")
+      if @page == "last"
+        redirect_to subject_path(@subject, :page => @subject.last_page, :anchor => "bottom", :q => @q)
+      elsif Puzzle.started_or_root(current_user) && (!Rails.env.production? || @subject.id == 66) && @page == "9.75"
+        @case = 1
+        @content = "Rendez-vous sur la plus longue des courses, environ huit fois plus près de la page $3$ que de la page $2$."
+        render 'code'
+      elsif Puzzle.started_or_root(current_user) && (!Rails.env.production? || @subject.id == 159) && @page.size >= 17 && @page[0..16] == "3.141592653589793"
+        @case = 3
+        @content = "Quel est le [u]prénom[/u] de l'ultra-marathonien belge ayant rejoint le Canada depuis le Mexique en courant en moyenne plus de $2$ marathons par jour pendant $46$ jours ?"
+        render 'code'
+      elsif Puzzle.started_or_root(current_user) && (!Rails.env.production? || @subject.id == 159) && @page.size >= 4 && @page[0..3] == "3.14"
+        @case = 2
+        @content = "Il va falloir être plus précis..."
+        render 'code'
+      else
+        @page = @page.to_i
+      end
     end
     # @messages is computed in the view to be able to render subjects/show in case of error
   end
