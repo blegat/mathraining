@@ -1,0 +1,59 @@
+<% provide(:title, 'Mathrénigmes') %>
+
+<center>
+<%= image_tag "mathrenigmes.png", :class => "light-theme-only", :style => "width:100%; max-width:400px;" %>
+<%= image_tag "mathrenigmes-dark.png", :class => "dark-theme-only", :style => "width:100%; max-width:400px;" %>
+</center>
+
+<p>Pour célébrer les dix ans de Mathraining, nous vous proposons une petite chasse aux énigmes ! Le concept est simple : il y a 10 codes à trouver, cachés sur le site (ou aux alentours de celui-ci). Certains codes sont plus difficiles à trouver que d'autres : ne perdez pas espoir !</p>
+
+<% if !Puzzle.ended? %>
+  <!-- Chronomètre -->
+  <p class="mt-3 text-center" style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></p>
+  <%= render 'contests/clock', date_limit: Puzzle.end_date.to_i, message_zero: "Temps écoulé", p_id: 0 %>
+<% end %>
+
+
+<div class="clue-bis mb-3">
+  <div class="text-center"><button onclick="return Clue.toggle(0)" class="btn btn-ld-light-dark">Instructions et règlement</button></div>
+  <div id="indice0" class="clue-hide" style="height:0px;">
+    <div class="clue-content">
+      <ul class="mb-1">
+        <li>Les codes comportent tous exactement 5 caractères, chacun étant un chiffre ou une lettre majuscule non-accentuée.</li>
+        <li>Vous n'aurez a priori pas de doute, lorsque vous trouverez un code, qu'il s'agit bien du bon. Si vous n'êtes pas sûr de vous, c'est probablement que vous avez raté quelque chose.</li>
+        <li>Vous êtes libre de modifier vos réponses jusqu'à la fin du temps imparti, moment auquel les codes attendus seront enfin dévoilés.</li>
+        <li>Les participants seront classés selon la somme de leurs points, chaque énigme valant $$\left\lceil\frac{100}{\sqrt[3]{n}}\right\rceil \text{ points,}$$ où $n$ est le nombre de personnes qui l'auront résolue.</li>
+        <li>Merci de participer individuellement et de ne pas donner de réponse ou même d'indice à d'autres personnes, pour ne pas leur gâcher le plaisir de la recherche.</li>
+        <li>Si vous pensez qu'il y a une erreur ou un bug concernant une énigme, alors <u>ne</u> le signalez <u>pas</u> sur le Forum mais plutôt par message privé à <%= link_to "Nicolas Radu", new_discussion_path(:qui => 5) %>.</li>
+        <li>La chasse a lieu du <b><%= write_date(Puzzle.start_date) %></b> au <b><%= write_date(Puzzle.end_date) %></b>, mais il sera toujours possible de chercher les codes une fois l'événement terminé.</li>
+      </ul>
+    </div>
+  </div>
+</div> 
+
+
+<% tab = 0 %>
+
+<% if Puzzle.ended? || current_user.root? %>
+  <% if params.has_key?:tab %>
+    <% tab = params[:tab].to_i %>
+  <% end %>
+  <% if (tab != 0 && tab != 1) %>
+    <% tab = 0 %>
+  <% end %>
+  <!-- Tabs -->
+  <ul class="nav nav-tabs nav-justified flex-column flex-sm-row mt-3 mb-3">
+    <li class="nav-item"><%= link_to "Énigmes", ten_years_path(@contest), :class => "nav-link #{ "active" if tab == 0 }" %></li>
+    <li class="nav-item"><%= link_to "Classement", ten_years_path(@contest, :tab => 1), :class => "nav-link #{ "active" if tab == 1 }" %></li>
+  </ul>
+<% end %>
+
+<% if tab == 0 %>
+  <%= render 'puzzles' %>
+<% elsif tab == 1 %>
+  <%= render 'ranking' %> 
+<% end %>
+
+<% if current_user.root? %>
+  <center><%= link_to "Modifier les énigmes", puzzles_path %></center>
+<% end %>

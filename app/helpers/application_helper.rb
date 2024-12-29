@@ -246,6 +246,11 @@ module ApplicationHelper
     return title_2((link_to "Politiques de confidentialité", privacypolicies_path), title)
   end
   
+  # Titles concerning puzzles
+  def title_puzzles(title)
+    return title_2((link_to "Énigmes", puzzles_path), title)
+  end
+  
   # Titles concerning subjects
   def title_subjects(title)
     return title_2((link_to "Forum", subjects_path(:q => @q)), title)

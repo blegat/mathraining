@@ -275,6 +275,15 @@ Rails.application.routes.draw do
     end
   end
   
+  # Puzzles (10 years)
+  resources :puzzles, only: [:index, :new, :create, :edit, :update, :destroy] do
+    member do
+      put :order
+      get :attempt # only via JS
+    end
+  end
+  get '/ten_years', to: 'puzzles#main'
+  
   # Sessions (singular resource, to call destroy without an id!)
   resource :sessions, only: [:create, :destroy]
   

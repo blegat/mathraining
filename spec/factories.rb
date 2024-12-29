@@ -191,6 +191,14 @@ FactoryGirl.define do
     online false
   end
   
+  # Puzzle
+  factory :puzzle do
+    sequence(:statement) {|n| "Ce puzzle #{n} est difficile"}
+    code "AB123"
+    sequence(:position) {|n| n}
+    sequence(:explanation) {|n| "Il fallait faire #{n} opérations."}
+  end
+  
   # Question
   factory :question do
     association :chapter

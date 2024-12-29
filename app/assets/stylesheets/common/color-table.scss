@@ -346,6 +346,12 @@
     color: var(--bs-table-color);
     border-color: var(--bs-table-border-color);
   }
+  
+  .bg-as-table-ld-info {
+    color: #000;
+    background-color: #cff4fc;
+    border: 1px solid #badce3;
+  }
 }
 
 [data-bs-theme="dark"] {
@@ -355,5 +361,11 @@
     --bs-table-border-color: #195c6a;
     color: var(--bs-table-color);
     border-color: var(--bs-table-border-color);
+  }
+  
+  .bg-as-table-ld-info {
+    color: #fff;
+    background-color: #054856;
+    border: 1px solid #195c6a;
   }
 }

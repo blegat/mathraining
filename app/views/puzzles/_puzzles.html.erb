@@ -1,0 +1,129 @@
+<script>
+var curGuesses = [];
+<% puzzles = Puzzle.all.order(:position).to_a %>
+<% num_puzzles = puzzles.size %>
+<% puzzle_to_attempt = {} %>
+<% puzzles.each do |p| %>
+  curGuesses[<%= p.id %>] = "";
+<% end %>
+<% current_user.puzzleattempts.each do |a| %>
+  <% puzzle_to_attempt[a.puzzle_id] = a %>
+  curGuesses[<%= a.puzzle_id %>] = "<%= a.code %>";
+<% end %>
+
+function setClass(element, status) {
+  if (status == "none") {
+    element.classList.add("puzzle-none")
+  }
+  else {
+    element.classList.remove("puzzle-none")
+  }
+  if (status == "submitted") {
+    element.classList.add("puzzle-submitted")
+  }
+  else {
+    element.classList.remove("puzzle-submitted")
+  }
+  if (status == "to-submit") {
+    element.classList.add("puzzle-to-submit")
+  }
+  else {
+    element.classList.remove("puzzle-to-submit")
+  }
+  if (status == "error") {
+    element.classList.add("puzzle-error")
+  }
+  else {
+    element.classList.remove("puzzle-error")
+  }
+}
+
+function checkStatus(puzzle_id) {
+  var code_input = document.getElementById("code-" + puzzle_id);
+  var status_div = document.getElementById("status-" + puzzle_id);
+  var submit_btn = document.getElementById("submit-" + puzzle_id);
+  var new_guess = code_input.value;
+  var prev_guess = curGuesses[parseInt(puzzle_id)];
+  if (new_guess != prev_guess) {
+    setClass(status_div, "to-submit");
+    status_div.innerHTML = "Non enregistré";
+    <% unless in_skin? %>
+      submit_btn.disabled = "";
+    <% end %>
+  }
+  else if (new_guess.length == 0) {
+    setClass(status_div, "none");
+    status_div.innerHTML = "";
+    <% unless Rails.env.test? %>
+      submit_btn.disabled = "disabled";
+    <% end %>
+  }
+  else {
+    setClass(status_div, "submitted");
+    status_div.innerHTML = "Enregistré";
+    <% unless Rails.env.test? %>
+      submit_btn.disabled = "disabled";
+    <% end %>
+  }
+}
+
+function submitPuzzleAttempt(puzzle_id) {
+  var code_input = document.getElementById("code-" + puzzle_id);
+  var submit_btn = document.getElementById("submit-" + puzzle_id);
+  submit_btn.disabled = "disabled";
+  var code = code_input.value;
+  $.getScript("/puzzles/" + puzzle_id + "/attempt?code=" + code);
+  return false;
+}
+</script>
+
+<% if Puzzle.ended? %>
+  <% puzzle_resolutions = Puzzleattempt.joins(:puzzle).where("puzzleattempts.code = puzzles.code").group(:puzzle_id).count %>
+<% end %>
+
+<div class="grid mb-3" style="--bs-columns:12; --bs-gap:10px;">
+
+<% i = 1 %>
+<% puzzles.each do |p| %>
+  <div class="g-col-12 g-col-lg-6 basic_container p-3">
+  <%= render 'puzzle', puzzle: p, number: i %>
+  
+  <% if !Puzzle.ended? %>
+    <% puzzleattempt = puzzle_to_attempt[p.id] %> 
+    <% code = puzzleattempt.nil? ? "" : puzzleattempt.code %> 
+    
+    <center>
+    <form class="input-group" style="width:260px;" onsubmit="return submitPuzzleAttempt('<%= p.id %>')">
+      <input class="form-control text-center" type="text" value="<%= code %>" id="code-<%= p.id %>" maxlength="5" oninput="checkStatus('<%= p.id %>')" placeholder="_ _ _ _ _">
+      <button class="btn btn-primary" id="submit-<%= p.id %>" <%= "disabled='disabled'" if in_skin? %>>✓</button>
+      <div class="input-group-text text-center" style="width:140px; display:grid;" id="status-<%= p.id %>"></div>
+    </form>
+    </center>
+    
+    <script>checkStatus('<%= p.id %>')</script>
+  <% else %>
+    <div class="clue-bis">
+      <div class="text-center"><button onclick="return Clue.toggle(<%= i %>)" class="btn btn-ld-light-dark">Solution</button></div>
+      <div id="indice<%= i %>" class="clue-hide" style="height:0px;">
+        <div class="clue-content" style="text-align:justify;">
+          <div class="mb-3"><%= raw(p.explanation) unless p.explanation.nil? %></div>
+          <% n = puzzle_resolutions[p.id] %>
+          <div>
+          <% if n.nil? || n == 0 %>
+            Personne n'a trouvé ce code : il aurait pu vous rapporter <%= Puzzle.value_for(1) %> points !
+          <% elsif n == 1 %>
+            Ce code n'a été trouvé que par <b>une seule personne</b> et lui a donc rapporté <b><%= Puzzle.value_for(n) %> points</b>.
+          <% else %>
+            Ce code a été trouvé par <b><%= n %> personnes</b> et leur a donc rapporté <b><%= Puzzle.value_for(n) %> points</b>.
+          <% end %>
+          </div>
+        </div>
+      </div>
+    </div> 
+  <% end %>
+  
+  <% i += 1 %>
+  </div>
+<% end %>
+
+</div>

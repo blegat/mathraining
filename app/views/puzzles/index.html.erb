@@ -1,0 +1,63 @@
+<% provide(:title, 'Énigmes') %>
+
+<h1><%= title_1("Énigmes") %></h1>
+
+<div class="grid mb-3" style="--bs-columns:12; --bs-gap:10px;">
+
+<% puzzles = Puzzle.all.order(:position).to_a %>
+
+<% attempts = {} %>
+<% puzzles.each do |p| %>
+  <% attempts[p.id] = {} %>
+<% end %>
+
+<% Puzzleattempt.all.group(:puzzle_id, :code).count.each do |key, value| %>
+  <% attempts[key[0]][key[1]] = value %>
+<% end %>
+
+<% num_puzzles = puzzles.size %>
+<% i = 1 %>
+<% puzzles.each do |p| %>
+  <div class="g-col-12 g-col-lg-6 basic_container p-3">
+  
+  <%= render 'puzzle', puzzle: p, number: i %>
+  
+  <div class="mb-3 text-center" style="font-size:20px;">
+    Code : <b><%= p.code %></b>
+  </div>
+  
+  <div class="mb-3">
+  <u>Tentatives</u> :
+  <% first = true %>
+  <% attempts[p.id].sort_by{|key, value| -value}.each do |a| %>
+    <%= " - " unless first %>
+    <% first = false %>
+    <%= a[0] %> (<%= a[1] %>)
+  <% end %>
+  </div>
+  
+  <div class="mb-3" style="text-align:justify;"><u>Explication</u> : <%= raw(htmlise(p.explanation)) unless p.explanation.nil? %></div>
+  
+  <div class="text-center">
+  <%= link_to "Modifier cette énigme", edit_puzzle_path(p) %>
+  <% unless Puzzle.ended? %>
+    | <%= link_to "Supprimer cette énigme", p, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette étape ?" } %>
+  
+    <% if num_puzzles > 1 %>
+      | Déplacer vers le
+      <%= link_to "haut", order_puzzle_path(p, :new_position => puzzles[i-2].position), :method => :put if i > 1 %>
+      <%= "-" if i > 1 && i < num_puzzles %>
+      <%= link_to "bas", order_puzzle_path(p, :new_position => puzzles[i].position), :method => :put if i < num_puzzles %>
+    <% end %>
+  <% end %>
+  </div>
+  
+  <% i += 1 %>
+  </div>
+<% end %>
+
+</div>
+
+<% unless Puzzle.ended? %>
+  <center><%= button_to "Créer une énigme", new_puzzle_path, :class => "btn btn-lg btn-ld-light-dark", :method => "get" %></center>
+<% end %>

@@ -101,6 +101,7 @@ class User < ActiveRecord::Base
   has_many :followed_submissions, through: :followings, source: :submission
   has_many :messages, dependent: :destroy
   has_many :takentests, dependent: :destroy
+  has_many :puzzleattempts, dependent: :destroy
   
   has_many :links
   has_many :discussions, through: :links # dependent: :destroy does NOT destroy the associated discussions, but only the link!

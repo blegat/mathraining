@@ -1,3 +1,25 @@
+<% if signed_in? %>
+  <% date_now = DateTime.now.in_time_zone %>
+  <% if !Puzzle.started? && Puzzle.start_date <= date_now + 7.days %>
+    <div class="text-center bg-as-table-ld-info mb-2 py-1 px-2" style="font-size:18px;">
+    <% if Puzzle.start_date <= date_now + 1.day %>
+      L'événement surprise commencera dans : <b><span id="clockbox0">--------</span></b>
+      <%= render 'contests/clock', date_limit: Puzzle.start_date.to_i, message_zero: "C'est parti !", p_id: 0 %>
+    <% else %>
+      L'événement surprise commencera le <b><%= write_date(Puzzle.start_date) %></b> !   
+    <% end %> 
+    </div>
+  <% elsif Puzzle.started? && !Puzzle.ended? %>
+    <div class="text-center bg-as-table-ld-info mb-2 py-1 px-2" style="font-size:18px;">
+    Participez aux <b><%= link_to "Mathrénigmes", ten_years_path %></b> jusqu'au <b><%= write_date_only(Puzzle.end_date) %></b> !
+    </div>
+  <% elsif Puzzle.ended? && Puzzle.end_date >= date_now - 7.days %>
+    <div class="text-center bg-as-table-ld-info mb-2 py-1 px-2" style="font-size:18px;">
+    Découvrez les solutions et le classement des <b><%= link_to "Mathrénigmes", ten_years_path %></b> !
+    </div>
+  <% end %>
+<% end %>
+
 <% recent_corrections = Following.includes(:user).where(:kind => :first_corrector).where("created_at > ?", Date.today.in_time_zone).group(:user_id).select("count(followings.id) AS num_corrections, user_id").order("num_corrections DESC").to_a %>
 
 <!-- Barre de progrès pour les correcteurs -->

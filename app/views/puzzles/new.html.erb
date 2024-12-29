@@ -1,0 +1,8 @@
+<% provide(:title, 'Créer une énigme') %>
+
+<h1><%= title_puzzles("Créer une énigme") %></h1>
+
+<%= form_for(@puzzle) do |f| %>
+  <%= render 'form', f: f %>
+  <%= f.submit "Créer", class: "btn btn-primary btn-lg" %>
+<% end %>

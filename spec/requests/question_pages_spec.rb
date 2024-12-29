@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Question pages" do
+describe "Question pages", question: true do
 
   subject { page }
 

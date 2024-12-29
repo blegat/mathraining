@@ -90,6 +90,12 @@ fr:
         level: "Niveau"
         explanation: "Éléments de solution"
         markscheme: "Marking scheme"
+      puzzle:
+        statement: "Énoncé"
+        code: "Code"
+        explanation: "Explication"
+      puzzleattempt:
+        code: "Code"
       question:
         statement: "Énoncé"
         level: "Niveau"

@@ -1,0 +1,30 @@
+.puzzle-none {
+}
+
+[data-bs-theme="light"] {
+  .puzzle-submitted {
+    background-color: #cff4fc; // as table info
+  }
+
+  .puzzle-to-submit {
+    background-color: #fff3cd; // as table warning
+  }
+  
+  .puzzle-error {
+    background-color: #f8d7da; // as table danger
+  }
+}
+
+[data-bs-theme="dark"] {
+  .puzzle-submitted {
+    background-color: #054856;
+  }
+
+  .puzzle-to-submit {
+    background-color: #453400;
+  }
+  
+  .puzzle-error {
+    background-color: #6a121a;
+  }
+}

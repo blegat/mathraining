@@ -249,3 +249,11 @@ RSpec::Matchers.define :have_controller_get_static_path_behavior do |path, behav
     expect(response).to have_behavior(behavior)
   end
 end
+
+# The following does not really work because have_behavior is not implemented correctly for js
+RSpec::Matchers.define :have_controller_get_js_path_behavior do |path, obj, behavior, other_params = {}|
+  match do |response|
+    get path, format: 'js', xhr: true, params: {:id => obj.id}.merge(other_params)
+    expect(response).to have_behavior(behavior)
+  end
+end

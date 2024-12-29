@@ -1,0 +1,22 @@
+<%= render 'shared/error_messages', object: f.object %>
+
+<!-- Énoncé -->
+<div class="mb-2">
+  <%= f.label :statement, :for => "MathInput", :class => "form-label" %>
+  <%= render 'shared/preview' %>
+  <%= render 'shared/font' %>
+  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()" %>
+  <script>initAndUpdatePreviewWhenPossible()</script>
+</div>
+
+<!-- Code -->
+<div class="mb-2">
+  <%= f.label :code, :class => "form-label" %>
+  <%= f.text_field :code, :style => "width:100%; max-width:100px;", :class => "form-control", :maxlength => 5 %>
+</div>
+
+<!-- Explication -->
+<div class="mb-2">
+  <%= f.label :explanation, :class => "form-label" %>
+  <%= f.text_area :explanation, :class => "form-control", :maxlength => "8000", :style => "height:100px;" %>
+</div>

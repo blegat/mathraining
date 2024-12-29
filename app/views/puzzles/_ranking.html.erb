@@ -1,0 +1,95 @@
+<% nb_puzzles = 0 %>
+
+<% puzzles_by_user = {} %>
+<% results_by_puzzle = [] %>
+
+<% puzzle_ids = Puzzle.order(:position).pluck(:id).to_a %>
+
+<% puzzle_ids.each do |puzzle_id| %>
+  <% results_by_puzzle[puzzle_id] = {:nb_users => 0, :points => 0} %>
+  <% nb_puzzles += 1 %>
+<% end %>
+
+<% Puzzleattempt.joins(:puzzle).where("puzzleattempts.code = puzzles.code").select(:puzzle_id, :user_id, :code).each do |p| %>
+  <% if puzzles_by_user.has_key?(p.user_id) %>
+    <% puzzles_by_user[p.user_id].add(p.puzzle_id) %>
+  <% else %>
+    <% puzzles_by_user[p.user_id] = Set[p.puzzle_id] %>
+  <% end %>
+  <% results_by_puzzle[p.puzzle_id][:nb_users] += 1 %>
+<% end %>
+
+<% linked_names_by_user = {} %>
+<% rating_by_user = {} %>
+<% User.where(:id => puzzles_by_user.keys).each do |u| %>
+  <% linked_names_by_user[u.id] = u.linked_name %>
+  <% rating_by_user[u.id] = u.rating %>
+<% end %>
+
+<% puzzle_ids.each do |puzzle_id| %>
+  <% if results_by_puzzle[puzzle_id][:nb_users] > 0 %>
+    <% results_by_puzzle[puzzle_id][:points] = Puzzle.value_for(results_by_puzzle[puzzle_id][:nb_users]) %>
+  <% end %>
+<% end %>
+
+<% points_by_user = [] %>
+<% puzzles_by_user.each do |user_id, solved_puzzle_ids| %>
+  <% points = 0 %>
+  <% solved_puzzle_ids.each do |puzzle_id| %>
+    <% points += results_by_puzzle[puzzle_id][:points] %>
+  <% end %>
+  <% points_by_user.push({:user_id => user_id, :points => points, :rating => rating_by_user[user_id]}) %>
+<% end %>
+
+<% points_by_user = points_by_user.sort_by{|x| [-x[:points], -x[:rating], x[:user_id]]} %>
+
+<center><b><%= points_by_user.size() %></b> participants ont résolu au moins une énigme.</center>
+
+<div class="mt-3 mb-3" style="width:100%; overflow-x:auto;">
+<center>
+<% width_rank = 45 %>
+<% width_name = 230 %>
+<% width_puzzle = 40 %>
+<% width_number = 40 %>
+<% width_total = 55 %>
+<% width_table = width_rank + width_name + nb_puzzles * width_puzzle + width_number + width_total %>
+<table id="results-table" class="table table-bordered my-0" style="min-width:<%= width_table %>px; width:<%= width_table %>px;">
+<tr class="table-ld-header">
+<th style="width:<%= width_rank %>px;"></th>
+<th style="width:<%= width_name %>px;">Nom</th>
+<% (1..nb_puzzles).each do |i| %>
+  <th class="text-center" style="width:<%= width_puzzle %>px;"><%= i %></th>
+<% end %>
+<th class="text-center" style="width:<%= width_number %>px;">Nb</th>
+<th class="text-center" style="width:<%= width_total %>px;">Total</th>
+</tr>
+
+<% prevrank = 0 %>
+<% prevscore = -1 %>
+<% i = 1 %>
+<% points_by_user.each do |x| %>
+  <tr>
+  <% if x[:points] != prevscore %>
+    <td class="text-center"><%= i %>.</td>
+  <% else %>
+    <td></td>
+  <% end %>
+  <td><%= raw(linked_names_by_user[x[:user_id]]) %></td>
+  <% solved_puzzles = puzzles_by_user[x[:user_id]] %>
+  <% puzzle_ids.each do |puzzle_id| %>
+    <% if solved_puzzles.include?(puzzle_id) %>
+      <td class="text-center contest-score-green"><%= results_by_puzzle[puzzle_id][:points] %></td>
+    <% else %>
+      <td></td> 
+    <% end %>  
+  <% end %>
+  <td class="text-center"><%= solved_puzzles.size() %></td>
+  <td class="text-center fw-bold"><%= x[:points] %></td>
+  </tr>
+  <% i += 1 %>
+  <% prevscore = x[:points] %>
+<% end %>
+
+</table>
+</center>
+</div>
