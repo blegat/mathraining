@@ -235,6 +235,22 @@
         callMethodWhenPossible(() => initializeSelect2IfPossible(placeholder));
       }
       
+      <% if Puzzle.started_or_root(current_user) %> 
+        // To initialize Switcher when page is loaded and Switcher is defined
+        var initSwitcherDone = false;
+        
+        function initSwitcherIfPossible() {
+          if ("Switcher" in window) {
+            if (!initSwitcherDone) {
+              initSwitcherDone = true;
+              Switcher.Init();
+            }
+          }
+        }
+        
+        callMethodWhenPossible(initSwitcherIfPossible);
+      <% end %>
+      
       <% if Rails.env.test? %>
         // Disable animations in test environment, to go faster and avoid random errors
         var animationsDisabled = false;

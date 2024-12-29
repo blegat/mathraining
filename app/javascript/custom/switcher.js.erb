@@ -1,0 +1,73 @@
+var Switcher = {
+  shift: 4,
+  lambda: 2, // lambda = 1 is the initial status
+  numSwitches: 0,
+  text: ".edoc tom el ertîarappa eriaf ruop sesirper srueisulp à tseuo-dus ua uaevuon à siup ,tse-dus ua tnanetniam suov-zedner : etis ud tseuo-dus el siof xis étisiv zeva suoV ! elbisnesotohp eispelipé'd zerffuos suov is tnemmedurp el-setiaf siam ,tnasuma tnemevitaler tse ertua'l à emèht nu'd ressaP .gniniarhtaM rus noitirappa nos tiaf a erbmos emèht el ,3202 erbmetpes nE",
+  
+  Init: function () {
+    window.addEventListener("theme-change", () => { this.Switch() } );
+    this.text = this.text.split("").reverse().join("");
+  },
+  
+  Switch1: function() {
+    var id = "9-elzzup";
+    var p = document.getElementById(id.split("").reverse().join(""));
+    if (p == null)
+      return false;
+    if (this.numSwitches == 0 && !p.innerHTML.includes("En septemb_e")) // security
+      return false;
+    var curSpacing = 1;
+    var curInSpacing = 0;
+    var curLimitInSpacing = 4;
+    var actualText = "";
+    var j = 0;
+    for (let i = 0; i < this.text.length; i++) {
+      var c = this.text[i];
+      if (c == ' ' || c == '.' || c == ',' || c == '\'' || c == '!' || c == '-')
+      {
+        actualText += c;
+        continue;
+      }
+      var realSpacing = (curSpacing >= this.lambda ? curSpacing / this.lambda : 1);
+      if (j < this.shift || (j - this.shift) % realSpacing == 0) {
+        actualText += c;
+      }
+      else {
+        actualText += "_";
+      }
+      
+      if (j >= this.shift) {
+        curInSpacing++;
+        if (curInSpacing == curLimitInSpacing) {
+          curLimitInSpacing *= 2;
+          curSpacing *= 2;
+          curInSpacing = 0;
+        }
+      }
+      j++;
+    }
+    p.innerHTML = actualText;
+    this.lambda *= 2;
+    return true;
+  },
+  
+  Switch2: function() {
+    var img = document.getElementById("contact");
+    if (img == null)
+      return false;
+    if (this.numSwitches >= 3) {
+      var x = this.numSwitches - 2;
+      <% (1..17).each do |i| %>
+        if (x == <%= i %>) { img.src = "<%= asset_path("contact-#{i}.svg") %>"; }
+      <% end %>
+    }
+    return true;
+  },
+  
+  Switch: function () {
+    if (this.Switch1() || this.Switch2())
+      this.numSwitches++;
+  }
+};
+
+export default Switcher

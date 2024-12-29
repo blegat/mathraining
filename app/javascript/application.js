@@ -15,6 +15,7 @@ import Rolling from "custom/rolling"
 import ShowHideCode from "custom/showcode"
 import Insert from "custom/tainsert"
 import LeavingForm from "custom/leavingform"
+import Switcher from "custom/switcher"
 
 // NB: Import of springy and springyui is done only in graph_prerequisites.html.erb
 
@@ -27,6 +28,7 @@ window.Rolling = Rolling;
 window.ShowHideCode = ShowHideCode;
 window.Insert = Insert;
 window.LeavingForm = LeavingForm;
+window.Switcher = Switcher
 
 window.dispatchEvent(new CustomEvent("importmap-scripts-loaded"));
 

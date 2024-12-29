@@ -11,3 +11,4 @@ pin "jquery_ujs", to: "jquery_ujs.js", preload: true
 pin "select2", to: "https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js", preload: true
 pin "select2_locale_fr", to: "select2_locale_fr.js", preload: true
 pin_all_from "app/javascript/custom", under: "custom", preload: true
+pin "custom/switcher", preload: true

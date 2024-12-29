@@ -1,5 +1,5 @@
 <h4>Énigme <%= number %></h4>
 
-<div class="mb-3" style="text-align:justify;">
+<div class="mb-3" style="text-align:justify; <%= "font-family: monospace, monospace;".html_safe if puzzle.statement.include?("____") %>">
   <%= raw(htmlise(puzzle.statement)) %>
 </div>
