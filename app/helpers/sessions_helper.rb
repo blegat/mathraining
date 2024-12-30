@@ -2,9 +2,9 @@
 module SessionsHelper
   def sign_in(user, remember_me)
     if remember_me
-      cookies.permanent[:remember_token] = user.remember_token
+      cookies.permanent[:remember_token] = { :value => user.remember_token, :httponly => true }
     else
-      cookies[:remember_token] = user.remember_token
+      cookies[:remember_token] = { :value => user.remember_token, :httponly => true }
     end
     @current_user_computed = nil
   end
