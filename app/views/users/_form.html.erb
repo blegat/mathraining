@@ -72,10 +72,10 @@
 <!-- Email -->
 <div class="mb-2">
   <%= f.label :email, :class => "form-label" %>
-  <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => (modif && !current_user(false).admin?)  %>
+  <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => (modif && !current_user_no_skin.admin?)  %>
 </div>
 
-<% if modif && !in_skin? && current_user(false).admin? %>
+<% if modif && !in_skin? && current_user.admin? %>
   <p>(Vous pouvez modifier votre adresse e-mail car vous êtes administrateur.)</p>
 <% end %>
 

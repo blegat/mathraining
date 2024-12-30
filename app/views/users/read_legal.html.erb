@@ -20,12 +20,14 @@ function checkChecked() {
 
 <p>Vous pouvez trouver ci-dessous un résumé des modifications apportées au texte depuis la dernière version que vous avez acceptée.</p>
 
+<% user = current_user_no_skin %>
+
 <table class="table table-bordered">
 <tr class="table-ld-header"><th class="text-center" style="width:90px;">Date</th><th>Modifications</th></tr>
-<% if current_user(false).consent_time.nil? %>
+<% if user.consent_time.nil? %>
   <% thedate = Time.zone.parse('2000-01-01 00:00') %>
 <% else %>
-  <% thedate = current_user(false).consent_time %>
+  <% thedate = user.consent_time %>
 <% end %>
 <% Privacypolicy.where("online = ? AND publication_time > ?", true, thedate).order(:publication_time).each do |p| %>
 <tr class="table-ld-warning">
@@ -46,8 +48,6 @@ function checkChecked() {
 <p class="mt-3">pour demander à ce que votre compte soit supprimé.</p>
 
 <hr/>
-
-<% user = current_user(false) %>
 
 <%= form_for user, url: accept_legal_path do |f| %>
   <!-- Lire et accepter la politique de confidentialité -->

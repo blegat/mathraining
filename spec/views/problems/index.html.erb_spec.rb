@@ -38,7 +38,7 @@ describe "problems/index.html.erb", type: :view, problem: true do
   end
   
   describe "user with rating 199" do
-    before { assign(:current_user, user_with_rating_199) }
+    before { sign_in_view(user_with_rating_199) }
     
     it "renders the message about needed rating" do
       render template: "problems/index"
@@ -48,7 +48,7 @@ describe "problems/index.html.erb", type: :view, problem: true do
   end
   
   describe "user with rating 200" do
-    before { assign(:current_user, user) }
+    before { sign_in_view(user) }
 
     describe "having completed no chapter" do
       it "renders the expected problems" do
@@ -393,7 +393,7 @@ describe "problems/index.html.erb", type: :view, problem: true do
   end
   
   describe "admin" do
-    before { assign(:current_user, admin) }
+    before { sign_in_view(admin) }
 
     it "renders the expected problems" do
       render template: "problems/index"

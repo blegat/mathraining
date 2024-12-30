@@ -16,7 +16,7 @@ describe "corrections/_new.html.erb", type: :view, correction: true do
   
   context "if the user is the submission owner" do
     before do
-      assign(:current_user, user)
+      sign_in_view(user)
       assign(:correction, Correction.new)
     end
       
@@ -28,7 +28,7 @@ describe "corrections/_new.html.erb", type: :view, correction: true do
   
   context "if the user is not the submission owner" do
     before do
-      assign(:current_user, admin)
+      sign_in_view(admin)
       assign(:correction, Correction.new)
     end
     

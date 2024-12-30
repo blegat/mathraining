@@ -75,7 +75,7 @@ class ApplicationController < ActionController::Base
   def check_under_maintenance
     if @under_maintenance
       flash[:info] = @under_maintenance_message.html_safe
-      if !signed_in? || !current_user(false).root?
+      if !signed_in? || !current_user_no_skin.root?
         redirect_to root_path if request.path != "/"
       end
     end
@@ -84,11 +84,11 @@ class ApplicationController < ActionController::Base
   # Check that the user consented to the last policy
   def has_consent
     pp = request.fullpath.to_s
-    if signed_in? && !current_user(false).last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
+    if signed_in? && !current_user_no_skin.last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
       if Privacypolicy.where(:online => true).count > 0
         render 'users/read_legal' and return
       else # If no policy at all, we automatically mark it as read
-        current_user(false).update_attribute(:last_policy_read, true)
+        current_user_no_skin.update(:last_policy_read => true, :consent_time => DateTime.now)
       end
     end
   end

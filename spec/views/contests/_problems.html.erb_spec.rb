@@ -22,7 +22,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
@@ -44,7 +44,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
@@ -59,7 +59,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is a participant" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
@@ -79,7 +79,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
@@ -94,7 +94,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is a participant" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
@@ -114,7 +114,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is a participant" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"
@@ -138,7 +138,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     end
     
     context "and the user is a participant" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
     
       it "renders the contestproblem correctly" do
         render partial: "contests/problems"

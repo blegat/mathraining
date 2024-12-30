@@ -14,7 +14,7 @@ describe "discussions/show.html.erb", type: :view, discussion: true do
   let!(:tchatmessage2) { Tchatmessage.create(user: user2, discussion: discussion, content: "Hello", created_at: DateTime.now - 3.days) }
   
   before do
-    assign(:current_user, user)
+    sign_in_view(user)
     assign(:discussion, discussion)
     assign(:tchatmessage, Tchatmessage.new)
     assign(:compteur, 1) # defined by controller

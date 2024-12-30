@@ -6,41 +6,55 @@ module SessionsHelper
     else
       cookies[:remember_token] = user.remember_token
     end
+    @current_user_computed = nil
   end
-
-  def signed_in?
-    !current_user(false).nil?
+  
+  def sign_out
+    cookies.delete(:remember_token)
+    @current_user_computed = nil
   end
-
-  def current_user(use_skin = true)
-    if @current_user.nil? && !cookies[:remember_token].nil? # Compute @current_user based on cookie, if not already done
+  
+  def compute_current_user
+    return if !@current_user_computed.nil? # Already computed
+    @current_user = nil
+    @current_user_sk = nil
+    @current_user_computed = true
+    
+    if !cookies[:remember_token].nil?
       @current_user = User.find_by_remember_token(cookies[:remember_token])
-      if !@current_user.nil?
-        mtn = DateTime.now.in_time_zone.to_date
-        if mtn != @current_user.last_connexion_date
-          @current_user.last_connexion_date = mtn
-          @current_user.save
-        end
-      end
     end
-    return @current_user if !use_skin # Do not use skin if not asked to
-    return @current_user_sk if !@current_user_sk.nil? # Skin already computed
-    if @current_user.nil? || !@current_user.root? || @current_user.skin == 0
-      @current_user_sk = @current_user # No skin
-    else
+    
+    return if @current_user.nil?
+    
+    today = DateTime.now.in_time_zone.to_date
+    if today != @current_user.last_connexion_date
+      @current_user.update_attribute(:last_connexion_date, today)
+    end
+    
+    if @current_user.root? && @current_user.skin != 0
       @current_user_sk = User.find_by_id(@current_user.skin)
+    else
+      @current_user_sk = @current_user # No skin
     end
+  end
+  
+  def signed_in?
+    compute_current_user
+    return !@current_user.nil?
+  end
+
+  def current_user
+    compute_current_user
     return @current_user_sk
   end
   
-  def in_skin?
-    u = current_user(false)
-    return !u.nil? && u.root? && u.skin != 0
+  def current_user_no_skin
+    compute_current_user
+    return @current_user
   end
-
-  def sign_out
-    @current_user = nil
-    @current_user_sk = nil
-    cookies.delete(:remember_token)
+  
+  def in_skin?
+    compute_current_user
+    return @current_user_sk.id != @current_user.id
   end
 end

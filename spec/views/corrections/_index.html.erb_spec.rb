@@ -12,7 +12,7 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
   before { assign(:submission, submission) }
   
   context "if the user is the submission owner" do
-    before { assign(:current_user, user) }
+    before { sign_in_view(user) }
     
     context "and there is no correction" do
       before { submission.waiting! }
@@ -52,7 +52,7 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
   end
   
   context "if the user is not the submission owner" do
-    before { assign(:current_user, admin) }
+    before { sign_in_view(admin) }
     
     context "and the submission is wrong" do
       let!(:correction) { FactoryGirl.create(:correction, submission: submission, user: admin) }

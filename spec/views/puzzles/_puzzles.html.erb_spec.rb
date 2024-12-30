@@ -10,7 +10,7 @@ describe "puzzles/_puzzles.html.erb", type: :view, puzzle: true do
   let!(:puzzle) { FactoryGirl.create(:puzzle) }
     
   context "if the user is not a root" do
-    before { assign(:current_user, admin) }
+    before { sign_in_view(admin) }
     
     context "and we are before the end date" do
       before { travel_to Puzzle.end_date - 10.minutes }

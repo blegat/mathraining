@@ -13,7 +13,7 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
   let(:chapter3) { FactoryGirl.create(:chapter, section: section_fondation, level: 1, position: 3, author: "Jean Flabour", publication_date: nil, online: true) }
   
   context "if the user is a root" do
-    before { assign(:current_user, root) }
+    before { sign_in_view(root) }
     
     context "and the chapter is very empty" do
       before do
@@ -78,7 +78,7 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
   end
   
   context "if the user is not an admin" do
-    before { assign(:current_user, user) }
+    before { sign_in_view(user) }
     
     context "and the chapter is normal" do
       before { assign(:chapter, chapter3) }

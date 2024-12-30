@@ -21,7 +21,7 @@ describe "contests/_statistics.html.erb", type: :view, contest: true do
   before { assign(:contest, contest) }
     
   context "and the user is connected" do
-    before { assign(:current_user, user1) }
+    before { sign_in_view(user1) }
   
     it "renders the statistics correctly" do
       render partial: "contests/statistics"

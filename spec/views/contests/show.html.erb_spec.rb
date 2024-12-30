@@ -26,7 +26,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an admin" do
-      before { assign(:current_user, admin) }
+      before { sign_in_view(admin) }
         
       it "renders the page correctly" do
         render template: "contests/show"
@@ -46,7 +46,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
         
       it "renders the page correctly" do
         render template: "contests/show"
@@ -74,7 +74,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an admin" do
-      before { assign(:current_user, admin) }
+      before { sign_in_view(admin) }
         
       it "renders the page correctly" do
         render template: "contests/show"
@@ -92,7 +92,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
         
       it "renders the page correctly" do
         render template: "contests/show"
@@ -106,7 +106,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user can participate" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
         
       it "renders the page correctly" do
         render template: "contests/show"
@@ -136,7 +136,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user can participate" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
         
       it "renders the page correctly" do
         render template: "contests/show"
@@ -169,7 +169,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
         
       it "renders the page correctly" do
         render template: "contests/show"

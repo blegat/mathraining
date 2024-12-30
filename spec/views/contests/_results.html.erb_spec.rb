@@ -34,7 +34,7 @@ describe "contests/_results.html.erb", type: :view, contest: true do
     end
     
     context "and the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
     
       it "renders no result" do
         render partial: "contests/results"
@@ -64,7 +64,7 @@ describe "contests/_results.html.erb", type: :view, contest: true do
     end
     
     context "and the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
     
       it "renders the results correctly" do
         render partial: "contests/results"
@@ -96,7 +96,7 @@ describe "contests/_results.html.erb", type: :view, contest: true do
     end
     
     context "and the user is a participant" do
-      before { assign(:current_user, user1) }
+      before { sign_in_view(user1) }
     
       it "renders the results correctly" do
         render partial: "contests/results"

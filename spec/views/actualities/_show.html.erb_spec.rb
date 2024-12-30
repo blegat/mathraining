@@ -12,7 +12,7 @@ describe "actualities/_show.html.erb", type: :view, actuality: true do
   before { assign(:actualities, Actuality.paginate(:page => 1, :per_page => 5)) }
   
   context "if the user is an admin" do
-    before { assign(:current_user, admin) }
+    before { sign_in_view(admin) }
     
     it "renders the actuality and the modify/delete links" do
       render partial: "actualities/index"
@@ -24,7 +24,7 @@ describe "actualities/_show.html.erb", type: :view, actuality: true do
   end
   
   context "if the user is not an admin" do
-    before { assign(:current_user, user) }
+    before { sign_in_view(user) }
     
     it "renders the actuality and not the modify/delete links" do
       render partial: "actualities/index"

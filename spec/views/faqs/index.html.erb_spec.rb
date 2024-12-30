@@ -13,7 +13,7 @@ describe "faqs/index.html.erb", type: :view, faq: true do
   before { assign(:faqs, Faq.all) }
   
   context "if the user is an admin" do
-    before { assign(:current_user, admin) }
+    before { sign_in_view(admin) }
     
     it "renders the faq and the modify buttons" do
       render template: "faqs/index"
@@ -30,7 +30,7 @@ describe "faqs/index.html.erb", type: :view, faq: true do
   end
   
   context "if the user is not an admin" do
-    before { assign(:current_user, user) }
+    before { sign_in_view(user) }
     
     it "renders the faq and not the modify buttons" do
       render template: "faqs/index"

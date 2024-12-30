@@ -24,7 +24,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
   end
   
   context "if the user is an admin" do
-    before { assign(:current_user, admin) }
+    before { sign_in_view(admin) }
     
     context "if the problem is offline" do
       before { problem.update(online: false) }
@@ -72,7 +72,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
   end
   
   context "if the user didn't solve the problem" do
-    before { assign(:current_user, bad_user) }
+    before { sign_in_view(bad_user) }
         
     it "renders the page correctly" do
       render template: "problems/show"
@@ -141,7 +141,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
   end
   
   context "if the user solved the problem" do
-    before { assign(:current_user, good_user) }
+    before { sign_in_view(good_user) }
         
     it "renders the page correctly" do
       render template: "problems/show"
@@ -194,7 +194,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
   end
   
   context "if the user is a corrector having solved the problem" do
-    before { assign(:current_user, good_corrector) }
+    before { sign_in_view(good_corrector) }
      
     it "shows the explanation" do
       render template: "problems/show"
@@ -218,7 +218,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
   end
   
   context "if the user is a corrector not having solved the problem" do
-    before { assign(:current_user, bad_corrector) }
+    before { sign_in_view(bad_corrector) }
      
     it "does not show the explanation" do
       render template: "problems/show"

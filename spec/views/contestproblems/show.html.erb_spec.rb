@@ -26,7 +26,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
       
       it "renders the page correctly" do
         render template: "contestproblems/show"
@@ -58,7 +58,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
         
       it "renders the page correctly" do
         render template: "contestproblems/show"
@@ -82,7 +82,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
         
       it "renders the page correctly" do
         render template: "contestproblems/show"
@@ -100,7 +100,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user can participate" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
       
       context "and has not sent a solution yet" do
         before { assign(:contestsolution, Contestsolution.new) }
@@ -132,7 +132,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user cannot participate" do
-      before { assign(:current_user, user_bad) }
+      before { sign_in_view(user_bad) }
       
       it "renders the page correctly" do
         render template: "contestproblems/show"
@@ -154,7 +154,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
         
       it "renders the page correctly" do
         render template: "contestproblems/show"
@@ -173,7 +173,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user) }
       let!(:contestsolution_other) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem) }
       
-      before { assign(:current_user, user) }    
+      before { sign_in_view(user) }    
         
       it "renders the page correctly" do
         render template: "contestproblems/show"
@@ -224,7 +224,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       let!(:contestsolution_other_good) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, score: 7) }
       let!(:contestsolution_other_bad) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, score: 6) }
       
-      before { assign(:current_user, user) }      
+      before { sign_in_view(user) }      
         
       it "renders the page correctly" do
         render template: "contestproblems/show"

@@ -12,7 +12,7 @@ describe "puzzles/main.html.erb", type: :view, puzzle: true do
   before { assign(:faqs, Faq.all) }
   
   context "if the user is not a root" do
-    before { assign(:current_user, admin) }
+    before { sign_in_view(admin) }
     
     context "and we are before the end date" do
       before { travel_to Puzzle.end_date - 10.minutes }
@@ -47,7 +47,7 @@ describe "puzzles/main.html.erb", type: :view, puzzle: true do
   end
   
   context "if the user is a root" do
-    before { assign(:current_user, root) }
+    before { sign_in_view(root) }
     
     context "and we are before the end date" do
       before { travel_to Puzzle.end_date - 10.minutes }

@@ -14,7 +14,7 @@ describe "privacypolicies/show.html.erb", type: :view, privacypolicy: true do
   
   context "if the user is a root" do
     before do
-      assign(:current_user, root)
+      sign_in_view(root)
       assign(:privacypolicy, privacypolicy3)
     end
     
@@ -25,7 +25,7 @@ describe "privacypolicies/show.html.erb", type: :view, privacypolicy: true do
   end
   
   context "if the user is not an admin" do
-    before { assign(:current_user, user) }
+    before { sign_in_view(user) }
     
     context "if this is the first version " do
       before { assign(:privacypolicy, privacypolicy1) }

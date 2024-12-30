@@ -184,7 +184,7 @@ class UsersController < ApplicationController
 
     allowed_params = [:see_name, :sex, :year, :country_id, :password, :password_confirmation, :accept_analytics]
     allowed_params << [:first_name, :last_name] unless !@user.can_change_name && !in_skin?
-    allowed_params << :email if current_user(false).admin? # false because root can change email of someone else
+    allowed_params << :email if current_user_no_skin.admin? # no_skin because root can change email of someone else
     allowed_params << :corrector_color if (current_user.admin? || current_user.corrector?)
     if @user.update(params.require(:user).permit(allowed_params))
       @user.adapt_name
@@ -380,7 +380,7 @@ class UsersController < ApplicationController
   # Take the skin of a user
   def take_skin
     unless @user.admin || !@user.active # Cannot take the skin of an admin or inactive user
-      current_user(false).update_attribute(:skin, @user.id)
+      current_user_no_skin.update_attribute(:skin, @user.id)
       flash[:success] = "Vous êtes maintenant dans la peau de #{@user.name}."
     end
     redirect_back(fallback_location: root_path)
@@ -388,8 +388,8 @@ class UsersController < ApplicationController
 
   # Leave the skin of a user
   def leave_skin
-    if current_user(false).skin != 0
-      current_user(false).update_attribute(:skin, 0)
+    if current_user_no_skin.skin != 0
+      current_user_no_skin.update_attribute(:skin, 0)
       flash[:success] = "Vous êtes à nouveau dans votre peau."
     end
     redirect_back(fallback_location: root_path)
@@ -469,10 +469,7 @@ class UsersController < ApplicationController
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir continuer sur le site."
       render 'read_legal'
     else
-      user = current_user(false)
-      user.consent_time = DateTime.now
-      user.last_policy_read = true
-      user.save
+      current_user_no_skin.update(:last_policy_read => true, :consent_time => DateTime.now)
       redirect_to root_path
     end
   end

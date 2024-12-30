@@ -47,7 +47,7 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
   end
   
   context "if the user is signed in" do
-    before { assign(:current_user, user) }
+    before { sign_in_view(user) }
     
     it "renders the header correctly" do
       render partial: "layouts/header"
@@ -159,7 +159,7 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
   end
   
   context "if the user is an admin" do
-    before { assign(:current_user, admin) }
+    before { sign_in_view(admin) }
     
     it "renders the header correctly" do
       render partial: "layouts/header"
@@ -200,7 +200,7 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
   end
   
   context "if the user is a root" do
-    before { assign(:current_user, root) }
+    before { sign_in_view(root) }
     
     it "renders the header correctly" do
       render partial: "layouts/header"

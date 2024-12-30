@@ -7,7 +7,7 @@ describe "discussions/_menu.html.erb", type: :view, discussion: true do
 
   let(:user) { FactoryGirl.create(:user) }
   
-  before { assign(:current_user, user) }
+  before { sign_in_view(user) }
   
   context "if the user has no discussion" do   
     it "renders no discussion" do

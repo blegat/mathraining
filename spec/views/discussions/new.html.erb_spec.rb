@@ -8,7 +8,7 @@ describe "discussions/new.html.erb", type: :view, discussion: true do
   let(:user) { FactoryGirl.create(:user) }
   
   before do
-    assign(:current_user, user)
+    sign_in_view(user)
     assign(:tchatmessage, Tchatmessage.new)
   end
   

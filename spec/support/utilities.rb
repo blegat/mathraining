@@ -12,6 +12,12 @@ def sign_in_controller(user)
   request.cookies[:remember_token] = user.remember_token
 end
 
+def sign_in_view(user)
+  assign(:current_user, user)
+  assign(:current_user_sk, user)
+  assign(:current_user_computed, true)
+end
+
 def sign_out
   visit root_path
   click_link "Déconnexion"

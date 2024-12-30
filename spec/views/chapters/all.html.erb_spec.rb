@@ -38,7 +38,7 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
   end
   
   context "if the user is an admin" do
-    before { assign(:current_user, admin) }
+    before { sign_in_view(admin) }
     
     it "renders the online theory and nothing else" do
       render template: "chapters/all"
@@ -51,7 +51,7 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
   end
   
   context "if the user is not an admin" do
-    before { assign(:current_user, user) }
+    before { sign_in_view(user) }
     
     it "renders the online theory and other stuff" do
       render template: "chapters/all"

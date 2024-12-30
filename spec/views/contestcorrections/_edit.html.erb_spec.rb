@@ -14,7 +14,7 @@ describe "contestcorrections/_edit.html.erb", type: :view, contestcorrection: tr
     contestproblem.contest.organizers << user
     assign(:contestproblem, contestproblem)
     assign(:contest, contestproblem.contest)
-    assign(:current_user, user)
+    sign_in_view(user)
   end
   
   context "if the solution is official" do      

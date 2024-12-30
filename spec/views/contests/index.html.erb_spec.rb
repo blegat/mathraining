@@ -27,7 +27,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an admin" do
-      before { assign(:current_user, admin) }
+      before { sign_in_view(admin) }
         
       it "renders the contest correctly" do
         render template: "contests/index"
@@ -40,7 +40,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user is an organizer" do
-      before { assign(:current_user, user_organizer) }
+      before { sign_in_view(user_organizer) }
         
       it "renders the contest correctly" do
         render template: "contests/index"
@@ -53,7 +53,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user is not an organizer" do
-      before { assign(:current_user, user_bad) }
+      before { sign_in_view(user_bad) }
         
       it "does not render the contest" do
         render template: "contests/index"
@@ -71,7 +71,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user can participate" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
         
       it "renders the page correctly" do
         render template: "contests/index"
@@ -83,7 +83,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user cannot participate" do
-      before { assign(:current_user, user_bad) }
+      before { sign_in_view(user_bad) }
         
       it "renders the page correctly" do
         render template: "contests/index"
@@ -102,7 +102,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user can participate" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
         
       it "renders the page correctly" do
         render template: "contests/index"
@@ -128,7 +128,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
     end
     
     context "if the user can participate" do
-      before { assign(:current_user, user) }
+      before { sign_in_view(user) }
         
       it "renders the page correctly" do
         render template: "contests/index"
