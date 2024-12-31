@@ -58,10 +58,19 @@ var Preview = {
       this.needUpdate = true;
       return;
     }
+    
     var text = this.input.value.
+    replace(/</g,'&lt;').
+    replace(/>/g,'&gt;').
+    replace(/&lt;b&gt;(.*?)&lt;\/b&gt;/gsmi, '<b>$1</b>').
+    replace(/&lt;u&gt;(.*?)&lt;\/u&gt;/gsmi, '<u>$1</u>').
+    replace(/&lt;i&gt;(.*?)&lt;\/i&gt;/gsmi, '<i>$1</i>').
+    replace(/&lt;hr&gt;/g, '<hr>').
     replace(/<hr>[ \r]*\n/g,'<hr>').
-    replace(/\][ \r]*\n/g,'\] ').
-    replace(/\$\$[ \r]*\n/g,'$$$ ').
+    replace(/&lt;h2&gt;(.*?)&lt;\/h2&gt;/gsmi, '<h2>$1</h2>').
+    replace(/&lt;h3&gt;(.*?)&lt;\/h3&gt;/gsmi, '<h3>$1</h3>').
+    replace(/&lt;h4&gt;(.*?)&lt;\/h4&gt;/gsmi, '<h4>$1</h4>').
+    replace(/&lt;h5&gt;(.*?)&lt;\/h5&gt;/gsmi, '<h5>$1</h5>').
     replace(/\n[ \r]*<h2>/g,'<h2 class="mt-3">').
     replace(/\n[ \r]*<h3>/g,'<h3 class="mt-3">').
     replace(/\n[ \r]*<h4>/g,'<h4 class="mt-3">').
@@ -70,13 +79,19 @@ var Preview = {
     replace(/<\/h3>[ \r]*\n/g,'</h3>').
     replace(/<\/h4>[ \r]*\n/g,'</h4>').
     replace(/<\/h5>[ \r]*\n/g,'</h5>').
-    replace(/<ol>/g, '<ol class="mb-1">').
-    replace(/<ul>/g, '<ul class="mb-1">').
+    replace(/&lt;ol&gt;(.*?)&lt;\/ol&gt;/gsmi, '<ol>$1</ol>').
+    replace(/&lt;ul&gt;(.*?)&lt;\/ul&gt;/gsmi, '<ul>$1</ul>').
+    replace(/&lt;li&gt;(.*?)&lt;\/li&gt;/gsmi, '<li>$1</li>').
+    replace(/<ol>/g, '<ol class="my-1">').
+    replace(/<ul>/g, '<ul class="my-1">').
     replace(/<\/ol>[ \r]*\n/g, '</ol>').
     replace(/\n[ \r]*<\/ol>/g, '</ol>').
     replace(/<\/ul>[ \r]*\n/g, '</ul>').
     replace(/\n[ \r]*<\/ul>/g, '</ul>').
-    replace(/\n(\040)*<li>/g, '<li>').
+    replace(/\n[ \r]*<li>/g, '<li>').
+    replace(/&lt;result&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/result&gt;/gsmi, '<result>$1<statement>$2</result>').
+    replace(/&lt;proof&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/proof&gt;/gsmi, '<proof>$1<statement>$2</proof>').
+    replace(/&lt;remark&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/remark&gt;/gsmi, '<remark>$1<statement>$2</remark>').
     replace(/<result>[ \r]*\n/g, '<result>').
     replace(/<\/result>[ \r]*\n/g, '</result>').
     replace(/<proof>[ \r]*\n/g, '<proof>').
@@ -85,11 +100,14 @@ var Preview = {
     replace(/<\/remark>[ \r]*\n/g, '</remark>').
     replace(/<statement>[ \r]*\n/g, '<statement>').
     replace(/<\/indice>[ \r]*\n/g, '</indice>').
-    replace(/\n/g, '<br/>').
-    replace(/<result>(.*?)<statement>(.*?)<\/result>/g, "<div class='result-title'>$1</div><div class='result-content'>$2</div>").
-    replace(/<proof>(.*?)<statement>(.*?)<\/proof>/g, "<div class='proof-title'>$1</div><div class='proof-content'>$2</div>").
-    replace(/<remark>(.*?)<statement>(.*?)<\/remark>/g, "<div class='remark-title'>$1</div><div class='remark-content'>$2</div>").
-    replace(/<indice>(.*?)<\/indice>/g, "<div class='clue-bis'><div><a href='#' onclick='return false;' class='btn btn-light'>Indice</a></div><div id='indice0' class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$1</div></div></div>")
+    replace(/<result>(.*?)<statement>(.*?)<\/result>/gsmi, "<div class='result-title'>$1</div><div class='result-content'>$2</div>").
+    replace(/<proof>(.*?)<statement>(.*?)<\/proof>/gsmi, "<div class='proof-title'>$1</div><div class='proof-content'>$2</div>").
+    replace(/<remark>(.*?)<statement>(.*?)<\/remark>/gsmi, "<div class='remark-title'>$1</div><div class='remark-content'>$2</div>").
+    replace(/<indice>(.*?)<\/indice>/g, "<div class='clue-bis'><div><a href='#' onclick='return false;' class='btn btn-light'>Indice</a></div><div id='indice0' class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$1</div></div></div>").
+    replace(/&lt;center&gt;(.*?)&lt;\/center&gt;/gsmi, '<center>$1</center>').
+    replace(/&lt;img (.*?)\/&gt;/gsmi, '<img $1/>').
+    replace(/&lt;a (.*?)&gt;(.*?)&lt;\/a&gt;/gsmi, '<a $1>$2</a>').
+    replace(/\n/g, '<br/>')
     
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;

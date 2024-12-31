@@ -22,7 +22,10 @@
 <h1 class="mb-0">
 <table style="width:100%;">
 <tr><td>
-<%= title_subjects("#{(h @subject.title)}#{('<span style="font-size:20px;"> - ' + title_complement + '</span>') if !title_complement.empty?}") %>
+<%= title_subjects(@subject.title) %>
+<% unless title_complement.empty? %>
+  <span style="font-size:20px;">- <%= title_complement %></span>
+<% end %>
 </td>
 
 <td class="d-none d-md-table-cell ps-3 text-end">

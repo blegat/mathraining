@@ -79,12 +79,16 @@ var PreviewSafe = {
 
     var text = this.input.value.replace(/</g,'&lt').replace(/>/g,'&gt')
     
+    // Delete the \n and \r after the \] and $$
+    text = text.replace(/\\\][ \r]*\n/g,'\\\] ')
+               .replace(/\$\$[ \r]*\n/g,'$$$ ')
+    
     if (this.bbcode)
     {
       // Replace the [b], [u], [i]
-      text = text.replace(/\[b\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/b\]/gmi, '<b>$1</b>')
-                 .replace(/\[u\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/u\]/gmi, '<u>$1</u>')
-                 .replace(/\[i\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/i\]/gmi, '<i>$1</i>');
+      text = text.replace(/\[b\]((.|\n)*?)\[\/b\]/gmi, '<b>$1</b>')
+                 .replace(/\[u\]((.|\n)*?)\[\/u\]/gmi, '<u>$1</u>')
+                 .replace(/\[i\]((.|\n)*?)\[\/i\]/gmi, '<i>$1</i>');
       
       // Replace the [url=www.example.com]Lien[/url]
       text = text.replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>');
@@ -95,10 +99,6 @@ var PreviewSafe = {
         while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, "<div class='clue'><div><button onclick='return false;' class='btn btn-light'>$1</button></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$2</div></div></div>");
       }
     }
-    
-    // Delete the \n and \r after the \] and $$
-    text = text.replace(/\][ \r]*\n/g,'\] ')
-               .replace(/\$\$[ \r]*\n/g,'$$$ ')
     
     // Replace the \n by <br/>
     text = text.replace(/\n/g, '<br/>')

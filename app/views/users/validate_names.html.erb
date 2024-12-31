@@ -27,7 +27,9 @@ function confirmChange(user_id) {
 
 <% provide(:title, 'Valider les noms') %>
 
-<h1><%= title_1("Valider <span id='num_remaining'>#{@users_to_validate.size}</span> noms") %></h1>
+<h1><%= title_1("Valider les noms") %>
+(<span id='num_remaining'><%= @users_to_validate.size %></span>)
+</h1>
 
 <% if @users_to_validate.size == 0 %>
   <p>Aucun nom à valider !</p>

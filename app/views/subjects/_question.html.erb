@@ -43,7 +43,7 @@
       <ul class="mt-2">
       <% q.items.order(:position).each do |c| %>
         <li class="p-1">
-        <%= raw(c.ans) %>
+        <%= raw(htmlise(c.ans)) %>
       <% end %>
       </ul>
       <% if q.many_answers %>

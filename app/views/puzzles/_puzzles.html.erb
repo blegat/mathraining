@@ -106,7 +106,7 @@ function submitPuzzleAttempt(puzzle_id) {
       <div class="text-center"><button onclick="return Clue.toggle(<%= i %>)" class="btn btn-ld-light-dark">Solution</button></div>
       <div id="indice<%= i %>" class="clue-hide" style="height:0px;">
         <div class="clue-content" style="text-align:justify;">
-          <div class="mb-3"><%= raw(p.explanation) unless p.explanation.nil? %></div>
+          <div class="mb-3"><%= raw(htmlise(p.explanation)) unless p.explanation.nil? %></div>
           <% n = puzzle_resolutions[p.id] %>
           <div>
           <% if n.nil? || n == 0 %>

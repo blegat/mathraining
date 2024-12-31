@@ -44,7 +44,7 @@ module ApplicationHelper
     gsub(/\[i\](.*?)\[\/i\]/mi, '<i>\1</i>').
     gsub(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/mi, '<a target=\'blank\' href=\'\1\'>\2</a>').
     gsub(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*(.*?)[ \r\n]*\[\/hide\]/mi, '[hide=\1]\2[/hide]').
-    gsub(/\n/, '<br>').
+    gsub(/\n/, '<br/>').
     gsub(/\:\-\)/,    image_tag("Smiley1.png", alt: ":-)", width: "20px")).
     gsub(/\:\-\(/,    image_tag("Smiley2.png", alt: ":-(", width: "20px")).
     gsub(/\:\-[D]/,   image_tag("Smiley3.png", alt: ":-D", width: "20px")).
@@ -58,9 +58,17 @@ module ApplicationHelper
 
   # To read code on admin side
   def htmlise(m)
-    m2 = m.gsub(/<hr>[ \r]*\n/,'<hr>').
-    gsub(/\\\][ \r]*\n/,'\] ').
-    gsub(/\$\$[ \r]*\n/,'$$ ').
+    (h m.gsub(/\\\][ \r]*\n/,'\] ').
+    gsub(/\$\$[ \r]*\n/,'$$ ')).
+    gsub(/&lt;b&gt;(.*?)&lt;\/b&gt;/mi, '<b>\1</b>').
+    gsub(/&lt;u&gt;(.*?)&lt;\/u&gt;/mi, '<u>\1</u>').
+    gsub(/&lt;i&gt;(.*?)&lt;\/i&gt;/mi, '<i>\1</i>').
+    gsub(/&lt;hr&gt;/, '<hr>').
+    gsub(/<hr>[ \r]*\n/,'<hr>').
+    gsub(/&lt;h2&gt;(.*?)&lt;\/h2&gt;/mi, '<h2>\1</h2>').
+    gsub(/&lt;h3&gt;(.*?)&lt;\/h3&gt;/mi, '<h3>\1</h3>').
+    gsub(/&lt;h4&gt;(.*?)&lt;\/h4&gt;/mi, '<h4>\1</h4>').
+    gsub(/&lt;h5&gt;(.*?)&lt;\/h5&gt;/mi, '<h5>\1</h5>').
     gsub(/\n[ \r]*<h2>/,'<h2 class="mt-3">').
     gsub(/\n[ \r]*<h3>/,'<h3 class="mt-3">').
     gsub(/\n[ \r]*<h4>/,'<h4 class="mt-3">').
@@ -69,28 +77,31 @@ module ApplicationHelper
     gsub(/<\/h3>[ \r]*\n/,'</h3>').
     gsub(/<\/h4>[ \r]*\n/,'</h4>').
     gsub(/<\/h5>[ \r]*\n/,'</h5>').
-    gsub(/<ol>/, '<ol class="mb-1">').
-    gsub(/<ul>/, '<ul class="mb-1">').
+    gsub(/&lt;ol&gt;(.*?)&lt;\/ol&gt;/mi, '<ol>\1</ol>').
+    gsub(/&lt;ul&gt;(.*?)&lt;\/ul&gt;/mi, '<ul>\1</ul>').
+    gsub(/&lt;li&gt;(.*?)&lt;\/li&gt;/mi, '<li>\1</li>').
+    gsub(/<ol>/, '<ol class="my-1">').
+    gsub(/<ul>/, '<ul class="my-1">').
     gsub(/<\/ol>[ \r]*\n/, '</ol>').
     gsub(/\n[ \r]*<\/ol>/, '</ol>').
     gsub(/<\/ul>[ \r]*\n/, '</ul>').
     gsub(/\n[ \r]*<\/ul>/, '</ul>').
     gsub(/\n[ \r]*<li>/, '<li>').
+    gsub(/&lt;result&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/result&gt;/mi, '<result>\1<statement>\2</result>').
+    gsub(/&lt;proof&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/proof&gt;/mi, '<proof>\1<statement>\2</proof>').
+    gsub(/&lt;remark&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/remark&gt;/mi, '<remark>\1<statement>\2</remark>').
     gsub(/<\/result>[ \r]*\n/, '</result>').
     gsub(/<\/proof>[ \r]*\n/, '</proof>').
     gsub(/<\/remark>[ \r]*\n/, '</remark>').
-    gsub(/<statement>[ \r]*\n/, '<statement>')
-    
-    while m2.sub!(/<result>(.*?)<statement>(.*?)<\/result>/mi) {"<div class='result-title'>#{$1}</div><div class='result-content'>#{$2}</div>"}
-    end
-    
-    while m2.sub!(/<proof>(.*?)<statement>(.*?)<\/proof>/mi) {"<div class='proof-title'>#{$1}</div><div class='proof-content'>#{$2}</div>"}
-    end
-    
-    while m2.sub!(/<remark>(.*?)<statement>(.*?)<\/remark>/mi) {"<div class='remark-title'>#{$1}</div><div class='remark-content'>#{$2}</div>"}
-    end
-    
-    return m2.gsub(/\n/, '<br/>')
+    gsub(/<statement>[ \r]*\n/, '<statement>').
+    gsub(/<result>(.*?)<statement>(.*?)<\/result>/mi, '<div class=\'result-title\'>\1</div><div class=\'result-content\'>\2</div>').
+    gsub(/<proof>(.*?)<statement>(.*?)<\/proof>/mi, '<div class=\'proof-title\'>\1</div><div class=\'proof-content\'>\2</div>').
+    gsub(/<remark>(.*?)<statement>(.*?)<\/remark>/mi, '<div class=\'remark-title\'>\1</div><div class=\'remark-content\'>\2</div>').
+    gsub(/&lt;center&gt;(.*?)&lt;\/center&gt;/mi, '<center>\1</center>').
+    gsub(/&quot;/, '"').
+    gsub(/&lt;img (.*?)\/&gt;/mi, '<img \1/>').
+    gsub(/&lt;a (.*?)&gt;(.*?)&lt;\/a&gt;/mi, '<a \1>\2</a>').
+    gsub(/\n/, '<br/>')
   end
 
   # Method to deal with clues
@@ -211,19 +222,19 @@ module ApplicationHelper
   
   # Methods to write titles
   def title_1(x)
-    return "<span class='title-true'>#{ x }</span>".html_safe
+    return "<span class='title-true'>".html_safe + x + "</span>".html_safe
   end
   
   def title_2(x, y)
-    return "<span class='title-first'>#{ x } ></span> <span class='title-true'>#{ y }</span>".html_safe
+    return "<span class='title-first'>".html_safe + x + " ></span> <span class='title-true'>".html_safe + y + "</span>".html_safe
   end
   
   def title_3(x, y, z)
-    return "<span class='title-first'>#{ x } ></span> <span class='title-second'>#{ y } ></span> <span classs='title-true'>#{ z }</span>".html_safe
+    return "<span class='title-first'>".html_safe + x + " ></span> <span class='title-second'>".html_safe + y + " ></span> <span classs='title-true'>".html_safe + z + "</span>".html_safe
   end
   
   def title_4(x, y, z, t)
-    return "<span class='title-first'>#{ x } ></span> <span class='title-second'>#{ y } ></span> <span class='title-third'>#{ z } ></span> <span class='title-true'>#{ t }</span>".html_safe
+    return "<span class='title-first'>".html_safe + x + " ></span> <span class='title-second'>".html_safe + y +  " ></span> <span class='title-third'>".html_safe + z + " ></span> <span class='title-true'>".html_safe + t + "</span>".html_safe
   end
   
   # Titles concerning actualities

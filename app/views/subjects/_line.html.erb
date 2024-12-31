@@ -21,7 +21,7 @@
       <td class="p-0 ps-1" style="border-left:1px dotted grey;">
     <% end %>
 
-    <%= link_to (h s.title), subject_path(s, :q => @q) %> - <%= get_category_name(s) %>
+    <%= link_to s.title, subject_path(s, :q => @q) %> - <%= get_category_name(s) %>
 
     <% if s.for_correctors? || s.for_wepion? %>
       </td></tr></table>

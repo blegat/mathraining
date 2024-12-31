@@ -61,7 +61,11 @@
 <% end %>
 
 <% if !unsolvedquestion.nb_guess.nil? %>
-  <p class="mt-3 text-color-red">Votre réponse <%= ("(<b>" + val.to_s + "</b>)").html_safe if !question.is_qcm %> est erronée. Vous avez déjà commis <b><%= unsolvedquestion.nb_guess %></b> erreur<%= "s" if unsolvedquestion.nb_guess > 1 %>.</p>
+  <p class="mt-3 text-color-red">Votre réponse
+  <% unless question.is_qcm %>
+    (<b><%= val %></b>)
+  <% end %>
+  est erronée. Vous avez déjà commis <b><%= unsolvedquestion.nb_guess %></b> erreur<%= "s" if unsolvedquestion.nb_guess > 1 %>.</p>
   
   <p class="text-color-red">À partir de la troisième erreur, vous devez attendre trois minutes avant chaque nouvelle tentative.</p>
   
