@@ -77,9 +77,12 @@ module ApplicationHelper
     gsub(/<\/h3>[ \r]*\n/,'</h3>').
     gsub(/<\/h4>[ \r]*\n/,'</h4>').
     gsub(/<\/h5>[ \r]*\n/,'</h5>').
-    gsub(/&lt;ol&gt;(.*?)&lt;\/ol&gt;/mi, '<ol>\1</ol>').
-    gsub(/&lt;ul&gt;(.*?)&lt;\/ul&gt;/mi, '<ul>\1</ul>').
-    gsub(/&lt;li&gt;(.*?)&lt;\/li&gt;/mi, '<li>\1</li>').
+    gsub(/&lt;ol&gt;/mi, '<ol>').
+    gsub(/&lt;ul&gt;/mi, '<ul>').
+    gsub(/&lt;li&gt;/mi, '<li>').
+    gsub(/&lt;\/ol&gt;/mi, '</ol>').
+    gsub(/&lt;\/ul&gt;/mi, '</ul>').
+    gsub(/&lt;\/li&gt;/mi, '</li>').
     gsub(/<ol>/, '<ol class="my-1">').
     gsub(/<ul>/, '<ul class="my-1">').
     gsub(/<\/ol>[ \r]*\n/, '</ol>').

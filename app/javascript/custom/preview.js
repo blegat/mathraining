@@ -79,9 +79,12 @@ var Preview = {
     replace(/<\/h3>[ \r]*\n/g,'</h3>').
     replace(/<\/h4>[ \r]*\n/g,'</h4>').
     replace(/<\/h5>[ \r]*\n/g,'</h5>').
-    replace(/&lt;ol&gt;(.*?)&lt;\/ol&gt;/gsmi, '<ol>$1</ol>').
-    replace(/&lt;ul&gt;(.*?)&lt;\/ul&gt;/gsmi, '<ul>$1</ul>').
-    replace(/&lt;li&gt;(.*?)&lt;\/li&gt;/gsmi, '<li>$1</li>').
+    replace(/&lt;ol&gt;/gsmi, '<ol>').
+    replace(/&lt;ul&gt;/gsmi, '<ul>').
+    replace(/&lt;li&gt;/gsmi, '<li>').
+    replace(/&lt;\/ol&gt;/gsmi, '</ol>').
+    replace(/&lt;\/ul&gt;/gsmi, '</ul>').
+    replace(/&lt;\/li&gt;/gsmi, '</li>').
     replace(/<ol>/g, '<ol class="my-1">').
     replace(/<ul>/g, '<ul class="my-1">').
     replace(/<\/ol>[ \r]*\n/g, '</ol>').
