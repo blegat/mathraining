@@ -80,18 +80,21 @@ var Preview = {
     replace(/<\/h4>[ \r]*\n/g,'</h4>').
     replace(/<\/h5>[ \r]*\n/g,'</h5>').
     replace(/&lt;ol&gt;/gsmi, '<ol>').
+    replace(/&lt;ol (.*?)&gt;/gsmi, '<ol $1>').
     replace(/&lt;ul&gt;/gsmi, '<ul>').
+    replace(/&lt;ul (.*?)&gt;/gsmi, '<ul $1>').
     replace(/&lt;li&gt;/gsmi, '<li>').
+    replace(/&lt;li (.*?)&gt;/gsmi, '<li $1>').
     replace(/&lt;\/ol&gt;/gsmi, '</ol>').
     replace(/&lt;\/ul&gt;/gsmi, '</ul>').
     replace(/&lt;\/li&gt;/gsmi, '</li>').
-    replace(/<ol>/g, '<ol class="my-1">').
-    replace(/<ul>/g, '<ul class="my-1">').
+    replace(/<ol/g, '<ol class="my-1"').
+    replace(/<ul/g, '<ul class="my-1"').
     replace(/<\/ol>[ \r]*\n/g, '</ol>').
     replace(/\n[ \r]*<\/ol>/g, '</ol>').
     replace(/<\/ul>[ \r]*\n/g, '</ul>').
     replace(/\n[ \r]*<\/ul>/g, '</ul>').
-    replace(/\n[ \r]*<li>/g, '<li>').
+    replace(/\n[ \r]*<li/g, '<li').
     replace(/&lt;result&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/result&gt;/gsmi, '<result>$1<statement>$2</result>').
     replace(/&lt;proof&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/proof&gt;/gsmi, '<proof>$1<statement>$2</proof>').
     replace(/&lt;remark&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/remark&gt;/gsmi, '<remark>$1<statement>$2</remark>').
@@ -110,6 +113,7 @@ var Preview = {
     replace(/&lt;center&gt;(.*?)&lt;\/center&gt;/gsmi, '<center>$1</center>').
     replace(/&lt;img (.*?)\/&gt;/gsmi, '<img $1/>').
     replace(/&lt;a (.*?)&gt;(.*?)&lt;\/a&gt;/gsmi, '<a $1>$2</a>').
+    replace(/&lt;span (.*?)&gt;(.*?)&lt;\/span&gt;/gsmi, '<span $1>$2</span>').
     replace(/\n/g, '<br/>')
     
     if (text === this.oldtext) return;

@@ -78,18 +78,21 @@ module ApplicationHelper
     gsub(/<\/h4>[ \r]*\n/,'</h4>').
     gsub(/<\/h5>[ \r]*\n/,'</h5>').
     gsub(/&lt;ol&gt;/mi, '<ol>').
+    gsub(/&lt;ol (.*?)&gt;/mi, '<ol \1>').
     gsub(/&lt;ul&gt;/mi, '<ul>').
+    gsub(/&lt;ul (.*?)&gt;/mi, '<ul \1>').
     gsub(/&lt;li&gt;/mi, '<li>').
+    gsub(/&lt;li (.*?)&gt;/mi, '<li \1>').
     gsub(/&lt;\/ol&gt;/mi, '</ol>').
     gsub(/&lt;\/ul&gt;/mi, '</ul>').
     gsub(/&lt;\/li&gt;/mi, '</li>').
-    gsub(/<ol>/, '<ol class="my-1">').
-    gsub(/<ul>/, '<ul class="my-1">').
+    gsub(/<ol/, '<ol class="my-1"').
+    gsub(/<ul/, '<ul class="my-1"').
     gsub(/<\/ol>[ \r]*\n/, '</ol>').
     gsub(/\n[ \r]*<\/ol>/, '</ol>').
     gsub(/<\/ul>[ \r]*\n/, '</ul>').
     gsub(/\n[ \r]*<\/ul>/, '</ul>').
-    gsub(/\n[ \r]*<li>/, '<li>').
+    gsub(/\n[ \r]*<li/, '<li').
     gsub(/&lt;result&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/result&gt;/mi, '<result>\1<statement>\2</result>').
     gsub(/&lt;proof&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/proof&gt;/mi, '<proof>\1<statement>\2</proof>').
     gsub(/&lt;remark&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/remark&gt;/mi, '<remark>\1<statement>\2</remark>').
@@ -107,6 +110,7 @@ module ApplicationHelper
     gsub(/&#39;/, '\'').
     gsub(/&lt;img (.*?)\/&gt;/mi, '<img \1/>').
     gsub(/&lt;a (.*?)&gt;(.*?)&lt;\/a&gt;/mi, '<a \1>\2</a>').
+    gsub(/&lt;span (.*?)&gt;(.*?)&lt;\/span&gt;/mi, '<span \1>\2</span>').
     gsub(/\n/, '<br/>')
   end
 
