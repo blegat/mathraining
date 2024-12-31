@@ -105,10 +105,11 @@ var Preview = {
     replace(/<remark>[ \r]*\n/g, '<remark>').
     replace(/<\/remark>[ \r]*\n/g, '</remark>').
     replace(/<statement>[ \r]*\n/g, '<statement>').
-    replace(/<\/indice>[ \r]*\n/g, '</indice>').
     replace(/<result>(.*?)<statement>(.*?)<\/result>/gsmi, "<div class='result-title'>$1</div><div class='result-content'>$2</div>").
     replace(/<proof>(.*?)<statement>(.*?)<\/proof>/gsmi, "<div class='proof-title'>$1</div><div class='proof-content'>$2</div>").
     replace(/<remark>(.*?)<statement>(.*?)<\/remark>/gsmi, "<div class='remark-title'>$1</div><div class='remark-content'>$2</div>").
+    replace(/&lt;indice&gt;(.*?)&lt;\/indice&gt;/gsmi, '<indice>$1</indice>').
+    replace(/<\/indice>[ \r]*\n/g, '</indice>').
     replace(/<indice>(.*?)<\/indice>/g, "<div class='clue-bis'><div><a href='#' onclick='return false;' class='btn btn-light'>Indice</a></div><div id='indice0' class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$1</div></div></div>").
     replace(/&lt;center&gt;(.*?)&lt;\/center&gt;/gsmi, '<center>$1</center>').
     replace(/&lt;img (.*?)\/&gt;/gsmi, '<img $1/>').
