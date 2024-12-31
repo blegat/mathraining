@@ -62,6 +62,8 @@ var Preview = {
     var text = this.input.value.
     replace(/</g,'&lt;').
     replace(/>/g,'&gt;').
+    replace(/\\\][ \r]*\n/g,'\\\] ').
+    replace(/\$\$[ \r]*\n/g,'$$$ ').
     replace(/&lt;b&gt;(.*?)&lt;\/b&gt;/gsmi, '<b>$1</b>').
     replace(/&lt;u&gt;(.*?)&lt;\/u&gt;/gsmi, '<u>$1</u>').
     replace(/&lt;i&gt;(.*?)&lt;\/i&gt;/gsmi, '<i>$1</i>').
