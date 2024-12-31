@@ -99,6 +99,9 @@ module ApplicationHelper
     gsub(/<remark>(.*?)<statement>(.*?)<\/remark>/mi, '<div class=\'remark-title\'>\1</div><div class=\'remark-content\'>\2</div>').
     gsub(/&lt;center&gt;(.*?)&lt;\/center&gt;/mi, '<center>\1</center>').
     gsub(/&quot;/, '"').
+    gsub(/&#34;/, '"').
+    gsub(/&apos;/, '\'').
+    gsub(/&#39;/, '\'').
     gsub(/&lt;img (.*?)\/&gt;/mi, '<img \1/>').
     gsub(/&lt;a (.*?)&gt;(.*?)&lt;\/a&gt;/mi, '<a \1>\2</a>').
     gsub(/\n/, '<br/>')
