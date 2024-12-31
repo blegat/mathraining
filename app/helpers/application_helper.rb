@@ -110,6 +110,7 @@ module ApplicationHelper
     gsub(/&#39;/, '\'').
     gsub(/&lt;img (.*?)\/&gt;/mi, '<img \1/>').
     gsub(/&lt;a (.*?)&gt;(.*?)&lt;\/a&gt;/mi, '<a \1>\2</a>').
+    gsub(/&lt;div (.*?)&gt;(.*?)&lt;\/div&gt;/mi, '<div \1>\2</div>').
     gsub(/&lt;span (.*?)&gt;(.*?)&lt;\/span&gt;/mi, '<span \1>\2</span>').
     gsub(/\n/, '<br/>')
   end

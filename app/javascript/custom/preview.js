@@ -114,6 +114,7 @@ var Preview = {
     replace(/&lt;center&gt;(.*?)&lt;\/center&gt;/gsmi, '<center>$1</center>').
     replace(/&lt;img (.*?)\/&gt;/gsmi, '<img $1/>').
     replace(/&lt;a (.*?)&gt;(.*?)&lt;\/a&gt;/gsmi, '<a $1>$2</a>').
+    replace(/&lt;div (.*?)&gt;(.*?)&lt;\/div&gt;/gsmi, '<div $1>$2</div>').
     replace(/&lt;span (.*?)&gt;(.*?)&lt;\/span&gt;/gsmi, '<span $1>$2</span>').
     replace(/\n/g, '<br/>')
     
