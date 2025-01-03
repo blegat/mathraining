@@ -5,7 +5,7 @@
 
 <!-- Enoncé -->
 <div>
-  <%= raw(replace_indice(htmlise(@question.statement))) %>
+  <%= raw(htmlise(@question.statement, true)) %>
 </div>
 
 <!-- Si administrateur -->

@@ -14,7 +14,7 @@ var Rolling = {
     return false;
   },
 
-  develop: function(m, enableHiddenText=false) {
+  develop: function(m, enableHiddenText = false) {
     this.hideActual();
     this.actual = m;
     $("#the" + m).animate({height:'0px'}, this.rollingTime);
@@ -36,7 +36,7 @@ var Rolling = {
     return false;
   },
 
-  develop_quick: function(m, enableHiddenText=false) {
+  develop_quick: function(m, enableHiddenText = false) {
     this.actual = m;
     $("#the" + m).height(0);
     $("#form" + m).height('auto');

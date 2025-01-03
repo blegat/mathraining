@@ -13,7 +13,7 @@ var PreviewSafe = {
   //  Get the preview and buffer DIV's
   //
   Init: function (s) {
-    if(s == undefined)
+    if (s == undefined)
       s = "";
     this.preview = document.getElementById("MathPreview" + s);
     this.buffer = document.getElementById("MathBuffer" + s);
@@ -71,55 +71,52 @@ var PreviewSafe = {
   //
   CreatePreview: function () {
     Preview.timeout = null;
-    if (this.mjRunning)
-    {
+    if (this.mjRunning) {
       this.needUpdate = true;
       return;
     }
 
-    var text = this.input.value.replace(/</g,'&lt').replace(/>/g,'&gt')
+    // The following should be similar to what we have in bbcode (in application_helper.rb)
+    var text = this.input.value.
+    replace(/&/g, '&amp;').
+    replace(/</g, '&lt').
+    replace(/>/g, '&gt').
+    replace(/"/g, '&quot;').
+    replace(/'/g, '&#39;').
+    replace(/\\\][ \r]*\n/g, '\\\] ').
+    replace(/\$\$[ \r]*\n/g, '$$$ ')
     
-    // Delete the \n and \r after the \] and $$
-    text = text.replace(/\\\][ \r]*\n/g,'\\\] ')
-               .replace(/\$\$[ \r]*\n/g,'$$$ ')
-    
-    if (this.bbcode)
-    {
-      // Replace the [b], [u], [i]
-      text = text.replace(/\[b\]((.|\n)*?)\[\/b\]/gmi, '<b>$1</b>')
-                 .replace(/\[u\]((.|\n)*?)\[\/u\]/gmi, '<u>$1</u>')
-                 .replace(/\[i\]((.|\n)*?)\[\/i\]/gmi, '<i>$1</i>');
+    if (this.bbcode) { // false only for LaTeX chapter (that's why there is no such variable in method bbcode)
+      text = text.
+      replace(/\[b\]((.|\n)*?)\[\/b\]/gmi, '<b>$1</b>').
+      replace(/\[u\]((.|\n)*?)\[\/u\]/gmi, '<u>$1</u>').
+      replace(/\[i\]((.|\n)*?)\[\/i\]/gmi, '<i>$1</i>').
+      replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>');
       
-      // Replace the [url=www.example.com]Lien[/url]
-      text = text.replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>');
-      
-      // Replace the [hide=Texte Caché]Texte Caché[/hide]
-      if (this.hiddentext) {
+      if (this.hiddentext) { // Only true for messages in Forum (no such variable in method bbcode because people could use <hide> in submissions before)
         var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
-        while(reg.test(text)) text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, "<div class='clue'><div><button onclick='return false;' class='btn btn-light'>$1</button></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$2</div></div></div>");
+        while (reg.test(text)) {
+          text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, "<div class='clue'><div><button onclick='return false;' class='btn btn-light'>$1</button></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$2</div></div></div>");
+        }
       }
-    }
-    
-    // Replace the \n by <br/>
-    text = text.replace(/\n/g, '<br/>')
-    
-    if (this.bbcode)
-    {
-      // Replace the smileys by the images
+      
       var smileys = [];
       for (let i = 1; i <= 9; i++) {
         smileys[i] = "<img src='" + document.getElementById("smiley" + i.toString() + "-img").getAttribute("src") + "' width='20px' height='20px' />";
       }
-      text = text.replace(/\:\-\)/g, smileys[1])
-                 .replace(/\:\-\(/g, smileys[2])
-                 .replace(/\:\-[D]/g, smileys[3])
-                 .replace(/\:\-[O]/g, smileys[4])
-                 .replace(/\:\-[P]/g, smileys[5])
-                 .replace(/\:\'\(/g, smileys[6])
-                 .replace(/\;\-\)/g, smileys[7])
-                 .replace(/\:\-\|/g, smileys[8])
-                 .replace(/[3]\:\[/g, smileys[9]);
+      text = text.
+      replace(/\:\-\)/g,    smileys[1]).
+      replace(/\:\-\(/g,    smileys[2]).
+      replace(/\:\-[D]/g,   smileys[3]).
+      replace(/\:\-[O]/g,   smileys[4]).
+      replace(/\:\-[P]/g,   smileys[5]).
+      replace(/\:&#39;\(/g, smileys[6]).
+      replace(/\;\-\)/g,    smileys[7]).
+      replace(/\:\-\|/g,    smileys[8]).
+      replace(/[3]\:\[/g,   smileys[9]);
     }
+    
+    text = text.replace(/\n/g, '<br/>')
 
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
@@ -153,7 +150,7 @@ var PreviewSafe = {
 //
 //  Cache a callback to the CreatePreview action
 //
-PreviewSafe.callback = MathJax.Callback(["CreatePreview",PreviewSafe]);
+PreviewSafe.callback = MathJax.Callback(["CreatePreview", PreviewSafe]);
 PreviewSafe.callback.autoReset = true;  // make sure it can run more than once
 
 export default PreviewSafe

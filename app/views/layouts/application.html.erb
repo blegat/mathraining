@@ -129,18 +129,21 @@
       // To initialize and update Preview when page is loaded and Preview is defined
       var initAndUpdatePreviewDone = false;
       
-      function initAndUpdatePreviewIfPossible() {
+      function initAndUpdatePreviewIfPossible(enableIndice) {
         if ("Preview" in window) {
           if (!initAndUpdatePreviewDone) {
             initAndUpdatePreviewDone = true;
             Preview.Init();
+            if (enableIndice) {
+              Preview.SetIndice(true);
+            }
             Preview.Update();
           }
         }
       }
     
-      function initAndUpdatePreviewWhenPossible() {
-        callMethodWhenPossible(initAndUpdatePreviewIfPossible);
+      function initAndUpdatePreviewWhenPossible(enableIndice = false) {
+        callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(enableIndice));
       }
       
       // To initialize and update PreviewSafe when page is loaded and PreviewSafe is defined

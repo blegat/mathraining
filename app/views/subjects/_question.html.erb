@@ -31,7 +31,7 @@
     <% end %>
     <!-- Enoncé -->
     <tr><td class="content">
-    <%= raw(replace_indice(htmlise(q.statement))) %>
+    <%= raw(htmlise(q.statement, true)) %>
 
     <% if !q.is_qcm %>
       <% if q.decimal %>

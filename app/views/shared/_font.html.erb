@@ -1,3 +1,7 @@
+<% if !(defined? indice) %>
+  <% indice = false %>
+<% end %>
+
 <div class="font-content">
 
 <div class="font">
@@ -15,8 +19,10 @@
 <div class="font">
 <a href="javascript:Insert.insert('<result>Résultat<statement>\n', '\n</result>', 'MathInput');" class="align-middle">Résultat</a> -
 <a href="javascript:Insert.insert('<proof>Démonstration<statement>\n', '\n</proof>', 'MathInput');" class="align-middle">Preuve</a> -
-<a href="javascript:Insert.insert('<remark>Remarque<statement>\n', '\n</remark>', 'MathInput');" class="align-middle">Remarque</a> -
-<a href="javascript:Insert.insert('<indice>', '</indice>', 'MathInput');" class="align-middle">Indice</a>
+<a href="javascript:Insert.insert('<remark>Remarque<statement>\n', '\n</remark>', 'MathInput');" class="align-middle">Remarque</a>
+<% if indice %>
+  - <a href="javascript:Insert.insert('<indice>', '</indice>', 'MathInput');" class="align-middle">Indice</a>
+<% end %>
 </div>
 
 <div class="font">

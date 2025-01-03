@@ -35,16 +35,16 @@ module ApplicationHelper
 
   private
 
-  # To read bbcode on user side
+  # To read bbcode on user side (should be similar to previewsafe.js)
   def bbcode(m)
-    (h m.gsub(/\\\][ \r]*\n/,'\] ').
-    gsub(/\$\$[ \r]*\n/,'$$ ')).
+    return (h m).
+    gsub(/\\\][ \r]*\n/,'\] ').
+    gsub(/\$\$[ \r]*\n/,'$$ ').
     gsub(/\[b\](.*?)\[\/b\]/mi, '<b>\1</b>').
     gsub(/\[u\](.*?)\[\/u\]/mi, '<u>\1</u>').
     gsub(/\[i\](.*?)\[\/i\]/mi, '<i>\1</i>').
     gsub(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/mi, '<a target=\'blank\' href=\'\1\'>\2</a>').
     gsub(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*(.*?)[ \r\n]*\[\/hide\]/mi, '[hide=\1]\2[/hide]').
-    gsub(/\n/, '<br/>').
     gsub(/\:\-\)/,    image_tag("Smiley1.png", alt: ":-)", width: "20px")).
     gsub(/\:\-\(/,    image_tag("Smiley2.png", alt: ":-(", width: "20px")).
     gsub(/\:\-[D]/,   image_tag("Smiley3.png", alt: ":-D", width: "20px")).
@@ -53,13 +53,19 @@ module ApplicationHelper
     gsub(/\:&#39;\(/, image_tag("Smiley6.png", alt: ":'(", width: "20px")).
     gsub(/\;\-\)/,    image_tag("Smiley7.png", alt: ";-)", width: "20px")).
     gsub(/\:\-\|/,    image_tag("Smiley8.png", alt: ":-|", width: "20px")).
-    gsub(/[3]\:\[/,   image_tag("Smiley9.png", alt: "3:[", width: "20px"))
+    gsub(/[3]\:\[/,   image_tag("Smiley9.png", alt: "3:[", width: "20px")).
+    gsub(/\n/, '<br/>')
   end
 
-  # To read code on admin side
-  def htmlise(m)
-    (h m.gsub(/\\\][ \r]*\n/,'\] ').
-    gsub(/\$\$[ \r]*\n/,'$$ ')).
+  # To read code on admin side (should be similar to preview.js)
+  def htmlise(m, replace_indice = false)
+    m2 = (h m).
+    gsub(/&quot;/, '"').
+    gsub(/&#34;/, '"').
+    gsub(/&apos;/, '\'').
+    gsub(/&#39;/, '\'').
+    gsub(/\\\][ \r]*\n/,'\] ').
+    gsub(/\$\$[ \r]*\n/,'$$ ').
     gsub(/&lt;b&gt;(.*?)&lt;\/b&gt;/mi, '<b>\1</b>').
     gsub(/&lt;u&gt;(.*?)&lt;\/u&gt;/mi, '<u>\1</u>').
     gsub(/&lt;i&gt;(.*?)&lt;\/i&gt;/mi, '<i>\1</i>').
@@ -96,32 +102,30 @@ module ApplicationHelper
     gsub(/&lt;result&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/result&gt;/mi, '<result>\1<statement>\2</result>').
     gsub(/&lt;proof&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/proof&gt;/mi, '<proof>\1<statement>\2</proof>').
     gsub(/&lt;remark&gt;(.*?)&lt;statement&gt;(.*?)&lt;\/remark&gt;/mi, '<remark>\1<statement>\2</remark>').
+    gsub(/<result>[ \r]*\n/, '<result>').
     gsub(/<\/result>[ \r]*\n/, '</result>').
+    gsub(/<proof>[ \r]*\n/, '<proof>').
     gsub(/<\/proof>[ \r]*\n/, '</proof>').
+    gsub(/<remark>[ \r]*\n/, '<remark>').
     gsub(/<\/remark>[ \r]*\n/, '</remark>').
     gsub(/<statement>[ \r]*\n/, '<statement>').
     gsub(/<result>(.*?)<statement>(.*?)<\/result>/mi, '<div class=\'result-title\'>\1</div><div class=\'result-content\'>\2</div>').
     gsub(/<proof>(.*?)<statement>(.*?)<\/proof>/mi, '<div class=\'proof-title\'>\1</div><div class=\'proof-content\'>\2</div>').
     gsub(/<remark>(.*?)<statement>(.*?)<\/remark>/mi, '<div class=\'remark-title\'>\1</div><div class=\'remark-content\'>\2</div>').
     gsub(/&lt;center&gt;(.*?)&lt;\/center&gt;/mi, '<center>\1</center>').
-    gsub(/&quot;/, '"').
-    gsub(/&#34;/, '"').
-    gsub(/&apos;/, '\'').
-    gsub(/&#39;/, '\'').
     gsub(/&lt;img (.*?)\/&gt;/mi, '<img \1/>').
     gsub(/&lt;a (.*?)&gt;(.*?)&lt;\/a&gt;/mi, '<a \1>\2</a>').
     gsub(/&lt;div (.*?)&gt;(.*?)&lt;\/div&gt;/mi, '<div \1>\2</div>').
     gsub(/&lt;span (.*?)&gt;(.*?)&lt;\/span&gt;/mi, '<span \1>\2</span>').
     gsub(/\n/, '<br/>')
-  end
-
-  # Method to deal with clues
-  def replace_indice(m)
-    m2 = m.
-    gsub(/&lt;indice&gt;(.*?)&lt;\/indice&gt;/mi, '<indice>\1</indice>').
-    gsub(/<\/indice>[ \r]*<br\/>/, "</indice>")
     
-    while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><button onclick='return Clue.toggle(0);' class='btn btn-ld-light-dark'>Indice</button></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
+    if replace_indice
+      m2 = m2.
+      gsub(/&lt;indice&gt;(.*?)&lt;\/indice&gt;/mi, '<indice>\1</indice>').
+      gsub(/<\/indice>[ \r]*<br\/>/, "</indice>")
+    
+      while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><button onclick='return Clue.toggle(0);' class='btn btn-ld-light-dark'>Indice</button></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
+      end
     end
     
     return m2

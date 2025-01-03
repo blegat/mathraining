@@ -1,5 +1,3 @@
-<div class="smiley-content">
-
 <% if !(defined? postfix) %>
   <% postfix = "" %>
 <% end %>
@@ -7,6 +5,8 @@
 <% if !(defined? hiddentext) %>
   <% hiddentext = false %>
 <% end %>
+
+<div class="smiley-content">
 
 <div class="smiley">
 <a href="javascript:Insert.insert('[b]', '[/b]', 'MathInput<%= postfix %>');"><%= image_tag "bold.svg", :class => "svg-black-white", :title => "Gras" %></a>

@@ -17,6 +17,14 @@ var Preview = {
     this.buffer = document.getElementById("MathBuffer");
     this.input = document.getElementById("MathInput");
     this.stop = document.getElementById('stop');
+    this.indice = false
+  },
+  
+  //
+  //  Say if 'indice' must be processed or not (only for questions)
+  //
+  SetIndice: function (v) {
+    this.indice = v
   },
 
   //
@@ -53,17 +61,18 @@ var Preview = {
   //
   CreatePreview: function () {
     Preview.timeout = null;
-    if (this.mjRunning)
-    {
+    if (this.mjRunning) {
       this.needUpdate = true;
       return;
     }
     
+    // The following should be similar to what we have in htmlise (in application_helper.rb)
     var text = this.input.value.
-    replace(/</g,'&lt;').
-    replace(/>/g,'&gt;').
-    replace(/\\\][ \r]*\n/g,'\\\] ').
-    replace(/\$\$[ \r]*\n/g,'$$$ ').
+    replace(/&/g, '&amp;').
+    replace(/</g, '&lt;').
+    replace(/>/g, '&gt;').
+    replace(/\\\][ \r]*\n/g, '\\\] ').
+    replace(/\$\$[ \r]*\n/g, '$$$ ').
     replace(/&lt;b&gt;(.*?)&lt;\/b&gt;/gsmi, '<b>$1</b>').
     replace(/&lt;u&gt;(.*?)&lt;\/u&gt;/gsmi, '<u>$1</u>').
     replace(/&lt;i&gt;(.*?)&lt;\/i&gt;/gsmi, '<i>$1</i>').
@@ -110,15 +119,19 @@ var Preview = {
     replace(/<result>(.*?)<statement>(.*?)<\/result>/gsmi, "<div class='result-title'>$1</div><div class='result-content'>$2</div>").
     replace(/<proof>(.*?)<statement>(.*?)<\/proof>/gsmi, "<div class='proof-title'>$1</div><div class='proof-content'>$2</div>").
     replace(/<remark>(.*?)<statement>(.*?)<\/remark>/gsmi, "<div class='remark-title'>$1</div><div class='remark-content'>$2</div>").
-    replace(/&lt;indice&gt;(.*?)&lt;\/indice&gt;/gsmi, '<indice>$1</indice>').
-    replace(/<\/indice>[ \r]*\n/g, '</indice>').
-    replace(/<indice>(.*?)<\/indice>/g, "<div class='clue-bis'><div><a href='#' onclick='return false;' class='btn btn-light'>Indice</a></div><div id='indice0' class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$1</div></div></div>").
     replace(/&lt;center&gt;(.*?)&lt;\/center&gt;/gsmi, '<center>$1</center>').
     replace(/&lt;img (.*?)\/&gt;/gsmi, '<img $1/>').
     replace(/&lt;a (.*?)&gt;(.*?)&lt;\/a&gt;/gsmi, '<a $1>$2</a>').
     replace(/&lt;div (.*?)&gt;(.*?)&lt;\/div&gt;/gsmi, '<div $1>$2</div>').
     replace(/&lt;span (.*?)&gt;(.*?)&lt;\/span&gt;/gsmi, '<span $1>$2</span>').
     replace(/\n/g, '<br/>')
+    
+    if (this.indice) {
+      text = text.
+      replace(/&lt;indice&gt;(.*?)&lt;\/indice&gt;/gsmi, '<indice>$1</indice>').
+      replace(/<\/indice>[ \r]*<br\/>/g, '</indice>').
+      replace(/<indice>(.*?)<\/indice>/g, "<div class='clue-bis'><div><a href='#' onclick='return false;' class='btn btn-light'>Indice</a></div><div id='indice0' class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$1</div></div></div>")
+    }
     
     if (text === this.oldtext) return;
     this.buffer.innerHTML = this.oldtext = text;
@@ -152,7 +165,7 @@ var Preview = {
 //
 //  Cache a callback to the CreatePreview action
 //
-Preview.callback = MathJax.Callback(["CreatePreview",Preview]);
+Preview.callback = MathJax.Callback(["CreatePreview", Preview]);
 Preview.callback.autoReset = true;  // make sure it can run more than once
 
 export default Preview

@@ -4,9 +4,9 @@
 <div class="mb-2">
   <%= f.label "Énoncé", :for => "MathInput", :class => "form-label" %>
   <%= render 'shared/preview' %>
-  <%= render 'shared/font' %>
+  <%= render 'shared/font', indice: true %>
   <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()" %>
-  <script>initAndUpdatePreviewWhenPossible()</script>
+  <script>initAndUpdatePreviewWhenPossible(/* enableIndice = */ true)</script>
 </div>
 
 <!-- Si déjà en ligne -->

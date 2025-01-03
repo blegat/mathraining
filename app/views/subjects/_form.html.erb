@@ -295,7 +295,7 @@ function checkWepion() {
     <%= render 'shared/preview', postfix: postfix %>
     <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
     <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()", :value => cont %>
-    <script>initAndUpdatePreviewSafeWhenPossible(false, true)</script>
+    <script>initAndUpdatePreviewSafeWhenPossible(/* disableBBCode = */ false, /* enableHiddenText = */ true)</script>
   </div>
 <% end %>
 
@@ -367,5 +367,5 @@ function checkWepion() {
 <% end %>
 
 <% if is_edit && erreur %>
-  <script>rollingDevelopQuickWhenPossible("<%= postfix %>", true)</script>
+  <script>rollingDevelopQuickWhenPossible("<%= postfix %>", /* enableHiddenText = */ true)</script>
 <% end %>
