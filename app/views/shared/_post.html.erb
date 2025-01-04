@@ -15,13 +15,13 @@
   <div class="author">
   <% if kind != "contestcorrection" %>
     <% if !ms.user.nil? %>
-      <%= raw(ms.user.linked_name) %>
+      <%= ms.user.linked_name %>
     <% else %>
       <b>Message automatique</b>
     <% end %>
   <% else %>
     <% if @contest.organizers.count == 1 %>
-      <%= raw(@contest.organizers.first.linked_name) %>
+      <%= @contest.organizers.first.linked_name %>
     <% else %>
       <b>Organisateurs</b>
     <% end %>

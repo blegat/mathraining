@@ -151,7 +151,7 @@
 
           <!-- Nom -->
           <a class="nav-link dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-            <%= "[" if in_skin? %><%= raw(current_user.colored_name(1)) %><%= ' (' + nonlu.to_s + ')' if nonlu > 0 %><%= "]" if in_skin? %>
+            <%= "[" if in_skin? %><%= current_user.colored_name(1) %><%= ' (' + nonlu.to_s + ')' if nonlu > 0 %><%= "]" if in_skin? %>
           </a>
 
           <ul class="dropdown-menu dropdown-menu-end">

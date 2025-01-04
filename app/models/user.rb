@@ -362,24 +362,26 @@ class User < ActiveRecord::Base
     goodname = self.fullname  if name_type == 1
     goodname = self.shortname if name_type == 2
     if self.admin?
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{html_escape(goodname)}</span>"
+      s = (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{html_escape(goodname)}</span>"
     elsif !self.corrector?
-      return "<span class='fw-bold #{self.color_class}'>#{html_escape(goodname)}</span>"
+      s = "<span class='fw-bold #{self.color_class}'>#{html_escape(goodname)}</span>"
     else
       debut = goodname[0]
       fin = goodname[1..-1]
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{debut}</span><span class='fw-bold #{self.color_class}'>#{html_escape(fin)}</span>"
+      s = (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{debut}</span><span class='fw-bold #{self.color_class}'>#{html_escape(fin)}</span>"
     end
+    return s.html_safe
   end
 
   # Returns the colored linked name of the user (see colored_name for explanations about name_type)
   def linked_name(name_type = 0, add_corrector_prefix = true)
     if !self.active?
-      return self.colored_name(name_type)
+      s = self.colored_name(name_type)
     else
       # Note: We give a color to the "a" so that the link is underlined with this color when it is hovered/clicked
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' class='#{self.color_class}'>" + self.colored_name(name_type, false) + "</a>"
+      s = (add_corrector_prefix ? self.corrector_prefix : "") + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' class='#{self.color_class}'>" + self.colored_name(name_type, false) + "</a>"
     end
+    return s.html_safe
   end
   
   # Tells if the user is currently banned

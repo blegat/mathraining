@@ -9,7 +9,7 @@
 
 <!-- Introduction -->
 <h3 class="mt-2">Introduction</h3>
-<p><%= raw(htmlise(@section.description)) %></p>
+<p><%= htmlise(@section.description) %></p>
 
 <% if signed_in? && current_user.admin? %>
 <p><%= link_to "Modifier l'introduction", edit_section_path(@section) %></p>

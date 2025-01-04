@@ -99,7 +99,7 @@
 <% end %>
 <div class="g-col-12 g-col-lg-<%= largeur %> basic_container text-center p-1">
   <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
-  <tr><td class="px-2" style="font-size:20px;"><%= raw(@user.colored_name) %></td></tr>
+  <tr><td class="px-2" style="font-size:20px;"><%= @user.colored_name %></td></tr>
   <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %> <%= "<span class='text-color-red'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if signed_in? && current_user.root? && @user.is_banned %></td></tr>
   <tr><td class="pt-2"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
@@ -114,12 +114,12 @@
     <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
       <tr>
       <td class="mytitle">Score</td>
-      <td class="myvalue <%= @user.color_class %>"><%= raw(write_readable_big_number(actualrating)) %></td>
+      <td class="myvalue <%= @user.color_class %>"><%= write_readable_big_number(actualrating) %></td>
       </tr>
       
       <tr>
       <td class="mytitle">Rang</td>
-      <td class="myvalue <%= @user.color_class %>"><%= raw(write_readable_big_number(rank)) if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
+      <td class="myvalue <%= @user.color_class %>"><%= write_readable_big_number(rank) if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
       </tr>
         
       <tr>
@@ -493,7 +493,7 @@
         <% end %>
         Ses solutions ont <%= "toutes" if followings.size == 1 %> été <%= "principalement" if followings.size > num_correctors_to_show %> corrigées par
         <% (0..num_correctors_to_show-1).each do |i| %>
-          <%= raw(followings[i].user.linked_name) %>
+          <%= followings[i].user.linked_name %>
           <% if num_correctors_to_show > 1 %>
             (<%= ((followings[i].num_corrections * 100.0)/tot_num_corr).round() %>%)<%= ", " if i < num_correctors_to_show-2 %><%= " et " if i == num_correctors_to_show-2 %><%= "." if i == num_correctors_to_show-1 %>
           <% end %>
@@ -727,7 +727,7 @@
 <% if nb_corrections > 0 %>
   <div class="g-col-12 basic_container p-1">
     <div class="container_title">Corrections</div>
-    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold <%= @user.color_class %>"><%= raw(write_readable_big_number(nb_corrections)) %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
+    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold <%= @user.color_class %>"><%= write_readable_big_number(nb_corrections) %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
     
     <% show_puzzle = Puzzle.started_or_root(current_user) && (!Rails.env.production? || @user.id == 38) %>
     

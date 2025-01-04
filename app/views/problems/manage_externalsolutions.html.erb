@@ -6,7 +6,7 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
-<%= raw(htmlise(@problem.statement)) %>
+<%= htmlise(@problem.statement) %>
 
 <% suspicions = Suspicion.joins(:submission).where("submissions.problem_id = ?", @problem).where(:status => [:confirmed, :forgiven]).order("submissions.created_at DESC").to_a %>
 <% suspicions_covered = Set.new %>

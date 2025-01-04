@@ -6,7 +6,7 @@
   <h4><%= f.question %></h4>
 
   <div class="mb-3">
-  <%= raw(htmlise(f.answer)) %>
+  <%= htmlise(f.answer) %>
   </div>
 
   <% if signed_in? && current_user.admin? %>

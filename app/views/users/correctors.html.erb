@@ -256,7 +256,7 @@ Votre navigateur ne supporte pas les canvas.
       <% if u.nil? %>
         -
       <% else %>
-        <%= raw(u.linked_name(2)) %>
+        <%= u.linked_name(2) %>
       <% end %>
     </td>
   <% end %>
@@ -313,7 +313,7 @@ const hideInactiveCorrectors = () => {
 
   <tr class="<%= green_class %> <%= is_active ? "" : "d-none" %>" data-active-corrector="<%= is_active %>">
   <td class="text-center"><%= real_rank %>.</td>
-  <td><%= raw(u.linked_name) %></td>
+  <td><%= u.linked_name %></td>
   <td class="text-center"><%= c[:nb_corrections] %></td>
   <td class="text-center"><%= c[:nb_recent] %></td>
   <td class="d-none d-md-table-cell"><%= write_date_only(c[:first_correction].in_time_zone) %></td>

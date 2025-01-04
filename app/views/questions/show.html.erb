@@ -5,7 +5,7 @@
 
 <!-- Enoncé -->
 <div>
-  <%= raw(htmlise(@question.statement, true)) %>
+  <%= htmlise(@question.statement, true) %>
 </div>
 
 <!-- Si administrateur -->
@@ -40,7 +40,7 @@
     <!-- Explication -->
     <% if @question.explanation.size > 0 %>
       <h4 class="mt-4">Explication</h4>
-      <%= raw(htmlise(@question.explanation)) %>
+      <%= htmlise(@question.explanation) %>
     <% end %>
   <% else %>
     <% unsolvedquestion = current_user.unsolvedquestions.where(:question => @question).first %>

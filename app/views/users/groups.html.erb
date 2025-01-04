@@ -24,7 +24,7 @@
     <tr class="table-ld-header"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
     <% User.where(:group => g).order("rating DESC").each do |u| %>
       <tr>
-      <td><%= raw(u.linked_name(1)) %></td>
+      <td><%= u.linked_name(1) %></td>
       <td><%= u.rating %></td>
       <td><%= u.email %></td>
       <% lastco = u.last_connexion_date %>
@@ -46,7 +46,7 @@
     <h3>Groupe <%= g %></h3>
     <ul>
     <% User.where(:group => g).order(:first_name).each do |u| %>
-      <li><%= raw(u.linked_name) %></li>
+      <li><%= u.linked_name %></li>
     <% end %>
     </ul>
   <% end %>

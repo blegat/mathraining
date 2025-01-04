@@ -36,7 +36,7 @@
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
             <%= check_box_tag "ans[#{ c.id }]", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || needtowait, :class => "form-check-input to-enable" %>
-            <%= raw(c.ans) %>
+            <%= htmlise(c.ans) %>
           </label>
         </div>
       <% end %>
@@ -50,7 +50,7 @@
         <div class="form-check mb-2">
           <label class="form-check-label ms-2">
             <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans[#{ c.id }]", :disabled => !signed_in? || needtowait, :class => "form-check-input to-enable" %>
-            <%= raw(c.ans) %>
+            <%= htmlise(c.ans) %>
           </label>
         </div>
       <% end %>

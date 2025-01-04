@@ -74,7 +74,7 @@
   <% else %>
     <td></td>
   <% end %>
-  <td><%= raw(linked_names_by_user[x[:user_id]]) %></td>
+  <td><%= linked_names_by_user[x[:user_id]] %></td>
   <% solved_puzzles = puzzles_by_user[x[:user_id]] %>
   <% puzzle_ids.each do |puzzle_id| %>
     <% if solved_puzzles.include?(puzzle_id) %>

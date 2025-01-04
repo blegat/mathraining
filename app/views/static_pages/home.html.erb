@@ -63,10 +63,10 @@
     <% f = (Rails.env.development? ? 1000 : 1) %>
       <center>
       <table class="home-stats">
-      <tr><td class="left top text-color-mt-blue"><%= raw(write_readable_big_number(statistic.nb_ranked_users * f)) %></td><td class="right top">utilisateurs classés</td></tr>
-      <tr><td class="left text-color-mt-blue"><%= raw(write_readable_big_number(statistic.nb_solvedproblems * f)) %></td><td class="right">problèmes résolus</td></tr>
-      <tr><td class="left text-color-mt-blue"><%= raw(write_readable_big_number(statistic.nb_solvedquestions * f)) %></td><td class="right">exercices résolus</td></tr>
-      <tr><td class="left bottom text-color-mt-blue"><%= raw(write_readable_big_number(statistic.nb_points * f)) %></td><td class="right bottom">points distribués</td></tr>
+      <tr><td class="left top text-color-mt-blue"><%= write_readable_big_number(statistic.nb_ranked_users * f) %></td><td class="right top">utilisateurs classés</td></tr>
+      <tr><td class="left text-color-mt-blue"><%= write_readable_big_number(statistic.nb_solvedproblems * f) %></td><td class="right">problèmes résolus</td></tr>
+      <tr><td class="left text-color-mt-blue"><%= write_readable_big_number(statistic.nb_solvedquestions * f) %></td><td class="right">exercices résolus</td></tr>
+      <tr><td class="left bottom text-color-mt-blue"><%= write_readable_big_number(statistic.nb_points * f) %></td><td class="right bottom">points distribués</td></tr>
       </table>
       </center>
     </div>
@@ -86,7 +86,7 @@
     <% recent_corrections.each do |f| %>
       <%= " - " unless first %>
       <% first = false %>
-      <%= raw(f.user.linked_name) %><%= "&nbsp;(#{f.num_corrections})".html_safe if signed_in? %>
+      <%= f.user.linked_name %><%= "&nbsp;(#{f.num_corrections})".html_safe if signed_in? %>
     <% end %>
   </div>
 <% end %>

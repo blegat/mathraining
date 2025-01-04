@@ -11,7 +11,7 @@
   <ul>
     <% question.items.order(:position).each do |c| %>
       <li class="p-1">
-      <%= raw(htmlise(c.ans)) %>
+      <%= htmlise(c.ans) %>
       <% if c.ok %>
         <%= image_tag v_icon, :class => "ms-2 svg-black-white", :id => "v-#{c.id}" %>
       <% end %>

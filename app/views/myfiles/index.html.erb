@@ -51,7 +51,7 @@
       <span class="text-color-red">Erreur</span>
     <% else %>
       <% qui = about.user %>
-      <%= raw(qui.linked_name) if !qui.nil? %>
+      <%= qui.linked_name if !qui.nil? %>
     <% end %>
   <% else %>
     Organisateurs

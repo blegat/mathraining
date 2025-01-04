@@ -117,7 +117,7 @@ var hideStatement = function () {
   <!-- Rappel de l'énoncé -->
   <% if show_statement_reminder %>
     <div id="statement_reminder" class="grey-box mb-1 p-2" style="display:none; width:100%;">
-    <%= raw(htmlise(@problem.statement)) %>
+    <%= htmlise(@problem.statement) %>
     </div>
   <% end %>
 

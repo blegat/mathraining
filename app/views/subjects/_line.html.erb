@@ -42,7 +42,7 @@
   <!-- Dernier message -->
   <td class="d-none d-lg-table-cell align-middle text-center" style="width:180px;">
     <% if !qui.nil? %>
-      <%= raw(qui.linked_name) %>
+      <%= qui.linked_name %>
     <% else %>
       <b>Message automatique</b>
     <% end %>
@@ -68,7 +68,7 @@
     <tr>
     <td class="align-middle text-center pb-1" style="width:220px; border-bottom:1px dashed grey;">
       <% if !qui.nil? %>
-        <%= raw(qui.linked_name) %>
+        <%= qui.linked_name %>
       <% else %>
         <b>Message automatique</b>
       <% end %>

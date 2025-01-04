@@ -35,7 +35,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
     <div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
     
       <div class="g-col-12 g-col-md-24 intro">
-        <%= raw(bbcode(c.description)) %>
+        <%= bbcode(c.description) %>
       </div>
 
       <div class="g-col-12 g-col-md-12 module left-info">
@@ -84,7 +84,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
         <% total = c.organizers.count %>
         <% c.organizers.order(:last_name, :first_name).each do |o| %>
           <% i = i+1 %>
-          <%= raw(o.linked_name) %><% if i == total - 1 %> et<% elsif i < total - 1 %>, <% else %>.<% end %>
+          <%= o.linked_name %><% if i == total - 1 %> et<% elsif i < total - 1 %>, <% else %>.<% end %>
         <% end %>
       </div>
     

@@ -3,7 +3,7 @@
 <% if question.explanation.size == 0 %>
   <span class="text-color-orange fw-bold">Pas d'explication</span>
 <% else %>
-  <%= raw(htmlise(question.explanation)) %>
+  <%= htmlise(question.explanation) %>
 <% end %>
 
 <!-- Modifier / Supprimer -->

@@ -96,7 +96,7 @@
 <!-- Enoncé -->
 <h3>Énoncé</h3>
 <div class="mb-3">
-<%= raw(htmlise(@problem.statement)) %>
+<%= htmlise(@problem.statement) %>
 </div>
 
 <!-- Origine si administrateur ou si résolu -->
@@ -187,7 +187,7 @@
 <% if (current_user.admin? || current_user.corrector? && problem_solved) %>
   <!-- Explication -->
   <div class='clue-bis'><div><center><button onclick='return Clue.toggle(0)' class='btn btn-ld-light-dark'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
-  <%= raw(htmlise(@problem.explanation)) %>
+  <%= htmlise(@problem.explanation) %>
   </div></div></div>
 <% end %>
 

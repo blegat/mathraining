@@ -45,7 +45,7 @@
         
         <div class="p-3 mt-3 grey-box">
           <h5>Marking scheme</h5>
-          <%= raw(htmlise(@problem.markscheme)) %>
+          <%= htmlise(@problem.markscheme) %>
         </div>
         
         <p class="mt-3 mb-2">Veuillez accepter ou refuser la solution indépendamment du score attribué, comme pour un problème normal. On acceptera donc essentiellement les solutions ayant obtenu un 7, mais des exceptions (dans un sens comme dans l'autre) restent possibles.</p>

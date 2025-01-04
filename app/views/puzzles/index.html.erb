@@ -36,7 +36,7 @@
   <% end %>
   </div>
   
-  <div class="mb-3" style="text-align:justify;"><u>Explication</u> : <%= raw(htmlise(p.explanation)) unless p.explanation.nil? %></div>
+  <div class="mb-3" style="text-align:justify;"><u>Explication</u> : <%= htmlise(p.explanation) unless p.explanation.nil? %></div>
   
   <div class="text-center">
   <%= link_to "Modifier cette énigme", edit_puzzle_path(p) %>

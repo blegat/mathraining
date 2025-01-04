@@ -20,7 +20,7 @@
   <tr class="<%= border_class %>">
   <td><%= write_date_only_small(s.correction_time) %></td>
   <td class="d-none d-md-table-cell"><%= write_hour(s.correction_time) %></td>
-  <td><%= raw(s.user.linked_name) %></td>
+  <td><%= s.user.linked_name %></td>
   <td class="d-none d-md-table-cell"><%= s.section_short_abbreviation %></td>
   <td class="d-none d-md-table-cell">Niv. <%= s.level %></td>
   <td>
@@ -35,7 +35,7 @@
     <td class="d-none d-md-table-cell">
       <% s.submission.followings.each do |f| %>
         <% if f.first_corrector? %>
-          <%= raw(f.user.linked_name) %>
+          <%= f.user.linked_name %>
         <% end %>
       <% end %>
     </td>

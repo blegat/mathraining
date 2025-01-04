@@ -173,7 +173,7 @@
                 </p>
               <% end %>
               <% if can_see_statement %>
-                <%= raw(htmlise(p.statement)) %>
+                <%= htmlise(p.statement) %>
               <% else %>
                 <!-- Uniquement possible quand le test est fini, les soumissions ne sont plus autorisées, et l'étudiant n'a pas de soumission sur ce problème -->
                 <i>Vous n'avez temporairement plus accès à ce problème.</i>

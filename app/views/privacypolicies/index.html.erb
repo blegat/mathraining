@@ -21,7 +21,7 @@
 <% end %>
 </td>
 <td>
-<%= raw(htmlise(p.description)) %>
+<%= htmlise(p.description) %>
 <br/><br/>
 <center><%= link_to "Modifier", edit_description_privacypolicy_path(p) %>
 <% if !p.online %>

@@ -58,7 +58,7 @@
       <% end %>
       </td>
     <% end %>
-    <td id="name-<%= line.user_id %>"><%= raw(line.user.linked_name) %></td>
+    <td id="name-<%= line.user_id %>"><%= line.user.linked_name %></td>
     <% allprobs.each do |p| %>
       <% if p.at_least(:corrected) %>
         <% x = allsols[p.number][line.user.id] %>

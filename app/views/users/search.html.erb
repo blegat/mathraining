@@ -36,7 +36,7 @@
       <h4>Administrateurs</h4>
       <ul>
       <% @admin_users.each do |u| %>
-        <li><%= raw(u.linked_name) %></li>
+        <li><%= u.linked_name %></li>
       <% end %>
       </ul>
     <% end %>

@@ -31,7 +31,7 @@
     <% end %>
     <!-- Enoncé -->
     <tr><td class="content">
-    <%= raw(htmlise(q.statement, true)) %>
+    <%= htmlise(q.statement, true) %>
 
     <% if !q.is_qcm %>
       <% if q.decimal %>
@@ -43,7 +43,7 @@
       <ul class="mt-2">
       <% q.items.order(:position).each do |c| %>
         <li class="p-1">
-        <%= raw(htmlise(c.ans)) %>
+        <%= htmlise(c.ans) %>
       <% end %>
       </ul>
       <% if q.many_answers %>

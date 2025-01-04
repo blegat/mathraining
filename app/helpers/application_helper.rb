@@ -54,7 +54,8 @@ module ApplicationHelper
     gsub(/\;\-\)/,    image_tag("Smiley7.png", alt: ";-)", width: "20px")).
     gsub(/\:\-\|/,    image_tag("Smiley8.png", alt: ":-|", width: "20px")).
     gsub(/[3]\:\[/,   image_tag("Smiley9.png", alt: "3:[", width: "20px")).
-    gsub(/\n/, '<br/>')
+    gsub(/\n/, '<br/>').
+    html_safe
   end
 
   # To read code on admin side (should be similar to preview.js)
@@ -128,7 +129,7 @@ module ApplicationHelper
       end
     end
     
-    return m2
+    return m2.html_safe
   end
 
   # Write 21h50
@@ -225,7 +226,7 @@ module ApplicationHelper
     m = n
     num_digits = 0
     n_string = ""
-    while(m > 0)
+    while (m > 0)
       if num_digits % 3 == 0 && num_digits > 0
         n_string = "&thinsp;" + n_string
       end
@@ -234,7 +235,7 @@ module ApplicationHelper
       m = m/10
       num_digits += 1
     end
-    return n_string
+    return n_string.html_safe
   end
   
   # Methods to write titles

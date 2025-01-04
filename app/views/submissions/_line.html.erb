@@ -89,7 +89,7 @@
 <% if !hide_user %>
   <!-- Nom (si on l'affiche) -->
   <td style="width:200px">
-    <%= raw(s.user.linked_name) unless hidden_sub %>
+    <%= s.user.linked_name unless hidden_sub %>
   </td>
 <% end %>
 
@@ -99,7 +99,7 @@
     <% premier = true %>
     <% s.followings.each do |f| %>
       <%= " - " if !premier %>
-      <%= raw(f.user.linked_name) %>
+      <%= f.user.linked_name %>
       <% premier = false %>
     <% end %>
   </td>

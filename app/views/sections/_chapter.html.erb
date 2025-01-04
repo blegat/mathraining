@@ -7,7 +7,7 @@
 <div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
 
   <div class="g-col-12 g-col-md-24 intro">
-    <%= raw(htmlise(chapter.description)) %>
+    <%= htmlise(chapter.description) %>
     <% if classe == "greyy" %>
       <p class="mt-3 mb-0 fw-bold">Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
       <% prems = true %>

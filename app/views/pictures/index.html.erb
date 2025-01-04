@@ -30,7 +30,7 @@
   <%= link_to image_tag(p.image, :class => "mb-2", :style => "width:100%;"), p, target: "_blank" %>
   <p class="text-center">
   <% if show_all %>
-    <%= raw(p.user.linked_name) %><br/>
+    <%= p.user.linked_name %><br/>
   <% end %>
   </p>
   </div>

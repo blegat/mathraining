@@ -78,7 +78,7 @@
 <% elsif signed_in? && current_user.root %>
   <ul>
   <% @all_users.each do |u| %>
-    <li><%= raw(u.linked_name) %> (<%= write_date_only(u.created_at) %>)</li>
+    <li><%= u.linked_name %> (<%= write_date_only(u.created_at) %>)</li>
   <% end %>
   </ul>
 <% end %>
