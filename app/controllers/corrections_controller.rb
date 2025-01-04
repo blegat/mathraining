@@ -75,7 +75,7 @@ class CorrectionsController < ApplicationController
     if current_user == @submission.user and @submission.wrong?
       @submission.status = :wrong_to_read
       @submission.save
-      m = ''
+      m = "Votre commentaire a bien été posté."
 
     # If new/wrong, current user is corrector and he wants to keep it wrong: new status is wrong
     elsif (current_user != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
@@ -83,14 +83,14 @@ class CorrectionsController < ApplicationController
       params[:commit] == "Poster et laisser la soumission comme erronée")
       @submission.status = :wrong
       @submission.save
-      m = ' et soumission marquée comme incorrecte'
+      m = "Soumission marquée comme incorrecte."
 
     # If wrong, current user is corrector and he wants to keep it wrong: new status is wrong
     elsif (current_user != @submission.user) and (@submission.wrong? or @submission.wrong_to_read?) and
       params[:commit] == "Poster et clôturer la soumission"
       @submission.status = :closed
       @submission.save
-      m = ' et soumission clôturée'
+      m = "Soumission clôturée."
 
     # If current user is corrector and he wants to accept it: new status is correct
     elsif (current_user != @submission.user) and params[:commit] == "Poster et accepter la soumission"
@@ -118,7 +118,7 @@ class CorrectionsController < ApplicationController
         end
         @problem.save
       end
-      m = ' et soumission marquée comme correcte'
+      m = "Soumission marquée comme correcte."
 
       # Delete the drafts of the user to the problem
       draft = @problem.submissions.where(:user => @submission.user, :status => :draft).first
@@ -160,7 +160,7 @@ class CorrectionsController < ApplicationController
       @submission.followings.update_all(:read => false)
     end
 
-    flash[:success] = "Réponse postée#{m}."
+    flash[:success] = m
     redirect_to problem_path(@problem, :sub => @submission)
   end
 
