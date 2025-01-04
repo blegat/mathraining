@@ -56,8 +56,15 @@
   }
 }
 
-.text-color-mt-blue {
-  color: rgb(3,109,170);
+[data-bs-theme="light"] {
+  .text-color-mt-blue {
+    color: #036daa
+  }
+}
+[data-bs-theme="dark"] {
+  .text-color-mt-blue {
+    color: #0497ec;
+  }
 }
 
 .text-color-grey {
