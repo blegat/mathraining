@@ -734,11 +734,9 @@
     <% if @user.correction_level > 0 %>
       <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang
       <% if show_puzzle %>
-      <a href="javascript:changeGraph()" class="<%= @user.color_class %>">
-      <% end %>
-      <span class="fw-bold <%= @user.color_class %>"><%= @user.correction_level %></span>
-      <% if show_puzzle %>
-      </a>
+        <a href="javascript:changeGraph()" class="fw-bold <%= @user.color_class %>"><%= @user.correction_level %></a>
+      <% else %>
+        <span class="fw-bold <%= @user.color_class %>"><%= @user.correction_level %></span>
       <% end %>
       de l'Ordre de Mathraining.
     <% end %>
