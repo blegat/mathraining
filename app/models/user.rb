@@ -242,21 +242,16 @@ class User < ActiveRecord::Base
 
   # Gives the "level" of the user
   def level
-    return {color:"#000000"} if admin # Should not be used anymore with light/dark theme!
-    return {color:"#BBBB00"} if !active 
-
+    return {} if admin # Should not be used anymore with light/dark theme!
     actuallevel = nil
-    if $allcolors.nil? || Rails.env.test? # Need to reload in tests because Colors can change
-      $allcolors = Color.order(:pt).to_a
-    end
-    $allcolors.each do |c|
+    Color.get_all.each do |c|
       if c.pt <= rating
         actuallevel = c
       else
         return actuallevel
       end
     end
-    return {pt: 0, color: "#FF0000", name: "Undefined", feminine_name: "Undefined"} if actuallevel.nil? # For tests, when no color exists
+    return {id: 0, pt: 0, color: "#FF0000", name: "Undefined", feminine_name: "Undefined"} if actuallevel.nil? # For tests, when no color exists
     return actuallevel
   end
 
@@ -346,6 +341,17 @@ class User < ActiveRecord::Base
       return ""
     end
   end
+  
+  # Gives the color class to be used for this user
+  def color_class
+    if self.admin?
+      return "text-color-black-white";
+    elsif !self.active?
+      return "text-color-level-inactive";
+    else
+      return "text-color-level-#{self.level[:id]}";
+    end
+  end
 
   # Returns the colored name of the user:
   # name_type = 0 : to respect the user choice (full name or not)
@@ -358,11 +364,11 @@ class User < ActiveRecord::Base
     if self.admin?
       return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{html_escape(goodname)}</span>"
     elsif !self.corrector?
-      return "<span class='fw-bold' style='color:#{self.level[:color]};'>#{html_escape(goodname)}</span>"
+      return "<span class='fw-bold #{self.color_class}'>#{html_escape(goodname)}</span>"
     else
       debut = goodname[0]
       fin = goodname[1..-1]
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{debut}</span><span class='fw-bold' style='color:#{self.level[:color]};'>#{html_escape(fin)}</span>"
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{debut}</span><span class='fw-bold #{self.color_class}'>#{html_escape(fin)}</span>"
     end
   end
 
@@ -370,12 +376,9 @@ class User < ActiveRecord::Base
   def linked_name(name_type = 0, add_corrector_prefix = true)
     if !self.active?
       return self.colored_name(name_type)
-    elsif self.admin?
-      # Note: We give a color to the "a" so that the link is underlined with this color when it is hovered/clicked
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' class='text-color-black-white'>" + self.colored_name(name_type, false) + "</a>"
     else
       # Note: We give a color to the "a" so that the link is underlined with this color when it is hovered/clicked
-      return (add_corrector_prefix ? self.corrector_prefix : "") + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' style='color:#{self.level[:color]};'>" + self.colored_name(name_type, false) + "</a>"
+      return (add_corrector_prefix ? self.corrector_prefix : "") + "<a href='#{Rails.application.routes.url_helpers.user_path(self)}' class='#{self.color_class}'>" + self.colored_name(name_type, false) + "</a>"
     end
   end
   

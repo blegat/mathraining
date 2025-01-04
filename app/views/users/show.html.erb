@@ -12,39 +12,12 @@
   <% niveau = @user.level %>
   <% grade = (@user.sex == 0 ? niveau[:name] : niveau[:femininename]) %>
   <% user_color_light = niveau[:color] %>
-  <% user_color_dark = niveau[:color] %>
+  <% user_color_dark = niveau[:dark_color] %>
 <% else %>
   <% grade = (@user.sex == 0 ? "Administrateur" : "Administratrice") %>
   <% user_color_light = "black" %>
   <% user_color_dark = "white" %>
 <% end %>
-
-<style type="text/css">
-  /* NB: Instead of using _light and _dark classes as we do today, another option would be to have only one class and
-     to change its definition using [data-bs-theme=light] and [data-bs-theme=dark] as usual. Unfortunately, that approach
-     does not work on Safari where the [data-...] tags look unsupported when declared inside the html file like here */
-  <% toSwap = [] %>
-  .user_color_light {
-    color: <%= user_color_light %>!important;
-  }
-  .user_color_dark {
-    color: <%= user_color_dark %>!important;
-  }
-  <% toSwap.push("user_color") %>
-  
-  <% if !@user.admin %>
-    /* Those classes can only be used for students (because user_color_light == user_color_dark)
-       We use them when possible, so that javascript does not have too much work when changing theme */
-    .user_color {
-      color: <%= user_color_light %>!important;
-    }
-    .user_color_bg {
-      background-color: <%= user_color_light %>;
-    }
-  <% end %>
-</style>
-
-
 
 <% if !@user.admin %>
 
@@ -141,17 +114,17 @@
     <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
       <tr>
       <td class="mytitle">Score</td>
-      <td class="myvalue user_color"><%= raw(write_readable_big_number(actualrating)) %></td>
+      <td class="myvalue <%= @user.color_class %>"><%= raw(write_readable_big_number(actualrating)) %></td>
       </tr>
       
       <tr>
       <td class="mytitle">Rang</td>
-      <td class="myvalue user_color"><%= raw(write_readable_big_number(rank)) if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
+      <td class="myvalue <%= @user.color_class %>"><%= raw(write_readable_big_number(rank)) if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
       </tr>
         
       <tr>
       <td class="mytitle">Centile</td>
-      <td class="myvalue user_color"><%= "#{rank_centile}%" if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
+      <td class="myvalue <%= @user.color_class %>"><%= "#{rank_centile}%" if actualrating > 0 %><%= "-" if actualrating == 0 %></td>
       </tr>
     </table>
     
@@ -180,7 +153,7 @@
     <tr>
     <% num_medals = @user.contestscores.group(:medal).count %>
     <% ["gold_medal", "silver_medal", "bronze_medal", "honourable_mention"].each do |m| %>
-      <td class="text-center pt-1 fw-bold user_color" style="font-size:22px;">
+      <td class="text-center pt-1 fw-bold <%= @user.color_class %>" style="font-size:22px;">
       <%= num_medals.key?(m) ? num_medals[m] : "-" %>
       </td>
     <% end %>
@@ -192,15 +165,15 @@
   
 <% if signed_in? && current_user.root? %>
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
-    Connecté le <span class="user_color_<%= mt_theme %>"><%= write_date_only_small(@user.last_connexion_date) %></span>
+    Connecté le <span class="<%= @user.color_class %>"><%= write_date_only_small(@user.last_connexion_date) %></span>
   </div>
   
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
-    <span class="user_color_<%= mt_theme %>"><%= "(" if !@user.email_confirm %><%= @user.email %><%= ")" if !@user.email_confirm %></span>
+    <span class="<%= @user.color_class %>"><%= "(" if !@user.email_confirm %><%= @user.email %><%= ")" if !@user.email_confirm %></span>
   </div>
   
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
-    Né en <span class="user_color_<%= mt_theme %>"><%= @user.year %></span>
+    Né en <span class="<%= @user.color_class %>"><%= @user.year %></span>
   </div>
   
   <div class="g-col-12 g-col-md-6 g-col-lg-3 basic_container text-center p-1">
@@ -241,23 +214,21 @@
       stroke-dashoffset: <%= circumference / 4 %>%;
     }
 
-    .circle_light.progress {
+    .mt_light.circle_progress {
       stroke: <%= user_color_light %>;
     }
     
-    .circle_dark.progress {
+    .mt_dark.circle_progress {
       stroke: <%= user_color_dark %>;
     }
 
-    .circle_light.bg {
+    .mt_light.circle_bg {
       stroke: <%= arcgrey_light %>;
     }
 
-    .circle_dark.bg {
+    .mt_dark.circle_bg {
       stroke: <%= arcgrey_dark %>;
     }
-
-    <% toSwap.push("circle") %>
   </style>
 
   <!-- Exercices -->
@@ -267,9 +238,9 @@
     <tr><td class="progress_circle">
     <div class="wrapper">
       <svg width="100" height="100">
-        <circle class="circle <%= "circle_#{mt_theme}" %> bg"/>
+        <circle class="circle <%= "mt_#{mt_theme}" %> circle_bg"/>
        <% if nb_q > 0 %>
-         <circle class="circle <%= "circle_#{mt_theme}" %> progress exo"/>
+         <circle class="circle <%= "mt_#{mt_theme}" %> circle_progress exo"/>
        <% end %>
       </svg>
       <div class="progress_nb"><%= nb_q %></div>
@@ -286,9 +257,9 @@
     <tr><td class="progress_circle">
     <div class="wrapper">
       <svg width="100" height="100">
-        <circle class="circle <%= "circle_#{mt_theme}" %> bg"/>
+        <circle class="circle <%= "mt_#{mt_theme}" %> circle_bg"/>
         <% if nb_p > 0 %> 
-          <circle class="circle <%= "circle_#{mt_theme}" %> progress pb"/>
+          <circle class="circle <%= "mt_#{mt_theme}" %> circle_progress pb"/>
         <% end %>
       </svg>
       <div class="progress_nb"><%= nb_p %></div>
@@ -297,6 +268,17 @@
     </td></tr>
     </table>
   </div>
+  
+  <!-- Style pour les progress bar horizontales -->
+  <style type="text/css">
+    .mt_light.progress-bar {
+      background-color: <%= user_color_light %>;
+    }
+    
+    .mt_dark.progress-bar {
+      background-color: <%= user_color_dark %>;
+    }
+  </style>
   
   <!-- Progression par section -->
   <div class="g-col-12 g-col-md-6 g-col-lg-6 basic_container p-1 px-3">
@@ -315,7 +297,7 @@
       <td class="px-1">
         <% pct = s.max_score == 0 ? 0 : 100*rate/s.max_score.to_f %>
         <div class="progress mb-0" style="height:10px;">
-        <div class="progress-bar user_color_bg" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%;">
+        <div class="progress-bar <%= "mt_#{mt_theme}" %>" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:<%= pct %>%;">
         </div>
         </div>
       </td>
@@ -385,7 +367,7 @@
         <% if numact == act.size %>
           <% remove_border += "border-bottom:0px;" %>
         <% end %>
-        <td class="text-center fw-bold user_color" style="width:50px; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
+        <td class="text-center fw-bold <%= @user.color_class %>" style="width:50px; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
         <td class="text-center" style="width:75px; <%= remove_border %>"><%= write_date_only_small(date) %><span class="d-inline d-md-none"><br/><%= write_hour(date) %></span></td>
         <td class="d-none d-md-table-cell text-center" style="width:60px; <%= remove_border %>"><%= write_hour(date) %></td>
         <td style="<%= remove_border %>">
@@ -461,7 +443,7 @@
         <% end %>
         <% if ac[:max_score] < 0 %>
           <!-- Concours organisé -->
-          <td class="text-center" style="width:190px; <%= remove_border %>" colspan="3"><span class="fw-bold user_color">Organisateur</span></td>
+          <td class="text-center" style="width:190px; <%= remove_border %>" colspan="3"><span class="fw-bold <%= @user.color_class %>">Organisateur</span></td>
         <% else %>
           <!-- Médaille -->
           <td class="p-0 text-center" style="width:35px; <%= remove_border %>">
@@ -472,14 +454,14 @@
           <%= "-" if ac[:medal] == "no_medal" || ac[:medal] == "undefined_medal" %>
           </td>
           <td class="d-none d-sm-table-cell text-center" style="width:90px; <%= remove_border %>">
-          <span class="fw-bold user_color"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
+          <span class="fw-bold <%= @user.color_class %>"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
           </td>
           <td class="d-none d-sm-table-cell text-center" style="width:100px; <%= remove_border %>">
-          <span class="fw-bold user_color"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+          <span class="fw-bold <%= @user.color_class %>"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
           </td>
           <td class="d-table-cell d-sm-none text-center" style="width:100px; <%= remove_border %>">
-          <span class="fw-bold user_color"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
-          <span class="fw-bold user_color"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+          <span class="fw-bold <%= @user.color_class %>"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
+          <span class="fw-bold <%= @user.color_class %>"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
           </td>
           <td class="d-table-cell d-sm-none" style="width:0px;"></td>
         <% end %>
@@ -500,7 +482,7 @@
   <div class="container_title">Évolution</div>
     
   <div class="pe-2 pb-2" style="padding-left:20px;">
-    <%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span class="user_color"><%= write_date_only(@user.created_at) %></span>.
+    <%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span class="<%= @user.color_class %>"><%= write_date_only(@user.created_at) %></span>.
     <% if nb_p >= 3 %>
       <% followings = Following.includes(:user).where(:submission_user => @user, :kind => [:first_corrector, :other_corrector]).group(:user_id).select("count(id) AS num_corrections, user_id").order("num_corrections DESC, user_id ASC").to_a %>
       <% if followings.size > 0 %>
@@ -533,12 +515,12 @@
     </center>
 
     <!-- Script pour le graphique de l'évolution -->
-    <% @niveaux = Color.order(:pt).to_a %>
+    <% niveaux = Color.get_all %>
 
     <% i = 1 %>
     <% numerolevel = 0 %>
 
-    <% @niveaux.each do |n| %>
+    <% niveaux.each do |n| %>
       <% if niveau.id == n.id %>
         <% numerolevel = i %>
       <% end %>
@@ -553,7 +535,7 @@
     <% if numerolevel == nombrelevel %>
       <% maxi = 1.2*actualrating %>
     <% else %>
-      <% maxi = 1.1*@niveaux[numerolevel][:pt] %>
+      <% maxi = 1.1*niveaux[numerolevel][:pt] %>
     <% end %>
     
     <script type="text/javascript">
@@ -615,7 +597,7 @@
         ctx.textAlign = 'right';
         <% i = 1 %>
         var prec = 1000;
-        <% @niveaux.each do |n| %>
+        <% niveaux.each do |n| %>
         
           // Points à gauche du graphique
           <% if i > 1 %>
@@ -635,14 +617,14 @@
             <% haut = 0 %>
           <% else %>
             <% bas = [1 - (n.pt / maxi), 0].max %>
-            <% haut = [1 - (@niveaux[i].pt / maxi), 0].max %>
+            <% haut = [1 - (niveaux[i].pt / maxi), 0].max %>
           <% end %>
           
           // Affichage du rectangle
           <% if bas > haut %>
             ctx.beginPath();
             ctx.rect(W_offset, H_offset + H_size * <%= haut %>, W_size, H_size * <%= bas - haut %>);
-            ctx.fillStyle = '<%= n.color %>';
+            ctx.fillStyle = (is_dark ? '<%= n.dark_color %>' : '<%= n.color %>');
             ctx.fill();
           <% end %>
           <% i = i+1 %>
@@ -754,16 +736,16 @@
 <% if nb_corrections > 0 %>
   <div class="g-col-12 basic_container p-1">
     <div class="container_title">Corrections</div>
-    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold user_color_<%= mt_theme %>"><%= raw(write_readable_big_number(nb_corrections)) %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
+    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold <%= @user.color_class %>"><%= raw(write_readable_big_number(nb_corrections)) %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
     
     <% show_puzzle = Puzzle.started_or_root(current_user) && (!Rails.env.production? || @user.id == 38) %>
     
     <% if @user.correction_level > 0 %>
       <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang
       <% if show_puzzle %>
-      <a href="javascript:changeGraph()" class="user_color_<%= mt_theme %>">
+      <a href="javascript:changeGraph()" class="<%= @user.color_class %>">
       <% end %>
-      <span class="fw-bold user_color_<%= mt_theme %>"><%= @user.correction_level %></span>
+      <span class="fw-bold <%= @user.color_class %>"><%= @user.correction_level %></span>
       <% if show_puzzle %>
       </a>
       <% end %>
@@ -1034,18 +1016,18 @@
 </div>
 <!-- END OF THE MAIN DIV -->
 
-<!-- Script to replace all _light classes by _dark classes (or vice versa) when theme changes -->
+<!-- Script to replace mt_light class by mt_dark class (or vice versa) when theme changes -->
+<!-- NB: Instead of using mt_light and mt_dark classes as we do today, another option would be to have only one class and
+     to change its definition using [data-bs-theme=light] and [data-bs-theme=dark] as usual. Unfortunately, that approach
+     does not work on Safari where the [data-...] tags look unsupported when declared inside the html file like here -->
 <script type="text/javascript">
   window.addEventListener("theme-change", () => {
     var theme = document.documentElement.getAttribute('data-bs-theme');
     var old_theme = (theme == 'light' ? 'dark' : 'light');
-    var els;
-    <% toSwap.each do |c| %>
-      els = document.getElementsByClassName("<%= c %>_" + old_theme); /* this is live and gets updated when changing classes below! */
-      while (els.length > 0) {
-        els[0].classList.add("<%= c %>_" + theme);
-        els[0].classList.remove("<%= c %>_" + old_theme);
-      }
-    <% end %>
+    var els = document.getElementsByClassName("mt_" + old_theme); /* this is live and gets updated when changing classes below! */
+    while (els.length > 0) {
+      els[0].classList.add("mt_" + theme);
+      els[0].classList.remove("mt_" + old_theme);
+    }
   });
 </script>

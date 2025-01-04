@@ -25,6 +25,7 @@ FactoryGirl.define do
     name "Nom"
     femininename "Nom feminin"
     color "#AAAAAA"
+    dark_color "#CCCCCC"
   end
   
   # Contest

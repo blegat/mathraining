@@ -5,7 +5,7 @@
 <% i = 1 %>
 
 <table class="mb-3">
-  <tr><th></th><th class="text-center p-1">Seuil</th><th class="text-center p-1">Nom</th><th class="text-center p-1">Nom féminin</th><th class="text-center p-1">Couleur</th><th></th><th></th></tr>
+  <tr><th></th><th class="text-center p-1">Seuil</th><th class="text-center p-1">Nom</th><th class="text-center p-1">Nom féminin</th><th class="text-center p-1">Couleur (light)</th><th class="text-center p-1">Couleur (dark)</th><th></th><th></th></tr>
   <% Color.order(:pt).each do |c| %>
     <tr>
       <td class="ps-2 pe-1"><%= i %>.</td>
@@ -14,6 +14,7 @@
         <td><%= f.text_field :name, :id => "name_edit#{i}", :class => "form-control m-0", :maxlength => "255", :style => "width:150px;"%></td>
         <td><%= f.text_field :femininename, :id => "femininename_edit#{i}", :class => "form-control m-0", :maxlength => "255", :style => "width:150px;"%></td>
         <td><%= f.text_field :color, :id => "color_edit#{i}", :class => "form-control m-0 fw-bold", :maxlength => "7", :style => "width:95px; color:#{c.color};" %></td>
+        <td><%= f.text_field :dark_color, :id => "dark_color_edit#{i}", :class => "form-control m-0 fw-bold", :maxlength => "7", :style => "width:95px; color:#{c.dark_color};" %></td>
         <td><%= f.submit "Modifier", :id => "button_edit#{i}", class: "btn btn-primary ms-2", onclick: "return confirm('Êtes-vous sûr de vouloir modifier ce niveau ?')" %></td>
         <% i = i+1 %>
       <% end %>
@@ -28,6 +29,7 @@
       <td class="pt-2"><%= f.text_field :name, :id => "name_add", :class => "form-control m-0", :maxlength => "255", :style => "width:150px;"%></td>
       <td class="pt-2"><%= f.text_field :femininename, :id => "femininename_add", :class => "form-control m-0", :maxlength => "255", :style => "width:150px;" %></td>
       <td class="pt-2"><%= f.text_field :color, :id => "color_add", :class => "form-control m-0", :maxlength => "7", :style => "width:95px;" %></td>
+      <td class="pt-2"><%= f.text_field :dark_color, :id => "dark_color_add", :class => "form-control m-0", :maxlength => "7", :style => "width:95px;" %></td>
       <td class="pt-2"><%= f.submit "Ajouter", :id => "button_add", class: "btn btn-primary ms-2",  onclick: "return confirm('Êtes-vous sûr de vouloir ajouter ce niveau ?')" %></td>
     <% end %>
   </tr>
@@ -44,14 +46,14 @@
   </div>
 </center>
 
-<% @niveaux = Color.order(:pt).all %>
+<% niveaux = Color.get_all %>
 
-<% nombrelevel = 0 %>
+<% numlevel = 0 %>
 <% maxi = 0 %>
 
-<% @niveaux.each do |n| %>
+<% niveaux.each do |n| %>
   <% maxi = 1 + n.pt * 1.2 %>
-  <% nombrelevel = nombrelevel + 1 %>
+  <% numlevel += 1 %>
 <% end %>
 
 <script type="text/javascript">
@@ -88,7 +90,7 @@
     ctx.textAlign = 'right';
     <% i = 1 %>
     var prec = 1000;
-    <% @niveaux.each do |n| %>
+    <% niveaux.each do |n| %>
     
       // Points à gauche du graphique
       <% if i > 1 %>
@@ -103,19 +105,19 @@
       <% end %>
 
       // Calcul du bas et du haut
-      <% if i == nombrelevel %>
+      <% if i == numlevel %>
         <% bas = [1 - (n.pt / maxi), 0].max %>
         <% haut = 0 %>
       <% else %>
         <% bas = [1 - (n.pt / maxi), 0].max %>
-        <% haut = [1 - (@niveaux[i].pt / maxi), 0].max %>
+        <% haut = [1 - (niveaux[i].pt / maxi), 0].max %>
       <% end %>
       
       // Affichage du rectangle
       <% if bas > haut %>
         ctx.beginPath();
         ctx.rect(W_offset, H_offset + H_size * <%= haut %>, W_size, H_size * <%= bas - haut %>);
-        ctx.fillStyle = '<%= n.color %>';
+        ctx.fillStyle = (is_dark ? '<%= n.dark_color %>' : '<%= n.color %>');
         ctx.fill();
       <% end %>
       <% i = i+1 %>

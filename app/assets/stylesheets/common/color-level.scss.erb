@@ -1,0 +1,25 @@
+[data-bs-theme="light"] {
+  .text-color-level-inactive {
+    color: #BBBB00!important;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .text-color-level-inactive {
+    color: #BBBB00!important;
+  }
+}
+
+<% Color.all.each do |c| %>
+  [data-bs-theme="light"] {
+    .text-color-level-<%= c.id %> {
+      color: <%= c.color %>!important;
+    }
+  }
+
+  [data-bs-theme="dark"] {
+    .text-color-level-<%= c.id %> {
+      color: <%= c.dark_color %>!important;
+    }
+  }
+<% end %>

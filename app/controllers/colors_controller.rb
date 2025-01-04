@@ -12,7 +12,7 @@ class ColorsController < ApplicationController
 
   # Create a color (send the form)
   def create
-    @color = Color.new(params.require(:color).permit(:pt, :name, :femininename, :color))
+    @color = Color.new(params.require(:color).permit(:pt, :name, :femininename, :color, :dark_color))
     if @color.save
       flash[:success] = "Niveau et couleur ajoutés."
     else
@@ -23,7 +23,7 @@ class ColorsController < ApplicationController
 
   # Update a color (send the form)
   def update
-    if @color.update(params.require(:color).permit(:pt, :name, :femininename, :color))
+    if @color.update(params.require(:color).permit(:pt, :name, :femininename, :color, :dark_color))
       flash[:success] = "Niveau et couleur modifiés."
     else
       flash[:danger] = error_list_for(@color)

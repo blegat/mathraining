@@ -7,6 +7,7 @@
 #  name         :string
 #  color        :string
 #  femininename :string
+#  dark_color   :string
 #
 require "spec_helper"
 
@@ -40,5 +41,10 @@ describe Color, color: true do
     before { color.color = "#ABCDEFG" }
     it { should_not be_valid }
   end
-
+  
+  # Dark color
+  describe "when dark color is not of length 7" do
+    before { color.color = "#ABCDE" }
+    it { should_not be_valid }
+  end
 end

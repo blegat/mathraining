@@ -27,11 +27,13 @@ describe "Color pages", color: true do
           find_by_id('name_add').set("new_name")
           find_by_id('femininename_add').set("new_feminine_name")
           find_by_id('color_add').set("#AABBCC")
+          find_by_id('dark_color_add').set("#BBCCDD")
           find_by_id('button_add').click
         end
         specify do
           expect(Color.order(:id).last.name).to eq("new_name")
           expect(Color.order(:id).last.color).to eq("#AABBCC")
+          expect(Color.order(:id).last.dark_color).to eq("#BBCCDD")
         end
       end
       
@@ -41,6 +43,7 @@ describe "Color pages", color: true do
           find_by_id('name_add').set("new_name")
           find_by_id('femininename_add').set("new_feminine_name")
           find_by_id('color_add').set("#AABBC") # Too short
+           find_by_id('dark_color_add').set("#BBCCDD")
           find_by_id('button_add').click
         end
         specify do
@@ -58,12 +61,14 @@ describe "Color pages", color: true do
           find_by_id('name_edit11').set("new_name")
           find_by_id('femininename_edit11').set("new_feminine_name")
           find_by_id('color_edit11').set("#AABBCC")
+          find_by_id('dark_color_edit11').set("#BBCCDD")
           find_by_id('button_edit11').click
           color.reload
         end
         specify do
           expect(color.name).to eq("new_name")
           expect(color.color).to eq("#AABBCC")
+          expect(color.dark_color).to eq("#BBCCDD")
         end
       end
       
@@ -72,7 +77,8 @@ describe "Color pages", color: true do
           find_by_id('pt_edit11').set(20)
           find_by_id('name_edit11').set("new_name")
           find_by_id('femininename_edit11').set("new_feminine_name")
-          find_by_id('color_edit11').set("#AABBC") # Too short
+          find_by_id('color_edit11').set("#AABBCC")
+          find_by_id('dark_color_edit11').set("#BBCCD") # Too short
           find_by_id('button_edit11').click
           color.reload
         end
