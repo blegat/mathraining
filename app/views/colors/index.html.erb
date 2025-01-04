@@ -91,10 +91,10 @@
     <% i = 1 %>
     var prec = 1000;
     <% niveaux.each do |n| %>
+      <% haut = [1 - (n.pt / maxi), 0].max %>
     
       // Points à gauche du graphique
       <% if i > 1 %>
-        <% haut = [1 - (n.pt / maxi), 0].max %>
         <% if haut > 0 %>
           if (H_size * <%= haut %> < prec - 15){
             ctx.fillStyle = (is_dark ? 'white' : 'black');
@@ -104,19 +104,10 @@
         <% end %>
       <% end %>
 
-      // Calcul du bas et du haut
-      <% if i == numlevel %>
-        <% bas = [1 - (n.pt / maxi), 0].max %>
-        <% haut = 0 %>
-      <% else %>
-        <% bas = [1 - (n.pt / maxi), 0].max %>
-        <% haut = [1 - (niveaux[i].pt / maxi), 0].max %>
-      <% end %>
-      
       // Affichage du rectangle
-      <% if bas > haut %>
+      <% if haut > 0 %>
         ctx.beginPath();
-        ctx.rect(W_offset, H_offset + H_size * <%= haut %>, W_size, H_size * <%= bas - haut %>);
+        ctx.rect(W_offset, H_offset, W_size, H_size * <%= haut %>);
         ctx.fillStyle = (is_dark ? '<%= n.dark_color %>' : '<%= n.color %>');
         ctx.fill();
       <% end %>
