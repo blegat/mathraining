@@ -120,7 +120,7 @@
 <% end %>
 
 <% def normal_title() %>
-  document.getElementById("subject_title").disabled = ""
+  document.getElementById("subject_title").disabled = false
   document.getElementById("subject_title").name = "subject[title]"
   document.getElementById("hidden_title").name = "osef"
 <% end %>
@@ -128,7 +128,7 @@
 <% def forced_title() %>
   document.getElementById("subject_title").name = "osef"
   document.getElementById("subject_title").value = "<%= params[:txt] %>".replace("HASHTAG", "#")
-  document.getElementById("subject_title").disabled = "disabled"
+  document.getElementById("subject_title").disabled = true
   document.getElementById("hidden_title").name = "subject[title]"
   document.getElementById("hidden_title").value = "<%= params[:txt] %>".replace("HASHTAG", "#")
 <% end %>

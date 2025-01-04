@@ -48,21 +48,21 @@ function checkStatus(puzzle_id) {
     setClass(status_div, "to-submit");
     status_div.innerHTML = "Non enregistré";
     <% unless in_skin? %>
-      submit_btn.disabled = "";
+      submit_btn.disabled = false;
     <% end %>
   }
   else if (new_guess.length == 0) {
     setClass(status_div, "none");
     status_div.innerHTML = "";
     <% unless Rails.env.test? %>
-      submit_btn.disabled = "disabled";
+      submit_btn.disabled = true;
     <% end %>
   }
   else {
     setClass(status_div, "submitted");
     status_div.innerHTML = "Enregistré";
     <% unless Rails.env.test? %>
-      submit_btn.disabled = "disabled";
+      submit_btn.disabled = true;
     <% end %>
   }
 }
@@ -70,7 +70,7 @@ function checkStatus(puzzle_id) {
 function submitPuzzleAttempt(puzzle_id) {
   var code_input = document.getElementById("code-" + puzzle_id);
   var submit_btn = document.getElementById("submit-" + puzzle_id);
-  submit_btn.disabled = "disabled";
+  submit_btn.disabled = true;
   var code = code_input.value;
   $.getScript("/puzzles/" + puzzle_id + "/attempt?code=" + code);
   return false;
@@ -95,7 +95,7 @@ function submitPuzzleAttempt(puzzle_id) {
     <center>
     <form class="input-group" style="width:260px;" onsubmit="return submitPuzzleAttempt('<%= p.id %>')">
       <input class="form-control text-center" type="text" value="<%= code %>" id="code-<%= p.id %>" maxlength="5" oninput="checkStatus('<%= p.id %>')" placeholder="_ _ _ _ _">
-      <button class="btn btn-primary" id="submit-<%= p.id %>" <%= "disabled='disabled'" if in_skin? %>>✓</button>
+      <button class="btn btn-primary" id="submit-<%= p.id %>" <%= "disabled" if in_skin? %>>✓</button>
       <div class="input-group-text text-center" style="width:140px; display:grid;" id="status-<%= p.id %>"></div>
     </form>
     </center>

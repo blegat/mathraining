@@ -8,5 +8,5 @@ var submit_btn = document.getElementById("submit-<%= @puzzle.id %>");
 <% else %>
   setClass(status_div, "error");
   status_div.innerHTML = "Format incorrect"
-  submit_btn.disabled = "disabled"
+  submit_btn.disabled = true
 <% end %>

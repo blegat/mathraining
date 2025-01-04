@@ -85,7 +85,7 @@ var hideStatement = function () {
   <div id="div_reserved_by_nobody" class="mb-2 p-2 ps-3 bg-as-table-ld-warning" style="<%= "display:none;" if reservation_case != 1 %>">
     Avant de corriger cette soumission, prévenez les autres que vous vous en occupez !
     <div class="d-block d-lg-none" style="height:7px;"></div>
-    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:reserve()" <%= "disabled='disabled'" if in_skin? %>>Réserver cette soumission</button>
+    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:reserve()" <%= "disabled" if in_skin? %>>Réserver cette soumission</button>
   </div>
   
   <div id="div_reserved_by_other" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-reder" style="<%= "display:none;" if reservation_case != 2 %>">
@@ -99,14 +99,14 @@ var hideStatement = function () {
     </span>
     <div class="d-block d-lg-none" style="height:7px;"></div>
     <% if current_user.root? %>
-      <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled='disabled'" if in_skin? %>>Annuler la réservation</button>
+      <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled" if in_skin? %>>Annuler la réservation</button>
     <% end %>
   </div>
   
   <div id="div_reserved_by_me" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-greener" style="<%= "display:none;" if reservation_case != 3 %>">
     Vous avez réservé cette soumission pour la corriger.
     <div class="d-block d-lg-none" style="height:7px;"></div>
-    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled='disabled'" if in_skin? %>>Annuler ma réservation</button>
+    <button class="btn btn-ld-light-dark ms-4" onclick="javascript:unreserve()" <%= "disabled" if in_skin? %>>Annuler ma réservation</button>
   </div>
 <% end %>
 
