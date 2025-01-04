@@ -18,16 +18,16 @@
 
 [data-bs-theme="dark"] {
   .greeny {
-    border: 1px solid #75c87c;
+    border: 1px solid #79ca82; // 56 % lighter
   }
 
   .greeny .title {
-    background-color: #205124;
+    background-color: #1f4f24; // 6 % lighter
   }
 
   .greeny .module {
-    background-color: #19401d;
-    border: 1px solid #55bb5d;
+    background-color: #183d1c;
+    border: 1px solid #54bc5f; // 44 % lighter
   }
 }
 
@@ -46,16 +46,16 @@
 
 [data-bs-theme="dark"] {
   .yellowy {
-    border: 1px solid #dac200;
+    border: 1px solid #bfad8b;
   }
   
   .yellowy .title {
-    background-color: #5c5200;
+    background-color: #51442d;
   }
 
   .yellowy .module {
-    background-color: #453d00;
-    border: 1px solid #baa500;
+    background-color: #413724;
+    border: 1px solid #ad976c;
   }
 }
 
@@ -73,16 +73,16 @@
 
 [data-bs-theme="dark"] {
   .greyy {
-    border: 1px solid #aaaaaa;
+    border: 1px solid #a5a5a5;
   }
   
   .greyy .title {
-    background-color: #444444;
+    background-color: #3f3f3f;
   }
 
   .greyy .module {
     background-color: #333333;
-    border: 1px solid #999999;
+    border: 1px solid #8d8d8d;
   }
 }
 
@@ -100,16 +100,16 @@
 
 [data-bs-theme="dark"] {
   .orangey {
-    border: 1px solid #ffae3d;
+    border: 1px solid #fdaf44;
   }
   
   .orangey .title {
-    background-color: #714200;
+    background-color: #683d01;
   }
 
   .orangey .module {
-    background-color: #5a3400;
-    border: 1px solid #ff9c10;
+    background-color: #4f2e01;
+    border: 1px solid #fc9911;
   }
 }
 
@@ -127,15 +127,15 @@
 
 [data-bs-theme="dark"] {
   .redy {
-    border: 1px solid #ff4b63;
+    border: 1px solid #ff4059;
   }
   
   .redy .title {
-    background-color: #76000f;
+    background-color: #65000d;
   }
 
   .redy .module {
-    background-color: #5e000c;
-    border: 1px solid #fe1c3a;
+    background-color: #4b000a;
+    border: 1px solid #ff0b2c;
   }
 }
