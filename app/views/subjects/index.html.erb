@@ -44,7 +44,7 @@
 <!-- Trier selon section, chapitre, catégorie... -->
 <span class="mb-2 mt-1 ms-3" style="float:right;">
 <%= form_tag "", :method => "get", :name => "research" do %>
-  <%= select_tag :q, grouped_options_for_select([["Tout afficher",liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], @q).html_safe, :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
+  <%= select_tag :q, grouped_options_for_select([["Tout afficher", liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], @q), :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
 <% end %>
 </span>
 

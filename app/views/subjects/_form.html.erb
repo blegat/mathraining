@@ -141,7 +141,7 @@ function checkWepion() {
 
 <div class="mb-2">
   <%= f.label :chapter_id, :class => "form-label", :style => "#{'display:none;' if !seechap}", :id => "label_chap" %>
-  <%= f.select(:chapter_id, options_for_select(listechap, selected_chapter).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{'display:none;' if !seechap}", :onchange => ("javascript: checkChapter();")}) %>
+  <%= f.select(:chapter_id, options_for_select(listechap, selected_chapter), {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{'display:none;' if !seechap}", :onchange => ("javascript: checkChapter();")}) %>
 </div>
 
 <% selected_exercise = 0 %>
@@ -206,7 +206,7 @@ function checkWepion() {
   <%= f.label :question_id, :class => "form-label", :style => "#{ 'display:none;' if !seeexo }", :id => "label_exo" %>
   <p id="alert-no-exercise-access" style="<%= 'display:none;' if exovisibles %>" class="mb-2 text-color-red">Vous n'avez pas accès aux exercices de ce chapitre.</p>
   <p id="alert-some-exercise-hidden" style="<%= 'display:none;' if !some_exo_hidden %>" class="mb-2 text-color-orange">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
-  <%= f.select(:question_id, options_for_select(listeexo, selected_exercise).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :onchange => ("javascript: checkQuestion();")}) %>
+  <%= f.select(:question_id, options_for_select(listeexo, selected_exercise), {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :onchange => ("javascript: checkQuestion();")}) %>
 </div>
 
 
@@ -259,7 +259,7 @@ function checkWepion() {
   <%= f.label :problem_id, :class => "form-label", :style => "#{ 'display:none;' if !seeprob }", :id => "label_prob" %>
   <p id="alert-no-problem-access" class="text-color-red" style="<%= 'display:none;' if probvisibles %>">Vous n'avez pas accès aux problèmes.</p>
   <p id="alert-some-problem-hidden" class="text-color-orange" style="<%= 'display:none;' if !some_prob_hidden %>">Certains problèmes n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
-  <%= f.select(:problem_id, options_for_select(listeprob, selected_problem).html_safe, {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeprob }", :onchange => ("javascript: checkProblem();")}) %>
+  <%= f.select(:problem_id, options_for_select(listeprob, selected_problem), {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeprob }", :onchange => ("javascript: checkProblem();")}) %>
 </div>
 
 

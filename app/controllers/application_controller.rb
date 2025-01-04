@@ -74,7 +74,7 @@ class ApplicationController < ActionController::Base
   # When doing big changes on the server
   def check_under_maintenance
     if @under_maintenance
-      flash[:info] = @under_maintenance_message.html_safe
+      flash[:info] = @under_maintenance_message
       if !signed_in? || !current_user_no_skin.root?
         redirect_to root_path if request.path != "/"
       end

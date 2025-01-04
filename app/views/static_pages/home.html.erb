@@ -86,7 +86,7 @@
     <% recent_corrections.each do |f| %>
       <%= " - " unless first %>
       <% first = false %>
-      <%= f.user.linked_name %><%= "&nbsp;(#{f.num_corrections})".html_safe if signed_in? %>
+      <%= f.user.linked_name %><% if signed_in? %>&nbsp;(<%= f.num_corrections %>)<% end %>
     <% end %>
   </div>
 <% end %>

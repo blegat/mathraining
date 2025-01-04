@@ -46,5 +46,5 @@
   <%= hidden_field_tag "postfix", postfix %>
 <% end %>
 
-<input type="button" value="Ajouter une pièce jointe" id="addFile<%= postfix %>" onclick="Joint.add('<%= postfix %>')" class="btn btn-sm btn-ld-light-dark mb-2" <%= 'disabled="disabled"'.html_safe if disable %> />
+<input type="button" value="Ajouter une pièce jointe" id="addFile<%= postfix %>" onclick="Joint.add('<%= postfix %>')" class="btn btn-sm btn-ld-light-dark mb-2" <%= "disabled" if disable %> />
 </div>

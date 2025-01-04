@@ -1,6 +1,6 @@
 <% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
 
-<% provide(:title, @user.name.html_safe) %>
+<% provide(:title, @user.name) %>
 
 <% if !@user.admin %>
   <% actualrating = @user.rating %>
@@ -100,7 +100,11 @@
 <div class="g-col-12 g-col-lg-<%= largeur %> basic_container text-center p-1">
   <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
   <tr><td class="px-2" style="font-size:20px;"><%= @user.colored_name %></td></tr>
-  <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %> <%= "<span class='text-color-red'>(ban #{write_date_only_small(@user.end_of_ban)})</span>".html_safe if signed_in? && current_user.root? && @user.is_banned %></td></tr>
+  <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %>
+  <% if signed_in? && current_user.root? && @user.is_banned %>
+    <span class='text-color-red'>(ban <%= write_date_only_small(@user.end_of_ban) %>)</span>
+  <% end %>
+  </td></tr>
   <tr><td class="pt-2"><%= @user.country.name %>
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
   </table>

@@ -152,13 +152,13 @@
     oldSel.add(opt, null);
     <% s.chapters.where(:online => true).order("level, position").each do |c| %>
       var opt = document.createElement('option');
-      opt.text = "<%= c.name.html_safe %>"
+      opt.text = "<%= c.name.gsub(/"/, '\"').html_safe %>"
       opt.value = <%= c.id %>
       oldSel.add(opt, null);
     <% end %>
     <% if !s.fondation %>
       var opt = document.createElement('option');
-      opt.text = "<%= get_problem_category_name(s.name).html_safe %>"
+      opt.text = "<%= get_problem_category_name(s.name).gsub(/"/, '\"').html_safe %>"
       opt.value = -1
       oldSel.add(opt, null);
     <% end %>
