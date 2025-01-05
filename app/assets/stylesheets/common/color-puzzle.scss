@@ -1,30 +1,32 @@
+/* USED FOR PUZZLES */
+
 .puzzle-none {
 }
 
 [data-bs-theme="light"] {
   .puzzle-submitted {
-    background-color: #cff4fc; // as table info
+    background-color: #cff4fc; // same as table-ld-info
   }
 
   .puzzle-to-submit {
-    background-color: #fff3cd; // as table warning
+    background-color: #fff3cd; // same as table-ld-warning
   }
   
   .puzzle-error {
-    background-color: #f8d7da; // as table danger
+    background-color: #f8d7da; // same as table-ld-danger
   }
 }
 
 [data-bs-theme="dark"] {
   .puzzle-submitted {
-    background-color: #054856;
+    background-color: #054856; // same as table-ld-info
   }
 
   .puzzle-to-submit {
-    background-color: #453400;
+    background-color: #413724; // same as table-ld-warning
   }
   
   .puzzle-error {
-    background-color: #6a121a;
+    background-color: #5f1017; // same as table-ld-danger
   }
 }

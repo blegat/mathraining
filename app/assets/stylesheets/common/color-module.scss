@@ -1,3 +1,5 @@
+/* USED FOR SECTIONS (CHAPTERS AND PROBLEMS) */
+
 [data-bs-theme="light"] {
   .module {
     border: 1px solid #dddddd;
@@ -8,54 +10,54 @@
 
 [data-bs-theme="light"] {
   .greeny .title {
-    background-color: #d7efd9;
+    background-color: #d1e7dd; // same as table-ld-success
   }
 
   .greeny .module {
-    background-color: #f2f7f3;  
+    background-color: #edf5f1; // 60 % lighter
   }
 }
 
 [data-bs-theme="dark"] {
   .greeny {
-    border: 1px solid #79ca82; // 56 % lighter
+    border: 1px solid #8ac3a9; // 56 % lighter
   }
 
   .greeny .title {
-    background-color: #1f4f24; // 6 % lighter
+    background-color: #2d5844; // 6 % lighter
   }
 
   .greeny .module {
-    background-color: #183d1c;
-    border: 1px solid #54bc5f; // 44 % lighter
+    background-color: #254838; // same as table-ld-success
+    border: 1px solid #6bb392; // 44 % lighter
   }
 }
 
 
-/* COULEUR JAUNE */
+/* COULEUR JAUNE (BRUN en thème sombre) */
 
 [data-bs-theme="light"] {
   .yellowy .title {
-    background-color: #fffad2;
+    background-color: #fff3cd; // same as table-ld-warning
   }
 
   .yellowy .module {
-    background-color: #fffded;
+    background-color: #fffaeb; // 60 % lighter
   }
 }
 
 [data-bs-theme="dark"] {
   .yellowy {
-    border: 1px solid #bfad8b;
+    border: 1px solid #bfad8b; // 56 % lighter
   }
   
   .yellowy .title {
-    background-color: #51442d;
+    background-color: #51442d; // 6 % lighter
   }
 
   .yellowy .module {
-    background-color: #413724;
-    border: 1px solid #ad976c;
+    background-color: #413724; // same as table-ld-warning
+    border: 1px solid #ad976c; // 44 % lighter
   }
 }
 
@@ -67,22 +69,22 @@
   }
 
   .greyy .module {
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; // 60 % lighter
   }
 }
 
 [data-bs-theme="dark"] {
   .greyy {
-    border: 1px solid #a5a5a5;
+    border: 1px solid #a5a5a5; // 56 % lighter
   }
   
   .greyy .title {
-    background-color: #3f3f3f;
+    background-color: #3f3f3f; // 6 % lighter
   }
 
   .greyy .module {
     background-color: #333333;
-    border: 1px solid #8d8d8d;
+    border: 1px solid #8d8d8d; // 44 % lighter
   }
 }
 
@@ -90,26 +92,26 @@
 
 [data-bs-theme="light"] {
   .orangey .title {
-    background-color: #ffe7c5;
+    background-color: #ffe3c5;
   }
 
   .orangey .module {
-    background-color: #fff4e6;
+    background-color: #fff4e8; // 60 % lighter
   }
 }
 
 [data-bs-theme="dark"] {
   .orangey {
-    border: 1px solid #fdaf44;
+    border: 1px solid #fdaf44; // 56 % lighter
   }
   
   .orangey .title {
-    background-color: #683d01;
+    background-color: #683d01; // 6 % lighter
   }
 
   .orangey .module {
     background-color: #4f2e01;
-    border: 1px solid #fc9911;
+    border: 1px solid #fc9911; // 44 % lighter
   }
 }
 
@@ -117,25 +119,25 @@
 
 [data-bs-theme="light"] {
   .redy .title {
-    background-color: #ffd9de;
+    background-color: #f8d7da; // same as table-ld-danger
   }
 
   .redy .module {
-    background-color: #ffedef;
+    background-color: #fceff0; // 60 % lighter
   }
 }
 
 [data-bs-theme="dark"] {
   .redy {
-    border: 1px solid #ff4059;
+    border: 1px solid #e66974; // 56 % lighter
   }
   
   .redy .title {
-    background-color: #65000d;
+    background-color: #73131c; // 6 % lighter
   }
 
   .redy .module {
-    background-color: #4b000a;
-    border: 1px solid #ff0b2c;
+    background-color: #5f1017; // same as table-ld-danger
+    border: 1px solid #df404e; // 44 % lighter
   }
 }

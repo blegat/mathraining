@@ -1,4 +1,4 @@
-/* Dark-theme background-color is rgb(33, 37, 41) = 212529
+/* NB: Dark-theme background-color is rgb(33, 37, 41) = #212529
 
 /* STUFF VISIBLE ONLY IN LIGHT OR DARK MODE */
 
@@ -178,15 +178,15 @@
 
 [data-bs-theme="light"] {
   .clue {
-    background-color: #fffad2;
+    background-color: #fff3cd; // same as table-ld-warning
     border: 1px solid #dddddd;
   }
 }
 
 [data-bs-theme="dark"] {
   .clue {
-    background-color: #5c5200;
-    border: 1px solid #666666;
+    background-color: #413724; // same as table-ld-warning
+    border: 1px solid #555555;
   }
 }
 
@@ -194,13 +194,13 @@
 
 [data-bs-theme="light"] {
   .unread_message {
-    background-color: #fff3cd;
+    background-color: #fff3cd; // same as table-ld-warning
   }
 }
 
 [data-bs-theme="dark"] {
   .unread_message {
-    background-color: #453400;
+    background-color: #413724; // same as table-ld-warning
   }
 }
 
@@ -262,26 +262,26 @@ hr.bottom-help {
 
 [data-bs-theme="light"] {
   footer {
-	  border-top: 1px solid #cccccc;
-	  a {
-		  color: #555555;
+    border-top: 1px solid #cccccc;
+    a {
+      color: #555555;
 
-		  &:hover {
-			  color: #222222;
-		  }
-	  }
+      &:hover {
+        color: #222222;
+      }
+    }
   }
 }
 
 [data-bs-theme="dark"] {
   footer {
-	  border-top: 1px solid #cccccc;
-	  a {
-		  color: #999999;
+    border-top: 1px solid #cccccc;
+    a {
+      color: #999999;
 
-		  &:hover {
-			  color: #bbbbbb;
-		  }
-	  }
+      &:hover {
+        color: #bbbbbb;
+      }
+    }
   }
 }
