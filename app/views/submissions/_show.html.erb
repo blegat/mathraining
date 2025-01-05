@@ -228,8 +228,8 @@ var hideStatement = function () {
     <p class="text-color-red">Cette solution a été clôturée par un correcteur.</p>
   <% elsif can_current_user_correct && @submission.closed? %>
     <p class="text-color-red">Cette solution a été clôturée.</p>
-  <% elsif current_user == @submission.user && @no_new_submission && @submission.wrong? && @submission.last_comment_time + 2.weeks < DateTime.now %>
-    <p class="text-color-orange">Cette solution n'a plus d'activité depuis plus de deux semaines et ne peut pas être commentée pour le moment.</p>
+  <% elsif current_user == @submission.user && @submission.wrong? && @submission.last_comment_time + 2.months < DateTime.now %>
+    <p class="text-color-orange">Cette solution a été automatiquement clôturée après une inactivité de deux mois.</p>
   <% elsif (can_current_user_correct || (current_user == @submission.user && @cansendnewcomment)) && !@submission.draft? %>
     <%= render 'corrections/new', disable_correction: disable_correction %>
   <% end %>

@@ -600,17 +600,16 @@ describe "Submission pages" do
               end
             end
             
-            describe "and tries to answer much later while no new submission is allowed" do
+            describe "and tries to answer much later" do
               before do
-                Globalvariable.create(:key => :no_new_submission, :value => 1, :message => "Nous sommes surchargés")
-                travel_to DateTime.now + 20.days
+                travel_to DateTime.now + 80.days
                 fill_in "MathInput", with: newanswer
                 click_button "Poster"
                 travel_back
               end
               specify do
                 expect(waiting_submission.corrections.last.content).not_to eq(newanswer)
-                expect(page).to have_content("Cette solution n'a plus d'activité depuis plus de deux semaines et ne peut pas être commentée pour le moment.")
+                expect(page).to have_content("Cette solution a été automatiquement clôturée après une inactivité de deux mois.")
               end
             end
             
