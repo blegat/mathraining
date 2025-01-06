@@ -221,7 +221,7 @@ class CorrectionsController < ApplicationController
   
   # Check that submission has recent activity
   def submission_has_recent_activity
-    if @submission.user == current_user && @submission.wrong? && @submission.last_comment_time + 2.months < DateTime.now
+    if @submission.user == current_user && @submission.wrong? && !@submission.has_recent_activity
       redirect_to problem_path(@problem, :sub => @submission) and return
     end
   end

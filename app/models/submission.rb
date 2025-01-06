@@ -94,6 +94,11 @@ class Submission < ActiveRecord::Base
     return false
   end
   
+  # Tell if the submission has had some activity recently
+  def has_recent_activity
+    return self.last_comment_time + 2.months > DateTime.now
+  end
+  
   # Update last_comment_time and last_comment_user
   def update_last_comment
     last_correction = self.corrections.order(:created_at).last

@@ -224,11 +224,9 @@ var hideStatement = function () {
     <p>Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.</p>
   <% elsif can_current_user_correct && @submission.plagiarized? %>
     <p class="text-color-red">Cette solution a été plagiée et n'est plus visible par l'étudiant.</p>
-  <% elsif current_user == @submission.user && @submission.closed? %>
+  <% elsif (current_user == @submission.user || can_current_user_correct) && @submission.closed? %>
     <p class="text-color-red">Cette solution a été clôturée par un correcteur.</p>
-  <% elsif can_current_user_correct && @submission.closed? %>
-    <p class="text-color-red">Cette solution a été clôturée.</p>
-  <% elsif current_user == @submission.user && @submission.wrong? && @submission.last_comment_time + 2.months < DateTime.now %>
+  <% elsif current_user == @submission.user && @submission.wrong? && !@submission.has_recent_activity %>
     <p class="text-color-orange">Cette solution a été automatiquement clôturée après une inactivité de deux mois.</p>
   <% elsif (can_current_user_correct || (current_user == @submission.user && @cansendnewcomment)) && !@submission.draft? %>
     <%= render 'corrections/new', disable_correction: disable_correction %>
