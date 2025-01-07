@@ -25,6 +25,7 @@ class SanctionsController < ApplicationController
     @sanction = Sanction.new(params.require(:sanction).permit(:sanction_type, :start_time, :duration, :reason))
     @sanction.user = @user
     if @sanction.save
+      @user.update_remember_token if @sanction.ban? # sign out the user
       flash[:success] = "Sanction ajoutée."
       redirect_to user_sanctions_path(@user)
     else
@@ -35,6 +36,7 @@ class SanctionsController < ApplicationController
   # Update a sanction (send the form)
   def update
     if @sanction.update(params.require(:sanction).permit(:sanction_type, :start_time, :duration, :reason))
+      @sanction.user.update_remember_token if @sanction.ban? # sign out the user
       flash[:success] = "Sanction modifiée."
       redirect_to user_sanctions_path(@sanction.user)
     else
