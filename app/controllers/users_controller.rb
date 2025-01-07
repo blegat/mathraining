@@ -1,13 +1,13 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed, :unset_follow_message]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :follow, :unfollow, :set_follow_message, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :follow, :unfollow, :set_follow_message, :set_can_change_name, :unset_can_change_name]
   before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
-  before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
+  before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :group_user, only: [:groups]
   
-  before_action :get_user, only: [:edit, :update, :show, :destroy, :activate, :destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :follow, :unfollow, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :ban_temporarily]
+  before_action :get_user, only: [:edit, :update, :show, :destroy, :activate, :destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :follow, :unfollow, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name]
   
   before_action :avoid_strange_scraping, only: [:index]
   
@@ -263,16 +263,6 @@ class UsersController < ApplicationController
   def unset_can_change_name
     flash[:success] = "Cet utilisateur ne peut maintenant plus changer son nom."
     @user.update_attribute(:can_change_name, false)
-    redirect_to @user
-  end
-  
-  # Deactivate the account for two weeks (because of plagiarism)
-  def ban_temporarily
-    unless @user.is_banned
-      @user.update_attribute(:last_ban_date, DateTime.now)
-      @user.update_remember_token # sign out the user
-      flash[:success] = "Cet utilisateur a été banni jusqu'au #{write_date(@user.end_of_ban)}."
-    end
     redirect_to @user
   end
 

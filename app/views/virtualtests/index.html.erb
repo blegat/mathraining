@@ -201,7 +201,7 @@
         <% if !current_user.admin? && status == "not_started" %>
           <% if current_user.can_write_submission? %>
             <div class="g-col-12 g-col-md-24">
-              <center><%= button_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || in_skin?), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
+              <center><%= button_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.has_no_submission_sanction || in_skin?), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
             </div>
           <% else %>
             <div class="g-col-12 g-col-md-24 module bottom-part text-start">

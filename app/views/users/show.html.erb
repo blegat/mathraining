@@ -101,8 +101,13 @@
   <table class="m-0 my-2 p-0" style="width:100%; height:100px;">
   <tr><td class="px-2" style="font-size:20px;"><%= @user.colored_name %></td></tr>
   <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %>
-  <% if signed_in? && current_user.root? && @user.is_banned %>
-    <span class='text-color-red'>(ban <%= write_date_only_small(@user.end_of_ban) %>)</span>
+  <% if signed_in? && current_user.root? %>
+    <% last_ban = @user.last_ban %>
+    <% if !last_ban.nil? && last_ban.end_time > DateTime.now %>
+      <span class='text-color-red'>(<%= write_date_only_small(last_ban.end_time) %>)</span>
+    <% elsif @user.has_no_submission_sanction %>
+      <span class='text-color-orange'>(<%= write_date_only_small(@user.last_no_submission_sanction.end_time) %>)</span>
+    <% end %>
   <% end %>
   </td></tr>
   <tr><td class="pt-2"><%= @user.country.name %>
@@ -951,57 +956,57 @@
 <!-- Si administrateur, différentes options -->
 <% if signed_in? && current_user.admin? && !@user.root? && (current_user.root? || !@user.admin) %>
   <div class="g-col-12 basic_container text-center p-2">
-  <% i = 0 %>
-    <% if current_user.root? && !@user.root? %>
-      <%= " | " if i > 0 %>
-      <% i = i+1 %>
-      <%= link_to "Supprimer les données personnelles", destroydata_user_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :method => :put, :class => "text-color-red" %>
-      <%= " | " if i > 0 %>
-      <% i = i+1 %>
-      <%= link_to 'Supprimer', @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :class => "text-color-red" %>
-    <% end %>
+    <% i = 0 %>
     <% if current_user.root? && @user.email_confirm && !@user.admin %>
       <%= " | " if i > 0 %>
-      <% i = i+1 %>
-      <%= link_to 'Voir le site comme lui', take_skin_user_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." }, :method => :put %>
+      <% i += 1 %>
+      <%= link_to "Voir le site comme lui", take_skin_user_path(@user), data: { confirm: "Vous allez voir tout le site comme #{@user.name} le voit." }, :method => :put %>
     <% end %>
     <% if current_user.root && !@user.admin %>
       <%= " | " if i > 0 %>
-      <% i = i+1 %>
-      <%= link_to 'Rendre administrateur', set_administrator_user_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :method => :put, :class => "text-color-red" %>
+      <% i += 1 %>
+      <%= link_to "Rendre administrateur", set_administrator_user_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} administrateur ? Vous ne pourrez plus revenir en arrière !"}, :method => :put, :class => "text-color-red" %>
     <% end %>
     <% if current_user.root && !@user.admin %>
       <%= " | " if i > 0 %>
-      <% i = i+1 %>
+      <% i += 1 %>
       <% if !@user.corrector %>
-        <%= link_to 'Rendre correcteur', set_corrector_user_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :method => :put, :class => "text-color-red" %>
+        <%= link_to "Rendre correcteur", set_corrector_user_path(@user), data: { confirm: "Êtes-vous sûr de vouloir rendre #{@user.name} correcteur ?"}, :method => :put, :class => "text-color-red" %>
       <% else %>
-        <%= link_to 'Retirer des correcteurs', unset_corrector_user_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :class => "text-color-red" %>
-      <% end %>
-    <% end %>
-    <% if current_user.root && !@user.root %>
-      <%= " | " if i > 0 %>
-      <% i = i+1 %>
-      <% if @user.can_change_name %>
-        <%= link_to "Interdire le changement de nom", unset_can_change_name_user_path(@user), :method => :put %>
-      <% else %>
-        <%= link_to "Autoriser le changement de nom", set_can_change_name_user_path(@user), :method => :put %>
+        <%= link_to "Retirer des correcteurs", unset_corrector_user_path(@user), data: { confirm: "Êtes-vous sûr de vouloir retirer #{@user.name} des correcteurs ?"}, :method => :put, :class => "text-color-red" %>
       <% end %>
     <% end %>
     <% if current_user.admin && !@user.admin %>
       <%= " | " if i > 0 %>
-      <% i = i+1 %>
+      <% i += 1 %>
       <% if @user.wepion %>
-        <%= link_to 'Retirer du groupe Wépion', unset_wepion_user_path(@user), :method => :put %>
+        <%= link_to "Retirer du groupe Wépion", unset_wepion_user_path(@user), :method => :put %>
       <% else %>
-        <%= link_to 'Ajouter au groupe Wépion', set_wepion_user_path(@user), :method => :put %>
+        <%= link_to "Ajouter au groupe Wépion", set_wepion_user_path(@user), :method => :put %>
       <% end %>
     <% end %>
     <% if current_user.admin && @user.wepion %>
       <%= " | " if i > 0 %>
-      <% i = i+1 %>
-      Groupe <%= link_to 'A', change_group_user_path(@user, :group => "A"), :method => :put %>, <%= link_to 'B', change_group_user_path(@user, :group => "B"), :method => :put %>, <%= link_to 'aucun', change_group_user_path(@user, :group => ""), :method => :put %>
+      <% i += 1 %>
+      Groupe <%= link_to "A", change_group_user_path(@user, :group => "A"), :method => :put %>, <%= link_to "B", change_group_user_path(@user, :group => "B"), :method => :put %>, <%= link_to "aucun", change_group_user_path(@user, :group => ""), :method => :put %>
     <% end %>
+  </div>
+<% end %>
+
+<!-- Si root, différentes options -->
+<% if signed_in? && !@user.root? && current_user.root? %>
+  <div class="g-col-12 basic_container text-center p-2">
+    <%= link_to "Supprimer les données personnelles", destroydata_user_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous sûr de vouloir continuer ?" }, :method => :put, :class => "text-color-red" %>
+    |
+    <%= link_to "Supprimer", @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous sûr de vouloir supprimer #{@user.name} ?" }, :class => "text-color-red" %>
+    |
+    <% if @user.can_change_name %>
+      <%= link_to "Interdire le changement de nom", unset_can_change_name_user_path(@user), :method => :put %>
+    <% else %>
+      <%= link_to "Autoriser le changement de nom", set_can_change_name_user_path(@user), :method => :put %>
+    <% end %>
+    |
+    <%= link_to "Sanctionner", user_sanctions_path(@user) %>
   </div>
 <% end %>
 

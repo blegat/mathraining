@@ -106,6 +106,28 @@ describe "Virtualtest pages" do
         end
       end
       
+      describe "and tries to start the test while no new submission is allowed" do
+        before do
+          Globalvariable.create(:key => "no_new_submission", :value => 1, :message => "Plus de nouvelle soumission")
+          click_button "Commencer ce test"
+        end
+        specify do
+          expect(page).to have_info_message("Plus de nouvelle soumission")
+          expect(Takentest.where(:virtualtest => virtualtest, :user => user_with_rating_200).count).to eq(0)
+        end
+      end
+      
+      describe "and tries to start the test while having received a sanction" do
+        let!(:sanction) { FactoryGirl.create(:sanction, user: user_with_rating_200, sanction_type: :no_submission) }
+        before do
+          click_button "Commencer ce test"
+        end
+        specify do
+          expect(page).to have_info_message(sanction.message)
+          expect(Takentest.where(:virtualtest => virtualtest, :user => user_with_rating_200).count).to eq(0)
+        end
+      end
+      
       describe "and starts the test" do
         before { click_button "Commencer ce test"  }
         it do

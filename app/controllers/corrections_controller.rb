@@ -198,20 +198,6 @@ class CorrectionsController < ApplicationController
     end
   end
   
-  # Check that the student has no (recent) plagiarized or closed solution to the problem
-  def user_has_no_recent_plagiarism_or_closure
-    if @submission.user == current_user
-      s = current_user.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
-      if !s.nil? && s.date_new_submission_allowed > Date.today
-        redirect_to problem_path(@problem, :sub => @submission) and return
-      end
-      s = current_user.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last
-      if !s.nil? && s.date_new_submission_allowed > Date.today
-        redirect_to problem_path(@problem, :sub => @submission) and return
-      end
-    end
-  end
-  
   # Check that the student does not try to comment a waiting submission in a test
   def submission_not_waiting_in_test
     if @submission.user == current_user && @submission.intest && @submission.waiting?

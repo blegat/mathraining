@@ -8,12 +8,10 @@ class SessionsController < ApplicationController
     email = params[:session][:email].downcase
     user = User.where(:email => email).first
     
-    if user && user.authenticate(params[:session][:password])
-      if !user.active # NB: The email of inactive accounts is set to the id of the user, so this should not happen in general
-        flash[:danger] = "Ce compte a été désactivé et n'est plus accessible."
-        redirect_back(fallback_location: root_path)
-      elsif user.is_banned
-        flash[:danger] = "Ce compte a été temporairement désactivé pour cause de plagiat. Il sera à nouveau accessible le " + write_date(user.end_of_ban) + ". L'équipe des correcteurs bénévoles de Mathraining vous invite à prendre de ce temps libre pour réfléchir à l'intérêt de leur faire corriger des solutions qui ne viennent pas de vous. Notez que la création d'un second compte est formellement interdite et résulterait en une sanction encore plus sévère que celle-ci."
+    if user && user.active && user.authenticate(params[:session][:password])
+      last_ban = user.last_ban
+      if !last_ban.nil? && last_ban.end_time > DateTime.now
+        flash[:danger] = last_ban.message
         redirect_back(fallback_location: root_path)
       elsif user.email_confirm
         remember_me = (params[:session][:remember_me].to_i == 1)

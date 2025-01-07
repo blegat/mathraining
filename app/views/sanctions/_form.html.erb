@@ -1,0 +1,64 @@
+<%= render 'shared/error_messages', object: f.object %>
+
+<script>
+function clearMessages() {
+  var select = document.getElementById("sanction_sanction_type");
+  if (select == undefined) { return; }
+  Array.from(select.options).forEach(function(o) {
+    var ul = document.getElementById("messages_" + o.value);
+    if (ul == undefined) { return; }
+    ul.style.display = "none";
+  });
+}
+
+function showMessages() {
+  clearMessages();
+  var select = document.getElementById("sanction_sanction_type");
+  if (select == undefined) { return; }
+  var ul = document.getElementById("messages_" + select.value);
+  if (ul == undefined) { return; }
+  ul.style.display = "block";  
+}
+</script>
+
+<!-- Type de sanction -->
+<div class="mb-2">
+  <%= f.label :sanction_type, :class => "form-label" %>
+  <%= f.select(:sanction_type, [["Bannissement", :ban], ["Interdiction de soumettre", :no_submission]], {}, { :class => "form-select", :style => "max-width:250px;", :onchange => "showMessages();" }) %>
+</div>
+
+<!-- Début -->
+<div class="mb-2">
+  <%= f.label :start_time, :class => "form-label" %>
+  <%= f.datetime_field :start_time, :class => "form-control", :style => "max-width:250px;" %>
+</div>
+
+<!-- Durée -->
+<div class="mb-2">
+  <%= f.label :duration, :class => "form-label" %>
+  <%= f.number_field :duration, :class => "form-control", :style => "width:90px;", :min => 0 %>
+</div>
+
+<!-- Raison -->
+<div class="mb-2">
+  <%= f.label :reason, :class => "form-label" %>
+  <%= f.text_area :reason, :class => "form-control", :maxlength => "2000", :style => "height:100px;" %>
+</div>
+
+<u>Précédents messages</u>
+
+<ul id="messages_ban" class="mt-1" style="display:none;">
+<% ban_messages = Sanction.where(:sanction_type => :ban).group(:reason).count %>
+<% ban_messages.sort_by{|message, nb| -nb}.each do |message, nb| %>
+  <li><%= message %></li>
+<% end %>
+</ul>
+
+<ul id="messages_no_submission" class="mt-1" style="display:none;">
+<% no_sub_messages = Sanction.where(:sanction_type => :no_submission).group(:reason).count %>
+<% no_sub_messages.sort_by{|message, nb| -nb}.each do |message, nb| %>
+  <li><%= message %></li>
+<% end %>
+</ul>
+
+<script>showMessages();</script>

@@ -23,9 +23,8 @@ class VirtualtestsController < ApplicationController
   def show
     if params.has_key?(:p)
       @problem = Problem.find_by_id(params[:p].to_i)
-      if @problem.virtualtest_id != @virtualtest.id
-        @problem = nil
-      else
+      @problem = nil if @problem.virtualtest_id != @virtualtest.id
+      unless @problem.nil?
         @submission = Submission.where(user_id: current_user.id, problem_id: @problem.id, intest: true).first
         @submission = Submission.new if @submission.nil?
       end 
@@ -157,6 +156,9 @@ class VirtualtestsController < ApplicationController
   def user_can_begin_virtualtest
     if @no_new_submission
       flash[:info] = @no_new_submission_message
+      redirect_to virtualtests_path
+    elsif current_user.has_no_submission_sanction
+      flash[:info] = current_user.last_no_submission_sanction.message
       redirect_to virtualtests_path
     elsif current_user.test_status(@virtualtest) != "not_started"
       redirect_to virtualtests_path

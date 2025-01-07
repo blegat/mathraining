@@ -46,7 +46,7 @@ describe "Authentication" do
         sign_in(user)
       end
       it do
-        should have_error_message("Ce compte a été désactivé et n'est plus accessible.")
+        should have_error_message("Email ou mot de passe invalide.")
         should have_no_content(user.fullname) # Should not be connected
       end
     end
@@ -63,21 +63,17 @@ describe "Authentication" do
     end
     
     describe "to an account that was recently banned" do
-      before do
-        user.update_attribute(:last_ban_date, DateTime.now - 1.week)
-        sign_in(user)
-      end
+      let!(:sanction) { FactoryGirl.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.week, duration: 14, reason: "Ce compte a été désactivé jusqu'au [DATE].") }
+      before { sign_in(user) }
       it do
-        should have_error_message("Ce compte a été temporairement désactivé pour cause de plagiat.")
+        should have_error_message("Ce compte a été désactivé jusqu'au #{write_date_only(sanction.end_time)}")
         should have_no_content(user.fullname) # Should not be connected
       end
     end
     
     describe "to an account that was banned some time ago" do
-      before do
-        user.update_attribute(:last_ban_date, DateTime.now - 1.month)
-        sign_in(user)
-      end
+      let!(:sanction) { FactoryGirl.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.month, duration: 14) }
+      before { sign_in(user) }
       it { should have_content(user.fullname) } # Should be connected
     end
   end

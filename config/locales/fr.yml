@@ -101,6 +101,11 @@ fr:
         level: "Niveau"
         answer: "Réponse"
         explanation: "Explication"
+      sanction:
+        sanction_type: "Type de sanction"
+        start_time: "Date de début"
+        duration: "Durée (en jours)"
+        reason: "Message"
       section:
         description: "Introduction"
         name: "Nom"

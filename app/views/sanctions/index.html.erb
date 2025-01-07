@@ -1,0 +1,29 @@
+<% provide(:title, "Sanctionner " + @user.name) %>
+
+<h1><%= title_user(@user, "Sanctionner") %></h1>
+
+<% sanctions = @user.sanctions.order(:start_time).to_a %>
+<% i = 0 %>
+
+<% if sanctions.size > 0 && sanctions[0].start_time < DateTime.new(2025, 1, 7, 23, 30) %>
+  <p><u>Note</u> : Avant janvier 2025, seule la dernière sanction était enregistrée. Il se peut donc qu'il y ait eu d'autres bannissements avant le premier indiqué.</p>
+<% end %>
+
+<table class="table table-bordered" style="width:auto;">
+<tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th style="width:220px;">Date de la soumission</th><th class="d-none d-sm-table-cell" style="width:220px;">Dernière activité</th><th style="width:54px;"></th></tr>
+<% @user.submissions.where(:status => [:closed, :plagiarized]).order(:created_at).each do |s| %>
+  <% while i < sanctions.size && sanctions[i].start_time < s.created_at %>
+    <%= render 'sanctions/line', s: sanctions[i] %>
+    <% i += 1 %>
+  <% end %>  
+
+  <%= render 'submissions/line', s: s, hide_user: true %>
+<% end %>
+
+<% while i < sanctions.size %>
+  <%= render 'sanctions/line', s: sanctions[i] %>
+  <% i += 1 %>
+<% end %> 
+</table>
+
+<center><%= button_to "Créer une sanction", new_user_sanction_path(@user), :class => "btn btn-lg btn-ld-light-dark", :method => "get" %></center>

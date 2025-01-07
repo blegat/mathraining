@@ -133,19 +133,7 @@ describe "Suspicion pages" do
           expect(suspicion.source).to eq(new_source)
           expect(suspicion.confirmed?).to eq(true)
           expect(wrong_submission.plagiarized?).to eq(true)
-          expect(page).to have_link("Bannir #{wrong_submission.user.name} pour deux semaines")
-        end
-        
-        describe "and bans the user" do
-          let!(:old_remember_token) { wrong_submission.user.remember_token }
-          before do
-            click_link "Bannir #{wrong_submission.user.name} pour deux semaines"
-            wrong_submission.user.reload
-          end
-          specify do
-            expect(wrong_submission.user.is_banned).to eq(true)
-            expect(wrong_submission.user.remember_token).not_to eq(old_remember_token) # should be disconnected
-          end
+          expect(page).to have_link("Sanctionner #{wrong_submission.user.name}")
         end
       end
     end

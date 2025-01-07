@@ -51,8 +51,8 @@ var showFalse = function() {
 <% else %>
 
   <!-- Dernières soumissions de l'étudiant en question -->
-  <% @cansendnewsub = true %>
-  <% @cansendnewcomment = true %>
+  <% @cansendnewsub = !current_user.has_no_submission_sanction %>
+  <% @cansendnewcomment = !current_user.has_no_submission_sanction %>
   <% date_submission_allowed = nil %>
   <% nonewcomment_reason = nil %>
   <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where('user_id = ? AND status != ?', current_user, Submission.statuses[:draft]).order('created_at DESC') %>

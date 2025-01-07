@@ -228,6 +228,15 @@ FactoryGirl.define do
     sequence(:explanation) { |n| "Voici une explication #{ n }" }
   end
   
+  # Sanction
+  factory :sanction do
+    association :user
+    sanction_type :ban
+    start_time DateTime.now
+    duration 14
+    sequence(:reason) { |n| "Banni pour #{n} plagiats jusqu'au [DATE]." }
+  end
+  
   # Section
   factory :section do
     sequence(:name) { |n| "Section #{n}" }

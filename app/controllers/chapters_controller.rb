@@ -61,7 +61,7 @@ class ChaptersController < ApplicationController
       position = last_chapter.position + 1
     end
     @chapter = Chapter.new(params.require(:chapter).permit(:name, :description, :level, :author))
-    @chapter.section_id = params[:section_id]
+    @chapter.section = @section
     @chapter.position = position
     if @chapter.save
       flash[:success] = "Chapitre ajouté."

@@ -15,12 +15,12 @@ class ProblemsController < ApplicationController
 
   # Show problems of a section
   def index
+    flash.now[:info] = current_user.last_no_submission_sanction.message if signed_in? && current_user.has_no_submission_sanction
     flash.now[:info] = @no_new_submission_message if @no_new_submission
   end
 
   # Show one problem
   def show
-    flash.now[:info] = @no_new_submission_message if @no_new_submission and params.has_key?("sub") and params[:sub] == "0"
     if params.has_key?("auto") # Automatically show the correct submission of current user, if any
       s = current_user.solvedproblems.where(:problem_id => @problem).first
       if s.nil?
@@ -30,8 +30,10 @@ class ProblemsController < ApplicationController
       end
     end
     
+    flash.now[:info] = current_user.last_no_submission_sanction.message if current_user.has_no_submission_sanction
     if params.has_key?("sub")
       if params[:sub].to_i == 0 # New submission
+        flash.now[:info] = @no_new_submission_message if @no_new_submission
         @submission = @problem.submissions.where(:user => current_user, :status => :draft).first # In case there is a draft
         @submission = Submission.new if @submission.nil? # In case there is no draft
       else # See existing submission

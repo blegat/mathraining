@@ -600,6 +600,19 @@ describe "Submission pages" do
               end
             end
             
+            describe "and answers while a sanction was given" do
+              let!(:sanction) { FactoryGirl.create(:sanction, user: waiting_submission.user, sanction_type: :no_submission) }
+              before do
+                fill_in "MathInput", with: newanswer
+                click_button "Poster"
+                waiting_submission.reload
+              end
+              specify do
+                expect(waiting_submission.corrections.last.content).not_to eq(newanswer)
+                expect(page).to have_content(sanction.message)
+              end
+            end
+            
             describe "and tries to answer much later" do
               before do
                 travel_to DateTime.now + 80.days

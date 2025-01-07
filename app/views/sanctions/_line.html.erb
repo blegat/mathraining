@@ -1,0 +1,13 @@
+<tr class="table-ld-info">
+<td colspan="4">
+<% if s.ban? %>
+  <b>Banni le <%= write_date(s.start_time) %> pour <%= s.duration %> jours</b>.
+<% elsif s.no_submission? %>
+  <b>Interdit de soumissions le <%= write_date(s.start_time) %> pour <%= s.duration %> jours</b>.
+<% end %>
+<br/><br/><u>Message</u> : <%= s.message %>
+<% if s.end_time > DateTime.now %>
+<br/><br/><center><%= link_to "Modifier", edit_sanction_path(s) %> - <%= link_to "Supprimer", s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette sanction ?" }, :class => "text-color-red" %></center>
+<% end %>
+</td>
+</tr>

@@ -203,7 +203,6 @@ Rails.application.routes.draw do
       put :unfollow
       put :set_can_change_name
       put :unset_can_change_name
-      put :ban_temporarily
       get :validate_name # only via JS
     end
     collection do
@@ -213,6 +212,7 @@ Rails.application.routes.draw do
       get :search
       get :validate_names
     end
+    resources :sanctions, only: [:index, :new, :create]
   end
   
   # Paths relative to current user
@@ -274,6 +274,9 @@ Rails.application.routes.draw do
       put :order
     end
   end
+  
+  # Sanctions
+  resources :sanctions, only: [:edit, :update, :destroy]
   
   # Puzzles (10 years)
   resources :puzzles, only: [:index, :new, :create, :edit, :update, :destroy] do

@@ -329,6 +329,15 @@ module ApplicationHelper
     return title_4((link_to "Concours", contests_path), (link_to "Concours ##{contestproblem.contest.number}", contestproblem.contest), (link_to "Problème ##{contestproblem.number}", contestproblem), title)
   end
   
+  # Titles concerning users
+  def title_user(user, title)
+    return title_2(user.linked_name, title)
+  end
+  
+  def title_sanction(user, title)
+    return title_3(user.linked_name, (link_to "Sanctionner", user_sanctions_path(user)), title)
+  end
+  
   def x_icon
     return 'x-mid.svg' # 'X.gif'
   end

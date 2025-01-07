@@ -34,7 +34,6 @@
 #  last_policy_read          :boolean          default(FALSE)
 #  accept_analytics          :boolean          default(TRUE)
 #  can_change_name           :boolean          default(TRUE)
-#  last_ban_date             :datetime
 #  correction_level          :integer          default(0)
 #  corrector_color           :string
 #
@@ -102,6 +101,7 @@ class User < ActiveRecord::Base
   has_many :messages, dependent: :destroy
   has_many :takentests, dependent: :destroy
   has_many :puzzleattempts, dependent: :destroy
+  has_many :sanctions, dependent: :destroy
   
   has_many :links
   has_many :discussions, through: :links # dependent: :destroy does NOT destroy the associated discussions, but only the link!
@@ -384,16 +384,20 @@ class User < ActiveRecord::Base
     return s.html_safe
   end
   
-  # Tells if the user is currently banned
-  def is_banned
-    return false if self.last_ban_date.nil?
-    return (self.end_of_ban > DateTime.now)
+  # Gives the last ban of the user
+  def last_ban
+    return self.sanctions.where(:sanction_type => :ban).order(:start_time).last
   end
   
-  # Gives the date of end of ban (if any)
-  def end_of_ban
-    return nil if self.last_ban_date.nil?
-    return self.last_ban_date + 2.weeks
+  # Gives the last sanction of the user not allowing him to send new submissions
+  def last_no_submission_sanction
+    return self.sanctions.where(:sanction_type => :no_submission).order(:start_time).last
+  end
+  
+  # Tells if the user currently has the sanction to not send new submissions
+  def has_no_submission_sanction
+    sanction = self.last_no_submission_sanction
+    return !sanction.nil? && sanction.end_time > DateTime.now
   end
   
   # Create a new random token, to automatically sign out the user from everywhere
