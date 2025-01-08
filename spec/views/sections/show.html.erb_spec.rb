@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Page section/showpb" do
+describe "sections/show.html.erb", section: true do
 
   subject { page }
 
@@ -50,6 +50,7 @@ describe "Page section/showpb" do
       it do
         should have_selector("h1", text: section.name)
         should have_content(section.description)
+        should have_no_link("Modifier l'introduction")
         
         should have_selector("table", id: "chapter#{chapter1.id}", class: "yellowy", text: chapter1.name)
         should have_link(theory11.title, href: chapter_theory_path(chapter1, theory11))
@@ -78,6 +79,8 @@ describe "Page section/showpb" do
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
+        
+        should have_no_button("Ajouter un chapitre")
       end
     end
     
@@ -89,6 +92,7 @@ describe "Page section/showpb" do
       it do
         should have_selector("h1", text: section.name)
         should have_content(section.description)
+        should have_no_link("Modifier l'introduction")
         
         should have_selector("table", id: "chapter#{chapter1.id}", class: "yellowy", text: chapter1.name)
         should have_link(theory11.title, href: chapter_theory_path(chapter1, theory11))
@@ -114,6 +118,8 @@ describe "Page section/showpb" do
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
+        
+        should have_no_button("Ajouter un chapitre")
       end
     end
   end
@@ -131,6 +137,7 @@ describe "Page section/showpb" do
       it do
         should have_selector("h1", text: section.name)
         should have_content(section.description)
+        should have_no_link("Modifier l'introduction")
         
         should have_selector("table", id: "chapter#{chapter1.id}", class: "yellowy", text: chapter1.name)
         should have_link(theory11.title, href: chapter_theory_path(chapter1, theory11))
@@ -161,6 +168,8 @@ describe "Page section/showpb" do
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
+        
+        should have_no_button("Ajouter un chapitre")
       end
     end
     
@@ -179,6 +188,7 @@ describe "Page section/showpb" do
       it do
         should have_selector("h1", text: section.name)
         should have_content(section.description)
+        should have_no_link("Modifier l'introduction")
         
         should have_selector("table", id: "chapter#{chapter1.id}", class: "greeny", text: chapter1.name)
         should have_link(theory11.title, href: chapter_theory_path(chapter1, theory11))
@@ -206,6 +216,8 @@ describe "Page section/showpb" do
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
+        
+        should have_no_button("Ajouter un chapitre")
       end
     end
     
@@ -223,6 +235,7 @@ describe "Page section/showpb" do
       it do
         should have_selector("h1", text: section.name)
         should have_content(section.description)
+        should have_no_link("Modifier l'introduction")
         
         should have_selector("table", id: "chapter#{chapter1.id}", class: "yellowy", text: chapter1.name)
         should have_link(theory11.title, href: chapter_theory_path(chapter1, theory11))
@@ -249,6 +262,8 @@ describe "Page section/showpb" do
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
+        
+        should have_no_button("Ajouter un chapitre")
       end
     end
   end
@@ -261,6 +276,7 @@ describe "Page section/showpb" do
       it do
         should have_selector("h1", text: section.name)
         should have_content(section.description)
+        should have_link("Modifier l'introduction")
         
         should have_selector("table", id: "chapter#{chapter1.id}", class: "yellowy", text: chapter1.name)
         should have_link(theory11.title, href: chapter_theory_path(chapter1, theory11))
@@ -287,6 +303,8 @@ describe "Page section/showpb" do
         should have_selector("table", id: "chapter#{chapter5_offline.id}", class: "orangey", text: chapter5_offline.name)
         should have_link(theory51_offline.title, href: chapter_theory_path(chapter5_offline, theory51_offline))
         should have_link(class: "btn-warning", text: "!", href: chapter_question_path(chapter5_offline, question51_offline))
+        
+        should have_button("Ajouter un chapitre")
       end
     end
     
@@ -298,6 +316,7 @@ describe "Page section/showpb" do
       it do
         should have_selector("h1", text: section.name)
         should have_content(section.description)
+        should have_link("Modifier l'introduction")
         
         should have_selector("table", id: "chapter#{chapter1.id}", class: "yellowy", text: chapter1.name)
         should have_link(theory11.title, href: chapter_theory_path(chapter1, theory11))
@@ -324,6 +343,8 @@ describe "Page section/showpb" do
         should have_selector("table", id: "chapter#{chapter5_offline.id}", class: "orangey", text: chapter5_offline.name)
         should have_link(theory51_offline.title, href: chapter_theory_path(chapter5_offline, theory51_offline))
         should have_link(class: "btn-warning", text: "!", href: chapter_question_path(chapter5_offline, question51_offline))
+        
+        should have_button("Ajouter un chapitre")
       end
     end
   end

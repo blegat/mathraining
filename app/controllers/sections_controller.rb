@@ -32,6 +32,5 @@ class SectionsController < ApplicationController
   def get_section
     @section = Section.find_by_id(params[:id])
     return if check_nil_object(@section)
-    @fondation = @section.fondation
   end
 end
