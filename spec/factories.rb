@@ -200,6 +200,13 @@ FactoryGirl.define do
     sequence(:explanation) {|n| "Il fallait faire #{n} opérations."}
   end
   
+  # Puzzleattempt
+  factory :puzzleattempt do
+    association :puzzle
+    association :user
+    code "BC234"
+  end
+  
   # Question
   factory :question do
     association :chapter
