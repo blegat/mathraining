@@ -207,10 +207,11 @@ class ProblemsController < ApplicationController
     return if check_nil_object(@problem)
   end
 
-  # Get the section
+  # Get the section (should not be the fondation section)
   def get_section
     @section = Section.find_by_id(params[:section_id])
     return if check_nil_object(@section)
+    render 'errors/access_refused' and return if @section.fondation?
   end
   
   ########## CHECK METHODS ##########
