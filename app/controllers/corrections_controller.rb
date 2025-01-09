@@ -58,7 +58,7 @@ class CorrectionsController < ApplicationController
 
     # Give the score to the submission
     if @submission.waiting? && @submission.intest && @submission.score == -1
-      @submission.score = params["score".to_sym].to_i
+      @submission.update_attribute(:score, params["score".to_sym].to_i)
     end
 
     # Delete reservations if needed
@@ -70,32 +70,29 @@ class CorrectionsController < ApplicationController
 
     # Now we change the status of the submission
     # It does not change if it is already correct
+    m = "Votre commentaire a bien été posté."
 
     # If wrong and current user is the student: new status is wrong_to_read
     if current_user == @submission.user and @submission.wrong?
-      @submission.status = :wrong_to_read
-      @submission.save
-      m = "Votre commentaire a bien été posté."
+      @submission.wrong_to_read!
 
     # If new/wrong, current user is corrector and he wants to keep it wrong: new status is wrong
     elsif (current_user != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
       (params[:commit] == "Poster et refuser la soumission" or
       params[:commit] == "Poster et laisser la soumission comme erronée")
-      @submission.status = :wrong
-      @submission.save
+      @submission.wrong!
       m = "Soumission marquée comme incorrecte."
 
     # If wrong, current user is corrector and he wants to keep it wrong: new status is wrong
     elsif (current_user != @submission.user) and (@submission.wrong? or @submission.wrong_to_read?) and
       params[:commit] == "Poster et clôturer la soumission"
-      @submission.status = :closed
-      @submission.save
+      @submission.closed!
       m = "Soumission clôturée."
 
     # If current user is corrector and he wants to accept it: new status is correct
     elsif (current_user != @submission.user) and params[:commit] == "Poster et accepter la soumission"
-      @submission.status = :correct
-      @submission.save
+      @submission.correct!
+      m = "Soumission marquée comme correcte."
 
       # If this is the first correct submission of the user to this problem, we give the points and mark problem as solved
       unless @submission.user.pb_solved?(@problem)
@@ -118,7 +115,6 @@ class CorrectionsController < ApplicationController
         end
         @problem.save
       end
-      m = "Soumission marquée comme correcte."
 
       # Delete the drafts of the user to the problem
       draft = @problem.submissions.where(:user => @submission.user, :status => :draft).first
