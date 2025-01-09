@@ -50,8 +50,11 @@
 </h1>
 
 <center>
-  <%= will_paginate @messages, list_classes: %w(pagination justify-content-center d-none d-sm-flex mt-3 mb-1), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
-  <%= will_paginate @messages, :class => "d-block d-sm-none mt-3 mb-0", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+  <!-- We need to provide the following params manually for the case where we encounter an error while creating
+       or updating a message. In that case, we can arrive to this page with an url that is not the expected one -->
+  <% params = {:controller => "subjects", :action => "show", :id => @subject.id} %>
+  <%= will_paginate @messages, params: params, list_classes: %w(pagination justify-content-center d-none d-sm-flex mt-3 mb-1), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+  <%= will_paginate @messages, params: params, :class => "d-block d-sm-none mt-3 mb-0", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->
@@ -78,8 +81,8 @@
 <% end %>
 
 <center>
-  <%= will_paginate @messages, list_classes: %w(pagination justify-content-center d-none d-sm-flex mt-3), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
-  <%= will_paginate @messages, :class => "d-block d-sm-none mt-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+  <%= will_paginate @messages, params: params, list_classes: %w(pagination justify-content-center d-none d-sm-flex mt-3), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+  <%= will_paginate @messages, params: params, :class => "d-block d-sm-none mt-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
 </center>
 
 <a name="bottom"></a>
