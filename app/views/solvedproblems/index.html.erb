@@ -2,44 +2,47 @@
 
 <h1><%= title_1("Résolutions récentes") %></h1>
 
-<p>Le tableau suivant reprend toutes les solutions ayant été <b>corrigées</b> les sept derniers jours. Elles sont classées selon leur date de correction, indiquée au début de chaque ligne.</p>
-
-<% oneweekago = Date.today - 7.days %>
+<div class="text-center mb-3">
+Solutions corrigées le :
+<% if @date < @max_date %>
+  <%= link_to write_date_only_small(@date + 1.day), solvedproblems_path(:date => (@date + 1.day).to_s) %> - 
+<% end %>
+<b><%= write_date_only_small(@date) %></b>
+<% if @date > @min_date %>
+  - <%= link_to write_date_only_small(@date - 1.day), solvedproblems_path(:date => (@date - 1.day).to_s) %>
+<% end %>
+</div>
 
 <% non_accessible_problems_set = non_accessible_problems_ids(current_user) %>
 
-<% prev_day = Date.today %>
-
-<table class="table">
-<% Solvedproblem.joins(:problem).joins(problem: :section).joins("LEFT JOIN followings ON followings.submission_id = solvedproblems.submission_id").select("solvedproblems.user_id, solvedproblems.problem_id, solvedproblems.submission_id, problems.number AS problem_number, problems.level, solvedproblems.correction_time, sections.short_abbreviation AS section_short_abbreviation, followings.user_id AS corrector_id").includes(:user, submission: {followings: :user}).where(followings: {kind: :first_corrector}).where("correction_time > ?", oneweekago).order("correction_time DESC").each do |s| %>
-  <% border_class = "" %>
-  <% if s.correction_time.in_time_zone.to_date != prev_day %>
-    <% prev_day = s.correction_time.in_time_zone.to_date %>
-    <% border_class = "thick_border_top" %>
-  <% end %>
-  <tr class="<%= border_class %>">
-  <td><%= write_date_only_small(s.correction_time) %></td>
-  <td class="d-none d-md-table-cell"><%= write_hour(s.correction_time) %></td>
-  <td><%= s.user.linked_name %></td>
-  <td class="d-none d-md-table-cell"><%= s.section_short_abbreviation %></td>
-  <td class="d-none d-md-table-cell">Niv. <%= s.level %></td>
-  <td>
-  <% if non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(s.problem_id) %>
-    <span class="d-none d-lg-inline"><%= link_to "Problème ##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
-    <span class="d-inline d-lg-none"><%= link_to "##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
-  <% else %>
-    <span class="d-none d-md-inline">Problème </span>#<%= s.problem_number %>
-  <% end %>
-  </td>
-  <% if signed_in? %>
-    <td class="d-none d-md-table-cell">
-      <% s.submission.followings.each do |f| %>
-        <% if f.first_corrector? %>
-          <%= f.user.linked_name %>
-        <% end %>
-      <% end %>
+<% if @solvedproblems.size > 0 %>
+  <table class="table">
+  <% @solvedproblems.each do |s| %>
+    <tr style="border-top-width:1px;">
+    <td><%= write_hour(s.correction_time) %></td>
+    <td><%= s.user.linked_name %></td>
+    <td class="d-none d-md-table-cell"><%= s.section_short_abbreviation %></td>
+    <td class="d-none d-md-table-cell">Niv. <%= s.level %></td>
+    <td>
+    <% if non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(s.problem_id) %>
+      <span class="d-none d-lg-inline"><%= link_to "Problème ##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
+     <span class="d-inline d-lg-none"><%= link_to "##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
+    <% else %>
+      <span class="d-none d-md-inline">Problème </span>#<%= s.problem_number %>
+    <% end %>
     </td>
+    <% if signed_in? %>
+      <td class="d-none d-md-table-cell">
+        <% s.submission.followings.each do |f| %>
+          <% if f.first_corrector? %>
+            <%= f.user.linked_name %>
+          <% end %>
+       <% end %>
+      </td>
+    <% end %>
+    </tr>
   <% end %>
-  </tr>
+  </table>
+<% else %>
+<div class="text-center fst-italic">Aucune solution n'a <%= "encore" if @date == @max_date %> été corrigée le <%= write_date_only(@date) %>.</div>
 <% end %>
-</table>
