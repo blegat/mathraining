@@ -40,7 +40,7 @@ var Insert = {
       if (instances%2 != 0 && text2 != ""){ sel.value = sel.value + text2; }
       else{ sel.value = sel.value + text1; }
     }
-    ta.dispatchEvent(new Event('input')); // To trigger the update of Preview or PreviewSafe
+    ta.dispatchEvent(new Event('input')); // To trigger the update of Preview
   }
 }
 

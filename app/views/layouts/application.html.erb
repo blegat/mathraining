@@ -129,44 +129,26 @@
       // To initialize and update Preview when page is loaded and Preview is defined
       var initAndUpdatePreviewDone = false;
       
-      function initAndUpdatePreviewIfPossible(enableIndice) {
+      function initAndUpdatePreviewIfPossible(safe, enableBBCode, enableHiddenText, enableIndice) {
         if ("Preview" in window) {
           if (!initAndUpdatePreviewDone) {
             initAndUpdatePreviewDone = true;
             Preview.Init();
-            if (enableIndice) {
-              Preview.SetIndice(true);
-            }
+            Preview.SetSafe(safe);
+            Preview.SetBBCode(enableBBCode);
+            Preview.SetHiddenText(enableHiddenText);
+            Preview.SetIndice(enableIndice);
             Preview.Update();
           }
         }
       }
     
       function initAndUpdatePreviewWhenPossible(enableIndice = false) {
-        callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(enableIndice));
+        callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(false, false, false, enableIndice));
       }
       
-      // To initialize and update PreviewSafe when page is loaded and PreviewSafe is defined
-      var initAndUpdatePreviewSafeDone = false;
-      
-      function initAndUpdatePreviewSafeIfPossible(disableBBCode, enableHiddenText) {
-        if ("PreviewSafe" in window) {
-          if (!initAndUpdatePreviewSafeDone) {
-            initAndUpdatePreviewSafeDone = true;
-            PreviewSafe.Init();
-            if (disableBBCode) {
-              PreviewSafe.SetBBCode(false);
-            }
-            if (!enableHiddenText) {
-              PreviewSafe.SetHiddenText(false);
-            }
-            PreviewSafe.Update();
-          }
-        }
-      }
-      
-      function initAndUpdatePreviewSafeWhenPossible(disableBBCode = false, enableHiddenText = false) {
-        callMethodWhenPossible(() => initAndUpdatePreviewSafeIfPossible(disableBBCode, enableHiddenText));
+      function initAndUpdatePreviewSafeWhenPossible(enableBBCode = true, enableHiddenText = false) {
+        callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(true, enableBBCode, enableHiddenText, false));
       }
       
       // To call Rolling.develop_quick when page is loaded and Rolling is defined

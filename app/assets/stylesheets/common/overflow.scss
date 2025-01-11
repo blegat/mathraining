@@ -1,5 +1,10 @@
-.myoverflow {
-  overflow-y:hidden;
+.content-part {
+  overflow-y:hidden; // To be invisible when height is set to 0
+}
+
+.form-part {
+  overflow-y:hidden; // To be invisible when height is set to 0
+  overflow-x:hidden; // Sometimes a horizontal scrollbar appears on the form because of the preview buffer...
 }
 
 .card-body {

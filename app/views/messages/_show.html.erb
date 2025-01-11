@@ -2,12 +2,12 @@
 
 <% can_edit = !m.new_record? && m.can_be_updated_by(current_user) %>
 
-<div id="the<%= postfix %>" class="myoverflow">
+<div id="the<%= postfix %>" class="content-part">
 <%= render 'shared/post', ms: m, kind: "message", can_edit: can_edit, postfix: postfix %>
 </div>
 
 <% if can_edit %>
-  <div id="form<%= postfix %>" class="myoverflow px-1" style="height:0px;">
+  <div id="form<%= postfix %>" class="form-part px-1" style="height:0px;">
   <%= render 'messages/edit', m: m, postfix: postfix %>
   </div>
 <% end %>

@@ -9,7 +9,7 @@
   <%= f.label :description, :for => "MathInput", :class => "form-label" %>
   <%= render 'shared/preview' %>
   <%= render 'shared/smiley' %>
-  <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()" %>
+  <%= f.text_area :description, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()" %>
   <script>initAndUpdatePreviewSafeWhenPossible()</script>
 </div>
 

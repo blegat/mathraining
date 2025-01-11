@@ -294,8 +294,8 @@ function checkWepion() {
     <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label" %>
     <%= render 'shared/preview', postfix: postfix %>
     <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()", :value => cont %>
-    <script>initAndUpdatePreviewSafeWhenPossible(/* disableBBCode = */ false, /* enableHiddenText = */ true)</script>
+    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :oninput => "Preview.MyUpdate()", :value => cont %>
+    <script>initAndUpdatePreviewSafeWhenPossible(/* enableBBCode = */ true, /* enableHiddenText = */ true)</script>
   </div>
 <% end %>
 

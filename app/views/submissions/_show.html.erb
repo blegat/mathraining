@@ -122,9 +122,7 @@ var hideStatement = function () {
   <% end %>
 
   <!-- Affichage de la soumission -->
-  <div class="myoverflow">
   <%= render 'shared/post', ms: @submission, kind: "submission", reduce_margin_top: true %>
-  </div>
 
   <!-- Si soumission en test avec score, on affiche le score -->
   <% if @submission.intest && @submission.score != -1 && (can_current_user_correct || current_user == @submission.user) %>

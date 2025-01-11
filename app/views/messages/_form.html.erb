@@ -27,7 +27,7 @@
   <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label" %>
   <%= render 'shared/preview', postfix: postfix %>
   <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id => "MathInput#{postfix}", :oninput => "PreviewSafe.MyUpdate()" %>
+  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id => "MathInput#{postfix}", :oninput => "Preview.MyUpdate()" %>
   <!-- Do not call initAndUpdatePreviewSafeWhenPossible: it will be done only after rolling to show the form -->
 </div>
 

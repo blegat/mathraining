@@ -1,10 +1,10 @@
 <% postfix = "NewMessage" %>
 
-<div id="the<%= postfix %>" class="myoverflow text-center">
+<div id="the<%= postfix %>" class="content-part text-center">
 <button onclick='return Rolling.develop("<%= postfix %>", true)' class='btn btn-lg btn-ld-light-dark mt-3'>Répondre</button>
 </div>
 
-<div id="form<%= postfix %>" class="myoverflow px-1" style="height:0px;">
+<div id="form<%= postfix %>" class="form-part px-1" style="height:0px;">
 
 <% @message = Message.new %>
 <%= form_for [@subject, @message], :url => subject_messages_path(@subject, @message, :action => :create, :q => @q), :html => { :multipart => true, :class => "mt-3" } do |f| %>

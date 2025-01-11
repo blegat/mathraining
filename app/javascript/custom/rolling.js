@@ -26,11 +26,9 @@ var Rolling = {
       var yyy = document.getElementById("form" + m).offsetTop - 60;
       body.animate({scrollTop:yyy}, this.rollingTime/2);
       if (document.getElementById("MathInput" + m)) {
-        PreviewSafe.Init(m);
-        if (!enableHiddenText) {
-          PreviewSafe.SetHiddenText(false);
-        }
-        PreviewSafe.Update();
+        Preview.Init(m);
+        Preview.SetHiddenText(enableHiddenText);
+        Preview.Update();
       }
     });
     return false;
@@ -45,11 +43,9 @@ var Rolling = {
       var yyy = document.getElementById("form" + m).offsetTop - 60;
       body.scrollTop(yyy);
       if (document.getElementById("MathInput" + m)) {
-        PreviewSafe.Init(m);
-        if (!enableHiddenText) {
-          PreviewSafe.SetHiddenText(false);
-        }
-        PreviewSafe.Update();
+        Preview.Init(m);
+        Preview.SetHiddenText(enableHiddenText);
+        Preview.Update();
       }
     });
   },

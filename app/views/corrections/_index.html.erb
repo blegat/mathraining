@@ -13,9 +13,7 @@
   <% @lastid = correction.id %>
   <% last_correction_user = correction.user %>
   
-  <div class="myoverflow">
   <%= render 'shared/post', ms: correction, kind: "correction", reduce_margin_top: first_comment %>
-  </div>
   
   <% first_comment = false %>
   

@@ -10,7 +10,7 @@
   <div class="mb-2">
     <%= render 'shared/preview' %>
     <%= render 'shared/smiley' %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "PreviewSafe.MyUpdate()", :disabled => disable_correction %>
+    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()", :disabled => disable_correction %>
     <script>initAndUpdatePreviewSafeWhenPossible()</script>
     <script>initLeavingFormWhenPossible()</script>
   </div>

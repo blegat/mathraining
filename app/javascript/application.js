@@ -10,7 +10,6 @@ import Clue from "custom/clue"
 import Info from "custom/info"
 import Joint from "custom/join"
 import Preview from "custom/preview"
-import PreviewSafe from "custom/previewsafe"
 import Rolling from "custom/rolling"
 import ShowHideCode from "custom/showcode"
 import Insert from "custom/tainsert"
@@ -23,7 +22,6 @@ window.Clue = Clue;
 window.Info = Info;
 window.Joint = Joint;
 window.Preview = Preview;
-window.PreviewSafe = PreviewSafe;
 window.Rolling = Rolling;
 window.ShowHideCode = ShowHideCode;
 window.Insert = Insert;

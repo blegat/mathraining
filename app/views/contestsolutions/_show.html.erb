@@ -78,12 +78,12 @@
 <% if !contestsolution.official %>
   <% can_edit = (contestsolution.user == current_user && @contestproblem.in_progress?) %>
 
-  <div id="the<%= 'fake' if contestsolution.user != current_user %>" class="myoverflow">
+  <div id="the<%= 'fake' if contestsolution.user != current_user %>" class="content-part">
     <%= render 'shared/post', ms: contestsolution, kind: "contestsolution", can_edit: can_edit, reduce_margin_top: true %>
   </div>
 
   <% if can_edit %>    
-    <div id="form" class="myoverflow mt-1 px-1" style="height:0px;">
+    <div id="form" class="form-part mt-1 px-1" style="height:0px;">
     <%= render 'contestsolutions/edit', contestsolution: contestsolution %>
     </div>
     

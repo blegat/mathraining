@@ -1,6 +1,6 @@
 <% postfix = "EditSubject" %>
 
-<div id="the<%= postfix %>" class="myoverflow">
+<div id="the<%= postfix %>" class="content-part">
 
 <% if !@subject.question.nil? %>
   <%= render 'subjects/question', q: @subject.question %>
@@ -29,7 +29,7 @@
 </div>
 
 <% if current_user.admin? %>
-  <div id="form<%= postfix %>" class="myoverflow px-1" style="height:0px;">
+  <div id="form<%= postfix %>" class="form-part px-1" style="height:0px;">
   <%= render 'subjects/edit', s: s, postfix: postfix %>
   </div>
 <% end %>
