@@ -6,13 +6,13 @@ class SubmissionsController < ApplicationController
   
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :create_intest, :update_draft, :update_intest] # Do not forget to check @invalid_csrf_token instead!
 
-  before_action :signed_in_user, only: [:all, :allmy, :allnew, :allmynew]
+  before_action :signed_in_user, only: [:all, :allmy, :allnew, :allmynew, :next_good, :prev_good]
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :search_script]
   before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
-  before_action :root_user, only: [:update_score, :star, :unstar]
+  before_action :root_user, only: [:update_score, :star, :unstar, :next_good, :prev_good]
   before_action :corrector_user, only: [:all, :allmy, :allnew, :allmynew]
   
-  before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script]
+  before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script, :next_good, :prev_good]
   before_action :get_problem, only: [:create, :create_intest, :index]
   
   before_action :user_in_test_or_root, only: [:destroy]
@@ -283,6 +283,26 @@ class SubmissionsController < ApplicationController
   def allmynew
     @submissions = current_user.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where(followings: {read: false}).order("submissions.last_comment_time").to_a
     @submissions_other = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:status => :wrong_to_read).order("submissions.last_comment_time").to_a
+  end
+  
+  # Go to the next good submission (when searching for submissions to star)
+  def next_good
+    submission = @problem.submissions.joins("INNER JOIN solvedproblems ON solvedproblems.submission_id = submissions.id").where("created_at > ? AND submissions.created_at = solvedproblems.resolution_time", @submission.created_at).order(:created_at).first
+    if submission.nil?
+      submission = @submission
+      flash[:info] = "Aucune soumission trouvée."
+    end
+    redirect_to problem_path(@problem, :sub => submission)
+  end
+  
+  # Go to the previous good submission (when searching for submissions to star)
+  def prev_good
+    submission = @problem.submissions.joins("INNER JOIN solvedproblems ON solvedproblems.submission_id = submissions.id").where("created_at < ? AND submissions.created_at = solvedproblems.resolution_time", @submission.created_at).order("created_at DESC").first
+    if submission.nil?
+      submission = @submission
+      flash[:info] = "Aucune soumission trouvée."
+    end
+    redirect_to problem_path(@problem, :sub => submission)
   end
 
   private

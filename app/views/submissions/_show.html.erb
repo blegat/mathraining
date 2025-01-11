@@ -265,3 +265,10 @@ var hideStatement = function () {
   <!-- Chercher un possible plagiat -->
   <%= render 'submissions/search_string' %>
 <% end %>
+
+<% if current_user.root? %>
+  <center>
+    <%= link_to "Bonne solution précédente", prev_good_submission_path(@submission) %> -
+    <%= link_to "Bonne solution suivante", next_good_submission_path(@submission) %>
+  </center>
+<% end %>

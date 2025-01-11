@@ -97,6 +97,8 @@ Rails.application.routes.draw do
       get :reserve # only via JS
       get :unreserve # only via JS
       post :search_script # only via JS
+      get :next_good
+      get :prev_good
     end
     collection do
       get :all

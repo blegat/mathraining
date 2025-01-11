@@ -18,11 +18,11 @@ describe "Submission pages" do
   
   let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: user, status: :waiting) } 
   let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user, status: :wrong) }
-  let!(:good_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user2, status: :correct) }
-  let!(:good_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_submission, user: other_user2) }
+  let!(:good_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user2, status: :correct, created_at: DateTime.now - 2.days) }
+  let!(:good_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_submission, resolution_time: good_submission.created_at, user: other_user2) }
   
-  let!(:good_corrector_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: :correct) }
-  let!(:good_corrector_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_corrector_submission, user: good_corrector) }
+  let!(:good_corrector_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: :correct, created_at: DateTime.now - 1.day) }
+  let!(:good_corrector_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_corrector_submission, resolution_time: good_corrector_submission.created_at, user: good_corrector) }
   
   let(:newsubmission) { "Voici ma belle soumission." }
   let(:newcorrection) { "Voici ma belle correction." }
@@ -807,6 +807,38 @@ describe "Submission pages" do
   
   describe "root" do
     before { sign_in root }
+    
+    describe "visits next good submission" do
+      before do
+        visit problem_path(problem_with_submissions, :sub => good_submission)
+        click_link("Bonne solution suivante")
+      end
+      it { should have_content(good_corrector_submission.content) }
+      
+      describe "and click again" do
+        before { click_link("Bonne solution suivante") }
+        it do
+          should have_info_message("Aucune soumission trouvée")
+          should have_content(good_corrector_submission.content)
+        end
+      end
+    end
+    
+    describe "visits previous good submission" do
+      before do
+        visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
+        click_link("Bonne solution précédente")
+      end
+      it { should have_content(good_submission.content) }
+      
+      describe "and click again" do
+        before { click_link("Bonne solution précédente") }
+        it do
+          should have_info_message("Aucune soumission trouvée")
+          should have_content(good_submission.content)
+        end
+      end
+    end
      
     describe "visits wrong submission" do
       before { visit problem_path(problem_with_submissions, :sub => wrong_submission) }
