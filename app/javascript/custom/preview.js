@@ -62,11 +62,11 @@ var Preview = {
   SwapBuffers: function () {
     var buffer = this.preview, preview = this.buffer;
     this.buffer = buffer; this.preview = preview;
-    var oldHeight = buffer.clientHeight;
-    var newHeight = preview.clientHeight;
+    var oldHeight = buffer.offsetHeight;
     var oldScroll = $(window).scrollTop();
     buffer.classList.add("hidden-preview");
     preview.classList.remove("hidden-preview");
+    var newHeight = preview.offsetHeight; // Must be done after removing hidden-preview!
     if (Math.abs(newHeight - oldHeight) > 1) {
       window.scrollTo(0, oldScroll+newHeight-oldHeight);
     }
