@@ -4,8 +4,23 @@
 
 <% problem_solved = current_user.pb_solved?(@problem) %>
 
-<h1><%= title_problems(@problem.section, "Problème ##{ @problem.number }#{ (' - Test #' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online }") %>
-<span class="ms-3 text-color-grey">(<%= pt %>&nbsp;points)</span>
+<!-- Titre avec un tableau pour que les points à droite se mettent bien -->
+<h1>
+<table style="width:100%;">
+<tr>
+<td>
+<%= title_problems(@problem.section, "Problème&nbsp;##{ @problem.number }#{ (' - Test&nbsp;#' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online }".html_safe) %>
+</td>
+
+<td class="d-none d-md-table-cell ps-3 text-end">
+<span class="badge rounded-pill py-2 px-3 bg-secondary" style="font-size:20px;"><%= pt %>&nbsp;points</span>
+</td>
+</tr>
+</table>
+
+<div class="d-block d-md-none pt-2 text-center">
+<span class="badge rounded-pill py-2 px-3 bg-secondary" style="font-size:20px;"><%= pt %>&nbsp;points</span>
+</div>
 </h1>
 
 <!-- Si administrateur -->
@@ -45,7 +60,7 @@
   <% end %>
 
   <!-- Prérequis -->
-  <h3>Prérequis (uniquement visibles des administrateurs)</h3>
+  <h3>Prérequis</h3>
 
   <% has_pre = false %>
   <% enligne_ok = true %>
@@ -186,7 +201,7 @@
 
 <% if (current_user.admin? || current_user.corrector? && problem_solved) %>
   <!-- Explication -->
-  <div class='clue-bis'><div><center><button onclick='return Clue.toggle(0)' class='btn btn-ld-light-dark'>Éléments de solution (pour les correcteurs)</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
+  <div class='clue-bis'><div><center><button onclick='return Clue.toggle(0)' class='btn btn-ld-light-dark'>Éléments de solution</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
   <%= htmlise(@problem.explanation) %>
   </div></div></div>
 <% end %>

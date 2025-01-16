@@ -4,14 +4,36 @@
 <% pct = question.nb_first_guesses.to_f / (question.nb_correct + question.nb_wrong).to_f if question.nb_correct + question.nb_wrong > 0 %>
 <% pct2 = [1.4*pct,1].min %>
 
-<h3>Exercice <%= number if question.online? %>
-<% if !@section.fondation %>
-<span class="ms-3 text-color-grey">(<%= pt %>&nbsp;points)</span>
-<% end %>
+<!-- Titre avec un tableau pour que les points à droite se mettent bien -->
+<h3>
+<table style="width:100%;">
+<tr>
+<td>
+Exercice <%= number if question.online? %>
+</td>
 
-<% if question.online %>
-  <span class="d-none d-lg-inline ms-3" style="font-size:20px; color:rgb(<%= 0+((1-pct2)*255).to_i %>,<%= 0+(pct2*225).to_i %>,0);">(Résolu <b><%= question.nb_correct %></b> fois - <b><%= (100*pct).round(0) %>%</b> de réussite au premier essai)</span>
-  <br class="d-inline d-lg-none" />
-  <span class="d-inline d-lg-none mb-1" style="font-size:20px; color:rgb(<%= 0+((1-pct2)*255).to_i %>,<%= 0+(pct2*225).to_i %>,0);">(Résolu <b><%= question.nb_correct %></b> fois - <br class="visible-xs" /> <b><%= (100*pct).round(0) %>%</b> de  réussite au 1<sup>er</sup> essai)</span>
+<% if !@section.fondation || question.online %>
+  <td class="d-none d-sm-table-cell ps-3 text-end">
+  <% if question.online %>
+    <%= link_to "Résolu #{ question.nb_correct } fois", stats_chapters_path, :class => "badge rounded-pill py-2 px-3 text-color-dark-light-blue gradient-green-red-#{ ((1-pct2)*20).to_i }", :style => "font-size:18px;" %>
+  <% end %>
+  
+  <% if !@section.fondation %>
+    <span class="badge rounded-pill py-2 px-3 bg-secondary" style="font-size:18px;"><%= pt %>&nbsp;points</span>
+  <% end %>
+  </td>
+<% end %>
+</tr>
+</table>
+
+<% if !@section.fondation || question.online %>
+  <div class="d-block d-sm-none pt-2 text-center">
+  <% if question.online %>
+    <%= link_to "Résolu #{ question.nb_correct } fois", stats_chapters_path, :class => "badge rounded-pill py-2 px-3 text-color-dark-light-blue gradient-green-red-#{ ((1-pct2)*20).to_i }", :style => "font-size:18px;" %>
+  <% end %>
+  <% if !@section.fondation %>
+    <span class="badge rounded-pill py-2 px-3 bg-secondary" style="font-size:18px;"><%= pt %>&nbsp;points</span>
+  <% end %>
+  </div>
 <% end %>
 </h3>
