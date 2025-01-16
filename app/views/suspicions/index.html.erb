@@ -7,7 +7,7 @@
 
 <h1><%= title_1("Suspicions de plagiats") %>
 <% if current_user.root? %>
-  <span style="font-size:20px;"> - 
+  <span class="h4"> - 
   <% if show_all %>
     <%= link_to "Nouvelles suspicions uniquement", suspicions_path %></span>
   <% else %>

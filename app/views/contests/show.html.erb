@@ -3,12 +3,13 @@
 <!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
 <h1>
 <table style="width:100%;">
-<tr><td>
+<tr>
+<td class="p-0">
 <%= title_contests("Concours ##{@contest.number}") %>
 </td>
 
 <% if signed_in? %>
-  <td class="d-none d-md-table-cell ps-3 text-end">
+  <td class="d-none d-md-table-cell p-0 ps-3 text-end">
   <% if !current_user.followed_contests.exists?(@contest.id) %>
     <%= link_to "Suivre ce concours", follow_contest_path(@contest), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: in_skin? %>
   <% else %>

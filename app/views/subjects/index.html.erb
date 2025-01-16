@@ -36,7 +36,7 @@
 <h1><%= title_1("Forum#{(' - ' + @title_complement) if !@title_complement.empty?}") %>
 
 <% if @title_complement.empty? %>
-  <span style="font-size:20px;">
+  <span class="h4">
   - <%= link_to "FAQ", faqs_path %>
   </span>
 <% end %>

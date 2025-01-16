@@ -21,21 +21,21 @@
 <!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
 <h1 class="mb-0">
 <table style="width:100%;">
-<tr><td>
+<tr>
+<td class="p-0">
 <%= title_subjects(@subject.title) %>
 <% unless title_complement.empty? %>
-  <span style="font-size:20px;">- <%= title_complement %></span>
+  <span class="h4">- <%= title_complement %></span>
 <% end %>
 </td>
 
-<td class="d-none d-md-table-cell ps-3 text-end">
+<td class="d-none d-md-table-cell p-0 ps-3 text-end">
 <% if !current_user.followed_subjects.exists?(@subject.id) %>
   <%= link_to "Suivre ce sujet", follow_subject_path(@subject), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail à chaque fois qu'un nouveau message sera posté sur ce sujet."}, disabled: in_skin? %>
 <% else %>
   <%= link_to "Ne plus suivre ce sujet", unfollow_subject_path(@subject), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: in_skin? %>
 <% end %>
 </td>
-
 </tr>
 </table>
 
@@ -46,7 +46,6 @@
   <%= link_to "Ne plus suivre ce sujet", unfollow_subject_path(@subject), class: 'btn btn-ld-light-dark', disabled: in_skin? %>
 <% end %>
 </div>
-
 </h1>
 
 <center>

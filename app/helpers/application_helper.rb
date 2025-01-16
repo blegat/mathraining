@@ -240,19 +240,19 @@ module ApplicationHelper
   
   # Methods to write titles
   def title_1(x)
-    return "<span class='title-true'>".html_safe + x + "</span>".html_safe
+    return "<span class='h1'>".html_safe + x + "</span>".html_safe
   end
   
   def title_2(x, y)
-    return "<span class='title-first'>".html_safe + x + " ></span> <span class='title-true'>".html_safe + y + "</span>".html_safe
+    return "<span class='h3'>".html_safe + x + " ></span> <span class='h1'>".html_safe + y + "</span>".html_safe
   end
   
   def title_3(x, y, z)
-    return "<span class='title-first'>".html_safe + x + " ></span> <span class='title-second'>".html_safe + y + " ></span> <span classs='title-true'>".html_safe + z + "</span>".html_safe
+    return "<span class='h4'>".html_safe + x + " ></span> <span class='h3'>".html_safe + y + " ></span> <span class='h1'>".html_safe + z + "</span>".html_safe
   end
   
   def title_4(x, y, z, t)
-    return "<span class='title-first'>".html_safe + x + " ></span> <span class='title-second'>".html_safe + y +  " ></span> <span class='title-third'>".html_safe + z + " ></span> <span class='title-true'>".html_safe + t + "</span>".html_safe
+    return "<span class='h5'>".html_safe + x + " ></span> <span class='h4'>".html_safe + y +  " ></span> <span class='h3'>".html_safe + z + " ></span> <span class='h1'>".html_safe + t + "</span>".html_safe
   end
   
   # Titles concerning actualities

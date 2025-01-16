@@ -12,7 +12,7 @@
   <div class="header <%= coul %>">
 
   <!-- Nom -->
-  <div class="author">
+  <div class="author h4 mb-0">
   <% if kind != "contestcorrection" %>
     <% if !ms.user.nil? %>
       <%= ms.user.linked_name %>
@@ -30,7 +30,7 @@
 
   <!-- Date -->
   <% if kind != "contestsolution" && kind != "contestcorrection" %>
-    <div class="date"><%= write_date(ms.created_at) %></div>
+    <div class="date h5 mb-0"><%= write_date(ms.created_at) %></div>
   <% end %>
 
   </div>
