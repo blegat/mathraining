@@ -14,12 +14,11 @@ Exercice <%= number if question.online? %>
 
 <% if !@section.fondation || question.online %>
   <td class="d-none d-sm-table-cell ps-3 text-end">
-  <% if question.online %>
-    <%= link_to "Résolu #{ question.nb_correct } fois", stats_chapters_path, :class => "badge rounded-pill py-2 px-3 text-color-dark-light-blue gradient-green-red-#{ ((1-pct2)*20).to_i }", :style => "font-size:18px;" %>
-  <% end %>
-  
   <% if !@section.fondation %>
     <span class="badge rounded-pill py-2 px-3 bg-secondary" style="font-size:18px;"><%= pt %>&nbsp;points</span>
+  <% end %>
+  <% if question.online %>
+    <%= link_to "Résolu #{ question.nb_correct } fois", stats_chapters_path, :class => "badge rounded-pill py-2 px-3 text-color-dark-light-blue gradient-green-red-#{ ((1-pct2)*20).to_i }", :style => "font-size:18px;" %>
   <% end %>
   </td>
 <% end %>
@@ -28,11 +27,11 @@ Exercice <%= number if question.online? %>
 
 <% if !@section.fondation || question.online %>
   <div class="d-block d-sm-none pt-2 text-center">
-  <% if question.online %>
-    <%= link_to "Résolu #{ question.nb_correct } fois", stats_chapters_path, :class => "badge rounded-pill py-2 px-3 text-color-dark-light-blue gradient-green-red-#{ ((1-pct2)*20).to_i }", :style => "font-size:18px;" %>
-  <% end %>
   <% if !@section.fondation %>
     <span class="badge rounded-pill py-2 px-3 bg-secondary" style="font-size:18px;"><%= pt %>&nbsp;points</span>
+  <% end %>
+  <% if question.online %>
+    <%= link_to "Résolu #{ question.nb_correct } fois", stats_chapters_path, :class => "badge rounded-pill py-2 px-3 text-color-dark-light-blue gradient-green-red-#{ ((1-pct2)*20).to_i }", :style => "font-size:18px;" %>
   <% end %>
   </div>
 <% end %>
