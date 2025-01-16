@@ -25,7 +25,7 @@ describe "Star proposal pages" do
     describe "visits wrong submission" do
       before { visit problem_path(problem, :sub => wrong_submission) }
       it do
-        should have_selector("h1", text: "Problème ##{problem.number}")
+        should have_selector("td", text: "Problème ##{problem.number}")
         should have_selector("div", text: wrong_submission.content)
         should have_no_link("Proposer une étoile")
       end
@@ -34,7 +34,7 @@ describe "Star proposal pages" do
     describe "visits correct submission" do
       before { visit problem_path(problem, :sub => correct_submission) }
       it do
-        should have_selector("h1", text: "Problème ##{problem.number}")
+        should have_selector("td", text: "Problème ##{problem.number}")
         should have_selector("div", text: correct_submission.content)
         should have_link("Proposer une étoile")
         should have_button("Envoyer pour traitement") # in test environment it is always shown
