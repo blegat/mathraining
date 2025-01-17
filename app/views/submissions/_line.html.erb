@@ -66,7 +66,7 @@
     <% premier = true %>
     <% s.followings.each do |f| %>
       <%= " - " if !premier %>
-      <%= f.user.linked_name %>s
+      <%= f.user.linked_name %>
       <% premier = false %>
     <% end %>
   </td>
