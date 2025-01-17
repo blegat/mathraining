@@ -1,0 +1,29 @@
+/* TITLES WITH SOMETHING ON THE RIGHT (OR BOTTOM) */
+
+$title-breakpoints: lg md;
+
+@each $title-breakpoint in $title-breakpoints {
+
+  .split-title-#{$title-breakpoint} {
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: map-get($grid-breakpoints, '#{$title-breakpoint}')) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .split-title-#{$title-breakpoint} .part-1 {
+  }
+
+  .split-title-#{$title-breakpoint} .part-2 {
+    text-align: center;
+    @media (min-width: map-get($grid-breakpoints, '#{$title-breakpoint}')) {
+      text-align: right;
+      padding-left: 1em;
+    }
+  }
+
+}

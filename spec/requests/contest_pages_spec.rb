@@ -201,7 +201,7 @@ describe "Contest pages", contest: true do
           expect(Contest.order(:id).last.description).to eq(newdescription)
           expect(Contest.order(:id).last.medal).to eq(true)
           expect(page).to have_success_message("Concours ajouté.")
-          expect(page).to have_content("Concours ##{newnumber}")
+          expect(page).to have_selector("h1", text: "Concours ##{newnumber}")
           expect(page).to have_content(newdescription)
         end
         

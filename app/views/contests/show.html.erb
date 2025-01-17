@@ -1,38 +1,21 @@
 <% provide(:title, "Concours ##{ @contest.number }") %>
 
-<!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
-<h1>
-<table style="width:100%;">
-<tr>
-<td class="p-0">
-<%= title_contests("Concours ##{@contest.number}") %>
-</td>
-
-<% if signed_in? %>
-  <td class="d-none d-md-table-cell p-0 ps-3 text-end">
-  <% if !current_user.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", follow_contest_path(@contest), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: in_skin? %>
-  <% else %>
-    <%= link_to "Ne plus suivre ce concours", unfollow_contest_path(@contest), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: in_skin? %>
-  <% end %>
-  </td>
-<% end %>
-
-</tr>
-</table>
-</h1>
-
-<% if signed_in? %>
-  <div class="d-block d-md-none pt-2 text-center">
-  <% if !current_user.followed_contests.exists?(@contest.id) %>
-    <%= link_to "Suivre ce concours", follow_contest_path(@contest), :method => :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: in_skin? %>
-  <% else %>
-    <%= link_to "Ne plus suivre ce concours", unfollow_contest_path(@contest), class: 'btn btn-ld-light-dark', disabled: in_skin? %>
-  <% end %>
+<div class="split-title-md mb-2">
+  <div class="part-1">
+    <h1 class="mb-0">
+    <%= title_contests("Concours ##{@contest.number}") %>
+    </h1>
   </div>
-<% end %>
+  <div class="part-2 pt-2">
+    <% if !current_user.followed_contests.exists?(@contest.id) %>
+      <%= link_to "Suivre ce concours", follow_contest_path(@contest), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: in_skin? %>
+    <% else %>
+      <%= link_to "Ne plus suivre ce concours", unfollow_contest_path(@contest), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: in_skin? %>
+    <% end %>
+  </div>
+</div>
 
-<h3 class="mt-2">Description</h3>
+<h3>Description</h3>
 
 <%= bbcode(@contest.description) %>
 

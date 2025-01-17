@@ -41,7 +41,7 @@ describe "Submission pages" do
     describe "visits problem" do
       before { visit problem_path(problem) }
       it do
-        should have_selector("td", text: "Problème ##{problem.number}")
+        should have_selector("h1", text: "Problème ##{problem.number}")
         should have_selector("div", text: problem.statement)
         should have_link("Nouvelle soumission")
       end
@@ -125,7 +125,7 @@ describe "Submission pages" do
           click_button "Soumettre cette solution"
         end
         specify do
-          expect(page).to have_selector("td", text: "Problème ##{problem.number}")
+          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
           expect(page).to have_no_link("Nouvelle soumission")
           expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
           expect(problem.submissions.where(:user => user).count).to eq(1) # Only the one created by FactoryGirl 
@@ -140,7 +140,7 @@ describe "Submission pages" do
           click_button "Soumettre cette solution"
         end
         specify do
-          expect(page).to have_selector("td", text: "Problème ##{problem.number}")
+          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
           expect(page).to have_no_link("Nouvelle soumission")
           expect(page).to have_content("Vous avez soumis une solution plagiée à ce problème.")
           expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
@@ -156,7 +156,7 @@ describe "Submission pages" do
           click_button "Soumettre cette solution"
         end
         specify do
-          expect(page).to have_selector("td", text: "Problème ##{problem.number}")
+          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
           expect(page).to have_no_content("Vous avez soumis une solution plagiée à ce problème.") # not shown for old plagiarism
           expect(page).to have_success_message("Votre solution a bien été soumise.")
           expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
@@ -172,7 +172,7 @@ describe "Submission pages" do
           click_button "Soumettre cette solution"
         end
         specify do
-          expect(page).to have_selector("td", text: "Problème ##{problem.number}")
+          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
           expect(page).to have_no_link("Nouvelle soumission")
           expect(page).to have_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.")
           expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
@@ -188,7 +188,7 @@ describe "Submission pages" do
           click_button "Soumettre cette solution"
         end
         specify do
-          expect(page).to have_selector("td", text: "Problème ##{problem.number}")
+          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
           expect(page).to have_no_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.") # not shown for old closed submission
           expect(page).to have_success_message("Votre solution a bien été soumise.")
           expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
@@ -230,7 +230,7 @@ describe "Submission pages" do
       let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, visible: false, content: newsubmission) }
       before { visit problem_path(problem) }
       it do
-        should have_selector("td", text: "Problème ##{problem.number}")
+        should have_selector("h1", text: "Problème ##{problem.number}")
         should have_selector("div", text: problem.statement)
         should have_link("Reprendre le brouillon")
       end
@@ -314,7 +314,7 @@ describe "Submission pages" do
         end
         specify do
           expect(page).to_not have_success_message("Votre brouillon a bien été enregistré.")
-          expect(page).to have_selector("td", text: "Problème ##{problem.number}") # We simply redirect in this case (because it could happen)
+          expect(page).to have_selector("h1", text: "Problème ##{problem.number}") # We simply redirect in this case (because it could happen)
           expect(draft_submission.content).to eq(newsubmission)
           expect(draft_submission.waiting?).to eq(true)
         end

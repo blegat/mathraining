@@ -1,27 +1,14 @@
-<!-- Titre avec un tableau pour que le bouton de droite se mette bien -->
-<h1 class="mb-2">
-<table style="width:100%;">
-<tr><td>
-<%= title_1("Messages") %>
-</td>
-
-<td class="d-none d-md-table-cell ps-3 text-end">
-<% if !current_user.follow_message %>
-  <%= button_to "M'avertir des nouveaux messages par e-mail", set_follow_message_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => in_skin? %>
-<% else %>
-  <%= button_to "Ne plus m'avertir par e-mail", unset_follow_message_path, :method => :get, :class => 'btn btn-ld-light-dark mt-2 ms-2', :disabled => in_skin? %>
-<% end %>
-</td>
-
-</tr>
-</table>
-
-<div class="d-block d-md-none pt-2 text-center">
-<% if !current_user.follow_message %>
-  <%= button_to "M'avertir des nouveaux messages par e-mail", set_follow_message_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => in_skin? %>
-<% else %>
-  <%= button_to "Ne plus m'avertir par e-mail", unset_follow_message_path, :method => :get, :class => 'btn btn-ld-light-dark mt-2 ms-2', :disabled => in_skin? %>
-<% end %>
+<div class="split-title-md mb-2">
+  <div class="part-1">
+    <h1 class="mb-0">
+    <%= title_1("Messages") %>
+    </h1>
+  </div>
+  <div class="part-2 pt-2">
+    <% if !current_user.follow_message %>
+      <%= button_to "M'avertir des nouveaux messages par e-mail", set_follow_message_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => in_skin? %>
+    <% else %>
+      <%= button_to "Ne plus m'avertir par e-mail", unset_follow_message_path, :method => :get, :class => 'btn btn-ld-light-dark', :disabled => in_skin? %>
+    <% end %>
+  </div>
 </div>
-
-</h1>

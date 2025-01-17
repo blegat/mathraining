@@ -4,24 +4,17 @@
 
 <% problem_solved = current_user.pb_solved?(@problem) %>
 
-<!-- Titre avec un tableau pour que les points à droite se mettent bien -->
-<h1>
-<table style="width:100%;">
-<tr>
-<td class="p-0">
-<%= title_problems(@problem.section, "Problème&nbsp;##{ @problem.number }#{ (' - Test&nbsp;#' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online }".html_safe) %>
-</td>
-
-<td class="d-none d-md-table-cell p-0 ps-3 text-end">
-<span class="badge rounded-pill py-2 px-3 bg-secondary" style="font-size:18px;"><%= pt %>&nbsp;points</span>
-</td>
-</tr>
-</table>
-
-<div class="d-block d-md-none pt-2 text-center">
-<span class="badge rounded-pill py-2 px-3 bg-secondary" style="font-size:18px;"><%= pt %>&nbsp;points</span>
+<div class="split-title-lg">
+  <div class="part-1">
+    <h1><%= title_problems(@problem.section, "Problème&nbsp;##{ @problem.number }#{ (' - Test&nbsp;#' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online }".html_safe) %></h1>
+  </div>
+  <div class="part-2">
+    <span class="badge rounded-pill py-2 px-3 mb-2 ms-1 bg-secondary" style="font-size:18px;"><%= pt %>&nbsp;points</span>
+    <% if @problem.online %>
+      <span class="badge rounded-pill py-2 px-3 mb-2 ms-1 bg-primary" style="font-size:18px;">Résolu <%= @problem.nb_solves %> fois</span>
+    <% end %>
+  </div>
 </div>
-</h1>
 
 <!-- Si administrateur -->
 <% if current_user.admin? %>

@@ -73,7 +73,7 @@ describe "Problem pages", problem: true do
     describe "visits online problem" do
       before { visit problem_path(online_problem) }
       it do
-        should have_selector("td", text: "Problème ##{online_problem.number}")
+        should have_selector("h1", text: "Problème ##{online_problem.number}")
         should have_selector("div", text: online_problem.statement)
       end
     end
@@ -127,7 +127,7 @@ describe "Problem pages", problem: true do
     describe "visits online problem with prerequisite" do
       before { visit problem_path(online_problem_with_prerequisite) }
       it do
-        should have_selector("td", text: "Problème ##{online_problem_with_prerequisite.number}")
+        should have_selector("h1", text: "Problème ##{online_problem_with_prerequisite.number}")
         should have_selector("div", text: online_problem_with_prerequisite.statement)
         should have_no_link("Modifier ce problème")
         should have_no_link("Modifier la solution")
@@ -159,7 +159,7 @@ describe "Problem pages", problem: true do
     describe "visits online problem" do
       before { visit problem_path(online_problem) }
       it do
-        should have_selector("td", text: "Problème ##{online_problem.number}")
+        should have_selector("h1", text: "Problème ##{online_problem.number}")
         should have_selector("div", text: online_problem.statement)
         should have_link("Modifier ce problème", href: edit_problem_path(online_problem))
         should have_link("Modifier la solution", href: edit_explanation_problem_path(online_problem))
@@ -170,7 +170,7 @@ describe "Problem pages", problem: true do
     describe "visits virtualtest problem" do
       before { visit problem_path(problem_in_virtualtest) }
       it do
-        should have_selector("td", text: "Problème ##{problem_in_virtualtest.number} - Test ##{online_virtualtest.number}")
+        should have_selector("h1", text: "Problème ##{problem_in_virtualtest.number} - Test ##{online_virtualtest.number}")
         should have_link("Modifier le marking scheme", href: edit_markscheme_problem_path(problem_in_virtualtest))
       end
     end
@@ -178,7 +178,7 @@ describe "Problem pages", problem: true do
     describe "visits offline problem" do
       before { visit problem_path(offline_problem) }
       it do
-        should have_selector("td", text: "Problème ##{offline_problem.number}")
+        should have_selector("h1", text: "Problème ##{offline_problem.number}")
         should have_selector("div", text: offline_problem.statement)
         should have_link("Supprimer ce problème")
         should have_no_button("Mettre en ligne") # Because no prerequisite
@@ -192,7 +192,7 @@ describe "Problem pages", problem: true do
           click_button "new_prerequisite_button"
         end
         it do
-          should have_selector("td", text: "Problème ##{offline_problem.number}")
+          should have_selector("h1", text: "Problème ##{offline_problem.number}")
           should have_link(chapter.name, href: chapter_path(chapter))
           should have_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(offline_problem, :chapter_id => chapter))
           should have_button("Mettre en ligne")
@@ -201,7 +201,7 @@ describe "Problem pages", problem: true do
         describe "and deletes a prerequisite" do
           before { click_link("Supprimer ce prérequis") }
           it do
-            should have_selector("td", text: "Problème ##{offline_problem.number}")
+            should have_selector("h1", text: "Problème ##{offline_problem.number}")
             should have_no_link(chapter.name, href: chapter_path(chapter))
           end
         end
@@ -211,7 +211,7 @@ describe "Problem pages", problem: true do
             select "Test virtuel ##{offline_virtualtest.number}", :from => "problem_virtualtest_id"
             click_button "add_to_virtualtest_button"
           end
-          it { should have_selector("td", text: "Problème ##{offline_problem.number} - Test ##{offline_virtualtest.number}") }
+          it { should have_selector("h1", text: "Problème ##{offline_problem.number} - Test ##{offline_virtualtest.number}") }
           
           describe "and removes from virtualtest" do
             before do
@@ -219,8 +219,8 @@ describe "Problem pages", problem: true do
               click_button "add_to_virtualtest_button"
             end
             it do
-              should have_selector("td", text: "Problème ##{offline_problem.number}")
-              should have_no_selector("td", text: "Problème ##{offline_problem.number} - Test virtuel ##{offline_virtualtest.number}")
+              should have_selector("h1", text: "Problème ##{offline_problem.number}")
+              should have_no_selector("h1", text: "Problème ##{offline_problem.number} - Test virtuel ##{offline_virtualtest.number}")
             end
           end
         end
