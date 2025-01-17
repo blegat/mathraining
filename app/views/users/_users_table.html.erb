@@ -24,4 +24,6 @@
   <% end %> 
 </table>
 
-<%= render 'shared/pages', data: @all_users, classes_small: "mb-3" %>
+<% if with_pagination %>
+  <%= render 'shared/pages', data: @all_users, classes_small: "mb-3" %>
+<% end %>
