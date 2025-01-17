@@ -1,7 +1,9 @@
 <%= render 'chapters/before', active: 'question-' + @question.id.to_s %>
 
+<% solvedquestion = (!signed_in? || !@chapter.online? || current_user.admin?) ? nil : current_user.solvedquestions.where(:question => @question).first %>
+
 <!-- Titre -->
-<%= render 'questions/title', question: @question, number: @number %>
+<%= render 'questions/title', question: @question, number: @number, solved: !solvedquestion.nil? %>
 
 <!-- Enoncé -->
 <div>
@@ -20,8 +22,6 @@
 
 <!-- Si étudiant inscrit -->
 <% elsif signed_in? %>
-
-  <% solvedquestion = current_user.solvedquestions.where(:question => @question).first %>
   
   <!-- Si l'exercice est déjà résolu -->
   <% if !solvedquestion.nil? %>    

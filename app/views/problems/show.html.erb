@@ -2,14 +2,14 @@
 
 <% pt = @problem.value %>
 
-<% problem_solved = current_user.pb_solved?(@problem) %>
+<% problem_solved = current_user.admin? ? false : current_user.pb_solved?(@problem) %>
 
 <div class="split-title-lg">
   <div class="part-1">
     <h1><%= title_problems(@problem.section, "Problème&nbsp;##{ @problem.number }#{ (' - Test&nbsp;#' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if !@problem.online }".html_safe) %></h1>
   </div>
   <div class="part-2">
-    <span class="badge rounded-pill py-2 px-3 mb-2 ms-1 bg-secondary" style="font-size:18px;"><%= pt %>&nbsp;points</span>
+    <span class="badge rounded-pill py-2 px-3 mb-2 ms-1 <%= problem_solved ? 'bg-success' : 'bg-secondary' %>" style="font-size:18px;"><%= pt %>&nbsp;points</span>
     <% if @problem.online %>
       <span class="badge rounded-pill py-2 px-3 mb-2 ms-1 bg-primary" style="font-size:18px;">Résolu <%= @problem.nb_solves %> fois</span>
     <% end %>
