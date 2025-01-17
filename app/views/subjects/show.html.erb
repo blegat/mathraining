@@ -39,7 +39,7 @@
 <!-- We need to provide the following params manually for the case where we encounter an error while creating
      or updating a message. In that case, we can arrive to this page with an url that is not the expected one -->
 <% params = {:controller => "subjects", :action => "show", :id => @subject.id} %>
-<%= render 'shared/pages', data: @messages, params: params, classes_small: "mt-3 mb-0", classes_large: "mt-3 mb-1" %>
+<%= render 'shared/pages', data: @messages, params: params, classes_small: "mt-3", classes_large: "mt-3 mb-0" %>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->
 <% if @page.nil? || @page == 1 %>
