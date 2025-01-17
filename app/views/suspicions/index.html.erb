@@ -16,10 +16,7 @@
 <% end %>
 </h1>
 
-<center>
-  <%= will_paginate @suspicions, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
-  <%= will_paginate @suspicions, :class => "d-block d-sm-none mb-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
-</center>
+<%= render 'shared/pages', data: @suspicions, classes_small: "mb-3" %>
 
 <% if @suspicions.size == 0 %>
   <% if show_all %>

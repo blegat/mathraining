@@ -1,10 +1,7 @@
 <% provide(:title, "Commentaires") %>
 <h1><%= title_1("Commentaires (tout)") %></h1>
 
-<center>
-  <%= will_paginate @submissions, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
-  <%= will_paginate @submissions, :class => "d-block d-sm-none mb-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
-</center>
+<%= render 'shared/pages', data: @submissions, classes_small: "mb-3" %>
 
 <% submissions_to_highlight = current_user.followings.select(:submission_id).where(:read => false).to_a.map(&:submission_id) %>
 
@@ -15,7 +12,4 @@
 <% end %>
 </table>
 
-<center>
-  <%= will_paginate @submissions, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
-  <%= will_paginate @submissions, :class => "d-block d-sm-none", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
-</center>
+<%= render 'shared/pages', data: @submissions %>

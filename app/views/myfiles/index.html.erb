@@ -14,10 +14,7 @@
 </p>
 </center>
 
-<center>
-  <%= will_paginate @list, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
-  <%= will_paginate @list, :class => "d-block d-sm-none mb-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
-</center>
+<%= render 'shared/pages', data: @list, classes_small: "mb-3" %>
 
 <table class="table table-bordered">
 <tr class="table-ld-header"><th class="d-none d-md-table-cell">Date</th><th>Qui</th><th class="d-none d-lg-table-cell">Où</th><th class="d-none d-md-table-cell">Quoi</th><th><center>Taille</center></th><th><center></center></th></tr>

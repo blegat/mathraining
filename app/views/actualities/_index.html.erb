@@ -4,11 +4,7 @@
   <%= render 'actualities/show', actuality: a %>
 <% end %>
 
-<center>
-  <%= will_paginate @actualities, list_classes: %w(pagination justify-content-center d-none d-sm-flex), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
-  <%= will_paginate @actualities, :class => "d-block d-sm-none mb-3", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
-</center>
-
+<%= render 'shared/pages', data: @actualities, classes_small: "mb-3" %>
 
 <!-- Ajouter une actualité -->
 <% if signed_in? && current_user.admin? %>

@@ -1,0 +1,14 @@
+<% if !(defined? classes_small) %>
+  <% classes_small = "" %>
+<% end %>
+<% if !(defined? classes_large) %>
+  <% classes_large = "" %>
+<% end %>
+<% if !(defined? params) %>
+  <% params = nil %>
+<% end %>
+
+<center>
+  <%= will_paginate data, params: params, list_classes: %w(pagination justify-content-center d-none d-sm-flex) + classes_large.split(" "), :renderer => WillPaginate::ActionView::BootstrapLinkRenderer, :inner_window => 2 %>
+  <%= will_paginate data, params: params, :class => "d-block d-sm-none #{classes_small}", :renderer => WillPaginate::ActionView::LinkRenderer, :previous_label => "&larr; Préc.", :next_label => "Suiv. &rarr;", :inner_window => 1 %>
+</center>
