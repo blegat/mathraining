@@ -1,0 +1,46 @@
+<% if !(defined? hide_user) %>
+  <% hide_user = false %>
+<% end %>
+<% if !(defined? show_correctors) %>
+  <% show_correctors = false %>
+<% end %>
+<% if !(defined? hide_last_activity) %>
+  <% hide_last_activity = false %>
+<% end %>
+<% if !(defined? show_section_and_level) %>
+  <% show_section_and_level = false %>
+<% end %>
+<% if !(defined? show_content_length) %>
+  <% show_content_length = false %>
+<% end %>
+<% if !(defined? num_matches) %>
+  <% num_matches = 0 %>
+<% end %>
+<% if !(defined? scroll) %>
+  <% scroll = false %>
+<% end %>
+<tr class="table-ld-header">
+<th class="sub-status">Statut</th>
+<th class="sub-date <%= 'd-none d-lg-table-cell' unless hide_user %>">Date de la soumission</th>
+<% if !hide_last_activity %>
+  <th class="sub-date <%= 'd-none d-lg-table-cell' unless hide_user %><%= 'd-none d-sm-table-cell' if hide_user %>">Dernière activité</th>
+<% end %>
+<% if !hide_user %>
+  <th class="sub-user">Qui</th>
+<% end %>
+<% if show_correctors %>
+  <th class="sub-user d-none d-lg-table-cell">Correcteur</th>
+<% end %>
+<% if show_section_and_level %>
+  <th class="sub-type">Type</th>
+<% end %>
+<% if show_content_length %>
+  <th class="sub-length d-none d-lg-table-cell">Long.</th>
+<% end %>
+<% if num_matches > 0 %>
+  <% (1..num_matches).each do |i| %>
+    <th class="sub-match">E<%= i %></th>
+  <% end %>
+<% end %>
+<th class="sub-link<%= '-scroll' if scroll %>"></th>
+</tr>

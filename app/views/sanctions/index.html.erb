@@ -10,7 +10,8 @@
 <% end %>
 
 <table class="table table-bordered" style="width:auto;">
-<tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th style="width:220px;">Date de la soumission</th><th class="d-none d-sm-table-cell" style="width:220px;">Dernière activité</th><th style="width:54px;"></th></tr>
+<%= render 'submissions/line_header', hide_user: true %>
+
 <% @user.submissions.where(:status => [:closed, :plagiarized]).order(:created_at).each do |s| %>
   <% while i < sanctions.size && sanctions[i].start_time < s.created_at %>
     <%= render 'sanctions/line', s: sanctions[i] %>

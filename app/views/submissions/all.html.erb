@@ -16,7 +16,7 @@
 <% end %>
 
 <table class="table table-bordered">
-<tr class="table-ld-header"><th class="text-center">Statut</th><th class="d-none d-lg-table-cell">Date de la soumission</th><th class="d-none d-lg-table-cell">Dernière activité</th><th>Qui</th><th class="d-none d-lg-table-cell">Correcteur(s)</th><th class="text-center">Type</th><th></th></tr>
+<%= render 'submissions/line_header', show_section_and_level: true, show_correctors: true %>
 <% @submissions.each do |n| %>
   <% hidden_sub = (!current_user.admin && problem_solved[n.problem_id] != true) %>
   <%= render 'submissions/line', s: n, show_section_and_level: true, hidden_sub: hidden_sub, show_correctors: true %>

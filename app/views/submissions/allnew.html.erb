@@ -267,7 +267,7 @@ Votre navigateur ne supporte pas les canvas.
   <% date_before = Date.new(2009, 1, 1) %>
 
   <table class="table table-bordered">
-  <tr class="table-ld-header"><th class="text-center">Statut</th><th class="d-none d-lg-table-cell">Date de la soumission</th><th>Qui</th><th class="d-none d-lg-table-cell">Correcteur</th><th class="text-center">Type</th><th class="d-none d-lg-table-cell text-center">Long.</th><th></th></tr>
+  <%= render 'submissions/line_header', hide_last_activity: true, show_section_and_level: true, show_correctors: true, show_content_length: true %>
   <% @submissions.each do |n| %>
     <% if date_before < n.created_at.in_time_zone.to_date %>
       <% date_before = n.created_at.in_time_zone.to_date %>
@@ -275,7 +275,7 @@ Votre navigateur ne supporte pas les canvas.
         </table>
         <h4>Moins prioritaires...</h4>
         <table class="table table-bordered">
-        <tr class="table-ld-header"><th class="text-center">Statut</th><th class="d-none d-lg-table-cell">Date de la soumission</th><th>Qui</th><th class="d-none d-lg-table-cell">Correcteur</th><th class="text-center">Type</th><th class="d-none d-lg-table-cell text-center">Long.</th><th></th></tr>
+        <%= render 'submissions/line_header', hide_last_activity: true, show_section_and_level: true, show_correctors: true, show_content_length: true %>
         <% split_done = true %>
       <% end %>
     <% end %>

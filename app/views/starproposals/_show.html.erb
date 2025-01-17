@@ -15,12 +15,12 @@
   
   <div class="mb-3" style="width:100%; overflow-x:auto;">
   <table class="table table-bordered my-0">
-  <tr class="table-ld-header"><th class="d-none d-lg-table-cell">Date</th><th>Proposé par</th><th>Raison</th><th class="text-center">Statut</th><% if current_user.root? %><th class="text-center">Action</th><% end %>
+  <tr class="table-ld-header"><th class="sub-date d-none d-lg-table-cell">Date</th><th class="sub-user">Proposé par</th><th>Raison</th><th class="text-center">Statut</th><% if current_user.root? %><th class="text-center">Action</th><% end %>
   </tr>
   <% starproposals.each do |s| %>
     <tr class="table-ld-<%= s.color_class %>">
-    <td class="d-none d-lg-table-cell" style="width:220px;"><%= write_date(s.created_at) %></td>
-    <td style="width:200px;"><%= s.user.linked_name %></td>
+    <td class="sub-date d-none d-lg-table-cell"><%= write_date(s.created_at) %></td>
+    <td class="sub-user"><%= s.user.linked_name %></td>
     <td><%= bbcode(s.reason) %><% unless s.waiting_treatment? %><br/><br/><b>Réponse</b> : <%= bbcode(s.answer) %><% end %></td>
     <td class="text-center" style="width:110px;"><%= s.status_string %></td>
     <% if current_user.root? %>

@@ -1,5 +1,3 @@
-<% today = DateTime.now.in_time_zone.to_date %>
-
 <% if !(defined? hide_user) %>
   <% hide_user = false %>
 <% end %>
@@ -27,117 +25,62 @@
 <% if !(defined? matches) %>
   <% matches = nil %>
 <% end %>
-
-<!-- Couleur -->
 <% if hidden_sub %>
-  <% color_class = "table-ld-secondary" %> <!-- Si non-visible : gris -->
+  <% color_class = "table-ld-secondary" %>
 <% elsif highlight_this_sub %>
-  <% color_class = "table-ld-warning" %> <!-- Si cette soumission doit être highlightée : toujours jaune -->
+  <% color_class = "table-ld-warning" %>
 <% elsif s.correct? %>
-  <% color_class = "table-ld-success" %> <!-- Si correct : toujours vert -->
+  <% color_class = "table-ld-success" %>
 <% elsif s.wrong? or s.plagiarized? or s.closed? %>
-  <% color_class = "table-ld-danger" %> <!-- Si incorrect ou plagiat ou clôturé : toujours rouge -->
+  <% color_class = "table-ld-danger" %>
 <% elsif s.waiting? %>
   <% if !(current_user.admin? or (current_user.corrector and current_user != s.user)) || s.followings.first.nil? %>
-    <% color_class = "table-ld-warning" %> <!-- Si en attente (pas encore corrigé) : toujours jaune, sauf si... -->
+    <% color_class = "table-ld-warning" %>
   <% elsif s.followings.first.user == current_user %>
-    <% color_class = "table-ld-warning-greener" %> <!-- si réservé par moi : un peu plus vert -->
+    <% color_class = "table-ld-warning-greener" %>
   <% else %>
-    <% color_class = "table-ld-warning-reder" %> <!-- si réservé par quelqu'un d'autre : un peu plus rouge -->
+    <% color_class = "table-ld-warning-reder" %>
   <% end %>
-<!-- Si nouveau commentaire jamais lu : bleu si on est correcteur, rouge si on est pas correcteur -->
 <% elsif s.wrong_to_read? && current_user != s.user %>
   <% color_class = "table-ld-info" %>
 <% elsif s.wrong_to_read? %>
   <% color_class = "table-ld-danger" %>
 <% end %>
-
 <tr id="line_sub_<%= s.id %>" class="<%= color_class %>">
-
-<!-- Icone -->
-<td class="text-center" style="width:70px;">
-	<% if !show_num_waiting_days_from.empty? && !s.correct? %>
-	  <% x = (today - s[show_num_waiting_days_from].in_time_zone.to_date).to_i %>
-	  <span class="<%= "fw-bold" if x >= 4 %> <%= "text-color-orange" if (x >= 4 and x <= 7) %> <%= "text-color-red" if x >= 8 %>">J-<%= x %></span>
-	<% else %>
-	  <%= image_tag s.icon, :class => "svg-black-white" %>
-	<% end %>
-</td>
-
-<!-- Date de soumission -->
-<td class="<%= 'd-none d-lg-table-cell' unless hide_user %>" style="width:220px;">
-<% show_test_tag = (s.intest && (current_user.admin? || current_user.corrector)) %>
-<% if show_test_tag %>
-  <table class="m-0 p-0"><tr><td class="m-0 pe-1 align-middle">
+<% if !show_num_waiting_days_from.empty? && !s.correct? %>
+  <% today = DateTime.now.in_time_zone.to_date %>
+  <% x = (today - s[show_num_waiting_days_from].in_time_zone.to_date).to_i %>
+  <td class="sub-status <%= "fw-bold" if x >= 4 %> <%= "text-color-orange" if (x >= 4 and x <= 7) %> <%= "text-color-red" if x >= 8 %>">J-<%= x %></td>
+<% else %>
+  <td class="sub-status"><%= image_tag s.icon, :class => "svg-black-white" %></td>
 <% end %>
-  <%= write_date(s.created_at) %>
-<% if show_test_tag %>  
-  </td>
-  <td class="p-0 ps-1" style="border-left:1px dotted grey;">
-    <span class="badge rounded-pill bg-secondary">T</span>
-  </td></tr></table>
-<% end %>
-</td>
-
+<td class="sub-date <%= 'd-none d-lg-table-cell' unless hide_user %>"><%= write_date(s.created_at) %></td>
 <% if !hide_last_activity %>
-  <!-- Dernière activité -->
-  <td class="<%= 'd-none d-lg-table-cell' unless hide_user %><%= 'd-none d-sm-table-cell' if hide_user %>" style="width:220px;">
-  <%= write_date(s.last_comment_time) %>
-  </td>
+  <td class="sub-date <%= 'd-none d-lg-table-cell' unless hide_user %><%= 'd-none d-sm-table-cell' if hide_user %>"><%= write_date(s.last_comment_time) %></td>
 <% end %>
-
 <% if !hide_user %>
-  <!-- Nom (si on l'affiche) -->
-  <td style="width:200px">
-    <%= s.user.linked_name unless hidden_sub %>
-  </td>
+  <td class="sub-user"><%= s.user.linked_name unless hidden_sub %></td>
 <% end %>
-
 <% if show_correctors %>
-  <!-- Correcteur (si on l'affiche) -->
-  <td class="d-none d-lg-table-cell" style="width:200px;">
+  <td class="sub-user d-none d-lg-table-cell">
     <% premier = true %>
     <% s.followings.each do |f| %>
       <%= " - " if !premier %>
-      <%= f.user.linked_name %>
+      <%= f.user.linked_name %>s
       <% premier = false %>
     <% end %>
   </td>
 <% end %>
-
 <% if show_section_and_level %>
-  <!-- Section et niveau (si on l'affiche) -->
-  <td class="text-center" style="width:100px;">
-    <% if !hidden_sub %>
-      <%= s.section_short_abbreviation %>
-      <%= s.problem_level %>
-    <% end %>
-  </td>
+  <td class="sub-type"><%= "#{s.section_short_abbreviation} #{s.problem_level}" if !hidden_sub %></td>
 <% end %>
-
 <% if show_content_length %>
-  <!-- Longueur du contenu (si on l'affiche) -->
-  <td class="d-none d-lg-table-cell text-center" style="width:60px;">
-    <% if !hidden_sub %>
-      <%= s.content_length %>
-    <% end %>
-  </td>
+  <td class="sub-length d-none d-lg-table-cell"><%= s.content_length if !hidden_sub %></td>
 <% end %>
-
 <% if !matches.nil? %>
-  <!-- Uniquement pour la recherche de plagiats -->
   <% matches.each do |m| %>
-    <td class="text-center" style="width:30px;">
-      <% if m %>
-        <%= image_tag v_icon, :class => "svg-black-white" %>
-      <% end %>
-    </td>
+    <td class="sub-match"><%= image_tag v_icon, :class => "svg-black-white" if m %></td>
   <% end %>
 <% end %>
-
-<!-- Voir -->
-<td class="text-center" style="width:54px;">
-<%= link_to "Voir", problem_path(s.problem_id, :sub => s.id) if !hidden_sub %>
-</td>
-
+<td class="sub-link"><%= link_to "Voir", problem_path(s.problem_id, :sub => s.id) if !hidden_sub %></td>
 </tr>

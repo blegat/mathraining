@@ -27,7 +27,7 @@ var showFalse = function() {
     <p>Aucune soumission.</p>
   <% else %>
     <table class="table table-bordered" style="width:auto;">
-    <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:220px;">Date de la soumission</th><th style="width:220px;" class="d-none d-lg-table-cell">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:54px;"></th></tr>
+      <%= render 'submissions/line_header' %>
       <% submissions.each do |s| %>
         <%= render 'submissions/line', s: s %>
       <% end %>
@@ -40,7 +40,7 @@ var showFalse = function() {
   <p id="none_correct" style="display:none;">Aucune soumission</p>
   <table class="table table-bordered fixed-scroll" style="width:840px; display:none;" id="all_correct">
   <thead>
-  <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:220px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:220px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    <%= render 'submissions/line_header', scroll: true %>
   </thead>
   <tbody>
     <!-- This body is filled via javascript, see showCorrect() -->
@@ -61,7 +61,7 @@ var showFalse = function() {
     <h3>Vos soumissions</h3>
     
     <table class="table table-bordered" style="width:auto;">
-    <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th style="width:220px;">Date de la soumission</th><th style="width:220px;" class="d-none d-sm-table-cell">Dernière activité</th><th style="width:54px;"></th></tr>
+    <%= render 'submissions/line_header', hide_user: true %>
     <% submissions.each do |s| %>
       <%= render 'submissions/line', s: s, hide_user: true %>
       <% if s.waiting? %>
@@ -96,7 +96,7 @@ var showFalse = function() {
 
     <% if !submissions.empty? %>
       <table class="table table-bordered" style="width:auto;">
-      <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:220px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:220px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:54px;"></tr>
+      <%= render 'submissions/line_header' %>
       <% submissions.each do |s| %>
         <%= render 'submissions/line', s: s %>
       <% end %>
@@ -111,7 +111,7 @@ var showFalse = function() {
     <p id="none_correct" style="display:none;">Aucune soumission.</p>
     <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_correct">
     <thead>
-    <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:220px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:220px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></tr>
+      <%= render 'submissions/line_header', scroll: true %>
     </thead>
     <tbody>
       <!-- This body is filled via javascript, see showCorrect() -->
@@ -131,7 +131,7 @@ var showFalse = function() {
   <p id="none_false" style="display:none;">Aucune soumission.</p>
   <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_false">
   <thead>
-  <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:220px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:220px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+    <%= render 'submissions/line_header', scroll: true %>
   </thead>
   <tbody>
     <!-- This body is filled via javascript, see showFalse() -->
@@ -144,7 +144,7 @@ var showFalse = function() {
     <h3>Soumissions en attente</h3>
     <table class="table table-bordered fixed-scroll" style="width:auto;" id="all_waiting">
     <thead>
-    <tr class="table-ld-header"><th class="text-center" style="width:70px;">Statut</th><th class="d-none d-lg-table-cell" style="width:220px;">Date de la soumission</th><th class="d-none d-lg-table-cell" style="width:220px;">Dernière activité</th><th style="width:200px;">Qui</th><th style="width:70px;"></th></tr>
+      <%= render 'submissions/line_header', scroll: true %>
     </thead>
     <tbody>
       <% submissions.each do |s| %>
