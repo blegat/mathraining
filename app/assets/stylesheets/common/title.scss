@@ -19,11 +19,11 @@ $title-breakpoints: lg md;
   }
 
   .split-title-#{$title-breakpoint} .part-2 {
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
     @media (min-width: map-get($grid-breakpoints, '#{$title-breakpoint}')) {
-      text-align: right;
       padding-left: 1em;
     }
   }
-
 }

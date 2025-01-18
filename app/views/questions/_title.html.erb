@@ -10,11 +10,11 @@
   </div>
   <div class="part-2">
     <% if !@section.fondation %>
-      <span class="badge rounded-pill py-2 px-3 mb-2 ms-1 <%= solved ? 'bg-success' : 'bg-secondary' %>" style="font-size:18px;"><%= pt %>&nbsp;points</span>
+      <span class="badge rounded-pill py-2 px-3 mb-2 <%= solved ? 'bg-success' : 'bg-secondary' %>" style="font-size:18px;"><%= pt %>&nbsp;points</span>
     <% end %>
     <% if question.online %>
-      <span class="badge rounded-pill py-2 px-3 mb-2 ms-1 bg-primary" style="font-size:18px;">Résolu <%= question.nb_correct %> fois</span>
-      <%= link_to "#{ (100*pct).round(0) }% au 1<sup>er</sup> essai".html_safe, stats_chapters_path, :class => "badge rounded-pill py-2 px-3 mb-2 ms-1 text-color-dark-light-blue gradient-green-red-#{ ((1-pct2)*20).to_i }", :style => "font-size:18px;" %>
+      <span class="badge rounded-pill py-2 px-3 mb-2 bg-primary" style="font-size:18px;">Résolu <%= question.nb_correct %> fois</span>
+      <%= link_to "#{ (100*pct).round(0) }% au 1<sup>er</sup> essai".html_safe, stats_chapters_path, :class => "badge rounded-pill py-2 px-3 mb-2 text-color-dark-light-blue gradient-green-red-#{ ((1-pct2)*20).to_i }", :style => "font-size:18px;" %>
     <% end %>
   </div>
 </div>
