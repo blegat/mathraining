@@ -29,9 +29,13 @@ class CorrectionsController < ApplicationController
     # Invalid CSRF token
     render_with_error('problems/show', @correction, get_csrf_error_message) and return if @invalid_csrf_token
 
-    # If a score is needed, we check that the score is set
-    if @submission.waiting? && @submission.intest && @submission.score == -1 && (params["score".to_sym].nil? || params["score".to_sym].blank?)
-      render_with_error('problems/show', @correction, "Veuillez donner un score à cette solution.") and return
+    # If a score is needed, we check that the score is set and appropriate
+    if @submission.waiting? && @submission.intest && @submission.score == -1
+      if (params[:score].nil? || params[:score].blank?)
+        render_with_error('problems/show', @correction, "Veuillez donner un score à cette solution.") and return
+      elsif (params[:score].to_i != 6 && params[:score].to_i != 7 && params[:commit] == "Poster et accepter la soumission")
+        render_with_error('problems/show', @correction, "Vous ne pouvez pas accepter une solution sans lui donner un score de 6 ou 7.") and return
+      end
     end
 
     # We check that no new message was posted
@@ -58,7 +62,7 @@ class CorrectionsController < ApplicationController
 
     # Give the score to the submission
     if @submission.waiting? && @submission.intest && @submission.score == -1
-      @submission.update_attribute(:score, params["score".to_sym].to_i)
+      @submission.update_attribute(:score, params[:score].to_i)
     end
 
     # Delete reservations if needed

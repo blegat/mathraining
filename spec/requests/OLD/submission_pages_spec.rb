@@ -13,8 +13,10 @@ describe "Submission pages" do
   let(:good_corrector) { FactoryGirl.create(:corrector) }
   let(:bad_corrector) { FactoryGirl.create(:corrector) }
   
-  let!(:problem) { FactoryGirl.create(:problem, online: true, :level => 1) }
-  let!(:problem_with_submissions) { FactoryGirl.create(:problem, online: true, :level => 1) }
+  let!(:section) { FactoryGirl.create(:section) }
+  
+  let!(:problem) { FactoryGirl.create(:problem, online: true, section: section, level: 1) }
+  let!(:problem_with_submissions) { FactoryGirl.create(:problem, online: true, section: section, level: 1) }
   
   let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: user, status: :waiting) } 
   let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user, status: :wrong) }
@@ -907,7 +909,7 @@ describe "Submission pages" do
     
     describe "visits reserved virtualtest submission" do
       let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true, number: 12) }
-      let!(:problem_in_test) { FactoryGirl.create(:problem, virtualtest: virtualtest) }
+      let!(:problem_in_test) { FactoryGirl.create(:problem, virtualtest: virtualtest, section: section) }
       let!(:waiting_submission_in_test) { FactoryGirl.create(:submission, problem: problem_in_test, user: user, status: :waiting, intest: true) }
       before do
         Takentest.create(:user => user, :virtualtest => virtualtest, :taken_time => DateTime.now - 2.weeks)
@@ -919,7 +921,7 @@ describe "Submission pages" do
         should have_button("Poster et accepter la soumission")
       end
       
-      describe "and corrects it" do
+      describe "and rejects it" do
         before do
           fill_in "MathInput", with: newcorrection
           fill_in "score", with: 4
@@ -947,6 +949,20 @@ describe "Submission pages" do
         end
       end
       
+      describe "and accepts it" do
+        before do
+          fill_in "MathInput", with: newcorrection
+          fill_in "score", with: 7
+          click_button "Poster et accepter la soumission"
+          waiting_submission_in_test.reload
+        end
+        specify do
+          expect(waiting_submission_in_test.correct?).to eq(true)
+          expect(waiting_submission_in_test.score).to eq(7)
+          expect(page).to have_content("7 / 7")
+        end
+      end
+      
       describe "and corrects it without giving a score" do
         before do
           fill_in "MathInput", with: newcorrection
@@ -955,6 +971,20 @@ describe "Submission pages" do
         end
         specify do
           expect(page).to have_error_message("Veuillez donner un score à cette solution.")
+          expect(waiting_submission_in_test.waiting?).to eq(true)
+          expect(waiting_submission_in_test.score).to eq(-1)
+        end
+      end
+      
+      describe "and tries to accept it with a bad score" do
+        before do
+          fill_in "MathInput", with: newcorrection
+          fill_in "score", with: 4
+          click_button "Poster et accepter la soumission"
+          waiting_submission_in_test.reload
+        end
+        specify do
+          expect(page).to have_error_message("Vous ne pouvez pas accepter une solution sans lui donner un score de 6 ou 7.")
           expect(waiting_submission_in_test.waiting?).to eq(true)
           expect(waiting_submission_in_test.score).to eq(-1)
         end
