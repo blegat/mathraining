@@ -1,0 +1,8 @@
+<% provide(:title, 'Modifier une réponse') %>
+
+<h1><%= title_submission(@submission, "Modifier une réponse") %></h1>
+
+<%= form_for(@savedreply, url: savedreply_path(@savedreply, :action => :update, :sub => @submission)) do |f| %>
+  <%= render 'form', f: f %>
+  <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
+<% end %>

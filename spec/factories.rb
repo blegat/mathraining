@@ -244,6 +244,12 @@ FactoryGirl.define do
     sequence(:reason) { |n| "Banni pour #{n} plagiats jusqu'au [DATE]." }
   end
   
+  # Saved reply
+  factory :savedreply do
+    association :problem
+    sequence(:content) { |n| "Réponse enregistrée numéro #{n} !" }
+  end
+  
   # Section
   factory :section do
     sequence(:name) { |n| "Section #{n}" }

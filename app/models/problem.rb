@@ -33,6 +33,7 @@ class Problem < ActiveRecord::Base
   has_many :solvedproblems, dependent: :destroy
   has_many :users, through: :solvedproblems
   has_many :externalsolutions, dependent: :destroy
+  has_many :savedreplies, dependent: :destroy
   has_one :subject
 
   # VALIDATIONS

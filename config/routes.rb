@@ -280,6 +280,9 @@ Rails.application.routes.draw do
   # Sanctions
   resources :sanctions, only: [:edit, :update, :destroy]
   
+  # Savedreplies
+  resources :savedreplies, only: [:new, :create, :edit, :update, :destroy]
+  
   # Puzzles (10 years)
   resources :puzzles, only: [:index, :new, :create, :edit, :update, :destroy] do
     member do

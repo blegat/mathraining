@@ -1,0 +1,11 @@
+<div class="card text-bg-ld-light-dark mb-2">
+  <div id="savedreply-<%= r.id %>" class="card-body" style="cursor:pointer;" onclick='Insert.insert("<%= r.content.gsub(/"/, '\"') %>", "", "MathInput"); savedReplyUsed(<%= r.id %>);'>
+    <%= bbcode(r.content) %>
+  </div>
+  <% if current_user.root? %>
+    <div class="card-body text-center pt-0">
+      <%= link_to "Modifier", edit_savedreply_path(r, :sub => @submission) %> |
+      <%= link_to "Supprimer", r, :method => :delete, :class => "text-color-red", data: (Rails.env.test? ? {} : { confirm: "Êtes vous sûr de vouloir supprimer cette réponse ?" })  %>
+    </div>
+  <% end %>
+</div>

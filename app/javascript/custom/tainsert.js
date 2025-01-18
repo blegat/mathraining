@@ -9,7 +9,7 @@ var Insert = {
 
       var sel = document.selection.createRange();
       
-      if (text2!="")
+      if (text2 != "")
       {
         sel.text = text1 + sel.text + text2;
       }
@@ -23,22 +23,22 @@ var Insert = {
       if (ta.selectionEnd > ta.value.length) { ta.selectionEnd = ta.value.length; }
 
       var firstPos = ta.selectionStart;
-      var secondPos = ta.selectionEnd+text1.length;
+      var secondPos = ta.selectionEnd + text1.length;
 
-      ta.value=ta.value.slice(0,firstPos)+text1+ta.value.slice(firstPos);
-      ta.value=ta.value.slice(0,secondPos)+text2+ta.value.slice(secondPos);
+      ta.value = ta.value.slice(0, firstPos) + text1 + ta.value.slice(firstPos);
+      ta.value = ta.value.slice(0, secondPos) + text2 + ta.value.slice(secondPos);
 
-      ta.selectionStart = firstPos+text1.length;
+      ta.selectionStart = firstPos + text1.length;
       ta.selectionEnd = secondPos;
       ta.focus();
     }
     else
-    { // Opera
+    { // Opera (not sure this is working!?)
       var sel = document.hop.contenu;
 
-      var instances = countInstances(text1,text2);
-      if (instances%2 != 0 && text2 != ""){ sel.value = sel.value + text2; }
-      else{ sel.value = sel.value + text1; }
+      var instances = countInstances(text1, text2);
+      if (instances % 2 != 0 && text2 != ""){ sel.value = sel.value + text2; }
+      else { sel.value = sel.value + text1; }
     }
     ta.dispatchEvent(new Event('input')); // To trigger the update of Preview
   }

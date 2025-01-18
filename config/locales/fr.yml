@@ -106,6 +106,9 @@ fr:
         start_time: "Date de début"
         duration: "Durée (en jours)"
         reason: "Message"
+      savedreply:
+        problem_id: "Problème"
+        content: "Réponse"
       section:
         description: "Introduction"
         name: "Nom"

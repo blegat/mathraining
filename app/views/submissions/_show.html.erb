@@ -227,7 +227,7 @@ var hideStatement = function () {
   <% elsif current_user == @submission.user && @submission.wrong? && !@submission.has_recent_activity %>
     <p class="text-color-orange">Cette solution a été automatiquement clôturée après une inactivité de deux mois.</p>
   <% elsif (can_current_user_correct || (current_user == @submission.user && @cansendnewcomment)) && !@submission.draft? %>
-    <%= render 'corrections/new', disable_correction: disable_correction %>
+    <%= render 'corrections/new', disable_correction: disable_correction, show_savedreplies: current_user != @submission.user %>
   <% end %>
 
 <% end %>

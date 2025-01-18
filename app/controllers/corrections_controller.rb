@@ -159,6 +159,16 @@ class CorrectionsController < ApplicationController
     else
       @submission.followings.update_all(:read => false)
     end
+    
+    # Deal with saved replied that have been used
+    if current_user != @submission.user
+      if !params[:correction][:savedreplies_used].nil?
+        params[:correction][:savedreplies_used].split(",").each do |id|
+          savedreply = Savedreply.find_by_id(id)
+          savedreply.update_attribute(:nb_uses, savedreply.nb_uses + 1) if !savedreply.nil?
+        end
+      end
+    end
 
     flash[:success] = m
     redirect_to problem_path(@problem, :sub => @submission)

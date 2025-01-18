@@ -316,6 +316,10 @@ module ApplicationHelper
     return title_4("Problèmes", (link_to problem.section.name, section_problems_path(problem.section)), (link_to "Problème ##{ problem.number }", problem), title)
   end
   
+  def title_submission(submission, title)
+    return title_4("Problèmes", (link_to submission.problem.section.name, section_problems_path(submission.problem.section)), (link_to "Problème ##{ submission.problem.number }", problem_path(submission.problem, :sub => submission)), title)
+  end
+  
   # Titles concerning contests / contestproblems
   def title_contests(title)
     return title_2((link_to "Concours", contests_path), title)

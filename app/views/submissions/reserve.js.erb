@@ -2,11 +2,6 @@ var div_reserved_by_nobody = document.getElementById("div_reserved_by_nobody");
 var div_reserved_by_other = document.getElementById("div_reserved_by_other");
 var div_reserved_by_me = document.getElementById("div_reserved_by_me");
 
-var MI = document.getElementById("MathInput");
-var PJ = document.getElementById("addFile");
-var B1 = document.getElementById("B1");
-var B2 = document.getElementById("B2");
-
 var line_sub = document.getElementById("line_sub_<%= @submission.id %>")
 
 div_reserved_by_nobody.style.display = "none"
@@ -25,10 +20,10 @@ div_reserved_by_me.style.display = "none"
   line_sub.classList.remove('table-ld-warning')
 <% elsif @what == 3 %>
   div_reserved_by_me.style.display = "block"
-  MI.disabled = false
-  PJ.disabled = false
-  B1.disabled = false
-  B2.disabled = false
+  var to_enable = document.getElementsByClassName("to-enable");
+  for (let i = 0; i < to_enable.length; i++) {
+    to_enable[i].disabled = false;
+  }
   line_sub.classList.add('table-ld-warning-greener')
   line_sub.classList.remove('table-ld-warning')
 <% end %>

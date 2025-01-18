@@ -1,0 +1,22 @@
+<%= render 'shared/error_messages', object: f.object %>
+
+<% p = @submission.problem %>
+<% listeprob = Array.new %>
+<% listeprob.push(["Aucun problème", 0]) %>
+<% listeprob.push(["Problème ##{p.number}",p.id]) %>
+
+<!-- Problème -->
+<div class="mb-2">
+  <%= f.label :problem_id, :class => "form-label" %>
+  <%= f.select(:problem_id, options_for_select(listeprob, @savedreply.problem_id), {}, { :class => "form-select", :style => "width:100%; max-width:400px;" }) %>
+</div>
+
+<!-- Texte -->
+<div class="mb-2">
+  <%= f.label :content, :class => "form-label", :for => "MathInput" %>
+  <%= render 'shared/preview' %>
+  <%= render 'shared/smiley' %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()" %>
+  <script>initAndUpdatePreviewSafeWhenPossible()</script>
+  <script>initLeavingFormWhenPossible()</script>
+</div>
