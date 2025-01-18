@@ -27,64 +27,64 @@
 /* GENERAL TEXT COLORS */
 
 .text-color-red {
-  color: red;
+  color: red!important;
 }
 
 .text-color-orange {
-  color: orange;
+  color: orange!important;
 }
 
 [data-bs-theme="light"] {
   .text-color-green {
-    color: green;
+    color: green!important;
   }
 }
 [data-bs-theme="dark"] {
   .text-color-green {
-    color: #66ff66;
+    color: #66ff66!important;
   }
 }
 
 [data-bs-theme="light"] {
   .text-color-black-white {
-    color: black;
+    color: black!important;
   }
 }
 [data-bs-theme="dark"] {
   .text-color-black-white {
-    color: white;
+    color: white!important;
   }
 }
 
 [data-bs-theme="light"] {
   .text-color-mt-blue {
-    color: #036daa
+    color: #036daa!important;
   }
 }
 [data-bs-theme="dark"] {
   .text-color-mt-blue {
-    color: #0497ec;
+    color: #0497ec!important;
   }
 }
 
 .text-color-grey {
-  color: grey;
+  color: grey!important;
 }
 
 [data-bs-theme="light"] {
   .text-color-dark-light-blue {
-    color: #0000bb;
+    color: #0000bb!important;
   }
 }
 
 [data-bs-theme="dark"] {
   .text-color-dark-light-blue {
-    color: #c0c0ff;
+    color: #c0c0ff!important;
   }
 }
 
 .text-color-transparent {
-  color: transparent;
+  color: transparent!important;
 }
 
 
@@ -229,29 +229,29 @@
 
 
 .information-tag {
-  background-color:rgb(4,136,212);
-  border:1px solid rgb(4,136,212);
-  color:white;
+  background-color: rgb(4,136,212);
+  border: 1px solid rgb(4,136,212);
+  color: white;
 }
 
 [data-bs-theme="light"] {
   .information-tag:hover, information-tag:active, information-tag:focus {
-    background-color:rgb(4,106,182);
-    border:1px solid rgb(4,106,182);
+    background-color: rgb(4,106,182);
+    border: 1px solid rgb(4,106,182);
   }
 }
 
 [data-bs-theme="dark"] {
   .information-tag:hover, information-tag:active, information-tag:focus {
-    background-color:rgb(4,166,242);
-    border:1px solid rgb(4,166,242);
+    background-color: rgb(4,166,242);
+    border: 1px solid rgb(4,166,242);
   }
 }
 
 
 
 hr.bottom-help {
-  border-top:1px solid #888888;
+  border-top: 1px solid #888888;
 }
 
 
