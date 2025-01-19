@@ -1,6 +1,7 @@
 <div class="card text-bg-ld-light-dark mb-2">
-  <div id="savedreply-<%= r.id %>" class="card-body" style="cursor:pointer;" onclick='Insert.insert("<%= r.content.gsub(/\\/, '\\\\\\').gsub(/"/, '\"') %>", "", "MathInput"); savedReplyUsed(<%= r.id %>);'>
-    <%= bbcode(r.content) %>
+ <% final_content = r.content.gsub("[e]", (@submission.user.sex == 0 ? "" : "e")) %>
+  <div id="savedreply-<%= r.id %>" class="card-body" style="cursor:pointer;" onclick='Insert.insert("<%= final_content.gsub(/\\/, '\\\\\\').gsub(/"/, '\"') %>", "", "MathInput"); savedReplyUsed(<%= r.id %>);'>
+    <%= bbcode(final_content) %>
   </div>
   <% if current_user.root? %>
     <div class="card-body text-center pt-0">

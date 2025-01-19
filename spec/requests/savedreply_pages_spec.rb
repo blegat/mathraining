@@ -8,7 +8,7 @@ describe "Savedreply pages", savedreply: true do
   let(:root) { FactoryGirl.create(:root) }
   let!(:problem) { FactoryGirl.create(:problem, online: true) }
   let!(:submission) { FactoryGirl.create(:submission, problem: problem, status: :waiting) }
-  let!(:savedreply) { FactoryGirl.create(:savedreply, problem: problem) }
+  let!(:savedreply) { FactoryGirl.create(:savedreply, problem: problem, content: "Es-tu sûr[e] de toi ?") }
   let!(:savedreply_generic) { FactoryGirl.create(:savedreply, problem_id: 0) }
   let(:newcontent) { "Es-tu certain que $1$ est un nombre premier ?" }
 
@@ -41,7 +41,7 @@ describe "Savedreply pages", savedreply: true do
         end
         specify do
           expect(page).to have_success_message("Soumission marquée comme incorrecte")
-          expect(submission.corrections.first.content).to eq(savedreply.content)
+          expect(submission.corrections.first.content).to eq("Es-tu sûr de toi ?")
           expect(savedreply.nb_uses).to eq(1)
           expect(savedreply_generic.nb_uses).to eq(0)
         end
