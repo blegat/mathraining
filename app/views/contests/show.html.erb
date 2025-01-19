@@ -7,10 +7,12 @@
     </h1>
   </div>
   <div class="part-2 pt-2">
-    <% if !current_user.followed_contests.exists?(@contest.id) %>
-      <%= link_to "Suivre ce concours", follow_contest_path(@contest), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: in_skin? %>
-    <% else %>
-      <%= link_to "Ne plus suivre ce concours", unfollow_contest_path(@contest), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: in_skin? %>
+    <% if signed_in? %>
+      <% if !current_user.followed_contests.exists?(@contest.id) %>
+        <%= link_to "Suivre ce concours", follow_contest_path(@contest), :method => :put, class: 'btn btn-ld-light-dark', id: 'link_follow', data: { confirm: "Vous recevrez un e-mail de rappel un jour avant la publication de chaque problème."}, disabled: in_skin? %>
+      <% else %>
+        <%= link_to "Ne plus suivre ce concours", unfollow_contest_path(@contest), class: 'btn btn-ld-light-dark', id: 'link_unfollow', disabled: in_skin? %>
+      <% end %>
     <% end %>
   </div>
 </div>
