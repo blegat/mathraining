@@ -1,5 +1,5 @@
 <div class="card text-bg-ld-light-dark mb-2">
-  <div id="savedreply-<%= r.id %>" class="card-body" style="cursor:pointer;" onclick='Insert.insert("<%= r.content.gsub(/"/, '\"') %>", "", "MathInput"); savedReplyUsed(<%= r.id %>);'>
+  <div id="savedreply-<%= r.id %>" class="card-body" style="cursor:pointer;" onclick='Insert.insert("<%= r.content.gsub(/\\/, '\\\\\\').gsub(/"/, '\"') %>", "", "MathInput"); savedReplyUsed(<%= r.id %>);'>
     <%= bbcode(r.content) %>
   </div>
   <% if current_user.root? %>
