@@ -15,11 +15,11 @@ class SavedrepliesController < ApplicationController
   # Show a submission where this saved reply can be seen
   def show
     if @savedreply.section_id == 0 && @savedreply.problem_id == 0
-      submission = Submission.where.not(:status => [:closed, :plagiarized]).order(:created_at).last
+      submission = Submission.where.not(:status => [:closed, :plagiarized, :draft]).order(:created_at).last
     elsif @savedreply.section_id > 0
-      submission = Submission.joins(:problem).where.not(:status => [:closed, :plagiarized]).where("problems.section_id = ?", @savedreply.section_id).order(:created_at).last
+      submission = Submission.joins(:problem).where.not(:status => [:closed, :plagiarized, :draft]).where("problems.section_id = ?", @savedreply.section_id).order(:created_at).last
     else
-      submission = Submission.where.not(:status => [:closed, :plagiarized]).where(:problem_id => @savedreply.problem_id).order(:created_at).last
+      submission = Submission.where.not(:status => [:closed, :plagiarized, :draft]).where(:problem_id => @savedreply.problem_id).order(:created_at).last
     end
     redirect_to (submission.nil? ? root_path : problem_path(submission.problem, :sub => submission))
   end
