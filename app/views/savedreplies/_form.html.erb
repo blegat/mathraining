@@ -2,13 +2,16 @@
 
 <% p = @submission.problem %>
 <% listeprob = Array.new %>
-<% listeprob.push(["Aucun problème", 0]) %>
+<% listeprob.push(["Générique", 0]) %>
+<% listeprob.push([p.section.name, -p.section_id]) %>
 <% listeprob.push(["Problème ##{p.number}",p.id]) %>
 
 <!-- Problème -->
 <div class="mb-2">
   <%= f.label :problem_id, :class => "form-label" %>
-  <%= f.select(:problem_id, options_for_select(listeprob, @savedreply.problem_id), {}, { :class => "form-select", :style => "width:100%; max-width:400px;" }) %>
+  <% selected = @savedreply.section_id %>
+  <% selected = @savedreply.problem_id unless @savedreply.problem_id == 0 %>
+  <%= f.select(:problem_id, options_for_select(listeprob, selected), {}, { :class => "form-select", :style => "width:100%; max-width:400px;" }) %>
 </div>
 
 <!-- Texte -->

@@ -6,6 +6,7 @@
 #  problem_id :bigint
 #  content    :text
 #  nb_uses    :integer          default(0)
+#  section_id :bigint
 #
 require "spec_helper"
 
@@ -16,6 +17,12 @@ describe Savedreply, savedreply: true do
   subject { savedreply }
 
   it { should be_valid }
+  
+  # Section
+  describe "when section_id is not present" do
+    before { savedreply.section_id = nil }
+    it { should_not be_valid }
+  end
   
   # Problem
   describe "when problem_id is not present" do

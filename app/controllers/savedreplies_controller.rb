@@ -9,7 +9,7 @@ class SavedrepliesController < ApplicationController
   
   # Create a saved reply (show the form)
   def new
-    @savedreply = Savedreply.new(:problem => @submission.problem)
+    @savedreply = Savedreply.new(:problem => @submission.problem, :section => @submission.problem.section)
   end
 
   # Update a saved reply (show the form)
@@ -18,7 +18,8 @@ class SavedrepliesController < ApplicationController
   
   # Create a saved reply (send the form)
   def create
-    @savedreply = Savedreply.new(params.require(:savedreply).permit(:problem_id, :content))
+    @savedreply = Savedreply.new(params.require(:savedreply).permit(:content))
+    set_problem_or_section
     if @savedreply.save
       flash[:success] = "Réponse ajoutée."
       redirect_to problem_path(@submission.problem, :sub => @submission)
@@ -29,7 +30,9 @@ class SavedrepliesController < ApplicationController
 
   # Update a saved reply (send the form)
   def update
-    if @savedreply.update(params.require(:savedreply).permit(:problem_id, :content))
+    @savedreply.content = params[:savedreply][:content]
+    set_problem_or_section
+    if @savedreply.save
       flash[:success] = "Réponse modifiée."
       redirect_to problem_path(@submission.problem, :sub => @submission)
     else
@@ -58,5 +61,24 @@ class SavedrepliesController < ApplicationController
   def get_submission
     @submission = Submission.find_by_id(params[:sub])
     return if check_nil_object(@submission)
+  end
+  
+  ########## HELPER METHODS ##########
+  
+  def set_problem_or_section
+    problem_id = params[:savedreply][:problem_id].to_i
+    if problem_id > 0 # Saved reply specific to a problem
+      problem = Problem.find_by_id(problem_id)
+      unless problem_id.nil?
+        @savedreply.problem = problem
+        @savedreply.section_id = 0
+      end
+    elsif problem_id < 0 # Saved reply specific to a section
+      @savedreply.problem_id = 0
+      @savedreply.section_id = -problem_id
+    else # Generic saved reply
+      @savedreply.problem_id = 0
+      @savedreply.section_id = 0
+    end
   end
 end

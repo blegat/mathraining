@@ -246,7 +246,8 @@ FactoryGirl.define do
   
   # Saved reply
   factory :savedreply do
-    association :problem
+    section_id 0
+    problem_id 0
     sequence(:content) { |n| "Réponse enregistrée numéro #{n} !" }
   end
   

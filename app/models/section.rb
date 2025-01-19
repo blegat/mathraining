@@ -17,9 +17,10 @@ class Section < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY
 
-  has_many :chapters
-  has_many :problems
-  has_many :pointspersections
+  has_many :chapters, dependent: :destroy
+  has_many :problems, dependent: :destroy
+  has_many :pointspersections, dependent: :destroy
+  has_many :savedreplies, dependent: :destroy
 
   # VALIDATIONS
 

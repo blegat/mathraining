@@ -1,12 +1,17 @@
 <script type="text/javascript">
   var savedreplies_used = new Set();
-  var toggleGenericSavedReplies = function () {
-    var old = document.getElementById("generic_saved_replies").style.display;
-    document.getElementById("generic_saved_replies").style.display = (old == 'block' ? 'none' : 'block');
+  var cleanSavedReplies = function () {
+    document.getElementById('generic_saved_replies').style.display = 'none';
+    document.getElementById('section_saved_replies').style.display = 'none';
+    document.getElementById('problem_saved_replies').style.display = 'none';
   }
-  var toggleProblemSavedReplies = function () {
-    var old = document.getElementById("problem_saved_replies").style.display;
-    document.getElementById("problem_saved_replies").style.display = (old == 'block' ? 'none' : 'block');
+  var toggleSavedReplies = function (id) {
+    var el = document.getElementById(id);
+    var old = el.style.display;
+    cleanSavedReplies();
+    if (old == 'none') {
+      el.style.display = 'block';
+    }
   }
   var savedReplyUsed = function(id) {
     savedreplies_used.add(id);
@@ -15,18 +20,29 @@
   }
 </script>
 
-<% generic_savedreplies = Savedreply.where(:problem_id => 0).order("nb_uses DESC, id ASC").to_a %>
+<% generic_savedreplies = Savedreply.where(:problem_id => 0, :section_id => 0).order("nb_uses DESC, id ASC").to_a %>
 <% num_generic = generic_savedreplies.size %>
+<% section_savedreplies = @submission.problem.section.savedreplies.order("nb_uses DESC, id ASC").to_a %>
+<% num_section = section_savedreplies.size %>
 <% problem_savedreplies = @submission.problem.savedreplies.order("nb_uses DESC, id ASC").to_a %>
 <% num_problem = problem_savedreplies.size %>
 
-<%= link_to "#{num_generic} #{num_generic > 1 ? 'réponses génériques' : 'réponse générique'}", "javascript:toggleGenericSavedReplies()", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_generic > 0 %>
-<%= link_to "#{num_problem} #{num_problem > 1 ? 'réponses spécifiques' : 'réponse spécifique'}", "javascript:toggleProblemSavedReplies()", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_problem > 0 %>
-<%= link_to "Ajouter", new_savedreply_path(:sub => @submission), :class => "btn btn-sm btn-ld-light-dark mb-2" if current_user.root? %>
+<%= link_to "#{num_generic} rép. génériques", "javascript:toggleSavedReplies('generic_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_generic > 0 %>
+<%= link_to "#{num_section} rép. #{@submission.problem.section.short_abbreviation}", "javascript:toggleSavedReplies('section_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_section > 0 %>
+<%= link_to "#{num_problem} rép. ##{@submission.problem.number}", "javascript:toggleSavedReplies('problem_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_problem > 0 %>
+<%= link_to "+", new_savedreply_path(:sub => @submission), :class => "btn btn-sm btn-ld-light-dark mb-2" if current_user.root? %>
 
 <% if num_generic > 0 %>
   <div id="generic_saved_replies" style="display:none;">
     <% generic_savedreplies.each do |r| %>
+      <%= render "savedreplies/show", r: r %>
+    <% end %>
+  </div>
+<% end %>
+
+<% if num_section > 0 %>
+  <div id="section_saved_replies" style="display:none;">
+    <% section_savedreplies.each do |r| %>
       <%= render "savedreplies/show", r: r %>
     <% end %>
   </div>
