@@ -1,9 +1,10 @@
 <script type="text/javascript">
   var savedreplies_used = new Set();
   var cleanSavedReplies = function () {
-    document.getElementById('generic_saved_replies').style.display = 'none';
-    document.getElementById('section_saved_replies').style.display = 'none';
-    document.getElementById('problem_saved_replies').style.display = 'none';
+    var to_hide = document.getElementsByClassName("to-hide");
+    for (let i = 0; i < to_hide.length; i++) {
+      to_hide[i].style.display = 'none';
+    }
   }
   var toggleSavedReplies = function (id) {
     var el = document.getElementById(id);
@@ -30,10 +31,10 @@
 <%= link_to "#{num_generic} rép. génériques", "javascript:toggleSavedReplies('generic_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_generic > 0 %>
 <%= link_to "#{num_section} rép. #{@submission.problem.section.short_abbreviation}", "javascript:toggleSavedReplies('section_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_section > 0 %>
 <%= link_to "#{num_problem} rép. ##{@submission.problem.number}", "javascript:toggleSavedReplies('problem_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_problem > 0 %>
-<%= link_to "+", new_savedreply_path(:sub => @submission), :class => "btn btn-sm btn-ld-light-dark mb-2" if current_user.root? %>
+<%= link_to "+", new_savedreply_path(:sub => @submission), :class => "btn btn-sm btn-ld-light-dark mb-2" %>
 
 <% if num_generic > 0 %>
-  <div id="generic_saved_replies" style="display:none;">
+  <div id="generic_saved_replies" class="to-hide" style="display:none;">
     <% generic_savedreplies.each do |r| %>
       <%= render "savedreplies/show", r: r %>
     <% end %>
@@ -41,7 +42,7 @@
 <% end %>
 
 <% if num_section > 0 %>
-  <div id="section_saved_replies" style="display:none;">
+  <div id="section_saved_replies" class="to-hide" style="display:none;">
     <% section_savedreplies.each do |r| %>
       <%= render "savedreplies/show", r: r %>
     <% end %>
@@ -49,7 +50,7 @@
 <% end %>
 
 <% if num_problem > 0 %>
-  <div id="problem_saved_replies" style="display:none;">
+  <div id="problem_saved_replies" class="to-hide" style="display:none;">
     <% problem_savedreplies.each do |r| %>
       <%= render "savedreplies/show", r: r %>
     <% end %>

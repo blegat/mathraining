@@ -9,6 +9,7 @@
 #  content    :text
 #  nb_uses    :integer          default(0)
 #  section_id :bigint
+#  approved   :boolean
 #
 
 class Savedreply < ActiveRecord::Base

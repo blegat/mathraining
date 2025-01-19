@@ -1,11 +1,28 @@
 #encoding: utf-8
 class SavedrepliesController < ApplicationController
-  before_action :signed_in_user, only: [:new, :edit]
+  before_action :signed_in_user, only: [:index, :show, :new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy]
-  before_action :root_user, only: [:new, :edit, :create, :update, :destroy]
+  before_action :root_user, only: [:index, :show, :edit, :update, :destroy]
+  before_action :corrector_user, only: [:new, :create]
   
-  before_action :get_savedreply, only: [:edit, :update, :destroy]
+  before_action :get_savedreply, only: [:show, :edit, :update, :destroy]
   before_action :get_submission, only: [:new, :create, :edit, :update]
+  
+  # Show non approved saved replies
+  def index
+  end
+  
+  # Show a submission where this saved reply can be seen
+  def show
+    if @savedreply.section_id == 0 && @savedreply.problem_id == 0
+      submission = Submission.where.not(:status => [:closed, :plagiarized]).order(:created_at).last
+    elsif @savedreply.section_id > 0
+      submission = Submission.joins(:problem).where.not(:status => [:closed, :plagiarized]).where("problems.section_id = ?", @savedreply.section_id).order(:created_at).last
+    else
+      submission = Submission.where.not(:status => [:closed, :plagiarized]).where(:problem_id => @savedreply.problem_id).order(:created_at).last
+    end
+    redirect_to (submission.nil? ? root_path : problem_path(submission.problem, :sub => submission))
+  end
   
   # Create a saved reply (show the form)
   def new
@@ -14,13 +31,20 @@ class SavedrepliesController < ApplicationController
 
   # Update a saved reply (show the form)
   def edit
+    if !@savedreply.approved
+      @savedreply.content = @savedreply.content.split("\n").drop(2).join("\n")
+    end
   end
   
   # Create a saved reply (send the form)
   def create
     @savedreply = Savedreply.new(params.require(:savedreply).permit(:content))
     set_problem_or_section
+    @savedreply.approved = current_user.root? # Automatically approved for roots
     if @savedreply.save
+      if !@savedreply.approved
+        @savedreply.update_attribute(:content, "(Proposé par #{current_user.name})\n\n" + @savedreply.content)
+      end
       flash[:success] = "Réponse ajoutée."
       redirect_to problem_path(@submission.problem, :sub => @submission)
     else
@@ -32,6 +56,7 @@ class SavedrepliesController < ApplicationController
   def update
     @savedreply.content = params[:savedreply][:content]
     set_problem_or_section
+    @savedreply.approved = true # Automatically approved for roots
     if @savedreply.save
       flash[:success] = "Réponse modifiée."
       redirect_to problem_path(@submission.problem, :sub => @submission)

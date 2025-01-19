@@ -5,6 +5,7 @@ describe "Savedreply pages", savedreply: true do
 
   subject { page }
 
+  let(:admin) { FactoryGirl.create(:admin) }
   let(:root) { FactoryGirl.create(:root) }
   let!(:section) { FactoryGirl.create(:section, short_abbreviation: "A. B.") }
   let!(:problem) { FactoryGirl.create(:problem, section: section, online: true) }
@@ -69,6 +70,7 @@ describe "Savedreply pages", savedreply: true do
           expect(page).to have_link("2 rép. ##{problem.number}")
           expect(problem.savedreplies.order(:id).last.content).to eq(newcontent)
           expect(problem.savedreplies.order(:id).last.section_id).to eq(0)
+          expect(problem.savedreplies.order(:id).last.approved).to eq(true)
         end
       end
       
@@ -139,6 +141,60 @@ describe "Savedreply pages", savedreply: true do
           expect(savedreply_generic.problem_id).to eq(0)
           expect(savedreply_generic.section_id).to eq(section.id)
           expect(savedreply_generic.content).to eq(newcontent)
+        end
+      end
+    end
+    
+    describe "visits path associated to generic saved reply" do
+      before { visit savedreply_path(savedreply_generic) }
+      it { should have_current_path(problem_path(problem, :sub => submission)) }
+    end
+    
+    describe "visits path associated to section saved reply" do
+      before { visit savedreply_path(savedreply_section) }
+      it { should have_current_path(problem_path(problem, :sub => submission)) }
+    end
+    
+    describe "visits path associated to problem saved reply" do
+      before { visit savedreply_path(savedreply_problem) }
+      it { should have_current_path(problem_path(problem, :sub => submission)) }
+    end
+  end
+  
+  describe "admin" do
+    before { sign_in admin }
+    
+    describe "creates a saved reply" do
+      before do
+        visit new_savedreply_path(:sub => submission)
+        select section.name, from: "Problème"
+        fill_in "Réponse", with: newcontent
+        click_button "Créer"
+      end
+      specify do
+        expect(page).to have_success_message("Réponse ajoutée")
+        expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
+        expect(page).to have_content(submission.content)
+        expect(section.savedreplies.order(:id).last.content).to eq("(Proposé par #{admin.name})\n\n" + newcontent)
+        expect(section.savedreplies.order(:id).last.problem_id).to eq(0)
+        expect(section.savedreplies.order(:id).last.approved).to eq(false)
+      end
+      
+      describe "and root approves it" do
+        let(:savedreply) { section.savedreplies.order(:id).last }
+        before do
+          sign_out
+          sign_in root
+          visit edit_savedreply_path(savedreply, :sub => submission)
+          click_button "Modifier"
+          savedreply.reload
+        end
+        specify do
+          expect(page).to have_success_message("Réponse modifiée")
+          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
+          expect(page).to have_content(submission.content)
+          expect(savedreply.content).to eq(newcontent) # (Proposé par...) has been removed in edit
+          expect(savedreply.approved).to eq(true)
         end
       end
     end

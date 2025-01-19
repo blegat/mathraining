@@ -21,6 +21,7 @@
       <% if signed_in? and (current_user.admin || current_user.corrector) %>
         <% num_waiting_suspicions = (current_user.root ? Suspicion.where(:status => :waiting_confirmation).count : 0) %>
         <% num_waiting_starproposals = (current_user.root ? Starproposal.where(:status => :waiting_treatment).count : 0) %>
+        <% num_unapproved_savedreplies = (current_user.root ? Savedreply.where(:approved => false).count : 0) %>
 
         <!-- Nouvelles soumissions et nouveaux commentaires -->
 
@@ -52,6 +53,11 @@
         <!-- Nouvelles suspicions de plagiat (pour les root) -->
         <% if current_user.root? && num_waiting_suspicions > 0 %>
           <%= link_to "#{num_waiting_suspicions}", suspicions_path, class: "btn btn-info" %>
+        <% end %>
+        
+        <!-- Nouvelles propositions de réponses enregistrées (pour les root) -->
+        <% if current_user.root? && num_unapproved_savedreplies > 0 %>
+          <%= link_to "#{num_unapproved_savedreplies}", savedreplies_path, class: "btn btn-primary" %>
         <% end %>
       <% end %>
       

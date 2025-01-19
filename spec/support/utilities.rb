@@ -199,17 +199,17 @@ RSpec::Matchers.define :have_controller_create_behavior do |name, behavior, othe
   end
 end
 
-RSpec::Matchers.define :have_controller_edit_behavior do |obj, behavior|
+RSpec::Matchers.define :have_controller_edit_behavior do |obj, behavior, other_params = {}|
   match do |response|
-    get :edit, params: {:id => obj.id}
+    get :edit, params: {:id => obj.id}.merge(other_params)
     expect(response).to have_behavior(behavior)
   end
 end
 
-RSpec::Matchers.define :have_controller_update_behavior do |obj, behavior|
+RSpec::Matchers.define :have_controller_update_behavior do |obj, behavior, other_params = {}|
   name = obj.class.name.downcase
   match do |response|
-    patch :update, params: {:id => obj.id, name => FactoryGirl.attributes_for(name)}
+    patch :update, params: {:id => obj.id, name => FactoryGirl.attributes_for(name)}.merge(other_params)
     expect(response).to have_behavior(behavior)
   end
 end

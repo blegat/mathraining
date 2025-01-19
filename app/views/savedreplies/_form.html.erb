@@ -9,7 +9,7 @@
 <!-- Problème -->
 <div class="mb-2">
   <%= f.label :problem_id, :class => "form-label" %>
-  <% selected = @savedreply.section_id %>
+  <% selected = -@savedreply.section_id %>
   <% selected = @savedreply.problem_id unless @savedreply.problem_id == 0 %>
   <%= f.select(:problem_id, options_for_select(listeprob, selected), {}, { :class => "form-select", :style => "width:100%; max-width:400px;" }) %>
 </div>
@@ -19,7 +19,6 @@
   <%= f.label :content, :class => "form-label", :for => "MathInput" %>
   <%= render 'shared/preview' %>
   <%= render 'shared/smiley' %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()" %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()", :placeholder => "Vous pouvez utiliser \"[e]\" pour un mot concernant l'étudiant(e) qui ne prend un \"e\" qu'au féminin. La réponse s'adaptera automatiquement à l'étudiant(e)." %>
   <script>initAndUpdatePreviewSafeWhenPossible()</script>
-  <script>initLeavingFormWhenPossible()</script>
 </div>

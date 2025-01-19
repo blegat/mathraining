@@ -1,6 +1,7 @@
-<div class="card text-bg-ld-light-dark mb-2">
+<div class="card text-bg-ld-light-dark <%= "border-warning" if !r.approved %> mb-2">
  <% final_content = r.content.gsub("[e]", (@submission.user.sex == 0 ? "" : "e")) %>
-  <div id="savedreply-<%= r.id %>" class="card-body" style="cursor:pointer;" onclick='Insert.insert("<%= final_content.gsub(/\\/, '\\\\\\').gsub(/"/, '\"') %>", "", "MathInput"); savedReplyUsed(<%= r.id %>);'>
+ <% final_content_no_proposal = (r.approved ? final_content : final_content.split("\n").drop(2).join("\n")) %>
+  <div id="savedreply-<%= r.id %>" class="card-body" style="cursor:pointer;" onclick='Insert.insert("<%= final_content_no_proposal.gsub(/\\/, '\\\\\\').gsub(/"/, '\"') %>", "", "MathInput"); savedReplyUsed(<%= r.id %>);'>
     <%= bbcode(final_content) %>
   </div>
   <% if current_user.root? %>

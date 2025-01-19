@@ -281,7 +281,7 @@ Rails.application.routes.draw do
   resources :sanctions, only: [:edit, :update, :destroy]
   
   # Savedreplies
-  resources :savedreplies, only: [:new, :create, :edit, :update, :destroy]
+  resources :savedreplies, only: [:index, :show, :new, :create, :edit, :update, :destroy]
   
   # Puzzles (10 years)
   resources :puzzles, only: [:index, :new, :create, :edit, :update, :destroy] do

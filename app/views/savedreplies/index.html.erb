@@ -1,0 +1,22 @@
+<% provide(:title, 'Réponses enregistrées') %>
+
+<h1><%= title_1("Réponses enregistrées") %></h1>
+
+<ul>
+<% last = [-1, -1] %>
+<% Savedreply.includes(:section).includes(:problem).where(:approved => false).order("section_id, problem_id").each do |s| %>
+  <% if last == [s.section_id, s.problem_id] %>
+    <% next %>
+  <% end %>
+  <% last = [s.section_id, s.problem_id] %>
+  <li>
+  <% if s.section_id == 0 && s.problem_id == 0 %>
+    <%= link_to "Générique", s %>
+  <% elsif s.problem_id == 0 %>
+    <%= link_to s.section.name, s %>
+  <% else %>
+    <%= link_to "Problème ##{s.problem.number}", s %>
+  <% end %>
+  </li>
+<% end %>
+</ul>
