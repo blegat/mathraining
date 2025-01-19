@@ -21,8 +21,10 @@ $title-breakpoints: lg md;
   .split-title-#{$title-breakpoint} .part-2 {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.5em;
     @media (min-width: map-get($grid-breakpoints, '#{$title-breakpoint}')) {
+      justify-content: flex-end;
       padding-left: 1em;
     }
   }
