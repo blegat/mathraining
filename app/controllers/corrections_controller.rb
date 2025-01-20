@@ -157,7 +157,7 @@ class CorrectionsController < ApplicationController
 
       @submission.notified_users << @submission.user unless @submission.notified_users.exists?(@submission.user_id)
     else
-      @submission.followings.update_all(:read => false)
+      @submission.followings.where.not(:kind => :reservation).update_all(:read => false)
     end
     
     # Deal with saved replied that have been used
