@@ -41,7 +41,7 @@
   <div class="text-center">
   <%= link_to "Modifier cette énigme", edit_puzzle_path(p) %>
   <% unless Puzzle.ended? %>
-    | <%= link_to "Supprimer cette énigme", p, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette étape ?" } %>
+    | <%= link_to "Supprimer cette énigme", p, :method => :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette étape ?" } %>
   
     <% if num_puzzles > 1 %>
       | Déplacer vers le

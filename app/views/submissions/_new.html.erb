@@ -30,7 +30,7 @@
     </div>
   <% end %>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Attention ! Votre solution va être lue par un correcteur bénévole.\n\nVeillez à ce que celle-ci soit suffisamment claire et bien rédigée. Avant de l'envoyer, nous vous encourageons à la relire entièrement, si possible plusieurs heures après l'avoir rédigée, pour vous assurer qu'elle est facilement compréhensible.\n\nÊtes-vous sûr#{'e' if current_user.sex == 1} de vouloir soumettre cette solution ?" }) %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Attention ! Votre solution va être lue par un correcteur bénévole.\n\nVeillez à ce que celle-ci soit suffisamment claire et bien rédigée. Avant de l'envoyer, nous vous encourageons à la relire entièrement, si possible plusieurs heures après l'avoir rédigée, pour vous assurer qu'elle est facilement compréhensible.\n\nÊtes-vous #{current_user.sure} de vouloir soumettre cette solution ?" }) %>
   <%= f.submit "Enregistrer comme brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (in_skin? || @no_new_submission) %>
 <% end %>
 

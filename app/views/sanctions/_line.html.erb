@@ -7,7 +7,7 @@
 <% end %>
 <br/><br/><u>Message</u> : <%= s.message %>
 <% if s.end_time > DateTime.now %>
-<br/><br/><center><%= link_to "Modifier", edit_sanction_path(s) %> - <%= link_to "Supprimer", s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette sanction ?" }, :class => "text-color-red" %></center>
+<br/><br/><center><%= link_to "Modifier", edit_sanction_path(s) %> - <%= link_to "Supprimer", s, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette sanction ?" }, :class => "text-color-red" %></center>
 <% end %>
 </td>
 </tr>

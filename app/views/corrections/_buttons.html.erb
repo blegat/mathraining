@@ -22,9 +22,9 @@
     <%= f.submit "Poster et refuser la soumission", class: "btn btn-danger mb-1 to-enable", :disabled => (disable_correction || in_skin?) %>
   <% end %>
   <% if show_accept %>
-    <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1 to-enable", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || in_skin?) %>
+    <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1 to-enable", data: {confirm: "Êtes-vous #{current_user.sure} de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || in_skin?) %>
   <% end %>
   <% if show_close %>
-    <%= f.submit "Poster et clôturer la soumission", class: "btn btn-ld-dark-light-er mb-1 to-enable", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || in_skin?) %>
+    <%= f.submit "Poster et clôturer la soumission", class: "btn btn-ld-dark-light-er mb-1 to-enable", data: {confirm: "Êtes-vous #{current_user.sure} de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || in_skin?) %>
   <% end %>
 </div>

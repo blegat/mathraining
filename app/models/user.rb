@@ -184,6 +184,11 @@ class User < ActiveRecord::Base
   def shortname
     return "#{self.first_name} #{self.last_name[0]}."
   end
+  
+  # Word sûr/sûre depending on the gender of the user (to ask confirmation)
+  def sure
+    return (self.sex == 1 ? "sûre" : "sûr")
+  end
 
   # Tells if the user solved the given problem
   def pb_solved?(problem)

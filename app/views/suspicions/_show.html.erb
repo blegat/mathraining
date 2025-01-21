@@ -44,11 +44,11 @@
     </tr>
     
     <% if current_user.root? %>
-      <%= form_for s, :url => suspicion_path(s, :action => :update), data: { confirm: "Êtes-vous sûr de vouloir faire cette modification ? Si vous confirmez une suspicion, l'étudiant ne pourra plus soumettre de solution à ce problème avant 6 mois." } do |f| %>
+      <%= form_for s, :url => suspicion_path(s, :action => :update), data: { confirm: "Êtes-vous #{current_user.sure} de vouloir faire cette modification ? Si vous confirmez une suspicion, l'étudiant ne pourra plus soumettre de solution à ce problème avant 6 mois." } do |f| %>
         <tr id="line_suspicion_edit_<%= s.id %>" class="table-ld-<%= s.color_class %>" style="display:<%= Rails.env.test? ? 'revert' : 'none' %>;">
         <td class="d-none d-lg-table-cell text-center align-middle">
         <% unless s.confirmed? %>
-          <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette suspicion de plagiat ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :class => "text-color-red" %>
+          <%= link_to 'Supprimer', s, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette suspicion de plagiat ? Utilisez cette option uniquement en cas de fausse manipulation !" }, :class => "text-color-red" %>
         <% end %>
         </td>
         <td>

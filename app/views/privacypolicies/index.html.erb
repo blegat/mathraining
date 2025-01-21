@@ -25,8 +25,8 @@
 <br/><br/>
 <center><%= link_to "Modifier", edit_description_privacypolicy_path(p) %>
 <% if !p.online %>
-  - <%= link_to "Supprimer", p, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette politique de confidentialité ?" }, :class => "text-color-red" %>
-  - <%= link_to "Publier", put_online_privacypolicy_path(p), :method => :put, data: { confirm: "ATTENTION : Après la publication tous les utilisateurs devront signer la nouvelle politique de confidentialité. Êtes-vous sûr de vouloir publier cette nouvelle version ?" }, :class => "text-color-red" %>
+  - <%= link_to "Supprimer", p, :method => :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette politique de confidentialité ?" }, :class => "text-color-red" %>
+  - <%= link_to "Publier", put_online_privacypolicy_path(p), :method => :put, data: { confirm: "ATTENTION : Après la publication tous les utilisateurs devront signer la nouvelle politique de confidentialité. Êtes-vous #{current_user.sure} de vouloir publier cette nouvelle version ?" }, :class => "text-color-red" %>
 <% end %>
 </center>
 </td>

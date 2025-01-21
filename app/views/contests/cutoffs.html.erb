@@ -102,7 +102,7 @@ Votre navigateur ne supporte pas les canvas.
 </tr>
 </table>
 
-<%= submit_tag "Distribuer les médailles", :class => "btn btn-primary mt-2", :onclick => "return confirm('Êtes vous sûr de vouloir choisir ces seuils ? Les médailles vont être publiées.')" %>
+<%= submit_tag "Distribuer les médailles", :class => "btn btn-primary mt-2", :onclick => "return confirm('Êtes vous #{current_user.sure} de vouloir choisir ces seuils ? Les médailles vont être publiées.')" %>
 
 <% end %>
 </center>

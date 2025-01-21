@@ -11,7 +11,7 @@
     <% @chapter.prerequisites_associations.joins(:prerequisite).includes(:prerequisite).select("prerequisites.*, chapters.name").order("chapters.level").each do |p| %>
       <li><%= link_to p.name, p.prerequisite %>
       <% if signed_in? && current_user.admin? && !@chapter.online %>
-        - <%= link_to "Supprimer", p, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?" }, :class => "text-color-red" %>
+        - <%= link_to "Supprimer", p, :method => :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce prérequis ?" }, :class => "text-color-red" %>
       <% end %>
       </li>
     <% end %>
@@ -64,7 +64,7 @@
     <% end %>
     
     <% if !@chapter.online && current_user.admin? %>
-      | <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce chapitre ?" } %>
+      | <%= link_to "Supprimer ce chapitre", @chapter, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce chapitre ?" } %>
     <% end %>
     
     <% if @section.fondation? && current_user.root? %>

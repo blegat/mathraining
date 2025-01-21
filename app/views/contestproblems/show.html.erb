@@ -33,7 +33,7 @@
 <% if @contest.is_organized_by_or_root(current_user) %>
   <p class="text-center"><%= link_to "Modifier ce problème", edit_contestproblem_path(@contestproblem) %>
   <% if @contest.in_construction? %>
-    | <%= link_to "Supprimer ce problème", @contestproblem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
+    | <%= link_to "Supprimer ce problème", @contestproblem, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce problème ?" } %>
   <% end %>
   <% if current_user.root? %>
     <% if @contestproblem.corrected? %>

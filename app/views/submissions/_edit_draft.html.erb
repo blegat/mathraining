@@ -30,9 +30,9 @@
     </div>
   <% end %>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Attention ! Votre solution va être lue par un correcteur bénévole.\n\nVeillez à ce que celle-ci soit suffisamment claire et bien rédigée. Avant de l'envoyer, nous vous encourageons à la relire entièrement, si possible plusieurs heures après l'avoir rédigée, pour vous assurer qu'elle est facilement compréhensible.\n\nÊtes-vous sûr de vouloir soumettre cette solution ?" }) %>
+  <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Attention ! Votre solution va être lue par un correcteur bénévole.\n\nVeillez à ce que celle-ci soit suffisamment claire et bien rédigée. Avant de l'envoyer, nous vous encourageons à la relire entièrement, si possible plusieurs heures après l'avoir rédigée, pour vous assurer qu'elle est facilement compréhensible.\n\nÊtes-vous #{current_user.sure} de vouloir soumettre cette solution ?" }) %>
   <%= f.submit "Enregistrer le brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (in_skin? || @no_new_submission) %>
-  <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger mb-1", :disabled => (in_skin? || @no_new_submission), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce brouillon ?" } %>
+  <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger mb-1", :disabled => (in_skin? || @no_new_submission), data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce brouillon ?" } %>
 <% end %>
 
 <% unless limit_reached %>

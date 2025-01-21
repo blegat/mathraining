@@ -201,7 +201,7 @@
         <% if !current_user.admin? && status == "not_started" %>
           <% if current_user.can_write_submission? %>
             <div class="g-col-12 g-col-md-24">
-              <center><%= button_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.has_no_submission_sanction || in_skin?), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez sûr d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
+              <center><%= button_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.has_no_submission_sanction || in_skin?), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez #{current_user.sure} d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
             </div>
           <% else %>
             <div class="g-col-12 g-col-md-24 module bottom-part text-start">
@@ -242,11 +242,11 @@
         <% if !t.online? && current_user.admin? %>
           <div class="g-col-12 g-col-md-24">
             <p class="mb-2 text-center">
-            <%= link_to "Modifier ce test", edit_virtualtest_path(t) %> - <%= link_to "Supprimer ce test", t, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce test virtuel ? Cela ne supprimera pas les problèmes associés." } %>
+            <%= link_to "Modifier ce test", edit_virtualtest_path(t) %> - <%= link_to "Supprimer ce test", t, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce test virtuel ? Cela ne supprimera pas les problèmes associés." } %>
             </p>
             <% if nb_prob > 0 && can_online %>
               <center>
-              <%= button_to "Mettre en ligne", put_online_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
+              <%= button_to "Mettre en ligne", put_online_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
               </center>
             <% else %>
               <center>

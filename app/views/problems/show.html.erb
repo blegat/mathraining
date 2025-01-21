@@ -61,7 +61,7 @@
   <ul>
   <% @problem.chapters.each do |c| %>
     <% has_pre = true %>
-    <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span class='text-color-orange'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', delete_prerequisite_problem_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous sûr de vouloir supprimer ce prérequis ?"}, :method => :put if !@problem.online %></li>
+    <li><%= link_to c.name, c %> <%= "(#{c.section.name})" if c.section != @problem.section %> <span class='text-color-orange'><%= "(en construction)" if !c.online %></span> <%= " - " if !@problem.online %> <%= link_to 'Supprimer ce prérequis', delete_prerequisite_problem_path(@problem, :chapter_id => c.id), data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce prérequis ?"}, :method => :put if !@problem.online %></li>
     <% enligne_ok = false if !c.online %>
   <% end %>
   </ul>
@@ -140,14 +140,14 @@
         | <%= link_to "Modifier le marking scheme", edit_markscheme_problem_path(@problem) %>
       <% end %>
       <% unless @problem.online %>
-        | <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce problème ?" } %>
+        | <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce problème ?" } %>
       <% end %>
     </p>
 
     <% if !@problem.online %>
       <% if has_pre && enligne_ok %>
         <center>
-        <%= button_to "Mettre en ligne", put_online_problem_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-3', data: { confirm: "Êtes-vous sûr de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
+        <%= button_to "Mettre en ligne", put_online_problem_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-3', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
         </center>
       <% else %>
         <center>

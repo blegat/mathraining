@@ -5,10 +5,14 @@ describe "questions/_admin.html.erb", type: :view, question: true do
 
   subject { rendered }
 
+  let(:admin) { FactoryGirl.create(:admin) }
   let(:chapter) { FactoryGirl.create(:chapter, online: true) }
   let(:question) { FactoryGirl.create(:question, chapter: chapter, position: 2) }
   
-  before { assign(:chapter, chapter) }
+  before do
+    sign_in_view(admin)
+    assign(:chapter, chapter)
+  end
   
   context "if the question is an exercise and not online" do
     before { question.update(:online => false, :is_qcm => false, :explanation => "") }

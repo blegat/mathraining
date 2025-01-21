@@ -26,7 +26,7 @@
 <p class="mt-3"><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
   <% c = c+1 %>
-  <%= o.linked_name %><% if (signed_in? && current_user.admin?) && @contest.in_construction? %> (<%= link_to "supprimer", remove_organizer_contest_path(@contest, :user_id => o.id), method: :put, data: { confirm: "Êtes-vous sûr de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
+  <%= o.linked_name %><% if (signed_in? && current_user.admin?) && @contest.in_construction? %> (<%= link_to "supprimer", remove_organizer_contest_path(@contest, :user_id => o.id), method: :put, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
 <% end %>
 </p>
 
@@ -105,8 +105,8 @@
 
 <% if @contest.in_construction? && signed_in? && current_user.admin? %>
   <%= " | " if num > 0 %>
-  <%= link_to "Mettre ce concours en ligne", put_online_contest_path(@contest), :method => :put, data: { confirm: "Êtes-vous sûr de vouloir mettre ce concours en ligne ?" } %>
-  | <%= link_to "Supprimer ce concours", @contest, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce concours ?" } %>
+  <%= link_to "Mettre ce concours en ligne", put_online_contest_path(@contest), :method => :put, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir mettre ce concours en ligne ?" } %>
+  | <%= link_to "Supprimer ce concours", @contest, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce concours ?" } %>
   <% num = num+1 %>
 <% end %>
 

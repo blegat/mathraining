@@ -11,7 +11,7 @@
   <p class="mt-3 text-center">
   <!-- Modifier/Supprimer -->
     <%= link_to "Modifier ce point théorique", edit_theory_path(@theory) %> |
-    <%= link_to "Supprimer ce point théorique", @theory, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce point théorique ?" } %>
+    <%= link_to "Supprimer ce point théorique", @theory, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce point théorique ?" } %>
   </p>
   
   <!-- Déplacer -->
@@ -30,7 +30,7 @@
   <!-- Mettre en ligne -->
   <% if !@theory.online && @chapter.online %>
     <center>
-    <%= button_to "Mettre en ligne", put_online_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Êtes-vous sûr de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
+    <%= button_to "Mettre en ligne", put_online_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
     </center>
   <% end %>
 

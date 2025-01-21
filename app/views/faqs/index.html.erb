@@ -12,7 +12,7 @@
   <% if signed_in? && current_user.admin? %>
     <p class="text-center">
     <%= link_to "Modifier la question", edit_faq_path(f) %> |
-    <%= link_to "Supprimer la question", f, :method => :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette question ?" } %>
+    <%= link_to "Supprimer la question", f, :method => :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette question ?" } %>
     
     <% if num_faqs > 1 %>
       | Déplacer vers le

@@ -16,7 +16,7 @@
   <% end %>
   | <%= link_to "Modifier l'explication", edit_explanation_question_path(question) %>
   <% unless question.online %>
-    | <%= link_to "Supprimer cet exercice", question, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet exercice ?" } %>
+    | <%= link_to "Supprimer cet exercice", question, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cet exercice ?" } %>
   <% end %>
 </p>
   
@@ -36,7 +36,7 @@
 <!-- Mettre en ligne -->
 <center>
 <% if !question.online && @chapter.online %>
-  <%= button_to "Mettre en ligne", put_online_question_path(question), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous sûr de vouloir le mettre en ligne ?" } %>
+  <%= button_to "Mettre en ligne", put_online_question_path(question), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous #{current_user.sure} de vouloir le mettre en ligne ?" } %>
 <% end %>
 </center>
 </div>

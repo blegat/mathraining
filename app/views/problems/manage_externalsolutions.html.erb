@@ -31,7 +31,7 @@
         <%= f.submit "Modifier", :class => "btn btn-primary", :id => "update_externalsolution_button_" + e.id.to_s %>
       </td>
       <td class="p-2">
-        <%= link_to "Supprimer", e, :method => :delete, :id => ("delete_externalsolution_" + e.id.to_s), :data => { confirm: "Êtes-vous sûr de vouloir supprimer cette solution externe ?" }, :class => "text-color-red" %>
+        <%= link_to "Supprimer", e, :method => :delete, :id => ("delete_externalsolution_" + e.id.to_s), :data => { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette solution externe ?" }, :class => "text-color-red" %>
       </td>
     <% end %>
     </tr>
@@ -85,7 +85,7 @@
         Score : <%= score %> / <%= matching_suspicions.count %>
       </td>
       <td class="p-2">
-        <%= link_to "Supprimer", extract, :method => :delete, :id => ("delete_extract_" + extract.id.to_s), :data => { confirm: "Êtes-vous sûr de vouloir supprimer cet extrait ?" }, :class => "text-color-red" %>
+        <%= link_to "Supprimer", extract, :method => :delete, :id => ("delete_extract_" + extract.id.to_s), :data => { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cet extrait ?" }, :class => "text-color-red" %>
       </td>
     <% end %>
     </tr>

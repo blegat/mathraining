@@ -16,7 +16,7 @@
           <%= g.submit "Modifier cette catégorie", class: "btn btn-primary" %>
         </td>
         <td class="p-2">
-          <%= link_to "Supprimer cette catégorie", c, method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cette catégorie ?" } %>
+          <%= link_to "Supprimer cette catégorie", c, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette catégorie ?" } %>
         </td>
       </tr>
     <% end %>
