@@ -82,14 +82,13 @@ class CorrectionsController < ApplicationController
 
     # If new/wrong, current user is corrector and he wants to keep it wrong: new status is wrong
     elsif (current_user != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
-      (params[:commit] == "Poster et refuser la soumission" or
-      params[:commit] == "Poster et laisser la soumission comme erronée")
-      @submission.wrong!
+          params[:commit] == "Poster et refuser la soumission"
+          @submission.wrong!
       m = "Soumission marquée comme incorrecte."
 
-    # If wrong, current user is corrector and he wants to keep it wrong: new status is wrong
-    elsif (current_user != @submission.user) and (@submission.wrong? or @submission.wrong_to_read?) and
-      params[:commit] == "Poster et clôturer la soumission"
+    # If current user is corrector and he wants to close it: new status is closed
+    elsif (current_user != @submission.user) and (@submission.waiting? or @submission.wrong? or @submission.wrong_to_read?) and
+          params[:commit] == "Poster et clôturer la soumission"
       @submission.closed!
       m = "Soumission clôturée."
 

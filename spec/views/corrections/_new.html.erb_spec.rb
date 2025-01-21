@@ -54,7 +54,7 @@ describe "corrections/_new.html.erb", type: :view, correction: true do
         it "renders the mark scheme" do
           render partial: "corrections/new"
           should have_field("score")
-          should have_selector("h5", text: "Marking scheme")
+          should have_content("Marking scheme")
           should have_content(submission.problem.markscheme)
         end
       end
@@ -75,7 +75,7 @@ describe "corrections/_new.html.erb", type: :view, correction: true do
       it "renders two buttons" do
         render partial: "corrections/new"
         should have_no_button("Poster", :exact => true)
-        should have_button("Poster et laisser la soumission comme erronée")
+        should have_button("Poster et refuser la soumission")
         should have_button("Poster et accepter la soumission")
       end
     end

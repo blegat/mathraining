@@ -665,7 +665,7 @@ describe "Submission pages" do
                   it do
                     should have_selector("h3", text: "Soumission (erronée)")
                     should have_selector("div", text: newanswer)
-                    should have_button("Poster et laisser la soumission comme erronée")
+                    should have_button("Poster et refuser la soumission")
                     should have_button("Poster et accepter la soumission")
                     should have_link("Marquer comme lu")
                     should have_no_link("Marquer comme non lu")

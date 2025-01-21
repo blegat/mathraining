@@ -4,6 +4,9 @@
 <% if !defined?(show_savedreplies) %>
   <% show_savedreplies = false %>
 <% end %>
+<% if !defined?(can_close_submission_directly) %>
+  <% can_close_submission_directly = false %>
+<% end %>
 
 <div id="theCorrection">
 <h4>Poster un commentaire</h4>
@@ -31,37 +34,26 @@
   <% if current_user != @submission.user %>
     <p class="mb-2">N'hésitez pas à faire des commentaires, même minimes, pouvant permettre à l'étudiant de progresser. On signalera par exemple une erreur de notation, un oubli de cas particulier, une suggestion d'amélioration... Si une grosse partie est manquante, alors on refusera la solution en demandant de la compléter.</p>
     <% if @submission.wrong? %>
-      <div class="mb-3">
-      <%= f.submit "Poster", class: "btn btn-primary mb-1", :disabled => (disable_correction || in_skin?) %>
-      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || in_skin?) %>
-      <%= f.submit "Poster et clôturer la soumission", class: "btn btn-ld-dark-light-er mb-1", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || in_skin?) %>
-      </div>
+      <%= render 'corrections/buttons', f: f, disable_correction: disable_correction, show_simple: true, show_accept: true, show_close: true %>
     <% elsif @submission.correct? %>
-      <%= f.submit "Poster", class: "btn btn-primary mb-3", :disabled => (disable_correction || in_skin?) %>
+      <%= render 'corrections/buttons', f: f, disable_correction: disable_correction, show_simple: true %>
     <% elsif @submission.wrong_to_read? %>
-      <div class="mb-3">
-      <%= f.submit "Poster et laisser la soumission comme erronée", class: "btn btn-danger mb-1", :disabled => (disable_correction || in_skin?) %>
-      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || in_skin?) %>
-      <%= f.submit "Poster et clôturer la soumission", class: "btn btn-ld-dark-light-er mb-1", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || in_skin?) %>
-      </div>
-    <% else ## Pas encore corrigé %>
+      <%= render 'corrections/buttons', f: f, disable_correction: disable_correction, show_accept: true, show_reject: true, show_close: true %>
+    <% else %>
       <% if @submission.intest && @submission.score == -1 %>
         <div class="mb-2">
         <label for="score" class="form-label">Score attribué (sur 7)</label>
         <%= number_field_tag "score", nil, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;" %>
         </div>
         
-        <div class="p-3 mt-3 grey-box">
-          <h5>Marking scheme</h5>
-          <%= htmlise(@problem.markscheme) %>
+        <div class="card">
+          <div class="card-header">Marking scheme</div>
+          <div class="card-body"><%= htmlise(@problem.markscheme) %></div>
         </div>
         
-        <p class="mt-3 mb-2">Veuillez accepter ou refuser la solution indépendamment du score attribué, comme pour un problème normal. On acceptera donc essentiellement les solutions ayant obtenu un 7, mais des exceptions (dans un sens comme dans l'autre) restent possibles.</p>
+        <p class="mt-3 mb-2">Veuillez accepter ou refuser la solution indépendamment du score attribué, comme pour un problème normal.</p>
       <% end %>
-      <div class="mb-3">
-      <%= f.submit "Poster et refuser la soumission", class: "btn btn-danger mb-1 to-enable", :disabled => (disable_correction || in_skin?) %>
-      <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1 to-enable", :disabled => (disable_correction || in_skin?), data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."} %>
-      </div>
+      <%= render 'corrections/buttons', f: f, disable_correction: disable_correction, show_reject: true, show_accept: true, show_close: can_close_submission_directly %>
     <% end %>
 
   <!-- Si étudiant, simple bouton -->

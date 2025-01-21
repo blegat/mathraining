@@ -64,7 +64,7 @@ var showFalse = function() {
     <%= render 'submissions/line_header', hide_user: true %>
     <% submissions.each do |s| %>
       <%= render 'submissions/line', s: s, hide_user: true %>
-      <% if s.waiting? %>
+      <% if s.waiting? || s.correct? %>
         <% @cansendnewsub = false %>
       <% elsif s.plagiarized? || s.closed? %>
         <% one_date_submission_allowed = s.date_new_submission_allowed %>

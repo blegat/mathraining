@@ -1,0 +1,30 @@
+<% if !defined?(disable_correction) %>
+  <% disable_correction = false %>
+<% end %>
+<% if !defined?(show_simple) %>
+  <% show_simple = false %>
+<% end %>
+<% if !defined?(show_reject) %>
+  <% show_reject = false %>
+<% end %>
+<% if !defined?(show_accept) %>
+  <% show_accept = false %>
+<% end %>
+<% if !defined?(show_close) %>
+  <% show_close = false %>
+<% end %>
+
+<div class="mb-3">
+  <% if show_simple %>
+    <%= f.submit "Poster", class: "btn btn-primary mb-1 to-enable", :disabled => (disable_correction || in_skin?) %>
+  <% end %>
+  <% if show_reject %>
+    <%= f.submit "Poster et refuser la soumission", class: "btn btn-danger mb-1 to-enable", :disabled => (disable_correction || in_skin?) %>
+  <% end %>
+  <% if show_accept %>
+    <%= f.submit "Poster et accepter la soumission", class: "btn btn-success mb-1 to-enable", data: {confirm: "Êtes-vous sûr de vouloir accepter cette soumission ? Vous ne pourrez plus revenir en arrière."}, :disabled => (disable_correction || in_skin?) %>
+  <% end %>
+  <% if show_close %>
+    <%= f.submit "Poster et clôturer la soumission", class: "btn btn-ld-dark-light-er mb-1 to-enable", data: {confirm: "Êtes-vous sûr de vouloir clore cette soumission ? L'étudiant ne pourra plus travailler sur ce problème pendant une semaine !"}, :disabled => (disable_correction || in_skin?) %>
+  <% end %>
+</div>
