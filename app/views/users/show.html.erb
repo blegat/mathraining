@@ -998,7 +998,7 @@
   <div class="g-col-12 basic_container text-center p-2">
     <%= link_to "Supprimer les données personnelles", destroydata_user_path(@user), data: { confirm: "ATTENTION : Cette action va supprimer les données personnelles de #{@user.name}, à savoir son adresse e-mail et son nom. Êtes-vous #{current_user.sure} de vouloir continuer ?" }, :method => :put, :class => "text-color-red" %>
     |
-    <%= link_to "Supprimer", @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Notez que cet utilisateur a écrit #{@user.messages.count} message(s) sur le forum, tout sera supprimé ! Êtes-vous #{current_user.sure} de vouloir supprimer #{@user.name} ?" }, :class => "text-color-red" %>
+    <%= link_to "Supprimer", @user, method: :delete, data: { confirm: "ATTENTION : Privilégiez la suppression des données personnelles ! En continuant, vous supprimerez toutes les données relatives à ce compte. Êtes-vous #{current_user.sure} de vouloir supprimer #{@user.name} ?" }, :class => "text-color-red" %>
     |
     <% if @user.can_change_name %>
       <%= link_to "Interdire le changement de nom", unset_can_change_name_user_path(@user), :method => :put %>

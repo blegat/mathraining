@@ -604,11 +604,23 @@ describe "User pages" do
       end
     end
     
-    describe "deletes a student with some created stuffs" do
+    describe "tries to delete a student with some created stuffs that cannot be deleted" do
       let!(:mes) { FactoryGirl.create(:message, user: zero_user) }
+      let!(:old_user_count) { User.count }
+      before do
+        visit user_path(zero_user)
+        click_link "Supprimer"
+      end
+      specify do
+        expect(page).to have_error_message("Cet utilisateur ne peut pas être totalement supprimé")
+        expect(User.count).to eq(old_user_count)
+      end
+    end
+    
+    describe "deletes a student with a discussion" do
       let!(:disc) { create_discussion_between(zero_user, other_zero_user, "Coucou mon ami", "Salut mon poto") }
       before { visit user_path(zero_user) }
-      specify { expect { click_link "Supprimer" }.to change(User, :count).by(-1) .and change(Subject, :count).by(0) .and change(Message, :count).by(-1) .and change(Discussion, :count).by(-1) .and change(Link, :count).by(-2) .and change(Tchatmessage, :count).by(-2) }
+      specify { expect { click_link "Supprimer" }.to change(User, :count).by(-1) .and change(Discussion, :count).by(-1) .and change(Link, :count).by(-2) .and change(Tchatmessage, :count).by(-2) }
     end
 
     describe "deletes a student while a root has his skin" do

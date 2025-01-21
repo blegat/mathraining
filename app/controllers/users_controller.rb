@@ -194,13 +194,24 @@ class UsersController < ApplicationController
         @user.update_attribute(:valid_name, false)
       end
       redirect_to edit_user_path(@user)
-    else
+    else       
       render 'edit'
     end
   end
 
   # Delete a user
   def destroy
+    if @user.messages.count > 0 || @user.submissions.count > 0 || @user.contestsolutions.count > 0 || @user.puzzleattempts.count > 0
+      m = "Cet utilisateur ne peut pas être totalement supprimé car il a :<ul>"
+      m += "<li>#{@user.messages.count} messages sur le Forum</li>" if @user.messages.count > 0
+      m += "<li>#{@user.submissions.count} soumissions à un problème</li>" if @user.submissions.count > 0
+      m += "<li>#{@user.contestsolutions.count} solutions à un problème de Concours</li>" if @user.contestsolutions.count > 0
+      m += "<li>#{@user.puzzleattempts.count} tentatives de résolution d'énigme</li>" if @user.puzzleattempts.count > 0
+      m += "</ul>Vous pouvez par contre supprimer ses données personnelles."
+      flash[:danger] = m
+      redirect_to @user and return
+    end
+    
     remove_skins(@user)
     @user.destroy
     Globalstatistic.get.update_all
