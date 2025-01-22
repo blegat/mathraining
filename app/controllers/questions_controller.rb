@@ -16,6 +16,7 @@ class QuestionsController < ApplicationController
 
   # Show a question (inside a chapter)
   def show
+    @show_answer = (params[:answer] == '1')
   end
 
   # Create a question (show the form)

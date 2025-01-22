@@ -1,14 +1,6 @@
-<!-- Explication -->
-<h4 class="mt-4">Explication</h4>
-<% if question.explanation.size == 0 %>
-  <span class="text-color-orange fw-bold">Pas d'explication</span>
-<% else %>
-  <%= htmlise(question.explanation) %>
-<% end %>
-
 <!-- Modifier / Supprimer -->
 <div class="noprint">
-<p class="mt-4 text-center">
+<p class="mt-4 mb-0 text-center">
   <% warning = (question.online ? { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } : {}) %>
   <%= link_to "Modifier cet exercice", edit_question_path(question), data: warning %>
   <% if question.is_qcm %>
@@ -25,7 +17,7 @@
 <% question_after = @chapter.questions.where("position > ?", question.position).order("position").first %>
 
 <% if (!question_before.nil? || !question_after.nil?) %>
-<p class="text-center">
+<p class="mt-3 mb-0 text-center">
   Déplacer cet exercice vers le
   <%= link_to "haut", order_question_path(question, :new_position => question_before.position), :method => :put if !question_before.nil? %>
   <%= '-' if !question_before.nil? && !question_after.nil? %>
@@ -36,7 +28,7 @@
 <!-- Mettre en ligne -->
 <center>
 <% if !question.online && @chapter.online %>
-  <%= button_to "Mettre en ligne", put_online_question_path(question), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous #{current_user.sure} de vouloir le mettre en ligne ?" } %>
+  <%= button_to "Mettre en ligne", put_online_question_path(question), method: :put, class: 'btn btn-ld-light-dark mt-3', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous #{current_user.sure} de vouloir le mettre en ligne ?" } %>
 <% end %>
 </center>
 </div>

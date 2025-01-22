@@ -31,7 +31,7 @@ describe UnsolvedquestionsController, :type => :controller do
           user.chapters << prerequisite
           post :create, :params => { :question_id => question.id, :unsolvedquestion => {:guess => question.answer} }
         end
-        specify { expect(response).to redirect_to(chapter_question_path(chapter, question)) }
+        specify { expect(response).to redirect_to(chapter_question_path(chapter, question, :answer => 1)) }
       end
       
       describe "if not the first try" do
@@ -49,14 +49,6 @@ describe UnsolvedquestionsController, :type => :controller do
           expect(Unsolvedquestion.where(:user => user, :question => question).count).to eq(1)
         end
       end
-    end
-    
-    describe "for admin" do
-      before do
-        sign_in_controller admin
-        post :create, :params => { :question_id => question.id, :unsolvedquestion => {:guess => question.answer} }
-      end
-      specify { expect(response).to render_template("errors/access_refused") }
     end
   end
   
@@ -81,7 +73,7 @@ describe UnsolvedquestionsController, :type => :controller do
           patch :update, :params => { :id => previous_unsolvedquestion.id, :question_id => question.id, :unsolvedquestion => {:guess => question.answer} }
         end
         specify do
-          expect(response).to redirect_to(chapter_question_path(chapter, question))
+          expect(response).to redirect_to(chapter_question_path(chapter, question, :answer => 1))
           expect(Solvedquestion.where(:user => user, :question => question).count).to eq(1)
           expect(Unsolvedquestion.where(:user => user, :question => question).count).to eq(0)
         end

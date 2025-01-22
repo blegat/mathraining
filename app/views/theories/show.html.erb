@@ -19,7 +19,7 @@
   <% theory_after = @chapter.theories.where("position > ?", @theory.position).order("position").first %>
 
   <% if !theory_before.nil? || !theory_after.nil? %>
-    <p class="text-center">
+    <p class="mt-3 mb-0 text-center">
     Déplacer ce point théorique vers le
     <%= link_to "haut", order_theory_path(@theory, :new_position => theory_before.position), :method => :put if !theory_before.nil? %>
     <%= '-' if !theory_before.nil? && !theory_after.nil? %>
@@ -30,7 +30,7 @@
   <!-- Mettre en ligne -->
   <% if !@theory.online && @chapter.online %>
     <center>
-    <%= button_to "Mettre en ligne", put_online_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
+    <%= button_to "Mettre en ligne", put_online_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
     </center>
   <% end %>
 
@@ -45,7 +45,7 @@
   </center>
 
   <hr class="bottom-help" />
-  <p>Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => "cha-" + @chapter.id.to_s), :target => "_blank" %> !</p>
+  Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => "cha-" + @chapter.id.to_s), :target => "_blank" %> !
 <% end %>
 
 </div>

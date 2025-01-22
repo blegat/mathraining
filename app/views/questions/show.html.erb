@@ -10,37 +10,62 @@
   <%= htmlise(@question.statement, true) %>
 </div>
 
-<!-- Si administrateur -->
+<!-- Si administrateur (ou auteur du chapitre) -->
 <% if !@chapter.online? || (signed_in? && current_user.admin?) %>
-
-  <!-- Réponse -->
-  <h4 class="mt-4">Réponse</h4>
-  <%= render 'questions/answer', question: @question %>
   
-  <!-- Pour les admins (dont l'explication) -->
+  <% if @question.online? && !@show_answer %>
+    <!-- Possibilité de répondre (pour le fun) -->
+    <% unsolvedquestion = Unsolvedquestion.new %>
+    <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
+    
+    <p class="text-center mt-3 mb-0"><%= link_to "Voir la réponse", chapter_question_path(@chapter, @question, :answer => 1), :class => "btn btn-ld-light-dark" %></p>
+  <% else %>
+    <!-- Réponse -->
+    <h4 class="mt-4">Réponse</h4>
+    <%= render 'questions/answer', question: @question %>
+    
+    <!-- Explication -->
+    <h4 class="mt-4">Explication</h4>
+    <% if @question.explanation.size == 0 %>
+      <span class="text-color-orange fw-bold">Pas d'explication</span>
+    <% else %>
+      <%= htmlise(@question.explanation) %>
+    <% end %>
+  <% end %>
+  
+  <!-- Boutons pour les admins -->
   <%= render 'questions/admin', question: @question %>
 
 <!-- Si étudiant inscrit -->
 <% elsif signed_in? %>
   
   <!-- Si l'exercice est déjà résolu -->
-  <% if !solvedquestion.nil? %>    
-    <p class="mt-3 fw-bold text-color-green">
-    <% if solvedquestion.nb_guess-1 > 0 %>
-      Vous avez résolu cet exercice après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
+  <% if !solvedquestion.nil? %>   
+    <% if !@show_answer %>
+       <!-- Possibilité de répondre (pour le fun) -->
+      <% unsolvedquestion = Unsolvedquestion.new %>
+      <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
+      
+      <p class="mt-3 text-center"><%= link_to "Voir la réponse", chapter_question_path(@chapter, @question, :answer => 1), :class => "btn btn-ld-light-dark" %></p>
     <% else %>
-      Vous avez résolu cet exercice du premier coup !
-    <% end %>
-    </p>
+      <p class="mt-3 fw-bold text-color-green">
+      Vous avez résolu cet exercice le <%= write_date(solvedquestion.resolution_time) %>,
+      <% if solvedquestion.nb_guess-1 > 0 %>
+        après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
+      <% else %>
+        du premier coup !
+      <% end %>
+      </p>
     
-    <!-- Réponse -->
-    <h4 class="mt-4">Réponse</h4>
-    <%= render 'questions/answer', question: @question %>
+      <!-- Réponse -->
+      <h4 class="mt-4">Réponse</h4>
+      <%= render 'questions/answer', question: @question %>
     
-    <!-- Explication -->
-    <% if @question.explanation.size > 0 %>
-      <h4 class="mt-4">Explication</h4>
-      <%= htmlise(@question.explanation) %>
+      <!-- Explication -->
+      <% if @question.explanation.size > 0 %>
+        <h4 class="mt-4">Explication</h4>
+        <%= htmlise(@question.explanation) %>
+      <% end %>
     <% end %>
   <% else %>
     <% unsolvedquestion = current_user.unsolvedquestions.where(:question => @question).first %>
@@ -52,7 +77,7 @@
 
   <hr class="bottom-help" />
   <% subject = @question.subject %>
-  <p>Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path(subject) : subjects_path(:q => "cha-" + @chapter.id.to_s)), :target => "_blank" %> !</p>
+  Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path(subject) : subjects_path(:q => "cha-" + @chapter.id.to_s)), :target => "_blank" %> !
 
 <!-- Si étudiant non inscrit -->
 <% else %>

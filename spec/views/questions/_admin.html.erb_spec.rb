@@ -19,7 +19,6 @@ describe "questions/_admin.html.erb", type: :view, question: true do
       
     it "renders the correct options" do
       render partial: "questions/admin", locals: {question: question}
-      should have_text("Pas d'explication")
       should have_link("Modifier cet exercice")
       should have_no_link("Modifier les réponses") # qcm only
       should have_link("Modifier l'explication")
@@ -35,7 +34,6 @@ describe "questions/_admin.html.erb", type: :view, question: true do
       
     it "renders the correct options" do
       render partial: "questions/admin", locals: {question: question}
-      should have_text(question.explanation)
       should have_link("Modifier cet exercice")
       should have_link("Modifier les réponses")
       should have_link("Modifier l'explication")

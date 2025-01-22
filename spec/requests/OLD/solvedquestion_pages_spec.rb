@@ -5,6 +5,7 @@ describe "Solvedquestion pages" do
 
   subject { page }
 
+  let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
   let!(:section) { FactoryGirl.create(:section) }
   let!(:chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
@@ -35,7 +36,8 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
-          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+          expect(page).to have_success_message("Bonne réponse !")
+          expect(page).to have_content("du premier coup !")
           expect(page).to have_content(exercise.explanation)
           expect(user.rating).to eq(rating_before + exercise.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
@@ -91,6 +93,7 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
+          expect(page).to have_error_message("Mauvaise réponse...")
           expect(page).to have_content("Votre réponse (#{exercise_answer+1}) est erronée. Vous avez déjà commis 1 erreur.")
           expect(page).to have_no_content(exercise.explanation)
           expect(user.rating).to eq(rating_before)
@@ -104,7 +107,8 @@ describe "Solvedquestion pages" do
             user.reload
           end
           specify do
-            expect(page).to have_content("Vous avez résolu cet exercice après 1 erreur.")
+            expect(page).to have_success_message("Bonne réponse !")
+            expect(page).to have_content("après 1 erreur.")
             expect(page).to have_content(exercise.explanation)
             expect(user.rating).to eq(rating_before + exercise.value)
             expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
@@ -152,8 +156,9 @@ describe "Solvedquestion pages" do
                 click_button "Soumettre"
                 user.reload
               end
-              specify do 
-                expect(page).to have_content("Vous avez résolu cet exercice après 3 erreurs.")
+              specify do
+                expect(page).to have_success_message("Bonne réponse !")
+                expect(page).to have_content("après 3 erreurs.")
                 expect(page).to have_content(exercise.explanation)
                 expect(user.rating).to eq(rating_before + exercise.value)
                 expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
@@ -174,7 +179,8 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
-          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+          expect(page).to have_success_message("Bonne réponse !")
+          expect(page).to have_content("du premier coup !")
           expect(page).to have_content(exercise_decimal.explanation)
           expect(user.rating).to eq(rating_before + exercise_decimal.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise_decimal.value)
@@ -188,7 +194,8 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
-          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+          expect(page).to have_success_message("Bonne réponse !")
+          expect(page).to have_content("du premier coup !")
         end
       end
       
@@ -213,6 +220,7 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
+          expect(page).to have_error_message("Mauvaise réponse...")
           expect(page).to have_content("Votre réponse (#{((exercise_decimal_answer+0.002).round(3)).to_s}) est erronée. Vous avez déjà commis 1 erreur.")
           expect(page).to have_no_content(exercise_decimal.explanation)
           expect(user.rating).to eq(rating_before)
@@ -225,6 +233,7 @@ describe "Solvedquestion pages" do
             user.reload
           end
           specify do
+            expect(page).to have_error_message("Mauvaise réponse...")
             expect(page).to have_content("Votre réponse (#{((exercise_decimal_answer-0.002).round(3)).to_s}) est erronée. Vous avez déjà commis 2 erreurs.")
             expect(page).to have_no_content(exercise_decimal.explanation)
             expect(user.rating).to eq(rating_before)
@@ -243,11 +252,45 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
-          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+          expect(page).to have_success_message("Bonne réponse !")
+          expect(page).to have_content("du premier coup !")
           expect(page).to have_content(qcm.explanation)
           expect(user.rating).to eq(rating_before + qcm.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm.value)
           expect(user.chapters.exists?(chapter.id)).to eq(false) # Because it's NOT the only question of chapter
+        end
+            
+        describe "and correctly solves it again for fun" do
+          before do
+            visit chapter_question_path(chapter, qcm)
+            choose "ans[#{item_correct.id}]"
+            click_button "Soumettre"
+            user.reload
+          end
+          
+          specify do
+            expect(page).to have_success_message("Bonne réponse !")
+            expect(page).to have_content("du premier coup !")
+            expect(page).to have_content(qcm.explanation)
+            expect(user.solvedquestions.where(:question => qcm).count).to eq(1) # And not 2
+            expect(user.rating).to eq(rating_before + qcm.value) # Should not gain points again!
+            expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm.value) # Should not gain points again!
+          end
+        end
+        
+        describe "and makes a mistake for fun" do
+          before do
+            visit chapter_question_path(chapter, qcm)
+            choose "ans[#{item_incorrect.id}]"
+            click_button "Soumettre"
+            user.reload
+          end
+          
+          specify do
+            expect(page).to have_error_message("Mauvaise réponse...")
+            expect(page).to have_no_content(exercise.explanation)
+            expect(user.unsolvedquestions.where(:question => qcm).count).to eq(0) # When answering for fun, no unsolvedquestion should be created!
+          end
         end
       end
       
@@ -258,6 +301,7 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
+          expect(page).to have_error_message("Mauvaise réponse...")
           expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
           expect(page).to have_no_content(qcm.explanation)
           expect(user.rating).to eq(rating_before)
@@ -301,7 +345,8 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
-          expect(page).to have_content("Vous avez résolu cet exercice du premier coup !")
+          expect(page).to have_success_message("Bonne réponse !")
+          expect(page).to have_content("du premier coup !")
           expect(page).to have_content(qcm_multiple.explanation)
           expect(user.rating).to eq(rating_before + qcm_multiple.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm_multiple.value)
@@ -317,6 +362,7 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
+          expect(page).to have_error_message("Mauvaise réponse...")
           expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
           expect(page).to have_no_content(qcm_multiple.explanation)
           expect(user.rating).to eq(rating_before)
@@ -331,7 +377,10 @@ describe "Solvedquestion pages" do
             click_button "Soumettre"
             user.reload
           end
-          it { should have_content("Votre réponse est erronée. Vous avez déjà commis 2 erreurs.") }
+          specify do
+            expect(page).to have_error_message("Mauvaise réponse...")
+            expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 2 erreurs.")
+          end
           
           describe "and correctly solves it" do
             before do
@@ -341,7 +390,8 @@ describe "Solvedquestion pages" do
               user.reload
             end
             specify do
-              expect(page).to have_content("Vous avez résolu cet exercice après 2 erreurs.")
+              expect(page).to have_success_message("Bonne réponse !")
+              expect(page).to have_content("après 2 erreurs.")
               expect(page).to have_content(qcm_multiple.explanation)
               expect(user.rating).to eq(rating_before + qcm_multiple.value)
               expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm_multiple.value)
@@ -369,8 +419,82 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
+          expect(page).to have_error_message("Mauvaise réponse...")
           expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
           expect(user.rating).to eq(rating_before)
+        end
+      end
+    end
+  end
+  
+  describe "admin" do
+    before { sign_in admin }
+    
+    describe "visits a decimal exercise" do
+      before { visit chapter_question_path(chapter, exercise_decimal) }
+    
+      describe "and correctly solves it for fun" do
+        before do
+          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer - 0.0005
+          click_button "Soumettre"
+          admin.reload
+        end
+        specify do
+          expect(page).to have_success_message("Bonne réponse !")
+          expect(page).to have_no_content("du premier coup !") # Only for students
+          expect(page).to have_content(exercise_decimal.explanation)
+          expect(admin.solvedquestions.where(:question => exercise_decimal).count).to eq(0) # Should not be created for an admin
+          expect(admin.rating).to eq(0)
+          expect(admin.pointspersections.where(:section_id => section).first.points).to eq(0)
+        end
+      end
+      
+      describe "and makes a mistake for fun" do
+        before do
+          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer - 0.6
+          click_button "Soumettre"
+          admin.reload
+        end
+        specify do
+          expect(page).to have_error_message("Mauvaise réponse...")
+          expect(page).to have_no_content(exercise_decimal.explanation)
+          expect(admin.unsolvedquestions.where(:question => exercise_decimal).count).to eq(0) # Should not be created for an admin
+        end
+      end
+    end
+    
+    describe "visits a multiple answer qcm" do
+      before { visit chapter_question_path(chapter2, qcm_multiple) }
+    
+      describe "and correctly solves it for fun" do
+        before do
+          check "ans[#{item_multiple_correct.id}]"
+          uncheck "ans[#{item_multiple_incorrect.id}]"
+          click_button "Soumettre"
+          admin.reload
+        end
+        specify do
+          expect(page).to have_success_message("Bonne réponse !")
+          expect(page).to have_no_content("du premier coup !") # Only for students
+          expect(page).to have_content(qcm_multiple.explanation)
+          expect(admin.solvedquestions.where(:question => qcm_multiple).count).to eq(0) # Should not be created for an admin
+          expect(admin.rating).to eq(0)
+          expect(admin.pointspersections.where(:section_id => section).first.points).to eq(0)
+          expect(admin.chapters.exists?(chapter2.id)).to eq(false) # Even if it's the only question of chapter2
+        end
+      end
+      
+      describe "and makes a mistake for fun" do
+        before do
+          check "ans[#{item_multiple_correct.id}]"
+          check "ans[#{item_multiple_incorrect.id}]"
+          click_button "Soumettre"
+          admin.reload
+        end
+        specify do
+          expect(page).to have_error_message("Mauvaise réponse...")
+          expect(page).to have_no_content(qcm_multiple.explanation)
+          expect(admin.unsolvedquestions.where(:question => qcm_multiple).count).to eq(0) # Should not be created for an admin
         end
       end
     end

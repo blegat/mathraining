@@ -3,7 +3,7 @@ class UnsolvedquestionsController < ApplicationController
   include ChapterConcern
   
   before_action :signed_in_user_danger, only: [:create, :update]
-  before_action :non_admin_user, only: [:create, :update]
+  before_action :non_admin_user, only: [:update]
   
   before_action :get_question, only: [:create, :update]
   
@@ -17,36 +17,53 @@ class UnsolvedquestionsController < ApplicationController
   # Try to solve a question (first time)
   def create
     @unsolvedquestion = Unsolvedquestion.new(:user => current_user, :question => @question)
-    res = check_answer(true)
+    for_fun = (current_user.admin? || current_user.solvedquestions.where(:question => @question).count > 0)
+    res = check_answer(true, for_fun)
     return if res == "skip"
-
-    if res == "correct"
-      @question.update(:nb_first_guesses => @question.nb_first_guesses + 1,
-                       :nb_correct       => @question.nb_correct + 1)
-      mark_chapter_as_solved_if_needed
-    else
-      @question.update(:nb_wrong         => @question.nb_wrong + 1)
-    end
-      
-    # We update chapter.nb_tries if it is the first question that this user tries
-    other_questions = @chapter.questions.where("id != ?", @question.id).select("id")
-    if current_user.solvedquestions.where(:question => other_questions).count + current_user.unsolvedquestions.where(:question => other_questions).count == 0
-      @chapter.update_attribute(:nb_tries, @chapter.nb_tries + 1)
+    
+    unless for_fun
+      if res == "correct"
+        @question.update(:nb_first_guesses => @question.nb_first_guesses + 1,
+                         :nb_correct       => @question.nb_correct + 1)
+        mark_chapter_as_solved_if_needed
+      else
+        @question.update(:nb_wrong         => @question.nb_wrong + 1)
+      end
+        
+      # We update chapter.nb_tries if it is the first question that this user tries
+      other_questions = @chapter.questions.where("id != ?", @question.id).select("id")
+      if current_user.solvedquestions.where(:question => other_questions).count + current_user.unsolvedquestions.where(:question => other_questions).count == 0
+        @chapter.update_attribute(:nb_tries, @chapter.nb_tries + 1)
+      end
     end
     
-    redirect_to chapter_question_path(@chapter, @question)
+    if res == "correct"
+      flash[:success] = "Bonne réponse !"
+      redirect_to chapter_question_path(@chapter, @question, :answer => 1)
+    else
+      flash[:danger] = "Mauvaise réponse..."
+      redirect_to chapter_question_path(@chapter, @question)
+    end
   end
 
   # Try to solve a question (next times)
   def update    
     res = check_answer(false)
     return if res == "skip"
+    
     if res == "correct"
       @question.update(:nb_correct => @question.nb_correct + 1,
                        :nb_wrong   => @question.nb_wrong - 1)
       mark_chapter_as_solved_if_needed
     end
-    redirect_to chapter_question_path(@chapter, @question)
+    
+    if res == "correct"
+      flash[:success] = "Bonne réponse !"
+      redirect_to chapter_question_path(@chapter, @question, :answer => 1)
+    else
+      flash[:danger] = "Mauvaise réponse..."
+      redirect_to chapter_question_path(@chapter, @question)
+    end
   end
 
   private
@@ -62,9 +79,9 @@ class UnsolvedquestionsController < ApplicationController
   
   ########## CHECK METHODS ##########
 
-  # Check that this is the first try of current user
+  # Check that this is the first try of current user (or that he already solved the question)
   def first_try_of_user
-    if current_user.solvedquestions.where(:question => @question).count + current_user.unsolvedquestions.where(:question => @question).count > 0
+    if current_user.unsolvedquestions.where(:question => @question).count > 0
       redirect_to chapter_question_path(@chapter, @question)
     end
   end
@@ -97,14 +114,14 @@ class UnsolvedquestionsController < ApplicationController
   ########## HELPER METHODS ##########
   
   # Helper method to check if the given answer is correct
-  def check_answer(first_sub)
+  def check_answer(first_sub, for_fun = false)
     correct = nil
+    @unsolvedquestion.nb_guess = (first_sub ? 1 : @unsolvedquestion.nb_guess + 1)
+    @unsolvedquestion.last_guess_time = DateTime.now
     if @question.is_qcm # QCM
       @unsolvedquestion.guess = 0.0
-      @unsolvedquestion.nb_guess = (first_sub ? 1 : @unsolvedquestion.nb_guess + 1)
       good_guess = true
       diff_sub = first_sub
-      @unsolvedquestion.last_guess_time = DateTime.now
       if @question.many_answers # Many answers possible
         if params[:ans]
           answer = params[:ans]
@@ -137,16 +154,17 @@ class UnsolvedquestionsController < ApplicationController
           return "skip"
         end
 
-        if good_guess
-          correct = true
-          create_solvedquestion_from_unsolvedquestion
-        else
-          correct = false
-          @unsolvedquestion.save
-          @unsolvedquestion.items.clear
-          @question.items.each do |c|
-            if answer[c.id.to_s]
-              @unsolvedquestion.items << c
+        correct = good_guess
+        unless for_fun
+          if correct
+            create_solvedquestion_from_unsolvedquestion
+          else
+            @unsolvedquestion.save
+            @unsolvedquestion.items.clear
+            @question.items.each do |c|
+              if answer[c.id.to_s]
+                @unsolvedquestion.items << c
+              end
             end
           end
         end
@@ -167,16 +185,17 @@ class UnsolvedquestionsController < ApplicationController
         
         rep = @question.items.where(:ok => true).first
 
-        if rep.id == params[:ans].to_i
-          correct = true
-          create_solvedquestion_from_unsolvedquestion
-        else
-          correct = false
-          @unsolvedquestion.save
-            
-          item = Item.find_by_id(params[:ans])
-          @unsolvedquestion.items.clear
-          @unsolvedquestion.items << item
+        correct = (rep.id == params[:ans].to_i)
+        unless for_fun
+          if correct
+            create_solvedquestion_from_unsolvedquestion
+          else
+            @unsolvedquestion.save
+              
+            item = Item.find_by_id(params[:ans])
+            @unsolvedquestion.items.clear
+            @unsolvedquestion.items << item
+          end
         end
       end
     else # EXERCISE
@@ -221,24 +240,23 @@ class UnsolvedquestionsController < ApplicationController
         return "skip"
       end
       
-      @unsolvedquestion.nb_guess = (first_sub ? 1 : @unsolvedquestion.nb_guess + 1)
-      @unsolvedquestion.guess = guess
-      @unsolvedquestion.last_guess_time = DateTime.now
-
       if @question.decimal
         correct = ((@question.answer - guess).abs < 0.001)
       else
         correct = (@question.answer.to_i == guess)
       end
       
-      if correct
-        create_solvedquestion_from_unsolvedquestion
-      else
-        @unsolvedquestion.save
+      unless for_fun
+        @unsolvedquestion.guess = guess
+        if correct
+          create_solvedquestion_from_unsolvedquestion
+        else
+          @unsolvedquestion.save
+        end
       end
     end
 
-    if correct
+    if correct && !for_fun
       point_attribution(current_user, @question)
     end
     
