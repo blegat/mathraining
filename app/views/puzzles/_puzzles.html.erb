@@ -6,9 +6,11 @@ var curGuesses = [];
 <% puzzles.each do |p| %>
   curGuesses[<%= p.id %>] = "";
 <% end %>
-<% current_user.puzzleattempts.each do |a| %>
-  <% puzzle_to_attempt[a.puzzle_id] = a %>
-  curGuesses[<%= a.puzzle_id %>] = "<%= a.code %>";
+<% if signed_in? %>
+  <% current_user.puzzleattempts.each do |a| %>
+    <% puzzle_to_attempt[a.puzzle_id] = a %>
+    curGuesses[<%= a.puzzle_id %>] = "<%= a.code %>";
+  <% end %>
 <% end %>
 
 function setClass(element, status) {
@@ -47,7 +49,7 @@ function checkStatus(puzzle_id) {
   if (new_guess != prev_guess) {
     setClass(status_div, "to-submit");
     status_div.innerHTML = "Non enregistré";
-    <% unless in_skin? %>
+    <% unless !signed_in? || in_skin? %>
       submit_btn.disabled = false;
     <% end %>
   }
@@ -94,8 +96,8 @@ function submitPuzzleAttempt(puzzle_id) {
     
     <center>
     <form class="input-group" style="width:260px;" onsubmit="return submitPuzzleAttempt('<%= p.id %>')">
-      <input class="form-control text-center" type="text" value="<%= code %>" id="code-<%= p.id %>" maxlength="5" oninput="checkStatus('<%= p.id %>')" placeholder="_ _ _ _ _">
-      <button class="btn btn-primary" id="submit-<%= p.id %>" <%= "disabled" if in_skin? %>>✓</button>
+      <input class="form-control text-center" type="text" value="<%= code %>" id="code-<%= p.id %>" maxlength="5" oninput="checkStatus('<%= p.id %>')" placeholder="_ _ _ _ _" <%= "disabled" if !signed_in? || in_skin? %>>
+      <button class="btn btn-primary" id="submit-<%= p.id %>" <%= "disabled" if !signed_in? || in_skin? %>>✓</button>
       <div class="input-group-text text-center" style="width:140px; display:grid;" id="status-<%= p.id %>"></div>
     </form>
     </center>
