@@ -15,7 +15,7 @@ describe PuzzlesController, type: :controller, puzzle: true do
     it { expect(response).to have_controller_update_behavior(puzzle, :access_refused) }
     it { expect(response).to have_controller_destroy_behavior(puzzle, :access_refused) }
     it { expect(response).to have_controller_get_static_path_behavior('main', :ok) }
-    it { expect(response).to have_controller_get_static_path_behavior('graph', :must_be_connected) }
+    it { expect(response).to have_controller_get_static_path_behavior('graph', :ok) }
     # it { expect(response).to have_controller_get_js_path_behavior('attempt', puzzle, :must_be_connected, {:attempt => "HELLO"}) } # Doesn't work correctly!
     it { expect(response).to have_controller_put_path_behavior('order', puzzle, :access_refused, {:new_position => 2}) }
   end

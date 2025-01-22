@@ -1,6 +1,6 @@
 #encoding: utf-8
 class PuzzlesController < ApplicationController
-  before_action :signed_in_user, only: [:index, :new, :edit, :graph]
+  before_action :signed_in_user, only: [:index, :new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :attempt]
   before_action :root_user, only: [:index, :new, :create, :edit, :update, :destroy, :order]
   
