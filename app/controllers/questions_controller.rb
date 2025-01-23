@@ -2,22 +2,21 @@
 class QuestionsController < ApplicationController
   include ChapterConcern
   
-  before_action :signed_in_user, only: [:new, :edit, :manage_items, :edit_explanation, :show_answer]
+  before_action :signed_in_user, only: [:new, :edit, :manage_items, :edit_explanation]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation]
   
-  before_action :get_question, only: [:show, :edit, :update, :destroy, :manage_items, :order, :put_online, :edit_explanation, :update_explanation, :show_answer]
+  before_action :get_question, only: [:show, :edit, :update, :destroy, :manage_items, :order, :put_online, :edit_explanation, :update_explanation]
   before_action :get_chapter, only: [:show, :new, :create]
   
   before_action :question_of_chapter, only: [:show]
-  before_action :user_can_see_chapter, only: [:show, :show_answer] # Maybe not necessary because of user_can_see_question?
-  before_action :user_can_see_question, only: [:show, :show_answer]
+  before_action :user_can_see_chapter, only: [:show]
+  before_action :user_can_see_question, only: [:show]
   before_action :user_can_update_chapter, only: [:new, :edit, :create, :update, :destroy, :manage_items, :edit_explanation, :order, :put_online, :update_explanation]
   before_action :offline_question, only: [:destroy]
-  before_action :user_can_see_answer, only: [:show_answer]
 
   # Show a question (inside a chapter)
   def show
-    @show_answer = (params[:answer] == '1') || !@question.online?
+    @show_answer = (params[:answer] == '1')
   end
 
   # Create a question (show the form)
@@ -164,13 +163,6 @@ class QuestionsController < ApplicationController
       render 'edit_explanation'
     end
   end
-  
-  # Show question answer (we want a trace in the logs)
-  def show_answer
-    respond_to do |format|
-      format.js
-    end
-  end
 
   private
   
@@ -207,14 +199,6 @@ class QuestionsController < ApplicationController
   # Check that user can see the question
   def user_can_see_question
     if !user_can_see_chapter_exercises(current_user, @chapter) || (!@question.online && !user_can_write_chapter(current_user, @chapter))
-      render 'errors/access_refused'
-    end
-  end
-  
-  # Check that user can see the answer
-  def user_can_see_answer
-    @solvedquestion = current_user.admin? ? nil : current_user.solvedquestions.where(:question => @question).first
-    if !current_user.admin? && @solvedquestion.nil?
       render 'errors/access_refused'
     end
   end

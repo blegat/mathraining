@@ -44,7 +44,6 @@ Rails.application.routes.draw do
       get :edit_explanation
       patch :update_explanation
       get :manage_items
-      get :show_answer # only via JS
     end
     resources :items, only: [:create]
   end
