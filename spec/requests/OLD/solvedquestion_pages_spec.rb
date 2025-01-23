@@ -10,7 +10,7 @@ describe "Solvedquestion pages" do
   let!(:section) { FactoryGirl.create(:section) }
   let!(:chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
   let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:exercise_answer) { 63 }
+  let!(:exercise_answer) { 6321567 }
   let!(:exercise) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 1, level: 1, answer: exercise_answer) }
   let!(:exercise_decimal_answer) { -15.4 }
   let!(:exercise_decimal) { FactoryGirl.create(:exercise_decimal, chapter: chapter, online: true, position: 2, level: 2, answer: exercise_decimal_answer) }
@@ -25,6 +25,37 @@ describe "Solvedquestion pages" do
     let!(:rating_before) { user.rating }
     let!(:section_rating_before) { user.pointspersections.where(:section_id => section).first.points }
     before { sign_in user }
+    
+    describe "tries to see the answer to a question he solved", :js => true do
+      let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) }
+      before do
+        visit chapter_question_path(chapter, exercise)
+        click_link "Voir la réponse"
+        wait_for_ajax
+      end
+      specify do
+        expect(page).to have_selector("h4", text: "Réponse")
+        expect(page).to have_content(exercise_answer)
+        expect(page).to have_selector("h4", text: "Explication")
+        expect(page).to have_content(exercise.explanation)
+      end
+    end
+    
+    describe "tries to see the answer to a question he did NOT solve (hack)", :js => true do
+      let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) }# To have the link 'Voir la réponse'
+      before do
+        visit chapter_question_path(chapter, exercise)
+        solvedquestion.destroy
+        click_link "Voir la réponse"
+        wait_for_ajax
+      end
+      specify do
+        expect(page).to have_no_selector("h4", text: "Réponse")
+        expect(page).to have_no_content(exercise_answer)
+        expect(page).to have_no_selector("h4", text: "Explication")
+        expect(page).to have_no_content(exercise.explanation)
+      end
+    end
     
     describe "visits an integer exercise" do
       before { visit chapter_question_path(chapter, exercise) }
@@ -459,6 +490,19 @@ describe "Solvedquestion pages" do
           expect(page).to have_error_message("Mauvaise réponse...")
           expect(page).to have_no_content(exercise_decimal.explanation)
           expect(admin.unsolvedquestions.where(:question => exercise_decimal).count).to eq(0) # Should not be created for an admin
+        end
+      end
+      
+      describe "and clicks to see the answer", :js => true do
+        before do
+          click_link "Voir la réponse"
+          wait_for_ajax
+        end
+        specify do
+          expect(page).to have_selector("h4", text: "Réponse")
+          expect(page).to have_content(exercise_decimal_answer)
+          expect(page).to have_selector("h4", text: "Explication")
+          expect(page).to have_content(exercise_decimal.explanation)
         end
       end
     end

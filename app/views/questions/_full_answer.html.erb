@@ -1,0 +1,23 @@
+<!-- Réponse -->
+<h4 class="mt-4">Réponse</h4>
+<%= render 'questions/answer', question: @question %>
+  
+<!-- Félicitations -->
+<% if !solvedquestion.nil? %>
+  <p class="mt-4 fw-bold text-color-green">
+  Vous avez résolu cet exercice le <%= write_date(solvedquestion.resolution_time) %>,
+  <% if solvedquestion.nb_guess-1 > 0 %>
+    après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
+  <% else %>
+    du premier coup !
+  <% end %>
+  </p>
+<% end %>
+    
+<!-- Explication -->
+<h4 class="mt-4">Explication</h4>
+<% if @question.explanation.size > 0 %>
+  <%= htmlise(@question.explanation) %>
+<% else %>
+  <span class="#{'text-color-orange fw-bold' if admin_or_author}">Pas d'explication.</span>
+<% end %>

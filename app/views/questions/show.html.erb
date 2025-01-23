@@ -1,92 +1,49 @@
 <%= render 'chapters/before', active: 'question-' + @question.id.to_s %>
 
-<% solvedquestion = (!signed_in? || !@chapter.online? || current_user.admin?) ? nil : current_user.solvedquestions.where(:question => @question).first %>
+<% admin_or_author = !@chapter.online? || (signed_in? && current_user.admin?) %>
+<% solvedquestion = (!signed_in? || admin_or_author) ? nil : current_user.solvedquestions.where(:question => @question).first %>
+<% unsolvedquestion = (!signed_in? || admin_or_author || !solvedquestion.nil? ? nil : current_user.unsolvedquestions.where(:question => @question).first) %>
+<% unsolvedquestion = Unsolvedquestion.new if unsolvedquestion.nil? %>
+<% can_see_answer = admin_or_author || !solvedquestion.nil? %>
+
+<script type="text/javascript">
+var showAnswer = function () {
+  $.getScript("<%= show_answer_question_url(@question) %>");
+}
+</script>
 
 <!-- Titre -->
 <%= render 'questions/title', question: @question, number: @number, solved: !solvedquestion.nil? %>
 
 <!-- Enoncé -->
-<div>
-  <%= htmlise(@question.statement, true) %>
-</div>
+<div><%= htmlise(@question.statement, true) %></div>
 
-<!-- Si administrateur (ou auteur du chapitre) -->
-<% if !@chapter.online? || (signed_in? && current_user.admin?) %>
-  
-  <% if @question.online? && !@show_answer %>
-    <!-- Possibilité de répondre (pour le fun) -->
-    <% unsolvedquestion = Unsolvedquestion.new %>
-    <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
-    
-    <p class="text-center mt-3 mb-0"><%= link_to "Voir la réponse", chapter_question_path(@chapter, @question, :answer => 1), :class => "btn btn-ld-light-dark" %></p>
-  <% else %>
-    <!-- Réponse -->
-    <h4 class="mt-4">Réponse</h4>
-    <%= render 'questions/answer', question: @question %>
-    
-    <!-- Explication -->
-    <h4 class="mt-4">Explication</h4>
-    <% if @question.explanation.size == 0 %>
-      <span class="text-color-orange fw-bold">Pas d'explication</span>
-    <% else %>
-      <%= htmlise(@question.explanation) %>
-    <% end %>
-  <% end %>
-  
-  <!-- Boutons pour les admins -->
-  <%= render 'questions/admin', question: @question %>
-
-<!-- Si étudiant inscrit -->
-<% elsif signed_in? %>
-  
-  <!-- Si l'exercice est déjà résolu -->
-  <% if !solvedquestion.nil? %>   
-    <% if !@show_answer %>
-       <!-- Possibilité de répondre (pour le fun) -->
-      <% unsolvedquestion = Unsolvedquestion.new %>
-      <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
-      
-      <p class="mt-3 text-center"><%= link_to "Voir la réponse", chapter_question_path(@chapter, @question, :answer => 1), :class => "btn btn-ld-light-dark" %></p>
-    <% else %>
-      <p class="mt-3 fw-bold text-color-green">
-      Vous avez résolu cet exercice le <%= write_date(solvedquestion.resolution_time) %>,
-      <% if solvedquestion.nb_guess-1 > 0 %>
-        après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
-      <% else %>
-        du premier coup !
-      <% end %>
-      </p>
-    
-      <!-- Réponse -->
-      <h4 class="mt-4">Réponse</h4>
-      <%= render 'questions/answer', question: @question %>
-    
-      <!-- Explication -->
-      <% if @question.explanation.size > 0 %>
-        <h4 class="mt-4">Explication</h4>
-        <%= htmlise(@question.explanation) %>
-      <% end %>
-    <% end %>
-  <% else %>
-    <% unsolvedquestion = current_user.unsolvedquestions.where(:question => @question).first %>
-    <% if unsolvedquestion.nil? %>
-      <% unsolvedquestion = Unsolvedquestion.new %>
-    <% end %>
-    <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
-  <% end %>
-
-  <hr class="bottom-help" />
-  <% subject = @question.subject %>
-  Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path(subject) : subjects_path(:q => "cha-" + @chapter.id.to_s)), :target => "_blank" %> !
-
-<!-- Si étudiant non inscrit -->
+<div id="question-div">
+<% if can_see_answer && @show_answer %>
+  <!-- Réponse, félicitations, explication -->
+  <%= render 'questions/full_answer', solvedquestion: solvedquestion %>
 <% else %>
-
-  <% unsolvedquestion = Unsolvedquestion.new %>
+  <!-- Formulaire pour répondre (pour de vrai ou pour le fun) -->
   <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
   
+  <% if can_see_answer %>
+    <!-- Bouton pour voir la réponse -->
+    <p class="text-center mt-3 mb-0"><a href="javascript:showAnswer();" class="btn btn-ld-light-dark">Voir la réponse</a></p>
+  <% end %>
+<% end %>
+</div>
+
+<% if admin_or_author %>
+  <!-- Boutons pour les admins -->
+  <%= render 'questions/admin', question: @question %>
+<% else %>
   <hr class="bottom-help" />
-  <p class="text-center">Pour pouvoir répondre aux exercices, vous devez être connecté.</p>
+  <% if signed_in? %>
+    <% subject = @question.subject %>
+    Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path(subject) : subjects_path(:q => "cha-" + @chapter.id.to_s)), :target => "_blank" %> !
+  <% else %>
+    Pour pouvoir répondre aux exercices, vous devez être connecté.
+  <% end %>
 <% end %>
 
 <%= render 'chapters/after' %>
