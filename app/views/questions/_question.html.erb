@@ -16,7 +16,7 @@
     <% val = unsolvedquestion.guess.to_i if !unsolvedquestion.guess.nil? %>
   <% end %>
 
-  <%= form_for(unsolvedquestion) do |g| %>
+  <%= form_for unsolvedquestion do |g| %>
     <%= hidden_field_tag "question_id", question.id %>
     <div class="mb-2">
     <%= g.label :guess, :class => "form-label to-enable", :disabled => !signed_in? || needtowait %>
@@ -72,5 +72,4 @@
   <% if needtowait %>
     <%= render 'questions/waiting', unsolvedquestion: unsolvedquestion, total_waiting: total_waiting %>
   <% end %>
-  
 <% end %>

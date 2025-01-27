@@ -1,0 +1,5 @@
+var div_question = document.getElementById("question-div");
+
+div_question.innerHTML = '<%= escape_javascript(render 'questions/full_answer', solvedquestion: @solvedquestion) %>';
+
+MathJax.Hub.Queue(["Typeset", MathJax.Hub, div_question]);
