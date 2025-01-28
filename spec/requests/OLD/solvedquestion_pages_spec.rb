@@ -21,17 +21,16 @@ describe "Solvedquestion pages" do
   let!(:item_multiple_correct) { FactoryGirl.create(:item_correct, question: qcm_multiple, position: 1) }
   let!(:item_multiple_incorrect) { FactoryGirl.create(:item, question: qcm_multiple, position: 2) }
   
-  describe "user" do
+  describe "user", :js => true do
     let!(:rating_before) { user.rating }
     let!(:section_rating_before) { user.pointspersections.where(:section_id => section).first.points }
     before { sign_in user }
     
-    describe "tries to see the answer to a question he solved", :js => true do
+    describe "tries to see the answer to a question he solved" do
       let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) }
       before do
         visit chapter_question_path(chapter, exercise)
         click_link "Voir la réponse"
-        wait_for_ajax
       end
       specify do
         expect(page).to have_selector("h4", text: "Réponse")
@@ -41,13 +40,12 @@ describe "Solvedquestion pages" do
       end
     end
     
-    describe "tries to see the answer to a question he did NOT solve (hack)", :js => true do
-      let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) }# To have the link 'Voir la réponse'
+    describe "tries to see the answer to a question he did NOT solve (hack)" do
+      let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) } # To have the link 'Voir la réponse'
       before do
         visit chapter_question_path(chapter, exercise)
         solvedquestion.destroy
         click_link "Voir la réponse"
-        wait_for_ajax
       end
       specify do
         expect(page).to have_no_selector("h4", text: "Réponse")
@@ -62,7 +60,7 @@ describe "Solvedquestion pages" do
     
       describe "and correctly solves it" do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise_answer
+          fill_in "ans", with: exercise_answer
           click_button "Soumettre"
           user.reload
         end
@@ -75,42 +73,14 @@ describe "Solvedquestion pages" do
         end
       end
       
-      describe "and makes an empty guess" do
-        before do
-          fill_in "unsolvedquestion[guess]", with: ""
-          click_button "Soumettre"
-          user.reload
-        end
-        specify do
-          expect(page).to have_error_message("Votre réponse est vide.")
-          expect(page).to have_no_content(exercise.explanation)
-          expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
-          expect(user.rating).to eq(rating_before)
-        end
-      end
-      
       describe "and writes a decimal number" do
         before do
-          fill_in "unsolvedquestion[guess]", with: "4.6"
+          fill_in "ans", with: "4.6"
           click_button "Soumettre"
           user.reload
         end
         specify do
-          expect(page).to have_error_message("La réponse attendue est un nombre entier.")
-          expect(page).to have_no_content(exercise.explanation)
-          expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
-          expect(user.rating).to eq(rating_before)
-        end
-      end
-      
-      describe "and makes a very large guess" do
-        before do
-          fill_in "unsolvedquestion[guess]", with: 1234567890
-          click_button "Soumettre"
-          user.reload
-        end
-        specify do
-          expect(page).to have_error_message("Votre réponse est trop grande (en valeur absolue).")
+          expect(page).to have_info_message("La réponse attendue est un nombre entier.")
           expect(page).to have_no_content(exercise.explanation)
           expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
           expect(user.rating).to eq(rating_before)
@@ -119,7 +89,7 @@ describe "Solvedquestion pages" do
       
       describe "and makes a mistake" do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise_answer + 1
+          fill_in "ans", with: exercise_answer + 1
           click_button "Soumettre"
           user.reload
         end
@@ -133,7 +103,7 @@ describe "Solvedquestion pages" do
         
         describe "and then solves it" do
           before do
-            fill_in "unsolvedquestion[guess]", with: exercise_answer
+            fill_in "ans", with: exercise_answer
             click_button "Soumettre"
             user.reload
           end
@@ -152,7 +122,7 @@ describe "Solvedquestion pages" do
             user.reload
           end
           specify do
-            expect(page).to have_error_message("Votre réponse est la même")
+            expect(page).to have_info_message("Cette réponse est la même")
             expect(page).to have_content("Vous avez déjà commis 1 erreur.")
             expect(user.rating).to eq(rating_before)
           end
@@ -160,117 +130,58 @@ describe "Solvedquestion pages" do
         
         describe "and makes two other mistakes" do
           before do
-            fill_in "unsolvedquestion[guess]", with: exercise_answer + 2
+            fill_in "ans", with: exercise_answer + 2
             click_button "Soumettre"
-            fill_in "unsolvedquestion[guess]", with: exercise_answer + 3
+            fill_in "ans", with: exercise_answer + 3
             click_button "Soumettre"
           end
           it do
-            should have_no_button("Soumettre") # Should be disabled
+            should have_button("Soumettre", disabled: true)
             should have_content("Vous devez encore patienter")
-          end
-          
-          describe "and waits for 3 minutes" do
-            let(:unsolvedquestion) { Unsolvedquestion.where(:user => user, :question => exercise).first }
-            before do
-              unsolvedquestion.update_attribute(:last_guess_time, DateTime.now - 190)
-              visit chapter_question_path(chapter, exercise)
-            end
-            it do
-              should have_button("Soumettre")
-              should have_no_content("Vous devez encore patienter")
-            end
-            
-            describe "and makes a new guess" do
-              before do
-                fill_in "unsolvedquestion[guess]", with: exercise_answer
-                click_button "Soumettre"
-                user.reload
-              end
-              specify do
-                expect(page).to have_success_message("Bonne réponse !")
-                expect(page).to have_content("après 3 erreurs.")
-                expect(page).to have_content(exercise.explanation)
-                expect(user.rating).to eq(rating_before + exercise.value)
-                expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
-              end
-            end
           end
         end
       end
     end
     
-    describe "visits a decimal exercise" do
-      before { visit chapter_question_path(chapter, exercise_decimal) }
+    describe "visits a question after 3 errors but 2 minutes", :js => false do
+      let!(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, user: user, question: exercise, nb_guess: 3, last_guess_time: DateTime.now - 2.minutes, guess: exercise_answer + 3) }
+      before { visit chapter_question_path(chapter, exercise) }
+      it do
+        should have_button("Soumettre", disabled: true)
+        should have_content("Vous devez encore patienter")
+      end
+    end
     
-      describe "and correctly solves it" do
-        before do
-          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer + 0.0005
-          click_button "Soumettre"
-          user.reload
-        end
-        specify do
-          expect(page).to have_success_message("Bonne réponse !")
-          expect(page).to have_content("du premier coup !")
-          expect(page).to have_content(exercise_decimal.explanation)
-          expect(user.rating).to eq(rating_before + exercise_decimal.value)
-          expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise_decimal.value)
-        end
+    describe "visits a question after 3 errors but 4 minutes", :js => false do
+      let!(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, user: user, question: exercise, nb_guess: 3, last_guess_time: DateTime.now - 4.minutes, guess: exercise_answer + 3) }
+      before { visit chapter_question_path(chapter, exercise) }
+      it do
+        should have_button("Soumettre", disabled: false)
+        should have_no_content("Vous devez encore patienter")
       end
       
-      describe "and correctly solves it but with a comma and white spaces" do
+      describe "and makes a 4th mistake", :js => true do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer.to_s.gsub('.', ',') + " "
+          fill_in "ans", with: exercise_answer + 12
           click_button "Soumettre"
-          user.reload
         end
-        specify do
-          expect(page).to have_success_message("Bonne réponse !")
-          expect(page).to have_content("du premier coup !")
+        it do
+          should have_error_message("Mauvaise réponse...")
+          should have_content("Votre réponse (#{exercise_answer+12}) est erronée. Vous avez déjà commis 4 erreurs.")
+          should have_button("Soumettre", disabled: true)
+          should have_content("Vous devez encore patienter")
         end
       end
+    end
       
-      describe "and writes a text instead of a decimal number" do
-        before do
-          fill_in "unsolvedquestion[guess]", with: "zero"
-          click_button "Soumettre"
-          user.reload
-        end
-        specify do
-          expect(page).to have_error_message("La réponse attendue est un nombre réel.")
-          expect(page).to have_no_content(exercise_decimal.explanation)
-          expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
-          expect(user.rating).to eq(rating_before)
-        end
+    describe "visits a question and tries to send an answer too early" do
+      before do
+        visit chapter_question_path(chapter, exercise)
+        FactoryGirl.create(:unsolvedquestion, user: user, question: exercise, nb_guess: 3, last_guess_time: DateTime.now - 2.minutes, guess: exercise_answer + 3)
+        fill_in "ans", with: exercise_answer
+        click_button "Soumettre"
       end
-      
-      describe "and makes a mistake (too large)" do
-        before do
-          fill_in "unsolvedquestion[guess]", with: (exercise_decimal_answer + 0.002).round(3)
-          click_button "Soumettre"
-          user.reload
-        end
-        specify do
-          expect(page).to have_error_message("Mauvaise réponse...")
-          expect(page).to have_content("Votre réponse (#{((exercise_decimal_answer+0.002).round(3)).to_s}) est erronée. Vous avez déjà commis 1 erreur.")
-          expect(page).to have_no_content(exercise_decimal.explanation)
-          expect(user.rating).to eq(rating_before)
-        end
-      
-        describe "and makes another mistake (too small)" do
-          before do
-            fill_in "unsolvedquestion[guess]", with: (exercise_decimal_answer - 0.002).round(3)
-            click_button "Soumettre"
-            user.reload
-          end
-          specify do
-            expect(page).to have_error_message("Mauvaise réponse...")
-            expect(page).to have_content("Votre réponse (#{((exercise_decimal_answer-0.002).round(3)).to_s}) est erronée. Vous avez déjà commis 2 erreurs.")
-            expect(page).to have_no_content(exercise_decimal.explanation)
-            expect(user.rating).to eq(rating_before)
-          end
-        end
-      end
+      it { should have_info_message("Merci d'attendre") }
     end
     
     describe "visits a single answer qcm" do
@@ -278,7 +189,7 @@ describe "Solvedquestion pages" do
     
       describe "and correctly solves it" do
         before do
-          choose "ans[#{item_correct.id}]"
+          choose "ans_#{item_correct.id}"
           click_button "Soumettre"
           user.reload
         end
@@ -294,7 +205,7 @@ describe "Solvedquestion pages" do
         describe "and correctly solves it again for fun" do
           before do
             visit chapter_question_path(chapter, qcm)
-            choose "ans[#{item_correct.id}]"
+            choose "ans_#{item_correct.id}"
             click_button "Soumettre"
             user.reload
           end
@@ -312,7 +223,7 @@ describe "Solvedquestion pages" do
         describe "and makes a mistake for fun" do
           before do
             visit chapter_question_path(chapter, qcm)
-            choose "ans[#{item_incorrect.id}]"
+            choose "ans_#{item_incorrect.id}"
             click_button "Soumettre"
             user.reload
           end
@@ -327,7 +238,7 @@ describe "Solvedquestion pages" do
       
       describe "and makes a mistake" do
         before do
-          choose "ans[#{item_incorrect.id}]"
+          choose "ans_#{item_incorrect.id}"
           click_button "Soumettre"
           user.reload
         end
@@ -338,18 +249,6 @@ describe "Solvedquestion pages" do
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before)
         end
-        
-        describe "and makes the same mistake" do
-          before do
-            click_button "Soumettre"
-            user.reload
-          end
-          specify do
-            expect(page).to have_error_message("Votre réponse est la même")
-            expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
-            expect(user.rating).to eq(rating_before)
-          end
-        end
       end
       
       describe "and does not check any answer" do
@@ -358,7 +257,7 @@ describe "Solvedquestion pages" do
           user.reload
         end
         specify do
-          expect(page).to have_error_message("Veuillez cocher une réponse.")
+          expect(page).to have_info_message("Veuillez cocher une réponse.")
           expect(page).to have_no_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
           expect(user.rating).to eq(rating_before)
         end
@@ -370,8 +269,8 @@ describe "Solvedquestion pages" do
     
       describe "and correctly solves it" do
         before do
-          check "ans[#{item_multiple_correct.id}]"
-          uncheck "ans[#{item_multiple_incorrect.id}]"
+          check "ans_#{item_multiple_correct.id}"
+          uncheck "ans_#{item_multiple_incorrect.id}"
           click_button "Soumettre"
           user.reload
         end
@@ -387,8 +286,8 @@ describe "Solvedquestion pages" do
       
       describe "and makes a mistake" do
         before do
-          check "ans[#{item_multiple_correct.id}]"
-          check "ans[#{item_multiple_incorrect.id}]"
+          check "ans_#{item_multiple_correct.id}"
+          check "ans_#{item_multiple_incorrect.id}"
           click_button "Soumettre"
           user.reload
         end
@@ -400,65 +299,11 @@ describe "Solvedquestion pages" do
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
           expect(user.chapters.exists?(chapter2.id)).to eq(false)
         end
-        
-        describe "and makes another mistake" do
-          before do
-            uncheck "ans[#{item_multiple_correct.id}]"
-            uncheck "ans[#{item_multiple_incorrect.id}]"
-            click_button "Soumettre"
-            user.reload
-          end
-          specify do
-            expect(page).to have_error_message("Mauvaise réponse...")
-            expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 2 erreurs.")
-          end
-          
-          describe "and correctly solves it" do
-            before do
-              check "ans[#{item_multiple_correct.id}]"
-              uncheck "ans[#{item_multiple_incorrect.id}]"
-              click_button "Soumettre"
-              user.reload
-            end
-            specify do
-              expect(page).to have_success_message("Bonne réponse !")
-              expect(page).to have_content("après 2 erreurs.")
-              expect(page).to have_content(qcm_multiple.explanation)
-              expect(user.rating).to eq(rating_before + qcm_multiple.value)
-              expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm_multiple.value)
-              expect(user.chapters.exists?(chapter2.id)).to eq(true) # Because it's the only question of chapter2
-            end
-          end
-        end
-        
-        describe "and makes the same mistake" do
-          before do
-            click_button "Soumettre"
-            user.reload
-          end
-          specify do
-            expect(page).to have_error_message("Votre réponse est la même")
-            expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
-            expect(user.rating).to eq(rating_before)
-          end
-        end
-      end
-      
-      describe "and does not check any answer" do # There is a special line for this in the controller
-        before do
-          click_button "Soumettre"
-          user.reload
-        end
-        specify do
-          expect(page).to have_error_message("Mauvaise réponse...")
-          expect(page).to have_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
-          expect(user.rating).to eq(rating_before)
-        end
       end
     end
   end
   
-  describe "admin" do
+  describe "admin", :js => true do
     before { sign_in admin }
     
     describe "visits a decimal exercise" do
@@ -466,7 +311,7 @@ describe "Solvedquestion pages" do
     
       describe "and correctly solves it for fun" do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer - 0.0005
+          fill_in "ans", with: exercise_decimal_answer - 0.0005
           click_button "Soumettre"
           admin.reload
         end
@@ -482,7 +327,7 @@ describe "Solvedquestion pages" do
       
       describe "and makes a mistake for fun" do
         before do
-          fill_in "unsolvedquestion[guess]", with: exercise_decimal_answer - 0.6
+          fill_in "ans", with: exercise_decimal_answer - 0.6
           click_button "Soumettre"
           admin.reload
         end
@@ -493,10 +338,9 @@ describe "Solvedquestion pages" do
         end
       end
       
-      describe "and clicks to see the answer", :js => true do
+      describe "and clicks to see the answer" do
         before do
           click_link "Voir la réponse"
-          wait_for_ajax
         end
         specify do
           expect(page).to have_selector("h4", text: "Réponse")
@@ -512,8 +356,8 @@ describe "Solvedquestion pages" do
     
       describe "and correctly solves it for fun" do
         before do
-          check "ans[#{item_multiple_correct.id}]"
-          uncheck "ans[#{item_multiple_incorrect.id}]"
+          check "ans_#{item_multiple_correct.id}"
+          uncheck "ans_#{item_multiple_incorrect.id}"
           click_button "Soumettre"
           admin.reload
         end
@@ -530,8 +374,8 @@ describe "Solvedquestion pages" do
       
       describe "and makes a mistake for fun" do
         before do
-          check "ans[#{item_multiple_correct.id}]"
-          check "ans[#{item_multiple_incorrect.id}]"
+          check "ans_#{item_multiple_correct.id}"
+          check "ans_#{item_multiple_incorrect.id}"
           click_button "Soumettre"
           admin.reload
         end

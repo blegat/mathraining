@@ -45,6 +45,7 @@ Rails.application.routes.draw do
       patch :update_explanation
       get :manage_items
       get :show_answer # only via JS
+      get :check_answer # only via JS
     end
     resources :items, only: [:create]
   end
@@ -57,8 +58,6 @@ Rails.application.routes.draw do
       put :order
     end
   end
-
-  resources :unsolvedquestions, only: [:create, :update]
   
   # Problems
   resources :problems, only: [:update, :edit, :destroy, :show] do
@@ -297,7 +296,11 @@ Rails.application.routes.draw do
   get '/ten_years', to: 'puzzles#main'
   
   # Sessions (singular resource, to call destroy without an id!)
-  resource :sessions, only: [:create, :destroy]
+  resource :sessions, only: [:create, :destroy] do
+    collection do
+      get :fast_create
+    end
+  end
   
   # Static pages
   root to: 'static_pages#home'

@@ -1,0 +1,13 @@
+<% pt = question.value %>
+
+<% pct = 0 %>
+<% pct = question.nb_first_guesses.to_f / (question.nb_correct + question.nb_wrong).to_f if question.nb_correct + question.nb_wrong > 0 %>
+<% pct2 = [1.4*pct,1].min %>
+
+<% if !@section.fondation %>
+  <span class="badge rounded-pill py-2 px-3 <%= solved ? 'bg-success' : 'bg-secondary' %>" style="font-size:18px;"><%= pt %>&nbsp;points</span>
+<% end %>
+<% if question.online %>
+  <span class="badge rounded-pill py-2 px-3 bg-primary" style="font-size:18px;">Résolu <%= question.nb_correct %> fois</span>
+  <%= link_to "#{ (100*pct).round(0) }% au 1<sup>er</sup> essai".html_safe, stats_chapters_path, :class => "badge rounded-pill py-2 px-3 text-color-dark-light-blue gradient-green-red-#{ ((1-pct2)*20).to_i }", :style => "font-size:18px;" %>
+<% end %>

@@ -1,6 +1,10 @@
 include ApplicationHelper
 
 def sign_in(user)
+  visit fast_create_sessions_path(:user_id => user.id)
+end
+
+def sign_in_with_form(user)
   visit root_path
   click_link "Connexion"
   fill_in "header_connect_email", with: user.email

@@ -19,11 +19,4 @@ module ChapterConcern
       render 'errors/access_refused' and return
     end
   end
-  
-  # Check that the user can see the exercises of @chapter
-  def user_can_see_chapter_questions
-    if !user_can_see_chapter_exercises(current_user, @chapter)
-      render 'errors/access_refused'
-    end
-  end
 end

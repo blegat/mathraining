@@ -1,6 +1,9 @@
 <!-- Réponse -->
 <h4 class="mt-4">Réponse</h4>
 <%= render 'questions/answer', question: @question %>
+
+<!-- En cas de bonne réponse -->
+<div id="question-success" class="alert alert-success mt-3 py-2" style="display:none;">Bonne réponse !</div>
   
 <!-- Félicitations -->
 <% if !solvedquestion.nil? %>
@@ -19,5 +22,5 @@
 <% if @question.explanation.size > 0 %>
   <%= htmlise(@question.explanation) %>
 <% else %>
-  <span class="#{'text-color-orange fw-bold' if admin_or_author}">Pas d'explication.</span>
+  <span class="#{'text-color-orange fw-bold' if !@question.online?}">Pas d'explication.</span>
 <% end %>

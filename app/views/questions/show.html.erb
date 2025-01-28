@@ -3,31 +3,137 @@
 <% admin_or_author = !@chapter.online? || (signed_in? && current_user.admin?) %>
 <% solvedquestion = (!signed_in? || admin_or_author) ? nil : current_user.solvedquestions.where(:question => @question).first %>
 <% unsolvedquestion = (!signed_in? || admin_or_author || !solvedquestion.nil? ? nil : current_user.unsolvedquestions.where(:question => @question).first) %>
-<% unsolvedquestion = Unsolvedquestion.new if unsolvedquestion.nil? %>
 <% can_see_answer = admin_or_author || !solvedquestion.nil? %>
 
 <script type="text/javascript">
 var showAnswer = function () {
   $.getScript("<%= show_answer_question_url(@question) %>");
 }
+
+var checkAnswer = function() {
+  document.getElementById("question-button").disabled = true;
+  var params = "";
+  var first = true;
+  <% if @question.is_qcm %>
+    <% @question.items.each do |c| %>
+      if (document.getElementById("ans_<%= c.id %>").checked) {
+        params += (first ? "?" : "&") + "ans[<%= c.id %>]=1";
+        first = false;
+      }
+    <% end %>
+  <% else %>
+    params = "?ans=" + document.getElementById("ans").value;
+  <% end %>
+  $.getScript("<%= check_answer_question_url(@question) %>" + params);
+}
+
+<% unless can_see_answer %>
+  var running = false;
+  var reste_debut;
+  var heure_debut_js;
+  var interval;
+  
+  function enableOrDisableInputs(disable) {
+    var to_enable = document.getElementsByClassName("to-enable");
+    for (let i = 0; i < to_enable.length; i++) {
+      to_enable[i].disabled = disable || <%= !signed_in? %>;
+    }
+  }
+  
+  function stopTimer() {
+    running = false;
+    enableOrDisableInputs(false);
+    document.getElementById('waitbox').style.display = "none";
+    clearInterval(interval);
+  }
+  
+  function startTimer(r) {
+    reste_debut = r;
+    heure_debut_js = Math.floor(Date.now() / 1000);
+    running = true;
+    enableOrDisableInputs(true);
+    document.getElementById('waitbox').style.display = "block";
+    remainingTime();
+    interval = setInterval(remainingTime, 1000);
+  }
+
+  function remainingTime() {
+    if (!running) { return; }
+    var heure_mtn_js = Math.floor(Date.now() / 1000);
+    reste = reste_debut - (heure_mtn_js - heure_debut_js);
+    if (reste <= 0) {
+      stopTimer();
+    }
+    else {
+      var r = reste
+      var resteh = Math.floor(r / 3600)
+      r = r - 3600 * resteh
+      var restem = Math.floor(r / 60)
+      r = r - 60 * restem
+      var restes = r
+    
+      if (restem < 10) { affichem = "0" + restem }
+      else { affichem = restem }
+    
+      if (restes < 10) { affiches = "0" + restes }
+      else { affiches = restes }
+    
+      document.getElementById('clockbox').innerHTML = affichem + ":" + affiches
+    }
+  }
+<% end %>
 </script>
 
 <!-- Titre -->
-<%= render 'questions/title', question: @question, number: @number, solved: !solvedquestion.nil? %>
+<div class="split-title-lg">
+  <div class="part-1">
+    <h3>Exercice&nbsp;<%= @number if @question.online? %></h3>
+  </div>
+  <div id="question-badges" class="part-2 mb-2">
+    <%= render 'questions/title_badges', question: @question, solved: !solvedquestion.nil? %>
+  </div>
+</div>
 
 <!-- Enoncé -->
 <div><%= htmlise(@question.statement, true) %></div>
 
 <div id="question-div">
-<% if can_see_answer && @show_answer %>
-  <!-- Réponse, félicitations, explication -->
+<% if !@question.online? %>
+  <!-- Réponse et explication -->
   <%= render 'questions/full_answer', solvedquestion: solvedquestion %>
 <% else %>
-  <!-- Formulaire pour répondre (pour de vrai ou pour le fun) -->
-  <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion %>
+  <% total_waiting = 180 %>
+  <% need_to_wait = !unsolvedquestion.nil? && unsolvedquestion.nb_guess >= 3 && DateTime.now < unsolvedquestion.last_guess_time + total_waiting %>
   
+  <!-- Formulaire pour répondre (pour de vrai ou pour le fun) -->
+  <%= render 'questions/question', question: @question, unsolvedquestion: unsolvedquestion, need_to_wait: need_to_wait %>
+  
+  <!-- En cas de mauvaise réponse -->
+  <div id="question-danger" class="alert alert-danger py-2 mt-3" style="display:none;">Mauvaise réponse...</div>
+  
+  <!-- En cas de réponse non prise en compte -->
+  <div id="question-info" class="alert alert-info py-2 mt-3" style="display:none;"></div>
+  
+  <!-- Message à propos des mauvaises réponses précédentes -->
+  <div id="wrong-answer-div">
+  <% unless unsolvedquestion.nil? %>
+    <%= render 'questions/wrong_answer_message', question: @question, unsolvedquestion: unsolvedquestion %>
+  <% end %>
+  </div>
+  
+  <!-- Message s'il faut attendre 3 minutes -->
+  <div id="waiting-div">
+  <% if need_to_wait %>
+    <% waiting = (unsolvedquestion.last_guess_time.to_f + total_waiting - DateTime.now.to_i).floor %>
+    <%= render 'questions/waiting', waiting: waiting %>
+    <script type="text/javascript">
+      startTimer(<%= waiting %>);
+    </script>
+  <% end %>
+  </div>
+  
+  <!-- Bouton pour voir la réponse -->
   <% if can_see_answer %>
-    <!-- Bouton pour voir la réponse -->
     <p class="text-center mt-3 mb-0"><a href="javascript:showAnswer();" class="btn btn-ld-light-dark">Voir la réponse</a></p>
   <% end %>
 <% end %>

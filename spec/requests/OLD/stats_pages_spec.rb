@@ -25,10 +25,10 @@ describe "Stats pages" do
   describe "user" do
     before { sign_in user1 }
     
-    describe "tries the first exercise of a chapter" do
+    describe "tries the first exercise of a chapter", :js => true do
       before do
         visit chapter_question_path(chapter1, exercise11)
-        fill_in "unsolvedquestion[guess]", with: exercise11.answer + 12
+        fill_in "ans", with: exercise11.answer + 12
         click_button "Soumettre"
         chapter1.reload
         exercise11.reload
@@ -44,7 +44,7 @@ describe "Stats pages" do
       describe "and then solves it correctly" do
         before do
           visit chapter_question_path(chapter1, exercise11)
-          fill_in "unsolvedquestion[guess]", with: exercise11.answer
+          fill_in "ans", with: exercise11.answer
           click_button "Soumettre"
           chapter1.reload
           exercise11.reload
@@ -59,10 +59,10 @@ describe "Stats pages" do
       end
     end
     
-    describe "solves the first exercise of a chapter" do
+    describe "solves the first exercise of a chapter", :js => true do
       before do
         visit chapter_question_path(chapter1, exercise11)
-        fill_in "unsolvedquestion[guess]", with: exercise11.answer
+        fill_in "ans", with: exercise11.answer
         click_button "Soumettre"
         chapter1.reload
         exercise11.reload
@@ -78,7 +78,7 @@ describe "Stats pages" do
       describe "and solves the second exercise of the chapter" do
         before do
           visit chapter_question_path(chapter1, exercise12)
-          fill_in "unsolvedquestion[guess]", with: exercise12.answer
+          fill_in "ans", with: exercise12.answer
           click_button "Soumettre"
           chapter1.reload
           exercise12.reload

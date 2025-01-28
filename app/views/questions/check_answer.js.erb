@@ -1,0 +1,61 @@
+var menu_question = document.getElementById("menu-question-<%= @question.id %>");
+var div_badges = document.getElementById("question-badges");
+var div_danger = document.getElementById("question-danger");
+var div_info = document.getElementById("question-info");
+
+<% if @result == "correct" %>
+  <% unless @for_fun %>
+    // Refresh the badges (to update statistics and have green color)
+    div_badges.innerHTML = '<%= escape_javascript(render 'questions/title_badges', question: @question, solved: true) %>';
+    // Make the menu item of the question green
+    var menu_question = document.getElementById("menu-question-<%= @question.id %>");
+    menu_question.classList.remove("list-group-item-danger");
+    menu_question.classList.add("list-group-item-success");
+  <% end %>
+  // Replace the question form with the answer
+  var div_question = document.getElementById("question-div");
+  div_question.innerHTML = '<%= escape_javascript(render 'questions/full_answer', solvedquestion: @solvedquestion) %>';
+  MathJax.Hub.Queue(["Typeset", MathJax.Hub, div_question]);
+  // Show "Bonne réponse !"
+  var div_success = document.getElementById("question-success");
+  div_success.style.display = "block";
+  div_danger.style.display = "none";
+  div_info.style.display = "none";
+<% elsif @result == "wrong" %>
+  <% if @for_fun %>
+    // Re-enable the submit button
+    document.getElementById("question-button").disabled = false
+  <% else %>
+    <% if @first_sub %>
+      // Refresh the badges (to update statistics)
+      div_badges.innerHTML = '<%= escape_javascript(render 'questions/title_badges', question: @question, solved: false) %>';
+    <% end %>
+    // Update the wrong answer message
+    var div_wrong_answer = document.getElementById("wrong-answer-div");
+    div_wrong_answer.innerHTML = '<%= escape_javascript(render 'questions/wrong_answer_message', question: @question, unsolvedquestion: @unsolvedquestion) %>';
+    // Update the waiting message (and start timer) if needed
+    <% total_waiting = 180 %>
+    <% need_to_wait = @unsolvedquestion.nb_guess >= 3 && DateTime.now < @unsolvedquestion.last_guess_time + total_waiting %>
+    <% if need_to_wait %>
+      var div_waiting = document.getElementById("waiting-div");
+      <% waiting = (@unsolvedquestion.last_guess_time.to_f + total_waiting - DateTime.now.to_i).floor %>
+      div_waiting.innerHTML = '<%= escape_javascript(render 'questions/waiting', waiting: waiting) %>';
+      startTimer(<%= waiting %>);
+    <% else %>
+     // Re-enable the submit button (if we don't need to wait)
+      document.getElementById("question-button").disabled = false;
+    <% end %>
+    // Make the menu item of the question red
+    menu_question.classList.add("list-group-item-danger");
+  <% end %>
+  // Show "Mauvaise réponse..."
+  div_danger.style.display = "block";
+  div_info.style.display = "none";
+<% elsif @result == "skip" %>
+  // Re-enable the submit button
+  document.getElementById("question-button").disabled = false;
+  // Show info with custom message
+  div_info.innerHTML = "<%= @message %>";
+  div_info.style.display = "block";
+  div_danger.style.display = "none";
+<% end %>

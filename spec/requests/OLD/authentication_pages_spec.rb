@@ -4,6 +4,8 @@ require "spec_helper"
 describe "Authentication" do
 
   subject { page }
+  
+  let!(:user) { FactoryGirl.create(:user) }
 
   describe "signin button" do
     before { visit root_path }
@@ -12,7 +14,6 @@ describe "Authentication" do
   end
   
   describe "tries to signin" do
-    let(:user) { FactoryGirl.create(:user) }
     before { visit root_path }
 
     describe "with invalid information" do
@@ -21,7 +22,7 @@ describe "Authentication" do
     end
 
     describe "with valid information" do
-      before { sign_in(user) }
+      before { sign_in_with_form(user) }
 
       specify do
         expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(user.remember_token)
@@ -43,7 +44,7 @@ describe "Authentication" do
     describe "to an inactive account" do
       before do
         user.update_attribute(:active, false)
-        sign_in(user)
+        sign_in_with_form(user)
       end
       it do
         should have_error_message("Email ou mot de passe invalide.")
@@ -54,7 +55,7 @@ describe "Authentication" do
     describe "to an account without confirmed email" do
       before do
         user.update_attribute(:email_confirm, false)
-        sign_in(user)
+        sign_in_with_form(user)
       end
       it do
         should have_error_message("Vous devez activer votre compte via l'e-mail qui vous a été envoyé.")
@@ -64,7 +65,7 @@ describe "Authentication" do
     
     describe "to an account that was recently banned" do
       let!(:sanction) { FactoryGirl.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.week, duration: 14, reason: "Ce compte a été désactivé jusqu'au [DATE].") }
-      before { sign_in(user) }
+      before { sign_in_with_form(user) }
       it do
         should have_error_message("Ce compte a été désactivé jusqu'au #{write_date_only(sanction.end_time)}")
         should have_no_content(user.fullname) # Should not be connected
@@ -73,13 +74,12 @@ describe "Authentication" do
     
     describe "to an account that was banned some time ago" do
       let!(:sanction) { FactoryGirl.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.month, duration: 14) }
-      before { sign_in(user) }
+      before { sign_in_with_form(user) }
       it { should have_content(user.fullname) } # Should be connected
     end
   end
   
   describe "visits a page only for connected people" do
-    let!(:user) { FactoryGirl.create(:user) }
     before { visit subjects_path }
     
     it do
@@ -105,6 +105,25 @@ describe "Authentication" do
         click_button "header_connect_button"
       end
       it { should have_selector("h1", text: "Forum") }
+    end
+  end
+  
+  describe "uses fast signin in test environment" do
+    before do
+      sign_in user
+    end
+    specify do
+      expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(user.remember_token)
+    end
+  end
+  
+  describe "tries to use fast signin in production environment" do
+    before do
+      allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new("production"))
+      sign_in user
+    end
+    specify do
+      expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).not_to eq(user.remember_token)
     end
   end
 end

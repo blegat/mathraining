@@ -1,7 +1,7 @@
 #encoding: utf-8
 class SessionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:destroy]
-  before_action :signed_out_user, only: [:create]
+  before_action :signed_out_user, only: [:create, :fast_create]
 
   # Create a session, i.e. sign in (send the form)
   def create
@@ -25,6 +25,15 @@ class SessionsController < ApplicationController
       flash[:danger] = "Email ou mot de passe invalide."
       redirect_back(fallback_location: root_path)
     end
+  end
+  
+  # Create a session, FOR TESTS ONLY to go faster than always filling the form
+  def fast_create
+    if Rails.env.test?
+      user = User.find_by_id(params[:user_id].to_i)
+      sign_in(user, false) unless user.nil?
+    end
+    redirect_back(fallback_location: root_path)
   end
 
   # Delete a session, i.e. sign out

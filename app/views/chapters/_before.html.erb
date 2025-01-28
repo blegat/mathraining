@@ -55,8 +55,8 @@
     <% questions_ids = questions.map { |q| q.id } %>
     <% solvedquestions = nil %>
     <% unsolvedquestions = nil %>
-    <% questions.each do |f| %>
-      <% if f.online || user_can_write_chapter(current_user, @chapter) %>
+    <% questions.each do |q| %>
+      <% if q.online || user_can_write_chapter(current_user, @chapter) %>
 
         <% if first_shown %>
           <h5 class="mt-3">Exercices</h5>
@@ -65,24 +65,24 @@
 
         <% if user_can_see_chapter_exercises(current_user, @chapter)  %>
           <% actif = "" %>
-          <% if active == 'question-' + f.id.to_s %>
+          <% if active == 'question-' + q.id.to_s %>
             <% actif = "active" %>
             <% @number = question_number %>
           <% end %>
             
           <% kind = "" %>
-          <% if f.online %>
+          <% if q.online %>
             <% if signed_in? && !current_user.admin? %>
               <% if solvedquestions.nil? %> 
                 <% solvedquestions = current_user.solvedquestions.where(:question_id => questions_ids).group(:question_id).count.keys.to_set %>
               <% end %>
-              <% if solvedquestions.include?(f.id) %>
+              <% if solvedquestions.include?(q.id) %>
                 <% kind = "list-group-item-success" %>
               <% else %>
                 <% if unsolvedquestions.nil? %>
                   <% unsolvedquestions = current_user.unsolvedquestions.where(:question_id => questions_ids).group(:question_id).count.keys.to_set %>
                 <% end %>
-                <% if unsolvedquestions.include?(f.id) %>
+                <% if unsolvedquestions.include?(q.id) %>
                   <% kind = "list-group-item-danger" %>
                 <% end %>
               <% end %>
@@ -90,15 +90,13 @@
           <% else %>
             <% kind = "list-group-item-warning" %>
           <% end %>
-          <%= link_to "Exercice #{question_number if f.online}", chapter_question_path(@chapter, f), :class => "list-group-item list-group-item-action #{kind} #{actif}" %>
+          <%= link_to "Exercice #{question_number if q.online}", chapter_question_path(@chapter, q), :id => "menu-question-#{q.id}", :class => "list-group-item list-group-item-action #{kind} #{actif}" %>
         <% else %>
           <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true"><%= "Exercice #{question_number}" %></a>
         <% end %> 
-        <% question_number += 1 if f.online %>
+        <% question_number += 1 if q.online %>
       <% end %>
     <% end %>
   </div>
     
   <div class="g-col-12 g-col-md-9 g-col-xl-10">
-  
-    <div class="mt-3 d-md-none"></div>
