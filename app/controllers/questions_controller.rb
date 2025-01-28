@@ -184,7 +184,8 @@ class QuestionsController < ApplicationController
       res = @question.check_answer(@unsolvedquestion, params)
     end
     
-    @result = res[0];
+    @result = res[0]
+    @message = res[1] if @result == "skip"
     
     unless @for_fun
       if @result == "correct"
@@ -216,8 +217,6 @@ class QuestionsController < ApplicationController
         end
         @question.update(:nb_wrong => @question.nb_wrong + 1) if @first_sub
         mark_chapter_as_tried_if_needed
-      else # "skip"
-        @message = res[1]
       end
     end
     
