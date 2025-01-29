@@ -22,31 +22,22 @@
   <!-- QCM -->
   <% prev_answers = (unsolvedquestion.nil? ? Set.new : unsolvedquestion.items.ids.to_set) %>
   <% if question.many_answers %>
-
-    <p class="mt-3 mb-3 fw-bold">Cochez chaque proposition correcte.</p>
-    <div class="mb-3">
-    <% question.items.order(:position).each do |c| %>
-      <div class="form-check mb-2">
-        <label class="form-check-label ms-2">
-          <%= check_box_tag "ans_#{ c.id }", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable" %>
-          <%= htmlise(c.ans) %>
-        </label>
-      </div>
-    <% end %>
-    </div>
-
-  <% else %>
-    <div class="mt-3 mb-3">
-    <% question.items.order(:position).each do |c| %>
-      <div class="form-check mb-2">
-        <label class="form-check-label ms-2">
-          <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans_#{ c.id }", :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable" %>
-          <%= htmlise(c.ans) %>
-        </label>
-      </div>
-    <% end %>
+    <p class="mt-3 fw-bold">Cochez chaque proposition correcte.</p>
+  <% end %>
+  <div class="mt-3 mb-3">
+  <% question.items.order(:position).each do |c| %>
+    <div class="form-check ms-2 mb-2 d-flex gap-2 align-items-center">
+      <% if question.many_answers %>
+        <%= check_box_tag "ans_#{ c.id }", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable flex-shrink-0 my-0" %>
+      <% else %>
+        <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans_#{ c.id }", :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable flex-shrink-0 my-0" %>
+      <% end %>
+      <label for="ans_<%= c.id %>" class="form-check-label">
+        <%= htmlise(c.ans) %>
+      </label>
     </div>
   <% end %>
+  </div>
 <% end %>
 
 <button id="question-button" onclick="javascript:checkAnswer();" class="btn btn-primary to-enable" <%= "disabled" if !signed_in? || in_skin? || need_to_wait %>>Soumettre</button>
