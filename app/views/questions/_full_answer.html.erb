@@ -24,3 +24,8 @@
 <% else %>
   <span class="#{'text-color-orange fw-bold' if !@question.online?}">Pas d'explication.</span>
 <% end %>
+
+<% if @question.online? %>
+  <!-- Bouton pour cacher la réponse -->
+  <p class="text-center mt-3 mb-0"><a href="javascript:hideAnswer();" class="btn btn-ld-light-dark">Cacher la réponse</a></p>
+<% end %>

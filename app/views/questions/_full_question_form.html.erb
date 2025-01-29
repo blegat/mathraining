@@ -1,0 +1,34 @@
+<% total_waiting = 180 %>
+<% need_to_wait = !unsolvedquestion.nil? && unsolvedquestion.nb_guess >= 3 && DateTime.now < unsolvedquestion.last_guess_time + total_waiting %>
+
+<!-- Formulaire pour répondre (pour de vrai ou pour le fun) -->
+<%= render 'questions/question_form', question: @question, unsolvedquestion: unsolvedquestion, need_to_wait: need_to_wait %>
+
+<!-- En cas de mauvaise réponse -->
+<div id="question-danger" class="alert alert-danger py-2 mt-3" style="display:none;">Mauvaise réponse...</div>
+
+<!-- En cas de réponse non prise en compte -->
+<div id="question-info" class="alert alert-info py-2 mt-3" style="display:none;"></div>
+
+<!-- Message à propos des mauvaises réponses précédentes -->
+<div id="wrong-answer-div">
+<% unless unsolvedquestion.nil? %>
+  <%= render 'questions/wrong_answer_message', question: @question, unsolvedquestion: unsolvedquestion %>
+<% end %>
+</div>
+
+<!-- Message s'il faut attendre 3 minutes -->
+<div id="waiting-div">
+<% if need_to_wait %>
+  <% waiting = (unsolvedquestion.last_guess_time.to_f + total_waiting - DateTime.now.to_i).floor %>
+  <%= render 'questions/waiting', waiting: waiting %>
+  <script type="text/javascript">
+    startTimer(<%= waiting %>);
+  </script>
+<% end %>
+</div>
+
+<!-- Bouton pour voir la réponse -->
+<% if can_see_answer %>
+  <p class="text-center mt-3 mb-0"><a href="javascript:showAnswer();" class="btn btn-ld-light-dark">Voir la réponse</a></p>
+<% end %>

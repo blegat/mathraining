@@ -2,20 +2,20 @@
 class QuestionsController < ApplicationController
   include ChapterConcern
   
-  before_action :signed_in_user, only: [:new, :edit, :manage_items, :edit_explanation, :show_answer, :check_answer]
+  before_action :signed_in_user, only: [:new, :edit, :manage_items, :edit_explanation, :show_answer, :hide_answer, :check_answer]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation]
   before_action :user_not_in_skin, only: [:check_answer]
   
-  before_action :get_question, only: [:show, :edit, :update, :destroy, :manage_items, :order, :put_online, :edit_explanation, :update_explanation, :show_answer, :check_answer]
+  before_action :get_question, only: [:show, :edit, :update, :destroy, :manage_items, :order, :put_online, :edit_explanation, :update_explanation, :show_answer, :hide_answer, :check_answer]
   before_action :get_chapter, only: [:show, :new, :create]
   
   before_action :question_of_chapter, only: [:show]
-  before_action :user_can_see_chapter, only: [:show, :show_answer, :check_answer] # Maybe not necessary because of user_can_see_question?
-  before_action :user_can_see_question, only: [:show, :show_answer, :check_answer]
+  before_action :user_can_see_chapter, only: [:show, :show_answer, :hide_answer, :check_answer] # Maybe not necessary because of user_can_see_question?
+  before_action :user_can_see_question, only: [:show, :show_answer, :hide_answer, :check_answer]
   before_action :user_can_update_chapter, only: [:new, :edit, :create, :update, :destroy, :manage_items, :edit_explanation, :order, :put_online, :update_explanation]
-  before_action :online_question, only: [:show_answer, :check_answer]
+  before_action :online_question, only: [:show_answer, :hide_answer, :check_answer]
   before_action :offline_question, only: [:destroy]
-  before_action :user_can_see_answer, only: [:show_answer]
+  before_action :user_can_see_answer, only: [:show_answer, :hide_answer]
 
   # Show a question (inside a chapter)
   def show
@@ -167,6 +167,11 @@ class QuestionsController < ApplicationController
   
   # Show question answer (we want a trace in the logs) (only in js)
   def show_answer
+    respond_to :js
+  end
+  
+  # Hide question answer (easier to reload it) (only in js)
+  def hide_answer
     respond_to :js
   end
   

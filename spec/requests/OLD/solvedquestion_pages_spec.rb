@@ -351,14 +351,24 @@ describe "Solvedquestion pages", question: true do
       end
       
       describe "and clicks to see the answer" do
-        before do
-          click_link "Voir la réponse"
-        end
+        before { click_link "Voir la réponse" }
         specify do
           expect(page).to have_selector("h4", text: "Réponse")
           expect(page).to have_content(exercise_decimal_answer)
           expect(page).to have_selector("h4", text: "Explication")
           expect(page).to have_content(exercise_decimal.explanation)
+           expect(page).to have_no_button("Soumettre")
+        end
+        
+        describe "and clicks to hide the answer" do
+          before { click_link "Cacher la réponse" }
+          specify do
+            expect(page).to have_no_selector("h4", text: "Réponse")
+            expect(page).to have_no_content(exercise_decimal_answer)
+            expect(page).to have_no_selector("h4", text: "Explication")
+            expect(page).to have_no_content(exercise_decimal.explanation)
+            expect(page).to have_button("Soumettre")
+          end
         end
       end
     end
