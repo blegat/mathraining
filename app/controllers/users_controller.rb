@@ -455,9 +455,7 @@ class UsersController < ApplicationController
       @user.valid_name = true
       @user.save
     end
-    respond_to do |format|
-      format.js
-    end
+    respond_to :js
   end
   
   # Page to read last privacy policy

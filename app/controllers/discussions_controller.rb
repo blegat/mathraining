@@ -21,11 +21,7 @@ class DiscussionsController < ApplicationController
     end
     @tchatmessages = @discussion.get_some_messages(page, per_page)
     @compteur = (page-1) * per_page + 1
-
-    respond_to do |format|
-      format.html
-      format.js
-    end
+    respond_to :html, :js
   end
 
   # Create a discussion (show the form)

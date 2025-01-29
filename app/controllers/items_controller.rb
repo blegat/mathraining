@@ -7,7 +7,7 @@ class ItemsController < ApplicationController
   before_action :get_item, only: [:update, :destroy, :correct, :uncorrect, :order]
   before_action :get_question, only: [:create]
   
-  before_action :user_can_update_chapter
+  before_action :user_can_update_chapter, only: [:create, :update, :destroy, :correct, :uncorrect, :order]
   before_action :offline_question, only: [:create, :destroy, :correct, :uncorrect]
 
   # Add an item to a qcm

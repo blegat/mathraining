@@ -1,5 +1,6 @@
 #encoding: utf-8
 class ExtractsController < ApplicationController
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy]
   before_action :admin_user, only: [:create, :update, :destroy]
   
   before_action :get_extract, only: [:update, :destroy]

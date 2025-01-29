@@ -4,7 +4,7 @@ class SectionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:update]
   before_action :admin_user, only: [:edit, :update]
   
-  before_action :get_section
+  before_action :get_section, only: [:show, :edit, :update]
 
   # Show the chapters of a section
   def show

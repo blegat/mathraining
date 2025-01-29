@@ -3,12 +3,12 @@ class PuzzlesController < ApplicationController
   before_action :signed_in_user, only: [:index, :new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :attempt]
   before_action :root_user, only: [:index, :new, :create, :edit, :update, :destroy, :order]
+  before_action :user_not_in_skin, only: [:attempt]
   
   before_action :get_puzzle, only: [:edit, :update, :destroy, :order, :attempt]
   
   before_action :after_start_date, only: [:main, :graph, :attempt]
   before_action :before_end_date, only: [:new, :create, :destroy, :order, :attempt]
-  before_action :user_not_in_skin, only: [:attempt]
   
   # Show all the puzzles (for a root)
   def index
@@ -92,9 +92,7 @@ class PuzzlesController < ApplicationController
         @code_ok = false
       end
     end
-    respond_to do |format|
-      format.js
-    end
+    respond_to :js
   end
   
   private

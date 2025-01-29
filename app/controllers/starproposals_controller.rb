@@ -1,11 +1,12 @@
 #encoding: utf-8
 class StarproposalsController < ApplicationController
   include SubmissionConcern
+  before_action :signed_in_user, only: [:index]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy]
+  before_action :corrector_user, only: [:index, :create]
+  before_action :root_user, only: [:update, :destroy]
   
-  before_action :corrector_user, only: [:index]
-  before_action :root_user, only: [:destroy, :update]
-  
-  before_action :get_starproposal, only: [:destroy, :update]
+  before_action :get_starproposal, only: [:update, :destroy]
   before_action :get_submission, only: [:create]
   
   before_action :user_can_correct_submission, only: [:create]

@@ -165,14 +165,12 @@ class QuestionsController < ApplicationController
     end
   end
   
-  # Show question answer (we want a trace in the logs)
+  # Show question answer (we want a trace in the logs) (only in js)
   def show_answer
-    respond_to do |format|
-      format.js
-    end
+    respond_to :js
   end
   
-  # Check question answer
+  # Check question answer (only in js)
   def check_answer
     @solvedquestion = current_user.admin? ? nil : current_user.solvedquestions.where(:question => @question).first
     @for_fun = current_user.admin? || !@solvedquestion.nil?
@@ -220,10 +218,7 @@ class QuestionsController < ApplicationController
         mark_chapter_as_tried_if_needed
       end
     end
-    
-    respond_to do |format|
-      format.js
-    end
+    respond_to :js
   end
 
   private

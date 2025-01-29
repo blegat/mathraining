@@ -86,7 +86,7 @@ class ApplicationController < ActionController::Base
     pp = request.fullpath.to_s
     if signed_in? && !current_user_no_skin.last_policy_read && pp != "/accept_legal" && pp != "/last_policy" && !pp.include?("/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/signout"
       if Privacypolicy.where(:online => true).count > 0
-        render 'users/read_legal' and return
+        render 'users/read_legal'
       else # If no policy at all, we automatically mark it as read
         current_user_no_skin.update(:last_policy_read => true, :consent_time => DateTime.now)
       end
@@ -122,14 +122,14 @@ class ApplicationController < ActionController::Base
   def signed_in_user
     unless signed_in?
       flash.now[:danger] = "Vous devez être connecté pour accéder à cette page."
-      render 'sessions/new' and return
+      render 'sessions/new'
     end
   end
   
   # In the case of a compromising page (like "delete a user"), we don't allow a redirection (to avoid hacks)
   def signed_in_user_danger
     unless signed_in?
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
@@ -143,50 +143,56 @@ class ApplicationController < ActionController::Base
   # Check that current user is not in the skin of somebody else
   def user_not_in_skin
     if in_skin?
-      flash[:danger] = "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un."
-      redirect_back(fallback_location: root_path)
+      respond_to do |format|
+        format.html do
+          flash[:danger] = "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un."
+          redirect_back(fallback_location: root_path)
+        end
+        format.js { render :js => 'alert("Vous ne pouvez pas effectuer cette action dans la peau de quelqu\'un.");' }
+      end
     end
   end
 
   # Check that current user is an admin
   def admin_user
     if !signed_in? || !current_user.admin
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that current user is not an admin (i.e. is a student)
   def non_admin_user
     if !signed_in? || current_user.admin
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
 
   # Check that current user is a root
   def root_user
     if !signed_in? || !current_user.root
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that current user is an admin or corrector
   def corrector_user
     if !signed_in? || (!current_user.admin && !current_user.corrector)
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that current user can write a submission
   def user_can_write_submission
     if !current_user.can_write_submission?
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that an object exists: should be used as "return if check_nil_object(...)"
   def check_nil_object(object)
     if object.nil?
-      render 'errors/access_refused' and return true
+      render 'errors/access_refused'
+      return true
     end
     return false
   end
@@ -194,7 +200,8 @@ class ApplicationController < ActionController::Base
   # Check that an object is ONLINE: should be used as "return if check_offline_object(...)"
   def check_offline_object(object)
     if !object.online
-      render 'errors/access_refused' and return true
+      render 'errors/access_refused'
+      return true
     end
     return false
   end
@@ -202,7 +209,8 @@ class ApplicationController < ActionController::Base
   # Check that an object if OFFLINE: should be used as "return if check_online_object(...)"
   def check_online_object(object)
     if object.online
-      render 'errors/access_refused' and return true
+      render 'errors/access_refused'
+      return true
     end
     return false
   end

@@ -6,10 +6,10 @@ class CorrectionsController < ApplicationController
   skip_before_action :error_if_invalid_csrf_token, only: [:create] # Do not forget to check @invalid_csrf_token instead!
   
   before_action :signed_in_user_danger, only: [:create]
+  before_action :user_not_in_skin, only: [:create]
   
   before_action :get_submission, only: [:create]
   
-  before_action :user_not_in_skin, only: [:create]
   before_action :user_can_comment_submission, only: [:create]
   before_action :submission_is_visible, only: [:create]
   before_action :submission_not_plagiarized_or_closed, only: [:create]

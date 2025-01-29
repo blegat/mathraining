@@ -1,8 +1,8 @@
 #encoding: utf-8
 class ActualitiesController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :new]
-  before_action :signed_in_user_danger, only: [:destroy, :update, :create]
-  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create]
+  before_action :signed_in_user, only: [:new, :edit]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy]
+  before_action :admin_user, only: [:new, :create, :edit, :update, :destroy]
   
   before_action :get_actuality, only: [:edit, :update, :destroy]
 

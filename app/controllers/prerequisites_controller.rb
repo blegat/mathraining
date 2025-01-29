@@ -2,7 +2,7 @@
 class PrerequisitesController < ApplicationController
   before_action :signed_in_user, only: [:index]
   before_action :signed_in_user_danger, only: [:create, :destroy]
-  before_action :admin_user
+  before_action :admin_user, only: [:index, :create, :destroy]
   
   before_action :get_prerequisite, only: [:destroy]
   

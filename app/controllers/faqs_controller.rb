@@ -1,8 +1,8 @@
 #encoding: utf-8
 class FaqsController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :new]
-  before_action :signed_in_user_danger, only: [:destroy, :update, :create, :order]
-  before_action :admin_user, only: [:destroy, :update, :edit, :new, :create, :order]
+  before_action :signed_in_user, only: [:new, :edit]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order]
+  before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :order]
   
   before_action :get_faq, only: [:edit, :update, :destroy, :order]
   

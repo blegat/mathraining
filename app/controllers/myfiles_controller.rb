@@ -2,7 +2,7 @@
 class MyfilesController < ApplicationController
   before_action :signed_in_user, only: [:index, :show]
   before_action :signed_in_user_danger, only: [:fake_delete]
-  before_action :root_user, only: [:fake_delete, :show, :index]
+  before_action :root_user, only: [:index, :show, :fake_delete]
   
   before_action :get_myfile, only: [:show, :fake_delete]
   

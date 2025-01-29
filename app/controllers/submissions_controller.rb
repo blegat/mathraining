@@ -13,7 +13,7 @@ class SubmissionsController < ApplicationController
   before_action :corrector_user, only: [:all, :allmy, :allnew, :allmynew]
   
   before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script, :next_good, :prev_good]
-  before_action :get_problem, only: [:create, :create_intest, :index]
+  before_action :get_problem, only: [:index, :create, :create_intest]
   
   before_action :user_in_test_or_root, only: [:destroy]
   before_action :user_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :search_script, :uncorrect]
@@ -38,9 +38,7 @@ class SubmissionsController < ApplicationController
       @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status != ? AND status != ? AND visible = ?', current_user, Submission.statuses[:correct], Submission.statuses[:waiting], true).order('created_at DESC')
     end
 
-    respond_to do |format|
-      format.js
-    end
+    respond_to :js
   end
 
   # Create a submission (send the form)
@@ -173,10 +171,7 @@ class SubmissionsController < ApplicationController
       end
       @what = 3
     end
-    
-    respond_to do |format|
-      format.js
-    end
+    respond_to :js
   end
 
   # Unreserve a submission (only through js)
@@ -188,10 +183,7 @@ class SubmissionsController < ApplicationController
       Following.delete(f.id)
       @what = 1
     end
-    
-    respond_to do |format|
-      format.js
-    end
+    respond_to :js
   end
 
   # Delete a submission
@@ -247,10 +239,7 @@ class SubmissionsController < ApplicationController
         end
       end
     end
-
-    respond_to do |format|
-      format.js
-    end
+    respond_to :js
   end
   
   # Show all submissions

@@ -5,15 +5,15 @@ class MessagesController < ApplicationController
   
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
   
-  before_action :signed_in_user_danger, only: [:create, :update, :soft_destroy, :destroy]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :soft_destroy]
   before_action :admin_user, only: [:destroy]
   
   before_action :get_message, only: [:update, :destroy, :soft_destroy]
   before_action :get_subject, only: [:create]
-  before_action :get_q, only: [:create, :update, :soft_destroy, :destroy]
+  before_action :get_q, only: [:create, :update, :destroy, :soft_destroy]
   
   before_action :user_can_see_subject, only: [:create]
-  before_action :user_can_update_message, only: [:update, :soft_destroy, :destroy]
+  before_action :user_can_update_message, only: [:update, :destroy, :soft_destroy]
   before_action :user_not_in_skin, only: [:create, :update]
   
 
