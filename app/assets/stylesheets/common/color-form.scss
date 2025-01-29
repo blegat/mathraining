@@ -1,0 +1,13 @@
+/* MAKE FORM INPUTS (CHECKBOXES, RADIO BUTTONS...) SLIGHTLY MORE VISIBLE */
+
+[data-bs-theme="light"] {
+  .form-control, .form-select, .form-check-input {
+    border: 1px solid rgb(202, 206, 210); // Default from bootstrap is rgb(222, 226, 230) (given by --bs-border-color)
+  }
+}
+[data-bs-theme="dark"] {
+  .form-control, .form-select, .form-check-input {
+    border: 1px solid rgb(93, 100, 107); // Default from bootstrap is rgb(73, 80, 87) (given by --bs-border-color)
+  }
+}
+
