@@ -91,7 +91,7 @@ class ItemsController < ApplicationController
   # Move an item to a new position
   def order
     item2 = @question.items.where("position = ?", params[:new_position]).first
-    if !item2.nil? and item2 != @item
+    if !item2.nil? && item2 != @item
       res = swap_position(@item, item2)
       flash[:success] = "Choix déplacé#{res}." 
     end

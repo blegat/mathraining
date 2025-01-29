@@ -149,7 +149,7 @@ class MessagesController < ApplicationController
   # Check that current user can update the message
   def user_can_update_message
     unless @message.can_be_updated_by(current_user)
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   

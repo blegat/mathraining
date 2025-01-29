@@ -186,7 +186,7 @@ class ProblemsController < ApplicationController
   def order
     t = @problem.virtualtest
     problem2 = t.problems.where("position = ?", params[:new_position]).first
-    if !problem2.nil? and problem2 != @problem
+    if !problem2.nil? && problem2 != @problem
       res = swap_position(@problem, problem2)
       flash[:success] = "Problème déplacé#{res}." 
     end
@@ -211,7 +211,7 @@ class ProblemsController < ApplicationController
   def get_section
     @section = Section.find_by_id(params[:section_id])
     return if check_nil_object(@section)
-    render 'errors/access_refused' and return if @section.fondation?
+    render 'errors/access_refused' if @section.fondation?
   end
   
   ########## CHECK METHODS ##########

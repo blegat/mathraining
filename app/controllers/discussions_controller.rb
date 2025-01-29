@@ -30,7 +30,7 @@ class DiscussionsController < ApplicationController
       other = User.find_by_id(params[:qui].to_i)
       return if check_nil_object(other)
       d = Discussion.get_discussion_between(current_user, other)
-      if not d.nil?
+      unless d.nil?
         redirect_to d and return
       end
     end

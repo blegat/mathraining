@@ -156,7 +156,7 @@ class ContestsController < ApplicationController
   # Check if current user can see the contest
   def user_can_see_contest
     if (@contest.in_construction? && !(signed_in? && @contest.is_organized_by_or_admin(current_user)))
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
 
@@ -178,14 +178,14 @@ class ContestsController < ApplicationController
   # Check that the contest is offline
   def offline_contest
     if !@contest.in_construction?
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check if cutoffs can be defined for this contest
   def cutoffs_can_be_defined
     if !@contest.completed? || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.root)
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
 

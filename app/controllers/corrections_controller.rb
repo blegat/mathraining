@@ -77,23 +77,23 @@ class CorrectionsController < ApplicationController
     m = "Votre commentaire a bien été posté."
 
     # If wrong and current user is the student: new status is wrong_to_read
-    if current_user == @submission.user and @submission.wrong?
+    if current_user == @submission.user && @submission.wrong?
       @submission.wrong_to_read!
 
     # If new/wrong, current user is corrector and he wants to keep it wrong: new status is wrong
-    elsif (current_user != @submission.user) and (@submission.waiting? or @submission.wrong_to_read?) and
+    elsif (current_user != @submission.user) && (@submission.waiting? || @submission.wrong_to_read?) &&
           params[:commit] == "Poster et refuser la soumission"
           @submission.wrong!
       m = "Soumission marquée comme incorrecte."
 
     # If current user is corrector and he wants to close it: new status is closed
-    elsif (current_user != @submission.user) and (@submission.waiting? or @submission.wrong? or @submission.wrong_to_read?) and
+    elsif (current_user != @submission.user) && (@submission.waiting? || @submission.wrong? || @submission.wrong_to_read?) &&
           params[:commit] == "Poster et clôturer la soumission"
       @submission.closed!
       m = "Soumission clôturée."
 
     # If current user is corrector and he wants to accept it: new status is correct
-    elsif (current_user != @submission.user) and params[:commit] == "Poster et accepter la soumission"
+    elsif (current_user != @submission.user) && params[:commit] == "Poster et accepter la soumission"
       @submission.correct!
       m = "Soumission marquée comme correcte."
 
@@ -110,10 +110,10 @@ class CorrectionsController < ApplicationController
         
         # Update the statistics of the problem
         @problem.nb_solves = @problem.nb_solves + 1
-        if @problem.first_solve_time.nil? or @problem.first_solve_time > resolution_time
+        if @problem.first_solve_time.nil? || @problem.first_solve_time > resolution_time
           @problem.first_solve_time = resolution_time
         end
-        if @problem.last_solve_time.nil? or @problem.last_solve_time < resolution_time
+        if @problem.last_solve_time.nil? || @problem.last_solve_time < resolution_time
           @problem.last_solve_time = resolution_time
         end
         @problem.save
@@ -189,35 +189,35 @@ class CorrectionsController < ApplicationController
   # Check that current user is the submission user, or an admin or a corrector having access to the problem
   def user_can_comment_submission
     if @submission.user != current_user && !current_user.admin && (!current_user.corrector || !current_user.pb_solved?(@problem))
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end  
   
   # Check that the submission is visible (not a draft and not in a running test)
   def submission_is_visible
     if !@submission.visible?
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that the submission is not plagiarized or closed (nobody can comment in that case)
   def submission_not_plagiarized_or_closed
     if @submission.plagiarized? || @submission.closed?
-      redirect_to problem_path(@problem, :sub => @submission) and return
+      redirect_to problem_path(@problem, :sub => @submission)
     end
   end
   
   # Check that the student does not try to comment a waiting submission in a test
   def submission_not_waiting_in_test
     if @submission.user == current_user && @submission.intest && @submission.waiting?
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that submission has recent activity
   def submission_has_recent_activity
     if @submission.user == current_user && @submission.wrong? && !@submission.has_recent_activity
-      redirect_to problem_path(@problem, :sub => @submission) and return
+      redirect_to problem_path(@problem, :sub => @submission)
     end
   end
   

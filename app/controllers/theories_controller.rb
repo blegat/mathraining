@@ -72,7 +72,7 @@ class TheoriesController < ApplicationController
   # Move a theory to another position
   def order
     theory2 = @chapter.theories.where("position = ?", params[:new_position]).first
-    if !theory2.nil? and theory2 != @theory
+    if !theory2.nil? && theory2 != @theory
       res = swap_position(@theory, theory2)
       flash[:success] = "Point théorique déplacé#{res}." 
     end

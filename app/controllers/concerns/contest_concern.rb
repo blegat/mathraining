@@ -8,21 +8,21 @@ module ContestConcern
   # Check that current user is an organizer of @contest
   def organizer_of_contest
     if !(signed_in? && @contest.is_organized_by(current_user))
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that current user is a root or an organizer of @contest
   def organizer_of_contest_or_root
     if !(signed_in? && @contest.is_organized_by_or_root(current_user))
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that current user is an admin or an organizer of @contest
   def organizer_of_contest_or_admin
     if !(signed_in? && @contest.is_organized_by_or_admin(current_user))
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   

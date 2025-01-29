@@ -331,7 +331,7 @@ class SubmissionsController < ApplicationController
   # Check that current user can create a new submission for the problem
   def user_can_write_submission_to_problem
     if current_user.submissions.where(:problem => @problem, :status => [:draft, :waiting]).count > 0
-      redirect_to problem_path(@problem) and return
+      redirect_to problem_path(@problem)
     end
   end
   
@@ -352,7 +352,7 @@ class SubmissionsController < ApplicationController
   # Check that current user is the author of the submission
   def author_of_submission
     if @submission.user != current_user
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
 
@@ -367,11 +367,11 @@ class SubmissionsController < ApplicationController
   def user_can_see_submissions
     redirect_to root_path if !(params.has_key?:what)
     @what = params[:what].to_i
-    redirect_to root_path if (@what != 0 and @what != 1)
+    redirect_to root_path if (@what != 0 && @what != 1)
     if @what == 0    # See correct submissions (need to have solved problem or to be admin)
-      redirect_to root_path if !current_user.admin? and !current_user.pb_solved?(@problem)
+      redirect_to root_path if !current_user.admin? && !current_user.pb_solved?(@problem)
     else # (@what == 1) # See incorrect submissions (need to be admin or corrector)
-      redirect_to root_path if !current_user.admin? and !current_user.corrector?
+      redirect_to root_path if !current_user.admin? && !current_user.corrector?
     end
   end
   
@@ -382,7 +382,7 @@ class SubmissionsController < ApplicationController
     unless current_user.root?
       # Corrector should have accepted the solution a few minutes ago
       eleven_minutes_ago = DateTime.now - 11.minutes
-      if Solvedproblem.where(:user => @submission.user, :problem => @problem).first.correction_time < eleven_minutes_ago or @submission.corrections.where(:user => current_user).where("created_at > ?", eleven_minutes_ago).count == 0
+      if Solvedproblem.where(:user => @submission.user, :problem => @problem).first.correction_time < eleven_minutes_ago || @submission.corrections.where(:user => current_user).where("created_at > ?", eleven_minutes_ago).count == 0
         flash[:danger] = "Vous ne pouvez plus marquer cette solution comme erronée."
         redirect_to problem_path(@problem, :sub => @submission)
       end

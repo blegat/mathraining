@@ -54,7 +54,7 @@ class SuspicionsController < ApplicationController
       if @submission.correct? && params[:suspicion][:status] == "confirmed"
         # Mark submission as incorrect (changing the user's score if needed)
         @submission.mark_incorrect
-      elsif @submission.waiting? and @suspicion.status == "confirmed"
+      elsif @submission.waiting? && @suspicion.status == "confirmed"
         # Delete the reservation, if any
         @submission.followings.where(:kind => :reservation).destroy_all
       end

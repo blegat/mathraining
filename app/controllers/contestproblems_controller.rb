@@ -149,14 +149,14 @@ class ContestproblemsController < ApplicationController
   # Check that the contest is offline
   def offline_contest
     if !@contest.in_construction?
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that current user has access to the problem
   def user_has_access_to_problem
     if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.at_most(:not_started_yet)
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
@@ -176,7 +176,7 @@ class ContestproblemsController < ApplicationController
       end_date = Time.zone.parse(params[:contestproblem][:end_time])
     end
     
-    if (start_date.nil? or end_date.nil?)
+    if (start_date.nil? || end_date.nil?)
       @date_error = "Les deux dates doivent être définies."
     elsif (@contestproblem.nil? || @contestproblem.at_most(:in_progress)) && !end_date.nil? && date_now >= end_date
       @date_error = "La deuxième date ne peut pas être dans le passé."

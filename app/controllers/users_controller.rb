@@ -360,7 +360,7 @@ class UsersController < ApplicationController
         @user.update(:key => SecureRandom.urlsafe_base64, :recup_password_date_limit => nil)
         flash[:info] = "Je ne vous félicite pas : vous avez une mauvaise mémoire, vous êtes en retard et vous tapez trop vite ! Quel personnage, ami de Malika, a également l'un ces défauts ?"
         redirect_to root_path
-      elsif (params[:user][:password].nil? or params[:user][:password].length == 0)
+      elsif (params[:user][:password].nil? || params[:user][:password].length == 0)
         @user.errors.add(:base, "Mot de passe est vide")
         render 'recup_password'
       elsif @user.update(params.require(:user).permit(:password, :password_confirmation))
@@ -475,7 +475,7 @@ class UsersController < ApplicationController
 
   # Start following a user
   def follow
-    unless current_user == @user or current_user.followed_users.exists?(@user.id) or @user.admin?
+    unless current_user == @user || current_user.followed_users.exists?(@user.id) || @user.admin?
       if current_user.followed_users.size >= 30
         flash[:danger] = "Vous ne pouvez pas suivre plus de 30 utilisateurs."
       else
@@ -517,7 +517,7 @@ class UsersController < ApplicationController
   def get_user
     @user = User.find_by_id(params[:id])
     if @user.nil? || !@user.active?
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
@@ -526,28 +526,28 @@ class UsersController < ApplicationController
   # Check that current user is in some Wépion group
   def group_user
     if !current_user.admin && current_user.group == ""
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that the target user is current user
   def target_user_is_current_user
     if current_user.id != @user.id
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that the target user is not a root
   def target_user_is_not_root
     if @user.root?
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Some scrapers require 'index' every second with random parameters 'page', 'from' and 'rank' (???)
   def avoid_strange_scraping
     if params.has_key?(:from) || params.has_key?(:rank)
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
@@ -651,16 +651,16 @@ class UsersController < ApplicationController
     end
 
     # Sort users with rank 1 in random order (only if at least 2 people with rank 1)
-    if local_id >= 2 and @x_globalrank[1] == 1
+    if local_id >= 2 && @x_globalrank[1] == 1
       s = 2
-      while s < local_id and @x_globalrank[s] == 1
+      while s < local_id && @x_globalrank[s] == 1
         s = s + 1
       end
       r = Random.new(Date.today.in_time_zone.to_time.to_i)
       alea = Array.new(s)
       (0..(s-1)).each do |i|
         x = r.rand()
-        if signed_in? and ids[i] == current_user.id
+        if signed_in? && ids[i] == current_user.id
           alea[i] = [0, i]
         else
           alea[i] = [x, i]

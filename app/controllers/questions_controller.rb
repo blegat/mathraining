@@ -137,7 +137,7 @@ class QuestionsController < ApplicationController
   # Move a question to a new position
   def order
     question2 = @chapter.questions.where("position = ?", params[:new_position]).first
-    if !question2.nil? and question2 != @question
+    if !question2.nil? && question2 != @question
       res = swap_position(@question, question2)
       flash[:success] = "Exercice déplacé#{res}." 
     end

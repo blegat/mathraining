@@ -60,21 +60,21 @@ class PicturesController < ApplicationController
   # Check that current user is admin or is creating a chapter
   def chapter_creator_or_admin
     if !signed_in? || (!current_user.admin && current_user.creating_chapters.count == 0)
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that current user is the author of the picture
   def author_of_picture_or_root
     if @picture.user.id != current_user.id && !current_user.root?
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
   
   # Check that the access key is present and correct
   def check_access_key
     if !params.has_key?:key or params[:key] != @picture.access_key
-      render 'errors/access_refused' and return
+      render 'errors/access_refused'
     end
   end
 end

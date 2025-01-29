@@ -123,7 +123,7 @@ class ChaptersController < ApplicationController
   # Move the chapter to another position
   def order
     chapter2 = @section.chapters.where("level = ? AND position = ?", @chapter.level, params[:new_position]).first
-    if !chapter2.nil? and chapter2 != @chapter
+    if !chapter2.nil? && chapter2 != @chapter
       res = swap_position(@chapter, chapter2)
       flash[:success] = "Chapitre déplacé#{res}." 
     end
@@ -187,7 +187,7 @@ class ChaptersController < ApplicationController
   def chapter_has_some_questions
     if @chapter.questions.count == 0
       flash[:danger] = "Un chapitre doit avoir au moins un exercice."
-      redirect_to @chapter and return
+      redirect_to @chapter
     end
   end
 end

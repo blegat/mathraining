@@ -76,7 +76,7 @@ class ContestsolutionsController < ApplicationController
   
   # Reserve a solution
   def reserve
-    if @contestsolution.reservation > 0 and @contestsolution.reservation != current_user.id
+    if @contestsolution.reservation > 0 && @contestsolution.reservation != current_user.id
       @correct_name = User.find(@contestsolution.reservation).name
       @ok = 0
     else
@@ -131,7 +131,7 @@ class ContestsolutionsController < ApplicationController
       if @contestsolution.nil? # Can happen in "create" case when a solution was sent in the meantime
         @contestsolution = mycontestsolution
       elsif mycontestsolution != @contestsolution
-        render 'errors/access_refused' and return
+        render 'errors/access_refused'
       end
     end
   end
