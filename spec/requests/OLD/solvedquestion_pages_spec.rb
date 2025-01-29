@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Solvedquestion pages" do
+describe "Solvedquestion pages", question: true do
 
   subject { page }
 
@@ -68,6 +68,8 @@ describe "Solvedquestion pages" do
           expect(page).to have_success_message("Bonne réponse !")
           expect(page).to have_content("du premier coup !")
           expect(page).to have_content(exercise.explanation)
+          expect(page).to have_selector("span", class: "bg-success", text: "#{exercise.value} points")
+          expect(page).to have_selector("a", id: "menu-question-#{exercise.id}", class: "list-group-item-success")
           expect(user.rating).to eq(rating_before + exercise.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
         end
@@ -81,6 +83,9 @@ describe "Solvedquestion pages" do
         end
         specify do
           expect(page).to have_info_message("La réponse attendue est un nombre entier.")
+          expect(page).to have_no_selector("span", class: "bg-success", text: "#{exercise.value} points")
+          expect(page).to have_no_selector("a", id: "menu-question-#{exercise.id}", class: "list-group-item-success")
+          expect(page).to have_no_selector("a", id: "menu-question-#{exercise.id}", class: "list-group-item-danger")
           expect(page).to have_no_content(exercise.explanation)
           expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
           expect(user.rating).to eq(rating_before)
@@ -97,6 +102,8 @@ describe "Solvedquestion pages" do
           expect(page).to have_error_message("Mauvaise réponse...")
           expect(page).to have_content("Votre réponse (#{exercise_answer+1}) est erronée. Vous avez déjà commis 1 erreur.")
           expect(page).to have_no_content(exercise.explanation)
+          expect(page).to have_no_selector("span", class: "bg-success", text: "#{exercise.value} points")
+          expect(page).to have_selector("a", id: "menu-question-#{exercise.id}", class: "list-group-item-danger")
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
         end
@@ -111,6 +118,8 @@ describe "Solvedquestion pages" do
             expect(page).to have_success_message("Bonne réponse !")
             expect(page).to have_content("après 1 erreur.")
             expect(page).to have_content(exercise.explanation)
+            expect(page).to have_no_selector("a", id: "menu-question-#{exercise.id}", class: "list-group-item-danger")
+            expect(page).to have_selector("a", id: "menu-question-#{exercise.id}", class: "list-group-item-success")
             expect(user.rating).to eq(rating_before + exercise.value)
             expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
           end
@@ -231,6 +240,7 @@ describe "Solvedquestion pages" do
           specify do
             expect(page).to have_error_message("Mauvaise réponse...")
             expect(page).to have_no_content(exercise.explanation)
+            expect(page).to have_selector("a", id: "menu-question-#{qcm.id}", class: "list-group-item-success") # should still be green
             expect(user.unsolvedquestions.where(:question => qcm).count).to eq(0) # When answering for fun, no unsolvedquestion should be created!
           end
         end
@@ -319,6 +329,7 @@ describe "Solvedquestion pages" do
           expect(page).to have_success_message("Bonne réponse !")
           expect(page).to have_no_content("du premier coup !") # Only for students
           expect(page).to have_content(exercise_decimal.explanation)
+          expect(page).to have_no_selector("a", id: "menu-question-#{exercise_decimal.id}", class: "list-group-item-success") # Should not become green
           expect(admin.solvedquestions.where(:question => exercise_decimal).count).to eq(0) # Should not be created for an admin
           expect(admin.rating).to eq(0)
           expect(admin.pointspersections.where(:section_id => section).first.points).to eq(0)
@@ -334,6 +345,7 @@ describe "Solvedquestion pages" do
         specify do
           expect(page).to have_error_message("Mauvaise réponse...")
           expect(page).to have_no_content(exercise_decimal.explanation)
+          expect(page).to have_no_selector("a", id: "menu-question-#{exercise_decimal.id}", class: "list-group-item-danger") # Should not become red
           expect(admin.unsolvedquestions.where(:question => exercise_decimal).count).to eq(0) # Should not be created for an admin
         end
       end
@@ -347,6 +359,22 @@ describe "Solvedquestion pages" do
           expect(page).to have_content(exercise_decimal_answer)
           expect(page).to have_selector("h4", text: "Explication")
           expect(page).to have_content(exercise_decimal.explanation)
+        end
+      end
+    end
+    
+    describe "visits a single answer qcm" do
+      before { visit chapter_question_path(chapter, qcm) }
+      
+      describe "and does not check any option for fun" do
+        before do
+          click_button "Soumettre"
+        end
+        specify do
+          expect(page).to have_info_message("Veuillez cocher une réponse.")
+          expect(page).not_to have_content(qcm.explanation)
+          expect(page).to have_no_selector("a", id: "menu-question-#{qcm.id}", class: "list-group-item-success") # Should not become green
+          expect(page).to have_no_selector("a", id: "menu-question-#{qcm.id}", class: "list-group-item-danger") # Should not become red
         end
       end
     end
@@ -369,20 +397,6 @@ describe "Solvedquestion pages" do
           expect(admin.rating).to eq(0)
           expect(admin.pointspersections.where(:section_id => section).first.points).to eq(0)
           expect(admin.chapters.exists?(chapter2.id)).to eq(false) # Even if it's the only question of chapter2
-        end
-      end
-      
-      describe "and makes a mistake for fun" do
-        before do
-          check "ans_#{item_multiple_correct.id}"
-          check "ans_#{item_multiple_incorrect.id}"
-          click_button "Soumettre"
-          admin.reload
-        end
-        specify do
-          expect(page).to have_error_message("Mauvaise réponse...")
-          expect(page).to have_no_content(qcm_multiple.explanation)
-          expect(admin.unsolvedquestions.where(:question => qcm_multiple).count).to eq(0) # Should not be created for an admin
         end
       end
     end

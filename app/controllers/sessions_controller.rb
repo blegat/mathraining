@@ -1,7 +1,7 @@
 #encoding: utf-8
 class SessionsController < ApplicationController
   before_action :signed_in_user_danger, only: [:destroy]
-  before_action :signed_out_user, only: [:create, :fast_create]
+  before_action :signed_out_user, only: [:create]
 
   # Create a session, i.e. sign in (send the form)
   def create
@@ -27,10 +27,11 @@ class SessionsController < ApplicationController
     end
   end
   
-  # Create a session, FOR TESTS ONLY to go faster than always filling the form
+  # Create a session, to go faster than always filling the form (NOT IN PRODUCTION)
   def fast_create
-    if Rails.env.test?
-      user = User.find_by_id(params[:user_id].to_i)
+    unless Rails.env.production?
+      sign_out if signed_in?
+      user = User.find_by_id(params[:id].to_i)
       sign_in(user, false) unless user.nil?
     end
     redirect_back(fallback_location: root_path)

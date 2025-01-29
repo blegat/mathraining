@@ -15,7 +15,7 @@
 
   <div class="mb-2">
   <%= label_tag :ans, "Votre réponse", class: "form-label" %>
-  <%= text_field_tag :ans, nil, class: "form-control to-enable ms-1", style: "width:70px;", value: val, :disabled => !signed_in? || need_to_wait %>
+  <%= text_field_tag :ans, nil, class: "form-control to-enable ms-1", style: "width:70px;", value: val, :disabled => !signed_in? || in_skin? || need_to_wait %>
   </div>
   
 <% else %>
@@ -28,7 +28,7 @@
     <% question.items.order(:position).each do |c| %>
       <div class="form-check mb-2">
         <label class="form-check-label ms-2">
-          <%= check_box_tag "ans_#{ c.id }", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || need_to_wait, :class => "form-check-input to-enable" %>
+          <%= check_box_tag "ans_#{ c.id }", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable" %>
           <%= htmlise(c.ans) %>
         </label>
       </div>
@@ -40,7 +40,7 @@
     <% question.items.order(:position).each do |c| %>
       <div class="form-check mb-2">
         <label class="form-check-label ms-2">
-          <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans_#{ c.id }", :disabled => !signed_in? || need_to_wait, :class => "form-check-input to-enable" %>
+          <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans_#{ c.id }", :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable" %>
           <%= htmlise(c.ans) %>
         </label>
       </div>
@@ -49,4 +49,4 @@
   <% end %>
 <% end %>
 
-<button id="question-button" onclick="javascript:checkAnswer();" class="btn btn-primary to-enable" <%= "disabled" if !signed_in? || need_to_wait %>>Soumettre</button>
+<button id="question-button" onclick="javascript:checkAnswer();" class="btn btn-primary to-enable" <%= "disabled" if !signed_in? || in_skin? || need_to_wait %>>Soumettre</button>

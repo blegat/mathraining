@@ -36,7 +36,7 @@ var checkAnswer = function() {
   function enableOrDisableInputs(disable) {
     var to_enable = document.getElementsByClassName("to-enable");
     for (let i = 0; i < to_enable.length; i++) {
-      to_enable[i].disabled = disable || <%= !signed_in? %>;
+      to_enable[i].disabled = disable || <%= in_skin? %>;
     }
   }
   

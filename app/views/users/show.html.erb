@@ -1010,6 +1010,13 @@
   </div>
 <% end %>
 
+<!-- Si développement : fast sign in to this user -->
+<% if Rails.env.development? %>
+  <div class="g-col-12 basic_container text-center p-2">
+    <%= link_to "Se connecter avec ce compte", fast_sign_in_path(:id => @user.id) %>
+  </div>
+<% end %>
+
 
 </div>
 <!-- END OF THE MAIN DIV -->

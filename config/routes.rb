@@ -296,11 +296,8 @@ Rails.application.routes.draw do
   get '/ten_years', to: 'puzzles#main'
   
   # Sessions (singular resource, to call destroy without an id!)
-  resource :sessions, only: [:create, :destroy] do
-    collection do
-      get :fast_create
-    end
-  end
+  resource :sessions, only: [:create, :destroy]
+  get '/fast_sign_in', to: 'sessions#fast_create' # Only in test and development!
   
   # Static pages
   root to: 'static_pages#home'

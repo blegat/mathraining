@@ -1,7 +1,7 @@
 include ApplicationHelper
 
 def sign_in(user)
-  visit fast_create_sessions_path(:user_id => user.id)
+  visit fast_sign_in_path(:id => user.id)
 end
 
 def sign_in_with_form(user)

@@ -4,6 +4,7 @@ class QuestionsController < ApplicationController
   
   before_action :signed_in_user, only: [:new, :edit, :manage_items, :edit_explanation, :show_answer, :check_answer]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation]
+  before_action :user_not_in_skin, only: [:check_answer]
   
   before_action :get_question, only: [:show, :edit, :update, :destroy, :manage_items, :order, :put_online, :edit_explanation, :update_explanation, :show_answer, :check_answer]
   before_action :get_chapter, only: [:show, :new, :create]
