@@ -54,7 +54,7 @@ class Question < ActiveRecord::Base
       if self.many_answers # Many answers possible
         answer = (params[:ans].nil? ? {} : params[:ans])
 
-        self.items.each do |c|
+        self.items.order(:id).each do |c|
           if answer[c.id.to_s] # Answered "true"
             good_guess = false if !c.ok
             diff_sub = true if !diff_sub && !unsolvedquestion.items.exists?(c.id)
