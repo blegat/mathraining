@@ -27,7 +27,7 @@ var checkAnswer = function() {
   $.getScript("<%= check_answer_question_url(@question) %>" + params);
 }
 
-<% unless can_see_answer %>
+<% if signed_in? && !can_see_answer %>
   var running = false;
   var reste_debut;
   var heure_debut_js;
