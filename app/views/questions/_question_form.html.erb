@@ -27,9 +27,11 @@
     <div class="mb-3">
     <% question.items.order(:position).each do |c| %>
       <div class="form-check mb-2">
-        <label class="form-check-label ms-2">
-          <%= check_box_tag "ans_#{ c.id }", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable" %>
-          <%= htmlise(c.ans) %>
+        <label class="form-check-label ms-2 d-flex gap-2 align-items-center">
+          <%= check_box_tag "ans_#{ c.id }", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable flex-shrink-0"%>
+          <div>
+            <%= htmlise(c.ans) %>
+          </div>
         </label>
       </div>
     <% end %>
@@ -39,9 +41,11 @@
     <div class="mt-3 mb-3">
     <% question.items.order(:position).each do |c| %>
       <div class="form-check mb-2">
-        <label class="form-check-label ms-2">
-          <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans_#{ c.id }", :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable" %>
-          <%= htmlise(c.ans) %>
+        <label class="form-check-label ms-2 d-flex gap-2 align-items-center">
+          <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans_#{ c.id }", :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable flex-shrink-0" %>
+          <div>
+            <%= htmlise(c.ans) %>
+          </div>        
         </label>
       </div>
     <% end %>
