@@ -22,30 +22,24 @@
   <!-- QCM -->
   <% prev_answers = (unsolvedquestion.nil? ? Set.new : unsolvedquestion.items.ids.to_set) %>
   <% if question.many_answers %>
-
     <p class="mt-3 mb-3 fw-bold">Cochez chaque proposition correcte.</p>
     <div class="mb-3">
     <% question.items.order(:position).each do |c| %>
-      <div class="form-check mb-2">
-        <label class="form-check-label ms-2 d-flex gap-2 align-items-center">
-          <%= check_box_tag "ans_#{ c.id }", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable flex-shrink-0"%>
-          <div>
-            <%= htmlise(c.ans) %>
-          </div>
+      <div class="form-check ms-2 mb-2 d-flex gap-2 align-items-center">
+        <%= check_box_tag "ans_#{ c.id }", "ok", prev_answers.include?(c.id), :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable flex-shrink-0 my-0" %>
+        <label for="ans_<%= c.id %>" class="form-check-label">
+          <%= htmlise(c.ans) %>
         </label>
       </div>
     <% end %>
     </div>
-
   <% else %>
     <div class="mt-3 mb-3">
     <% question.items.order(:position).each do |c| %>
-      <div class="form-check mb-2">
-        <label class="form-check-label ms-2 d-flex gap-2 align-items-center">
-          <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans_#{ c.id }", :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable flex-shrink-0" %>
-          <div>
-            <%= htmlise(c.ans) %>
-          </div>        
+      <div class="form-check ms-2 mb-2 d-flex gap-2 align-items-center">
+        <%= radio_button_tag "ans", c.id, prev_answers.include?(c.id), :id => "ans_#{ c.id }", :disabled => !signed_in? || in_skin? || need_to_wait, :class => "form-check-input to-enable flex-shrink-0 my-0" %>
+        <label for="ans_<%= c.id %>" class="form-check-label">
+          <%= htmlise(c.ans) %>      
         </label>
       </div>
     <% end %>
