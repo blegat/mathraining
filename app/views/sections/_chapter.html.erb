@@ -61,7 +61,7 @@
   <div class="<%= col_class %> module pb-2">
     <center><h5>Exercices</h5></center>
     <!-- Exercices -->
-    <%= render 'questions', chapter: chapter, acces: (classe != "greyy") %>
+    <%= render 'questions', chapter: chapter, can_see_questions: (classe != "greyy"), chapter_solved: (classe == "greeny") %>
   </div>
   
   <% if !@section.fondation %>

@@ -1,12 +1,15 @@
 <% j = 1 %>
 <% k = 1 %>
 
-<% compteur = 0 %>
+<% nb_questions = 0 %>
+
+<% check_if_chapter_solved = chapter.online? && signed_in? && !current_user.admin? && can_see_questions && !chapter_solved %>
+<% all_questions_solved = true %>
 
 <% if !@questions_by_chapter[chapter.id].nil? %>
   <% @questions_by_chapter[chapter.id].each do |q| %>
     <% if (q.online || (signed_in? && (current_user.admin? || @chapter_status[chapter.id] == "creator"))) %>
-      <% compteur = compteur + 1 %>
+      <% nb_questions += 1 %>
       <% if k % 8 == 1 && k > 1 %>
         </div>
         <br/>
@@ -15,7 +18,7 @@
         <center>
         <div class="btn-group mt-1">
       <% end %>
-      <% if acces %>
+      <% if can_see_questions %>
         <% classe = "" %>  
         <% if !signed_in? %>
           <% classe = "btn btn-ld-light-dark" %>  
@@ -37,13 +40,22 @@
       <% end %>
       <% j = j+1 if q.online %>
       <% k = k+1 %>
+      
+      <% if check_if_chapter_solved && all_questions_solved && q.online? && @question_status[q.id] != "correct" %>
+        <% all_questions_solved = false %>
+      <% end %>
     <% end %>
   <% end %>
 <% end %>
 
-<% if compteur == 0 %>
+<% if nb_questions == 0 %>
   <center><p><i>Aucun exercice.</i></p></center>
 <% else %>
   </div>
   </center>
+<% end %>
+
+<% if check_if_chapter_solved && all_questions_solved %>
+  <!-- Il est déjà arrivé qu'un chapitre ne soit pas marqué comme résolu au moment de résoudre la dernière question... -->
+  <% current_user.chapters << chapter %>
 <% end %>
