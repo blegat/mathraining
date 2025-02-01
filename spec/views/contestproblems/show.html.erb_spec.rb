@@ -31,7 +31,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       it "renders the page correctly" do
         render template: "contestproblems/show"
         should have_content("Origine du problème :")
-        expect(response).not_to render_template(:partial => "contests/_clock")
+        expect(response).not_to render_template(:partial => "shared/_clock")
         should have_link("Modifier ce problème")
         should have_link("Supprimer ce problème")
         expect(response).to render_template(:partial => "contestsolutions/_index")
@@ -63,8 +63,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       it "renders the page correctly" do
         render template: "contestproblems/show"
         should have_content("Origine du problème :")
-        should have_content("Temps avant publication :")
-        expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.start_time.to_i, message_zero: "En ligne"})
+        expect(response).to render_template(:partial => "shared/_clock", :locals => {text: "Temps avant publication", date_limit: contestproblem.start_time.to_i, message_zero: "En ligne"})
         should have_link("Modifier ce problème")
         should have_no_link("Supprimer ce problème")
         expect(response).to render_template(:partial => "contestsolutions/_index")
@@ -87,9 +86,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       it "renders the page correctly" do
         render template: "contestproblems/show"
         should have_content("Origine du problème :")
-        should have_no_content("Temps avant publication :")
-        should have_content("Temps restant :")
-        expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé"})
+        expect(response).to render_template(:partial => "shared/_clock", :locals => {text: "Temps restant", date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé"})
         should have_link("Modifier ce problème")
         should have_no_link("Supprimer ce problème")
         expect(response).to render_template(:partial => "contestsolutions/_index")
@@ -108,8 +105,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
         it "renders the page correctly" do
           render template: "contestproblems/show"
           should have_no_content("Origine du problème :")
-          should have_content("Temps restant :")
-          expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé"})
+          expect(response).to render_template(:partial => "shared/_clock", :locals => {text: "Temps restant", date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé"})
           should have_no_link("Modifier ce problème")
           expect(response).to render_template(:partial => "contestsolutions/_index")
           expect(response).to render_template(:partial => "contestsolutions/_new")
@@ -136,8 +132,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       
       it "renders the page correctly" do
         render template: "contestproblems/show"
-        should have_content("Temps restant :")
-        expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé"})
+        expect(response).to render_template(:partial => "shared/_clock", :locals => {text: "Temps restant", date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé"})
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
@@ -159,7 +154,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       it "renders the page correctly" do
         render template: "contestproblems/show"
         should have_content("Origine du problème :")
-        expect(response).not_to render_template(:partial => "contests/_clock")
+        expect(response).not_to render_template(:partial => "shared/_clock")
         should have_link("Modifier ce problème")
         should have_no_link("Supprimer ce problème")
         expect(response).to render_template(:partial => "contestsolutions/_index")
@@ -178,7 +173,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       it "renders the page correctly" do
         render template: "contestproblems/show"
         should have_content("Origine du problème :")
-        expect(response).not_to render_template(:partial => "contests/_clock")
+        expect(response).not_to render_template(:partial => "shared/_clock")
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
@@ -229,7 +224,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       it "renders the page correctly" do
         render template: "contestproblems/show"
         should have_content("Origine du problème :")
-        expect(response).not_to render_template(:partial => "contests/_clock")
+        expect(response).not_to render_template(:partial => "shared/_clock")
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
         expect(response).not_to render_template(:partial => "contestsolutions/_show")

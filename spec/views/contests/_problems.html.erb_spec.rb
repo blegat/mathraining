@@ -32,7 +32,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
         should have_content(contestproblem.origin)
         should have_no_content("Tenté par")
         should have_no_content("Publication dans :")
-        expect(response).not_to render_template(:partial => "contests/_clock")
+        expect(response).not_to render_template(:partial => "shared/_clock")
       end
     end
   end
@@ -53,8 +53,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
         should have_content(contestproblem.statement)
         should have_content(contestproblem.origin)
         should have_no_content("Tenté par")
-        should have_content("Publication dans :")
-        expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.start_time.to_i, message_zero: "En ligne", p_id: contestproblem.id})
+        expect(response).to render_template(:partial => "shared/_clock", :locals => {text: "Publication dans", date_limit: contestproblem.start_time.to_i, message_zero: "En ligne", id: contestproblem.id})
       end
     end
     
@@ -88,8 +87,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
         should have_content(contestproblem.statement)
         should have_content(contestproblem.origin)
         should have_content("Tenté par 0 personne")
-        should have_content("Temps restant :")
-        expect(response).to render_template(:partial => "contests/_clock", :locals => {date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé", p_id: contestproblem.id})
+        expect(response).to render_template(:partial => "shared/_clock", :locals => {text: "Temps restant", date_limit: contestproblem.end_time.to_i, message_zero: "Temps écoulé", id: contestproblem.id})
       end
     end
     
