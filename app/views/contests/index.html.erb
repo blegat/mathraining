@@ -25,7 +25,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
 
     <% nb_prob = c.num_problems %>
     
-    <table class="table table-bordered virtualtest <%= classe %>">
+    <table class="table table-bordered contest <%= classe %>">
     <tr><td class="title">
     <center><h4><%= link_to "Concours ##{c.number}", c %></h4></center>
     </td></tr>
@@ -78,7 +78,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
         <% end %>
       </div>
 
-      <div class="g-col-12 g-col-md-24 module bottom-part text-start">
+      <div class="g-col-12 g-col-md-24 module bottom-part">
         Organisé par 
         <% i = 0 %>
         <% total = c.organizers.count %>

@@ -180,8 +180,9 @@
               <% end %>
             </div>
 
-            <div class="g-col-12 g-col-md-6 g-col-lg-5 module right-part pb-2">
+            <div class="g-col-12 g-col-md-6 g-col-lg-5 module right-part">
               <center><h5>Score<%= " moyen" if current_user.admin? %></h5></center>
+              <div class="fs-2">
               <% if current_user.admin? %>
                 <%= arr[h].round(1) if arr[h] >= 0 %>
                 <%= "-" if arr[h] < 0 %>
@@ -191,6 +192,7 @@
                 <%= sc_show %>
               <% end %>
                / 7
+               </div>
             </div>
             
             <% h = h+1 %>
@@ -217,9 +219,8 @@
           <% depart = initial.to_i %>
           <% @virtualtest = t %>
           
-          <div class="g-col-12 g-col-md-24 module bottom-part">
-            <span style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></span>
-            <%= render 'contests/clock', date_limit: depart + 60*@virtualtest.duration, message_zero: "Temps écoulé", p_id: 0 %>
+          <div class="g-col-12 g-col-md-24 module clock-part">
+            <%= render 'shared/clock', text: "Temps restant", date_limit: depart + 60*@virtualtest.duration, message_zero: "Temps écoulé" %>
           </div>
         <% end %>
         

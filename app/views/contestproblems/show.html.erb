@@ -2,7 +2,7 @@
 
 <h1><%= title_contest(@contest, "Problème&nbsp;##{@contestproblem.number}".html_safe) %></h1>
 
-<p class="text-center fst-italic">
+<p class="text-center fst-italic pt-1">
   Solutions acceptées du <%= write_date_with_link(@contestproblem.start_time, @contest, @contestproblem) %> au <%= write_date_with_link(@contestproblem.end_time, @contest, @contestproblem) %> (heures belges)
 </p>
 
@@ -25,11 +25,9 @@
 
 <!-- Chronomètre -->
 <% if @contestproblem.in_progress? %>
-  <p class="text-center fs-4 pt-1">Temps restant : <b><span id="clockbox0">--------</span></b></p>
-  <%= render 'contests/clock', date_limit: @contestproblem.end_time.to_i, message_zero: "Temps écoulé", p_id: 0 %>
+  <%= render 'shared/clock', text: "Temps restant", date_limit: @contestproblem.end_time.to_i, message_zero: "Temps écoulé", classes: "mb-3" %>
 <% elsif @contestproblem.at_most(:not_started_yet) && !@contest.in_construction? %>
-  <p class="text-center fs-4 pt-1">Temps avant publication : <b><span id="clockbox0">--------</span></b></p>
-  <%= render 'contests/clock', date_limit: @contestproblem.start_time.to_i, message_zero: "En ligne", p_id: 0 %>
+  <%= render 'shared/clock', text: "Temps avant publication", date_limit: @contestproblem.start_time.to_i, message_zero: "En ligne", classes: "mb-3" %>
 <% end %>
 
 <% if @contest.is_organized_by_or_root(current_user) %>

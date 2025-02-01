@@ -1,11 +1,10 @@
 <% provide(:title, "Test ##{ @virtualtest.number }") %>
 
-<h1 class="mb-3"><%= title_virtualtests("Test ##{@virtualtest.number}") %></h1>
+<h1><%= title_virtualtests("Test ##{@virtualtest.number}") %></h1>
 
 <!-- Chronomètre -->
 <% start_time = Takentest.where(:user_id => current_user.id, :virtualtest_id => @virtualtest.id).first.taken_time %>
-<p class="text-center fs-4">Temps restant : <b><span id="clockbox0">--------</span></b></p>
-<%= render 'contests/clock', date_limit: start_time.to_i + 60 * @virtualtest.duration, message_zero: "Temps écoulé", p_id: 0 %>
+<%= render 'shared/clock', text: "Temps restant", date_limit: start_time.to_i + 60 * @virtualtest.duration, message_zero: "Temps écoulé", classes: "pt-1 mb-3" %>
 
 <% x = 1 %>
 <% numero = 0 %>

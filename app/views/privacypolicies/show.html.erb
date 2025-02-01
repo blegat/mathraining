@@ -1,10 +1,10 @@
 <% provide(:title, 'Politique de confidentialité') %>
 
-<h1 class="mb-3"><%= title_1("Politique de confidentialité") %></h1>
+<h1><%= title_1("Politique de confidentialité") %></h1>
 
 <% prev = Privacypolicy.where("online = ? AND publication_time < ?", true, @privacypolicy.publication_time).order("publication_time").last %>
 <% nex = Privacypolicy.where("online = ? AND publication_time > ?", true, @privacypolicy.publication_time).order("publication_time").first %>
-<p class="text-center">
+<p class="text-center pt-1">
 <% if !prev.nil? %>
   <%= link_to "Version du #{write_date_only(prev.publication_time)}", prev %> - 
 <% end %>

@@ -1,29 +1,41 @@
+<% if !defined?(classes) %>
+  <% classes = "" %>
+<% end %>
+
+<% if !defined?(id) %>
+  <% id = 0 %>
+<% end %>
+
+<div class="text-center fs-4 <%= classes if defined?(classes) %>">
+  <%= text %> : <b><span id="clockbox<%= id %>">--------</span></b>
+</div>
+
 <script type="text/javascript">
 
-var delta_between_server_and_local<%= p_id %>
+var delta_between_server_and_local<%= id %>
 
-function computeDelta<%= p_id %>(){
+function computeDelta<%= id %>(){
   if (!Date.now) {
     Date.now = function() { return new Date().getTime(); }
   }
-  delta_between_server_and_local<%= p_id %> = <%= DateTime.now.to_i %> - Math.floor(Date.now() / 1000)
-  if ( Math.abs(delta_between_server_and_local<%= p_id %>) < 10 ){
-    delta_between_server_and_local<%= p_id %> = 0
+  delta_between_server_and_local<%= id %> = <%= DateTime.now.to_i %> - Math.floor(Date.now() / 1000)
+  if ( Math.abs(delta_between_server_and_local<%= id %>) < 10 ){
+    delta_between_server_and_local<%= id %> = 0
   }
 }
 
-function remainingTime<%= p_id %>(){
+function remainingTime<%= id %>(){
 
 if (!Date.now) {
   Date.now = function() { return new Date().getTime(); }
 }
 
-var d = Math.floor(Date.now() / 1000) + delta_between_server_and_local<%= p_id %>
+var d = Math.floor(Date.now() / 1000) + delta_between_server_and_local<%= id %>
 
 var reste = <%= date_limit %> - d
 
 if (reste < 0) {
-  document.getElementById('clockbox<%= p_id %>').innerHTML = "<%= message_zero %>"
+  document.getElementById('clockbox<%= id %>').innerHTML = "<%= message_zero %>"
 }
 else {
   var restej = Math.floor(reste / 86400)
@@ -52,16 +64,16 @@ else {
     actualize = true
   }
 
-  document.getElementById('clockbox<%= p_id %>').innerHTML = text
+  document.getElementById('clockbox<%= id %>').innerHTML = text
   return actualize
 }
 
 }
 
-computeDelta<%= p_id %>();
+computeDelta<%= id %>();
 
-if(remainingTime<%= p_id %>())
+if(remainingTime<%= id %>())
 {
-  setInterval(remainingTime<%= p_id %>, 1000);
+  setInterval(remainingTime<%= id %>, 1000);
 }
 </script>

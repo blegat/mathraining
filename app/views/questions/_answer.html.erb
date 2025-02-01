@@ -3,12 +3,12 @@
   <p>
   <% if question.decimal %>
     <% real_decimal = (question.answer - question.answer.round).abs > 0.00001 %>
-    <span style="font-size:16px;"><%= real_decimal ? question.answer : question.answer.to_i %></span>
+    <span class="fs-5"><%= real_decimal ? question.answer : question.answer.to_i %></span>
     <% if !question.online? %>
       (On attend un nombre <b>réel</b>, arrondi si nécessaire au millième près)
     <% end %>
   <% else %>
-    <span style="font-size:16px;"><%= question.answer.to_i %></span>
+    <span class="fs-5"><%= question.answer.to_i %></span>
     <% if !question.online? %>
       (On attend un nombre <b>entier</b>)
     <% end %>

@@ -41,7 +41,6 @@
       
       <div class="g-col-12 g-col-md-10 g-col-lg-8 g-col-xl-7 module right-part">
         <center><h5>Statistiques</h5></center>
-        <center>
         <% if p.at_least(:in_progress) %>
           <% nb_sol = p.contestsolutions.count - 1 %>
           Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
@@ -56,24 +55,22 @@
             <% end %>
           <% end %>
         <% end %>
-        </center>   
       </div>
     <% end %>
     
     <% if p.at_most(:in_progress) && !@contest.in_construction? %>
       <% if p.at_most(:not_started_yet) %>
         <% date_limit = p.start_time.to_i %>
-        <% message_before = "Publication dans : " %>
+        <% message_before = "Publication dans" %>
         <% message_zero = "En ligne" %>
       <% else %>
         <% date_limit = p.end_time.to_i %>
-        <% message_before = "Temps restant : " %>
+        <% message_before = "Temps restant" %>
         <% message_zero = "Temps écoulé" %>
       <% end %>
 
-      <div class="g-col-12 g-col-md-24 module bottom-part">
-        <center><span class="fs-4"><%= message_before %><b><span id="clockbox<%= p.id %>">--------</span></b></span></center>
-        <%= render 'contests/clock', date_limit: date_limit, message_zero: message_zero, p_id: p.id %>
+      <div class="g-col-12 g-col-md-24 module clock-part">
+        <%= render 'shared/clock', text: message_before, date_limit: date_limit, message_zero: message_zero, id: p.id %>
       </div>
     <% end %>
     

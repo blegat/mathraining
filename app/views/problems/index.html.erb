@@ -100,7 +100,6 @@
         
         <div class="g-col-12 g-col-md-9 g-col-lg-8 g-col-xl-7 module right-part">
           <center><h5>Statistiques</h5></center>
-          <center>
           <% nb_sol = p.nb_solves %>
           <% if nb_sol >= 1 %>
             Résolu par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
@@ -109,7 +108,6 @@
           <% else %>
             <i>Jamais résolu</i>
           <% end %>
-          </center>
         </div>
 
         <!-- Origine si administrateur ou si résolu -->

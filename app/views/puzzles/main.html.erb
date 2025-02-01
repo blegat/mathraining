@@ -9,8 +9,7 @@
 
 <% if !Puzzle.ended? %>
   <!-- Chronomètre -->
-  <p class="text-center" style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></p>
-  <%= render 'contests/clock', date_limit: Puzzle.end_date.to_i, message_zero: "Temps écoulé", p_id: 0 %>
+  <%= render 'shared/clock', text: "Temps restant", date_limit: Puzzle.end_date.to_i, message_zero: "Temps écoulé", classes: "mb-3" %>
 <% end %>
 
 
