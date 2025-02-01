@@ -1,13 +1,8 @@
-<% iciadmin = false %>
-<% if current_user.admin? && (m.user.nil? || m.user.admin?) %>
-  <% iciadmin = true %>
-<% end %>
-
-<% if !(defined? postfix) %>
+<% if !defined?(postfix) %>
   <% postfix = "" %>
 <% end %>
 
-<% if !(defined? show_mail_checkboxes) %>
+<% if !defined?(show_mail_checkboxes) %>
   <% show_mail_checkboxes = false %>
 <% end %>
 

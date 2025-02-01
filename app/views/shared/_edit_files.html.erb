@@ -1,12 +1,12 @@
-<% if !(defined? postfix) %>
+<% if !defined?(postfix) %>
   <% postfix = "" %>
 <% end %>
 
-<% if !(defined? disable) %>
+<% if !defined?(disable) %>
   <% disable = false %>
 <% end %>
 
-<% if !(defined? s) || s.new_record? %>
+<% if !defined?(s) || s.new_record? %>
   <% numFiles = 0 %>
 <% else %>
   <% numFiles = s.myfiles.count + s.fakefiles.count %>

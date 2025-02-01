@@ -1,3 +1,7 @@
+<% if !defined?(postfix) %>
+  <% postfix = "" %>
+<% end %>
+
 <script type="text/javascript">
 function checkCategory() {
     var e = document.getElementById("subject_category_id");
@@ -40,10 +44,6 @@ function checkWepion() {
     }
 }
 </script>
-
-<% if !(defined? postfix) %>
-  <% postfix = "" %>
-<% end %>
 
 <% erreur = false %>
 

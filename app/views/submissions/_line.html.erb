@@ -1,28 +1,28 @@
-<% if !(defined? hide_user) %>
+<% if !defined?(hide_user) %>
   <% hide_user = false %>
 <% end %>
-<% if !(defined? show_correctors) %>
+<% if !defined?(show_correctors) %>
   <% show_correctors = false %>
 <% end %>
-<% if !(defined? hidden_sub) %>
+<% if !defined?(hidden_sub) %>
   <% hidden_sub = false %>
 <% end %>
-<% if !(defined? show_num_waiting_days_from) %>
+<% if !defined?(show_num_waiting_days_from) %>
   <% show_num_waiting_days_from = "" %>
 <% end %>
-<% if !(defined? hide_last_activity) %>
+<% if !defined?(hide_last_activity) %>
   <% hide_last_activity = false %>
 <% end %>
-<% if !(defined? show_section_and_level) %>
+<% if !defined?(show_section_and_level) %>
   <% show_section_and_level = false %>
 <% end %>
-<% if !(defined? highlight_this_sub) %>
+<% if !defined?(highlight_this_sub) %>
   <% highlight_this_sub = false %>
 <% end %>
-<% if !(defined? show_content_length) %>
+<% if !defined?(show_content_length) %>
   <% show_content_length = false %>
 <% end %>
-<% if !(defined? matches) %>
+<% if !defined?(matches) %>
   <% matches = nil %>
 <% end %>
 <% if hidden_sub %>
@@ -31,10 +31,10 @@
   <% color_class = "table-ld-warning" %>
 <% elsif s.correct? %>
   <% color_class = "table-ld-success" %>
-<% elsif s.wrong? or s.plagiarized? or s.closed? %>
+<% elsif s.wrong? || s.plagiarized? || s.closed? %>
   <% color_class = "table-ld-danger" %>
 <% elsif s.waiting? %>
-  <% if !(current_user.admin? or (current_user.corrector and current_user != s.user)) || s.followings.first.nil? %>
+  <% if !(current_user.admin? || (current_user.corrector && current_user != s.user)) || s.followings.first.nil? %>
     <% color_class = "table-ld-warning" %>
   <% elsif s.followings.first.user == current_user %>
     <% color_class = "table-ld-warning-greener" %>
@@ -54,7 +54,7 @@
 <% else %>
   <td class="sub-status"><%= image_tag s.icon, :class => "svg-black-white" %></td>
 <% end %>
-<td class="sub-date <%= 'd-none d-lg-table-cell' unless hide_user %>"><%= write_date(s.created_at) %></td>
+<td class="sub-date <%= 'd-none d-lg-table-cell' unless hide_user %>"><%= write_date(s.created_at) %><%= " [T]" if s.intest? && !hidden_sub && (current_user.admin? || (current_user.corrector && current_user != s.user)) %></td>
 <% if !hide_last_activity %>
   <td class="sub-date <%= 'd-none d-lg-table-cell' unless hide_user %><%= 'd-none d-sm-table-cell' if hide_user %>"><%= write_date(s.last_comment_time) %></td>
 <% end %>
