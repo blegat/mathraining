@@ -139,12 +139,16 @@ var hideStatement = function () {
       <p class="text-center">
         <a href='#' id='showform' onclick='document.getElementById("score_form").style.display="block"; return false;' style='display:inline;'>Modifier ce score</a>
       </p>
-      <div id="score_form" class="text-center mb-3" style="display:none;">
-      <%= form_tag update_score_submission_path(@submission), :method => :put do %>
-        Nouveau score :
-        <%= number_field_tag "new_score", @submission.score, :min => 0, :max => 7, :style => "width:50px;" %>
-        <%= submit_tag "Modifier", data: (Rails.env.test? ? {} : { confirm: "Êtes-vous #{current_user.sure} de vouloir modifier le score obtenu ?"}) %>
-      <% end %>
+      <div id="score_form" class="mb-3" style="display:none;">
+        <center>
+        <%= form_tag update_score_submission_path(@submission), :method => :put do %>
+          <div class="input-group" style="width:270px;">
+          <span class="input-group-text text-center" style="width:130px;">Nouveau score :</span>
+          <%= number_field_tag "new_score", @submission.score, :min => 0, :max => 7, :class =>"form-control", :style => "width:60px;" %>
+          <%= submit_tag "Modifier", class: "btn btn-primary", style: "width:80px;", data: (Rails.env.test? ? {} : { confirm: "Êtes-vous #{current_user.sure} de vouloir modifier le score obtenu ?"}) %>
+          </div>
+        <% end %>
+        </center>
       </div>
     <% end %>
   <% end %>

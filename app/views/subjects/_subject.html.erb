@@ -16,13 +16,17 @@
     | <%= link_to "Supprimer ce sujet", subject_path(@subject), method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce sujet et tous les messages associés ?" }  %>
     | <a href='#' id='showform' onclick='document.getElementById("migration_form").style.display="block"; return false;' style='display:inline;'>Migrer ce sujet</a>
   </p>
-  <div id="migration_form" class="text-center mb-3" style="<%= 'display:none;' unless Rails.env.test? %>">
+  <div id="migration_form" class="mb-3" style="<%= 'display:none;' unless Rails.env.test? %>">
+    <center>
     <%= form_tag migrate_subject_path(@subject), :method => :put do %>
-      Migrer ce sujet vers le sujet numéro
+      <div class="input-group" style="width:320px;">
+      <span class="input-group-text text-center" style="width:170px;">Migrer vers le sujet n°</span>
       <%= hidden_field_tag "q", @q %>
-      <%= number_field_tag "migreur", nil, min: 1, max: 10000, style: "width:80px;" %>
-      <%= submit_tag "Migrer", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir migrer ce sujet ? Êtes-vous #{current_user.sure} de l'id du sujet receveur ?"} %>
+      <%= number_field_tag "migreur", nil, min: 1, max: 10000, style: "width:80px;", class: "form-control text-center" %>
+      <%= submit_tag "Migrer", class: "btn btn-primary", style: "width:70px;", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir migrer ce sujet ? Êtes-vous #{current_user.sure} de l'id du sujet receveur ?"} %>
+      </div>
     <% end %>
+    </center>
   </div>
 <% end %>
 
