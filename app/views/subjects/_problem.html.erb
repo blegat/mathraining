@@ -6,15 +6,18 @@
     </table>
   <% else %>	  
     <% if current_user.admin? %>
-      <table class="table table-bordered reference yellowy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p), :target => "_blank" %> :</td></tr>
+      <% classe = "yellowy" %>
+      <% msg = "" %>
     <% elsif current_user.pb_solved?(p) %>
-      <table class="table table-bordered reference greeny">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p, :auto => 1), :target => "_blank" %>, que vous avez résolu :</td></tr>
+      <% classe = "greeny" %>
+      <% msg = ", que vous avez résolu" %>
     <% else %>
-      <table class="table table-bordered reference yellowy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
+      <% classe = "yellowy" %>
+      <% msg = ", que vous n'avez pas résolu" %>
     <% end %>
+    
+    <table class="table table-bordered reference <%= classe %>">
+    <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p, :auto => 1), :target => "_blank" %><%= msg %> :</td></tr>
 
     <!-- Enoncé -->
     <tr><td class="content">

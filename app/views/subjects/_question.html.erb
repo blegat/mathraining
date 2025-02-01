@@ -17,18 +17,22 @@
 	
   <% else %>	  
     <% if current_user.admin? %>
-      <table class="table table-bordered reference yellowy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(c, q), :target => "_blank" %> :</td></tr>
+      <% classe = "yellowy" %>
+      <% msg = "" %>
     <% elsif Solvedquestion.where(:user_id => current_user.id, :question_id => q.id).count > 0 %>
-      <table class="table table-bordered reference greeny">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(c, q), :target => "_blank" %>, que vous avez résolu :</td></tr>
+      <% classe = "greeny" %>
+      <% msg = ", que vous avez résolu" %>
     <% elsif Unsolvedquestion.where(:user_id => current_user.id, :question_id => q.id).count > 0 %>
-      <table class="table table-bordered reference redy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(c, q), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
+      <% classe = "redy" %>
+      <% msg = ", que vous n'avez pas résolu" %>
     <% else %>
-      <table class="table table-bordered reference yellowy">
-      <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(c, q), :target => "_blank" %>, que vous n'avez pas résolu :</td></tr>
+      <% classe = "yellowy" %>
+      <% msg = ", que vous n'avez pas résolu" %>
     <% end %>
+    
+    <table class="table table-bordered reference <%= classe %>">
+    <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(c, q), :target => "_blank" %><%= msg %> :</td></tr>
+    
     <!-- Enoncé -->
     <tr><td class="content">
     <div class="mb-3">
