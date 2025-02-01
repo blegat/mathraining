@@ -31,7 +31,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: map-get($grid-breakpoints, 'md')) { // 768px
   .chapter, .problem, .virtualtest, .contest {
     .content {
       --bs-columns: 24;

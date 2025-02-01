@@ -5,26 +5,25 @@
   margin-top: 10px;
   margin-bottom: 8px;
   width: 100%;
-}
 
-@media (min-width: 992px) {
-  .smiley-content {
+  @media (min-width: map-get($grid-breakpoints, 'md')) {
     display: -webkit-box;
     display: -mot-box;
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
   }
-  
-  .smiley {
-    padding-right: 20px;
-  }
 }
 
-@media (max-width: 991.99px) {
-  .smiley {
-    margin-bottom: 3px;
-    text-align: center;
-    width: 100%;
+.smiley {
+  margin-bottom: 3px;
+  text-align: center;
+  width: 100%;
+  
+  @media (min-width: map-get($grid-breakpoints, 'md')) {
+    margin-bottom: 0px;
+    text-align: left;
+    width: auto;
+    padding-right: 20px;
   }
 }

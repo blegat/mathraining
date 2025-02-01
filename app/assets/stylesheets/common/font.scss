@@ -5,26 +5,25 @@
   margin-top: 10px;
   margin-bottom: 10px;
   width: 100%;
-}
-
-@media (min-width: 1200px) {
-  .font-content {
+  
+  @media (min-width: map-get($grid-breakpoints, 'lg')) {
     display: -webkit-box;
     display: -mot-box;
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
   }
-  
-  .font {
-    padding-right: 20px;
-  }
 }
 
-@media (max-width: 1199.99px) {
-  .font {
-    margin-bottom: 3px;
-    text-align: center;
-    width: 100%;
+.font {
+  margin-bottom: 3px;
+  text-align: center;
+  width: 100%;
+  
+  @media (min-width: map-get($grid-breakpoints, 'lg')) {
+    margin-bottom: 0px;
+    text-align: left;
+    width: auto;
+    padding-right: 20px;
   }
 }

@@ -1,28 +1,25 @@
 /* IMAGES */
 
-@media (max-width: 767.99px) {
-  .image-pj {
-    width:100%;
+.image-pj {
+  max-width: 100%;
+  
+  @media (min-width: map-get($grid-breakpoints, 'md')) { // 768px
+    max-width: 440px;
   }
-  .image-pj2 {
-    width:100%;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 991.99px) {
-  .image-pj {
-    max-width:450px;
-  }
-  .image-pj2 {
-    max-width:660px;
+  
+  @media (min-width: map-get($grid-breakpoints, 'lg')) { // 992px
+    max-width: 670px;
   }
 }
 
-@media (min-width: 992px) {
-  .image-pj {
-    max-width:670px;
+.image-pj2 {
+  max-width: 100%;
+  
+  @media (min-width: map-get($grid-breakpoints, 'md')) { // 768px
+    max-width: 660px;
   }
-  .image-pj2 {
-    max-width:900px;
+  
+  @media (min-width: map-get($grid-breakpoints, 'lg')) { // 992px
+    max-width: 900px;
   }
 }

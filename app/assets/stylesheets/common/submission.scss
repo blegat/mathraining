@@ -23,9 +23,23 @@ td.sub-length, th.sub-length {
   text-align: center;
 }
 
+// For submission matching an extract
 td.sub-match, th.sub-match {
   width: 30px;
   text-align: center;
+}
+
+// For submission preview when searching a string
+td.sub-preview, th.sub-preview {
+  width: 150px;
+  
+  @media (min-width: map-get($grid-breakpoints, 'sm')) {
+    width: 250px;
+  }
+  
+  @media (min-width: map-get($grid-breakpoints, 'md')) {
+    width: 300px;
+  }
 }
 
 td.sub-link, th.sub-link {
