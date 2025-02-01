@@ -3,7 +3,7 @@
 <div id="the" class="content-part">
   <% if !contestsolution.official? %>
     <h4>Score obtenu</h4>
-    <div class="bg-as-table-ld-warning mb-3 p-1 border border-warning text-center" style="font-size:24px;">
+    <div class="bg-as-table-ld-warning mb-3 p-1 border border-warning text-center fs-3">
       <%= contestsolution.score if contestsolution.score >= 0 %><%= '-' if contestsolution.score < 0 %> / 7
     </div>
   <% end %>
