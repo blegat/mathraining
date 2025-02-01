@@ -6,7 +6,7 @@
   <% disable = false %>
 <% end %>
 
-<% if !(defined? s) %>
+<% if !(defined? s) || s.new_record? %>
   <% numFiles = 0 %>
 <% else %>
   <% numFiles = s.myfiles.count + s.fakefiles.count %>
