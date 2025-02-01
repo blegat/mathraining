@@ -69,7 +69,7 @@ describe "Subject pages" do
       before { visit subjects_path }
       it do
         should have_selector("h1", text: "Forum")
-        should have_button("Créer un sujet")
+        should have_link("Créer un sujet")
       
         should have_link(sub_nothing.title)
         should have_link(sub_category.title)

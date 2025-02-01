@@ -8,10 +8,10 @@ var showAllDiscussions = function () {
 </script>
 
 <div class="list-group mb-0">
-  <h5 class="mt-1">Nouveau message</h5>
+  <h5>Nouveau message</h5>
   <%= link_to "Nouvelle discussion", new_discussion_path, :class => "list-group-item list-group-item-action #{"active" if @discussion.nil?}" %>
 
-  <h4 class="mt-3">Discussions</h4>
+  <h5 class="mt-3">Discussions</h5>
   
   <% num = 0 %>
   <% num_max = 5 %>
@@ -21,8 +21,8 @@ var showAllDiscussions = function () {
       <div id="remaining_discussions" style="display:none;">
     <% end %>
     <%= link_to discussion_path(d.id), :class => "list-group-item list-group-item-action #{"active" if !@discussion.nil? && d.id == @discussion.id} #{"list-group-item-warning" if d.nonread > 0 && (@discussion.nil? || d.id != @discussion.id)}" do %>
-      <b><%= User.new(:first_name => d.first_name, :last_name => d.last_name, :see_name => d.see_name).name %><%= " (#{d.nonread})" if d.nonread > 0 && (@discussion.nil? || d.id != @discussion.id) %></b><br/>
-      <div class="mt-1"><%= write_date(d.last_message_time) %></div>
+      <div class="mb-1 fw-bold"><%= User.new(:first_name => d.first_name, :last_name => d.last_name, :see_name => d.see_name).name %><%= " (#{d.nonread})" if d.nonread > 0 && (@discussion.nil? || d.id != @discussion.id) %></div>
+      <div><%= write_date(d.last_message_time) %></div>
     <% end %>
     <% num = num + 1 %>
   <% end %>
@@ -32,4 +32,7 @@ var showAllDiscussions = function () {
   <% elsif num == 0 %>
     <i>Aucune discussion</i>
   <% end %>
+  
+  <!-- Espace en bas du menu, uniquement lorsqu'il se trouve à gauche -->
+  <div class="d-none d-md-block mb-3"></div>
 </div>

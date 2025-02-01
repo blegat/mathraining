@@ -190,20 +190,20 @@
 
             <!-- Formulaire pour se connecter -->
             <ul class="dropdown-menu dropdown-menu-end">
-              <li class="p-3 pb-1">
+              <li class="px-3 pt-2 pb-1">
               <%= form_for(:session, url: sessions_path) do |f| %>
-                <%= f.email_field :email, :placeholder => "Adresse e-mail", :class => "form-control", :style => "width:210px;", :id => "header_connect_email" %>
+                <%= f.email_field :email, :placeholder => "Adresse e-mail", :class => "form-control mb-2", :style => "width:210px;", :id => "header_connect_email" %>
 
-                <%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control mt-2 mb-1", :style => " width:210px;", :id => "header_connect_password" %>
+                <%= f.password_field :password, :placeholder => "Mot de passe", :class => "form-control mb-2", :style => " width:210px;", :id => "header_connect_password" %>
 
-                <div class="form-check mt-2 mb-0">
+                <div class="form-check mb-2">
                   <label class="form-check-label">
                     <%= f.check_box :remember_me, :id => "header_connect_remember", :class => "form-check-input" %>
                     Garder ma session active
                   </label>
                 </div>
 
-                <%= f.submit "Connexion", class: "btn btn-primary mt-2 mb-2", style: "width:210px;", id: "header_connect_button" %>
+                <%= f.submit "Connexion", class: "btn btn-primary mb-2", style: "width:210px;", id: "header_connect_button" %>
               <% end %>
               <%= link_to "J'ai oublié mon mot de passe", forgot_password_path %>
               </li>

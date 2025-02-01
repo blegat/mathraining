@@ -5,10 +5,10 @@
 <%= render 'questions/question_form', question: @question, unsolvedquestion: unsolvedquestion, need_to_wait: need_to_wait %>
 
 <!-- En cas de mauvaise réponse -->
-<div id="question-danger" class="alert alert-danger py-2 mt-3" style="display:none;">Mauvaise réponse...</div>
+<div id="question-danger" class="alert alert-danger py-2 mb-3" style="display:none;">Mauvaise réponse...</div>
 
 <!-- En cas de réponse non prise en compte -->
-<div id="question-info" class="alert alert-info py-2 mt-3" style="display:none;"></div>
+<div id="question-info" class="alert alert-info py-2 mb-3" style="display:none;"></div>
 
 <!-- Message à propos des mauvaises réponses précédentes -->
 <div id="wrong-answer-div">
@@ -30,5 +30,5 @@
 
 <!-- Bouton pour voir la réponse -->
 <% if can_see_answer %>
-  <p class="text-center mt-3 mb-0"><a href="javascript:showAnswer();" class="btn btn-ld-light-dark">Voir la réponse</a></p>
+  <div class="text-center mb-3"><button onclick="javascript:showAnswer();" class="btn btn-ld-light-dark">Voir la réponse</button></div>
 <% end %>

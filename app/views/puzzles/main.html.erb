@@ -9,7 +9,7 @@
 
 <% if !Puzzle.ended? %>
   <!-- Chronomètre -->
-  <p class="mt-3 text-center" style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></p>
+  <p class="text-center" style="font-size:20px;">Temps restant : <b><span id="clockbox0">--------</span></b></p>
   <%= render 'contests/clock', date_limit: Puzzle.end_date.to_i, message_zero: "Temps écoulé", p_id: 0 %>
 <% end %>
 
@@ -42,7 +42,7 @@
     <% tab = 0 %>
   <% end %>
   <!-- Tabs -->
-  <ul class="nav nav-tabs nav-justified flex-column flex-sm-row mt-3 mb-3">
+  <ul class="nav nav-tabs nav-justified flex-column flex-sm-row mb-3">
     <li class="nav-item"><%= link_to "Énigmes", ten_years_path(@contest), :class => "nav-link #{ "active" if tab == 0 }" %></li>
     <li class="nav-item"><%= link_to "Classement", ten_years_path(@contest, :tab => 1), :class => "nav-link #{ "active" if tab == 1 }" %></li>
   </ul>
@@ -55,5 +55,7 @@
 <% end %>
 
 <% if signed_in? && current_user.root? %>
-  <center><%= link_to "Modifier les énigmes", puzzles_path %></center>
+  <p class="text-center">
+    <%= link_to "Modifier les énigmes", puzzles_path %>
+  </p>
 <% end %>

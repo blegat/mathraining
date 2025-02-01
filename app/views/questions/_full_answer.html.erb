@@ -1,31 +1,33 @@
 <!-- Réponse -->
-<h4 class="mt-4">Réponse</h4>
+<h4>Réponse</h4>
 <%= render 'questions/answer', question: @question %>
 
 <!-- En cas de bonne réponse -->
-<div id="question-success" class="alert alert-success mt-3 py-2" style="display:none;">Bonne réponse !</div>
+<div id="question-success" class="alert alert-success mb-3 py-2" style="display:none;">Bonne réponse !</div>
   
 <!-- Félicitations -->
 <% if !solvedquestion.nil? %>
-  <p class="mt-4 fw-bold text-color-green">
-  Vous avez résolu cet exercice le <%= write_date(solvedquestion.resolution_time) %>,
-  <% if solvedquestion.nb_guess-1 > 0 %>
-    après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
-  <% else %>
-    du premier coup !
-  <% end %>
+  <p class="fw-bold text-color-green">
+    Vous avez résolu cet exercice le <%= write_date(solvedquestion.resolution_time) %>,
+    <% if solvedquestion.nb_guess-1 > 0 %>
+      après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
+    <% else %>
+      du premier coup !
+    <% end %>
   </p>
 <% end %>
     
 <!-- Explication -->
-<h4 class="mt-4">Explication</h4>
-<% if @question.explanation.size > 0 %>
-  <%= htmlise(@question.explanation) %>
-<% else %>
-  <span class="#{'text-color-orange fw-bold' if !@question.online?}">Pas d'explication.</span>
-<% end %>
+<h4>Explication</h4>
+<div class="mb-3">
+  <% if @question.explanation.size > 0 %>
+    <%= htmlise(@question.explanation) %>
+  <% else %>
+    <span class="#{'text-color-orange fw-bold' if !@question.online?}">Pas d'explication.</span>
+  <% end %>
+</div>
 
-<% if @question.online? %>
-  <!-- Bouton pour cacher la réponse -->
-  <p class="text-center mt-3 mb-0"><a href="javascript:hideAnswer();" class="btn btn-ld-light-dark">Cacher la réponse</a></p>
+<!-- Bouton pour cacher la réponse -->
+<% if @question.online? %>  
+  <div class="text-center mb-3"><button onclick="javascript:hideAnswer();" class="btn btn-ld-light-dark">Cacher la réponse</button></div>
 <% end %>

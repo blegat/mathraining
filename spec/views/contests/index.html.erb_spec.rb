@@ -35,7 +35,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
         should have_link("Concours ##{contest.number}", href: contest_path(contest))
         should have_content("(à venir)")
         should have_content("Aucun problème corrigé")
-        should have_button("Ajouter un concours")
+        should have_link("Ajouter un concours")
       end
     end
     
@@ -48,7 +48,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
         should have_link("Concours ##{contest.number}", href: contest_path(contest))
         should have_content("(à venir)")
         should have_content("Aucun problème corrigé")
-        should have_no_button("Ajouter un concours")
+        should have_no_link("Ajouter un concours")
       end
     end
     

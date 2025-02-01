@@ -17,8 +17,6 @@ var UserNotFound = function () {
   </div>
 
   <div class="g-col-12 g-col-md-8 g-col-lg-9">
-  
-    <div class="mt-3 d-md-none"></div>
 
     <h3>Nouvelle discussion</h3>
 
@@ -52,7 +50,7 @@ var UserNotFound = function () {
       
       <%= render 'shared/edit_files' %>
       
-      <%= f.submit "Envoyer", class: "btn btn-lg btn-primary", :disabled => in_skin? %>
+      <%= f.submit "Envoyer", class: "btn btn-lg btn-primary mb-3", :disabled => in_skin? %>
     <% end %>
 
   </div>

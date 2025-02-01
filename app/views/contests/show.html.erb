@@ -19,11 +19,13 @@
 
 <h3>Description</h3>
 
-<%= bbcode(@contest.description) %>
+<div class="mb-3">
+  <%= bbcode(@contest.description) %>
+</div>
 
 <% c = 0 %>
 <% total = @contest.organizers.count %>
-<p class="mt-3"><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
+<p><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
   <% c = c+1 %>
   <%= o.linked_name %><% if (signed_in? && current_user.admin?) && @contest.in_construction? %> (<%= link_to "supprimer", remove_organizer_contest_path(@contest, :user_id => o.id), method: :put, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
@@ -32,7 +34,7 @@
 
 <% if signed_in? && current_user.admin? && @contest.in_construction? %>
 
-  <%= form_for @contest, :url => add_organizer_contest_path(@contest), :html => {:class => "form-inline mt-2"} do |f| %>
+  <%= form_for @contest, :url => add_organizer_contest_path(@contest), :html => {:class => "form-inline mb-3"} do |f| %>
     <% mtn = DateTime.now.to_date - 14 %>
     <div class="row g-2 align-items-center">
       <div class="col-auto">
@@ -51,9 +53,9 @@
 <% organizer = signed_in? && @contest.is_organized_by_or_admin(current_user) %>
 
 <% if organizer && @contest.completed? && @contest.medal && @contest.gold_cutoff == 0 %>
-  <center>
-  <%= link_to "Définir les médailles", cutoffs_contest_path(@contest), class: 'btn btn-lg btn-ld-light-dark mt-2' %>
-  </center>
+  <p class="text-center">
+    <%= link_to "Définir les médailles", cutoffs_contest_path(@contest), class: 'btn btn-lg btn-ld-light-dark' %>
+  </p>
 <% end %>
 
 <% tab = 0 %>
@@ -68,7 +70,7 @@
     <% tab = 0 %>
   <% end %>
   <!-- Tabs -->
-  <ul class="nav nav-tabs nav-justified flex-column flex-sm-row mt-3 mb-3">
+  <ul class="nav nav-tabs nav-justified flex-column flex-sm-row mb-3">
     <li class="nav-item"><%= link_to "Problèmes", contest_path(@contest), :class => "nav-link #{ "active" if tab == 0 }" %></li>
     <% ranking_title = (nb_prob_corrected == nb_prob ? "Classement final" : "Classement après #{nb_prob_corrected} problème#{"s" if nb_prob_corrected >= 2}") %>
     <li class="nav-item"><%= link_to ranking_title, contest_path(@contest, :tab => 1), :class => "nav-link #{ "active" if tab == 1 }" %></li>
@@ -77,7 +79,7 @@
     <% end %>
   </ul>
 <% else %>
-  <h3 class="mt-3 mb-2">Problèmes</h3>
+  <h3>Problèmes</h3>
 <% end %>
 
 <% if tab == 0 %>
@@ -90,28 +92,33 @@
 
 <% num = 0 %>
 
-<p class="mt-3 text-center">
+<p class="text-center">
+  <% if organizer %>
+    <%= link_to "Modifier ce concours", edit_contest_path(@contest) %>
+    <% num = num+1 %>
+  <% end %>
 
-<% if organizer %>
-  <%= link_to "Modifier ce concours", edit_contest_path(@contest) %>
-  <% num = num+1 %>
-<% end %>
+  <% if @contest.in_construction? && signed_in? && @contest.is_organized_by(current_user) %>
+    <%= " | " if num > 0 %>
+    <%= link_to "Ajouter un problème", new_contest_contestproblem_path(@contest) %>
+    <% num = num+1 %>
+  <% end %>
 
-<% if @contest.in_construction? && signed_in? && @contest.is_organized_by(current_user) %>
-  <%= " | " if num > 0 %>
-  <%= link_to "Ajouter un problème", new_contest_contestproblem_path(@contest) %>
-  <% num = num+1 %>
-<% end %>
-
-<% if @contest.in_construction? && signed_in? && current_user.admin? %>
-  <%= " | " if num > 0 %>
-  <%= link_to "Mettre ce concours en ligne", put_online_contest_path(@contest), :method => :put, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir mettre ce concours en ligne ?" } %>
-  | <%= link_to "Supprimer ce concours", @contest, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce concours ?" } %>
-  <% num = num+1 %>
-<% end %>
-
+  <% if @contest.in_construction? && signed_in? && current_user.admin? %>
+    <%= " | " if num > 0 %>
+    <%= link_to "Supprimer ce concours", @contest, method: :delete, class: "text-color-red", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce concours ?" } %>
+    <% num = num+1 %>
+  <% end %>
 </p>
 
+<% if @contest.in_construction? && signed_in? && current_user.admin? %>
+  <p class="text-center">
+    <%= link_to "Mettre en ligne", put_online_contest_path(@contest), method: :put, class: "btn btn-danger", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir mettre ce concours en ligne ?" } %>
+  </p>
+<% end %>
+
 <% if @contest.in_construction? && signed_in? && @contest.is_organized_by(current_user) && !current_user.admin? %>
-  <p class="text-center">Pour mettre le concours en ligne, contacter un administrateur</p>
+  <p class="text-center fst-italic">
+    Pour mettre le concours en ligne, contacter un administrateur.
+  </p>
 <% end %>

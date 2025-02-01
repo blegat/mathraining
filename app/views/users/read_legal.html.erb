@@ -44,8 +44,10 @@ function checkChecked() {
 <p>Si vous acceptez notre politique, alors veuillez compléter le formulaire ci-dessous. Si vous avez moins de 16 ans, vous devez être en présence de votre tuteur légal.</p>
 
 <p>Si vous refusez notre politique, alors il est malheureusement impossible de continuer à posséder un compte sur Mathraining. Nous ne collectons en effet des données que dans le but de faire fonctionner le site correctement. Dans ce cas, nous vous demandons de ne pas compléter le formulaire et de nous contacter à l'adresse</p>
-<center><%= image_tag "contact.svg", :class => "svg-black-white", :style => "width:80%; max-width:250px;" %></center>
-<p class="mt-3">pour demander à ce que votre compte soit supprimé.</p>
+
+<p class="text-center"><%= image_tag "contact.svg", :class => "svg-black-white", :style => "width:80%; max-width:250px;" %></p>
+
+<p>pour demander à ce que votre compte soit supprimé.</p>
 
 <hr/>
 
@@ -65,6 +67,6 @@ function checkChecked() {
   </label>
   </div>
   
-  <%= f.submit "Continuer sur Mathraining", class: "btn btn-lg btn-primary", id: "send-button", disabled: !Rails.env.test? %>
+  <%= f.submit "Continuer sur Mathraining", class: "btn btn-lg btn-primary mb-3", id: "send-button", disabled: !Rails.env.test? %>
   <script>checkChecked()</script>
 <% end %>

@@ -4,15 +4,17 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
-<%= htmlise(@question.statement, true) %>
+<div class="mb-3">
+  <%= htmlise(@question.statement, true) %>
+</div>
 
 <!-- Réponse -->
-<h3 class="mt-3">Réponse</h3>
+<h3>Réponse</h3>
 
 <%= render 'questions/answer', question: @question %>
 
 <!-- Explication -->
-<h3 class="mt-3">Explication</h3>
+<h3>Explication</h3>
 
 <%= form_for(@question, url: update_explanation_question_path) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>
@@ -23,5 +25,5 @@
     <%= f.text_area :explanation, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()" %>
     <script>initAndUpdatePreviewWhenPossible()</script>
   </div>
-  <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
+  <%= f.submit "Modifier", class: "btn btn-lg btn-primary mb-3" %>
 <% end %>

@@ -4,9 +4,11 @@
   <%= render 'actualities/show', actuality: a %>
 <% end %>
 
-<%= render 'shared/pages', data: @actualities, classes_small: "mb-3" %>
+<%= render 'shared/pages', data: @actualities %>
 
 <!-- Ajouter une actualité -->
 <% if signed_in? && current_user.admin? %>
-<center><%= button_to "Ajouter une actualité", new_actuality_path, :class => "btn btn-lg btn-ld-light-dark", :method => "get" %></center>
+  <p class="text-center">
+    <%= link_to "Ajouter une actualité", new_actuality_path %>
+  </p>
 <% end %>	

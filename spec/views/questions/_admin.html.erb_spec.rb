@@ -24,7 +24,7 @@ describe "questions/_admin.html.erb", type: :view, question: true do
       should have_link("Modifier l'explication")
       should have_link("Supprimer cet exercice")
       should have_no_text("Déplacer cet exercice")
-      should have_button("Mettre en ligne")
+      should have_link("Mettre en ligne")
     end
   end
   
@@ -41,7 +41,7 @@ describe "questions/_admin.html.erb", type: :view, question: true do
       should have_text("Déplacer cet exercice")
       should have_link("haut", :href => order_question_path(question, :new_position => 1))
       should have_no_link("bas")
-      should have_no_button("Mettre en ligne") # because online
+      should have_no_link("Mettre en ligne") # because online
     end
     
     context "and also has a question after" do

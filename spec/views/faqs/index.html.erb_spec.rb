@@ -25,7 +25,7 @@ describe "faqs/index.html.erb", type: :view, faq: true do
       should have_link("Supprimer la question")
       should have_link("bas", href: order_faq_path(faq, :new_position => 3))
       should have_link("haut", href: order_faq_path(faq2, :new_position => 1))
-      should have_button("Ajouter une question")
+      should have_link("Ajouter une question")
     end
   end
   
@@ -42,7 +42,7 @@ describe "faqs/index.html.erb", type: :view, faq: true do
       should have_no_link("Supprimer la question")
       should have_no_link("bas")
       should have_no_link("haut")
-      should have_no_button("Ajouter une question")
+      should have_no_link("Ajouter une question")
     end
   end
   
@@ -57,7 +57,7 @@ describe "faqs/index.html.erb", type: :view, faq: true do
       should have_no_link("Supprimer la question")
       should have_no_link("bas")
       should have_no_link("haut")
-      should have_no_button("Ajouter une question")
+      should have_no_link("Ajouter une question")
     end
   end
 end

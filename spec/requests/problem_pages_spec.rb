@@ -181,7 +181,7 @@ describe "Problem pages", problem: true do
         should have_selector("h1", text: "Problème ##{offline_problem.number}")
         should have_selector("div", text: offline_problem.statement)
         should have_link("Supprimer ce problème")
-        should have_no_button("Mettre en ligne") # Because no prerequisite
+        should have_link("Mettre en ligne", class: "disabled") # Because no prerequisite
       end
       
       specify { expect { click_link "Supprimer ce problème" }.to change(Problem, :count).by(-1) }
@@ -195,7 +195,7 @@ describe "Problem pages", problem: true do
           should have_selector("h1", text: "Problème ##{offline_problem.number}")
           should have_link(chapter.name, href: chapter_path(chapter))
           should have_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(offline_problem, :chapter_id => chapter))
-          should have_button("Mettre en ligne")
+          should have_link("Mettre en ligne")
         end
         
         describe "and deletes a prerequisite" do
@@ -227,7 +227,7 @@ describe "Problem pages", problem: true do
         
         describe "and puts online" do
           before do
-            click_button "Mettre en ligne"
+            click_link "Mettre en ligne"
             offline_problem.reload
           end
           specify { expect(offline_problem.online).to eq(true) }
@@ -306,7 +306,7 @@ describe "Problem pages", problem: true do
           expect(Problem.order(:id).last.number).to be < 1000*section.id + 100*(newlevel+1)
           expect(Problem.order(:id).last.online).to eq(false)
           expect(page).to have_selector("div", text: newstatement)
-          expect(page).to have_no_button("Mettre en ligne") # Because no prerequisite
+          expect(page).to have_link("Mettre en ligne", class: "disabled") # Because no prerequisite
         end
       end
       

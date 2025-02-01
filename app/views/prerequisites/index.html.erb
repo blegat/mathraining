@@ -2,7 +2,7 @@
 
 <h1><%= title_2("Théorie", "Prérequis") %></h1>
 
-<div class="grid" style="--bs-columns: 12">
+<div class="grid mb-3" style="--bs-columns: 12">
   <div class="g-col-12 text-center">
     <center>
     <div style="width:100%; max-width:1200px; height:800px; position:relative; display:block;">
@@ -167,7 +167,7 @@
 
 <!-- Ajouter un lien -->
 <%= form_for(:prerequisite) do |f| %>
-  <h3 class="mt-3">Ajouter un lien</h3>
+  <h3>Ajouter un lien</h3>
   <div class="mb-2">
   <%= f.label "Prérequis", :for => "add_form_prerequisite", :class => "form-label" %>
   <%= f.select(:prerequisite_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "add_form_prerequisite" }) %>
@@ -176,5 +176,5 @@
   <%= f.label "Chapitre", :for => "add_form_chapter", :class => "form-label" %>
   <%= f.select(:chapter_id, grouped_options_for_select(liste), {}, { :class => "form-select", :style => "max-width:300px;", :prompt => true, :id => "add_form_chapter" }) %>
   </div>
-  <%= f.submit "Ajouter ce lien", class: "btn btn-primary" %>
+  <%= f.submit "Ajouter ce lien", class: "btn btn-primary mb-3" %>
 <% end %>

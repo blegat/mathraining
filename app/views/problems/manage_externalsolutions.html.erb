@@ -6,7 +6,9 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
-<%= htmlise(@problem.statement) %>
+<div class="mb-3">
+  <%= htmlise(@problem.statement) %>
+</div>
 
 <% suspicions = Suspicion.joins(:submission).where("submissions.problem_id = ?", @problem).where(:status => [:confirmed, :forgiven]).order("submissions.created_at DESC").to_a %>
 <% suspicions_covered = Set.new %>
@@ -18,10 +20,10 @@
 
 <% sol = 1 %>
 <% @problem.externalsolutions.order(:id).each do |e| %>
-  <h4 class="mt-3"><%= link_to "Solution externe #{ sol }", e.url, :target => "_blank" %></h4>
+  <h4><%= link_to "Solution externe #{ sol }", e.url, :target => "_blank" %></h4>
   <% sol = sol+1 %>
   
-  <table>
+  <table class="mb-3">
     <tr>
     <%= form_for(e) do |f| %>
       <td>
@@ -47,8 +49,8 @@
     <% end %>
   <% end %>
   
-  <h5 class="mt-3">Extraits</h5>
-  <table>
+  <h5>Extraits</h5>
+  <table class="mb-3">
   <% j = 1 %>
   <% e.extracts.order(:id).each do |extract| %>
     <tr>
@@ -109,7 +111,7 @@
   
   </table>
   
-  <h5 class="mt-3">Plagiats</h5>
+  <h5>Plagiats</h5>
   
   <% if matching_suspicions.size > 0 %>
     <table class="table table-bordered fixed-scroll" style="width:auto;" id="matching_<%= e.id %>">
@@ -132,8 +134,8 @@
   <% end %>
 <% end %>
 
-<h4 class="mt-3">Nouvelle solution externe</h4>
-<table>
+<h4>Nouvelle solution externe</h4>
+<table class="mb-3">
 <%= form_for(:externalsolution, url: problem_externalsolutions_path(@problem)) do |f| %>
   <td>
   </td>
@@ -148,7 +150,7 @@
 <% end %>
 </table>
 
-<h5 class="mt-3">Plagiats non couverts</h5>
+<h5>Plagiats non couverts</h5>
 
 <% if suspicions_covered.size < suspicions.size %>
   <table class="table table-bordered fixed-scroll" style="width:auto;" id="nonmatching">

@@ -4,13 +4,13 @@
 <button class="information-tag" onclick="return Info.toggle();">?</button>
 </h1>
 
-<%= render 'info' %>
+<%= render 'shared/info', about: "virtualtests" %>
 
 <% if !has_enough_points(current_user) %>
   
   <!-- Si moins de 200 points, on ne peut rien voir -->
-  <p class="mt-3 fw-bold">
-  Les tests virtuels ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.
+  <p class="fw-bold">
+    Les tests virtuels ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.
   </p>
 
 <% else %>
@@ -200,13 +200,13 @@
         <!-- Si l'étudiant n'a pas encore commencé le test -->
         <% if !current_user.admin? && status == "not_started" %>
           <% if current_user.can_write_submission? %>
-            <div class="g-col-12 g-col-md-24">
-              <center><%= button_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: (@no_new_submission || current_user.has_no_submission_sanction || in_skin?), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez #{current_user.sure} d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %></center>
+            <div class="g-col-12 g-col-md-24 text-center">
+              <%= link_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: "btn btn-lg btn-ld-light-dark #{'disabled' if (@no_new_submission || current_user.has_no_submission_sanction || in_skin?)}", data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez #{current_user.sure} d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %>
             </div>
           <% else %>
             <div class="g-col-12 g-col-md-24 module bottom-part text-start">
-              Pour pouvoir commencer un test virtuel, vous devez d'abord compléter les chapitres suivants :
-              <%= render 'submissions/chapters_to_write_submission' %>
+              <p class="mb-2">Pour pouvoir commencer un test virtuel, vous devez d'abord compléter les chapitres suivants :</p>
+              <%= render 'submissions/chapters_to_write_submission', mb_class: "mb-1" %>
             </div>
           <% end %>
         <% end %>
@@ -245,16 +245,16 @@
             <%= link_to "Modifier ce test", edit_virtualtest_path(t) %> - <%= link_to "Supprimer ce test", t, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce test virtuel ? Cela ne supprimera pas les problèmes associés." } %>
             </p>
             <% if nb_prob > 0 && can_online %>
-              <center>
-              <%= button_to "Mettre en ligne", put_online_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
-              </center>
+              <p class="text-center mb-0">
+                <%= link_to "Mettre en ligne", put_online_virtualtest_path(t), :method => :put, class: 'btn btn-danger', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir mettre ce test virtuel en ligne ? Vous ne pourrez alors plus le modifier !" } %>
+              </p>
             <% else %>
-              <center>
-              <%= button_to "Mettre en ligne", put_online_virtualtest_path(t), :method => :put, class: 'btn btn-lg btn-ld-light-dark', disabled: true %>
-              </center>
-              <p class="text-center mt-2 mb-0">
-              <%= "(Au moins un problème nécessaire)" if nb_prob == 0 %>
-              <%= "(Problèmes doivent être en ligne)" if nb_prob > 0 %>
+              <p class="text-center mb-1">
+                <%= link_to "Mettre en ligne", put_online_virtualtest_path(t), :method => :put, class: 'btn btn-danger disabled' %>
+              </p>
+              <p class="text-center mb-0">
+                <%= "(Au moins un problème nécessaire)" if nb_prob == 0 %>
+                <%= "(Problèmes doivent être en ligne)" if nb_prob > 0 %>
               </p>
             <% end %>
           </div>
@@ -268,9 +268,9 @@
 
   <!-- Ajouter un test -->
   <% if current_user.admin? %>
-    <center>
-    <%= button_to "Ajouter un test virtuel", new_virtualtest_path, method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
-    </center>
+    <p class="text-center">
+      <%= link_to "Ajouter un test virtuel", new_virtualtest_path %>
+    </p>
   <% end %>
 
   <% if compteur == 0 %>

@@ -1,6 +1,6 @@
 <!-- Modifier / Supprimer -->
 <div class="noprint">
-<p class="mt-4 mb-0 text-center">
+<p class="text-center">
   <% warning = (question.online ? { confirm: "Attention, cet exercice étant visible des utilisateurs, tâchez de ne pas faire de modifications majeures." } : {}) %>
   <%= link_to "Modifier cet exercice", edit_question_path(question), data: warning %>
   <% if question.is_qcm %>
@@ -17,18 +17,18 @@
 <% question_after = @chapter.questions.where("position > ?", question.position).order("position").first %>
 
 <% if (!question_before.nil? || !question_after.nil?) %>
-<p class="mt-3 mb-0 text-center">
-  Déplacer cet exercice vers le
-  <%= link_to "haut", order_question_path(question, :new_position => question_before.position), :method => :put if !question_before.nil? %>
-  <%= '-' if !question_before.nil? && !question_after.nil? %>
-  <%= link_to "bas", order_question_path(question, :new_position => question_after.position), :method => :put if !question_after.nil? %>
-</p>
+  <p class="text-center">
+    Déplacer cet exercice vers le
+    <%= link_to "haut", order_question_path(question, :new_position => question_before.position), :method => :put if !question_before.nil? %>
+    <%= '-' if !question_before.nil? && !question_after.nil? %>
+    <%= link_to "bas", order_question_path(question, :new_position => question_after.position), :method => :put if !question_after.nil? %>
+  </p>
 <% end %>
 
 <!-- Mettre en ligne -->
-<center>
 <% if !question.online && @chapter.online %>
-  <%= button_to "Mettre en ligne", put_online_question_path(question), method: :put, class: 'btn btn-ld-light-dark mt-3', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous #{current_user.sure} de vouloir le mettre en ligne ?" } %>
+  <p class="text-center">
+    <%= link_to "Mettre en ligne", put_online_question_path(question), method: :put, class: 'btn btn-danger', data: { confirm: "Vous ne pourrez plus modifier la réponse de cet exercice par la suite. Êtes-vous #{current_user.sure} de vouloir le mettre en ligne ?" } %>
+  </p>
 <% end %>
-</center>
 </div>

@@ -4,9 +4,9 @@
   <% active = "" %>
 <% end %>
 
-<h1><%= title_section(@section, "#{@chapter.name}#{' (en construction)' unless @chapter.online}") %></h1>
+<h1 class="mb-3"><%= title_section(@section, "#{@chapter.name}#{' (en construction)' unless @chapter.online}") %></h1>
 
-<div class="grid mt-3 mx-0" style="--bs-columns: 12;">
+<div class="grid mx-0" style="--bs-columns: 12;">
 
   <!-- MENU -->
   <div class="g-col-12 g-col-md-3 g-col-xl-2 noprint list-group">
@@ -97,6 +97,9 @@
         <% question_number += 1 if q.online %>
       <% end %>
     <% end %>
+    
+    <!-- Some space at the end, only when the menu is on the left -->
+    <div class="d-none d-md-block mb-3"></div>
   </div>
     
   <div class="g-col-12 g-col-md-9 g-col-xl-10">

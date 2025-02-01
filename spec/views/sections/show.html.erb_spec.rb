@@ -80,7 +80,7 @@ describe "sections/show.html.erb", section: true do
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
         
-        should have_no_button("Ajouter un chapitre")
+        should have_no_link("Ajouter un chapitre")
       end
     end
     
@@ -119,7 +119,7 @@ describe "sections/show.html.erb", section: true do
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
         
-        should have_no_button("Ajouter un chapitre")
+        should have_no_link("Ajouter un chapitre")
       end
     end
   end
@@ -169,7 +169,7 @@ describe "sections/show.html.erb", section: true do
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
         
-        should have_no_button("Ajouter un chapitre")
+        should have_no_link("Ajouter un chapitre")
       end
     end
     
@@ -217,7 +217,7 @@ describe "sections/show.html.erb", section: true do
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
         
-        should have_no_button("Ajouter un chapitre")
+        should have_no_link("Ajouter un chapitre")
       end
     end
     
@@ -263,7 +263,7 @@ describe "sections/show.html.erb", section: true do
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
         should have_no_link(theory51_offline.title)
         
-        should have_no_button("Ajouter un chapitre")
+        should have_no_link("Ajouter un chapitre")
       end
     end
   end
@@ -304,7 +304,7 @@ describe "sections/show.html.erb", section: true do
         should have_link(theory51_offline.title, href: chapter_theory_path(chapter5_offline, theory51_offline))
         should have_link(class: "btn-warning", text: "!", href: chapter_question_path(chapter5_offline, question51_offline))
         
-        should have_button("Ajouter un chapitre")
+        should have_link("Ajouter un chapitre")
       end
     end
     
@@ -344,7 +344,7 @@ describe "sections/show.html.erb", section: true do
         should have_link(theory51_offline.title, href: chapter_theory_path(chapter5_offline, theory51_offline))
         should have_link(class: "btn-warning", text: "!", href: chapter_question_path(chapter5_offline, question51_offline))
         
-        should have_button("Ajouter un chapitre")
+        should have_link("Ajouter un chapitre")
       end
     end
   end

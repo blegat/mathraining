@@ -18,7 +18,7 @@
   </script>
   
   <% if limit_reached %>
-    <p class="mt-2 text-color-red">Vous avez déjà soumis une nouvelle solution aujourd'hui. Afin de limiter la charge de travail des correcteurs, les nouvelles soumissions sont actuellement limitées à une par jour.</p>
+    <p class="mb-2 text-color-red">Vous avez déjà soumis une nouvelle solution aujourd'hui. Afin de limiter la charge de travail des correcteurs, les nouvelles soumissions sont actuellement limitées à une par jour.</p>
   <% else %>
     <div class="form-check mb-2">
     <label class="form-check-label">
@@ -30,10 +30,12 @@
     </div>
   <% end %>
 
-  <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Attention ! Votre solution va être lue par un correcteur bénévole.\n\nVeillez à ce que celle-ci soit suffisamment claire et bien rédigée. Avant de l'envoyer, nous vous encourageons à la relire entièrement, si possible plusieurs heures après l'avoir rédigée, pour vous assurer qu'elle est facilement compréhensible.\n\nÊtes-vous #{current_user.sure} de vouloir soumettre cette solution ?" }) %>
-  <%= f.submit "Enregistrer comme brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (in_skin? || @no_new_submission) %>
+  <div class="mb-2">
+    <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Attention ! Votre solution va être lue par un correcteur bénévole.\n\nVeillez à ce que celle-ci soit suffisamment claire et bien rédigée. Avant de l'envoyer, nous vous encourageons à la relire entièrement, si possible plusieurs heures après l'avoir rédigée, pour vous assurer qu'elle est facilement compréhensible.\n\nÊtes-vous #{current_user.sure} de vouloir soumettre cette solution ?" }) %>
+    <%= f.submit "Enregistrer comme brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (in_skin? || @no_new_submission) %>
+  </div>
 <% end %>
 
 <% unless limit_reached %>
-  <p class="mt-2" style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui renvoient une solution déjà envoyée sur un précédent compte.</p>
+  <p style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui renvoient une solution déjà envoyée sur un précédent compte.</p>
 <% end %>

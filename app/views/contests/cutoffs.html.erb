@@ -42,7 +42,7 @@
 <center>
 
 <!-- Endroit pour dessiner le graphique des scores -->
-<div id="contenant" class="mt-3" style="width:100%; max-width:900px; height:280px; position:relative; display:block;">
+<div id="contenant" class="mb-3" style="width:100%; max-width:900px; height:280px; position:relative; display:block;">
 <canvas id="myCanvas" width="900" height="280" style="position:absolute; left:0px; top:0px;">
 Votre navigateur ne supporte pas les canvas.
 </canvas>
@@ -52,8 +52,8 @@ Votre navigateur ne supporte pas les canvas.
 
 
 <center>
-<%= form_tag define_cutoffs_contest_path(@contest), :method => :post, :id => "cutoff_form", :class => "mt-3" do %>
-<table style="width:440px;">
+<%= form_tag define_cutoffs_contest_path(@contest), :method => :post, :id => "cutoff_form" do %>
+<table class="mb-2" style="width:440px;">
 <tr>
 <td style="width:200px;"></td>
 <th class="text-center" style="width:80px;"><label for="bronze_cutoff">Bronze</label></th>
@@ -102,7 +102,7 @@ Votre navigateur ne supporte pas les canvas.
 </tr>
 </table>
 
-<%= submit_tag "Distribuer les médailles", :class => "btn btn-primary mt-2", :onclick => "return confirm('Êtes vous #{current_user.sure} de vouloir choisir ces seuils ? Les médailles vont être publiées.')" %>
+<%= submit_tag "Distribuer les médailles", :class => "btn btn-primary mb-3", :onclick => "return confirm('Êtes vous #{current_user.sure} de vouloir choisir ces seuils ? Les médailles vont être publiées.')" %>
 
 <% end %>
 </center>

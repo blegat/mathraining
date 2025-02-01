@@ -43,7 +43,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
         should have_link("Modifier la solution")
         should have_link("Modifier les solutions externes")
         should have_link("Supprimer ce problème")
-        should have_button("Mettre en ligne")
+        should have_link("Mettre en ligne")
         expect(response).not_to render_template(:partial => "submissions/_index", :locals => {problem: problem})
         should have_button("Éléments de solution")
       end
@@ -64,7 +64,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
         should have_link("Modifier la solution")
         should have_link("Modifier les solutions externes")
         should have_no_link("Supprimer ce problème")
-        should have_no_button("Mettre en ligne")
+        should have_no_link("Mettre en ligne")
         expect(response).to render_template(:partial => "submissions/_index", :locals => {problem: problem})
         should have_button("Éléments de solution")
       end

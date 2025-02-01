@@ -45,16 +45,16 @@ function showMessages() {
   <%= f.text_area :reason, :class => "form-control", :maxlength => "2000", :style => "height:100px;" %>
 </div>
 
-<u>Précédents messages</u>
+<h6>Précédents messages</h6>
 
-<ul id="messages_ban" class="mt-1" style="display:none;">
+<ul id="messages_ban" style="display:none;">
 <% ban_messages = Sanction.where(:sanction_type => :ban).group(:reason).count %>
 <% ban_messages.sort_by{|message, nb| -nb}.each do |message, nb| %>
   <li><%= message %></li>
 <% end %>
 </ul>
 
-<ul id="messages_no_submission" class="mt-1" style="display:none;">
+<ul id="messages_no_submission" style="display:none;">
 <% no_sub_messages = Sanction.where(:sanction_type => :no_submission).group(:reason).count %>
 <% no_sub_messages.sort_by{|message, nb| -nb}.each do |message, nb| %>
   <li><%= message %></li>

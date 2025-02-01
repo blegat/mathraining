@@ -32,11 +32,11 @@ describe "Privacy policy pages", privacypolicy: true do
         before { visit privacypolicies_path }
         it do
           should have_selector("h1", text: "Politiques de confidentialité")
-          should have_button("Créer une nouvelle version")
+          should have_link("Créer une nouvelle version")
         end
         
         describe "and adds a new one" do
-          before { click_button("Créer une nouvelle version") }
+          before { click_link("Créer une nouvelle version") }
           specify do
             expect(Privacypolicy.last.content).to eq("- À écrire -")
             expect(Privacypolicy.last.description).to eq("- À écrire -")
@@ -144,12 +144,12 @@ describe "Privacy policy pages", privacypolicy: true do
           should have_link("Supprimer", href: privacypolicy_path(policy3_offline))
           should have_link("Publier", href: put_online_privacypolicy_path(policy3_offline))
           
-          should have_no_button("Créer une nouvelle version") # Because there is already an offline one
+          should have_no_link("Créer une nouvelle version") # Because there is already an offline one
         end
         
         specify do
           expect { click_link("Supprimer", href: privacypolicy_path(policy3_offline)) }.to change(Privacypolicy, :count).by(-1)
-          expect { click_button "Créer une nouvelle version" }.to change(Privacypolicy, :count).by(1)
+          expect { click_link "Créer une nouvelle version" }.to change(Privacypolicy, :count).by(1)
         end
         
         describe "and puts the new one online" do

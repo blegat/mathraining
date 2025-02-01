@@ -46,9 +46,9 @@
 
   <% points_by_user = points_by_user.sort_by{|x| [-x[:points], -x[:rating], x[:user_id]]} %>
 
-  <center><b><%= points_by_user.size() %></b> participants ont résolu au moins une énigme.</center>
+  <p class="text-center fw-bold"><%= points_by_user.size() %></b> participants ont résolu au moins une énigme.</p>
 
-  <div class="mt-3 mb-3" style="width:100%; overflow-x:auto;">
+  <div class="mb-3" style="width:100%; overflow-x:auto;">
   <center>
   <% width_rank = 45 %>
   <% width_name = 230 %>

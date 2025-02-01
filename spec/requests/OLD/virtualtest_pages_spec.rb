@@ -91,14 +91,14 @@ describe "Virtualtest pages" do
         should have_selector("h4", text: "Test \##{virtualtest.number}")
         should have_content("2 problèmes")
         should have_no_content("Score moyen")
-        should have_button("Commencer ce test")
+        should have_link("Commencer ce test")
       end
       
       describe "and tries to start the test while already in another test" do
         before do
           other_virtualtest = FactoryGirl.create(:virtualtest, online: true, number: 43, duration: 60)
           Takentest.create(virtualtest: other_virtualtest, user: user_with_rating_200, taken_time: DateTime.now - 10.minutes, status: :in_progress)
-          click_button "Commencer ce test"
+          click_link "Commencer ce test"
         end
         specify do
           expect(page).to have_error_message("Vous avez déjà un test virtuel en cours !")
@@ -109,7 +109,7 @@ describe "Virtualtest pages" do
       describe "and tries to start the test while no new submission is allowed" do
         before do
           Globalvariable.create(:key => "no_new_submission", :value => 1, :message => "Plus de nouvelle soumission")
-          click_button "Commencer ce test"
+          click_link "Commencer ce test"
         end
         specify do
           expect(page).to have_info_message("Plus de nouvelle soumission")
@@ -120,7 +120,7 @@ describe "Virtualtest pages" do
       describe "and tries to start the test while having received a sanction" do
         let!(:sanction) { FactoryGirl.create(:sanction, user: user_with_rating_200, sanction_type: :no_submission) }
         before do
-          click_button "Commencer ce test"
+          click_link "Commencer ce test"
         end
         specify do
           expect(page).to have_info_message(sanction.message)
@@ -129,7 +129,7 @@ describe "Virtualtest pages" do
       end
       
       describe "and starts the test" do
-        before { click_button "Commencer ce test"  }
+        before { click_link "Commencer ce test"  }
         it do
           should have_selector("h1", text: "Test \##{virtualtest.number}")
           should have_content("Temps restant")
@@ -142,7 +142,7 @@ describe "Virtualtest pages" do
           it do
             should have_selector("h4", text: "Test \##{virtualtest.number}")
             should have_no_content("Score moyen")
-            should have_no_button("Commencer ce test")
+            should have_no_link("Commencer ce test")
             should have_link("Problème 1", href: virtualtest_path(virtualtest, :p => problem))
             should have_content(problem.statement)
             should have_link("Problème 2", href: virtualtest_path(virtualtest, :p => problem_with_prerequisite))
@@ -256,11 +256,11 @@ describe "Virtualtest pages" do
         should have_content("2 problèmes")
         should have_content(problem.statement)
         should have_content("Score moyen")
-        should have_no_button("Commencer ce test")
+        should have_no_link("Commencer ce test")
         should have_no_link("Modifier ce test")
         should have_no_link("Supprimer ce test")
-        should have_no_button("Mettre en ligne")
-        should have_button("Ajouter un test virtuel")
+        should have_no_link("Mettre en ligne")
+        should have_link("Ajouter un test virtuel")
       end
     end
     
@@ -280,7 +280,7 @@ describe "Virtualtest pages" do
           expect(page).to have_content("(en construction)")
           expect(page).to have_link("Modifier ce test")
           expect(page).to have_link("Supprimer ce test")
-          expect(page).to have_no_button("Mettre en ligne")
+          expect(page).to have_link("Mettre en ligne", class: "disabled")
           expect(page).to have_content("(Au moins un problème nécessaire)")
           expect { click_link "Supprimer ce test" }.to change(Virtualtest, :count).by(-1)
         end
@@ -337,7 +337,7 @@ describe "Virtualtest pages" do
         visit virtualtests_path
       end
       specify do
-        expect(page).to have_button("Mettre en ligne")
+        expect(page).to have_link("Mettre en ligne")
         expect(page).to have_link("Supprimer ce test")
         expect(page).to have_link("bas", href: order_problem_path(problem, :new_position => 2))
         expect(page).to have_link("haut", href: order_problem_path(problem_with_prerequisite, :new_position => 1))
@@ -348,7 +348,7 @@ describe "Virtualtest pages" do
       
       describe "and puts it online" do
         before do
-          click_button "Mettre en ligne"
+          click_link "Mettre en ligne"
           virtualtest.reload
         end
         specify do
@@ -360,7 +360,7 @@ describe "Virtualtest pages" do
       describe "and puts it online while an offline problem was added" do
         before do
           offline_problem.update_attribute(:virtualtest, virtualtest)
-          click_button "Mettre en ligne"
+          click_link "Mettre en ligne"
           virtualtest.reload
         end
         specify do
@@ -377,7 +377,7 @@ describe "Virtualtest pages" do
         visit virtualtests_path
       end
       it do
-        should have_no_button("Mettre en ligne")
+        should have_link("Mettre en ligne", class: "disabled")
         should have_content("(Problèmes doivent être en ligne)")
       end
     end
@@ -394,7 +394,7 @@ describe "Virtualtest pages" do
     describe "writes a solution with a file" do
       before do
         visit virtualtests_path
-        click_button "Commencer ce test"
+        click_link "Commencer ce test"
         # No dialog box to accept in test environment: it was deactivated because we had issues with testing
         visit virtualtest_path(virtualtest, :p => problem)
         wait_for_js_imports
@@ -439,7 +439,7 @@ describe "Virtualtest pages" do
     describe "writes a solution with a wrong file" do
       before do
         visit virtualtests_path
-        click_button "Commencer ce test"
+        click_link "Commencer ce test"
         # No dialog box to accept in test environment: it was deactivated because we had issues with testing
         visit virtualtest_path(virtualtest, :p => problem)
         wait_for_js_imports

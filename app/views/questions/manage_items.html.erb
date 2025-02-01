@@ -6,11 +6,13 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>	
-<%= htmlise(@question.statement, true) %>
+<div class="mb-3">
+  <%= htmlise(@question.statement, true) %>
+</div>
 
 <!-- Réponse -->
-<h3 class="mt-3">Réponse</h3>	
-<table cellpadding="5">
+<h3>Réponse</h3>	
+<table cellpadding="5" class="mb-3">
 <tr><th></th><th></th><th class="p-1 text-center">Rép ?</th><th></th><th></th><th></th><th></th></tr>
 <% i = 0 %>
 <% items = @question.items.order(:position).to_a %>

@@ -20,7 +20,7 @@ describe "Sanction pages", sanction: true do
         expect(page).to have_content(sanction.message)
         expect(page).to have_link("Modifier", href: edit_sanction_path(sanction))
         expect(page).to have_link("Supprimer")
-        expect(page).to have_button("Créer une sanction")
+        expect(page).to have_link("Créer une sanction")
         expect { click_link("Supprimer") }.to change(Sanction, :count).by(-1)
       end
     end

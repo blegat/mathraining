@@ -2,9 +2,9 @@
 
 <h1><%= title_pictures("Récupérer un url") %></h1>
 
-<center>
-<%= image_tag @picture.image, :class => "mt-3", :style => "max-width:800px;" %>
-</center>
+<p class="text-center">
+  <%= image_tag @picture.image, :style => "width:90%; max-width:800px;" %>
+</p>
 
-<p class="mt-3 text-center"><%= image_picture_url(@picture, :only_path => true, :key => @picture.access_key) %></p>
-<p class="text-center"><%= link_to "Supprimer cette image", @picture, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous) ! Êtes-vous #{current_user.sure} de vouloir supprimer cette image ?" } %></p>
+<p class="text-center"><%= image_picture_url(@picture, :only_path => true, :key => @picture.access_key) %></p>
+<p class="text-center"><%= link_to "Supprimer cette image", @picture, method: :delete, data: { confirm: "Soyez certain que cette image n'est utilisée nulle part dans le site (même éventuellement par quelqu'un d'autre que vous) ! Êtes-vous #{current_user.sure} de vouloir supprimer cette image ?" }, class: "text-color-red" %></p>

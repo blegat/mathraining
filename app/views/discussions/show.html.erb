@@ -50,8 +50,6 @@ window.addEventListener("load", () => {
 
   <div class="g-col-12 g-col-md-8 g-col-lg-9">
     <div id="messages">
-      <div class="mt-3 d-md-none"></div>
-
       <% other = current_user %>
       <% @discussion.users.each do |u| %>
         <% if u != current_user %>
@@ -61,7 +59,7 @@ window.addEventListener("load", () => {
       <h3>Discussion avec <%= other.linked_name %></h3>
       
       <% if other.active %>
-      
+
         <%= form_for @tchatmessage, :html => { :multipart => true } do |f| %>
           <%= f.hidden_field :discussion_id, :value => @discussion.id %>
           
@@ -76,14 +74,12 @@ window.addEventListener("load", () => {
 
           <%= render 'shared/edit_files' %>
           
-          <%= f.submit "Envoyer", class: "btn btn-lg btn-primary mb-2", :disabled => in_skin? %>
+          <%= f.submit "Envoyer", class: "btn btn-lg btn-primary mb-3", :disabled => in_skin? %>
           <%= link_to 'Marquer comme non lu', unread_discussion_path(@discussion), :method => :put, :class => "btn btn-ld-light-dark", :style => "float:right;", :disabled => in_skin? %>
         <% end %>
         
       <% else %>
-      
-      <p class="mt-3 text-center fw-bold">Ce compte a été supprimé et vous ne pouvez donc plus lui envoyer de messages.</p>
-      
+        <p class="text-center fw-bold">Ce compte a été supprimé.</p>
       <% end %>
 
       <% @tchatmessages = @discussion.get_some_messages(1, 10) if @tchatmessages.nil? %>
@@ -94,7 +90,7 @@ window.addEventListener("load", () => {
         <% end %>
       </div>
 
-      <div id="infinite-scrolling" class="text-center">
+      <div id="infinite-scrolling" class="text-center mb-1">
         <div style="display:none;">
         <center>
         <%= will_paginate @tchatmessages %>

@@ -99,7 +99,7 @@ var checkAnswer = function() {
 </div>
 
 <!-- Enoncé -->
-<div><%= htmlise(@question.statement, true) %></div>
+<div class="mb-3"><%= htmlise(@question.statement, true) %></div>
 
 <div id="question-div">
 <% if !@question.online? %>
@@ -114,12 +114,12 @@ var checkAnswer = function() {
   <!-- Boutons pour les admins -->
   <%= render 'questions/admin', question: @question %>
 <% else %>
-  <hr class="bottom-help" />
+  <hr class="bottom-help mt-0" />
   <% if signed_in? %>
     <% subject = @question.subject %>
-    Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path(subject) : subjects_path(:q => "cha-" + @chapter.id.to_s)), :target => "_blank" %> !
+    <p>Un souci avec cet exercice ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", (!subject.nil? ? subject_path(subject) : subjects_path(:q => "cha-" + @chapter.id.to_s)), :target => "_blank" %> !</p>
   <% else %>
-    Pour pouvoir répondre aux exercices, vous devez être connecté.
+    <p>Pour pouvoir répondre aux exercices, vous devez être connecté.</p>
   <% end %>
 <% end %>
 

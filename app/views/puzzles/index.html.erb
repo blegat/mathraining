@@ -59,5 +59,7 @@
 </div>
 
 <% unless Puzzle.ended? %>
-  <center><%= button_to "Créer une énigme", new_puzzle_path, :class => "btn btn-lg btn-ld-light-dark", :method => "get" %></center>
+  <p class="text-center">
+    <%= link_to "Créer une énigme", new_puzzle_path %>
+  </p>
 <% end %>

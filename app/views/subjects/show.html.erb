@@ -18,7 +18,7 @@
   <% title_complement = (link_to @chapitre.name, @chapitre, target: '_blank') %>
 <% end %>
 
-<div class="split-title-lg">
+<div class="split-title-lg mb-2">
   <div class="part-1">
     <h1 class="mb-0">
     <%= title_subjects(@subject.title) %>
@@ -39,7 +39,7 @@
 <!-- We need to provide the following params manually for the case where we encounter an error while creating
      or updating a message. In that case, we can arrive to this page with an url that is not the expected one -->
 <% params = {:controller => "subjects", :action => "show", :id => @subject.id} %>
-<%= render 'shared/pages', data: @messages, params: params, classes_small: "mt-3", classes_large: "mt-3 mb-0" %>
+<%= render 'shared/pages', data: @messages, params: params %>
 
 <!-- S'il s'agit de la première page, on affiche le sujet -->
 <% if @page.nil? || @page == 1 %>
@@ -64,6 +64,6 @@
   <%= render 'messages/new' %>
 <% end %>
 
-<%= render 'shared/pages', data: @messages, params: params, classes_small: "mt-3", classes_large: "mt-3" %>
+<%= render 'shared/pages', data: @messages, params: params %>
 
 <a name="bottom"></a>

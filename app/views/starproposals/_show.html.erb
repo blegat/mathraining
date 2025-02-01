@@ -63,11 +63,11 @@
 </div>
 
 <% if current_user.root? %>
-  <center>
+  <p class="text-center">
     <% if @submission.star %>
-      <%= button_to 'Ne plus étoiler cette solution', unstar_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => in_skin? %>
+      <%= link_to 'Ne plus étoiler cette solution', unstar_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark" %>
     <% else %>
-      <%= button_to 'Étoiler cette solution', star_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark mb-3", :disabled => in_skin? %>
+      <%= link_to 'Étoiler cette solution', star_submission_path(@submission), :method => :put, :class => "btn btn-ld-light-dark" %>
     <% end %>
-  </center>
+  </p>
 <% end %>

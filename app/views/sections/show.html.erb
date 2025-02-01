@@ -4,15 +4,16 @@
 <button class="information-tag" onclick="return Info.toggle();">?</button>
 </h1>
 
-<%= render 'info_fondation' if @section.fondation %>
-<%= render 'info' unless @section.fondation %>
+<%= render 'shared/info', about: (@section.fondation ? "chapters-fondation" : "chapters") %>
 
 <!-- Introduction -->
-<h3 class="mt-2">Introduction</h3>
+<h3>Introduction</h3>
 <p><%= htmlise(@section.description) %></p>
 
 <% if signed_in? && current_user.admin? %>
-<p><%= link_to "Modifier l'introduction", edit_section_path(@section) %></p>
+  <p class="text-center">
+    <%= link_to "Modifier l'introduction", edit_section_path(@section) %>
+  </p>
 <% end %>
 
 <!-- Chapitres -->
@@ -103,10 +104,8 @@
 
 <!-- Si administrateur -->
 <% if signed_in? && current_user.admin? %>
-
-<!-- Ajouter un chapitre -->
-<center>
-<%= button_to "Ajouter un chapitre", new_section_chapter_path(@section), method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
-</center>
-
+  <!-- Ajouter un chapitre -->
+  <p class="text-center">
+    <%= link_to "Ajouter un chapitre", new_section_chapter_path(@section) %>
+  </p>
 <% end %>

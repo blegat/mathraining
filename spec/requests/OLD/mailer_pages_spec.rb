@@ -169,7 +169,7 @@ feature 'Emailer' do
         finished_contestproblem_officialsol.update_attribute(:star, true)
         sign_in root
         visit contestproblem_path(finished_contestproblem)
-        click_button "Publier les résultats"
+        click_link "Publier les résultats"
       end
       
       specify do

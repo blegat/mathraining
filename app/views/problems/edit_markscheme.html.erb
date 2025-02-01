@@ -4,16 +4,20 @@
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
-<%= htmlise(@problem.statement) %>
+<div class="mb-3">
+  <%= htmlise(@problem.statement) %>
+</div>
 
 <% if @problem.explanation.size > 0 %>
   <!-- Explication -->
-  <h3 class="mt-3">Éléments de solution</h3>
-  <%= htmlise(@problem.explanation) %>
+  <h3>Éléments de solution</h3>
+  <div class="mb-3">
+    <%= htmlise(@problem.explanation) %>
+  </div>
 <% end %>
 
 <!-- Marking scheme -->
-<h3 class="mt-3">Marking scheme</h3>
+<h3>Marking scheme</h3>
 <p>Ce champ ne sera visible <u>que par les administrateurs et correcteurs</u>.</p>
 
 <%= form_for(@problem, url: update_markscheme_problem_path) do |f| %>
@@ -24,5 +28,5 @@
     <%= f.text_area :markscheme, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()" %>
     <script>initAndUpdatePreviewWhenPossible()</script>
   </div>
-  <%= f.submit "Modifier", class: "btn btn-lg btn-primary" %>
+  <%= f.submit "Modifier", class: "btn btn-lg btn-primary mb-3" %>
 <% end %>

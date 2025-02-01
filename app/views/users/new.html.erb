@@ -19,25 +19,23 @@ function checkChecked() {
 
 <% provide(:title, 'Inscription') %>
 
-<div class="mt-3 mb-2 p-3 pb-0 grey-box">
-<h3>À lire avant l'inscription</h3>
-<p>
-Mathraining est un site interactif sur lequel il est possible d'écrire une solution à un problème pour la faire corriger par un correcteur bénévole. Par respect pour les correcteurs, il est dès lors demandé à chacun de ne proposer que des solutions dont il est l'auteur, et qui n'ont donc jamais été soumise sur Mathraining auparavant. <b>Les doubles comptes ne sont donc pas tolérés et seront systématiquement supprimés.</b>
-</p>
-
-<p>
-Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes mal intentionnées ou utilisant le site de manière inappropriée.
-</p>
-</div>
-
 <h1><%= title_1("Inscription") %></h1>
 
 <p>Pour vous inscrire, il vous suffit de posséder une adresse e-mail valide. Un e-mail de confirmation vous sera envoyé à cette adresse.</p>
 
+<div class="card mb-3">
+  <h5 class="card-header">À lire avant l'inscription</h5>
+  <div class="card-body">
+    <p>Mathraining est un site interactif sur lequel il est possible d'écrire une solution à un problème pour la faire corriger par un correcteur bénévole. Par respect pour les correcteurs, il est dès lors demandé à chacun de ne proposer que des solutions dont il est l'auteur, et qui n'ont donc jamais été soumise sur Mathraining auparavant. <b>Les doubles comptes ne sont donc pas tolérés et seront systématiquement supprimés.</b></p>
+
+    <p class="mb-0">Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes mal intentionnées ou utilisant le site de manière inappropriée.</p>
+  </div>
+</div>
+
 <%= form_for(@user) do |f| %>
   <%= render 'form', f: f, modif: false %>
 
-  <%= f.submit "Créer mon compte", class: "btn btn-lg btn-primary", id: "send-button", disabled: !Rails.env.test? %>
-  <p id="warning" class="mt-3 text-color-red">Pour pouvoir vous inscrire, vous devez accepter la politique de confidentialité.</p>
+  <%= f.submit "Créer mon compte", class: "btn btn-lg btn-primary mb-2", id: "send-button", disabled: !Rails.env.test? %>
+  <p id="warning" class="text-color-red">Pour pouvoir vous inscrire, vous devez accepter la politique de confidentialité.</p>
   <script>checkChecked()</script>
 <% end %>

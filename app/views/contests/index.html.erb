@@ -4,7 +4,7 @@
 <button class="information-tag" onclick="return Info.toggle();">?</button>
 </h1>
 
-<%= render 'info' %>
+<%= render 'shared/info', about: "contests" %>
 
 <% if !has_enough_points(current_user) %>
 <div class="mb-3 fw-bold">
@@ -94,7 +94,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
 
 <!-- Ajouter un concours -->
 <% if signed_in? && current_user.admin? %>
-  <center>
-  <%= button_to "Ajouter un concours", new_contest_path, method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
-  </center>
+  <p class="text-center">
+    <%= link_to "Ajouter un concours", new_contest_path %>
+  </p>
 <% end %>

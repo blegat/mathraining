@@ -1,0 +1,55 @@
+<div id="information" style="height:0px; overflow-y:hidden;">
+  <div class="card mb-3">
+    <h5 class="card-header">Informations</h5>
+    <div class="card-body">
+      <% if about == "chapters" %>
+        
+        <p>Chaque chapitre est constitué de points théoriques et d'exercices.
+        Ces derniers ont pour but de vérifier que la théorie a bien été assimilée.
+        Ils rapportent chacun entre 3 et 12 points, selon leur difficulté.
+        Pour <i>compléter</i> un chapitre, il faut résoudre tous ses exercices.</p>
+        
+        <p class="mb-0">Certains chapitres ont d'autres chapitres pour prérequis.
+        Pour accéder aux exercices d'un tel chapitre, il est nécessaire de d'abord compléter ses chapitres prérequis.</p>
+        
+      <% elsif about == "chapters-fondation" %>
+        
+        <p class="mb-0">Les chapitres de cette section ne rapportent aucun point et il n'est pas nécessaire de les terminer pour gagner l'accès à d'autres chapitres.
+        Certains d'entre eux devront cependant être complétés avant de pouvoir rédiger des solutions aux problèmes du site.</p>
+        
+      <% elsif about == "contests" %>
+        
+        <p>Un concours est une série de problèmes, chacun pouvant être résolu entre deux dates bien précises annoncées à l'avance.
+        Les participants au concours ont le temps, entre ces deux dates, d'écrire leur solution au problème.</p>
+
+        <p>Lorsqu'un problème ne peut plus recevoir de solution, les organisateurs du concours les corrigent toutes et leur attribuent un score entre 0 et 7.
+        Ils publient ensuite les résultats du problème, et toutes les solutions correctes (c'est-à-dire avec un score de 7/7) sont alors accessibles par tous.</p>
+
+        <p class="mb-0">Les concours et leurs problèmes n'ont aucune influence sur les scores habituels du site.
+        Il est toutefois nécessaire d'avoir un minimum de 200 points pour être autorisé à participer à un concours (et il s'agit là de la seule restriction).</p>
+        
+      <% elsif about == "virtualtests" %>
+        
+        <p>Les tests virtuels ont pour but de simuler des compétitions et tests qui ont lieu dans le cadre de diverses olympiades.
+        Chaque test a une durée limitée et contient un nombre précis de problèmes.
+        Les solutions écrites pendant un test sont corrigées comme celles des problèmes habituels, si ce n'est qu'une note sur 7 est également attribuée à chaque solution.
+        Cette note est donnée à titre informatif et n'est pas visible par les autres utilisateurs.</p>
+
+        <p>Une fois qu'un test virtuel est terminé, tous ses problèmes sont transférés dans leur section respective et peuvent être résolus comme les autres problèmes du site.
+        Les points associés à un problème peuvent donc être obtenus même après le test, qui donne simplement une occasion de s'entraîner à écrire des solutions en un temps limité.</p>
+
+        <p class="mb-0">Un test virtuel ne devient visible pour un utilisateur que lorsque ce dernier a complété les chapitres considérés comme nécessaires à la bonne résolution des problèmes du test.
+        De manière générale, un minimum de 200 points est également requis pour avoir accès aux tests virtuels.</p>
+        
+      <% elsif about == "problems" %>
+        
+         <p>Les problèmes du site, contrairement aux exercices, demandent des solutions rédigées rigoureusement.
+         Ces solutions sont corrigées par une équipe de correcteurs bénévoles, dans des délais qui varient selon leurs disponibilités.</p>
+
+        <p class="mb-0">Un problème ne devient visible pour un utilisateur que lorsque ce dernier a complété les chapitres considérés comme nécessaires à sa bonne résolution.
+        De manière générale, un minimum de 200 points est également requis pour avoir accès aux problèmes.</p>
+        
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -8,11 +8,11 @@
 <% numLatexTest = 0 %>
 <% @chapter.theories.order(:position).each do |t| %>
   <% if t.online || !@chapter.online %>
-    <h3 class="mt-4"><%= i %>. <%= t.title %></h3>
-    <div>
+    <h3><%= i %>. <%= t.title %></h3>
+    <div class="mb-3">
       <% numLatexTest += 1 if t.content.include? "latextest" %>
       <% if numLatexTest <= 1 %>
-        <%= htmlise(t.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control mt-2" style="height:120px;" oninput="Preview.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(false)</script>').html_safe %>
+        <%= htmlise(t.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark mb-2"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control" style="height:120px;" oninput="Preview.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(false)</script>').html_safe %>
       <% else %>
         <%= htmlise(t.content).gsub(/\/latextest\//, '<center><i>Voir plus haut.</i></center>').html_safe %>
       <% end %>
@@ -23,10 +23,14 @@
 
 <% if @chapter.online && signed_in? && !current_user.admin? %>
   <!-- Marquer comme lu -->
-  <center><%= button_to "Marquer toute la théorie comme lue", read_chapter_path(@chapter), :method => :put, class: 'btn btn-ld-light-dark mt-3', :disabled => (!signed_in? || in_skin?) %></center>
+  <p class="text-center">
+    <%= link_to "Marquer toute la théorie comme lue", read_chapter_path(@chapter), :method => :put, class: "btn btn-ld-light-dark #{'disabled' if !signed_in? || in_skin?}" %>
+  </p>
   
-  <hr class="bottom-help" />
-  Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => "cha-" + @chapter.id.to_s) %> !
+  <hr class="bottom-help mt-0" />
+  <p>
+    Des questions ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => "cha-" + @chapter.id.to_s) %> !
+  </p>
 <% end %>
 
 <%= render 'chapters/after' %>

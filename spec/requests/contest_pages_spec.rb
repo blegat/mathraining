@@ -206,7 +206,7 @@ describe "Contest pages", contest: true do
         end
         
         describe "and tries to put it online without a problem" do
-          before { click_link "Mettre ce concours en ligne" }
+          before { click_link "Mettre en ligne" }
           it { should have_error_message("Un concours doit contenir au moins un problème !") }
         end
       end
@@ -224,7 +224,7 @@ describe "Contest pages", contest: true do
       before { visit contest_path(offline_contest) }
       specify do
         expect(page).to have_link("Modifier ce concours")
-        expect(page).to have_link("Mettre ce concours en ligne")
+        expect(page).to have_link("Mettre en ligne")
         expect(page).to have_link("Supprimer ce concours")
         expect(page).to have_button("Ajouter") # To add an organizer
         expect { click_link "Supprimer ce concours" }.to change(Contest, :count).by(-1)
@@ -233,7 +233,7 @@ describe "Contest pages", contest: true do
       describe "and puts it online" do
         before do
           Category.create(:name => "Mathraining") # Will be used for the new subject
-          click_link "Mettre ce concours en ligne"
+          click_link "Mettre en ligne"
           offline_contest.reload
           offline_contestproblem.reload
         end
@@ -250,7 +250,7 @@ describe "Contest pages", contest: true do
       describe "and tries to put it online too late" do
         before do
           offline_contestproblem.update_attribute(:start_time, DateTime.now - 20.minutes)
-          click_link "Mettre ce concours en ligne"
+          click_link "Mettre en ligne"
           offline_contest.reload
           offline_contestproblem.reload
         end

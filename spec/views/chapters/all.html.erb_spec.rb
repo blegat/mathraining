@@ -43,7 +43,7 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
     it "renders the online theory and nothing else" do
       render template: "chapters/all"
       should have_chapter_all_content
-      should have_no_button("Marquer toute la théorie comme lue")
+      should have_no_link("Marquer toute la théorie comme lue")
       should have_no_content("Des questions ? N'hésitez pas à demander de l'aide")
       expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'all'})
       expect(response).to render_template(:partial => "chapters/_intro")
@@ -56,7 +56,7 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
     it "renders the online theory and other stuff" do
       render template: "chapters/all"
       should have_chapter_all_content
-      should have_button("Marquer toute la théorie comme lue")
+      should have_link("Marquer toute la théorie comme lue")
       should have_content("Des questions ? N'hésitez pas à demander de l'aide")
       expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'all'})
       expect(response).to render_template(:partial => "chapters/_intro")
@@ -67,7 +67,7 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
     it "renders the online theory and nothing else" do
       render template: "chapters/all"
       should have_chapter_all_content
-      should have_no_button("Marquer toute la théorie comme lue")
+      should have_no_link("Marquer toute la théorie comme lue")
       should have_no_content("Des questions ? N'hésitez pas à demander de l'aide")
       expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'all'})
       expect(response).to render_template(:partial => "chapters/_intro")

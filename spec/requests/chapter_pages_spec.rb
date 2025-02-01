@@ -45,18 +45,18 @@ describe "Chapter pages", chapter: true do
       before { visit all_chapter_path(online_chapter) }
       it do
         should have_selector("h3", text: online_theory.title)
-        should have_button("Marquer toute la théorie comme lue")
+        should have_link("Marquer toute la théorie comme lue")
         should have_link("forum", href: subjects_path(:q => "cha-" + online_chapter.id.to_s))
       end
       
       describe "and mark it as read" do
         before do
-          click_button "Marquer toute la théorie comme lue"
+          click_link "Marquer toute la théorie comme lue"
           visit chapter_theory_path(online_chapter, online_theory)
           user.reload
         end
         specify do
-          expect(page).to have_button("Marquer comme non lu")
+          expect(page).to have_link("Marquer comme non lu")
           expect(user.theories.exists?(online_theory.id)).to eq(true)
         end
       end
@@ -76,7 +76,7 @@ describe "Chapter pages", chapter: true do
         expect(page).to have_link("Supprimer", href: prerequisite_path(prerequisite_link_1))
         expect(page).to have_link("point théorique")
         expect(page).to have_link("QCM")
-        expect(page).to have_no_button("Mettre ce chapitre en ligne") # Only for root
+        expect(page).to have_no_link("Mettre ce chapitre en ligne") # Only for root
         expect { click_link("Supprimer", href: prerequisite_path(prerequisite_link_1)) }.to change(Prerequisite, :count).by(-1)
         expect { click_link("Supprimer ce chapitre") }.to change(Chapter, :count).by(-1) .and change(Question, :count).by(-2) .and change(Theory, :count).by(-1) .and change(Item, :count).by(-1)
       end
@@ -194,7 +194,7 @@ describe "Chapter pages", chapter: true do
     describe "puts a chapter online" do
       before do
         visit chapter_path(offline_chapter)
-        click_button "Mettre ce chapitre en ligne"
+        click_link "Mettre ce chapitre en ligne"
         offline_chapter.reload
         offline_qcm.reload
         offline_exercise.reload
@@ -210,13 +210,13 @@ describe "Chapter pages", chapter: true do
     
     describe "tries to put online an online chapter" do
       before { visit chapter_path(online_chapter) }
-      it { should have_no_button("Mettre ce chapitre en ligne") }
+      it { should have_no_link("Mettre ce chapitre en ligne") }
     end
     
     describe "tries to put online a chapter with offline prerequisites" do
       before do
         visit chapter_path(offline_chapter_2)
-        click_button("Mettre ce chapitre en ligne")
+        click_link("Mettre ce chapitre en ligne")
         offline_chapter_2.reload
       end
       specify do
@@ -228,7 +228,7 @@ describe "Chapter pages", chapter: true do
     describe "tries to put online a chapter without any question" do
       before do
         visit chapter_path(offline_chapter_3)
-        click_button("Mettre ce chapitre en ligne")
+        click_link("Mettre ce chapitre en ligne")
         offline_chapter_3.reload
       end
       specify do

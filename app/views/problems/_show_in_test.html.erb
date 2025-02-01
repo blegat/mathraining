@@ -1,23 +1,23 @@
 <!-- Enoncé -->
 <h3>Énoncé</h3>
 
-<div>
+<div class="mb-3">
   <%= htmlise(@problem.statement) %>
 </div>
 
 <!-- Solution de l'étudiant -->
-<h3 class="mt-4">Votre solution</h3>
+<h3>Votre solution</h3>
 
 <div id="the" class="content-part">
 <!-- Si une soumission a déjà été faite -->
 <% if !@submission.new_record? %>
-  <%= render 'shared/post', ms: @submission, kind: "submission_in_test", can_edit: true, reduce_margin_top: true %>
+  <%= render 'shared/post', ms: @submission, kind: "submission_in_test", can_edit: true %>
 <!-- Si pas encore de soumission -->
 <% else %>
   <!-- On propose d'écrire une solution -->
   <p class="text-color-orange">Vous n'avez pas encore envoyé de solution à ce problème.</p>
   <p>N'hésitez pas à écrire tout ce que vous trouvez même s'il ne s'agit pas d'une solution complète au problème ! Lors d'un vrai test ou d'une vraie compétition, vous rendrez également vos feuilles de brouillon et celles-ci pourront vous rapporter des points si elles contiennent des éléments pouvant mener à une solution.</p>
-  <center><button class="btn btn-ld-light-dark" onclick='return Rolling.develop("")'>Écrire une solution</button></center>
+  <center><button class="btn btn-ld-light-dark mb-3" onclick='return Rolling.develop("")'>Écrire une solution</button></center>
 <% end %>
 </div>
 

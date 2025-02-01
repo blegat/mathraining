@@ -31,10 +31,12 @@
     <% end %>
     <!-- Enoncé -->
     <tr><td class="content">
-    <%= htmlise(q.statement, true) %>
+    <div class="mb-3">
+      <%= htmlise(q.statement, true) %>
+    </div>
 
     <% if !q.is_qcm %>
-      <p class="mt-3 mb-0 fst-italic">
+      <p class="mb-0 fst-italic">
       <% if q.decimal %>
         On attend un nombre <b>réel</b>, arrondi si nécessaire au millième près.
       <% else %>
@@ -42,10 +44,11 @@
       <% end %>
       </p>
     <% else %>
-      <ul class="mt-2">
+      <ul class="mt-n1">
       <% q.items.order(:position).each do |c| %>
         <li class="p-1">
-        <%= htmlise(c.ans) %>
+          <%= htmlise(c.ans) %>
+        </li>
       <% end %>
       </ul>
       <p class="mb-0 fst-italic">

@@ -30,7 +30,7 @@ describe "Solvedquestion pages", question: true do
       let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) }
       before do
         visit chapter_question_path(chapter, exercise)
-        click_link "Voir la réponse"
+        click_button "Voir la réponse"
       end
       specify do
         expect(page).to have_selector("h4", text: "Réponse")
@@ -41,11 +41,11 @@ describe "Solvedquestion pages", question: true do
     end
     
     describe "tries to see the answer to a question he did NOT solve (hack)" do
-      let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) } # To have the link 'Voir la réponse'
+      let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) } # To have the button 'Voir la réponse'
       before do
         visit chapter_question_path(chapter, exercise)
         solvedquestion.destroy
-        click_link "Voir la réponse"
+        click_button "Voir la réponse"
       end
       specify do
         expect(page).to have_no_selector("h4", text: "Réponse")
@@ -351,7 +351,7 @@ describe "Solvedquestion pages", question: true do
       end
       
       describe "and clicks to see the answer" do
-        before { click_link "Voir la réponse" }
+        before { click_button "Voir la réponse" }
         specify do
           expect(page).to have_selector("h4", text: "Réponse")
           expect(page).to have_content(exercise_decimal_answer)
@@ -361,7 +361,7 @@ describe "Solvedquestion pages", question: true do
         end
         
         describe "and clicks to hide the answer" do
-          before { click_link "Cacher la réponse" }
+          before { click_button "Cacher la réponse" }
           specify do
             expect(page).to have_no_selector("h4", text: "Réponse")
             expect(page).to have_no_content(exercise_decimal_answer)

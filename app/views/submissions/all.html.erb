@@ -1,7 +1,7 @@
 <% provide(:title, "Soumissions") %>
 <h1><%= title_1("Soumissions (tout)") %></h1>
 
-<%= render 'shared/pages', data: @submissions, classes_small: "mb-3" %>
+<%= render 'shared/pages', data: @submissions %>
 
 <% if !current_user.admin? %>
   <% problem_solved = Array.new %>

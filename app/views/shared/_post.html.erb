@@ -6,7 +6,7 @@
   <% reduce_margin_top = false %>
 <% end %>
 
-<div class="post mb-0 <%= "mt-3" unless reduce_margin_top %><%= "mt-1" if reduce_margin_top %>">
+<div class="post mb-3">
 
   <% coul = ((kind == "correction" && ms.user != @submission.user) || kind == "contestcorrection") ? "table-ld-danger" : "table-ld-primary" %>
   <div class="header <%= coul %>">

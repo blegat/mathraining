@@ -853,7 +853,7 @@ describe "Submission pages" do
     describe "gives a star to a submission" do
       before do
         visit problem_path(problem_with_submissions, :sub => good_submission)
-        click_button "Étoiler cette solution"
+        click_link "Étoiler cette solution"
         good_submission.reload
       end
       specify { expect(good_submission.star).to eq(true) }
@@ -863,7 +863,7 @@ describe "Submission pages" do
       before do
         good_submission.update_attribute(:star, true)
         visit problem_path(problem_with_submissions, :sub => good_submission)
-        click_button "Ne plus étoiler cette solution"
+        click_link "Ne plus étoiler cette solution"
         good_submission.reload
       end
       specify { expect(good_submission.star).to eq(false) }

@@ -146,19 +146,19 @@
 
     <% if !@problem.online %>
       <% if has_pre && enligne_ok %>
-        <center>
-        <%= button_to "Mettre en ligne", put_online_problem_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-3', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
-        </center>
+        <p class="text-center">
+          <%= link_to "Mettre en ligne", put_online_problem_path(@problem), :method => :put, class: "btn btn-danger", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>
+        </p>
       <% else %>
-        <center>
-        <%= button_to "Mettre en ligne", put_online_problem_path(@problem), :method => :put, class: 'btn btn-lg btn-ld-light-dark mb-1', disabled: true %>
-        </center>
-        <p class="mb-3 text-center">
-        <% if !has_pre %>
-          (Au moins un chapitre prérequis nécessaire)
-        <% else %>
-          (Chapitres prérequis doivent être en ligne)
-        <% end %>
+        <p class="text-center mb-1">
+          <%= link_to "Mettre en ligne", put_online_problem_path(@problem), :method => :put, class: "btn btn-danger disabled" %>
+        </p>
+        <p class="text-center">
+          <% if !has_pre %>
+            (Au moins un chapitre prérequis nécessaire)
+          <% else %>
+            (Chapitres prérequis doivent être en ligne)
+          <% end %>
         </p>
       <% end %>
     <% end %>
@@ -180,9 +180,9 @@
     <% if @cansendnewsub %>
       <% if @submission.nil? || (!@submission.draft? && !@submission.new_record?) %>
         <% if @problem.submissions.where(:user => current_user, :status => :draft).count == 0 %>
-          <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
+          <%= link_to 'Nouvelle soumission', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark mb-3" %>
         <% else %>
-          <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark" %>
+          <%= link_to 'Reprendre le brouillon', problem_path(@problem, :sub => 0), :class => "btn btn-ld-light-dark mb-3" %>
         <% end %>
       <% end %>
     <% end %>
@@ -194,9 +194,16 @@
 
 <% if (current_user.admin? || current_user.corrector? && problem_solved) %>
   <!-- Explication -->
-  <div class='clue-bis'><div><center><button onclick='return Clue.toggle(0)' class='btn btn-ld-light-dark'>Éléments de solution</button></center></div><div id='indice0' class='clue-hide'><div class='clue-content'>
-  <%= htmlise(@problem.explanation) %>
-  </div></div></div>
+  <div class="clue-bis mb-3">
+    <div class="text-center">
+      <button onclick="return Clue.toggle(0)" class="btn btn-ld-light-dark">Éléments de solution</button>
+    </div>
+    <div id="indice0" class="clue-hide">
+      <div class="clue-content">
+        <%= htmlise(@problem.explanation) %>
+      </div>
+    </div>
+  </div>
 <% end %>
 
 <% if !@submission.nil? %>
@@ -212,14 +219,14 @@
           <%= render 'submissions/edit_draft', problem: @problem, submission: @submission %>
         <% end %>
       <% else %>
-        Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :
+        <p class="mb-2">Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :</p>
         <%= render 'submissions/chapters_to_write_submission' %>
       <% end %>
     <% end %>
 
   <!-- Si on veut regarder une soumission -->
   <% else %>
-    <hr>
+    <hr class="mt-0">
     <%= render 'submissions/show' %>
   <% end %>
 <% end %>

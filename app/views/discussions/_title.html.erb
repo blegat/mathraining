@@ -1,4 +1,4 @@
-<div class="split-title-md mb-2">
+<div class="split-title-md mb-3">
   <div class="part-1">
     <h1 class="mb-0">
     <%= title_1("Messages") %>
@@ -6,9 +6,9 @@
   </div>
   <div class="part-2 pt-2">
     <% if !current_user.follow_message %>
-      <%= button_to "M'avertir des nouveaux messages par e-mail", set_follow_message_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => in_skin? %>
+      <%= link_to "M'avertir des nouveaux messages par e-mail", set_follow_message_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => in_skin? %>
     <% else %>
-      <%= button_to "Ne plus m'avertir par e-mail", unset_follow_message_path, :method => :get, :class => 'btn btn-ld-light-dark', :disabled => in_skin? %>
+      <%= link_to "Ne plus m'avertir par e-mail", unset_follow_message_path, :class => 'btn btn-ld-light-dark', :disabled => in_skin? %>
     <% end %>
   </div>
 </div>

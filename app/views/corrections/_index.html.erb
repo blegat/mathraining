@@ -1,4 +1,4 @@
-<h4 class="mt-3">Commentaires</h4>
+<h4>Commentaires</h4>
 
 <% if @submission.corrections.count == 0 %>
   <p>Aucun commentaire.</p>
@@ -6,32 +6,25 @@
 
 <% @lastid = -1 %>
 <% last_correction_user = nil %>
-<% first_comment = true %>
 
 <% @submission.corrections.order(:created_at).each do |correction| %>
-
   <% @lastid = correction.id %>
   <% last_correction_user = correction.user %>
-  
-  <%= render 'shared/post', ms: correction, kind: "correction", reduce_margin_top: first_comment %>
-  
-  <% first_comment = false %>
-  
+  <%= render 'shared/post', ms: correction, kind: "correction" %>  
 <% end %>
 
-<div class="mb-3"></div>
-
 <% if @submission.user == current_user && @submission.wrong? && @submission.has_recent_activity && !last_correction_user.nil? && last_correction_user != current_user %>
-
-  <div class="p-3 mb-3 grey-box">
-  Votre solution est erronée. Deux options s'offrent à vous :
-  <ul>
-  <li>Si l'idée générale de votre solution est correcte mais que vous devez apporter une justification complémentaire,
-  faire une modification ou corriger une erreur, alors rajoutez simplement un commentaire ci-dessous.</li>
-  <li>Si votre solution est totalement incorrecte et que vous souhaitez en écrire une nouvelle (essentiellement différente),
-  alors faites une nouvelle soumission.</li>
-  </ul>
-  <i>Merci de respecter cette règle pour éviter aux correcteurs de corriger deux solutions quasi identiques !</i>
+  <div class="card mb-3">
+    <h5 class="card-header">Commentaire ou nouvelle soumission ?</h5>
+    <div class="card-body">
+      <p class="mb-2">Votre solution est erronée. Deux options s'offrent à vous :</p>
+      <ul class="mb-3">
+      <li class="mb-1">Si l'idée générale de votre solution est correcte mais que vous devez apporter une justification complémentaire,
+      faire une modification ou corriger une erreur, alors écrivez simplement un commentaire ci-dessous.</li>
+      <li>Si votre solution est totalement incorrecte et que vous souhaitez en écrire une nouvelle (essentiellement différente),
+      alors faites une nouvelle soumission.</li>
+      </ul>
+      <p class="mb-0 fst-italic">Merci de respecter cette règle pour simplifier la vie des correcteurs et leur faire gagner du temps !</p>
+    </div>
   </div>
-  
 <% end %>

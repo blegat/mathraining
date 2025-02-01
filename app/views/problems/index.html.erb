@@ -4,13 +4,13 @@
 <button class="information-tag" onclick="return Info.toggle();">?</button>
 </h1>
 
-<%= render 'info' %>
+<%= render 'shared/info', about: "problems" %>
 
 <% if !has_enough_points(current_user) %>
 
   <!-- Si moins de 200 points, on ne peut rien voir -->
-  <p class="mt-3 fw-bold">
-  Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.
+  <p class="fw-bold">
+    Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.
   </p>
 
 <% else %>
@@ -32,7 +32,7 @@
 <% end %>
 
 <% (1..5).each do |level| %>
-  <h3 class="<%= "mt-2" if level == 1 %>">Niveau <%= level %></h3>
+  <h3>Niveau <%= level %></h3>
   <% if problems_by_level[level].nil? %>
     <p>Aucun problème de niveau <%= level %> n'est disponible.</p>
   <% else %>
@@ -129,9 +129,9 @@
 
 <!-- Ajouter un problème -->
 <% if signed_in? && current_user.admin? %>
-  <center>
-  <%= button_to "Ajouter un problème", new_section_problem_path(@section), method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
-  </center>
+  <p class="text-center">
+    <%= link_to "Ajouter un problème", new_section_problem_path(@section) %>
+  </p>
 <% end %>
 
 <% end %>

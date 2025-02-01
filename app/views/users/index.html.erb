@@ -55,7 +55,7 @@
 
 <center>
 <%= form_tag "", :method => "get", :name => "research" do %>
-<div class="grid mb-2" style="--bs-columns:12; --bs-gap:10px;">
+<div class="grid mb-3" style="--bs-columns:12; --bs-gap:10px;">
   <div class="g-col-12 g-start-md-5 g-col-md-4 g-start-lg-7 g-col-lg-3">
     <%= select_tag :title, options_for_select(title_list, @title), :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
   </div>
@@ -68,7 +68,7 @@
 
 <% if @real_users %>
   <% if @all_users.size == 0 %>
-    <p class="mt-2 text-center">Aucun utilisateur.</p>
+    <p class="text-center fst-italic">Aucun utilisateur.</p>
   <% else %>
     <center>
       <%= render "users_table", with_pagination: true %>

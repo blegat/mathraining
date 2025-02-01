@@ -30,7 +30,7 @@
     <center><p><%= @search_error %></p></center>
   <% elsif !@all_users.nil? %>
     <% if @all_users.size == 0 && @admin_users.size == 0 %>
-      <center><p>Aucun utilisateur trouvé.</p></center>
+      <p class="text-center fst-italic">Aucun utilisateur trouvé.</p>
     <% end %>
     <% if @admin_users.size > 0 %>
       <h4>Administrateurs</h4>

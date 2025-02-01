@@ -29,7 +29,7 @@ describe "Puzzle pages", puzzle: true do
         should have_link("Supprimer cette énigme", href: puzzle_path(puzzle))
         should have_no_link("haut")
         should have_no_link("bas")
-        should have_button("Créer une énigme")
+        should have_link("Créer une énigme")
       end
       
       specify { expect { click_link "Supprimer cette énigme" }.to change(Puzzle, :count).by(-1) }
@@ -404,7 +404,7 @@ describe "Puzzle pages", puzzle: true do
       describe "a message that is not right" do
         before do
           visit user_path(user_jh)
-          click_button "Envoyer un message"
+          click_link "Envoyer un message"
           fill_in "MathInput", with: "Bonjour"
           click_button "Envoyer"
           Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 2.minutes)
@@ -428,7 +428,7 @@ describe "Puzzle pages", puzzle: true do
       describe "a message that is right" do
         before do
           visit user_path(user_jh)
-          click_button "Envoyer un message"
+          click_link "Envoyer un message"
           fill_in "MathInput", with: "QUEL   EST le code de la dernière énigme?  "
           click_button "Envoyer"
           Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 2.minutes)
@@ -446,7 +446,7 @@ describe "Puzzle pages", puzzle: true do
       describe "two messages, one of them being the right one" do
         before do
           visit user_path(user_jh)
-          click_button "Envoyer un message"
+          click_link "Envoyer un message"
           fill_in "MathInput", with: "Quel est le code de la dernière énigme ?"
           click_button "Envoyer"
           Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 3.minutes)
@@ -467,7 +467,7 @@ describe "Puzzle pages", puzzle: true do
       describe "two messages, none of them being the right one" do
         before do
           visit user_path(user_jh)
-          click_button "Envoyer un message"
+          click_link "Envoyer un message"
           fill_in "MathInput", with: "Wesh c'est quoi le code ?"
           click_button "Envoyer"
           Tchatmessage.order(:id).last.update_attribute(:created_at, DateTime.now - 3.minutes)

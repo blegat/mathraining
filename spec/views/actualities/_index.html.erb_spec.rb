@@ -17,7 +17,7 @@ describe "actualities/_index.html.erb", type: :view, actuality: true do
     it "renders the actuality and the add button" do
       render partial: "actualities/index"
       expect(response).to render_template(:partial => "actualities/_show", :locals => {actuality: actuality})
-      should have_button("Ajouter une actualité")
+      should have_link("Ajouter une actualité")
     end
   end
   
@@ -27,7 +27,7 @@ describe "actualities/_index.html.erb", type: :view, actuality: true do
     it "renders the actuality and not the add button" do
       render partial: "actualities/index"
       expect(response).to render_template(:partial => "actualities/_show", :locals => {actuality: actuality})
-      should have_no_button("Ajouter une actualité")
+      should have_no_link("Ajouter une actualité")
     end
   end
   
@@ -35,7 +35,7 @@ describe "actualities/_index.html.erb", type: :view, actuality: true do
     it "renders the actuality and not the add button" do
       render partial: "actualities/index"
       expect(response).to render_template(:partial => "actualities/_show", :locals => {actuality: actuality})
-      should have_no_button("Ajouter une actualité")
+      should have_no_link("Ajouter une actualité")
     end
   end
 end

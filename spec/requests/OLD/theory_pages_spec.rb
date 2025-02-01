@@ -41,32 +41,32 @@ describe "Theory pages" do
         should have_selector("h3", text: online_theory2.title)
         should have_no_link("bas")
         should have_no_link("haut")
-        should have_button("Marquer comme lu")
-        should have_no_button("Marquer comme non lu")
+        should have_link("Marquer comme lu")
+        should have_no_link("Marquer comme non lu")
         should have_link("forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
       end
       
       describe "and mark it as read" do
         before do
-          click_button "Marquer comme lu"
+          click_link "Marquer comme lu"
           online_theory2.reload
           user.reload
         end
         specify do
-          expect(page).to have_no_button("Marquer comme lu")
-          expect(page).to have_button("Marquer comme non lu")
+          expect(page).to have_no_link("Marquer comme lu")
+          expect(page).to have_link("Marquer comme non lu")
           expect(user.theories.exists?(online_theory2.id)).to eq(true)
         end
         
         describe "and mark it back as unread" do
           before do
-            click_button "Marquer comme non lu"
+            click_link "Marquer comme non lu"
             online_theory2.reload
             user.reload
           end
           specify do
-            expect(page).to have_button "Marquer comme lu"
-            expect(page).to have_no_button "Marquer comme non lu"
+            expect(page).to have_link "Marquer comme lu"
+            expect(page).to have_no_link "Marquer comme non lu"
             expect(user.theories.exists?(online_theory2.id)).to eq(false)
           end
         end
@@ -112,12 +112,12 @@ describe "Theory pages" do
       before { visit chapter_theory_path(chapter, offline_theory) }
       it do
         should have_selector("h3", text: offline_theory.title)
-        should have_button("Mettre en ligne")
+        should have_link("Mettre en ligne")
       end
       
       describe "and puts it online" do
         before do
-          click_button "Mettre en ligne"
+          click_link "Mettre en ligne"
           offline_theory.reload
         end
         specify { expect(offline_theory.online).to eq(true) }
@@ -174,7 +174,7 @@ describe "Theory pages" do
           expect(Theory.order(:id).last.position).to eq(1)
           expect(Theory.order(:id).last.online).to eq(false)
           expect(page).to have_selector("h3", text: newtitle)
-          expect(page).to have_button("Mettre en ligne")
+          expect(page).to have_link("Mettre en ligne")
         end
         
         describe "and adds a second theory" do

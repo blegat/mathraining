@@ -1,17 +1,17 @@
 <% provide(:title, 'Problèmes récemment résolus') %>
 
-<h1><%= title_1("Résolutions récentes") %></h1>
+<h1 class="mb-3"><%= title_1("Résolutions récentes") %></h1>
 
-<div class="text-center mb-3">
-Solutions corrigées le :
-<% if @date < @max_date %>
-  <%= link_to write_date_only_small(@date + 1.day), solvedproblems_path(:date => (@date + 1.day).to_s) %> - 
-<% end %>
-<b><%= write_date_only_small(@date) %></b>
-<% if @date > @min_date %>
-  - <%= link_to write_date_only_small(@date - 1.day), solvedproblems_path(:date => (@date - 1.day).to_s) %>
-<% end %>
-</div>
+<p class="text-center">
+  Solutions corrigées le :
+  <% if @date < @max_date %>
+    <%= link_to write_date_only_small(@date + 1.day), solvedproblems_path(:date => (@date + 1.day).to_s) %> - 
+  <% end %>
+  <b><%= write_date_only_small(@date) %></b>
+  <% if @date > @min_date %>
+    - <%= link_to write_date_only_small(@date - 1.day), solvedproblems_path(:date => (@date - 1.day).to_s) %>
+  <% end %>
+</p>
 
 <% non_accessible_problems_set = non_accessible_problems_ids(current_user) %>
 
@@ -44,5 +44,7 @@ Solutions corrigées le :
   <% end %>
   </table>
 <% else %>
-<div class="text-center fst-italic">Aucune solution n'a <%= "encore" if @date == @max_date %> été corrigée le <%= write_date_only(@date) %>.</div>
+  <p class="text-center fst-italic">
+    Aucune solution n'a <%= "encore" if @date == @max_date %> été corrigée le <%= write_date_only(@date) %>.
+  </p>
 <% end %>

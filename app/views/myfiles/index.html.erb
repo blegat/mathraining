@@ -4,20 +4,18 @@
 
 <% total = ActiveStorage::Blob.sum(:byte_size) %>
 
-<center>
-<p class="fs-5">
+<p class="text-center fs-5">
 <% if total < 1000000 %>
   Total : <b><%= (total/1000.0).round(1).to_s + " ko"%></b>
 <% else %>
   Total : <b><%= (total/1000000.0).round(2).to_s + " Mo"%></b>
 <% end %>
 </p>
-</center>
 
-<%= render 'shared/pages', data: @list, classes_small: "mb-3" %>
+<%= render 'shared/pages', data: @list %>
 
 <table class="table table-bordered">
-<tr class="table-ld-header"><th class="d-none d-md-table-cell">Date</th><th>Qui</th><th class="d-none d-lg-table-cell">Où</th><th class="d-none d-md-table-cell">Quoi</th><th><center>Taille</center></th><th><center></center></th></tr>
+<tr class="table-ld-header"><th class="d-none d-md-table-cell">Date</th><th>Qui</th><th class="d-none d-lg-table-cell">Où</th><th class="d-none d-md-table-cell">Quoi</th><th class="text-center">Taille</th><th></th></tr>
 
 <!-- Affiche toutes les pièces jointes du site -->
 <% @list.each do |f| %>

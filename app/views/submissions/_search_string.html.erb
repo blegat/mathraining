@@ -34,14 +34,14 @@ NB : Les caractères suivants sont ignorés (dans la chaîne et dans les solutio
 <% end %>
 <b>(espace)</b>, <b>(retour à la ligne)</b>.
 </div>
-<%= submit_tag "Chercher", :class => "btn btn-primary", :onclick => "javascript:showSearch()" %>
+<%= submit_tag "Chercher", :class => "btn btn-primary mb-3", :onclick => "javascript:showSearch()" %>
 <% end %>
 
-<p class="mt-3" id="loading_results" style="display:none;">Recherche...</p>
-<p class="mt-3" id="none_results" style="display:none;">Aucun résultat.</p>
-<p class="mt-3" id="error_results" style="display:none;">La chaîne doit contenir au moins 3 caractères (non ignorés).</p>
+<p id="loading_results" style="display:none;">Recherche...</p>
+<p id="none_results" style="display:none;">Aucun résultat.</p>
+<p id="error_results" style="display:none;">La chaîne doit contenir au moins 3 caractères (non ignorés).</p>
 
-<table class="table table-bordered tex2jax_ignore mt-3 fixed-scroll" style="width:auto; display:none;" id="tab_results">
+<table class="table table-bordered tex2jax_ignore fixed-scroll" style="width:auto; display:none;" id="tab_results">
   <thead>
   <tr class="table-ld-header"><th class="sub-status d-none d-md-table-cell">Statut</th><th class="sub-date d-none d-lg-table-cell">Date</th><th class="sub-user">Qui</th><th style="width:300px;">Prévisualisation</th><th class="sub-link-scroll"></th></tr>
   </thead>

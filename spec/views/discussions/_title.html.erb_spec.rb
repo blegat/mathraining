@@ -14,8 +14,8 @@ describe "discussions/_title.html.erb", type: :view, discussion: true do
       
     it "renders the button to stop" do
       render partial: "discussions/title"
-      should have_button("Ne plus m'avertir par e-mail")
-      should have_no_button("M'avertir des nouveaux messages par e-mail")
+      should have_link("Ne plus m'avertir par e-mail")
+      should have_no_link("M'avertir des nouveaux messages par e-mail")
     end
   end
   
@@ -24,8 +24,8 @@ describe "discussions/_title.html.erb", type: :view, discussion: true do
       
     it "renders the button to receive emails" do
       render partial: "discussions/title"
-      should have_no_button("Ne plus m'avertir par e-mail")
-      should have_button("M'avertir des nouveaux messages par e-mail")
+      should have_no_link("Ne plus m'avertir par e-mail")
+      should have_link("M'avertir des nouveaux messages par e-mail")
     end
   end
 end

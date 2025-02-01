@@ -2,10 +2,12 @@
 
 <div id="the" class="content-part">
   <% if !contestsolution.official? %>
-    <h4 class="mt-3">Score obtenu</h4>
-    <center><div class="bg-as-table-ld-warning p-1 border border-warning" style="font-size:24px;"><%= contestsolution.score if contestsolution.score >= 0 %><%= '-' if contestsolution.score < 0 %> / 7</span></center>
+    <h4>Score obtenu</h4>
+    <div class="bg-as-table-ld-warning mb-3 p-1 border border-warning text-center" style="font-size:24px;">
+      <%= contestsolution.score if contestsolution.score >= 0 %><%= '-' if contestsolution.score < 0 %> / 7
+    </div>
   <% end %>
-  <%= render 'shared/post', ms: contestcorrection, kind: "contestcorrection", can_edit: can_edit, reduce_margin_top: contestsolution.official? %>
+  <%= render 'shared/post', ms: contestcorrection, kind: "contestcorrection", can_edit: can_edit %>
 </div>
 
 <% if can_edit %>  

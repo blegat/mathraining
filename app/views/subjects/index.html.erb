@@ -33,22 +33,26 @@
 <% end %>
 <% liste2.push(["&nbsp;&nbsp;&nbsp;".html_safe + get_problem_category_name(last_section_name), "pro-" + last_section_id.to_s]) %>
 
-<h1><%= title_1("Forum#{(' - ' + @title_complement) if !@title_complement.empty?}") %>
 
-<% if @title_complement.empty? %>
-  <span class="h4">
-  - <%= link_to "FAQ", faqs_path %>
-  </span>
-<% end %>
-
-<!-- Trier selon section, chapitre, catégorie... -->
-<span class="mb-2 mt-1 ms-3" style="float:right;">
-<%= form_tag "", :method => "get", :name => "research" do %>
-  <%= select_tag :q, grouped_options_for_select([["Tout afficher", liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], @q), :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
-<% end %>
-</span>
-
-</h1>
+<div class="split-title-lg mb-2">
+  <div class="part-1">
+    <h1 class="mb-0">
+    <%= title_1("Forum") %>
+    <span class="h4 mb-0"> -
+    <% if !@title_complement.empty? %>
+      <%= @title_complement %>
+    <% else %>
+      <%= link_to "FAQ", faqs_path %>
+    <% end %>
+    </span>
+    </h1>
+  </div>
+  <div class="part-2 pt-2">
+    <%= form_tag "", :method => "get", :name => "research" do %>
+      <%= select_tag :q, grouped_options_for_select([["Tout afficher", liste0], ["En dehors des cours", liste], ["En lien avec les cours", liste2]], @q), :class => "form-select", :onchange => ("javascript: document.research.submit();") %>
+    <% end %>
+  </div>
+</div>
 
 <% num_messages_by_subject = Message.where(:subject_id => @importants.ids + @subjects.ids).group(:subject_id).count %>
 
@@ -82,22 +86,23 @@
   </table>
 <% end %>
 
-<%= render 'shared/pages', data: @subjects, classes_small: "mb-3" %>
+<%= render 'shared/pages', data: @subjects %>
 
 <% if @subjects.size + @importants.size == 0 %>
-  <!-- In a table to be sure it takes 100% without overlap with the select -->
-  <table class="mb-3" style="width:100%;"><tr><td class="fw-bold">Aucun sujet.</td></tr></table>
+  <p class="fw-bold">Aucun sujet.</p>
 <% end %>
 
 
 <!-- Créer un sujet -->
-<center>
-  <%= button_to "Créer un sujet", new_subject_path, params: (@q.nil? ? nil : { q: @q }), method: :get, class: 'btn btn-lg btn-ld-light-dark' %>
-</center>
+<p class="text-center">
+  <%= link_to "Créer un sujet", new_subject_path(:q => @q), class: 'btn btn-lg btn-ld-light-dark' %>
+</p>
 
 <!-- Modifier les catégories -->
 <% if current_user.root? %>
-  <p class="mt-3 text-center"><%= link_to "Modifier les catégories", categories_path %></p>
+  <p class="text-center">
+    <%= link_to "Modifier les catégories", categories_path %>
+  </p>
 <% end %>
 
 <!-- Modifier le moment où le forum a été vu la dernière fois -->

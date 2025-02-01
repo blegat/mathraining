@@ -7,9 +7,11 @@
 <div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
 
   <div class="g-col-12 g-col-md-24 intro">
-    <%= htmlise(chapter.description) %>
+    <div class="<%= 'mb-3' if classe == 'greyy' %>">
+      <%= htmlise(chapter.description) %>
+    </div>
     <% if classe == "greyy" %>
-      <p class="mt-3 mb-0 fw-bold">Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
+      <p class="fw-bold mb-0">Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :
       <% prems = true %>
       <% chapter.prerequisites.order(:level, :position).each do |p| %>
         <% if (!signed_in? || !current_user.chapters.exists?(p.id)) %>
@@ -46,7 +48,7 @@
     <% end %>
 
     <% if compteur == 0 %>
-      <p class="ms-3"><i>Aucun point théorique.</i></p>
+      <p class="ms-3 fst-italic">Aucun point théorique.</p>
     <% else %>
       </ul>
     <% end %>    

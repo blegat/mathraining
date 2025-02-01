@@ -35,5 +35,7 @@
 </table>
 
 <% if Privacypolicy.where(:online => false).count == 0 %>
-  <center><%= button_to "Créer une nouvelle version", new_privacypolicy_path, method: :get, class: 'btn btn-lg btn-ld-light-dark' %></center>
+  <p class="text-center">
+    <%= link_to "Créer une nouvelle version", new_privacypolicy_path, class: 'btn btn-lg btn-ld-light-dark' %>
+  </p>
 <% end %>

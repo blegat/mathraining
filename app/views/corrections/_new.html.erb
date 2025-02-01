@@ -46,19 +46,19 @@
         <%= number_field_tag "score", nil, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;" %>
         </div>
         
-        <div class="card">
+        <div class="card mb-3">
           <h5 class="card-header">Marking scheme</h5>
           <div class="card-body"><%= htmlise(@problem.markscheme) %></div>
         </div>
         
-        <p class="mt-3 mb-2">Veuillez accepter ou refuser la solution indépendamment du score attribué, comme pour un problème normal.</p>
+        <p class="mb-2">Veuillez accepter ou refuser la solution indépendamment du score attribué, comme pour un problème normal.</p>
       <% end %>
       <%= render 'corrections/buttons', f: f, disable_correction: disable_correction, show_reject: true, show_accept: true, show_close: can_close_submission_directly %>
     <% end %>
 
   <!-- Si étudiant, simple bouton -->
   <% else %>
-    <%= f.submit "Poster", class: "btn btn-primary", :disabled => (disable_correction || in_skin?) %>
+    <%= f.submit "Poster", class: "btn btn-primary mb-3", :disabled => (disable_correction || in_skin?) %>
   <% end %>
 <% end %>
 </div>

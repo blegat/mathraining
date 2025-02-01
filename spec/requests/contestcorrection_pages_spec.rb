@@ -181,7 +181,7 @@ describe "Contestcorrection pages", contestcorrection: true do
           expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
           expect(page).to have_info_message("Le score a été mis automatiquement à 7/7 (car solution étoilée).")
           expect(page).to have_content("7 / 7")
-          expect(page).to have_button("Publier les résultats")
+          expect(page).to have_link("Publier les résultats")
         end
       end
       
@@ -243,7 +243,7 @@ describe "Contestcorrection pages", contestcorrection: true do
       
       describe "publishes the results" do
         before do
-          click_button "Publier les résultats"
+          click_link "Publier les résultats"
           contestproblem_finished.reload
         end
         specify do

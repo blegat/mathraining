@@ -6,14 +6,11 @@ describe "Faq pages", faq: true do
   subject { page }
 
   let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
   let!(:faq) { FactoryGirl.create(:faq, position: 1) }
   let(:newquestion) { "Nouvelle question" }
   let(:newanswer) { "Nouvelle réponse" }
 
-  describe "user" do
-    before { sign_in user }
-    
+  describe "visitor" do
     describe "visits faq path" do
       before { visit faqs_path }
       it do
@@ -22,7 +19,7 @@ describe "Faq pages", faq: true do
         should have_content(faq.answer)
         should have_no_link("Modifier la question")
         should have_no_link("Supprimer la question")
-        should have_no_button("Ajouter une question")
+        should have_no_link("Ajouter une question")
       end
     end
   end
@@ -40,7 +37,7 @@ describe "Faq pages", faq: true do
         expect(page).to have_link("Supprimer la question")
         expect(page).to have_no_link("haut") # Because only one question
         expect(page).to have_no_link("bas") # Because only one question
-        expect(page).to have_button("Ajouter une question")
+        expect(page).to have_link("Ajouter une question")
         expect { click_link("Supprimer la question") }.to change(Faq, :count).by(-1)
       end
     end

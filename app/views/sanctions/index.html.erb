@@ -27,4 +27,6 @@
 <% end %> 
 </table>
 
-<center><%= button_to "Créer une sanction", new_user_sanction_path(@user), :class => "btn btn-lg btn-ld-light-dark", :method => "get" %></center>
+<p class="text-center">
+  <%= link_to "Créer une sanction", new_user_sanction_path(@user), :class => "btn btn-lg btn-ld-light-dark" %>
+</p>

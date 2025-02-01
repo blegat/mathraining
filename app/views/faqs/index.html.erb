@@ -28,5 +28,7 @@
 
 <!-- Ajouter une question -->
 <% if signed_in? && current_user.admin? %>
-<center><%= button_to "Ajouter une question", new_faq_path, :class => "btn btn-lg btn-ld-light-dark", :method => "get" %></center>
+  <p class="text-center">
+    <%= link_to "Ajouter une question", new_faq_path %>
+  </p>
 <% end %>	

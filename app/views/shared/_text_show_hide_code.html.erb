@@ -10,11 +10,11 @@
 <% end %>
 
 <div id="normal<%= id %>" style="display:block;">
-<%= bb.html_safe %>
-<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.showCode('<%= id %>'); return false;">(Montrer le code)</a></div>
+  <%= bb.html_safe %>
+  <div class="text-end ms-1 mt-1" style="float:right;"><a href='#' onclick="ShowHideCode.showCode('<%= id %>'); return false;">(Montrer le code)</a></div>
 </div>
 
 <div class="tex2jax_ignore" id="anormal<%= id %>" style="display:none;">
-<%= (h content).gsub(/\n/, '<br/>').html_safe %>
-<div class="text-end mt-1" style="float:right;">&nbsp; <a href='#' onclick="ShowHideCode.hideCode('<%= id %>'); return false;">(Cacher le code)</a></div>
+  <%= (h content).gsub(/\n/, '<br/>').html_safe %>
+  <div class="text-end ms-1 mt-1" style="float:right;"><a href='#' onclick="ShowHideCode.hideCode('<%= id %>'); return false;">(Cacher le code)</a></div>
 </div>

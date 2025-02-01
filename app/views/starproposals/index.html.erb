@@ -16,13 +16,13 @@
 <% end %>
 </h1>
 
-<%= render 'shared/pages', data: @starproposals, classes_small: "mb-3" %>
+<%= render 'shared/pages', data: @starproposals %>
 
 <% if @starproposals.size == 0 %>
   <% if show_all %>
-    Aucune proposition.
+    <p>Aucune proposition.</p>
   <% else %>
-    Aucune nouvelle proposition.
+    <p>Aucune nouvelle proposition.</p>
   <% end %>
 <% else %>
   <table class="table table-bordered">

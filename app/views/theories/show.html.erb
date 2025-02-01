@@ -1,14 +1,14 @@
 <%= render 'chapters/before', active: 'theory-' + @theory.id.to_s %>
 
 <h3><%= @theory.title %></h3>
-<div>
-<%= htmlise(@theory.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control mt-2" style="height:120px;" oninput="Preview.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(false)</script>').html_safe %>
+<div class="mb-3">
+  <%= htmlise(@theory.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark mb-2"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control" style="height:120px;" oninput="Preview.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(false)</script>').html_safe %>
 </div>
 
 <div class="noprint">
 <!-- Si administrateur ou hors-ligne (pour étudiant créateur) -->
 <% if !@chapter.online? || (signed_in? && current_user.admin?) %>
-  <p class="mt-3 text-center">
+  <p class="text-center">
   <!-- Modifier/Supprimer -->
     <%= link_to "Modifier ce point théorique", edit_theory_path(@theory) %> |
     <%= link_to "Supprimer ce point théorique", @theory, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce point théorique ?" } %>
@@ -19,7 +19,7 @@
   <% theory_after = @chapter.theories.where("position > ?", @theory.position).order("position").first %>
 
   <% if !theory_before.nil? || !theory_after.nil? %>
-    <p class="mt-3 mb-0 text-center">
+    <p class="text-center">
     Déplacer ce point théorique vers le
     <%= link_to "haut", order_theory_path(@theory, :new_position => theory_before.position), :method => :put if !theory_before.nil? %>
     <%= '-' if !theory_before.nil? && !theory_after.nil? %>
@@ -29,25 +29,24 @@
   
   <!-- Mettre en ligne -->
   <% if !@theory.online && @chapter.online %>
-    <center>
-    <%= button_to "Mettre en ligne", put_online_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
-    </center>
+    <p class="text-center">
+      <%= link_to "Mettre en ligne", put_online_theory_path(@theory), method: :put, class: 'btn btn-danger', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir rendre ce point théorique visible par les utilisateurs ?" } %>
+    </p>
   <% end %>
 
 <!-- Si étudiant (connecté) -->
 <% elsif signed_in? %>
-  <center>
+  <p class="text-center">
     <% if !@read_theories.nil? && @read_theories.include?(@theory.id) %>
-      <%= button_to "Marquer comme non lu", unread_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => in_skin? %>
+      <%= link_to "Marquer comme non lu", unread_theory_path(@theory), method: :put, class: "btn btn-ld-light-dark #{'disabled' if in_skin?}" %>
     <% else %>
-      <%= button_to "Marquer comme lu", read_theory_path(@theory), method: :put, class: 'btn btn-ld-light-dark mt-3', :disabled => in_skin? %>
+      <%= link_to "Marquer comme lu", read_theory_path(@theory), method: :put, class: "btn btn-ld-light-dark #{'disabled' if in_skin?}" %>
     <% end %>
-  </center>
+  </p>
 
-  <hr class="bottom-help" />
-  Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => "cha-" + @chapter.id.to_s), :target => "_blank" %> !
+  <hr class="bottom-help mt-0" />
+  <p>Une question concernant ce point théorique ? N'hésitez pas à demander de l'aide sur le <%= link_to "forum", subjects_path(:q => "cha-" + @chapter.id.to_s), :target => "_blank" %> !</p>
 <% end %>
-
 </div>
 
 <%= render 'chapters/after' %>

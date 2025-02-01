@@ -18,7 +18,7 @@ describe "Picture pages", picture: true do
       before { visit pictures_path }
       it do
         should have_selector("h1", text: "Vos images")
-        should have_button("Uploader une nouvelle image")
+        should have_link("Uploader une nouvelle image")
       end
     end
     

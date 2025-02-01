@@ -90,14 +90,14 @@ describe "Question pages", question: true do
         should have_selector("a", text: "Modifier cet exercice")
         should have_selector("a", text: "Supprimer cet exercice")
         should have_selector("a", text: "QCM") # Link to add a new QCM
-        should have_button("Mettre en ligne")
+        should have_link("Mettre en ligne")
       end
       
       specify { expect { click_link "Supprimer cet exercice" }.to change(Question, :count).by(-1) }
       
       describe "and puts it online" do
         before do
-          click_button "Mettre en ligne"
+          click_link "Mettre en ligne"
           offline_exercise.reload
         end
         specify { expect(offline_exercise.online).to eq(true) }
@@ -187,7 +187,7 @@ describe "Question pages", question: true do
           expect(Question.order(:id).last.position).to eq(1)
           expect(Question.order(:id).last.online).to eq(false)
           expect(page).to have_selector("div", text: newstatement)
-          expect(page).to have_button("Mettre en ligne")
+          expect(page).to have_link("Mettre en ligne")
         end
         
         describe "and adds a second exercise" do

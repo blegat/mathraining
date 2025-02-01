@@ -90,7 +90,7 @@
 <% end %>
 
 <!-- OPEN OF THE MAIN DIV -->
-<div class="grid mx-0 pt-1" style="--bs-columns:12; --bs-gap:10px;">
+<div class="grid mx-0 mb-3 pt-1" style="--bs-columns:12; --bs-gap:10px;">
 
 <% largeur = (@user.admin ? 12 : 5) %>
 <% can_send_message = true %>
@@ -114,7 +114,7 @@
   <%= image_tag "countries/" + @user.country.code + ".png", :title => @user.country.name, :height => "15px;", :class => "ps-1", :style => "margin-top:-2px;" %></td></tr>
   </table>
   <% if signed_in? && current_user != @user %>
-    <%= button_to "Envoyer un message", new_discussion_path, :method => :get, :params => { qui: @user }, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:170px;", :disabled => !signed_in? %>
+    <%= link_to "Envoyer un message", new_discussion_path(:qui => @user), :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:170px;", :disabled => !signed_in? %>
   <% end %> 
 </div>
   
@@ -139,9 +139,9 @@
     
     <% if signed_in? && @user != current_user %>
       <% if !current_user.followed_users.exists?(@user.id) %>
-        <%= button_to "Suivre", follow_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:140px;" %>
+        <%= link_to "Suivre", follow_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-1 mb-2 #{'disabled' if in_skin?}", :style => "width:140px;" %>
       <% else %>
-        <%= button_to "Ne plus suivre", unfollow_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-1 mb-2", :style => "width:140px;" %>
+        <%= link_to "Ne plus suivre", unfollow_user_path(@user), :method => :put, :class => "btn btn-ld-light-dark mt-1 mb-2 #{'disabled' if in_skin?}", :style => "width:140px;" %>
       <% end %>
     <% end %>
   </div>

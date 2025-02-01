@@ -40,7 +40,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
         expect(response).to render_template(:partial => "contests/_problems")
         should have_link("Modifier ce concours")
         should have_no_link("Ajouter un problème")
-        should have_link("Mettre ce concours en ligne")
+        should have_link("Mettre en ligne")
         should have_link("Supprimer ce concours")
       end
     end
@@ -60,7 +60,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
         expect(response).to render_template(:partial => "contests/_problems")
         should have_link("Modifier ce concours")
         should have_link("Ajouter un problème")
-        should have_no_link("Mettre ce concours en ligne")
+        should have_no_link("Mettre en ligne")
         should have_no_link("Supprimer ce concours")
       end
     end
@@ -86,7 +86,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
         expect(response).to render_template(:partial => "contests/_problems")
         should have_link("Modifier ce concours")
         should have_no_link("Ajouter un problème")
-        should have_no_link("Mettre ce concours en ligne")
+        should have_no_link("Mettre en ligne")
         should have_no_link("Supprimer ce concours")
       end
     end
