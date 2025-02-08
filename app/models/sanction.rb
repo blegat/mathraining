@@ -14,6 +14,7 @@
 
 class SanctionReasonValidator < ActiveModel::Validator
   def validate(record)
+    return if record.auto_reserved? # The message is not shown so we don't need [DATE]
     if record.reason.nil? || record.reason.scan(/(?=\[DATE\])/).count != 1
       record.errors.add(:base, "Le message doit contenir exactement une fois '[DATE]'.")
     end
@@ -23,7 +24,8 @@ end
 class Sanction < ActiveRecord::Base
   
   enum sanction_type: {:ban           => 0, # cannot connect to the account
-                       :no_submission => 1} # cannot send a submission or a comment
+                       :no_submission => 1, # cannot send a submission or a comment
+                       :auto_reserved => 2} # submissions are automatically reserved
 
   # BELONGS_TO, HAS_MANY
 

@@ -107,6 +107,8 @@
       <span class='text-color-red'>(<%= write_date_only_small(last_ban.end_time) %>)</span>
     <% elsif @user.has_no_submission_sanction %>
       <span class='text-color-orange'>(<%= write_date_only_small(@user.last_no_submission_sanction.end_time) %>)</span>
+    <% elsif @user.has_auto_reserved_sanction %>
+      <span class='text-color-orange'>(<%= write_date_only_small(@user.last_auto_reserved_sanction.end_time) %>)</span>
     <% end %>
   <% end %>
   </td></tr>

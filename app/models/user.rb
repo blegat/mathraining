@@ -399,9 +399,20 @@ class User < ActiveRecord::Base
     return self.sanctions.where(:sanction_type => :no_submission).order(:start_time).last
   end
   
+  # Gives the last sanction of the user that auto-reserves his submissions
+  def last_auto_reserved_sanction
+    return self.sanctions.where(:sanction_type => :auto_reserved).order(:start_time).last
+  end
+  
   # Tells if the user currently has the sanction to not send new submissions
   def has_no_submission_sanction
     sanction = self.last_no_submission_sanction
+    return !sanction.nil? && sanction.end_time > DateTime.now
+  end
+  
+  # Tells if the user currently has its submissions that are automatically reserved
+  def has_auto_reserved_sanction
+    sanction = self.last_auto_reserved_sanction
     return !sanction.nil? && sanction.end_time > DateTime.now
   end
   

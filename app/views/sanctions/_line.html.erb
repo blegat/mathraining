@@ -4,6 +4,8 @@
   <b>Banni le <%= write_date(s.start_time) %> pour <%= s.duration %> jours</b>.
 <% elsif s.no_submission? %>
   <b>Interdit de soumissions le <%= write_date(s.start_time) %> pour <%= s.duration %> jours</b>.
+<% elsif s.auto_reserved? %>
+  <b>Soumissions auto-réservées à partir du <%= write_date(s.start_time) %> pour <%= s.duration %> jours</b>.
 <% end %>
 <br/><br/><u>Message</u> : <%= s.message %>
 <% if s.end_time > DateTime.now %>

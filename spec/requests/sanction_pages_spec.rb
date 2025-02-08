@@ -31,12 +31,14 @@ describe "Sanction pages", sanction: true do
       
       describe "and sends with good information" do
         before do
+          select "Soumissions réservées automatiquement", from: "Type de sanction"
           fill_in "Message", with: newreason
           click_button "Créer"
         end
         specify do
           expect(page).to have_success_message("Sanction ajoutée")
           expect(user.sanctions.order(:id).last.reason).to eq(newreason)
+          expect(user.has_auto_reserved_sanction).to eq(true)
         end
       end
       
