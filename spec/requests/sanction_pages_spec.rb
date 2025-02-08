@@ -31,7 +31,7 @@ describe "Sanction pages", sanction: true do
       
       describe "and sends with good information" do
         before do
-          select "Soumissions réservées automatiquement", from: "Type de sanction"
+          select "Soumissions auto-réservées", from: "Type de sanction"
           fill_in "Message", with: newreason
           click_button "Créer"
         end
