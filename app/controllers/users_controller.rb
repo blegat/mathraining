@@ -1,6 +1,6 @@
 #encoding: utf-8
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed, :unset_follow_message]
+  before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed, :unset_follow_message, :search]
   before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :follow, :unfollow, :set_follow_message, :set_can_change_name, :unset_can_change_name]
   before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
   before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name]
@@ -307,18 +307,19 @@ class UsersController < ApplicationController
     render 'forgot_password' and return if (!Rails.env.test? && !Rails.env.development? && !verify_recaptcha(:model => @user, :message => "Captcha incorrect"))
 
     @user = User.where(:email => params[:user][:email]).first
-    if @user
-      if @user.email_confirm
-        @user.update_attribute(:key, SecureRandom.urlsafe_base64)
-        @user.update_attribute(:recup_password_date_limit, DateTime.now)
-        UserMailer.forgot_password(@user.id).deliver
-        flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if !Rails.env.production?
-        flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
-      else
-        flash[:danger] = "Veuillez d'abord confirmer votre adresse e-mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
-      end
+    if @user.nil?
+      flash.now[:danger] = "Aucun utilisateur ne possède cette adresse."
+      render 'forgot_password' and return
+    end
+    
+    if @user.email_confirm
+      @user.update_attribute(:key, SecureRandom.urlsafe_base64)
+      @user.update_attribute(:recup_password_date_limit, DateTime.now)
+      UserMailer.forgot_password(@user.id).deliver
+      flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if !Rails.env.production?
+      flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
     else
-      flash[:danger] = "Aucun utilisateur ne possède cette adresse."
+      flash[:danger] = "Veuillez d'abord confirmer votre adresse e-mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
     end
     redirect_to root_path
   end
