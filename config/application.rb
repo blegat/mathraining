@@ -80,8 +80,8 @@ module Mathraining
     end
     
     config.lograge.custom_payload do |controller|
-      if controller.action_methods.include? "current_user"
-        { current_user: controller.current_user.try(:id) } # Include the current_user.id
+      if controller.action_methods.include? "current_user_no_skin"
+        { current_user: controller.current_user_no_skin.try(:id) } # Include the current_user_no_skin.id
       end
     end
     
