@@ -100,15 +100,8 @@
         <% arr = Array.new %>
         <% h = 0 %>
         <% problems.each do |p| %>
-          <% nb_u_real = nb_u %>
-          <% sc = 0 %>
-          <% p.submissions.where(:intest => true).where.not(:status => :draft).each do |s| %>
-            <% if s.score == -1 %>
-              <% nb_u_real = nb_u_real - 1 %>
-            <% else %>
-              <% sc = sc + s.score %>
-            <% end %>
-          <% end %>
+          <% sc = p.submissions.where(:intest => true).where.not(:status => [:draft, :waiting]).sum(:score) %>
+          <% nb_u_real = nb_u - p.submissions.where(:intest => true, :status => :waiting).count %>
           <% arr[h] = sc.to_f / nb_u_real if nb_u_real > 0 %>
           <% arr[h] = -1 if nb_u_real <= 0 %>
           <% moy = moy + arr[h] if arr[h] >= 0 %>
