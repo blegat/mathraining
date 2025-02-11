@@ -9,7 +9,6 @@
 #  created_at        :datetime         not null
 #  status            :integer          default("waiting")
 #  intest            :boolean          default(FALSE)
-#  visible           :boolean          default(TRUE)
 #  score             :integer          default(-1)
 #  last_comment_time :datetime
 #  star              :boolean          default(FALSE)

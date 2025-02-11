@@ -207,7 +207,7 @@ class User < ActiveRecord::Base
   
   # Tells if the user has already sent a new submission (not in a test) today
   def has_already_submitted_today?
-    return self.submissions.where("visible = ? AND intest = ? AND created_at >= ?", true, false, Date.today.in_time_zone.to_datetime).count >= 1
+    return self.submissions.where.not(:status => :draft).where("intest = ? AND created_at >= ?", false, Date.today.in_time_zone.to_datetime).count >= 1
   end
 
   # Gives the status for the given virtual test ("not_started", "in_progress", "finished")
@@ -225,9 +225,9 @@ class User < ActiveRecord::Base
     Groupdate.time_zone = false unless Rails.env.production?
     x = {}
     if self.admin?
-      x = Submission.joins(:problem).where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).group_by_day(:created_at).count
+      x = Submission.joins(:problem).where(:status => :waiting).where("problems.level in (?)", levels).group_by_day(:created_at).count
     elsif self.corrector?
-      x = Submission.joins(:problem).where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{self.id})").where(:status => :waiting, :visible => true).where("problems.level in (?)", levels).group_by_day(:created_at).count
+      x = Submission.joins(:problem).where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{self.id})").where(:status => :waiting).where("problems.level in (?)", levels).group_by_day(:created_at).count
     end
     y = x.sort_by(&:first)
     n = 0

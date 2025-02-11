@@ -25,7 +25,7 @@ class Record < ActiveRecord::Base
     curmonday = lastdate+7
     while(curmonday <= mondaybeforelastmonday)
       nextmonday = curmonday+7
-      nb_submissions = Submission.where("status != ? AND created_at >= ? AND created_at < ?", Submission.statuses[:draft], curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
+      nb_submissions = Submission.where.not(:status => :draft).where("created_at >= ? AND created_at < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
       nb_questions_solved = Solvedquestion.where("resolution_time >= ? AND resolution_time < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
       r = Record.create(:date                => curmonday,
                         :nb_submissions      => nb_submissions,
@@ -41,7 +41,7 @@ class Record < ActiveRecord::Base
       nextmonday_time = nextmonday.to_time.to_datetime
       
       # check submissions not in a test
-      if Submission.where("created_at >= ? AND created_at < ? AND status = ? AND intest = ?", curmonday_time, nextmonday_time, Submission.statuses[:waiting], false).count > 0
+      if Submission.where(:status => :waiting, :intest => :false).where("created_at >= ? AND created_at < ?", curmonday_time, nextmonday_time).count > 0
         next # not all submissions were corrected
       end
       
@@ -49,7 +49,7 @@ class Record < ActiveRecord::Base
       all_subs_in_test_corrected = true
       modified_start_for_test = curmonday-2 # hardcoded, knowing that the longest test lasts for 2 days
       modified_start_for_test_time = modified_start_for_test.to_time.to_datetime
-      Submission.where("created_at >= ? AND created_at < ? AND status = ? AND intest = ?", modified_start_for_test_time, nextmonday_time, Submission.statuses[:waiting], true).each do |s|
+      Submission.where(:status => :waiting, :intest => :true).where("created_at >= ? AND created_at < ?", modified_start_for_test_time, nextmonday_time).each do |s|
         p = s.problem
         t = p.virtualtest
         date_start = t.takentests.where(:user_id => s.user_id).first.taken_time
@@ -65,7 +65,7 @@ class Record < ActiveRecord::Base
 
       total = 0
       number = 0
-      Submission.where("created_at >= ? AND created_at < ? AND status != ? AND (intest = ? OR created_at >= ?)", modified_start_for_test_time, nextmonday_time, Submission.statuses[:draft], true, curmonday_time).each do |s|
+      Submission.where.not(:status => :draft).where("created_at >= ? AND created_at < ? AND (intest = ? OR created_at >= ?)", modified_start_for_test_time, nextmonday_time, true, curmonday_time).each do |s|
         submission_date = s.created_at
         if s.intest?
           p = s.problem

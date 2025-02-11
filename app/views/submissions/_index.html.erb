@@ -22,7 +22,7 @@ var showFalse = function() {
 <!-- Si administrateur : peut voir toutes les soumissions correctes -->
 <% if current_user.admin %>
   <h3>Soumissions étoilées</h3>
-  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where(:visible => true, :status => :correct, :star => true).order('created_at') %>
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where(:status => :correct, :star => true).order('created_at') %>
   <% if submissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>
@@ -55,7 +55,7 @@ var showFalse = function() {
   <% @cansendnewcomment = !current_user.has_no_submission_sanction %>
   <% date_submission_allowed = nil %>
   <% nonewcomment_reason = nil %>
-  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where('user_id = ? AND status != ?', current_user, Submission.statuses[:draft]).order('created_at DESC') %>
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where(:user => current_user).where.not(:status => :draft).order('created_at DESC') %>
 
   <% if !submissions.empty? %>
     <h3>Vos soumissions</h3>
@@ -92,7 +92,7 @@ var showFalse = function() {
   <% if current_user.pb_solved?(problem) %>
   
     <h3>Autres soumissions, étoilées</h3>
-    <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND star = ?', current_user, Submission.statuses[:correct], true).order('created_at DESC') %>
+    <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :correct, :star => true).order('created_at DESC') %>
 
     <% if !submissions.empty? %>
       <table class="table table-bordered" style="width:auto;">
@@ -138,7 +138,7 @@ var showFalse = function() {
   </tbody>
   </table>
   
-  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND visible = ?', current_user, Submission.statuses[:waiting], true).order('created_at') %>
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :waiting).order('created_at') %>
   
   <% if !submissions.empty? %>
     <h3>Soumissions en attente</h3>

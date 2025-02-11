@@ -71,7 +71,7 @@
   <% new_cor[i] = Array.new(num_intervals, 0) %>
 <% end %>
 
-<% Submission.joins(:problem).select(:created_at, :intest, :problem_id, :user_id).where("visible = ? AND created_at > ? AND (intest = ? OR created_at > ?)", true, date_begin_for_test, true, date_begin).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
+<% Submission.joins(:problem).select(:created_at, :intest, :problem_id, :user_id).where.not(:status => :draft).where("created_at > ? AND (intest = ? OR created_at > ?)", date_begin_for_test, true, date_begin).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
   <% date_created = s.created_at %>
   <% date_sub = date_created %>
   <% if s.intest? %>
@@ -86,7 +86,7 @@
   <% end %>
 <% end %>
 
-<% Submission.joins(:problem).select(:created_at, :problem_id).where("visible = ? AND created_at > ?", true, date_begin - (shifts.max).days).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
+<% Submission.joins(:problem).select(:created_at, :problem_id).where.not(:status => :draft).where("created_at > ?", date_begin - (shifts.max).days).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
   <% (1..2).each do |i| %>
     <% threshold_date = s.created_at.in_time_zone.to_date + shifts[i] %>
     <% threshold_time = threshold_date.in_time_zone.to_time + 1.second %>
@@ -118,7 +118,7 @@
 <% end %>
 
 <% Groupdate.time_zone = false unless Rails.env.production? %>
-<% num_waiting_now_by_date = Submission.joins(:problem).where(:status => :waiting, :visible => true).where(section_condition).where("problems.level in (?)", levels).group_by_day(:created_at).count %>
+<% num_waiting_now_by_date = Submission.joins(:problem).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).group_by_day(:created_at).count %>
 
 <% r = (num_intervals-1)..0 %>
 

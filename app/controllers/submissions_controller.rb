@@ -26,16 +26,16 @@ class SubmissionsController < ApplicationController
   before_action :user_can_write_submission, only: [:create, :update_draft]
   before_action :author_of_submission, only: [:update_intest, :update_draft]
   before_action :user_in_test, only: [:create_intest, :update_intest]
-  before_action :draft_submission, only: [:update_draft]
+  before_action :draft_submission_not_in_test, only: [:update_draft]
   before_action :user_can_see_submissions, only: [:index]
   before_action :user_can_uncorrect_submission, only: [:uncorrect]
 
   # Show all submissions to a problem (only through js)
   def index
     if @what == 0
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status = ? AND star = ? AND visible = ?', current_user, Submission.statuses[:correct], false, true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :correct, :star => false).order('created_at DESC')
     elsif @what == 1
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where('user_id != ? AND status != ? AND status != ? AND visible = ?', current_user, Submission.statuses[:correct], Submission.statuses[:waiting], true).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => [:wrong, :wrong_to_read, :plagiarized, :closed]).order('created_at DESC')
     end
 
     respond_to :js
@@ -59,7 +59,6 @@ class SubmissionsController < ApplicationController
     render_with_error('problems/show', @submission, @file_error) and return if !@file_error.nil?
 
     if params[:commit] == "Enregistrer comme brouillon" || (@limited_new_submissions && current_user.has_already_submitted_today?)
-      @submission.visible = false
       @submission.status = :draft
     end
 
@@ -82,16 +81,15 @@ class SubmissionsController < ApplicationController
     oldsub = @problem.submissions.where(user_id: current_user.id, intest: true).first
     if !oldsub.nil?
       @submission = oldsub
-      @context = 1
-      update_submission
+      update_intest
       return
     end
     params[:submission][:content].strip! if !params[:submission][:content].nil?
 
-    @submission = @problem.submissions.build(content: params[:submission][:content],
-                                             user:    current_user,
-                                             intest:  true,
-                                             visible: false)
+    @submission = @problem.submissions.build(:content => params[:submission][:content],
+                                             :user    => current_user,
+                                             :intest  => true,
+                                             :status  => :draft)
     
     # Invalid CSRF token
     render_with_error('virtualtests/show', @submission, get_csrf_error_message) and return if @invalid_csrf_token
@@ -226,7 +224,7 @@ class SubmissionsController < ApplicationController
 
       @all_found = Array.new
 
-      @problem.submissions.where(:visible => true).order("created_at DESC").each do |s|
+      @problem.submissions.where.not(:status => :draft).order("created_at DESC").each do |s|
         res = Extract.find_if_included_in(s.content, @string_to_search)
         if !res.nil?
           @all_found.push([s, strip_content(s.content, res)])
@@ -245,12 +243,12 @@ class SubmissionsController < ApplicationController
   
   # Show all submissions
   def all
-    @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:visible => true).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+    @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where.not(:status => :draft).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
 
   # Show all submissions in which we took part
   def allmy
-    @submissions = current_user.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where("status != ? AND status != ?", Submission.statuses[:draft], Submission.statuses[:waiting]).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
+    @submissions = current_user.followed_submissions.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user).where.not(:status => [:draft, :waiting]).order("submissions.last_comment_time DESC").paginate(page: params[:page]).to_a
   end
   
   # Show all new submissions
@@ -266,7 +264,7 @@ class SubmissionsController < ApplicationController
       end
     end
     section_condition = ((params.has_key?:section) and params[:section].to_i > 0) ? "problems.section_id = #{params[:section].to_i}" : ""
-    @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting, :visible => true).where(section_condition).where("problems.level in (?)", levels).order("submissions.created_at").to_a
+    @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).order("submissions.created_at").to_a
   end
 
   # Show all new comments to submissions in which we took part
@@ -358,8 +356,8 @@ class SubmissionsController < ApplicationController
   end
 
   # Check that the submission is a draft
-  def draft_submission
-    unless @submission.draft?
+  def draft_submission_not_in_test
+    unless @submission.draft? && !@submission.intest
       redirect_to @problem
     end
   end
@@ -425,7 +423,7 @@ class SubmissionsController < ApplicationController
       redirect_to problem_path(@problem, :sub => 0)
     else
       date_now = DateTime.now
-      @submission.update(:status => :waiting, :created_at => date_now, :last_comment_time => date_now, :visible => true)
+      @submission.update(:status => :waiting, :created_at => date_now, :last_comment_time => date_now)
       Following.create(:submission => @submission, :user => User.where(:root => true).order(:id).last, :kind => :reservation) if current_user.has_auto_reserved_sanction
       flash[:success] = "Votre solution a bien été soumise."
       redirect_to problem_path(@problem, :sub => @submission.id)

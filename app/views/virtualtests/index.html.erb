@@ -102,10 +102,10 @@
         <% problems.each do |p| %>
           <% nb_u_real = nb_u %>
           <% sc = 0 %>
-          <% p.submissions.where(intest: true).each do |s| %>
-            <% if s.score == -1 && s.visible %>
+          <% p.submissions.where(:intest => true).where.not(:status => :draft).each do |s| %>
+            <% if s.score == -1 %>
               <% nb_u_real = nb_u_real - 1 %>
-            <% elsif s.visible %>
+            <% else %>
               <% sc = sc + s.score %>
             <% end %>
           <% end %>

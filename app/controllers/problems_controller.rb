@@ -41,7 +41,7 @@ class ProblemsController < ApplicationController
         if @submission.nil? || @submission.problem != @problem || !@submission.can_be_seen_by(current_user)
           redirect_to problem_path(@problem) and return
         end
-        @correction = Correction.new if @submission.visible?
+        @correction = Correction.new unless @submission.draft?
       end
     end
   end

@@ -4,7 +4,7 @@
 
 <h1><%= title_1("Corrections") %></h1>
 
-<% newsubs = Submission.joins(:problem).where(:status => :waiting, :visible => true).group("problems.section_id").group("problems.level").count %>
+<% newsubs = Submission.joins(:problem).where(:status => :waiting).group("problems.section_id").group("problems.level").count %>
 <% num_nuwsubs = newsubs.values.sum %>
 <p>Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 2 %> en attente de correction. Le tableau suivant en illustre la répartition, par niveau et par section.</p>
 
@@ -55,7 +55,7 @@
 <% amonthago = today - 32 %>
 
 <% Groupdate.time_zone = false unless Rails.env.production? %>
-<% allsub = Submission.where("created_at > ? AND visible = ?", amonthago, true).group(:status).group_by_day(:created_at).count %>
+<% allsub = Submission.where.not(:status => :draft).where("created_at > ?", amonthago).group(:status).group_by_day(:created_at).count %>
 
 <% allsub.each do |x, n| %>
   <% status = x.first %>

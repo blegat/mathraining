@@ -229,7 +229,7 @@ describe "Submission pages" do
     end
       
     describe "visits problem with a draft" do
-      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, visible: false, content: newsubmission) }
+      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, content: newsubmission) }
       before { visit problem_path(problem) }
       it do
         should have_selector("h1", text: "Problème ##{problem.number}")
@@ -239,7 +239,7 @@ describe "Submission pages" do
     end
     
     describe "visits draft page" do
-      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, visible: false, content: newsubmission) }
+      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, content: newsubmission) }
       before { visit problem_path(problem, :sub => 0) }
       it do
         should have_selector("h3", text: "Énoncé")
@@ -689,7 +689,7 @@ describe "Submission pages" do
                   
                   describe "and accepts it" do
                     before do
-                      Submission.create(user: user, problem: problem_with_submissions, status: :draft, visible: false, content: "brouillon")
+                      Submission.create(user: user, problem: problem_with_submissions, status: :draft, content: "brouillon")
                       fill_in "MathInput", with: newcorrection2
                       click_button "Poster et accepter la soumission"
                       waiting_submission.reload

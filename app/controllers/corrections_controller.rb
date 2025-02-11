@@ -11,7 +11,7 @@ class CorrectionsController < ApplicationController
   before_action :get_submission, only: [:create]
   
   before_action :user_can_comment_submission, only: [:create]
-  before_action :submission_is_visible, only: [:create]
+  before_action :submission_not_draft, only: [:create]
   before_action :submission_not_plagiarized_or_closed, only: [:create]
   before_action :user_has_no_recent_plagiarism_or_closure, only: [:create]
   before_action :submission_not_waiting_in_test, only: [:create]
@@ -193,9 +193,9 @@ class CorrectionsController < ApplicationController
     end
   end  
   
-  # Check that the submission is visible (not a draft and not in a running test)
-  def submission_is_visible
-    if !@submission.visible?
+  # Check that the submission is not a draft (i.e. also not a draft in test)
+  def submission_not_draft
+    if @submission.draft?
       render 'errors/access_refused'
     end
   end
@@ -207,7 +207,7 @@ class CorrectionsController < ApplicationController
     end
   end
   
-  # Check that the student does not try to comment a waiting submission in a test
+  # Check that the student does not try to comment a waiting submission from a test
   def submission_not_waiting_in_test
     if @submission.user == current_user && @submission.intest && @submission.waiting?
       render 'errors/access_refused'

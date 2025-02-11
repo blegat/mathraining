@@ -214,7 +214,7 @@ describe "Virtualtest pages" do
           end
           
           describe "and writes a new solution after having written another one in another tab" do
-            let!(:submission) { FactoryGirl.create(:submission, problem: problem, user: user_with_rating_200, status: :waiting, intest: true, visible: false, content: newsolution) }
+            let!(:submission) { FactoryGirl.create(:submission, problem: problem, user: user_with_rating_200, status: :draft, intest: true, content: newsolution) }
             before do
               fill_in "MathInput", with: newsolution2
               click_button "Enregistrer cette solution"

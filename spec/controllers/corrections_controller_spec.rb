@@ -18,10 +18,7 @@ describe CorrectionsController, type: :controller, correction: true do
     before { sign_in_controller(admin) }
     
     context "but the submission is a draft" do
-      before do
-        submission.draft!
-        submission.update_attribute(:visible, false)
-      end
+      before { submission.draft! }
       
       it { expect(response).to have_controller_create_behavior('correction', :access_refused, {:submission_id => submission.id}) }
     end
