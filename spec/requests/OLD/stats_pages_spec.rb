@@ -27,6 +27,8 @@ describe "Stats pages" do
     
     describe "tries the first exercise of a chapter", :js => true do
       before do
+        exercise11.update(:nb_wrong => 0, :nb_correct => 0, :nb_first_guesses => 0)
+        chapter1.update(:nb_tries => 0, :nb_completions => 0)
         visit chapter_question_path(chapter1, exercise11)
         fill_in "ans", with: exercise11.answer + 12
         click_button "Soumettre"
@@ -61,6 +63,10 @@ describe "Stats pages" do
     
     describe "solves the first exercise of a chapter", :js => true do
       before do
+        exercise11.update(:nb_wrong => 0, :nb_correct => 0, :nb_first_guesses => 0)
+        exercise12.update(:nb_wrong => 0, :nb_correct => 0, :nb_first_guesses => 0)
+        chapter1.update(:nb_tries => 0, :nb_completions => 0)
+        chapter2.update(:nb_tries => 0, :nb_completions => 0)
         visit chapter_question_path(chapter1, exercise11)
         fill_in "ans", with: exercise11.answer
         click_button "Soumettre"
