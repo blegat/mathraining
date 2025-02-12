@@ -219,27 +219,27 @@ class ApplicationController < ActionController::Base
   
   # Check if some test just got finished
   def check_takentests
-    time_now = DateTime.now.to_i
-    Takentestcheck.all.each do |c|
-      t = c.takentest
-      if t.finished?
-        c.destroy # Should not happen in theory
-      else
-        debut = t.taken_time.to_i
-        fin = debut + t.virtualtest.duration*60
-        if fin < time_now
+    respond_to do |format|
+      format.html do
+        time_now = DateTime.now.to_i
+        Takentestcheck.includes(:takentest, takentest: :virtualtest).all.each do |c|
+          takentest = c.takentest
+          c.destroy and next if takentest.finished? # Should not happen in theory
+          virtualtest = takentest.virtualtest
+          fin = takentest.taken_time.to_i + virtualtest.duration * 60
+          next if fin >= time_now # Not finished yet
           c.destroy
-          t.finished!
-          u = t.user
-          v = t.virtualtest
-          v.problems.each do |p|
-            p.submissions.where(user_id: u.id, intest: true).each do |s|
+          takentest.finished!
+          user = takentest.user
+          virtualtest.problems.each do |p|
+            p.submissions.where(user_id: user.id, intest: true).each do |s|
               s.update_attribute(:status, :waiting)
-              Following.create(:submission => s, :user => User.where(:root => true).order(:id).last, :kind => :reservation) if u.has_auto_reserved_sanction
+              Following.create(:submission => s, :user => User.where(:root => true).order(:id).last, :kind => :reservation) if user.has_auto_reserved_sanction
             end
           end
         end
       end
+      format.js {} # No need to check for taken tests when loading something with js
     end
   end
 end

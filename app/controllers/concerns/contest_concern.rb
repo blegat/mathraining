@@ -30,7 +30,7 @@ module ContestConcern
   def check_contests
     date_now = DateTime.now
     # Note: Problems in Contestproblemcheck are also used in contest.rb to check problems for which an email or forum subject must be created
-    Contestproblemcheck.all.order(:id).each do |c|
+    Contestproblemcheck.includes(:contestproblem).all.order(:id).each do |c|
       p = c.contestproblem
       if p.not_started_yet? # Contest is online but problem is not published yet
         if p.start_time <= date_now
