@@ -27,8 +27,8 @@ var UserNotFound = function () {
       <div class="mb-2" id="destinataire-div">
         <%= f.label :destinataire, :for => "destinataire", :class => "form-label" %>
         
-        <% mtn = DateTime.now.to_date - 14 %>
-        <% users = User.select(:id, :rating, :first_name, :last_name, :see_name, :admin).where("id != ? AND (last_connexion_date >= ? OR id = ?) AND active = ?", current_user.id, mtn, params[:qui].to_i, true).order("first_name, last_name, rating") %>
+        <% one_week_ago = DateTime.now.to_date - 7 %>
+        <% users = User.select(:id, :rating, :first_name, :last_name, :see_name, :admin).where("id != ? AND (last_connexion_date >= ? OR id = ?) AND active = ?", current_user.id, one_week_ago, params[:qui].to_i, true).order("first_name, last_name, rating") %>
         <%= select_tag :qui, options_for_select(users.collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, ""), params[:qui].to_i), :class => "form-select select2", :style => "width:300px;" %>
       </div>
       
