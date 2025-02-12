@@ -1,9 +1,6 @@
 <script type="text/javascript">
 var showAllDiscussions = function () {
-  var link = document.getElementById("show_all_discussions");
-  var remaining = document.getElementById("remaining_discussions");
-  link.style.display = "none";
-  remaining.style.display = "block";
+  $.getScript("<%= show_all_discussions_url(id: @discussion) %>");
 }
 </script>
 
@@ -13,25 +10,9 @@ var showAllDiscussions = function () {
 
   <h5 class="mt-3">Discussions</h5>
   
-  <% num = 0 %>
-  <% num_max = 5 %>
-  <% Discussion.find_by_sql("SELECT discussions.id, discussions.last_message_time, a.nonread, users.first_name, users.last_name, users.see_name FROM discussions INNER JOIN links AS a ON discussions.id = a.discussion_id INNER JOIN links AS b ON discussions.id = b.discussion_id INNER JOIN users ON b.user_id = users.id WHERE a.user_id = #{current_user.id} AND b.user_id != #{current_user.id} ORDER BY last_message_time DESC").each do |d| %>
-    <% if num == num_max %>
-      <a id="show_all_discussions" class="list-group-item list-group-item-action text-center" onclick="showAllDiscussions();" style="cursor:pointer;">Tout charger</a>
-      <div id="remaining_discussions" style="display:none;">
-    <% end %>
-    <%= link_to discussion_path(d.id), :class => "list-group-item list-group-item-action #{"active" if !@discussion.nil? && d.id == @discussion.id} #{"list-group-item-warning" if d.nonread > 0 && (@discussion.nil? || d.id != @discussion.id)}" do %>
-      <div class="mb-1 fw-bold"><%= User.new(:first_name => d.first_name, :last_name => d.last_name, :see_name => d.see_name).name %><%= " (#{d.nonread})" if d.nonread > 0 && (@discussion.nil? || d.id != @discussion.id) %></div>
-      <div><%= write_date(d.last_message_time) %></div>
-    <% end %>
-    <% num = num + 1 %>
-  <% end %>
-  
-  <% if num > num_max %>
-    </div>
-  <% elsif num == 0 %>
-    <i>Aucune discussion</i>
-  <% end %>
+  <div id="discussions-div" %>
+    <%= render 'discussions/discussions', limit: 5, cur_discussion_id: (@discussion.nil? ? 0 : @discussion.id) %>
+  </div>
   
   <!-- Espace en bas du menu, uniquement lorsqu'il se trouve à gauche -->
   <div class="d-none d-md-block mb-3"></div>

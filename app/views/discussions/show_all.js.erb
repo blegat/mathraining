@@ -1,0 +1,2 @@
+var div_discussions = document.getElementById("discussions-div");
+div_discussions.innerHTML = '<%= escape_javascript(render 'discussions/discussions', cur_discussion_id: params[:id]) %>';

@@ -263,6 +263,9 @@ Rails.application.routes.draw do
     member do
       put :unread
     end
+    collection do
+      get :show_all # only via JS
+    end
   end
   
   # Tchatmessages

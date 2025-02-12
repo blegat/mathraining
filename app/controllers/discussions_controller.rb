@@ -2,7 +2,7 @@
 class DiscussionsController < ApplicationController
   include DiscussionConcern
   
-  before_action :signed_in_user, only: [:show, :new]
+  before_action :signed_in_user, only: [:show, :new, :show_all]
   before_action :signed_in_user_danger, only: [:unread]
   
   before_action :get_discussion, only: [:show, :unread]
@@ -42,6 +42,11 @@ class DiscussionsController < ApplicationController
     l = current_user.links.where(:discussion_id => @discussion.id).first
     l.update_attribute(:nonread, l.nonread + 1)
     redirect_to new_discussion_path
+  end
+  
+  # Show all discussions of current user in menu (only in js)
+  def show_all
+    respond_to :js
   end
 
   private

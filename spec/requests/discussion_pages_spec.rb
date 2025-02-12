@@ -280,5 +280,44 @@ describe "Discussion pages", discussion: true do
         end
       end
     end
+    
+    describe "has more than 5 discussions", :js => false do
+      let!(:other_user3) { FactoryGirl.create(:user) }
+      let!(:other_user4) { FactoryGirl.create(:user) }
+      let!(:other_user5) { FactoryGirl.create(:user) }
+      let!(:discussion_1) { create_discussion_between(user, root, content, content2) }
+      let!(:discussion_2) { create_discussion_between(user, other_user, content, content2) }
+      let!(:discussion_3) { create_discussion_between(user, other_user2, content, content2) }
+      let!(:discussion_4) { create_discussion_between(user, other_user3, content, content2) }
+      let!(:discussion_5) { create_discussion_between(user, other_user4, content, content2) }
+      let!(:discussion_6) { create_discussion_between(user, other_user5, content, content2) }
+      
+      before { visit new_discussion_path }
+      it do
+        should have_no_content(root.name) # Not shown yet because 6th in the list
+        should have_content(other_user.name)
+        should have_content(other_user2.name)
+        should have_content(other_user3.name)
+        should have_content(other_user4.name)
+        should have_content(other_user5.name)
+        should have_button("Tout charger")
+      end
+      
+      describe "and click to show all of them", :js => true do
+        before do
+          click_button "Tout charger"
+          wait_for_ajax
+        end
+        it do
+          should have_content(root.name) # Should now be shown
+          should have_content(other_user.name)
+          should have_content(other_user2.name)
+          should have_content(other_user3.name)
+          should have_content(other_user4.name)
+          should have_content(other_user5.name)
+          should have_no_button("Tout charger")
+        end
+      end
+    end
   end
 end

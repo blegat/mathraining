@@ -1,0 +1,23 @@
+<% if !defined?(cur_discussion_id) %>
+  <% cur_discussion_id = 0 %>
+<% end %>
+
+<% num = 0 %>
+<% has_limit = defined?(limit) %>
+<% limit_str = has_limit ? "LIMIT #{limit+1}" : "" %>
+
+<% Discussion.find_by_sql("SELECT discussions.id, discussions.last_message_time, a.nonread, users.first_name, users.last_name, users.see_name FROM discussions INNER JOIN links AS a ON discussions.id = a.discussion_id INNER JOIN links AS b ON discussions.id = b.discussion_id INNER JOIN users ON b.user_id = users.id WHERE a.user_id = #{current_user.id} AND b.user_id != #{current_user.id} ORDER BY last_message_time DESC #{limit_str}").each do |d| %>
+  <% if has_limit && num == limit %>
+    <button id="show_all_discussions" class="list-group-item list-group-item-action text-center" onclick="showAllDiscussions();">Tout charger</button>
+  <% else %>
+    <%= link_to discussion_path(d.id), :class => "list-group-item list-group-item-action #{"active" if d.id == cur_discussion_id} #{"list-group-item-warning" if d.nonread > 0 && d.id != cur_discussion_id}" do %>
+      <div class="mb-1 fw-bold"><%= User.new(:first_name => d.first_name, :last_name => d.last_name, :see_name => d.see_name).name %><%= " (#{d.nonread})" if d.nonread > 0 && d.id != cur_discussion_id %></div>
+      <div><%= write_date(d.last_message_time) %></div>
+    <% end %>
+  <% end %>
+  <% num += 1 %>
+<% end %>
+  
+<% if num == 0 %>
+  <i>Aucune discussion</i>
+<% end %>
