@@ -294,7 +294,10 @@ const hideInactiveCorrectors = () => {
 
 <% correctors = [] %>
 <% Following.select("followings.user_id, COUNT(followings.id) AS nb_corrections, MIN(followings.created_at) AS first_correction, MAX(followings.created_at) AS last_correction").where(:kind => [:first_corrector, :other_corrector]).group(:user_id).includes(:user).each do |f| %>
-  <% correctors.push({:nb_corrections => f.nb_corrections, :nb_recent => (nb_recent_by_user[f.user_id].nil? ? 0 : nb_recent_by_user[f.user_id]), :first_correction => f.first_correction, :last_correction => f.last_correction, :user => f.user}) %>
+  <% user = f.user %>
+  <% if user.admin? || user.corrector? %> 
+    <% correctors.push({:nb_corrections => f.nb_corrections, :nb_recent => (nb_recent_by_user[user.id].nil? ? 0 : nb_recent_by_user[user.id]), :first_correction => f.first_correction, :last_correction => f.last_correction, :user => user}) %>
+  <% end %>
 <% end %>
 
 <center>
