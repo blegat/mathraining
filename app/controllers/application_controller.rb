@@ -143,12 +143,11 @@ class ApplicationController < ActionController::Base
   # Check that current user is not in the skin of somebody else
   def user_not_in_skin
     if in_skin?
-      respond_to do |format|
-        format.html do
-          flash[:danger] = "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un."
-          redirect_back(fallback_location: root_path)
-        end
-        format.js { render :js => 'alert("Vous ne pouvez pas effectuer cette action dans la peau de quelqu\'un.");' }
+      if request.format.html?
+        flash[:danger] = "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un."
+        redirect_back(fallback_location: root_path)
+      elsif request.format.js?
+        render :js => 'alert("Vous ne pouvez pas effectuer cette action dans la peau de quelqu\'un.");'
       end
     end
   end
@@ -219,27 +218,23 @@ class ApplicationController < ActionController::Base
   
   # Check if some test just got finished
   def check_takentests
-    respond_to do |format|
-      format.html do
-        time_now = DateTime.now.to_i
-        Takentestcheck.includes(:takentest, takentest: :virtualtest).all.each do |c|
-          takentest = c.takentest
-          c.destroy and next if takentest.finished? # Should not happen in theory
-          virtualtest = takentest.virtualtest
-          fin = takentest.taken_time.to_i + virtualtest.duration * 60
-          next if fin >= time_now # Not finished yet
-          c.destroy
-          takentest.finished!
-          user = takentest.user
-          virtualtest.problems.each do |p|
-            p.submissions.where(user_id: user.id, intest: true).each do |s|
-              s.update_attribute(:status, :waiting)
-              Following.create(:submission => s, :user => User.where(:root => true).order(:id).last, :kind => :reservation) if user.has_auto_reserved_sanction
-            end
-          end
+    return unless request.format.html?
+    time_now = DateTime.now.to_i
+    Takentestcheck.includes(:takentest, takentest: :virtualtest).all.each do |c|
+      takentest = c.takentest
+      c.destroy and next if takentest.finished? # Should not happen in theory
+      virtualtest = takentest.virtualtest
+      fin = takentest.taken_time.to_i + virtualtest.duration * 60
+      next if fin >= time_now # Not finished yet
+      c.destroy
+      takentest.finished!
+      user = takentest.user
+      virtualtest.problems.each do |p|
+        p.submissions.where(user_id: user.id, intest: true).each do |s|
+          s.update_attribute(:status, :waiting)
+          Following.create(:submission => s, :user => User.where(:root => true).order(:id).last, :kind => :reservation) if user.has_auto_reserved_sanction
         end
       end
-      format.js {} # No need to check for taken tests when loading something with js
     end
   end
 end
