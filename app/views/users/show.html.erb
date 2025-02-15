@@ -735,7 +735,7 @@
   </div>
 <% end %>
 
-<% nb_corrections = (@user.admin? || @user.corrector?) ? @user.followings.where(:kind => [:first_corrector, :other_corrector]).count : 0 %>
+<% nb_corrections = @user.followings.where(:kind => [:first_corrector, :other_corrector]).count %>
 <% if nb_corrections > 0 %>
   <div class="g-col-12 basic_container p-1">
     <div class="container_title">Corrections</div>
