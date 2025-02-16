@@ -7,15 +7,18 @@
 <% end %>
 
 <% if !defined?(s) || s.new_record? %>
-  <% numFiles = 0 %>
+  <% num_files = 0 %>
 <% else %>
-  <% numFiles = s.myfiles.count + s.fakefiles.count %>
+  <% myfiles = (@myfiles.nil? ? s.myfiles.to_a : @myfiles.select { |f| f.myfiletable == s }) %>
+  <% fakefiles = (@fakefiles.nil? ? s.fakefiles.to_a : @fakefiles.select { |f| f.fakefiletable == s }) %>
+  <% num_files = myfiles.size + fakefiles.size %>
 <% end %>
 
 <div>
-<label class="form-label">Pièces jointes <%= '(décochez pour supprimer)' if numFiles > 0 %></label>
-<% if numFiles > 0 %>
-  <% s.myfiles.order(:id).each do |f| %>
+<label class="form-label">Pièces jointes <%= '(décochez pour supprimer)' if num_files > 0 %></label>
+<% if num_files > 0 %>
+  <% myfiles.sort_by!{|f| f.id} %>
+  <% myfiles.each do |f| %>
     <div class="form-check mb-1">
     <label class="form-check-label">
       <%= check_box_tag "prevFile#{ postfix }_#{ f.id }", 1, true, :class => "form-check-input" %>
@@ -23,7 +26,8 @@
     </label>
     </div>
   <% end %>
-  <% s.fakefiles.order(:id).each do |f| %>
+  <% fakefiles.sort_by!{|f| f.id} %>
+  <% fakefiles.each do |f| %>
     <div class="form-check mb-1">
     <label class="form-check-label">
       <%= check_box_tag "prevFakeFile#{ postfix }_#{ f.id }", 1, true, :class => "form-check-input" %>

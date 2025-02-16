@@ -40,7 +40,7 @@
   <% if kind == "message" && ms.erased? %>
     <i>Ce message a été supprimé.</i>
   <% else %>
-    <% theid = -ms.id if kind == "submission" || kind == "contestsolution" || kind == "submission_in_test" %>
+    <% theid = -ms.id if kind == "submission" || kind == "contestsolution" %>
     <% theid = ms.id if kind == "message" || kind == "correction" || kind == "contestcorrection" %>
   
     <%= render '/shared/text_show_hide_code', content: ms.content, id: theid, replace_indice: (kind == "message") %>
@@ -72,7 +72,7 @@
           Modifier la solution
         <% end %>
         </a>
-      <% elsif kind == "submission_in_test" %>
+      <% elsif kind == "submission" %>
         <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>
         | <%= link_to "Supprimer la solution", submission_path(@submission), method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette solution ?" } %>
       <% end %>

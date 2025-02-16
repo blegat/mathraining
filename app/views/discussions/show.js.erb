@@ -1,3 +1,5 @@
+<% @myfiles = Myfile.where(:myfiletable => @tchatmessages).to_a %>
+<% @fakefiles = Fakefile.where(:fakefiletable => @tchatmessages).to_a %>
 <% @tchatmessages.each do |m| %>
   $('#all-messages').append('<%= j render 'tchatmessages/show', m: m %>');
 <% end %>

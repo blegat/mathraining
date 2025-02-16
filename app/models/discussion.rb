@@ -19,7 +19,7 @@ class Discussion < ActiveRecord::Base
   
   # Get several messages (used in controller and in view)
   def get_some_messages(page, per_page)
-    return tchatmessages.order("created_at DESC").paginate(page: page, per_page: per_page)
+    return self.tchatmessages.includes(:user).order("created_at DESC").paginate(page: page, per_page: per_page).to_a
   end
   
   # Get the discussion between two users (or nil if it does not exist)

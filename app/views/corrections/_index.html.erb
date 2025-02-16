@@ -7,7 +7,11 @@
 <% @lastid = -1 %>
 <% last_correction_user = nil %>
 
-<% @submission.corrections.order(:created_at).each do |correction| %>
+<% corrections = @submission.corrections.includes(:user).order(:created_at).to_a %>
+<% @myfiles = Myfile.where(:myfiletable => corrections).to_a %>
+<% @fakefiles = Fakefile.where(:fakefiletable => corrections).to_a %>
+
+<% corrections.each do |correction| %>
   <% @lastid = correction.id %>
   <% last_correction_user = correction.user %>
   <%= render 'shared/post', ms: correction, kind: "correction" %>  

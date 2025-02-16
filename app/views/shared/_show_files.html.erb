@@ -1,24 +1,21 @@
-<% n_real = s.myfiles.count %>
-<% n_fake = s.fakefiles.count %>
+<% myfiles = (@myfiles.nil? ? s.myfiles.to_a : @myfiles.select { |f| f.myfiletable == s }) %>
+<% fakefiles = (@fakefiles.nil? ? s.fakefiles.to_a : @fakefiles.select { |f| f.fakefiletable == s }) %>
+<% num_files = myfiles.size + fakefiles.size %>
 
-<% if n_real + n_fake > 0 %>
+<% if num_files > 0 %>
   <p class="mt-3 mb-1 fw-bold">
-    <% if n_real + n_fake == 1 %>
+    <% if num_files == 1 %>
       1 pièce jointe :
     <% else %>
-      <%= n_real + n_fake %> pièces jointes :
+      <%= num_files %> pièces jointes :
     <% end %>
   </p>
   
-  <% files = Array.new %>
-  <% s.myfiles.each do |f| %>
-    <% files.push([f.file.filename.to_s, f]) %>
-  <% end %>
-  <% files.sort! %>
+  <% myfiles.sort_by!{ |f| f.file.filename.to_s } %>
+  <% fakefiles.sort_by!{ |f| f.filename } %>
   
   <ul class="mb-1">
-  <% files.each do |ff| %>
-    <% f = ff[1] %>
+  <% myfiles.each do |f| %>
     <li><%= link_to f.file.filename, rails_blob_path(f.file, disposition: 'attachment') %>
     (<%= (f.file.blob.byte_size / 1.kilobyte).round(1) %>
     <% if f.myfiletable_type == "Tchatmessage" %>
@@ -31,14 +28,14 @@
     <% end %>
     </li>
   <% end %>
-  <% s.fakefiles.order(:filename).each do |f| %>
+  
+  <% fakefiles.each do |f| %>
     <li><span class="text-color-dark-light-blue"><%= f.filename %> (<%= (f.byte_size / 1.kilobyte).round(1) %> ko, désactivée)</span></li>
   <% end %>
   </ul>
 
   <!-- Afficher les pièces jointes images -->
-  <% files.each do |ff| %>
-    <% f = ff[1] %>
+  <% myfiles.each do |f| %>
     <% if f.is_image %>
       <hr/>
       <center><p><%= f.file.filename.to_s %></p>

@@ -83,6 +83,8 @@ window.addEventListener("load", () => {
       <% end %>
 
       <% @tchatmessages = @discussion.get_some_messages(1, 10) if @tchatmessages.nil? %>
+      <% @myfiles = Myfile.where(:myfiletable => @tchatmessages).to_a %>
+      <% @fakefiles = Fakefile.where(:fakefiletable => @tchatmessages).to_a %>
       <% @compteur = 1 %>
       <div id="all-messages">
         <% @tchatmessages.each do |m| %>
