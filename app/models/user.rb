@@ -10,13 +10,10 @@
 #  email                     :string
 #  password_digest           :string
 #  remember_token            :string
-#  admin                     :boolean          default(FALSE)
-#  root                      :boolean          default(FALSE)
 #  created_at                :datetime         not null
 #  key                       :string
 #  email_confirm             :boolean          default(TRUE)
 #  skin                      :integer          default(0)
-#  active                    :boolean          default(TRUE)
 #  see_name                  :integer          default(1)
 #  sex                       :integer          default(0)
 #  wepion                    :boolean          default(FALSE)
@@ -25,7 +22,6 @@
 #  last_forum_visit_time     :datetime         default(Thu, 01 Jan 2009 01:00:00.000000000 CET +01:00)
 #  last_connexion_date       :date             default(Thu, 01 Jan 2009)
 #  follow_message            :boolean          default(FALSE)
-#  corrector                 :boolean          default(FALSE)
 #  group                     :string           default("")
 #  valid_name                :boolean          default(FALSE)
 #  consent_time              :datetime
@@ -36,6 +32,8 @@
 #  can_change_name           :boolean          default(TRUE)
 #  correction_level          :integer          default(0)
 #  corrector_color           :string
+#  corrector                 :boolean          default(FALSE)
+#  role                      :integer          default("student")
 #
 include ERB::Util
 
@@ -83,6 +81,11 @@ class ColorValidator < ActiveModel::Validator
 end
 
 class User < ActiveRecord::Base
+
+  enum role: {:deleted       => 0, # deleted account
+              :student       => 1, # simple student (possibly a corrector)
+              :administrator => 2, # admin but not root
+              :root          => 3} # root (webmaster)
 
   # BELONGS_TO, HAS_MANY
 
@@ -164,6 +167,11 @@ class User < ActiveRecord::Base
   
   def self.limit_waiting_submissions
     return (Rails.env.production? ? 50 : 2)
+  end
+  
+  # Tells if user is an administrator or a root
+  def admin?
+    return self.administrator? || self.root?
   end
 
   # Complete name (with only initial of last name if the user asked to)
@@ -247,7 +255,7 @@ class User < ActiveRecord::Base
 
   # Gives the "level" of the user
   def level
-    return {} if admin # Should not be used anymore with light/dark theme!
+    return {} if self.admin? # Should not be used anymore with light/dark theme!
     actuallevel = nil
     Color.get_all.each do |c|
       if c.pt <= rating
@@ -351,7 +359,7 @@ class User < ActiveRecord::Base
   def color_class
     if self.admin?
       return "text-color-black-white";
-    elsif !self.active?
+    elsif self.deleted?
       return "text-color-level-inactive";
     else
       return "text-color-level-#{self.level[:id]}";
@@ -380,7 +388,7 @@ class User < ActiveRecord::Base
 
   # Returns the colored linked name of the user (see colored_name for explanations about name_type)
   def linked_name(name_type = 0, add_corrector_prefix = true)
-    if !self.active?
+    if self.deleted?
       s = self.colored_name(name_type)
     else
       # Note: We give a color to the "a" so that the link is underlined with this color when it is hovered/clicked
@@ -454,7 +462,7 @@ class User < ActiveRecord::Base
     end
     # Users having confirmed their email but that never came on the website after one month (rating = 0 should be redundant))
     onemonthago = Date.today - 31
-    User.where("admin = ? AND rating = ? AND created_at < ? AND last_connexion_date < ?", false, 0, onemonthago, "2012-01-01").each do |u|
+    User.where(:role => :student).where("rating = ? AND created_at < ? AND last_connexion_date < ?", 0, onemonthago, "2012-01-01").each do |u|
       u.destroy
     end
   end
@@ -493,7 +501,7 @@ class User < ActiveRecord::Base
       question_scores[u.id] += u.x
     end
     
-    User.where(:admin => false, :active => true).select("users.*").each do |u|
+    User.where(:role => :student).each do |u|
       current_score = u.rating
       problem_score = problem_scores[u.id]
       problem_score = 0 if problem_score.nil?

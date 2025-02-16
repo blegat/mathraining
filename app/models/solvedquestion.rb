@@ -72,8 +72,8 @@ class Solvedquestion < ActiveRecord::Base
       suspect = false if num_fast_solves < suspect_num_fast_solves               # solved 10 questions in < 1 min
       
       if suspect
-        user = User.find(user_id)
-        if user.active
+        user = User.find_by_id(user_id)
+        if user.student?
           suspect_users.push({:user => user, :num_solves_in_time_range => max_num_solves_in_time_range, :num_fast_solves => num_fast_solves, :fastest_solve => fastest_solve})
         end
       end

@@ -112,7 +112,7 @@
         <div class="g-col-12 g-col-md-12 module right-info pb-2">
           <h5>Statistiques</h5>
           Terminé par <b><%= nb_u %></b> personne<%= "s" if nb_u > 1 %><br/>
-          <% if current_user.admin || (nb_u >= 3 && status == "finished") %>
+          <% if current_user.admin? || (nb_u >= 3 && status == "finished") %>
             Score moyen : <b><%= moy.round(1) if moy >= 0 %><%= "-" if moy < 0 %> / <%= 7*h %></b>
           <% end %>
         </div>
@@ -121,7 +121,7 @@
         <% can_online = true %>
         <% total = 0 %>
         <!-- Si admin ou étudiant ayant commencé : on affiche les problèmes -->
-        <% if current_user.admin || status != "not_started" %>
+        <% if current_user.admin? || status != "not_started" %>
           <% h = 0 %>
           <% problems.each do |p| %>
             <% can_online = false if !p.online? %>
@@ -147,7 +147,7 @@
             <div class="g-col-12 g-col-md-18 g-col-lg-19 module left-part">
               <% can_see_statement = (status == "in_progress" || p.can_be_seen_by(current_user, @no_new_submission)) %>
               <center><h5>
-              <% if !current_user.admin && status == "in_progress" %>
+              <% if !current_user.admin? && status == "in_progress" %>
                 <%= link_to "Problème #{h+1}", virtualtest_path(t, :p => p.id) %>
               <% elsif !can_see_statement %>
                 Problème <%= h+1 %>

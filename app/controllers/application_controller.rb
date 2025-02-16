@@ -154,28 +154,28 @@ class ApplicationController < ActionController::Base
 
   # Check that current user is an admin
   def admin_user
-    if !signed_in? || !current_user.admin
+    if !signed_in? || !current_user.admin?
       render 'errors/access_refused'
     end
   end
   
   # Check that current user is not an admin (i.e. is a student)
   def non_admin_user
-    if !signed_in? || current_user.admin
+    if !signed_in? || current_user.admin?
       render 'errors/access_refused'
     end
   end
 
   # Check that current user is a root
   def root_user
-    if !signed_in? || !current_user.root
+    if !signed_in? || !current_user.root?
       render 'errors/access_refused'
     end
   end
   
   # Check that current user is an admin or corrector
   def corrector_user
-    if !signed_in? || (!current_user.admin && !current_user.corrector)
+    if !signed_in? || (!current_user.admin? && !current_user.corrector?)
       render 'errors/access_refused'
     end
   end

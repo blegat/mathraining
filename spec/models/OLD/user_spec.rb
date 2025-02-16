@@ -8,13 +8,10 @@
 #  email                     :string
 #  password_digest           :string
 #  remember_token            :string
-#  admin                     :boolean          default(FALSE)
-#  root                      :boolean          default(FALSE)
 #  created_at                :datetime         not null
 #  key                       :string
 #  email_confirm             :boolean          default(TRUE)
 #  skin                      :integer          default(0)
-#  active                    :boolean          default(TRUE)
 #  see_name                  :integer          default(1)
 #  sex                       :integer          default(0)
 #  wepion                    :boolean          default(FALSE)
@@ -23,7 +20,6 @@
 #  last_forum_visit_time     :datetime         default(Thu, 01 Jan 2009 01:00:00.000000000 CET +01:00)
 #  last_connexion_date       :date             default(Thu, 01 Jan 2009)
 #  follow_message            :boolean          default(FALSE)
-#  corrector                 :boolean          default(FALSE)
 #  group                     :string           default("")
 #  valid_name                :boolean          default(FALSE)
 #  consent_time              :datetime
@@ -32,9 +28,10 @@
 #  last_policy_read          :boolean          default(FALSE)
 #  accept_analytics          :boolean          default(TRUE)
 #  can_change_name           :boolean          default(TRUE)
-#  last_ban_date             :datetime
 #  correction_level          :integer          default(0)
 #  corrector_color           :string
+#  corrector                 :boolean          default(FALSE)
+#  role                      :integer          default("student")
 #
 require "spec_helper"
 
@@ -52,11 +49,9 @@ describe User do
     should respond_to(:password)
     should respond_to(:password_confirmation)
     should respond_to(:remember_token)
-    should respond_to(:admin)
     should respond_to(:authenticate)
 
     should be_valid
-    should_not be_admin
   end
   
   describe "name, password and email" do
@@ -255,7 +250,7 @@ describe User do
     end
     
     describe "for an admin" do
-      before { @user.update_attribute(:admin, true) }
+      before { @user.update_attribute(:role, :administrator) }
       it do
         expect(@user.colored_name).to eq("<span class='text-color-black-white fw-bold'>Jean Dupont</span>")
         expect(@user.linked_name(0, false)).to eq("<a href='#{user_path(@user)}' class='text-color-black-white'>" + @user.colored_name + "</a>")
@@ -266,7 +261,7 @@ describe User do
       before do
         @user.first_name = "Compte"
         @user.last_name = "supprimé"
-        @user.active = false
+        @user.role = :deleted
         @user.save
       end
       it do

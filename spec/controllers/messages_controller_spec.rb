@@ -35,7 +35,7 @@ describe MessagesController, type: :controller, message: true do
     before { sign_in_controller(admin) }
     
     context "and the message is from another admin" do
-      before { message.user.update_attribute(:admin, true) }
+      before { message.user.update_attribute(:role, :administrator) }
       
       it { expect(response).to have_controller_update_behavior(message, :access_refused) }
       it { expect(response).to have_controller_destroy_behavior(message, :access_refused) }

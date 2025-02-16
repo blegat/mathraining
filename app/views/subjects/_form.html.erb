@@ -300,7 +300,7 @@ function checkWepion() {
 <% end %>
 
 <!-- Case correcteurs -->
-<% if current_user.admin || current_user.corrector %>
+<% if current_user.admin? || current_user.corrector? %>
   <% checked = "" %>
   <% if erreur %>
     <% checked = "checked" if @error_params.has_key?(:for_correctors) && @error_params[:for_correctors].to_i == 1 %>
@@ -336,7 +336,7 @@ function checkWepion() {
 
 <!-- Case wépion -->
 <% wepion_checked = "" %>
-<% if current_user.wepion || current_user.admin? %>
+<% if current_user.wepion? || current_user.admin? %>
   <% if erreur %>
     <% wepion_checked = "checked" if @error_params.has_key?(:for_wepion) && @error_params[:for_wepion].to_i == 1 %>
   <% elsif is_edit %>
@@ -352,7 +352,7 @@ function checkWepion() {
 <% end %>
 
 <!-- Case e-mails aux groupes A et/ou B -->
-<% if current_user.root && !is_edit %>
+<% if current_user.root? && !is_edit %>
   <div class="form-check mb-1" style="<%= "display:none;" unless wepion_checked == "checked" or Rails.env.test? %>" id="emailWepionDiv">
   <label class="form-check-label">
     <%= check_box_tag "emailWepion", "A", false, :class => "form-check-input" %>

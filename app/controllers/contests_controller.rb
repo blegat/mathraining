@@ -184,7 +184,7 @@ class ContestsController < ApplicationController
   
   # Check if cutoffs can be defined for this contest
   def cutoffs_can_be_defined
-    if !@contest.completed? || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.root)
+    if !@contest.completed? || !@contest.medal || (@contest.gold_cutoff > 0 && !current_user.root?)
       render 'errors/access_refused'
     end
   end

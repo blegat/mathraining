@@ -66,7 +66,7 @@
   <% premier = true %>
   <% if !chapters_by_level[level].nil? %>
     <% chapters_by_level[level].each do |c| %>
-      <% if (c.online || (signed_in? && (current_user.admin || @chapter_status[c.id] == "creator"))) %>
+      <% if (c.online || (signed_in? && (current_user.admin? || @chapter_status[c.id] == "creator"))) %>
         <% if premier %>
           <% if @section.fondation %>
           
@@ -85,7 +85,7 @@
         
         <% if !c.online? %>
           <% classe = "orangey" %>
-        <% elsif signed_in? && current_user.admin %>
+        <% elsif signed_in? && current_user.admin? %>
           <% classe = "yellowy" %>
         <% elsif @chapter_status[c.id] == "solved" %>
           <% classe = "greeny" %>

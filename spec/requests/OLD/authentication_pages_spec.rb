@@ -41,9 +41,9 @@ describe "Authentication" do
       end
     end
     
-    describe "to an inactive account" do
+    describe "to a deleted account" do
       before do
-        user.update_attribute(:active, false)
+        user.update_attribute(:role, :deleted)
         sign_in_with_form(user)
       end
       it do

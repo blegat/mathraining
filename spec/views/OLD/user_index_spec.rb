@@ -54,14 +54,14 @@ describe "Page user/index" do
     # Initialize Pointspersection randomly
     Section.where(:fondation => false).each do |s|
       s.update_attribute(:max_score, (r.rand() * 1000).to_i)
-      User.where(:admin => false).each do |u|
+      User.where(:role => :student).each do |u|
         pps = Pointspersection.where(:user => u, :section => s).first
         pps.update_attribute(:points, [[(r.rand() * (s.max_score+100)).to_i - 50, 0].max, s.max_score].min)
       end
     end
     
     # Initialize recently solved problems and questions randomly
-    User.where(:admin => false).each do |u|
+    User.where(:role => :student).each do |u|
       Problem.all.each do |p|
         if r.rand() < 0.5 # Tried to solve the problem
           if r.rand() < 0.5 # Incorrect

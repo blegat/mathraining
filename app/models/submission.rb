@@ -121,7 +121,7 @@ class Submission < ActiveRecord::Base
         # Si c'était la seule soumission correcte, alors il faut agir et baisser le score
         sp = Solvedproblem.where(:submission => self).first
         sp.destroy unless sp.nil? # Should never be nil, but for security (and for tests)
-        if u.active
+        if u.student?
           u.rating = u.rating - pb.value
           u.save
         end

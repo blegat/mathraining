@@ -27,7 +27,7 @@
 </div>
 
 <!-- Case e-mails aux groupes A et/ou B -->
-<% if current_user.root && show_mail_checkboxes && @subject.for_wepion %>
+<% if current_user.root? && show_mail_checkboxes && @subject.for_wepion %>
   <div class="form-check">
   <label class="form-check-label">
     <%= check_box_tag "emailWepion", "A", false, :class => "form-check-input" %>

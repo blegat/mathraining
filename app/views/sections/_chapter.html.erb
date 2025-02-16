@@ -42,7 +42,7 @@
           <% end %>
           <% compteur = compteur + 1 %>
           <li><%= link_to t.title, chapter_theory_path(chapter, t) %>
-          <%= image_tag v_icon, :class => "ms-2 svg-black-white", :style => "margin-top:-3px;", :id => "V-#{t.id}" if signed_in? && !current_user.admin && @theory_status[t.id] == "read" %></li>
+          <%= image_tag v_icon, :class => "ms-2 svg-black-white", :style => "margin-top:-3px;", :id => "V-#{t.id}" if signed_in? && !current_user.admin? && @theory_status[t.id] == "read" %></li>
         <% end %>
       <% end %>
     <% end %>

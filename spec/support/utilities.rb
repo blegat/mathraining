@@ -47,16 +47,16 @@ end
 def options_for_user_titles(country_id, for_root)
   num_before = 0
   if country_id == 0
-    num_tot = User.where("admin = ? AND active = ? AND rating > 0", false, true).count
+    num_tot = User.where(:role => :student).where("rating > 0").count
   else
-    num_tot = User.where("admin = ? AND active = ? AND rating > 0 AND country_id = ?", false, true, country_id).count
+    num_tot = User.where(:role => :student).where("rating > 0 AND country_id = ?", country_id).count
   end
   options = ["Tous les titres (#{num_tot})"]
   Color.order("pt DESC").each do |c|
     if country_id == 0
-      num = User.where("admin = ? AND active = ? AND rating > 0 AND rating >= ?", false, true, c.pt).count
+      num = User.where(:role => :student).where("rating > 0 AND rating >= ?", c.pt).count
     else
-      num = User.where("admin = ? AND active = ? AND rating > 0 AND rating >= ? AND country_id = ?", false, true, c.pt, country_id).count
+      num = User.where(:role => :student).where("rating > 0 AND rating >= ? AND country_id = ?", c.pt, country_id).count
     end
     options.push("#{pluriel(c.name)} (#{num-num_before})")
     num_before = num

@@ -57,17 +57,17 @@ class UsersController < ApplicationController
       end
     end
     
-    rating_condition = (@min_rating == 0 && @max_rating == 1000000 ? "" : " AND rating <= #{@max_rating} AND rating >= #{@min_rating}")
-    @num_users_in_rating_range_by_country = User.where("admin = ? AND active = ? #{rating_condition}", @admin, true).group(:country_id).count
+    rating_condition = (@min_rating == 0 && @max_rating == 1000000 ? "1=1" : "rating <= #{@max_rating} AND rating >= #{@min_rating}")
+    @num_users_in_rating_range_by_country = User.where(:role => (@admin ? [:administrator, :root] : [:student])).where("#{rating_condition}").group(:country_id).count
     
-    country_condition = (@country == 0 ? "" : " AND country_id = #{@country}")
-    @num_users_in_country_by_rating =  User.where("admin = ? AND active = ? AND rating > 0 #{country_condition}", false, true).group(:rating).order("rating DESC").count
+    country_condition = (@country == 0 ? "1=1" : "country_id = #{@country}")
+    @num_users_in_country_by_rating =  User.where(:role => :student).where("rating > 0 AND #{country_condition}").group(:rating).order("rating DESC").count
 
     if !@real_users
       if @title == -1
-        @all_users = User.where("rating = ? AND admin = ? AND active = ? #{country_condition}", 0, false, true).order("id ASC")
+        @all_users = User.where(:role => :student).where("rating = 0 AND #{country_condition}").order("id ASC")
       elsif @title == -2
-        @all_users = User.where("admin = ? AND active = ? #{country_condition}", true, true).order("id ASC")
+        @all_users = User.where(:role => [:administrator, :root]).where("#{country_condition}").order("id ASC")
       end
       return
     end
@@ -75,7 +75,7 @@ class UsersController < ApplicationController
     fill_sections_max_score
     
     all_users_count = (@country == 0 ? @num_users_in_rating_range_by_country.sum{|x| x.second} : @num_users_in_rating_range_by_country[@country])
-    @all_users = User.where("admin = ? AND active = ? #{rating_condition} #{country_condition}", false, true).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page, :total_entries => all_users_count)
+    @all_users = User.where(:role => :student).where("#{rating_condition} AND #{country_condition}").order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page, :total_entries => all_users_count)
 
     fill_user_info(@all_users)
   end
@@ -84,7 +84,7 @@ class UsersController < ApplicationController
   def followed
     fill_sections_max_score
     
-    @all_users = current_user.followed_users.where(:admin => false).to_a
+    @all_users = current_user.followed_users.where(:role => :student).to_a
     if !current_user.admin?
       @all_users.append(current_user)
     end
@@ -135,8 +135,8 @@ class UsersController < ApplicationController
     fill_sections_max_score
     
     name_condition = "(see_name = 1 AND LOWER(first_name || ' ' || last_name) LIKE LOWER('%#{search}%')) OR (see_name = 0 AND LOWER(first_name || ' ' || SUBSTR(last_name, 1, 1) || '.') LIKE LOWER('%#{search}%'))"
-    @all_users = User.where(:admin => false, :active => true).where(name_condition).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page)
-    @admin_users = (page == 1 ? User.where(:admin => true, :active => true).where(name_condition).order("first_name, last_name").to_a : [])
+    @all_users = User.where(:role => :student).where(name_condition).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page)
+    @admin_users = (page == 1 ? User.where(:role => [:administrator, :root]).where(name_condition).order("first_name, last_name").to_a : [])
     
     fill_user_info(@all_users)
   end
@@ -190,7 +190,7 @@ class UsersController < ApplicationController
       @user.adapt_name
       @user.save
       flash[:success] = "Votre profil a bien été mis à jour."
-      if ((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.root)
+      if ((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.root?)
         @user.update_attribute(:valid_name, false)
       end
       redirect_to edit_user_path(@user)
@@ -221,7 +221,7 @@ class UsersController < ApplicationController
 
   # Mark user as administrator
   def set_administrator
-    @user.update_attribute(:admin, true)
+    @user.update_attribute(:role, :administrator)
     remove_skins(@user)
     flash[:success] = "Utilisateur promu au rang d'administrateur !"
     redirect_to @user
@@ -381,7 +381,7 @@ class UsersController < ApplicationController
 
   # Take the skin of a user
   def take_skin
-    unless @user.admin || !@user.active # Cannot take the skin of an admin or inactive user
+    if @user.student? # Cannot take the skin of an admin or a deleted user
       current_user_no_skin.update_attribute(:skin, @user.id)
       flash[:success] = "Vous êtes maintenant dans la peau de #{@user.name}."
     end
@@ -399,9 +399,9 @@ class UsersController < ApplicationController
 
   # Deletes data of one account
   def destroydata
-    if @user.active
+    unless @user.deleted?
       flash[:success] = "Les données personnelles de #{@user.name} ont été supprimées."
-      @user.update(:active         => false,
+      @user.update(:role           => :deleted,
                    :email          => @user.id.to_s,
                    :first_name     => "Compte",
                    :last_name      => "supprimé",
@@ -517,7 +517,7 @@ class UsersController < ApplicationController
   # Get the user
   def get_user
     @user = User.find_by_id(params[:id])
-    if @user.nil? || !@user.active?
+    if @user.nil? || @user.deleted?
       render 'errors/access_refused'
     end
   end
@@ -526,7 +526,7 @@ class UsersController < ApplicationController
   
   # Check that current user is in some Wépion group
   def group_user
-    if !current_user.admin && current_user.group == ""
+    if !current_user.admin? && current_user.group == ""
       render 'errors/access_refused'
     end
   end
@@ -624,7 +624,7 @@ class UsersController < ApplicationController
     if !@num_users_in_country_by_rating.nil? && !@country.nil? && @country == 0
       num_users_by_rating = @num_users_in_country_by_rating # Avoid recomputing it
     else
-      num_users_by_rating = User.where("admin = ? AND active = ? AND rating > 0", false, true).group(:rating).order("rating DESC").count
+      num_users_by_rating = User.where(:role => :student).where("rating > 0").group(:rating).order("rating DESC").count
     end
     
     rank_by_rating = {}
@@ -637,7 +637,7 @@ class UsersController < ApplicationController
     rank_by_rating[0] = r
     
     # Old way of computing the rank, but was not very efficient:
-    # globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.admin = false AND u.active = true) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
+    # globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.role = 1) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
 
     users.each do |u|
       ids[local_id] = u.id

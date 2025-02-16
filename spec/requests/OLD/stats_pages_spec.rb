@@ -32,6 +32,7 @@ describe "Stats pages" do
         visit chapter_question_path(chapter1, exercise11)
         fill_in "ans", with: exercise11.answer + 12
         click_button "Soumettre"
+        wait_for_ajax
         chapter1.reload
         exercise11.reload
       end
@@ -48,6 +49,7 @@ describe "Stats pages" do
           visit chapter_question_path(chapter1, exercise11)
           fill_in "ans", with: exercise11.answer
           click_button "Soumettre"
+          wait_for_ajax
           chapter1.reload
           exercise11.reload
         end
@@ -70,6 +72,7 @@ describe "Stats pages" do
         visit chapter_question_path(chapter1, exercise11)
         fill_in "ans", with: exercise11.answer
         click_button "Soumettre"
+        wait_for_ajax
         chapter1.reload
         exercise11.reload
       end
@@ -86,6 +89,7 @@ describe "Stats pages" do
           visit chapter_question_path(chapter1, exercise12)
           fill_in "ans", with: exercise12.answer
           click_button "Soumettre"
+          wait_for_ajax
           chapter1.reload
           exercise12.reload
         end

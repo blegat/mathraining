@@ -33,10 +33,10 @@ class Globalstatistic < ActiveRecord::Base
   
   # Recompute all statistics from scratch
   def update_all
-    self.nb_ranked_users = User.where("admin = ? AND rating > 0 AND active = ?", false, true).count
+    self.nb_ranked_users = User.where(:role => :student).where("rating > 0").count
     self.nb_solvedproblems = Solvedproblem.count
     self.nb_solvedquestions = Solvedquestion.count
-    self.nb_points = User.where("admin = ?", false).sum(:rating)
+    self.nb_points = User.where(:role => :student).sum(:rating)
     self.save
   end
   

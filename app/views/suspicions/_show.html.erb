@@ -12,7 +12,7 @@
 <% suspicions = @submission.suspicions %>
 
 <% if suspicions.size > 0 %>
-  <% correctors = User.select(:id, :first_name, :last_name, :see_name).where("admin = ? OR corrector = ?", true, true).order("first_name, last_name") %>
+  <% correctors = User.select(:id, :first_name, :last_name, :see_name).where("role IN (?) OR corrector = ?", [User.roles[:administrator], User.roles[:root]], true).order("first_name, last_name") %>
   
   <div class="mb-3" style="width:100%; overflow-x:auto;">
   <table class="table table-bordered my-0">
@@ -65,7 +65,7 @@
   </div>
 <% end %>
 
-<% if current_user.root? && @submission.plagiarized? && @submission.user.active? %>
+<% if current_user.root? && @submission.plagiarized? && @submission.user.student? %>
   <% num_plagiarism = @submission.user.submissions.where(:status => :plagiarized).count %>
   <p><%= @submission.user.name %> a envoyé <b><%= num_plagiarism %> soumission<%= 's' if num_plagiarism > 1 %> plagiée<%= 's' if num_plagiarism > 1 %></b> sur Mathraining.</p>
   <% last_ban = @submission.user.last_ban %>

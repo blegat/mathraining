@@ -188,7 +188,7 @@ class CorrectionsController < ApplicationController
 
   # Check that current user is the submission user, or an admin or a corrector having access to the problem
   def user_can_comment_submission
-    if @submission.user != current_user && !current_user.admin && (!current_user.corrector || !current_user.pb_solved?(@problem))
+    if @submission.user != current_user && !current_user.admin? && (!current_user.corrector? || !current_user.pb_solved?(@problem))
       render 'errors/access_refused'
     end
   end  

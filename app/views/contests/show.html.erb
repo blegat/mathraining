@@ -38,7 +38,7 @@
     <% mtn = DateTime.now.to_date - 14 %>
     <div class="row g-2 align-items-center">
       <div class="col-auto">
-        <%= select_tag :user_id, options_for_select(User.where("last_connexion_date >= ? AND active = ?", mtn, true).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin}" + "#{' (administrateur)' if u.admin }", u.id ] }.insert(0, ""), -1), :class => "form-select select2 p-1 ps-2", :style => "width:300px;" %>
+        <%= select_tag :user_id, options_for_select(User.where.not(:role => :deleted).where("last_connexion_date >= ?", mtn).order("first_name, last_name, rating").collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin?}" + "#{' (administrateur)' if u.admin?}", u.id ] }.insert(0, ""), -1), :class => "form-select select2 p-1 ps-2", :style => "width:300px;" %>
       </div>
       <div class="col-auto">
         <%= f.submit "Ajouter", class: "btn btn-primary" %>

@@ -355,7 +355,7 @@ describe "User pages" do
       let!(:marcel_pinot) { FactoryGirl.create(:user, first_name: "Marcel", last_name: "Pinot", rating: 200) }
       let!(:lionel_p) { FactoryGirl.create(:user, first_name: "L'ionel", last_name: "Proust", see_name: 0, rating: 100) }
       let!(:lionel_pinot) { FactoryGirl.create(:user, first_name: "L'ionel", last_name: "Pinot", rating: 0) }
-      let!(:diesel_proust_inactive) { FactoryGirl.create(:user, first_name: "Diesel", last_name: "Proust", active: false) }
+      let!(:diesel_proust_deleted) { FactoryGirl.create(:user, first_name: "Diesel", last_name: "Proust", role: :deleted) }
       
       before { visit search_users_path }
       it do
@@ -375,7 +375,7 @@ describe "User pages" do
           should have_no_link(marcel_pinot.name, href: user_path(marcel_pinot))
           should have_no_link(lionel_p.name, href: user_path(lionel_p))
           should have_no_link(lionel_pinot.name, href: user_path(lionel_pinot))
-          should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
+          should have_no_link(diesel_proust_deleted.name, href: user_path(diesel_proust_deleted))
         end
       end
       
@@ -391,7 +391,7 @@ describe "User pages" do
           should have_link(marcel_pinot.name, href: user_path(marcel_pinot))
           should have_link(lionel_p.name, href: user_path(lionel_p))
           should have_no_link(lionel_pinot.name, href: user_path(lionel_pinot)) # on page 2
-          should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
+          should have_no_link(diesel_proust_deleted.name, href: user_path(diesel_proust_deleted))
           should have_link(href: search_users_path(:search => " el p   ", :page => 2))
         end
         
@@ -404,7 +404,7 @@ describe "User pages" do
             should have_no_link(marcel_pinot.name, href: user_path(marcel_pinot)) # on page 1
             should have_no_link(lionel_p.name, href: user_path(lionel_p)) # on page 1
             should have_link(lionel_pinot.name, href: user_path(lionel_pinot))
-            should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
+            should have_no_link(diesel_proust_deleted.name, href: user_path(diesel_proust_deleted))
             should have_link(href: search_users_path(:search => " el p   ", :page => 1))
           end          
         end
@@ -422,7 +422,7 @@ describe "User pages" do
           should have_no_link(marcel_pinot.name, href: user_path(marcel_pinot))
           should have_link(lionel_p.name, href: user_path(lionel_p))
           should have_no_link(lionel_pinot.name, href: user_path(lionel_pinot))
-          should have_no_link(diesel_proust_inactive.name, href: user_path(diesel_proust_inactive))
+          should have_no_link(diesel_proust_deleted.name, href: user_path(diesel_proust_deleted))
         end
       end
       
@@ -503,9 +503,9 @@ describe "User pages" do
       it { should have_content(error_access_refused) }
     end
     
-    describe "tries to visit the profile of an inactive user" do
+    describe "tries to visit the profile of a deleted user" do
       before do
-        other_zero_user.update_attribute(:active, false)
+        other_zero_user.update_attribute(:role, :deleted)
         visit user_path(other_zero_user)
       end
       it { should have_content(error_access_refused) }
@@ -594,7 +594,7 @@ describe "User pages" do
         other_root.reload
       end
       specify do
-        expect(zero_user.active).to eq(false)
+        expect(zero_user.deleted?).to eq(true)
         expect(other_root.skin).to eq(0)
         expect(zero_user.followed_users.count).to eq(0)
         expect(zero_user.following_users.count).to eq(0)
@@ -652,8 +652,7 @@ describe "User pages" do
         zero_user.reload
       end
       specify do
-        expect(zero_user.admin).to eq(true)
-        expect(zero_user.root).to eq(false)
+        expect(zero_user.administrator?).to eq(true)
       end
     end
     

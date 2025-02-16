@@ -7,7 +7,7 @@ module SubmissionConcern
   
   # Check that current user is a corrector (or admin) that can correct @submission
   def user_can_correct_submission
-    unless signed_in? && (current_user.admin || (current_user.corrector && current_user.pb_solved?(@problem) && current_user != @submission.user))
+    unless signed_in? && (current_user.admin? || (current_user.corrector? && current_user.pb_solved?(@problem) && current_user != @submission.user))
       render 'errors/access_refused'
     end
   end

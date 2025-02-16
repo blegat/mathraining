@@ -20,7 +20,7 @@ var showFalse = function() {
 <!-- Cette page affiche toutes les soumissions que l'utilisateur peut voir pour le problème problem -->
 
 <!-- Si administrateur : peut voir toutes les soumissions correctes -->
-<% if current_user.admin %>
+<% if current_user.admin? %>
   <h3>Soumissions étoilées</h3>
   <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where(:status => :correct, :star => true).order('created_at') %>
   <% if submissions.empty? %>
@@ -123,7 +123,7 @@ var showFalse = function() {
 <% end %>
 
 <!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées, en attente ou plagiées -->
-<% if current_user.admin || (current_user.corrector && current_user.pb_solved?(problem)) %>
+<% if current_user.admin? || (current_user.corrector? && current_user.pb_solved?(problem)) %>
 
   <h3>Soumissions erronées</h3>
   <p id="btn_false"><%= link_to "Afficher les soumissions erronées", "javascript:showFalse()" %></p>

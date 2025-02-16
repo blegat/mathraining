@@ -351,11 +351,10 @@ FactoryGirl.define do
     last_policy_read true
     valid_name true
     factory :admin do
-      admin true
+      role :administrator
     end
     factory :root do
-      admin true
-      root true
+      role :root
     end
     factory :corrector do
       corrector true

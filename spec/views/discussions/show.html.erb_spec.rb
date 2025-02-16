@@ -20,7 +20,7 @@ describe "discussions/show.html.erb", type: :view, discussion: true do
     assign(:compteur, 1) # defined by controller
   end
   
-  context "if the other user is active" do    
+  context "if the other user is a normal user" do    
     it "renders the discussion page correctly" do
       render template: "discussions/show", locals: {params: {id: discussion.id}}
       expect(response).to render_template(:partial => "discussions/_menu")
@@ -33,8 +33,8 @@ describe "discussions/show.html.erb", type: :view, discussion: true do
     end
   end
   
-  context "if the other user is unactive" do
-    before { user2.update_attribute(:active, false) }
+  context "if the other user has been deleted" do
+    before { user2.update_attribute(:role, :deleted) }
     
     it "renders the discussion page correctly" do
       render template: "discussions/show", locals: {params: {id: discussion.id}}

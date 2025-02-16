@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
     email = params[:session][:email].downcase
     user = User.where(:email => email).first
     
-    if user && user.active && user.authenticate(params[:session][:password])
+    if user && !user.deleted? && user.authenticate(params[:session][:password])
       last_ban = user.last_ban
       if !last_ban.nil? && last_ban.end_time > DateTime.now
         flash[:danger] = last_ban.message

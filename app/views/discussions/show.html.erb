@@ -58,7 +58,7 @@ window.addEventListener("load", () => {
       <% end %>
       <h3>Discussion avec <%= other.linked_name %></h3>
       
-      <% if other.active %>
+      <% if !other.deleted? %>
 
         <%= form_for @tchatmessage, :html => { :multipart => true } do |f| %>
           <%= f.hidden_field :discussion_id, :value => @discussion.id %>

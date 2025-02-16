@@ -29,8 +29,8 @@ class Visitor < ActiveRecord::Base
     end
     
     # Compute number of users and admins connected yesterday
-    num_users = User.where("admin = ? AND last_connexion_date >= ?", false, yesterday).count
-    num_admins = User.where("admin = ? AND last_connexion_date >= ?", true, yesterday).count
+    num_users = User.where(:role => :student).where("last_connexion_date >= ?", yesterday).count
+    num_admins = User.where(:role => [:administrator, :root]).where("last_connexion_date >= ?", yesterday).count
     
     # Create new Visitor element
     Visitor.create(:date => yesterday, :nb_users => num_users, :nb_admins => num_admins)  
