@@ -19,6 +19,7 @@ class ApplicationController < ActionController::Base
   before_action :start_or_stop_benchmark
   before_action :load_global_variables
   before_action :check_under_maintenance
+  before_action :check_temporary_closure
   before_action :has_consent
   before_action :check_takentests
   
@@ -83,12 +84,14 @@ class ApplicationController < ActionController::Base
         redirect_to root_path if request.path != "/"
       end
     end
+  end
+  
+  # When closing the website for some reason
+  def check_temporary_closure
     if @temporary_closure
-      if !(signed_in? && (current_user_no_skin.admin? || current_user.corrector? || current_user.wepion?))
-        if request.path != "/" && request.path != "/sessions" && request.path != "/contact" && request.path != "/about" && !(request.path.size >= 10 && request.path[0..9] == "/pictures/") && !(request.path.size >= 17 && request.path[0..16] == "/privacypolicies/")
-          sign_out if signed_in?
-          redirect_to root_path 
-        end
+      if signed_in? && !(current_user_no_skin.admin? || current_user.corrector? || current_user.wepion?)
+        sign_out
+        redirect_to root_path
       end
       if request.path == "/"
         flash.now[:info] = @temporary_closure_message

@@ -36,7 +36,7 @@ describe "Static pages" do
     end
   end
   
-  describe "When site is temporary closed" do
+  describe "When website is temporary closed" do
     before { Globalvariable.create(:key => "temporary_closure", :value => true, :message => "Site fermé car j'en ai marre.") }
     
     describe "home page should show message" do
@@ -44,46 +44,60 @@ describe "Static pages" do
       it { should have_info_message("Site fermé car j'en ai marre.") }
     end
     
-    describe "scores page should redirect to home page" do
-      before { visit users_path }
-      it { should have_selector("h1", text: "Actualités") }
-    end
-    
-    describe "contact page should not redirect to home page" do
-      before { visit contact_path }
-      it { should have_selector("h1", text: "Contact") }
-    end
-    
-    describe "scores page should redirect to home page for a random user" do
+    describe "sign in should not work for a random user" do
       before do
-        sign_in_with_form user
         visit users_path
+        sign_in_with_form(user, false)
       end
-      it { should have_selector("h1", text: "Actualités") }
+      it do
+        should have_info_message("Site fermé car j'en ai marre.")
+        should have_selector("h1", text: "Scores")
+      end
     end
     
-    describe "forum page should not redirect to home page for a wepion user" do
+    describe "sign in should not work for a wepion user" do
       before do
-        sign_in_with_form user_wepion
-        visit subjects_path
+        visit users_path
+        sign_in_with_form(user_wepion, false)
       end
-      it { should have_selector("h1", text: "Forum") }
+      it do
+        should have_no_content("Site fermé car j'en ai marre.")
+        should have_selector("h1", text: "Scores")
+      end
     end
     
-    describe "account page should not redirect to home page for a corrector" do
+    describe "sign in should not work for a corrector" do
       before do
-        sign_in_with_form corrector
-        visit edit_user_path(corrector)
+        visit users_path
+        sign_in_with_form(corrector, false)
       end
-      it { should have_selector("h1", text: "Votre compte") }
+      it do
+        should have_no_content("Site fermé car j'en ai marre.")
+        should have_selector("h1", text: "Scores")
+      end
     end
     
-    describe "submission page should not redirect to home page for an admin" do
+    describe "sign in should not work for an admin" do
       before do
-        sign_in_with_form admin
-        visit allnew_submissions_path
+        visit users_path
+        sign_in_with_form(admin, false)
       end
-      it { should have_selector("h1", text: "Soumissions") }
+      it do
+        should have_no_content("Site fermé car j'en ai marre.")
+        should have_selector("h1", text: "Scores")
+      end
+    end
+  end
+  
+  describe "when website is temporary closed while visiting it" do
+    before do
+      sign_in user
+      Globalvariable.create(:key => "temporary_closure", :value => true, :message => "Site fermé car j'en ai marre.")
+      visit users_path
+    end
+    it do
+      should have_info_message("Site fermé car j'en ai marre.")
+      should have_selector("h1", text: "Actualités")
     end
   end
 

@@ -4,8 +4,8 @@ def sign_in(user)
   visit fast_sign_in_path(:id => user.id)
 end
 
-def sign_in_with_form(user)
-  visit root_path
+def sign_in_with_form(user, start_from_root_path = true)
+  visit root_path if start_from_root_path
   click_link "Connexion"
   fill_in "header_connect_email", with: user.email
   fill_in "header_connect_password", with: user.password
