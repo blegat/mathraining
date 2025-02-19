@@ -34,25 +34,27 @@ function confirmChange(user_id) {
 <% if @users_to_validate.size == 0 %>
   <p>Aucun nom à valider !</p>
 <% else %>
-  <table class="table table-bordered" style="width:100%; max-width:780px;">
-  <% @users_to_validate.each do |u| %>
-    <tr id="user<%= u.id %>">
-    <td style="width:200px;"><%= u.linked_name(1) %></td>
-    <td style="width:50px;" class="text-center"><a id="ok-<%= u.id %>" href="javascript:nameIsOk(<%= u.id %>, 0)">OK</a></td>
-    <td style="width:250px;"><a id="capitalize-<%= u.id %>" href="javascript:nameIsOk(<%= u.id %>, 1)">Capitalize</a> (<%= u.first_name.my_titleize %> <%= u.last_name.my_titleize %>)</td>
-    <td style="width:120px;"><a id="initials-<%= u.id %>" href="javascript:nameIsOk(<%= u.id %>, 2)">Initiales</a> (<%= u.first_name[0].upcase %>. <%= u.last_name[0].upcase %>.)</td>
-    <td style="width:80px;" class="text-center"><a id="change-<%= u.id %>" href="javascript:showForm(<%= u.id %>)">Changer</a></td>
-    <td style="width:80px;" class="text-center"><a id="pass-<%= u.id %>" href="javascript:hideUser(<%= u.id %>)">Passer</a></td>
-    </tr>
-    <tr id="form<%= u.id %>" style="display:none;"><td colspan="6">
-    <form class="form-inline">
-    <div class="input-group">
-    <input id="first-name-<%= u.id %>" class="form-control" type="text" value="<%= u.first_name %>">
-    <input id="last-name-<%= u.id %>" class="form-control" type="text" value="<%= u.last_name %>">
-    <a id="confirm-<%= u.id %>" class="btn btn-primary" href="javascript:confirmChange(<%= u.id %>)">OK</a>
-    </div>
-    </form>
-    </td></tr>
-  <% end %>
-  </table>
+  <div class="mb-3" style="width:100%; overflow-x:auto;">
+    <table class="table table-bordered mb-0" style="width:100%; max-width:780px;">
+    <% @users_to_validate.each do |u| %>
+      <tr id="user<%= u.id %>">
+        <td style="width:200px;"><%= u.linked_name(1) %></td>
+        <td style="width:50px;" class="text-center"><a id="ok-<%= u.id %>" href="javascript:nameIsOk(<%= u.id %>, 0)">OK</a></td>
+        <td style="width:250px;"><a id="capitalize-<%= u.id %>" href="javascript:nameIsOk(<%= u.id %>, 1)">Capitalize</a> (<%= u.first_name.my_titleize %> <%= u.last_name.my_titleize %>)</td>
+        <td style="width:120px;"><a id="initials-<%= u.id %>" href="javascript:nameIsOk(<%= u.id %>, 2)">Initiales</a> (<%= u.first_name[0].upcase %>. <%= u.last_name[0].upcase %>.)</td>
+        <td style="width:80px;" class="text-center"><a id="change-<%= u.id %>" href="javascript:showForm(<%= u.id %>)">Changer</a></td>
+        <td style="width:80px;" class="text-center"><a id="pass-<%= u.id %>" href="javascript:hideUser(<%= u.id %>)">Passer</a></td>
+      </tr>
+      <tr id="form<%= u.id %>" style="display:none;"><td colspan="6">
+        <form class="form-inline">
+        <div class="input-group">
+        <input id="first-name-<%= u.id %>" class="form-control" type="text" value="<%= u.first_name %>">
+        <input id="last-name-<%= u.id %>" class="form-control" type="text" value="<%= u.last_name %>">
+        <a id="confirm-<%= u.id %>" class="btn btn-primary" href="javascript:confirmChange(<%= u.id %>)">OK</a>
+        </div>
+        </form>
+      </td></tr>
+    <% end %>
+    </table>
+  </div>
 <% end %>
