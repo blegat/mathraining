@@ -58,6 +58,7 @@ class ApplicationController < ActionController::Base
     @under_maintenance = false
     @no_new_submission = false
     @limited_new_submissions = false
+    @temporary_closure = false
     Globalvariable.all.each do |g|
       if g.key == "under_maintenance"
         @under_maintenance = g.value
@@ -67,6 +68,9 @@ class ApplicationController < ActionController::Base
         @no_new_submission_message = g.message
       elsif g.key == "limited_new_submissions"
         @limited_new_submissions = g.value
+      elsif g.key == "temporary_closure"
+        @temporary_closure = g.value
+        @temporary_closure_message = g.message
       end
     end
   end
@@ -77,6 +81,17 @@ class ApplicationController < ActionController::Base
       flash[:info] = @under_maintenance_message
       if !signed_in? || !current_user_no_skin.root?
         redirect_to root_path if request.path != "/"
+      end
+    end
+    if @temporary_closure
+      if !(signed_in? && (current_user_no_skin.admin? || current_user.corrector? || current_user.wepion?))
+        if request.path != "/" && request.path != "/sessions" && request.path != "/contact" && request.path != "/about" && !(request.path.size >= 10 && request.path[0..9] == "/pictures/") && !(request.path.size >= 17 && request.path[0..16] == "/privacypolicies/")
+          sign_out if signed_in?
+          redirect_to root_path 
+        end
+      end
+      if request.path == "/"
+        flash[:info] = @temporary_closure_message
       end
     end
   end

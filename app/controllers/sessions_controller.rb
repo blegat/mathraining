@@ -13,6 +13,8 @@ class SessionsController < ApplicationController
       if !last_ban.nil? && last_ban.end_time > DateTime.now
         flash[:danger] = last_ban.message
         redirect_back(fallback_location: root_path)
+      elsif @temporary_closure && !user.admin? && !user.corrector? && !user.wepion?
+        redirect_to root_path
       elsif user.email_confirm
         remember_me = (params[:session][:remember_me].to_i == 1)
         sign_in(user, remember_me)
