@@ -91,7 +91,7 @@ class ApplicationController < ActionController::Base
         end
       end
       if request.path == "/"
-        flash[:info] = @temporary_closure_message
+        flash.now[:info] = @temporary_closure_message
       end
     end
   end
