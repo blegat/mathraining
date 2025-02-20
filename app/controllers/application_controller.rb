@@ -20,6 +20,7 @@ class ApplicationController < ActionController::Base
   before_action :load_global_variables
   before_action :check_under_maintenance
   before_action :check_temporary_closure
+  before_action :update_last_connexion_date
   before_action :has_consent
   before_action :check_takentests
   
@@ -93,8 +94,18 @@ class ApplicationController < ActionController::Base
         sign_out
         redirect_to root_path
       end
-      if request.path == "/"
+      if request.path == "/" || request.path == "/signup"
         flash.now[:info] = @temporary_closure_message
+      end
+    end
+  end
+  
+  # Update last connexion date of current user
+  def update_last_connexion_date
+    if signed_in?
+      today = Date.today
+      if today != current_user_no_skin.last_connexion_date
+        current_user_no_skin.update_attribute(:last_connexion_date, today)
       end
     end
   end

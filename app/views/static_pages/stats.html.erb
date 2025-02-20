@@ -594,7 +594,7 @@ Votre navigateur ne supporte pas les canvas.
   <% @visiteurs = Visitor.order("date").to_a %>
   
   <% premierjour = very_first_date %>
-  <% dernierjour = DateTime.now.in_time_zone.to_date - 1.day %>
+  <% dernierjour = Date.today - 1.day %>
   <% prev = premierjour %>
   <% if premierjour < dernierjour %>
     <% @visiteurs.each do |v| %>

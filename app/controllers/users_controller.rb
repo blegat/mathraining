@@ -148,7 +148,6 @@ class UsersController < ApplicationController
   # Create a user, i.e. register on the website (show the form)
   def new
     @user = User.new
-    flash.now[:info] = @temporary_closure_message if @temporary_closure
   end
 
   # Update a user (show the form)

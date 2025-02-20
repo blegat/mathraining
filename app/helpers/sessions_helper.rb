@@ -26,11 +26,6 @@ module SessionsHelper
     
     return if @current_user.nil?
     
-    today = DateTime.now.in_time_zone.to_date
-    if today != @current_user.last_connexion_date
-      @current_user.update_attribute(:last_connexion_date, today)
-    end
-    
     if @current_user.root? && @current_user.skin != 0
       @current_user_sk = User.find_by_id(@current_user.skin)
     else

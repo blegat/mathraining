@@ -48,7 +48,7 @@
 <% end %>
 <tr id="line_sub_<%= s.id %>" class="<%= color_class %>">
 <% if !show_num_waiting_days_from.empty? && !s.correct? %>
-  <% today = DateTime.now.in_time_zone.to_date %>
+  <% today = Date.today %>
   <% x = (today - s[show_num_waiting_days_from].in_time_zone.to_date).to_i %>
   <td class="sub-status <%= "fw-bold" if x >= 4 %> <%= "text-color-orange" if (x >= 4 and x <= 7) %> <%= "text-color-red" if x >= 8 %>">J-<%= x %></td>
 <% else %>

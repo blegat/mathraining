@@ -95,7 +95,7 @@ class Record < ActiveRecord::Base
   
   # Helper method to get the monday before the last monday
   def self.get_monday_before_last_monday
-    today = DateTime.now.in_time_zone.to_date
+    today = Date.today
     yesterday = today-1
     last_sunday = yesterday - yesterday.wday
     return last_sunday-6
