@@ -188,9 +188,9 @@ Votre navigateur ne supporte pas les canvas.
     ctx.fillStyle = (is_dark ? 'rgb(33, 37, 41)' : 'white');
     ctx.fill(); 
     
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     ctx.strokeStyle = (is_dark ? 'white' : 'black');
-    ctx.stroke();  
+    ctx.stroke();
     
     // Labels axe des X
     ctx.font = "12px Arial";
@@ -224,6 +224,12 @@ Votre navigateur ne supporte pas les canvas.
     <% end %>
     ctx.stroke();
     
+    // Avoid graph to go below zero in sharp angles:
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(W_offset-1, H_offset-1, W_size+2, H_size+2);
+    ctx.clip();
+            
     <% (0..2).each do |i| %>
       ctx.beginPath();
       ctx.moveTo(W_offset + W_internal_size, H_offset + H_size - H_internal_size * <%= graphs[i][num_intervals] / graph_maxi.to_f %>);
@@ -236,6 +242,8 @@ Votre navigateur ne supporte pas les canvas.
       <% end %>
       ctx.stroke()
     <% end %>
+    
+    ctx.restore();
   }
 
   window.addEventListener("resize", () => {
