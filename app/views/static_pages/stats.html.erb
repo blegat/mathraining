@@ -264,6 +264,7 @@ Votre navigateur ne supporte pas les canvas.
     ctx.fill();
     
     if (!batonnets) {
+      // Draw black rectangle before the graph
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = (is_dark ? 'white' : 'black');
       ctx.stroke();
@@ -343,189 +344,197 @@ Votre navigateur ne supporte pas les canvas.
     ctx.textAlign = 'center';
     ctx.lineWidth = 2;
     
+    var N = end_index - start_index + (batonnets ? 1 : 0);
+    var dd = Math.round(W_offset + W_internal_offset + W_internal_size * (end_index - start_index + 1)/N); // for batonnets only
+    var num_points = 0; // for !batonnets only
+    
+    if (!batonnets) {
+      // Avoid graph to go below zero in sharp angles:
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(W_offset-1, H_offset-1, W_size+2, H_size+2);
+      ctx.clip();
+            
+      ctx.beginPath();
+    }
+    
     while (encours >= start_index) {
-      var N = end_index - start_index + (batonnets ? 1 : 0);
-      var w = W_internal_offset + W_internal_size * (encours - start_index + (batonnets ? 0.5 : 0))/N;
       var huser = H_size - H_size * (val[encours] / maxi);
       if (val[encours] >= 0) {
         if (batonnets) {
-          var halfwidth = W_internal_size/(2*N);
-          var gg = Math.round(W_offset + w - halfwidth);
-          var dd = Math.round(W_offset + w + halfwidth);
+          var gg = Math.round(W_offset + W_internal_offset + W_internal_size * (encours - start_index)/N);
           ctx.fillRect(gg, H_offset + huser, dd - gg, H_size * (val[encours] / maxi));
+          dd = gg;
         }
         else {
-          if (premier) {
-            // Avoid graph to go below zero in sharp angles:
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(W_offset-1, H_offset-1, W_size+2, H_size+2);
-            ctx.clip();
-            
-            ctx.beginPath();
+          var w = W_internal_offset + W_internal_size * (encours - start_index)/N;
+          if (num_points == 0) {
             ctx.moveTo(W_offset + w, H_offset + huser);
-            premier = false;
           }
           else {
             ctx.lineTo(W_offset + w, H_offset + huser);
           }
+          num_points++;
         }
       }
       encours = encours  -1;
     }
     if (!batonnets) { 
-      if (!premier) {
+      if (num_points >= 2) {
         ctx.stroke();
-        ctx.restore();
-        <% if Puzzle.started_or_root(current_user) %>
-        if (couleur[0] == "o" && start_index <= 2867 && end_index >= 2868) {
-          ww = W_internal_offset + W_internal_size * (2867 - start_index)/N;
-          hh = H_size - H_size * (424 / maxi);
-          ww2 = W_internal_offset + W_internal_size * (2868 - start_index)/N;
-          hh2 = H_size - H_size * (952 / maxi);
-          delta = end_index - start_index;
-          
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(W_offset, H_offset, W_size, H_size);
-          ctx.clip();
-          
-          ctx.beginPath();
-          ctx.moveTo(W_offset + getX(1.1, 10), H_offset + getY(1.1, 10));
-          ctx.lineTo(W_offset + getX(1.5, 0), H_offset + getY(1.5, 0));
-          ctx.lineTo(W_offset + getX(1.9, 6), H_offset + getY(1.9, 6));
-          ctx.lineTo(W_offset + getX(2.3, 0), H_offset + getY(2.3, 0));
-          ctx.lineTo(W_offset + getX(2.7, 10), H_offset + getY(2.7, 10));
-          
-          ctx.moveTo(W_offset + getX(3, 0), H_offset + getY(3, 0));
-          ctx.lineTo(W_offset + getX(3.6, 10), H_offset + getY(3.6, 10));
-          ctx.lineTo(W_offset + getX(4.2, 0), H_offset + getY(4.2, 0));
-          ctx.moveTo(W_offset + getX(3.2, 10.0/3), H_offset + getY(3.2, 10.0/3));
-          ctx.lineTo(W_offset + getX(4, 10.0/3), H_offset + getY(4, 10.0/3));
-          
-          ctx.moveTo(W_offset + getX(7.9, 0), H_offset + getY(7.9, 0));
-          ctx.lineTo(W_offset + getX(7.9, 10), H_offset + getY(7.9, 10));
-          ctx.moveTo(W_offset + getX(8.9, 0), H_offset + getY(8.9, 0));
-          ctx.lineTo(W_offset + getX(8.9, 10), H_offset + getY(8.9, 10));
-          ctx.moveTo(W_offset + getX(7.9, 5), H_offset + getY(7.9, 5));
-          ctx.lineTo(W_offset + getX(8.9, 5), H_offset + getY(8.9, 5));
-          ctx.stroke();
-          
-          ctx.beginPath();
-          var x = getX(5.2, 5);
-          var y = getY(5.2, 5);
-          var x2 = getX(5.9, 5);
-          var y2 = getY(5.9, 5);
-          var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
-          var x3 = getX(5.2, 10);
-          var y3 = getY(5.2, 10);
-          var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
-          var angle = Math.atan((y2-y)/(x2-x));
-          ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
-          ctx.stroke();
-          
-          ctx.beginPath();
-          x = getX(6.8, 5);
-          y = getY(6.8, 5);
-          x2 = getX(7.3, 5);
-          y2 = getY(7.3, 5);
-          x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
-          x3 = getX(6.8, 10);
-          y3 = getY(6.8, 10);
-          y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
-          angle = Math.atan((y2-y)/(x2-x));
-          ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, Math.PI, false);
-          ctx.stroke();
-          
-          ctx.beginPath();
-          ctx.moveTo(W_offset + getX(7.3, 5), H_offset + getY(7.3, 5));
-          ctx.lineTo(W_offset + getX(7.3, 10), H_offset + getY(7.3, 10));
-          ctx.moveTo(W_offset + getX(6.3, 5), H_offset + getY(6.3, 5));
-          ctx.lineTo(W_offset + getX(6.3, 10), H_offset + getY(6.3, 10));
-          ctx.stroke();
-          
-          ctx.restore();
-        }
-        <% end %>
-        
-        if (couleur[0] == "o" && start_index <= 3725 && end_index >= 3726) {
-          ww = W_internal_offset + W_internal_size * (3725 - start_index)/N;
-          hh = H_size - H_size * (883 / maxi);
-          ww2 = W_internal_offset + W_internal_size * (3726 - start_index)/N;
-          hh2 = H_size - H_size * (80 / maxi);
-          delta = end_index - start_index;
-          
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(W_offset, H_offset, W_size, H_size);
-          ctx.clip();
-          
-          ctx.beginPath();
-          ctx.moveTo(W_offset + getX(7.8, 0), H_offset + getY(7.8, 0));
-          ctx.lineTo(W_offset + getX(7.8, 10), H_offset + getY(7.8, 10));
-          ctx.moveTo(W_offset + getX(8.8, 0), H_offset + getY(8.8, 0));
-          ctx.lineTo(W_offset + getX(8.8, 10), H_offset + getY(8.8, 10));
-          ctx.moveTo(W_offset + getX(7.8, 5), H_offset + getY(7.8, 5));
-          ctx.lineTo(W_offset + getX(8.8, 5), H_offset + getY(8.8, 5));
-          ctx.stroke();
-          
-          ctx.beginPath();
-          var x = getX(1.9, 5);
-          var y = getY(1.9, 5);
-          var x2 = getX(2.5, 5);
-          var y2 = getY(2.5, 5);
-          var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
-          var x3 = getX(1.9, 10);
-          var y3 = getY(1.9, 10);
-          var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
-          var angle = Math.atan((y2-y)/(x2-x));
-          ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
-          ctx.stroke();
-          
-          ctx.beginPath();
-          var x = getX(3.5, 5);
-          var y = getY(3.5, 5);
-          var x2 = getX(4.1, 5);
-          var y2 = getY(4.1, 5);
-          var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
-          var x3 = getX(3.5, 10);
-          var y3 = getY(3.5, 10);
-          var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
-          var angle = Math.atan((y2-y)/(x2-x));
-          ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
-          ctx.stroke();
-          
-          ctx.beginPath();
-          var x = getX(5.1, 5);
-          var y = getY(5.1, 5);
-          var x2 = getX(5.7, 5);
-          var y2 = getY(5.7, 5);
-          var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
-          var x3 = getX(5.1, 10);
-          var y3 = getY(5.1, 10);
-          var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
-          var angle = Math.atan((y2-y)/(x2-x));
-          ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
-          ctx.stroke();
-          
-          ctx.beginPath();
-          var x = getX(6.7, 5);
-          var y = getY(6.7, 5);
-          var x2 = getX(7.3, 5);
-          var y2 = getY(7.3, 5);
-          var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
-          var x3 = getX(6.7, 10);
-          var y3 = getY(6.7, 10);
-          var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
-          var angle = Math.atan((y2-y)/(x2-x));
-          ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
-          ctx.stroke();
-          
-          ctx.restore();
-        }
       }
+      ctx.restore();
     }
-    else {
+    
+    <% if Puzzle.started_or_root(current_user) %>
+    if (couleur[0] == "o" && start_index <= 2867 && end_index >= 2868) {
+      ww = W_internal_offset + W_internal_size * (2867 - start_index)/N;
+      hh = H_size - H_size * (424 / maxi);
+      ww2 = W_internal_offset + W_internal_size * (2868 - start_index)/N;
+      hh2 = H_size - H_size * (952 / maxi);
+      delta = end_index - start_index;
+      
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(W_offset, H_offset, W_size, H_size);
+      ctx.clip();
+      
+      ctx.beginPath();
+      ctx.moveTo(W_offset + getX(1.1, 10), H_offset + getY(1.1, 10));
+      ctx.lineTo(W_offset + getX(1.5, 0), H_offset + getY(1.5, 0));
+      ctx.lineTo(W_offset + getX(1.9, 6), H_offset + getY(1.9, 6));
+      ctx.lineTo(W_offset + getX(2.3, 0), H_offset + getY(2.3, 0));
+      ctx.lineTo(W_offset + getX(2.7, 10), H_offset + getY(2.7, 10));
+      
+      ctx.moveTo(W_offset + getX(3, 0), H_offset + getY(3, 0));
+      ctx.lineTo(W_offset + getX(3.6, 10), H_offset + getY(3.6, 10));
+      ctx.lineTo(W_offset + getX(4.2, 0), H_offset + getY(4.2, 0));
+      ctx.moveTo(W_offset + getX(3.2, 10.0/3), H_offset + getY(3.2, 10.0/3));
+      ctx.lineTo(W_offset + getX(4, 10.0/3), H_offset + getY(4, 10.0/3));
+      
+      ctx.moveTo(W_offset + getX(7.9, 0), H_offset + getY(7.9, 0));
+      ctx.lineTo(W_offset + getX(7.9, 10), H_offset + getY(7.9, 10));
+      ctx.moveTo(W_offset + getX(8.9, 0), H_offset + getY(8.9, 0));
+      ctx.lineTo(W_offset + getX(8.9, 10), H_offset + getY(8.9, 10));
+      ctx.moveTo(W_offset + getX(7.9, 5), H_offset + getY(7.9, 5));
+      ctx.lineTo(W_offset + getX(8.9, 5), H_offset + getY(8.9, 5));
+      ctx.stroke();
+      
+      ctx.beginPath();
+      var x = getX(5.2, 5);
+      var y = getY(5.2, 5);
+      var x2 = getX(5.9, 5);
+      var y2 = getY(5.9, 5);
+      var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
+      var x3 = getX(5.2, 10);
+      var y3 = getY(5.2, 10);
+      var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
+      var angle = Math.atan((y2-y)/(x2-x));
+      ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      x = getX(6.8, 5);
+      y = getY(6.8, 5);
+      x2 = getX(7.3, 5);
+      y2 = getY(7.3, 5);
+      x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
+      x3 = getX(6.8, 10);
+      y3 = getY(6.8, 10);
+      y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
+      angle = Math.atan((y2-y)/(x2-x));
+      ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, Math.PI, false);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(W_offset + getX(7.3, 5), H_offset + getY(7.3, 5));
+      ctx.lineTo(W_offset + getX(7.3, 10), H_offset + getY(7.3, 10));
+      ctx.moveTo(W_offset + getX(6.3, 5), H_offset + getY(6.3, 5));
+      ctx.lineTo(W_offset + getX(6.3, 10), H_offset + getY(6.3, 10));
+      ctx.stroke();
+      
+      ctx.restore();
+    }
+    <% end %>
+    
+    if (couleur[0] == "o" && start_index <= 3725 && end_index >= 3726) {
+      ww = W_internal_offset + W_internal_size * (3725 - start_index)/N;
+      hh = H_size - H_size * (883 / maxi);
+      ww2 = W_internal_offset + W_internal_size * (3726 - start_index)/N;
+      hh2 = H_size - H_size * (80 / maxi);
+      delta = end_index - start_index;
+      
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(W_offset, H_offset, W_size, H_size);
+      ctx.clip();
+      
+      ctx.beginPath();
+      ctx.moveTo(W_offset + getX(7.8, 0), H_offset + getY(7.8, 0));
+      ctx.lineTo(W_offset + getX(7.8, 10), H_offset + getY(7.8, 10));
+      ctx.moveTo(W_offset + getX(8.8, 0), H_offset + getY(8.8, 0));
+      ctx.lineTo(W_offset + getX(8.8, 10), H_offset + getY(8.8, 10));
+      ctx.moveTo(W_offset + getX(7.8, 5), H_offset + getY(7.8, 5));
+      ctx.lineTo(W_offset + getX(8.8, 5), H_offset + getY(8.8, 5));
+      ctx.stroke();
+          
+      ctx.beginPath();
+      var x = getX(1.9, 5);
+      var y = getY(1.9, 5);
+      var x2 = getX(2.5, 5);
+      var y2 = getY(2.5, 5);
+      var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
+      var x3 = getX(1.9, 10);
+      var y3 = getY(1.9, 10);
+      var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
+      var angle = Math.atan((y2-y)/(x2-x));
+      ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      var x = getX(3.5, 5);
+      var y = getY(3.5, 5);
+      var x2 = getX(4.1, 5);
+      var y2 = getY(4.1, 5);
+      var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
+      var x3 = getX(3.5, 10);
+      var y3 = getY(3.5, 10);
+      var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
+      var angle = Math.atan((y2-y)/(x2-x));
+      ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      var x = getX(5.1, 5);
+      var y = getY(5.1, 5);
+      var x2 = getX(5.7, 5);
+      var y2 = getY(5.7, 5);
+      var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
+      var x3 = getX(5.1, 10);
+      var y3 = getY(5.1, 10);
+      var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
+      var angle = Math.atan((y2-y)/(x2-x));
+      ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      var x = getX(6.7, 5);
+      var y = getY(6.7, 5);
+      var x2 = getX(7.3, 5);
+      var y2 = getY(7.3, 5);
+      var x_radius = Math.sqrt((x2-x)*(x2-x)+(y2-y)*(y2-y));
+      var x3 = getX(6.7, 10);
+      var y3 = getY(6.7, 10);
+      var y_radius = Math.sqrt((x3-x)*(x3-x)+(y3-y)*(y3-y));
+      var angle = Math.atan((y2-y)/(x2-x));
+      ctx.ellipse(W_offset + x, H_offset + y, x_radius, y_radius, angle, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      ctx.restore();
+    }
+    
+    if (batonnets) {
+      // Draw black rectangle after the graph
       ctx.beginPath();
       ctx.rect(W_offset, H_offset, W_size, H_size);
       ctx.lineWidth = 1.5;
@@ -732,7 +741,7 @@ Votre navigateur ne supporte pas les canvas.
     xxx_int = <%= ruby_to_javascript(xx_int) %>;
     xxx = <%= ruby_to_javascript_string(xx) %>;
     yyy = <%= ruby_to_javascript(yy) %>;
-    
+
     graphique[1] = [xxx_int, xxx, yyy, 'myCanvas2', 'blue'];
       
     yyy = <%= ruby_to_javascript(yy2) %>;
