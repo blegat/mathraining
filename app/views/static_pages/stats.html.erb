@@ -360,11 +360,10 @@ Votre navigateur ne supporte pas les canvas.
     
     while (encours >= start_index) {
       var huser = H_size - H_size * (val[encours] / maxi);
+      var gg = Math.round(W_offset + W_internal_offset + W_internal_size * (encours - start_index)/N); // for batonnets only
       if (val[encours] >= 0) {
         if (batonnets) {
-          var gg = Math.round(W_offset + W_internal_offset + W_internal_size * (encours - start_index)/N);
           ctx.fillRect(gg, H_offset + huser, dd - gg, H_size * (val[encours] / maxi));
-          dd = gg;
         }
         else {
           var w = W_internal_offset + W_internal_size * (encours - start_index)/N;
@@ -377,7 +376,8 @@ Votre navigateur ne supporte pas les canvas.
           num_points++;
         }
       }
-      encours = encours  -1;
+      dd = gg; // for batonnets only
+      encours--;
     }
     if (!batonnets) { 
       if (num_points >= 2) {
