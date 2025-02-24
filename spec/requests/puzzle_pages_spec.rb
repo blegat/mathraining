@@ -313,25 +313,25 @@ describe "Puzzle pages", puzzle: true do
           travel_to user.recup_password_date_limit + 3700.seconds
           visit recup_password_user_path(user, :key => user.key)
         end
-        it { should have_selector("h1", text: "Modifier votre mot de passe") }
+        it { should have_selector("h1", text: "Nouveau mot de passe") }
         
         describe "and writes the same password twice" do
           before do
-            fill_in "user_password", with: "foobar"
-            fill_in "Confirmation du mot de passe", with: "foobar"
+            fill_in "user_password", with: "Foobar1234"
+            fill_in "Confirmation du mot de passe", with: "Foobar1234"
             click_button "Modifier le mot de passe"
             user.reload
           end
           specify do
-            expect(page).to have_success_message("Votre mot de passe vient d'être modifié")
+            expect(page).to have_success_message("Votre mot de passe a été modifié avec succès")
             expect(user.recup_password_date_limit).to eq(nil)
           end
         end
         
         describe "and swaps two characters" do
           before do
-            fill_in "user_password", with: "foobar"
-            fill_in "Confirmation du mot de passe", with: "foobra"
+            fill_in "user_password", with: "Foobar1234"
+            fill_in "Confirmation du mot de passe", with: "Foobra1234"
             click_button "Modifier le mot de passe"
             user.reload
           end
@@ -343,8 +343,8 @@ describe "Puzzle pages", puzzle: true do
         
         describe "and replaces a character by another one" do
           before do
-            fill_in "user_password", with: "foobar"
-            fill_in "Confirmation du mot de passe", with: "foobzr"
+            fill_in "user_password", with: "Foobar123"
+            fill_in "Confirmation du mot de passe", with: "Foobzr123"
             click_button "Modifier le mot de passe"
             user.reload
           end
@@ -356,8 +356,8 @@ describe "Puzzle pages", puzzle: true do
         
         describe "and removes one character" do
           before do
-            fill_in "user_password", with: "foobar"
-            fill_in "Confirmation du mot de passe", with: "fobar"
+            fill_in "user_password", with: "Foobar4567"
+            fill_in "Confirmation du mot de passe", with: "Fobar4567"
             click_button "Modifier le mot de passe"
             user.reload
           end
@@ -369,8 +369,8 @@ describe "Puzzle pages", puzzle: true do
         
         describe "and adds one character" do
           before do
-            fill_in "user_password", with: "foobar"
-            fill_in "Confirmation du mot de passe", with: "fgoobar"
+            fill_in "user_password", with: "Foobar456"
+            fill_in "Confirmation du mot de passe", with: "Fgoobar456"
             click_button "Modifier le mot de passe"
             user.reload
           end

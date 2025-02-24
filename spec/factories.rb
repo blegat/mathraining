@@ -345,8 +345,9 @@ FactoryGirl.define do
     association :country
     year 1992
     rating 0
-    password "foobar"
-    password_confirmation "foobar"
+    password "Foobar22"
+    password_confirmation "Foobar22"
+    password_strength :strong_password
     consent_time DateTime.now
     last_policy_read true
     valid_name true

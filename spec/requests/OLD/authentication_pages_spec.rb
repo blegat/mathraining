@@ -22,7 +22,10 @@ describe "Authentication" do
     end
 
     describe "with valid information" do
-      before { sign_in_with_form(user) }
+      before do
+        sign_in_with_form(user)
+        user.reload
+      end
 
       specify do
         expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(user.remember_token)
@@ -30,6 +33,7 @@ describe "Authentication" do
         expect(page).to have_link("Compte", href: edit_user_path(user))
         expect(page).to have_link("Déconnexion", href: sessions_path)
         expect(page).to have_no_link("Connexion")
+        expect(user.strong_password?).to eq(true)
       end
       
       describe "followed by signout" do
@@ -76,6 +80,43 @@ describe "Authentication" do
       let!(:sanction) { FactoryGirl.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.month, duration: 14) }
       before { sign_in_with_form(user) }
       it { should have_content(user.fullname) } # Should be connected
+    end
+    
+    describe "to an account whose password is weak" do
+      before do
+        user.password = "TOTO124"
+        user.password_confirmation = "TOTO124"
+        user.password_strength = :unknown_password
+        user.save(validate: false)
+        sign_in_with_form(user)
+        user.reload
+      end
+      specify do
+        expect(user.weak_password?).to eq(true)
+        expect(page).to have_selector("h1", text: "Mot de passe trop faible")
+      end
+    end
+    
+    describe "to an account whose password is unknown" do # not really sign-in, but come back on a browser with correct remember_token
+      before do
+        user.unknown_password!
+        sign_in(user) # fast sign in (without specifying the password)
+      end
+      it do
+        should have_error_message("Une mise à jour concernant la sécurité des mots de passe a eu lieu. Merci de vous reconnecter.")
+        should have_content("Connexion")
+      end
+      
+      describe "and connects again" do
+        before do
+          sign_in_with_form(user)
+          user.reload
+        end
+        specify do
+          expect(page).to have_selector("h1", text: "Actualités")
+          expect(user.strong_password?).to eq(true)
+        end
+      end
     end
   end
   

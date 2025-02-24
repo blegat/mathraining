@@ -12,7 +12,7 @@
   <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !in_skin?) %>
 </div>
 
-<% if(modif && !@user.can_change_name) %>
+<% if modif && !@user.can_change_name %>
   <p>(Vous ne pouvez plus modifier votre nom car vous avez abusé de cette possibilité.)</p>
 <% elsif modif && !@user.root? %>
   <p>(Les changements de noms sont sujets à vérification, dans un souci d'uniformité entre utilisateurs. En cas d'abus, la possibilité de modifier votre nom vous sera retirée.)</p>
@@ -87,17 +87,7 @@
 </div>
 <% end %>
 
-<!-- Mot de passe -->
-<div class="mb-2">
-  <%= f.label :password, :class => "form-label" %>
-  <%= f.password_field :password, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && in_skin?), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
-</div>
-
-<!-- Confirmation mot de passe -->
-<div class="mb-2">
-  <%= f.label :password_confirmation, :class => "form-label" %>
-  <%= f.password_field :password_confirmation, :class => "form-control", :style => "width:250px;", :disabled => (signed_in? && in_skin?), :placeholder => "#{'Laissez vide pour ne pas changer' if modif}" %>
-</div>
+<%= render "password_inputs", f: f, show_placeholders: modif %>
 
 <% if !modif && !Rails.env.test? %>
   <%= render 'users/captcha' %>

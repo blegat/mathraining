@@ -20,7 +20,7 @@ describe "User pages" do
   let(:new_first_name)  { "New First Name" }
   let(:new_last_name)  { "New Last Name" }
   let(:new_name)  { "#{new_first_name} #{new_last_name}" }
-  let(:new_password) { "Tototototo" }
+  let(:new_password) { "Tototototo22" }
   
   describe "visitor" do
     before { visit signup_path }
@@ -50,8 +50,8 @@ describe "User pages" do
         # Il y a deux fois ces champs (pour la connexion et l"inscription)
         fill_in "user_email", with: "user@example.com"
         fill_in "Confirmation de l'adresse e-mail", with: "user@example.com"
-        fill_in "user_password", with: "foobar"
-        fill_in "Confirmation du mot de passe", with: "foobar"
+        fill_in "user_password", with: "Foobar456"
+        fill_in "Confirmation du mot de passe", with: "Foobar456"
         check "consent1"
         check "consent2"
       end
@@ -156,7 +156,7 @@ describe "User pages" do
             sign_in zero_user
             visit recup_password_user_path(zero_user, :key => zero_user.key)
           end
-          it { should have_selector("h1", text: "Modifier votre mot de passe") }
+          it { should have_selector("h1", text: "Nouveau mot de passe") }
         end
         
         describe "and visits the reset page" do
@@ -164,7 +164,7 @@ describe "User pages" do
             zero_user.reload
             visit recup_password_user_path(zero_user, :key => zero_user.key)
           end
-          it { should have_selector("h1", text: "Modifier votre mot de passe") }
+          it { should have_selector("h1", text: "Nouveau mot de passe") }
           
           describe "and sets an empty password" do
             before { click_button "Modifier le mot de passe" }
@@ -206,7 +206,7 @@ describe "User pages" do
               fill_in "Confirmation du mot de passe", with: new_password
               click_button "Modifier le mot de passe"
             end
-            it { should have_success_message("Votre mot de passe vient d'être modifié") }
+            it { should have_success_message("Votre mot de passe a été modifié avec succès") }
             
             describe "and tries to sign in with new password" do
               before do
@@ -517,6 +517,50 @@ describe "User pages" do
         visit groups_users_path
       end
       it { should have_content(error_access_refused) }
+    end
+    
+    describe "has a weak password" do
+      before do
+        zero_user.weak_password!
+        visit subjects_path
+      end
+      it { should have_selector("h1", text: "Mot de passe trop faible") }
+      
+      describe "and does not fill the password" do
+        before { click_button "Modifier le mot de passe" }
+        specify do
+          expect(page).to have_error_message("Mot de passe est vide")
+          expect(page).to have_selector("h1", text: "Mot de passe trop faible")
+          expect(zero_user.weak_password?).to eq(true)
+        end
+      end
+      
+      describe "and enters a weak password again" do
+        before do
+          fill_in "user_password", with: "foobar456"
+          fill_in "Confirmation du mot de passe", with: "foobar456"
+          click_button "Modifier le mot de passe"
+        end
+        specify do
+          expect(page).to have_error_message("Mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule et un chiffre")
+          expect(page).to have_selector("h1", text: "Mot de passe trop faible")
+          expect(zero_user.weak_password?).to eq(true)
+        end
+      end
+      
+      describe "and enters a strong password" do
+        before do
+          fill_in "user_password", with: "Foobar456"
+          fill_in "Confirmation du mot de passe", with: "Foobar456"
+          click_button "Modifier le mot de passe"
+          zero_user.reload
+        end
+        specify do
+          expect(page).to have_success_message("Votre mot de passe a été modifié avec succès")
+          expect(page).to have_selector("h1", text: "Actualités")
+          expect(zero_user.strong_password?).to eq(true)
+        end
+      end
     end
   end
 

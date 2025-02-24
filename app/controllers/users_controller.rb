@@ -1,7 +1,7 @@
 #encoding: utf-8
 class UsersController < ApplicationController
   before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed, :unset_follow_message, :search]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :follow, :unfollow, :set_follow_message, :set_can_change_name, :unset_can_change_name]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :follow, :unfollow, :set_follow_message, :set_can_change_name, :unset_can_change_name, :improve_password]
   before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
   before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
@@ -367,11 +367,25 @@ class UsersController < ApplicationController
         render 'recup_password'
       elsif @user.update(params.require(:user).permit(:password, :password_confirmation))
         @user.update(:key => SecureRandom.urlsafe_base64, :recup_password_date_limit => nil)
-        flash[:success] = "Votre mot de passe vient d'être modifié. Vous pouvez maintenant vous connecter à votre compte."
+        flash[:success] = "Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter à votre compte."
         redirect_to root_path
       else
         render 'recup_password'
       end
+    end
+  end
+  
+  # Password too weak: check and set new password
+  def improve_password
+    if (params[:user][:password].nil? || params[:user][:password].length == 0)
+      current_user_no_skin.errors.add(:base, "Mot de passe est vide")
+      render 'set_strong_password'
+    elsif current_user_no_skin.update(params.require(:user).permit(:password, :password_confirmation))
+      current_user_no_skin.strong_password!
+      flash[:success] = "Votre mot de passe a été modifié avec succès."
+      redirect_to root_path
+    else
+      render 'set_strong_password'
     end
   end
 

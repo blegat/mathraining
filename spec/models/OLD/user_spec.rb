@@ -32,6 +32,7 @@
 #  corrector_color           :string
 #  corrector                 :boolean          default(FALSE)
 #  role                      :integer          default("student")
+#  password_strength         :integer          default("unknown_password")
 #
 require "spec_helper"
 

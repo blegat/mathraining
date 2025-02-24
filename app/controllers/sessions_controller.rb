@@ -7,27 +7,30 @@ class SessionsController < ApplicationController
   def create
     email = params[:session][:email].downcase
     user = User.where(:email => email).first
-    
-    if user && !user.deleted? && user.authenticate(params[:session][:password])
+    password = params[:session][:password]
+    if user && !user.deleted? && user.authenticate(password)
       last_ban = user.last_ban
       if !last_ban.nil? && last_ban.end_time > DateTime.now
         flash[:danger] = last_ban.message
-        redirect_back(fallback_location: root_path)
       elsif @temporary_closure && !user.admin? && !user.corrector? && !user.wepion?
         flash[:info] = @temporary_closure_message
-        redirect_back(fallback_location: root_path)
-      elsif user.email_confirm
+      elsif !user.email_confirm
+        flash[:danger] = "Vous devez activer votre compte via l'e-mail qui vous a été envoyé."
+      else
         remember_me = (params[:session][:remember_me].to_i == 1)
         sign_in(user, remember_me)
-        redirect_back(fallback_location: root_path)
-      else
-        flash[:danger] = "Vous devez activer votre compte via l'e-mail qui vous a été envoyé."
-        redirect_back(fallback_location: root_path)
+        if user.unknown_password?
+          if password.size >= 8 && password =~ /[A-Z]/ && password =~ /[a-z]/ && password =~ /[0-9]/
+            user.strong_password!
+          else
+            user.weak_password!
+          end
+        end
       end
     else
       flash[:danger] = "Email ou mot de passe invalide."
-      redirect_back(fallback_location: root_path)
     end
+    redirect_back(fallback_location: root_path)
   end
   
   # Create a session, to go faster than always filling the form (NOT IN PRODUCTION)

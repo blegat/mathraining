@@ -228,6 +228,7 @@ Rails.application.routes.draw do
   post '/password_forgotten', to: 'users#password_forgotten'
   put '/set_follow_message', to: "users#set_follow_message"
   get '/unset_follow_message', to: "users#unset_follow_message" # Get because it should be doable via email link
+  patch '/improve_password', to: 'users#improve_password'
   
   # Privacy policies
   resources :privacypolicies, only: [:index, :show, :new, :edit, :update, :destroy] do

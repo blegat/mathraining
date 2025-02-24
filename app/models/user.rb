@@ -34,6 +34,7 @@
 #  corrector_color           :string
 #  corrector                 :boolean          default(FALSE)
 #  role                      :integer          default("student")
+#  password_strength         :integer          default("unknown_password")
 #
 include ERB::Util
 
@@ -80,12 +81,27 @@ class ColorValidator < ActiveModel::Validator
   end
 end
 
+class MyPasswordValidator < ActiveModel::Validator
+  def validate(record)
+    value = record.password
+    return if value.nil? || value.empty?
+    
+    unless value =~ /[A-Z]/ && value =~ /[a-z]/ && value =~ /[0-9]/
+      record.errors.add(:base, "Mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule et un chiffre")
+    end
+  end
+end
+
 class User < ActiveRecord::Base
 
   enum role: {:deleted       => 0, # deleted account
               :student       => 1, # simple student (possibly a corrector)
               :administrator => 2, # admin but not root
               :root          => 3} # root (webmaster)
+              
+  enum password_strength: {:unknown_password => 0,
+                           :weak_password    => 1,
+                           :strong_password  => 2}
 
   # BELONGS_TO, HAS_MANY
 
@@ -148,10 +164,11 @@ class User < ActiveRecord::Base
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }, on: :create
   validates :email_confirmation, presence: true, on: :create
-  validates :password, length: { minimum: 6 }, on: :create
-  validates :password, length: { minimum: 6 }, on: :update, allow_blank: true
-  validates :password_confirmation, presence: true, on: :create
   validates_confirmation_of :email, case_sensitive: false
+  validates :password, length: { minimum: 8, maximum: 128 }, on: :create
+  validates :password, length: { minimum: 8, maximum: 128 }, on: :update, allow_blank: true
+  validates_with MyPasswordValidator
+  validates :password_confirmation, presence: true, on: :create
   validates :year, presence: true
   validates_with ColorValidator
   

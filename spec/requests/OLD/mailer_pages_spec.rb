@@ -15,8 +15,8 @@ feature 'Emailer' do
       # Il y a deux fois ces champs (pour la connexion et l"inscription)
       page.all(:fillable_field, "Adresse e-mail").last.set("jean@biboux.com")
       fill_in "Confirmation de l'adresse e-mail", with: "jean@biboux.com"
-      page.all(:fillable_field, "Mot de passe").last.set("motdepasse")
-      fill_in "Confirmation du mot de passe", with: "motdepasse"
+      page.all(:fillable_field, "Mot de passe").last.set("MotDePasse123")
+      fill_in "Confirmation du mot de passe", with: "MotDePasse123"
       check "consent1"
       check "consent2"
       click_button "Créer mon compte"
