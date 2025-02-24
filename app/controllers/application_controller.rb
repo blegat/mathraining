@@ -95,9 +95,6 @@ class ApplicationController < ActionController::Base
         sign_out
         redirect_to root_path
       end
-      if request.path == "/" || request.path == "/signup"
-        flash.now[:info] = @temporary_closure_message
-      end
     end
   end
   
