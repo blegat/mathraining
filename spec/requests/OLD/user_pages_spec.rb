@@ -23,7 +23,7 @@ describe "User pages" do
   let(:new_password) { "Tototototo22" }
   
   describe "visitor" do
-    before { visit signup_path }
+    before { visit signup_path(:hide_code_of_conduct => 1) }
 
     describe "signup with invalid information" do
       specify { expect { click_button "Créer mon compte" }.not_to change(User, :count) }
@@ -869,6 +869,61 @@ describe "User pages" do
   end
   
   # -- TESTS THAT REQUIRE JAVASCRIPT --
+  
+  describe "visitor", :js => true do
+    describe "accepts code of conduct" do
+      before do
+        visit signup_path
+        check "code1"
+        check "code2"
+        check "code3"
+        check "code4"
+        check "code5"
+        click_button "Accepter et poursuivre l'inscription"
+        check "consent1"
+        check "consent2"
+      end
+      it { should have_button "Créer mon compte" }
+    end
+    
+    describe "accepts code of conduct without reading" do
+      before do
+        visit signup_path
+        check "code1"
+        check "code3"
+        check "code4"
+        check "code5"
+      end
+      it { should have_button("Accepter et poursuivre l'inscription", disabled: true) }
+    end
+  end
+  
+  describe "user not having accepted the code yet", :js => true do
+    before do
+      zero_user.update_attribute(:accepted_code_of_conduct, false)
+      sign_in zero_user
+    end
+    it do
+      should have_content("Code de conduite")
+      should have_button("Accepter les conditions", disabled: true)
+    end
+    
+    describe "and accepts it" do
+      before do
+        check "code1"
+        check "code2"
+        check "code3"
+        check "code4"
+        check "code5"
+        click_button "Accepter les conditions"
+        zero_user.reload
+      end
+      specify do
+        expect(page).to have_selector("h1", text: "Actualités")
+        expect(zero_user.accepted_code_of_conduct).to eq(true)
+      end
+    end
+  end
   
   describe "root", :js => true do
     before { sign_in root }

@@ -1,0 +1,19 @@
+<script type="text/javascript">
+function checkChecked() {
+  var c1 = document.getElementById("consent1").checked;
+  var c2 = document.getElementById("consent2").checked;
+  var bt = document.getElementById("send-button");
+  if(c1 && c2) {
+    bt.disabled = false;
+  }
+  else {
+    bt.disabled = true;
+  }
+}
+</script>
+
+<% provide(:title, 'Code de conduite') %>
+
+<h1><%= title_1("Code de conduite") %></h1>
+
+<%= render "users/code_of_conduct", context: "existing_user" %>

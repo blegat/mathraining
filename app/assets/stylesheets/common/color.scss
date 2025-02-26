@@ -30,8 +30,15 @@
   color: red!important;
 }
 
-.text-color-orange {
-  color: orange!important;
+[data-bs-theme="light"] {
+  .text-color-orange {
+    color: #f09b00!important;
+  }
+}
+[data-bs-theme="dark"] {
+  .text-color-orange {
+    color: orange!important;
+  }
 }
 
 [data-bs-theme="light"] {

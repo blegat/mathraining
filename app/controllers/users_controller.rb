@@ -1,7 +1,9 @@
 #encoding: utf-8
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:edit, :notifs, :groups, :read_legal, :followed, :unset_follow_message, :search]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :follow, :unfollow, :set_follow_message, :set_can_change_name, :unset_can_change_name, :improve_password]
+  skip_before_action :user_has_some_actions_to_take, only: [:improve_password, :accept_legal, :accept_code_of_conduct]
+  
+  before_action :signed_in_user, only: [:edit, :notifs, :groups, :followed, :unset_follow_message, :search]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :accept_legal, :accept_code_of_conduct, :follow, :unfollow, :set_follow_message, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :improve_password]
   before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
   before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
@@ -148,6 +150,7 @@ class UsersController < ApplicationController
   # Create a user, i.e. register on the website (show the form)
   def new
     flash.now[:info] = @temporary_closure_message if @temporary_closure
+    @show_code_of_conduct = !(Rails.env.test? && params.has_key?("hide_code_of_conduct"))
     @user = User.new
   end
 
@@ -163,13 +166,14 @@ class UsersController < ApplicationController
     @user.email_confirm = false
     @user.adapt_name # Remove white spaces at start and end, and add '.' if needed
     
+    @show_code_of_conduct = false
     if !params.has_key?("consent1") || !params.has_key?("consent2")
       flash.now[:danger] = "Vous devez accepter notre politique de confidentialité pour pouvoir créer un compte."
       render 'new'
     elsif (Rails.env.test? || Rails.env.development? || verify_recaptcha(:model => @user, :message => "Captcha incorrect")) && @user.save
       UserMailer.registration_confirmation(@user.id).deliver
       
-      @user.update(:consent_time => DateTime.now, :last_policy_read => true)
+      @user.update(:consent_time => DateTime.now, :last_policy_read => true, :accepted_code_of_conduct => true)
       
       flash[:info] = "Lien (développement uniquement) : localhost:3000/activate?id=#{@user.id}&key=#{@user.key}" if !Rails.env.production?
       flash[:success] = "Vous allez recevoir un e-mail de confirmation d'ici quelques minutes pour activer votre compte. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver. Vous avez 7 jours pour confirmer votre inscription. Si vous rencontrez un problème, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas de la page)."
@@ -475,10 +479,6 @@ class UsersController < ApplicationController
     respond_to :js
   end
   
-  # Page to read last privacy policy
-  def read_legal
-  end
-  
   # Accept last privacy policy
   def accept_legal
     if !params.has_key?("consent1") || !params.has_key?("consent2")
@@ -488,6 +488,12 @@ class UsersController < ApplicationController
       current_user_no_skin.update(:last_policy_read => true, :consent_time => DateTime.now)
       redirect_to root_path
     end
+  end
+  
+  # Accept code of conduct
+  def accept_code_of_conduct
+    current_user_no_skin.update_attribute(:accepted_code_of_conduct, true)
+    redirect_to root_path
   end
 
   # Start following a user

@@ -21,8 +21,7 @@ class ApplicationController < ActionController::Base
   before_action :check_under_maintenance
   before_action :check_temporary_closure
   before_action :update_last_connexion_date
-  before_action :has_consent
-  before_action :has_strong_password
+  before_action :user_has_some_actions_to_take
   before_action :check_takentests
   
   # Called from CustomCSRFStrategy when an invalid token is detected
@@ -108,34 +107,32 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  # Ask user for a new password if current one is too weak
-  def has_strong_password
-    if signed_in? 
-      if current_user_no_skin.weak_password?
-        pp = request.fullpath.to_s
-        if pp != "/set_strong_password" && pp != "/improve_password" && pp != "/last_policy" && !(pp.size >= 16 && pp[0..15] == "/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/sessions" && (Rails.env.production? || !pp.include?("/fast_sign_in"))
-          render 'users/set_strong_password'
-        end
-      elsif current_user_no_skin.unknown_password?
-        current_user_no_skin.update_remember_token # Change remember_token to force recreating the cookie with http_only
-        sign_out # Not mandatory, but remember current remember_token
-        flash[:danger] = "Une mise à jour concernant la sécurité des mots de passe a eu lieu. Merci de vous reconnecter."
-        redirect_to root_path
+  # Users sometimes need to take actions after connecting (accept legal conditions, improving password...)
+  def user_has_some_actions_to_take
+    return unless signed_in?
+    
+    # Force user to have a strong password
+    if current_user_no_skin.weak_password?
+      render 'users/set_strong_password' and return
+    elsif current_user_no_skin.unknown_password?
+      current_user_no_skin.update_remember_token # Change remember_token to force recreating the cookie with http_only
+      sign_out # Not mandatory, but remember current remember_token
+      flash[:danger] = "Une mise à jour concernant la sécurité des mots de passe a eu lieu. Merci de vous reconnecter."
+      redirect_to root_path and return
+    end
+    
+    # Ask user to consent to the last policy, if not done yet
+    if !current_user_no_skin.last_policy_read
+      if Privacypolicy.where(:online => true).count > 0
+        render 'users/read_legal' and return
+      else # If no policy at all, we automatically mark it as read
+        current_user_no_skin.update(:last_policy_read => true, :consent_time => DateTime.now)
       end
     end
-  end
-  
-  # Check that the user consented to the last policy
-  def has_consent
-    if signed_in? && !current_user_no_skin.last_policy_read && !current_user_no_skin.weak_password?
-      pp = request.fullpath.to_s
-      if pp != "/accept_legal" && pp != "/last_policy" && !(pp.size >= 16 && pp[0..15] == "/privacypolicies") && pp != "/about" && pp != "/contact" && pp != "/sessions" && (Rails.env.production? || !pp.include?("/fast_sign_in"))
-        if Privacypolicy.where(:online => true).count > 0
-          render 'users/read_legal'
-        else # If no policy at all, we automatically mark it as read
-          current_user_no_skin.update(:last_policy_read => true, :consent_time => DateTime.now)
-        end
-      end
+    
+    # Ask user to accept code of conduct, if not done yet
+    if !current_user_no_skin.accepted_code_of_conduct
+      render 'users/read_code_of_conduct' and return
     end
   end
   

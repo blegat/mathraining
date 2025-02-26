@@ -1,0 +1,60 @@
+<script type="text/javascript">
+function checkCode() {
+    var c1 = document.getElementById("code1").checked;
+    var c2 = document.getElementById("code2").checked;
+    var c3 = document.getElementById("code3").checked;
+    var c4 = document.getElementById("code4").checked;
+    var c5 = document.getElementById("code5").checked;
+    var bt = document.getElementById("code-button");
+    bt.disabled = !(c1 && c2 && c3 && c4 && c5);
+}
+</script>
+
+<p>Mathraining est un site interactif sur lequel il est possible d'écrire des solutions à des problèmes pour les faire corriger par des correcteurs bénévoles. Ceux-ci prennent énormément de leur temps libre pour apporter un retour constructif aux autres étudiants. Nous vous demandons de respecter leur travail en prenant connaissance des conditions suivantes et en les acceptant.</p>
+    
+<div class="form-check mb-3">
+<label class="form-check-label">
+  <%= check_box_tag "code1", "1", false, :class => "form-check-input", :onchange => "javascript:checkCode();" %>
+  Je ne créerai pas de comptes multiples sur Mathraining.
+  <% if context == "existing_user" %>
+    Si je possède déjà plusieurs comptes, alors je m'engage à ne plus en utiliser qu'un seul.
+  <% end %>
+</label>
+</div>
+
+<div class="form-check mb-3">
+<label class="form-check-label">
+  <%= check_box_tag "code2", "1", false, :class => "form-check-input", :onchange => "javascript:checkCode();" %>
+  Je ne soumettrai pour correction que des solutions originales, c'est-à-dire que j'aurai entièrement trouvées et écrites moi-même. En particulier, je n'aurai pas recours à une intelligence artificielle.
+</label>
+</div>
+
+<div class="form-check mb-3">
+<label class="form-check-label">
+  <%= check_box_tag "code3", "1", false, :class => "form-check-input", :onchange => "javascript:checkCode();" %>
+  Je ne divulguerai pas les réponses des exercices ou des problèmes à d'autres personnes qui ne les auraient pas encore résolus.
+</label>
+</div>
+
+<div class="form-check mb-3">
+<label class="form-check-label">
+  <%= check_box_tag "code4", "1", false, :class => "form-check-input", :onchange => "javascript:checkCode();" %>
+  Je resterai courtois envers les correcteurs, en toutes circonstances, même si je suis en désaccord avec eux.
+</label>
+</div>
+
+<div class="form-check mb-3">
+<label class="form-check-label">
+  <%= check_box_tag "code5", "1", false, :class => "form-check-input", :onchange => "javascript:checkCode();" %>
+  J'ai conscience que mon compte peut être suspendu temporairement, voire supprimé définitivement, si je ne respecte pas les conditions ci-dessus.
+</label>
+</div>
+
+<% if context == "new_user" %>
+  <button id="code-button" onclick="javascript:acceptCode();" class="btn btn-primary mb-3" disabled>Accepter et poursuivre l'inscription</button>
+<% else %>
+  <%= form_tag accept_code_of_conduct_path, :method => :put do %>
+    <%= submit_tag "Accepter les conditions", :id => "code-button", :class => "btn btn-primary mb-3", :disabled => true %>
+  <% end %>
+<% end %>
+<script>checkCode()</script>

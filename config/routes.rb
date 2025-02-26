@@ -221,6 +221,7 @@ Rails.application.routes.draw do
   # Paths relative to current user
   put '/leave_skin', to: 'users#leave_skin'
   patch '/accept_legal', to: 'users#accept_legal'
+  put '/accept_code_of_conduct', to: 'users#accept_code_of_conduct'
   get '/notifs', to: 'users#notifs'
   get '/signup', to: 'users#new'
   get '/activate', to: 'users#activate'

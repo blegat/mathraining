@@ -1,5 +1,7 @@
 #encoding: utf-8
 class SessionsController < ApplicationController
+  skip_before_action :user_has_some_actions_to_take, only: [:destroy, :fast_create]
+
   before_action :signed_in_user_danger, only: [:destroy]
   before_action :signed_out_user, only: [:create]
 
@@ -40,7 +42,7 @@ class SessionsController < ApplicationController
       user = User.find_by_id(params[:id].to_i)
       sign_in(user, false) unless user.nil?
     end
-    redirect_back(fallback_location: root_path)
+    redirect_to root_path
   end
 
   # Delete a session, i.e. sign out

@@ -7,7 +7,7 @@ feature 'Emailer' do
     
     before do
       clear_emails
-      visit new_user_path
+      visit signup_path(:hide_code_of_conduct => 1)
       fill_in "Prénom", with: "Jean"
       fill_in "Nom", with: "Biboux"
       select country.name, from: "Pays"

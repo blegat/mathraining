@@ -350,6 +350,7 @@ FactoryGirl.define do
     password_strength :strong_password
     consent_time DateTime.now
     last_policy_read true
+    accepted_code_of_conduct true
     valid_name true
     factory :admin do
       role :administrator
