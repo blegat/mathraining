@@ -35,6 +35,7 @@
 #  corrector                 :boolean          default(FALSE)
 #  role                      :integer          default("student")
 #  password_strength         :integer          default("unknown_password")
+#  accepted_code_of_conduct  :boolean          default(FALSE)
 #
 include ERB::Util
 
@@ -121,6 +122,7 @@ class User < ActiveRecord::Base
   has_many :takentests, dependent: :destroy
   has_many :puzzleattempts, dependent: :destroy
   has_many :sanctions, dependent: :destroy
+  has_many :savedreplies, dependent: :destroy
   
   has_many :links
   has_many :discussions, through: :links # dependent: :destroy does NOT destroy the associated discussions, but only the link!

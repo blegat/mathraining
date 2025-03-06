@@ -3,14 +3,22 @@
 <% p = @submission.problem %>
 <% listeprob = Array.new %>
 <% listeprob.push(["Générique", 0]) %>
-<% listeprob.push([p.section.name, -p.section_id]) %>
-<% listeprob.push(["Problème ##{p.number}",p.id]) %>
+<% listeprob.push(["Générique (personnelle)", -1]) %>
+<% listeprob.push([p.section.name, -1-p.section_id]) %>
+<% listeprob.push(["Problème ##{p.number}", p.id]) %>
 
 <!-- Problème -->
 <div class="mb-2">
   <%= f.label :problem_id, :class => "form-label" %>
-  <% selected = -@savedreply.section_id %>
-  <% selected = @savedreply.problem_id unless @savedreply.problem_id == 0 %>
+  <% if @savedreply.problem_id > 0 %>
+    <% selected = @savedreply.problem_id %>
+  <% elsif @savedreply.section_id > 0 %>
+    <% selected = -1-@savedreply.section_id %>
+  <% elsif @savedreply.user_id > 0 %>
+    <% selected = -1 %>
+  <% else %>
+    <% selected = 0 %>
+  <% end %>
   <%= f.select(:problem_id, options_for_select(listeprob, selected), {}, { :class => "form-select", :style => "width:100%; max-width:400px;" }) %>
 </div>
 

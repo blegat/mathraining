@@ -5,7 +5,7 @@
     <div><%= bbcode(final_content) %></div>
     <div><span class="badge text-bg-secondary" title="Cette réponse <%= r.nb_uses == 0 ? "n'a jamais été utilisée" : "a été utilisée #{r.nb_uses} fois" %>."><%= r.nb_uses %></span></div>
   </div>
-  <% if current_user.root? %>
+  <% if current_user.root? || r.user == current_user %>
     <div class="card-body text-center pt-0">
       <%= link_to "Modifier", edit_savedreply_path(r, :sub => @submission) %> |
       <%= link_to "Supprimer", r, :method => :delete, :class => "text-color-red", data: (Rails.env.test? ? {} : { confirm: "Êtes vous #{current_user.sure} de vouloir supprimer cette réponse ?" })  %>

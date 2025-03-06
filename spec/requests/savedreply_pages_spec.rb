@@ -177,6 +177,7 @@ describe "Savedreply pages", savedreply: true do
         expect(page).to have_content(submission.content)
         expect(section.savedreplies.order(:id).last.content).to eq("(Proposé par #{admin.name})\n\n" + newcontent)
         expect(section.savedreplies.order(:id).last.problem_id).to eq(0)
+        expect(section.savedreplies.order(:id).last.user_id).to eq(0)
         expect(section.savedreplies.order(:id).last.approved).to eq(false)
       end
       
@@ -195,6 +196,42 @@ describe "Savedreply pages", savedreply: true do
           expect(page).to have_content(submission.content)
           expect(savedreply.content).to eq(newcontent) # (Proposé par...) has been removed in edit
           expect(savedreply.approved).to eq(true)
+        end
+      end
+    end
+    
+    describe "creates a personal saved reply" do
+      before do
+        visit new_savedreply_path(:sub => submission)
+        select "Générique (personnelle)", from: "Problème"
+        fill_in "Réponse", with: newcontent
+        click_button "Créer"
+      end
+      specify do
+        expect(page).to have_success_message("Réponse ajoutée")
+        expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
+        expect(page).to have_content(submission.content)
+        expect(admin.savedreplies.order(:id).last.content).to eq(newcontent) # No "(Proposé par...) for a personal savedreply
+        expect(admin.savedreplies.order(:id).last.problem_id).to eq(0)
+        expect(admin.savedreplies.order(:id).last.section_id).to eq(0)
+        expect(admin.savedreplies.order(:id).last.approved).to eq(true)
+      end
+      
+      describe "and updates it to be non-personal" do
+        let(:savedreply) { admin.savedreplies.order(:id).last }
+        before do
+          visit edit_savedreply_path(savedreply, :sub => submission)
+          select "Générique", from: "Problème"
+          click_button "Modifier"
+          savedreply.reload
+        end
+        specify do
+          expect(page).to have_success_message("Réponse modifiée")
+          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
+          expect(page).to have_content(submission.content)
+          expect(savedreply.content).to eq("(Proposé par #{admin.name})\n\n" + newcontent)
+          expect(savedreply.user_id).to eq(0)
+          expect(savedreply.approved).to eq(false)
         end
       end
     end

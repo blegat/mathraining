@@ -2,11 +2,13 @@
 class SavedrepliesController < ApplicationController
   before_action :signed_in_user, only: [:index, :show, :new, :edit]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy]
-  before_action :root_user, only: [:index, :show, :edit, :update, :destroy]
+  before_action :root_user, only: [:index, :show]
   before_action :corrector_user, only: [:new, :create]
   
   before_action :get_savedreply, only: [:show, :edit, :update, :destroy]
   before_action :get_submission, only: [:new, :create, :edit, :update]
+  
+  before_action :user_can_update_savedreply, only: [:edit, :update, :destroy]
   
   # Show non approved saved replies
   def index
@@ -14,6 +16,7 @@ class SavedrepliesController < ApplicationController
   
   # Show a submission where this saved reply can be seen
   def show
+    redirect_to root_path if @savedreply.user_id != 0 # This method should not be used for personal saved replies
     if @savedreply.section_id == 0 && @savedreply.problem_id == 0
       submission = Submission.where.not(:status => [:closed, :plagiarized, :draft]).order(:created_at).last
     elsif @savedreply.section_id > 0
@@ -26,7 +29,7 @@ class SavedrepliesController < ApplicationController
   
   # Create a saved reply (show the form)
   def new
-    @savedreply = Savedreply.new(:problem => @submission.problem, :section => @submission.problem.section)
+    @savedreply = Savedreply.new(:problem => @submission.problem, :section => @submission.problem.section, :user_id => 0)
   end
 
   # Update a saved reply (show the form)
@@ -39,8 +42,8 @@ class SavedrepliesController < ApplicationController
   # Create a saved reply (send the form)
   def create
     @savedreply = Savedreply.new(params.require(:savedreply).permit(:content))
-    set_problem_or_section
-    @savedreply.approved = current_user.root? # Automatically approved for roots
+    set_problem_or_section_or_user
+    @savedreply.approved = current_user.root? || @savedreply.user_id > 0
     if @savedreply.save
       if !@savedreply.approved
         @savedreply.update_attribute(:content, "(Proposé par #{current_user.name})\n\n" + @savedreply.content)
@@ -55,9 +58,12 @@ class SavedrepliesController < ApplicationController
   # Update a saved reply (send the form)
   def update
     @savedreply.content = params[:savedreply][:content]
-    set_problem_or_section
-    @savedreply.approved = true # Automatically approved for roots
+    set_problem_or_section_or_user
+    @savedreply.approved = current_user.root? || @savedreply.user_id > 0
     if @savedreply.save
+      if !@savedreply.approved
+        @savedreply.update_attribute(:content, "(Proposé par #{current_user.name})\n\n" + @savedreply.content)
+      end
       flash[:success] = "Réponse modifiée."
       redirect_to problem_path(@submission.problem, :sub => @submission)
     else
@@ -88,22 +94,31 @@ class SavedrepliesController < ApplicationController
     return if check_nil_object(@submission)
   end
   
+  ########## CHECK METHODS ##########
+  
+  # Check that current user can update this saved reply
+  def user_can_update_savedreply
+    unless current_user.root? || @savedreply.user == current_user
+      render 'errors/access_refused'
+    end
+  end
+  
   ########## HELPER METHODS ##########
   
-  def set_problem_or_section
+  def set_problem_or_section_or_user
+    @savedreply.problem_id = 0
+    @savedreply.section_id = 0
+    @savedreply.user_id = 0
     problem_id = params[:savedreply][:problem_id].to_i
     if problem_id > 0 # Saved reply specific to a problem
       problem = Problem.find_by_id(problem_id)
       unless problem_id.nil?
         @savedreply.problem = problem
-        @savedreply.section_id = 0
       end
-    elsif problem_id < 0 # Saved reply specific to a section
-      @savedreply.problem_id = 0
-      @savedreply.section_id = -problem_id
-    else # Generic saved reply
-      @savedreply.problem_id = 0
-      @savedreply.section_id = 0
+    elsif problem_id < -1 # Saved reply specific to a section
+      @savedreply.section_id = -1-problem_id
+    elsif problem_id == -1 # Generic personal saved reply
+      @savedreply.user = current_user
     end
   end
 end

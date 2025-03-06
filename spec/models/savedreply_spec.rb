@@ -8,6 +8,7 @@
 #  nb_uses    :integer          default(0)
 #  section_id :bigint
 #  approved   :boolean
+#  user_id    :bigint
 #
 require "spec_helper"
 

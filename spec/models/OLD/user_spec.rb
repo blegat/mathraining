@@ -33,6 +33,7 @@
 #  corrector                 :boolean          default(FALSE)
 #  role                      :integer          default("student")
 #  password_strength         :integer          default("unknown_password")
+#  accepted_code_of_conduct  :boolean          default(FALSE)
 #
 require "spec_helper"
 

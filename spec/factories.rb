@@ -248,6 +248,7 @@ FactoryGirl.define do
   factory :savedreply do
     section_id 0
     problem_id 0
+    user_id 0
     approved true
     sequence(:content) { |n| "Réponse enregistrée numéro #{n} !" }
   end

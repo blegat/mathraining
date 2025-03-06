@@ -8,6 +8,7 @@ describe SavedrepliesController, type: :controller, savedreply: true do
   let(:root) { FactoryGirl.create(:root) }
   let(:submission) { FactoryGirl.create(:submission) }
   let(:savedreply) { FactoryGirl.create(:savedreply) }
+  let(:admin_savedreply) { FactoryGirl.create(:savedreply, user: admin) }
   
   context "if the user is not a corrector" do
     before { sign_in_controller(user) }
@@ -31,6 +32,9 @@ describe SavedrepliesController, type: :controller, savedreply: true do
     it { expect(response).to have_controller_edit_behavior(savedreply, :access_refused, {:sub => submission}) }
     it { expect(response).to have_controller_update_behavior(savedreply, :access_refused, {:sub => submission}) }
     it { expect(response).to have_controller_destroy_behavior(savedreply, :access_refused) }
+    it { expect(response).to have_controller_edit_behavior(admin_savedreply, :ok, {:sub => submission}) }
+    it { expect(response).to have_controller_update_behavior(admin_savedreply, :ok, {:sub => submission}) }
+    it { expect(response).to have_controller_destroy_behavior(admin_savedreply, :ok) }
   end
   
   context "if the user is a root" do
