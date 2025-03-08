@@ -21,7 +21,7 @@ describe "Savedreply pages", savedreply: true do
     describe "visits submission" do
       before { visit problem_path(problem, :sub => submission) }
       specify do
-        expect(page).to have_link("1 rép. générique")
+        expect(page).to have_link("1 rép. gén.")
         expect(page).to have_link("1 rép. A. B.")
         expect(page).to have_link("1 rép. ##{problem.number}")
         expect(page).to have_link("+", href: new_savedreply_path(:sub => submission))
@@ -29,7 +29,7 @@ describe "Savedreply pages", savedreply: true do
       
       describe "and deletes a saved reply", :js => true do
         before do
-          click_link "1 rép. générique"
+          click_link "1 rép. gén."
         end
         specify { expect { click_link("Supprimer", href: savedreply_path(savedreply_generic)) }.to change(Savedreply, :count).by(-1) }
       end
@@ -37,7 +37,7 @@ describe "Savedreply pages", savedreply: true do
       describe "and uses a saved reply", :js => true do
         before do
           click_button "Réserver cette soumission"
-          click_link "1 rép. générique"
+          click_link "1 rép. gén."
           find("#savedreply-#{savedreply_generic.id}").click() # This registers in a hidden field that the saved reply has been used
           click_button "Poster et refuser la soumission"
           savedreply_generic.reload
@@ -101,7 +101,7 @@ describe "Savedreply pages", savedreply: true do
           expect(page).to have_success_message("Réponse modifiée")
           expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
           expect(page).to have_content(submission.content)
-          expect(page).to have_link("2 rép. génériques")
+          expect(page).to have_link("2 rép. gén.")
           expect(savedreply_problem.problem_id).to eq(0)
           expect(savedreply_problem.section_id).to eq(0)
           expect(savedreply_problem.content).to eq(newcontent)

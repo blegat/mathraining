@@ -31,7 +31,7 @@
 <% num_problem = problem_savedreplies.size %>
 
 <%= link_to "#{num_personal} rép. perso.", "javascript:toggleSavedReplies('personal_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_personal > 0 %>
-<%= link_to "#{num_generic} rép. génériques", "javascript:toggleSavedReplies('generic_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_generic > 0 %>
+<%= link_to "#{num_generic} rép. gén.", "javascript:toggleSavedReplies('generic_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_generic > 0 %>
 <%= link_to "#{num_section} rép. #{@submission.problem.section.short_abbreviation}", "javascript:toggleSavedReplies('section_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_section > 0 %>
 <%= link_to "#{num_problem} rép. ##{@submission.problem.number}", "javascript:toggleSavedReplies('problem_saved_replies')", :class => "btn btn-sm btn-ld-light-dark mb-2" if num_problem > 0 %>
 <%= link_to "+", new_savedreply_path(:sub => @submission), :class => "btn btn-sm btn-ld-light-dark mb-2" %>
