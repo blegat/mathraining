@@ -32,7 +32,9 @@
 
   <!-- Si administrateur ou correcteur : tous les boutons différents -->
   <% if current_user != @submission.user %>
-    <p class="mb-2">N'hésitez pas à faire des commentaires, même minimes, pouvant permettre à l'étudiant de progresser. On signalera par exemple une erreur de notation, un oubli de cas particulier, une suggestion d'amélioration... Si une grosse partie est manquante, alors on refusera la solution en demandant de la compléter.</p>
+    <% if current_user.correction_level == 0 %>
+      <p class="mb-2">N'hésitez pas à faire des commentaires, même minimes, pouvant permettre à l'étudiant de progresser. On signalera par exemple une erreur de notation, un oubli de cas particulier, une suggestion d'amélioration... Si une grosse partie est manquante, alors on refusera la solution en demandant de la compléter.</p>
+    <% end %>
     <% if @submission.wrong? %>
       <%= render 'corrections/buttons', f: f, disable_correction: disable_correction, show_simple: true, show_accept: true, show_close: true %>
     <% elsif @submission.correct? %>
