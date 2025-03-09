@@ -94,7 +94,8 @@ Rails.application.routes.draw do
       put :star
       put :unstar
       put :update_score
-      put :uncorrect
+      put :mark_wrong
+      put :mark_correct
       get :reserve # only via JS
       get :unreserve # only via JS
       post :search_script # only via JS

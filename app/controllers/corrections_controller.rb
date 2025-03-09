@@ -94,36 +94,8 @@ class CorrectionsController < ApplicationController
 
     # If current user is corrector and he wants to accept it: new status is correct
     elsif (current_user != @submission.user) && params[:commit] == "Poster et accepter la soumission"
-      @submission.correct!
+      @submission.mark_correct
       m = "Soumission marquée comme correcte."
-
-      # If this is the first correct submission of the user to this problem, we give the points and mark problem as solved
-      unless @submission.user.pb_solved?(@problem)
-        point_attribution(@submission.user, @problem)
-        last_user_corr = @submission.corrections.where("user_id = ?", @submission.user_id).order(:created_at).last
-        resolution_time = (last_user_corr.nil? ? @submission.created_at : last_user_corr.created_at)
-        Solvedproblem.create(:user            => @submission.user,
-                             :problem         => @problem,
-                             :correction_time => DateTime.now,
-                             :submission      => @submission,
-                             :resolution_time => resolution_time)
-        
-        # Update the statistics of the problem
-        @problem.nb_solves = @problem.nb_solves + 1
-        if @problem.first_solve_time.nil? || @problem.first_solve_time > resolution_time
-          @problem.first_solve_time = resolution_time
-        end
-        if @problem.last_solve_time.nil? || @problem.last_solve_time < resolution_time
-          @problem.last_solve_time = resolution_time
-        end
-        @problem.save
-      end
-
-      # Delete the drafts of the user to the problem
-      draft = @problem.submissions.where(:user => @submission.user, :status => :draft).first
-      if !draft.nil?
-        draft.destroy
-      end
     end
 
     # Deal with notifications
@@ -218,20 +190,6 @@ class CorrectionsController < ApplicationController
   def submission_has_recent_activity
     if @submission.user == current_user && @submission.wrong? && !@submission.has_recent_activity
       redirect_to problem_path(@problem, :sub => @submission)
-    end
-  end
-  
-  ########## HELPER METHODS ##########
-
-  # Helper method to give the points of a problem to a user
-  def point_attribution(user, problem)
-    if !user.pb_solved?(problem) # Avoid giving two times the points to a same problem
-      pt = problem.value
-
-      Globalstatistic.get.update_after_problem_solved(pt)
-      user.update_attribute(:rating, user.rating + pt)
-      partial = user.pointspersections.where(:section_id => problem.section.id).first
-      partial.update_attribute(:points, partial.points + pt)
     end
   end
 end

@@ -108,6 +108,47 @@ class Submission < ActiveRecord::Base
     end
   end
   
+  # Mark the submission as correct
+  def mark_correct
+    u = self.user
+    pb = self.problem
+    self.correct!
+    unless u.pb_solved?(pb)
+      # Give points to the user
+      Globalstatistic.get.update_after_problem_solved(pb.value)
+      if u.student?
+        u.update_attribute(:rating, u.rating + pb.value)
+        pps = u.pointspersections.where(:section_id => pb.section.id).first
+        pps.update_attribute(:points, pps.points + pb.value)
+      end
+      
+      # Create Solvedproblem
+      last_user_corr = self.corrections.where(:user => u).order(:created_at).last
+      resolution_time = (last_user_corr.nil? ? self.created_at : last_user_corr.created_at)
+      Solvedproblem.create(:user            => u,
+                           :problem         => pb,
+                           :correction_time => DateTime.now,
+                           :submission      => self,
+                           :resolution_time => resolution_time)
+                           
+      # Update statistics of pb
+      pb.nb_solves += 1
+      if pb.first_solve_time.nil? || pb.first_solve_time > resolution_time
+        pb.first_solve_time = resolution_time
+      end
+      if pb.last_solve_time.nil? || pb.last_solve_time < resolution_time
+        pb.last_solve_time = resolution_time
+      end
+      pb.save
+    end
+
+    # Delete the drafts of the user to the problem
+    draft = pb.submissions.where(:user => u, :status => :draft).first
+    if !draft.nil?
+      draft.destroy
+    end
+  end
+  
   # Mark the submission as wrong
   def mark_incorrect
     u = self.user
@@ -122,12 +163,10 @@ class Submission < ActiveRecord::Base
         sp = Solvedproblem.where(:submission => self).first
         sp.destroy unless sp.nil? # Should never be nil, but for security (and for tests)
         if u.student?
-          u.rating = u.rating - pb.value
-          u.save
+          u.update_attribute(:rating, u.rating - pb.value)
+          pps = Pointspersection.where(:user => u, :section_id => pb.section).first
+          pps.update_attribute(:points, pps.points - pb.value)
         end
-        pps = Pointspersection.where(:user => u, :section_id => pb.section).first
-        pps.points = pps.points - pb.value
-        pps.save
         Globalstatistic.get.update_after_problem_unsolved(pb.value)
       else
         # Si il y a d'autres soumissions il faut peut-être modifier le submission_id du Solvedproblem correspondant

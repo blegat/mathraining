@@ -7,16 +7,16 @@ class SubmissionsController < ApplicationController
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :create_intest, :update_draft, :update_intest] # Do not forget to check @invalid_csrf_token instead!
 
   before_action :signed_in_user, only: [:all, :allmy, :allnew, :allmynew, :next_good, :prev_good]
-  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :uncorrect, :search_script]
+  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :mark_wrong, :mark_correct, :search_script]
   before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
   before_action :root_user, only: [:update_score, :star, :unstar, :next_good, :prev_good]
   before_action :corrector_user, only: [:all, :allmy, :allnew, :allmynew]
   
-  before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :uncorrect, :search_script, :next_good, :prev_good]
+  before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :mark_wrong, :mark_correct, :search_script, :next_good, :prev_good]
   before_action :get_problem, only: [:index, :create, :create_intest]
   
   before_action :user_in_test_or_root, only: [:destroy]
-  before_action :user_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :search_script, :uncorrect]
+  before_action :user_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :search_script, :mark_wrong, :mark_correct]
   before_action :online_problem, only: [:create, :create_intest]
   before_action :user_did_not_solve_problem, only: [:create]
   before_action :new_submissions_allowed, only: [:create, :update_draft]
@@ -28,7 +28,8 @@ class SubmissionsController < ApplicationController
   before_action :user_in_test, only: [:create_intest, :update_intest]
   before_action :draft_submission_not_in_test, only: [:update_draft]
   before_action :user_can_see_submissions, only: [:index]
-  before_action :user_can_uncorrect_submission, only: [:uncorrect]
+  before_action :user_can_mark_submission_as_wrong, only: [:mark_wrong]
+  before_action :user_can_mark_submission_as_correct, only: [:mark_correct]
 
   # Show all submissions to a problem (only through js)
   def index
@@ -207,10 +208,17 @@ class SubmissionsController < ApplicationController
   end
   
   # Mark a correct solution as incorrect (only in case of mistake)
-  def uncorrect
+  def mark_wrong
     @submission.mark_incorrect
     @submission.starproposals.destroy_all
     flash[:success] = "Soumission marquée comme erronée."
+    redirect_to problem_path(@problem, :sub => @submission)
+  end
+  
+  # Mark a wrong submission as correct without a commmment (only in case of mistake)
+  def mark_correct
+    @submission.mark_correct
+    flash[:success] = "Soumission marquée comme correcte."
     redirect_to problem_path(@problem, :sub => @submission)
   end
 
@@ -374,8 +382,8 @@ class SubmissionsController < ApplicationController
     end
   end
   
-  # Check that current user can uncorrect the current submission
-  def user_can_uncorrect_submission
+  # Check that current user can mark the current submission as wrong
+  def user_can_mark_submission_as_wrong
     # Submission must be correct to be marked as wrong
     redirect_to problem_path(@problem, :sub => @submission) unless @submission.correct?
     unless current_user.root?
@@ -385,6 +393,18 @@ class SubmissionsController < ApplicationController
         flash[:danger] = "Vous ne pouvez plus marquer cette solution comme erronée."
         redirect_to problem_path(@problem, :sub => @submission)
       end
+    end
+  end
+  
+  # Check that current user can mark the current submission as correct (without a comment)
+  def user_can_mark_submission_as_correct
+    # Submission must be wrong to be marked as correct
+    redirect_to problem_path(@problem, :sub => @submission) unless @submission.wrong?
+    # Corrector should have rejected the solution a few minutes ago
+    eleven_minutes_ago = DateTime.now - 11.minutes
+    if @submission.corrections.where(:user => current_user).where("created_at > ?", eleven_minutes_ago).count == 0
+      flash[:danger] = "Vous ne pouvez plus marquer cette solution comme correcte sans laisser un commentaire."
+      redirect_to problem_path(@problem, :sub => @submission)
     end
   end
   

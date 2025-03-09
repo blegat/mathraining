@@ -287,8 +287,8 @@ class QuestionsController < ApplicationController
     if !@section.fondation && pt > 0
       Globalstatistic.get.update_after_question_solved(current_user.rating, pt)
       current_user.update_attribute(:rating, current_user.rating + pt)
-      partial = current_user.pointspersections.where(:section => @section).first
-      partial.update_attribute(:points, partial.points + pt)
+      pps = current_user.pointspersections.where(:section => @section).first
+      pps.update_attribute(:points, pps.points + pt)
     end
   end
   

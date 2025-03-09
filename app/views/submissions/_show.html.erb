@@ -245,25 +245,29 @@ var hideStatement = function () {
 
 <% end %>
 
+<!-- Passer la soumission comme erronée/correcte (root ou correcteur qui vient d'accepter ou de refuser) -->
+<% if @submission.correct? || @submission.wrong? %>
+  <% ten_minutes_ago = DateTime.now - 10.minutes %>
+  <% if (@submission.correct? && current_user.root?) || (can_current_user_correct && @submission.corrections.where(:user => current_user).where("created_at > ?", ten_minutes_ago).count > 0) %>
+    <% sp = (@submission.correct? ? Solvedproblem.where(:user => @submission.user, :problem => @problem).first : nil) %>
+    <!-- NB: sp.nil? can happen for a correct submission in test environment -->
+    <% if (@submission.correct? && current_user.root?) || @submission.wrong? || (!sp.nil? && sp.correction_time > ten_minutes_ago) %>
+      <p class="text-center">
+      <% if @submission.correct? %>
+        <%= link_to 'Marquer comme erronée', mark_wrong_submission_path(@submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous #{current_user.sure} de vouloir marquer cette soumission comme erronée ?#{ " Les propositions d'étoiles seront automatiquement supprimées !" if @submission.starproposals.count > 0 }" }), :method => :put, :class => "text-color-red" %>
+      <% else %>
+        <%= link_to 'Marquer comme correcte', mark_correct_submission_path(@submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous #{current_user.sure} de vouloir marquer cette soumission comme correcte ?" }), :method => :put, :class => "text-color-green" %>
+      <% end %>
+      </p>
+    <% end %>
+  <% end %>
+<% end %>
+
 <!-- Supprimer la soumission : pas possible si correcte -->
 <% if current_user.root? && !@submission.correct? && !@submission.draft? %>
   <p class="text-center">
   <%= link_to 'Supprimer cette soumission', @submission, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette soumission ? Ne faites-cela que si celle-ci n'est pas vraiment une soumission (par exemple si l'étudiant signale une erreur)." }, :class => "text-color-red" %>
   </p>
-<% end %>
-
-<!-- Repasser la soumission comme erronée (root ou correcteur qui vient d'accepter) -->
-<% if @submission.correct? %>
-  <% ten_minutes_ago = DateTime.now - 10.minutes %>
-  <% if current_user.root? || (can_current_user_correct && @submission.corrections.where(:user => current_user).where("created_at > ?", ten_minutes_ago).count > 0) %>
-    <% sp = Solvedproblem.where(:user => @submission.user, :problem => @problem).first %>
-    <!-- NB: sp.nil? can happen in test environment only -->
-    <% if current_user.root? || (!sp.nil? && sp.correction_time > ten_minutes_ago) %>
-      <p class="text-center">
-      <%= link_to 'Marquer comme erronée', uncorrect_submission_path(@submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous #{current_user.sure} de vouloir marquer cette soumission comme erronée ?#{ " Les propositions d'étoiles seront automatiquement supprimées !" if @submission.starproposals.count > 0 }" }), :method => :put, :class => "text-color-red" %>
-      </p>
-    <% end %>
-  <% end %>
 <% end %>
 
 <% if can_current_user_correct && !@submission.draft? %>
