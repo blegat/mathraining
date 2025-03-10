@@ -249,7 +249,7 @@ var hideStatement = function () {
 <% if @submission.correct? || @submission.wrong? %>
   <% ten_minutes_ago = DateTime.now - 10.minutes %>
   <% experienced_corrector = (can_current_user_correct && current_user.correction_level >= 12) %>
-  <% if (@submission.correct? && (current_user.root? || experienced_corrector)) || (@submission.wrong? && can_current_user_correct && @submission.corrections.where(:user => current_user).where("created_at > ?", ten_minutes_ago).count > 0) %>
+  <% if (@submission.correct? && (current_user.root? || experienced_corrector)) || (can_current_user_correct && @submission.corrections.where(:user => current_user).where("created_at > ?", ten_minutes_ago).count > 0) %>
     <% one_week_ago = DateTime.now - 7.days %>
     <% sp = (@submission.correct? ? Solvedproblem.where(:user => @submission.user, :problem => @problem).first : nil) %>
     <!-- NB: sp.nil? can happen for a correct submission in test environment -->
