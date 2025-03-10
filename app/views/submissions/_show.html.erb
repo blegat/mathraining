@@ -248,13 +248,15 @@ var hideStatement = function () {
 <!-- Passer la soumission comme erronée/correcte (root ou correcteur qui vient d'accepter ou de refuser) -->
 <% if @submission.correct? || @submission.wrong? %>
   <% ten_minutes_ago = DateTime.now - 10.minutes %>
-  <% if (@submission.correct? && current_user.root?) || (can_current_user_correct && @submission.corrections.where(:user => current_user).where("created_at > ?", ten_minutes_ago).count > 0) %>
+  <% experienced_corrector = (can_current_user_correct && current_user.correction_level >= 12) %>
+  <% if (@submission.correct? && (current_user.root? || experienced_corrector)) || (@submission.wrong? && can_current_user_correct && @submission.corrections.where(:user => current_user).where("created_at > ?", ten_minutes_ago).count > 0) %>
+    <% one_week_ago = DateTime.now - 7.days %>
     <% sp = (@submission.correct? ? Solvedproblem.where(:user => @submission.user, :problem => @problem).first : nil) %>
     <!-- NB: sp.nil? can happen for a correct submission in test environment -->
-    <% if (@submission.correct? && current_user.root?) || @submission.wrong? || (!sp.nil? && sp.correction_time > ten_minutes_ago) %>
+    <% if (@submission.correct? && (current_user.root? || (experienced_corrector && @submission.last_comment_time > one_week_ago) || (!sp.nil? && sp.correction_time > ten_minutes_ago))) || @submission.wrong? %>
       <p class="text-center">
       <% if @submission.correct? %>
-        <%= link_to 'Marquer comme erronée', mark_wrong_submission_path(@submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous #{current_user.sure} de vouloir marquer cette soumission comme erronée ?#{ " Les propositions d'étoiles seront automatiquement supprimées !" if @submission.starproposals.count > 0 }" }), :method => :put, :class => "text-color-red" %>
+        <%= link_to 'Marquer comme erronée', mark_wrong_submission_path(@submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous #{current_user.sure} de vouloir marquer cette soumission comme erronée ?" }), :method => :put, :class => "text-color-red" %>
       <% else %>
         <%= link_to 'Marquer comme correcte', mark_correct_submission_path(@submission), data: (Rails.env.test? ? {} : { confirm: "Êtes-vous #{current_user.sure} de vouloir marquer cette soumission comme correcte ?" }), :method => :put, :class => "text-color-green" %>
       <% end %>

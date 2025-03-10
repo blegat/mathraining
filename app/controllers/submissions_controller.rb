@@ -386,13 +386,13 @@ class SubmissionsController < ApplicationController
   def user_can_mark_submission_as_wrong
     # Submission must be correct to be marked as wrong
     redirect_to problem_path(@problem, :sub => @submission) unless @submission.correct?
-    unless current_user.root?
-      # Corrector should have accepted the solution a few minutes ago
-      eleven_minutes_ago = DateTime.now - 11.minutes
-      if Solvedproblem.where(:user => @submission.user, :problem => @problem).first.correction_time < eleven_minutes_ago || @submission.corrections.where(:user => current_user).where("created_at > ?", eleven_minutes_ago).count == 0
-        flash[:danger] = "Vous ne pouvez plus marquer cette solution comme erronée."
-        redirect_to problem_path(@problem, :sub => @submission)
-      end
+    return if current_user.root? # Root can always mark as wrong
+    return if current_user.correction_level >= 12 && @submission.last_comment_time > DateTime.now - 7.days - 1.hour # Experienced corrector can mark as wrong during one week
+    # Corrector should have accepted the solution a few minutes ago
+    eleven_minutes_ago = DateTime.now - 11.minutes
+    if Solvedproblem.where(:user => @submission.user, :problem => @problem).first.correction_time < eleven_minutes_ago || @submission.corrections.where(:user => current_user).where("created_at > ?", eleven_minutes_ago).count == 0
+      flash[:danger] = "Vous ne pouvez plus marquer cette solution comme erronée."
+      redirect_to problem_path(@problem, :sub => @submission)
     end
   end
   
