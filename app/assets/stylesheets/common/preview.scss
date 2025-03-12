@@ -1,8 +1,11 @@
 /* PREVIEW */
 
 .hidden-preview {
-  visibility: hidden!important;
-  position: absolute!important;
-  top: 0!important;
-  left: 0!important;
+  // Old implementation, not working with Mathjax 2.7.5:
+  // (not sure why we were using something so complex)
+  //visibility: hidden!important;
+  //position: absolute!important;
+  //top: 0!important;
+  //left: 0!important;
+  display:none;
 }
