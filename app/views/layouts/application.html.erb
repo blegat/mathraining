@@ -1,8 +1,20 @@
 <!DOCTYPE html>
 <% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
 <html data-bs-theme="<%= mt_theme %>">
-  <head>  
-  <script type="text/x-mathjax-config">
+  <head>
+    <% if signed_in? && current_user_no_skin.accept_analytics && Rails.env.production? %>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-FZ7Q2MRZ89"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-FZ7Q2MRZ89', {'theme': '<%= mt_theme %>'});
+      </script>
+    <% end %>
+  
+    <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {
         inlineMath: [ ['$','$'] ],
@@ -73,18 +85,8 @@
     
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
-    <% if signed_in? && current_user_no_skin.accept_analytics && Rails.env.production? %>
-      <!-- Google tag (gtag.js) -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-FZ7Q2MRZ89"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-FZ7Q2MRZ89', {'theme': '<%= mt_theme %>'});
-      </script>
-    <% end %>
     <title><%= full_title(yield(:title)) %></title>
+    
     <script type="application/ld+json">
       {
         "@context" : "https://schema.org",
@@ -107,16 +109,15 @@
     <%= stylesheet_link_tag 'application-print', :media => 'print' %>
     
     <%= csrf_meta_tags %>
-
-    <% # mathjax_tag %>
     
     <!-- For Google Search Console -->
     <meta name="google-site-verification" content="hxNpvWtQioPx3-dn2C2-oTX1RVEvfkwXZrKrUz5FIIw" />
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <%= javascript_importmap_tags %>
-    <script type="text/javascript">
     
+    <%= javascript_importmap_tags %>
+    
+    <script type="text/javascript">
       function callMethodWhenPossible(method) {
         method();
         ["DOMContentLoaded", "load", "importmap-scripts-loaded"].forEach(function(e){
