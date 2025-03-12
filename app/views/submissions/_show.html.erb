@@ -116,8 +116,8 @@ var hideStatement = function () {
 
   <!-- Rappel de l'énoncé -->
   <% if show_statement_reminder %>
-    <div id="statement_reminder" class="hidden-latex">
-      <div class="card mb-3">
+    <div style="position:relative;">
+      <div id="statement_reminder" class="card mb-3 hidden-latex">
         <h5 class="card-header">Énoncé</h5>
         <div class="card-body">
           <%= htmlise(@problem.statement) %>
