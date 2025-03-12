@@ -7,12 +7,12 @@
 var showStatement = function () {
   document.getElementById("link_show_statement").style.display = 'none';
   document.getElementById("link_hide_statement").style.display = 'inline';
-  document.getElementById("statement_reminder").style.display = 'table';
+  document.getElementById("statement_reminder").classList.remove("hidden-latex");
 }
 var hideStatement = function () {
   document.getElementById("link_show_statement").style.display = 'inline';
   document.getElementById("link_hide_statement").style.display = 'none';
-  document.getElementById("statement_reminder").style.display = 'none';
+  document.getElementById("statement_reminder").classList.add("hidden-latex");
 }
 </script>
 
@@ -116,13 +116,13 @@ var hideStatement = function () {
 
   <!-- Rappel de l'énoncé -->
   <% if show_statement_reminder %>
-    <div id="statement_reminder" style="display:none; width:100%;">
+    <div id="statement_reminder" class="hidden-latex">
       <div class="card mb-3">
         <h5 class="card-header">Énoncé</h5>
         <div class="card-body">
           <%= htmlise(@problem.statement) %>
         </div>
-      </div>  
+      </div>
     </div>
   <% end %>
 

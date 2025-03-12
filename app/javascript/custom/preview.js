@@ -64,9 +64,9 @@ var Preview = {
     this.buffer = buffer; this.preview = preview;
     var oldHeight = buffer.offsetHeight;
     var oldScroll = $(window).scrollTop();
-    buffer.classList.add("hidden-preview");
-    preview.classList.remove("hidden-preview");
-    var newHeight = preview.offsetHeight; // Must be done after removing hidden-preview!
+    buffer.classList.add("hidden-latex");
+    preview.classList.remove("hidden-latex");
+    var newHeight = preview.offsetHeight; // Must be done after removing hidden-latex!
     if (Math.abs(newHeight - oldHeight) > 1) {
       window.scrollTo(0, oldScroll+newHeight-oldHeight);
     }

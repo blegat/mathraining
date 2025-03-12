@@ -1,0 +1,10 @@
+/* PREVIEW */
+
+.hidden-latex {
+  // We cannot simply use "display:none;" because the equations would not been split correctly (as the width is not correct)
+  visibility: hidden!important;
+  position: absolute!important;
+  top: 0!important;
+  left: 0!important;
+  width: 100%!important; // If not used, then writing "On a (a,b) = 1" does not work!
+}
