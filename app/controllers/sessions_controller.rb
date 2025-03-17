@@ -11,9 +11,8 @@ class SessionsController < ApplicationController
     user = User.where(:email => email).first
     password = params[:session][:password]
     if user && !user.deleted? && user.authenticate(password)
-      last_ban = user.last_ban
-      if !last_ban.nil? && last_ban.end_time > DateTime.now
-        flash[:danger] = last_ban.message
+      if user.has_sanction_of_type(:ban)
+        flash[:danger] = user.last_sanction_of_type(:ban).message
       elsif @temporary_closure && !user.admin? && !user.corrector? && !user.wepion?
         flash[:info] = @temporary_closure_message
       elsif !user.email_confirm

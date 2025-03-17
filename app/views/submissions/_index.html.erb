@@ -51,8 +51,8 @@ var showFalse = function() {
 <% else %>
 
   <!-- Dernières soumissions de l'étudiant en question -->
-  <% @cansendnewsub = !current_user.has_no_submission_sanction %>
-  <% @cansendnewcomment = !current_user.has_no_submission_sanction %>
+  <% @cansendnewsub = !current_user.has_sanction_of_type(:no_submission) %>
+  <% @cansendnewcomment = @cansendnewsub %>
   <% date_submission_allowed = nil %>
   <% nonewcomment_reason = nil %>
   <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where(:user => current_user).where.not(:status => :draft).order('created_at DESC') %>
@@ -64,7 +64,7 @@ var showFalse = function() {
     <%= render 'submissions/line_header', hide_user: true %>
     <% submissions.each do |s| %>
       <%= render 'submissions/line', s: s, hide_user: true %>
-      <% if s.waiting? || s.correct? %>
+      <% if s.waiting? || s.waiting_forever? || s.correct? %>
         <% @cansendnewsub = false %>
       <% elsif s.plagiarized? || s.closed? %>
         <% one_date_submission_allowed = s.date_new_submission_allowed %>

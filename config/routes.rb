@@ -107,6 +107,7 @@ Rails.application.routes.draw do
       get :allmy
       get :allnew
       get :allmynew
+      get :allhidden
     end
     resources :corrections, only: [:create]
     resources :suspicions, only: [:create]

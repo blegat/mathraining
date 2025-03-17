@@ -100,8 +100,8 @@
         <% arr = Array.new %>
         <% h = 0 %>
         <% problems.each do |p| %>
-          <% sc = p.submissions.where(:intest => true).where.not(:status => [:draft, :waiting]).sum(:score) %>
-          <% nb_u_real = nb_u - p.submissions.where(:intest => true, :status => :waiting).count %>
+          <% sc = p.submissions.where(:intest => true).where.not(:status => [:draft, :waiting, :waiting_forever]).sum(:score) %>
+          <% nb_u_real = nb_u - p.submissions.where(:intest => true, :status => [:waiting, :waiting_forever]).count %>
           <% arr[h] = sc.to_f / nb_u_real if nb_u_real > 0 %>
           <% arr[h] = -1 if nb_u_real <= 0 %>
           <% moy = moy + arr[h] if arr[h] >= 0 %>
@@ -196,7 +196,7 @@
         <% if !current_user.admin? && status == "not_started" %>
           <% if current_user.can_write_submission? %>
             <div class="g-col-12 g-col-md-24 text-center">
-              <%= link_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: "btn btn-lg btn-ld-light-dark #{'disabled' if (@no_new_submission || current_user.has_no_submission_sanction || in_skin?)}", data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez #{current_user.sure} d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %>
+              <%= link_to "Commencer ce test", begin_test_virtualtest_path(t), :method => :put, class: "btn btn-lg btn-ld-light-dark #{'disabled' if (@no_new_submission || current_user.has_sanction_of_type(:no_submission) || in_skin?)}", data: (Rails.env.test? ? {} : { confirm: "Êtes-vous certain de vouloir commencer ce test ? Soyez #{current_user.sure} d'avoir #{t.duration / 60}h#{"0" if (t.duration % 60) < 10}#{t.duration % 60} devant vous !" }) %>
             </div>
           <% else %>
             <div class="g-col-12 g-col-md-24 module bottom-part text-start">

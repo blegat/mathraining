@@ -57,7 +57,7 @@
           <!-- Si déjà résolu : vert -->
           <% classe = "greeny" %>
         <% else %>  
-          <% num_waiting_subs = get_num_subs_for_problem_and_statuses(p, ["waiting"]) %>  
+          <% num_waiting_subs = get_num_subs_for_problem_and_statuses(p, ["waiting", "waiting_forever"]) %>  
           <% num_incorrect_subs = get_num_subs_for_problem_and_statuses(p, ["wrong", "wrong_to_read", "plagiarized", "closed"]) %>
           <% num_drafts = get_num_subs_for_problem_and_statuses(p, ["draft"]) %>
           

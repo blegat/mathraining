@@ -416,30 +416,14 @@ class User < ActiveRecord::Base
     return s.html_safe
   end
   
-  # Gives the last ban of the user
-  def last_ban
-    return self.sanctions.where(:sanction_type => :ban).order(:start_time).last
+  # Gives the last sanction of the given type
+  def last_sanction_of_type(type)
+    return self.sanctions.where(:sanction_type => type).order(:start_time).last
   end
   
-  # Gives the last sanction of the user not allowing him to send new submissions
-  def last_no_submission_sanction
-    return self.sanctions.where(:sanction_type => :no_submission).order(:start_time).last
-  end
-  
-  # Gives the last sanction of the user that auto-reserves his submissions
-  def last_auto_reserved_sanction
-    return self.sanctions.where(:sanction_type => :auto_reserved).order(:start_time).last
-  end
-  
-  # Tells if the user currently has the sanction to not send new submissions
-  def has_no_submission_sanction
-    sanction = self.last_no_submission_sanction
-    return !sanction.nil? && sanction.end_time > DateTime.now
-  end
-  
-  # Tells if the user currently has its submissions that are automatically reserved
-  def has_auto_reserved_sanction
-    sanction = self.last_auto_reserved_sanction
+  # Tells if the user currently has a sanction of the given type
+  def has_sanction_of_type(type)
+    sanction = self.last_sanction_of_type(type)
     return !sanction.nil? && sanction.end_time > DateTime.now
   end
   

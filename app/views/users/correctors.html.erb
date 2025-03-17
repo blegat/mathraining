@@ -4,7 +4,9 @@
 
 <h1><%= title_1("Corrections") %></h1>
 
-<% newsubs = Submission.joins(:problem).where(:status => :waiting).group("problems.section_id").group("problems.level").count %>
+<% waiting_statuses = [:waiting] %>
+<% waiting_statuses.push(:waiting_forever) unless signed_in? && (current_user.admin? || current_user.corrector?) %>
+<% newsubs = Submission.joins(:problem).where(:status => waiting_statuses).group("problems.section_id").group("problems.level").count %>
 <% num_nuwsubs = newsubs.values.sum %>
 <p>Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 2 %> en attente de correction. Le tableau suivant en illustre la répartition, par niveau et par section.</p>
 
@@ -62,7 +64,7 @@
   <% date = Rails.env.production? ? x.second.in_time_zone.to_date : x.second.to_date %>
   <% diff = (today - date).to_i %>
   <% if diff < 31 %>
-    <% if status == "waiting" %>
+    <% if status == "waiting" || (status == "waiting_forever" && !(signed_in? && (current_user.admin? || current_user.corrector?))) %>
       <% numberdontknow[diff] = numberdontknow[diff] + n %>
     <% elsif status == "correct" %>
       <% numbercorrect[diff] = numbercorrect[diff] + n %>

@@ -65,7 +65,7 @@ class Record < ActiveRecord::Base
 
       total = 0
       number = 0
-      Submission.where.not(:status => :draft).where("created_at >= ? AND created_at < ? AND (intest = ? OR created_at >= ?)", modified_start_for_test_time, nextmonday_time, true, curmonday_time).each do |s|
+      Submission.where.not(:status => [:draft, :waiting_forever]).where("created_at >= ? AND created_at < ? AND (intest = ? OR created_at >= ?)", modified_start_for_test_time, nextmonday_time, true, curmonday_time).each do |s|
         submission_date = s.created_at
         if s.intest?
           p = s.problem

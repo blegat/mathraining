@@ -24,7 +24,7 @@ function showMessages() {
 <!-- Type de sanction -->
 <div class="mb-2">
   <%= f.label :sanction_type, :class => "form-label" %>
-  <%= f.select(:sanction_type, [["Bannissement", :ban], ["Interdiction de soumettre", :no_submission], ["Soumissions auto-réservées", :auto_reserved]], {}, { :class => "form-select", :style => "max-width:250px;", :onchange => "showMessages();" }) %>
+  <%= f.select(:sanction_type, [["Bannissement", :ban], ["Interdiction de soumettre", :no_submission], ["Soumissions non corrigées", :not_corrected]], {}, { :class => "form-select", :style => "max-width:250px;", :onchange => "showMessages();" }) %>
 </div>
 
 <!-- Début -->

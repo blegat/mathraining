@@ -157,8 +157,8 @@ class VirtualtestsController < ApplicationController
     if @no_new_submission
       flash[:info] = @no_new_submission_message
       redirect_to virtualtests_path
-    elsif current_user.has_no_submission_sanction
-      flash[:info] = current_user.last_no_submission_sanction.message
+    elsif current_user.has_sanction_of_type(:no_submission)
+      flash[:info] = current_user.last_sanction_of_type(:no_submission).message
       redirect_to virtualtests_path
     elsif current_user.test_status(@virtualtest) != "not_started"
       redirect_to virtualtests_path

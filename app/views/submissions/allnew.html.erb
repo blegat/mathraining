@@ -3,6 +3,9 @@
 <h1>
 <%= title_1("Soumissions") %>
 <span class="h4"> - <%= link_to "Tout voir", all_submissions_path %>
+<% if current_user.root? %>
+  - <%= link_to "Cachées", allhidden_submissions_path %>
+<% end %>
 <% if current_user.root? || current_user.suspicions.count > 0 %>
  - <%= link_to "Plagiats", suspicions_path %>
 <% end %>
@@ -71,7 +74,7 @@
   <% new_cor[i] = Array.new(num_intervals, 0) %>
 <% end %>
 
-<% Submission.joins(:problem).select(:created_at, :intest, :problem_id, :user_id).where.not(:status => :draft).where("created_at > ? AND (intest = ? OR created_at > ?)", date_begin_for_test, true, date_begin).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
+<% Submission.joins(:problem).select(:created_at, :intest, :problem_id, :user_id).where.not(:status => [:draft, :waiting_forever]).where("created_at > ? AND (intest = ? OR created_at > ?)", date_begin_for_test, true, date_begin).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
   <% date_created = s.created_at %>
   <% date_sub = date_created %>
   <% if s.intest? %>
@@ -86,7 +89,7 @@
   <% end %>
 <% end %>
 
-<% Submission.joins(:problem).select(:created_at, :problem_id).where.not(:status => :draft).where("created_at > ?", date_begin - (shifts.max).days).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
+<% Submission.joins(:problem).select(:created_at, :problem_id).where.not(:status => [:draft, :waiting_forever]).where("created_at > ?", date_begin - (shifts.max).days).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
   <% (1..2).each do |i| %>
     <% threshold_date = s.created_at.in_time_zone.to_date + shifts[i] %>
     <% threshold_time = threshold_date.in_time_zone.to_time + 1.second %>

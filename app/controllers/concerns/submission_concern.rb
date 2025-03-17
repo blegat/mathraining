@@ -15,7 +15,7 @@ module SubmissionConcern
   # Check that the student has no (recent) plagiarized or closed solution to the problem
   def user_has_no_recent_plagiarism_or_closure
     if @submission.nil? || @submission.user == current_user
-      if current_user.has_no_submission_sanction
+      if current_user.has_sanction_of_type(:no_submission)
         redirect_to problem_path(@problem, :sub => @submission) and return
       end
       s = current_user.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last

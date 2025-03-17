@@ -33,8 +33,14 @@
   <% color_class = "table-ld-success" %>
 <% elsif s.wrong? || s.plagiarized? || s.closed? %>
   <% color_class = "table-ld-danger" %>
+<% elsif s.waiting_forever? %>
+  <% if current_user == s.user %>
+    <% color_class = "table-ld-warning" %>
+  <% else %>
+    <% color_class = "table-ld-danger" %>
+  <% end %>
 <% elsif s.waiting? %>
-  <% if !(current_user.admin? || (current_user.corrector? && current_user != s.user)) || s.followings.first.nil? %>
+  <% if current_user == s.user || s.followings.first.nil? %>
     <% color_class = "table-ld-warning" %>
   <% elsif s.followings.first.user == current_user %>
     <% color_class = "table-ld-warning-greener" %>

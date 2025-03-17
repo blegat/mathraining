@@ -68,7 +68,7 @@
 <% if current_user.root? && @submission.plagiarized? && @submission.user.student? %>
   <% num_plagiarism = @submission.user.submissions.where(:status => :plagiarized).count %>
   <p><%= @submission.user.name %> a envoyé <b><%= num_plagiarism %> soumission<%= 's' if num_plagiarism > 1 %> plagiée<%= 's' if num_plagiarism > 1 %></b> sur Mathraining.</p>
-  <% last_ban = @submission.user.last_ban %>
+  <% last_ban = @submission.user.last_sanction_of_type(:ban) %>
   <% if !last_ban.nil? %>
     <% if last_ban.end_time > DateTime.now %>
       <p class="text-color-red">Il est actuellement banni du site, jusqu'au <%= write_date(last_ban.end_time) %>.</p>

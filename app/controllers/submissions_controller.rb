@@ -6,10 +6,10 @@ class SubmissionsController < ApplicationController
   
   skip_before_action :error_if_invalid_csrf_token, only: [:create, :create_intest, :update_draft, :update_intest] # Do not forget to check @invalid_csrf_token instead!
 
-  before_action :signed_in_user, only: [:all, :allmy, :allnew, :allmynew, :next_good, :prev_good]
+  before_action :signed_in_user, only: [:all, :allmy, :allnew, :allmynew, :allhidden, :next_good, :prev_good]
   before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :mark_wrong, :mark_correct, :search_script]
   before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
-  before_action :root_user, only: [:update_score, :star, :unstar, :next_good, :prev_good]
+  before_action :root_user, only: [:allhidden, :update_score, :star, :unstar, :next_good, :prev_good]
   before_action :corrector_user, only: [:all, :allmy, :allnew, :allmynew]
   
   before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :mark_wrong, :mark_correct, :search_script, :next_good, :prev_good]
@@ -71,7 +71,7 @@ class SubmissionsController < ApplicationController
       flash[:success] = "Votre brouillon a bien été enregistré."
       redirect_to problem_path(@problem, :sub => 0)
     else
-      Following.create(:submission => @submission, :user => User.where(:role => :root).order(:id).last, :kind => :reservation) if current_user.has_auto_reserved_sanction
+      @submission.set_waiting_status
       flash[:success] = "Votre solution a bien été soumise."
       redirect_to problem_path(@problem, :sub => @submission.id)
     end
@@ -281,6 +281,11 @@ class SubmissionsController < ApplicationController
     @submissions_other = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:status => :wrong_to_read).order("submissions.last_comment_time").to_a
   end
   
+  # Show all waiting submissions that will not be corrected
+  def allhidden
+    @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions).includes(:user, followings: :user).where(:status => :waiting_forever).order("submissions.created_at").to_a
+  end
+  
   # Go to the next good submission (when searching for submissions to star)
   def next_good
     submission = @problem.submissions.joins("INNER JOIN solvedproblems ON solvedproblems.submission_id = submissions.id").where("created_at > ? AND submissions.created_at = solvedproblems.resolution_time", @submission.created_at).order(:created_at).first
@@ -337,7 +342,7 @@ class SubmissionsController < ApplicationController
 
   # Check that current user can create a new submission for the problem
   def user_can_write_submission_to_problem
-    if current_user.submissions.where(:problem => @problem, :status => [:draft, :waiting]).count > 0
+    if current_user.submissions.where(:problem => @problem, :status => [:draft, :waiting, :waiting_forever]).count > 0
       redirect_to problem_path(@problem)
     end
   end
@@ -443,8 +448,8 @@ class SubmissionsController < ApplicationController
       redirect_to problem_path(@problem, :sub => 0)
     else
       date_now = DateTime.now
-      @submission.update(:status => :waiting, :created_at => date_now, :last_comment_time => date_now)
-      Following.create(:submission => @submission, :user => User.where(:role => :root).order(:id).last, :kind => :reservation) if current_user.has_auto_reserved_sanction
+      @submission.update(:created_at => date_now, :last_comment_time => date_now)
+      @submission.set_waiting_status
       flash[:success] = "Votre solution a bien été soumise."
       redirect_to problem_path(@problem, :sub => @submission.id)
     end

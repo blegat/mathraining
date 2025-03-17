@@ -1,0 +1,9 @@
+<% provide(:title, "Soumissions cachées") %>
+<h1><%= title_1("Soumissions cachées") %></h1>
+
+<table class="table table-bordered">
+<%= render 'submissions/line_header', show_section_and_level: true %>
+<% @submissions.each do |n| %>
+  <%= render 'submissions/line', s: n, show_section_and_level: true %>
+<% end %>
+</table>

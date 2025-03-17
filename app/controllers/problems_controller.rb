@@ -15,7 +15,7 @@ class ProblemsController < ApplicationController
 
   # Show problems of a section
   def index
-    flash.now[:info] = current_user.last_no_submission_sanction.message if signed_in? && current_user.has_no_submission_sanction
+    flash.now[:info] = current_user.last_sanction_of_type(:no_submission).message if signed_in? && current_user.has_sanction_of_type(:no_submission)
     flash.now[:info] = @no_new_submission_message if @no_new_submission
   end
 
@@ -30,7 +30,7 @@ class ProblemsController < ApplicationController
       end
     end
     
-    flash.now[:info] = current_user.last_no_submission_sanction.message if current_user.has_no_submission_sanction
+    flash.now[:info] = current_user.last_sanction_of_type(:no_submission).message if current_user.has_sanction_of_type(:no_submission)
     if params.has_key?("sub")
       if params[:sub].to_i == 0 # New submission
         flash.now[:info] = @no_new_submission_message if @no_new_submission

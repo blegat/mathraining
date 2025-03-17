@@ -17,13 +17,14 @@
 #
 class Submission < ActiveRecord::Base
   
-  enum status: {:draft         => -1, # draft (only for the student)
-                :waiting       =>  0, # waiting for a correction
-                :wrong         =>  1, # wrong (and last comment was marked as read)
-                :correct       =>  2, # correct
-                :wrong_to_read =>  3, # wrong, but last comment was not read yet
-                :plagiarized   =>  4, # plagiarized (cannot submit for 6 months)
-                :closed        =>  5} # closed by the corrector (cannot submit for 1 week) 
+  enum status: {:draft           => -1, # draft (only for the student)
+                :waiting         =>  0, # waiting for a correction
+                :wrong           =>  1, # wrong (and last comment was marked as read)
+                :correct         =>  2, # correct
+                :wrong_to_read   =>  3, # wrong, but last comment was not read yet
+                :plagiarized     =>  4, # plagiarized (cannot submit for 6 months)
+                :closed          =>  5, # closed by the corrector (cannot submit for 1 week)
+                :waiting_forever =>  6} # waiting for a correction that will never happen
 
   # BELONGS_TO, HAS_MANY
 
@@ -59,7 +60,7 @@ class Submission < ActiveRecord::Base
     else
       if self.correct?
         return v_icon
-      elsif self.draft? or self.waiting?
+      elsif self.draft? or self.waiting? or self.waiting_forever?
         return dash_icon
       elsif self.wrong? or self.wrong_to_read?
         return x_icon
@@ -105,6 +106,15 @@ class Submission < ActiveRecord::Base
       self.update(:last_comment_time => self.created_at)
     else
       self.update(:last_comment_time => last_correction.created_at)
+    end
+  end
+  
+  # Set status to :waiting or :waiting_forever depending on the user
+  def set_waiting_status
+    if self.user.has_sanction_of_type(:not_corrected)
+      self.waiting_forever!
+    else
+      self.waiting!
     end
   end
   

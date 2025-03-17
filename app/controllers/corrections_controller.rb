@@ -181,7 +181,7 @@ class CorrectionsController < ApplicationController
   
   # Check that the student does not try to comment a waiting submission from a test
   def submission_not_waiting_in_test
-    if @submission.user == current_user && @submission.intest && @submission.waiting?
+    if @submission.user == current_user && @submission.intest && (@submission.waiting? || @submission.waiting_forever?)
       render 'errors/access_refused'
     end
   end

@@ -31,14 +31,14 @@ describe "Sanction pages", sanction: true do
       
       describe "and sends with good information" do
         before do
-          select "Soumissions auto-réservées", from: "Type de sanction"
+          select "Soumissions non corrigées", from: "Type de sanction"
           fill_in "Message", with: newreason
           click_button "Créer"
         end
         specify do
           expect(page).to have_success_message("Sanction ajoutée")
           expect(user.sanctions.order(:id).last.reason).to eq(newreason)
-          expect(user.has_auto_reserved_sanction).to eq(true)
+          expect(user.has_sanction_of_type(:not_corrected)).to eq(true)
         end
       end
       

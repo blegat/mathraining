@@ -32,7 +32,7 @@ var hideStatement = function () {
 
 <% if !@submission.draft? %>
   <h3>Soumission
-  <% if @submission.waiting? %>
+  <% if @submission.waiting? || @submission.waiting_forever? %>
     (en attente de correction)
   <% elsif @submission.wrong? or @submission.wrong_to_read? %>
     (erronée)
@@ -157,7 +157,7 @@ var hideStatement = function () {
   <%= render 'corrections/index' %>
 
   <!-- Marquer comme lu ou non lu -->
-  <% if can_current_user_correct && !@submission.draft? && !@submission.waiting? %>
+  <% if can_current_user_correct && !@submission.draft? && !@submission.waiting? && !@submission.waiting_forever? %>
     <% following = @submission.followings.where(:user_id => current_user).first %>
     <% if !following.nil? %>
       <p class="text-center">
@@ -231,8 +231,10 @@ var hideStatement = function () {
     <p class="text-color-orange">Cette soumission fait partie d'un test virtuel qui n'est pas terminé. Vous ne pourrez la corriger qu'une fois le temps de celui-ci écoulé.</p>
   <% elsif @submission.draft? %>
     <p class="text-color-orange">Cette soumission n'est qu'un brouillon qui n'a pas encore été soumis pour correction.</p>
-  <% elsif current_user == @submission.user && @submission.intest && @submission.waiting? %>
+  <% elsif current_user == @submission.user && @submission.intest && (@submission.waiting? || @submission.waiting_forever?) %>
     <p>Cette solution fait partie d'un test et n'a pas encore été corrigée. Vous pourrez la commenter une fois que cela aura été fait.</p>
+  <% elsif can_current_user_correct && @submission.waiting_forever? %>
+    <p class="text-color-red">Cette solution ne sera jamais corrigée suite aux différents abus de l'étudiant.</p>
   <% elsif can_current_user_correct && @submission.plagiarized? %>
     <p class="text-color-red">Cette solution a été plagiée et n'est plus visible par l'étudiant.</p>
   <% elsif (current_user == @submission.user || can_current_user_correct) && @submission.closed? %>
