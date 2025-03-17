@@ -71,7 +71,7 @@ class SubmissionsController < ApplicationController
       flash[:success] = "Votre brouillon a bien été enregistré."
       redirect_to problem_path(@problem, :sub => 0)
     else
-      Following.create(:submission => @submission, :user => User.where(:root => true).order(:id).last, :kind => :reservation) if current_user.has_auto_reserved_sanction
+      Following.create(:submission => @submission, :user => User.where(:role => :root).order(:id).last, :kind => :reservation) if current_user.has_auto_reserved_sanction
       flash[:success] = "Votre solution a bien été soumise."
       redirect_to problem_path(@problem, :sub => @submission.id)
     end
@@ -444,7 +444,7 @@ class SubmissionsController < ApplicationController
     else
       date_now = DateTime.now
       @submission.update(:status => :waiting, :created_at => date_now, :last_comment_time => date_now)
-      Following.create(:submission => @submission, :user => User.where(:root => true).order(:id).last, :kind => :reservation) if current_user.has_auto_reserved_sanction
+      Following.create(:submission => @submission, :user => User.where(:role => :root).order(:id).last, :kind => :reservation) if current_user.has_auto_reserved_sanction
       flash[:success] = "Votre solution a bien été soumise."
       redirect_to problem_path(@problem, :sub => @submission.id)
     end

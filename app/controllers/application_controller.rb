@@ -275,7 +275,7 @@ class ApplicationController < ActionController::Base
       virtualtest.problems.each do |p|
         p.submissions.where(user_id: user.id, intest: true).each do |s|
           s.update_attribute(:status, :waiting)
-          Following.create(:submission => s, :user => User.where(:root => true).order(:id).last, :kind => :reservation) if user.has_auto_reserved_sanction
+          Following.create(:submission => s, :user => User.where(:role => :root).order(:id).last, :kind => :reservation) if user.has_auto_reserved_sanction
         end
       end
     end
