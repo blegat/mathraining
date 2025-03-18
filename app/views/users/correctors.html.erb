@@ -57,14 +57,16 @@
 <% amonthago = today - 32 %>
 
 <% Groupdate.time_zone = false unless Rails.env.production? %>
-<% allsub = Submission.where.not(:status => :draft).where("created_at > ?", amonthago).group(:status).group_by_day(:created_at).count %>
+<% ignored_statuses = [:draft] %>
+<% ignored_statuses.push(:waiting_forever) if signed_in? && (current_user.admin? || current_user.corrector?) %>
+<% allsub = Submission.where.not(:status => ignored_statuses).where("created_at > ?", amonthago).group(:status).group_by_day(:created_at).count %>
 
 <% allsub.each do |x, n| %>
   <% status = x.first %>
   <% date = Rails.env.production? ? x.second.in_time_zone.to_date : x.second.to_date %>
   <% diff = (today - date).to_i %>
   <% if diff < 31 %>
-    <% if status == "waiting" || (status == "waiting_forever" && !(signed_in? && (current_user.admin? || current_user.corrector?))) %>
+    <% if status == "waiting" || status == "waiting_forever" %>
       <% numberdontknow[diff] = numberdontknow[diff] + n %>
     <% elsif status == "correct" %>
       <% numbercorrect[diff] = numbercorrect[diff] + n %>
