@@ -347,9 +347,14 @@ class User < ActiveRecord::Base
     end
   end
   
-  # Update correction level
-  def update_correction_level
-    num_corrections = self.followings.where("kind > 0").count
+  # If F_0 = 0 and F_1 = 1, then a corrector needs F_(delta+1+i) corrections to be "Chevalier d'ordre i"
+  def self.correction_level_delta
+    return (Rails.env.production? ? 8 : 1)
+  end
+  
+  # Compute actuel correction level
+  def compute_correction_level
+    num_corrections = self.followings.where(:kind => [:first_corrector, :other_corrector]).count
     level = 0
     a = 1
     b = 1
@@ -357,12 +362,31 @@ class User < ActiveRecord::Base
       c = a+b
       a = b
       b = c
-      level = level + 1
+      level += 1
     end
-    level = level - (Rails.env.production? ? 8 : 1)
+    return level - User.correction_level_delta
+  end
+  
+  # Update correction level
+  def update_correction_level
+    level = self.compute_correction_level
     if self.correction_level < level
       self.update_attribute(:correction_level, level)
     end
+  end
+  
+  # Get number of corrections for a given correction level
+  def self.get_threshold_of_correction_level(level)
+    l = level + User.correction_level_delta
+    a = 1
+    b = 1
+    while l > 1
+      c = a+b
+      a = b
+      b = c
+      l -= 1
+    end
+    return b
   end
   
   # Gives the corrector prefix (if any) for the name

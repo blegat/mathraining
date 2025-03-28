@@ -1,27 +1,17 @@
-<% recent_corrections = Following.includes(:user).where(:kind => :first_corrector).where("created_at > ?", Date.today.in_time_zone).group(:user_id).select("count(followings.id) AS num_corrections, user_id").order("num_corrections DESC").to_a %>
-
 <!-- Barre de progrès pour les correcteurs -->
 
 <% if signed_in? && (current_user.admin? || current_user.corrector?) %>
-  <% num_my_corrections = 0 %>
-  <% recent_corrections.each do |f| %>
-    <% num_my_corrections = f.num_corrections if f.user_id == current_user.id %>
-  <% end %>
-  <% pct = [20*num_my_corrections, 100].min %>
+  <% num_corrections = current_user.followings.where(:kind => [:first_corrector, :other_corrector]).count %>
+  <% correction_level = current_user.correction_level %>
+  <% objective = User.get_threshold_of_correction_level(correction_level+1) %>
+  <% remaining = objective - num_corrections %>
+  <% pct = 100 * num_corrections / objective.to_f %>
   <div class="progress" style="margin-top:3px;">
-    <% if num_my_corrections > 0 %>
-      <div class="progress-bar bg-success" role="progressbar" style="width: <%= pct %>%" aria-valuenow="<%= pct %>" aria-valuemin="0" aria-valuemax="100">
-        <% if num_my_corrections < 5 %>
-          <%= num_my_corrections %> / 5
-        <% else %>
-          Merci pour ces <%= num_my_corrections %> corrections !
-        <% end %>
-      </div>
-    <% else %>
-      <div class="text-center" style="width:100%">
-        Pour votre santé, corrigez 5 soumissions par jour !
-      </div>
-    <% end %>
+    <div class="progress-bar bg-success" role="progressbar" style="width: <%= pct %>%" aria-valuenow="<%= pct %>" aria-valuemin="0" aria-valuemax="100">
+      <% if pct >= 40 %>
+        <%= num_corrections %> / <%= objective %>
+      <% end %>
+    </div>
   </div>
 <% end %>
 
@@ -78,6 +68,7 @@
   </div>
 </div>
 
+<% recent_corrections = Following.includes(:user).where(:kind => :first_corrector).where("created_at > ?", Date.today.in_time_zone).group(:user_id).select("count(followings.id) AS num_corrections, user_id").order("num_corrections DESC").to_a %>
 <% num_users_to_display = recent_corrections.size %>
 <% if num_users_to_display > 0 %>
   <div class="bg-as-table-ld-primary p-2 text-center mb-2">
