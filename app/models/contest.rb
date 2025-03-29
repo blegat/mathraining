@@ -175,7 +175,7 @@ class Contest < ActiveRecord::Base
   # Method called every exact hour (see schedule.rb)
   def self.check_contests_starts
     date_now_plus_1_min = DateTime.now + 1.minute # Security of 1 min in case cron job is earlier (should not happen...)
-    date_in_one_day_plus_1_min = 1.day.from_now + 1.minute # idem
+    date_in_one_day_plus_1_min = date_now_plus_1_min + 1.day # idem
     Contestproblemcheck.all.order(:id).each do |c|
       p = c.contestproblem
       if p.no_reminder_sent? # Check reminder for problem published in one day

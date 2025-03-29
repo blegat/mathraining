@@ -91,7 +91,7 @@ class ContestsController < ApplicationController
   # Put a contest online
   def put_online
     @contest.in_progress!
-    date_in_one_day = 1.day.from_now
+    date_in_one_day = DateTime.now + 1.day
     @contest.contestproblems.order(:number, :id).each do |p|
       p.not_started_yet!
       if p.start_time <= date_in_one_day # Problem starts in less than one day: there will be no post on the forum one day before
@@ -162,7 +162,7 @@ class ContestsController < ApplicationController
 
   # Check if the contest can be put online
   def contest_can_be_online
-    date_in_one_hour = 1.hour.from_now
+    date_in_one_hour = DateTime.now + 1.hour
     if @contest.contestproblems.count == 0
       flash[:danger] = "Un concours doit contenir au moins un problème !"
       redirect_to @contest
