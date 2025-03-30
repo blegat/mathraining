@@ -20,6 +20,30 @@
         inlineMath: [ ['$','$'], ["\\(", "\\)"] ],
         processEscapes: true
       },
+      TeX: {
+        Macros: {
+          pgcd: "\\operatorname{pgcd}",
+          ppcm: "\\operatorname{ppcm}",
+          arccot: "\\operatorname{arccot}",
+          P: "{\\mathbb P}",
+          N: "{\\mathbb N}",
+          Z: "{\\mathbb Z}",
+          Q: "{\\mathbb Q}",
+          R: "{\\mathbb R}",
+          C: "{\\mathbb C}",
+          abs: ["\\left\\lvert #1 \\right\\rvert", 1],
+          floor: ["\\left\\lfloor #1 \\right\\rfloor", 1],
+          ceil: ["\\left\\lceil #1 \\right\\rceil", 1],
+          par: ["\\left( #1 \\right)", 1],
+          set: ["\\left\\\{ #1 \\right\\\}", 1],
+          norm: ["\\left\\lVert #1 \\right\\rVert", 1],
+          La: "\\Leftarrow",
+          Ra: "\\Rightarrow",
+          Lra: "\\Leftrightarrow",
+          wh: ["\\widehat\{ #1 \}", 1],
+          degree: "^\\circ"
+        }
+      },
       "HTML-CSS": {
         mtextFontInherit: true,
         linebreaks: { automatic: true }
