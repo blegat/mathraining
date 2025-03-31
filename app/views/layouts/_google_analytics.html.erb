@@ -1,0 +1,11 @@
+<% if signed_in? && current_user_no_skin.accept_analytics && Rails.env.production? %>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FZ7Q2MRZ89"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'G-FZ7Q2MRZ89', {'theme': '<%= mt_theme %>'});
+  </script>
+<% end %>

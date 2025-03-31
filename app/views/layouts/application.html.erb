@@ -2,63 +2,9 @@
 <% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
 <html data-bs-theme="<%= mt_theme %>">
   <head>
-    <% if signed_in? && current_user_no_skin.accept_analytics && Rails.env.production? %>
-      <!-- Google tag (gtag.js) -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-FZ7Q2MRZ89"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-FZ7Q2MRZ89', {'theme': '<%= mt_theme %>'});
-      </script>
-    <% end %>
-  
-    <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [ ['$','$'], ["\\(", "\\)"] ],
-        processEscapes: true
-      },
-      TeX: {
-        Macros: {
-          pgcd: "\\operatorname{pgcd}",
-          ppcm: "\\operatorname{ppcm}",
-          arccot: "\\operatorname{arccot}",
-          P: "{\\mathbb P}",
-          N: "{\\mathbb N}",
-          Z: "{\\mathbb Z}",
-          Q: "{\\mathbb Q}",
-          R: "{\\mathbb R}",
-          C: "{\\mathbb C}",
-          abs: ["\\left\\lvert #1 \\right\\rvert", 1],
-          floor: ["\\left\\lfloor #1 \\right\\rfloor", 1],
-          ceil: ["\\left\\lceil #1 \\right\\rceil", 1],
-          par: ["\\left( #1 \\right)", 1],
-          set: ["\\left\\\{ #1 \\right\\\}", 1],
-          norm: ["\\left\\lVert #1 \\right\\rVert", 1],
-          La: "\\Leftarrow",
-          Ra: "\\Rightarrow",
-          Lra: "\\Leftrightarrow",
-          wh: "\\widehat",
-          degree: "^\\circ"
-        }
-      },
-      "HTML-CSS": {
-        mtextFontInherit: true,
-        linebreaks: { automatic: true }
-      },
-      CommonHTML: {
-        linebreaks: { automatic: true }
-      },
-      SVG: {
-        linebreaks: { automatic: true }
-      },
-      messageStyle: "simple" 
-    })
-    </script>
+    <%= render 'layouts/google_analytics' %>
     
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <%= render 'layouts/mathjax' %>
     
     <title><%= full_title(yield(:title)) %></title>
     
@@ -71,14 +17,7 @@
       }
     </script>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/icon-57.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/icon-76.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/icon-120.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/icon-152.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="/icon-167.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
-    <link rel="icon" sizes="192x192" href="/icon-192.png">
-    <link rel="icon" sizes="128x128" href="/icon-128.png">
+    <%= render 'layouts/apple_icons' %>
     
     <%= stylesheet_link_tag 'application', :media => 'screen, projection' %>
     <%= stylesheet_link_tag 'application-print', :media => 'print' %>
@@ -92,142 +31,7 @@
     
     <%= javascript_importmap_tags %>
     
-    <script type="text/javascript">
-      function callMethodWhenPossible(method) {
-        method();
-        ["DOMContentLoaded", "load", "importmap-scripts-loaded"].forEach(function(e){
-          window.addEventListener(e, () => {
-            method();
-          });
-        });
-      }
-    
-      // To initialize and update Preview when page is loaded and Preview is defined
-      var initAndUpdatePreviewDone = false;
-      
-      function initAndUpdatePreviewIfPossible(safe, enableBBCode, enableHiddenText, enableIndice) {
-        if ("Preview" in window) {
-          if (!initAndUpdatePreviewDone) {
-            initAndUpdatePreviewDone = true;
-            Preview.Init();
-            Preview.SetSafe(safe);
-            Preview.SetBBCode(enableBBCode);
-            Preview.SetHiddenText(enableHiddenText);
-            Preview.SetIndice(enableIndice);
-            Preview.Update();
-          }
-        }
-      }
-    
-      function initAndUpdatePreviewWhenPossible(enableIndice = false) {
-        callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(false, false, false, enableIndice));
-      }
-      
-      function initAndUpdatePreviewSafeWhenPossible(enableBBCode = true, enableHiddenText = false) {
-        callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(true, enableBBCode, enableHiddenText, false));
-      }
-      
-      // To call Rolling.develop_quick when page is loaded and Rolling is defined
-      var rollingDevelopQuickDone = false;
-      
-      function rollingDevelopQuickIfPossible(m, enableHiddenText) {
-        if ("Rolling" in window) {
-          if (!rollingDevelopQuickDone) {
-            rollingDevelopQuickDone = true;
-            Rolling.develop_quick(m, enableHiddenText);
-          }
-        }
-      }
-    
-      function rollingDevelopQuickWhenPossible(m, enableHiddenText = false) {
-        callMethodWhenPossible(() => rollingDevelopQuickIfPossible(m, enableHiddenText));
-      }
-      
-      // To call Rolling.showus when page is loaded and Rolling is defined
-      var rollingShowusDone = false;
-      
-      function rollingShowusIfPossible(m) {
-        if ("Rolling" in window) {
-          if (!rollingShowusDone) {
-            rollingShowusDone = true;
-            Rolling.showus(m);
-          }
-        }
-      }
-    
-      function rollingShowusWhenPossible(m) {
-        callMethodWhenPossible(() => rollingShowusIfPossible(m));
-      }
-      
-      // To initialize and update LeavingForm when page is loaded and LeavingForm is defined
-      var initLeavingFormDone = false;
-      
-      function initLeavingFormIfPossible() {
-        if ("LeavingForm" in window) {
-          if (!initLeavingFormDone) {
-            initLeavingFormDone = true;
-            LeavingForm.Init();
-          }
-        }
-      }
-      
-      function initLeavingFormWhenPossible() {
-        callMethodWhenPossible(initLeavingFormIfPossible);
-      }
-      
-      // To initialize select2 when page is loaded and $ (jquery) is defined
-      var select2Initialized = false;
-      
-      function initializeSelect2IfPossible(placeholder) {
-        if ("$" in window) {
-          if (!select2Initialized) {
-            select2Initialized = true;
-            $('.select2').select2({
-              theme: "bootstrap-5",
-              language: "fr",
-              width: "300",
-              placeholder: placeholder
-            });
-          }
-        }
-      }
-      
-      function initializeSelect2WhenPossible(placeholder) {
-        callMethodWhenPossible(() => initializeSelect2IfPossible(placeholder));
-      }
-      
-      <% if Puzzle.started_or_root(current_user) %> 
-        // To initialize Switcher when page is loaded and Switcher is defined
-        var initSwitcherDone = false;
-        
-        function initSwitcherIfPossible() {
-          if ("Switcher" in window) {
-            if (!initSwitcherDone) {
-              initSwitcherDone = true;
-              Switcher.Init();
-            }
-          }
-        }
-        
-        callMethodWhenPossible(initSwitcherIfPossible);
-      <% end %>
-      
-      <% if Rails.env.test? %>
-        // Disable animations in test environment, to go faster and avoid random errors
-        var animationsDisabled = false;
-        
-        function disableAnimations() {
-          if ("$" in window) {
-            if (!animationsDisabled) {
-              animationsDisabled = true;
-              $.fx.off = true;
-            }
-          }
-        }
-        
-        callMethodWhenPossible(disableAnimations);
-      <% end %>
-    </script>
+    <%= render 'layouts/custom_js' %>
   </head>
   
   <body>
@@ -239,7 +43,6 @@
       <% end %>
       <%= yield %>
       <%= render 'layouts/footer' %>
-      <% debug(params) if Rails.env.development? %>
     </div>
     
     <% if defined? @benchmark_start_time %>
