@@ -33,7 +33,7 @@ class UsersController < ApplicationController
     @real_users = true
     @title = 0
     @min_rating = 1
-    @max_rating = 1000000
+    @max_rating = 10000000
     @admin = false
     if(params.has_key?:title)
       @title = params[:title].to_i
@@ -45,21 +45,31 @@ class UsersController < ApplicationController
         @real_users = false
         @min_rating = 0
         @admin = true
+      elsif @title == 11
+        @min_rating = 10000
       elsif @title > 0
         cur_color = Color.find_by_id(@title)
         if cur_color.nil?
           @title = 0
         else
-          @min_rating = [1, cur_color.pt].max
-          next_color = Color.where("pt > ?", cur_color.pt).order("pt").first
+          @min_rating = [1, 3*cur_color.pt/2].max
+          next_color = Color.where("pt > ?", 3*cur_color.pt/2).order("pt").first
           if !next_color.nil?
-            @max_rating = next_color.pt - 1
+            @max_rating = 3*next_color.pt/2 - 1
+          else
+            @max_rating = 10000
           end
         end
       end
     end
     
-    rating_condition = (@min_rating == 0 && @max_rating == 1000000 ? "1=1" : "rating <= #{@max_rating} AND rating >= #{@min_rating}")
+    tax_id = (Rails.env.production? ? 36066 : (Rails.env.development? ? 26 : 0))
+    fake_rating_select = "users.*, (CASE WHEN (id = #{tax_id}) THEN (10000) ELSE(rating) END) AS fake_rating"
+    
+    rating_condition = (@min_rating == 0 && @max_rating == 10000000 ? "1=1" : "(rating <= #{@max_rating} AND rating >= #{@min_rating})")
+    if @max_rating == 10000000
+      rating_condition = "(" + rating_condition + "OR id = #{tax_id})"
+    end
     @num_users_in_rating_range_by_country = User.where(:role => (@admin ? [:administrator, :root] : [:student])).where("#{rating_condition}").group(:country_id).count
     
     country_condition = (@country == 0 ? "1=1" : "country_id = #{@country}")
@@ -67,7 +77,7 @@ class UsersController < ApplicationController
 
     if !@real_users
       if @title == -1
-        @all_users = User.where(:role => :student).where("rating = 0 AND #{country_condition}").order("id ASC")
+        @all_users = User.where(:role => :student).where("rating = 0 AND id != #{tax_id} AND #{country_condition}").order("id ASC")
       elsif @title == -2
         @all_users = User.where(:role => [:administrator, :root]).where("#{country_condition}").order("id ASC")
       end
@@ -77,7 +87,7 @@ class UsersController < ApplicationController
     fill_sections_max_score
     
     all_users_count = (@country == 0 ? @num_users_in_rating_range_by_country.sum{|x| x.second} : @num_users_in_rating_range_by_country[@country])
-    @all_users = User.where(:role => :student).where("#{rating_condition} AND #{country_condition}").order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page, :total_entries => all_users_count)
+    @all_users = User.select(fake_rating_select).where(:role => :student).where("#{rating_condition} AND #{country_condition}").order("fake_rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page, :total_entries => all_users_count)
 
     fill_user_info(@all_users)
   end
@@ -90,7 +100,7 @@ class UsersController < ApplicationController
     if !current_user.admin?
       @all_users.append(current_user)
     end
-    @all_users.sort_by! { |u| [-u.rating, u.id] }
+    @all_users.sort_by! { |u| [(u.tax_man ? -10000 : -u.rating), u.id] }
     
     fill_user_info(@all_users)
   end
@@ -136,8 +146,11 @@ class UsersController < ApplicationController
     
     fill_sections_max_score
     
+    tax_id = (Rails.env.production? ? 36066 : (Rails.env.development? ? 26 : 0))
+    fake_rating_select = "users.*, (CASE WHEN (id = #{tax_id}) THEN (10000) ELSE(rating) END) AS fake_rating"
+    
     name_condition = "(see_name = 1 AND LOWER(first_name || ' ' || last_name) LIKE LOWER('%#{search}%')) OR (see_name = 0 AND LOWER(first_name || ' ' || SUBSTR(last_name, 1, 1) || '.') LIKE LOWER('%#{search}%'))"
-    @all_users = User.where(:role => :student).where(name_condition).order("rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page)
+    @all_users = User.select(fake_rating_select).where(:role => :student).where(name_condition).order("fake_rating DESC, id ASC").paginate(:page => page, :per_page => number_by_page)
     @admin_users = (page == 1 ? User.where(:role => [:administrator, :root]).where(name_condition).order("first_name, last_name").to_a : [])
     
     fill_user_info(@all_users)
@@ -661,15 +674,17 @@ class UsersController < ApplicationController
     # Old way of computing the rank, but was not very efficient:
     # globalrank_here = User.select("users.id, (SELECT COUNT(u.id) FROM users AS u WHERE u.rating > users.rating AND u.role = 1) + 1 AS ranking").where(:id => users.map(&:id)).order("rating DESC").to_a.map(&:ranking)
 
+    tax_local_id = -1
     users.each do |u|
       ids[local_id] = u.id
       global_user_id_to_local_id[u.id] = local_id
       @x_persection[local_id] = Array.new
       @x_recent[local_id] = 0
-      @x_rating[local_id] = u.rating
-      @x_globalrank[local_id] = rank_by_rating[u.rating]
+      @x_rating[local_id] = (u.tax_man ? Globalstatistic.get.nb_points/3 : 2*u.rating/3)
+      @x_globalrank[local_id] = (u.tax_man ? 1 : 1 + rank_by_rating[u.rating])
       @x_country[local_id] = u.country_id
       @x_linked_name[local_id] = u.linked_name
+      tax_local_id = local_id if u.tax_man
       local_id = local_id + 1
     end
 
@@ -709,15 +724,28 @@ class UsersController < ApplicationController
     twoweeksago = Date.today - 14
 
     Solvedproblem.where(:user_id => ids).includes(:problem).where("resolution_time > ?", twoweeksago).find_each do |s|
-      @x_recent[global_user_id_to_local_id[s.user_id]] += s.problem.value
+      @x_recent[global_user_id_to_local_id[s.user_id]] += s.problem.value*2/3
+      @x_recent[tax_local_id] += s.problem.value/3 if tax_local_id >= 0
     end
 
     Solvedquestion.where(:user_id => ids).includes(:question).where("resolution_time > ?", twoweeksago).find_each do |s|
-      @x_recent[global_user_id_to_local_id[s.user_id]] += s.question.value
+      @x_recent[global_user_id_to_local_id[s.user_id]] += s.question.value*2/3
+      @x_recent[tax_local_id] += s.question.value/3 if tax_local_id >= 0
+    end
+    
+        
+    if tax_local_id >= 0
+      Solvedproblem.where.not(:user_id => ids).includes(:problem).where("resolution_time > ?", twoweeksago).find_each do |s|
+        @x_recent[tax_local_id] += s.problem.value/3
+      end
+      
+      Solvedquestion.where.not(:user_id => ids).includes(:question).where("resolution_time > ?", twoweeksago).find_each do |s|
+        @x_recent[tax_local_id] += s.question.value/3
+      end
     end
 
     Pointspersection.where(:user_id => ids).all.each do |p|
-	    @x_persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
+      @x_persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
     end
   end  
 end

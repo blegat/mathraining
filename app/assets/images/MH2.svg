@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="28"
+   height="20"
+   viewBox="0 0 28 20"
+   fill="none"
+   version="1.1"
+   id="svg305"
+   sodipodi:docname="MH2.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <metadata
+     id="metadata309">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1440"
+     inkscape:window-height="830"
+     id="namedview307"
+     showgrid="false"
+     inkscape:pagecheckerboard="true"
+     inkscape:zoom="11.313709"
+     inkscape:cx="11.578874"
+     inkscape:cy="4.065864"
+     inkscape:window-x="-6"
+     inkscape:window-y="-6"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g298"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     clip-path="url(#clip0)"
+     id="g298">
+    <rect
+       width="14.427046"
+       height="16.788239"
+       fill="#ffffff"
+       id="rect284"
+       x="2.8169017"
+       y="1.0008252"
+       style="stroke-width:0.71174" />
+    <rect
+       x="3.54999"
+       y="1.75"
+       width="20.9"
+       height="15.3"
+       fill="#EDD581"
+       fill-opacity="0.39"
+       stroke="#EDD581"
+       stroke-width="1.5"
+       id="rect286"
+       clip-path="url(#clipPath5)" />
+    <line
+       x1="6.99997"
+       y1="5.84998"
+       x2="21"
+       y2="5.84998"
+       stroke="#EDD581"
+       stroke-width="1.5"
+       id="line288"
+       clip-path="url(#clipPath4)" />
+    <line
+       x1="7"
+       y1="10.25"
+       x2="15"
+       y2="10.25"
+       stroke="#EDD581"
+       stroke-width="1.5"
+       id="line290" />
+    <line
+       x1="20.1153"
+       y1="13.4359"
+       x2="22.8967"
+       y2="19.8596"
+       stroke="#EDD581"
+       stroke-width="1.5"
+       id="line292"
+       clip-path="url(#clipPath3)" />
+    <line
+       y1="-0.75"
+       x2="7"
+       y2="-0.75"
+       transform="matrix(-0.397339 0.917672 0.917672 0.397339 19.7729 13.6)"
+       stroke="#EDD581"
+       stroke-width="1.5"
+       id="line294"
+       clip-path="url(#clipPath2)" />
+    <circle
+       cx="19.6"
+       cy="12.2"
+       r="2.05"
+       fill="#F8EFCE"
+       stroke="#EDD581"
+       stroke-width="1.5"
+       id="circle296"
+       clip-path="url(#clipPath1)" />
+    <rect
+       id="rect311"
+       width="4.4507041"
+       height="4.126761"
+       x="2.8169017"
+       y="1.0140845" />
+  </g>
+  <defs
+     id="defs303">
+    <clipPath
+       id="clip0">
+      <rect
+         width="28"
+         height="20"
+         fill="white"
+         id="rect300" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1">
+      <rect
+         style="fill:#000000"
+         id="rect2"
+         width="17.25"
+         height="20.25"
+         x="0"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath2">
+      <rect
+         style="fill:#000000"
+         id="rect3"
+         width="17.249998"
+         height="20.249998"
+         x="-19.772898"
+         y="-13.599998"
+         transform="matrix(-0.39733896,0.91767192,0.91767192,0.39733896,0,0)" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3">
+      <rect
+         style="fill:#000000"
+         id="rect4"
+         width="17.25"
+         height="20.25"
+         x="0"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4">
+      <rect
+         style="fill:#000000"
+         id="rect5"
+         width="17.25"
+         height="20.25"
+         x="0"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5">
+      <rect
+         style="fill:#000000"
+         id="rect6"
+         width="17.25"
+         height="20.25"
+         x="0"
+         y="0" />
+    </clipPath>
+  </defs>
+</svg>

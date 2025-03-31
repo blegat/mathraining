@@ -25,7 +25,7 @@
     <% User.where(:group => g).order("rating DESC").each do |u| %>
       <tr>
       <td><%= u.linked_name(1) %></td>
-      <td><%= u.rating %></td>
+      <td><%= 2*u.rating/3 %></td>
       <td><%= u.email %></td>
       <% lastco = u.last_connexion_date %>
       <td>

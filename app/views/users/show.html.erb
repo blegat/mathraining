@@ -2,11 +2,20 @@
 
 <% provide(:title, @user.name) %>
 
-<% if !@user.admin? %>
-  <% actualrating = @user.rating %>
+<% if @user.tax_man %>
+  <% actualrating = (Rails.env.development? ? 2680756 : Globalstatistic.get.nb_points/3) %>
+  <% rank = 1 %>
+  <% num_users = Globalstatistic.get.nb_ranked_users + 1 %>
+  <% rank_centile = (rank == 1 ? 100 : (100.0 * (num_users - rank + 1) / num_users).round(1)) %>
+  <% niveau = @user.level %>
+  <% grade = (@user.sex == 0 ? niveau[:name] : niveau[:femininename]) %>
+  <% user_color_light = niveau[:color] %>
+  <% user_color_dark = niveau[:dark_color] %>
+<% elsif !@user.admin? %>
+  <% actualrating = @user.rating*2/3 %>
   <% if actualrating > 0 %>
-    <% rank = User.where(:role => :student).where("rating > ?", actualrating).count + 1 %>
-    <% num_users = Globalstatistic.get.nb_ranked_users %>
+    <% rank = User.where(:role => :student).where("rating > ?", 3*actualrating/2).count + 2 %>
+    <% num_users = Globalstatistic.get.nb_ranked_users + 1 %>
     <% rank_centile = (rank == 1 ? 100 : (100.0 * (num_users - rank + 1) / num_users).round(1)) %>
   <% end %>
   <% niveau = @user.level %>
@@ -19,7 +28,7 @@
   <% user_color_dark = "white" %>
 <% end %>
 
-<% if !@user.admin? %>
+<% if !@user.admin? && !@user.tax_man %>
 
   <!-- On détermine ce que la personne peut voir ou ne pas voir -->
   
@@ -70,7 +79,7 @@
       <% end %>
       <% peutvoir = !non_accessible_chapters_set.include?(q.chapter_id) %>
       <% q_encours = q_encours + 1 %>
-      <% act.push({:time => q.time, :type => "Q", :id => q.id, :peutvoir => peutvoir, :pt => 3 * q.level, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
+      <% act.push({:time => q.time, :type => "Q", :id => q.id, :peutvoir => peutvoir, :pt => 2 * q.level, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
     <% elsif bestqui == "P" %>
       <% p = problems[p_encours] %>
       <% nb_p = nb_p+1 %>
@@ -80,7 +89,7 @@
       <% end %>
       <% peutvoir = non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(p.id) %>
       <% p_encours = p_encours + 1 %>
-      <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => 15 * p.level, :number => p.number, :section_id => p.section_id}) %>
+      <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => 10 * p.level, :number => p.number, :section_id => p.section_id}) %>
     <% end %>
   <% end %>
   
@@ -147,7 +156,7 @@
     <% end %>
   </div>
 <% end %>
-  
+
 <% if !@user.admin? %>
   <div class="g-col-12 g-col-sm-6 g-col-lg-4 basic_container text-center p-1">
     
@@ -161,13 +170,20 @@
     <td class="text-center pt-1" style="width:25%;"><%= image_tag("MH.svg", height: 34, alt: "Mentions honorables", title: "Mentions honorables", style: "margin-top:5px;") %></td>
     </tr>
     <tr>
-    <% num_medals = @user.contestscores.group(:medal).count %>
-    <% ["gold_medal", "silver_medal", "bronze_medal", "honourable_mention"].each do |m| %>
-      <td class="text-center pt-1 fw-bold <%= @user.color_class %>" style="font-size:22px;">
-      <%= num_medals.key?(m) ? num_medals[m] : "-" %>
-      </td>
+    <% if @user.tax_man %>
+      <td class="text-center pt-1 fw-bold <%= @user.color_class %>" style="font-size:22px;">34.7</td>
+      <td class="text-center pt-1 fw-bold <%= @user.color_class %>" style="font-size:22px;">67.7</td>
+      <td class="text-center pt-1 fw-bold <%= @user.color_class %>" style="font-size:22px;">92.3</td>
+      <td class="text-center pt-1 fw-bold <%= @user.color_class %>" style="font-size:22px;">153</td>
+    <% else %>
+      <% num_medals = @user.contestscores.group(:medal).count %>
+      <% ["gold_medal", "silver_medal", "bronze_medal", "honourable_mention"].each do |m| %>
+        <td class="text-center pt-1 fw-bold <%= @user.color_class %>" style="font-size:22px;">
+        <%= num_medals.key?(m) ? (2*num_medals[m]/3.0).round(1) : "-" %>
+        </td>
+      <% end %>
+      </tr>
     <% end %>
-    </tr>
     </table>
       
   </div>
@@ -195,7 +211,7 @@
   </div>
 <% end %>
 
-<% if !@user.admin? %>
+<% if !@user.admin? && !@user.tax_man %>
   <!-- Style pour les progress bar circulaires -->
   <style type="text/css">
 
@@ -457,10 +473,10 @@
         <% else %>
           <!-- Médaille -->
           <td class="p-0 text-center" style="width:35px; <%= remove_border %>">
-          <%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == "gold_medal" %>
-          <%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") if ac[:medal] == "silver_medal" %>
-          <%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") if ac[:medal] == "bronze_medal" %>
-          <%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") if ac[:medal] == "honourable_mention" %>
+          <%= image_tag("Gold2.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") if ac[:medal] == "gold_medal" %>
+          <%= image_tag("Silver2.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") if ac[:medal] == "silver_medal" %>
+          <%= image_tag("Bronze2.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") if ac[:medal] == "bronze_medal" %>
+          <%= image_tag("MH2.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") if ac[:medal] == "honourable_mention" %>
           <%= "-" if ac[:medal] == "no_medal" || ac[:medal] == "undefined_medal" %>
           </td>
           <td class="d-none d-sm-table-cell text-center" style="width:90px; <%= remove_border %>">
@@ -486,12 +502,106 @@
     </div>
   </div>
 
+<% end %>
+
+
+<% if @user.tax_man %>
+  <!-- Points -->
+  <% actperday = Array.new %>
+  <% parquoi = "jour" %>
+  <div class="g-col-12 g-col-xl-6 basic_container p-1">
+    <div class="container_title">Points</div>
+    <div class="resolution_container_table">
+      <!-- Début du tableau des résolutions -->
+      <table class="table middle_aligned my-0" style="width:100%;">
+        <% sq_levels_by_month = [2448, 1113, 1085, 794, 809, 1311, 406, 191, 772, 406, 426, 178, 548, 1222, 994, 1349, 1123, 1756, 1631, 2137, 3267, 2487, 3140, 2668, 1991, 3280, 5126, 4325, 2856, 3139, 5273, 3750, 4637, 5036, 4707, 4977, 4724, 4937, 3739, 4232, 5898, 5565, 6769, 9573, 9368, 7095, 6010, 6028, 6439, 7437, 7611, 8210, 7658, 8476, 10324, 10906, 9662, 6058, 10825, 9655, 10270, 9083, 14596, 13183, 18278, 12686, 11660, 9206, 7958, 7358, 11074, 9593, 10751, 8625, 11695, 11462, 11735, 8775, 9229, 15141, 13186, 9676, 13908, 12180, 18233, 14078, 13892, 14068, 15014, 13293, 16488, 17334, 17191, 11537, 31742, 27764, 33747, 28273, 23914, 21872, 24815, 21410, 26634, 30655, 27718, 17774, 22188, 27870, 30311, 31768, 39386, 37302, 30520, 23956, 29158, 33115, 30560, 21811, 32464, 25453, 33262, 37039, 29141] %>
+        <% sp_levels_by_month = [349, 398, 309, 203, 402, 250, 232, 54, 64, 90, 164, 134, 123, 160, 188, 281, 374, 426, 499, 417, 562, 557, 470, 323, 396, 493, 616, 662, 591, 676, 808, 715, 817, 896, 694, 782, 934, 1050, 641, 882, 1200, 1771, 1380, 2030, 2086, 1476, 851, 950, 842, 997, 1175, 1360, 1385, 1507, 1552, 2793, 2699, 1248, 1291, 1884, 1892, 1898, 2248, 2829, 4490, 3067, 2063, 2116, 2349, 1633, 1741, 2137, 2313, 1481, 1832, 1899, 2405, 1725, 1366, 3159, 2628, 2055, 1596, 1804, 2482, 2210, 1639, 1798, 2207, 2800, 2165, 4038, 3328, 1567, 1805, 3309, 3468, 3554, 3696, 2952, 3449, 2767, 2618, 5376, 5106, 2537, 2347, 2068, 2746, 2121, 4912, 4697, 5773, 3707, 3719, 5483, 3123, 3800, 3248, 2636, 3728, 3859, 2766] %>
+        <% sq_levels_by_month.push(Solvedquestion.joins(:question).where("resolution_time >= ? AND resolution_time < ?", Date.new(2025,3,1).in_time_zone.to_datetime, Date.new(2025,4,1).in_time_zone.to_datetime).sum(:level)) %>
+        <% sq_levels_by_month.push(Solvedquestion.joins(:question).where("resolution_time >= ? AND resolution_time < ?", Date.new(2025,4,1).in_time_zone.to_datetime, Date.new(2025,5,1).in_time_zone.to_datetime).sum(:level)) %>
+        <% sp_levels_by_month.push(Solvedproblem.joins(:problem).where("resolution_time >= ? AND resolution_time < ?", Date.new(2025,3,1).in_time_zone.to_datetime, Date.new(2025,4,1).in_time_zone.to_datetime).sum(:level)) %>
+        <% sp_levels_by_month.push(Solvedproblem.joins(:problem).where("resolution_time >= ? AND resolution_time < ?", Date.new(2025,4,1).in_time_zone.to_datetime, Date.new(2025,5,1).in_time_zone.to_datetime).sum(:level)) %>
+        
+        <% d = Date.new(2025,4,1) %>
+        <% i = 0 %>
+        <% while d >= Date.new(2014,12,1) %>
+          <tr>
+          <% remove_border = "" %>
+          <% if i == 0 %>
+            <% remove_border = "border-top:0px;" %>
+          <% end %>
+          <td class="text-center fw-bold <%= @user.color_class %>" style="width:80px; <%= remove_border %>">+ <%= sp_levels_by_month[sp_levels_by_month.size-1-i]*5 %></td>
+          <td style="width:50px; <%= remove_border %>"><%= write_month_only_small(d) %></td>
+          <td style="<%= remove_border %>">Taxes sur les problèmes</td>
+          </tr>
+          
+          <tr>
+          <% remove_border = "" %>
+          <% if d == Date.new(2014,12,1) %>
+            <% remove_border += "border-bottom:0px;" %>
+          <% end %>
+        
+          <td class="text-center fw-bold <%= @user.color_class %>" style="width:80px; <%= remove_border %>">+ <%= sq_levels_by_month[sq_levels_by_month.size-1-i]*1 %></td>
+          <td style="width:50px; <%= remove_border %>"><%= write_month_only_small(d) %></td>
+          <td style="<%= remove_border %>">Taxes sur les exercices</td>
+          </tr>
+          
+          <% actperday.push({:time => d, :pt => sp_levels_by_month[sp_levels_by_month.size-1-i]*5 + sq_levels_by_month[sq_levels_by_month.size-1-i]*1}) %>
+          <% i += 1 %>
+          <% d = d-1.month %>
+        <% end %>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Médailles -->
+  <div class="g-col-12 g-col-xl-6 basic_container p-1">
+    <div class="container_title">Médailles</div>
+    <div class="resolution_container_table">
+    
+      <!-- Début du tableau des concours -->
+      <table class="table middle_aligned mb-0" style="width:100%;">
+      <% numact = 0 %>
+      <% cs = Contestscore.group(:contest_id, :medal).count %>
+      <% Contest.order("id DESC").each do |c| %>
+        <% numact += 1 %>
+        <tr>
+          <% remove_border = "" %>
+          <% if numact == 1 %>
+            <% remove_border = "border-top:0px;" %>
+          <% end %>
+          <% if numact == Contest.count %>
+            <% remove_border += "border-bottom:0px;" %>
+          <% end %>
+
+          <!-- Médaille -->
+          <td class="p-0 text-center" style="width:150px; <%= remove_border %>">
+          <% if c.medal %>
+            <%= ((cs[[c.id, "gold_medal"]].nil? ? 0 : cs[[c.id, "gold_medal"]])/3.0).round(1) %> x <%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") %> -
+            <%= ((cs[[c.id, "silver_medal"]].nil? ? 0 : cs[[c.id, "silver_medal"]])/3.0).round(1) %> x  <%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") %><br/>
+            <%= ((cs[[c.id, "bronze_medal"]].nil? ? 0 : cs[[c.id, "bronze_medal"]])/3.0).round(1) %> x <%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") %> -
+            <%= ((cs[[c.id, "honourable_mention"]].nil? ? 0 : cs[[c.id, "honourable_mention"]])/3.0).round(1) %> x <%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") %>
+          <% else %>
+            -
+          <% end %>
+          </td>
+          <td class="d-none d-sm-table-cell text-center" style="width:150px; <%= remove_border %>"><%= write_date_only_small(c[:start_time]) %> - <%= write_date_only_small(c[:end_time]) %></td>
+          <td class="text-start" style="<%= remove_border %>;"><%= link_to "Concours ##{c[:number]}", contest_path(c[:id], :tab => 1) %></td>
+        </tr>
+      <% end %>
+      </table>
+    </div>
+  </div>
+<% end %>
+
+<% if !@user.admin? %>
 
   <!-- Évolution de l'étudiant -->
   <div class="g-col-12 basic_container p-1">
   <div class="container_title">Évolution</div>
     
   <div class="pe-2 pb-2" style="padding-left:20px;">
+    <% if !@user.tax_man %>
+    
     <%= @user.name %> s'est inscrit<%= "e" if @user.sex == 1 %> sur Mathraining le <span class="<%= @user.color_class %>"><%= write_date_only(@user.created_at) %></span>.
     <% if nb_p >= 3 %>
       <% followings = Following.includes(:user).where(:submission_user => @user, :kind => [:first_corrector, :other_corrector]).group(:user_id).select("count(id) AS num_corrections, user_id").order("num_corrections DESC, user_id ASC").to_a %>
@@ -511,6 +621,12 @@
         <% end %>
       <% end %>
     <% end %>
+    
+    <% else %>
+    
+    <%= @user.name %> veille sur ses concitoyens depuis le <span class="<%= @user.color_class %>"><%= write_date_only(Date.new(2013, 7, 21)) %></span>.
+    
+    <% end %>
   </div>
     
   <% if actualrating > 0 %>
@@ -526,20 +642,23 @@
     </center>
 
     <!-- Script pour le graphique de l'évolution -->
-    <% niveaux = Color.get_all %>
+    <% niveaux = Color.get_all.clone %>
+    <% if @user.tax_man %>
+      <% niveaux.push({id: 11, pt: 1000000, color: "#E6C619", dark_color: "#FFD700", name: "Roi des Belges", femininename: "Roi des Belges"}) %>
+    <% end %>
 
     <% i = 1 %>
     <% numerolevel = 0 %>
 
     <% niveaux.each do |n| %>
-      <% if niveau.id == n.id %>
+      <% if niveau[:id] == n[:id] %>
         <% numerolevel = i %>
       <% end %>
       <% i = i+1 %>
     <% end %>
 
     <% nombrelevel = i-1 %>
-
+    
     <% maxi = 0 %>
 
 
@@ -595,7 +714,7 @@
         var pct = c.offsetWidth / W;
         var W_real = pct * W;
         var H_real = pct * H;
-        var W_offset = 50;
+        var W_offset = <%= @user.tax_man ? 60 : 50 %>;
         var H_offset = 5;
         var W_size = W_real - W_offset - 50;
         var H_size = H_real - H_offset - 20;
@@ -604,32 +723,33 @@
 
 
         // Affichage des niveaux avec couleurs
-        ctx.font = "14px Arial";
-        ctx.textAlign = 'right';
-        <% i = 1 %>
-        var prec = 1000;
         <% niveaux.each do |n| %>
-          <% haut = [1 - (n.pt / maxi), 0].max %>
-        
-          // Points à gauche du graphique
-          <% if i > 1 %>
-            <% if haut > 0 %>
-              if (H_size * <%= haut %> < prec - 15){
-                ctx.fillStyle = (is_dark ? 'white' : 'black');
-                ctx.fillText(<%= n.pt %>, W_offset - 6, H_offset + H_size * <%= haut %> + 5);
-                prec = H_size * <%= haut %>;
-              }
-            <% end %>
-          <% end %>
-          
+          <% haut = [1 - (n[:pt] / maxi), 0].max %>
+                    
           // Affichage du rectangle
           <% if haut > 0 %>
             ctx.beginPath();
             ctx.rect(W_offset, H_offset, W_size, H_size * <%= haut %>);
-            ctx.fillStyle = (is_dark ? '<%= n.dark_color %>' : '<%= n.color %>');
+            ctx.fillStyle = (is_dark ? '<%= n[:dark_color] %>' : '<%= n[:color] %>');
             ctx.fill();
           <% end %>
-          <% i = i+1 %>
+        <% end %>
+        
+        
+        ctx.font = "14px Arial";
+        ctx.textAlign = 'right';
+        var prec = -1000;
+        <% niveaux.reverse().each do |n| %>
+          <% haut = [1 - (n[:pt] / maxi), 0].max %>
+        
+          // Points à gauche du graphique
+          <% if n[:pt] > 0 && haut > 0 %>
+            if (H_size * <%= haut %> > prec + 15){
+              ctx.fillStyle = (is_dark ? 'white' : 'black');
+              ctx.fillText(<%= n[:pt] %>, W_offset - 6, H_offset + H_size * <%= haut %> + 5);
+              prec = H_size * <%= haut %>;
+            }
+          <% end %>
         <% end %>
 
 

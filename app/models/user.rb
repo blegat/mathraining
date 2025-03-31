@@ -271,19 +271,25 @@ class User < ActiveRecord::Base
   def num_notifications_update
     return followings.where(:read => false).count
   end
+  
+  # Tells if this user takes the taxes
+  def tax_man
+    return self.id == (Rails.env.production? ? 36066 : (Rails.env.development? ? 26 : 0))
+  end
 
   # Gives the "level" of the user
   def level
+    return {id: 11, pt: 1000000, color: "#E6C619", dark_color: "#FFD700", name: "Roi des Belges", femininename: "Roi des Belges"} if self.tax_man
     return {} if self.admin? # Should not be used anymore with light/dark theme!
     actuallevel = nil
     Color.get_all.each do |c|
-      if c.pt <= rating
+      if c.pt <= 2*rating/3
         actuallevel = c
       else
         return actuallevel
       end
     end
-    return {id: 0, pt: 0, color: "#FF0000", name: "Undefined", feminine_name: "Undefined"} if actuallevel.nil? # For tests, when no color exists
+    return {id: 0, pt: 0, color: "#FF0000", dark_color: "#FF0000", name: "Undefined", femininename: "Undefined"} if actuallevel.nil? # For tests, when no color exists
     return actuallevel
   end
 
@@ -400,7 +406,9 @@ class User < ActiveRecord::Base
   
   # Gives the color class to be used for this user
   def color_class
-    if self.admin?
+    if self.tax_man
+      return "text-color-level-altesse"
+    elsif self.admin?
       return "text-color-black-white";
     elsif self.deleted?
       return "text-color-level-inactive";
@@ -417,7 +425,7 @@ class User < ActiveRecord::Base
     goodname = self.name      if name_type == 0
     goodname = self.fullname  if name_type == 1
     goodname = self.shortname if name_type == 2
-    if self.admin?
+    if self.admin? && !self.tax_man
       s = (add_corrector_prefix ? self.corrector_prefix : "") + "<span class='text-color-black-white fw-bold'>#{html_escape(goodname)}</span>"
     elsif !self.corrector?
       s = "<span class='fw-bold #{self.color_class}'>#{html_escape(goodname)}</span>"

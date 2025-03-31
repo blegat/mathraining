@@ -2,12 +2,12 @@
   <% with_pagination = false %>
 <% end %>
 
-<table id="users_table" class="table table-bordered" style="max-width:800px;">
+<table id="users_table" class="table table-bordered" style="max-width:880px;">
   <tr class="table-ld-header">
-    <th style="width:20px;"></th>
+    <th style="width:40px;"></th>
     <th style="width:230px;">Nom</th>
     <th class="text-center" style="width:50px;">Pays</th>
-    <th class="text-center" style="width:90px;">Score</th>
+    <th class="text-center" style="width:100px;">Score</th>
     <% @allsec.each do |s| %>
       <th class="d-none d-md-table-cell" style="width:60px;"><center><%= s.initials %></center></th>
     <% end %>

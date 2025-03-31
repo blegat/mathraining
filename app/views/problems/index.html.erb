@@ -36,7 +36,7 @@
   <% if problems_by_level[level].nil? %>
     <p>Aucun problème de niveau <%= level %> n'est disponible.</p>
   <% else %>
-    <p>Chaque problème de niveau <%= level %> vaut <b><%= 15*level %></b> points.</p>
+    <p>Chaque problème de niveau <%= level %> vaut <b><%= 15*level %></b> points hors taxes.</p>
     
     <% problems_by_level[level].each do |p| %>
       <% num_drafts = 0 %>

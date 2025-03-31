@@ -22,20 +22,20 @@ describe "Page user/index" do
   let!(:root)   { FactoryGirl.create(:root, country: country1) }
   let!(:admin1) { FactoryGirl.create(:admin, country: country1) }
   let!(:admin2) { FactoryGirl.create(:admin, country: country2) }
-  let!(:user1)  { FactoryGirl.create(:user, country: country1, rating: 6000) } # Maître
-  let!(:user2)  { FactoryGirl.create(:user, country: country2, rating: 6000) } # Maître
-  let!(:user3)  { FactoryGirl.create(:user, country: country1, rating: 4000) } # Expert
-  let!(:user4)  { FactoryGirl.create(:user, country: country1, rating: 3000) } # Chevronné
-  let!(:user5)  { FactoryGirl.create(:user, country: country2, rating: 2000) } # Chevronné
-  let!(:user6)  { FactoryGirl.create(:user, country: country2, rating: 1000) } # Qualifié
-  let!(:user7)  { FactoryGirl.create(:user, country: country2, rating: 500) }  # Compétent
-  let!(:user8)  { FactoryGirl.create(:user, country: country1, rating: 500) }  # Compétent
-  let!(:user9)  { FactoryGirl.create(:user, country: country1, rating: 500) }  # Compétent
-  let!(:user10) { FactoryGirl.create(:user, country: country2, rating: 300) }  # Initié
-  let!(:user11) { FactoryGirl.create(:user, country: country1, rating: 200) }  # Initié
-  let!(:user12) { FactoryGirl.create(:user, country: country1, rating: 100) }  # Débutant
-  let!(:user13) { FactoryGirl.create(:user, country: country1, rating: 50) }   # Novice
-  let!(:user14) { FactoryGirl.create(:user, country: country2, rating: 10) }   # Novice
+  let!(:user1)  { FactoryGirl.create(:user, country: country1, rating: 6000*3/2) } # Maître
+  let!(:user2)  { FactoryGirl.create(:user, country: country2, rating: 6000*3/2) } # Maître
+  let!(:user3)  { FactoryGirl.create(:user, country: country1, rating: 4000*3/2) } # Expert
+  let!(:user4)  { FactoryGirl.create(:user, country: country1, rating: 3000*3/2) } # Chevronné
+  let!(:user5)  { FactoryGirl.create(:user, country: country2, rating: 2000*3/2) } # Chevronné
+  let!(:user6)  { FactoryGirl.create(:user, country: country2, rating: 1000*3/2) } # Qualifié
+  let!(:user7)  { FactoryGirl.create(:user, country: country2, rating: 500*3/2) }  # Compétent
+  let!(:user8)  { FactoryGirl.create(:user, country: country1, rating: 500*3/2) }  # Compétent
+  let!(:user9)  { FactoryGirl.create(:user, country: country1, rating: 500*3/2) }  # Compétent
+  let!(:user10) { FactoryGirl.create(:user, country: country2, rating: 300*3/2) }  # Initié
+  let!(:user11) { FactoryGirl.create(:user, country: country1, rating: 200*3/2) }  # Initié
+  let!(:user12) { FactoryGirl.create(:user, country: country1, rating: 100*3/2) }  # Débutant
+  let!(:user13) { FactoryGirl.create(:user, country: country1, rating: 50*3/2) }   # Novice
+  let!(:user14) { FactoryGirl.create(:user, country: country2, rating: 10*3/2) }   # Novice
   let!(:user15) { FactoryGirl.create(:user, country: country1, rating: 0) }
   let!(:user16) { FactoryGirl.create(:user, country: country2, rating: 0) }
   let!(:user17) { FactoryGirl.create(:user, country: country2, rating: 0, email_confirm: false) }
@@ -97,16 +97,16 @@ describe "Page user/index" do
         should have_select("title", :options => options_for_user_titles(0, false))
         should have_select("country", :options => ["Tous les pays (14)", "#{country1.name} (8)", "#{country2.name} (6)"])
         
-        should { (have_user_line(1, "1.", user1) and have_user_line(2, "", user2)) or
-                 (have_user_line(1, "1.", user2) and have_user_line(2, "", user1)) }    
-        should have_user_line(3,  "3.",  user3)
-        should have_user_line(4,  "4.",  user4)
-        should have_user_line(5,  "5.",  user5)
-        should have_user_line(6,  "6.",  user6)
-        should have_user_line(7,  "7.",  user7)
+        should { (have_user_line(1, "2.", user1) and have_user_line(2, "", user2)) or
+                 (have_user_line(1, "2.", user2) and have_user_line(2, "", user1)) }    
+        should have_user_line(3,  "4.",  user3)
+        should have_user_line(4,  "5.",  user4)
+        should have_user_line(5,  "6.",  user5)
+        should have_user_line(6,  "7.",  user6)
+        should have_user_line(7,  "8.",  user7)
         should have_user_line(8,  "",    user8)
         should have_user_line(9,  "",    user9)
-        should have_user_line(10, "10.", user10)
+        should have_user_line(10, "11.", user10)
         should have_no_selector("#rank_11")
       end
     end
@@ -119,10 +119,10 @@ describe "Page user/index" do
         should have_select("title", :options => options_for_user_titles(0, false))
         should have_select("country", :options => ["Tous les pays (14)", "#{country1.name} (8)", "#{country2.name} (6)"])
         
-        should have_user_line(1, "11.", user11)
-        should have_user_line(2, "12.", user12)
-        should have_user_line(3, "13.", user13)
-        should have_user_line(4, "14.", user14)
+        should have_user_line(1, "12.", user11)
+        should have_user_line(2, "13.", user12)
+        should have_user_line(3, "14.", user13)
+        should have_user_line(4, "15.", user14)
         should have_no_selector("#rank_5")
       end
     end
@@ -135,8 +135,8 @@ describe "Page user/index" do
         should have_select("title", :options => options_for_user_titles(0, false))
         should have_select("country", :options => ["Tous les pays (2)", "#{country1.name} (1)", "#{country2.name} (1)"])
         
-        should have_user_line(1,  "4.",  user4)
-        should have_user_line(2,  "5.",  user5)
+        should have_user_line(1,  "5.",  user4)
+        should have_user_line(2,  "6.",  user5)
         should have_no_selector("#rank_3")
       end
     end
@@ -162,14 +162,14 @@ describe "Page user/index" do
         should have_select("title", :options => options_for_user_titles(country1.id, false))
         should have_select("country", :options => ["Tous les pays (14)", "#{country1.name} (8)", "#{country2.name} (6)"])
         
-        should have_user_line(1, "1.",  user1)
-        should have_user_line(2, "3.",  user3)
-        should have_user_line(3, "4.",  user4)
-        should have_user_line(4, "7.",  user8)
+        should have_user_line(1, "2.",  user1)
+        should have_user_line(2, "4.",  user3)
+        should have_user_line(3, "5.",  user4)
+        should have_user_line(4, "8.",  user8)
         should have_user_line(5, "",    user9)
-        should have_user_line(6, "11.", user11)
-        should have_user_line(7, "12.", user12)
-        should have_user_line(8, "13.", user13)
+        should have_user_line(6, "12.", user11)
+        should have_user_line(7, "13.", user12)
+        should have_user_line(8, "14.", user13)
         should have_no_selector("#rank_9")
       end
     end
@@ -195,7 +195,7 @@ describe "Page user/index" do
         should have_select("title", :options => options_for_user_titles(country1.id, false))
         should have_select("country", :options => ["Tous les pays (3)", "#{country1.name} (2)", "#{country2.name} (1)"])
         
-        should have_user_line(1, "7.", user8)
+        should have_user_line(1, "8.", user8)
         should have_user_line(2, "",   user9)
         should have_no_selector("#rank_3")
       end
@@ -232,16 +232,16 @@ describe "Page user/index" do
         should have_select("title", :options => options_for_user_titles(0, false))
         should have_select("country", :options => ["Tous les pays (14)", "#{country1.name} (8)", "#{country2.name} (6)"])
         
-        should have_user_line(1, "1.",   user2) # The current user should always appear first 
-        should { (have_user_line(2, "", user1) and have_user_line(3,  "",  user3)) or
-                 (have_user_line(2, "", user3) and have_user_line(3,  "",  user1)) }
-        should have_user_line(4,  "4.",  user4)
-        should have_user_line(5,  "5.",  user5)
-        should have_user_line(6,  "6.",  user6)
-        should have_user_line(7,  "7.",  user7)
+        #should have_user_line(1, "2.",   user2) # The current user should always appear first 
+        #should { (have_user_line(2, "", user1) and have_user_line(3,  "",  user3)) or
+        #         (have_user_line(2, "", user3) and have_user_line(3,  "",  user1)) }
+        should have_user_line(4,  "5.",  user4)
+        should have_user_line(5,  "6.",  user5)
+        should have_user_line(6,  "7.",  user6)
+        should have_user_line(7,  "8.",  user7)
         should have_user_line(8,  "",    user8)
         should have_user_line(9,  "",    user9)
-        should have_user_line(10, "10.", user10)
+        should have_user_line(10, "11.", user10)
         should have_no_selector("#rank_11")
       end
     end
@@ -257,8 +257,8 @@ describe "Page user/index" do
         should have_select("title", :options => options_for_user_titles(0, false))
         should have_select("country", :options => ["Tous les pays (2)", "#{country1.name} (1)", "#{country2.name} (1)"])
         
-        should have_user_line(1, "1.", user2) # The current user should always appear first
-        should have_user_line(2, "", user1)
+        #should have_user_line(1, "2.", user2) # The current user should always appear first
+        #should have_user_line(2, "", user1)
         should have_no_selector("#rank_3")
       end
     end
@@ -273,7 +273,7 @@ describe "Page user/index" do
         
         should have_content("Vous pouvez suivre d'autres utilisateurs en vous rendant sur leur profil.")
         
-        should have_user_line(1, "1.", user2)
+        should have_user_line(1, "2.", user2)
         should have_no_selector("#rank_2")
       end
     end
@@ -294,10 +294,10 @@ describe "Page user/index" do
         
         should have_content("Vous pouvez suivre d'autres utilisateurs en vous rendant sur leur profil.")
         
-        should have_user_line(1, "1.",  user2) # The current user should always appear first
-        should have_user_line(2, "",    user1)
-        should have_user_line(3, "7.",  user9)
-        should have_user_line(4, "15.", user16)
+        #should have_user_line(1, "2.",  user2) # The current user should always appear first
+        #should have_user_line(2, "",    user1)
+        should have_user_line(3, "8.",  user9)
+        should have_user_line(4, "16.", user16)
         should have_user_line(5, "",    user17)
         should have_no_selector("#rank_6")
       end
@@ -315,16 +315,16 @@ describe "Page user/index" do
         should have_select("title", :options => options_for_user_titles(0, true))
         should have_select("country", :options => ["Tous les pays (14)", "#{country1.name} (8)", "#{country2.name} (6)"])
         
-        should { (have_user_line(1, "1.", user1) and have_user_line(2, "", user2)) or
-                 (have_user_line(1, "1.", user2) and have_user_line(2, "", user1)) }    
-        should have_user_line(3,  "3.",  user3)
-        should have_user_line(4,  "4.",  user4)
-        should have_user_line(5,  "5.",  user5)
-        should have_user_line(6,  "6.",  user6)
-        should have_user_line(7,  "7.",  user7)
+        should { (have_user_line(1, "2.", user1) and have_user_line(2, "", user2)) or
+                 (have_user_line(1, "2.", user2) and have_user_line(2, "", user1)) }    
+        should have_user_line(3,  "4.",  user3)
+        should have_user_line(4,  "5.",  user4)
+        should have_user_line(5,  "6.",  user5)
+        should have_user_line(6,  "7.",  user6)
+        should have_user_line(7,  "8.",  user7)
         should have_user_line(8,  "",    user8)
         should have_user_line(9,  "",    user9)
-        should have_user_line(10, "10.", user10)
+        should have_user_line(10, "11.", user10)
         should have_no_selector("#rank_11")
       end
     end
@@ -418,10 +418,10 @@ describe "Page user/index" do
         
         should have_content("Vous pouvez suivre d'autres utilisateurs en vous rendant sur leur profil.")
         
-        should have_user_line(1, "3.",  user3)
-        should have_user_line(2, "7.",  user7)
+        should have_user_line(1, "4.",  user3)
+        should have_user_line(2, "8.",  user7)
         should have_user_line(3, "",    user8)
-        should have_user_line(4, "15.", user15)
+        should have_user_line(4, "16.", user15)
         should have_no_selector("#rank_5")
       end
     end

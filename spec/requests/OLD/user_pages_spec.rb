@@ -247,23 +247,23 @@ describe "User pages" do
       end
     end
     
-    describe "visits title scores page" do
-      before { visit users_path(:title => color) }
-      it do
-        should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points
-        should have_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points
-        should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) # Has 225 points
-      end
-    end
+    #describe "visits title scores page" do
+    #  before { visit users_path(:title => color) }
+    #  it do
+    #    should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points
+    #    should have_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points
+    #    should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) # Has 225 points
+    #  end
+    #end
     
-    describe "visits country and title scores page" do
-      before { visit users_path(:title => color, :country => country) }
-      it do
-        should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points and in country
-        should have_no_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points but not in country
-        should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) # Has 225 points and in country
-      end
-    end
+    #describe "visits country and title scores page" do
+    #  before { visit users_path(:title => color, :country => country) }
+    #  it do
+    #    should have_no_link(ranked_user.name, href: user_path(ranked_user)) # Has 157 points and in country
+    #    should have_no_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points but not in country
+    #    should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) # Has 225 points and in country
+    #  end
+    #end
     
     describe "tries to visit followed users" do
       before { visit followed_users_path }

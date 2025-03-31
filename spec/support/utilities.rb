@@ -47,16 +47,16 @@ end
 def options_for_user_titles(country_id, for_root)
   num_before = 0
   if country_id == 0
-    num_tot = User.where(:role => :student).where("rating > 0").count
+    num_tot = User.where(:role => :student).where("rating > 0").count + 1
   else
     num_tot = User.where(:role => :student).where("rating > 0 AND country_id = ?", country_id).count
   end
-  options = ["Tous les titres (#{num_tot})"]
+  options = ["Tous les titres (#{num_tot})", "Roi des Belges (#{country_id == 0 ? 1 : 0})"]
   Color.order("pt DESC").each do |c|
     if country_id == 0
-      num = User.where(:role => :student).where("rating > 0 AND rating >= ?", c.pt).count
+      num = User.where(:role => :student).where("rating > 0 AND rating >= ?", 3*c.pt/2).count
     else
-      num = User.where(:role => :student).where("rating > 0 AND rating >= ? AND country_id = ?", c.pt, country_id).count
+      num = User.where(:role => :student).where("rating > 0 AND rating >= ? AND country_id = ?", 3*c.pt/2, country_id).count
     end
     options.push("#{pluriel(c.name)} (#{num-num_before})")
     num_before = num
@@ -75,7 +75,7 @@ RSpec::Matchers.define :have_user_line do |line_id, rank_str, user|
     expect(page).to have_selector("#rank_#{line_id}", text: rank_str, exact_text: true)
     expect(page).to have_selector("#name_#{line_id}", text: user.name)
     expect(page).to have_css("img[id=flag_#{line_id}_#{user.country.id}]")
-    expect(page).to have_selector("#score_#{line_id}", text: user.rating.to_s, exact_text: true)
+    expect(page).to have_selector("#score_#{line_id}", text: (user.rating*2/3).to_s, exact_text: true)
     
     Section.where(:fondation => false).each do |s|
       if s.max_score > 0
@@ -89,10 +89,10 @@ RSpec::Matchers.define :have_user_line do |line_id, rank_str, user|
     recent_points = 0
     twoweeksago = Date.today - 14.days
     user.solvedproblems.includes(:problem).where("resolution_time > ?", twoweeksago).each do |s|
-      recent_points += s.problem.value
+      recent_points += s.problem.value*2/3
     end
     user.solvedquestions.includes(:question).where("resolution_time > ?", twoweeksago).each do |s|
-      recent_points += s.question.value
+      recent_points += s.question.value*2/3
     end
     expect(page).to have_selector("#recent_#{line_id}", text: (recent_points == 0 ? "" : "+ " + recent_points.to_s), exact_text: true)
   end
