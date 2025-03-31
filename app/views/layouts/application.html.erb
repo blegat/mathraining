@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<% mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
-<html data-bs-theme="<%= mt_theme %>">
+<% @mt_theme = (cookies.has_key?(:dark_theme) ? 'dark' : 'light') %>
+<html data-bs-theme="<%= @mt_theme %>">
   <head>
     <%= render 'layouts/google_analytics' %>
     
