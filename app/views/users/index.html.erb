@@ -29,17 +29,14 @@
 
 <% title_list = Array.new %>
 
-<% belgique = (Rails.env.production? ? 19 : (Rails.env.development? ? 214 : -12)) %>
-
-<% tot_num = @num_users_in_country_by_rating.sum{|x| x.second} + (@country == belgique || @country == 0 ? 1 : 0) %>
+<% tot_num = @num_users_in_country_by_rating.sum{|x| x.second} %>
 <% title_list.push(["Tous les titres (" + tot_num.to_s + ")", 0]) %>
 
 <% num_users_in_country_by_rating_arr = @num_users_in_country_by_rating.to_a %>
 <% i = 0 %>
-<% title_list.push(["Roi des Belges (#{@country == belgique || @country == 0 ? 1 : 0})", 11]) %>
 <% Color.order("pt DESC").each do |c| %>
   <% num = 0 %>
-  <% while i < num_users_in_country_by_rating_arr.size && num_users_in_country_by_rating_arr[i][0] >= 3*c.pt/2 %>
+  <% while i < num_users_in_country_by_rating_arr.size && num_users_in_country_by_rating_arr[i][0] >= c.pt %>
     <% num += num_users_in_country_by_rating_arr[i][1] %>
     <% i += 1 %>
   <% end %>

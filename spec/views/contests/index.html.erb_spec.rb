@@ -87,7 +87,7 @@ describe "contests/index.html.erb", type: :view, contest: true do
         
       it "renders the page correctly" do
         render template: "contests/index"
-        should have_content("Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 133 points pour y participer.")
+        should have_content("Les problèmes des concours sont accessibles par tous, mais il est nécessaire d'avoir au moins 200 points pour y participer.")
         should have_selector("table", class: "greyy")
         should have_link("Concours ##{contest.number}", href: contest_path(contest))
       end

@@ -110,7 +110,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
           expect(response).to render_template(:partial => "contestsolutions/_index")
           expect(response).to render_template(:partial => "contestsolutions/_new")
           expect(response).not_to render_template(:partial => "contestsolutions/_show")
-          should have_no_content("Pour pouvoir participer aux concours, il faut avoir au moins 133 points.")
+          should have_no_content("Pour pouvoir participer aux concours, il faut avoir au moins 200 points.")
         end
       end
       
@@ -136,7 +136,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
         expect(response).to render_template(:partial => "contestsolutions/_index")
         expect(response).not_to render_template(:partial => "contestsolutions/_new")
         expect(response).not_to render_template(:partial => "contestsolutions/_show")
-        should have_content("Pour pouvoir participer aux concours, il faut avoir au moins 133 points.")
+        should have_content("Pour pouvoir participer aux concours, il faut avoir au moins 200 points.")
       end
     end
   end

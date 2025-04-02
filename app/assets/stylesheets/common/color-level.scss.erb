@@ -12,18 +12,6 @@
   }
 }
 
-[data-bs-theme="light"] {
-  .text-color-level-altesse {
-    color: #E6C619!important;
-  }
-}
-
-[data-bs-theme="dark"] {
-  .text-color-level-altesse {
-    color: #FFD700!important;
-  }
-}
-
 <% Color.all.each do |c| %>
   [data-bs-theme="light"] {
     .text-color-level-<%= c.id %> {

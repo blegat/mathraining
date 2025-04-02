@@ -51,10 +51,10 @@
     </td>
     <% if show_medals %>
       <td id="medal-<%= line.user_id %>" class="text-center">
-      <% if line.gold_medal? %><%= image_tag("Gold2.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") %>
-      <% elsif line.silver_medal? %><%= image_tag("Silver2.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") %>
-      <% elsif line.bronze_medal? %><%= image_tag("Bronze2.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") %>
-      <% elsif line.honourable_mention? %><%= image_tag("MH2.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") %>
+      <% if line.gold_medal? %><%= image_tag("Gold.svg", height: 20, alt: "Médaille d'or", title: "Médaille d'or") %>
+      <% elsif line.silver_medal? %><%= image_tag("Silver.svg", height: 20, alt: "Médaille d'argent", title: "Médaille d'argent") %>
+      <% elsif line.bronze_medal? %><%= image_tag("Bronze.svg", height: 20, alt: "Médaille de bronze", title: "Médaille de bronze") %>
+      <% elsif line.honourable_mention? %><%= image_tag("MH.svg", height: 20, alt: "Mention honorable", title: "Mention honorable") %>
       <% end %>
       </td>
     <% end %>

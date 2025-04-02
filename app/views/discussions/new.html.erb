@@ -29,7 +29,7 @@ var UserNotFound = function () {
         
         <% one_week_ago = DateTime.now.to_date - 7 %>
         <% users = User.select(:id, :rating, :first_name, :last_name, :see_name, :role).where.not(:role => :deleted).where("id != ? AND (last_connexion_date >= ? OR id = ?)", current_user.id, one_week_ago, params[:qui].to_i).order("first_name, last_name, rating") %>
-        <%= select_tag :qui, options_for_select(users.collect {|u| [ u.name + "#{' (' + (2*u.rating/3).to_s + ')' if u.rating > 0 && !u.admin?}" + "#{' (' + (Globalstatistic.get.nb_points/3).to_s + ')' if u.tax_man}" + "#{' (administrateur)' if u.admin?}", u.id ] }.insert(0, ""), params[:qui].to_i), :class => "form-select select2", :style => "width:300px;" %>
+        <%= select_tag :qui, options_for_select(users.collect {|u| [ u.name + "#{' (' + u.rating.to_s + ')' if u.rating > 0 && !u.admin?}" + "#{' (administrateur)' if u.admin?}", u.id ] }.insert(0, ""), params[:qui].to_i), :class => "form-select select2", :style => "width:300px;" %>
       </div>
       
       <div class="mb-2" id="user-not-found-link">

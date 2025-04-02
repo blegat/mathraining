@@ -52,7 +52,7 @@ describe "Contestsolution pages" do
       before { visit contestproblem_path(contestproblem_running) }
       it do
         should have_selector("h1", text: "Problème ##{contestproblem_running.number}")
-        should have_content("Pour pouvoir participer aux concours, il faut avoir au moins 133 points.")
+        should have_content("Pour pouvoir participer aux concours, il faut avoir au moins 200 points.")
       end
     end
   end

@@ -278,7 +278,7 @@ describe User do
       it "should have correct color" do
         ratings_to_test = [0, 100, 200, 400, 800, 1600, 3200, 6400, 12800]
         ratings_to_test.each do |rating|
-          @user.update_attribute(:rating, rating*3/2)
+          @user.update_attribute(:rating, rating)
           c = Color.where("pt <= ?", rating).order("pt").last
           expect(@user.level[:id]).to eq(c.id)
           expect(@user.color_class).to eq("text-color-level-#{c.id}")
@@ -296,7 +296,7 @@ describe User do
       it "should have correct color" do
         ratings_to_test = [0, 100, 200, 400, 800, 1600, 3200, 6400, 12800]
         ratings_to_test.each do |rating|
-          @user.update_attribute(:rating, rating*3/2)
+          @user.update_attribute(:rating, rating)
           c = Color.where("pt <= ?", rating).order("pt").last
           expect(@user.level[:id]).to eq(c.id)
           expect(@user.color_class).to eq("text-color-level-#{c.id}")
@@ -314,7 +314,7 @@ describe User do
       it "should have correct color" do
         ratings_to_test = [0, 100, 200, 400, 800, 1600, 3200, 6400, 12800]
         ratings_to_test.each do |rating|
-          @user.update_attribute(:rating, rating*3/2)
+          @user.update_attribute(:rating, rating)
           c = Color.where("pt <= ?", rating).order("pt").last
           expect(@user.level[:id]).to eq(c.id)
           expect(@user.color_class).to eq("text-color-level-#{c.id}")

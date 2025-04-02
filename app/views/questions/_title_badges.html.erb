@@ -5,7 +5,7 @@
 <% pct2 = [1.4*pct,1].min %>
 
 <% if !@section.fondation %>
-  <span class="badge rounded-pill py-2 px-3 fs-5 <%= solved ? 'bg-success' : 'bg-secondary' %>"><%= pt %>&nbsp;points HT</span>
+  <span class="badge rounded-pill py-2 px-3 fs-5 <%= solved ? 'bg-success' : 'bg-secondary' %>"><%= pt %>&nbsp;points</span>
 <% end %>
 <% if question.online %>
   <span class="badge rounded-pill py-2 px-3 fs-5 bg-primary">Résolu <%= question.nb_correct %> fois</span>
