@@ -13,6 +13,6 @@ class Globalvariable < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :key, presence: true
+  validates :key, presence: true, uniqueness: true
   validates :value, inclusion: [true, false]
 end

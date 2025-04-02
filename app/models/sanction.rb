@@ -33,7 +33,6 @@ class Sanction < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :user_id, presence: true
   validates :sanction_type, presence: true
   validates :start_time, presence: true
   validates :duration, presence: true, numericality: { greater_than: 0 }

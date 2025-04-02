@@ -25,5 +25,6 @@ class Takentest < ActiveRecord::Base
   # VALIDATIONS
 
   validates :status, presence: true
+  validates :virtualtest_id, uniqueness: { scope: :user_id }
 
 end

@@ -12,5 +12,9 @@ class Contestproblemcheck < ActiveRecord::Base
   # BELONGS_TO, HAS_MANY
   
   belongs_to :contestproblem
+  
+  # VALIDATIONS
+  
+  validates :contestproblem_id, uniqueness: true
 
 end

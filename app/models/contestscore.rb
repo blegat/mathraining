@@ -29,7 +29,7 @@ class Contestscore < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :user_id, uniqueness: { scope: :contest_id }
+  validates :contest_id, uniqueness: { scope: :user_id }
   validates :rank, presence: true, numericality: { greater_than: 0 }
   validates :score, presence: true, numericality: { greater_than: 0 }
   validates :medal, presence: true

@@ -15,12 +15,7 @@ class Country < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :name, presence: true
-  validates :code, presence: true
-  
-  # VALIDATIONS
-
-  # validates_uniqueness_of :code # Test database is broken if we uncomment this line
-  validates_uniqueness_of :name
+  validates :name, presence: true, uniqueness: true
+  validates :code, presence: true #, uniqueness: true # Test database is broken if we impose uniqueness
 
 end

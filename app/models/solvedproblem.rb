@@ -21,7 +21,6 @@ class Solvedproblem < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :user_id, presence: true
-  validates :problem_id, presence: true, uniqueness: { scope: :user_id }
+  validates :problem_id, uniqueness: { scope: :user_id }
 
 end

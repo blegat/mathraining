@@ -47,8 +47,6 @@ class Submission < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :user_id, presence: true
-  validates :problem_id, presence: true
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   
   # OTHER METHODS

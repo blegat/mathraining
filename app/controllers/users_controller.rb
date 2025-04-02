@@ -422,7 +422,7 @@ class UsersController < ApplicationController
     unless @user.deleted?
       flash[:success] = "Les données personnelles de #{@user.name} ont été supprimées."
       @user.update(:role           => :deleted,
-                   :email          => @user.id.to_s,
+                   :email          => "deleted-" + @user.id.to_s + "@deleted.com",
                    :first_name     => "Compte",
                    :last_name      => "supprimé",
                    :see_name       => 1,

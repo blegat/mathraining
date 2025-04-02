@@ -31,8 +31,8 @@ class Subject < ActiveRecord::Base
   belongs_to :section, optional: true
   belongs_to :category, optional: true
   belongs_to :question, optional: true
-  belongs_to :contest, optional: true
   belongs_to :problem, optional: true
+  belongs_to :contest, optional: true
   belongs_to :last_comment_user, class_name: "User", optional: true # For automatic messages
   has_and_belongs_to_many :following_users, -> { distinct }, class_name: "User", join_table: :followingsubjects
 
@@ -43,6 +43,9 @@ class Subject < ActiveRecord::Base
   # VALIDATIONS
 
   validates :title, presence: true, length: { maximum: 255 }
+  validates :question_id, uniqueness: true, allow_nil: true
+  validates :problem_id, uniqueness: true, allow_nil: true
+  validates :contest_id, uniqueness: true, allow_nil: true
   
   # OTHER METHODS
   

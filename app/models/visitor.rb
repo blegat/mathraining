@@ -11,6 +11,12 @@
 #
 class Visitor < ActiveRecord::Base
 
+  # VALIDATIONS
+  
+  validates :date, presence: true, uniqueness: true
+  validates :nb_users, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :nb_admins, presence: true, numericality: { greater_than_or_equal_to: 0 }
+
   # Compute the number of visitors for the last day (done every day at midnight (see schedule.rb))
   def self.compute
     # Get date of yesterday

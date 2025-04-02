@@ -29,7 +29,7 @@ class Contestsolution < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :user_id, uniqueness: { scope: :contestproblem_id }
+  validates :contestproblem_id, uniqueness: { scope: :user_id }
   validates :content, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :score, presence: true, inclusion: { in: [-1, 0, 1, 2, 3, 4, 5, 6, 7] }
   

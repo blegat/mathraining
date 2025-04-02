@@ -13,6 +13,12 @@
 #
 class Record < ActiveRecord::Base
 
+  # VALIDATIONS
+  
+  validates :date, uniqueness: true
+  
+  # OTHER METHODS
+
   # Update the statistics, if possible (done every day at 2 am (see schedule.rb))
   def self.update
     mondaybeforelastmonday = get_monday_before_last_monday

@@ -15,6 +15,10 @@ class Link < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :discussion
+  
+  # VALIDATIONS
 
   validates :nonread, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :discussion_id, uniqueness: { scope: :user_id }
+  
 end

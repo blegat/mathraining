@@ -26,7 +26,7 @@ class Following < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :user_id, uniqueness: { scope: :submission_id }
+  validates :submission_id, uniqueness: { scope: :user_id }
   validates :kind, presence: true
   
   # BEFORE, AFTER

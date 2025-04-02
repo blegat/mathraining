@@ -26,8 +26,6 @@ class Starproposal < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :user_id, presence: true
-  validates :submission_id, presence: true
   validates :reason, presence: true, length: { maximum: 2000 }
   validates :answer, length: { maximum: 2000 }
   

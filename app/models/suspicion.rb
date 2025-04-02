@@ -25,8 +25,6 @@ class Suspicion < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :user_id, presence: true
-  validates :submission_id, presence: true
   validates :source, presence: true, length: { maximum: 1000 }
   
   # OTHER METHODS

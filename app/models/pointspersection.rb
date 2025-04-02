@@ -19,6 +19,6 @@ class Pointspersection < ActiveRecord::Base
   # VALIDATIONS
   
   validates :points, presence: true
-  validates :section_id, presence: true
+  validates :section_id, uniqueness: { scope: :user_id }
 
 end

@@ -19,7 +19,6 @@ class Prerequisite < ActiveRecord::Base
   # VALIDATIONS
 
   validates :prerequisite_id, presence: true, uniqueness: { scope: :chapter_id }
-  validates :chapter_id, presence: true
   
   validate :no_loop
   validate :not_redundant
