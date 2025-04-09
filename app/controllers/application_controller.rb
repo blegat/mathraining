@@ -262,19 +262,23 @@ class ApplicationController < ActionController::Base
   # Check if some test just got finished
   def check_takentests
     return unless request.format.html?
-    time_now = DateTime.now.to_i
+    time_now = DateTime.now
     Takentestcheck.includes(:takentest, takentest: :virtualtest).all.each do |c|
       takentest = c.takentest
       c.destroy and next if takentest.finished? # Should not happen in theory
       virtualtest = takentest.virtualtest
-      fin = takentest.taken_time.to_i + virtualtest.duration * 60
-      next if fin >= time_now # Not finished yet
+      end_of_test = takentest.taken_time + virtualtest.duration.minutes
+      next if end_of_test >= time_now # Not finished yet
       c.destroy
       takentest.finished!
       user = takentest.user
-      virtualtest.problems.each do |p|
+      shift = 0
+      virtualtest.problems.order(:number).each do |p|
         p.submissions.where(user_id: user.id, intest: true).each do |s|
           s.set_waiting_status
+          new_created_at = end_of_test + (0.01 * shift).seconds
+          s.update(:created_at => new_created_at, :last_comment_time => new_created_at)
+          shift += 1 # Avoid having several submissions at the exact same time
         end
       end
     end

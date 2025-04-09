@@ -191,16 +191,17 @@ describe "Virtualtest pages" do
             describe "and the time stops" do
               let!(:takentest) { Takentest.where(:user => user_with_rating_200, :virtualtest => virtualtest).first }
               before do
-                takentest.update_attribute(:taken_time, DateTime.now - virtualtest.duration - 1)
+                takentest.update_attribute(:taken_time, DateTime.now - (virtualtest.duration + 1).minutes)
                 visit virtualtest_path(virtualtest, :p => problem) # Should redirect to virtualtests page
               end
-              it do
-                should have_selector("h1", text: "Tests virtuels")
-                should have_link("Problème 1", href: problem_path(problem, :sub => problem.submissions.where(:user => user_with_rating_200).first))
-                should have_link("Problème 2", href: problem_path(problem_with_prerequisite))
-                should have_content("? / 7") # Problème 1
-                should have_content("0 / 7") # Problème 2 (no submission)
-                should have_no_content("Temps restant")
+              specify do
+                expect(problem.submissions.order(:id).last.created_at).to be_within(1.second).of(takentest.taken_time + virtualtest.duration.minutes)
+                expect(page).to have_selector("h1", text: "Tests virtuels")
+                expect(page).to have_link("Problème 1", href: problem_path(problem, :sub => problem.submissions.where(:user => user_with_rating_200).first))
+                expect(page).to have_link("Problème 2", href: problem_path(problem_with_prerequisite))
+                expect(page).to have_content("? / 7") # Problème 1
+                expect(page).to have_content("0 / 7") # Problème 2 (no submission)
+                expect(page).to have_no_content("Temps restant")
               end
             end
           end

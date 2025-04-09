@@ -288,7 +288,7 @@ describe "Stats pages" do
       let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true, duration: 2880) } # Test taking 2 days
       let!(:problem4_in_test) { FactoryGirl.create(:problem, section: section, online: true, number: 1114, level: 4, virtualtest: virtualtest) }
       let!(:takentest) { Takentest.create(user: user1, virtualtest: virtualtest, taken_time: now-17.days, status: :in_progress) } # 04/01
-      let!(:sub14) { FactoryGirl.create(:submission, user: user1, problem: problem4_in_test, status: :waiting, intest: true, created_at: now-17.days+1.hour)} # 04/01 + 1 hour, but can only be corrected from 04/01 + 2 days = 06/01
+      let!(:sub14) { FactoryGirl.create(:submission, user: user1, problem: problem4_in_test, status: :waiting, intest: true, created_at: takentest.taken_time + virtualtest.duration.minutes)} # 04/01 + 2 days = 06/01
       
       before do
         travel_to now
@@ -321,11 +321,11 @@ describe "Stats pages" do
         expect(record3.complete).to eq(true)
         expect(record3.avg_correction_time.round(3)).to eq((7.0/3.0).round(3))
         
-        expect(record4.nb_submissions).to eq(2) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
+        expect(record4.nb_submissions).to eq(1)
         expect(record4.complete).to eq(false)
         
-        expect(record5.nb_submissions).to eq(0)
-        expect(record5.complete).to eq(false) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
+        expect(record5.nb_submissions).to eq(1)
+        expect(record5.complete).to eq(false)
         
         expect(record6.nb_submissions).to eq(0)
         expect(record6.complete).to eq(true)
@@ -353,11 +353,11 @@ describe "Stats pages" do
         specify do
           expect(Record.count).to eq(7)
           
-          expect(record4.nb_submissions).to eq(2) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
+          expect(record4.nb_submissions).to eq(1)
           expect(record4.complete).to eq(true)
           expect(record4.avg_correction_time).to eq(23.25)
           
-          expect(record5.nb_submissions).to eq(0) # sub14 counts for record4.nb_submissions but only for record5.avg_correction_time
+          expect(record5.nb_submissions).to eq(1)
           expect(record5.complete).to eq(true)
           expect(record5.avg_correction_time).to eq(16.5)
           

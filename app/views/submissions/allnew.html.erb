@@ -74,45 +74,32 @@
   <% new_cor[i] = Array.new(num_intervals, 0) %>
 <% end %>
 
-<% Submission.joins(:problem).select(:created_at, :intest, :problem_id, :user_id).where.not(:status => [:draft, :waiting_forever]).where("created_at > ? AND (intest = ? OR created_at > ?)", date_begin_for_test, true, date_begin).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
-  <% date_created = s.created_at %>
-  <% date_sub = date_created %>
-  <% if s.intest? %>
-    <% p = s.problem %>
-    <% t = p.virtualtest %>
-    <% date_start = t.takentests.where(:user_id => s.user_id).first.taken_time %>
-    <% date_sub = date_start + (t.duration).minutes %>
-  <% end %>
-  <% if date_sub >= date_begin %>
-    <% interval_id = [((date_sub - date_begin) / time_interval).floor, num_intervals-1].min %>
-    <% new_sub[0][interval_id] = new_sub[0][interval_id] + 1 %>
-  <% end %>
-<% end %>
-
+<!-- Go through recent waiting submissions -->
 <% Submission.joins(:problem).select(:created_at, :problem_id).where.not(:status => [:draft, :waiting_forever]).where("created_at > ?", date_begin - (shifts.max).days).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
-  <% (1..2).each do |i| %>
+  <% (0..2).each do |i| %>
     <% threshold_date = s.created_at.in_time_zone.to_date + shifts[i] %>
     <% threshold_time = threshold_date.in_time_zone.to_time + 1.second %>
     <% if threshold_time >= date_begin %>
       <% interval_id = ((threshold_time - date_begin) / time_interval).floor %>
       <% if interval_id <= num_intervals-1 %>
-        <% new_sub[i][interval_id] = new_sub[i][interval_id] + 1 %>
+        <% new_sub[i][interval_id] += 1 %>
       <% end %>
     <% end %>
   <% end %>
 <% end %>
 
+<!-- Go through recently corrected submissions -->
 <% Following.joins(submission: :problem).select("followings.created_at, submissions.created_at AS sub_created_at").where(:kind => :first_corrector).where("followings.created_at > ?", date_begin).where(section_condition).where("problems.level in (?)", levels).each do |f| %>
   <% interval_id = [((f.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
-  <% new_cor[0][interval_id] = new_cor[0][interval_id] + 1 %>
+  <% new_cor[0][interval_id] += 1 %>
   <% (1..2).each do |i| %>
     <% threshold_date = f.sub_created_at.in_time_zone.to_date + shifts[i] %>
     <% if threshold_date <= f.created_at.in_time_zone.to_date %>
-      <% new_cor[i][interval_id] = new_cor[i][interval_id] + 1 %>
+      <% new_cor[i][interval_id] += 1 %>
       <% threshold_time = threshold_date.in_time_zone.to_time + 1.second %>
       <% if threshold_time >= date_begin %>
         <% second_interval_id = [((threshold_time - date_begin) / time_interval).floor, num_intervals-1].min %>
-        <% new_sub[i][second_interval_id] = new_sub[i][second_interval_id] + 1 %>
+        <% new_sub[i][second_interval_id] += 1 %>
       <% end %>
     <% else %>
       <% break %>
