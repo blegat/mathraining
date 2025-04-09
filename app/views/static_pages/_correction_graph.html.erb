@@ -1,0 +1,122 @@
+<center>
+
+<!-- Endroit pour dessiner le graphique des corrections -->
+<div class="mb-3" style="width:100%; max-width:600px; height:200px; position:relative; display:block;">
+<canvas id="myCanvas2" width="600" height="200" style="position:absolute; left:0px; top:0px;">
+Votre navigateur ne supporte pas les canvas.
+</canvas>
+</div>
+
+</center>
+
+<% today = Date.today %>
+<% num_days = 15 %>
+<% sometimeago = today.in_time_zone.to_datetime - (num_days-1).days %>
+<% subs = Submission.where.not(:status => [:draft, :waiting_forever]).where("created_at >= ?", sometimeago).group_by_day(:created_at).count %>
+<% corrs = Following.where(:kind => :first_corrector).where("created_at >= ?", sometimeago).group_by_day(:created_at).count %>
+<% submissions = Array.new(num_days, 0) %>
+<% corrections = Array.new(num_days, 0) %>
+<% max_num_subs = 1 %>
+<% subs.each do |date, v| %>
+  <% submissions[num_days-1-(today-date)] = v %>
+  <% max_num_subs = [max_num_subs, v].max %>
+<% end %>
+<% max_num_corrs = 1 %>
+<% corrs.each do |date, v| %>
+  <% corrections[num_days-1-(today-date)] = v %>
+  <% max_num_corrs = [max_num_corrs, v].max %>
+<% end %>
+
+<script type="text/javascript">
+
+  function respondCanvas(){
+    // Check light or dark theme
+    var is_dark = (document.documentElement.getAttribute('data-bs-theme') == 'dark');
+    
+    // Get the canvas & context
+    var c = document.getElementById('myCanvas2');
+    var ctx = c.getContext('2d');
+    var container = c.parentElement;
+    
+    var W = 600.0;
+    var H = 200.0;
+    
+    c.setAttribute('width', container.offsetWidth); //max width
+    c.setAttribute('height', H * container.offsetWidth / W); //max height
+
+    container.style.height = H * container.offsetWidth / W + "px";
+
+    // Draw content
+
+    var pct = c.offsetWidth / W;
+    var W_real = pct * W;
+    var H_real = pct * H;
+    var W_offset = 10;
+    var H_offset = 16;
+    var W_size = W_real - W_offset - 12;
+    var H_size = H_real - 2 * H_offset;
+    var W_step = W_size / <%= num_days.to_f %>;
+    var H_unit = H_size / <%= (max_num_corrs + max_num_subs).to_f %>;
+    var H_mid = H_offset + H_unit * <%= max_num_corrs %>;
+    
+    ctx.beginPath();
+    ctx.moveTo(0, H_mid);
+    ctx.lineTo(W_real, H_mid);
+    ctx.moveTo(W_real, H_mid);
+    ctx.lineTo(W_real-5, H_mid+5);
+    ctx.moveTo(W_real, H_mid);
+    ctx.lineTo(W_real-5, H_mid-5);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = (is_dark ? 'white' : 'black');
+    ctx.stroke();
+    
+    <% for i in (0..(num_days-1)) do %>
+      <% if corrections[i] > 0 %>
+        ctx.beginPath();
+        ctx.rect(W_offset + W_step * <%= i %>, H_mid, W_step, - H_unit * <%= corrections[i] %>);
+        ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
+        ctx.fill();
+        ctx.stroke();
+      <% end %>
+      <% if submissions[i] > 0 %>
+        ctx.beginPath();
+        ctx.rect(W_offset + W_step * <%= i %>, H_mid, W_step, H_unit * <%= submissions[i] %>);
+        ctx.fillStyle = (is_dark ? '#555555' : 'lightgrey');
+        ctx.fill();
+        ctx.stroke();
+      <% end %>
+      <% if submissions[i] != corrections[i] %>
+        ctx.beginPath();
+        ctx.rect(W_offset + W_step * <%= i %>, H_mid, W_step, H_unit * <%= submissions[i] - corrections[i] %>);
+        ctx.fillStyle = "<%= (submissions[i] > corrections[i] ? 'red' : 'green') %>";
+        ctx.fill();
+        ctx.stroke();
+      <% end %>
+    <% end %>
+    
+    var is_large_screen = (pct > 0.6);
+    ctx.font = (is_large_screen ? "12px Arial" : "10px Arial");
+    var top_shift = (is_large_screen ? 6 : 5);
+    var bottom_shift = (is_large_screen ? 14 : 12);
+    ctx.fillStyle = (is_dark ? 'white' : 'black');
+    ctx.textAlign = 'center';
+    <% for i in (0..(num_days-1)) do %>
+      <% if corrections[i] > 0 %>
+        ctx.fillText("<%= corrections[i] %>", W_offset + W_step * (<%= i %> + 0.5), H_mid - H_unit * <%= corrections[i] %> - top_shift);
+      <% end %>
+      <% if submissions[i] > 0 %>
+        ctx.fillText("<%= submissions[i] %>", W_offset + W_step * (<%= i %> + 0.5), H_mid + H_unit * <%= submissions[i] %> + bottom_shift);
+      <% end %>
+    <% end %>
+  }
+
+  window.addEventListener("resize", () => {
+    respondCanvas();
+  });
+  
+  window.addEventListener("theme-change", () => {
+    respondCanvas();
+  });
+  
+  respondCanvas();
+</script>

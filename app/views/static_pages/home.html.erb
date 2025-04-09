@@ -19,8 +19,11 @@
 
 <div class="home">
   <div class="grid" style="--bs-columns:12; --bs-gap:5px;">
-  <% show_correction_target = signed_in? && (current_user.admin? || current_user.corrector?) %>
-  <% if show_correction_target %>
+  <% show_correction_graphs = signed_in? && (current_user.admin? || current_user.corrector?) %>
+  <% if show_correction_graphs %>
+    <div class="g-col-12">
+    <%= render 'correction_graph' %>
+    </div>
     <div class="g-col-12 g-col-lg-7 g-col-xl-6 mt-n2">
     <%= render 'correction_target' %>
     </div>
