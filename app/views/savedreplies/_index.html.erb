@@ -18,6 +18,7 @@
     savedreplies_used.add(id);
     var hidden_field = document.getElementById("correction_savedreplies_used");
     hidden_field.value = Array.from(savedreplies_used).join(",")
+    cleanSavedReplies();
   }
 </script>
 
