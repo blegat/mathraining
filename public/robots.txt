@@ -5,7 +5,10 @@ Disallow: /
 # A lot of /users/ and /users pages, so too many requests.
 # The /sessions page does not exist but is often wrongly
 # visited because of the form to connect on each page.
+# The /solvedproblems page always changes so it does not
+# really make sense to have it referenced on Google.
 User-Agent: *
 Disallow: /users/
 Disallow: /users
 Disallow: /sessions
+Disallow: /solvedproblems
