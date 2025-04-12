@@ -11,20 +11,27 @@ Votre navigateur ne supporte pas les canvas.
 
 <% today = Date.today %>
 <% num_days = 15 %>
-<% sometimeago = today.in_time_zone.to_datetime - (num_days-1).days %>
+<!-- NB: Need to deduct days before converting to datetime, otherwise we can have an issue with time change, twice a year -->
+<% sometimeago = (today - (num_days-1).days).in_time_zone.to_datetime %>
 <% subs = Submission.where.not(:status => [:draft, :waiting_forever]).where("created_at >= ?", sometimeago).group_by_day(:created_at).count %>
 <% corrs = Following.where(:kind => :first_corrector).where("created_at >= ?", sometimeago).group_by_day(:created_at).count %>
 <% submissions = Array.new(num_days, 0) %>
 <% corrections = Array.new(num_days, 0) %>
 <% max_num_subs = 1 %>
 <% subs.each do |date, v| %>
-  <% submissions[num_days-1-(today-date)] = v %>
-  <% max_num_subs = [max_num_subs, v].max %>
+  <% diff = (today-date).to_i %>
+  <% if diff < num_days %>
+    <% submissions[num_days-1-diff] = v %>
+    <% max_num_subs = [max_num_subs, v].max %>
+  <% end %>
 <% end %>
 <% max_num_corrs = 1 %>
 <% corrs.each do |date, v| %>
-  <% corrections[num_days-1-(today-date)] = v %>
-  <% max_num_corrs = [max_num_corrs, v].max %>
+  <% diff = (today-date).to_i %>
+  <% if diff < num_days %>
+    <% corrections[num_days-1-diff] = v %>
+    <% max_num_corrs = [max_num_corrs, v].max %>
+  <% end %>
 <% end %>
 
 <script type="text/javascript">

@@ -53,17 +53,18 @@
 <% end %>
 
 <% today = Date.today %>
-<% twoweeksago = today - 14 %>
-<% amonthago = today - 32 %>
+<!-- NB: Need to deduct days before converting to datetime, otherwise we can have an issue with time change, twice a year -->
+<% twoweeksago = (today - 13.days).in_time_zone.to_datetime %>
+<% amonthago = (today - 30.days).in_time_zone.to_datetime %>
 
 <% Groupdate.time_zone = false unless Rails.env.production? %>
 <% ignored_statuses = [:draft] %>
 <% ignored_statuses.push(:waiting_forever) if signed_in? && (current_user.admin? || current_user.corrector?) %>
-<% allsub = Submission.where.not(:status => ignored_statuses).where("created_at > ?", amonthago).group(:status).group_by_day(:created_at).count %>
+<% allsub = Submission.where.not(:status => ignored_statuses).where("created_at >= ?", amonthago).group(:status).group_by_day(:created_at).count %>
 
 <% allsub.each do |x, n| %>
   <% status = x.first %>
-  <% date = Rails.env.production? ? x.second.in_time_zone.to_date : x.second.to_date %>
+  <% date = x.second %>
   <% diff = (today - date).to_i %>
   <% if diff < 31 %>
     <% if status == "waiting" || status == "waiting_forever" %>

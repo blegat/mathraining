@@ -706,18 +706,19 @@ class UsersController < ApplicationController
       end
     end
 
-    twoweeksago = Date.today - 14
+    # NB: Need to deduct days before converting to datetime, otherwise we can have an issue with time change, twice a year
+    twoweeksago = (Date.today - 13.days).in_time_zone.to_datetime
 
-    Solvedproblem.where(:user_id => ids).includes(:problem).where("resolution_time > ?", twoweeksago).find_each do |s|
+    Solvedproblem.where(:user_id => ids).includes(:problem).where("resolution_time >= ?", twoweeksago).find_each do |s|
       @x_recent[global_user_id_to_local_id[s.user_id]] += s.problem.value
     end
 
-    Solvedquestion.where(:user_id => ids).includes(:question).where("resolution_time > ?", twoweeksago).find_each do |s|
+    Solvedquestion.where(:user_id => ids).includes(:question).where("resolution_time >= ?", twoweeksago).find_each do |s|
       @x_recent[global_user_id_to_local_id[s.user_id]] += s.question.value
     end
 
     Pointspersection.where(:user_id => ids).all.each do |p|
-	    @x_persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
+      @x_persection[global_user_id_to_local_id[p.user_id]][p.section_id] = p.points
     end
   end  
 end
