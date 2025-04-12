@@ -87,11 +87,11 @@ RSpec::Matchers.define :have_user_line do |line_id, rank_str, user|
     end
     
     recent_points = 0
-    twoweeksago = Date.today - 14.days
-    user.solvedproblems.includes(:problem).where("resolution_time > ?", twoweeksago).each do |s|
+    twoweeksago = (Date.today - 13.days).in_time_zone.to_datetime
+    user.solvedproblems.includes(:problem).where("resolution_time >= ?", twoweeksago).each do |s|
       recent_points += s.problem.value
     end
-    user.solvedquestions.includes(:question).where("resolution_time > ?", twoweeksago).each do |s|
+    user.solvedquestions.includes(:question).where("resolution_time >= ?", twoweeksago).each do |s|
       recent_points += s.question.value
     end
     expect(page).to have_selector("#recent_#{line_id}", text: (recent_points == 0 ? "" : "+ " + recent_points.to_s), exact_text: true)
