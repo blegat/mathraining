@@ -134,7 +134,7 @@ GEM
     factory_bot_rails (6.4.4)
       factory_bot (~> 6.5)
       railties (>= 5.0.0)
-    ffi (1.17.0)
+    ffi (1.17.0-x86_64-linux-gnu)
     globalid (1.2.1)
       activesupport (>= 6.1)
     groupdate (6.3.0)
@@ -188,7 +188,7 @@ GEM
     net-smtp (0.5.0)
       net-protocol
     nio4r (2.7.3)
-    nokogiri (1.16.8-x86_64-linux)
+    nokogiri (1.18.7-x86_64-linux-gnu)
       racc (~> 1.4)
     pg (1.5.3)
     popper_js (2.11.8)
@@ -381,7 +381,7 @@ DEPENDENCIES
   will_paginate-bootstrap-style
 
 RUBY VERSION
-   ruby 3.0.0p0
+   ruby 3.2.8p263
 
 BUNDLED WITH
-   2.2.3
+   2.6.8
