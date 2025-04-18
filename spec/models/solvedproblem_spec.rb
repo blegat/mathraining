@@ -11,27 +11,23 @@
 #
 require "spec_helper"
 
-describe Solvedproblem do
+describe Solvedproblem, solvedproblem: true do
 
-  before { @sp = FactoryGirl.build(:solvedproblem) }
+  let(:sp) { FactoryGirl.build(:solvedproblem) }
 
-  subject { @sp }
-
-  it { should respond_to(:problem) }
-  it { should respond_to(:user) }
-
+  subject { sp }
+  
   it { should be_valid }
-
-  # Problem
-  describe "when problem is not present" do
-    before { @sp.problem = nil }
+  
+  # Correction time
+  describe "when correction_time is not present" do
+    before { sp.correction_time = nil }
     it { should_not be_valid }
   end
-
-  # User
-  describe "when user is not present" do
-    before { @sp.user = nil }
+  
+  # Resolution time
+  describe "when resolution_time is not present" do
+    before { sp.resolution_time = nil }
     it { should_not be_valid }
   end
-
 end

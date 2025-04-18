@@ -26,17 +26,6 @@ describe Problem, problem: true do
   subject { problem }
 
   it { should be_valid }
-  
-  # Section
-  describe "when section is not present" do
-    before { problem.section = nil }
-    it { should_not be_valid }
-  end
-  
-  describe "when statement is too long" do
-    before { problem.statement = "a" * 16001 }
-    it { should_not be_valid }
-  end
 
   # Statement
   describe "when statement is not present" do

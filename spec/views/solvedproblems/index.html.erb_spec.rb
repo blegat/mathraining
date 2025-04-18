@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Page solvedproblem/index" do
+# Note: This test suite is not of "type: :view", but it mainly tests what is shown in the view...
+describe "solvedproblems/index.html.erb", solvedproblem: true do
 
   subject { page }
   

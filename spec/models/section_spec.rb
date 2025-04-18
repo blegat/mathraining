@@ -18,10 +18,6 @@ describe Section, section: true do
 
   subject { section }
 
-  it { should respond_to(:name) }
-  it { should respond_to(:description) }
-  it { should respond_to(:chapters) }
-
   it { should be_valid }
 
   # Name

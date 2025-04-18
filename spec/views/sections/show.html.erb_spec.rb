@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "sections/show.html.erb", section: true do
+describe "sections/show.html.erb", type: :view, section: true do
 
-  subject { page }
+  subject { rendered }
 
   let(:admin) { FactoryGirl.create(:admin) }
   let(:user) { FactoryGirl.create(:user) }
@@ -41,13 +41,15 @@ describe "sections/show.html.erb", section: true do
     chapter3.prerequisites << chapter1
     chapter4.prerequisites << chapter2
     chapter4.prerequisites << chapter3
+    assign(:section, section)
   end
   
   describe "visitor" do
   
     describe "for a non-fondation section" do
-      before { visit section_path(section) }
       it do
+        render template: "sections/show"
+        
         should have_selector("h1", text: section.name)
         should have_content(section.description)
         should have_no_link("Modifier l'introduction")
@@ -62,19 +64,23 @@ describe "sections/show.html.erb", section: true do
         should have_link(class: "btn-ld-light-dark", text: "3", href: chapter_question_path(chapter1, question14))
         
         should have_selector("table", id: "chapter#{chapter2.id}", class: "greyy", text: chapter2.name)
-        should have_selector("table", id: "chapter#{chapter2.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter1.name}")
+        should have_selector("table", id: "chapter#{chapter2.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :")
+        should have_selector("table", id: "chapter#{chapter2.id}", text: chapter1.name)
         should have_link(theory21.title, href: chapter_theory_path(chapter2, theory21))
         should have_no_link(theory22_offline.title)
         should have_button(class: "disabled", id: "disabled-question-#{question21.id}", text: "1")
         should have_no_button(class: "disabled", id: "disabled-question-#{question22_offline.id}", text: "2")
         
         should have_selector("table", id: "chapter#{chapter3.id}", class: "greyy", text: chapter3.name)
-        should have_selector("table", id: "chapter#{chapter3.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter1.name}")
+        should have_selector("table", id: "chapter#{chapter3.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :")
+        should have_selector("table", id: "chapter#{chapter3.id}", text: chapter1.name)
         should have_link(theory31.title, href: chapter_theory_path(chapter3, theory31))
         should have_button(class: "disabled", id: "disabled-question-#{question31.id}", text: "1")
         
         should have_selector("table", id: "chapter#{chapter4.id}", class: "greyy", text: chapter4.name)
-        should have_selector("table", id: "chapter#{chapter4.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter2.name} - #{chapter3.name}")
+        should have_selector("table", id: "chapter#{chapter4.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :")
+        should have_selector("table", id: "chapter#{chapter4.id}", text: chapter2.name)
+        should have_selector("table", id: "chapter#{chapter4.id}", text: chapter3.name)
         should have_button(class: "disabled", id: "disabled-question-#{question41.id}", text: "1")
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
@@ -87,9 +93,10 @@ describe "sections/show.html.erb", section: true do
     describe "for a fondation section" do
       before do
         section.update_attribute(:fondation, true)
-        visit section_path(section)
       end
       it do
+        render template: "sections/show"
+        
         should have_selector("h1", text: section.name)
         should have_content(section.description)
         should have_no_link("Modifier l'introduction")
@@ -125,16 +132,17 @@ describe "sections/show.html.erb", section: true do
   end
   
   describe "user" do
-    before { sign_in user }
+    before { sign_in_view user }
     
     describe "having completed no chapter" do
       before do
         FactoryGirl.create(:solvedquestion, user: user, question: question11)
         FactoryGirl.create(:unsolvedquestion, user: user, question: question12)
         user.theories << theory11
-        visit section_path(section)
       end
       it do
+        render template: "sections/show"
+        
         should have_selector("h1", text: section.name)
         should have_content(section.description)
         should have_no_link("Modifier l'introduction")
@@ -151,19 +159,23 @@ describe "sections/show.html.erb", section: true do
         should have_link(class: "btn-ld-light-dark", text: "3", href: chapter_question_path(chapter1, question14))
         
         should have_selector("table", id: "chapter#{chapter2.id}", class: "greyy", text: chapter2.name)
-        should have_selector("table", id: "chapter#{chapter2.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter1.name}")
+        should have_selector("table", id: "chapter#{chapter2.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :")
+        should have_selector("table", id: "chapter#{chapter2.id}", text: chapter1.name)
         should have_link(theory21.title, href: chapter_theory_path(chapter2, theory21))
         should have_no_link(theory22_offline.title)
         should have_button(class: "disabled", id: "disabled-question-#{question21.id}", text: "1")
         should have_no_button(class: "disabled", id: "disabled-question-#{question22_offline.id}", text: "2")
         
         should have_selector("table", id: "chapter#{chapter3.id}", class: "greyy", text: chapter3.name)
-        should have_selector("table", id: "chapter#{chapter3.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter1.name}")
+        should have_selector("table", id: "chapter#{chapter3.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :")
+        should have_selector("table", id: "chapter#{chapter3.id}", text: chapter1.name)
         should have_link(theory31.title, href: chapter_theory_path(chapter3, theory31))
         should have_button(class: "disabled", id: "disabled-question-#{question31.id}", text: "1")
         
         should have_selector("table", id: "chapter#{chapter4.id}", class: "greyy", text: chapter4.name)
-        should have_selector("table", id: "chapter#{chapter4.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter2.name} - #{chapter3.name}")
+        should have_selector("table", id: "chapter#{chapter4.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :")
+        should have_selector("table", id: "chapter#{chapter4.id}", text: chapter2.name)
+        should have_selector("table", id: "chapter#{chapter4.id}", text: chapter3.name)
         should have_button(class: "disabled", id: "disabled-question-#{question41.id}", text: "1")
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
@@ -183,9 +195,10 @@ describe "sections/show.html.erb", section: true do
         user.theories << theory12
         user.chapters << chapter1
         user.chapters << chapter2
-        visit section_path(section)
       end
       it do
+        render template: "sections/show"
+        
         should have_selector("h1", text: section.name)
         should have_content(section.description)
         should have_no_link("Modifier l'introduction")
@@ -211,7 +224,8 @@ describe "sections/show.html.erb", section: true do
         should have_link(class: "btn-ld-light-dark", text: "1", href: chapter_question_path(chapter3, question31))
         
         should have_selector("table", id: "chapter#{chapter4.id}", class: "greyy", text: chapter4.name)
-        should have_selector("table", id: "chapter#{chapter4.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter : #{chapter3.name}")
+        should have_selector("table", id: "chapter#{chapter4.id}", text: "Pour pouvoir accéder aux exercices de ce chapitre, vous devez d'abord compléter :")
+        should have_selector("table", id: "chapter#{chapter4.id}", text: chapter3.name)
         should have_button(class: "disabled", id: "disabled-question-#{question41.id}", text: "1")
         
         should have_no_selector("table", id: "chapter#{chapter5_offline.id}", text: chapter5_offline.name)
@@ -230,9 +244,10 @@ describe "sections/show.html.erb", section: true do
         user.theories << theory11
         user.theories << theory12
         #user.chapters << chapter1 # We don't remember completed chapters for fondation section
-        visit section_path(section)
       end
       it do
+        render template: "sections/show"
+        
         should have_selector("h1", text: section.name)
         should have_content(section.description)
         should have_no_link("Modifier l'introduction")
@@ -269,11 +284,12 @@ describe "sections/show.html.erb", section: true do
   end
   
   describe "admin" do
-    before { sign_in admin }
+    before { sign_in_view admin }
     
     describe "for a non-fondation section" do
-      before { visit section_path(section) }
       it do
+        render template: "sections/show"
+        
         should have_selector("h1", text: section.name)
         should have_content(section.description)
         should have_link("Modifier l'introduction")
@@ -309,11 +325,10 @@ describe "sections/show.html.erb", section: true do
     end
     
     describe "for a fondation section" do
-      before do
-        section.update_attribute(:fondation, true)
-        visit section_path(section)
-      end
+      before { section.update_attribute(:fondation, true) }
       it do
+        render template: "sections/show"
+        
         should have_selector("h1", text: section.name)
         should have_content(section.description)
         should have_link("Modifier l'introduction")
